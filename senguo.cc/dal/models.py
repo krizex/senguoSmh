@@ -31,8 +31,13 @@ class _AccountApi:
         return u
 
     @classmethod
-    def check_name_exist(cls, username):
-        pass
+    def get_by_username(cls, username):
+        s = DBSession()
+        try:
+            u = s.query(cls).filter_by(username=username).one()
+        except:u = None
+        s.close()
+        return u
 
 class SuperAdmin(MapBase, _AccountApi):
     __tablename__ = "super_admin"
@@ -85,7 +90,7 @@ class ShopAdmin(MapBase, _AccountApi):
     birthday = Column(DateTime)
     qr_code_url = Column(String(2048))
 
-    shops = relationship(Shop)
+    shops = relationship(Shop, backref=backref('admin'))
 
     def __repr__(self):
         return "<ShopAdmin: {0}({1})>".format(self.username, self.id)
@@ -94,6 +99,12 @@ class ShopAdmin(MapBase, _AccountApi):
 class ShopStaff(MapBase, _AccountApi):
     __tablename__ = "shop_staff"
     id = Column(Integer, primary_key=True, nullable=False)
+    username = Column(String(64),unique=True, nullable=False)
+    password = Column(String(2048), nullable=False)
+    
+    email = Column(String(2048), nullable=False)
+    phone = Column(String(30), nullable=False)
+
 
 
 class Customer(MapBase, _AccountApi):

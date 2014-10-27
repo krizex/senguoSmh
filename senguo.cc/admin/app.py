@@ -8,12 +8,12 @@ import os
 
 import handlers.front
 import handlers.admin
+import handlers.superadmin
 
 class Application(tornado.web.Application):
     def __init__(self):
         settings = {
             "debug": bool(options.debug),
-            "login_url": r"/admin/login",
             "static_path": os.path.join(os.path.dirname(__file__), "static"),
             "static_url_prefix": "/static/",
             "template_path": os.path.join(os.path.dirname(__file__), "templates"),
@@ -22,16 +22,28 @@ class Application(tornado.web.Application):
         }
         handlers_ = [
             (r"/", handlers.front.Home,{}, "frontHome"),
-            (r"/super/login", handlers.superadmin.Access,{"action":"login"}, "superLogin"),
-            (r"/super/logout", handlers.superadmin.Access,{"action":"logout"}, "superLogout" ),
-            (r"/super/", handlers.superadmin.Home, {},"superHome"),
+            (r"/super/login", handlers.superadmin.Access,
+             {"action":"login"}, "superLogin"),
+            (r"/super/logout", handlers.superadmin.Access,
+             {"action":"logout"}, "superLogout" ),
+
+            (r"/super/", handlers.superadmin.Home, 
+             {"action":"applying"},"superHome"),
+            (r"/super/applying",handlers.superadmin.Home, 
+             {"action":"applying"},"superHomeApplying"),
+            (r"/super/active", handlers.superadmin.Home, 
+             {"action":"active"},"superHomeActive"),
+            (r"/super/frozen", handlers.superadmin.Home, 
+             {"action":"frozen"},"superHomeFrozen"),
+            
+            # (r"/super/notice/", handlers.superadmin.Notice),
 
             (r"/admin/login", handlers.admin.Access,
              {"action":"login"}, "adminLogin"),
             (r"/admin/logout", handlers.admin.Access, 
              {"action":"logout"}, "adminLogout"),
             (r"/admin/register", handlers.admin.Access, 
-             {"action":"register"}, "adminRegister")
+             {"action":"register"}, "adminRegister"),
             (r"/admin/", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
             (r"/admin/shelf", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
             # (r"/admin/order", handlers.admin.Order, {}, "adminOrder"), 
@@ -47,7 +59,7 @@ class Application(tornado.web.Application):
 
 def main():
     define("debug", default=0, help="debug mode: 1 to open, 0 to close")
-    define("port", default=8888, help="port, defualt: 8888")
+    define("port", default=8887, help="port, defualt: 8888")
     tornado.options.parse_command_line()
     app = Application()
     app.listen(options.port)
