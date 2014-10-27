@@ -12,12 +12,12 @@ class Access(AdminBaseHandler):
         elif self._action == "logout":
             self.clear_current_user()
             return self.redirect(self.reverse_url("adminHome"))
-        elif self._action == "auth":
-            self.handle_auth()
+        elif self._action == "oauth":
+            self.handle_oauth()
         else:
             return self.send_error(404)
     @AdminBaseHandler.check_arguments("code?", "state?")
-    def handle_auth(self):
+    def handle_oauth(self):
         if not "code" in self.args:
             return self.redirect(self.reverse_url("adminHome"))
         # todo: handle state

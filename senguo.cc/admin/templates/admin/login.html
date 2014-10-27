@@ -1,4 +1,4 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-<a href="https://open.weixin.qq.com/connect/qrconnect?appid=wxcaaf6943cacada36&redirect_uri={{url_escape('http://auth.monklof.com'+reverse_url('adminAuth'))}}&response_type=code&scope=snsapi_login&state=ohfuck#wechat_redirect">微信登录</a>
+<a href="{% raw handler.get_wexin_oauth_link()%}">微信登录</a>
 <a href="">手机号登录</a>

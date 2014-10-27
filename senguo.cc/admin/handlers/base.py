@@ -1,9 +1,11 @@
-from merryweb.webbase import BaseHandler
+from libs.webbase import BaseHandler
 import dal.models as models
 from libs.utils import Logger
 import json
 import urllib
 import traceback
+from settings import APPID, APPSECRET, APP_OAUTH_CALLBACK_URL
+import tornado.escape
 
 class GlobalBaseHandler(BaseHandler):
     @property
@@ -13,7 +15,7 @@ class GlobalBaseHandler(BaseHandler):
         self._session = models.DBSession()
         return self._session
     
-    def on_close(self):
+    def on_finish(self):
         # release db connection
         if hasattr(self, "_session"):
             self._session.close()
@@ -26,6 +28,15 @@ class _AccountBaseHandler(GlobalBaseHandler):
     __account_model__ = None
     __account_cookie_name__ = ""
     __login_url_name__ = ""
+    __wexin_oauth_url_name__ = ""
+
+    def get_wexin_oauth_link(self):
+        if not self.__wexin_oauth_url_name__:
+            raise Exception("you have to complete this wexin oauth config.")
+        redirect_uri = tornado.escape.url_escape(
+            APP_OAUTH_CALLBACK_URL+\
+            self.reverse_url(self.__wexin_oauth_url_name__))
+        return "https://open.weixin.qq.com/connect/qrconnect?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_login&state=ohfuck#wechat_redirect".format(appid=APPID, redirect_uri=redirect_uri)
     
     def get_login_url(self):
         if not self.__login_url_name__:
@@ -69,6 +80,7 @@ class AdminBaseHandler(_AccountBaseHandler):
     __account_model__ = models.ShopAdmin
     __account_cookie_name__ = "admin_id"
     __login_url_name__ = "adminLogin"
+    __wexin_oauth_url_name__ = "adminOauth"
     
 class StaffBaseHandler(_AccountBaseHandler):
     __account_model__ = models.ShopStaff

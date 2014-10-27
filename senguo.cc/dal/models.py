@@ -3,7 +3,10 @@ from sqlalchemy.types import String, Integer, DateTime, Text, Boolean, Float
 from sqlalchemy.orm import relationship, backref, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-engine = create_engine("mysql+mysqlconnector://monk:test123@127.0.0.1/test_sqlalchemy")
+from settings import MYSQL_DRIVER, MYSQL_USERNAME, MYSQL_PASSWORD, DB_NAME
+
+engine = create_engine("mysql+{driver}://{username}:{password}@127.0.0.1/{database}".format(
+    driver=MYSQL_DRIVER,username=MYSQL_USERNAME,password=MYSQL_PASSWORD, database=DB_NAME))
 MapBase = declarative_base(bind=engine)
 DBSession = sessionmaker(bind=engine)
 
