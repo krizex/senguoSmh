@@ -22,8 +22,8 @@ class Application(tornado.web.Application):
         }
         handlers_ = [
             (r"/", handlers.front.Home,{}, "frontHome"),
-            (r"/super/login", handlers.superadmin.Access,
-             {"action":"login"}, "superLogin"),
+            (r"/super/login", handlers.superadmin.Access,{
+                "action":"login"}, "superLogin"),
             (r"/super/logout", handlers.superadmin.Access,
              {"action":"logout"}, "superLogout" ),
 
@@ -40,6 +40,8 @@ class Application(tornado.web.Application):
 
             (r"/admin/login", handlers.admin.Access,
              {"action":"login"}, "adminLogin"),
+            (r"/admin/auth", handlers.admin.Access, {
+                "action":"auth"}, "adminAuth"),
             (r"/admin/logout", handlers.admin.Access, 
              {"action":"logout"}, "adminLogout"),
             (r"/admin/register", handlers.admin.Access, 

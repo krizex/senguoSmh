@@ -1,7 +1,9 @@
 from merryweb.webbase import BaseHandler
 import dal.models as models
 from libs.utils import Logger
-
+import json
+import urllib
+import traceback
 
 class GlobalBaseHandler(BaseHandler):
     @property
@@ -10,9 +12,6 @@ class GlobalBaseHandler(BaseHandler):
             return self._session
         self._session = models.DBSession()
         return self._session
-    def check_xsrf_cookie(self):
-        pass
-    
     
     def on_close(self):
         # release db connection
@@ -57,6 +56,10 @@ class _AccountBaseHandler(GlobalBaseHandler):
             raise Exception("overwrite model to support authenticate.")
         self.clear_cookie(self.__account_cookie_name__)
 
+    def get_wx_userinfo(self, code):
+        return WxOauth2.get_userinfo(code)
+        
+    
 class SuperBaseHandler(_AccountBaseHandler):
     __account_model__ = models.SuperAdmin
     __account_cookie_name__ = "super_id"
@@ -75,3 +78,48 @@ class CustomerBaseHandler(_AccountBaseHandler):
     __account_model__ = models.Customer
     __account_cookie_name__ = "customer_id"
 
+from settings import APPID, APPSECRET
+
+class WxOauth2:
+    token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}&secret={appsecret}&code={code}&grant_type=authorization_code"
+    userinfo_url = "https://api.weixin.qq.com/sns/userinfo?access_token={access_token}&openid={openid}"
+    @classmethod
+    def get_userinfo(cls, code):
+        token_url = cls.token_url.format(code=code, appid=APPID, appsecret=APPSECRET)
+        # 获取access_token
+        try:
+            data = json.loads(
+                urllib.request.urlopen(token_url).read().decode("utf-8"))
+            print(data)
+            access_token = data["access_token"]
+            openid = data["openid"]
+        except Exception as e:
+            Logger.warn("WxOauth2 Error", "获取access_token失败，注意是否存在攻击")
+            traceback.print_exc()
+            return None
+        
+        userinfo_url = cls.userinfo_url.format(access_token=access_token, openid=openid)
+        try:            
+            data = json.loads(
+                urllib.request.urlopen(userinfo_url).read().decode("utf-8"))
+            if data["sex"] == 2: # female
+                sex = "female"
+            else:
+                sex = "male"
+            userinfo_data = dict(
+                openid=data["openid"],
+                nickname=data["nickname"],
+                sex=sex,
+                province=data["province"],
+                city=data["city"],
+                country=data["country"],
+                headimgurl=data["headimgurl"],
+                unionid=data["unionid"]
+            )
+            print(userinfo_data)
+        except Exception as e:
+            Logger.warn("Oauth2 Error", "获取用户信息失败")
+            traceback.print_exc()
+            return None
+        
+        return userinfo_data

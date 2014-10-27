@@ -34,6 +34,20 @@ class BaseHandler(tornado.web.RequestHandler):
                 out_text += c
         return out_text
 
+    def get_argument(self, name, default=[], strip=True):
+        if self.request.method.upper() == "POST" and\
+           "Content-Type" in self.request.headers and \
+           self.request.headers["Content-Type"].split(";")[0].strip() \
+           == "application/json":
+            if not hasattr(self, "_json_parsed_dict"):
+                try:
+                    self._json_parsed_dict = tornado.escape.json_decode(self.request.body)
+                except:
+                    self._json_parsed_dict = {}
+            if name in self._json_parsed_dict:
+                return self._json_parsed_dict[name]
+            # 没找着，pass
+        return super().get_argument(name, default, strip)
 
     def check_arguments(*request_arguments):
         """
@@ -45,46 +59,37 @@ class BaseHandler(tornado.web.RequestHandler):
         """
         def func_wrapper(method):
             def wrapper(self,*args,**kwargs):
-                if self.request.method == "POST":
-                    obj = self.__json_parse(self.request.body) or {}
-                    for name in request_arguments:
-                        if name.count(':'):
-                            Type = name.split(":")[1]
-                            name = name.split(":")[0]
+                obj = dict()
+                for name in request_arguments:
+                    if name.count(':'):
+                        Type = name.split(":")[1]
+                        name = name.split(":")[0]
+                    else:
+                        Type = "all"
+                    should_exists = True
+                    if name.count("?") > 0 or Type.count("?") > 0:
+                        name.replace("?", '')
+                        Type.replace("?",'')
+                        should_exists = False
+
+                    # 获取参数
+                    try:
+                        v = self.get_argument(name)
+                    except:
+                        if should_exists:
+                            return self.send_error(400)
                         else:
-                            Type = "all"
-                        if name.count('?') == 0 and Type.count("?") == 0:
-                            if name not in obj:
-                                try:
-                                    obj[name] = self.get_argument(name)
-                                except:
-                                    return self.send_error(400)
-                        name = name.replace("?",'',1)
-                        if name in obj:
-                            try:
-                                obj[name] = self.__parse_type(obj[name],Type)
-                            except:
-                                return self.send_error(400)
-                else:
-                    obj = {}
-                    for name in request_arguments:
-                        if name.count(':'):
-                            Type = name.split(":")[1]
-                            name = name.split(":")[0]
-                        else:
-                            Type = "all"
-                        if name.count('?') > 0 or Type.count("?") > 0:
-                            name = name.replace('?','',1)
-                            try:obj[name] = self.get_argument(name)
-                            except:pass
-                        else:
-                            try:obj[name] = self.get_argument(name)
-                            except: return self.send_error(400)
-                        if name in obj:
-                            try:
-                                obj[name] = self.__parse_type(obj[name],Type)
-                            except:
-                                return self.send_error(400)
+                            continue
+                    # 解析参数
+                    try:
+                        v = self.__parse_type(v, Type)
+                    except:
+                        if should_exists: 
+                            return self.send_error(400)
+                        else: 
+                            continue
+                    # 存储
+                    obj[name] = v
                 self.args = obj
                 return method(self,*args,**kwargs)
             return wrapper
@@ -103,23 +108,7 @@ class BaseHandler(tornado.web.RequestHandler):
         self.set_header("Content-Type", 'utf-8')
         self.write(res)
 
-    def __json_parse(self,string):
-        try:
-            obj = dict()
-            if self.request.headers["Content-Type"] ==\
-               "application/x-www-form-urlencoded":
-                for name in self.request.body_arguments:
-                    obj[name] = self.request.body_arguments[name][0].decode()
-                print(obj)
-                return obj
-            else:
-                data = tornado.escape.json_decode(string)
-                print(data)
-                return data
-        except:
-            return None
     def __parse_type(self,value,Type):
-        print("check for type: {0}, origin type: {1}, value: {2}".format(Type, type(value), value))
         if not Type or Type == "all":
             return value
         if (Type == "str" or Type == "string") and type(value) != str:
