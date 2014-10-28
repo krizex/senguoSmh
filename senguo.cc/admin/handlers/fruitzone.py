@@ -18,7 +18,8 @@ class Apply(AdminBaseHandler):
         "admin_realname","admin_email","admin_wx_username", "admin_use_system:bool",
         "admin_charge_type:int", "admin_phone")
     def post(self):
-        return self.write(self.request.body)
+        # return self.send_fail(error_text ="用户名不合法")
+        return self.send_success()
 
 class ShopList(AdminBaseHandler):
     pass
@@ -51,5 +52,5 @@ class PhoneVerify(AdminBaseHandler):
         print("check msg code for phone: {0} with code: {1}".\
               format( self.args["phone"],
                       self.args["code"]))
-        return self.send_success
+        return self.send_success()
     
