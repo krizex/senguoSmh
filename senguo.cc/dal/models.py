@@ -174,6 +174,7 @@ class Customer(MapBase, _AccountApi):
     wx_city = Column(String(128))
     wx_headimgurl = Column(String(2048))
 
+
 class Address(MapBase):
     __tablename__ = "address"
 

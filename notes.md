@@ -19,7 +19,7 @@
 
 * 转义 xhtml_escape(), url_escape(), json_escape(), 注意xsrf, _xsrf token问题
 
-* 高级 url name,reverse_url()
+* 高级 url name,reverse_url(), {{static_url('css/home.css')}}
 
 ## 数据处理部分
 
