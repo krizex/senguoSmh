@@ -30,12 +30,18 @@ class _AccountBaseHandler(GlobalBaseHandler):
     __login_url_name__ = ""
     __wexin_oauth_url_name__ = ""
 
-    def get_wexin_oauth_link(self):
+    def get_wexin_oauth_link(self, next_url=""):
         if not self.__wexin_oauth_url_name__:
             raise Exception("you have to complete this wexin oauth config.")
+        
+        if next_url: 
+            para_str = "?next="+next_url
+        else:
+            para_str = ""
+        
         redirect_uri = tornado.escape.url_escape(
             APP_OAUTH_CALLBACK_URL+\
-            self.reverse_url(self.__wexin_oauth_url_name__))
+            self.reverse_url(self.__wexin_oauth_url_name__) + para_str)
         return "https://open.weixin.qq.com/connect/qrconnect?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_login&state=ohfuck#wechat_redirect".format(appid=APPID, redirect_uri=redirect_uri)
     
     def get_login_url(self):

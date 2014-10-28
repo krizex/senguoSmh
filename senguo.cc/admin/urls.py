@@ -1,6 +1,7 @@
 import handlers.front
 import handlers.admin
 import handlers.superadmin
+import handlers.fruitzone
 
 handlers = [
     (r"/", handlers.front.Home,{}, "frontHome"),
@@ -37,4 +38,14 @@ handlers = [
     #  {"action":"profile"}, "adminSettingsProfile")
     # (r"/staff/", handlers.staff.Home, {}, "staffHome"),
     # (r"/staff/...")
+
+    (r"/fruitzone/shops/", handlers.fruitzone.ShopList, {}, "fruitzoneShops"),
+    (r"/fruitzone/shop/(\d+)", handlers.fruitzone.Shop, {}, "fruitzoneShop"),
+    (r"/fruitzone/apply", handlers.fruitzone.Apply, {}, "fruitzoneApply"),
+    (r"/fruitzone/phoneVerify/gencode", handlers.fruitzone.PhoneVerify, {
+        "action":"gencode"}, "fruitzoneVerifyGencode"),
+    (r"/fruitzone/phoneVerify/checkcode", handlers.fruitzone.PhoneVerify,{
+        "action":"checkcode"}, "fruitzoneCheckcode")
+    
 ]
+
