@@ -9,11 +9,12 @@ class Access(AdminBaseHandler):
     def get(self):
         next_url = self.get_argument('next', '')
         if self._action == "login":
-            return self.render("admin/login.html")
+            next_url = self.get_argument("next", "")
+            return self.render("admin/login.html", 
+                                 context=dict(next_url=next_url))
         elif self._action == "logout":
             self.clear_current_user()
-            return self.redirect(self.reverse_url("adminHome"),
-                                 context=dict(next_url=next_url))
+            return self.redirect(self.reverse_url("adminHome"))
         elif self._action == "oauth":
             self.handle_oauth()
         else:
