@@ -28,6 +28,12 @@ class SHOPADMIN_CHARGE_TYPE:
     SIXMONTH_988 = 2
     TWELVEMONTH_1788 = 3
 
+class SHOP_STATUS:
+    """商店状态"""
+    APPLYING = 1
+    ALLOWED = 2
+    DECLINED = 3
+
 
 class _AccountApi:
     """
@@ -76,6 +82,15 @@ class _AccountApi:
         s.close()
         return u
 
+    def save(self):
+        s = DBSession()
+        s.add(self)
+        s.commit()
+        s.close()
+    def update(self, **kwargs):
+        for key in kwargs.keys():
+            setattr(self, key, kwargs[key])
+        self.save()
 
 class SuperAdmin(MapBase, _AccountApi):
     __tablename__ = "super_admin"
@@ -90,13 +105,27 @@ class SuperAdmin(MapBase, _AccountApi):
             format(id=self.id,username=self.username)
 
 class Shop(MapBase):
+    
+    def __init__(self, **kwargs):
+        if "shop_service_areas" in kwargs:
+            shop_service_areas = kwargs["shop_service_areas"]
+            del kwargs["shop_service_areas"]
+        else:
+            shop_service_areas = []
+        super().__init__(**kwargs)
+
+        for shop_service_type in shop_service_areas:
+            shop_service_area_link = ShopServiceAreaLink(service_type=shop_service_type)
+            self.shop_service_areas.append(shop_service_type)
+                
+
     __tablename__ = "shop"
     
     id = Column(Integer, primary_key=True, nullable=False)
     shop_name = Column(String(128), nullable=False)
-    shop_code = Column(String(128), nullable=False)
+    shop_code = Column(String(128), nullable=False, default="not set")
     create_date = Column(DateTime, nullable=False, default=func.now())
-    shop_status = Column(String(16))
+    shop_status = Column(String(16), default=SHOP_STATUS.APPLYING)
 
     admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
 
@@ -114,7 +143,7 @@ class Shop(MapBase):
     shop_sales_range = Column(String(128))
     
     # 是否做实体店
-    have_offline_entity = Column(Boolean)
+    have_offline_entity = Column(Boolean, default=False)
 
     # 店铺介绍
     shop_intro = Column(String(568))
@@ -138,6 +167,7 @@ class Shop(MapBase):
     wx_accountname = Column(String(128))
     wx_nickname = Column(String(128))
     wx_qr_code = Column(String(1024))
+
 
     def __repr__(self):
         return "<Shop: {0} (id={1}, code={2})>".format(
@@ -178,6 +208,18 @@ class ShopAdmin(MapBase, _AccountApi):
     wx_province = Column(String(128))
     wx_city = Column(String(128))
     wx_headimgurl = Column(String(2048))
+
+    def add_shop(self, **kwargs):
+        kwargs["admin_id"] = self.id
+        if "shops" in kwargs:
+            del kwargs["shops"]
+        
+        s = DBSession()
+        s.add(self)
+        sp = Shop(**kwargs)
+        self.shops.append(sp)
+        s.commit()
+        s.close()
 
     def __repr__(self):
         return "<ShopAdmin: {0}({1})>".format(self.username, self.id)

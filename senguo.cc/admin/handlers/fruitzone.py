@@ -12,23 +12,33 @@ class ShopApply(AdminBaseHandler):
     
     @tornado.web.authenticated
     def get(self):
-        # 是否允许多个申请
+        # 判断信息设置是否完全
+        u = self.current_user
+        if not u.realname or not u.phone or not u.email or\
+           not u.wx_username:
+            return self.redirect(
+                self.reverse_url("fruitzoneAdminProfile"))
+        # 返回申请页面
         return self.render("fruitzone/apply.html")
     
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments(
-        "shop_name", "shop_service_areas:list",
+        "shop_name", ,
         "shop_province", "shop_city", "shop_address_detail",
-        "have_offline_entity:bool", 
-        
-        "admin_realname","admin_email","admin_wx_username", "admin_use_system:bool",
-        "admin_charge_type:int", "admin_phone")
+        "have_offline_entity:bool", "shop_service_areas:list"        
+        "shop_intro")
     def post(self):
-        # return self.send_fail(error_text ="用户名不合法")
+        #* todo 检查合法性
+        self.current_user.add_shop(
+            shop_name=self.args["shop_name"],
+            shop_province=self.args["shop_province"],
+            shop_city = self.args["shop_city"],
+            shop_address_detail=self.args["shop_address_detail"],
+            have_offline_entity=self.args["have_offline_entity"],
+            shop_service_areas=self.args["shop_service_areas"],
+            shop_intro=self.args["shop_intro"]
+        )
         return self.send_success()
-
-class ShopList(AdminBaseHandler):
-    pass
 
 class Shop(AdminBaseHandler):
     pass
