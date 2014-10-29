@@ -63,6 +63,6 @@ class Home(SuperBaseHandler):
             shops=shops, next_page=next_page,
             pre_page=pre_page))
     
-        
+
         
 

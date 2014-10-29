@@ -16,7 +16,7 @@ handlers = [
         "action":"active"},"superHomeActive"),
     (r"/super/frozen", handlers.superadmin.Home, {
         "action":"frozen"},"superHomeFrozen"),
-    
+
     # (r"/super/notice/", handlers.superadmin.Notice),
     
     (r"/admin/login", handlers.admin.Access,{
