@@ -7,8 +7,11 @@ class Access(AdminBaseHandler):
         self._action = action
 
     def get(self):
+        next_url = self.get_argument('next', '')
         if self._action == "login":
-            return self.render("admin/login.html")
+            next_url = self.get_argument("next", "")
+            return self.render("admin/login.html", 
+                                 context=dict(next_url=next_url))
         elif self._action == "logout":
             self.clear_current_user()
             return self.redirect(self.reverse_url("adminHome"))
@@ -18,6 +21,7 @@ class Access(AdminBaseHandler):
             return self.send_error(404)
     @AdminBaseHandler.check_arguments("code?", "state?")
     def handle_oauth(self):
+        print(self.args)
         if not "code" in self.args:
             return self.redirect(self.reverse_url("adminHome"))
         # todo: handle state
@@ -28,7 +32,9 @@ class Access(AdminBaseHandler):
             return self.redirect(self.reverse_url("adminLogin"))
         u = models.ShopAdmin.get_or_create_with_unionid(userinfo["unionid"], userinfo)
         self.set_current_user(u)
-        return self.redirect(self.reverse_url("adminHome"))
+        
+        next_url = self.get_argument("next", self.reverse_url("adminHome"))
+        return self.redirect(next_url)
 
 class Home(AdminBaseHandler):
     @tornado.web.authenticated
