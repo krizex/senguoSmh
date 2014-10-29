@@ -68,8 +68,8 @@ class BaseHandler(tornado.web.RequestHandler):
                         Type = "all"
                     should_exists = True
                     if name.count("?") > 0 or Type.count("?") > 0:
-                        name.replace("?", '')
-                        Type.replace("?",'')
+                        name = name.replace("?", '')
+                        Type = Type.replace("?",'')
                         should_exists = False
 
                     # 获取参数

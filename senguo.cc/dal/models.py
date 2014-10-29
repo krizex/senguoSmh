@@ -8,7 +8,34 @@ from settings import MYSQL_DRIVER, MYSQL_USERNAME, MYSQL_PASSWORD, DB_NAME
 engine = create_engine("mysql+{driver}://{username}:{password}@127.0.0.1/{database}".format(
     driver=MYSQL_DRIVER,username=MYSQL_USERNAME,password=MYSQL_PASSWORD, database=DB_NAME))
 MapBase = declarative_base(bind=engine)
-DBSession = sessionmaker(bind=engine)
+DBSession = sessionmaker(bind=engine, expire_on_commit=False)
+
+
+# 常量
+
+class SHOP_SERVICE_AREA:
+    """服务区域"""
+    HIGH_SCHOOL = 1
+    COMMUNITY = 2
+    TRADE_CIRCLE = 3
+    OTHERS = 4
+
+class SHOPADMIN_ROLE_TYPE:
+    """管理员角色"""
+    SHOP_OWNER = 1
+    SYSTEM_USER = 2
+
+class SHOPADMIN_PRIVILEGE:
+    """权限"""
+    ALL = 1
+
+class SHOPADMIN_CHARGE_TYPE:
+    """付费类型"""
+    THREEMONTH_588 = 1
+    SIXMONTH_988 = 2
+    TWELVEMONTH_1788 = 3
+
+
 
 class _AccountApi:
     """
@@ -42,7 +69,7 @@ class _AccountApi:
                 wx_country=userinfo["country"],
                 wx_province=userinfo["province"],
                 wx_city=userinfo["city"],
-                wx_headimgurl=data["headimgurl"])
+                wx_headimgurl=userinfo["headimgurl"])
         s = DBSession()
         s.add(u)
         s.commit()
@@ -133,7 +160,7 @@ class ShopAdmin(MapBase, _AccountApi):
     password = Column(String(2048))
     
     # 角色类型，SHOPADMIN_ROLE_TYPE: [SHOP_OWNER, SYSTEM_USER]
-    role = Column(Integer, nullable=False)
+    role = Column(Integer, nullable=False, default=SHOPADMIN_ROLE_TYPE.SHOP_OWNER)
     # 权限类型，SHOPADMIN_PRIVILEGE: [ALL, ]
     privileges = relationship("ShopAdminPrivilegeLink", uselist=True)
     # 付费类型，SHOPADMIN_CHARGE_TYPE: 
@@ -234,30 +261,7 @@ class ShopAdminPrivilegeLink(MapBase):
     __tablename__ = "shop_admin_privilege_link"
     id = Column(Integer, primary_key=True, nullable=False)
     privilege_type = Column(Integer, nullable=False)
-
-# 常量
-
-class SHOP_SERVICE_AREA:
-    """服务区域"""
-    HIGH_SCHOOL = 1
-    COMMUNITY = 2
-    TRADE_CIRCLE = 3
-    OTHERS = 4
-
-class SHOPADMIN_ROLE_TYPE:
-    """管理员角色"""
-    SHOP_OWNER = 1
-    SYSTEM_USER = 2
-
-class SHOPADMIN_PRIVILEGE:
-    """权限"""
-    ALL = 1
-
-class SHOPADMIN_CHARGE_TYPE:
-    """付费类型"""
-    THREEMONTH_588 = 1
-    SIXMONTH_988 = 2
-    TWELVEMONTH_1788 = 3
+    admin_id = Column(Integer, ForeignKey(ShopAdmin.id))
 
 
 

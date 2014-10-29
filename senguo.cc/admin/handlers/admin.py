@@ -21,6 +21,7 @@ class Access(AdminBaseHandler):
             return self.send_error(404)
     @AdminBaseHandler.check_arguments("code?", "state?")
     def handle_oauth(self):
+        print(self.args)
         if not "code" in self.args:
             return self.redirect(self.reverse_url("adminHome"))
         # todo: handle state
