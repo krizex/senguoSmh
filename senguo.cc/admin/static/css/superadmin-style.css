@@ -1,0 +1,24 @@
+.login-box{text-align:center;width:560px;margin:0 auto;margin-top:50px;}
+.login-box .login-info{width:40%;margin:0 auto;clear:both;margin-bottom:10px;}
+.login-box .login-info label{width:60px;}
+.login-box .login-info input{}
+.login-box .login-hint{text-align:center;width:100%;float:left;}
+.login-box .login-btn{clear:both;margin:0 auto;}
+
+#area-add-btn {margin-top: 20px;}
+.area-list-item {width: 98%;padding: 8px;border-bottom: 1px solid #ddd;}
+.area-list-item span {display: inline-block;min-width: 45px;}
+.area-list-item label {font-weight: bold;}
+.area-list-item label.ib { margin-right: 10px;}
+.area-list-item .label {display: inline-block;min-width: 0;margin: auto 10px;}
+.area-list-item .label-wrapper {display: inline-block;width: 90px;}
+.area-list-item .button-box {float: right;}
+.area-list-item .remove-btn:hover {color: darkred;}
+.area-list-item:hover{background-color: #eee;}
+.area-list-item .toggle {position: relative;padding-bottom: 30px;}
+.area-list-item .toggle .btn-link {margin-right: 20px;}
+.area-list-item .toggle #show-orders {margin-right: 20px;}
+.area-list-item .toggle .toggle-content {margin: 20px;border-radius: 5px;}
+.area-list-item .toggle .btn-box {position: absolute;right: 10px;bottom: 5px;}
+.area-list-item .toggle .btn-box a {float: right;margin: 8px;display: inline-block;}
+

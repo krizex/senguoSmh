@@ -1,0 +1,21 @@
+body{font-size: 1em;font-family:"microsoft yahei";}
+p{clear: both;width: 100%}
+ol,ul,li{list-style:none;}
+.phone-box{width:100%;min-width:320px;max-width:640px;margin:0 auto;overflow:hidden;}
+.color-green{color:#40c689;}
+ul{padding-left:0px;}
+a:hover{text-decoration:none;}
+a:focus{text-decoration: none}
+a:focus{outline:none;}
+input{border:none;}
+.container{padding:0;}
+
+
+.title-box{width:100%;background:#00D681;text-align:center;height:5em;line-height:5em;box-shadow:0px 1px 2px #ccc;position:relative;}
+.title-box .phone-box{position:relative;}
+.title-box .title{font-size:2em;text-shadow:1px 1px 2px #aaa;color:#fff;}
+.title-box .logo{height:4.5em;position:absolute;left:2em;top:1em;}
+.title-box .return-btn{display:inline-block;border:1px solid #fff;font-size:1.4em;color:#fff;position:absolute;left:1em;top:0.8em;height:2em;line-height:2em;padding:0 0.8em;border-radius:2px;}
+
+
+

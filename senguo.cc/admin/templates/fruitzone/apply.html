@@ -1,3 +1,115 @@
-<pre>
-  haha, you get it!
-</pre>
+{% extends 'base.html'%}
+
+{% block content %}
+<header class="apply-title title-box phone-box">
+    <div class="phone-box">
+        <img class="logo pull-left" src="{{static_url('images/logo.png')}}"/>
+        <span class="title">入驻申请</span>
+    </div>
+</header>
+<div class="container apply-box phone-box">
+    <form action="/fruitzone/apply" method="post" id="applyInfo">
+        <div class="container-title">店铺信息</div>
+        <div class="info-box">
+            <p class="title">店铺名称<em>*</em>：</p>
+            <input type="text" class="input-box" id="shopName"/>
+            <p class="title" style="display:none">店铺logo<em>*</em>：</p>
+            <a class="upload-img" href="#" style="display:none">点击上传图片</a>
+            <p class="title">详细地址<em>*</em>：</p>
+            <div class="better-address">
+                <div class="dropdown select-provience pull-left" data-toggle="modal" data-target="#provinceList">
+                    <button class="btn btn-default dropdown-toggle" type="button">
+                        <span  id="provinceAddress">选择省份</span>
+                        <span class="caret"></span>
+                    </button>
+                </div>
+                <div class="dropdown select-provience pull-left" data-toggle="modal" data-target="#cityList">
+                    <button class="btn btn-default dropdown-toggle" type="button">
+                        <span id="cityAddress">选择城市</span>
+                        <span class="caret"></span>
+                    </button>
+                </div>
+            </div>
+            <input type="text" class="input-box input1" placeholder="请填详细地址" id="addressDetail"/>
+            <div class="whether-shop">
+                <p class="title pull-left">是否做实体店<em>*</em>：</p>
+                <ul class="area-select  select-list pull-right" id="realShop">
+                    <li class="active"><a href="javascript:;">是</a></li>
+                    <li><a href="javascript:;">否</a></li>
+                </ul>
+            </div>
+            <p class="title">服务区域(多选)<em>*</em>：</p>
+            <ul class="area-select  area-choose-list row" id="serverArea">
+                <li class="active"><a href="javascript:;">高校</a></li>
+                <li><a href="javascript:;">社区</a></li>
+                <li><a href="javascript:;">商圈</a></li>
+                <li><a href="javascript:;">其他</a></li>
+            </ul>
+            <p class="title">店铺简介<em>*</em>：</p>
+            <textarea class="shop-intro" id="shopIntro"></textarea>
+        </div>
+        <div class="container-title">申请个人信息</div>
+        <div class="info-box">
+
+            <p class="title">是否接入森果后台系统：<a href="#" class="to-know">了解一下</a></p>
+            <ul class="if-use select-list" id="useStage">
+                <li class="active"><a href="javascript:;" class="use-stage">是</a></li>
+                <li><a href="javascript:;"class="dont-use-stage">否</a></li>
+            </ul>
+            <div class="use-box" style="display:none;">
+                <p class="title">平台申请使用期限：</p>
+                <ul class="use-limit select select-list" id="useLimt">
+                    <li class="active"><a href="javascript:;">588元/三个月</a></li>
+                    <li><a href="javascript:;">988元/六个月</a></li>
+                    <li><a href="javascript:;">1788元/十二个月</a></li>
+                </ul>
+            </div>
+            <p id="#notice">hahahahahah</p>
+            <input type="submit" value="提交申请" class="green" id="submitApply"/>
+        </div>
+    </form>
+</div>
+
+<div class="modal fade select-popbox" id="provinceList" tabindex="-1" role="dialog" aria-labelledby="provinceAddress" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">省份选择</h4>
+            </div>
+            <div class="modal-body">
+                <div class="address-list province-list select-list">
+                    <ul class="provinceList">
+
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-style" data-dismiss="modal" id="provinceSelect">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade select-popbox" id="cityList" tabindex="-1" role="dialog" aria-labelledby="provinceAddress" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">城市选择</h4>
+            </div>
+            <div class="modal-body">
+                <div class="address-list city-list select-list">
+                    <ul class="cityList">
+                        <a href="">123</a>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-style" data-dismiss="modal" id="citySelect">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
