@@ -1,0 +1,23 @@
+{% autoescape None %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-cn">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta charset="UTF-8"/>
+    <title>haha</title>
+    <link rel="stylesheet" href="{{static_url('css/bootstrap.min.css')}}"/>
+    <link rel="stylesheet" href="{{static_url('css/fruitzone-global.css')}}"/>
+    <link rel="stylesheet" href="{{static_url('css/fruitzone-style.css')}}"/>
+    <script src="{{static_url('js/jquery.js')}}"></script>
+    <script src="{{static_url('js/bootstrap.min.js')}}"></script>
+    <script src="{{static_url('js/PCASClass.js')}}"></script>
+    <script src="{{static_url('js/fruitzone-public.js')}}"></script>
+    {% block head %}{% end %}
+</head>
+<body>
+{% block content %}{% end %}
+</body>
+</html>

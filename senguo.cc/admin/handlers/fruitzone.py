@@ -3,14 +3,16 @@ import dal.models as models
 import tornado.web
 
 class Home(AdminBaseHandler):
-    pass
+   def get(self):
+           return self.render("fruitzone/peer-circles.html")
 
 class ApplySuccess(AdminBaseHandler):
-    pass
+    def get(self):
+        return self.render("fruitzone/apply-success.html")
 
 class ShopApply(AdminBaseHandler):
     
-    @tornado.web.authenticated
+    # @tornado.web.authenticated
     def get(self):
         # 是否允许多个申请
         return self.render("fruitzone/apply.html")
@@ -34,12 +36,13 @@ class Shop(AdminBaseHandler):
     pass
 
 class AdminHome(AdminBaseHandler):
-    pass
+     def get(self):
+            return self.render("fruitzone/admin-home.html")
 
 class AdminProfile(AdminBaseHandler):
-    @tornado.web.authenticated
+    # @tornado.web.authenticated
     def get(self):
-        pass
+        return self.render("fruitzone/admin-profile.html")
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action")
     def post(self):

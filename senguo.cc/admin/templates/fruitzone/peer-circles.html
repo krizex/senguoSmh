@@ -1,0 +1,72 @@
+{% extends 'base.html'%}
+
+{% block content%}
+    <header class="herder-box phone-box title-box">
+        <div class="content-title">
+            <a href="{{reverse_url('fruitzoneAdminHome')}}" class="center-btn">个人中心</a>
+            <h1>水果.同行圈子</h1>
+            <a href="#" class="to-some">申请入驻</a>
+            <a href="#" class="to-search" id="search-btn">搜索</a>
+        </div>
+        <div class="search-box" id="search-box" style="display:none;">
+            <input type="text" placeholder="请输入店铺名、姓名、城市" class="search-input"/>
+            <input type="submit" value="搜索" class="search-btn"/>
+        </div>
+    </header>
+    <div class="order-by phone-box">
+        <a href="javascript:;" onclick="orderBy(1);">城市<span class="arrow"></span></a>
+        <a href="javascript:;" onclick="orderBy(2);">服务区域<span class="arrow"></span></a>
+        <a href="javascript:;" onclick="orderBy(3);">运营时间<span class="arrow"></span></a>
+    </div>
+    <div class="order-by-city select-list phone-box order-by-list" id="orderBy1" style="display:none;">
+        <ul class="province-select pull-left" id="province-select">
+            <li class="active"><a href="javascript:;">湖北省</a></li>
+            <li><a href="javascript:;">湖北省</a></li>
+            <li><a href="javascript:;">湖北省</a></li>
+        </ul>
+        <div class="city-select pull-left" id="city-select">
+            <ul  class="order-by-item">
+                <li class="active"><a href="javascript:;">武汉市</a></li>
+                <li><a href="javascript:;">武汉市</a></li>
+                <li><a href="javascript:;">武汉市</a></li>
+            </ul>
+            <ul  class="order-by-item">
+                <li class="active"><a href="javascript:;">火星市</a></li>
+                <li><a href="javascript:;">火星市</a></li>
+                <li><a href="javascript:;">火星市</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="order-by-area select-list phone-box order-by-list" id="orderBy2" style="display:none;">
+        <ul class="order-by-item">
+            <li class="active"><a href="javascript:;">高校</a></li>
+            <li><a href="javascript:;">社区</a></li>
+            <li><a href="javascript:;">商圈</a></li>
+            <li><a href="javascript:;">其他</a></li>
+        </ul>
+     </div>
+    <div class="order-by-time select-list phone-box order-by-list" id="orderBy3" style="display:none;">
+        <ul class="order-by-item">
+            <li class="active"><a href="javascript:;">一个月以上</a></li>
+            <li><a href="javascript:;">三个月以上</a></li>
+            <li><a href="javascript:;">半年以上</a></li>
+            <li><a href="javascript:;">一年以上</a></li>
+        </ul>
+    </div>
+    <div class="container phone-box shop-list-content">
+        <ul class="shop-list">
+            <li>
+                <a href="#">
+                    <div class="shop-logo pull-left">
+                         <img src="img/good.png"/>
+                    </div>
+                    <div class="shop-info pull-right">
+                        <p><span class="shop-name w1">We信水果帮</span><span class="area">湖北 武汉</span></p>
+                        <p>运营时间：12个月</p>
+                        <p><span class="shop-owner w1">负责人：喵星人</span><span class="wechat-code">helloworld</span></p>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+{% end %}
