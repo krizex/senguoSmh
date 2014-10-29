@@ -2,7 +2,13 @@ from handlers.base import AdminBaseHandler
 import dal.models as models
 import tornado.web
 
-class Apply(AdminBaseHandler):
+class Home(AdminBaseHandler):
+    pass
+
+class ApplySuccess(AdminBaseHandler):
+    pass
+
+class ShopApply(AdminBaseHandler):
     
     @tornado.web.authenticated
     def get(self):
@@ -27,6 +33,38 @@ class ShopList(AdminBaseHandler):
 class Shop(AdminBaseHandler):
     pass
 
+class AdminHome(AdminBaseHandler):
+    pass
+
+class AdminProfile(AdminBaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        pass
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action")
+    def post(self):
+        action = self.args["action"]
+
+        if action == "edit_headimg":
+            pass
+        elif action == "edit_nickname":
+            pass
+        elif action == "edit_realname":
+            pass
+        elif action == "edit_wx_username":
+            pass
+        elif action == "edit_phone":
+            pass
+        elif action == "edit_email":
+            pass
+        elif action == "edit_sex":
+            pass
+        elif action == "edit_birthday":
+            pass
+        elif action == "edit_intro":
+            pass
+        else:
+            return self.send_error(404)
 
 class PhoneVerify(AdminBaseHandler):
     

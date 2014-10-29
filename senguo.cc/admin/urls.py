@@ -39,9 +39,17 @@ handlers = [
     # (r"/staff/", handlers.staff.Home, {}, "staffHome"),
     # (r"/staff/...")
 
-    (r"/fruitzone/shops/", handlers.fruitzone.ShopList, {}, "fruitzoneShops"),
+    # 水果圈子
+
+    # 主页
+    (r"/fruitzone/", handlers.fruitzone.Home, {}, "fruitzoneHome"),
+    (r"/fruitzone/admin/home", handlers.fruitzone.AdminHome, {}, "fruitzoneAdminHome"),
+    (r"/fruitzone/admin/profile", handlers.fruitzone.AdminProfile, {}, "fruitzoneAdminProfile"),
+    (r"/fruitzone/shop/apply", handlers.fruitzone.ShopApply, {}, "fruitzoneShopApply"),
+    (r"/fruitzone/shop/applySuccess", handlers.fruitzone.ApplySuccess, {}, "fruitzoneShopApplySuccess"),
+
     (r"/fruitzone/shop/(\d+)", handlers.fruitzone.Shop, {}, "fruitzoneShop"),
-    (r"/fruitzone/apply", handlers.fruitzone.Apply, {}, "fruitzoneApply"),
+
     (r"/fruitzone/phoneVerify/gencode", handlers.fruitzone.PhoneVerify, {
         "action":"gencode"}, "fruitzoneVerifyGencode"),
     (r"/fruitzone/phoneVerify/checkcode", handlers.fruitzone.PhoneVerify,{
