@@ -1,6 +1,9 @@
 from handlers.base import AdminBaseHandler
 import dal.models as models
 import tornado.web
+from  dal.db_configs import DBSession
+from dal.models import Shop, ShopAdmin
+import datetime
 
 class Home(AdminBaseHandler):
    def get(self):
@@ -33,39 +36,49 @@ class ShopList(AdminBaseHandler):
     pass
 
 class Shop(AdminBaseHandler):
-    pass
+    def get(self, shop_id):
+        shop = models.Shop.get_by_id(shop_id)
+        if not shop:
+            return self.send_error(404)
+        return self.render("fruitzone/shop.html", context=dict(
+                    shop=shop, shop_admin=shop.admin))
 
 class AdminHome(AdminBaseHandler):
-     def get(self):
-            return self.render("fruitzone/admin-home.html")
-
+    @tornado.web.authenticated
+    def get(self):
+        self.render("fruitzone/admin_home.html")
 class AdminProfile(AdminBaseHandler):
     # @tornado.web.authenticated
     def get(self):
-        return self.render("fruitzone/admin-profile.html")
+        self.render("fruitzone/admin_profile.html")
+
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("action")
+    @AdminBaseHandler.check_arguments("action", "data")
     def post(self):
         action = self.args["action"]
+        data = self.args["data"]
 
         if action == "edit_headimg":
             pass
         elif action == "edit_nickname":
             pass
         elif action == "edit_realname":
-            pass
+            self.current_user.update(realname=data)
         elif action == "edit_wx_username":
-            pass
+            self.current_user.update(wx_username=data)
         elif action == "edit_phone":
-            pass
+            self.current_user.update(phone=data)
         elif action == "edit_email":
-            pass
+            self.current_user.update(email=data)
         elif action == "edit_sex":
             pass
         elif action == "edit_birthday":
-            pass
+            year = data["year"]
+            month = data["month"]
+            birthday = datetime.datetime(year=year, month=month)
+            self.current_user.update(birthday=birthday)
         elif action == "edit_intro":
-            pass
+            self.current_user.update(briefintro=data)
         else:
             return self.send_error(404)
 
