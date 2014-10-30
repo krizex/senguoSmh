@@ -1,25 +1,53 @@
-import sys
-sys.path.append("../")
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(
+    os.path.dirname(__file__),os.path.pardir)))
 
 import dal.models as models
 from tornado.httpclient import HTTPClient, HTTPRequest, HTTPError
+from sqlalchemy.orm.exc import NoResultFound
 
 import json
+import app
+import tornado.web
 
-class TestConfigs:
+class Configs:
     test_users = {
-        models.SuperAdmin:models.SuperAdmin(
-            username="__testcasesuperadmin0.0__",
-            password="__testcasepassword身体的痛不要紧，要紧的是老夫那不能行侠仗义的心__",
-            email="__testcaseemail__"
-        ),
-        # models.ShopAdmin:models.ShopAdmin(
-        #     username="__testcaseshopadmin0.0__",
-        #     password="__testcasepassword他们说你不是傻逼，这是真的吗__",
-        #     email="__testcaseemail__",
-        #     phone="12345",
-        # ),
+        models.ShopAdmin:dict(
+            email="monklof@gmail.com")
     }
+
+    @classmethod
+    def create_testusers(cls):
+        s = models.DBSession()
+        for m in cls.test_users.keys():
+            try:
+                print("check user: {0} exist...".format(cls.test_users[m]))
+                u = s.query(m).filter_by(**cls.test_users[m]).one()
+                print("user: {0} exists.".format(cls.test_users[m]))
+            except NoResultFound as e:
+                print("user: {0} doesn't exists, now creating".format(cls.test_users[m]))
+                # 未找到，插入
+                u = m(**cls.test_users[m])
+                s.add(u)
+                s.commit()
+                print("user: {0} create success!".format(cls.test_users[m]))
+            except Exception as e:
+                raise e
+        s.close()
+    @classmethod
+    def create_testuser_cookies(cls):
+        s = models.DBSession()
+        for m in cls.test_users.keys():
+            u = s.query(m).filter_by(**cls.test_users[m]).one()
+            v = tornado.web.create_signed_value(
+                app.application.settings["cookie_secret"],
+                TestHTTPClient._auth_cookie[m][0],
+                str(u.id)
+            )
+            print("secret cookie for user: {0}\n{1}={2}".format(
+                cls.test_users[m],
+                TestHTTPClient._auth_cookie[m][0],v))
+            
 
 class TestHTTPClient(HTTPClient):
     """
@@ -38,9 +66,10 @@ class TestHTTPClient(HTTPClient):
     _xsrf_switch = "on"
 
     # 这些用户必须是已经存在数据库中的
-    _test_users = TestConfigs.test_users
+    _test_users = Configs.test_users
     _auth_cookie = {
-        models.SuperAdmin:("super_id", "2|1:0|10:1414372786|8:super_id|4:MjM=|67ae83c03ec1666117031e85e2bb6f591bbf1bde12aecd60e35ab71413668107"),
+#        models.SuperAdmin:("super_id", "2|1:0|10:1414372786|8:super_id|4:MjM=|67ae83c03ec1666117031e85e2bb6f591bbf1bde12aecd60e35ab71413668107"),
+        models.ShopAdmin:("admin_id", "2|1:0|10:1414641859|8:admin_id|4:MQ==|f42e360cea9dae3b1d7f70254a935f9b0bc0dc2bf388cf04781f76223c206fbc")
     }
 
     def get(self, url, *, params={}, cookies={}, **kwargs):
@@ -67,7 +96,7 @@ class TestHTTPClient(HTTPClient):
         }
         return self.fetch(url, headers=headers, **kwargs)
 
-    def post(self, url,*, cookies={}, params_dict={}, **kwargs):
+    def post(self, url, params_dict={},  *, cookies={},  **kwargs):
         assert type(url) == str
         assert type(params_dict) == dict
         assert type(cookies) == dict
@@ -83,7 +112,7 @@ class TestHTTPClient(HTTPClient):
         body = json.dumps(params_dict)
         return self.fetch(url, method="POST", headers=headers, body=body, **kwargs)
 
-    def authenticated_post(self, account_model, url,*, cookies={}, params_dict={}, **kwargs):
+    def authenticated_post(self, account_model, url,params_dict={}, *, cookies={}, **kwargs):
         assert account_model in self._auth_cookie
         assert type(url) == str
         assert type(params_dict) == dict

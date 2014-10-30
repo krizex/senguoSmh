@@ -177,8 +177,8 @@ class ShopAdmin(MapBase, _AccountApi):
     __tablename__ = "shop_admin"
     
     id = Column(Integer, primary_key=True, nullable=False)
-    phone = Column(String(64))
-    email = Column(String(2048))
+    phone = Column(String(64), unique=True)
+    email = Column(String(128), unique=True)
     password = Column(String(2048))
     
     # 角色类型，SHOPADMIN_ROLE_TYPE: [SHOP_OWNER, SYSTEM_USER]
@@ -195,6 +195,7 @@ class ShopAdmin(MapBase, _AccountApi):
     birthday = Column(DateTime)
     qr_code_url = Column(String(2048))
     create_date = Column(DateTime, nullable=False, default=func.now())
+    briefintro = Column(String(300), default="")
 
     shops = relationship(Shop, backref=backref('admin'))
     username = Column(String(128)) # not used now    

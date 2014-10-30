@@ -50,6 +50,9 @@ handlers = [
 
     (r"/fruitzone/shop/(\d+)", handlers.fruitzone.Shop, {}, "fruitzoneShop"),
 
+    (r"/fruitzone/admin/shops", handlers.fruitzone.AdminShops, {}, "fuirzoneAdminShops"),
+    (r"/fruitzone/admin/shop/(\d+)", handlers.fruitzone.AdminShop, {}, "fruitzoneAdminShop"),
+
     (r"/fruitzone/phoneVerify/gencode", handlers.fruitzone.PhoneVerify, {
         "action":"gencode"}, "fruitzoneVerifyGencode"),
     (r"/fruitzone/phoneVerify/checkcode", handlers.fruitzone.PhoneVerify,{

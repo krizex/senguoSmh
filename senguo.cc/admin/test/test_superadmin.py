@@ -1,4 +1,4 @@
-from base import TestConfigs, TestHTTPClient, _TestBase
+from base import Configs, TestHTTPClient, _TestBase
 from tornado.httpclient import HTTPError
 import dal.models as models
 import json
@@ -11,14 +11,14 @@ class TestSuperAdminAccess(_TestBase):
     def test_post_login_with_invalid_account(self):
         # form a request
         res  = self.client.post("/super/login", params_dict=dict(
-            username=TestConfigs.test_users[models.SuperAdmin].username,
-            password=TestConfigs.test_users[models.SuperAdmin].password +"密码错啦"))
+            username=Configs.test_users[models.SuperAdmin].username,
+            password=Configs.test_users[models.SuperAdmin].password +"密码错啦"))
         msg = json.loads(res.body.decode())
         assert msg["success"] == False
     def test_post_login_with_valid_account(self):
         res  = self.client.post("/super/login", params_dict=dict(
-            username=TestConfigs.test_users[models.SuperAdmin].username,
-            password=TestConfigs.test_users[models.SuperAdmin].password))
+            username=Configs.test_users[models.SuperAdmin].username,
+            password=Configs.test_users[models.SuperAdmin].password))
         msg = json.loads(res.body.decode())
         # should be True
         assert msg["success"] == True

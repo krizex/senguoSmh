@@ -3,7 +3,8 @@
 import tornado.web
 import tornado.ioloop
 from tornado.options import options, define
-
+define("debug", default=0, help="debug mode: 1 to open, 0 to close")
+define("port", default=8887, help="port, defualt: 8888")
 import os
 
 
@@ -21,12 +22,11 @@ class Application(tornado.web.Application):
         }
         super().__init__(handlers, **settings)
 
+tornado.options.parse_command_line()
+application = Application()
+
 def main():
-    define("debug", default=0, help="debug mode: 1 to open, 0 to close")
-    define("port", default=8887, help="port, defualt: 8888")
-    tornado.options.parse_command_line()
-    app = Application()
-    app.listen(options.port)
+    application.listen(options.port)
     if options.debug:debug_str = "in debug mode"
     else:debug_str = "in production mode"
     print("running senguo.cc {0} @ {1}...".format(debug_str, 

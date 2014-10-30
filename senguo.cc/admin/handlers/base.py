@@ -103,6 +103,7 @@ class WxOauth2:
     userinfo_url = "https://api.weixin.qq.com/sns/userinfo?access_token={access_token}&openid={openid}"
     @classmethod
     def get_userinfo(cls, code):
+        # 需要改成异步请求
         token_url = cls.token_url.format(code=code, appid=APPID, appsecret=APPSECRET)
         # 获取access_token
         try:
