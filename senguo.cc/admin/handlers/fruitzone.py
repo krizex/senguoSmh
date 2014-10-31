@@ -23,7 +23,7 @@ class AdminProfile(AdminBaseHandler):
        # 具体可以查看models.ShopAdmin中的属性
        self.render("fruitzone/admin-profile.html")
 
-    @tornado.web.authenticated
+    # @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")
     def post(self):
         action = self.args["action"]
@@ -61,20 +61,14 @@ class ApplySuccess(AdminBaseHandler):
 class ShopApply(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        # 判断信息设置是否完全
-        u = self.current_user
-        if not u.realname or not u.phone or not u.email or\
-           not u.wx_username:
-            return self.redirect(
-                self.reverse_url("fruitzoneAdminProfile"))
-        # 返回申请页面
+
         return self.render("fruitzone/apply.html")
-    
+
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments(
         "shop_name",
         "shop_province", "shop_city", "shop_address_detail",
-        "have_offline_entity:bool", "shop_service_areas:list"        
+        "have_offline_entity:bool", "shop_service_areas:list"
         "shop_intro")
     def post(self):
         #* todo 检查合法性
@@ -99,16 +93,16 @@ class Shop(AdminBaseHandler):
 
 
 class AdminShops(AdminBaseHandler):
-    @tornado.web.authenticated
+   @tornado.web.authenticated
     def get(self):
        return self.render("fruitzone/shops.html", context=dict(self.current_user.shops))
 
-class AdminShop(AdminBaseHandler):
+class AdminShop(AdminBaseHandler):		 class AdminShop(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self,shop_id):
        shop = models.Shop.get_by_id(shop_id)
        if not shop:
-           return self.send_error(404)
+          return self.send_error(404)
        return self.render("fruitzone/shop.html", context=dict(shop=shop))
 
     @tornado.web.authenticated
@@ -136,10 +130,10 @@ class AdminShop(AdminBaseHandler):
         return self.send_success()
 
 class PhoneVerify(AdminBaseHandler):
-    
+
     def initialize(self, action):
         self._action = action
-    
+
     @tornado.web.authenticated
     def post(self):
         if self._action == "gencode":
@@ -148,20 +142,19 @@ class PhoneVerify(AdminBaseHandler):
             self.handle_checkcode()
         else:
             return self.send_error(404)
-    
+
     @AdminBaseHandler.check_arguments("phone:str")
     def handle_gencode(self):
         print("gen msg code for phone: ", self.args["phone"])
         gen_msg_token(wx_id=self.current_user.wx_unionid, phone=self.args["phone"])
         return self.send_success()
-    
+
     @AdminBaseHandler.check_arguments("phone:str", "code:int")
     def handle_checkcode(self):
         print("check msg code for phone: {0} with code: {1}".\
               format( self.args["phone"],
                       self.args["code"]))
-
         if not check_msg_token(wx_id=self.current_user.wx_unionid, code=self.args["code"]):
-            return send_fail(error_text="验证码过期或者不正确")
+           return send_fail(error_text="验证码过期或者不正确")
         return self.send_success()
     

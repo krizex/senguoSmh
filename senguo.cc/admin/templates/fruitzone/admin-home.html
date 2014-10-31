@@ -5,58 +5,36 @@
 </style>
 {% end %}
 {% block content%}
-<header class="apply-title title-box phone-box">
+<header class="title-box phone-box">
     <div class="phone-box">
         <a href="javascript:history.back(-1)" class="return-btn">返回</a>
         <span class="title">个人中心</span>
     </div>
 </header>
-<div class="user-center-info phone-box container">
-    <img src="" class="pull-left user-img"/>
+<div class="user-center-info white-color phone-box container">
+    <img src="{{static_url('images/anoa-1-md.gif')}}" class="pull-left user-img"/>
     <div class="info pull-left">
-        <p class="username">hahhhaha</p>
-        <a href="" class="to-tie" data-toggle="modal" data-target="#tieBox">点击绑定手机号</a>
+        <p class="username">{{current_user.realname}}</p>
     </div>
+    <a href="{{reverse_url('fruitzoneAdminProfile')}}" class="to-profile pull-left">&nbsp</a>
 </div>
 <div class="center-list phone-box container">
     <ul>
-        <li>
+        <li class="white-color">
             <a href="#">我的店铺管理</a>
         </li>
-        <li>
+        <li class="white-color">
             <a href="#">我的收藏</a>
         </li>
-        <li class="w1">
+        <li class="w1 white-color">
             <a href="#">使用帮助</a>
         </li>
-        <li>
+        <li class="white-color">
             <a href="#">意见反馈 </a>
         </li>
-        <li class="w1">
+        <li class="w1 white-color">
             <a href="#">关于森果</a>
         </li>
     </ul>
-</div>
-
-<div class="modal fade tie-popbox" id="tieBox" tabindex="-1" role="dialog"  aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-                <div class="tie-info">
-                      <div class="phone-number">
-                         <input type="text" placeholder="输入手机号" class="phone input1 pull-left"/>
-                         <input type="submit" value="获取验证码" class="get-code pull-right"/>
-                      </div>
-                    <input type="text" placeholder="输入收到的短信验证码" class="input1"/>
-                    <input type="text" placeholder="设置一个手机号登陆密码" class="input1"/>
-                    <input type="text" placeholder="密码确认" class="input1"/>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn pull-left concel-btn" data-dismiss="modal">取消</button>
-                <button type="button" class="btn pull-right tie-btn" data-dismiss="modal" id="tiePhone">绑定</button>
-            </div>
-        </div>
-    </div>
 </div>
 {% end %}

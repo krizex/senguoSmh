@@ -1,4 +1,4 @@
-body{font-size: 1em;font-family:"microsoft yahei";}
+body{font-size: 1em;font-family:"microsoft yahei";background:#F2F2F2;}
 p{clear: both;width: 100%}
 ol,ul,li{list-style:none;}
 .phone-box{width:100%;min-width:320px;max-width:640px;margin:0 auto;overflow:hidden;}
@@ -11,11 +11,31 @@ input{border:none;}
 .container{padding:0;}
 
 
-.title-box{width:100%;background:#00D681;text-align:center;height:5em;line-height:5em;box-shadow:0px 1px 2px #ccc;position:relative;}
+.title-box{width:100%;background:#00D681;text-align:center;height:6em;line-height:6em;box-shadow:0px 1px 2px #ccc;position:relative;}
 .title-box .phone-box{position:relative;}
 .title-box .title{font-size:2em;text-shadow:1px 1px 2px #aaa;color:#fff;}
 .title-box .logo{height:4.5em;position:absolute;left:2em;top:1em;}
 .title-box .return-btn{display:inline-block;border:1px solid #fff;font-size:1.4em;color:#fff;position:absolute;left:1em;top:0.8em;height:2em;line-height:2em;padding:0 0.8em;border-radius:2px;}
+.title-box h1{margin:0;line-height:3em;}
+.title-box .content-title{height:6em;}
 
+.bgcolor{background:#fff;}
 
+.title-box2{background:#00D289;text-indent:20px;font-size:1.8em;height:3em;line-height:3em;color:#fff;box-shadow:1px 1px 2px #aaa;}
+.title-box2 .return-btn{display:inline-block;width:2em;height:3em;background:url('../images/back-white-2px.png') no-repeat center center;}
+.herder-box .content-title .to-share{position:absolute;top:1em;right:0.5em;}
+
+.btn-box{margin-top:1em;}
+.btn-box a{display:inline-block;width:45%;color:#fff !important;text-align:center;border-radius:1px;padding:0.3em 0;}
+.btn-box .concel-btn{background:#999;float:left;}
+.btn-box .sure-btn{background:#00D289;float:right;}
+
+.white-color{background:#fff;}
+.green-color{background:#00D681;}
+.grey-color{background:#f9f9f9;}
+.grey-color2{background:#f2f2f2;}
+.grey-color{background:#E7E7E7;}
+.btn-green{background:#00D289;}
+
+.text-green{color:#00D289;}
 

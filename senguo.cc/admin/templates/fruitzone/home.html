@@ -4,17 +4,16 @@
     <header class="herder-box phone-box title-box">
         <div class="content-title">
             <a href="{{reverse_url('fruitzoneAdminHome')}}" class="center-btn">个人中心</a>
-            <h1>水果.同行圈子</h1>
-            <a href="#" class="to-some">申请入驻</a>
-            <a href="#" class="to-search" id="search-btn">搜索</a>
+            <h1 class="title">水果.同行圈子</h1>
+            <a href="{{reverse_url('fruitzoneShopApply')}}" class="to-some">申请入驻</a>
         </div>
-        <div class="search-box" id="search-box" style="display:none;">
-            <input type="text" placeholder="请输入店铺名、姓名、城市" class="search-input"/>
+        <div class="search-box" id="search-box">
+            <input type="text" placeholder="请输入店铺名、姓名、城市、在售水果" class="search-input"/>
             <input type="submit" value="搜索" class="search-btn"/>
         </div>
     </header>
     <div class="order-by phone-box">
-        <a href="javascript:;" onclick="orderBy(1);">城市<span class="arrow"></span></a>
+        <a href="javascript:;" onclick="orderBy(1);" class="active">城市<span class="arrow"></span></a>
         <a href="javascript:;" onclick="orderBy(2);">服务区域<span class="arrow"></span></a>
         <a href="javascript:;" onclick="orderBy(3);">运营时间<span class="arrow"></span></a>
     </div>
@@ -56,9 +55,21 @@
     <div class="container phone-box shop-list-content">
         <ul class="shop-list">
             <li>
+                <a href="/fruitzone/admin/shop/">
+                    <div class="shop-logo pull-left">
+                         <img src="{{static_url('images/anoa-1-md.gif')}}"/>
+                    </div>
+                    <div class="shop-info pull-right">
+                        <p><span class="shop-name w1">We信水果帮</span><span class="area">湖北 武汉</span></p>
+                        <p>运营时间：12个月</p>
+                        <p><span class="shop-owner w1">负责人：喵星人</span><span class="wechat-code">helloworld</span></p>
+                    </div>
+                </a>
+            </li>
+            <li>
                 <a href="#">
                     <div class="shop-logo pull-left">
-                         <img src="img/good.png"/>
+                        <img src="{{static_url('images/anoa-1-md.gif')}}"/>
                     </div>
                     <div class="shop-info pull-right">
                         <p><span class="shop-name w1">We信水果帮</span><span class="area">湖北 武汉</span></p>

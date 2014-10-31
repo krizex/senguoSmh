@@ -5,7 +5,7 @@
 </style>
 {% end %}
 {% block content%}
-<header class="apply-title title-box phone-box">
+<header class="title-box phone-box">
     <div class="phone-box">
         <a href="javascript:history.back(-1)" class="return-btn">返回</a>
         <span class="title">个人信息</span>
@@ -15,38 +15,118 @@
   <form action="/fruitzone/admin/profile" method="post">
         <ul>
             <li>
-                <span class="title pull-left">头像</span>
-                <img src="" class="pull-right"/>
+                <div class="info-con">
+                    <span class="title img-title pull-left">头像</span>
+                    <a href="javascript:;"><img src="{{static_url('images/anoa-1-md.gif')}}" class="user-img pull-right"/></a>
+                </div>
             </li>
             <li>
-                <span class="title pull-left">昵称</span>
-                <span class="nickname pull-right s1">hahahahah</span>
+                <div class="info-con">
+                    <span class="title pull-left">昵称</span>
+                    <a href="javascript:;" class="nickname pull-right s1 editInfo" id="userNickname">{{current_user.nickname}}</a>
+                </div>
+                <div class="info-edit" style="display:none;">
+                   <input type="text" class="edit-box" id="editNickname" value="{{current_user.nickname}}"/>
+                    <div class="btn-box">
+                        <a href="javascript:;" class="concel-btn">取消</a>
+                        <a href="javascript:;" class="sure-btn"  data-action="edit_nickname">确定</a>
+                    </div>
+                </div>
             </li>
             <li>
-                <span class="title pull-left">微信号</span>
-                <a href="javascript:;" class="pull-right">点击设置</a>
+                <div class="info-con">
+                    <span class="title pull-left">微信号</span>
+                    <a href="javascript:;" class="pull-right editInfo" id="userWechat">{{current_user.wx_username}}</a>
+                </div>
+                <div class="info-edit" style="display:none;">
+                    <input type="text" class="edit-box" placeholder="微信号的提交有助于同行、供应商找到你" id="wechatEdit" value="{{current_user.wx_username}}"/>
+                    <div class="btn-box">
+                        <a href="javascript:;" class="concel-btn">取消</a>
+                        <a href="javascript:;" class="sure-btn" data-action="edit_wx_username">确定</a>
+                    </div>
+                </div>
             </li>
             <li>
-                <span class="title pull-left">手机号</span>
-                <a href="javascript:;" class="pull-right">点击设置</a>
+                <div class="info-con">
+                    <span class="title pull-left" id="phoneNumber">手机号</span>
+                    <a href="javascript:;" class="pull-right editInfo" data-toggle="modal" data-target="#tieBox" id="userNumber">点击绑定手机号</a>
+                </div>
             </li>
             <li>
-                <span class="title pull-left">个人邮箱</span>
-                <a href="javascript:;" class="pull-right s1">123@qq.com</a>
+                <div class="info-con">
+                    <span class="title pull-left">个人邮箱</span>
+                    <a href="javascript:;" class="pull-right s1 editInfo" id="userMail">{{current_user.email}}</a>
+                </div>
+                <div class="info-edit" style="display:none;">
+                    <input type="text" class="edit-box" id="mailEdit" value="{{current_user.email}}"/>
+                    <div class="btn-box">
+                        <a href="javascript:;" class="concel-btn">取消</a>
+                        <a href="javascript:;" class="sure-btn" data-action="edit_email">确定</a>
+                    </div>
+                </div>
             </li>
             <li class="w1">
-                <span class="title pull-left">性别</span>
-                <a href="javascript:;" class="pull-right s1">其他</a>
+                <div class="info-con">
+                    <span class="title pull-left">性别</span>
+                    <a href="javascript:;" class="pull-right s1 editInfo" id="userSex">{{current_user.sex}}</a>
+                </div>
+                <div class="info-edit" style="display:none;">
+                    <input type="text" class="edit-box" id="sexEdit" value="{{current_user.sex}}"/>
+                    <div class="btn-box">
+                        <a href="javascript:;" class="concel-btn">取消</a>
+                        <a href="javascript:;" class="sure-btn" data-action="edit_sex">确定</a>
+                    </div>
+                </div>
             </li>
             <li>
-                <span class="title pull-left">出生年月</span>
-                <a href="javascript:;" class="pull-right">点击设置</a>
+                <div class="info-con">
+                    <span class="title pull-left">出生年月</span>
+                    <a href="javascript:;" class="pull-right editInfo" id="userBirthday">{{current_user.birthday.year}}年{{current_user.birthday.month}}月</a>
+                </div>
+                <div class="info-edit" style="display:none;">
+                    <input type="text" class="edit-box" placeholder="请输入年份" id="yearEdit" value="{{current_user.birthday.year}}"/>
+                    <input type="text" class="edit-box" placeholder="请输入月份" id="monthEdit" value="{{current_user.birthday.month}}"/>
+                    <div class="btn-box">
+                        <a href="javascript:;" class="concel-btn">取消</a>
+                        <a href="javascript:;" class="sure-btn" data-action="edit_birthday">确定</a>
+                    </div>
+                </div>
             </li>
             <li>
-                <span class="title pull-left">个人说明</span>
-                <a href="" class="pull-right">点击设置</a>
+                <div class="info-con">
+                    <span class="title pull-left">个人说明</span>
+                    <a href="javascript:;"  class="pull-right editInfo" id="userIntro">{{current_user.briefintro}}</a>
+                </div>
+                <div class="info-edit" style="display:none;">
+                    <textarea type="text" class="edit-box" placeholder="输入一些个人说明，好多同行想认识你" id="introEdit" value="{{current_user.briefintro}}"></textarea>
+                    <div class="btn-box">
+                        <a href="javascript:;" class="concel-btn">取消</a>
+                        <a href="javascript:;" class="sure-btn" data-action="edit_intro">确定</a>
+                    </div>
+                </div>
             </li>
         </ul>
   </form>
+</div>
+<div class="modal fade tie-popbox" id="tieBox" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="tie-info">
+                    <div class="phone-number">
+                        <input type="text" placeholder="输入手机号" class="phone input1 pull-left" id="enterPhone"/>
+                        <input type="submit" value="获取验证码" class="get-code pull-right green-color" id="getVrify"/>
+                    </div>
+                    <input type="text" placeholder="输入收到的短信验证码" class="input1" id="enterVrify"/>
+                    <input type="text" placeholder="设置一个手机号登陆密码" class="input1" id=""/>
+                    <input type="text" placeholder="密码确认" class="input1"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn pull-left concel-btn" data-dismiss="modal">取消</button>
+                <button type="button" class="btn pull-right tie-btn green-color"  id="tiePhone">绑定</button>
+            </div>
+        </div>
+    </div>
 </div>
 {% end %}

@@ -51,7 +51,8 @@ def gen_msg_token(wx_id, phone):
 
     else:
         #用户在24小时后再次申请验证码，响应
-        if (datetime.datetime.now() - q.create_time).hour >= 24:
+        t=(datetime.datetime.now() - q.create_time)
+        if t.days>=1 or t.seconds>=86400:
             post()
             q.wx_id = wx_id
             q.code = code
@@ -78,7 +79,9 @@ def check_msg_token(wx_id, code):
         q = s.query(_VerifyCode).filter(_VerifyCode.wx_id == wx_id).one()
     except:
         return False
-    if (datetime.datetime.now() - q.create_time).minute >= 24:
+
+    t=(datetime.datetime.now() - q.create_time)
+    if t.days==0 and t.seconds>= 1800:
         return False
 
     if q.code == code:
