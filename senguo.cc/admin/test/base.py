@@ -40,7 +40,7 @@ class Configs:
         for m in cls.test_users.keys():
             u = s.query(m).filter_by(**cls.test_users[m]).one()
             v = tornado.web.create_signed_value(
-                app.application.settings["cookie_secret"],
+                app.settings["cookie_secret"],
                 TestHTTPClient._auth_cookie[m][0],
                 str(u.id)
             )
@@ -69,7 +69,7 @@ class TestHTTPClient(HTTPClient):
     _test_users = Configs.test_users
     _auth_cookie = {
 #        models.SuperAdmin:("super_id", "2|1:0|10:1414372786|8:super_id|4:MjM=|67ae83c03ec1666117031e85e2bb6f591bbf1bde12aecd60e35ab71413668107"),
-        models.ShopAdmin:("admin_id", "2|1:0|10:1414641859|8:admin_id|4:MQ==|f42e360cea9dae3b1d7f70254a935f9b0bc0dc2bf388cf04781f76223c206fbc")
+        models.ShopAdmin:("admin_id", "2|1:0|10:1414671410|8:admin_id|4:MQ==|1c3ce02bd21f42d5a3fb1b49227c23e2abc0a3fefc791d8a65a55ec43f853afb")
     }
 
     def get(self, url, *, params={}, cookies={}, **kwargs):

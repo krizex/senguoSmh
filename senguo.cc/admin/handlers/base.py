@@ -8,6 +8,7 @@ from settings import APPID, APPSECRET, APP_OAUTH_CALLBACK_URL
 import tornado.escape
 
 class GlobalBaseHandler(BaseHandler):
+
     @property
     def session(self):
         if hasattr(self, "_session"):

@@ -8,6 +8,21 @@ class TestFruitzoneHome(_TestBase):
     def test_get_home(self):
         res = self.client.get("/fruitzone/")
         assert res.code == 200
+    
+    def test_post_filter(self):
+        # 插入数据
+        shop = models.Shop(shop_name="小廖的小店",admin_id=1,
+                           shop_province=420000, shop_city=420100,
+                           shop_address_detail="傻逼一号楼:)")
+        s = models.DBSession()
+        s.add(shop)
+        s.commit()
+        s.close()
+        
+        res = self.client.authenticated_post(
+            models.ShopAdmin, "/fruitzone/",
+            {"action":"filter"})
+        print(res.body)
 
 class TestAdminHome(_TestBase):
 

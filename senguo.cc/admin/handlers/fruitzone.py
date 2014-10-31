@@ -3,12 +3,49 @@ import dal.models as models
 import tornado.web
 from  dal.db_configs import DBSession
 from dal.models import Shop, ShopAdmin
+
 import datetime
 
 class Home(AdminBaseHandler):
-   def get(self):
-      return self.render("fruitzone/home.html")
+    _page_count = 20
 
+    def get(self):
+        return self.render("fruitzone/home.html")
+    
+    @AdminBaseHandler.check_arguments("action")
+    def post(self):
+        action = self.args["action"]
+        if action == "filter":
+            return self.handle_filter()
+        elif action == "search":
+            return self.handle_search()
+        else:
+            return self.send_error(403)
+    @AdminBaseHandler.check_arguments("skip?:int","limit?:int",
+                                      "city?:int", "service_area?:int", "live_month?:int")
+    def handle_filter(self):
+        # 按什么排序？暂时采用id排序
+        q = self.session.query(models.Shop).order_by(models.Shop.id)
+        if "city" in self.args:
+            q = q.filter_by(shop_city=self.args["city"])
+        if "service_area" in self.args:
+            # 目前只支持服务区域完全匹配
+            q = q.filter_by(shop_service_area=self.args["service_area"])
+        if "live_month" in self.args:
+            q = q.filter(models.Shop.live_month>self.args["live_month"])
+        
+        if "skip" in self.args:
+            q = q.offset(self.args["skip"])
+        
+        if "limit" in self.args:
+            q = q.limit(self.args["limit"])
+        else:
+            q = q.limit(self._page_count)
+
+        shops = []
+        for shop in q.all():
+            shops.append(shop.safe_props)
+        return self.send_success(shops=shops)
 class AdminHome(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self):
@@ -72,20 +109,23 @@ class ShopApply(AdminBaseHandler):
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments(
         "shop_name",
-        "shop_province", "shop_city", "shop_address_detail",
+        "shop_province:int", "shop_city:int", "shop_address_detail",
         "have_offline_entity:bool", "shop_service_areas:list"        
         "shop_intro")
     def post(self):
         #* todo 检查合法性
-        self.current_user.add_shop(
-            shop_name=self.args["shop_name"],
-            shop_province=self.args["shop_province"],
-            shop_city = self.args["shop_city"],
-            shop_address_detail=self.args["shop_address_detail"],
-            have_offline_entity=self.args["have_offline_entity"],
-            shop_service_areas=self.args["shop_service_areas"],
-            shop_intro=self.args["shop_intro"]
-        )
+        try:
+           self.current_user.add_shop(
+              shop_name=self.args["shop_name"],
+              shop_province=self.args["shop_province"],
+              shop_city = self.args["shop_city"],
+              shop_address_detail=self.args["shop_address_detail"],
+              have_offline_entity=self.args["have_offline_entity"],
+              shop_service_areas=self.args["shop_service_areas"],
+              shop_intro=self.args["shop_intro"]
+           )
+        except DistrictCodeError as e:
+           return self.send_fail(error_text = "城市编码错误！")
         return self.send_success()
 
 class Shop(AdminBaseHandler):

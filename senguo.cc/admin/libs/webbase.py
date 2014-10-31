@@ -1,5 +1,6 @@
 import tornado.web
 from tornado.escape import xhtml_escape
+import traceback
 
 class BaseHandler(tornado.web.RequestHandler):
     """
@@ -43,6 +44,7 @@ class BaseHandler(tornado.web.RequestHandler):
                 try:
                     self._json_parsed_dict = tornado.escape.json_decode(self.request.body)
                 except:
+                    traceback.print_exc()
                     self._json_parsed_dict = {}
             if name in self._json_parsed_dict:
                 return self._json_parsed_dict[name]

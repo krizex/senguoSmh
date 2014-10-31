@@ -1,17 +1,24 @@
 from sqlalchemy import create_engine, func, ForeignKey, Column
-from sqlalchemy.types import String, Integer, DateTime, Text, Boolean, Float
+from sqlalchemy.types import String, Integer, Text, Boolean, Float
 from sqlalchemy.orm import relationship, backref
 
 from dal.db_configs import MapBase, DBSession
+from dal.districts_in_china import dis_dict
+import json
+import time
+
+class DistrictCodeError(Exception):
+    pass
+
 
 # 常量
 
 class SHOP_SERVICE_AREA:
-    """服务区域"""
+    """服务区域, 使用方法：HIGH_SCHOOL | COMMUNITY，实现多选"""
     HIGH_SCHOOL = 1
     COMMUNITY = 2
-    TRADE_CIRCLE = 3
-    OTHERS = 4
+    TRADE_CIRCLE = 4
+    OTHERS = 8
 
 class SHOPADMIN_ROLE_TYPE:
     """管理员角色"""
@@ -20,7 +27,8 @@ class SHOPADMIN_ROLE_TYPE:
 
 class SHOPADMIN_PRIVILEGE:
     """权限"""
-    ALL = 1
+    NONE = -1
+    ALL = 0
 
 class SHOPADMIN_CHARGE_TYPE:
     """付费类型"""
@@ -35,6 +43,36 @@ class SHOP_STATUS:
     DECLINED = 3
 
 
+class _SafeOutputTransfer:
+    """
+    当需要向前端发送数据时，有些数据是不能被发送的，比如密码等敏感数据，
+    所以需要进行数据保护
+    
+    这里定义了一个接口：
+    @ func: props()，可以用来向外界发送经过处理的数据
+    """
+
+    # 定义需要保护的对象名:
+    __protected_props__ = []
+
+    @property
+    def all_props(self):
+        output_data = {}
+        for key in self.__dict__:
+            if type[key] == str and \
+               not key.startswith("_") and \
+               not key in self.__protected_props__:
+                output_data[key] = self.__dict__[key]
+        return output_data
+    @property
+    def safe_props(self):
+        output_data = {}
+        for key in self.__dict__:
+            if type(key) == str and \
+               not key.startswith("_"):
+                output_data[key] = self.__dict__[key]
+        return output_data
+    
 class _AccountApi:
     """
     a common account access api, should be inherit by every 
@@ -67,7 +105,8 @@ class _AccountApi:
                 wx_country=userinfo["country"],
                 wx_province=userinfo["province"],
                 wx_city=userinfo["city"],
-                wx_headimgurl=userinfo["headimgurl"])
+                wx_headimgurl=userinfo["headimgurl"],
+                create_date_timestamp=int(time.time()))
         s = DBSession()
         s.add(u)
         s.commit()
@@ -92,9 +131,10 @@ class _AccountApi:
             setattr(self, key, kwargs[key])
         self.save()
 
-class SuperAdmin(MapBase, _AccountApi):
+class SuperAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     __tablename__ = "super_admin"
     
+    __protected_props__ = ["password"]
     id = Column(Integer, primary_key=True, nullable=False)
     username = Column(String(64),unique=True, nullable=False)
     password = Column(String(2048), nullable=False)
@@ -104,41 +144,51 @@ class SuperAdmin(MapBase, _AccountApi):
         return "<SiteAdmin: ({id}, {username})>".\
             format(id=self.id,username=self.username)
 
-class Shop(MapBase):
+class Shop(MapBase, _SafeOutputTransfer):
     
     def __init__(self, **kwargs):
-        if "shop_service_areas" in kwargs:
-            shop_service_areas = kwargs["shop_service_areas"]
-            del kwargs["shop_service_areas"]
-        else:
-            shop_service_areas = []
+        if "shop_province" in kwargs or "shop_city" in kwargs:
+            if not self._check_city_code(
+                    kwargs["shop_province"], kwargs["shop_city"]):
+                raise DistrictCodeError
+        # 如果没有二级city，将city设为province
+        if not "shop_city" in kwargs:
+            kwargs["shop_city"] = "shop_province"
+
+        if not "create_date_timestamp" in kwargs:
+            kwargs["create_date_timestamp"] = time.time()
         super().__init__(**kwargs)
+    
+    def _check_city_code(self, shop_province, shop_city):
 
-        for shop_service_type in shop_service_areas:
-            shop_service_area_link = ShopServiceAreaLink(service_type=shop_service_type)
-            self.shop_service_areas.append(shop_service_type)
-                
-
+        for p in dis_dict["province"]:
+            if p["code"] == shop_province:
+                if not "city" in p:
+                    return True
+                for city in p["city"]:
+                    if city["code"] == shop_city:
+                        return True
+                return False
+        return False
     __tablename__ = "shop"
     
     id = Column(Integer, primary_key=True, nullable=False)
     shop_name = Column(String(128), nullable=False)
     shop_code = Column(String(128), nullable=False, default="not set")
-    create_date = Column(DateTime, nullable=False, default=func.now())
-    shop_status = Column(String(16), default=SHOP_STATUS.APPLYING)
+    create_date_timestamp = Column(Integer, nullable=False)
+    shop_status = Column(Integer, default=SHOP_STATUS.APPLYING)
 
     admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
 
     # 店铺标志
     shop_trademark_url = Column(String(2048))
     
-    # 服务区域，列表序列化存储, SHOP_SERVICE_AREA:[]
-    shop_service_areas = relationship("ShopServiceAreaLink", uselist=True, 
-                                     backref=backref("shop"))
+    # 服务区域，SHOP_SERVICE_AREA
+    shop_service_area = Column(Integer, default=SHOP_SERVICE_AREA.OTHERS)
 
     # 地址
-    shop_province = Column(String(128))
-    shop_city = Column(String(128))
+    shop_province = Column(Integer)
+    shop_city = Column(Integer)
     shop_address_detail = Column(String(1024), nullable=False)
     shop_sales_range = Column(String(128))
     
@@ -173,8 +223,17 @@ class Shop(MapBase):
         return "<Shop: {0} (id={1}, code={2})>".format(
             self.shop_name, self.id, self.shop_code)
 
-class ShopAdmin(MapBase, _AccountApi):
+class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
+    
+    def __init__(self, **kwargs):
+        if not "create_date_timestamp" in kwargs:
+            kwargs["create_date_timestamp"] = time.time()
+        super().__init__(**kwargs)
+
+
     __tablename__ = "shop_admin"
+    
+    __protected_props__ = ["password"]
     
     id = Column(Integer, primary_key=True, nullable=False)
     phone = Column(String(64), unique=True)
@@ -184,7 +243,7 @@ class ShopAdmin(MapBase, _AccountApi):
     # 角色类型，SHOPADMIN_ROLE_TYPE: [SHOP_OWNER, SYSTEM_USER]
     role = Column(Integer, nullable=False, default=SHOPADMIN_ROLE_TYPE.SHOP_OWNER)
     # 权限类型，SHOPADMIN_PRIVILEGE: [ALL, ]
-    privileges = relationship("ShopAdminPrivilegeLink", uselist=True)
+    privileges = Column(Integer, default=SHOPADMIN_PRIVILEGE.NONE)
     # 付费类型，SHOPADMIN_CHARGE_TYPE: 
     # [ThreeMonth_588, SixMonth_988, TwelveMonth_1788]
     charge_type = Column(Integer)
@@ -192,9 +251,9 @@ class ShopAdmin(MapBase, _AccountApi):
     sex = Column(String(128))
     nickname = Column(String(128), default="")
     realname = Column(String(128))
-    birthday = Column(DateTime)
+    birthday = Column(Integer)
     qr_code_url = Column(String(2048))
-    create_date = Column(DateTime, nullable=False, default=func.now())
+    create_date_timestamp = Column(Integer, nullable=False)
     briefintro = Column(String(300), default="")
 
     shops = relationship(Shop, backref=backref('admin'))
@@ -214,10 +273,11 @@ class ShopAdmin(MapBase, _AccountApi):
         kwargs["admin_id"] = self.id
         if "shops" in kwargs:
             del kwargs["shops"]
-        
+
+        sp = Shop(**kwargs)
+
         s = DBSession()
         s.add(self)
-        sp = Shop(**kwargs)
         self.shops.append(sp)
         s.commit()
         s.close()
@@ -226,12 +286,20 @@ class ShopAdmin(MapBase, _AccountApi):
         return "<ShopAdmin: {0}({1})>".format(self.username, self.id)
 
 
-class ShopStaff(MapBase, _AccountApi):
+class ShopStaff(MapBase, _AccountApi, _SafeOutputTransfer):
     __tablename__ = "shop_staff"
+
+    __protected_props__ = ["password"]
+
+    def __init__(self, **kwargs):
+        if not "create_date_timestamp" in kwargs:
+            kwargs["create_date_timestamp"] = time.time()
+        super().__init__(**kwargs)
+
     id = Column(Integer, primary_key=True, nullable=False)
     phone = Column(String(30))
     password = Column(String(2048))
-    create_date = Column(DateTime, nullable=False, default=func.now())
+    create_date_timestamp = Column(Integer, nullable=False)
     
     email = Column(String(2048))
     nickname = Column(String(128), default="")
@@ -249,13 +317,20 @@ class ShopStaff(MapBase, _AccountApi):
 
 
 
-class Customer(MapBase, _AccountApi):
+class Customer(MapBase, _AccountApi, _SafeOutputTransfer):
     __tablename__ = "customer"
     
+    __protected_props__ = ["password"]
+
+    def __init__(self, **kwargs):
+        if not "create_date_timestamp" in kwargs:
+            kwargs["create_date_timestamp"] = time.time()
+        super().__init__(**kwargs)
+
     id = Column(Integer, primary_key=True, nullable=False)
     phone = Column(String(30))
     password = Column(String(2048), nullable=False)
-    create_date = Column(DateTime, nullable=False, default=func.now())
+    create_date_timestamp = Column(Integer, nullable=False)
 
     nickname = Column(String(64), unique=True, nullable=False)
     email = Column(String(2048))
@@ -283,19 +358,6 @@ class Address(MapBase):
     receiver = Column(String(64), nullable=False)
     address_text = Column(String(1024), nullable=False)
     owner_id = Column(Integer, ForeignKey(Customer.id))
-
-class ShopServiceAreaLink(MapBase):
-    __tablename__ = "shop_service_area_link"
-    
-    id = Column(Integer, primary_key=True, nullable=False)
-    service_type = Column(Integer, nullable=False)
-    shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
-
-class ShopAdminPrivilegeLink(MapBase):
-    __tablename__ = "shop_admin_privilege_link"
-    id = Column(Integer, primary_key=True, nullable=False)
-    privilege_type = Column(Integer, nullable=False)
-    admin_id = Column(Integer, ForeignKey(ShopAdmin.id))
 
 MapBase.metadata.create_all()
 
