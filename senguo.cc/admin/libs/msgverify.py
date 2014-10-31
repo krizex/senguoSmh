@@ -27,7 +27,7 @@ def gen_msg_token(wx_id, phone):
         url = "http://106.ihuyi.cn/webservice/sms.php?method=Submit&account=cf_liaosimin&password=13005670060&mobile={phone}&content={content}".\
             format(phone=phone, content=content)
         h = HTTPClient()
-        res = h.fetch(url)
+        res = h.fetch(url)#这个还要检查一下短信验证服务商返回的信息
         h.close()
 
     try:
@@ -44,10 +44,15 @@ def gen_msg_token(wx_id, phone):
         s.close()
         return
 
+    #如果用户在30秒内连续申请产生验证码，不响应
     if (datetime.datetime.now() - q.create_time).seconds < 30:
         return
+
+
     else:
-        if (datetime.datetime.now() - q.create_time).hour >= 24:
+        #用户在24小时后再次申请验证码，响应
+        t=(datetime.datetime.now() - q.create_time)
+        if t.days>=1 or t.seconds>=86400:
             post()
             q.wx_id = wx_id
             q.code = code
@@ -55,6 +60,7 @@ def gen_msg_token(wx_id, phone):
             s.commit()
             s.close()
 
+        #用户在24小室内申请验证码，这时要检查是否24小时内申请次数没超过10次（24小时内只允许申请10次）
         else:
             if q.count <= 10:
                 post()
@@ -63,7 +69,7 @@ def gen_msg_token(wx_id, phone):
                 q.count += 1
                 s.commit()
                 s.close()
-
+            #24小时内多于10次，不响应
             else:
                 return
 
@@ -72,6 +78,10 @@ def check_msg_token(wx_id, code):
     try:
         q = s.query(_VerifyCode).filter(_VerifyCode.wx_id == wx_id).one()
     except:
+        return False
+
+    t=(datetime.datetime.now() - q.create_time)
+    if t.days==0 and t.seconds>= 1800:
         return False
 
     if q.code == code:

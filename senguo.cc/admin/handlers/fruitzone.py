@@ -5,6 +5,7 @@ from  dal.db_configs import DBSession
 from dal.models import Shop, ShopAdmin
 
 import datetime
+from libs.msgverify import gen_msg_token,check_msg_token
 
 class Home(AdminBaseHandler):
     _page_count = 20
@@ -59,7 +60,7 @@ class AdminProfile(AdminBaseHandler):
        # 具体可以查看models.ShopAdmin中的属性
        self.render("fruitzone/admin-profile.html")
 
-    @tornado.web.authenticated
+    # @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")
     def post(self):
         action = self.args["action"]
@@ -97,20 +98,14 @@ class ApplySuccess(AdminBaseHandler):
 class ShopApply(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        # 判断信息设置是否完全
-        u = self.current_user
-        if not u.realname or not u.phone or not u.email or\
-           not u.wx_username:
-            return self.redirect(
-                self.reverse_url("fruitzoneAdminProfile"))
-        # 返回申请页面
+
         return self.render("fruitzone/apply.html")
-    
+
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments(
         "shop_name",
         "shop_province:int", "shop_city:int", "shop_address_detail",
-        "have_offline_entity:bool", "shop_service_areas:list"        
+        "have_offline_entity:bool", "shop_service_area:int",
         "shop_intro")
     def post(self):
         #* todo 检查合法性
@@ -121,7 +116,7 @@ class ShopApply(AdminBaseHandler):
               shop_city = self.args["shop_city"],
               shop_address_detail=self.args["shop_address_detail"],
               have_offline_entity=self.args["have_offline_entity"],
-              shop_service_areas=self.args["shop_service_areas"],
+              shop_service_area=self.args["shop_service_area"],
               shop_intro=self.args["shop_intro"]
            )
         except DistrictCodeError as e:
@@ -138,16 +133,47 @@ class Shop(AdminBaseHandler):
 
 
 class AdminShops(AdminBaseHandler):
-   pass
+   @tornado.web.authenticated
+   def get(self):
+       return self.render("fruitzone/shops.html", context=dict(self.current_user.shops))
 
 class AdminShop(AdminBaseHandler):
-   pass
+    @tornado.web.authenticated
+    def get(self,shop_id):
+       shop = models.Shop.get_by_id(shop_id)
+       if not shop:
+          return self.send_error(404)
+       return self.render("fruitzone/shop.html", context=dict(shop=shop))
+
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action", "data", "shop_id")
+    def post(self):
+        action=self.args["action"]
+        data=self.args["data"]
+        shop_id=self.args["shop_id"]
+        shop = models.Shop.get_by_id(shop_id)
+
+        if action == "edit_shop_url":
+            shop.update(shop_url=data)
+        elif action == "edit_live_month":
+            shop.update(live_month=int(data))
+        elif action == "edit_total_users":
+            shop.update(total_users=int(data))
+        elif action == "edit_daily_sales":
+            shop.update(daily_sales=int(data))
+        elif action == "edit_single_stock_size":
+            shop.update(single_stock_size=int(data))
+        elif action == "edit_shop_intro":
+            shop.update(shop_intro=data)
+        else:
+            return self.send_error(404)
+        return self.send_success()
 
 class PhoneVerify(AdminBaseHandler):
-    
+
     def initialize(self, action):
         self._action = action
-    
+
     @tornado.web.authenticated
     def post(self):
         if self._action == "gencode":
@@ -156,16 +182,19 @@ class PhoneVerify(AdminBaseHandler):
             self.handle_checkcode()
         else:
             return self.send_error(404)
-    
+
     @AdminBaseHandler.check_arguments("phone:str")
     def handle_gencode(self):
         print("gen msg code for phone: ", self.args["phone"])
+        gen_msg_token(wx_id=self.current_user.wx_unionid, phone=self.args["phone"])
         return self.send_success()
-    
+
     @AdminBaseHandler.check_arguments("phone:str", "code:int")
     def handle_checkcode(self):
         print("check msg code for phone: {0} with code: {1}".\
               format( self.args["phone"],
                       self.args["code"]))
+        if not check_msg_token(wx_id=self.current_user.wx_unionid, code=self.args["code"]):
+           return send_fail(error_text="验证码过期或者不正确")
         return self.send_success()
     
