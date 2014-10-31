@@ -4,6 +4,7 @@ import tornado.web
 from  dal.db_configs import DBSession
 from dal.models import Shop, ShopAdmin
 import datetime
+from libs.msgverify import gen_msg_token,check_msg_token
 
 class Home(AdminBaseHandler):
    def get(self):
@@ -98,10 +99,41 @@ class Shop(AdminBaseHandler):
 
 
 class AdminShops(AdminBaseHandler):
-   pass
+    @tornado.web.authenticated
+    def get(self):
+       return self.render("fruitzone/shops.html", context=dict(self.current_user.shops))
 
 class AdminShop(AdminBaseHandler):
-   pass
+    @tornado.web.authenticated
+    def get(self,shop_id):
+       shop = models.Shop.get_by_id(shop_id)
+       if not shop:
+           return self.send_error(404)
+       return self.render("fruitzone/shop.html", context=dict(shop=shop))
+
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action", "data", "shop_id")
+    def post(self):
+        action=self.args["action"]
+        data=self.args["data"]
+        shop_id=self.args["shop_id"]
+        shop = models.Shop.get_by_id(shop_id)
+
+        if action == "edit_shop_url":
+            shop.update(shop_url=data)
+        elif action == "edit_live_month":
+            shop.update(live_month=int(data))
+        elif action == "edit_total_users":
+            shop.update(total_users=int(data))
+        elif action == "edit_daily_sales":
+            shop.update(daily_sales=int(data))
+        elif action == "edit_single_stock_size":
+            shop.update(single_stock_size=int(data))
+        elif action == "edit_shop_intro":
+            shop.update(shop_intro=data)
+        else:
+            return self.send_error(404)
+        return self.send_success()
 
 class PhoneVerify(AdminBaseHandler):
     
@@ -120,6 +152,7 @@ class PhoneVerify(AdminBaseHandler):
     @AdminBaseHandler.check_arguments("phone:str")
     def handle_gencode(self):
         print("gen msg code for phone: ", self.args["phone"])
+        gen_msg_token(wx_id=self.current_user.wx_unionid, phone=self.args["phone"])
         return self.send_success()
     
     @AdminBaseHandler.check_arguments("phone:str", "code:int")
@@ -127,5 +160,8 @@ class PhoneVerify(AdminBaseHandler):
         print("check msg code for phone: {0} with code: {1}".\
               format( self.args["phone"],
                       self.args["code"]))
+
+        if not check_msg_token(wx_id=self.current_user.wx_unionid, code=self.args["code"]):
+            return send_fail(error_text="验证码过期或者不正确")
         return self.send_success()
     
