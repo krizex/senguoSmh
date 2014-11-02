@@ -2,7 +2,7 @@
 
 /*---------------------------------apply------------------------------------------*/
 .container-title{text-align:center;font-size:1.6em;float:left;width:100%;border-bottom:1px solid #ddd;padding:0.5em 0;}
-.apply-title .title{background:url('../images/logo.png') no-repeat 10% center;background-size:5em;display:block;}
+.apply-title .title{background:url('../images/logo.png') no-repeat 20% center;background-size:5em;display:block;}
 
 
 .apply-box{position:relative;}
@@ -67,17 +67,16 @@
 
 
 /*-------------------------------------admin-home----------------------------------------------*/
-.user-center-info{width:100%;padding:1em;border-bottom:1px solid #ddd;border-top:1px solid #ddd;margin-top:0.8em;position:relative;}
-.user-center-info a{display:block;}
+.user-center-info{width:100%;border-bottom:1px solid #ddd;border-top:1px solid #ddd;margin-top:0.8em;position:relative;}
+.user-center-info a{display:inline-block;width:100%;padding:1em;background:url('../images/next-black-2px.png') no-repeat 95% center;}
 .user-center-info .user-img{width:6.5em;height:6.5em;box-shadow:1px 1px 2px #aaa;}
-.user-center-info .info{padding-left:2em;width:80%;}
+.user-center-info .info{padding-left:2em;}
 .user-center-info .info .username{color:#333;font-size:1.6em;margin-bottom:1em;height:2em;}
 .user-center-info .info .to-tie{display:inine-block;color:#FF2424;font-size:1.4em;}
-.user-center-info .to-profile{display:inline-block;width:3em;height:6.5em;position:absolute;right:2em;background:url('../images/next-black-2px.png') no-repeat center center;}
 
 .center-list{margin-top:2.5em;}
-.center-list ul li{width:100%;margin-bottom:0.5em;border-top:1px solid #ddd;border-bottom:1px solid #ddd;font-size:1.4em;padding:1em 0;}
-.center-list ul li a{display:block;color:#333;text-indent:1em;}
+.center-list ul li{width:100%;margin-top:-1px;border-top:1px solid #ddd;border-bottom:1px solid #ddd;font-size:1.4em;}
+.center-list ul li a{display:block;color:#333;padding:1em;background:url('../images/next-black-2px.png') no-repeat 95% center;}
 .center-list .w1{margin-top:1.5em;}
 
 .tie-popbox .tie-info{width:100%;}
@@ -104,7 +103,7 @@
 /*---------------------------------------peer-circle---------------------------------*/
 .herder-box{width:100%;height:auto;}
 .herder-box .content-title{width:100%;text-align:center;position:relative;}
-.herder-box .content-title .to-some{position:absolute;top:1em;right:4em;display:inline-block;border:1px solid #fff;height:2em;line-height:2em;color:#fff;font-size:1.5em;padding:0 0.5em;border-radius:2px;}
+.herder-box .content-title .to-some{position:absolute;top:1em;right:1em;display:inline-block;border:1px solid #fff;height:2em;line-height:2em;color:#fff;font-size:1.5em;padding:0 0.5em;border-radius:2px;}
 .herder-box .content-title .to-search{position:absolute;top:1em;right:0.5em;display:inline-block;border:1px solid #fff;height:2em;line-height:2em;color:#fff;font-size:1.5em;padding:0 0.5em;border-radius:2px;}
 .herder-box .search-box{width:100%;height:4em;background:#00E19A;padding:0.5em;}
 .herder-box .search-box input{height:2.5em;line-height:2.5em;font-size:1.4em;}
@@ -198,14 +197,13 @@
 .detail-box .focus-senguo strong{color:#333;}
 
 /*-------------------------------admin-shops---------------------------------*/
-.shops-list{padding:1em 2em;width:130%;float:left;}
-.shops-list li{float:left;border:1px solid #ddd;width:12em;height:15em;margin-right:8em;margin-bottom:3em;text-align:center;background:#fff;padding:0.5em;}
-.shops-list li a{display:block;}
+.shops-list{padding:1em 0;width:110%;float:left;}
+.shops-list li{float:left;border:1px solid #ddd;width:140px;height:160px;margin-left:35px;margin-right:15px;margin-bottom:3em;text-align:center;background:#fff;position:relative;}
+.shops-list li a{display:block;padding:0.5em;}
 .shops-list li a img{width:100%;}
 .shops-list li a p{font-size:1.4em;color:#333;padding-top:0.5em;}
-.shops-list .add-shops a{font-size:8em;font-weight:bold;color:#00D289;}
-.shops-list .pass-status{display:inline-block;position:absolute;width:12em;height:15em;z-index:999;}
-
+.shops-list .add-shops a{font-size:8em;font-weight:bold;color:#00D289;width:140px;height:160px;display:inline-block;line-height:160px;padding:0;}
+.shops-list .status{display:inline-block;position:absolute;z-index:999;top:0;left:0;width:140px;height:160px;line-height:160px;text-align:center;font-size:2.2em;color:#333;background:rgba(255,255,255,0.6);}
 
 /*--------------------------------shop-detail------------------------------------*/
 .detail-box{position:relative;overflow:hidden;}

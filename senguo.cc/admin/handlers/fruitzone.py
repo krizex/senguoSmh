@@ -3,6 +3,7 @@ import dal.models as models
 import tornado.web
 from  dal.db_configs import DBSession
 from sqlalchemy import select
+from dal.districts_in_china import dis_dict
 
 import datetime
 from libs.msgverify import gen_msg_token,check_msg_token
@@ -149,8 +150,11 @@ class ShopApply(AdminBaseHandler):
         return self.send_success()
 
 class Shop(AdminBaseHandler):
-    def get(self, shop_id):
-        shop = models.Shop.get_by_id(self.session, shop_id)
+    def get(self,id):
+        try:
+            shop = self.session.query(models.Shop).filter_by(id=id).one()
+        except:
+            shop = None
         if not shop:
             return self.send_error(404)
         return self.render("fruitzone/shop.html", context=dict(

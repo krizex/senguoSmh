@@ -7,26 +7,28 @@
 </header>
 <div class="container phone-box">
     <ul class="shops-list" id="adminShopsList">
+        {% for shops in context['shops']%}
         <li>
-            <a href="">
-                <img src=""/>
-                <p>We信水果帮</p>
+            <a href="{{reverse_url('fruitzoneAdminShop',shops.id)}}">
+                <img src="{{static_url('images/anoa-1-md.gif')}}"/>
+                <p>{{shops.shop_name}}</p>
             </a>
         </li>
+        {% end %}
         <li class="pass-mode">
             <a href="">
-                <img src=""/>
+                <img src="{{static_url('images/anoa-1-md.gif')}}"/>
                 <p>We信水果帮</p>
             </a>
         </li>
         <li class="check-mode">
             <a href="">
-                <img src=""/>
+                <img src="{{static_url('images/anoa-1-md.gif')}}"/>
                 <p>We信水果帮</p>
             </a>
         </li>
         <li class="add-shops">
-            <a href="javascript:;">+</a>
+            <a href="{{reverse_url('fruitzoneShopApply')}}">+</a>
         </li>
     </ul>
 </div>
