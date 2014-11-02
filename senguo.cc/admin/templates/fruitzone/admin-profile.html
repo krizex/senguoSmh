@@ -5,9 +5,9 @@
 </style>
 {% end %}
 {% block content%}
-<header class="title-box phone-box">
-    <div class="phone-box">
-        <a href="javascript:history.back(-1)" class="return-btn">返回</a>
+<header class="phone-box">
+    <div class="title-box2">
+        <a href="javascript:history.back(-1)" class="return-btn"></a>
         <span class="title">个人信息</span>
     </div>
 </header>
@@ -81,11 +81,11 @@
             <li>
                 <div class="info-con">
                     <span class="title pull-left">出生年月</span>
-                    <a href="javascript:;" class="pull-right editInfo" id="userBirthday">{{current_user.birthday.year}}年{{current_user.birthday.month}}月</a>
+                    <a href="javascript:;" class="pull-right editInfo" id="userBirthday">{{current_user.birthday}}年月</a>
                 </div>
                 <div class="info-edit" style="display:none;">
-                    <input type="text" class="edit-box" placeholder="请输入年份" id="yearEdit" value="{{current_user.birthday.year}}"/>
-                    <input type="text" class="edit-box" placeholder="请输入月份" id="monthEdit" value="{{current_user.birthday.month}}"/>
+                    <input type="text" class="edit-box" placeholder="请输入年份" id="yearEdit" value=""/>
+                    <input type="text" class="edit-box" placeholder="请输入月份" id="monthEdit" value=""/>
                     <div class="btn-box">
                         <a href="javascript:;" class="concel-btn">取消</a>
                         <a href="javascript:;" class="sure-btn" data-action="edit_birthday">确定</a>

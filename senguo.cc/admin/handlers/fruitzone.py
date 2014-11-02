@@ -2,6 +2,7 @@ from handlers.base import AdminBaseHandler
 import dal.models as models
 import tornado.web
 from  dal.db_configs import DBSession
+from dal.districts_in_china import dis_dict
 
 import datetime
 from libs.msgverify import gen_msg_token,check_msg_token
@@ -10,7 +11,8 @@ class Home(AdminBaseHandler):
     _page_count = 20
 
     def get(self):
-        return self.render("fruitzone/home.html")
+        shops = self.session.query(models.Shop).all()
+        return self.render("fruitzone/home.html", context=dict(shops=shops))
     
     @AdminBaseHandler.check_arguments("action")
     def post(self):
@@ -109,7 +111,7 @@ class ShopApply(AdminBaseHandler):
     def post(self):
         #* todo 检查合法性
         try:
-           self.current_user.add_shop(
+           self.current_user.add_shop(self.session,
               shop_name=self.args["shop_name"],
               shop_province=self.args["shop_province"],
               shop_city = self.args["shop_city"],
@@ -123,8 +125,11 @@ class ShopApply(AdminBaseHandler):
         return self.send_success()
 
 class Shop(AdminBaseHandler):
-    def get(self, shop_id):
-        shop = models.Shop.get_by_id(self.session, shop_id)
+    def get(self,id):
+        try:
+            shop = self.session.query(models.Shop).filter_by(id=id).one()
+        except:
+            shop = None
         if not shop:
             return self.send_error(404)
         return self.render("fruitzone/shop.html", context=dict(

@@ -1,6 +1,7 @@
 {% extends 'base.html'%}
 
 {% block content %}
+{% set shop=context['shop']%}
 <header class="title-box2 phone-box">
     <a href="javascript:history.back(-1)" class="return-btn pull-left"></a>
     <span class="title pull-left">店铺详情</span>
@@ -13,17 +14,17 @@
                 <img src="{{static_url('images/anoa-1-md.gif')}}"/>
             </div>
             <div class="info pull-right">
-                <p class="shop-name">We信水果帮</p>
-                <p>湖北武汉</p>
-                <p>服务区域：社区</p>
-                <p>店面：有</p>
+                <p class="shop-name">{{shop.shop_name}}</p>
+                <p>{{shop.shop_province}}{{shop.shop_city}}</p>
+                <p>服务区域：<span data-area="{{shop.shop_service_area}}" id="detailsArea"></span></p>
+                <p>店面：<span data-real="{{shop.have_offline_entity}}" id="detailsReal"></span></spanb></p>
             </div>
             <div class="collect-box">
                 <a href="" class="collect-btn">收藏</a>
                 <a href="" class="action-mode" style="display:none;">已收藏</a>
             </div>
         </div>
-        <a href="" class="focus-btn">关注我的微信店铺</a>
+        <a href="{{shop.shop_url}}" class="focus-btn">关注我的微信店铺</a>
     </div>
     <div class="info-box1">
         <ul class="shop-info-detail2 ">
@@ -33,22 +34,22 @@
             </li>
             <li>
                 <p>总用户数</p>
-                <p>8888</p>
+                <p>{{shop.total_users}}</p>
             </li>
             <li>
                 <p>平均日销量</p>
-                <p>2500元</p>
+                <p>{{shop.daily_sales}}元</p>
             </li>
             <li>
                 <p>单次采购量</p>
-                <p>2500元</p>
+                <p>{{shop.single_stock_size}}元</p>
             </li>
         </ul>
     </div>
     <div class="info-box1">
         <p class="title2">店铺简介：</p>
         <p class="shop-intro">
-            喵喵喵星人来啦！喵星人爱吃水果？不知道，也许～
+            {{shop.shop_intro}}
         </p>
     </div>
     <div class="info-box1">
@@ -78,14 +79,26 @@
         <div class="pricipal-info">
             <img src="" class="pull-left"/>
             <div class="show-info pull-left">
-                <p class="info1">喵星人 <span>性别：其他</span></p>
+                <p class="info1">{{shop.admin.realname}} <span>性别：{{shop.admin.sex}}</span></p>
                 <p>出生年月：2088年8月</p>
             </div>
         </div>
         <div class="pricipal-info2">
             <div class="pull-left">
-                <p class="pricipal-phone">手机号：<span>********</span></p>
-                <p class="pricipal-wechat">微信号：<span>********</span></p>
+                <p class="pricipal-phone">手机号：
+                    {% if current_user%}
+                        <span>{{shop.admin.phone}}</span>
+                    {% else %}
+                        <span>*******</span>
+                    {% end %}
+                </p>
+                <p class="pricipal-wechat">微信号：
+                    {% if current_user%}
+                         <span>{{shop.admin.wx_username}}</span>
+                    {% else %}
+                         <span>*******</span>
+                    {% end %}
+                </p>
             </div>
             <div class="pull-right how-to">
                 <p>店铺入驻后</p>
@@ -96,7 +109,7 @@
     <div class="info-box1">
         <p class="title2">个人说明：</p>
         <p class="shop-intro">
-            喵喵喵星人来啦！喵星人爱吃水果？不知道，也许～
+            {{shop.admin.briefintro}}
         </p>
     </div>
     <a href="#" class="focus-senguo">点击关注<strong>森果</strong>，获取更多行业资源</a>
