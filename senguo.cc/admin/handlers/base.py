@@ -21,6 +21,20 @@ class GlobalBaseHandler(BaseHandler):
         if hasattr(self, "_session"):
             self._session.close()
 
+    #将服务区域的编码转换为文字显示
+    def service_area_text(self, shop_service_area):
+        text = ""
+        if shop_service_area & models.SHOP_SERVICE_AREA.HIGH_SCHOOL:
+            text += "高校 "
+        if shop_service_area & models.SHOP_SERVICE_AREA.COMMUNITY:
+            text += "社区 "
+        if shop_service_area & models.SHOP_SERVICE_AREA.TRADE_CIRCLE:
+            text += "商圈 "
+        if shop_service_area & models.SHOP_SERVICE_AREA.OTHERS:
+            text += "其他"
+        return text
+
+
 class FrontBaseHandler(GlobalBaseHandler):
     pass
 
