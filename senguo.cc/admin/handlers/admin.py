@@ -30,7 +30,7 @@ class Access(AdminBaseHandler):
         userinfo = self.get_wx_userinfo(code)
         if not userinfo:
             return self.redirect(self.reverse_url("adminLogin"))
-        u = models.ShopAdmin.get_or_create_with_unionid(userinfo["unionid"], userinfo)
+        u = models.ShopAdmin.get_or_create_with_unionid(self.session, userinfo["unionid"], userinfo)
         self.set_current_user(u)
         
         next_url = self.get_argument("next", self.reverse_url("adminHome"))
