@@ -2,7 +2,6 @@ from handlers.base import AdminBaseHandler
 import dal.models as models
 import tornado.web
 from  dal.db_configs import DBSession
-from dal.models import Shop, ShopAdmin
 
 import datetime
 from libs.msgverify import gen_msg_token,check_msg_token
@@ -125,7 +124,7 @@ class ShopApply(AdminBaseHandler):
 
 class Shop(AdminBaseHandler):
     def get(self, shop_id):
-        shop = models.Shop.get_by_id(shop_id)
+        shop = models.Shop.get_by_id(self.session, shop_id)
         if not shop:
             return self.send_error(404)
         return self.render("fruitzone/shop.html", context=dict(
@@ -135,12 +134,12 @@ class Shop(AdminBaseHandler):
 class AdminShops(AdminBaseHandler):
    @tornado.web.authenticated
    def get(self):
-       return self.render("fruitzone/shops.html", context=dict(self.current_user.shops))
+       return self.render("fruitzone/shops.html", context=dict(shops=self.current_user.shops))
 
 class AdminShop(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self,shop_id):
-       shop = models.Shop.get_by_id(shop_id)
+       shop = models.Shop.get_by_id(self.session, shop_id)
        if not shop:
           return self.send_error(404)
        return self.render("fruitzone/shop.html", context=dict(shop=shop))
@@ -151,7 +150,7 @@ class AdminShop(AdminBaseHandler):
         action=self.args["action"]
         data=self.args["data"]
         shop_id=self.args["shop_id"]
-        shop = models.Shop.get_by_id(shop_id)
+        shop = models.Shop.get_by_id(self.session, shop_id)
 
         if action == "edit_shop_url":
             shop.update(shop_url=data)

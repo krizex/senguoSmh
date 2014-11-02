@@ -77,25 +77,29 @@ class _AccountApi:
     """
     a common account access api, should be inherit by every 
     account.
+
+    * 难题：解决有奖
+    问题1： session中的实例什么时候会被系统回收？如果实例一直未被detached会不会一直不会被系统回收？
+    问题2： 在本模块中，对象内置的一些方法可能会用到会话，怎么管理这些会话？
+          1. 全局唯一会话：带来并发问题，可能会导致并发处理异常。
+          2. 全局多个会话，并实现访问排队：可能导致性能受影响。
+    最粗暴的解决方法：传一个外部控制的session参数进来，由外部控制session的死活。
     """
-    
     @classmethod
-    def get_by_id(cls, id):
-        s = DBSession()
+    def get_by_id(cls, session, id):
+        s = session
         try:u = s.query(cls).filter_by(id=id).one()
         except:u = None
-        s.close()
         return u
     
     @classmethod
-    def get_by_unionid(cls, wx_unionid):
-        s = DBSession()
+    def get_by_unionid(cls, session, wx_unionid):
+        s = session
         try:u = s.query(cls).filter_by(wx_unionid=wx_unionid).one()
         except:u = None
-        s.close()
         return u
     @classmethod
-    def get_or_create_with_unionid(cls, wx_unionid, userinfo={}):
+    def get_or_create_with_unionid(cls, session, wx_unionid, userinfo={}):
         u = cls.get_by_unionid(wx_unionid)
         if u: return u
         u = cls(wx_unionid=userinfo["unionid"],
@@ -107,25 +111,22 @@ class _AccountApi:
                 wx_city=userinfo["city"],
                 wx_headimgurl=userinfo["headimgurl"],
                 create_date_timestamp=int(time.time()))
-        s = DBSession()
+        s = session
         s.add(u)
         s.commit()
-        s.close()
         return u
     
     @classmethod
-    def get_by_phone(cls, phone):
-        s = DBSession()
+    def get_by_phone(cls, session, phone):
+        s = session
         try:u = s.query(cls).filter_by(phone=phone).one()
         except:u = None
-        s.close()
         return u
 
     def save(self):
-        s = DBSession()
+        s = session
         s.add(self)
         s.commit()
-        s.close()
     def update(self, **kwargs):
         for key in kwargs.keys():
             setattr(self, key, kwargs[key])
@@ -269,18 +270,17 @@ class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     wx_city = Column(String(128))
     wx_headimgurl = Column(String(2048))
 
-    def add_shop(self, **kwargs):
+    def add_shop(self, session, **kwargs):
         kwargs["admin_id"] = self.id
         if "shops" in kwargs:
             del kwargs["shops"]
 
         sp = Shop(**kwargs)
 
-        s = DBSession()
+        s = session
         s.add(self)
         self.shops.append(sp)
         s.commit()
-        s.close()
 
     def __repr__(self):
         return "<ShopAdmin: {0}({1})>".format(self.username, self.id)
