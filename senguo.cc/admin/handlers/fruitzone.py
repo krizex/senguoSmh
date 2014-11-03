@@ -3,7 +3,7 @@ import dal.models as models
 import tornado.web
 from  dal.db_configs import DBSession
 from sqlalchemy import select
-from dal.districts_in_china import dis_dict
+from dal.dis_dict import dis_dict
 
 import datetime
 from libs.msgverify import gen_msg_token,check_msg_token

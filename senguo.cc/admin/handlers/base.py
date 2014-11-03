@@ -6,6 +6,7 @@ import urllib
 import traceback
 from settings import APPID, APPSECRET, APP_OAUTH_CALLBACK_URL
 import tornado.escape
+from dal.dis_dict import dis_dict
 
 class GlobalBaseHandler(BaseHandler):
 
@@ -21,19 +22,42 @@ class GlobalBaseHandler(BaseHandler):
         if hasattr(self, "_session"):
             self._session.close()
 
-    #将服务区域的编码转换为文字显示
-    def service_area_text(self, shop_service_area):
+    def code_to_text(self, column_name, code):
         text = ""
-        if shop_service_area & models.SHOP_SERVICE_AREA.HIGH_SCHOOL:
-            text += "高校 "
-        if shop_service_area & models.SHOP_SERVICE_AREA.COMMUNITY:
-            text += "社区 "
-        if shop_service_area & models.SHOP_SERVICE_AREA.TRADE_CIRCLE:
-            text += "商圈 "
-        if shop_service_area & models.SHOP_SERVICE_AREA.OTHERS:
-            text += "其他"
-        return text
 
+        #将服务区域的编码转换为文字显示
+        if column_name == "service_area":
+            if code & models.SHOP_SERVICE_AREA.HIGH_SCHOOL:
+                text += "高校 "
+            if code & models.SHOP_SERVICE_AREA.COMMUNITY:
+                text += "社区 "
+            if code & models.SHOP_SERVICE_AREA.TRADE_CIRCLE:
+                text += "商圈 "
+            if code & models.SHOP_SERVICE_AREA.OTHERS:
+                text += "其他"
+            return text
+
+        #将商店审核状态编码转换为文字显示
+        if column_name == "shop_status":
+            if code == models.SHOP_STATUS.APPLYING:
+                text = "审核中"
+            elif code == models.SHOP_STATUS.ACCEPTED:
+                text = "审核通过"
+            elif code == models.SHOP_STATUS.DECLINED:
+                text = "拒绝申请"
+            return text
+
+        #将省份编码转换为文字显示
+        if column_name == "shop_province":
+            text = dis_dict[code]["name"]
+            return text
+
+        #将城市编码转换为文字显示（可以由城市编码算出城市所在省份的编码）
+        if column_name == "shop_city":
+            text += dis_dict[int(code/10000)*10000]["name"]
+            text += " "
+            text += dis_dict[int(code/10000)*10000]["city"][code]["name"]
+            return text
 
 class FrontBaseHandler(GlobalBaseHandler):
     pass
