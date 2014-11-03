@@ -54,30 +54,20 @@
     </div>
     <div class="container phone-box shop-list-content">
         <ul class="shop-list">
+            {% for sh in context['shops'] %}
             <li>
-                <a href="/fruitzone/admin/shop/">
+                <a href="{{reverse_url('fruitzoneShop',sh.id)}}">
                     <div class="shop-logo pull-left">
                          <img src="{{static_url('images/anoa-1-md.gif')}}"/>
                     </div>
                     <div class="shop-info pull-right">
-                        <p><span class="shop-name w1">We信水果帮</span><span class="area">湖北 武汉</span></p>
-                        <p>运营时间：12个月</p>
-                        <p><span class="shop-owner w1">负责人：喵星人</span><span class="wechat-code">helloworld</span></p>
+                        <p><span class="shop-name w1">{{sh.shop_name}}</span><span class="area">{{sh.shop_province}} {{sh.shop_city}}</span></p>
+                        <p>运营时间：{{sh.live_month}}</p>
+                        <p><span class="shop-owner w1">负责人：{{sh.admin.realname}}</span><span class="wechat-code">{{sh.admin.wx_username}}</span></p>
                     </div>
                 </a>
             </li>
-            <li>
-                <a href="#">
-                    <div class="shop-logo pull-left">
-                        <img src="{{static_url('images/anoa-1-md.gif')}}"/>
-                    </div>
-                    <div class="shop-info pull-right">
-                        <p><span class="shop-name w1">We信水果帮</span><span class="area">湖北 武汉</span></p>
-                        <p>运营时间：12个月</p>
-                        <p><span class="shop-owner w1">负责人：喵星人</span><span class="wechat-code">helloworld</span></p>
-                    </div>
-                </a>
-            </li>
+          {% end %}
         </ul>
     </div>
 {% end %}

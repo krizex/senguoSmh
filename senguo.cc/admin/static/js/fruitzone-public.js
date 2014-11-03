@@ -28,7 +28,7 @@ $(document).ready(function(){
         {$(this).text('点击设置').css({'color':'#FF3C3C'});}
     })
 
-    $('#submitApply').click(function(evt){Apply(evt);});
+    $('#submitApply').click(function(evt){console.log('123');Apply(evt);});
 
     $('.info-edit').find('.concel-btn').each(function(){$(this).click(function(){$(this).parents('.info-edit').hide();})});
     $('.info-edit').find('.sure-btn').each(function(){infoEdit($(this))});
@@ -36,12 +36,35 @@ $(document).ready(function(){
     $('#getVrify').click(function(evt){Vrify(evt);time($(this));});
     $('#tiePhone').click(function(evt){TiePhone(evt);});
 
+    $('#adminShopsList').find('li').each(function(){
+        if($(this).hasClass('pass-mode'))
+        {
+            $(this).find('a').append('<span class="status">已通过</span>');
+        }
+        else if($(this).hasClass('check-mode'))
+        {
+            $(this).find('a').append('<span class="status">审核中</span>');
+        }
+    });
+
+    if($('#detailsReal').data('real')=='true')
+         $('#detailsReal').text('是');
+    else $('#detailsReal').text('否');
+
+    var are=$('#detailsArea');
+    if(are.data('area')=='1')
+       are.text('高校');
+    else if(are.data('area')=='2')
+        are.text('社区');
+    else if(are.data('area')=='4')
+        are.text('商圈');
+    else if(are.data('area')=='5')
+        are.text('其他');
 
 });
 
 function orderBy(i){
     $('#orderBy'+i).slideToggle().siblings('.order-by-list').slideUp(100);
-    $('.order-by').toggleClass('bgcolor');
 }
 
 $.postJson = function(url, args, successCall, failCall, alwaysCall){
@@ -52,7 +75,7 @@ $.postJson = function(url, args, successCall, failCall, alwaysCall){
         contentType:"application/json; charset=UTF-8",
         success:successCall,
         fail:failCall,
-        error:failCall,
+        error:failCall
     });
     req.always(alwaysCall);
 };
@@ -165,34 +188,36 @@ function TiePhone(evt){
 function Apply(evt){
     evt.preventDefault();
     var shop_name=$('#shopName').val().trim();
-    var shop_province=$('#provinceAddress').text().trim();
-    var shop_city=$('#cityAddress').text().trim();
+    var shop_province=$('#provinceAddress').data('code');
+    var shop_city=$('#cityAddress').data('code');
     var shop_address_detail=$('#addressDetail').val().trim();
     var have_offline_entity=$('#realShop').find('.active').find('a').data('real');
-    var shop_service_areas=$('#serverArea').find('.active').find('a').data('id');
+    var shop_service_area=$('#serverArea').find('.active').data('id');
     var shop_intro=$('#shopIntro').val().trim();
-    if (!shop_name || ! shop_service_areas || !shop_province || !shop_city || !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
+    if (!shop_name || ! shop_service_area || !shop_province ||!shop_city || !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
     var args={
         shop_name:shop_name,
         shop_province:shop_province,
         shop_city:shop_city,
         shop_address_detail:shop_address_detail,
         have_offline_entity:have_offline_entity,
-        shop_service_areas:shop_service_areas,
+        shop_service_area:shop_service_area,
         shop_intro:shop_intro,
         _xsrf: window.dataObj._xsrf
     };
-
     var url="/fruitzone/shop/apply";
     $.postJson(url,args,
         function(res){
             if(res.success)
             {
                 console.log(args);
-                window.location.href="/fruitzone/applySuccess";
+                window.location.href="/fruitzone/shop/applySuccess";
+                alert("申请成功！");
             }
             else  alert("信息填写错误！");
         },
+        function(){
+            alert('网络错误！');},
         function(){
             alert('网络错误！');}
     );

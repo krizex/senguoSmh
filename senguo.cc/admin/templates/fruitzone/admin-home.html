@@ -6,22 +6,23 @@
 {% end %}
 {% block content%}
 <header class="title-box phone-box">
-    <div class="phone-box">
+    <div class="title-box">
         <a href="javascript:history.back(-1)" class="return-btn">返回</a>
         <span class="title">个人中心</span>
     </div>
 </header>
 <div class="user-center-info white-color phone-box container">
-    <img src="{{static_url('images/anoa-1-md.gif')}}" class="pull-left user-img"/>
-    <div class="info pull-left">
-        <p class="username">{{current_user.realname}}</p>
-    </div>
-    <a href="{{reverse_url('fruitzoneAdminProfile')}}" class="to-profile pull-left">&nbsp</a>
+    <a href="{{reverse_url('fruitzoneAdminProfile')}}">
+        <img src="{{static_url('images/anoa-1-md.gif')}}" class="pull-left user-img"/>
+        <div class="info pull-left">
+            <p class="username">{{current_user.realname}}</p>
+        </div>
+    </a>
 </div>
 <div class="center-list phone-box container">
     <ul>
         <li class="white-color">
-            <a href="#">我的店铺管理</a>
+            <a href="{{reverse_url('fuirzoneAdminShops')}}">我的店铺管理</a>
         </li>
         <li class="white-color">
             <a href="#">我的收藏</a>

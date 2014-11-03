@@ -2,15 +2,21 @@ from handlers.base import AdminBaseHandler
 import dal.models as models
 import tornado.web
 from  dal.db_configs import DBSession
+from sqlalchemy import select
+from dal.districts_in_china import dis_dict
 
 import datetime
 from libs.msgverify import gen_msg_token,check_msg_token
+
 
 class Home(AdminBaseHandler):
     _page_count = 20
 
     def get(self):
-        return self.render("fruitzone/home.html")
+        q = self.session.query(models.Shop).order_by(models.Shop.id).\
+            filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
+        shops = q.all()
+        return self.render("fruitzone/home.html", context=dict(shops=shops))
     
     @AdminBaseHandler.check_arguments("action")
     def post(self):
@@ -22,10 +28,11 @@ class Home(AdminBaseHandler):
         else:
             return self.send_error(403)
     @AdminBaseHandler.check_arguments("skip?:int","limit?:int",
-                                      "city?:int", "service_area?:int", "live_month?:int")
+                                      "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids:list")
     def handle_filter(self):
         # 按什么排序？暂时采用id排序
-        q = self.session.query(models.Shop).order_by(models.Shop.id)
+        q = self.session.query(models.Shop).order_by(models.Shop.id).\
+            filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
         if "city" in self.args:
             q = q.filter_by(shop_city=self.args["city"])
         if "service_area" in self.args:
@@ -33,6 +40,13 @@ class Home(AdminBaseHandler):
             q = q.filter_by(shop_service_area=self.args["service_area"])
         if "live_month" in self.args:
             q = q.filter(models.Shop.live_month>self.args["live_month"])
+
+        if "onsalefruit_ids" in self.args:
+            q = q.filter(models.Shop.id.in_(
+                select([models.ShopOnsalefruitLink.shop_id]).\
+                where(models.ShopOnsalefruitLink.fruit_id.in_(
+                    self.args["onsalefruit_ids"]))
+            ))
         
         if "skip" in self.args:
             q = q.offset(self.args["skip"])
@@ -42,10 +56,23 @@ class Home(AdminBaseHandler):
         else:
             q = q.limit(self._page_count)
 
+
+
         shops = []
         for shop in q.all():
             shops.append(shop.safe_props)
         return self.send_success(shops=shops)
+
+    @AdminBaseHandler.check_arguments("q")
+    def handle_search(self):
+        q = self.session.query(models.Shop).order_by(models.Shop.id).\
+            filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"])),
+                   models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
+        shops = []
+        for shop in q.all():
+            shops.append(shop.safe_props)
+        return self.send_success(shops=shops)
+
 class AdminHome(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self):
@@ -109,7 +136,7 @@ class ShopApply(AdminBaseHandler):
     def post(self):
         #* todo 检查合法性
         try:
-           self.current_user.add_shop(
+           self.current_user.add_shop(self.session,
               shop_name=self.args["shop_name"],
               shop_province=self.args["shop_province"],
               shop_city = self.args["shop_city"],
@@ -123,8 +150,11 @@ class ShopApply(AdminBaseHandler):
         return self.send_success()
 
 class Shop(AdminBaseHandler):
-    def get(self, shop_id):
-        shop = models.Shop.get_by_id(self.session, shop_id)
+    def get(self,id):
+        try:
+            shop = self.session.query(models.Shop).filter_by(id=id).one()
+        except:
+            shop = None
         if not shop:
             return self.send_error(404)
         return self.render("fruitzone/shop.html", context=dict(

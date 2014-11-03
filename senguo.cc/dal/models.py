@@ -10,6 +10,8 @@ import time
 class DistrictCodeError(Exception):
     pass
 
+class FruitTypeError(Exception):
+    pass
 
 # 常量
 
@@ -39,7 +41,7 @@ class SHOPADMIN_CHARGE_TYPE:
 class SHOP_STATUS:
     """商店状态"""
     APPLYING = 1
-    ALLOWED = 2
+    ACCEPTED = 2
     DECLINED = 3
 
 
@@ -100,7 +102,7 @@ class _AccountApi:
         return u
     @classmethod
     def get_or_create_with_unionid(cls, session, wx_unionid, userinfo={}):
-        u = cls.get_by_unionid(wx_unionid)
+        u = cls.get_by_unionid(session, wx_unionid)
         if u: return u
         u = cls(wx_unionid=userinfo["unionid"],
                 wx_openid=userinfo["openid"],
@@ -158,6 +160,7 @@ class Shop(MapBase, _SafeOutputTransfer):
 
         if not "create_date_timestamp" in kwargs:
             kwargs["create_date_timestamp"] = time.time()
+
         super().__init__(**kwargs)
     
     def _check_city_code(self, shop_province, shop_city):
@@ -202,8 +205,10 @@ class Shop(MapBase, _SafeOutputTransfer):
     daily_sales = Column(Integer)
     # 单次采购（元）
     single_stock_size = Column(Integer)
-    # 求购水果, 列表序列化存储，直接存名字，用;分开
-    intent_fruits = Column(String(2048))
+    # 求购水果
+    demand_fruits = relationship("FruitType", secondary="shop_demandfruit_link")
+    # 在售水果
+    onsale_fruits = relationship("FruitType", secondary="shop_onsalefruit_link")
     # 店铺url
     shop_url = Column(String(2048))
     # 运营时间
@@ -248,9 +253,13 @@ class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     charge_type = Column(Integer)
     # 性别，男male, 女female
     sex = Column(String(128))
+    # 昵称
     nickname = Column(String(128), default="")
+    # 姓名
     realname = Column(String(128))
-    birthday = Column(Integer)
+    # 头像url
+    headimgurl = Column(String(1024))
+    birthday = Column(Integer)# timestamp
     qr_code_url = Column(String(2048))
     create_date_timestamp = Column(Integer, nullable=False)
     briefintro = Column(String(300), default="")
@@ -356,6 +365,35 @@ class Address(MapBase):
     receiver = Column(String(64), nullable=False)
     address_text = Column(String(1024), nullable=False)
     owner_id = Column(Integer, ForeignKey(Customer.id))
+
+class FruitType(MapBase):
+    __tablename__ = "fruit_type"
+    
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    code = Column(String(128), default="", unique=True)
+    
+    name = Column(String(64), unique=True)
+
+class ShopOnsalefruitLink(MapBase):
+    """
+    店铺的在售水果
+    """
+    __tablename__ = "shop_onsalefruit_link"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+
+    shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
+    fruit_id = Column(Integer,ForeignKey(FruitType.id), nullable=False)
+
+class ShopDemandfruitLink(MapBase):
+    """
+    店铺的求购水果
+    """
+    __tablename__ = "shop_demandfruit_link"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+
+    shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
+    fruit_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
+
 
 MapBase.metadata.create_all()
 
