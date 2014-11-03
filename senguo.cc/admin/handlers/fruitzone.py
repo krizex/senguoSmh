@@ -97,22 +97,22 @@ class AdminProfile(AdminBaseHandler):
         elif action == "edit_nickname":
             pass
         elif action == "edit_realname":
-            self.current_user.update(realname=data)
+            self.current_user.update(session=self.session, realname=data)
         elif action == "edit_wx_username":
-            self.current_user.update(wx_username=data)
+            self.current_user.update(session=self.session, wx_username=data)
         elif action == "edit_phone":
-            self.current_user.update(phone=data)
+            self.current_user.update(session=self.session, phone=data)
         elif action == "edit_email":
-            self.current_user.update(email=data)
+            self.current_user.update(session=self.session, email=data)
         elif action == "edit_sex":
             pass
         elif action == "edit_birthday":
             year = int(data["year"])
             month = int(data["month"])
             birthday = datetime.datetime(year=year, month=month, day=19)
-            self.current_user.update(birthday=birthday)
+            self.current_user.update(session=self.session, birthday=birthday)
         elif action == "edit_intro":
-            self.current_user.update(briefintro=data)
+            self.current_user.update(session=self.session, briefintro=data)
         else:
             return self.send_error(404)
         return self.send_success()
@@ -158,7 +158,7 @@ class Shop(AdminBaseHandler):
         if not shop:
             return self.send_error(404)
         return self.render("fruitzone/shop.html", context=dict(
-                    shop=shop, shop_admin=shop.admin))
+                    shop=shop, shop_admin=shop.admin,edit=False))
 
 
 class AdminShops(AdminBaseHandler):
@@ -168,11 +168,14 @@ class AdminShops(AdminBaseHandler):
 
 class AdminShop(AdminBaseHandler):
     @tornado.web.authenticated
-    def get(self,shop_id):
-       shop = models.Shop.get_by_id(self.session, shop_id)
-       if not shop:
-          return self.send_error(404)
-       return self.render("fruitzone/shop.html", context=dict(shop=shop))
+    def get(self,id):
+        try:
+            shop = self.session.query(models.Shop).filter_by(id=id).one()
+        except:
+            shop = None
+        if not shop:
+            return self.send_error(404)
+        return self.render("fruitzone/shop.html", context=dict(shop=shop,edit=True))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data", "shop_id")

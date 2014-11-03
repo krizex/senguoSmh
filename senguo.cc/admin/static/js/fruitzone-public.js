@@ -26,40 +26,24 @@ $(document).ready(function(){
     $('a.editInfo').each(function(){
         if($(this).text() =='None'||$(this).text() =='')
         {$(this).text('点击设置').css({'color':'#FF3C3C'});}
-    })
-
-    $('#submitApply').click(function(evt){console.log('123');Apply(evt);});
-
-    $('.info-edit').find('.concel-btn').each(function(){$(this).click(function(){$(this).parents('.info-edit').hide();})});
-    $('.info-edit').find('.sure-btn').each(function(){infoEdit($(this))});
-
-    $('#getVrify').click(function(evt){Vrify(evt);time($(this));});
-    $('#tiePhone').click(function(evt){TiePhone(evt);});
-
-    $('#adminShopsList').find('li').each(function(){
-        if($(this).hasClass('pass-mode'))
-        {
-            $(this).find('a').append('<span class="status">已通过</span>');
-        }
-        else if($(this).hasClass('check-mode'))
-        {
-            $(this).find('a').append('<span class="status">审核中</span>');
-        }
     });
+    $('.info-edit').find('.concel-btn').each(function(){$(this).click(function(){$(this).parents('.info-edit').hide();})});
+
+    $('.info-edit').find('.sure-btn').each(function(){infoEdit($(this))});
+    $('#submitApply').click(function(evt){Apply(evt);});
+    $('#getVrify').click(function(evt){Vrify(evt);});
+    $('#tiePhone').click(function(evt){TiePhone(evt);});
 
     if($('#detailsReal').data('real')=='true')
          $('#detailsReal').text('是');
     else $('#detailsReal').text('否');
 
-    var are=$('#detailsArea');
-    if(are.data('area')=='1')
-       are.text('高校');
-    else if(are.data('area')=='2')
-        are.text('社区');
-    else if(are.data('area')=='4')
-        are.text('商圈');
-    else if(are.data('area')=='5')
-        are.text('其他');
+    if($('#adminSex').data('sex')=='male')
+        $('#adminSex').text('男');
+    else if($('#adminSex').data('sex')=='famale')
+        $('#adminSex').text('女');
+
+    $('#searchSubmit').click(function(evt){Search(evt);})
 
 });
 
@@ -102,24 +86,29 @@ function infoEdit(evt){
         var email=$('#mailEdit').val();
         var year=$('#yearEdit').val();
         var month=$('#monthEdit').val();
-        var sex=$('#sexEdit').val();
+        var sex=$('#sexEdit option:selected').data('sex');
+        var realname=$('#realnameEdit').val();
         var regEmail=/^([a-z0-9]*[-_]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/;
         var regNumber=/^\d{n}$/;
         var regMonth=/^((0?[1-9])|((1|2)[0-9])|30|31)$/;
-        var regSex=/^[\u4E00-\uFA29\uE7C7-\uE7F3]+-[男女]$/;
-
-        if(!regEmail.test(email)){return alert("邮箱不存在");}
-        if(!regMonth.test(month)){return alert("请输入正确的年月!");}
-
+        var regSex=/^[男女]$/;
         var action=evt.data('action');
-        var data=evt.parents('.info-edit').find('.edit-box').val().trim();
-        if(action=='edit_birthday')
-        {
-            data={
-                year:$('#yearEdit').val().trim(),
-                month:$('#monthEdit').val().trim()
+        var data=evt.parents('.info-edit').find('.edit-box').val();
+
+        if(action=='edit_email' && !regEmail.test(email))
+             {return alert("邮箱不存在!");}
+        else if(action=='edit_sex' && !regSex.test($('#sexEdit').val()))
+             {return alert('性别只能为男或女！');}
+        else if(action=='edit_birthday' && !regMonth.test(month))
+             {return alert("请输入正确的年月!");}
+        else if(action=='edit_birthday')
+            {
+                data={
+                    year:$('#yearEdit').val().trim(),
+                    month:$('#monthEdit').val().trim()
+                }
             }
-        }
+
         var url="/fruitzone/admin/profile";
         var args={action: action, data: data, _xsrf: window.dataObj._xsrf};
          $.postJson(url,args,
@@ -127,8 +116,9 @@ function infoEdit(evt){
                  console.log(res);
                  if (res.success) {
                      evt.parents('li').find('a.editInfo').text(data);
-                     evt.parents('li').find('#userBirthday').text(data.year+'年'+data.month+'月');
+                     //evt.parents('li').find('#userBirthday').text(data.year+'年'+data.month+'月');
                      if(data==''){evt.parents('li').find('.editInfo').text('点击设置').css({'color':'#FF3C3C'});}
+                     evt.parents('li').find('.info-edit').hide();
                      alert('修改成功！');
                  }},
              function(){
@@ -150,6 +140,7 @@ function Vrify(evt){
         function(res){
             if(res.success)
             {
+                time($('#getVrify'));
                 alert('验证码已发送到您的手机,请注意查收！');
 
             }
@@ -187,12 +178,22 @@ function TiePhone(evt){
 
 function Apply(evt){
     evt.preventDefault();
+    var i=0;
+    if($('#serverArea li').eq(0).hasClass('active'))
+        i+=1;
+    if($('#serverArea li').eq(1).hasClass('active'))
+        i+=2;
+    if($('#serverArea li').eq(2).hasClass('active'))
+        i+=4;
+    if($('#serverArea li').eq(3).hasClass('active'))
+        i+=8;
     var shop_name=$('#shopName').val().trim();
     var shop_province=$('#provinceAddress').data('code');
     var shop_city=$('#cityAddress').data('code');
     var shop_address_detail=$('#addressDetail').val().trim();
     var have_offline_entity=$('#realShop').find('.active').find('a').data('real');
-    var shop_service_area=$('#serverArea').find('.active').data('id');
+    var shop_service_area=i;
+    console.log(i);
     var shop_intro=$('#shopIntro').val().trim();
     if (!shop_name || ! shop_service_area || !shop_province ||!shop_city || !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
     var args={
@@ -217,8 +218,29 @@ function Apply(evt){
             else  alert("信息填写错误！");
         },
         function(){
-            alert('网络错误！');},
-        function(){
             alert('网络错误！');}
+    );
+}
+
+function Search(evt){
+    evt.preventDefault();
+    var q=$('#searchKey').val().trim();
+    var action=$('#searchSubmit').data('action');
+    var url="/fruitzone/";
+    var args={
+        q:q,
+        action:action,
+        _xsrf: window.dataObj._xsrf
+
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success)
+                console.log(q);
+            else alert('无搜索结果！');
+        },
+    function(){
+        alert('网络错误！');
+         }
     );
 }
