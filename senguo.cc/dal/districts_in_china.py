@@ -2023,6 +2023,6 @@ for i in dis_dict["province"]:
 print(d)
 import json
 file_object = open('dis_dict.py', 'w')
-j=json.dumps(d)
-file_object.write(j)
+#j=json.dumps(d)
+file_object.write(str(d))
 file_object.close( )

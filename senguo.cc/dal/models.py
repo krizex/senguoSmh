@@ -3,7 +3,7 @@ from sqlalchemy.types import String, Integer, Text, Boolean, Float
 from sqlalchemy.orm import relationship, backref
 
 from dal.db_configs import MapBase, DBSession
-from dal.districts_in_china import dis_dict
+from dal.dis_dict import dis_dict
 import json
 import time
 
@@ -161,16 +161,14 @@ class Shop(MapBase, _SafeOutputTransfer):
         super().__init__(**kwargs)
     
     def _check_city_code(self, shop_province, shop_city):
+        if shop_province not in dis_dict.keys():
+            return False
+        if "city" not in dis_dict[shop_province].keys():
+            return True
+        if shop_city not in dis_dict[shop_province]["city"]:
+            return False
+        return True
 
-        for p in dis_dict["province"]:
-            if p["code"] == shop_province:
-                if not "city" in p:
-                    return True
-                for city in p["city"]:
-                    if city["code"] == shop_city:
-                        return True
-                return False
-        return False
     __tablename__ = "shop"
     
     id = Column(Integer, primary_key=True, nullable=False)
