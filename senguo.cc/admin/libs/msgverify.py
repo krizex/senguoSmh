@@ -32,8 +32,8 @@ def gen_msg_token(wx_id, phone):
 
     try:
         q = s.query(_VerifyCode).filter(_VerifyCode.wx_id == wx_id).one()
-
     except:
+        # ** 需要处理post异常 **
         post()
         v = _VerifyCode()
         v.wx_id = wx_id
@@ -42,36 +42,37 @@ def gen_msg_token(wx_id, phone):
         s.add(v)
         s.commit()
         s.close()
-        return
+        return True
+    
+    # 数据库有该用户验证码
+    delta_time = (datetime.datetime.now() - q.create_time)
+    delta_seconds = delta_time.days * 24*3600 + delta_time.seconds
 
     #如果用户在30秒内连续申请产生验证码，不响应
-    if (datetime.datetime.now() - q.create_time).seconds < 30:
-        return
-
-
+    if delta_seconds < 30:
+        return True
+    #用户在24小时后再次申请验证码，响应
+    elif delta_seconds > 24*3600:
+        post()
+        q.wx_id = wx_id
+        q.code = code
+        q.create_time=datetime.datetime.now()
+        q.count = 1
+        s.commit()
+        s.close()
+        return True
     else:
-        #用户在24小时后再次申请验证码，响应
-        t=(datetime.datetime.now() - q.create_time)
-        if t.days>=1 or t.seconds>=86400:
+        #用户在24小室内申请验证码，这时要检查是否24小时内申请次数没超过10次（24小时内只允许申请10次）
+        if q.count <= 10:
             post()
             q.wx_id = wx_id
             q.code = code
-            q.count = 1
+            q.count += 1
             s.commit()
             s.close()
-
-        #用户在24小室内申请验证码，这时要检查是否24小时内申请次数没超过10次（24小时内只允许申请10次）
-        else:
-            if q.count <= 10:
-                post()
-                q.wx_id = wx_id
-                q.code = code
-                q.count += 1
-                s.commit()
-                s.close()
             #24小时内多于10次，不响应
-            else:
-                return
+        else:
+            return False
 
 def check_msg_token(wx_id, code):
     s = DBSession()
