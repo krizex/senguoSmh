@@ -79,6 +79,14 @@ class AdminHome(AdminBaseHandler):
        # 模板中通过current_user获取当前admin的相关数据，
        # 具体可以查看models.ShopAdmin中的属性
        self.render("fruitzone/admin-home.html")
+
+    @tornado.web.authenticated
+    def post(self):
+        feedback = models.Feedback()
+        feedback.text = self.args["feedback"]
+        self.current_user.feedback.append(feedback)
+        return self.send_success()
+
 class AdminProfile(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self):
@@ -157,8 +165,10 @@ class Shop(AdminBaseHandler):
             shop = None
         if not shop:
             return self.send_error(404)
+        time_tuple = time.localtime(shop.admin.birthday)
+        birthday = time.strftime("%Y-%m", time_tuple)
         return self.render("fruitzone/shop.html", context=dict(
-                    shop=shop, shop_admin=shop.admin,edit=False))
+                    shop=shop, shop_admin=shop.admin, birthday=birthday, edit=False))
 
 
 class AdminShops(AdminBaseHandler):
@@ -186,17 +196,25 @@ class AdminShop(AdminBaseHandler):
         shop = models.Shop.get_by_id(self.session, shop_id)
 
         if action == "edit_shop_url":
-            shop.update(shop_url=data)
+            shop.update(session=self.session, shop_url=data)
         elif action == "edit_live_month":
-            shop.update(live_month=int(data))
+            shop.update(session=self.session, live_month=int(data))
         elif action == "edit_total_users":
-            shop.update(total_users=int(data))
+            shop.update(session=self.session, total_users=int(data))
         elif action == "edit_daily_sales":
-            shop.update(daily_sales=int(data))
+            shop.update(session=self.session, daily_sales=int(data))
         elif action == "edit_single_stock_size":
-            shop.update(single_stock_size=int(data))
+            shop.update(session=self.session, single_stock_size=int(data))
         elif action == "edit_shop_intro":
-            shop.update(shop_intro=data)
+            shop.update(session=self.session, shop_intro=data)
+        elif action == "edit_onsale_fruits":
+            for fruit_id in data:
+                fruit_type = self.session.query(models.FruitType).filter(id == fruit_id).one()
+                shop.onsale_fruits.append(fruit_type)
+        elif action == "edit_demand_fruits":
+            for fruit_id in data:
+                fruit_type = self.session.query(models.FruitType).filter(id == fruit_id).one()
+                shop.demand_fruits.append(fruit_type)
         else:
             return self.send_error(404)
         return self.send_success()

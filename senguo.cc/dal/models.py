@@ -265,7 +265,8 @@ class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     briefintro = Column(String(300), default="")
 
     shops = relationship(Shop, backref=backref('admin'))
-    username = Column(String(128)) # not used now    
+    username = Column(String(128)) # not used now
+    feedback = relationship("Feedback")
 
     wx_openid = Column(String(1024)) 
     wx_unionid = Column(String(1024))
@@ -394,6 +395,11 @@ class ShopDemandfruitLink(MapBase):
     shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
     fruit_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
 
+class Feedback(MapBase):
+    __tablename__ = "feedback"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
+    text = Column(String(500))
 
 MapBase.metadata.create_all()
 
