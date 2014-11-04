@@ -11,7 +11,7 @@ test_shop_admin = dict(
     headimgurl="http://wx.qlogo.cn/mmopen/FMajU52WvbEafZYABcyncw2XmosqWdtGSaBVjrpMmopHHEtO4j6hPFLKYVntAbKd4r01X8Rshy59afLMqg2oicwpmVTfib3G3c/0",
     nickname="昵称？",
     phone="180000000000",
-    sex="male",
+    sex=1,
     birthday = int(time.time())
 )
 
@@ -70,7 +70,7 @@ def main():
 
 ** 另外，请确保你已经初始化水果种类信息，否则请先使用install_db_fruits.py将水果种类信息传进去.
 
-“lsm==sb?”输入'yes'确定进行数据初始化，其他输入退出 :)
+“lc==sb?”输入'yes'确定进行数据初始化，其他输入退出 :)
     """)
     if choice == "yes":
         session = models.DBSession()

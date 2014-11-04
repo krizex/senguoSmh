@@ -92,9 +92,11 @@ class AdminProfile(AdminBaseHandler):
     def get(self):
        # 模板中通过current_user获取当前admin的相关数据，
        # 具体可以查看models.ShopAdmin中的属性
-       self.render("fruitzone/admin-profile.html")
+       time_tuple = time.localtime(self.current_user.birthday)
+       birthday = time.strftime("%Y-%m", time_tuple)
+       self.render("fruitzone/admin-profile.html", context=dict(birthday=birthday))
 
-    # @tornado.web.authenticated
+    @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")
     def post(self):
         action = self.args["action"]
@@ -113,12 +115,12 @@ class AdminProfile(AdminBaseHandler):
         elif action == "edit_email":
             self.current_user.update(session=self.session, email=data)
         elif action == "edit_sex":
-            pass
+            self.current_user.update(session=self.session, sex=1 if data else 0)
         elif action == "edit_birthday":
             year = int(data["year"])
             month = int(data["month"])
             birthday = datetime.datetime(year=year, month=month, day=19)
-            self.current_user.update(birthday=time.mktime(birthday.timetuple()))
+            self.current_user.update(session=self.session, birthday=time.mktime(birthday.timetuple()))
         elif action == "edit_intro":
             self.current_user.update(session=self.session, briefintro=data)
         else:
