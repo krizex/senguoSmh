@@ -130,32 +130,70 @@ class ApplySuccess(AdminBaseHandler):
         return self.render("fruitzone/apply-success.html")
 
 class ShopApply(AdminBaseHandler):
-    @tornado.web.authenticated
-    def get(self):
+    def initialize(self, action):
+        self._action = action
 
-        return self.render("fruitzone/apply.html")
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("shop_id?:int")
+    def get(self):
+        if self._action == "apply":
+            return self.render("fruitzone/apply.html")
+        elif self._action == "reApply":
+            if not "shop_id" in self.args:
+                return  self.send_error(404)
+            shop_id = self.args["shop_id"]
+            try:
+                shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
+            except:
+                shop = None
+            if not shop:
+                return self.send_error(404)
+            return self.render("fruitzone/apply.html", context=dict(shop=shop))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments(
-        "shop_name",
+        "shop_name", "shop_id?:int",
         "shop_province:int", "shop_city:int", "shop_address_detail",
         "have_offline_entity:bool", "shop_service_area:int",
         "shop_intro")
     def post(self):
         #* todo 检查合法性
-        try:
-           self.current_user.add_shop(self.session,
-              shop_name=self.args["shop_name"],
-              shop_province=self.args["shop_province"],
-              shop_city = self.args["shop_city"],
-              shop_address_detail=self.args["shop_address_detail"],
-              have_offline_entity=self.args["have_offline_entity"],
-              shop_service_area=self.args["shop_service_area"],
-              shop_intro=self.args["shop_intro"]
-           )
-        except DistrictCodeError as e:
-           return self.send_fail(error_text = "城市编码错误！")
-        return self.send_success()
+
+        if self._action == "apply":
+            try:
+               self.current_user.add_shop(self.session,
+                  shop_name=self.args["shop_name"],
+                  shop_province=self.args["shop_province"],
+                  shop_city = self.args["shop_city"],
+                  shop_address_detail=self.args["shop_address_detail"],
+                  have_offline_entity=self.args["have_offline_entity"],
+                  shop_service_area=self.args["shop_service_area"],
+                  shop_intro=self.args["shop_intro"]
+               )
+            except DistrictCodeError as e:
+               return self.send_fail(error_text = "城市编码错误！")
+            return self.send_success()
+
+        elif self._action == "reApply":
+            if not "shop_id" in self.args:
+                return  self.send_error(404)
+            shop_id = self.args["shop_id"]
+            try:
+                shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
+            except:
+                shop = None
+            if not shop:
+                return self.send_error(404)
+            shop.shop_name = self.args["shop_name"],
+            shop.shop_province = self.args["shop_province"],
+            shop.shop_city = self.args["shop_city"],
+            shop.shop_address_detail = self.args["shop_address_detail"],
+            shop.have_offline_entity = self.args["have_offline_entity"],
+            shop.shop_service_area = self.args["shop_service_area"],
+            shop.shop_intro = self.args["shop_intro"]
+            shop.shop_status = models.SHOP_STATUS.APPLYING
+            self.session.add(shop)
+            self.seeeion.commit()
 
 class Shop(AdminBaseHandler):
     def get(self,id):
