@@ -2008,21 +2008,23 @@ dis_dict = {
     }
   ]
 }
-d = {}
-for i in dis_dict["province"]:
-    d[int(i["code"])]={}
-    d[int(i["code"])]["name"]=i["name"]
-    d[int(i["code"])]["py"]=i["py"]
-    if "city" in i.keys():
-        d[int(i["code"])]["city"]={}
-        for j in i["city"]:
-            d[int(i["code"])]["city"][int(j["code"])]={}
-            d[int(i["code"])]["city"][int(j["code"])]["name"]=j["name"]
-            d[int(i["code"])]["city"][int(j["code"])]["py"]=j["py"]
+if __name__ == "__main__":
 
-print(d)
-import json
-file_object = open('dis_dict.py', 'w')
-#j=json.dumps(d)
-file_object.write(str(d))
-file_object.close( )
+    d = {}
+    for i in dis_dict["province"]:
+        d[int(i["code"])]={}
+        d[int(i["code"])]["name"]=i["name"]
+        d[int(i["code"])]["py"]=i["py"]
+        if "city" in i.keys():
+            d[int(i["code"])]["city"]={}
+            for j in i["city"]:
+                d[int(i["code"])]["city"][int(j["code"])]={}
+                d[int(i["code"])]["city"][int(j["code"])]["name"]=j["name"]
+                d[int(i["code"])]["city"][int(j["code"])]["py"]=j["py"]
+
+    print(d)
+    import json
+    file_object = open('dis_dict.py', 'w')
+    #j=json.dumps(d)
+    file_object.write(str(d))
+    file_object.close( )
