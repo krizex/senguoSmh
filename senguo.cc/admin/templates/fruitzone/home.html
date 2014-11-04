@@ -1,9 +1,16 @@
 {% extends 'base.html'%}
 
 {% block content%}
-    <header class="herder-box phone-box title-box">
-        <div class="content-title">
-            <a href="{{reverse_url('fruitzoneAdminHome')}}" class="center-btn">个人中心</a>
+{% if "fruit_types" in context%}
+{% import json%}
+<script>
+    window.dataObj.fruit_types = {% raw json.dumps(context["fruit_types"]) %}
+</script>
+{% end %}
+
+    <header class="herder-box phone-box">
+        <div class="content-title title-box">
+            <a href="{{reverse_url('fruitzoneAdminHome')}}" class="return-btn">个人中心</a>
             <h1 class="title">水果.同行圈子</h1>
             <a href="{{reverse_url('fruitzoneShopApply')}}" class="to-some">申请入驻</a>
         </div>
@@ -23,32 +30,29 @@
 
         </ul>
         <div class="city-select pull-left select-list" id="city-select">
-            <ul  class="order-by-item ">
+            <ul  class="order-by-item" id="cityFilter">
 
             </ul>
         </div>
     </div>
     <div class="order-by-area select-list phone-box order-by-list" id="orderBy2" style="display:none;">
-        <ul class="order-by-item">
-            <li class="active"><a href="javascript:;" data-id="1">{{handler.code_to_text("service_area",1)}}</a></li>
-            <li><a href="javascript:;" data-id="2">{{handler.code_to_text("service_area",2)}}</a></li>
-            <li><a href="javascript:;" data-id="4">{{handler.code_to_text("service_area",4)}}</a></li>
-            <li><a href="javascript:;" data-id="8">{{handler.code_to_text("service_area",8)}}</a></li>
+        <ul class="order-by-item" id="areaFilter">
+            <li data-code="1">{{handler.code_to_text("service_area",1)}}</li>
+            <li data-code="2">{{handler.code_to_text("service_area",2)}}</li>
+            <li data-code="4">{{handler.code_to_text("service_area",4)}}</li>
+            <li data-code="8">{{handler.code_to_text("service_area",8)}}</li>
         </ul>
      </div>
     <div class="order-by-time select-list phone-box order-by-list" id="orderBy3" style="display:none;">
-        <ul class="order-by-item">
-            <li class="active"><a href="javascript:;" data-id="1">一个月</a></li>
-            <li><a href="javascript:;" data-id="3">三个月</a></li>
-            <li><a href="javascript:;" data-id="6">半年以上</a></li>
-            <li><a href="javascript:;" data-id="12">一年以上</a></li>
+        <ul class="order-by-item" id="liveFilter">
+            <li data-code="1">一个月</li>
+            <li data-code="3">三个月</li>
+            <li data-code="6">半年以上</li>
+            <li data-code="12">一年以上</li>
         </ul>
     </div>
     <div class="order-by-fruit select-list phone-box order-by-list" id="orderBy4" style="display:none;">
-        <ul class="order-by-item">
-            {% for fruit in context['shops'] %}
-              <li class="active"><a href="javascript:;">苹果</a></li>
-            {% end %}
+        <ul class="order-by-item fruit-list select-list" id="fruitFilter">
         </ul>
     </div>
     <div class="container phone-box shop-list-content">
@@ -60,9 +64,9 @@
                          <img src="{{static_url('images/anoa-1-md.gif')}}"/>
                     </div>
                     <div class="shop-info pull-right">
-                        <p><span class="shop-name w1">{{shop.shop_name}}</span><span class="area">{{handler.code_to_text("shop_city",shop.shop_city)}}</span></p>
+                        <p><span class="shop-name w1 pull-left">{{shop.shop_name}}</span><span class="area pull-left">{{handler.code_to_text("shop_city",shop.shop_city)}}</span></p>
                         <p>运营时间：{{shop.live_month}}月</p>
-                        <p><span class="shop-owner w1">负责人：{{shop.admin.realname}}</span><span class="wechat-code">{{shop.admin.wx_username or "无"}}</span></p>
+                        <p><span class="shop-owner w1 pull-left">负责人：{{shop.admin.realname}}</span><span class="wechat-code pull-left">{{shop.admin.wx_username or "无"}}</span></p>
                     </div>
                 </a>
             </li>

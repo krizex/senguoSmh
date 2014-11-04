@@ -12,13 +12,6 @@ $(document).ready(function(){
         });
     });
 
-    $('#city-select ul').eq(0).show().siblings('ul').hide();
-    $('#province-select li').click(function(){
-        var i=$(this).index();
-        $('#city-select ul').eq(i).show().siblings('ul').hide();
-    });
-
-    $('.order-by-item li').click(function(){$(this).parents('.order-by-list').hide();});
     $('.order-by a').click(function(){$(this).addClass('active').siblings().removeClass('active');});
 
     $('.editInfo').click(function(){$(this).parents('.info-con').siblings('.info-edit').toggle();});
@@ -33,17 +26,31 @@ $(document).ready(function(){
     $('#submitApply').click(function(evt){Apply(evt);});
     $('#getVrify').click(function(evt){Vrify(evt);});
     $('#tiePhone').click(function(evt){TiePhone(evt);});
+    $('.shop-edit-btn').each(function(){shopEdit($(this));});
+    $('#searchSubmit').click(function(evt){Search(evt);});
+    $('.order-by-item').find('li').each(function(){Filter($(this));});
+
 
     if($('#detailsReal').data('real')=='true')
-         $('#detailsReal').text('是');
-    else $('#detailsReal').text('否');
+         $('#detailsReal').text('有');
+    else $('#detailsReal').text('无');
 
-    if($('#adminSex').data('sex')=='male')
-        $('#adminSex').text('男');
-    else if($('#adminSex').data('sex')=='famale')
-        $('#adminSex').text('女');
+    if($('.showSex').data('sex')=='1')
+        $('.showSex').text('男');
+    else if($('.showSex').data('sex')=='0')
+        $('.showSex').text('女');
 
-    $('#searchSubmit').click(function(evt){Search(evt);})
+    var fruit=window.dataObj.fruit_types;
+    for(var code in fruit)
+    {
+        var fruitlist=$('<li data-code="'+fruit[code]['id']+'"></li>').text(fruit[code]['name']);
+        $('.fruit-list').append(fruitlist);
+        console.log('222');
+    }
+
+    $('.modal .fruit-list li').each(function(){$(this).click(function(){
+        $(this).toggleClass('active');
+    });})
 
 });
 
@@ -83,23 +90,25 @@ function time(evt) {
 
 function infoEdit(evt){
      evt.click(function(){
+         alert('22222');
         var email=$('#mailEdit').val();
         var year=$('#yearEdit').val();
         var month=$('#monthEdit').val();
         var sex=$('#sexEdit option:selected').data('sex');
         var realname=$('#realnameEdit').val();
         var regEmail=/^([a-z0-9]*[-_]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/;
-        var regNumber=/^\d{n}$/;
+        var regNumber=/^[0-9]*[1-9][0-9]*$/
         var regMonth=/^((0?[1-9])|((1|2)[0-9])|30|31)$/;
-        var regSex=/^[男女]$/;
         var action=evt.data('action');
         var data=evt.parents('.info-edit').find('.edit-box').val();
 
         if(action=='edit_email' && !regEmail.test(email))
              {return alert("邮箱不存在!");}
-        else if(action=='edit_sex' && !regSex.test($('#sexEdit').val()))
-             {return alert('性别只能为男或女！');}
-        else if(action=='edit_birthday' && !regMonth.test(month))
+        else if(action=='edit_sex')
+             {
+                 data=sex;
+             }
+        else if(action=='edit_birthday' && !regMonth.test(month)&&!regNumber.test(year))
              {return alert("请输入正确的年月!");}
         else if(action=='edit_birthday')
             {
@@ -108,7 +117,6 @@ function infoEdit(evt){
                     month:$('#monthEdit').val().trim()
                 }
             }
-
         var url="/fruitzone/admin/profile";
         var args={action: action, data: data, _xsrf: window.dataObj._xsrf};
          $.postJson(url,args,
@@ -116,9 +124,11 @@ function infoEdit(evt){
                  console.log(res);
                  if (res.success) {
                      evt.parents('li').find('a.editInfo').text(data);
-                     //evt.parents('li').find('#userBirthday').text(data.year+'年'+data.month+'月');
+                     evt.parents('li').find('#userBirthday').text(data.year+''+data.month);
                      if(data==''){evt.parents('li').find('.editInfo').text('点击设置').css({'color':'#FF3C3C'});}
                      evt.parents('li').find('.info-edit').hide();
+                     $('#serSex').attr({'data-sex':data});
+                     console.log(data);
                      alert('修改成功！');
                  }},
              function(){
@@ -222,6 +232,80 @@ function Apply(evt){
     );
 }
 
+
+function shopEdit(evt){
+    evt.click(function(){
+        var link=$('#shopLink').val();
+        var time=$('#shopTime').val();
+        var users=$('#shopUser').val();
+        var sell=$('#shopSell').val();
+        var buy=$('#shopBuy').val();
+        var intro=$('#shopIntro').val();
+        var regNumber=/^[0-9]*[1-9][0-9]*$/;
+        var id=$('#headerId').data('shop');
+
+        var action=evt.data('action');
+        var data=evt.parents('.modal').find('.shop-edit-info').find('.editBox').val();
+
+        if(action=='edit_live_month')
+        {
+            data={
+                year:$('#startYear').val().trim(),
+                month:$('#startMonth').val().trim()
+            }
+        }
+        else if(action=='edit_total_users' && !regNumber.test(users))
+            {return alert('用户数只能为数字！');}
+        else if(action=='edit_daily_sales' && !regNumber.test(sell))
+            {return alert("日销量只能为数字!");}
+        else if(action=='edit_single_stock_size' && !regNumber.test(buy))
+            {return alert("采购量只能为数字!");}
+        else if(action=='edit_onsale_fruits')
+            {
+                var data=[];
+                var f=$('#sellFruit').find('.active');
+                for(var i=0;i<f.length;i++)
+                {
+                    var b=$('#sellFruit').find('.active').eq(i).data('code');
+                    data.push(b);
+
+                }
+            }
+        else if(action=='edit_demand_fruits')
+            {
+                var data=[];
+                var f=$('#buyFruit').find('.active');
+                for(var i=0;i<f.length;i++)
+                {
+                    var b=$('#buyFruit').find('.active').eq(i).data('code');
+                    data.push(b);
+                }
+            }
+        console.log(data);
+        var url="/fruitzone/admin/shop/"+id;
+        var args={action: action, data: data,_xsrf: window.dataObj._xsrf};
+        $.postJson(url,args,
+            function (res) {
+                console.log(res);
+                if (res.success) {
+                    evt.parents('.editBox').find('.shopShow').text(data);
+                    evt.attr({'data-dismiss':'modal'});
+                    var fruit=window.dataObj.fruit_types;
+                    for(var i=0;i<data.length;i++)
+                    {
+                        var h=data[i]-1;
+                        var fruitlist=$('<li data-code="'+fruit[h]['id']+'"></li>').text(fruit[h]['name']);
+                        evt.parents('.modal').prev('.edit-fruit-list').prepend(fruitlist);
+                    }
+                    alert('修改成功！');
+                }},
+            function(){
+                alert('网络错误！');}
+        );
+    });
+}
+
+
 function Search(evt){
     evt.preventDefault();
     var q=$('#searchKey').val().trim();
@@ -233,14 +317,48 @@ function Search(evt){
         _xsrf: window.dataObj._xsrf
 
     };
+    console.log(q);
     $.postJson(url,args,
         function(res){
-            if(res.success)
-                console.log(q);
-            else alert('无搜索结果！');
+            if(res.success&&res.shops==[])
+                 alert('无搜索结果！');
         },
     function(){
         alert('网络错误！');
          }
     );
+}
+
+
+function Filter(evt){
+    evt.click(function(){
+        console.log(evt);
+        var action='filter';
+        var city=$('#cityFilter').find('.active').data('code');
+        var service_area=$('#areaFilter').find('.active').data('code');
+        var live_month=$('#liveFilter').find('.active').data('code');
+        var onsalefruit_ids=$('#fruitFilter').find('.active').data('code');
+        var url="/fruitzone/";
+        console.log(evt);
+        if(evt.parents('.order-by-item').is('#cityFilter'))
+            {var args = {city: city,action: action,_xsrf: window.dataObj._xsrf}}
+        else if(evt.parents('.order-by-item').is('#areaFilter'))
+            {var args = {service_area: service_area,action: action,_xsrf: window.dataObj._xsrf}}
+        else if(evt.parents('.order-by-item').is('#liveFilter'))
+            {var args = {live_month: live_month,action: action,_xsrf: window.dataObj._xsrf}}
+        else if(evt.parents('.order-by-item').is('#fruitFilter'))
+            {var args = {onsalefruit_ids: onsalefruit_ids,action: action,_xsrf: window.dataObj._xsrf}}
+
+        $.postJson(url,args,
+            function(res){
+                if(res.success)
+                    evt.parents('.order-by-list').hide();
+                     console.log('无搜索结果！');
+            },
+            function(){
+                alert('网络错误！');
+            }
+        );
+    });
+
 }

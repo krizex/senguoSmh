@@ -7,13 +7,14 @@
 {% block content%}
 <header class="title-box phone-box">
     <div class="title-box">
-        <a href="javascript:history.back(-1)" class="return-btn">返回</a>
+        <a href="{{reverse_url('fruitzoneHome')}}" class="return-btn">返回</a>
         <span class="title">个人中心</span>
+        <a href="{{reverse_url('adminLogout')}}" class="to-some">退出登录</a>
     </div>
 </header>
 <div class="user-center-info white-color phone-box container">
     <a href="{{reverse_url('fruitzoneAdminProfile')}}">
-        <img src="{{static_url('images/anoa-1-md.gif')}}" class="pull-left user-img"/>
+        <img src="{{current_user.headimgurl}}" class="pull-left user-img"/>
         <div class="info pull-left">
             <p class="username">{{current_user.wx_nickname or '无'}}</p>
         </div>
