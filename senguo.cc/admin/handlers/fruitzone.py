@@ -5,7 +5,7 @@ from  dal.db_configs import DBSession
 from sqlalchemy import select
 from dal.dis_dict import dis_dict
 
-import datetime
+import datetime,time
 from libs.msgverify import gen_msg_token,check_msg_token
 
 
@@ -110,7 +110,7 @@ class AdminProfile(AdminBaseHandler):
             year = int(data["year"])
             month = int(data["month"])
             birthday = datetime.datetime(year=year, month=month, day=19)
-            self.current_user.update(birthday=birthday)
+            self.current_user.update(birthday=time.mktime(birthday.timetuple()))
         elif action == "edit_intro":
             self.current_user.update(briefintro=data)
         else:

@@ -251,8 +251,8 @@ class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     # 付费类型，SHOPADMIN_CHARGE_TYPE: 
     # [ThreeMonth_588, SixMonth_988, TwelveMonth_1788]
     charge_type = Column(Integer)
-    # 性别，男male, 女female
-    sex = Column(String(128))
+    # 性别，男Ture, 女False
+    sex = Column(Boolean)
     # 昵称
     nickname = Column(String(128), default="")
     # 姓名
@@ -326,7 +326,7 @@ class ShopStaff(MapBase, _AccountApi, _SafeOutputTransfer):
 
 class Customer(MapBase, _AccountApi, _SafeOutputTransfer):
     __tablename__ = "customer"
-    
+
     __protected_props__ = ["password"]
 
     def __init__(self, **kwargs):
