@@ -125,14 +125,14 @@ class _AccountApi:
         except:u = None
         return u
 
-    def save(self):
+    def save(self, session):
         s = session
         s.add(self)
         s.commit()
-    def update(self, **kwargs):
+    def update(self, session, **kwargs):
         for key in kwargs.keys():
             setattr(self, key, kwargs[key])
-        self.save()
+        self.save(session)
 
 class SuperAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     __tablename__ = "super_admin"

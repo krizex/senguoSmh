@@ -15,7 +15,7 @@
     <a href="{{reverse_url('fruitzoneAdminProfile')}}">
         <img src="{{static_url('images/anoa-1-md.gif')}}" class="pull-left user-img"/>
         <div class="info pull-left">
-            <p class="username">{{current_user.realname}}</p>
+            <p class="username">{{current_user.wx_nickname or '无'}}</p>
         </div>
     </a>
 </div>

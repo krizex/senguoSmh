@@ -92,15 +92,17 @@
 .user-info-detail{border-bottom:1px solid #ddd;border-top:1px solid #ddd;}
 .user-info-detail .img-title{line-height:4.5em;}
 .user-info-detail .user-img{width:4.5em;height:4.5em;box-shadow:1px 1px 2px #aaa;}
-.user-info-detail li{width:100%;float:left;background:#fff;font-size:1.5em;padding:1em 1.5em;border-top:1px solid #ddd;}
+.user-info-detail li{width:100%;float:left;font-size:1.5em;padding:1em 1.5em;border-top:1px solid #ddd;background-color:#fff;}
 .user-info-detail .w1{margin-top:1.5em;}
 .user-info-detail li a{color:#A8A8A8;}
 .user-info-detail .s1{color:#A8A8A8;}
 .user-info-detail .info-con{width:100%;float:left;}
 .user-info-detail .info-edit{width:100%;float:left;margin-top:0.5em;}
 .user-info-detail .info-edit .edit-box{width:100%;border:1px solid #ddd;border-radius:2px;background:#f2f2f2;font-size:1em;padding:0.3em 0;text-indent:5px;}
+.user-info-detail select{width:100px;height:25px;}
+.user-info-detail select option{height:25px;}
 
-/*---------------------------------------peer-circle---------------------------------*/
+/*---------------------------------------home---------------------------------*/
 .herder-box{width:100%;height:auto;}
 .herder-box .content-title{width:100%;text-align:center;position:relative;}
 .herder-box .content-title .to-some{position:absolute;top:1em;right:1em;display:inline-block;border:1px solid #fff;height:2em;line-height:2em;color:#fff;font-size:1.5em;padding:0 0.5em;border-radius:2px;}
@@ -113,7 +115,7 @@
 
 
 .order-by{border-bottom:1px solid #ddd;padding:1em;}
-.order-by a{display:inine-block;float:left;width:33%;text-align:center;font-size:1.5em;color:#333;}
+.order-by a{display:inine-block;float:left;width:25%;text-align:center;font-size:1.5em;color:#333;}
 .order-by a .arrow{border-style:solid;border-width: 0 0 0.6em 0.6em;border-color: transparent transparent #666;position:absolute;margin-top:0.5em;margin-left:0.2em;}
 .order-by a:hover{text-decoration:none;}
 .order-by .active{color:#00D681;}
@@ -121,16 +123,14 @@
 .order-by-city{background:#E7E7E7;border-bottom:1px solid #ddd;}
 .order-by-city ul{margin-bottom:0px;}
 .order-by-city .province-select{width:35%;border-right:1px solid #ddd;margin-left:-1px;}
-.order-by-city .province-select li{border-bottom:1px solid #ddd;text-indent:1.5em;padding:0.5em 0;}
-.order-by-city .province-select li a{color:#333;font-size:1.4em;display:block;}
-.order-by-city .province-select li a:hover{color:#00D681;display:block;}
-.order-by-city .province-select .active a{color:#00D681;}
+.order-by-city .province-select li{border-bottom:1px solid #ddd;text-indent:1.5em;padding:0.5em 0;color:#333;font-size:1.4em;}
+.order-by-city .province-select li:hover{color:#00D681;display:block;cursor:pointer;}
+.order-by-city .province-select .active{color:#00D681;}
 .order-by-city .city-select{width:65%;padding:1em;}
 .order-by-city .city-select ul{width:105%;}
-.order-by-city .city-select ul li{float:left;border:1px solid #ddd;font-size:1.4em;margin-left:0.5em;margin-bottom:0.5em;padding:0.1em 0.3em;background:#fff;}
-.order-by-city .city-select ul li a{display:block;color:#333;}
-.order-by-city .city-select ul .active{border-color:#00D681;}
-.order-by-city .city-select ul .active a{color:#00D681;}
+.order-by-city .city-select ul li{float:left;border:1px solid #ddd;font-size:1.4em;margin-left:0.5em;margin-bottom:0.5em;padding:0.1em 0.3em;background:#fff;color:#333;}
+.order-by-city .city-select ul .active{border-color:#00D681;color:#00D681;}
+.order-by-city .city-select ul li:hover{cursor:pointer;}
 
 .order-by-area{background:#E7E7E7;padding:1.5em;border-bottom:1px solid #ddd;}
 .order-by-area ul{width:100%;}
@@ -232,32 +232,10 @@
 .detail-box .pricipal-info img{width:5em;height:5em;margin-right:1em;}
 .detail-box .pricipal-info .info1{margin-bottom:1em;margin-top:0.5em;}
 .detail-box .pricipal-info .info1 span{margin-left:1em;}
+.detail-box .pricipal-info .info1 span i{font-style:normal;}
 .detail-box .pricipal-info2{text-align:center;}
-.detail-box .pricipal-info2 p{font-size:1.4em;margin-bottom:0;}
+.detail-box .pricipal-info2 p{font-size:1.4em;margin-bottom:0;text-align:left;}
 .detail-box .pricipal-info2 .how-to{color:#FF3449;border:1px solid #FF3449;padding:0 1em;}
 .detail-box .focus-senguo{display:inline-block;text-align:center;width:100%;color:#00D289;border:1px solid #00D289;font-size:1.4em;padding:0.8em;background:#fff;}
 .detail-box .focus-senguo strong{color:#333;}
-
-
-/*------------------------------------admin-shop-detail--------------------------------------------*/
-.shop-detail-box{position:relative;overflow:hidden;}
-.shop-detail-box .info-box1{float:left;width:100%;padding:1em;background:#fff;margin-bottom:1em;border-top:1px solid #ddd;border-bottom:1px solid #ddd;}
-.shop-detail-box .info-title{font-size:1.6em;text-align:center;padding:0.8em 0;background:#f2f2f2;margin-bottom:0;}
-.shop-detail-box .shop-info-detail{font-size:1.5em;width:100%;float:left;}
-.shop-detail-box .shop-info-detail .logo{width:40%;position:relative;}
-.shop-detail-box .shop-info-detail .logo .edit{position:absolute;left:0;top:0;width:8em;height:8em;z-index:999;opacity:0;}
-.shop-detail-box .shop-info-detail .logo img{height:8em;}
-.shop-detail-box .shop-info-detail .logo .click{position:absolute;left:0;top:0;width:8em;height:8em;z-index:19;color:#333;text-align:center;line-height:8em;}
-.shop-detail-box .shop-info-detail .info{width:60%;height:8em;}
-.shop-detail-box .shop-info-detail .info .shop-name{font-size:1.2em;}
-.shop-detail-box .shop-info-detail .info p{margin-bottom:0.6em;}
-.shop-detail-box .title2{font-size:1.5em;margin-bottom:0.1em;clear:both;}
-.shop-detail-box .shop-info-detail2{margin:1em 0 0 -1px;}
-.shop-detail-box .shop-info-detail2 li{float:left;width:25%;font-size:1.4em;margin-bottom:0.5em;border-left:1px solid #ddd;text-align:center;}
-.shop-detail-box .shop-info-detail2 li input{width:100%;text-align:center;}
-.shop-detail-box .shop-intro{font-size:1.4em;padding:0.5em 0;color:#666;width:100%;text-indent:5px;}
-.shop-detail-box .sell-fruit-list{}
-.shop-detail-box .sell-fruit-list li{float:left;border:1px solid #ddd;width:19%;text-align:center;background:#f2f2f2;font-size:1.4em;margin-right:1%;margin-bottom:0.5em;padding:0.1em 0;}
-.shop-detail-box .buy-fruit-list li{float:left;border:1px solid #ddd;width:19%;text-align:center;color:#00D289;background:#f2f2f2;font-size:1.4em;margin-right:1%;margin-bottom:0.5em;padding:0.1em 0;}
-.shop-detail-box .focus-btn{margin-top:0.5em;display:inline-block;border:1px solid #00D289;width:100%;padding:0.8em 0;text-align:center;color:#00D289;font-size:1.4em;}
 

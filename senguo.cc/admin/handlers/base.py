@@ -47,16 +47,13 @@ class GlobalBaseHandler(BaseHandler):
                 text = "拒绝申请"
             return text
 
-        #将省份编码转换为文字显示
-        if column_name == "shop_province":
-            text = dis_dict[code]["name"]
-            return text
 
         #将城市编码转换为文字显示（可以由城市编码算出城市所在省份的编码）
         if column_name == "shop_city":
             text += dis_dict[int(code/10000)*10000]["name"]
-            text += " "
-            text += dis_dict[int(code/10000)*10000]["city"][code]["name"]
+            if "city" in dis_dict[int(code/10000)*10000].keys():
+                text += " "
+                text += dis_dict[int(code/10000)*10000]["city"][code]["name"]
             return text
 
 class FrontBaseHandler(GlobalBaseHandler):

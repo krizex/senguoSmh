@@ -2,6 +2,15 @@
 
 {% block content %}
 {% set shop=context['shop']%}
+
+{% if "edit" in context and context["edit"] %}
+   {% set bt_edit_show = "show"%}
+{% else %}
+    {% set bt_edit_show = "hidden"%}
+{% end %}
+
+
+
 <header class="title-box2 phone-box">
     <a href="javascript:history.back(-1)" class="return-btn pull-left"></a>
     <span class="title pull-left">店铺详情</span>
@@ -15,8 +24,8 @@
             </div>
             <div class="info pull-right">
                 <p class="shop-name">{{shop.shop_name}}</p>
-                <p>{{shop.shop_province}}{{shop.shop_city}}</p>
-                <p>服务区域：<span data-area="{{shop.shop_service_area}}" id="detailsArea"></span></p>
+                <p>{{handler.code_to_text("shop_city",shop.shop_city)}}</p>
+                <p>服务区域：{{handler.code_to_text("service_area",shop.shop_service_area)}}</p>
                 <p>店面：<span data-real="{{shop.have_offline_entity}}" id="detailsReal"></span></spanb></p>
             </div>
             <div class="collect-box">
@@ -30,48 +39,48 @@
         <ul class="shop-info-detail2 ">
             <li>
                 <p>运营时间</p>
-                <p>{{shop.live_month}}个月</p>
+                <p>
+                    {{shop.live_month or '0'}}个月
+                    <a href="javascript:;" class="{{bt_edit_show}}">点击设置</a>
+                </p>
             </li>
             <li>
                 <p>总用户数</p>
-                <p>{{shop.total_users}}</p>
+                <p>
+                    {{shop.total_users or '0'}}
+                    <a href="javascript:;" class="{{bt_edit_show}}">点击设置</a>
+                </p>
             </li>
             <li>
                 <p>平均日销量</p>
-                <p>{{shop.daily_sales}}元</p>
+                <p>{{shop.daily_sales or '0'}}元</p>
+                <a href="javascript:;" class="{{bt_edit_show}}">点击设置</a>
             </li>
             <li>
                 <p>单次采购量</p>
-                <p>{{shop.single_stock_size}}元</p>
+                <p>{{shop.single_stock_size or '0'}}元</p>
+                <a href="javascript:;" class="{{bt_edit_show}}">点击设置</a>
             </li>
         </ul>
     </div>
     <div class="info-box1">
         <p class="title2">店铺简介：</p>
         <p class="shop-intro">
-            {{shop.shop_intro}}
+            {{shop.shop_intro or '无'}}
         </p>
     </div>
     <div class="info-box1">
         <p class="title2">在售水果：</p>
         <ul class="sell-fruit-list">
-            <li>苹果</li>
-            <li>苹果</li>
-            <li>苹果</li>
-            <li>苹果</li>
-            <li>苹果</li>
-            <li>苹果</li>
-            <li>苹果</li>
+            {% for fruit in context['shop'].onsale_fruits%}
+            <li>{{fruit.name}}</li>
+           {% end %}
         </ul>
         <p class="title2">求购水果：</p>
         <ul class="buy-fruit-list">
-            <li>苹果</li>
-            <li>苹果</li>
-            <li>苹果</li>
-            <li>苹果</li>
-            <li>苹果</li>
-            <li>苹果</li>
-            <li>苹果</li>
+            {% for fruit in context['shop'].demand_fruits%}
+            <li>{{fruit.name}}</li>
+            {% end %}
         </ul>
     </div>
     <p class="info-title">负责人信息</p>
@@ -79,37 +88,39 @@
         <div class="pricipal-info">
             <img src="" class="pull-left"/>
             <div class="show-info pull-left">
-                <p class="info1">{{shop.admin.realname}} <span>性别：{{shop.admin.sex}}</span></p>
-                <p>出生年月：2088年8月</p>
+                <p class="info1">{{shop.admin.realname or '无'}}<span>性别：<i data-sex="{{shop.admin.sex}}" id="adminSex"></i></span></p>
+                <p>出生年月：{{shop.admin.birthday}}年{{shop.admin.birthday}}月</p>
             </div>
         </div>
         <div class="pricipal-info2">
             <div class="pull-left">
                 <p class="pricipal-phone">手机号：
                     {% if current_user%}
-                        <span>{{shop.admin.phone}}</span>
+                         <span>{{shop.admin.phone or '无'}}</span>
                     {% else %}
-                        <span>*******</span>
+                         <span>*******</span>
                     {% end %}
                 </p>
                 <p class="pricipal-wechat">微信号：
                     {% if current_user%}
-                         <span>{{shop.admin.wx_username}}</span>
+                         <span>{{shop.admin.wx_username or '无'}}</span>
                     {% else %}
                          <span>*******</span>
                     {% end %}
                 </p>
             </div>
+            {% if not current_user%}
             <div class="pull-right how-to">
                 <p>店铺入驻后</p>
                 <p>才能查看同行信息</p>
             </div>
+            {% end %}
         </div>
     </div>
     <div class="info-box1">
         <p class="title2">个人说明：</p>
         <p class="shop-intro">
-            {{shop.admin.briefintro}}
+            {{shop.admin.briefintro or '无'}}
         </p>
     </div>
     <a href="#" class="focus-senguo">点击关注<strong>森果</strong>，获取更多行业资源</a>
