@@ -251,8 +251,8 @@ class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     # 付费类型，SHOPADMIN_CHARGE_TYPE: 
     # [ThreeMonth_588, SixMonth_988, TwelveMonth_1788]
     charge_type = Column(Integer)
-    # 性别，男male, 女female
-    sex = Column(String(128))
+    # 性别，男Ture, 女False
+    sex = Column(Boolean)
     # 昵称
     nickname = Column(String(128), default="")
     # 姓名
@@ -265,7 +265,8 @@ class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     briefintro = Column(String(300), default="")
 
     shops = relationship(Shop, backref=backref('admin'))
-    username = Column(String(128)) # not used now    
+    username = Column(String(128)) # not used now
+    feedback = relationship("Feedback")
 
     wx_openid = Column(String(1024)) 
     wx_unionid = Column(String(1024))
@@ -326,7 +327,7 @@ class ShopStaff(MapBase, _AccountApi, _SafeOutputTransfer):
 
 class Customer(MapBase, _AccountApi, _SafeOutputTransfer):
     __tablename__ = "customer"
-    
+
     __protected_props__ = ["password"]
 
     def __init__(self, **kwargs):
@@ -394,6 +395,11 @@ class ShopDemandfruitLink(MapBase):
     shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
     fruit_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
 
+class Feedback(MapBase):
+    __tablename__ = "feedback"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
+    text = Column(String(500))
 
 MapBase.metadata.create_all()
 

@@ -5,7 +5,7 @@ from  dal.db_configs import DBSession
 from sqlalchemy import select
 from dal.dis_dict import dis_dict
 
-import datetime
+import datetime,time
 from libs.msgverify import gen_msg_token,check_msg_token
 
 
@@ -79,6 +79,14 @@ class AdminHome(AdminBaseHandler):
        # 模板中通过current_user获取当前admin的相关数据，
        # 具体可以查看models.ShopAdmin中的属性
        self.render("fruitzone/admin-home.html")
+
+    @tornado.web.authenticated
+    def post(self):
+        feedback = models.Feedback()
+        feedback.text = self.args["feedback"]
+        self.current_user.feedback.append(feedback)
+        return self.send_success()
+
 class AdminProfile(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self):
@@ -110,7 +118,7 @@ class AdminProfile(AdminBaseHandler):
             year = int(data["year"])
             month = int(data["month"])
             birthday = datetime.datetime(year=year, month=month, day=19)
-            self.current_user.update(session=self.session, birthday=birthday)
+            self.current_user.update(birthday=time.mktime(birthday.timetuple()))
         elif action == "edit_intro":
             self.current_user.update(session=self.session, briefintro=data)
         else:
@@ -122,32 +130,70 @@ class ApplySuccess(AdminBaseHandler):
         return self.render("fruitzone/apply-success.html")
 
 class ShopApply(AdminBaseHandler):
-    @tornado.web.authenticated
-    def get(self):
+    def initialize(self, action):
+        self._action = action
 
-        return self.render("fruitzone/apply.html")
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("shop_id?:int")
+    def get(self):
+        if self._action == "apply":
+            return self.render("fruitzone/apply.html")
+        elif self._action == "reApply":
+            if not "shop_id" in self.args:
+                return  self.send_error(404)
+            shop_id = self.args["shop_id"]
+            try:
+                shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
+            except:
+                shop = None
+            if not shop:
+                return self.send_error(404)
+            return self.render("fruitzone/apply.html", context=dict(shop=shop))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments(
-        "shop_name",
+        "shop_name", "shop_id?:int",
         "shop_province:int", "shop_city:int", "shop_address_detail",
         "have_offline_entity:bool", "shop_service_area:int",
         "shop_intro")
     def post(self):
         #* todo 检查合法性
-        try:
-           self.current_user.add_shop(self.session,
-              shop_name=self.args["shop_name"],
-              shop_province=self.args["shop_province"],
-              shop_city = self.args["shop_city"],
-              shop_address_detail=self.args["shop_address_detail"],
-              have_offline_entity=self.args["have_offline_entity"],
-              shop_service_area=self.args["shop_service_area"],
-              shop_intro=self.args["shop_intro"]
-           )
-        except DistrictCodeError as e:
-           return self.send_fail(error_text = "城市编码错误！")
-        return self.send_success()
+
+        if self._action == "apply":
+            try:
+               self.current_user.add_shop(self.session,
+                  shop_name=self.args["shop_name"],
+                  shop_province=self.args["shop_province"],
+                  shop_city = self.args["shop_city"],
+                  shop_address_detail=self.args["shop_address_detail"],
+                  have_offline_entity=self.args["have_offline_entity"],
+                  shop_service_area=self.args["shop_service_area"],
+                  shop_intro=self.args["shop_intro"]
+               )
+            except DistrictCodeError as e:
+               return self.send_fail(error_text = "城市编码错误！")
+            return self.send_success()
+
+        elif self._action == "reApply":
+            if not "shop_id" in self.args:
+                return  self.send_error(404)
+            shop_id = self.args["shop_id"]
+            try:
+                shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
+            except:
+                shop = None
+            if not shop:
+                return self.send_error(404)
+            shop.shop_name = self.args["shop_name"],
+            shop.shop_province = self.args["shop_province"],
+            shop.shop_city = self.args["shop_city"],
+            shop.shop_address_detail = self.args["shop_address_detail"],
+            shop.have_offline_entity = self.args["have_offline_entity"],
+            shop.shop_service_area = self.args["shop_service_area"],
+            shop.shop_intro = self.args["shop_intro"]
+            shop.shop_status = models.SHOP_STATUS.APPLYING
+            self.session.add(shop)
+            self.seeeion.commit()
 
 class Shop(AdminBaseHandler):
     def get(self,id):
@@ -157,8 +203,10 @@ class Shop(AdminBaseHandler):
             shop = None
         if not shop:
             return self.send_error(404)
+        time_tuple = time.localtime(shop.admin.birthday)
+        birthday = time.strftime("%Y-%m", time_tuple)
         return self.render("fruitzone/shop.html", context=dict(
-                    shop=shop, shop_admin=shop.admin,edit=False))
+                    shop=shop, shop_admin=shop.admin, birthday=birthday, edit=False))
 
 
 class AdminShops(AdminBaseHandler):
@@ -186,17 +234,25 @@ class AdminShop(AdminBaseHandler):
         shop = models.Shop.get_by_id(self.session, shop_id)
 
         if action == "edit_shop_url":
-            shop.update(shop_url=data)
+            shop.update(session=self.session, shop_url=data)
         elif action == "edit_live_month":
-            shop.update(live_month=int(data))
+            shop.update(session=self.session, live_month=int(data))
         elif action == "edit_total_users":
-            shop.update(total_users=int(data))
+            shop.update(session=self.session, total_users=int(data))
         elif action == "edit_daily_sales":
-            shop.update(daily_sales=int(data))
+            shop.update(session=self.session, daily_sales=int(data))
         elif action == "edit_single_stock_size":
-            shop.update(single_stock_size=int(data))
+            shop.update(session=self.session, single_stock_size=int(data))
         elif action == "edit_shop_intro":
-            shop.update(shop_intro=data)
+            shop.update(session=self.session, shop_intro=data)
+        elif action == "edit_onsale_fruits":
+            for fruit_id in data:
+                fruit_type = self.session.query(models.FruitType).filter(id == fruit_id).one()
+                shop.onsale_fruits.append(fruit_type)
+        elif action == "edit_demand_fruits":
+            for fruit_id in data:
+                fruit_type = self.session.query(models.FruitType).filter(id == fruit_id).one()
+                shop.demand_fruits.append(fruit_type)
         else:
             return self.send_error(404)
         return self.send_success()
