@@ -7,7 +7,7 @@
 {% block content%}
 <header class="phone-box">
     <div class="title-box2">
-        <a href="javascript:history.back(-1)" class="return-btn"></a>
+        <a href="{{reverse_url('fruitzoneAdminHome')}}" class="return-btn"></a>
         <span class="title">个人信息</span>
     </div>
 </header>
@@ -17,7 +17,7 @@
             <li>
                 <div class="info-con">
                     <span class="title img-title pull-left">头像</span>
-                    <a href="javascript:;"><img src="{{current_user.wx_headimgurl}}" class="user-img pull-right"/></a>
+                    <a href="javascript:;"><img src="{{current_user.headimgurl}}" class="user-img pull-right"/></a>
                 </div>
             </li>
             <li>
@@ -81,12 +81,12 @@
             <li class="w1">
                 <div class="info-con">
                     <span class="title pull-left">性别</span>
-                    <a href="javascript:;" class="pull-right s1 editInfo" id="userSex">{{current_user.sex}}</a>
+                    <a href="javascript:;" class="pull-right s1 editInfo showSex" id="userSex" data-sex="{{current_user.sex}}"></a>
                 </div>
                 <div class="info-edit" style="display:none;">
                      <select id="sexEdit">
-                         <option data-sex="true">男</option>
-                         <option data-sex="false">女</option>
+                         <option data-sex="1">男</option>
+                         <option data-sex="0">女</option>
                      </select>
                     <div class="btn-box">
                         <a href="javascript:;" class="concel-btn">取消</a>
@@ -100,8 +100,8 @@
                     <a href="javascript:;" class="pull-right editInfo" id="userBirthday">{{current_user.birthday or '请设置'}}年月</a>
                 </div>
                 <div class="info-edit" style="display:none;">
-                    <input type="text" class="edit-box" placeholder="请输入年份" id="yearEdit" value=""/>
-                    <input type="text" class="edit-box" placeholder="请输入月份" id="monthEdit" value=""/>
+                    <input type="text" class="edit-box" placeholder="请输入您的出生年份 例如：2014" id="yearEdit" value=""/>
+                    <input type="text" class="edit-box" placeholder="请输入您的出生月份 例如：05" id="monthEdit" value=""/>
                     <div class="btn-box">
                         <a href="javascript:;" class="concel-btn">取消</a>
                         <a href="javascript:;" class="sure-btn" data-action="edit_birthday">确定</a>
