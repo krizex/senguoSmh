@@ -1,69 +1,72 @@
 {% extends 'base.html'%}
 
 {% block content%}
-    <header class="herder-box phone-box title-box">
-        <div class="content-title">
-            <a href="{{reverse_url('fruitzoneAdminHome')}}" class="center-btn">个人中心</a>
+{% if "fruit_types" in context%}
+{% import json%}
+<script>
+    window.dataObj.fruit_types = {% raw json.dumps(context["fruit_types"]) %}
+</script>
+{% end %}
+
+    <header class="herder-box phone-box">
+        <div class="content-title title-box">
+            <a href="{{reverse_url('fruitzoneAdminHome')}}" class="return-btn">个人中心</a>
             <h1 class="title">水果.同行圈子</h1>
             <a href="{{reverse_url('fruitzoneShopApply')}}" class="to-some">申请入驻</a>
         </div>
         <div class="search-box" id="search-box">
-            <input type="text" placeholder="请输入店铺名、姓名、城市、在售水果" class="search-input"/>
-            <input type="submit" value="搜索" class="search-btn"/>
+            <input type="text" placeholder="请输入店铺名、姓名、城市、在售水果" class="search-input" id="searchKey"/>
+            <input type="submit" value="搜索" class="search-btn" id="searchSubmit" data-action="search"/>
         </div>
     </header>
     <div class="order-by phone-box">
         <a href="javascript:;" onclick="orderBy(1);" class="active">城市<span class="arrow"></span></a>
         <a href="javascript:;" onclick="orderBy(2);">服务区域<span class="arrow"></span></a>
         <a href="javascript:;" onclick="orderBy(3);">运营时间<span class="arrow"></span></a>
+        <a href="javascript:;" onclick="orderBy(4);">在售水果<span class="arrow"></span></a>
     </div>
-    <div class="order-by-city select-list phone-box order-by-list" id="orderBy1" style="display:none;">
-        <ul class="province-select pull-left" id="province-select">
-            <li class="active"><a href="javascript:;">湖北省</a></li>
-            <li><a href="javascript:;">湖北省</a></li>
-            <li><a href="javascript:;">湖北省</a></li>
+    <div class="order-by-city  phone-box order-by-list" id="orderBy1" style="display:none;">
+        <ul class="province-select pull-left select-list" id="province-select">
+
         </ul>
-        <div class="city-select pull-left" id="city-select">
-            <ul  class="order-by-item">
-                <li class="active"><a href="javascript:;">武汉市</a></li>
-                <li><a href="javascript:;">武汉市</a></li>
-                <li><a href="javascript:;">武汉市</a></li>
-            </ul>
-            <ul  class="order-by-item">
-                <li class="active"><a href="javascript:;">火星市</a></li>
-                <li><a href="javascript:;">火星市</a></li>
-                <li><a href="javascript:;">火星市</a></li>
+        <div class="city-select pull-left select-list" id="city-select">
+            <ul  class="order-by-item" id="cityFilter">
+
             </ul>
         </div>
     </div>
     <div class="order-by-area select-list phone-box order-by-list" id="orderBy2" style="display:none;">
-        <ul class="order-by-item">
-            <li class="active"><a href="javascript:;">高校</a></li>
-            <li><a href="javascript:;">社区</a></li>
-            <li><a href="javascript:;">商圈</a></li>
-            <li><a href="javascript:;">其他</a></li>
+        <ul class="order-by-item" id="areaFilter">
+            <li data-code="1">{{handler.code_to_text("service_area",1)}}</li>
+            <li data-code="2">{{handler.code_to_text("service_area",2)}}</li>
+            <li data-code="4">{{handler.code_to_text("service_area",4)}}</li>
+            <li data-code="8">{{handler.code_to_text("service_area",8)}}</li>
         </ul>
      </div>
     <div class="order-by-time select-list phone-box order-by-list" id="orderBy3" style="display:none;">
-        <ul class="order-by-item">
-            <li class="active"><a href="javascript:;">一个月以上</a></li>
-            <li><a href="javascript:;">三个月以上</a></li>
-            <li><a href="javascript:;">半年以上</a></li>
-            <li><a href="javascript:;">一年以上</a></li>
+        <ul class="order-by-item" id="liveFilter">
+            <li data-code="1">一个月</li>
+            <li data-code="3">三个月</li>
+            <li data-code="6">半年以上</li>
+            <li data-code="12">一年以上</li>
+        </ul>
+    </div>
+    <div class="order-by-fruit select-list phone-box order-by-list" id="orderBy4" style="display:none;">
+        <ul class="order-by-item fruit-list select-list" id="fruitFilter">
         </ul>
     </div>
     <div class="container phone-box shop-list-content">
-        <ul class="shop-list">
-            {% for sh in context['shops'] %}
+        <ul class="shop-list" id="homeShopList">
+            {% for shop in context['shops'] %}
             <li>
-                <a href="{{reverse_url('fruitzoneShop',sh.id)}}">
+                <a href="{{reverse_url('fruitzoneShop',shop.id)}}">
                     <div class="shop-logo pull-left">
                          <img src="{{static_url('images/anoa-1-md.gif')}}"/>
                     </div>
                     <div class="shop-info pull-right">
-                        <p><span class="shop-name w1">{{sh.shop_name}}</span><span class="area">{{sh.shop_province}} {{sh.shop_city}}</span></p>
-                        <p>运营时间：{{sh.live_month}}</p>
-                        <p><span class="shop-owner w1">负责人：{{sh.admin.realname}}</span><span class="wechat-code">{{sh.admin.wx_username}}</span></p>
+                        <p><span class="shop-name w1 pull-left">{{shop.shop_name}}</span><span class="area pull-left">{{handler.code_to_text("shop_city",shop.shop_city)}}</span></p>
+                        <p>运营时间：{{shop.live_month}}月</p>
+                        <p><span class="shop-owner w1 pull-left">负责人：{{shop.admin.realname}}</span><span class="wechat-code pull-left">{{shop.admin.wx_username or "无"}}</span></p>
                     </div>
                 </a>
             </li>

@@ -12,13 +12,6 @@ $(document).ready(function(){
         });
     });
 
-    $('#city-select ul').eq(0).show().siblings('ul').hide();
-    $('#province-select li').click(function(){
-        var i=$(this).index();
-        $('#city-select ul').eq(i).show().siblings('ul').hide();
-    });
-
-    $('.order-by-item li').click(function(){$(this).parents('.order-by-list').hide();});
     $('.order-by a').click(function(){$(this).addClass('active').siblings().removeClass('active');});
 
     $('.editInfo').click(function(){$(this).parents('.info-con').siblings('.info-edit').toggle();});
@@ -26,40 +19,39 @@ $(document).ready(function(){
     $('a.editInfo').each(function(){
         if($(this).text() =='None'||$(this).text() =='')
         {$(this).text('点击设置').css({'color':'#FF3C3C'});}
-    })
-
-    $('#submitApply').click(function(evt){console.log('123');Apply(evt);});
-
-    $('.info-edit').find('.concel-btn').each(function(){$(this).click(function(){$(this).parents('.info-edit').hide();})});
-    $('.info-edit').find('.sure-btn').each(function(){infoEdit($(this))});
-
-    $('#getVrify').click(function(evt){Vrify(evt);time($(this));});
-    $('#tiePhone').click(function(evt){TiePhone(evt);});
-
-    $('#adminShopsList').find('li').each(function(){
-        if($(this).hasClass('pass-mode'))
-        {
-            $(this).find('a').append('<span class="status">已通过</span>');
-        }
-        else if($(this).hasClass('check-mode'))
-        {
-            $(this).find('a').append('<span class="status">审核中</span>');
-        }
     });
+    $('.info-edit').find('.concel-btn').each(function(){$(this).click(function(){$(this).parents('.info-edit').hide();})});
+
+    $('.info-edit').find('.sure-btn').each(function(){infoEdit($(this))});
+    $('#submitApply').click(function(evt){Apply(evt);});
+    $('#getVrify').click(function(evt){Vrify(evt);});
+    $('#tiePhone').click(function(evt){TiePhone(evt);});
+    $('.shop-edit-btn').each(function(){shopEdit($(this));});
+    $('#searchSubmit').click(function(evt){Search(evt);});
+    $('.order-by-item').find('li').each(function(){Filter($(this));});
+    $('#feedbackEdit').click(function(evt){FeedBack(evt);});
+
 
     if($('#detailsReal').data('real')=='true')
-         $('#detailsReal').text('是');
-    else $('#detailsReal').text('否');
+         $('#detailsReal').text('有');
+    else $('#detailsReal').text('无');
 
-    var are=$('#detailsArea');
-    if(are.data('area')=='1')
-       are.text('高校');
-    else if(are.data('area')=='2')
-        are.text('社区');
-    else if(are.data('area')=='4')
-        are.text('商圈');
-    else if(are.data('area')=='5')
-        are.text('其他');
+    if($('.showSex').data('sex')=='1')
+        $('.showSex').text('男');
+    else if($('.showSex').data('sex')=='0')
+        $('.showSex').text('女');
+
+    var fruit=window.dataObj.fruit_types;
+    for(var code in fruit)
+    {
+        var fruitlist=$('<li data-code="'+fruit[code]['id']+'"></li>').text(fruit[code]['name']);
+        $('.fruit-list').append(fruitlist);
+        console.log('222');
+    }
+
+    $('.modal .fruit-list li').each(function(){$(this).click(function(){
+        $(this).toggleClass('active');
+    });})
 
 });
 
@@ -102,24 +94,29 @@ function infoEdit(evt){
         var email=$('#mailEdit').val();
         var year=$('#yearEdit').val();
         var month=$('#monthEdit').val();
-        var sex=$('#sexEdit').val();
+        var sex=$('#sexEdit option:selected').data('sex');
+        var realname=$('#realnameEdit').val();
         var regEmail=/^([a-z0-9]*[-_]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/;
-        var regNumber=/^\d{n}$/;
+        var regNumber=/^[0-9]*[1-9][0-9]*$/
         var regMonth=/^((0?[1-9])|((1|2)[0-9])|30|31)$/;
-        var regSex=/^[\u4E00-\uFA29\uE7C7-\uE7F3]+-[男女]$/;
-
-        if(!regEmail.test(email)){return alert("邮箱不存在");}
-        if(!regMonth.test(month)){return alert("请输入正确的年月!");}
-
         var action=evt.data('action');
-        var data=evt.parents('.info-edit').find('.edit-box').val().trim();
-        if(action=='edit_birthday')
-        {
-            data={
-                year:$('#yearEdit').val().trim(),
-                month:$('#monthEdit').val().trim()
+        var data=evt.parents('.info-edit').find('.edit-box').val();
+
+        if(action=='edit_email' && !regEmail.test(email))
+             {return alert("邮箱不存在!");}
+        else if(action=='edit_sex')
+             {
+                 data=sex;
+             }
+        else if(action=='edit_birthday' && !regMonth.test(month)&&!regNumber.test(year))
+             {return alert("请输入正确的年月!");}
+        else if(action=='edit_birthday')
+            {
+                data={
+                    year:$('#yearEdit').val().trim(),
+                    month:$('#monthEdit').val().trim()
+                }
             }
-        }
         var url="/fruitzone/admin/profile";
         var args={action: action, data: data, _xsrf: window.dataObj._xsrf};
          $.postJson(url,args,
@@ -127,8 +124,13 @@ function infoEdit(evt){
                  console.log(res);
                  if (res.success) {
                      evt.parents('li').find('a.editInfo').text(data);
-                     evt.parents('li').find('#userBirthday').text(data.year+'年'+data.month+'月');
+                     evt.parents('li').find('#userBirthday').text(data.year+''+data.month);
                      if(data==''){evt.parents('li').find('.editInfo').text('点击设置').css({'color':'#FF3C3C'});}
+                     if(data=='0'){$('#userSex').text('女');}
+                     else if(data=='1'){$('#userSex').text('男');}
+                     evt.parents('li').find('.info-edit').hide();
+                     $('#serSex').attr({'data-sex':data});
+                     console.log(data);
                      alert('修改成功！');
                  }},
              function(){
@@ -150,6 +152,7 @@ function Vrify(evt){
         function(res){
             if(res.success)
             {
+                time($('#getVrify'));
                 alert('验证码已发送到您的手机,请注意查收！');
 
             }
@@ -187,12 +190,22 @@ function TiePhone(evt){
 
 function Apply(evt){
     evt.preventDefault();
+    var i=0;
+    if($('#serverArea li').eq(0).hasClass('active'))
+        i+=1;
+    if($('#serverArea li').eq(1).hasClass('active'))
+        i+=2;
+    if($('#serverArea li').eq(2).hasClass('active'))
+        i+=4;
+    if($('#serverArea li').eq(3).hasClass('active'))
+        i+=8;
     var shop_name=$('#shopName').val().trim();
     var shop_province=$('#provinceAddress').data('code');
     var shop_city=$('#cityAddress').data('code');
     var shop_address_detail=$('#addressDetail').val().trim();
     var have_offline_entity=$('#realShop').find('.active').find('a').data('real');
-    var shop_service_area=$('#serverArea').find('.active').data('id');
+    var shop_service_area=i;
+    console.log(i);
     var shop_intro=$('#shopIntro').val().trim();
     if (!shop_name || ! shop_service_area || !shop_province ||!shop_city || !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
     var args={
@@ -217,8 +230,168 @@ function Apply(evt){
             else  alert("信息填写错误！");
         },
         function(){
-            alert('网络错误！');},
-        function(){
             alert('网络错误！');}
+    );
+}
+
+
+function shopEdit(evt){
+    evt.click(function(){
+        var link=$('#shopLink').val();
+        var time=$('#shopTime').val();
+        var users=$('#shopUser').val();
+        var sell=$('#shopSell').val();
+        var buy=$('#shopBuy').val();
+        var intro=$('#shopIntro').val();
+        var regNumber=/^[0-9]*[1-9][0-9]*$/;
+        var id=$('#headerId').data('shop');
+
+        var action=evt.data('action');
+        var data=evt.parents('.modal').find('.shop-edit-info').find('.editBox').val();
+
+        if(action=='edit_live_month')
+        {
+            data={
+                year:$('#startYear').val().trim(),
+                month:$('#startMonth').val().trim()
+            }
+        }
+        else if(action=='edit_total_users' && !regNumber.test(users))
+            {return alert('用户数只能为数字！');}
+        else if(action=='edit_daily_sales' && !regNumber.test(sell))
+            {return alert("日销量只能为数字!");}
+        else if(action=='edit_single_stock_size' && !regNumber.test(buy))
+            {return alert("采购量只能为数字!");}
+        else if(action=='edit_onsale_fruits')
+            {
+                var data=[];
+                var f=$('#sellFruit').find('.active');
+                for(var i=0;i<f.length;i++)
+                {
+                    var b=$('#sellFruit').find('.active').eq(i).data('code');
+                    data.push(b);
+
+                }
+            }
+        else if(action=='edit_demand_fruits')
+            {
+                var data=[];
+                var f=$('#buyFruit').find('.active');
+                for(var i=0;i<f.length;i++)
+                {
+                    var b=$('#buyFruit').find('.active').eq(i).data('code');
+                    data.push(b);
+                }
+            }
+        console.log(data);
+        var url="/fruitzone/admin/shop/"+id;
+        var args={action: action, data: data,_xsrf: window.dataObj._xsrf};
+        $.postJson(url,args,
+            function (res) {
+                console.log(res);
+                if (res.success) {
+                    evt.parents('.editBox').find('.shopShow').text(data);
+                    var fruit=window.dataObj.fruit_types;
+                    for(var i=0;i<data.length;i++)
+                    {
+                        var h=data[i]-1;
+                        var fruitlist=$('<li data-code="'+fruit[h]['id']+'"></li>').text(fruit[h]['name']);
+                        evt.parents('.modal').prev('.edit-fruit-list').prepend(fruitlist);
+                    }
+                    alert('修改成功！');
+                }},
+            function(){
+                alert('网络错误！');}
+        );
+    });
+}
+
+
+function Search(evt){
+    evt.preventDefault();
+    var q=$('#searchKey').val().trim();
+    var action=$('#searchSubmit').data('action');
+    var url="/fruitzone/";
+    var args={
+        q:q,
+        action:action,
+        _xsrf: window.dataObj._xsrf
+
+    };
+    console.log(q);
+    $.postJson(url,args,
+        function(res){
+            if(res.success)
+                {
+                    $('#homeShopList').empty();
+                    var shops=res.shop_admin;
+                    for(var shop in shops)
+                    {
+                        var list=$('<li><a href="/fruitzone/shop/"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-right"><p><span class="shop-name w1 pull-left">'+shops[shop]["shop_name"]+'</span><span class="area pull-left"></span></p><p>运营时间：'+shops[shop]['live_month']+'月</p><p><span class="shop-owner w1 pull-left">负责人：'+shops[shop]["shop_name"]+'</span><span class="wechat-code pull-left">'+shops[shop]["shop_name"]+'</span></p></div></a></li>');
+                        $('#homeShopList').append(list);
+                        console.log(shops);
+                    }
+                }
+            if(res.success&&res.shops=='')
+                {
+                    $('#homeShopList').empty();
+                    alert('无搜索结果！');
+                }
+        },
+        function(){
+            alert('网络错误！');
+             }
+    );
+}
+
+
+function Filter(evt){
+    evt.click(function(){
+        console.log(evt);
+        var action='filter';
+        var city=$('#cityFilter').find('.active').data('code');
+        var service_area=$('#areaFilter').find('.active').data('code');
+        var live_month=$('#liveFilter').find('.active').data('code');
+        var onsalefruit_ids=$('#fruitFilter').find('.active').data('code');
+        var url="/fruitzone/";
+        console.log(evt);
+        if(evt.parents('.order-by-item').is('#cityFilter'))
+            {var args = {city: city,action: action,_xsrf: window.dataObj._xsrf}}
+        else if(evt.parents('.order-by-item').is('#areaFilter'))
+            {var args = {service_area: service_area,action: action,_xsrf: window.dataObj._xsrf}}
+        else if(evt.parents('.order-by-item').is('#liveFilter'))
+            {var args = {live_month: live_month,action: action,_xsrf: window.dataObj._xsrf}}
+        else if(evt.parents('.order-by-item').is('#fruitFilter'))
+            {var args = {onsalefruit_ids: onsalefruit_ids,action: action,_xsrf: window.dataObj._xsrf}}
+
+        $.postJson(url,args,
+            function(res){
+                if(res.success)
+                    evt.parents('.order-by-list').hide();
+                     console.log('无搜索结果！');
+            },
+            function(){
+                alert('网络错误！');
+            }
+        );
+    });
+
+}
+
+function FeedBack(){
+    var feedback=$('#feedbackInfo').val().trim();
+    var args={
+        feedback:feedback,
+        _xsrf: window.dataObj._xsrf
+    };
+    var url="/fruitzone/admin/home";
+    $.postJson(url,args,
+        function(res){
+            if(res.success)
+                alert('感谢您的宝贵意见！');
+        },
+        function(){
+            alert('网络错误！');
+        }
     );
 }

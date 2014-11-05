@@ -5,7 +5,8 @@ $(document).ready(function(){
     {
         var province=$("<li data-dismiss='modal' data-code='"+code+"'></li>").text(area[code]['name']);
         $('.provinceList').append(province);
-
+        var prolist=$("<li data-code='"+code+"'></li>").text(area[code]['name']);
+        $('#province-select').append(prolist);
     }
 
     $('.provinceList li').click(function() {
@@ -27,4 +28,19 @@ $(document).ready(function(){
         }
 
     });
+
+    $('#province-select li').click(function() {
+        var pcode=$(this).data('code');
+        $('#city-select ul').empty();
+        for(var code in area[pcode]['city'])
+        {
+            var city = $("<li data-code='"+code+"' class=''></li>").text(area[pcode]['city'][code]['name']);
+            $('#city-select ul').append(city);
+            $('#city-select li').eq(0).addClass('active');
+            $('#city-select li').click(function(){$(this).addClass('active').siblings().removeClass('active');$(this).parents('.order-by-list').hide();});
+        }
+
+    });
+
+    $('.order-by-city li').eq(0).addClass('active');
 });

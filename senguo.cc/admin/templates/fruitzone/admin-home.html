@@ -7,15 +7,16 @@
 {% block content%}
 <header class="title-box phone-box">
     <div class="title-box">
-        <a href="javascript:history.back(-1)" class="return-btn">返回</a>
+        <a href="{{reverse_url('fruitzoneHome')}}" class="return-btn">返回</a>
         <span class="title">个人中心</span>
+        <a href="{{reverse_url('adminLogout')}}" class="to-some">退出登录</a>
     </div>
 </header>
 <div class="user-center-info white-color phone-box container">
     <a href="{{reverse_url('fruitzoneAdminProfile')}}">
-        <img src="{{static_url('images/anoa-1-md.gif')}}" class="pull-left user-img"/>
+        <img src="{{current_user.headimgurl}}" class="pull-left user-img"/>
         <div class="info pull-left">
-            <p class="username">{{current_user.realname}}</p>
+            <p class="username">{{current_user.wx_nickname or '无'}}</p>
         </div>
     </a>
 </div>
@@ -25,17 +26,36 @@
             <a href="{{reverse_url('fuirzoneAdminShops')}}">我的店铺管理</a>
         </li>
         <li class="white-color">
+            <a href="#">森果商城系统接入</a>
+        </li>
+       <!-- <li class="white-color">
             <a href="#">我的收藏</a>
         </li>
         <li class="w1 white-color">
             <a href="#">使用帮助</a>
+        </li>-->
+        <li class="w1 white-color">
+            <a href="javascript:;" data-toggle="modal" data-target="#feedBox">意见反馈</a>
         </li>
         <li class="white-color">
-            <a href="#">意见反馈 </a>
-        </li>
-        <li class="w1 white-color">
-            <a href="#">关于森果</a>
+            <a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200574666&idx=1&sn=236c50b1d3c6e61ec1bbec985f9ece95#rd">关于森果</a>
         </li>
     </ul>
+</div>
+<div class="modal fade tie-popbox" id="feedBox" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>意见反馈</h4>
+             </div>
+            <div class="modal-body">
+                <textarea class="textstyle" id="feedbackInfo"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn pull-left concel-btn" data-dismiss="modal">取消</button>
+                <button type="button" class="btn pull-right tie-btn green-color"  data-dismiss="modal" id="feedbackEdit">确定</button>
+            </div>
+        </div>
+    </div>
 </div>
 {% end %}

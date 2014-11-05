@@ -3,7 +3,7 @@ from sqlalchemy.types import String, Integer, Text, Boolean, Float
 from sqlalchemy.orm import relationship, backref
 
 from dal.db_configs import MapBase, DBSession
-from dal.districts_in_china import dis_dict
+from dal.dis_dict import dis_dict
 import json
 import time
 
@@ -76,8 +76,27 @@ class _SafeOutputTransfer:
                not key.startswith("_"):
                 output_data[key] = self.__dict__[key]
         return output_data
-    
-class _AccountApi:
+
+class _CommonApi:
+    @classmethod
+    def get_by_id(cls, session, id):
+        s = session
+        try:u = s.query(cls).filter_by(id=id).one()
+        except:u = None
+        return u
+
+    def save(self, session):
+        s = session
+        s.add(self)
+        s.commit()
+    def update(self, session, **kwargs):
+        for key in kwargs.keys():
+            setattr(self, key, kwargs[key])
+        self.save(session)
+
+
+
+class _AccountApi(_CommonApi):
     """
     a common account access api, should be inherit by every 
     account.
@@ -89,12 +108,7 @@ class _AccountApi:
           2. 全局多个会话，并实现访问排队：可能导致性能受影响。
     最粗暴的解决方法：传一个外部控制的session参数进来，由外部控制session的死活。
     """
-    @classmethod
-    def get_by_id(cls, session, id):
-        s = session
-        try:u = s.query(cls).filter_by(id=id).one()
-        except:u = None
-        return u
+
     
     @classmethod
     def get_by_unionid(cls, session, wx_unionid):
@@ -127,14 +141,6 @@ class _AccountApi:
         except:u = None
         return u
 
-    def save(self):
-        s = session
-        s.add(self)
-        s.commit()
-    def update(self, **kwargs):
-        for key in kwargs.keys():
-            setattr(self, key, kwargs[key])
-        self.save()
 
 class SuperAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     __tablename__ = "super_admin"
@@ -149,7 +155,7 @@ class SuperAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
         return "<SiteAdmin: ({id}, {username})>".\
             format(id=self.id,username=self.username)
 
-class Shop(MapBase, _SafeOutputTransfer):
+class Shop(MapBase, _SafeOutputTransfer,_CommonApi):
     
     def __init__(self, **kwargs):
         if "shop_province" in kwargs or "shop_city" in kwargs:
@@ -166,16 +172,14 @@ class Shop(MapBase, _SafeOutputTransfer):
         super().__init__(**kwargs)
     
     def _check_city_code(self, shop_province, shop_city):
+        if shop_province not in dis_dict.keys():
+            return False
+        if "city" not in dis_dict[shop_province].keys():
+            return True
+        if shop_city not in dis_dict[shop_province]["city"]:
+            return False
+        return True
 
-        for p in dis_dict["province"]:
-            if p["code"] == shop_province:
-                if not "city" in p:
-                    return True
-                for city in p["city"]:
-                    if city["code"] == shop_city:
-                        return True
-                return False
-        return False
     __tablename__ = "shop"
     
     id = Column(Integer, primary_key=True, nullable=False)
@@ -255,11 +259,10 @@ class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     # 付费类型，SHOPADMIN_CHARGE_TYPE: 
     # [ThreeMonth_588, SixMonth_988, TwelveMonth_1788]
     charge_type = Column(Integer)
-
     # 过期时间
     expire_time = Column(Integer, default=0)
-    # 性别，男male, 女female
-    sex = Column(String(128))
+    # 性别，男1, 女0
+    sex = Column(Integer)
     # 昵称
     nickname = Column(String(128), default="")
     # 姓名
@@ -272,7 +275,8 @@ class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     briefintro = Column(String(300), default="")
 
     shops = relationship(Shop, backref=backref('admin'))
-    username = Column(String(128)) # not used now    
+    username = Column(String(128)) # not used now
+    feedback = relationship("Feedback")
 
     wx_openid = Column(String(1024)) 
     wx_unionid = Column(String(1024))
@@ -333,7 +337,7 @@ class ShopStaff(MapBase, _AccountApi, _SafeOutputTransfer):
 
 class Customer(MapBase, _AccountApi, _SafeOutputTransfer):
     __tablename__ = "customer"
-    
+
     __protected_props__ = ["password"]
 
     def __init__(self, **kwargs):
@@ -401,6 +405,11 @@ class ShopDemandfruitLink(MapBase):
     shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
     fruit_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
 
+class Feedback(MapBase):
+    __tablename__ = "feedback"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
+    text = Column(String(500))
 
 MapBase.metadata.create_all()
 

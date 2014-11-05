@@ -75,7 +75,8 @@ handlers = [
     (r"/fruitzone/", handlers.fruitzone.Home, {}, "fruitzoneHome"),
     (r"/fruitzone/admin/home", handlers.fruitzone.AdminHome, {}, "fruitzoneAdminHome"),
     (r"/fruitzone/admin/profile", handlers.fruitzone.AdminProfile, {}, "fruitzoneAdminProfile"),
-    (r"/fruitzone/shop/apply", handlers.fruitzone.ShopApply, {}, "fruitzoneShopApply"),
+    (r"/fruitzone/shop/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),
+    (r"/fruitzone/shop/reApply", handlers.fruitzone.ShopApply, {"action": "reApply"}, "fruitzoneShopReApply"),
     (r"/fruitzone/shop/applySuccess", handlers.fruitzone.ApplySuccess, {}, "fruitzoneShopApplySuccess"),
 
     (r"/fruitzone/shop/(\d+)", handlers.fruitzone.Shop, {}, "fruitzoneShop"),
