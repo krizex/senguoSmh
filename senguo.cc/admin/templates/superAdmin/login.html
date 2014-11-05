@@ -1,7 +1,19 @@
+<script src="{{static_url('js/jquery.js')}}"></script>
+<script src="{{static_url('js/sha256.js')}}"></script>
+
 <p>you should rewrite this templates :)</p>
-<form method="POST">
+<form method="POST" id="submit-form">
   <input name="username">
-  <input name="password">
-  <input type="submit">
+  <input name="password" type="password">
+  <input type="submit" id="submit-btn">
 {% module xsrf_form_html()%}
 </form>
+
+<script>
+ $("#submit-btn").click(function(evt){
+   evt.preventDefault();
+   var form = $("#submit-form")[0]
+   form["password"].value = CryptoJS.SHA256(form["password"].value).toString();
+   form.submit();
+ });
+</script>
