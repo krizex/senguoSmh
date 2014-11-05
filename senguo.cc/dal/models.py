@@ -128,6 +128,9 @@ class _AccountApi(_CommonApi):
                 wx_province=userinfo["province"],
                 wx_city=userinfo["city"],
                 wx_headimgurl=userinfo["headimgurl"],
+                headimgurl=userinfo["headimgurl"],
+                nickname=userinfo["nickname"],
+                sex = userinfo["sex"],
                 create_date_timestamp=int(time.time()))
         s = session
         s.add(u)
@@ -261,7 +264,7 @@ class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     charge_type = Column(Integer)
     # 过期时间
     expire_time = Column(Integer, default=0)
-    # 性别，男1, 女0
+    # 性别，男1, 女2, 其他0
     sex = Column(Integer)
     # 昵称
     nickname = Column(String(128), default="")
@@ -323,6 +326,10 @@ class ShopStaff(MapBase, _AccountApi, _SafeOutputTransfer):
     nickname = Column(String(128), default="")
 
     username = Column(String(64),unique=True) # not used now
+    # 头像url
+    headimgurl = Column(String(1024))
+    # 性别，男1, 女2, 其他0
+    sex = Column(Integer)
 
     wx_openid = Column(String(1024)) 
     wx_unionid = Column(String(1024))
@@ -357,6 +364,10 @@ class Customer(MapBase, _AccountApi, _SafeOutputTransfer):
     addresses = relationship("Address", backref="customer")
 
     username = Column(String(64)) # not used
+    # 头像url
+    headimgurl = Column(String(1024))
+    # 性别，男1, 女2, 其他0
+    sex = Column(Integer)
 
     wx_openid = Column(String(1024)) 
     wx_unionid = Column(String(1024))
@@ -411,6 +422,18 @@ class Feedback(MapBase):
     admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
     text = Column(String(500))
 
-MapBase.metadata.create_all()
+def init_db_data():
+    MapBase.metadata.create_all()
+    # add fruittypes to database
+    s = DBSession()
+    if s.query(FruitType).count():
+        s.close()
+        return True
+    from dal.db_fruits import fruit_types as fruits
+    for fruit in fruits:
+        s.add(models.FruitType(name=fruit["name"], code=fruit["code"]))
+    s.commit()
+    s.close()
+    return True
 
 

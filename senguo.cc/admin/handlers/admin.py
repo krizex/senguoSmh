@@ -19,7 +19,7 @@ class Access(AdminBaseHandler):
             self.handle_oauth()
         else:
             return self.send_error(404)
-    @AdminBaseHandler.check_arguments("code", "state?", "from")
+    @AdminBaseHandler.check_arguments("code", "state?", "mode")
     def handle_oauth(self):
         # todo: handle state
         code =self.args["code"]

@@ -95,6 +95,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
         
         if self.is_wexin_browser():
             if para_str: para_str += "&"
+            else: para_str = "?"
             para_str += "mode=mp"
             redirect_uri = tornado.escape.url_escape(
                 APP_OAUTH_CALLBACK_URL+\
@@ -102,6 +103,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
             link =  self._wx_oauth_weixin.format(appid=MP_APPID, redirect_uri=redirect_uri)
         else:
             if para_str: para_str += "&"
+            else: para_str = "?"
             para_str += "mode=kf"
             redirect_uri = tornado.escape.url_escape(
                 APP_OAUTH_CALLBACK_URL+\
@@ -138,8 +140,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
             raise Exception("overwrite model to support authenticate.")
         self.clear_cookie(self.__account_cookie_name__)
 
-    def get_wx_userinfo(self, code):
-        return WxOauth2.get_userinfo(code)
+    def get_wx_userinfo(self, code, mode):
+        return WxOauth2.get_userinfo(code, mode)
         
     
 class SuperBaseHandler(_AccountBaseHandler):
@@ -190,14 +192,10 @@ class WxOauth2:
         try:            
             data = json.loads(
                 urllib.request.urlopen(userinfo_url).read().decode("utf-8"))
-            if data["sex"] == 2: # female
-                sex = "female"
-            else:
-                sex = "male"
             userinfo_data = dict(
                 openid=data["openid"],
                 nickname=data["nickname"],
-                sex=sex,
+                sex=data["sex"],
                 province=data["province"],
                 city=data["city"],
                 country=data["country"],

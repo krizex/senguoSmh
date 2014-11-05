@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 #import gc
 
+import dal.models as models
 import tornado.web
 import tornado.ioloop
 from tornado.options import options, define
@@ -24,6 +25,7 @@ class Application(tornado.web.Application):
         super().__init__(handlers, **settings)
 
 def main():
+    models.init_db_data()
     tornado.options.parse_command_line()
     application = Application()
     application.listen(options.port)

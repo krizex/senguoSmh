@@ -122,7 +122,7 @@ class AdminProfile(AdminBaseHandler):
         elif action == "edit_email":
             self.current_user.update(session=self.session, email=data)
         elif action == "edit_sex":
-            self.current_user.update(session=self.session, sex=1 if data else 0)
+            self.current_user.update(session=self.session, sex=data)
         elif action == "edit_birthday":
             year = int(data["year"])
             month = int(data["month"])

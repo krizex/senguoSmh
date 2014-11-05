@@ -38,8 +38,10 @@ $(document).ready(function(){
 
     if($('.showSex').data('sex')=='1')
         $('.showSex').text('男');
-    else if($('.showSex').data('sex')=='0')
+    else if($('.showSex').data('sex')=='2')
         $('.showSex').text('女');
+    else
+        $('.showSex').text('其他');
 
     var fruit=window.dataObj.fruit_types;
     for(var code in fruit)
