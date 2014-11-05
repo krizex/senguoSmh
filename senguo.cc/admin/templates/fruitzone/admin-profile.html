@@ -97,7 +97,7 @@
             <li>
                 <div class="info-con">
                     <span class="title pull-left">出生年月</span>
-                    <a href="javascript:;" class="pull-right editInfo" id="userBirthday">{{current_user.birthday or '请设置'}}年月</a>
+                    <a href="javascript:;" class="pull-right editInfo" id="userBirthday">{{context['birthday'] or '请设置'}}</a>
                 </div>
                 <div class="info-edit" style="display:none;">
                     <input type="text" class="edit-box" placeholder="请输入您的出生年份 例如：2014" id="yearEdit" value=""/>
@@ -114,7 +114,7 @@
                     <a href="javascript:;"  class="pull-right editInfo" id="userIntro">{{current_user.briefintro}}</a>
                 </div>
                 <div class="info-edit" style="display:none;">
-                    <textarea type="text" class="edit-box" placeholder="输入一些个人说明，好多同行想认识你" id="introEdit" value="{{current_user.briefintro or '请设置'}}"></textarea>
+                    <textarea type="text" class="edit-box" placeholder="{{current_user.birthday or '输入一些个人说明，好多同行想认识你'}}" id="introEdit" value="{{current_user.briefintro or '请设置'}}"></textarea>
                     <div class="btn-box">
                         <a href="javascript:;" class="concel-btn">取消</a>
                         <a href="javascript:;" class="sure-btn" data-action="edit_intro">确定</a>

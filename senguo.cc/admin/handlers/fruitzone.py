@@ -16,7 +16,10 @@ class Home(AdminBaseHandler):
         q = self.session.query(models.Shop).order_by(models.Shop.id).\
             filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
         shops = q.all()
-        return self.render("fruitzone/home.html", context=dict(shops=shops))
+        fruit_types = []
+        for f_t in self.session.query(models.FruitType).all():
+            fruit_types.append(f_t.safe_props)
+        return self.render("fruitzone/home.html", context=dict(shops=shops, fruit_types=fruit_types))
     
     @AdminBaseHandler.check_arguments("action")
     def post(self):
@@ -71,7 +74,11 @@ class Home(AdminBaseHandler):
         shops = []
         for shop in q.all():
             shops.append(shop.safe_props)
-        return self.send_success(shops=shops)
+
+        shop_admin=[]
+        for shop in  shops:
+            shop_admin.append({"shop":shop,"admin":shop.admin})
+        return self.send_success(shop_admin=shop_admin)
 
 class AdminHome(AdminBaseHandler):
     @tornado.web.authenticated
@@ -83,7 +90,7 @@ class AdminHome(AdminBaseHandler):
     @tornado.web.authenticated
     def post(self):
         feedback = models.Feedback()
-        feedback.text = self.args["feedback"]
+        feedback.text = self.get_arguments("feedback")
         self.current_user.feedback.append(feedback)
         return self.send_success()
 
@@ -225,14 +232,20 @@ class AdminShop(AdminBaseHandler):
             shop = None
         if not shop:
             return self.send_error(404)
-        return self.render("fruitzone/shop.html", context=dict(shop=shop,edit=True))
+        fruit_types = []
+        for f_t in self.session.query(models.FruitType).all():
+            fruit_types.append(f_t.safe_props)
+
+        time_tuple = time.localtime(shop.admin.birthday)
+        birthday = time.strftime("%Y-%m", time_tuple)
+
+        return self.render("fruitzone/shop.html", context=dict(shop=shop,edit=True,birthday=birthday, fruit_types=fruit_types))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data", "shop_id")
-    def post(self):
+    def post(self,shop_id):
         action=self.args["action"]
         data=self.args["data"]
-        shop_id=self.args["shop_id"]
         shop = models.Shop.get_by_id(self.session, shop_id)
 
         if action == "edit_shop_url":
@@ -249,12 +262,14 @@ class AdminShop(AdminBaseHandler):
             shop.update(session=self.session, shop_intro=data)
         elif action == "edit_onsale_fruits":
             for fruit_id in data:
-                fruit_type = self.session.query(models.FruitType).filter(id == fruit_id).one()
+                fruit_type = self.session.query(models.FruitType).filter_by(id = fruit_id).one()
                 shop.onsale_fruits.append(fruit_type)
+            self.session.commit()
         elif action == "edit_demand_fruits":
             for fruit_id in data:
-                fruit_type = self.session.query(models.FruitType).filter(id == fruit_id).one()
+                fruit_type = self.session.query(models.FruitType).filter_by(id = fruit_id).first()
                 shop.demand_fruits.append(fruit_type)
+            self.session.commit()
         else:
             return self.send_error(404)
         return self.send_success()

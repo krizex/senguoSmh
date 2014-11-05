@@ -29,6 +29,7 @@ $(document).ready(function(){
     $('.shop-edit-btn').each(function(){shopEdit($(this));});
     $('#searchSubmit').click(function(evt){Search(evt);});
     $('.order-by-item').find('li').each(function(){Filter($(this));});
+    $('#feedbackEdit').click(function(evt){FeedBack(evt);});
 
 
     if($('#detailsReal').data('real')=='true')
@@ -90,7 +91,6 @@ function time(evt) {
 
 function infoEdit(evt){
      evt.click(function(){
-         alert('22222');
         var email=$('#mailEdit').val();
         var year=$('#yearEdit').val();
         var month=$('#monthEdit').val();
@@ -126,6 +126,8 @@ function infoEdit(evt){
                      evt.parents('li').find('a.editInfo').text(data);
                      evt.parents('li').find('#userBirthday').text(data.year+''+data.month);
                      if(data==''){evt.parents('li').find('.editInfo').text('点击设置').css({'color':'#FF3C3C'});}
+                     if(data=='0'){$('#userSex').text('女');}
+                     else if(data=='1'){$('#userSex').text('男');}
                      evt.parents('li').find('.info-edit').hide();
                      $('#serSex').attr({'data-sex':data});
                      console.log(data);
@@ -289,7 +291,6 @@ function shopEdit(evt){
                 console.log(res);
                 if (res.success) {
                     evt.parents('.editBox').find('.shopShow').text(data);
-                    evt.attr({'data-dismiss':'modal'});
                     var fruit=window.dataObj.fruit_types;
                     for(var i=0;i<data.length;i++)
                     {
@@ -320,12 +321,26 @@ function Search(evt){
     console.log(q);
     $.postJson(url,args,
         function(res){
-            if(res.success&&res.shops==[])
-                 alert('无搜索结果！');
+            if(res.success)
+                {
+                    $('#homeShopList').empty();
+                    var shops=res.shop_admin;
+                    for(var shop in shops)
+                    {
+                        var list=$('<li><a href="/fruitzone/shop/"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-right"><p><span class="shop-name w1 pull-left">'+shops[shop]["shop_name"]+'</span><span class="area pull-left"></span></p><p>运营时间：'+shops[shop]['live_month']+'月</p><p><span class="shop-owner w1 pull-left">负责人：'+shops[shop]["shop_name"]+'</span><span class="wechat-code pull-left">'+shops[shop]["shop_name"]+'</span></p></div></a></li>');
+                        $('#homeShopList').append(list);
+                        console.log(shops);
+                    }
+                }
+            if(res.success&&res.shops=='')
+                {
+                    $('#homeShopList').empty();
+                    alert('无搜索结果！');
+                }
         },
-    function(){
-        alert('网络错误！');
-         }
+        function(){
+            alert('网络错误！');
+             }
     );
 }
 
@@ -361,4 +376,22 @@ function Filter(evt){
         );
     });
 
+}
+
+function FeedBack(){
+    var feedback=$('#feedbackInfo').val().trim();
+    var args={
+        feedback:feedback,
+        _xsrf: window.dataObj._xsrf
+    };
+    var url="/fruitzone/admin/home";
+    $.postJson(url,args,
+        function(res){
+            if(res.success)
+                alert('感谢您的宝贵意见！');
+        },
+        function(){
+            alert('网络错误！');
+        }
+    );
 }

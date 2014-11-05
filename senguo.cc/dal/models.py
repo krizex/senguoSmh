@@ -74,8 +74,27 @@ class _SafeOutputTransfer:
                not key.startswith("_"):
                 output_data[key] = self.__dict__[key]
         return output_data
-    
-class _AccountApi:
+
+class _CommonApi:
+    @classmethod
+    def get_by_id(cls, session, id):
+        s = session
+        try:u = s.query(cls).filter_by(id=id).one()
+        except:u = None
+        return u
+
+    def save(self, session):
+        s = session
+        s.add(self)
+        s.commit()
+    def update(self, session, **kwargs):
+        for key in kwargs.keys():
+            setattr(self, key, kwargs[key])
+        self.save(session)
+
+
+
+class _AccountApi(_CommonApi):
     """
     a common account access api, should be inherit by every 
     account.
@@ -87,12 +106,7 @@ class _AccountApi:
           2. 全局多个会话，并实现访问排队：可能导致性能受影响。
     最粗暴的解决方法：传一个外部控制的session参数进来，由外部控制session的死活。
     """
-    @classmethod
-    def get_by_id(cls, session, id):
-        s = session
-        try:u = s.query(cls).filter_by(id=id).one()
-        except:u = None
-        return u
+
     
     @classmethod
     def get_by_unionid(cls, session, wx_unionid):
@@ -125,14 +139,6 @@ class _AccountApi:
         except:u = None
         return u
 
-    def save(self, session):
-        s = session
-        s.add(self)
-        s.commit()
-    def update(self, session, **kwargs):
-        for key in kwargs.keys():
-            setattr(self, key, kwargs[key])
-        self.save(session)
 
 class SuperAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     __tablename__ = "super_admin"
@@ -147,7 +153,7 @@ class SuperAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
         return "<SiteAdmin: ({id}, {username})>".\
             format(id=self.id,username=self.username)
 
-class Shop(MapBase, _SafeOutputTransfer):
+class Shop(MapBase, _SafeOutputTransfer,_CommonApi):
     
     def __init__(self, **kwargs):
         if "shop_province" in kwargs or "shop_city" in kwargs:
@@ -251,8 +257,8 @@ class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     # 付费类型，SHOPADMIN_CHARGE_TYPE: 
     # [ThreeMonth_588, SixMonth_988, TwelveMonth_1788]
     charge_type = Column(Integer)
-    # 性别，男Ture, 女False
-    sex = Column(Boolean)
+    # 性别，男1, 女0
+    sex = Column(Integer)
     # 昵称
     nickname = Column(String(128), default="")
     # 姓名
@@ -367,7 +373,7 @@ class Address(MapBase):
     address_text = Column(String(1024), nullable=False)
     owner_id = Column(Integer, ForeignKey(Customer.id))
 
-class FruitType(MapBase):
+class FruitType(MapBase,_SafeOutputTransfer):
     __tablename__ = "fruit_type"
     
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)

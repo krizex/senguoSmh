@@ -45,7 +45,7 @@
         <a href="{{shop.shop_url}}" class="focus-btn {{bt_edit_hide}}">关注我的微信店铺</a>
         <div class="{{bt_edit_show}} edit-link editBox">
             <a href="javascript:;" class="focus-btn" id="linkEdit"  data-toggle="modal" data-target="#linkBox">编辑店铺链接</a>
-            <a href="#" class="check-course text-red">查看填写教程</a>
+            <a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200574697&idx=1&sn=cc6a43fcc99b5bad6cf963dc92f4babd#rd" class="check-course text-red">查看填写教程</a>
             <div class="modal fade" id="linkBox" tabindex="-1" role="dialog"  aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -226,7 +226,7 @@
             <img src="{{shop.admin.headimgurl}}" class="pull-left"/>
             <div class="show-info pull-left">
                 <p class="info1">{{shop.admin.realname or '无'}}<span>性别：<i data-sex="{{shop.admin.sex}}" id="adminSex" class="showSex"></i></span></p>
-                <p>出生年月：{{shop.admin.birthday}}年{{shop.admin.birthday}}月</p>
+                <p>出生年月：{{context['birthday']}}</p>
             </div>
         </div>
         <div class="pricipal-info2">
