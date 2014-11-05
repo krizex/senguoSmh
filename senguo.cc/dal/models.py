@@ -431,7 +431,7 @@ def init_db_data():
         return True
     from dal.db_fruits import fruit_types as fruits
     for fruit in fruits:
-        s.add(models.FruitType(name=fruit["name"], code=fruit["code"]))
+        s.add(FruitType(name=fruit["name"], code=fruit["code"]))
     s.commit()
     s.close()
     return True
