@@ -10,5 +10,8 @@ MYSQL_USERNAME = "monk"
 MYSQL_PASSWORD = "test123"
 DB_NAME = "test_sqlalchemy"
 
-
+#手机短信验证的设置
+content = "您的验证码是：【{code}】。请不要把验证码泄露给其他人。"
+account = "cf_liuchao2"
+password = "liuchao123"
 

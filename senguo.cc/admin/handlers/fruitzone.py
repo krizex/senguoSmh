@@ -300,6 +300,6 @@ class PhoneVerify(AdminBaseHandler):
               format( self.args["phone"],
                       self.args["code"]))
         if not check_msg_token(wx_id=self.current_user.wx_unionid, code=self.args["code"]):
-           return send_fail(error_text="验证码过期或者不正确")
+           return self.send_fail(error_text="验证码过期或者不正确")
         return self.send_success()
     
