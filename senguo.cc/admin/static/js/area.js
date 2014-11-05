@@ -13,6 +13,7 @@ $(document).ready(function(){
         var pcode=$(this).data('code');
         var pro=$(this).text();
         $('.cityList').empty();
+        $('#cityAddress').text('选择城市');
         $('#provinceAddress').text(pro).attr({'data-code':pcode});
         for(var code in area[pcode]['city'])
         {
@@ -26,6 +27,8 @@ $(document).ready(function(){
                 });
             });
         }
+        if($('.cityList').find('li').length==0) {$('.select-city').hide();}
+        else $('.select-city').show();
 
     });
 

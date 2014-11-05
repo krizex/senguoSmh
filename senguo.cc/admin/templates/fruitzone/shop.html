@@ -55,7 +55,7 @@
                         <div class="modal-footer">
                             <div class="btn-box">
                                 <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
-                                <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_shop_url">确定</button>
+                                <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_shop_url" data-dismiss="modal">确定</button>
                             </div>
                         </div>
                     </div>
@@ -79,7 +79,7 @@
                             <div class="modal-footer">
                                 <div class="btn-box">
                                     <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
-                                    <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_live_month">确定</button>
+                                    <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_live_month" data-dismiss="modal">确定</button>
                                 </div>
                             </div>
                         </div>
@@ -99,7 +99,7 @@
                             <div class="modal-footer">
                                 <div class="btn-box">
                                     <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
-                                    <button type="button" class="btn  sure-btn shop-edit-btn"  data-action="edit_total_users">确定</button>
+                                    <button type="button" class="btn  sure-btn shop-edit-btn"  data-action="edit_total_users" data-dismiss="modal">确定</button>
                                 </div>
                             </div>
                         </div>
@@ -119,7 +119,7 @@
                             <div class="modal-footer">
                                 <div class="btn-box">
                                     <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
-                                    <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_daily_sales">确定</button>
+                                    <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_daily_sales" data-dismiss="modal">确定</button>
                                 </div>
                             </div>
                         </div>
@@ -139,7 +139,7 @@
                             <div class="modal-footer">
                                 <div class="btn-box">
                                     <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
-                                    <button type="button" class="btn  sure-btn shop-edit-btn"   data-action="edit_single_stock_size">确定</button>
+                                    <button type="button" class="btn  sure-btn shop-edit-btn"   data-action="edit_single_stock_size" data-dismiss="modal">确定</button>
                                 </div>
                             </div>
                         </div>
@@ -163,7 +163,7 @@
                     <div class="modal-footer">
                         <div class="btn-box">
                             <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
-                            <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_shop_intro">确定</button>
+                            <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_shop_intro" data-dismiss="modal">确定</button>
                         </div>
                     </div>
                 </div>
@@ -174,11 +174,11 @@
         <p class="title2">在售水果：</p>
         <ul class="sell-fruit-list edit-fruit-list">
             {% for fruit in context['shop'].onsale_fruits%}
-            <li>{{fruit.name}}</li>
+            <li class="fruitsty" data-code="{{fruit.id}}">{{fruit.name}}</li>
            {% end %}
-            <li class="{{bt_edit_show}}" data-toggle="modal" data-target="#fruitSellBox">+</li>
+            <span class="{{bt_edit_show}} fruitsty" data-toggle="modal" data-target="#fruitSellBox">编辑水果</span>
         </ul>
-        <div class="modal fade" id="fruitSellBox" tabindex="-1" role="dialog"  aria-hidden="true">
+        <div class="modal fade fruitBox" id="fruitSellBox" tabindex="-1" role="dialog"  aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-body">
@@ -189,7 +189,7 @@
                     <div class="modal-footer">
                         <div class="btn-box">
                             <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
-                            <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_onsale_fruits">确定</button>
+                            <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_onsale_fruits" data-dismiss="modal">确定</button>
                         </div>
                     </div>
                 </div>
@@ -198,11 +198,11 @@
         <p class="title2">求购水果：</p>
         <ul class="buy-fruit-list edit-fruit-list">
             {% for fruit in context['shop'].demand_fruits%}
-            <li>{{fruit.name}}</li>
+            <li  class="fruitsty" data-code="{{fruit.id}}">{{fruit.name}}</li>
             {% end %}
-            <li class="{{bt_edit_show}}" data-toggle="modal" data-target="#fruitBuyBox">+</li>
+            <span class="{{bt_edit_show}} fruitsty" data-toggle="modal" data-target="#fruitBuyBox">编辑水果</span>
         </ul>
-        <div class="modal fade" id="fruitBuyBox" tabindex="-1" role="dialog"  aria-hidden="true">
+        <div class="modal fade fruitBox" id="fruitBuyBox" tabindex="-1" role="dialog"  aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-body">
@@ -213,7 +213,7 @@
                     <div class="modal-footer">
                         <div class="btn-box">
                             <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
-                            <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_demand_fruits">确定</button>
+                            <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_demand_fruits" data-dismiss="modal">确定</button>
                         </div>
                     </div>
                 </div>
