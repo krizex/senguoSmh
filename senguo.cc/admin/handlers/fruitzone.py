@@ -74,11 +74,7 @@ class Home(AdminBaseHandler):
         shops = []
         for shop in q.all():
             shops.append(shop.safe_props)
-
-        shop_admin=[]
-        for shop in  shops:
-            shop_admin.append({"shop":shop,"admin":shop.admin})
-        return self.send_success(shop_admin=shop_admin)
+        return self.send_success(shops=shops)
 
 class AdminHome(AdminBaseHandler):
     @tornado.web.authenticated
@@ -122,7 +118,7 @@ class AdminProfile(AdminBaseHandler):
         elif action == "edit_email":
             self.current_user.update(session=self.session, email=data)
         elif action == "edit_sex":
-            self.current_user.update(session=self.session, sex=1 if data else 0)
+            self.current_user.update(session=self.session, sex=data)
         elif action == "edit_birthday":
             year = int(data["year"])
             month = int(data["month"])
@@ -261,11 +257,13 @@ class AdminShop(AdminBaseHandler):
         elif action == "edit_shop_intro":
             shop.update(session=self.session, shop_intro=data)
         elif action == "edit_onsale_fruits":
+            shop.onsale_fruits = []
             for fruit_id in data:
                 fruit_type = self.session.query(models.FruitType).filter_by(id = fruit_id).one()
                 shop.onsale_fruits.append(fruit_type)
             self.session.commit()
         elif action == "edit_demand_fruits":
+            shop.demand_fruits=[]
             for fruit_id in data:
                 fruit_type = self.session.query(models.FruitType).filter_by(id = fruit_id).first()
                 shop.demand_fruits.append(fruit_type)

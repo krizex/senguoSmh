@@ -15,7 +15,7 @@
             <a href="{{reverse_url('fruitzoneShopApply')}}" class="to-some">申请入驻</a>
         </div>
         <div class="search-box" id="search-box">
-            <input type="text" placeholder="请输入店铺名、姓名、城市、在售水果" class="search-input" id="searchKey"/>
+            <input type="text" placeholder="请输入店铺名、姓名、城市" class="search-input" id="searchKey"/>
             <input type="submit" value="搜索" class="search-btn" id="searchSubmit" data-action="search"/>
         </div>
     </header>
@@ -64,7 +64,7 @@
                          <img src="{{static_url('images/anoa-1-md.gif')}}"/>
                     </div>
                     <div class="shop-info pull-right">
-                        <p><span class="shop-name w1 pull-left">{{shop.shop_name}}</span><span class="area pull-left">{{handler.code_to_text("shop_city",shop.shop_city)}}</span></p>
+                        <p><span class="shop-name w1 pull-left" class="homeShopName">{{shop.shop_name}}</span><span class="area pull-left">{{handler.code_to_text("shop_city",shop.shop_city)}}</span></p>
                         <p>运营时间：{{shop.live_month}}月</p>
                         <p><span class="shop-owner w1 pull-left">负责人：{{shop.admin.realname}}</span><span class="wechat-code pull-left">{{shop.admin.wx_username or "无"}}</span></p>
                     </div>

@@ -38,20 +38,26 @@ $(document).ready(function(){
 
     if($('.showSex').data('sex')=='1')
         $('.showSex').text('男');
-    else if($('.showSex').data('sex')=='0')
+    else if($('.showSex').data('sex')=='2')
         $('.showSex').text('女');
+    else $('.showSex').text('其他');
+
 
     var fruit=window.dataObj.fruit_types;
     for(var code in fruit)
     {
         var fruitlist=$('<li data-code="'+fruit[code]['id']+'"></li>').text(fruit[code]['name']);
         $('.fruit-list').append(fruitlist);
-        console.log('222');
     }
 
-    $('.modal .fruit-list li').each(function(){$(this).click(function(){
-        $(this).toggleClass('active');
-    });})
+    $('.modal .fruit-list li').each(function(){$(this).click(function(){$(this).toggleClass('active');});});
+
+    var s1=$('.sell-fruit-list').find('li');
+    var s2=$('#sellFruit').find('li');
+    var b1=$('.buy-fruit-list').find('li');
+    var b2=$('#buyFruit').find('li');
+    Remember(s1,s2);
+    Remember(b1,b2);
 
 });
 
@@ -71,6 +77,22 @@ $.postJson = function(url, args, successCall, failCall, alwaysCall){
     });
     req.always(alwaysCall);
 };
+
+function Remember(sell1,sell2){
+    for(var i= 0;i<sell1.length;i++)
+    {
+        var t=sell1.eq(i).data('code');
+        for(var j=0;j<sell2.length;j++)
+        {
+            var g=sell2.eq(j).data('code');
+            if(g==t)
+            {
+                sell2.eq(j).addClass('active');
+            }
+        }
+
+    }
+}
 
 var wait=60;
 function time(evt) {
@@ -124,10 +146,11 @@ function infoEdit(evt){
                  console.log(res);
                  if (res.success) {
                      evt.parents('li').find('a.editInfo').text(data);
-                     evt.parents('li').find('#userBirthday').text(data.year+''+data.month);
+                     evt.parents('li').find('#userBirthday').text(data.year+'-'+data.month);
                      if(data==''){evt.parents('li').find('.editInfo').text('点击设置').css({'color':'#FF3C3C'});}
-                     if(data=='0'){$('#userSex').text('女');}
+                     if(data=='0'){$('#userSex').text('其他');}
                      else if(data=='1'){$('#userSex').text('男');}
+                     else if(data=='2'){$('#userSex').text('女');}
                      evt.parents('li').find('.info-edit').hide();
                      $('#serSex').attr({'data-sex':data});
                      console.log(data);
@@ -207,7 +230,7 @@ function Apply(evt){
     var shop_service_area=i;
     console.log(i);
     var shop_intro=$('#shopIntro').val().trim();
-    if (!shop_name || ! shop_service_area || !shop_province ||!shop_city || !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
+    if (!shop_name || ! shop_service_area || !shop_province || !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
     var args={
         shop_name:shop_name,
         shop_province:shop_province,
@@ -288,15 +311,17 @@ function shopEdit(evt){
         var args={action: action, data: data,_xsrf: window.dataObj._xsrf};
         $.postJson(url,args,
             function (res) {
-                console.log(res);
                 if (res.success) {
                     evt.parents('.editBox').find('.shopShow').text(data);
                     var fruit=window.dataObj.fruit_types;
+                    evt.parents('.modal').prev('.edit-fruit-list').find('li').remove();
                     for(var i=0;i<data.length;i++)
                     {
                         var h=data[i]-1;
-                        var fruitlist=$('<li data-code="'+fruit[h]['id']+'"></li>').text(fruit[h]['name']);
-                        evt.parents('.modal').prev('.edit-fruit-list').prepend(fruitlist);
+                        var fruitlist=$('<li class="fruitsty" data-code="'+fruit[h]['id']+'"></li>').text(fruit[h]['name']);
+                        evt.parents('.fruitBox').prev('.edit-fruit-list').prepend(fruitlist);
+                        console.log(h);
+
                     }
                     alert('修改成功！');
                 }},
@@ -324,10 +349,10 @@ function Search(evt){
             if(res.success)
                 {
                     $('#homeShopList').empty();
-                    var shops=res.shop_admin;
+                    var shops=res.shops;
                     for(var shop in shops)
                     {
-                        var list=$('<li><a href="/fruitzone/shop/"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-right"><p><span class="shop-name w1 pull-left">'+shops[shop]["shop_name"]+'</span><span class="area pull-left"></span></p><p>运营时间：'+shops[shop]['live_month']+'月</p><p><span class="shop-owner w1 pull-left">负责人：'+shops[shop]["shop_name"]+'</span><span class="wechat-code pull-left">'+shops[shop]["shop_name"]+'</span></p></div></a></li>');
+                        var list=$('<li><a href="/fruitzone/shop/'+shops[shop]["id"]+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-right"><p><span class="shop-name w1 pull-left">'+shops[shop]["shop_name"]+'</span><span class="area pull-left">wait</span></p><p>运营时间：'+shops[shop]['live_month']+'月</p><p><span class="shop-owner w1 pull-left">负责人：'+shops[shop]["shop_name"]+'</span><span class="wechat-code pull-left">'+shops[shop]["shop_name"]+'</span></p></div></a></li>');
                         $('#homeShopList').append(list);
                         console.log(shops);
                     }

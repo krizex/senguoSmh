@@ -1,4 +1,15 @@
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+{% extends 'base.html'%}
 
-<a href="{% raw handler.get_wexin_oauth_link(next_url=context['next_url'])%}">微信登录</a>
-<a href="">手机号登录</a>
+{% block content%}
+
+<div class="container center-block" style="width:400px; padding-left:25px;padding-bottom:50px;">
+  <h2>请选择登录方式</h2>
+  <div class="center-block">
+    <br/>
+    <br/>
+    <a class="btn btn-primary" href="{% raw handler.get_wexin_oauth_link(next_url=context['next_url'])%}">微信登录</a>
+    <a class="btn btn-default" href="">手机号登录</a>
+  </div>
+</div>
+
+{% end %}

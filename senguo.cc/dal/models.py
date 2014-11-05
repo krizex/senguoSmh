@@ -45,6 +45,8 @@ class SHOP_STATUS:
     DECLINED = 3
 
 
+## TODO: 账户支付及账户升级功能
+
 class _SafeOutputTransfer:
     """
     当需要向前端发送数据时，有些数据是不能被发送的，比如密码等敏感数据，
@@ -126,6 +128,9 @@ class _AccountApi(_CommonApi):
                 wx_province=userinfo["province"],
                 wx_city=userinfo["city"],
                 wx_headimgurl=userinfo["headimgurl"],
+                headimgurl=userinfo["headimgurl"],
+                nickname=userinfo["nickname"],
+                sex = userinfo["sex"],
                 create_date_timestamp=int(time.time()))
         s = session
         s.add(u)
@@ -257,7 +262,9 @@ class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     # 付费类型，SHOPADMIN_CHARGE_TYPE: 
     # [ThreeMonth_588, SixMonth_988, TwelveMonth_1788]
     charge_type = Column(Integer)
-    # 性别，男1, 女0
+    # 过期时间
+    expire_time = Column(Integer, default=0)
+    # 性别，男1, 女2, 其他0
     sex = Column(Integer)
     # 昵称
     nickname = Column(String(128), default="")
@@ -319,6 +326,10 @@ class ShopStaff(MapBase, _AccountApi, _SafeOutputTransfer):
     nickname = Column(String(128), default="")
 
     username = Column(String(64),unique=True) # not used now
+    # 头像url
+    headimgurl = Column(String(1024))
+    # 性别，男1, 女2, 其他0
+    sex = Column(Integer)
 
     wx_openid = Column(String(1024)) 
     wx_unionid = Column(String(1024))
@@ -353,6 +364,10 @@ class Customer(MapBase, _AccountApi, _SafeOutputTransfer):
     addresses = relationship("Address", backref="customer")
 
     username = Column(String(64)) # not used
+    # 头像url
+    headimgurl = Column(String(1024))
+    # 性别，男1, 女2, 其他0
+    sex = Column(Integer)
 
     wx_openid = Column(String(1024)) 
     wx_unionid = Column(String(1024))
@@ -364,7 +379,7 @@ class Customer(MapBase, _AccountApi, _SafeOutputTransfer):
     wx_headimgurl = Column(String(2048))
 
 
-class Address(MapBase):
+class Address(MapBase,  _SafeOutputTransfer):
     __tablename__ = "address"
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -373,7 +388,7 @@ class Address(MapBase):
     address_text = Column(String(1024), nullable=False)
     owner_id = Column(Integer, ForeignKey(Customer.id))
 
-class FruitType(MapBase,_SafeOutputTransfer):
+class FruitType(MapBase,  _SafeOutputTransfer):
     __tablename__ = "fruit_type"
     
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -407,6 +422,18 @@ class Feedback(MapBase):
     admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
     text = Column(String(500))
 
-MapBase.metadata.create_all()
+def init_db_data():
+    MapBase.metadata.create_all()
+    # add fruittypes to database
+    s = DBSession()
+    if s.query(FruitType).count():
+        s.close()
+        return True
+    from dal.db_fruits import fruit_types as fruits
+    for fruit in fruits:
+        s.add(FruitType(name=fruit["name"], code=fruit["code"]))
+    s.commit()
+    s.close()
+    return True
 
 
