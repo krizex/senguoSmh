@@ -1,0 +1,7 @@
+<ul>
+{% for shop in context["shops"]%}
+<li>
+{{shop.safe_props}}
+</li>
+{% end %}
+</ul>

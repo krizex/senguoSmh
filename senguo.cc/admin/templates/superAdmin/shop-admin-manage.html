@@ -1,0 +1,5 @@
+<ul>
+{% for admin in context["admins"]%}
+<li> {{admin.safe_props}}</li>
+{% end %}
+</ul>

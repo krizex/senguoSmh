@@ -45,6 +45,8 @@ class SHOP_STATUS:
     DECLINED = 3
 
 
+## TODO: 账户支付及账户升级功能
+
 class _SafeOutputTransfer:
     """
     当需要向前端发送数据时，有些数据是不能被发送的，比如密码等敏感数据，
@@ -253,6 +255,9 @@ class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     # 付费类型，SHOPADMIN_CHARGE_TYPE: 
     # [ThreeMonth_588, SixMonth_988, TwelveMonth_1788]
     charge_type = Column(Integer)
+
+    # 过期时间
+    expire_time = Column(Integer, default=0)
     # 性别，男male, 女female
     sex = Column(String(128))
     # 昵称
@@ -359,7 +364,7 @@ class Customer(MapBase, _AccountApi, _SafeOutputTransfer):
     wx_headimgurl = Column(String(2048))
 
 
-class Address(MapBase):
+class Address(MapBase,  _SafeOutputTransfer):
     __tablename__ = "address"
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -368,7 +373,7 @@ class Address(MapBase):
     address_text = Column(String(1024), nullable=False)
     owner_id = Column(Integer, ForeignKey(Customer.id))
 
-class FruitType(MapBase):
+class FruitType(MapBase,  _SafeOutputTransfer):
     __tablename__ = "fruit_type"
     
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)

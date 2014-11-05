@@ -9,14 +9,44 @@ handlers = [
         "action":"login"}, "superLogin"),
     (r"/super/logout", handlers.superadmin.Access,{
         "action":"logout"}, "superLogout" ),
-    (r"/super/", handlers.superadmin.Home, {
-        "action":"applying"},"superHome"),
-    (r"/super/applying",handlers.superadmin.Home, {
-        "action":"applying"},"superHomeApplying"),
-    (r"/super/active", handlers.superadmin.Home, {
-        "action":"active"},"superHomeActive"),
-    (r"/super/frozen", handlers.superadmin.Home, {
-        "action":"frozen"},"superHomeFrozen"),
+
+    ################ 超级管理员后台
+    (r"/super/", handlers.superadmin.ShopAdminManage, {
+        "action":"all"},"superHome"),
+
+    ## 水果商家信息展示
+    # 所有商家
+    (r"/super/shopAdminManage/", handlers.superadmin.ShopAdminManage, {
+        "action":"all"}, "superShopAdminManage"),
+
+    (r"/super/shopAdminManage/all", handlers.superadmin.ShopAdminManage, {
+        "action":"all"}, "superShopAdminManageAll"),
+    # 正在使用商家
+    (r"/super/shopAdminManage/using", handlers.superadmin.ShopAdminManage, {
+        "action":"using"}, "superShopAdminManageUsing"),
+    # 到期未续商家
+    (r"/super/shopAdminManage/expire", handlers.superadmin.ShopAdminManage, {
+        "action":"expire"}, "superShopAdminManageExpire"),
+    # 未付费商家/普通商家
+    (r"/super/shopAdminManage/common", handlers.superadmin.ShopAdminManage, {
+        "action":"common"}, "superShopAdminManageCommon"),
+
+    ## 店铺申请接入管理
+    # 所有店铺
+    (r"/super/shopManage/", handlers.superadmin.ShopManage, {
+        "action":"all"}, "superShopManage"),
+    (r"/super/shopManage/all", handlers.superadmin.ShopManage, {
+        "action":"all"}, "superShopManageAll"),
+
+    # 正在申请接入店铺
+    (r"/super/shopManage/applying", handlers.superadmin.ShopManage, {
+        "action":"applying"}, "superShopManageApplying"),
+    # 已经通过申请店铺
+    (r"/super/shopManage/accepted", handlers.superadmin.ShopManage, {
+        "action":"accepted"}, "superShopManageAccepted"),
+    # 已被拒绝店铺
+    (r"/super/shopManage/declined", handlers.superadmin.ShopManage, {
+        "action":"declined"}, "superShopManageDeclined"),
 
     # (r"/super/notice/", handlers.superadmin.Notice),
     

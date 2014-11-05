@@ -4,7 +4,7 @@ from libs.utils import Logger
 import json
 import urllib
 import traceback
-from settings import APPID, APPSECRET, APP_OAUTH_CALLBACK_URL
+from settings import KF_APPID, KF_APPSECRET, APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET
 import tornado.escape
 
 class GlobalBaseHandler(BaseHandler):
@@ -24,12 +24,30 @@ class GlobalBaseHandler(BaseHandler):
 class FrontBaseHandler(GlobalBaseHandler):
     pass
 
+
+
 class _AccountBaseHandler(GlobalBaseHandler):
     # overwrite this to specify which account is used
     __account_model__ = None
     __account_cookie_name__ = ""
     __login_url_name__ = ""
     __wexin_oauth_url_name__ = ""
+
+    _wx_oauth_pc = "https://open.weixin.qq.com/connect/qrconnect?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_login&state=ohfuck#wechat_redirect"
+    _wx_oauth_weixin = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_userinfo&state=onfuckweixin#wechat_redirect"
+
+    def is_wexin_browser(self):
+        if "User-Agent" in self.request.headers:
+            ua = self.request.headers["User-Agent"]
+        else:
+            ua = ""
+        return  "MicroMessenger" in ua
+    def is_pc_browser(self):
+        if "User-Agent" in self.request.headers:
+            ua = self.request.headers["User-Agent"]
+        else:
+            ua = ""
+        return not ("Mobile" in ua)
 
     def get_wexin_oauth_link(self, next_url=""):
         if not self.__wexin_oauth_url_name__:
@@ -40,10 +58,21 @@ class _AccountBaseHandler(GlobalBaseHandler):
         else:
             para_str = ""
         
-        redirect_uri = tornado.escape.url_escape(
-            APP_OAUTH_CALLBACK_URL+\
-            self.reverse_url(self.__wexin_oauth_url_name__) + para_str)
-        return "https://open.weixin.qq.com/connect/qrconnect?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_login&state=ohfuck#wechat_redirect".format(appid=APPID, redirect_uri=redirect_uri)
+        if self.is_wexin_browser():
+            if para_str: para_str += "&"
+            para_str += "mode=mp"
+            redirect_uri = tornado.escape.url_escape(
+                APP_OAUTH_CALLBACK_URL+\
+                self.reverse_url(self.__wexin_oauth_url_name__) + para_str)
+            link =  self._wx_oauth_weixin.format(appid=MP_APPID, redirect_uri=redirect_uri)
+        else:
+            if para_str: para_str += "&"
+            para_str += "mode=kf"
+            redirect_uri = tornado.escape.url_escape(
+                APP_OAUTH_CALLBACK_URL+\
+                self.reverse_url(self.__wexin_oauth_url_name__) + para_str)
+            link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
+        return link
     
     def get_login_url(self):
         if not self.__login_url_name__:
@@ -97,15 +126,19 @@ class CustomerBaseHandler(_AccountBaseHandler):
     __account_model__ = models.Customer
     __account_cookie_name__ = "customer_id"
 
-from settings import APPID, APPSECRET
 
 class WxOauth2:
     token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}&secret={appsecret}&code={code}&grant_type=authorization_code"
     userinfo_url = "https://api.weixin.qq.com/sns/userinfo?access_token={access_token}&openid={openid}"
     @classmethod
-    def get_userinfo(cls, code):
+    def get_userinfo(cls, code, mode):
         # 需要改成异步请求
-        token_url = cls.token_url.format(code=code, appid=APPID, appsecret=APPSECRET)
+        if mode == "kf": # 从PC来的登录请求
+            token_url = cls.token_url.format(
+                code=code, appid=KF_APPID, appsecret=KF_APPSECRET)
+        elif mode == "mp":
+            token_url = cls.token_url.format(
+                code=code, appid=MP_APPID, appsecret=MP_APPSECRET)
         # 获取access_token
         try:
             data = json.loads(

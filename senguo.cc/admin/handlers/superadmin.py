@@ -1,7 +1,7 @@
 from handlers.base import SuperBaseHandler
 import dal.models as models
 import tornado.web
-
+import time
 
 class Access(SuperBaseHandler):
     
@@ -20,49 +20,95 @@ class Access(SuperBaseHandler):
     def post(self):
         if self._action != "login":
             raise Exception("Superadmin Only support login post!")
-        user = models.SuperAdmin.login(self.args["username"],
-                                       self.args["password"])
+        #try:
+        user = self.session.query(models.SuperAdmin).filter_by(
+                username= self.args["username"], 
+                password= self.args["password"]).one()
+        #except:
+        #user = None
         if not user:
             return self.send_fail(error_text = "username account not match!")
         self.set_current_user(user)
         return self.send_success()
 
-class Home(SuperBaseHandler):
-    _page_count = 20
 
+class ShopAdminManage(SuperBaseHandler):
+    """商家管理，基本上是信息展示"""
+    
+    _page_count = 20
+    
+    def initialize(self, action):
+        self._action = action
+    
+    @tornado.web.authenticated
+    @SuperBaseHandler.check_arguments("page?:int")
+    def get(self):
+        offset = (self.args.get("page", 1)-1) * self._page_count
+        q = self.session.query(models.ShopAdmin)
+        t = int(time.time())
+        if self._action == "all":
+            pass
+        elif self._action == "using":
+            q = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER,
+                         models.ShopAdmin.expire_time > t)
+        elif self._action == "expire":
+            q = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER, 
+                         models.ShopAdmin.expire_time <= t)
+        elif self._action == "common":
+            q = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SHOP_OWNER)
+        else:
+            return self.send_error(404)
+        # 排序规则id, offset 和 limit
+        q = q.order_by(models.ShopAdmin.id.desc()).offset(offset).limit(self._page_count)
+        
+        admins = q.all()
+        # admins 是models.ShopAdmin的实例的列表，具体属性可以去dal/models.py中看到
+        return self.render("superAdmin/shop-admin-manage.html", context=dict(admins = admins))
+    @tornado.web.authenticated
+    def post(self):
+        return self.send_error(404)
+
+
+class ShopManage(SuperBaseHandler):
+    _page_count = 20
+    
     def initialize(self, action):
         self._action = action
 
     @tornado.web.authenticated
+    @SuperBaseHandler.check_arguments("page?:int")
     def get(self):
-        if self._action == "active":
-            self.get_handle_shops("active")
-        elif self._action == "frozen":
-            self.get_handle_shops("frozen")
+        offset = (self.args.get("page", 1) - 1) * self._page_count
+        q = self.session.query(models.Shop)
+        if self._action == "all":
+            pass
         elif self._action == "applying":
-            self.get_handle_shops("applying")
+            q = q.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
+        elif self._action == "accepted":
+            q = q.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
+        elif self._action == "declined":
+            q = q.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
         else:
             return self.send_error(404)
-    
-    @SuperBaseHandler.check_arguments("page?:int")
-    def get_handle_shops(self, shop_status):
-        page = self.args.get("page", 0)
-        try:
-            shops = self.session.query(models.Shop).filter_by(shop_status=shop_status).\
-                    order_by(models.Shop.id).\
-                    offset(page*self._page_count).limit(self._page_count+1).all()
-        except:
-            shops = []
-        if not shops and page !=0: return self.send_error(404)
-
-        if len(shops) > self._page_count: next_page = page+1
-        else: next_page = None
-        if page: pre_page = page-1
-        else: pre_page = None
-        return self.render("superAdmin/home.html", context=dict(
-            shops=shops, next_page=next_page,
-            pre_page=pre_page))
-    
-
+        # 排序规则id, offset 和 limit
+        q = q.order_by(models.Shop.id.desc()).offset(offset).limit(self._page_count)
         
+        shops = q.all()
+        # shops 是models.Shop实例的列表
+        return self.render("superAdmin/shop-manage.html", context=dict(shops = shops))
 
+    @tornado.web.authenticated
+    @SuperBaseHandler.check_arguments("action")
+    def post(self):
+        action = self.args["action"]
+        if action == "updateShopStatus":
+            self.handle_updateStatus()
+        else:
+            return self.send(400)
+    @SuperBaseHandler.check_arguments("shop_id:int", "new_status:int")
+    def handle_updateStatus(self):
+        shop = models.Shop.get_by_id(self.args["shop_id"])
+        if not shop:
+            return self.send_error(403)
+        shop.update(self.session, self.args["new_status"])
+        return self.send_success()

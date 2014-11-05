@@ -1,4 +1,5 @@
 #! /usr/bin/env python3
+#import gc
 
 import tornado.web
 import tornado.ioloop
@@ -30,6 +31,7 @@ def main():
     else:debug_str = "in production mode"
     print("running senguo.cc {0} @ {1}...".format(debug_str, 
                                                  options.port))
+#    print("garbage collector: collected %d objecs"%gc.collect())
     tornado.ioloop.IOLoop.instance().start()
 
     

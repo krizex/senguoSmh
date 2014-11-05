@@ -19,15 +19,16 @@ class Access(AdminBaseHandler):
             self.handle_oauth()
         else:
             return self.send_error(404)
-    @AdminBaseHandler.check_arguments("code?", "state?")
+    @AdminBaseHandler.check_arguments("code", "state?", "from")
     def handle_oauth(self):
-        print(self.args)
-        if not "code" in self.args:
-            return self.redirect(self.reverse_url("adminHome"))
         # todo: handle state
         code =self.args["code"]
-        print("code get:", code)
-        userinfo = self.get_wx_userinfo(code)
+        mode = self.args["mode"]
+        print("mode: ", mode , ", code get:", code)
+        if mode not in ["mp", "kf"]:
+            return self.send_error(400)
+
+        userinfo = self.get_wx_userinfo(code, mode)
         if not userinfo:
             return self.redirect(self.reverse_url("adminLogin"))
         u = models.ShopAdmin.get_or_create_with_unionid(self.session, userinfo["unionid"], userinfo)
