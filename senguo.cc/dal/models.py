@@ -59,6 +59,7 @@ class _SafeOutputTransfer:
 
     # 定义需要保护的对象名:
     __protected_props__ = []
+    __relationship_props__ = []
 
     def safe_props(self, with_relationship=True):
         output_data = {}
