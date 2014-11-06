@@ -133,7 +133,7 @@ class AdminProfile(AdminBaseHandler):
 class ApplySuccess(AdminBaseHandler):
     def get(self):
         return self.render("fruitzone/apply-success.html")
-
+	
 class ShopApply(AdminBaseHandler):
     def initialize(self, action):
         self._action = action
