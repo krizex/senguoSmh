@@ -27,8 +27,8 @@ input{border:none;}
 .btn-box{margin-top:1em;}
 .btn-box a{display:inline-block;width:45%;color:#fff !important;text-align:center;border-radius:1px;padding:0.3em 0;font-size:1em;}
 .btn-box button{display:inline-block;width:45%;color:#fff !important;text-align:center;border-radius:1px;padding:0.3em 0;font-size:1em;}
-.btn-box .concel-btn{background:#999;float:left;color:#fff;}
-.btn-box .sure-btn{background:#00D289;float:right;color:#fff;}
+.concel-btn{background:#999;float:left;color:#fff;}
+.sure-btn{background:#00D289;float:right;color:#fff;}
 
 .input-style{border:1px solid #ddd;width:80%;text-indent:5px;margin:0 auto;height:1.6em;height:2.5em;line-height:2.5em;margin-right:0.5em;background:#f2f2f2;}
 .input-style2{border:1px solid #ddd;width:100%;text-indent:5px;margin:0 auto;height:1.6em;height:2.5em;line-height:2.5em;margin-right:0.5em;background:#f2f2f2;}

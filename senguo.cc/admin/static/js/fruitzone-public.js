@@ -28,8 +28,10 @@ $(document).ready(function(){
     $('#tiePhone').click(function(evt){TiePhone(evt);});
     $('.shop-edit-btn').each(function(){shopEdit($(this));});
     $('#searchSubmit').click(function(evt){Search(evt);});
-    $('.order-by-item').find('li').each(function(){Filter($(this));});
     $('#feedbackEdit').click(function(evt){FeedBack(evt);});
+    $('.order-by-city').find('li').each(function(){Filter($(this));});
+    $('.order-by-area').find('li').each(function(){Filter($(this));});
+    $('.order-by-time').find('li').each(function(){Filter($(this));});
 
 
     if($('#detailsReal').data('real')=='true')
@@ -59,6 +61,7 @@ $(document).ready(function(){
     Remember(s1,s2);
     Remember(b1,b2);
 
+    $('.order-by-fruit').find('li').each(function(){$(this).click(function(){$(this).toggleClass('active');});});
 });
 
 function orderBy(i){
@@ -228,9 +231,9 @@ function Apply(evt){
     var shop_address_detail=$('#addressDetail').val().trim();
     var have_offline_entity=$('#realShop').find('.active').find('a').data('real');
     var shop_service_area=i;
-    console.log(i);
+    console.log(shop_city);
     var shop_intro=$('#shopIntro').val().trim();
-    if (!shop_name || ! shop_service_area || !shop_province || !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
+    if (!shop_name || ! shop_service_area || ! shop_city ||!shop_province || !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
     var args={
         shop_name:shop_name,
         shop_province:shop_province,
@@ -250,7 +253,7 @@ function Apply(evt){
                 window.location.href="/fruitzone/shop/applySuccess";
                 alert("申请成功！");
             }
-            else  alert("信息填写错误！");
+            else  alert(res.error_text);
         },
         function(){
             alert('网络错误！');}
@@ -352,7 +355,7 @@ function Search(evt){
                     var shops=res.shops;
                     for(var shop in shops)
                     {
-                        var list=$('<li><a href="/fruitzone/shop/'+shops[shop]["id"]+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-right"><p><span class="shop-name w1 pull-left">'+shops[shop]["shop_name"]+'</span><span class="area pull-left">wait</span></p><p>运营时间：'+shops[shop]['live_month']+'月</p><p><span class="shop-owner w1 pull-left">负责人：'+shops[shop]["shop_name"]+'</span><span class="wechat-code pull-left">'+shops[shop]["shop_name"]+'</span></p></div></a></li>');
+                        var list=$('<li><a href="/fruitzone/shop/'+shops[shop]["id"]+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-right"><p><span class="shop-name w1 pull-left">'+shops[shop]["shop_name"]+'</span><span class="w2 area pull-left">wait</span></p><p>运营时间：'+shops[shop]['live_month']+'月</p><p><span class="shop-owner w1 pull-left">负责人：'+shops[shop]["shop_name"]+'</span><span class="w2 wechat-code pull-left">'+shops[shop]["shop_name"]+'</span></p></div></a></li>');
                         $('#homeShopList').append(list);
                         console.log(shops);
                     }
@@ -372,28 +375,44 @@ function Search(evt){
 
 function Filter(evt){
     evt.click(function(){
-        console.log(evt);
         var action='filter';
-        var city=$('#cityFilter').find('.active').data('code');
-        var service_area=$('#areaFilter').find('.active').data('code');
-        var live_month=$('#liveFilter').find('.active').data('code');
-        var onsalefruit_ids=$('#fruitFilter').find('.active').data('code');
+        var city=evt.data('code');
+        var service_area=evt.data('code');
+        var live_month=evt.data('code');
+        var onsalefruit_ids=[];
+        var fruit=$('.order-by-fruit').find('.active');
+        for(var i=0;i<fruit.length;i++)
+            {
+             var code=fruit.eq(i).data('code');
+             onsalefruit_ids.push(code);
+            }
+        console.log(onsalefruit_ids);
         var url="/fruitzone/";
-        console.log(evt);
-        if(evt.parents('.order-by-item').is('#cityFilter'))
+        var order=evt.parents('.order-by-item').data('action');
+        if(order=='cityFilter')
             {var args = {city: city,action: action,_xsrf: window.dataObj._xsrf}}
-        else if(evt.parents('.order-by-item').is('#areaFilter'))
+        else if(order=='areaFilter')
             {var args = {service_area: service_area,action: action,_xsrf: window.dataObj._xsrf}}
-        else if(evt.parents('.order-by-item').is('#liveFilter'))
+        else if(order=='liveFilter')
             {var args = {live_month: live_month,action: action,_xsrf: window.dataObj._xsrf}}
-        else if(evt.parents('.order-by-item').is('#fruitFilter'))
+        else if(order=='fruitFilter')
             {var args = {onsalefruit_ids: onsalefruit_ids,action: action,_xsrf: window.dataObj._xsrf}}
 
         $.postJson(url,args,
             function(res){
-                if(res.success)
+                if(res.success) {
                     evt.parents('.order-by-list').hide();
-                     console.log('无搜索结果！');
+                    $('#homeShopList').empty();
+                    var shops = res.shops;
+                    console.log(res.shops);
+                    for (var shop in shops)
+                    {
+                        var list = $('<li><a href="/fruitzone/shop/' + shops[shop]["id"] + '"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-right"><p><span class="shop-name w1 pull-left">' + shops[shop]["shop_name"] + '</span><span class="w2 area pull-left">wait</span></p><p>运营时间：' + shops[shop]['live_month'] + '月</p><p><span class="shop-owner w1 pull-left">负责人：' + shops[shop]["shop_name"] + '</span><span class="w2 wechat-code pull-left">' + shops[shop]["shop_name"] + '</span></p></div></a></li>');
+                        $('#homeShopList').append(list);
+                        console.log('22222');
+
+                    }
+                }
             },
             function(){
                 alert('网络错误！');

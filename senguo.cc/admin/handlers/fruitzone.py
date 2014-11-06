@@ -31,7 +31,7 @@ class Home(AdminBaseHandler):
         else:
             return self.send_error(403)
     @AdminBaseHandler.check_arguments("skip?:int","limit?:int",
-                                      "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids:list")
+                                      "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids?:list")
     def handle_filter(self):
         # 按什么排序？暂时采用id排序
         q = self.session.query(models.Shop).order_by(models.Shop.id).\
@@ -44,7 +44,7 @@ class Home(AdminBaseHandler):
         if "live_month" in self.args:
             q = q.filter(models.Shop.live_month>self.args["live_month"])
 
-        if "onsalefruit_ids" in self.args:
+        if "onsalefruit_ids" in self.args and self.args["onsalefruit_ids"]:
             q = q.filter(models.Shop.id.in_(
                 select([models.ShopOnsalefruitLink.shop_id]).\
                 where(models.ShopOnsalefruitLink.fruit_id.in_(
@@ -59,11 +59,13 @@ class Home(AdminBaseHandler):
         else:
             q = q.limit(self._page_count)
 
+        print("filter args:", self.args)
 
 
         shops = []
         for shop in q.all():
             shops.append(shop.safe_props)
+        print("filter results:", shops)
         return self.send_success(shops=shops)
 
     @AdminBaseHandler.check_arguments("q")
