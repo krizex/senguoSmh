@@ -47,6 +47,11 @@ handlers = [
     # 已被拒绝店铺
     (r"/super/shopManage/declined", handlers.superadmin.ShopManage, {
         "action":"declined"}, "superShopManageDeclined"),
+    
+    ## 用户反馈
+    (r"/super/feedback/", handlers.superadmin.Feedback, {"action":"all"}, "superFeedback"),
+    (r"/super/feedback/unprocessed", handlers.superadmin.Feedback, {"action":"unprocessed"}, "superFeedbackUnprocessed"),
+    (r"/super/feedback/processed", handlers.superadmin.Feedback, {"action":"processed"}, "superFeedbackProcessed"),
 
     # (r"/super/notice/", handlers.superadmin.Notice),
     
