@@ -35,7 +35,7 @@ class BaseHandler(tornado.web.RequestHandler):
                 out_text += c
         return out_text
 
-    def get_argument(self, name, default=[], strip=True):
+    def get_argument(self, name, default=tornado.web.RequestHandler._ARG_DEFAULT, strip=True):
         if self.request.method.upper() == "POST" and\
            "Content-Type" in self.request.headers and \
            self.request.headers["Content-Type"].split(";")[0].strip() \
