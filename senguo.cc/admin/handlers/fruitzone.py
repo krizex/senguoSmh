@@ -81,11 +81,18 @@ class AdminHome(AdminBaseHandler):
        self.render("fruitzone/admin-home.html")
 
     @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action", "feedback_text")
     def post(self):
-        feedback = models.Feedback()
-        feedback.text = self.get_arguments("feedback")
-        self.current_user.feedback.append(feedback)
-        return self.send_success()
+        if self.args["action"] == "feedback":
+            feedback = models.Feedback(
+                text=self.args["feedback_text"],
+                create_date_timestamp = int(time.time())
+            )
+            self.current_user.feedback.append(feedback)
+            self.session.commit()
+            return self.send_success()
+        else:
+            return self.send_error(404)
 
 class AdminProfile(AdminBaseHandler):
     @tornado.web.authenticated

@@ -43,6 +43,8 @@ class SHOP_STATUS:
     APPLYING = 1
     ACCEPTED = 2
     DECLINED = 3
+    
+    DATA_LIST = [APPLYING, ACCEPTED, DECLINED]
 
 
 ## TODO: 账户支付及账户升级功能
@@ -216,6 +218,7 @@ class Shop(MapBase, _SafeOutputTransfer,_CommonApi):
     shop_code = Column(String(128), nullable=False, default="not set")
     create_date_timestamp = Column(Integer, nullable=False)
     shop_status = Column(Integer, default=SHOP_STATUS.APPLYING)
+    declined_reason = Column(String(256), default="")
 
     admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
     admin  = relationship("ShopAdmin", uselist=False)
@@ -443,11 +446,14 @@ class ShopDemandfruitLink(MapBase):
     shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
     fruit_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
 
-class Feedback(MapBase):
+class Feedback(MapBase, _CommonApi, _SafeOutputTransfer):
     __tablename__ = "feedback"
+    
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    create_date_timestamp = Column(Integer, nullable=False)
     admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
     text = Column(String(500))
+    processed = Column(Boolean, default=False)
 
 def init_db_data():
     MapBase.metadata.create_all()
