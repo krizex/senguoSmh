@@ -29,10 +29,17 @@ $(document).ready(function(){
     $('.shop-edit-btn').each(function(){shopEdit($(this));});
     $('#searchSubmit').click(function(evt){Search(evt);});
     $('#feedbackEdit').click(function(evt){FeedBack(evt);});
-    $('.order-by-city').find('li').each(function(){Filter($(this));});
-    $('.order-by-area').find('li').each(function(){Filter($(this));});
-    $('.order-by-time').find('li').each(function(){Filter($(this));});
 
+    $('#province-select').find('li').click(function(){
+        if($('#city-select').find('li').length==0)
+        {
+            Filter($(this));
+        }
+        else $('.city-select').find('li').each(function(){$(this).click(function(){Filter($(this));});});
+    });
+    $('.order-by-area').find('li').each(function(){$(this).click(function(){Filter($(this));});});
+    $('.order-by-time').find('li').each(function(){$(this).click(function(){Filter($(this));});});
+    $('#orderByFruit').click(function(){Filter($(this));});
 
     if($('#detailsReal').data('real')=='true')
          $('#detailsReal').text('有');
@@ -374,7 +381,6 @@ function Search(evt){
 
 
 function Filter(evt){
-    evt.click(function(){
         var action='filter';
         var city=evt.data('code');
         var service_area=evt.data('code');
@@ -388,7 +394,7 @@ function Filter(evt){
             }
         console.log(onsalefruit_ids);
         var url="/fruitzone/";
-        var order=evt.parents('.order-by-item').data('action');
+        var order=evt.parents('.order-by-list').find('.order-by-item').data('action');
         if(order=='cityFilter')
             {var args = {city: city,action: action,_xsrf: window.dataObj._xsrf}}
         else if(order=='areaFilter')
@@ -396,12 +402,12 @@ function Filter(evt){
         else if(order=='liveFilter')
             {var args = {live_month: live_month,action: action,_xsrf: window.dataObj._xsrf}}
         else if(order=='fruitFilter')
-            {var args = {onsalefruit_ids: onsalefruit_ids,action: action,_xsrf: window.dataObj._xsrf}}
-
+            {var args = {onsalefruit_ids: onsalefruit_ids,action: action,_xsrf: window.dataObj._xsrf};}
+        console.log(args);
         $.postJson(url,args,
             function(res){
                 if(res.success) {
-                    evt.parents('.order-by-list').hide();
+                   evt.parents('.order-by-list').hide();
                     $('#homeShopList').empty();
                     var shops = res.shops;
                     console.log(res.shops);
@@ -418,14 +424,15 @@ function Filter(evt){
                 alert('网络错误！');
             }
         );
-    });
 
 }
 
 function FeedBack(){
     var feedback=$('#feedbackInfo').val().trim();
+    var action="feedback";
     var args={
-        feedback:feedback,
+        action:action,
+        feedback_text:feedback,
         _xsrf: window.dataObj._xsrf
     };
     var url="/fruitzone/admin/home";

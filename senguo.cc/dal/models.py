@@ -51,6 +51,7 @@ class _SafeOutputTransfer:
     """
     当需要向前端发送数据时，有些数据是不能被发送的，比如密码等敏感数据，
     所以需要进行数据保护
+    另外，支持一级relationship对象
     
     这里定义了一个接口：
     @ func: props()，可以用来向外界发送经过处理的数据
@@ -58,23 +59,46 @@ class _SafeOutputTransfer:
 
     # 定义需要保护的对象名:
     __protected_props__ = []
+    __relationship_props__ = []
 
-    @property
-    def all_props(self):
+    def safe_props(self, with_relationship=True):
         output_data = {}
         for key in self.__dict__:
-            if type[key] == str and \
+            if type(key) == str and \
                not key.startswith("_") and \
                not key in self.__protected_props__:
                 output_data[key] = self.__dict__[key]
+        if with_relationship:
+            for rel_prop_name in self.__relationship_props__:
+                if not rel_prop_name in self.__protected_props__:
+                    rel_prop_data = getattr(self, rel_prop_name)
+
+                    try:
+                        out_prop_data = []
+                        for prop_data in  rel_prop_data:
+                            out_prop_data.append(prop_data.safe_props(False))
+                    except:
+                        out_prop_data = rel_prop_data.safe_props(False)
+                    output_data[rel_prop_name] = out_prop_data
+
         return output_data
-    @property
-    def safe_props(self):
+
+    def all_props(self, with_relationship=False):
         output_data = {}
         for key in self.__dict__:
             if type(key) == str and \
                not key.startswith("_"):
                 output_data[key] = self.__dict__[key]
+        if with_relationship:
+            for rel_prop_name in self.__relationship_props__:
+                rel_prop_data = getattr(self, rel_prop_name)
+                try:
+                    out_prop_data = []
+                    for prop_data in  rel_prop_data:
+                        out_prop_data.append(prop_data.all_props(False))
+                except:
+                    out_prop_data = rel_prop_data.all_props(False)
+                output_data[rel_prop_name] = out_prop_data
         return output_data
 
 class _CommonApi:
@@ -159,6 +183,8 @@ class SuperAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
             format(id=self.id,username=self.username)
 
 class Shop(MapBase, _SafeOutputTransfer,_CommonApi):
+    __relationship_props__ = ["admin", "demand_fruits", "onsale_fruits"]
+    
     
     def __init__(self, **kwargs):
         if "shop_province" in kwargs or "shop_city" in kwargs:
@@ -192,6 +218,7 @@ class Shop(MapBase, _SafeOutputTransfer,_CommonApi):
     shop_status = Column(Integer, default=SHOP_STATUS.APPLYING)
 
     admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
+    admin  = relationship("ShopAdmin", uselist=False)
 
     # 店铺标志
     shop_trademark_url = Column(String(2048))
@@ -277,7 +304,7 @@ class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     create_date_timestamp = Column(Integer, nullable=False)
     briefintro = Column(String(300), default="")
 
-    shops = relationship(Shop, backref=backref('admin'))
+    shops = relationship(Shop, uselist=True)
     username = Column(String(128)) # not used now
     feedback = relationship("Feedback")
 

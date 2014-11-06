@@ -27,10 +27,8 @@ $(document).ready(function(){
                 });
             });
         }
-        if($('.cityList').find('li').length==0) {
-            $('#cityAddress').attr({'data-code':pcode});
-            $('.select-city').hide();
-        }
+        if($('.cityList').find('li').length==0)
+        {$('#cityAddress').attr({'data-code':pcode});$('.select-city').hide();}
         else $('.select-city').show();
 
     });

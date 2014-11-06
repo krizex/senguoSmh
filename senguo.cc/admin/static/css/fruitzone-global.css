@@ -49,4 +49,5 @@ input{border:none;}
 .text-green{color:#00D289;}
 .text-red{color:#FF0808;}
 
+.border-green{border:1px solid #00D289;border-radius:2px;}
 .left-none{border-left:none !important;}
