@@ -38,7 +38,7 @@ $(document).ready(function(){
         $('#city-select ul').empty();
         for(var code in area[pcode]['city'])
         {
-            var city = $("<li data-code='"+code+"' class=''></li>").text(area[pcode]['city'][code]['name']);
+            var city = $("<li data-code='"+code+"' class='' data-dismiss='modal'></li>").text(area[pcode]['city'][code]['name']);
             $('#city-select ul').append(city);
             $('#city-select li').eq(0).addClass('active');
             $('#city-select li').click(function(){$(this).addClass('active').siblings().removeClass('active');$(this).parents('.order-by-list').hide();});
@@ -47,4 +47,6 @@ $(document).ready(function(){
     });
 
     $('.order-by-city li').eq(0).addClass('active');
+
+
 });

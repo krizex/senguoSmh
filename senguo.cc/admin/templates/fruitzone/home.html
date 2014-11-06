@@ -1,5 +1,9 @@
 {% extends 'base.html'%}
 
+{% block head%}
+<script src="{{static_url('js/fruitzone-home.js')}}"></script>
+{% end %}
+
 {% block content%}
 {% if "fruit_types" in context%}
 {% import json%}
@@ -73,11 +77,11 @@
             </li>
           {% end %}
         </ul>
-        <nav class="home-pagination">
-            <ul class="pagination">
-                <li><a href="#" id="prePage">上一页</a></li>
-                <li><a href="#" id="nextPage">下一页</a></li>
+        <!--<nav class="home-pagination order-by-list">
+            <ul class="pagination order-by-item" data-action="skipFilter">
+                <li data-code="1"><a href="javascript:;" id="prePage">上一页</a></li>
+                <li data-code="2"><a href="javascript:;" id="nextPage">下一页</a></li>
             </ul>
-        </nav>
+        </nav>-->
     </div>
 {% end %}
