@@ -16,21 +16,18 @@ class Access(SuperBaseHandler):
             return self.redirect(self.reverse_url("superHome"))
         else:
             return self.send_error(404)
-    @SuperBaseHandler.check_arguments("username", "password")
+    @SuperBaseHandler.check_arguments("phone", "password")
     def post(self):
+        """后台登录暂时只支持手机号密码登录"""
         if self._action != "login":
             raise Exception("Superadmin Only support login post!")
-        #try:
-        user = self.session.query(models.SuperAdmin).filter_by(
-                username= self.args["username"], 
-                password= self.args["password"]).one()
-        #except:
-        #user = None
+        user = models.SuperAdmin.login_by_phone_password(
+            self.session,
+            self.args["phone"], self.args["password"])
         if not user:
-            return self.send_fail(error_text = "username account not match!")
+            return self.send_fail(error_text = "user not exists or password  not match!")
         self.set_current_user(user)
         return self.send_success()
-
 
 class ShopAdminManage(SuperBaseHandler):
     """商家管理，基本上是信息展示"""

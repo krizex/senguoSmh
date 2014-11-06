@@ -10,7 +10,7 @@ import hashlib
 
 if __name__ == "__main__":
     choice = input("""
-    这将会创造一个(用户名, 密码)为(superlady, super)的超级管理员， 输入yes继续：""")
+这将会创造一个(手机号, 密码)为(20141111, super)的超级管理员， 输入yes继续：""")
     if choice == "yes":
         u = models.SuperAdmin(username="superlady", password=hashlib.sha256(b'super').hexdigest(), email="superlady@senguo.cc")
         s = models.DBSession()

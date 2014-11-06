@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, func, ForeignKey, Column
 from sqlalchemy.types import String, Integer, Text, Boolean, Float
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm.exc import NoResultFound
 
 from dal.db_configs import MapBase, DBSession
 from dal.dis_dict import dis_dict
@@ -49,20 +50,29 @@ class SHOP_STATUS:
 
 ## TODO: 账户支付及账户升级功能
 
-class _SafeOutputTransfer:
-    """
-    当需要向前端发送数据时，有些数据是不能被发送的，比如密码等敏感数据，
-    所以需要进行数据保护
-    另外，支持一级relationship对象
-    
-    这里定义了一个接口：
-    @ func: props()，可以用来向外界发送经过处理的数据
-    """
 
+class _CommonApi:
+
+    @classmethod
+    def get_by_id(cls, session, id):
+        s = session
+        try:u = s.query(cls).filter_by(id=id).one()
+        except:u = None
+        return u
+
+    def save(self, session):
+        s = session
+        s.add(self)
+        s.commit()
+    def update(self, session, **kwargs):
+        for key in kwargs.keys():
+            setattr(self, key, kwargs[key])
+        self.save(session)
+
+    """将数据实例对象转换为dict数据，便于与前端通信"""
     # 定义需要保护的对象名:
     __protected_props__ = []
     __relationship_props__ = []
-
     def safe_props(self, with_relationship=True):
         output_data = {}
         for key in self.__dict__:
@@ -103,24 +113,6 @@ class _SafeOutputTransfer:
                 output_data[rel_prop_name] = out_prop_data
         return output_data
 
-class _CommonApi:
-    @classmethod
-    def get_by_id(cls, session, id):
-        s = session
-        try:u = s.query(cls).filter_by(id=id).one()
-        except:u = None
-        return u
-
-    def save(self, session):
-        s = session
-        s.add(self)
-        s.commit()
-    def update(self, session, **kwargs):
-        for key in kwargs.keys():
-            setattr(self, key, kwargs[key])
-        self.save(session)
-
-
 
 class _AccountApi(_CommonApi):
     """
@@ -134,57 +126,132 @@ class _AccountApi(_CommonApi):
           2. 全局多个会话，并实现访问排队：可能导致性能受影响。
     最粗暴的解决方法：传一个外部控制的session参数进来，由外部控制session的死活。
     """
-
     
+    # 微信登录API
     @classmethod
-    def get_by_unionid(cls, session, wx_unionid):
+    def login_by_unionid(cls, session, wx_unionid):
         s = session
-        try:u = s.query(cls).filter_by(wx_unionid=wx_unionid).one()
-        except:u = None
+        try:
+            u = s.query(cls).filter(
+                Accountinfo.id==cls.id, 
+                Accountinfo.wx_unionid==wx_unionid).one()
+        except NoResultFound:
+            u = None
         return u
+    # 微信注册API（注意）
     @classmethod
-    def get_or_create_with_unionid(cls, session, wx_unionid, userinfo={}):
-        u = cls.get_by_unionid(session, wx_unionid)
+    def register_with_wx(cls, session, wx_userinfo):
+        # 判断是否在本账户里存在该用户
+        u = cls.login_by_unionid(session, wx_userinfo["unionid"])
         if u: return u
-        u = cls(wx_unionid=userinfo["unionid"],
-                wx_openid=userinfo["openid"],
-                wx_sex=userinfo["sex"],
-                wx_nickname=userinfo["nickname"],
-                wx_country=userinfo["country"],
-                wx_province=userinfo["province"],
-                wx_city=userinfo["city"],
-                wx_headimgurl=userinfo["headimgurl"],
-                headimgurl=userinfo["headimgurl"],
-                nickname=userinfo["nickname"],
-                sex = userinfo["sex"],
-                create_date_timestamp=int(time.time()))
-        s = session
-        s.add(u)
-        s.commit()
+        # 判断是否在基本信息表里存在该用户
+        
+        try:
+            account_info = session.query(Accountinfo).filter_by(wx_unionid=wx_userinfo["unionid"]).one()
+        except NoResultFound:
+            account_info = None
+        # 基本账户中存在该账户，直接添加
+        if account_info:
+            u = cls(id=account_info.id)
+            session.add(u)
+            session.commit()
+            return u
+        
+        # 基本账户中不存在，先创建基本信息，再添加到该用户账户中去
+        account_info = Accountinfo(
+            wx_unionid=wx_userinfo["unionid"],
+            wx_openid=wx_userinfo["openid"],
+            wx_country=wx_userinfo["country"],
+            wx_province=wx_userinfo["province"],
+            wx_city=wx_userinfo["city"],
+            headimgurl=wx_userinfo["headimgurl"],
+            nickname=wx_userinfo["nickname"],
+            sex = wx_userinfo["sex"])
+        u = cls()
+        u.accountinfo = account_info
+        session.add(u)
+        session.commit()
         return u
     
+    # 手机号密码登录
     @classmethod
-    def get_by_phone(cls, session, phone):
+    def login_by_phone_password(cls, session, phone, password):
         s = session
-        try:u = s.query(cls).filter_by(phone=phone).one()
-        except:u = None
+        try:
+            u = s.query(cls).filter(
+                cls.id == Accountinfo.id,
+                Accountinfo.phone==phone,
+                Accountinfo.password != None,
+                Accountinfo.password == password
+            ).one()
+        except NoResultFound:
+            u = None
         return u
+    # 手机号验证码登录
+    @classmethod
+    def login_by_phone(cls, session, phone):
+        s = session
+        try:
+            u = s.query(cls).filter(
+                cls.id == Accountinfo.id,
+                Accountinfo.phone==phone
+            ).one()
+        except NoResultFound:
+            u = None
+        return u
+    # * TODO 手机号注册
 
-
-class SuperAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
-    __tablename__ = "super_admin"
+class Accountinfo(MapBase, _CommonApi):
+    __tablename__ = "account_info"
     
     __protected_props__ = ["password"]
+
+    def __init__(self, **kwargs):
+        if not "create_date_timestamp" in kwargs:
+            kwargs["create_date_timestamp"] = time.time()
+        super().__init__(**kwargs)
+    
     id = Column(Integer, primary_key=True, nullable=False)
-    username = Column(String(64),unique=True, nullable=False)
-    password = Column(String(2048), nullable=False)
-    email = Column(String(2048), nullable=False)
+    create_date_timestamp = Column(Integer, nullable=False)    
+
+    # 账户访问信息 (phone/email, password)/(wx_unionid)用来登录
+    phone = Column(String(32), unique=True, default=None)
+    email = Column(String(64), unique=True, default=None)
+    password = Column(String(128), default=None)
+    wx_unionid = Column(String(64), unique=True)
+    
+    # 基本账户信息
+
+    # 性别，男1, 女2, 其他0
+    sex = Column(Integer, default=0)
+    # 昵称
+    nickname = Column(String(64), default="")
+    # 真实姓名
+    realname = Column(String(128))
+    # 头像url
+    headimgurl = Column(String(1024))
+    # 生日
+    birthday = Column(Integer)# timestamp
+    # 微信数据
+    wx_openid = Column(String(64)) 
+    wx_username = Column(String(64))
+    wx_country = Column(String(32))
+    wx_province = Column(String(32))
+    wx_city = Column(String(32))
+
+
+class SuperAdmin(MapBase, _AccountApi):
+    __tablename__ = "super_admin"
+    __relationship_props__ = ["accountinfo"]
+
+    id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
+    accountinfo = relationship(Accountinfo)
 
     def __repr__(self):
-        return "<SiteAdmin: ({id}, {username})>".\
-            format(id=self.id,username=self.username)
+        return "<SuperAdmin ({nickname}, {id})>".\
+            format(id=self.id, nickname=self.accountinfo.nickname)
 
-class Shop(MapBase, _SafeOutputTransfer,_CommonApi):
+class Shop(MapBase, _CommonApi):
     __relationship_props__ = ["admin", "demand_fruits", "onsale_fruits"]
     
     
@@ -221,7 +288,7 @@ class Shop(MapBase, _SafeOutputTransfer,_CommonApi):
     declined_reason = Column(String(256), default="")
 
     admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
-    admin  = relationship("ShopAdmin", uselist=False)
+    admin  = relationship("ShopAdmin")
 
     # 店铺标志
     shop_trademark_url = Column(String(2048))
@@ -268,22 +335,11 @@ class Shop(MapBase, _SafeOutputTransfer,_CommonApi):
         return "<Shop: {0} (id={1}, code={2})>".format(
             self.shop_name, self.id, self.shop_code)
 
-class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
-    
-    def __init__(self, **kwargs):
-        if not "create_date_timestamp" in kwargs:
-            kwargs["create_date_timestamp"] = time.time()
-        super().__init__(**kwargs)
-
-
+class ShopAdmin(MapBase, _AccountApi):
     __tablename__ = "shop_admin"
-    
-    __protected_props__ = ["password"]
-    
-    id = Column(Integer, primary_key=True, nullable=False)
-    phone = Column(String(64), unique=True)
-    email = Column(String(128), unique=True)
-    password = Column(String(2048))
+
+    id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
+    accountinfo = relationship(Accountinfo)
     
     # 角色类型，SHOPADMIN_ROLE_TYPE: [SHOP_OWNER, SYSTEM_USER]
     role = Column(Integer, nullable=False, default=SHOPADMIN_ROLE_TYPE.SHOP_OWNER)
@@ -294,32 +350,10 @@ class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     charge_type = Column(Integer)
     # 过期时间
     expire_time = Column(Integer, default=0)
-    # 性别，男1, 女2, 其他0
-    sex = Column(Integer)
-    # 昵称
-    nickname = Column(String(128), default="")
-    # 姓名
-    realname = Column(String(128))
-    # 头像url
-    headimgurl = Column(String(1024))
-    birthday = Column(Integer)# timestamp
-    qr_code_url = Column(String(2048))
-    create_date_timestamp = Column(Integer, nullable=False)
     briefintro = Column(String(300), default="")
 
     shops = relationship(Shop, uselist=True)
-    username = Column(String(128)) # not used now
     feedback = relationship("Feedback")
-
-    wx_openid = Column(String(1024)) 
-    wx_unionid = Column(String(1024))
-    wx_nickname = Column(String(128))
-    wx_username = Column(String(128))
-    wx_sex = Column(String(20))
-    wx_country = Column(String(128))
-    wx_province = Column(String(128))
-    wx_city = Column(String(128))
-    wx_headimgurl = Column(String(2048))
 
     def add_shop(self, session, **kwargs):
         kwargs["admin_id"] = self.id
@@ -334,82 +368,28 @@ class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
         s.commit()
 
     def __repr__(self):
-        return "<ShopAdmin: {0}({1})>".format(self.username, self.id)
+        return "<ShopAdmin (nickname, id)>".format(self.accountinfo.nickname, 
+                                                   self.id)
 
 
-class ShopStaff(MapBase, _AccountApi, _SafeOutputTransfer):
+class ShopStaff(MapBase, _AccountApi):
     __tablename__ = "shop_staff"
 
-    __protected_props__ = ["password"]
-
-    def __init__(self, **kwargs):
-        if not "create_date_timestamp" in kwargs:
-            kwargs["create_date_timestamp"] = time.time()
-        super().__init__(**kwargs)
-
-    id = Column(Integer, primary_key=True, nullable=False)
-    phone = Column(String(30))
-    password = Column(String(2048))
-    create_date_timestamp = Column(Integer, nullable=False)
-    
-    email = Column(String(2048))
-    nickname = Column(String(128), default="")
-
-    username = Column(String(64),unique=True) # not used now
-    # 头像url
-    headimgurl = Column(String(1024))
-    # 性别，男1, 女2, 其他0
-    sex = Column(Integer)
-
-    wx_openid = Column(String(1024)) 
-    wx_unionid = Column(String(1024))
-    wx_nickname = Column(String(128))
-    wx_sex = Column(String(20))
-    wx_country = Column(String(128))
-    wx_province = Column(String(128))
-    wx_city = Column(String(128))
-    wx_headimgurl = Column(String(2048))    
+    id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
+    accountinfo = relationship(Accountinfo)
 
 
-
-class Customer(MapBase, _AccountApi, _SafeOutputTransfer):
+class Customer(MapBase, _AccountApi):
     __tablename__ = "customer"
 
-    __protected_props__ = ["password"]
+    id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
+    accountinfo = relationship(Accountinfo)
 
-    def __init__(self, **kwargs):
-        if not "create_date_timestamp" in kwargs:
-            kwargs["create_date_timestamp"] = time.time()
-        super().__init__(**kwargs)
-
-    id = Column(Integer, primary_key=True, nullable=False)
-    phone = Column(String(30))
-    password = Column(String(2048), nullable=False)
-    create_date_timestamp = Column(Integer, nullable=False)
-
-    nickname = Column(String(64), unique=True, nullable=False)
-    email = Column(String(2048))
     balance = Column(Float, default=0)
     credits = Column(Float, default=0)
     addresses = relationship("Address", backref="customer")
 
-    username = Column(String(64)) # not used
-    # 头像url
-    headimgurl = Column(String(1024))
-    # 性别，男1, 女2, 其他0
-    sex = Column(Integer)
-
-    wx_openid = Column(String(1024)) 
-    wx_unionid = Column(String(1024))
-    wx_nickname = Column(String(128))
-    wx_sex = Column(String(20))
-    wx_country = Column(String(128))
-    wx_province = Column(String(128))
-    wx_city = Column(String(128))
-    wx_headimgurl = Column(String(2048))
-
-
-class Address(MapBase,  _SafeOutputTransfer):
+class Address(MapBase,  _CommonApi):
     __tablename__ = "address"
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -418,7 +398,7 @@ class Address(MapBase,  _SafeOutputTransfer):
     address_text = Column(String(1024), nullable=False)
     owner_id = Column(Integer, ForeignKey(Customer.id))
 
-class FruitType(MapBase,  _SafeOutputTransfer):
+class FruitType(MapBase,  _CommonApi):
     __tablename__ = "fruit_type"
     
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -446,7 +426,7 @@ class ShopDemandfruitLink(MapBase):
     shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
     fruit_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
 
-class Feedback(MapBase, _CommonApi, _SafeOutputTransfer):
+class Feedback(MapBase, _CommonApi):
     __tablename__ = "feedback"
     
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)

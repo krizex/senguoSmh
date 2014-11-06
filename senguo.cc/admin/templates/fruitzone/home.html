@@ -66,7 +66,7 @@
                     <div class="shop-info pull-right">
                         <p><span class="shop-name w1 pull-left" class="homeShopName">{{shop.shop_name}}</span><span class="area pull-left">{{handler.code_to_text("shop_city",shop.shop_city)}}</span></p>
                         <p>运营时间：{{shop.live_month}}月</p>
-                        <p><span class="shop-owner w1 pull-left">负责人：{{shop.admin.realname}}</span><span class="wechat-code pull-left">{{shop.admin.wx_username or "无"}}</span></p>
+                        <p><span class="shop-owner w1 pull-left">负责人：{{shop.admin.accountinfo.realname}}</span><span class="wechat-code pull-left">{{shop.admin.accountinfo.wx_username or "无"}}</span></p>
                     </div>
                 </a>
             </li>
