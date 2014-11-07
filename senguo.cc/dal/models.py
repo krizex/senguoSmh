@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, func, ForeignKey, Column
-from sqlalchemy.types import String, Integer, Text, Boolean, Float
+from sqlalchemy.types import String, Integer, Text, Boolean, Float, DateTime
 from sqlalchemy.orm import relationship, backref
 
 from dal.db_configs import MapBase, DBSession
@@ -252,6 +252,7 @@ class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     
     id = Column(Integer, primary_key=True, nullable=False)
     phone = Column(String(64), unique=True)
+    username = Column(String(128)) # not used now
     email = Column(String(128), unique=True)
     password = Column(String(2048))
     
@@ -278,7 +279,7 @@ class ShopAdmin(MapBase, _AccountApi, _SafeOutputTransfer):
     briefintro = Column(String(300), default="")
 
     shops = relationship(Shop, backref=backref('admin'))
-    username = Column(String(128)) # not used now
+    orders = relationship("Order")
     feedback = relationship("Feedback")
 
     wx_openid = Column(String(1024)) 
@@ -421,6 +422,21 @@ class Feedback(MapBase):
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
     text = Column(String(500))
+
+class Order(MapBase):
+    __tablename__ = "order"
+    #商城交易号
+    out_trade_no = Column(Integer, primary_key=True, nullable=False)
+    admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
+    subject = Column(String(30))
+    total_fee = Column(Integer)
+    pay_success = Column(Boolean, default=False)
+    create_time = Column(DateTime, default=func.now())
+    count = Column(Integer)
+    #支付宝交易号
+    trade_no = Column(String(64))
+    buyer_email=Column(String(64))
+
 
 def init_db_data():
     MapBase.metadata.create_all()

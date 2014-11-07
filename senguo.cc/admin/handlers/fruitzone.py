@@ -5,8 +5,10 @@ from  dal.db_configs import DBSession
 from sqlalchemy import select
 from dal.dis_dict import dis_dict
 
-import datetime,time
+import datetime, time, random
 from libs.msgverify import gen_msg_token,check_msg_token
+from libs.alipay import WapAlipay
+from settings import subject, seller_account_name, call_back_url, notify_url
 
 
 class Home(AdminBaseHandler):
@@ -19,7 +21,7 @@ class Home(AdminBaseHandler):
         fruit_types = []
         for f_t in self.session.query(models.FruitType).all():
             fruit_types.append(f_t.safe_props)
-        return self.render("fruitzone/home.html", context=dict(shops=shops, fruit_types=fruit_types))
+        return self.render("fruitzone/home.html", context=dict(shops=shops, fruit_types=fruit_types, now=time.time()))
     
     @AdminBaseHandler.check_arguments("action")
     def post(self):
@@ -42,7 +44,7 @@ class Home(AdminBaseHandler):
             # 目前只支持服务区域完全匹配
             q = q.filter_by(shop_service_area=self.args["service_area"])
         if "live_month" in self.args:
-            q = q.filter(models.Shop.live_month>self.args["live_month"])
+            q = q.filter(models.Shop.live_month < time.time()-self.args["live_month"]*(30*24*60*60))
 
         if "onsalefruit_ids" in self.args:
             q = q.filter(models.Shop.id.in_(
@@ -95,7 +97,7 @@ class AdminProfile(AdminBaseHandler):
     def get(self):
        # 模板中通过current_user获取当前admin的相关数据，
        # 具体可以查看models.ShopAdmin中的属性
-       time_tuple = time.localtime(self.current_user.birthday)
+       time_tuple = time.localtime(self.current_user.accountinfo.birthday)
        birthday = time.strftime("%Y-%m", time_tuple)
        self.render("fruitzone/admin-profile.html", context=dict(birthday=birthday))
 
@@ -110,22 +112,20 @@ class AdminProfile(AdminBaseHandler):
         elif action == "edit_nickname":
             pass
         elif action == "edit_realname":
-            self.current_user.update(session=self.session, realname=data)
+            self.current_user.accountinfo.update(session=self.session, realname=data)
         elif action == "edit_wx_username":
-            self.current_user.update(session=self.session, wx_username=data)
-        elif action == "edit_phone":
-            self.current_user.update(session=self.session, phone=data)
+            self.current_user.accountinfo.update(session=self.session, wx_username=data)
         elif action == "edit_email":
-            self.current_user.update(session=self.session, email=data)
+            self.current_user.accountinfo.update(session=self.session, email=data)
         elif action == "edit_sex":
-            self.current_user.update(session=self.session, sex=data)
+            self.current_user.accountinfo.update(session=self.session, sex=data)
         elif action == "edit_birthday":
             year = int(data["year"])
             month = int(data["month"])
             birthday = datetime.datetime(year=year, month=month, day=19)
-            self.current_user.update(session=self.session, birthday=time.mktime(birthday.timetuple()))
+            self.current_user.accountinfo.update(session=self.session, birthday=time.mktime(birthday.timetuple()))
         elif action == "edit_intro":
-            self.current_user.update(session=self.session, briefintro=data)
+            self.current_user.accountinfo.update(session=self.session, briefintro=data)
         else:
             return self.send_error(404)
         return self.send_success()
@@ -235,7 +235,8 @@ class AdminShop(AdminBaseHandler):
         time_tuple = time.localtime(shop.admin.birthday)
         birthday = time.strftime("%Y-%m", time_tuple)
 
-        return self.render("fruitzone/shop.html", context=dict(shop=shop,edit=True,birthday=birthday, fruit_types=fruit_types))
+        return self.render("fruitzone/shop.html", context=dict(shop=shop, edit=True, birthday=birthday,
+                                                               fruit_types=fruit_types, now=time.time()))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data", "shop_id")
@@ -247,7 +248,10 @@ class AdminShop(AdminBaseHandler):
         if action == "edit_shop_url":
             shop.update(session=self.session, shop_url=data)
         elif action == "edit_live_month":
-            shop.update(session=self.session, live_month=int(data))
+            year = int(data["year"])
+            month = int(data["month"])
+            live_month = datetime.datetime(year=year, month=month, day=0)
+            shop.update(session=self.session, live_month=time.mktime(live_month.timetuple()))
         elif action == "edit_total_users":
             shop.update(session=self.session, total_users=int(data))
         elif action == "edit_daily_sales":
@@ -289,7 +293,7 @@ class PhoneVerify(AdminBaseHandler):
     @AdminBaseHandler.check_arguments("phone:str")
     def handle_gencode(self):
         print("gen msg code for phone: ", self.args["phone"])
-        gen_msg_token(wx_id=self.current_user.wx_unionid, phone=self.args["phone"])
+        gen_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, phone=self.args["phone"])
         return self.send_success()
 
     @AdminBaseHandler.check_arguments("phone:str", "code:int")
@@ -297,7 +301,48 @@ class PhoneVerify(AdminBaseHandler):
         print("check msg code for phone: {0} with code: {1}".\
               format( self.args["phone"],
                       self.args["code"]))
-        if not check_msg_token(wx_id=self.current_user.wx_unionid, code=self.args["code"]):
+        if not check_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, code=self.args["code"]):
            return self.send_fail(error_text="验证码过期或者不正确")
+        self.current_user.accountinfo.update(session=self.session, phone=self.args["phone"])
         return self.send_success()
-    
+
+# class Order(AdminBaseHandler):
+#     def get(self):
+#         pass
+#
+#     @tornado.web.authenticated
+#     @AdminBaseHandler.check_arguments("action", "fee:int")
+#     def post(self):
+#
+#         if self.args["fee"] == 1:
+#             total_fee = "588"
+#         elif self.args["fee"] == 2:
+#             total_fee = "988"
+#         elif self.args["fee"] == 3:
+#             total_fee = "1788"
+#
+#         count = 0
+#         try:
+#             q = self.session.query(models.Shop).order_by(models.Shop.id).first()
+#             count = q.count
+#         except:
+#             count = 0
+#         out_trade_no = time.strftime("%Y%m%d%H%M%S", time.gmtime())+self.args["fee"]+str(count)
+#
+#         # todo out_user 在模块里没传进去
+#         out_user = ""  #买家在商户系统的唯一标识。当该买家支付成功一次后,再次支付金额在 30 元内时,不需要再次输入密码。
+#         merchant_url = "http://www.senguo.cc.monklof.com/merchant"#操作中断返回地址
+#         pay_expire = "3600"#交易自动关闭时间（分钟）
+#
+#
+#         order = models.Order()
+#         order.out_trade_no = out_trade_no
+#         order.subject
+#         order.total_fee
+#
+#         alipay = WapAlipay(pid="2088511484939521",key="oknunsvpq83x358worr6obs7zo2h1xxw",seller_email="senguo@senguo.cc")
+#         url = alipay.create_direct_pay_by_user_url(out_trade_no=out_trade_no, subject=subject,
+#                                             total_fee=total_fee,seller_account_name=seller_account_name,
+#                                             call_back_url=call_back_url, notify_url=notify_url)
+#         print(url)
+#         self.redirect(url)
