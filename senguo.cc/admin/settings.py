@@ -16,6 +16,11 @@ DB_NAME = "senguocc"
 
 #手机短信验证的设置
 content = "您的验证码是：【{code}】。请不要把验证码泄露给其他人。"
-account = "cf_liuchao2"
-password = "liuchao123"
+account = "cf_senguocc"
+password = "sg201404"
 
+#alipay 参数
+subject = "森果商城系统1.0"
+seller_account_name = "senguo@senguo.cc"
+call_back_url = "http://senguo.cc.monklof.com/fruitzone/shop/applySuccess"
+notify_url = "http://senguo.cc.monklof.com/fruitzone/shop/applySucces"

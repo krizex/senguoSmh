@@ -13,9 +13,9 @@
 </header>
 <div class="user-center-info white-color phone-box container">
     <a href="{{reverse_url('fruitzoneAdminProfile')}}">
-        <img src="{{current_user.headimgurl}}" class="pull-left user-img"/>
+        <img src="{{current_user.accountinfo.headimgurl}}" class="pull-left user-img"/>
         <div class="info pull-left">
-            <p class="username">{{current_user.wx_nickname or '无'}}</p>
+            <p class="username">{{current_user.accountinfo.nickname or '无'}}</p>
         </div>
     </a>
 </div>
@@ -25,7 +25,7 @@
             <a href="{{reverse_url('fuirzoneAdminShops')}}">我的店铺管理</a>
         </li>
         <li class="white-color">
-            <a href="#">森果商城系统接入</a>
+            <a href="#"><strong>森果商城&后台管理</strong>系统接入申请</a>
         </li>
        <!-- <li class="white-color">
             <a href="#">我的收藏</a>

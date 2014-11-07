@@ -334,7 +334,7 @@ class Shop(MapBase, _CommonApi):
     # 店铺url
     shop_url = Column(String(2048))
     # 运营时间
-    live_month = Column(Integer)
+    shop_start_timestamp = Column(Integer)
     # 团队人数
     team_size = Column(Integer)
 
