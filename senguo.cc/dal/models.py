@@ -353,6 +353,7 @@ class ShopAdmin(MapBase, _AccountApi):
     __tablename__ = "shop_admin"
 
     __relationship_props__ = ["accountinfo"]
+    __protected_props__ = ["system_orders"]
 
     id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
     accountinfo = relationship(Accountinfo)
@@ -361,11 +362,11 @@ class ShopAdmin(MapBase, _AccountApi):
     role = Column(Integer, nullable=False, default=SHOPADMIN_ROLE_TYPE.SHOP_OWNER)
     # 权限类型，SHOPADMIN_PRIVILEGE: [ALL, ]
     privileges = Column(Integer, default=SHOPADMIN_PRIVILEGE.NONE)
-    # 付费类型，SHOPADMIN_CHARGE_TYPE: 
-    # [ThreeMonth_588, SixMonth_988, TwelveMonth_1788]
-    charge_type = Column(Integer)
     # 过期时间
     expire_time = Column(Integer, default=0)
+    # 系统购买数据
+    system_orders = relationship("SystemOrder", uselist=True)
+
     briefintro = Column(String(300), default="")
 
     shops = relationship(Shop, uselist=True)
@@ -404,6 +405,44 @@ class Customer(MapBase, _AccountApi):
     balance = Column(Float, default=0)
     credits = Column(Float, default=0)
     addresses = relationship("Address", backref="customer")
+
+class SystemOrder(MapBase, _CommonApi):
+    """系统的购买订单"""
+
+    __tablename__ = "system_order"
+    
+    # 订单id， 构成如"年月日订单当日编号", 2014110700001
+    order_id = Column(Integer, nullable=False, unique=True, primary_key=True)
+    # 下单人
+    admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
+    admin  = relationship("ShopAdmin")
+    # 订单时间
+    create_date_timestamp = Column(Integer, nullable=False)
+    # charge数据
+    charge_id = Column(Integer, nullable=False)
+    charge_month = Column(Integer, nullable=False)
+    charge_price = Column(Integer, nullable=False)
+    charge_description = Column(String(32), nullable=False)
+
+    # 支付宝相关数据
+
+
+class SystemTempOrder(MapBase, _CommonApi):
+    """系统购买临时订单"""
+    __tablename__ = "system_temp_order"
+    # 订单id， 构成如"年月日订单当日编号", 2014110700001
+    order_id = Column(Integer, nullable=False, unique=True, primary_key=True)
+    # 下单人
+    admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
+    admin  = relationship("ShopAdmin")
+    # 订单时间
+    create_date_timestamp = Column(Integer, nullable=False)
+    # charge数据
+    charge_id = Column(Integer, nullable=False)
+    charge_month = Column(Integer, nullable=False)
+    charge_price = Column(Integer, nullable=False)
+    charge_description = Column(String(32), nullable=False)
+    
 
 class Address(MapBase,  _CommonApi):
     __tablename__ = "address"
@@ -451,18 +490,42 @@ class Feedback(MapBase, _CommonApi):
     text = Column(String(500))
     processed = Column(Boolean, default=False)
 
+class ChargeType(MapBase, _CommonApi):
+    __tablename__ = "charge_type"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    # 商品名
+    good_name = Column(String(32), nullable=False)
+    # 月
+    month = Column(Integer, nullable=False)
+    # 价格
+    price = Column(Integer, nullable=False)
+    # 详细描述，如588/三个月
+    description = Column(String(32), nullable=False)
+
 def init_db_data():
     MapBase.metadata.create_all()
     # add fruittypes to database
     s = DBSession()
-    if s.query(FruitType).count():
-        s.close()
-        return True
-    from dal.db_fruits import fruit_types as fruits
-    for fruit in fruits:
-        s.add(FruitType(name=fruit["name"], code=fruit["code"]))
-    s.commit()
+    if not s.query(FruitType).count():
+        from dal.db_initdata import fruit_types as fruits
+        for fruit in fruits:
+            s.add(FruitType(name=fruit["name"], code=fruit["code"]))
+        s.commit()
+        print("init fruittypes success")
+    else:
+        print("fruit types exists in db, jump init.")
+    # add chargetypes to database    
+    if not s.query(ChargeType).count():
+        from dal.db_initdata import charge_types
+        for c in charge_types:
+            s.add(ChargeType(**c))
+        s.commit()
+        print("init chargetypes success")
+    else:
+        print("charge types exists in db, jump init.")
     s.close()
+    print("init db success")
     return True
 
 

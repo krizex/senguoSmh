@@ -20,6 +20,9 @@ account = "cf_senguocc"
 password = "sg201404"
 
 #alipay 参数
+pid = "2088511484939521"
+key="oknunsvpq83x358worr6obs7zo2h1xxw"
+
 subject = "森果商城系统1.0"
 seller_account_name = "senguo@senguo.cc"
 call_back_url = "http://senguo.cc.monklof.com/fruitzone/shop/applySuccess"

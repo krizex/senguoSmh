@@ -239,7 +239,7 @@ class AdminShop(AdminBaseHandler):
             return self.send_error(404)
         fruit_types = []
         for f_t in self.session.query(models.FruitType).all():
-            fruit_types.append(f_t.safe_props())
+            fruit_types.append(f_t.all_props())
 
         time_tuple = time.localtime(shop.admin.accountinfo.birthday)
         birthday = time.strftime("%Y-%m", time_tuple)
@@ -312,43 +312,95 @@ class PhoneVerify(AdminBaseHandler):
         self.current_user.accountinfo.update(self.session, phone=self.args["phone"],password=self.args["password"])
         return self.send_success()
 
-# class Order(AdminBaseHandler):
-#     def get(self):
-#         pass
-#
-#     @tornado.web.authenticated
-#     @AdminBaseHandler.check_arguments("action", "fee:int")
-#     def post(self):
-#
-#         if self.args["fee"] == 1:
-#             total_fee = "588"
-#         elif self.args["fee"] == 2:
-#             total_fee = "988"
-#         elif self.args["fee"] == 3:
-#             total_fee = "1788"
-#
-#         count = 0
-#         try:
-#             q = self.session.query(models.Shop).order_by(models.Shop.id).first()
-#             count = q.count
-#         except:
-#             count = 0
-#         out_trade_no = time.strftime("%Y%m%d%H%M%S", time.gmtime())+self.args["fee"]+str(count)
-#
-#         # todo out_user 在模块里没传进去
-#         out_user = ""  #买家在商户系统的唯一标识。当该买家支付成功一次后,再次支付金额在 30 元内时,不需要再次输入密码。
-#         merchant_url = "http://www.senguo.cc.monklof.com/merchant"#操作中断返回地址
-#         pay_expire = "3600"#交易自动关闭时间（分钟）
-#
-#
-#         order = models.Order()
-#         order.out_trade_no = out_trade_no
-#         order.subject
-#         order.total_fee
-#
-#         alipay = WapAlipay(pid="2088511484939521",key="oknunsvpq83x358worr6obs7zo2h1xxw",seller_email="senguo@senguo.cc")
-#         url = alipay.create_direct_pay_by_user_url(out_trade_no=out_trade_no, subject=subject,
-#                                             total_fee=total_fee,seller_account_name=seller_account_name,
-#                                             call_back_url=call_back_url, notify_url=notify_url)
-#         print(url)
-#         self.redirect(url)
+class AdminSystemPurchase(AdminBaseHandler):
+    """后台购买相关页面"""
+    def initialize(self, action):
+        self._action == action
+
+    @tornado.web.authenticated
+    def get(self):
+        if self._action == "chooseChargeType":
+            return self.render("fruitzone/admin-choose-charge-type.html")
+        elif self._action == "getChargeDetail":
+            return self.get_charge_detail()
+        else:
+            return self.send_error(404)
+
+    @tornado.web.authenticated
+    def post(self):
+        if self._action == "getChargeDetail":
+            return self.handle_confirm_payment()
+    
+    @AdminBaseHandler.check_arguments("charge_type:int", "pay_type")
+    def handle_confirm_payment(self):
+        if self.args["pay_type"] == "wx":
+            # 判断charge_type合法性，不合法从新返回接入申请页
+            # 创建订单，跳转到支付宝支付页
+            pass
+
+
+    @AdminBaseHandler.check_arguments("charge_type:int")
+    def get_charge_detail(self):
+        # 判断charge_type合法性，不合法从新返回接入申请页
+        # 获取商品数据，返回render
+        pass
+    
+    
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Order(AdminBaseHandler):
+    def get(self):
+        pass
+
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action", "fee:int")
+    def post(self):
+
+        if self.args["fee"] == 1:
+            total_fee = "588"
+        elif self.args["fee"] == 2:
+            total_fee = "988"
+        elif self.args["fee"] == 3:
+            total_fee = "1788"
+
+        count = 0
+        try:
+            q = self.session.query(models.Shop).order_by(models.Shop.id).first()
+            count = q.count
+        except:
+            count = 0
+        out_trade_no = time.strftime("%Y%m%d%H%M%S", time.gmtime())+self.args["fee"]+str(count)
+
+        # todo out_user 在模块里没传进去
+        out_user = ""  #买家在商户系统的唯一标识。当该买家支付成功一次后,再次支付金额在 30 元内时,不需要再次输入密码。
+        merchant_url = "http://www.senguo.cc.monklof.com/merchant"#操作中断返回地址
+        pay_expire = "3600"#交易自动关闭时间（分钟）
+
+
+        order = models.Order()
+        order.out_trade_no = out_trade_no
+        order.subject
+        order.total_fee
+
+        alipay = WapAlipay(pid="2088511484939521",key="oknunsvpq83x358worr6obs7zo2h1xxw",seller_email="senguo@senguo.cc")
+        url = alipay.create_direct_pay_by_user_url(
+            out_trade_no=out_trade_no, 
+            subject=subject,
+            total_fee=total_fee,
+            seller_account_name=seller_account_name,
+            call_back_url=call_back_url, 
+            notify_url=notify_url)
+        print(url)
+        self.redirect(url)
