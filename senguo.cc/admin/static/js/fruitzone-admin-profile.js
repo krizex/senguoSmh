@@ -1,6 +1,7 @@
 $(document).ready(function(){
     $('.editInfo').click(function(){$(this).parents('.info-con').siblings('.info-edit').toggle();});
 
+    // 不要采用通过js设置文本显示的方法，用两个html元素来分别显示提示信息和真实信息。这样对于html代码不够直观。
     $('a.editInfo').each(function(){
         if($(this).text() =='None'||$(this).text() =='')
         {$(this).text('点击设置').css({'color':'#FF3C3C'});}
@@ -49,7 +50,7 @@ function infoEdit(evt){
         var regMonth=/^((0?[1-9])|((1|2)[0-9])|30|31)$/;
         var action=evt.data('action');
         var data=evt.parents('.info-edit').find('.edit-box').val();
-
+        // action 不要放在html里面
         if(action=='edit_email' && !regEmail.test(email))
         {return alert("邮箱不存在!");}
         else if(action=='edit_sex')

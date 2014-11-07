@@ -8,6 +8,11 @@ $(document).ready(function(){
         }
         else $('.city-select').find('li').each(function(){$(this).click(function(){Filter($(this));});});
     });
+
+    // 不要用order-by这样的命名，易误会
+    /* 这种实现点击事件处理的方法效率低，建议采用事件代理，可以参考这篇文章：http://chajn.org/project/javascript-events-responding-user/
+     */
+
     $('.order-by-fruit').find('li').each(function(){$(this).click(function(){$(this).toggleClass('active');});});
     $('.order-by-area').find('li').each(function(){$(this).click(function(){Filter($(this));});});
     $('.order-by-time').find('li').each(function(){$(this).click(function(){Filter($(this));});});
@@ -27,6 +32,9 @@ function Search(evt){
         _xsrf: window.dataObj._xsrf
 
     };
+    
+    // 需要判断q是否为空 & action不要放在html element data属性里面（它应当是js里面的内容）
+
     $.postJson(url,args,
         function(res){
             if(res.success)
@@ -46,8 +54,10 @@ function Search(evt){
                     var wxusername=shops[shop]["admin"]["accountinfo"]["wx_username"];
                     var list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-left"><p><span class="shop-name w1 pull-left">'+shopname+'</span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"> </em><em data="'+city+'" id="filterCity"></em></span></p><p>运营时间：'+livemonth+'月</p><p><span class="shop-owner w1 pull-left">负责人：'+nickname+'</span><span class="w2 wechat-code pull-left">'+wxusername+'</span></p></div></a></li>');
                     $('#homeShopList').append(list);
+
                     $('#filterProvince').text(provinceArea(province));
                     if(city!=province){$('#filterCity').text(cityArea(province,city));}
+                    // 这段替换代码逻辑有问题，应该是替换list中的"#filterProvince"
 
                 }
             }
@@ -89,6 +99,8 @@ function Filter(evt){
         {var args = {onsalefruit_ids: onsalefruit_ids,action: action,_xsrf: window.dataObj._xsrf};}
     else if(order=='skipFilter')
         {var args = {skip:skip,action: action,_xsrf: window.dataObj._xsrf};}
+    // 以上args中的action和_xsrf字段可以脱离出来
+    // 事实上postJson你可以重写，把_xsrf参数自动添加进去
     $.postJson(url,args,
         function(res){
             if(res.success) {
@@ -113,8 +125,9 @@ function Filter(evt){
                     if(city!=province){$('#filterCity').text(cityArea(province,city));}
                     if(wxusername=='null'||wxusername==''){$('.wechat-code').text('无');}
                     console.log(wxusername);
+                    //同样处理省份的转换有问题
                 }
-
+                // 考虑无过滤结果的情况
             }
         },
         function(){
