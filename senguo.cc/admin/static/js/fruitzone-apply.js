@@ -31,13 +31,15 @@ function Apply(evt){
     if($('#serverArea li').eq(3).hasClass('active'))
         i+=8;
     var shop_name=$('#shopName').val().trim();
-    var shop_province=$('#provinceAddress').data('code');
-    var shop_city=$('#cityAddress').data('code');
+    var shop_province=$('#provinceAddress').attr('data-code');
+    var shop_city=$('#cityAddress').attr('data-code');
     var shop_address_detail=$('#addressDetail').val().trim();
     var have_offline_entity=$('#realShop').find('.active').find('a').data('real');
     var shop_service_area=i;
     var shop_intro=$('#shopIntro').val().trim();
-    if (!shop_name || ! shop_service_area ||!shop_province || !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
+    console.log(shop_province,shop_city);
+    if (!shop_name || ! shop_service_area ||!shop_city||!shop_province || !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
+    console.log(shop_province,shop_city);
     var args={
         shop_name:shop_name,
         shop_province:shop_province,
@@ -78,14 +80,14 @@ function reApply(evt){
     if($('#serverArea li').eq(3).hasClass('active'))
         i+=8;
     var shop_name=$('#shopName').val().trim();
-    var shop_province=$('#provinceAddress').data('code');
-    var shop_city=$('#cityAddress').data('code');
+    var shop_province=$('#provinceAddress').attr('data-code');
+    var shop_city=$('#cityAddress').attr('data-code');
     var shop_address_detail=$('#addressDetail').val().trim();
     var have_offline_entity=$('#realShop').find('.active').find('a').data('real');
     var shop_service_area=i;
     var shop_intro=$('#shopIntro').val().trim();
     var shop_id=$('#headerId').data('id');
-    if (!shop_name || ! shop_service_area ||!shop_province || !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
+    if (!shop_name || ! shop_service_area ||!shop_province ||!shop_city|| !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
     var args={
         shop_name:shop_name,
         shop_province:shop_province,

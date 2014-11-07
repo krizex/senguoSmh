@@ -1,7 +1,7 @@
 body{font-size: 1em;font-family:"microsoft yahei";background:#f2f2f2;}
 p{clear: both;width: 100%}
 ol,ul,li{list-style:none;}
-.phone-box{width:100%;min-width:320px;max-width:640px;margin:0 auto;overflow:hidden;background:#F2F2F2;}
+.phone-box{width:100%;min-width:320px;max-width:640px;margin:0 auto;overflow:hidden;background:#F2F2F2;padding-bottom:10px;}
 .color-green{color:#40c689;}
 ul{padding-left:0px;margin-bottom:0;}
 a:hover{text-decoration:none;}

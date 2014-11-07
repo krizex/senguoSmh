@@ -15,6 +15,7 @@ $(document).ready(function(){
         var pro=$(this).text();
         $('.cityList').empty();
         $('#cityAddress').text('选择城市');
+        $('#cityAddress').attr({'data-code':''});
         $('#provinceAddress').text(pro).attr({'data-code':pcode});
         for(var code in area[pcode]['city'])
         {
