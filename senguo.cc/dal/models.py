@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, func, ForeignKey, Column
-from sqlalchemy.types import String, Integer, Text, Boolean, Float, DateTime
+from sqlalchemy.types import String, Integer, Text, Boolean, Float
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -69,7 +69,7 @@ class _CommonApi:
             setattr(self, key, kwargs[key])
         self.save(session)
 
-    """将数据实例对象转换为dict数据，便于与前端通信"""
+    """将数据实例对象转换为dict数据，便于与前端通信，目前支持2级展开关系表"""
     # 定义需要保护的对象名:
     __protected_props__ = []
     __relationship_props__ = []
@@ -80,9 +80,15 @@ class _CommonApi:
                not key.startswith("_") and \
                not key in self.__protected_props__:
                 output_data[key] = self.__dict__[key]
+        # 支持账户类型数据
+        if "accountinfo" in self.__relationship_props__:
+            output_data["accountinfo"] = getattr(self, "accountinfo").safe_props(False)
+
         if with_relationship:
             for rel_prop_name in self.__relationship_props__:
                 if not rel_prop_name in self.__protected_props__:
+                    if rel_prop_name == "accountinfo":
+                        continue
                     rel_prop_data = getattr(self, rel_prop_name)
 
                     try:
@@ -95,14 +101,21 @@ class _CommonApi:
 
         return output_data
 
-    def all_props(self, with_relationship=False):
+    def all_props(self, with_relationship=True):
         output_data = {}
         for key in self.__dict__:
             if type(key) == str and \
                not key.startswith("_"):
                 output_data[key] = self.__dict__[key]
+
+        # 支持账户类型数据
+        if "accountinfo" in self.__relationship_props__:
+            output_data["accountinfo"] = getattr(self, "accountinfo").safe_props(False)
+
         if with_relationship:
             for rel_prop_name in self.__relationship_props__:
+                if rel_prop_name == "accountinfo":
+                        continue
                 rel_prop_data = getattr(self, rel_prop_name)
                 try:
                     out_prop_data = []
@@ -204,7 +217,8 @@ class _AccountApi(_CommonApi):
 class Accountinfo(MapBase, _CommonApi):
     __tablename__ = "account_info"
     
-    __protected_props__ = ["password"]
+    __protected_props__ = ["password", "phone", "email", "wx_unionid", "sex", 
+                           "realname", "headimgurl", "birthday", "wx_openid", "wx_country", "wx_province", "wx_city"]
 
     def __init__(self, **kwargs):
         if not "create_date_timestamp" in kwargs:
@@ -320,7 +334,7 @@ class Shop(MapBase, _CommonApi):
     # 店铺url
     shop_url = Column(String(2048))
     # 运营时间
-    live_month = Column(Integer)
+    shop_start_timestamp = Column(Integer)
     # 团队人数
     team_size = Column(Integer)
 
@@ -338,6 +352,8 @@ class Shop(MapBase, _CommonApi):
 class ShopAdmin(MapBase, _AccountApi):
     __tablename__ = "shop_admin"
 
+    __relationship_props__ = ["accountinfo"]
+
     id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
     accountinfo = relationship(Accountinfo)
     
@@ -352,7 +368,6 @@ class ShopAdmin(MapBase, _AccountApi):
     expire_time = Column(Integer, default=0)
     briefintro = Column(String(300), default="")
 
-    orders = relationship("Order")
     shops = relationship(Shop, uselist=True)
     feedback = relationship("Feedback")
 
@@ -375,14 +390,14 @@ class ShopAdmin(MapBase, _AccountApi):
 
 class ShopStaff(MapBase, _AccountApi):
     __tablename__ = "shop_staff"
-
+    __relationship_props__ = ["accountinfo"]
     id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
     accountinfo = relationship(Accountinfo)
 
 
 class Customer(MapBase, _AccountApi):
     __tablename__ = "customer"
-
+    __relationship_props__ = ["accountinfo"]
     id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
     accountinfo = relationship(Accountinfo)
 
@@ -435,21 +450,6 @@ class Feedback(MapBase, _CommonApi):
     admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
     text = Column(String(500))
     processed = Column(Boolean, default=False)
-
-class Order(MapBase):
-    __tablename__ = "order"
-    #商城交易号
-    out_trade_no = Column(Integer, primary_key=True, nullable=False)
-    admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
-    subject = Column(String(30))
-    total_fee = Column(Integer)
-    pay_success = Column(Boolean, default=False)
-    create_time = Column(DateTime, default=func.now())
-    count = Column(Integer)
-    #支付宝交易号
-    trade_no = Column(String(64))
-    buyer_email=Column(String(64))
-
 
 def init_db_data():
     MapBase.metadata.create_all()

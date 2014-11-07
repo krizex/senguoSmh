@@ -33,7 +33,7 @@ class Access(AdminBaseHandler):
     def handle_oauth(self):
         # todo: handle state
         code =self.args["code"]
-        mode = self.args, userinfo["mode"]
+        mode = self.args["mode"]
         print("mode: ", mode , ", code get:", code)
         if mode not in ["mp", "kf"]:
             return self.send_error(400)

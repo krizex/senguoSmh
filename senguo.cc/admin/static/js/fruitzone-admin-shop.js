@@ -1,0 +1,128 @@
+$(document).ready(function(){
+    $('.modal .fruit-list li').each(function(){$(this).click(function(){$(this).toggleClass('active');});});
+
+    var s1=$('.sell-fruit-list').find('li');
+    var s2=$('#sellFruit').find('li');
+    var b1=$('.buy-fruit-list').find('li');
+    var b2=$('#buyFruit').find('li');
+    Remember(s1,s2);
+    Remember(b1,b2);
+
+    $('.shop-edit-btn').each(function(){shopEdit($(this));});
+    $('#liveTimeEdit').click(function(){TimeEdit($(this))});
+
+});
+
+
+function Remember(sell1,sell2){
+    for(var i= 0;i<sell1.length;i++)
+    {
+        var t=sell1.eq(i).data('code');
+        for(var j=0;j<sell2.length;j++)
+        {
+            var g=sell2.eq(j).data('code');
+            if(g==t)
+            {
+                sell2.eq(j).addClass('active');
+            }
+        }
+
+    }
+}
+
+function TimeEdit(evt){
+        var action=evt.data('action');
+        var data= {
+            year: $('#startYear').val().trim(),
+            month: $('#startMonth').val().trim()
+        };
+        var id=$('#headerId').data('shop');
+        if(!data['year']||!data['month']){return alert('请输入运营起始年月！')}
+
+        var url="/fruitzone/admin/shop/"+id;
+        var args={action: action, data: data,_xsrf: window.dataObj._xsrf};
+        $.postJson(url,args,
+            function (res) {
+                if (res.success) {
+                    evt.parents('.editBox').find('.shopShow').text(data);
+                    if(res.shop_start_timestamp!=0)
+                    {
+                        var time=parseInt((res.now-res.shop_start_timestamp)/(30*24*60*60));
+                        $('#liveTime').text(time);
+                        console.log(time);
+                        alert('修改成功！');
+                    }
+
+                }
+                else alert('您填写的信息格式不正确！');
+            },
+            function(){
+                alert('网络错误！');}
+        );
+}
+
+
+function shopEdit(evt){
+    evt.click(function(){
+        var link=$('#shopLink').val();
+        var users=$('#shopUser').val();
+        var sell=$('#shopSell').val();
+        var buy=$('#shopBuy').val();
+        var intro=$('#shopIntro').val();
+        var regNumber=/^[0-9]*[1-9][0-9]*$/;
+        var id=$('#headerId').data('shop');
+
+        var action=evt.data('action');
+        var data=evt.parents('.modal').find('.shop-edit-info').find('.editBox').val();
+
+
+        if(action=='edit_total_users' && !regNumber.test(users))
+            {return alert('用户数只能为数字！');}
+        else if(action=='edit_daily_sales' && !regNumber.test(sell))
+            {return alert("日销量只能为数字!");}
+        else if(action=='edit_single_stock_size' && !regNumber.test(buy))
+            {return alert("采购量只能为数字!");}
+        else if(action=='edit_onsale_fruits')
+            {
+                var data=[];
+                var f=$('#sellFruit').find('.active');
+                for(var i=0;i<f.length;i++)
+                {
+                    var b=$('#sellFruit').find('.active').eq(i).data('code');
+                    data.push(b);
+
+                }
+            }
+        else if(action=='edit_demand_fruits')
+            {
+                var data=[];
+                var f=$('#buyFruit').find('.active');
+                for(var i=0;i<f.length;i++)
+                {
+                    var b=$('#buyFruit').find('.active').eq(i).data('code');
+                    data.push(b);
+                }
+            }
+        var url="/fruitzone/admin/shop/"+id;
+        var args={action: action, data: data,_xsrf: window.dataObj._xsrf};
+        $.postJson(url,args,
+            function (res) {
+                if (res.success) {
+                    evt.parents('.editBox').find('.shopShow').text(data);
+                    var fruit=window.dataObj.fruit_types;
+                    evt.parents('.modal').prev('.edit-fruit-list').find('li').remove();
+                    for(var i=0;i<data.length;i++)
+                    {
+                        var h=data[i]-1;
+                        var fruitlist=$('<li class="fruitsty" data-code="'+fruit[h]['id']+'"></li>').text(fruit[h]['name']);
+                        evt.parents('.fruitBox').prev('.edit-fruit-list').prepend(fruitlist);
+                    }
+
+                }
+                else alert('您填写的信息格式不正确！');
+            },
+            function(){
+                alert('网络错误！');}
+        );
+    });
+}

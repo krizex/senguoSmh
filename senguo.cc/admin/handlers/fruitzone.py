@@ -43,7 +43,7 @@ class Home(AdminBaseHandler):
         if "service_area" in self.args:
             q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
         if "live_month" in self.args:
-            q = q.filter(models.Shop.live_month < time.time()-self.args["live_month"]*(30*24*60*60))
+            q = q.filter(models.Shop.shop_start_timestamp < time.time()-self.args["live_month"]*(30*24*60*60))
 
         if "onsalefruit_ids" in self.args and self.args["onsalefruit_ids"]:
             q = q.filter(models.Shop.id.in_(
@@ -265,10 +265,11 @@ class AdminShop(AdminBaseHandler):
             year = int(data["year"])
             month = int(data["month"])
             try:
-                live_month = datetime.datetime(year=year, month=month, day=1)
+                shop_start_timestamp = datetime.datetime(year=year, month=month, day=1)
             except ValueError:
                 return self.send_fail("月份必须为1~12")
-            shop.update(session=self.session, live_month=time.mktime(live_month.timetuple()))
+            shop.update(session=self.session, shop_start_timestamp=time.mktime(shop_start_timestamp.timetuple()))
+            return self.send_success(now=time.time(),shop_start_timestamp=time.mktime(shop_start_timestamp.timetuple()))
         elif action == "edit_total_users":
             shop.update(session=self.session, total_users=int(data))
         elif action == "edit_daily_sales":
@@ -311,14 +312,14 @@ class PhoneVerify(AdminBaseHandler):
 
     @AdminBaseHandler.check_arguments("phone:str")
     def handle_gencode(self):
-        gen_msg_token(wx_id=self.current_user.wx_unionid, phone=self.args["phone"])
+        gen_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, phone=self.args["phone"])
         return self.send_success()
 
-    @AdminBaseHandler.check_arguments("phone:str", "code:int")
+    @AdminBaseHandler.check_arguments("phone:str", "code:int","password")
     def handle_checkcode(self):
-        if not check_msg_token(wx_id=self.current_user.wx_unionid, code=self.args["code"]):
+        if not check_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, code=self.args["code"]):
            return self.send_fail(error_text="验证码过期或者不正确")
-        self.current_user.accountinfo.update(session=self.session, phone=self.args["phone"])
+        self.current_user.accountinfo.update(self.session, phone=self.args["phone"],password=self.args["password"])
         return self.send_success()
 
 # class Order(AdminBaseHandler):

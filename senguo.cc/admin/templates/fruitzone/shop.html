@@ -6,6 +6,8 @@
 
 
 {% block content %}
+{% import time%}
+{% import dal.models as models %}
 {% if "fruit_types" in context%}
 {% import json%}
 <script>
@@ -29,6 +31,12 @@
     <a href="javascript:history.back(-1)" class="return-btn pull-left"></a>
     <span class="title pull-left">店铺详情</span>
 </header>
+{% if shop.shop_status==models.SHOP_STATUS.APPLYING %}
+    <div class="container phone-box decline-box">
+        <span class="title">店铺认证未通过：</span>{{shop.declined_reason}}
+        <a href="{{reverse_url('fruitzoneShopReApply')}}" class="reapply-btn green-color">重新申请</a>
+    </div>
+{% end %}
 <div class="container phone-box detail-box">
     <p class="info-title">店铺信息</p>
     <div class="info-box1">
@@ -72,7 +80,7 @@
         <ul class="shop-info-detail2 ">
             <li class="left-none editBox">
                 <p>运营时间</p>
-                <p><span class="shopShow">{{shop.live_month or '0'}}</span>个月</p>
+                <p><span class="shopShow" id="liveTime">{{int( (time.time() - shop.shop_start_timestamp)/(30*24*3600)) or '0'}}</span>个月</p>
                 <a href="javascript:;" class="{{bt_edit_show}}  text-red" id="timeEdit"  data-toggle="modal" data-target="#timeBox">点击设置</a>
                 <div class="modal fade" id="timeBox" tabindex="-1" role="dialog"  aria-hidden="true">
                     <div class="modal-dialog">
@@ -84,7 +92,7 @@
                             <div class="modal-footer">
                                 <div class="btn-box">
                                     <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
-                                    <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_live_month" data-dismiss="modal">确定</button>
+                                    <button type="button" class="btn  sure-btn" data-action="edit_live_month" data-dismiss="modal" id="liveTimeEdit">确定</button>
                                 </div>
                             </div>
                         </div>
@@ -181,7 +189,7 @@
             {% for fruit in context['shop'].onsale_fruits%}
             <li class="fruitsty" data-code="{{fruit.id}}">{{fruit.name}}</li>
            {% end %}
-            <span class="{{bt_edit_show}} fruitsty" data-toggle="modal" data-target="#fruitSellBox">编辑水果</span>
+            <span class="{{bt_edit_show}} fruitsty" data-toggle="modal" data-target="#fruitSellBox">点击编辑</span>
         </ul>
         <div class="modal fade fruitBox" id="fruitSellBox" tabindex="-1" role="dialog"  aria-hidden="true">
             <div class="modal-dialog">
@@ -205,7 +213,7 @@
             {% for fruit in context['shop'].demand_fruits%}
             <li  class="fruitsty" data-code="{{fruit.id}}">{{fruit.name}}</li>
             {% end %}
-            <span class="{{bt_edit_show}} fruitsty" data-toggle="modal" data-target="#fruitBuyBox">编辑水果</span>
+            <span class="{{bt_edit_show}} fruitsty" data-toggle="modal" data-target="#fruitBuyBox">点击编辑</span>
         </ul>
         <div class="modal fade fruitBox" id="fruitBuyBox" tabindex="-1" role="dialog"  aria-hidden="true">
             <div class="modal-dialog">
@@ -228,30 +236,31 @@
     <p class="info-title {{bt_edit_hide}}">负责人信息</p>
     <div class="info-box1 {{bt_edit_hide}}">
         <div class="pricipal-info">
-            <img src="{{shop.admin.headimgurl}}" class="pull-left"/>
+            <img src="{{shop.admin.accountinfo.headimgurl}}" class="pull-left"/>
             <div class="show-info pull-left">
-                <p class="info1">{{shop.admin.realname or '无'}}<span>性别：<i data-sex="{{shop.admin.sex}}" id="adminSex" class="showSex"></i></span></p>
+                <p class="info1">{{shop.admin.accountinfo.realname or '无'}}<span>性别：<i data-sex="{{shop.admin.accountinfo.sex}}" id="adminSex" class="showSex"></i></span></p>
                 <p>出生年月：{{context['birthday']}}</p>
             </div>
         </div>
         <div class="pricipal-info2">
             <div class="pull-left">
                 <p class="pricipal-phone">手机号：
-                    {% if current_user%}
-                         <span>{{shop.admin.phone or '无'}}</span>
+                    {% if current_user and current_user.shops%}
+                         <span>{{shop.admin.accountinfo.phone or '无'}}</span>
                     {% else %}
                          <span>*******</span>
                     {% end %}
                 </p>
                 <p class="pricipal-wechat">微信号：
-                    {% if current_user%}
-                         <span>{{shop.admin.wx_username or '无'}}</span>
+                    {% if current_user and current_user.shops%}
+                         <span>{{shop.admin.accountinfo.wx_username or '无'}}</span>
                     {% else %}
                          <span>*******</span>
                     {% end %}
                 </p>
             </div>
-            {% if not current_user%}
+            {% if  current_user and  current_user.shops%}
+            {% else %}
             <div class="pull-right how-to">
                 <p>店铺入驻后</p>
                 <p>才能查看同行信息</p>
