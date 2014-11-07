@@ -15,8 +15,8 @@ class Home(AdminBaseHandler):
     _page_count = 20
 
     def get(self):
-        q = self.session.query(models.Shop).order_by(models.Shop.id).\
-            filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
+        q = self.session.query(models.Shop).order_by(models.Shop.id)#\
+            #.filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
         shops = q.all()
         fruit_types = []
         for f_t in self.session.query(models.FruitType).all():
@@ -134,7 +134,7 @@ class AdminProfile(AdminBaseHandler):
         elif action == "edit_intro":
             if len(data) >= 300:
                 self.send_fail("太长了，请控制在300字以内")
-            self.current_user.accountinfo.update(session=self.session, briefintro=data)
+            self.current_user.update(session=self.session, briefintro=data)
         else:
             return self.send_error(404)
         return self.send_success()
@@ -153,6 +153,12 @@ class ShopApply(AdminBaseHandler):
     @AdminBaseHandler.check_arguments("shop_id?:int")
     def get(self):
         if self._action == "apply":
+            if not self.current_user.accountinfo.phone or \
+                not self.current_user.accountinfo.email or\
+                not self.current_user.accountinfo.wx_username:
+                return self.render("fruitzone/apply.html", context=dict(reApply=False,
+                    need_complete_accountinfo=True))
+
             return self.render("fruitzone/apply.html", context=dict(reApply=False))
         elif self._action == "reApply":
             if not "shop_id" in self.args:

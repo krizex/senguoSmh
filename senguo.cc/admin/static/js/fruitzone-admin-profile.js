@@ -6,6 +6,11 @@ $(document).ready(function(){
         {$(this).text('点击设置').css({'color':'#FF3C3C'});}
     });
 
+    $('a.tiephone').each(function(){
+        if($(this).text() =='None'||$(this).text() =='')
+        {$(this).text('点击绑定手机号').css({'color':'#FF3C3C'});}
+    });
+
     $('.info-edit').find('.concel-btn').each(function(){
         $(this).click(function(){$(this).parents('.info-edit').hide();})
     });
@@ -131,6 +136,7 @@ function TiePhone(evt){
             {
                 $('#phoneNumber').text(phone);
                 alert('绑定成功！');
+                $('#tieBox').modal("hide")
             }
             else alert(res.error_text);
         },

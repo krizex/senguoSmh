@@ -112,9 +112,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
         return link
     
     def get_login_url(self):
-        if not self.__login_url_name__:
-            raise Exception("you should complete this config in the subclass.")
-        return self.reverse_url(self.__login_url_name__)
+        return self.get_wexin_oauth_link()
     def get_current_user(self):
         if not self.__account_model__ or not self.__account_cookie_name__:
             raise Exception("overwrite model to support authenticate.")
@@ -147,12 +145,11 @@ class _AccountBaseHandler(GlobalBaseHandler):
 class SuperBaseHandler(_AccountBaseHandler):
     __account_model__ = models.SuperAdmin
     __account_cookie_name__ = "super_id"
-    __login_url_name__ = "superLogin"
+    __wexin_oauth_url_name__ = "superOauth"
 
 class AdminBaseHandler(_AccountBaseHandler):
     __account_model__ = models.ShopAdmin
     __account_cookie_name__ = "admin_id"
-    __login_url_name__ = "adminLogin"
     __wexin_oauth_url_name__ = "adminOauth"
     
 class StaffBaseHandler(_AccountBaseHandler):

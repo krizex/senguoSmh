@@ -8,13 +8,50 @@ sys.path.append(os.path.abspath(os.path.join(
 import dal.models as models
 import hashlib
 
+super_users = [
+dict(
+     unionid = "oxkR_jtCKSJLFO4dFYhhHXGNw4ns",
+     openid = "o78-ms4b-xnS7mXqqBu5mWFXo_dU",
+     country = "CN",
+     province = "Hubei",
+     city = "Wuhan",
+     headimgurl="http://wx.qlogn.cn/mmopen/FMajU52WvbEafZYABcyncw2XmosqWdtGSaBVjrpMmopHHEtO4j6hPFLKYVntAbKd4r01X8Rshy59afLMqg2oicwpmVTfib3G3c/0",
+     nickname="刘超",
+     sex=1),
+dict(
+     unionid = "oxkR_jm8co_E3_TlR5THez96UuN8",
+     openid = "o5SQ5t3VW_4zFSYhrKghCiOfEojc",
+     country = "CN",
+     province = "Hubei",
+     city = "Wuhan",
+     headimgurl="http://wx.qlogo.cn/mmopen/ajNVdqHZLLDkH4L0vPFzpLFpFAJnBakcJrfriaic8D1RtJUG1aHMuWLTv5QlldheEF4WwtV6TbFo53whBbBvzjPA/0",
+     nickname="风轻扬",
+     sex=1),
+dict(
+     unionid = "oxkR_jl1wZKFLAa5TFI-t0pWxmh8",
+     openid = "o5SQ5t7LKwgictyW60gRSq4fYYJw",
+     country = "CN",
+     province = "Hubei",
+     city = "Wuhan",
+     headimgurl="http://wx.qlogo.cn/mmopen/AibiaqE7dwD8UxdGEZGKqUhK3Y0QsFgeD9rVZMEbUhLnYGXCX9ZOu6vAO4OEVz3KhibibO9qGFRUawQdG1gB5NKpFWJyMX2GkGc7/0",
+     nickname="黄铁森@森果senguo.cc",
+     sex=1),
+dict(
+     unionid = "oxkR_jsr9QiWscrxTSRhYSDTssLU",
+     openid = "o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ",
+     country = "CN",
+     province = "Hubei",
+     city = "Wuhan",
+     headimgurl="http://wx.qlogo.cn/mmopen/XiaNUE39hM3WeU66LCia2QVBmiaLucl4hYKTaSbq5wepalu7gdgpEIG3cThwcia3B8tb0UZXoicLiaWVjZ3PgSibRoccRYsicvx0pUwB/0",
+     nickname="喵七七",
+     sex=2),
+      ]
+
 if __name__ == "__main__":
-    choice = input("""
-这将会创造一个(手机号, 密码)为(20141111, super)的超级管理员， 输入yes继续：""")
+    choice = input("""创建超级管理员， 输入yes继续：""")
     if choice == "yes":
-        u = models.SuperAdmin(username="superlady", password=hashlib.sha256(b'super').hexdigest(), email="superlady@senguo.cc")
         s = models.DBSession()
-        s.add(u)
-        s.commit()
+        for u in super_users:
+            models.SuperAdmin.register_with_wx(s, u)
         s.close()
         print("create success")

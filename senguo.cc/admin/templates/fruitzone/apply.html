@@ -23,6 +23,14 @@
     </div>
 </header>
 {% end %}
+
+{% if "need_complete_accountinfo" in context and context["need_complete_accountinfo"]%}
+<div class="container apply-box phone-box">
+<h5 style="text-align: center">请先完善：<a href="{{reverse_url('fruitzoneAdminProfile')}}">个人信息</a></h5>
+</div>>
+{% else %}
+
+
 <div class="container apply-box phone-box">
     <div class="container-title">店铺信息</div>
     <div class="info-box">
@@ -96,7 +104,7 @@
         {% end %}
     </div>
     <div class="info-box">
-        <p class="title">是否接入森果后台系统：<a href="#" class="to-know">了解一下</a></p>
+        <p class="title">是否接入森果后台系统：<a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200343770&idx=1&sn=1230c48bb781da7d7e63d5dc804cbf10#rd" class="to-know">了解一下</a></p>
         {% if "reApply" in context and context["reApply"] %}
         <input type="submit" value="提交申请" class="green" id="submitReapply"/>
         {% else %}
@@ -146,4 +154,6 @@
         </div>
     </div>
 </div>
+
+{% end %}
 {% end %}

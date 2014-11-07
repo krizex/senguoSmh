@@ -1,7 +1,13 @@
-<ul>
-{% for shop in context["shops"]%}
-<li>
-{{shop.safe_props}}
-</li>
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <ul>
+        {% for shop in context["shops"]%}
+            <li>
+            {{shop.safe_props}}
+            </li>
+        {% end %}
+        </ul>
+    </div>
 {% end %}
-</ul>

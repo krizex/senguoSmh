@@ -14,7 +14,7 @@ class Access(AdminBaseHandler):
                                  context=dict(next_url=next_url))
         elif self._action == "logout":
             self.clear_current_user()
-            return self.redirect(self.reverse_url("adminHome"))
+            return self.redirect(self.reverse_url("fruitzoneHome"))
         elif self._action == "oauth":
             self.handle_oauth()
         else:

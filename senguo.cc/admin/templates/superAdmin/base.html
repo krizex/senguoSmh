@@ -6,21 +6,18 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta charset="UTF-8"/>
-    <title>{% block title%} 森果同行{% end %}</title>
+    <title>haha</title>
     <link rel="stylesheet" href="{{static_url('css/bootstrap.min.css')}}"/>
-    <link rel="stylesheet" href="{{static_url('css/fruitzone-global.css')}}"/>
-    <link rel="stylesheet" href="{{static_url('css/fruitzone-style.css')}}"/>
+    <link rel="stylesheet" href="{{static_url('css/superadmin-global.css')}}"/>
+    <link rel="stylesheet" href="{{static_url('css/superadmin-style.css')}}"/>>
     <script src="{{static_url('js/jquery.js')}}"></script>
     <script src="{{static_url('js/bootstrap.min.js')}}"></script>
-    <script src="{{static_url('js/area.js')}}"></script>
-    <script src="{{static_url('js/sha256.js')}}"></script>
-    <script src="{{static_url('js/fruitzone-public.js')}}"></script>
     <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     {% block head %}{% end %}
     <script>
         window.dataObj = {
-                _xsrf: "{{handler.xsrf_token}}"};
+            _xsrf: "{{handler.xsrf_token}}"};
     </script>
 </head>
 <body>

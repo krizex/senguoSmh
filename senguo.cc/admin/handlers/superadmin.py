@@ -9,25 +9,33 @@ class Access(SuperBaseHandler):
         self._action = action
     
     def get(self):
-        if self._action == "login":
-            return self.render("superAdmin/login.html")
+        if self._action == "oauth":
+            self.handle_oauth()
         elif self._action == "logout":
             self.clear_current_user()
             return self.redirect(self.reverse_url("superHome"))
         else:
             return self.send_error(404)
-    @SuperBaseHandler.check_arguments("phone", "password")
-    def post(self):
-        """后台登录暂时只支持手机号密码登录"""
-        if self._action != "login":
-            raise Exception("Superadmin Only support login post!")
-        user = models.SuperAdmin.login_by_phone_password(
-            self.session,
-            self.args["phone"], self.args["password"])
-        if not user:
-            return self.send_fail(error_text = "user not exists or password  not match!")
-        self.set_current_user(user)
-        return self.send_success()
+    @SuperBaseHandler.check_arguments("code", "state?", "mode")
+    def handle_oauth(self):
+        # todo: handle state
+        code =self.args["code"]
+        mode = self.args["mode"]
+        print("mode: ", mode , ", code get:", code)
+        if mode not in ["mp", "kf"]:
+            return self.send_error(400)
+
+        userinfo = self.get_wx_userinfo(code, mode)
+        if not userinfo:
+            return self.redirect(self.reverse_url("adminLogin"))
+        # 登录
+        u = models.SuperAdmin.login_by_unionid(self.session, userinfo["unionid"])
+        if not u:
+            return self.write("对不起，你不属于此系统用户，我们拒绝你的加入。")
+        self.set_current_user(u)
+
+        next_url = self.get_argument("next", self.reverse_url("superHome"))
+        return self.redirect(next_url)
 
 class ShopAdminManage(SuperBaseHandler):
     """商家管理，基本上是信息展示"""
