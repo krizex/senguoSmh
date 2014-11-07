@@ -137,7 +137,7 @@ function TiePhone(evt){
             {
                 $('#phoneNumber').text(phone);
                 alert('绑定成功！');
-                $('#tieBox').modal("hide")
+                $('#tieBox').modal("hide");
             }
             else alert(res.error_text);
         },
