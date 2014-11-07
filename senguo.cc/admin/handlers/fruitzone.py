@@ -15,8 +15,8 @@ class Home(AdminBaseHandler):
     _page_count = 20
 
     def get(self):
-        q = self.session.query(models.Shop).order_by(models.Shop.id).\
-            filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
+        q = self.session.query(models.Shop).order_by(models.Shop.id)#\
+            #.filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
         shops = q.all()
         fruit_types = []
         for f_t in self.session.query(models.FruitType).all():
@@ -126,10 +126,15 @@ class AdminProfile(AdminBaseHandler):
         elif action == "edit_birthday":
             year = int(data["year"])
             month = int(data["month"])
-            birthday = datetime.datetime(year=year, month=month, day=19)
+            try:
+                birthday = datetime.datetime(year=year, month=month, day=19)
+            except ValueError as e:
+                return self.send_fail("月份必须为1~12")
             self.current_user.accountinfo.update(session=self.session, birthday=time.mktime(birthday.timetuple()))
         elif action == "edit_intro":
-            self.current_user.accountinfo.update(session=self.session, briefintro=data)
+            if len(data) >= 300:
+                self.send_fail("太长了，请控制在300字以内")
+            self.current_user.update(session=self.session, briefintro=data)
         else:
             return self.send_error(404)
         return self.send_success()
@@ -148,7 +153,13 @@ class ShopApply(AdminBaseHandler):
     @AdminBaseHandler.check_arguments("shop_id?:int")
     def get(self):
         if self._action == "apply":
-            return self.render("fruitzone/apply.html")
+            if not self.current_user.accountinfo.phone or \
+                not self.current_user.accountinfo.email or\
+                not self.current_user.accountinfo.wx_username:
+                return self.render("fruitzone/apply.html", context=dict(reApply=False,
+                    need_complete_accountinfo=True))
+
+            return self.render("fruitzone/apply.html", context=dict(reApply=False))
         elif self._action == "reApply":
             if not "shop_id" in self.args:
                 return  self.send_error(404)
@@ -159,7 +170,7 @@ class ShopApply(AdminBaseHandler):
                 shop = None
             if not shop:
                 return self.send_error(404)
-            return self.render("fruitzone/apply.html", context=dict(shop=shop))
+            return self.render("fruitzone/apply.html", context=dict(shop=shop,reApply=True))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments(
@@ -198,16 +209,15 @@ class ShopApply(AdminBaseHandler):
                 shop = None
             if not shop:
                 return self.send_error(404)
-            shop.shop_name = self.args["shop_name"],
-            shop.shop_province = self.args["shop_province"],
-            shop.shop_city = self.args["shop_city"],
-            shop.shop_address_detail = self.args["shop_address_detail"],
-            shop.have_offline_entity = self.args["have_offline_entity"],
-            shop.shop_service_area = self.args["shop_service_area"],
-            shop.shop_intro = self.args["shop_intro"]
-            shop.shop_status = models.SHOP_STATUS.APPLYING
-            self.session.add(shop)
-            self.seeeion.commit()
+            shop.update(session=self.session,shop_name = self.args["shop_name"])
+            shop.update(session=self.session,shop_province = self.args["shop_province"])
+            shop.update(session=self.session,shop_city = self.args["shop_city"])
+            shop.update(session=self.session,shop_address_detail = self.args["shop_address_detail"])
+            shop.update(session=self.session,have_offline_entity = self.args["have_offline_entity"])
+            shop.update(session=self.session,shop_service_area = self.args["shop_service_area"])
+            shop.update(session=self.session,shop_intro = self.args["shop_intro"])
+            shop.update(session=self.session,shop_status = models.SHOP_STATUS.APPLYING)
+            return self.send_success()
 
 class Shop(AdminBaseHandler):
     def get(self,id):
@@ -259,7 +269,10 @@ class AdminShop(AdminBaseHandler):
         elif action == "edit_live_month":
             year = int(data["year"])
             month = int(data["month"])
-            shop_start_timestamp = datetime.datetime(year=year, month=month, day=1)
+            try:
+                shop_start_timestamp = datetime.datetime(year=year, month=month, day=1)
+            except ValueError:
+                return self.send_fail("月份必须为1~12")
             shop.update(session=self.session, shop_start_timestamp=time.mktime(shop_start_timestamp.timetuple()))
             return self.send_success(now=time.time(),shop_start_timestamp=time.mktime(shop_start_timestamp.timetuple()))
         elif action == "edit_total_users":
@@ -269,6 +282,8 @@ class AdminShop(AdminBaseHandler):
         elif action == "edit_single_stock_size":
             shop.update(session=self.session, single_stock_size=int(data))
         elif action == "edit_shop_intro":
+            if len(data) > 568:
+                return self.send_fail("字数超出了568个")
             shop.update(session=self.session, shop_intro=data)
         elif action == "edit_onsale_fruits":
             shop.onsale_fruits = []

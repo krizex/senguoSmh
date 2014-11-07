@@ -5,8 +5,8 @@ import handlers.fruitzone
 
 handlers = [
     (r"/", handlers.front.Home,{}, "frontHome"),
-    (r"/super/login", handlers.superadmin.Access,{
-        "action":"login"}, "superLogin"),
+    (r"/super/oauth", handlers.superadmin.Access,{
+        "action":"oauth"}, "superOauth"),
     (r"/super/logout", handlers.superadmin.Access,{
         "action":"logout"}, "superLogout" ),
 

@@ -62,7 +62,7 @@
             <li>
                 <div class="info-con">
                     <span class="title pull-left">手机号</span>
-                    <a href="javascript:;" class="pull-right editInfo" data-toggle="modal" data-target="#tieBox" id="phoneNumber">{{current_user.accountinfo.phone or '点击绑定手机号'}}</a>
+                    <a href="javascript:;" class="pull-right  tiephone" data-toggle="modal" data-target="#tieBox" id="phoneNumber">{{current_user.accountinfo.phone}}</a>
                 </div>
             </li>
             <li>
@@ -141,7 +141,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn pull-left concel-btn" data-dismiss="modal">取消</button>
-                <button type="button" class="btn pull-right tie-btn green-color"  data-dismiss="modal" id="tiePhone">绑定</button>
+                <button type="button" class="btn pull-right tie-btn green-color"  id="tiePhone">绑定</button>
             </div>
         </div>
     </div>

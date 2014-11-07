@@ -104,9 +104,9 @@ class BaseHandler(tornado.web.RequestHandler):
         self.write(obj)
     def send_fail(self,error_code=None, error_text = None):
         if type(error_code) == int:
-            res = {"success":False, "errorCode":error_code,"errorText":error_text}
+            res = {"success":False, "error_code":error_code,"error_text":error_text}
         else:
-            res = {"success":False, "errorText": error_text}
+            res = {"success":False, "error_text": error_text}
         self.set_header("Content-Type", 'utf-8')
         self.write(res)
 

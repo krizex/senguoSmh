@@ -31,10 +31,10 @@
     <a href="javascript:history.back(-1)" class="return-btn pull-left"></a>
     <span class="title pull-left">店铺详情</span>
 </header>
-{% if shop.shop_status==models.SHOP_STATUS.APPLYING %}
+{% if shop.shop_status==models.SHOP_STATUS.DECLINED %}
     <div class="container phone-box decline-box">
         <span class="title">店铺认证未通过：</span>{{shop.declined_reason}}
-        <a href="{{reverse_url('fruitzoneShopReApply')}}" class="reapply-btn green-color">重新申请</a>
+        <a href="{{reverse_url('fruitzoneShopReApply')}}?shop_id={{shop.id}}" class="reapply-btn green-color">重新申请</a>
     </div>
 {% end %}
 <div class="container phone-box detail-box">
@@ -80,7 +80,13 @@
         <ul class="shop-info-detail2 ">
             <li class="left-none editBox">
                 <p>运营时间</p>
-                <p><span class="shopShow" id="liveTime">{{int( (time.time() - shop.shop_start_timestamp)/(30*24*3600)) or '0'}}</span>个月</p>
+                <p><span class="shopShow" id="liveTime">
+                    {% if shop.shop_start_timestamp%}
+                        {{int((time.time() - (shop.shop_start_timestamp))/(30*24*3600)) }}
+                    {% else %}
+                        0
+                    {% end %}
+                </span>个月</p>
                 <a href="javascript:;" class="{{bt_edit_show}}  text-red" id="timeEdit"  data-toggle="modal" data-target="#timeBox">点击设置</a>
                 <div class="modal fade" id="timeBox" tabindex="-1" role="dialog"  aria-hidden="true">
                     <div class="modal-dialog">
@@ -274,6 +280,6 @@
             {{shop.admin.briefintro or '无'}}
         </p>
     </div>
-    <a href="#" class="focus-senguo {{bt_edit_hide}}">点击关注<strong>森果</strong>，获取更多行业资源</a>
+    <a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200521182&idx=1&sn=a3d7731e0233aef218eb91346d581b02#rd" class="focus-senguo {{bt_edit_hide}}">点击关注<strong>森果</strong>，获取更多行业资源</a>
 </div>
 {% end %}
