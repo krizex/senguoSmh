@@ -23,7 +23,7 @@ class Access(AdminBaseHandler):
     def handle_oauth(self):
         # todo: handle state
         code =self.args["code"]
-        mode = self.args["mode"]
+        mode = self.args, userinfo["mode"]
         print("mode: ", mode , ", code get:", code)
         if mode not in ["mp", "kf"]:
             return self.send_error(400)
@@ -31,7 +31,10 @@ class Access(AdminBaseHandler):
         userinfo = self.get_wx_userinfo(code, mode)
         if not userinfo:
             return self.redirect(self.reverse_url("adminLogin"))
-        u = models.ShopAdmin.get_or_create_with_unionid(self.session, userinfo["unionid"], userinfo)
+        # 尝试登录
+        u = models.ShopAdmin.login_by_unionid(self.session, userinfo["unionid"])
+        if not u:# 新建用户
+            u = models.ShopAdmin.register_with_wx(self.session, userinfo)
         self.set_current_user(u)
         
         next_url = self.get_argument("next", self.reverse_url("adminHome"))

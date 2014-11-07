@@ -12,7 +12,7 @@ MP_APPSECRET = "6ecd60383b7e26a09d51a12e75649b3e"
 MYSQL_DRIVER = "mysqlconnector"
 MYSQL_USERNAME = "monk"
 MYSQL_PASSWORD = "test123"
-DB_NAME = "test_sqlalchemy"
+DB_NAME = "senguocc"
 
 #手机短信验证的设置
 content = "您的验证码是：【{code}】。请不要把验证码泄露给其他人。"

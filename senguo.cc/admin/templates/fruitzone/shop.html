@@ -1,5 +1,10 @@
 {% extends 'base.html'%}
 
+{% block head%}
+<script src="{{static_url('js/fruitzone-admin-shop.js')}}"></script>
+{% end %}
+
+
 {% block content %}
 {% if "fruit_types" in context%}
 {% import json%}

@@ -16,21 +16,18 @@ class Access(SuperBaseHandler):
             return self.redirect(self.reverse_url("superHome"))
         else:
             return self.send_error(404)
-    @SuperBaseHandler.check_arguments("username", "password")
+    @SuperBaseHandler.check_arguments("phone", "password")
     def post(self):
+        """后台登录暂时只支持手机号密码登录"""
         if self._action != "login":
             raise Exception("Superadmin Only support login post!")
-        #try:
-        user = self.session.query(models.SuperAdmin).filter_by(
-                username= self.args["username"], 
-                password= self.args["password"]).one()
-        #except:
-        #user = None
+        user = models.SuperAdmin.login_by_phone_password(
+            self.session,
+            self.args["phone"], self.args["password"])
         if not user:
-            return self.send_fail(error_text = "username account not match!")
+            return self.send_fail(error_text = "user not exists or password  not match!")
         self.set_current_user(user)
         return self.send_success()
-
 
 class ShopAdminManage(SuperBaseHandler):
     """商家管理，基本上是信息展示"""
@@ -105,10 +102,57 @@ class ShopManage(SuperBaseHandler):
             self.handle_updateStatus()
         else:
             return self.send(400)
-    @SuperBaseHandler.check_arguments("shop_id:int", "new_status:int")
+    @SuperBaseHandler.check_arguments("shop_id:int", "new_status:int", "declined_reason?")
     def handle_updateStatus(self):
-        shop = models.Shop.get_by_id(self.args["shop_id"])
+        shop = models.Shop.get_by_id(self.session, self.args["shop_id"])
         if not shop:
             return self.send_error(403)
-        shop.update(self.session, self.args["new_status"])
+        if not self.args["new_status"] in models.SHOP_STATUS.DATA_LIST:
+            return self.send_error(400)
+
+        if self.args["new_status"] == models.SHOP_STATUS.DECLINED:
+            shop.update(self.session, shop_status = self.args["new_status"],
+                        declined_reason=self.args["declined_reason"])
+        else:
+            shop.update(self.session, shop_status = self.args["new_status"])
+            
         return self.send_success()
+
+class Feedback(SuperBaseHandler):
+    _page_count = 20
+
+    def initialize(self, action):
+        self._action = action
+
+    @tornado.web.authenticated
+    @SuperBaseHandler.check_arguments("page?:int")
+    def get(self):
+        offset = self._page_count * (self.args.get("page", 1) - 1)
+        q = self.session.query(models.Feedback)
+        if self._action == "all":
+            pass
+        elif self._action == "unprocessed":
+            q = q.filter_by(processed=False)
+        elif self._action == "processed":
+            q = q.filter_by(processed=True)
+        else:
+            return self.send_error(404)
+        q = q.order_by(models.Feedback.create_date_timestamp.desc()).\
+            offset(offset).limit(self._page_count)
+        
+        return self.render("superAdmin/feedback.html", context=dict(
+            feedbacks = q.all()))
+        
+    @tornado.web.authenticated
+    @SuperBaseHandler.check_arguments("action", "feedback_id:int")
+    def post(self):
+        if self.args["action"] == "set_processed":
+            f  = Feedback.get_by_id(self.session, self.args["feedback_id"])
+            if not f:
+                return self.send_error(404)
+            f.update(self.session, processed=False)
+            return self.send_success()
+        else:
+            return self.send_error(404)
+        
+    

@@ -20,7 +20,7 @@ class Home(AdminBaseHandler):
         shops = q.all()
         fruit_types = []
         for f_t in self.session.query(models.FruitType).all():
-            fruit_types.append(f_t.safe_props)
+            fruit_types.append(f_t.safe_props())
         return self.render("fruitzone/home.html", context=dict(shops=shops, fruit_types=fruit_types, now=time.time()))
     
     @AdminBaseHandler.check_arguments("action")
@@ -33,7 +33,7 @@ class Home(AdminBaseHandler):
         else:
             return self.send_error(403)
     @AdminBaseHandler.check_arguments("skip?:int","limit?:int",
-                                      "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids:list")
+                                      "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids?:list")
     def handle_filter(self):
         # 按什么排序？暂时采用id排序
         q = self.session.query(models.Shop).order_by(models.Shop.id).\
@@ -41,12 +41,11 @@ class Home(AdminBaseHandler):
         if "city" in self.args:
             q = q.filter_by(shop_city=self.args["city"])
         if "service_area" in self.args:
-            # 目前只支持服务区域完全匹配
-            q = q.filter_by(shop_service_area=self.args["service_area"])
+            q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
         if "live_month" in self.args:
             q = q.filter(models.Shop.live_month < time.time()-self.args["live_month"]*(30*24*60*60))
 
-        if "onsalefruit_ids" in self.args:
+        if "onsalefruit_ids" in self.args and self.args["onsalefruit_ids"]:
             q = q.filter(models.Shop.id.in_(
                 select([models.ShopOnsalefruitLink.shop_id]).\
                 where(models.ShopOnsalefruitLink.fruit_id.in_(
@@ -61,11 +60,9 @@ class Home(AdminBaseHandler):
         else:
             q = q.limit(self._page_count)
 
-
-
         shops = []
         for shop in q.all():
-            shops.append(shop.safe_props)
+            shops.append(shop.safe_props())
         return self.send_success(shops=shops)
 
     @AdminBaseHandler.check_arguments("q")
@@ -75,7 +72,7 @@ class Home(AdminBaseHandler):
                    models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
         shops = []
         for shop in q.all():
-            shops.append(shop.safe_props)
+            shops.append(shop.safe_props())
         return self.send_success(shops=shops)
 
 class AdminHome(AdminBaseHandler):
@@ -86,11 +83,18 @@ class AdminHome(AdminBaseHandler):
        self.render("fruitzone/admin-home.html")
 
     @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action", "feedback_text")
     def post(self):
-        feedback = models.Feedback()
-        feedback.text = self.get_arguments("feedback")
-        self.current_user.feedback.append(feedback)
-        return self.send_success()
+        if self.args["action"] == "feedback":
+            feedback = models.Feedback(
+                text=self.args["feedback_text"],
+                create_date_timestamp = int(time.time())
+            )
+            self.current_user.feedback.append(feedback)
+            self.session.commit()
+            return self.send_success()
+        else:
+            return self.send_error(404)
 
 class AdminProfile(AdminBaseHandler):
     @tornado.web.authenticated
@@ -133,8 +137,10 @@ class AdminProfile(AdminBaseHandler):
 class ApplySuccess(AdminBaseHandler):
     def get(self):
         return self.render("fruitzone/apply-success.html")
-
+	
 class ShopApply(AdminBaseHandler):
+    MAX_APPLY_COUNT = 15
+
     def initialize(self, action):
         self._action = action
 
@@ -165,6 +171,9 @@ class ShopApply(AdminBaseHandler):
         #* todo 检查合法性
 
         if self._action == "apply":
+            # 这种检查方式效率比较低
+            if len(self.current_user.shops) >= self.MAX_APPLY_COUNT:
+                return self.send_fail(error_text="您申请的店铺数量超过限制！最多能申请{0}家".format(self.MAX_APPLY_COUNT))
             try:
                self.current_user.add_shop(self.session,
                   shop_name=self.args["shop_name"],
@@ -208,7 +217,7 @@ class Shop(AdminBaseHandler):
             shop = None
         if not shop:
             return self.send_error(404)
-        time_tuple = time.localtime(shop.admin.birthday)
+        time_tuple = time.localtime(shop.admin.accountinfo.birthday)
         birthday = time.strftime("%Y-%m", time_tuple)
         return self.render("fruitzone/shop.html", context=dict(
                     shop=shop, shop_admin=shop.admin, birthday=birthday, edit=False))
@@ -230,16 +239,16 @@ class AdminShop(AdminBaseHandler):
             return self.send_error(404)
         fruit_types = []
         for f_t in self.session.query(models.FruitType).all():
-            fruit_types.append(f_t.safe_props)
+            fruit_types.append(f_t.safe_props())
 
-        time_tuple = time.localtime(shop.admin.birthday)
+        time_tuple = time.localtime(shop.admin.accountinfo.birthday)
         birthday = time.strftime("%Y-%m", time_tuple)
 
         return self.render("fruitzone/shop.html", context=dict(shop=shop, edit=True, birthday=birthday,
                                                                fruit_types=fruit_types, now=time.time()))
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("action", "data", "shop_id")
+    @AdminBaseHandler.check_arguments("action", "data")
     def post(self,shop_id):
         action=self.args["action"]
         data=self.args["data"]
@@ -292,16 +301,12 @@ class PhoneVerify(AdminBaseHandler):
 
     @AdminBaseHandler.check_arguments("phone:str")
     def handle_gencode(self):
-        print("gen msg code for phone: ", self.args["phone"])
-        gen_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, phone=self.args["phone"])
+        gen_msg_token(wx_id=self.current_user.wx_unionid, phone=self.args["phone"])
         return self.send_success()
 
     @AdminBaseHandler.check_arguments("phone:str", "code:int")
     def handle_checkcode(self):
-        print("check msg code for phone: {0} with code: {1}".\
-              format( self.args["phone"],
-                      self.args["code"]))
-        if not check_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, code=self.args["code"]):
+        if not check_msg_token(wx_id=self.current_user.wx_unionid, code=self.args["code"]):
            return self.send_fail(error_text="验证码过期或者不正确")
         self.current_user.accountinfo.update(session=self.session, phone=self.args["phone"])
         return self.send_success()
