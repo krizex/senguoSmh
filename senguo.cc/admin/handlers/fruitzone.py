@@ -43,7 +43,7 @@ class Home(AdminBaseHandler):
         if "live_month" in self.args:
             q = q.filter(models.Shop.live_month>self.args["live_month"])
 
-        if "onsalefruit_ids" in self.args:
+        if "onsalefruit_ids" in self.args and self.args["onsalefruit_ids"]:
             q = q.filter(models.Shop.id.in_(
                 select([models.ShopOnsalefruitLink.shop_id]).\
                 where(models.ShopOnsalefruitLink.fruit_id.in_(
@@ -117,8 +117,8 @@ class AdminProfile(AdminBaseHandler):
             self.current_user.update(session=self.session, realname=data)
         elif action == "edit_wx_username":
             self.current_user.update(session=self.session, wx_username=data)
-        elif action == "edit_phone":
-            self.current_user.update(session=self.session, phone=data)
+        #elif action == "edit_phone":
+        #    self.current_user.update(session=self.session, phone=data)
         elif action == "edit_email":
             self.current_user.update(session=self.session, email=data)
         elif action == "edit_sex":
@@ -247,7 +247,7 @@ class AdminShop(AdminBaseHandler):
         return self.render("fruitzone/shop.html", context=dict(shop=shop,edit=True,birthday=birthday, fruit_types=fruit_types))
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("action", "data", "shop_id")
+    @AdminBaseHandler.check_arguments("action", "data")
     def post(self,shop_id):
         action=self.args["action"]
         data=self.args["data"]
