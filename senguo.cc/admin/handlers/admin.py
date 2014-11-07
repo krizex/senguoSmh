@@ -19,6 +19,16 @@ class Access(AdminBaseHandler):
             self.handle_oauth()
         else:
             return self.send_error(404)
+
+    @AdminBaseHandler.check_arguments("phone", "password", "next?")
+    def post(self):
+        u = models.ShopAdmin.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
+        if not u:
+            return self.send_fail(error_text = "用户名或密码错误")
+        self.set_current_user(u)
+        self.redirect(self.args.get("next", self.reverse_url("fruitzoneHome")))
+        return self.send_success()
+
     @AdminBaseHandler.check_arguments("code", "state?", "mode")
     def handle_oauth(self):
         # todo: handle state
@@ -37,7 +47,7 @@ class Access(AdminBaseHandler):
             u = models.ShopAdmin.register_with_wx(self.session, userinfo)
         self.set_current_user(u)
         
-        next_url = self.get_argument("next", self.reverse_url("adminHome"))
+        next_url = self.get_argument("next", self.reverse_url("fruitzoneHome"))
         return self.redirect(next_url)
 
 class Home(AdminBaseHandler):
