@@ -24,28 +24,28 @@ test_admin_shops = [
         shop_address_detail="王府井",
 
     shop_service_area = models.SHOP_SERVICE_AREA.HIGH_SCHOOL | models.SHOP_SERVICE_AREA.TRADE_CIRCLE,
-        live_month = 1,
+        shop_start_timestamp = int(time.time()) - 1*30*24*3600,
         shop_status = models.SHOP_STATUS.ACCEPTED),
     dict(
         shop_name="草帽海贼团 索隆店", 
         shop_province=420000, shop_city=420100, 
         shop_address_detail="华中科技大学",
         shop_service_area = models.SHOP_SERVICE_AREA.HIGH_SCHOOL,
-        live_month = 4,
+        shop_start_timestamp = int(time.time()) - 5*30*24*3600,
         shop_status = models.SHOP_STATUS.ACCEPTED),
     dict(
         shop_name="草帽海贼团 路飞店", 
         shop_province=420000, shop_city=420100, 
         shop_address_detail="武汉大学",
         shop_service_area = models.SHOP_SERVICE_AREA.COMMUNITY,
-        live_month = 7,
+        shop_start_timestamp = int(time.time()) - 15*30*24*3600,
     ),
     dict(
         shop_name="草帽海贼团 撒谎布店", 
         shop_province=430000, shop_city=430600, 
         shop_address_detail="岳阳楼区",
         shop_service_area = models.SHOP_SERVICE_AREA.COMMUNITY | models.SHOP_SERVICE_AREA.OTHERS,
-        live_month = 15,
+        shop_start_timestamp = int(time.time()) - 7*30*24*3600,
         shop_status = models.SHOP_STATUS.ACCEPTED),
 ]
 

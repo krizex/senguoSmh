@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, func, ForeignKey, Column
-from sqlalchemy.types import String, Integer, Text, Boolean, Float, DateTime
+from sqlalchemy.types import String, Integer, Text, Boolean, Float
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -320,7 +320,7 @@ class Shop(MapBase, _CommonApi):
     # 店铺url
     shop_url = Column(String(2048))
     # 运营时间
-    live_month = Column(Integer)
+    shop_start_timestamp = Column(Integer)
     # 团队人数
     team_size = Column(Integer)
 
@@ -352,7 +352,6 @@ class ShopAdmin(MapBase, _AccountApi):
     expire_time = Column(Integer, default=0)
     briefintro = Column(String(300), default="")
 
-    orders = relationship("Order")
     shops = relationship(Shop, uselist=True)
     feedback = relationship("Feedback")
 
@@ -435,21 +434,6 @@ class Feedback(MapBase, _CommonApi):
     admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
     text = Column(String(500))
     processed = Column(Boolean, default=False)
-
-class Order(MapBase):
-    __tablename__ = "order"
-    #商城交易号
-    out_trade_no = Column(Integer, primary_key=True, nullable=False)
-    admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
-    subject = Column(String(30))
-    total_fee = Column(Integer)
-    pay_success = Column(Boolean, default=False)
-    create_time = Column(DateTime, default=func.now())
-    count = Column(Integer)
-    #支付宝交易号
-    trade_no = Column(String(64))
-    buyer_email=Column(String(64))
-
 
 def init_db_data():
     MapBase.metadata.create_all()

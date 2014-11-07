@@ -12,7 +12,6 @@ if six.PY3:
 else:
     from urlparse import parse_qs, urlparse, unquote
 from xml.etree import ElementTree
-from alipay.exceptions import TokenAuthorizationError
 
 try:
     from urllib import urlencode

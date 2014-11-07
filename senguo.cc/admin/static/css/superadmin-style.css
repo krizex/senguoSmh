@@ -1,7 +1,7 @@
-.login-box{text-align:center;width:560px;margin:0 auto;margin-top:50px;}
-.login-box .login-info{width:40%;margin:0 auto;clear:both;margin-bottom:10px;}
-.login-box .login-info label{width:60px;}
-.login-box .login-info input{}
+.login-box{text-align:center;width:560px;margin:0 auto;margin-top:50px;background:url('../images/logo.png') no-repeat center 0;background-size:200px;padding-top:60px;}
+.login-box .login-info{width:280px;margin:0 auto;clear:both;}
+.login-box .login-info .w1{width:60px;margin-bottom:20px;}
+.login-box .login-info input{border:1px solid #ddd;background-color:#fff !important;}
 .login-box .login-hint{text-align:center;width:100%;float:left;}
 .login-box .login-btn{clear:both;margin:0 auto;}
 
