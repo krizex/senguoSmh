@@ -152,9 +152,9 @@
 .shop-list-content{}
 .shop-list-content .shop-list{}
 .shop-list-content .shop-list li{width:100%;float:left;border-bottom:1px solid #ddd;padding:0.5em;margin-bottom:0.5em;background:url("../images/next-black-2px.png") no-repeat 95% center;background-color:#fff;}
-.shop-list-content .shop-list .shop-logo{width:28%;}
-.shop-list-content .shop-list .shop-logo img{width:100%;max-width:9.5em;}
-.shop-list-content .shop-list .shop-info{width:70%;color:#333;margin-left:2%;height:6em;}
+.shop-list-content .shop-list .shop-logo{width:25%;}
+.shop-list-content .shop-list .shop-logo img{width:100%;}
+.shop-list-content .shop-list .shop-info{width:70%;color:#333;height:6em;margin-left:0.5em;}
 .shop-list-content .shop-list .shop-info p{margin-bottom:5%;font-size:1.5em;display:inline-block;}
 .shop-list-content .shop-list .shop-info .w1{display:inline-block;width:50%;height:1.5em;overflow:hidden;margin-right:0.5em;}
 .shop-list-content .shop-list .shop-info .w2{display:inline-block;width:46%;height:1.5em;overflow:hidden;}
@@ -221,3 +221,4 @@
 .shops-list .add-shops a{font-size:8em;font-weight:bold;color:#00D289;width:140px;height:160px;display:inline-block;line-height:160px;padding:0;}
 .shops-list .status{display:inline-block;position:absolute;z-index:999;top:0;left:0;width:140px;height:160px;line-height:160px;text-align:center;font-size:2.2em;color:#333;background:rgba(255,255,255,0.6);}
 
+.shop-list li em{font-style:normal;font-size:1em;}

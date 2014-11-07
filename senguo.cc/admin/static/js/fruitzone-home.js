@@ -13,6 +13,7 @@ $(document).ready(function(){
     $('.order-by-time').find('li').each(function(){$(this).click(function(){Filter($(this));});});
     $('#orderByFruit').click(function(){Filter($(this));});
     $('.home-pagination').find('li').each(function(){$(this).click(function(){Filter($(this));});});
+
 });
 
 function Search(evt){
@@ -34,8 +35,20 @@ function Search(evt){
                 var shops=res.shops;
                 for(var shop in shops)
                 {
-                    var list=$('<li><a href="/fruitzone/shop/'+shops[shop]["id"]+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-right"><p><span class="shop-name w1 pull-left">'+shops[shop]["shop_name"]+'</span><span class="w2 area pull-left"></span></p><p>运营时间：'+shops[shop]['live_month']+'月</p><p><span class="shop-owner w1 pull-left">负责人：'+shops[shop]["admin"]["accountinfo"]["realname"]+'</span><span class="w2 wechat-code pull-left">'+shops[shop]["admin"]["accountinfo"]["wx_username"]+'</span></p></div></a></li>');
+                    var timenow=new Date().getTime()/1000;
+                    var shopid=shops[shop]["id"];
+                    var shopname =shops[shop]["shop_name"];
+                    var livetime=shops[shop]['shop_start_timestamp'];
+                    var province=shops[shop]['shop_province'];
+                    var city=shops[shop]['shop_city'];
+                    var livemonth=parseInt((timenow-livetime)/(30*24*60*60));
+                    var nickname=shops[shop]["admin"]["accountinfo"]["nickname"];
+                    var wxusername=shops[shop]["admin"]["accountinfo"]["wx_username"];
+                    var list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-left"><p><span class="shop-name w1 pull-left">'+shopname+'</span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"> </em><em data="'+city+'" id="filterCity"></em></span></p><p>运营时间：'+livemonth+'月</p><p><span class="shop-owner w1 pull-left">负责人：'+nickname+'</span><span class="w2 wechat-code pull-left">'+wxusername+'</span></p></div></a></li>');
                     $('#homeShopList').append(list);
+                    $('#filterProvince').text(provinceArea(province));
+                    if(city!=province){$('#filterCity').text(cityArea(province,city));}
+
                 }
             }
             if(res.success&&res.shops=='')
@@ -59,7 +72,6 @@ function Filter(evt){
     var skip=evt.data('code');
     var onsalefruit_ids=[];
     var fruit=$('.order-by-fruit').find('.active');
-    console.log(evt.data('code'));
     for(var i=0;i<fruit.length;i++)
     {
         var code=fruit.eq(i).data('code');
@@ -85,11 +97,24 @@ function Filter(evt){
                 var shops = res.shops;
                 for (var shop in shops)
                 {
-                    var list=$('<li><a href="/fruitzone/shop/'+shops[shop]["id"]+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-right"><p><span class="shop-name w1 pull-left">'+shops[shop]["shop_name"]+'</span><span class="w2 area pull-left"></span></p><p>运营时间：'+shops[shop]['live_month']+'月</p><p><span class="shop-owner w1 pull-left">负责人：'+shops[shop]["admin"]["realname"]+'</span><span class="w2 wechat-code pull-left">'+shops[shop]["admin"]["wx_username"]+'</span></p></div></a></li>');
+                    var timenow=new Date().getTime()/1000;
+                    var shopid=shops[shop]["id"];
+                    var shopname =shops[shop]["shop_name"];
+                    var livetime=shops[shop]['shop_start_timestamp'];
+                    var province=shops[shop]['shop_province'];
+                    var city=shops[shop]['shop_city'];
+                    var livemonth=parseInt((timenow-livetime)/(30*24*60*60));
+                    var nickname=shops[shop]["admin"]["accountinfo"]["nickname"];
+                    var wxusername=shops[shop]["admin"]["accountinfo"]["wx_username"];
+                    console.log(wxusername);
+                    var list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-left"><p><span class="shop-name w1 pull-left">'+shopname+'</span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"> </em><em data="'+city+'" id="filterCity"></em></span></p><p>运营时间：'+livemonth+'月</p><p><span class="shop-owner w1 pull-left">负责人：'+nickname+'</span><span class="w2 wechat-code pull-left">'+wxusername+'</span></p></div></a></li>');
                     $('#homeShopList').append(list);
-                    console.log(shops);
-
+                    $('#filterProvince').text(provinceArea(province));
+                    if(city!=province){$('#filterCity').text(cityArea(province,city));}
+                    if(wxusername=='null'||wxusername==''){$('.wechat-code').text('无');}
+                    console.log(wxusername);
                 }
+
             }
         },
         function(){

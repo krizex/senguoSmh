@@ -10,9 +10,7 @@ $(document).ready(function(){
 
     $('.shop-edit-btn').each(function(){shopEdit($(this));});
     $('#liveTimeEdit').click(function(){TimeEdit($(this))});
-
 });
-
 
 function Remember(sell1,sell2){
     for(var i= 0;i<sell1.length;i++)

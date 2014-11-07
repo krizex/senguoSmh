@@ -7,6 +7,7 @@ $(document).ready(function(){
         $('.provinceList').append(province);
         var prolist=$("<li data-code='"+code+"'></li>").text(area[code]['name']);
         $('#province-select').append(prolist);
+
     }
 
     $('.provinceList li').click(function() {
@@ -49,4 +50,16 @@ $(document).ready(function(){
     $('.order-by-city li').eq(0).addClass('active');
 
 
+
 });
+function provinceArea(procode){
+        var pro=area[procode]['name'];
+        return pro;
+}
+
+function cityArea(procode,citcode){
+    var pro=area[procode]['name'];
+    var cit=area[procode]['city'][citcode]['name'];
+    return cit;
+}
+
