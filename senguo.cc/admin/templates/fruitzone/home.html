@@ -11,8 +11,8 @@
     window.dataObj.fruit_types = {% raw json.dumps(context["fruit_types"]) %}
 </script>
 {% end %}
-
-    <header class="herder-box phone-box">
+<div class="container phone-box">
+    <header class="herder-box">
         <div class="content-title title-box">
             <a href="{{reverse_url('fruitzoneAdminHome')}}" class="return-btn">个人中心</a>
             <h1 class="title">水果.同行圈子</h1>
@@ -24,13 +24,13 @@
         </div>
        <p style="color:red;text-align:center;"><small>平台公测中，店铺数据暂未通过审核</small></p>
     </header>
-    <div class="order-by phone-box">
+    <div class="filter-box">
         <a href="javascript:;" onclick="orderBy(1);" class="active">城市<span class="arrow"></span></a>
         <a href="javascript:;" onclick="orderBy(2);">服务区域<span class="arrow"></span></a>
         <a href="javascript:;" onclick="orderBy(3);">运营时间<span class="arrow"></span></a>
         <a href="javascript:;" onclick="orderBy(4);">在售水果<span class="arrow"></span></a>
     </div>
-    <div class="order-by-city  phone-box order-by-list" id="orderBy1" style="display:none;">
+    <div class="order-by-city  order-by-list" id="orderBy1" style="display:none;">
         <ul class="province-select pull-left select-list" id="province-select">
 
         </ul>
@@ -40,7 +40,7 @@
             </ul>
         </div>
     </div>
-    <div class="order-by-area select-list phone-box order-by-list" id="orderBy2" style="display:none;">
+    <div class="order-by-area select-list order-by-list" id="orderBy2" style="display:none;">
         <ul class="order-by-item" data-action="areaFilter">
             <li data-code="1">{{handler.code_to_text("service_area",1)}}</li>
             <li data-code="2">{{handler.code_to_text("service_area",2)}}</li>
@@ -48,7 +48,7 @@
             <li data-code="8">{{handler.code_to_text("service_area",8)}}</li>
         </ul>
      </div>
-    <div class="order-by-time select-list phone-box order-by-list" id="orderBy3" style="display:none;">
+    <div class="order-by-time select-list order-by-list" id="orderBy3" style="display:none;">
         <ul class="order-by-item" data-action="liveFilter">
             <li data-code="1">一个月以上</li>
             <li data-code="3">三个月以上</li>
@@ -56,12 +56,12 @@
             <li data-code="12">一年以上</li>
         </ul>
     </div>
-    <div class="order-by-fruit select-list phone-box order-by-list" id="orderBy4" style="display:none;">
+    <div class="order-by-fruit select-list order-by-list" id="orderBy4" style="display:none;">
         <a class="pull-right text-green border-green white-color" href="javascript:;" id="orderByFruit">点击筛选</a>
         <ul class="order-by-item fruit-list" data-action="fruitFilter">
         </ul>
     </div>
-    <div class="container phone-box shop-list-content">
+    <div class="shop-list-content">
         <ul class="shop-list" id="homeShopList">
             {% import time%}
             {% for shop in context['shops'] %}
@@ -92,4 +92,5 @@
             </ul>
         </nav>-->
     </div>
+</div>
 {% end %}

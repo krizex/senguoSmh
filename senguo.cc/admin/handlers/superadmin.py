@@ -47,7 +47,7 @@ class ShopAdminManage(SuperBaseHandler):
 
     @tornado.web.authenticated
     @SuperBaseHandler.check_arguments("page?:int", "id?:int")
-    def get(self, id):
+    def get(self):
         offset = (self.args.get("page", 1)-1) * self._page_count
         q = self.session.query(models.ShopAdmin)
         count = q.count()

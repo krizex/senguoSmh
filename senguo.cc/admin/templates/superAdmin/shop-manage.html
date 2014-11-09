@@ -1,13 +1,61 @@
 {% extends 'base.html' %}
-
+{% block head %}
+<script src="{{static_url('js/superadmin-shop-manage.js')}}"></script>
+{% end %}
 {% block content %}
-    <div class="container">
-        <ul>
-        {% for shop in context["shops"]%}
-            <li>
-            {{shop.safe_props}}
-            </li>
-        {% end %}
-        </ul>
-    </div>
+
+<div class="admin-shop-left admin-left pull-left">
+    <ul class="nav nav-pills nav-stacked" role="tablist">
+        <li class="active"><a href="{{reverse_url('superShopManageAll')}}">所有店铺（88888）</a></li>
+        <li><a href="{{reverse_url('superShopManageApplying')}}">正在申请接入店铺（88888）</a></li>
+        <li><a href="{{reverse_url('superShopManageAccepted')}}">已经通过申请店铺（88888）</a></li>
+        <li><a href="{{reverse_url('superShopManageDeclined')}}">已被拒绝店铺（88888）</a></li>
+    </ul>
+</div>
+<div class="admin-shop-right admin-right pull-left">
+    <ul class="shop-list">
+    {% for shop in context["shops"]%}
+        <li class="row" data-shopid="{{shop.id}}">
+            <a href="{{reverse_url('superShopAdminManageShopProfile',shop.id)}}">
+                <div class="show-info">
+                    <span class="col-lg-2 shop-img">
+                        <img src="{{shop.admin.accountinfo.headimgurl}}"/>
+                    </span>
+                    <div class="col-lg-3">
+                        <p>{{shop.shop_name}}</p>
+                        <p>{{shop.admin.accountinfo.nickname}}</p>
+                    </div>
+                    <div class="col-lg-3">{{handler.code_to_text("shop_city",shop.shop_city)}}</div>
+                    <div class="col-lg-2 btn-box">
+                        <button type="button" class="btn-style btn-green passApply">通过</button>
+                    </div>
+                    <div class="col-lg-2 btn-box">
+                        <button type="button" class="btn-style btn-red rejectApply">拒绝</button>
+                        <div class="modal fade reject-box" id="rejectBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <textarea placeholder="输入你的拒绝理由" class="decline-reason"></textarea>
+                                        <button type="text" class="btn-style btn-green send-btn rejectSend">发送</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hide-info">
+                    <p>
+                        <strong>服务区域：</strong>{{handler.code_to_text("service_area",shop.shop_service_area)}}
+                        <strong>店面： </strong><span class="have-entity" data-real="{{shop.have_offline_entity}}"></span>
+                    </p>
+                    <div class="row">
+                        <span class="col-lg-2"> <strong>店铺简介： </strong></span>
+                        <p class="col-lg-10">{{shop.shop_intro or '无'}}</p>
+                    </div>
+                </div>
+            </a>
+        </li>
+    {% end %}
+    </ul>
+</div>
 {% end %}
