@@ -39,36 +39,60 @@ class Access(SuperBaseHandler):
 
 class ShopAdminManage(SuperBaseHandler):
     """商家管理，基本上是信息展示"""
-    
+
     _page_count = 20
-    
+
     def initialize(self, action):
         self._action = action
-    
+
     @tornado.web.authenticated
-    @SuperBaseHandler.check_arguments("page?:int")
-    def get(self):
+    @SuperBaseHandler.check_arguments("page?:int", "id?:int")
+    def get(self, id):
         offset = (self.args.get("page", 1)-1) * self._page_count
         q = self.session.query(models.ShopAdmin)
+        count = q.count()
         t = int(time.time())
         if self._action == "all":
             pass
         elif self._action == "using":
             q = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER,
                          models.ShopAdmin.expire_time > t)
+            count = q.count()
         elif self._action == "expire":
-            q = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER, 
+            q = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER,
                          models.ShopAdmin.expire_time <= t)
+            count = q.count()
         elif self._action == "common":
             q = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SHOP_OWNER)
+            count = q.count()
+        #商家个人信息
+        elif self._action == "admin_profile":
+            try:
+                admin = q.filter_by(id=id).one()
+            except:
+                admin = None
+            if not admin:
+                return self.send_error(404)
+            time_tuple = time.localtime(admin.accountinfo.birthday)
+            birthday = time.strftime("%Y-%m", time_tuple)
+            return self.render("superAdmin/admin-profile.html", context=dict(admin=admin, birthday=birthday))
+        #商店信息
+        elif self._action =="shop_profile":
+            try:
+                shop = self.session.query(models.Shop).filter_by(id=id).one()
+            except:
+                shop = None
+            if not shop:
+                return self.send_error(404)
+            return self.render("superAdmin/shop-profile.html", context=dict(shop=shop))
         else:
             return self.send_error(404)
         # 排序规则id, offset 和 limit
         q = q.order_by(models.ShopAdmin.id.desc()).offset(offset).limit(self._page_count)
-        
+
         admins = q.all()
         # admins 是models.ShopAdmin的实例的列表，具体属性可以去dal/models.py中看到
-        return self.render("superAdmin/shop-admin-manage.html", context=dict(admins = admins))
+        return self.render("superAdmin/shop-admin-manage.html", context=dict(admins = admins, count=count))
     @tornado.web.authenticated
     def post(self):
         return self.send_error(404)
