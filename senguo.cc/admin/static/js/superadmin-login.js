@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    $('#submit-btn').click(function(){submit();});
+    $('#submit-btn').on('click',function(){submit();});
     $('#homeList').load("home-list.item.html");
 })
 

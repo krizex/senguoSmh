@@ -9,23 +9,22 @@
         <li><a href="{{reverse_url('superShopAdminManageCommon')}}">未付费商家（88888）</a></li>
     </ul>
 </div>
-<div class="admin-manage-right admin-right pull-left">
+<div class="admin-manage-right admin-right pull-right">
     <ul class="user-list w1">
         {% for admin in context["admins"]%}
             <li class="row">
-                <a href="{{reverse_url('superShopAdminProfile',admin.id)}}">
-                    <span class="col-lg-1 user-img">
-                        <img src="{{admin.accountinfo.headimgurl}}"/>
-                    </span>
-                    <span class="col-lg-11">{{admin.accountinfo.nickname}}</span>
-                </a>
+                <span class="col-lg-1 user-img">
+                    <img src="{{admin.accountinfo.headimgurl}}"/>
+                </span>
+                <span class="col-lg-10">{{admin.accountinfo.nickname}}</span>
+                <a class="col-lg-10" href="{{reverse_url('superShopAdminProfile',admin.id)}}">查看详情&rarr;</a>
             </li>
         {% end %}
     </ul>
     <nav>
         <ul class="pager">
-            <li><a href="#">&larr; 上一页</a></li>
-            <li><a href="#">下一页&rarr;</a></li>
+            <li><a href="" id="PrePage">&larr; 上一页</a></li>
+            <li><a href="" id="NextPage">下一页&rarr;</a></li>
         </ul>
     </nav>
 </div>

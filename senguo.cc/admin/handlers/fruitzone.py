@@ -235,7 +235,7 @@ class Shop(AdminBaseHandler):
     #收藏店铺
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("shop_id:int")
-    def post(self):
+    def post(self,shop_id):
         try:
             shop = self.session.query(models.Shop).filter_by(id = shop_id).one()
         except:
@@ -248,12 +248,12 @@ class Shop(AdminBaseHandler):
 class AdminShops(AdminBaseHandler):
    @tornado.web.authenticated
    def get(self):
-       return self.render("fruitzone/shops.html", context=dict(shops=self.current_user.shops))
+       return self.render("fruitzone/shops.html", context=dict(shops=self.current_user.shops,collect=False))
 
 class AdminShopsCollect(AdminBaseHandler):
    @tornado.web.authenticated
    def get(self):
-       return self.render("fruitzone/shops.html", context=dict(shops_collect=self.current_user.shops_collect))
+       return self.render("fruitzone/shops.html", context=dict(shops=self.current_user.shops_collect,collect=True))
 
 class AdminShop(AdminBaseHandler):
     @tornado.web.authenticated

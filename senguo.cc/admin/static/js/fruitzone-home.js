@@ -1,30 +1,48 @@
 $(document).ready(function(){
-    $('.order-by a').click(function(){$(this).addClass('active').siblings().removeClass('active');});
-    $('#searchSubmit').click(function(evt){Search(evt);});
-    $('#province-select').find('li').click(function(){
+    $('.filter-box a').on('click',function(){$(this).addClass('active').siblings().removeClass('active');});
+    $('#searchSubmit').on('click',function(evt){Search(evt);});
+    $('#province-select').find('li').on('click',function(){
         if($('#city-select').find('li').length==0)
         {
             Filter($(this));
         }
-        else $('.city-select').find('li').each(function(){$(this).click(function(){Filter($(this));});});
+        else $('.city-select').find('li').each(function(){$(this).on('click',function(){Filter($(this));});});
     });
 
-    // 不要用order-by这样的命名，易误会
     /* 这种实现点击事件处理的方法效率低，建议采用事件代理，可以参考这篇文章：http://chajn.org/project/javascript-events-responding-user/
      */
 
-    $('.order-by-fruit').find('li').each(function(){$(this).click(function(){$(this).toggleClass('active');});});
-    $('.order-by-area').find('li').each(function(){$(this).click(function(){Filter($(this));});});
-    $('.order-by-time').find('li').each(function(){$(this).click(function(){Filter($(this));});});
-    $('#orderByFruit').click(function(){Filter($(this));});
-    $('.home-pagination').find('li').each(function(){$(this).click(function(){Filter($(this));});});
+    $('.order-by-fruit').find('li').each(function(){$(this).on('click',function(){$(this).toggleClass('active');});});
+    $('.order-by-area').find('li').each(function(){$(this).on('click',function(){Filter($(this));});});
+    $('.order-by-time').find('li').each(function(){$(this).on('click',function(){Filter($(this));});});
+    $('#orderByFruit').on('click',function(){Filter($(this));});
+    $('.home-pagination').find('li').each(function(){$(this).on('click',function(){Filter($(this));});});
 
+    var pre=$('#PrePage');
+    var next=$('#NextPage');
+    var page=$.getUrlParam('page', 1);
+    var url=window.location.pathname;
+    if(page==1) pre.css({'background':'#ddd'});
+    if($('.shop-list').find('li').length<10)
+    {
+        next.addClass('hidden');
+    }
+    pre.on('click',function(){
+        if(page>1) {
+            page--;
+            pre.attr({'href': url + '?page=' + page});
+        }
+    });
+    next.on('click',function(){
+        page++;
+        next.attr({'href':url+'?page='+page});
+    });
 });
 
 function Search(evt){
     evt.preventDefault();
     var q=$('#searchKey').val().trim();
-    var action=$('#searchSubmit').data('action');
+    var action="search";
     var url="/fruitzone/";
     var args={
         q:q,
@@ -54,7 +72,6 @@ function Search(evt){
                     var wxusername=shops[shop]["admin"]["accountinfo"]["wx_username"];
                     var list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-left"><p><span class="shop-name w1 pull-left">'+shopname+'</span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"> </em><em data="'+city+'" id="filterCity"></em></span></p><p>运营时间：'+livemonth+'月</p><p><span class="shop-owner w1 pull-left">负责人：'+nickname+'</span><span class="w2 wechat-code pull-left">'+wxusername+'</span></p></div></a></li>');
                     $('#homeShopList').append(list);
-
                     $('#filterProvince').text(provinceArea(province));
                     if(city!=province){$('#filterCity').text(cityArea(province,city));}
                     // 这段替换代码逻辑有问题，应该是替换list中的"#filterProvince"
@@ -64,7 +81,7 @@ function Search(evt){
             if(res.success&&res.shops=='')
             {
                 $('#homeShopList').empty();
-                $('#homeShopList').append('<h5>无搜索结果！</h5>');
+                $('#homeShopList').append('<h5 class="text-center">无搜索结果！</h5>');
             }
         },
         function(){
@@ -123,11 +140,13 @@ function Filter(evt){
                     $('#homeShopList').append(list);
                     $('#filterProvince').text(provinceArea(province));
                     if(city!=province){$('#filterCity').text(cityArea(province,city));}
-                    if(wxusername=='null'||wxusername==''){$('.wechat-code').text('无');}
-                    console.log(wxusername);
                     //同样处理省份的转换有问题
                 }
-                // 考虑无过滤结果的情况
+                if(res.success&&res.shops=='')
+                {
+                    $('#homeShopList').empty();
+                    $('#homeShopList').append('<h5 class="text-center">无搜索结果！</h5>');
+                }// 考虑无过滤结果的情况
             }
         },
         function(){

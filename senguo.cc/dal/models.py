@@ -370,7 +370,7 @@ class ShopAdmin(MapBase, _AccountApi):
     briefintro = Column(String(300), default="")
 
     shops = relationship(Shop, uselist=True)
-    shops_collect = relationship("ShopsCollect")
+    shops_collect = relationship("Shop",secondary="shops_collect")
     feedback = relationship("Feedback")
 
     def add_shop(self, session, **kwargs):

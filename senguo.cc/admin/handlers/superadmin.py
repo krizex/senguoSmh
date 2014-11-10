@@ -40,7 +40,7 @@ class Access(SuperBaseHandler):
 class ShopAdminManage(SuperBaseHandler):
     """商家管理，基本上是信息展示"""
 
-    _page_count = 20
+    _page_count = 10
 
     def initialize(self, action):
         self._action = action
@@ -105,7 +105,7 @@ class ShopProfile(SuperBaseHandler):
 
 
 class ShopManage(SuperBaseHandler):
-    _page_count = 20
+    _page_count = 10
     
     def initialize(self, action):
         self._action = action
