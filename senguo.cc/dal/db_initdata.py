@@ -46,7 +46,7 @@ charge_types = [
     {"id":1,
      "good_name":"森果商城系统1.0（三个月套餐）",
      "month":3,
-     "price":588,
+     "price":0.01,#588
      "description":"588元/三个月"},
     {"id":2,
      "good_name":"森果商城系统1.0（六个月套餐）",

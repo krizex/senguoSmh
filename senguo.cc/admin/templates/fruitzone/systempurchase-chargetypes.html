@@ -1,0 +1,12 @@
+{% extends 'base.html'%}
+
+{% block content%}
+<h3>请选择系统使用时期</h3>
+<ul>
+  {% for charge_type in context["charge_types"]%}
+  <li>
+    <span>{{charge_type.id}}.</span>{{charge_type.description}}
+  </li>
+  {% end %}
+</ul>
+{%end%}

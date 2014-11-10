@@ -1,0 +1,31 @@
+{% extends 'base.html'%}
+
+{% block content%}
+{% set charge_type = context["charge_type"] %}
+
+<div class="container">
+  <div class="panel panel-info">
+    <div class="panel-heading">订单详情</div>
+    <div class="panel-body">
+      <ul class="list-group">
+        <li class="list-group-item">
+          <label class="pull-left">商品名称</label>
+          <span class="pull-right">{{charge_type.good_name}}</span>
+          <div style="clear:both"></div>
+        </li>
+        <li class="list-group-item">
+          <label class="pull-left">使用期限</label>
+          <span class="pull-right">{{charge_type.month}} 个月</span>
+          <div style="clear:both"></div>
+        </li>
+        <li class="list-group-item">
+          <label class="pull-left">总价</label>
+          <span class="pull-right">{{charge_type.price}} 元</span>
+          <div style="clear:both"></div>
+        </li>
+      </ul>
+    </div>
+    
+  </div>
+</div>
+{% end %}

@@ -8,8 +8,9 @@ from dal.dis_dict import dis_dict
 import datetime, time, random
 from libs.msgverify import gen_msg_token,check_msg_token
 from libs.alipay import WapAlipay
-from settings import subject, seller_account_name, call_back_url, notify_url
-
+from settings import ALIPAY_PID, ALIPAY_KEY, ALIPAY_SELLER_ACCOUNT, ALIPAY_HANDLE_HOST
+from libs.utils import Logger
+import libs.xmltodict as xmltodict
 
 class Home(AdminBaseHandler):
     _page_count = 20
@@ -327,95 +328,116 @@ class PhoneVerify(AdminBaseHandler):
         self.current_user.accountinfo.update(self.session, phone=self.args["phone"],password=self.args["password"])
         return self.send_success()
 
-class AdminSystemPurchase(AdminBaseHandler):
+class SystemPurchase(AdminBaseHandler):
     """后台购买相关页面"""
     def initialize(self, action):
-        self._action == action
+        self._action = action
 
     @tornado.web.authenticated
     def get(self):
-        if self._action == "chooseChargeType":
-            return self.render("fruitzone/admin-choose-charge-type.html")
-        elif self._action == "getChargeDetail":
+        if self._action == "chargeTypes":
+            charge_types = self.session.query(models.ChargeType).\
+                           order_by(models.ChargeType.id).all()
+            return self.render("fruitzone/systempurchase-chargetypes.html",
+                               context=dict(charge_types=charge_types))
+        elif self._action == "chargeDetail":
             return self.get_charge_detail()
+        elif self._action == "dealFinishedCallback":
+            return self.handle_deal_finished_callback()
+        elif self._action == "dealSuccess":
+            return self.render("fruitzone/systempurchase-dealsuccess.html")
         else:
             return self.send_error(404)
 
+    @AdminBaseHandler.check_arguments("charge_type:int")
+    def get_charge_detail(self):
+        # 判断charge_type合法性，不合法从新返回接入申请页
+        charge_type = models.ChargeType.get_by_id(self.session, self.args["charge_type"])
+        if not charge_type:
+            return self.send_fail(error_text="抱歉，此商品不存在呵呵(#‵′)凸")
+        return self.render("fruitzone/systempurchase-chargedetail.html", 
+                           context=dict(charge_type=charge_type))
+    @AdminBaseHandler.check_arguments("sign", "result", "out_trade_no", 
+                                      "trade_no", "request_token")
+    def handle_deal_finished_callback(self):
+        # 检查是否合法
+        print(self.args)
+        sign = self.args.pop("sign")
+        signmethod = self._alipay.getSignMethod()
+        if signmethod(self.args) != sign:
+            Logger.warn("SystemPurchase: sign from alipay error!")
+            return self.send_error(403)
+        # 创建成功订单记录
+        o = self.current_user.finish_order(
+            self.session,
+            order_id=int(self.args["out_trade_no"]),
+            ali_trade_no=self.args["trade_no"])
+        if not o:
+            print("tmp order not found!")
+            return self.write("交易已完成或不存在!")
+        # 重定向到支付成功页面
+        return self.redirect(self.reverse_url("fruitzoneSystemPurchaseDealSuccess"))
+
     @tornado.web.authenticated
     def post(self):
-        if self._action == "getChargeDetail":
+        if self._action == "chargeDetail":
             return self.handle_confirm_payment()
+        elif self._action == "dealNotify":
+            return self.handle_deal_notify()
+        else:
+            return self.send_error(404)
     
     @AdminBaseHandler.check_arguments("charge_type:int", "pay_type")
     def handle_confirm_payment(self):
         if self.args["pay_type"] == "wx":
             # 判断charge_type合法性，不合法从新返回接入申请页
-            # 创建订单，跳转到支付宝支付页
-            pass
+            charge_data = models.ChargeType.get_by_id(self.session, self.args["charge_type"])
+            if not charge_data:
+                return self.send_fail(error_text="抱歉，此商品不存在呵呵(#‵′)凸")
+            # 创建临时订单，跳转到支付宝支付页
+            try:
+                url = self._create_tmporder_url(charge_data)
+            except Exception as e:
+                Logger.error("System Purchase: get auth url failed!", e)
+                return self.send_fail(error_text="系统繁忙，请稍后重试")
+            return self.send_success(url=url)
 
-
-    @AdminBaseHandler.check_arguments("charge_type:int")
-    def get_charge_detail(self):
-        # 判断charge_type合法性，不合法从新返回接入申请页
-        # 获取商品数据，返回render
-        pass
+    @AdminBaseHandler.check_arguments(
+        "service", "v","sec_id","sign","notify_data")
+    def handle_deal_notify(self):
+        # 验证签名
+        print("SystemPurchase Notify args: ", self.args)
+        sign = self.args.pop("sign")
+        signmethod = self._alipay.getSignMethod(**self.args)
+        if signmethod(self.args) != sign:
+            Logger.warn("SystemPurchase Notify: sign from alipay error!")
+            return self.send_error(403)        
+        # # 验证notify_id是否存在, 这部分是否需要做？
+        # if not self._alipay.verify_notify(**self.args):
+        #     Logger.warn("Purchase Notify: notify check illegal!")
+        #     return self.send_error(403)
+        notify_data = xmltodict.parse(self.args["notify_data"])["notify"]
+        # 判断该notify是否已经被处理，已处理直接返回success，未处理填补信息
+        o = self.current_user.update_order_notify_data(
+            self.session, 
+            order_id=int(notify_data["out_trade_no"]),
+            notify_data=notify_data)
+        if not o:
+            Logger.error("SystemPurchase Notify Fatal Error: order not found!")
+            return self.write("fail")
+        return self.write("success")
     
-    
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-class Order(AdminBaseHandler):
-    def get(self):
-        pass
-
-    @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("action", "fee:int")
-    def post(self):
-
-        if self.args["fee"] == 1:
-            total_fee = "588"
-        elif self.args["fee"] == 2:
-            total_fee = "988"
-        elif self.args["fee"] == 3:
-            total_fee = "1788"
-
-        count = 0
-        try:
-            q = self.session.query(models.Shop).order_by(models.Shop.id).first()
-            count = q.count
-        except:
-            count = 0
-        out_trade_no = time.strftime("%Y%m%d%H%M%S", time.gmtime())+self.args["fee"]+str(count)
-
-        # todo out_user 在模块里没传进去
-        out_user = ""  #买家在商户系统的唯一标识。当该买家支付成功一次后,再次支付金额在 30 元内时,不需要再次输入密码。
-        merchant_url = "http://www.senguo.cc.monklof.com/merchant"#操作中断返回地址
-        pay_expire = "3600"#交易自动关闭时间（分钟）
-
-
-        order = models.Order()
-        order.out_trade_no = out_trade_no
-        order.subject
-        order.total_fee
-
-        alipay = WapAlipay(pid="2088511484939521",key="oknunsvpq83x358worr6obs7zo2h1xxw",seller_email="senguo@senguo.cc")
-        url = alipay.create_direct_pay_by_user_url(
-            out_trade_no=out_trade_no, 
-            subject=subject,
-            total_fee=total_fee,
-            seller_account_name=seller_account_name,
-            call_back_url=call_back_url, 
-            notify_url=notify_url)
-        print(url)
-        self.redirect(url)
+    _alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
+    def _create_tmporder_url(self, charge_data):
+        # 创建临时订单
+        tmp_order = self.current_user.add_tmp_order(self.session, charge_data)
+        authed_url = self._alipay.create_direct_pay_by_user_url(
+            out_trade_no=str(tmp_order.order_id),
+            subject = tmp_order.charge_good_name,
+            total_fee = tmp_order.charge_price,
+            seller_account_name = ALIPAY_SELLER_ACCOUNT,
+            call_back_url= "%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseDealFinishedCallback")),
+            notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseDealNotify")),
+            merchant_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseChargeTypes"))
+        )
+        return authed_url

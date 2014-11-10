@@ -89,7 +89,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
             raise Exception("you have to complete this wexin oauth config.")
         
         if next_url: 
-            para_str = "?next="+next_url
+            para_str = "?next="+tornado.escape.url_escape(next_url)
         else:
             para_str = ""
         
@@ -112,7 +112,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
         return link
     
     def get_login_url(self):
-        return self.get_wexin_oauth_link()
+        return self.get_wexin_oauth_link(next_url=self.request.full_url())
     def get_current_user(self):
         if not self.__account_model__ or not self.__account_cookie_name__:
             raise Exception("overwrite model to support authenticate.")

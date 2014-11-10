@@ -92,7 +92,18 @@ handlers = [
     (r"/fruitzone/phoneVerify/gencode", handlers.fruitzone.PhoneVerify, {
         "action":"gencode"}, "fruitzoneVerifyGencode"),
     (r"/fruitzone/phoneVerify/checkcode", handlers.fruitzone.PhoneVerify,{
-        "action":"checkcode"}, "fruitzoneCheckcode")
+        "action":"checkcode"}, "fruitzoneCheckcode"),
+    
+    (r"/fruitzone/systemPurchase/chargeTypes", handlers.fruitzone.SystemPurchase, {
+        "action":"chargeTypes"}, "fruitzoneSystemPurchaseChargeTypes"),
+    (r"/fruitzone/systemPurchase/chargeDetail", handlers.fruitzone.SystemPurchase, {
+        "action":"chargeDetail"}, "fruitzoneSystemPurchaseChargeDetail"),
+    (r"/fruitzone/systemPurchase/dealFinishedCallback", handlers.fruitzone.SystemPurchase, {
+        "action":"dealFinishedCallback"}, "fruitzoneSystemPurchaseDealFinishedCallback"),
+    (r"/fruitzone/systemPurchase/dealSuccess", handlers.fruitzone.SystemPurchase, {
+        "action":"dealSuccess"}, "fruitzoneSystemPurchaseDealSuccess"),
+    (r"/fruitzone/systemPurchase/dealNotify", handlers.fruitzone.SystemPurchase, {
+        "action":"dealNotify"}, "fruitzoneSystemPurchaseDealNotify"),
     
 ]
 
