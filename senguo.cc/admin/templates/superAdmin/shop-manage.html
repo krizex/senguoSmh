@@ -16,7 +16,7 @@
     <ul class="shop-list">
     {% for shop in context["shops"]%}
         <li class="row" data-shopid="{{shop.id}}">
-            <a href="{{reverse_url('superShopAdminManageShopProfile',shop.id)}}">
+            <a href="{{reverse_url('superShopProfile',shop.id)}}">
                 <div class="show-info">
                     <span class="col-lg-2 shop-img">
                         <img src="{{shop.admin.accountinfo.headimgurl}}"/>

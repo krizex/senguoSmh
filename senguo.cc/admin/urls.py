@@ -31,11 +31,9 @@ handlers = [
     (r"/super/shopAdminManage/common", handlers.superadmin.ShopAdminManage, {
         "action": "common"}, "superShopAdminManageCommon"),
     # 商家个人信息详情
-    (r"/super/shopAdminManage/admin_profile/(\d+)", handlers.superadmin.ShopAdminManage, {
-        "action": "admin_profile"}, "superShopAdminManageAdminProfile"),
+    (r"/super/shopAdminProfile/(\d+)", handlers.superadmin.ShopAdminProfile, {}, "superShopAdminProfile"),
     # 店铺信息详情
-    (r"/super/shopAdminManage/shop_profile/(\d+)", handlers.superadmin.ShopAdminManage, {
-        "action": "shop_profile"}, "superShopAdminManageShopProfile"),
+    (r"/super/shopProfile/(\d+)", handlers.superadmin.ShopProfile, {}, "superShopProfile"),
 
     ## 店铺申请接入管理
     # 所有店铺

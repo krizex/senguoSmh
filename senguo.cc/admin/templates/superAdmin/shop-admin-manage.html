@@ -13,7 +13,7 @@
     <ul class="user-list w1">
         {% for admin in context["admins"]%}
             <li class="row">
-                <a href="{{reverse_url('superShopAdminManageAdminProfile',admin.id)}}">
+                <a href="{{reverse_url('superShopAdminProfile',admin.id)}}">
                     <span class="col-lg-1 user-img">
                         <img src="{{admin.accountinfo.headimgurl}}"/>
                     </span>

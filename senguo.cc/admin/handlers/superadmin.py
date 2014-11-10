@@ -46,7 +46,7 @@ class ShopAdminManage(SuperBaseHandler):
         self._action = action
 
     @tornado.web.authenticated
-    @SuperBaseHandler.check_arguments("page?:int", "id?:int")
+    @SuperBaseHandler.check_arguments("page?:int")
     def get(self):
         offset = (self.args.get("page", 1)-1) * self._page_count
         q = self.session.query(models.ShopAdmin)
@@ -65,26 +65,6 @@ class ShopAdminManage(SuperBaseHandler):
         elif self._action == "common":
             q = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SHOP_OWNER)
             count = q.count()
-        #商家个人信息
-        elif self._action == "admin_profile":
-            try:
-                admin = q.filter_by(id=id).one()
-            except:
-                admin = None
-            if not admin:
-                return self.send_error(404)
-            time_tuple = time.localtime(admin.accountinfo.birthday)
-            birthday = time.strftime("%Y-%m", time_tuple)
-            return self.render("superAdmin/admin-profile.html", context=dict(admin=admin, birthday=birthday))
-        #商店信息
-        elif self._action =="shop_profile":
-            try:
-                shop = self.session.query(models.Shop).filter_by(id=id).one()
-            except:
-                shop = None
-            if not shop:
-                return self.send_error(404)
-            return self.render("superAdmin/shop-profile.html", context=dict(shop=shop))
         else:
             return self.send_error(404)
         # 排序规则id, offset 和 limit
@@ -96,6 +76,32 @@ class ShopAdminManage(SuperBaseHandler):
     @tornado.web.authenticated
     def post(self):
         return self.send_error(404)
+
+class ShopAdminProfile(SuperBaseHandler):
+
+    @tornado.web.authenticated
+    #@SuperBaseHandler.check_arguments("id:int")
+    def get(self, id):
+        try:
+            admin = self.session.query(models.ShopAdmin).filter_by(id=id).one()
+        except:
+            admin = None
+        if not admin:
+            return self.send_error(404)
+        time_tuple = time.localtime(admin.accountinfo.birthday)
+        birthday = time.strftime("%Y-%m", time_tuple)
+        return self.render("superAdmin/admin-profile.html", context=dict(admin=admin, birthday=birthday))
+class ShopProfile(SuperBaseHandler):
+    @tornado.web.authenticated
+    #@SuperBaseHandler.check_arguments("id:int")
+    def get(self, id):
+        try:
+            shop = self.session.query(models.Shop).filter_by(id=id).one()
+        except:
+            shop = None
+        if not shop:
+            return self.send_error(404)
+        return self.render("superAdmin/shop-profile.html", context=dict(shop=shop))
 
 
 class ShopManage(SuperBaseHandler):
