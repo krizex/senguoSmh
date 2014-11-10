@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    $('.modal .fruit-list li').each(function(){$(this).click(function(){$(this).toggleClass('active');});});
+    $('.modal .fruit-list li').each(function(){$(this).on('click',function(){$(this).toggleClass('active');});});
 
     var s1=$('.sell-fruit-list').find('li');
     var s2=$('#sellFruit').find('li');
@@ -9,7 +9,9 @@ $(document).ready(function(){
     Remember(b1,b2);
 
     $('.shop-edit-btn').each(function(){shopEdit($(this));});
-    $('#liveTimeEdit').click(function(){TimeEdit($(this))});
+    $('#liveTimeEdit').on('click',function(){TimeEdit($(this))});
+
+    $('#collectBox').on('click',function(){Collect();})
 });
 
 function Remember(sell1,sell2){
@@ -26,6 +28,20 @@ function Remember(sell1,sell2){
         }
 
     }
+}
+
+function Collect(){
+    var shop_id=$('#headerId').data('shop');
+    var url="/fruitzone/shop/"+shop_id;
+    var args={shop_id:shop_id,_xsrf: window.dataObj._xsrf};
+    $.postJson(url,args,
+        function (res) {
+            if (res.success) {
+                alert('收藏成功！');
+                $('#collectBox').addClass('hidden').siblings('.action-mode').addClass('show');
+            }
+        }
+    );
 }
 
 function TimeEdit(evt){
@@ -61,7 +77,7 @@ function TimeEdit(evt){
 
 
 function shopEdit(evt){
-    evt.click(function(){
+    evt.on('click',function(){
         var link=$('#shopLink').val();
         var users=$('#shopUser').val();
         var sell=$('#shopSell').val();

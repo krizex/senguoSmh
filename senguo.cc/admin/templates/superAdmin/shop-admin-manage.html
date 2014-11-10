@@ -1,5 +1,31 @@
-<ul>
-{% for admin in context["admins"]%}
-<li> {{admin.safe_props}}</li>
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="admin-manage-left admin-left pull-left">
+    <ul class="nav nav-pills nav-stacked" role="tablist">
+        <li class="active"><a href="{{reverse_url('superShopAdminManageAll')}}">所有商家（）</a></li>
+        <li><a href="{{reverse_url('superShopAdminManageUsing')}}">正在使用商家（88888）</a></li>
+        <li><a href="{{reverse_url('superShopAdminManageExpire')}}">到期未续商家（88888）</a></li>
+        <li><a href="{{reverse_url('superShopAdminManageCommon')}}">未付费商家（88888）</a></li>
+    </ul>
+</div>
+<div class="admin-manage-right admin-right pull-right">
+    <ul class="user-list w1">
+        {% for admin in context["admins"]%}
+            <li class="row">
+                <span class="col-lg-1 user-img">
+                    <img src="{{admin.accountinfo.headimgurl}}"/>
+                </span>
+                <span class="col-lg-10">{{admin.accountinfo.nickname}}</span>
+                <a class="col-lg-10" href="{{reverse_url('superShopAdminProfile',admin.id)}}">查看详情&rarr;</a>
+            </li>
+        {% end %}
+    </ul>
+    <nav>
+        <ul class="pager">
+            <li><a href="" id="PrePage">&larr; 上一页</a></li>
+            <li><a href="" id="NextPage">下一页&rarr;</a></li>
+        </ul>
+    </nav>
+</div>
 {% end %}
-</ul>

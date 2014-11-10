@@ -29,7 +29,11 @@ handlers = [
         "action":"expire"}, "superShopAdminManageExpire"),
     # 未付费商家/普通商家
     (r"/super/shopAdminManage/common", handlers.superadmin.ShopAdminManage, {
-        "action":"common"}, "superShopAdminManageCommon"),
+        "action": "common"}, "superShopAdminManageCommon"),
+    # 商家个人信息详情
+    (r"/super/shopAdminProfile/(\d+)", handlers.superadmin.ShopAdminProfile, {}, "superShopAdminProfile"),
+    # 店铺信息详情
+    (r"/super/shopProfile/(\d+)", handlers.superadmin.ShopProfile, {}, "superShopProfile"),
 
     ## 店铺申请接入管理
     # 所有店铺
@@ -87,6 +91,7 @@ handlers = [
     (r"/fruitzone/shop/(\d+)", handlers.fruitzone.Shop, {}, "fruitzoneShop"),
 
     (r"/fruitzone/admin/shops", handlers.fruitzone.AdminShops, {}, "fuirzoneAdminShops"),
+    (r"/fruitzone/admin/shopsCollect", handlers.fruitzone.AdminShopsCollect, {}, "fuirzoneAdminShopsCollect"),
     (r"/fruitzone/admin/shop/(\d+)", handlers.fruitzone.AdminShop, {}, "fruitzoneAdminShop"),
 
     (r"/fruitzone/phoneVerify/gencode", handlers.fruitzone.PhoneVerify, {

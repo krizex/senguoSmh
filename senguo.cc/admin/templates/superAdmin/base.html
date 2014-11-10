@@ -9,9 +9,11 @@
     <title>haha</title>
     <link rel="stylesheet" href="{{static_url('css/bootstrap.min.css')}}"/>
     <link rel="stylesheet" href="{{static_url('css/superadmin-global.css')}}"/>
-    <link rel="stylesheet" href="{{static_url('css/superadmin-style.css')}}"/>>
+    <link rel="stylesheet" href="{{static_url('css/superadmin-style.css')}}"/>
     <script src="{{static_url('js/jquery.js')}}"></script>
     <script src="{{static_url('js/bootstrap.min.js')}}"></script>
+    <script src="{{static_url('js/global.js')}}"></script>
+    <script src="{{static_url('js/superadmin-public.js')}}"></script>
     <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     {% block head %}{% end %}
@@ -21,6 +23,15 @@
     </script>
 </head>
 <body>
-{% block content %}{% end %}
+<header class="container">
+    <ul class="nav nav-pills header-nav" role="tablist">
+        <li role="presentation" class="active"><a href="{{reverse_url('superShopAdminManage')}}">商家管理</a></li>
+        <li role="presentation"><a href="{{reverse_url('superShopManage')}}">店铺管理</a></li>
+        <li role="presentation"><a href="{{reverse_url('superShopAdminManage')}}">商城接入管理</a></li>
+    </ul>
+</header>
+<div class="container">
+    {% block content %}{% end %}
+</div>
 </body>
 </html>

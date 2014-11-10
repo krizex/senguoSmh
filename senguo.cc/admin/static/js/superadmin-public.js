@@ -1,35 +1,51 @@
 $(document).ready(function(){
-    $('#submit-btn').click(function(){submit();});
-    $('#homeList').load("home-list.item.html");
-})
 
-function submit(){
-    var username=$('#username-input').val().trim();
-    var password=$('#pw-input').val().trim();
-    var regUsername=/^[a-zA-Z_\d]{2,21}$/;
-    if (!username || !password){alert("用户名或密码不能为空");return false;}
-    if(username.length > 20){alert("用户名不能超过20个字符");return false;}
-    if(!regUsername.test(username)){alert("用户名不要包括奇怪的字符");return false;}
-    password = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
-    password = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
-    var args={
-        "username":username,
-        "password":password
-    };
-    $.ajax({
-        url:"/super/login",
-        type:"POST",
-        dataType:"json",
-        data: $.param(args),
-        success:function(r){
-            if(r.success==1){
-                window.location.href="/super/";
-            }
-            else{
-                alert("用户名或密码错误！");
-                return false;
-            }
-        }
+    $('.have-entity').each(function(){
+        var entity=$(this).data('real');
+        $(this).text(Have(entity));
 
     });
+    $('.admin-sex').each(function(){
+        var sex=$(this).data('sex');
+        $(this).text(Sex(sex));
+
+    });
+
+    var pre=$('#PrePage');
+    var next=$('#NextPage');
+    var page=$.getUrlParam('page', 1);
+    var url=window.location.pathname;
+    if(page==1) pre.css({'background':'#ddd'});
+    if($('.shop-list').find('li').length<10)
+        {
+            next.addClass('hidden');
+        }
+    pre.on('click',function(){
+       if(page>1) {
+            page--;
+            pre.attr({'href': url + '?page=' + page});
+        }
+    });
+    next.on('click',function(){
+        page++;
+        next.attr({'href':url+'?page='+page});
+    });
+});
+
+
+function Have(evt){
+    if(evt=='True')
+      return '有';
+    else if(evt=='False')
+      return '无';
 }
+
+function Sex(evt){
+    if(evt=='0')
+        return '其他';
+    else if(evt=='1')
+        return '男';
+    else if(evt=='2')
+        return '女';
+}
+

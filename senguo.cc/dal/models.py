@@ -375,6 +375,7 @@ class ShopAdmin(MapBase, _AccountApi):
     briefintro = Column(String(300), default="")
 
     shops = relationship(Shop, uselist=True)
+    shops_collect = relationship("Shop",secondary="shops_collect")
     feedback = relationship("Feedback")
 
     def success_orders(self, session):
@@ -588,6 +589,13 @@ class ShopDemandfruitLink(MapBase):
 
     shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
     fruit_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
+
+class ShopsCollect(MapBase, _CommonApi):
+    __tablename__ = "shops_collect"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
+    shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
 
 class Feedback(MapBase, _CommonApi):
     __tablename__ = "feedback"

@@ -1,7 +1,7 @@
 {% extends 'base.html'%}
 
 {% block head%}
-<script src="{{static_url('js/fruitzone-home.js')}}"></script>
+<link rel="stylesheet" href="{{static_url('css/fruitzone-home.css')}}"/>
 {% end %}
 
 {% block content%}
@@ -11,85 +11,85 @@
     window.dataObj.fruit_types = {% raw json.dumps(context["fruit_types"]) %}
 </script>
 {% end %}
+<header class="herder-box">
+    <div class="content-title title-box">
+        <a href="{{reverse_url('fruitzoneAdminHome')}}" class="return-btn">个人中心</a>
+        <h1 class="title">水果.同行圈子</h1>
+        <a href="{{reverse_url('fruitzoneShopApply')}}" class="to-some">免费入驻</a>
+    </div>
+    <div class="search-box hidden" id="search-box">
+        <input type="text" placeholder="请输入店铺名" class="search-input" id="searchKey"/>
+        <input type="submit" value="搜索" class="search-btn" id="searchSubmit"/>
+    </div>
+   <p style="color:red;text-align:center;margin-top:1em"><small>平台公测中，店铺数据暂未通过审核</small></p>
+</header>
+<div class="filter-box">
+    <a href="javascript:;" onclick="orderBy(1);" class="active">城市<span class="arrow"></span></a>
+    <a href="javascript:;" onclick="orderBy(2);">服务区域<span class="arrow"></span></a>
+    <a href="javascript:;" onclick="orderBy(3);">运营时间<span class="arrow"></span></a>
+    <a href="javascript:;" onclick="orderBy(4);">在售水果<span class="arrow"></span></a>
+</div>
+<div class="order-by-city  order-by-list" id="orderBy1" style="display:none;">
+    <ul class="province-select pull-left select-list" id="province-select">
 
-    <header class="herder-box phone-box">
-        <div class="content-title title-box">
-            <a href="{{reverse_url('fruitzoneAdminHome')}}" class="return-btn">个人中心</a>
-            <h1 class="title">水果.同行圈子</h1>
-            <a href="{{reverse_url('fruitzoneShopApply')}}" class="to-some">免费入驻</a>
-        </div>
-        <div class="search-box" id="search-box">
-            <input type="text" placeholder="请输入店铺名" class="search-input" id="searchKey"/>
-            <input type="submit" value="搜索" class="search-btn" id="searchSubmit" data-action="search"/>
-        </div>
-       <p style="color:red;text-align:center;"><small>平台公测中，店铺数据暂未通过审核</small></p>
-    </header>
-    <div class="order-by phone-box">
-        <a href="javascript:;" onclick="orderBy(1);" class="active">城市<span class="arrow"></span></a>
-        <a href="javascript:;" onclick="orderBy(2);">服务区域<span class="arrow"></span></a>
-        <a href="javascript:;" onclick="orderBy(3);">运营时间<span class="arrow"></span></a>
-        <a href="javascript:;" onclick="orderBy(4);">在售水果<span class="arrow"></span></a>
-    </div>
-    <div class="order-by-city  phone-box order-by-list" id="orderBy1" style="display:none;">
-        <ul class="province-select pull-left select-list" id="province-select">
+    </ul>
+    <div class="city-select pull-left select-list" id="city-select">
+        <ul  class="order-by-item" data-action="cityFilter">
 
         </ul>
-        <div class="city-select pull-left select-list" id="city-select">
-            <ul  class="order-by-item" data-action="cityFilter">
-
-            </ul>
-        </div>
     </div>
-    <div class="order-by-area select-list phone-box order-by-list" id="orderBy2" style="display:none;">
-        <ul class="order-by-item" data-action="areaFilter">
-            <li data-code="1">{{handler.code_to_text("service_area",1)}}</li>
-            <li data-code="2">{{handler.code_to_text("service_area",2)}}</li>
-            <li data-code="4">{{handler.code_to_text("service_area",4)}}</li>
-            <li data-code="8">{{handler.code_to_text("service_area",8)}}</li>
+</div>
+<div class="order-by-area select-list order-by-list" id="orderBy2" style="display:none;">
+    <ul class="order-by-item" data-action="areaFilter">
+        <li data-code="1">{{handler.code_to_text("service_area",1)}}</li>
+        <li data-code="2">{{handler.code_to_text("service_area",2)}}</li>
+        <li data-code="4">{{handler.code_to_text("service_area",4)}}</li>
+        <li data-code="8">{{handler.code_to_text("service_area",8)}}</li>
+    </ul>
+ </div>
+<div class="order-by-time select-list order-by-list" id="orderBy3" style="display:none;">
+    <ul class="order-by-item" data-action="liveFilter">
+        <li data-code="1">一个月以上</li>
+        <li data-code="3">三个月以上</li>
+        <li data-code="6">半年以上</li>
+        <li data-code="12">一年以上</li>
+    </ul>
+</div>
+<div class="order-by-fruit select-list order-by-list" id="orderBy4" style="display:none;">
+    <a class="pull-right text-green border-green white-color" href="javascript:;" id="orderByFruit">点击筛选</a>
+    <ul class="order-by-item fruit-list" data-action="fruitFilter">
+    </ul>
+</div>
+<div class="shop-list-content">
+    <ul class="shop-list" id="homeShopList">
+        {% import time%}
+        {% for shop in context['shops'] %}
+        <li>
+            <a href="{{reverse_url('fruitzoneShop',shop.id)}}">
+                <div class="shop-logo pull-left">
+                     <img src="{{static_url('images/anoa-1-md.gif')}}" class="pull-left"/>
+                </div>
+                <div class="shop-info pull-left">
+                    <p><span class="shop-name w1 pull-left">{{shop.shop_name}}</span><span class="w2 area pull-left">{{handler.code_to_text("shop_city",shop.shop_city)}}</span></p>
+                    <p>运营时间：<span>
+                        {% if shop.shop_start_timestamp%}
+                        {{int( (time.time() - shop.shop_start_timestamp)/(30*24*3600)) or '0'}}
+                        {% else %}
+                        0
+                        {% end %}
+                    </span>月</p>
+                    <p><span class="shop-owner w1 pull-left">负责人：{{shop.admin.accountinfo.realname or "无"}}</span><span class="w2 wechat-code pull-left">{{shop.admin.accountinfo.wx_username or "无"}}</span></p>
+                </div>
+            </a>
+        </li>
+      {% end %}
+    </ul>
+   <!-- <nav class="home-pagination order-by-list">
+        <ul class="pagination order-by-item" data-action="skipFilter">
+            <li class="previous"><a href="javascript:;" id="PrePage">上一页</a></li>
+            <li class="next"><a href="javascript:;" id="NextPage">下一页</a></li>
         </ul>
-     </div>
-    <div class="order-by-time select-list phone-box order-by-list" id="orderBy3" style="display:none;">
-        <ul class="order-by-item" data-action="liveFilter">
-            <li data-code="1">一个月以上</li>
-            <li data-code="3">三个月以上</li>
-            <li data-code="6">半年以上</li>
-            <li data-code="12">一年以上</li>
-        </ul>
-    </div>
-    <div class="order-by-fruit select-list phone-box order-by-list" id="orderBy4" style="display:none;">
-        <a class="pull-right text-green border-green white-color" href="javascript:;" id="orderByFruit">点击筛选</a>
-        <ul class="order-by-item fruit-list" data-action="fruitFilter">
-        </ul>
-    </div>
-    <div class="container phone-box shop-list-content">
-        <ul class="shop-list" id="homeShopList">
-            {% import time%}
-            {% for shop in context['shops'] %}
-            <li>
-                <a href="{{reverse_url('fruitzoneShop',shop.id)}}">
-                    <div class="shop-logo pull-left">
-                         <img src="{{static_url('images/anoa-1-md.gif')}}" class="pull-left"/>
-                    </div>
-                    <div class="shop-info pull-left">
-                        <p><span class="shop-name w1 pull-left">{{shop.shop_name}}</span><span class="w2 area pull-left">{{handler.code_to_text("shop_city",shop.shop_city)}}</span></p>
-                        <p>运营时间：<span>
-                            {% if shop.shop_start_timestamp%}
-                            {{int( (time.time() - shop.shop_start_timestamp)/(30*24*3600)) or '0'}}
-                            {% else %}
-                            0
-                            {% end %}
-                        </span>月</p>
-                        <p><span class="shop-owner w1 pull-left">负责人：{{shop.admin.accountinfo.realname or "无"}}</span><span class="w2 wechat-code pull-left">{{shop.admin.accountinfo.wx_username or "无"}}</span></p>
-                    </div>
-                </a>
-            </li>
-          {% end %}
-        </ul>
-        <!--<nav class="home-pagination order-by-list">
-            <ul class="pagination order-by-item" data-action="skipFilter">
-                <li data-code="1"><a href="javascript:;" id="prePage">上一页</a></li>
-                <li data-code="2"><a href="javascript:;" id="nextPage">下一页</a></li>
-            </ul>
-        </nav>-->
-    </div>
+    </nav>-->
+</div>
+<script src="{{static_url('js/fruitzone-home.js')}}"></script>
 {% end %}

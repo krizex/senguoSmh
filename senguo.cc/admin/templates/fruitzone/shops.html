@@ -1,24 +1,53 @@
 {% extends 'base.html'%}
 
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/fruitzone-shops.css')}}"/>
+{% end %}
+
 {% block content %}
-<header class="title-box2 phone-box">
+<header class="title-box2">
     <a href="javascript:history.back(-1)" class="return-btn"></a>
-    <span class="title">我的店铺</span>
-</header>
-<div class="container phone-box">
-    <ul class="shops-list" id="adminShopsList">
-        {% for shops in context['shops']%}
-        <li data-status="{{shops.shop_status}}">
-            <a href="{{reverse_url('fruitzoneAdminShop',shops.id)}}">
-                <img src="{{static_url('images/anoa-1-md.gif')}}"/>
-                <p>{{shops.shop_name}}</p>
-                <span class="status">{{handler.code_to_text('shop_status',shops.shop_status)}}</span>
-            </a>
-        </li>
+    <span class="title">
+        {% if "collect" in context and context["collect"] %}
+            我的收藏
+            {% else %}
+            我的店铺
         {% end %}
-        <li class="add-shops">
-            <a href="{{reverse_url('fruitzoneShopApply')}}">+</a>
-        </li>
-    </ul>
-</div>
+    </span>
+</header>
+
+<ul class="shops-list" id="adminShopsList">
+    {% if "collect" in context and context["collect"] %}
+        {% if context['shops']%}
+            {% for shops in context['shops']%}
+            <li>
+                <a href="{{reverse_url('fruitzoneAdminShop',shops.id)}}">
+                    <img src="{{static_url('images/anoa-1-md.gif')}}"/>
+                    <p>{{shops.shop_name}}</p>
+                </a>
+            </li>
+            {% end %}
+        {% else %}
+            <h3 class="text-center">暂无收藏店铺!</h3>
+        {% end %}
+    {% else %}
+        {% if context['shops']%}
+            {% for shops in context['shops']%}
+            <li data-status="{{shops.shop_status}}">
+                <a href="{{reverse_url('fruitzoneAdminShop',shops.id)}}">
+                    <img src="{{static_url('images/anoa-1-md.gif')}}"/>
+                    <p>{{shops.shop_name}}</p>
+                    <span class="status">{{handler.code_to_text('shop_status',shops.shop_status)}}</span>
+                </a>
+            </li>
+            {% end %}
+            <li class="add-shops">
+                <a href="{{reverse_url('fruitzoneShopApply')}}">+</a>
+            </li>
+        {% else %}
+            <h3 class="text-center">暂无申请店铺!</h3>
+        {% end %}
+    {% end %}
+</ul>
+
 {% end %}
