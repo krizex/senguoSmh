@@ -7,6 +7,7 @@ import traceback
 from settings import KF_APPID, KF_APPSECRET, APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET
 import tornado.escape
 from dal.dis_dict import dis_dict
+import time
 
 class GlobalBaseHandler(BaseHandler):
 
@@ -21,6 +22,9 @@ class GlobalBaseHandler(BaseHandler):
         # release db connection
         if hasattr(self, "_session"):
             self._session.close()
+
+    def timestamp_to_str(self, timestamp):
+        return time.strftime("%Y-%m-%d", time.gmtime(timestamp))
 
     def code_to_text(self, column_name, code):
         text = ""
@@ -54,6 +58,18 @@ class GlobalBaseHandler(BaseHandler):
             if "city" in dis_dict[int(code/10000)*10000].keys():
                 text += " "
                 text += dis_dict[int(code/10000)*10000]["city"][code]["name"]
+            return text
+        
+        if column_name == "order_status":
+            text = ""
+            if code == models.ORDER_STATUS.TEMP:
+                text = "待支付"
+            elif code == models.ORDER_STATUS.SUCCESS:
+                text = "已支付"
+            elif code == models.ORDER_STATUS.ABORTED:
+                text = "已取消"
+            else:
+                text = "ORDER_STATUS: 此编码不存在"
             return text
 
 class FrontBaseHandler(GlobalBaseHandler):

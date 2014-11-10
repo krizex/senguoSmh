@@ -94,6 +94,11 @@ handlers = [
     (r"/fruitzone/phoneVerify/checkcode", handlers.fruitzone.PhoneVerify,{
         "action":"checkcode"}, "fruitzoneCheckcode"),
     
+    (r"/fruitzone/systemPurchase/systemAccount", handlers.fruitzone.SystemPurchase, {
+        "action":"systemAccount"}, "fruitzoneSystemPurchaseSystemAccount"),
+    (r"/fruitzone/systemPurchase/history", handlers.fruitzone.SystemPurchase, {
+        "action":"history"}, "fruitzoneSystemPurchaseHistory"),
+
     (r"/fruitzone/systemPurchase/chargeTypes", handlers.fruitzone.SystemPurchase, {
         "action":"chargeTypes"}, "fruitzoneSystemPurchaseChargeTypes"),
     (r"/fruitzone/systemPurchase/chargeDetail", handlers.fruitzone.SystemPurchase, {

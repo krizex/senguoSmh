@@ -341,22 +341,28 @@ class SystemPurchase(AdminBaseHandler):
             return self.render("fruitzone/systempurchase-chargetypes.html",
                                context=dict(charge_types=charge_types))
         elif self._action == "chargeDetail":
-            return self.get_charge_detail()
+            # 判断charge_type合法性，不合法从新返回接入申请页
+            try:
+                charge_type_id = int(self.get_argument("charge_type"))
+            except:
+                return self.write("抱歉，此商品不存在呵呵(#‵′)凸")
+            charge_type = models.ChargeType.get_by_id(
+                self.session, charge_type_id)
+            if not charge_type:
+                return self.write("抱歉，此商品不存在呵呵(#‵′)凸")
+            return self.render("fruitzone/systempurchase-chargedetail.html", 
+                               context=dict(charge_type=charge_type))
         elif self._action == "dealFinishedCallback":
             return self.handle_deal_finished_callback()
-        elif self._action == "dealSuccess":
-            return self.render("fruitzone/systempurchase-dealsuccess.html")
+        elif self._action == "history":
+            orders = self.current_user.success_orders(self.session)
+            return self.render("fruitzone/systempurchase-history.html", 
+                               context=dict(orders=orders, subpage="history"))
+        elif self._action == "systemAccount":
+            return self.render("fruitzone/systempurchase-systemaccount.html", context=dict(subpage="account"))
         else:
             return self.send_error(404)
 
-    @AdminBaseHandler.check_arguments("charge_type:int")
-    def get_charge_detail(self):
-        # 判断charge_type合法性，不合法从新返回接入申请页
-        charge_type = models.ChargeType.get_by_id(self.session, self.args["charge_type"])
-        if not charge_type:
-            return self.send_fail(error_text="抱歉，此商品不存在呵呵(#‵′)凸")
-        return self.render("fruitzone/systempurchase-chargedetail.html", 
-                           context=dict(charge_type=charge_type))
     @AdminBaseHandler.check_arguments("sign", "result", "out_trade_no", 
                                       "trade_no", "request_token")
     def handle_deal_finished_callback(self):
@@ -376,7 +382,11 @@ class SystemPurchase(AdminBaseHandler):
             print("tmp order not found!")
             return self.write("交易已完成或不存在!")
         # 重定向到支付成功页面
-        return self.redirect(self.reverse_url("fruitzoneSystemPurchaseDealSuccess"))
+        return self.redirect(
+            "{0}#{1}".format(
+                self.reverse_url("fruitzoneSystemPurchaseHistory"),
+                o.order_id)
+        )
 
     @tornado.web.authenticated
     def post(self):
@@ -389,7 +399,7 @@ class SystemPurchase(AdminBaseHandler):
     
     @AdminBaseHandler.check_arguments("charge_type:int", "pay_type")
     def handle_confirm_payment(self):
-        if self.args["pay_type"] == "wx":
+        if self.args["pay_type"] == "alipay":
             # 判断charge_type合法性，不合法从新返回接入申请页
             charge_data = models.ChargeType.get_by_id(self.session, self.args["charge_type"])
             if not charge_data:
@@ -400,7 +410,7 @@ class SystemPurchase(AdminBaseHandler):
             except Exception as e:
                 Logger.error("System Purchase: get auth url failed!", e)
                 return self.send_fail(error_text="系统繁忙，请稍后重试")
-            return self.send_success(url=url)
+            return self.redirect(url)
 
     @AdminBaseHandler.check_arguments(
         "service", "v","sec_id","sign","notify_data")

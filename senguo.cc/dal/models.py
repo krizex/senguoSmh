@@ -368,10 +368,22 @@ class ShopAdmin(MapBase, _AccountApi):
     # 系统购买数据
     system_orders = relationship("SystemOrder", uselist=True)
 
+    # 商城1.0系统账户密码(目前一个商家给一个店铺账户和密码)
+    system_username = Column(String(32))
+    system_password = Column(String(128))
+
     briefintro = Column(String(300), default="")
 
     shops = relationship(Shop, uselist=True)
     feedback = relationship("Feedback")
+
+    def success_orders(self, session):
+        if not hasattr(self, "_success_orders"):
+            self._success_orders = session.query(SystemOrder).\
+                                   filter_by(admin_id=self.id, 
+                                             order_status=ORDER_STATUS.SUCCESS
+                                   ).all()
+        return self._success_orders
 
     def add_shop(self, session, **kwargs):
         kwargs["admin_id"] = self.id
@@ -406,6 +418,7 @@ class ShopAdmin(MapBase, _AccountApi):
             return None
 
         o.update(session, order_status=ORDER_STATUS.SUCCESS, ali_trade_no=ali_trade_no)
+        self.update(session, role=SHOPADMIN_ROLE_TYPE.SYSTEM_USER)
         return o
     
 
