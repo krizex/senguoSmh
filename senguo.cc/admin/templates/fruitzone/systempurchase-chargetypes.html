@@ -7,9 +7,9 @@
 
 <form method="GET" action="{{reverse_url('fruitzoneSystemPurchaseChargeDetail')}}">
   <h4>请选择系统使用套餐</h4>
-  <ul class="list-group theme-list-select">
+  <ul class="list-group theme-list-select  select-list">
     {% for index, charge_type in enumerate(context["charge_types"])%}
-    <li class="list-group-item" ">
+    <li class="list-group-item">
       {% if index == len(context["charge_types"]) - 1%}
       <input type="radio" name="charge_type" value="{{charge_type.id}}" checked>
       {% else%}
@@ -20,7 +20,7 @@
     {% end %}
   </ul>
   <p class="help-block">订单提交支付完成后，我们将在1个工作日内为您新建账号，并将账号信息发送到您的邮箱。</p>
-  <input type="submit" class="btn btn-success form-control" value="提交并支付">
+  <input type="submit" class="btn btn-green text-white form-control" value="提交并支付">
 </form>
 {%end%}
 

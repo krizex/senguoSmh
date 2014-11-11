@@ -22,7 +22,7 @@ class Home(AdminBaseHandler):
         fruit_types = []
         for f_t in self.session.query(models.FruitType).all():
             fruit_types.append(f_t.safe_props())
-        return self.render("fruitzone/home.html", context=dict(shops=shops, fruit_types=fruit_types, now=time.time()))
+        return self.render("fruitzone/home.html", context=dict(shops=shops, fruit_types=fruit_types, now=time.time(),subpage="home"))
     
     @AdminBaseHandler.check_arguments("action")
     def post(self):
@@ -81,7 +81,7 @@ class AdminHome(AdminBaseHandler):
     def get(self):
        # 模板中通过current_user获取当前admin的相关数据，
        # 具体可以查看models.ShopAdmin中的属性
-       self.render("fruitzone/admin-home.html")
+       self.render("fruitzone/admin-home.html",context=dict(subpage="adminHome"))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "feedback_text")

@@ -2,7 +2,7 @@
 
 /*---------------------------------apply------------------------------------------*/
 .container-title{text-align:center;font-size:1.6em;float:left;width:100%;border-bottom:1px solid #ddd;padding:0.5em 0;}
-.apply-title .title{background:url('../images/logo.png') no-repeat 10% center;background-size:3.5em;display:block;}
+.apply-title .title{background:url('../images/logo.png') no-repeat 15% center;background-size:3.5em;display:block;}
 
 
 .apply-box{position:relative;padding-bottom:1em;}
@@ -16,7 +16,7 @@
 .apply-box .info-box .whether-shop .title{width:40%;}
 .apply-box .info-box .whether-shop .area-select{width:60%;}
 .apply-box .info-box .whether-shop .area-select li{width:48%;}
-.apply-box .info-box .shop-intro{width:100%;border:1px solid #ddd;background:#f9f9f9;border-radius:2px;height:8em;}
+.apply-box .info-box .shop-intro{width:100%;border:1px solid #ddd;background:#f9f9f9;border-radius:2px;height:8em;font-size:1.2em;}
 
 .apply-box .info-box .area-select{margin-left:-5px;width:100%;float:left;margin-bottom:0;}
 .apply-box .info-box .area-select li{width:24%;text-align:center;float:left;margin-left:1%;}

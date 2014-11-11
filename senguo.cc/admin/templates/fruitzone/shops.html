@@ -1,4 +1,9 @@
 {% extends 'base.html'%}
+{% if "collect" in context and context["collect"] %}
+    {% block title %}我的收藏{% end %}
+{% else %}
+    {% block title %}我的店铺{% end %}
+{% end %}
 
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/fruitzone-shops.css')}}"/>

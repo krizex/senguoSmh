@@ -1,5 +1,5 @@
 {% extends 'base.html'%}
-
+{% block title %}店铺详情{% end %}
 {% block head%}
 <link rel="stylesheet" href="{{static_url('css/fruitzone-shop.css')}}"/>
 {% end %}
@@ -24,17 +24,18 @@
     {% set bt_edit_hide = "show"%}
 {% end %}
 
-<header class="title-box2 phone-box" data-shop="{{shop.id}}" id="headerId">
+<header class="title-box2" data-shop="{{shop.id}}" id="headerId">
     <a href="javascript:history.back(-1)" class="return-btn pull-left"></a>
     <span class="title pull-left">店铺详情</span>
+    <a href="" class="to-some">分享</a>
 </header>
 {% if shop.shop_status==models.SHOP_STATUS.DECLINED %}
-    <div class="container phone-box decline-box">
+    <div class="decline-box">
         <span class="title">店铺认证未通过：</span>{{shop.declined_reason}}
         <a href="{{reverse_url('fruitzoneShopReApply')}}?shop_id={{shop.id}}" class="reapply-btn green-color">重新申请</a>
     </div>
 {% end %}
-<div class="container phone-box detail-box">
+<div class="detail-box">
     <p class="info-title">店铺信息</p>
     <div class="info-box1">
         <div class="shop-info-detail">
@@ -61,7 +62,7 @@
                {% end %}
             </div>
         </div>
-        <a href="{{shop.shop_url}}" class="focus-btn {{bt_edit_hide}}">关注我的微信店铺</a>
+        <a href="{{shop.shop_url}}" class="focus-btn {{bt_edit_hide}}" id="focusLink">关注我的微信店铺</a>
         <div class="{{bt_edit_show}} edit-link editBox">
             <a href="javascript:;" class="focus-btn" id="linkEdit"  data-toggle="modal" data-target="#linkBox">编辑店铺链接</a>
             <a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200574697&idx=1&sn=cc6a43fcc99b5bad6cf963dc92f4babd#rd" class="check-course text-red">查看填写教程</a>
@@ -69,12 +70,12 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-body shop-edit-info">
-                            <input type="text" class="input-style2 editBox" id="shopLink" placeholder="请输入店铺链接"/>
+                            <input type="text" class="input-style2 editBox" id="shopLink" placeholder="{{shop.shop_url or '请输入店铺链接'}}"/>
                         </div>
                         <div class="modal-footer">
                             <div class="btn-box">
                                 <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
-                                <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_shop_url" data-dismiss="modal">确定</button>
+                                <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_shop_url">确定</button>
                             </div>
                         </div>
                     </div>
@@ -104,7 +105,7 @@
                             <div class="modal-footer">
                                 <div class="btn-box">
                                     <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
-                                    <button type="button" class="btn  sure-btn" data-action="edit_live_month" data-dismiss="modal" id="liveTimeEdit">确定</button>
+                                    <button type="button" class="btn  sure-btn" data-action="edit_live_month" id="liveTimeEdit">确定</button>
                                 </div>
                             </div>
                         </div>
@@ -124,7 +125,7 @@
                             <div class="modal-footer">
                                 <div class="btn-box">
                                     <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
-                                    <button type="button" class="btn  sure-btn shop-edit-btn"  data-action="edit_total_users" data-dismiss="modal">确定</button>
+                                    <button type="button" class="btn  sure-btn shop-edit-btn"  data-action="edit_total_users">确定</button>
                                 </div>
                             </div>
                         </div>
@@ -144,7 +145,7 @@
                             <div class="modal-footer">
                                 <div class="btn-box">
                                     <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
-                                    <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_daily_sales" data-dismiss="modal">确定</button>
+                                    <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_daily_sales">确定</button>
                                 </div>
                             </div>
                         </div>
@@ -164,7 +165,7 @@
                             <div class="modal-footer">
                                 <div class="btn-box">
                                     <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
-                                    <button type="button" class="btn  sure-btn shop-edit-btn"   data-action="edit_single_stock_size" data-dismiss="modal">确定</button>
+                                    <button type="button" class="btn  sure-btn shop-edit-btn"   data-action="edit_single_stock_size">确定</button>
                                 </div>
                             </div>
                         </div>
@@ -188,7 +189,7 @@
                     <div class="modal-footer">
                         <div class="btn-box">
                             <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
-                            <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_shop_intro" data-dismiss="modal">确定</button>
+                            <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_shop_intro" >确定</button>
                         </div>
                     </div>
                 </div>
@@ -214,7 +215,7 @@
                     <div class="modal-footer">
                         <div class="btn-box">
                             <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
-                            <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_onsale_fruits" data-dismiss="modal">确定</button>
+                            <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_onsale_fruits">确定</button>
                         </div>
                     </div>
                 </div>
@@ -238,7 +239,7 @@
                     <div class="modal-footer">
                         <div class="btn-box">
                             <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
-                            <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_demand_fruits" data-dismiss="modal">确定</button>
+                            <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_demand_fruits">确定</button>
                         </div>
                     </div>
                 </div>
@@ -288,5 +289,7 @@
     </div>
     <a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200521182&idx=1&sn=a3d7731e0233aef218eb91346d581b02#rd" class="focus-senguo {{bt_edit_hide}}">点击关注<strong>森果</strong>，获取更多行业资源</a>
 </div>
+{% end %}
+{% block bottom %}
 <script src="{{static_url('js/fruitzone-admin-shop.js')}}"></script>
 {% end %}

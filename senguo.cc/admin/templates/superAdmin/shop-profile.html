@@ -33,6 +33,7 @@
             <li>
                 <span class="title pull-left">运营时间：</span>
                 <span class="pull-right">
+                    {% import time %}
                     {% if shop.shop_start_timestamp%}
                         {{int((time.time() - (shop.shop_start_timestamp))/(30*24*3600)) }}
                     {% else %}

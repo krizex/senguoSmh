@@ -16,26 +16,20 @@ $(document).ready(function(){
     $('.order-by-area').find('li').each(function(){$(this).on('click',function(){Filter($(this));});});
     $('.order-by-time').find('li').each(function(){$(this).on('click',function(){Filter($(this));});});
     $('#orderByFruit').on('click',function(){Filter($(this));});
-    $('.home-pagination').find('li').each(function(){$(this).on('click',function(){Filter($(this));});});
-
-    var pre=$('#PrePage');
-    var next=$('#NextPage');
-    var page=$.getUrlParam('page', 1);
-    var url=window.location.pathname;
-    if(page==1) pre.css({'background':'#ddd'});
-    if($('.shop-list').find('li').length<10)
-    {
-        next.addClass('hidden');
-    }
-    pre.on('click',function(){
-        if(page>1) {
-            page--;
-            pre.attr({'href': url + '?page=' + page});
+    var i=1;
+    $('#PrePage').on('click',function(){
+        if(i>1)
+        {
+            i=i-1;
+            $(this).attr({'data-code':i});
+            Filter($(this));
         }
+
     });
-    next.on('click',function(){
-        page++;
-        next.attr({'href':url+'?page='+page});
+    $('#NextPage').on('click',function(){
+            i=i+1;
+            $(this).attr({'data-code':i});
+            Filter($(this));
     });
 });
 

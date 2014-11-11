@@ -72,7 +72,7 @@ class ShopAdminManage(SuperBaseHandler):
 
         admins = q.all()
         # admins 是models.ShopAdmin的实例的列表，具体属性可以去dal/models.py中看到
-        return self.render("superAdmin/shop-admin-manage.html", context=dict(admins = admins, count=count))
+        return self.render("superAdmin/shop-admin-manage.html", context=dict(admins = admins, count=count,sunpage='shopAadminManage',action=self._action))
     @tornado.web.authenticated
     def post(self):
         return self.send_error(404)
@@ -130,7 +130,7 @@ class ShopManage(SuperBaseHandler):
         
         shops = q.all()
         # shops 是models.Shop实例的列表
-        return self.render("superAdmin/shop-manage.html", context=dict(shops = shops))
+        return self.render("superAdmin/shop-manage.html", context=dict(shops = shops,subpage='shopManage',action=self._action))
 
     @tornado.web.authenticated
     @SuperBaseHandler.check_arguments("action")

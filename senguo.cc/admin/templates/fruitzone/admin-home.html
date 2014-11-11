@@ -1,16 +1,13 @@
-{% extends base.html %}
-
+{% extends 'fix-bottom.html'%}
+{% block title%}个人中心 {% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/fruitzone-admin-home.css')}}"/>
 {% end %}
 
-{% block content%}
+{% block mainpage%}
 <header class="title-box">
-    <div class="title-box">
-        <a href="{{reverse_url('fruitzoneHome')}}" class="return-btn">返回</a>
-        <span class="title">个人中心</span>
-        <a href="{{reverse_url('adminLogout')}}" class="to-some">退出登录</a>
-    </div>
+    <span class="title">个人中心</span>
+    <a href="{{reverse_url('adminLogout')}}" class="to-some">退出登录</a>
 </header>
 <div class="user-center-info white-color">
     <a href="{{reverse_url('fruitzoneAdminProfile')}}">
@@ -20,20 +17,16 @@
         </div>
     </a>
 </div>
-<div class="center-list phone-box container">
+<div class="center-list">
     <ul>
         <li class="white-color">
             <a href="{{reverse_url('fuirzoneAdminShops')}}">我的店铺管理</a>
         </li>
         <li class="white-color">
-            <a href="{{reverse_url('fruitzoneSystemPurchaseChargeTypes')}}"><strong>森果商城&后台管理</strong>系统接入申请</a>
-        </li>
-        <!-- 
-       <li class="white-color">
-            <a href="#">我的收藏</a>
-        </li>-->
-       <li class="white-color">
             <a href="{{reverse_url('fuirzoneAdminShopsCollect')}}">我的收藏</a>
+        </li>
+        <li class="w1 white-color">
+            <a href="{{reverse_url('fruitzoneSystemPurchaseChargeTypes')}}"><strong>森果商城&后台管理</strong>系统接入申请</a>
         </li>
         <li class="w1 white-color">
             <a href="javascript:;" data-toggle="modal" data-target="#feedBox">意见反馈</a>
@@ -60,5 +53,7 @@
     </div>
 </div>
 
+{% end %}
+{% block bottom %}
 <script src="{{static_url('js/fruitzone-admin-home.js')}}"></script>
 {% end %}

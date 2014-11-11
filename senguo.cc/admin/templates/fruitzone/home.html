@@ -1,10 +1,11 @@
-{% extends 'base.html'%}
+{% extends 'fix-bottom.html'%}
+{% block title %}同行圈子{% end %}
 
 {% block head%}
 <link rel="stylesheet" href="{{static_url('css/fruitzone-home.css')}}"/>
 {% end %}
 
-{% block content%}
+{% block mainpage%}
 {% if "fruit_types" in context%}
 {% import json%}
 <script>
@@ -13,11 +14,13 @@
 {% end %}
 <header class="herder-box">
     <div class="content-title title-box">
-        <a href="{{reverse_url('fruitzoneAdminHome')}}" class="return-btn">个人中心</a>
-        <h1 class="title">水果.同行圈子</h1>
+        <ul class="home-head">
+            <li class="active"><a href="{{reverse_url('fruitzoneHome')}}">零售商</a></li>
+            <li class="willOpen"><a href="javascript:;">供应商</a></li>
+        </ul>
         <a href="{{reverse_url('fruitzoneShopApply')}}" class="to-some">免费入驻</a>
     </div>
-    <div class="search-box hidden" id="search-box">
+    <div class="search-box" id="search-box">
         <input type="text" placeholder="请输入店铺名" class="search-input" id="searchKey"/>
         <input type="submit" value="搜索" class="search-btn" id="searchSubmit"/>
     </div>
@@ -84,12 +87,15 @@
         </li>
       {% end %}
     </ul>
-   <!-- <nav class="home-pagination order-by-list">
+    <nav class="home-pagination order-by-list">
         <ul class="pagination order-by-item" data-action="skipFilter">
             <li class="previous"><a href="javascript:;" id="PrePage">上一页</a></li>
             <li class="next"><a href="javascript:;" id="NextPage">下一页</a></li>
         </ul>
-    </nav>-->
+    </nav>
 </div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/area.js')}}"></script>
 <script src="{{static_url('js/fruitzone-home.js')}}"></script>
 {% end %}

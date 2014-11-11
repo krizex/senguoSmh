@@ -9,24 +9,20 @@
 {% end %}
 
 {% if "reApply" in context and context["reApply"] %}
-<header class="apply-title phone-box" data-id="{{shop.id}}" id="headerId">
-    <div class="title-box">
-        <a href="javascript:history.back(-1)" class="return-btn">返回</a>
-        <span class="title">入驻申请</span>
-    </div>
+<header class="apply-title title-box" data-id="{{shop.id}}" id="headerId">
+    <a href="javascript:history.back(-1)" class="return-btn"></a>
+    <span class="title">入驻申请</span>
 </header>
 {% else %}
-<header class="apply-title" id="headerId">
-    <div class="title-box">
-        <span class="title">入驻申请</span>
-        <a href="javascript:history.back(-1)" class="to-some">返回</a>
-    </div>
+<header class="apply-title title-box" id="headerId">
+    <a href="javascript:history.back(-1)" class="return-btn"></a>
+    <span class="title">入驻申请</span>
 </header>
 {% end %}
 
 {% if "need_complete_accountinfo" in context and context["need_complete_accountinfo"]%}
 <div class="container apply-box phone-box">
-<h5 style="text-align: center">请先完善：<a href="{{reverse_url('fruitzoneAdminProfile')}}">个人信息</a></h5>
+    <h4style="text-align: center">请先完善：<a href="{{reverse_url('fruitzoneAdminProfile')}}">个人信息</a></h4>
 </div>>
 {% else %}
 
@@ -156,5 +152,10 @@
 </div>
 
 {% end %}
+<script src="{{static_url('js/area.js')}}"></script>
+<script src="{{static_url('js/fruitzone-apply.js')}}"></script>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/area.js')}}"></script>
 <script src="{{static_url('js/fruitzone-apply.js')}}"></script>
 {% end %}
