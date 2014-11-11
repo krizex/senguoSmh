@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    $('.editInfo').click(function(){$(this).parents('.info-con').siblings('.info-edit').toggle();});
+    $('.editInfo').on('click',function(){$(this).parents('.info-con').siblings('.info-edit').toggle();});
 
     // 不要采用通过js设置文本显示的方法，用两个html元素来分别显示提示信息和真实信息。这样对于html代码不够直观。
     $('a.editInfo').each(function(){
@@ -13,12 +13,12 @@ $(document).ready(function(){
     });
 
     $('.info-edit').find('.concel-btn').each(function(){
-        $(this).click(function(){$(this).parents('.info-edit').hide();})
+        $(this).on('click',function(){$(this).parents('.info-edit').hide();})
     });
 
     $('.info-edit').find('.sure-btn').each(function(){infoEdit($(this))});
-    $('#getVrify').click(function(evt){Vrify(evt);});
-    $('#tiePhone').click(function(evt){TiePhone(evt);});
+    $('#getVrify').on('click',function(evt){Vrify(evt);});
+    $('#tiePhone').on('click',function(evt){TiePhone(evt);});
 });
 
 var wait=60;
@@ -39,7 +39,7 @@ function time(evt) {
 
 
 function infoEdit(evt){
-    evt.click(function(){
+    evt.on('click',function(){
         var email=$('#mailEdit').val();
         var year=$('#yearEdit').val();
         var month=$('#monthEdit').val();
@@ -135,7 +135,7 @@ function TiePhone(evt){
         function(res){
             if(res.success)
             {
-                $('#phoneNumber').text(phone);
+                $('#phoneNumber').text(phone).css({'color':'#a8a8a8'});
                 alert('绑定成功！');
                 $('#tieBox').modal("hide");
             }

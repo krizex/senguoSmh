@@ -1,4 +1,5 @@
 ul,li,ol{list-style:none;}
+ul{padding-left:0;}
 .center-style{text-align:center;}
 
 .text-grey{color:#333 !important;}
@@ -28,3 +29,8 @@ ul,li,ol{list-style:none;}
 
 
 .btn-style{display:inline-block;width:80px;height:30px;text-align:center;color:#fff;border:1px solid #ddd;}
+
+
+.admin-title{width:100%;margin:0 auto;padding:30px 0 15px 0;}
+
+.pager{clear:both;padding-top:20px;}

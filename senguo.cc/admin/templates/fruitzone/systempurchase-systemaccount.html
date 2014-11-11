@@ -1,0 +1,28 @@
+{% extends 'systempurchase-base.html'%}
+
+{% block head-title %} 支付订单 {% end %}
+
+{% block page-detail%}
+
+
+
+
+{% import dal.models as models%}
+<h4>账户详情</h4>
+{% if current_user.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER%}
+  {% if current_user.system_username%}
+  <ul class="list-group proper-padding">
+    <li class="list-group-item">
+      <label class="pull-left">账户名：</label>
+      <span class="pull-right">{{current_user.system_username}}</span>
+      <div style="clear:both"></div>
+    </li>
+  </ul>
+  {% else %}
+  <p class="" style="text-align:center;">系统管理员正在处理您的订单，我们将会在1日内处理完，并通过邮件将账户信息发送给您。</p>
+  {% end %}
+{% else %}
+<p class="" style="text-align:center;">您在森果商城暂无账户，<a href="{{reverse_url('fruitzoneSystemPurchaseChargeTypes')}}">去购买系统</a></p>
+{% end %}
+
+{% end %}

@@ -1,6 +1,6 @@
 $(document).ready(function(){
     $('.select-list li').each(function(){
-        $(this).click(function(){
+        $(this).on('click',function(){
             $(this).addClass('active').siblings().removeClass('active');
         });
     });
@@ -30,36 +30,3 @@ function orderBy(i){
     $('#orderBy'+i).slideToggle(50).siblings('.order-by-list').slideUp(50);
 }
 
-$.postJson = function(url, args, successCall, failCall, alwaysCall){
-    var req = $.ajax({
-        type:"post",
-        url:url,
-        data:JSON.stringify(args),
-        contentType:"application/json; charset=UTF-8",
-        success:successCall,
-        fail:failCall,
-        error:failCall
-    });
-    req.always(alwaysCall);
-};
-
-
-function FeedBack(){
-    var feedback=$('#feedbackInfo').val().trim();
-    var action="feedback";
-    var args={
-        action:action,
-        feedback_text:feedback,
-        _xsrf: window.dataObj._xsrf
-    };
-    var url="/fruitzone/admin/home";
-    $.postJson(url,args,
-        function(res){
-            if(res.success)
-                alert('感谢您的宝贵意见！');
-        },
-        function(){
-            alert('网络错误！');
-        }
-    );
-}

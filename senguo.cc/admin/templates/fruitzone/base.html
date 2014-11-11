@@ -9,9 +9,9 @@
     <title>{% block title%} 森果同行{% end %}</title>
     <link rel="stylesheet" href="{{static_url('css/bootstrap.min.css')}}"/>
     <link rel="stylesheet" href="{{static_url('css/fruitzone-global.css')}}"/>
-    <link rel="stylesheet" href="{{static_url('css/fruitzone-style.css')}}"/>
     <script src="{{static_url('js/jquery.js')}}"></script>
     <script src="{{static_url('js/bootstrap.min.js')}}"></script>
+    <script src="{{static_url('js/global.js')}}"></script>
     <script src="{{static_url('js/area.js')}}"></script>
     <script src="{{static_url('js/sha256.js')}}"></script>
     <script src="{{static_url('js/fruitzone-public.js')}}"></script>
@@ -24,6 +24,16 @@
     </script>
 </head>
 <body>
-{% block content %}{% end %}
+<div class="phone-box">
+    {% block content %}{% end %}
+    <nav class="bottom-nav white-color navbar-fixed-bottom">
+        <ul class="nav navbar row select-list">
+            <li class="col-xs-3 col-sm-3 active"><a href="{{reverse_url('fruitzoneHome')}}">同行圈子</a></li>
+            <li class="col-xs-3 col-sm-3"><a href="#">社区</a></li>
+            <li class="col-xs-3 col-sm-3"><a href="#">信息墙</a></li>
+            <li class="col-xs-3 col-sm-3"><a href="{{reverse_url('fruitzoneAdminHome')}}">个人中心</a></li>
+        </ul>
+    </nav>
+</div>
 </body>
 </html>

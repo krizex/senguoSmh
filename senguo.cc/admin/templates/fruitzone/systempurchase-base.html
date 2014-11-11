@@ -1,0 +1,69 @@
+{% extends 'base.html'%}
+
+{% block head%}
+  <style>
+   .system-purchase-nav{
+     text-align: center;
+     padding-bottom: 1px;
+     border-bottom: 2px solid #00D289;
+   }
+   ul.system-purchase-nav li, ul.system-purchase-nav li.active{
+     background-color: white;
+     border-color: gray;
+     display: inline-block;
+     padding: 8px 15px;
+   }
+   ul.system-purchase-nav li a{
+     color: #000;
+   }
+   ul.system-purchase-nav li.active a{
+     color: #00D289;
+   }
+   .system-purchase-detail{
+     padding-left: 15px;
+     padding-right: 15px;
+   }
+  </style>
+{% end %}
+
+{% block content%}
+
+{% set subpage = context.get("subpage", "charge")%}
+
+{% set account_active = ""%}
+{% set history_active = ""%}
+{% set charge_active = ""%}
+
+{% if subpage == "account"%}
+  {% set account_active = "active"%}
+{% elif subpage == "history"%}
+  {% set history_active = "active"%}
+{% else %}
+  {% set charge_active = "active"%}
+{% end %}
+
+  <header class=" phone-box ">
+    <div class="title-box2">
+      <a href="{{reverse_url('fruitzoneAdminHome')}}" class="return-btn"></a>
+      <span class="title">
+        {% block head-title%}
+        水果商城系统
+        {% end %}
+      </span>
+    </div>
+  </header>
+  <div class=" phone-box ">
+    <ul class="system-purchase-nav">
+      <li class="{{account_active}}"><a href="{{reverse_url('fruitzoneSystemPurchaseSystemAccount')}}">账号信息</a></li>
+      <li class="{{history_active}}"><a href="{{reverse_url('fruitzoneSystemPurchaseHistory')}}">购买记录</a></li>
+      <li class="{{charge_active}}"><a href="{{reverse_url('fruitzoneSystemPurchaseChargeTypes')}}">申请接入</a></li>
+    </ul>
+  </div>
+
+  <div class="system-purchase-detail phone-box">
+    {% block page-detail%}
+
+    {% end %}
+  </div>
+
+{% end %}

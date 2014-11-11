@@ -1,6 +1,6 @@
 {% extends 'base.html'%}
 {% block head%}
-<script src="{{static_url('js/fruitzone-apply.js')}}"></script>
+<link rel="stylesheet" href="{{static_url('css/fruitzone-apply.css')}}"/>
 {% end %}
 
 {% block content %}
@@ -16,22 +16,22 @@
     </div>
 </header>
 {% else %}
-<header class="apply-title phone-box" id="headerId">
+<header class="apply-title" id="headerId">
     <div class="title-box">
-        <a href="javascript:history.back(-1)" class="return-btn">返回</a>
         <span class="title">入驻申请</span>
+        <a href="javascript:history.back(-1)" class="to-some">返回</a>
     </div>
 </header>
 {% end %}
 
 {% if "need_complete_accountinfo" in context and context["need_complete_accountinfo"]%}
 <div class="container apply-box phone-box">
-<h5 style="text-align: center">请先完善：<a href="{{reverse_url('fruitzoneAdminProfile')}}">个人信息</a></h5>
-</div>>
+  <h5 class="proper-padding bg-warning">你的个人信息不完善，为了方便大家交流，请先完善：<a href="{{reverse_url('fruitzoneAdminProfile')}}">个人信息</a></h5>
+</div>
 {% else %}
 
 
-<div class="container apply-box phone-box">
+<div class="apply-box white-color">
     <div class="container-title">店铺信息</div>
     <div class="info-box">
         <p class="title">店铺名称<em>*</em>：</p>
@@ -156,4 +156,5 @@
 </div>
 
 {% end %}
+<script src="{{static_url('js/fruitzone-apply.js')}}"></script>
 {% end %}

@@ -1,0 +1,11 @@
+
+/*-------------------------------admin-shops---------------------------------*/
+.shops-list{padding:1em 0;width:110%;float:left;}
+.shops-list li{float:left;border:1px solid #ddd;width:140px;height:160px;margin-left:35px;margin-right:15px;margin-bottom:3em;text-align:center;background:#fff;position:relative;}
+.shops-list li a{display:block;padding:0.5em;}
+.shops-list li a img{width:100%;}
+.shops-list li a p{font-size:1.4em;color:#333;padding-top:0.5em;}
+.shops-list .add-shops a{font-size:8em;font-weight:bold;color:#00D289;width:140px;height:160px;display:inline-block;line-height:160px;padding:0;}
+.shops-list .status{display:inline-block;position:absolute;z-index:999;top:0;left:0;width:140px;height:160px;line-height:160px;text-align:center;font-size:2.2em;color:#333;background:rgba(255,255,255,0.6);}
+
+.shop-list li em{font-style:normal;font-size:1em;}

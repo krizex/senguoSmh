@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, func, ForeignKey, Column
-from sqlalchemy.types import String, Integer, Text, Boolean, Float, DateTime
+from sqlalchemy.types import String, Integer, Text, Boolean, Float, Date, DateTime, BigInteger
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -7,6 +7,7 @@ from dal.db_configs import MapBase, DBSession
 from dal.dis_dict import dis_dict
 import json
 import time
+import datetime
 
 class DistrictCodeError(Exception):
     pass
@@ -373,15 +374,28 @@ class ShopAdmin(MapBase, _AccountApi):
     # 系统购买数据
     system_orders = relationship("SystemOrder", uselist=True)
 
+    # 商城1.0系统账户密码(目前一个商家给一个店铺账户和密码)
+    system_username = Column(String(32))
+    system_password = Column(String(128))
+    system_market_url = Column(String(256))
+
     briefintro = Column(String(300), default="")
 
     shops = relationship(Shop, uselist=True)
-    shops_collect = relationship("ShopsCollect")
+    shops_collect = relationship("Shop",secondary="shops_collect")
     feedback = relationship("Feedback")
 
     info = relationship("Info")
     info_collect = relationship("Info", secondary="info_collect", backref="shop_admin")
     comment = relationship("Comment", backref="shop_admin")
+
+    def success_orders(self, session):
+        if not hasattr(self, "_success_orders"):
+            self._success_orders = session.query(SystemOrder).\
+                                   filter_by(admin_id=self.id, 
+                                             order_status=ORDER_STATUS.SUCCESS
+                                   ).all()
+        return self._success_orders
 
     def add_shop(self, session, **kwargs):
         kwargs["admin_id"] = self.id
@@ -394,6 +408,63 @@ class ShopAdmin(MapBase, _AccountApi):
         s.add(self)
         self.shops.append(sp)
         s.commit()
+    
+    def add_tmp_order(self, session, charge_data):
+        """添加一个临时订单"""
+        o = SystemOrder.create_one(
+            session,
+            admin_id=self.id,
+            charge_id=charge_data.id,
+            charge_good_name=charge_data.good_name,
+            charge_price= charge_data.price,
+            charge_month=charge_data.month,
+            charge_description=charge_data.description
+        )
+        return o
+    
+    def finish_order(self, session, *, order_id, ali_trade_no):
+        """用户付款完成一个订单[一般由用户支付成功回调时使用]"""
+        try:
+            o = session.query(SystemOrder).filter_by(order_id=order_id).one()
+        except NoResultFound:
+            return None
+
+        o.update(session, order_status=ORDER_STATUS.SUCCESS, ali_trade_no=ali_trade_no)
+        self.update(session, role=SHOPADMIN_ROLE_TYPE.SYSTEM_USER)
+        return o
+    
+
+    def update_order_notify_data(self, session, *,
+                    order_id, notify_data):
+        """更新订单notify_data[一般由阿里服务器通知]"""
+        try:
+            o = session.query(SystemOrder).filter_by(order_id=order_id).one()
+        except NoResultFound:
+            return None
+        nd = notify_data
+        o.update(session, ali_trade_no=nd["trade_no"],
+                 have_more_data=True,
+                 buyer_email=nd["buyer_email"],
+                 buyer_id=nd["buyer_id"],
+                 gmt_create=nd["gmt_create"],
+                 gmt_payment=nd.get("gmt_payment", ""),
+                 gmt_close=nd.get("gmt_close", ""),
+                 quantity=nd["quantity"],
+                 trade_status=nd["trade_status"],
+                 notify_id = nd["notify_id"])
+        return o
+    @classmethod
+    def set_system_info(cls,session, *,
+                        admin_id, system_username, system_password, system_code):
+        try:
+            admin = session.query(ShopAdmin).filter_by(id=admin_id).one()
+        except NoResultFound:
+            return None
+        
+        admin.system_username = system_username
+        admin.system_password = system_password
+        admin.system_market_url = "http://open.wexinfruit.com/market/"+system_code
+        return admin
 
     def __repr__(self):
         return "<ShopAdmin (nickname, id)>".format(self.accountinfo.nickname, 
@@ -417,13 +488,66 @@ class Customer(MapBase, _AccountApi):
     credits = Column(Float, default=0)
     addresses = relationship("Address", backref="customer")
 
+class COUNTER_TYPE:
+    SYSTEM_ORDER_COUNTER = 1
+
+class Counter(MapBase):
+    __tablename__ = "counter"
+    type = Column(Integer, nullable=False, primary_key=True, unique=True)
+    count = Column(Integer, nullable=False)
+    # 初始化数据的时间戳
+    init_date = Column(Date, nullable=False)
+
+class ORDER_STATUS:
+    TEMP = 1
+    SUCCESS = 2
+    ABORTED = 3
+
 class SystemOrder(MapBase, _CommonApi):
     """系统的购买订单"""
 
     __tablename__ = "system_order"
-    
+
+    @classmethod
+    def create_one(cls, session, **kwargs):
+        if not "order_id" in kwargs:
+            kwargs["order_id"] = cls._create_orderid(session)
+        if not "create_date_timestamp" in kwargs:
+            kwargs["create_date_timestamp"] = int(time.time())
+        order = cls(**kwargs)
+        session.add(order)
+        session.commit()
+        return order
+
+    @classmethod
+    def _create_orderid(cls, session):
+        # 获取当天计数
+        # TODO：需要确认事务性
+        try:
+            c = session.query(Counter).filter_by(type=COUNTER_TYPE.SYSTEM_ORDER_COUNTER).one()
+            if c.init_date != datetime.date.today():
+                c.init_date = datetime.date.today()
+                c.count = 0
+        except NoResultFound:
+            c = Counter(type=COUNTER_TYPE.SYSTEM_ORDER_COUNTER, count=0, init_date=datetime.date.today())
+            session.add(c)
+        c.count += 1
+        session.commit()
+        count_str = str(c.count)
+        # 补齐
+        while len(count_str) < 5:
+            count_str = "0" + count_str
+        order_id_str = time.strftime("%Y%m%d", time.gmtime()) + count_str
+        return int(order_id_str)
+
+    def set_read(self, session):
+        self.have_read = True
+        session.commit()
+        
+
     # 订单id， 构成如"年月日订单当日编号", 2014110700001
-    order_id = Column(Integer, nullable=False, unique=True, primary_key=True)
+    order_id = Column(BigInteger, nullable=False, unique=True, primary_key=True)
+    order_status = Column(Integer, nullable=False, default=ORDER_STATUS.TEMP)
     # 下单人
     admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
     admin  = relationship("ShopAdmin")
@@ -431,29 +555,32 @@ class SystemOrder(MapBase, _CommonApi):
     create_date_timestamp = Column(Integer, nullable=False)
     # charge数据
     charge_id = Column(Integer, nullable=False)
+    charge_good_name = Column(String(32), nullable=False)
     charge_month = Column(Integer, nullable=False)
-    charge_price = Column(Integer, nullable=False)
+    charge_price = Column(Float, nullable=False)
     charge_description = Column(String(32), nullable=False)
+
+    have_read = Column(Boolean, default=False)
 
     # 支付宝相关数据
+    ali_trade_no = Column(String(33))
+    have_more_data = Column(Boolean, nullable=False, default=False)
 
+    # 异步数据
+    buyer_email = Column(String(101))
+    buyer_id = Column(String(17))
+    # 交易创建时间
+    gmt_create = Column(String(32))
+    # 交易付款时间
+    gmt_payment = Column(String(32))
+    # 交易关闭时间
+    gmt_close = Column(String(32))
 
-class SystemTempOrder(MapBase, _CommonApi):
-    """系统购买临时订单"""
-    __tablename__ = "system_temp_order"
-    # 订单id， 构成如"年月日订单当日编号", 2014110700001
-    order_id = Column(Integer, nullable=False, unique=True, primary_key=True)
-    # 下单人
-    admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
-    admin  = relationship("ShopAdmin")
-    # 订单时间
-    create_date_timestamp = Column(Integer, nullable=False)
-    # charge数据
-    charge_id = Column(Integer, nullable=False)
-    charge_month = Column(Integer, nullable=False)
-    charge_price = Column(Integer, nullable=False)
-    charge_description = Column(String(32), nullable=False)
-    
+    quantity = Column(String(8))
+    # 交易状态
+    trade_status = Column(String(32))
+
+    notify_id = Column(String(64))    
 
 class Address(MapBase,  _CommonApi):
     __tablename__ = "address"
@@ -559,12 +686,12 @@ class ChargeType(MapBase, _CommonApi):
     __tablename__ = "charge_type"
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    # 商品名
+    # 商品名，如“森果商城系统1.0（三个月套餐）”
     good_name = Column(String(32), nullable=False)
-    # 月
+    # 使用月数
     month = Column(Integer, nullable=False)
-    # 价格
-    price = Column(Integer, nullable=False)
+    # 套餐价格
+    price = Column(Float, nullable=False)
     # 详细描述，如588/三个月
     description = Column(String(32), nullable=False)
 

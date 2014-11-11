@@ -1,15 +1,15 @@
 $(document).ready(function(){
 
     $('.area-choose-list li').each(function(){
-        $(this).click(function(){
+        $(this).on('click',function(){
             if($(this).hasClass('active'))
-            {$(this).removeClass('active');}
+                {$(this).removeClass('active');}
             else $(this).addClass('active');
         });
     });
 
-    $('#submitApply').click(function(evt){Apply(evt);});
-    $('#submitReapply').click(function(evt){reApply(evt);});
+    $('#submitApply').on('click',function(evt){Apply(evt);});
+    $('#submitReapply').on('click',function(evt){reApply(evt);});
 
     var proc=$('.reProvince').data('code');
     var citc=$('.reCity').data('code');

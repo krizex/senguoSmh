@@ -1,0 +1,11 @@
+.done-box{}
+.done-box .good-body{width:250px;margin:0 auto;text-align:center;color:#4A4A4A;padding-top:5%;}
+.done-box .good-body p{margin-bottom:5px;}
+.done-box .good-body .good{text-align:center;width:30%;margin-bottom:5%;}
+.done-box .good-body .good-text{font-size:1.6em;text-align:center;}
+.done-box .good-body .red{color:#fe2d2d;}
+.done-box .good-body .check-btn{display:inline-block;width:80%;font-size:1.6em;color:#fff;padding:0.6em 0;margin-bottom:1em;}
+.done-box .good-body .space{margin-top:3%;}
+.done-box .good-body .close-page{color:#00D681;display:inline-block;width:60%;font-size:1.6em;}
+.done-box .good-text2{text-align:left;font-size:1.6em;text-indent:28px;}
+.done-box .w1{margin-top:2em !important;}

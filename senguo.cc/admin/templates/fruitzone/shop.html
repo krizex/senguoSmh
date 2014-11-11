@@ -1,9 +1,8 @@
 {% extends 'base.html'%}
 
 {% block head%}
-<script src="{{static_url('js/fruitzone-admin-shop.js')}}"></script>
+<link rel="stylesheet" href="{{static_url('css/fruitzone-shop.css')}}"/>
 {% end %}
-
 
 {% block content %}
 {% import time%}
@@ -24,8 +23,6 @@
     {% set bt_edit_show = "hidden"%}
     {% set bt_edit_hide = "show"%}
 {% end %}
-
-
 
 <header class="title-box2 phone-box" data-shop="{{shop.id}}" id="headerId">
     <a href="javascript:history.back(-1)" class="return-btn pull-left"></a>
@@ -50,10 +47,19 @@
                 <p>服务区域：{{handler.code_to_text("service_area",shop.shop_service_area)}}</p>
                 <p>店面：<span data-real="{{shop.have_offline_entity}}" id="detailsReal"></span></spanb></p>
             </div>
-           <!-- <div class="collect-box">
-                <a href="" class="collect-btn">收藏</a>
-                <a href="" class="action-mode" style="display:none;">已收藏</a>
-            </div>-->
+           <div class="collect-box">
+               {% if current_user %}
+                    {% if shop in current_user.shops_collect %}
+                    <button type="button" class="action-mode">已收藏</button>
+                    {% else %}
+                    <button type="button" class="collect-btn" id="collectBox">收藏</button>
+                    <button type="button" class="action-mode" style="display:none;">已收藏</button>
+                    {% end %}
+               {% else %}
+                    <button type="button" class="uncollect-btn">收藏</button>
+                    <p>*登录后即可收藏店铺*</p>
+               {% end %}
+            </div>
         </div>
         <a href="{{shop.shop_url}}" class="focus-btn {{bt_edit_hide}}">关注我的微信店铺</a>
         <div class="{{bt_edit_show}} edit-link editBox">
@@ -282,4 +288,5 @@
     </div>
     <a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200521182&idx=1&sn=a3d7731e0233aef218eb91346d581b02#rd" class="focus-senguo {{bt_edit_hide}}">点击关注<strong>森果</strong>，获取更多行业资源</a>
 </div>
+<script src="{{static_url('js/fruitzone-admin-shop.js')}}"></script>
 {% end %}

@@ -42,7 +42,6 @@ handlers = [
         "action":"all"}, "superShopManage"),
     (r"/super/shopManage/all", handlers.superadmin.ShopManage, {
         "action":"all"}, "superShopManageAll"),
-
     # 正在申请接入店铺
     (r"/super/shopManage/applying", handlers.superadmin.ShopManage, {
         "action":"applying"}, "superShopManageApplying"),
@@ -52,6 +51,18 @@ handlers = [
     # 已被拒绝店铺
     (r"/super/shopManage/declined", handlers.superadmin.ShopManage, {
         "action":"declined"}, "superShopManageDeclined"),
+    
+    ## 商城购买订单
+    (r"/super/orderManage/", handlers.superadmin.OrderManage, {
+        "action":"all"}, "superOrderManage"),
+    (r"/super/orderManage/all", handlers.superadmin.OrderManage, {
+        "action":"all"}, "superOrderManageAll"),
+    (r"/super/orderManage/processed", handlers.superadmin.OrderManage, {
+        "action":"processed"}, "superOrderManageProcessed"),
+    (r"/super/orderManage/new", handlers.superadmin.OrderManage, {
+        "action":"new"}, "superOrderManageNew"),
+    (r"/super/orderManage/aborted", handlers.superadmin.OrderManage, {
+        "action":"aborted"}, "superOrderManageAborted"),
     
     ## 用户反馈
     (r"/super/feedback/", handlers.superadmin.Feedback, {"action":"all"}, "superFeedback"),
@@ -92,6 +103,7 @@ handlers = [
     (r"/fruitzone/shop/(\d+)", handlers.fruitzone.Shop, {}, "fruitzoneShop"),
 
     (r"/fruitzone/admin/shops", handlers.fruitzone.AdminShops, {}, "fuirzoneAdminShops"),
+    (r"/fruitzone/admin/shopsCollect", handlers.fruitzone.AdminShopsCollect, {}, "fuirzoneAdminShopsCollect"),
     (r"/fruitzone/admin/shop/(\d+)", handlers.fruitzone.AdminShop, {}, "fruitzoneAdminShop"),
 
     (r"/fruitzone/phoneVerify/gencode", handlers.fruitzone.PhoneVerify, {
@@ -107,6 +119,24 @@ handlers = [
     (r"/infowall/infoDetail/comment", handlers.infowall.InfoDetail, {}, "infowallInfoDetailComment"),
     (r"/infowall/infoCollect", handlers.infowall.InfoCollect, {}, "infowallInfoCollect"),
     (r"/infowall/infoIssue", handlers.infowall.InfoIssue, {}, "infowallInfoIssue"),
+    
 
+    (r"/fruitzone/systemPurchase/", handlers.fruitzone.SystemPurchase, {
+        "action":"home"}, "fruitzoneSystemPurchase"),
+    (r"/fruitzone/systemPurchase/systemAccount", handlers.fruitzone.SystemPurchase, {
+        "action":"systemAccount"}, "fruitzoneSystemPurchaseSystemAccount"),
+    (r"/fruitzone/systemPurchase/history", handlers.fruitzone.SystemPurchase, {
+        "action":"history"}, "fruitzoneSystemPurchaseHistory"),
+
+    (r"/fruitzone/systemPurchase/chargeTypes", handlers.fruitzone.SystemPurchase, {
+        "action":"chargeTypes"}, "fruitzoneSystemPurchaseChargeTypes"),
+    (r"/fruitzone/systemPurchase/chargeDetail", handlers.fruitzone.SystemPurchase, {
+        "action":"chargeDetail"}, "fruitzoneSystemPurchaseChargeDetail"),
+    (r"/fruitzone/systemPurchase/dealFinishedCallback", handlers.fruitzone.SystemPurchase, {
+        "action":"dealFinishedCallback"}, "fruitzoneSystemPurchaseDealFinishedCallback"),
+    (r"/fruitzone/systemPurchase/dealSuccess", handlers.fruitzone.SystemPurchase, {
+        "action":"dealSuccess"}, "fruitzoneSystemPurchaseDealSuccess"),
+    (r"/fruitzone/systemPurchase/dealNotify", handlers.fruitzone.SystemPurchase, {
+        "action":"dealNotify"}, "fruitzoneSystemPurchaseDealNotify")
 ]
 

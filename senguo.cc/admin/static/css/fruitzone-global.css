@@ -1,7 +1,7 @@
 body{font-size: 1em;font-family:"microsoft yahei";background:#f2f2f2;}
 p{clear: both;width: 100%}
 ol,ul,li{list-style:none;}
-.phone-box{width:100%;min-width:320px;max-width:640px;margin:0 auto;overflow:hidden;background:#F2F2F2;padding-bottom:10px;}
+.phone-box{width:100%;min-width:320px;max-width:640px;margin:0 auto;overflow:hidden;background:#F2F2F2;padding-bottom:50px;}
 .color-green{color:#40c689;}
 ul{padding-left:0px;margin-bottom:0;}
 a:hover{text-decoration:none;}
@@ -50,5 +50,15 @@ input{border:none;}
 .text-green{color:#00D289;}
 .text-red{color:#FF0808;}
 
+.text-center{text-align:center;}
+
 .border-green{border:1px solid #00D289;border-radius:2px;}
 .left-none{border-left:none !important;}
+
+.bottom-nav{height:50px;line-height:40px;max-width:640px;margin:0 auto;font-size:1.4em;border-top:1px solid #ddd;}
+.bottom-nav li{text-align:center;padding:0 5px;}
+.bottom-nav li a{color:#333;}
+.bottom-nav .active a{color:#00D289;font-weight:bold;}
+.proper-padding {
+    padding: 8px 14px;
+}

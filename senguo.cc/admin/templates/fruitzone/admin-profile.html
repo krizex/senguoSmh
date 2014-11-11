@@ -1,17 +1,17 @@
 {% extends base.html %}
 
 {% block head %}
-<script src="{{static_url('js/fruitzone-admin-profile.js')}}"></script>
+<link rel="stylesheet" href="{{static_url('css/fruitzone-admin-profile.css')}}"/>
 {% end %}
 
 {% block content%}
-<header class="phone-box">
+<header>
     <div class="title-box2">
         <a href="{{reverse_url('fruitzoneAdminHome')}}" class="return-btn"></a>
         <span class="title">个人信息</span>
     </div>
 </header>
-<div class="user-info-detail phone-box container">
+<div class="user-info-detail ">
   <form action="/fruitzone/admin/profile" method="post">
         <ul>
             <li>
@@ -146,4 +146,5 @@
         </div>
     </div>
 </div>
+<script src="{{static_url('js/fruitzone-admin-profile.js')}}"></script>
 {% end %}
