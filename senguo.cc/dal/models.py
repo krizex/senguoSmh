@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, func, ForeignKey, Column
-from sqlalchemy.types import String, Integer, Text, Boolean, Float
+from sqlalchemy.types import String, Integer, Text, Boolean, Float, DateTime
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -46,6 +46,12 @@ class SHOP_STATUS:
     DECLINED = 3
     
     DATA_LIST = [APPLYING, ACCEPTED, DECLINED]
+
+class INFO_TYPE:
+    """信息类型"""
+    SUPPLY = 1
+    DEMAND = 2
+    OTHER = 3
 
 
 ## TODO: 账户支付及账户升级功能
@@ -373,6 +379,10 @@ class ShopAdmin(MapBase, _AccountApi):
     shops_collect = relationship("ShopsCollect")
     feedback = relationship("Feedback")
 
+    info = relationship("Info")
+    info_collect = relationship("Info", secondary="info_collect", backref="shop_admin")
+    comment = relationship("Comment", backref="shop_admin")
+
     def add_shop(self, session, **kwargs):
         kwargs["admin_id"] = self.id
         if "shops" in kwargs:
@@ -453,6 +463,53 @@ class Address(MapBase,  _CommonApi):
     receiver = Column(String(64), nullable=False)
     address_text = Column(String(1024), nullable=False)
     owner_id = Column(Integer, ForeignKey(Customer.id))
+
+#信息墙＝＝＝＝
+class Info(MapBase, _CommonApi):
+    __tablename__ = "info"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    #信息的作者id
+    admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
+
+    text = Column(String(568))
+    #板块类型：供应1、求购2、其他3
+    type = Column(Integer, default=INFO_TYPE.SUPPLY)
+    #collect_sum = Column(Integer)
+    create_date_timestamp = Column(DateTime, default=func.now())
+
+    fruit_img = relationship("FruitImg")
+    comment = relationship("Comment")
+    fruit_type = relationship("FruitType", secondary="info_fruit_link")
+
+#admin、info关系表
+class InfoCollect(MapBase, _CommonApi):
+    __tablename__= "info_collect"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
+    info_id = Column(Integer, ForeignKey(Info.id), nullable=False)
+
+class FruitImg(MapBase, _CommonApi):
+    __tablename__ = "fruit_img"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    info_id = Column(Integer, ForeignKey(Info.id), nullable=False)
+    img_url = Column(String(1024))
+
+class Comment(MapBase, _CommonApi):
+    __tablename__ = "comment"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    info_id = Column(Integer, ForeignKey(Info.id), nullable=False)
+    #该评论的作者的id
+    admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
+    text = Column(String(100))
+
+class InfofruitLink(MapBase):
+    """信息墙的信息的水果种类"""
+    __tablename__ = "info_fruit_link"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+
+    info_id = Column(Integer, ForeignKey(Info.id), nullable=False)
+    fruit_id = Column(Integer, ForeignKey("fruit_type.id"), nullable=False)
+#＝＝＝＝信息墙
 
 class FruitType(MapBase,  _CommonApi):
     __tablename__ = "fruit_type"
