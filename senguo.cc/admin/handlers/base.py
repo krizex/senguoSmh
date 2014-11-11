@@ -24,7 +24,7 @@ class GlobalBaseHandler(BaseHandler):
             self._session.close()
 
     def timestamp_to_str(self, timestamp):
-        return time.strftime("%Y-%m-%d", time.gmtime(timestamp))
+        return time.strftime("%Y-%m-%d %H:%M", time.gmtime(timestamp))
 
     def code_to_text(self, column_name, code):
         text = ""

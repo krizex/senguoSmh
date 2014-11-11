@@ -371,6 +371,7 @@ class ShopAdmin(MapBase, _AccountApi):
     # 商城1.0系统账户密码(目前一个商家给一个店铺账户和密码)
     system_username = Column(String(32))
     system_password = Column(String(128))
+    system_market_url = Column(String(256))
 
     briefintro = Column(String(300), default="")
 
@@ -436,12 +437,25 @@ class ShopAdmin(MapBase, _AccountApi):
                  buyer_email=nd["buyer_email"],
                  buyer_id=nd["buyer_id"],
                  gmt_create=nd["gmt_create"],
-                 gmt_payment=nd["gmt_payment"],
-                 gmt_close=nd["gmt_close"],
+                 gmt_payment=nd.get("gmt_payment", ""),
+                 gmt_close=nd.get("gmt_close", ""),
                  quantity=nd["quantity"],
                  trade_status=nd["trade_status"],
                  notify_id = nd["notify_id"])
         return o
+    @classmethod
+    def set_system_info(cls,session, *,
+                        admin_id, system_username, system_password, system_code):
+        try:
+            admin = session.query(ShopAdmin).filter_by(id=admin_id).one()
+        except NoResultFound:
+            return None
+        
+        admin.system_username = system_username
+        admin.system_password = system_password
+        admin.system_market_url = "http://open.wexinfruit.com/market/"+system_code
+        return admin
+
     def __repr__(self):
         return "<ShopAdmin (nickname, id)>".format(self.accountinfo.nickname, 
                                                    self.id)
@@ -515,6 +529,11 @@ class SystemOrder(MapBase, _CommonApi):
             count_str = "0" + count_str
         order_id_str = time.strftime("%Y%m%d", time.gmtime()) + count_str
         return int(order_id_str)
+
+    def set_read(self, session):
+        self.have_read = True
+        session.commit()
+        
 
     # 订单id， 构成如"年月日订单当日编号", 2014110700001
     order_id = Column(BigInteger, nullable=False, unique=True, primary_key=True)

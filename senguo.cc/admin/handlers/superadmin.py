@@ -21,13 +21,12 @@ class Access(SuperBaseHandler):
         # todo: handle state
         code =self.args["code"]
         mode = self.args["mode"]
-        print("mode: ", mode , ", code get:", code)
         if mode not in ["mp", "kf"]:
             return self.send_error(400)
 
         userinfo = self.get_wx_userinfo(code, mode)
         if not userinfo:
-            return self.redirect(self.reverse_url("adminLogin"))
+            return self.write("登录失败或过期，请重新登录")
         # 登录
         u = models.SuperAdmin.login_by_unionid(self.session, userinfo["unionid"])
         if not u:
@@ -194,3 +193,65 @@ class Feedback(SuperBaseHandler):
             return self.send_error(404)
         
     
+class OrderManage(SuperBaseHandler):
+    _page_count = 20
+    
+    def initialize(self, action):
+        self._action = action
+
+    @tornado.web.authenticated
+    @SuperBaseHandler.check_arguments("page?:int")
+    def get(self):
+        q_all = self.session.query(models.SystemOrder).filter_by(
+            order_status = models.ORDER_STATUS.SUCCESS)
+        q_new = q_all.filter_by(have_read=False)
+        q_processed = q_all.filter_by(have_read=True)
+        # 被放弃或者还未付款的订单
+        q_aborted = self.session.query(models.SystemOrder).filter(
+            models.SystemOrder.order_status != models.ORDER_STATUS.SUCCESS)
+        count = {
+            "all":q_all.count(),
+            "new":q_new.count(),
+            "processed":q_processed.count(),
+            "aborted":q_aborted.count()
+        }
+        
+        offset = self._page_count * (self.args.get("page", 1) - 1)
+
+        if self._action == "all":
+            q = q_all
+        elif self._action == "new":
+            q = q_new
+        elif self._action == "processed":
+            q = q_processed
+        elif self._action == "aborted":
+            q = q_aborted
+        else:
+            return self.send_error(404)
+        
+        q = q.order_by(models.SystemOrder.create_date_timestamp.desc()).\
+            offset(offset).limit(self._page_count)
+        orders = q.all()
+        subpage = self._action
+        
+        return self.render("superAdmin/order-manage.html", context=dict(
+            orders = orders,subpage = subpage,count=count))
+
+    @tornado.web.authenticated
+    @SuperBaseHandler.check_arguments("order_id:int", "system_username",
+                                      "system_password","system_code" ,
+                                      "action")
+    def post(self):
+        if self.args["action"] == "set_read":
+            o = self.session.query(models.SystemOrder).\
+                filter_by(order_id=self.args["order_id"]).one()
+            if not o:
+                return self.send_fail(error_text="订单不存在！")
+            o.set_read(self.session)
+            models.ShopAdmin.set_system_info(
+                self.session, 
+                admin_id = o.admin.id,
+                system_username=self.args["system_username"],
+                system_password=self.args["system_password"], 
+                system_code=self.args["system_code"])
+            return self.send_success()

@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block title%}商家管理{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/order-manage.css')}}"/>
+{% end %}
+
+{% block content %}
+{% set subpage=context['subpage'] %}
+
+{% set all_active = ""%}
+{% set process_active = ""%}
+{% set new_active = ""%}
+{% set aborted_active = ""%}
+
+{% if subpage == "all" %}
+    {% set all_active="active"%}
+{% elif subpage == "processed" %}
+    {% set process_active="active"%}
+{% elif subpage == "new" %}
+    {% set new_active="active"%}
+{% else %}
+    {% set aborted_active='active'%}
+{% end %}
+
+{% set count =context['count']%}
+
+<div class="admin-manage-left admin-left pull-left">
+    <ul class="nav nav-pills nav-stacked" role="tablist">
+        <li class="{{all_active}}"><a href="{{reverse_url('superOrderManageAll')}}">全部订单（{{count["all"]}}）</a></li>
+        <li class="{{new_active}}"><a href="{{reverse_url('superOrderManageNew')}}">新订单（{{count["new"]}}）</a></li>
+        <li class="{{process_active}}"><a href="{{reverse_url('superOrderManageProcessed')}}">已处理订单（{{count["processed"]}}）</a></li>
+        <li class="{{aborted_active}}"><a href="{{reverse_url('superOrderManageAborted')}}">未支付订单（{{count["aborted"]}}）</a></li>
+    </ul>
+</div>
+<div class="admin-manage-right admin-right pull-right">
+    <h3 class="admin-title">订单信息</h3>
+    <div class="orders-list">
+        <ul>
+            {% for orders in context['orders']%}
+            <li class="row" data-id="{{orders.order_id}}">
+                <div class="col-lg-6">
+                    <p>
+                        <span class="title"><strong>姓名：</strong>
+                            {{orders.admin.accountinfo.nickname}}
+                        </span>
+                    </p>
+                    <p>
+                        <span class="title">
+                            <strong>头像：</strong>
+                            <img src="{{orders.admin.accountinfo.headimgurl}}" class="wx_img"/>
+                        </span>
+                    </p>
+                    <p>
+                        <span class="title ">
+                            <strong>邮箱：</strong>
+                            {{orders.admin.accountinfo.email}}
+                        </span>
+                    </p>
+                    <p>
+                        <span class="title">
+                            <strong>电话：</strong>
+                            {{orders.admin.accountinfo.phone}}
+                        </span>
+                    </p>
+                    <p>
+                        <span class="title">
+                            <strong>微信：</strong>
+                            {{orders.admin.accountinfo.wx_username}}
+                        </span>
+                    </p>
+                    <p>
+                        <a href="{{reverse_url('superShopAdminProfile',orders.admin.id)}}">查看详情&rarr;</a>
+                    </p>
+                </div>
+                <div class="col-lg-6">
+                    <p>
+                        <span class="title">
+                            <strong>下单时间：</strong>
+                            {{orders.gmt_create}}
+                        </span>
+                    </p>
+                    <p>
+                        <span class="title">
+                            <strong>套餐名称：</strong>
+                            {{orders.charge_good_name}}
+                        </span>
+                    </p>
+                    <p>
+                        <span class="title">
+                            <strong>付款金额：</strong>
+                            {{orders.charge_price}}
+                        </span>
+                    </p>
+                    <p>
+                        {% if orders.order_status==2 and orders.have_read==False%}
+                        <button type="button" class="btn-green set-btn" data-toggle="modal" data-target="#setBox">设置商城后台账户</button>
+                        {% end %}
+                    </p>
+                </div>
+                <div class="modal fade set-box" id="setBox" tabindex="-1" role="dialog"  aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">请输入该商户的后台系统账户信息</div>
+                            <div class="modal-body">
+                                <p><span class="w1">管理员登录名：</span><input type="text" class="loginName"/></p>
+                                <p><span class="w1">管理员密码：</span><input type="text" class="loginPass"/></p>
+                                <p><span class="w1">商城系统代号：</span><input type="text" class="marketCode"/></p>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="btn-box">
+                                    <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
+                                    <button type="button" class="btn  sure-btn accountSet">确定</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            {% end %}
+        </ul>
+
+    </div>
+    <nav>
+        <ul class="pager">
+            <li><a href="" id="PrePage">&larr; 上一页</a></li>
+            <li><a href="" id="NextPage">下一页&rarr;</a></li>
+        </ul>
+    </nav>
+</div>
+<script src="{{static_url('js/order-manage.js')}}"></script>
+{% end %}

@@ -57,5 +57,7 @@ input{border:none;}
 
 .bottom-nav{max-width:640px;margin:0 auto;font-size:1.4em;border-top:1px solid #ddd;padding:15px 10px;}
 .bottom-nav li{text-align:center;padding:0 5px;}
-.bottom-nav li a{color:#333;padding:5px;}
+
+.bottom-nav li a{color:#333;display:block;}
 .bottom-nav .active a{color:#00D289;font-weight:bold;}
+.proper-padding {padding: 8px 14px;}

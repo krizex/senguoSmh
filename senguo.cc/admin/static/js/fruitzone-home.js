@@ -17,17 +17,19 @@ $(document).ready(function(){
     $('.order-by-time').find('li').each(function(){$(this).on('click',function(){Filter($(this));});});
     $('#orderByFruit').on('click',function(){Filter($(this));});
     var i=1;
+    if(i=1){$('#PrePage').parents('li').hide();}
+    if($('#homeShopList').find('li').length<20){$('#NextPage').parents('li').hide();}
     $('#PrePage').on('click',function(){
         if(i>1)
         {
-            i=i-1;
+            i=i-20;
             $(this).attr({'data-code':i});
             Filter($(this));
         }
 
     });
     $('#NextPage').on('click',function(){
-            i=i+1;
+            i=i+20;
             $(this).attr({'data-code':i});
             Filter($(this));
     });
@@ -90,7 +92,7 @@ function Filter(evt){
     var city=evt.data('code');
     var service_area=evt.data('code');
     var live_month=evt.data('code');
-    var skip=evt.data('code');
+    var skip=evt.attr('data-code');
     var onsalefruit_ids=[];
     var fruit=$('.order-by-fruit').find('.active');
     for(var i=0;i<fruit.length;i++)
@@ -116,6 +118,7 @@ function Filter(evt){
         function(res){
             if(res.success) {
                 evt.parents('.order-by-list').hide();
+                $('.home-pagination').show();
                 $('#homeShopList').empty();
                 var shops = res.shops;
                 for (var shop in shops)

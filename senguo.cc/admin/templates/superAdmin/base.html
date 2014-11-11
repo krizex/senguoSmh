@@ -27,18 +27,21 @@
 
 {% set shop_admin_active = ""%}
 {% set shop_active = ""%}
+{% set order_active = ""%}
 
 {% if subpage == "shopAadminManage"%}
-{% set shop_admin_active = "active"%}
+    {% set shop_admin_active = "active"%}
 {% elif subpage == "shopManage"%}
-{% set shop_active = "active"%}
+    {% set shop_active = "active"%}
+{% else %}
+    {% set order_active = "active"%}
 {% end %}
 
 <header class="container">
     <ul class="nav nav-pills header-nav" role="tablist">
         <li role="presentation" class="{{shop_admin_active}}"><a href="{{reverse_url('superShopAdminManage')}}">商家管理</a></li>
         <li role="presentation" class="{{shop_active}}"><a href="{{reverse_url('superShopManage')}}">店铺管理</a></li>
-        <li role="presentation"><a href="{{reverse_url('superShopAdminManage')}}">商城接入管理</a></li>
+        <li role="presentation" class="{{order_active}}"><a href="{{reverse_url('superOrderManage')}}">商城接入管理</a></li>
     </ul>
 </header>
 <div class="container">

@@ -5,3 +5,6 @@ class Logger:
     @classmethod
     def error(cls, title, detail=""):
         print("[error]", title, detail)
+    @classmethod
+    def info(cls, title, detail=""):
+        print("[info]", title, detail)

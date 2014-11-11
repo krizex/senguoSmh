@@ -22,8 +22,9 @@
 
 {% if "need_complete_accountinfo" in context and context["need_complete_accountinfo"]%}
 <div class="container apply-box phone-box">
-    <h4style="text-align: center">请先完善：<a href="{{reverse_url('fruitzoneAdminProfile')}}">个人信息</a></h4>
-</div>>
+  <h5 class="proper-padding bg-warning">你的个人信息不完善，为了方便大家交流，请先完善：<a href="{{reverse_url('fruitzoneAdminProfile')}}">个人信息</a></h5>
+</div>
+
 {% else %}
 
 
@@ -155,7 +156,10 @@
 <script src="{{static_url('js/area.js')}}"></script>
 <script src="{{static_url('js/fruitzone-apply.js')}}"></script>
 {% end %}
+<<<<<<< HEAD
 {% block bottom %}
 <script src="{{static_url('js/area.js')}}"></script>
 <script src="{{static_url('js/fruitzone-apply.js')}}"></script>
 {% end %}
+=======
+>>>>>>> a2b5066c81333acda24fd7bad7edbfb6c75a4491

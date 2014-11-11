@@ -1,0 +1,6 @@
+.orders-list{}
+.orders-list li{border:1px solid #ddd;padding:10px;margin-bottom:10px;}
+.orders-list .wx_img{width:80px;height:80px;}
+.orders-list .set-btn{color:#fff;border:0px;padding:5px;}
+
+.set-box{} .w1{display:inline-block;width:100px;}
