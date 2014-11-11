@@ -59,3 +59,6 @@ input{border:none;}
 .bottom-nav li{text-align:center;padding:0 5px;}
 .bottom-nav li a{color:#333;}
 .bottom-nav .active a{color:#00D289;font-weight:bold;}
+.proper-padding {
+    padding: 8px 14px;
+}

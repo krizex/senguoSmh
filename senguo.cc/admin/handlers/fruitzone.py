@@ -352,7 +352,15 @@ class SystemPurchase(AdminBaseHandler):
 
     @tornado.web.authenticated
     def get(self):
-        if self._action == "chargeTypes":
+        if self._action == "home":
+            if self.current_user.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER:
+                # 已经是系统用户
+                return self.redirect(
+                    self.reverse_url("fruitzoneSystemPurchaseSystemAccount"))
+            else:
+                return self.redirect(
+                    self.reverse_url("fruitzoneSystemPurchaseSystemCharge"))
+        elif self._action == "chargeTypes":
             charge_types = self.session.query(models.ChargeType).\
                            order_by(models.ChargeType.id).all()
             return self.render("fruitzone/systempurchase-chargetypes.html",
@@ -433,7 +441,6 @@ class SystemPurchase(AdminBaseHandler):
         "service", "v","sec_id","sign","notify_data")
     def handle_deal_notify(self):
         # 验证签名
-        print("SystemPurchase Notify args: ", self.args)
         sign = self.args.pop("sign")
         signmethod = self._alipay.getSignMethod(**self.args)
         if signmethod(self.args) != sign:
@@ -457,6 +464,7 @@ class SystemPurchase(AdminBaseHandler):
     _alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
     def _create_tmporder_url(self, charge_data):
         # 创建临时订单
+        # TODO: 订单失效时间与清除
         tmp_order = self.current_user.add_tmp_order(self.session, charge_data)
         authed_url = self._alipay.create_direct_pay_by_user_url(
             out_trade_no=str(tmp_order.order_id),
@@ -468,3 +476,21 @@ class SystemPurchase(AdminBaseHandler):
             merchant_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseChargeTypes"))
         )
         return authed_url
+
+    def check_xsrf_cookie(self):
+        if self._action == "dealNotify":
+            Logger.info("SystemPurchase: it's a notify post from alipay, pass xsrf cookie check")
+            return 
+        return super().check_xsrf_cookie()
+        
+        
+    def _check_info_complete(self):
+        u = self.current_user
+        
+        if not u.accountinfo.email or not u.accountinfo.phone or \
+           not u.accountinfo.wx_username or not len(u.shops):
+            return False
+        
+        return True
+            
+        
