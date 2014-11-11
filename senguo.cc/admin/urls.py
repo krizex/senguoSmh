@@ -2,6 +2,7 @@ import handlers.front
 import handlers.admin
 import handlers.superadmin
 import handlers.fruitzone
+import handlers.infowall
 
 handlers = [
     (r"/", handlers.front.Home,{}, "frontHome"),
@@ -111,6 +112,15 @@ handlers = [
         "action":"gencode"}, "fruitzoneVerifyGencode"),
     (r"/fruitzone/phoneVerify/checkcode", handlers.fruitzone.PhoneVerify,{
         "action":"checkcode"}, "fruitzoneCheckcode"),
+
+    #信息墙
+    (r"/infowall/supply", handlers.infowall.Home, {"action": "supply"}, "infowallHomeSupply"),
+    (r"/infowall/demand", handlers.infowall.Home, {"action": "demand"}, "infowallHomeDemand"),
+    (r"/infowall/other", handlers.infowall.Home, {"action": "other"}, "infowallHomeOther"),
+    (r"/infowall/infoDetail/(\d+)", handlers.infowall.InfoDetail, {}, "infowallInfoDetail"),
+    (r"/infowall/infoDetail/comment", handlers.infowall.InfoDetail, {}, "infowallInfoDetailComment"),
+    (r"/infowall/infoCollect", handlers.infowall.InfoCollect, {}, "infowallInfoCollect"),
+    (r"/infowall/infoIssue", handlers.infowall.InfoIssue, {}, "infowallInfoIssue"),
     
 
     (r"/fruitzone/systemPurchase/", handlers.fruitzone.SystemPurchase, {
@@ -129,7 +139,6 @@ handlers = [
     (r"/fruitzone/systemPurchase/dealSuccess", handlers.fruitzone.SystemPurchase, {
         "action":"dealSuccess"}, "fruitzoneSystemPurchaseDealSuccess"),
     (r"/fruitzone/systemPurchase/dealNotify", handlers.fruitzone.SystemPurchase, {
-        "action":"dealNotify"}, "fruitzoneSystemPurchaseDealNotify"),
-    
+        "action":"dealNotify"}, "fruitzoneSystemPurchaseDealNotify")
 ]
 
