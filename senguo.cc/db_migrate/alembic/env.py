@@ -15,7 +15,7 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 import sys, os
 sys.path.append(os.path.abspath(os.path.join(
-    os.path.dirname(__file__),"..")))
+    os.path.dirname(__file__),"../..")))
 import dal.models as models
 target_metadata = models.MapBase.metadata
 compare_type = True
