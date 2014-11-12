@@ -288,10 +288,12 @@ class AdminShop(AdminBaseHandler):
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")
     def post(self,shop_id):
-        action=self.args["action"]
-        data=self.args["data"]
+        action = self.args["action"]
+        data = self.args["data"]
         shop = models.Shop.get_by_id(self.session, shop_id)
-
+        #如果该店铺不属于该用户，禁止修改
+        if shop not in self.current_user.shops:
+            return self.send_error(403)
         if action == "edit_shop_url":
             shop.update(session=self.session, shop_url=data)
         elif action == "edit_live_month":

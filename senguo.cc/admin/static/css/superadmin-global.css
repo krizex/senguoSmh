@@ -19,14 +19,11 @@ ul{padding-left:0;}
 .btn-red{background:#FF0000;}
 .btn-green{background:#009933;}
 
-.header-nav{}
+.header-nav{margin-bottom:50px;border:1px solid #ddd;}
 .header-nav .nav{}
 .header-nav a{font-weight:bold;color:#333;}
-.header-nav li{\width:33%;text-align:center;}
-
-.admin-left{width:250px;margin-top:20px;overflow:hidden;}
-.admin-right{width:850px;margin-top:20px;overflow:hidden;}
-
+.header-nav li{\width:33.333%;text-align:center;float:left;}
+.header-nav li.active a{background:#ddd;}
 
 .btn-style{display:inline-block;width:80px;height:30px;text-align:center;color:#fff;border:1px solid #ddd;}
 
@@ -37,3 +34,13 @@ ul{padding-left:0;}
 
 .concel-btn{background:#999;float:left;color:#fff;}
 .sure-btn{background:#00D289;float:right;color:#fff;}
+
+.admin-left{}
+.admin-left li{border-bottom:1px solid #ddd;}
+.admin-left li.active a{background:#fff;color:#009933 !important;}
+.admin-left a{color:#333;}
+
+.count-badge{
+    margin-left:10px;
+    text-indent:0;
+}

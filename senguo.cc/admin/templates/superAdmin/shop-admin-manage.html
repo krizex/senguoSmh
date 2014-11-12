@@ -20,31 +20,34 @@
     {% set common_active='active'%}
 {% end %}
 
-<div class="admin-manage-left admin-left pull-left">
-    <ul class="nav nav-pills nav-stacked" role="tablist">
-        <li class="{{all_active}}"><a href="{{reverse_url('superShopAdminManageAll')}}">所有商家({{count['all']}})</a></li>
-        <li class="{{using_active}}"><a href="{{reverse_url('superShopAdminManageUsing')}}">正在使用商家({{count['using']}})</a></li>
-        <li class="{{expire_active}}"><a href="{{reverse_url('superShopAdminManageExpire')}}">到期未续商家({{count['expire']}})</a></li>
-        <li class="{{common_active}}"><a href="{{reverse_url('superShopAdminManageCommon')}}">未付费商家({{count['common']}})</a></li>
-    </ul>
-</div>
-<div class="admin-manage-right admin-right pull-right">
-    <ul class="user-list w1 list-group item-list">
-        {% for admin in context["admins"]%}
-            <li class="row list-group-item">
-                <span class="col-lg-1 user-img">
-                    <img src="{{admin.accountinfo.headimgurl}}"/>
-                </span>
-                <span class="col-lg-10">{{admin.accountinfo.nickname}}</span>
-                <a class="col-lg-10" href="{{reverse_url('superShopAdminProfile',admin.id)}}">查看详情&rarr;</a>
-            </li>
-        {% end %}
-    </ul>
-    <nav>
-        <ul class="pager">
-            <li><a href="" id="PrePage">&larr; 上一页</a></li>
-            <li><a href="" id="NextPage">下一页&rarr;</a></li>
+
+<div class="row">
+    <div class="admin-manage-left  admin-left col-lg-3 col-md-4">
+        <ul class="nav nav-stacked" role="tablist">
+        <li class="{{all_active}}"><a href="{{reverse_url('superShopAdminManageAll')}}">所有商家<span class="badge count-badge">{{count['all']}}</span></a></li>
+        <li class="{{using_active}}"><a href="{{reverse_url('superShopAdminManageUsing')}}">正在使用商家<span class="badge count-badge">{{count['using']}}</span></a></li>
+        <li class="{{expire_active}}"><a href="{{reverse_url('superShopAdminManageExpire')}}">到期未续商家<span class="badge count-badge">{{count['expire']}}</span></a></li>
+        <li class="{{common_active}}"><a href="{{reverse_url('superShopAdminManageCommon')}}">未付费商家<span class="badge count-badge">{{count['common']}}</span></a></li>
         </ul>
-    </nav>
+    </div>
+    <div class="admin-manage-right col-lg-9 col-md-8 ">
+        <ul class="user-list w1 list-group item-list">
+            {% for admin in context["admins"]%}
+                <li class="row list-group-item">
+                    <span class="col-lg-1 user-img">
+                        <img src="{{admin.accountinfo.headimgurl}}"/>
+                    </span>
+                    <span class="col-lg-10">{{admin.accountinfo.nickname}}</span>
+                    <a class="col-lg-10" href="{{reverse_url('superShopAdminProfile',admin.id)}}">查看详情&rarr;</a>
+                </li>
+            {% end %}
+        </ul>
+        <nav>
+            <ul class="pager">
+                <li><a href="" id="PrePage">&larr; 上一页</a></li>
+                <li><a href="" id="NextPage">下一页&rarr;</a></li>
+            </ul>
+        </nav>
+    </div>
 </div>
 {% end %}
