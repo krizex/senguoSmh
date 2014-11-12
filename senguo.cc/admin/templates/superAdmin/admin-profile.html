@@ -2,15 +2,8 @@
 {% block content %}
 {% set admin=context['admin'] %}
 <div class="row">
-    <div class="admin-left pull-left col-lg-3 col-md-4">
-        <ul class="nav  nav-stacked" role="tablist">
-            <li class="active"><a href="{{reverse_url('superShopAdminManageAll')}}">所有商家（888）</a></li>
-            <li><a href="{{reverse_url('superShopAdminManageUsing')}}">正在使用商家（88888）</a></li>
-            <li><a href="{{reverse_url('superShopAdminManageExpire')}}">到期未续商家（88888）</a></li>
-            <li><a href="{{reverse_url('superShopAdminManageCommon')}}">未付费商家（88888）</a></li>
-        </ul>
-    </div>
-    <div class="admin-right pull-right col-lg-9 col-md-8">
+    <div class="col-md-2"></div>
+    <div class="admin-shop-right col-md-8 center-block">
         <h3 class="admin-title">商家个人信息</h3>
         <div class="admin-profile-detail">
             <ul>
