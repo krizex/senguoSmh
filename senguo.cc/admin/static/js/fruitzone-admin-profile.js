@@ -80,8 +80,6 @@ function infoEdit(evt){
                     else if(data=='2'){$('#userSex').text('女');}
                     evt.parents('li').find('.info-edit').hide();
                     $('#serSex').attr({'data-sex':data});
-                    console.log(data);
-                    alert('修改成功！');
                 }},
             function(){
                 alert('网络错误！');}

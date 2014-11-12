@@ -61,3 +61,8 @@ input{border:none;}
 .bottom-nav li a{color:#333;display:block;}
 .bottom-nav .active a{color:#00D289;font-weight:bold;}
 .proper-padding {padding: 8px 14px;}
+
+
+.undone-box{margin-top:20px;padding:20px 0;border-top:1px solid #ddd;border-bottom:1px solid #ddd;}
+
+.well p{font-size:1.4em;}
