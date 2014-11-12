@@ -16,26 +16,22 @@ $(document).ready(function(){
     $('.order-by-area').find('li').each(function(){$(this).on('click',function(){Filter($(this));});});
     $('.order-by-time').find('li').each(function(){$(this).on('click',function(){Filter($(this));});});
     $('#orderByFruit').on('click',function(){Filter($(this));});
-    $('.home-pagination').find('li').each(function(){$(this).on('click',function(){Filter($(this));});});
-
-    var pre=$('#PrePage');
-    var next=$('#NextPage');
-    var page=$.getUrlParam('page', 1);
-    var url=window.location.pathname;
-    if(page==1) pre.css({'background':'#ddd'});
-    if($('.shop-list').find('li').length<10)
-    {
-        next.addClass('hidden');
-    }
-    pre.on('click',function(){
-        if(page>1) {
-            page--;
-            pre.attr({'href': url + '?page=' + page});
+    var i=1;
+    if(i=1){$('#PrePage').parents('li').hide();}
+    if($('#homeShopList').find('li').length<20){$('#NextPage').parents('li').hide();}
+    $('#PrePage').on('click',function(){
+        if(i>1)
+        {
+            i=i-20;
+            $(this).attr({'data-code':i});
+            Filter($(this));
         }
+
     });
-    next.on('click',function(){
-        page++;
-        next.attr({'href':url+'?page='+page});
+    $('#NextPage').on('click',function(){
+            i=i+20;
+            $(this).attr({'data-code':i});
+            Filter($(this));
     });
 });
 
@@ -96,7 +92,7 @@ function Filter(evt){
     var city=evt.data('code');
     var service_area=evt.data('code');
     var live_month=evt.data('code');
-    var skip=evt.data('code');
+    var skip=evt.attr('data-code');
     var onsalefruit_ids=[];
     var fruit=$('.order-by-fruit').find('.active');
     for(var i=0;i<fruit.length;i++)
@@ -122,6 +118,7 @@ function Filter(evt){
         function(res){
             if(res.success) {
                 evt.parents('.order-by-list').hide();
+                $('.home-pagination').show();
                 $('#homeShopList').empty();
                 var shops = res.shops;
                 for (var shop in shops)

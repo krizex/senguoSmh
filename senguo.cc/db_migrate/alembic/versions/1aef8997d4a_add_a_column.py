@@ -15,7 +15,8 @@ import sqlalchemy as sa
 
 
 def upgrade():
-    op.drop_column('info', sa.Column('create_date_timestamp'))
-    op.add_column('info', sa.Column('create_date', sa.DateTime, default=sa.func.now()))
+    op.add_column('feedback', sa.Column('test', sa.Integer,default=1))
+
+
 def downgrade():
     op.drop_column('feedback', "test")

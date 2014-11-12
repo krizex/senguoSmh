@@ -71,7 +71,7 @@ class ShopAdminManage(SuperBaseHandler):
 
         admins = q.all()
         # admins 是models.ShopAdmin的实例的列表，具体属性可以去dal/models.py中看到
-        return self.render("superAdmin/shop-admin-manage.html", context=dict(admins = admins, count=count))
+        return self.render("superAdmin/shop-admin-manage.html", context=dict(admins = admins, count=count,sunpage='shopAadminManage',action=self._action))
     @tornado.web.authenticated
     def post(self):
         return self.send_error(404)
@@ -129,7 +129,7 @@ class ShopManage(SuperBaseHandler):
         
         shops = q.all()
         # shops 是models.Shop实例的列表
-        return self.render("superAdmin/shop-manage.html", context=dict(shops = shops))
+        return self.render("superAdmin/shop-manage.html", context=dict(shops = shops,subpage='shopManage',action=self._action))
 
     @tornado.web.authenticated
     @SuperBaseHandler.check_arguments("action")
@@ -207,8 +207,8 @@ class OrderManage(SuperBaseHandler):
         q_new = q_all.filter_by(have_read=False)
         q_processed = q_all.filter_by(have_read=True)
         # 被放弃或者还未付款的订单
-        q_aborted = self.session.query(models.SystemOrder).filter_by(
-            order_status != models.ORDER_STATUS.SUCCESS)
+        q_aborted = self.session.query(models.SystemOrder).filter(
+            models.SystemOrder.order_status != models.ORDER_STATUS.SUCCESS)
         count = {
             "all":q_all.count(),
             "new":q_new.count(),
@@ -235,7 +235,7 @@ class OrderManage(SuperBaseHandler):
         subpage = self._action
         
         return self.render("superAdmin/order-manage.html", context=dict(
-            orders = orders,subpage = subpage))
+            orders = orders,subpage = subpage,count=count))
 
     @tornado.web.authenticated
     @SuperBaseHandler.check_arguments("order_id:int", "system_username",
@@ -244,7 +244,7 @@ class OrderManage(SuperBaseHandler):
     def post(self):
         if self.args["action"] == "set_read":
             o = self.session.query(models.SystemOrder).\
-                filter_by(order_id=self.args["order_id"])
+                filter_by(order_id=self.args["order_id"]).one()
             if not o:
                 return self.send_fail(error_text="订单不存在！")
             o.set_read(self.session)

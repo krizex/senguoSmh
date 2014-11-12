@@ -1,15 +1,30 @@
 {% extends 'base.html' %}
-{% block head %}
-<script src="{{static_url('js/superadmin-shop-manage.js')}}"></script>
-{% end %}
+{% block title%}店铺管理{% end %}
+
 {% block content %}
+{% set action=context.get("action") %}
+
+{% set all_active = ""%}
+{% set applaying_active = ""%}
+{% set pass_active = ""%}
+{% set decline_active = ""%}
+
+{% if action == "all" %}
+    {% set all_active="active"%}
+{% elif action == "applying" %}
+    {% set applaying_active="active"%}
+{% elif action == "accepted" %}
+    {% set pass_active="active"%}
+{% else %}
+    {% set decline_active='active'%}
+{% end %}
 
 <div class="admin-shop-left admin-left pull-left">
-    <ul class="nav nav-pills nav-stacked" role="tablist">
-        <li class="active"><a href="{{reverse_url('superShopManageAll')}}">所有店铺（88888）</a></li>
-        <li><a href="{{reverse_url('superShopManageApplying')}}">正在申请接入店铺（88888）</a></li>
-        <li><a href="{{reverse_url('superShopManageAccepted')}}">已经通过申请店铺（88888）</a></li>
-        <li><a href="{{reverse_url('superShopManageDeclined')}}">已被拒绝店铺（88888）</a></li>
+    <ul class="nav nav-pills nav-stacked shop-manage-nav" role="tablist">
+        <li class="{{all_active}}"><a href="{{reverse_url('superShopManageAll')}}">所有店铺（88888）</a></li>
+        <li class="{{applaying_active}}"><a href="{{reverse_url('superShopManageApplying')}}">正在申请接入店铺（88888）</a></li>
+        <li class="{{pass_active}}"><a href="{{reverse_url('superShopManageAccepted')}}">已经通过申请店铺（88888）</a></li>
+        <li class="{{decline_active}}"><a href="{{reverse_url('superShopManageDeclined')}}">已被拒绝店铺（88888）</a></li>
     </ul>
 </div>
 <div class="admin-shop-right admin-right pull-right">
@@ -55,6 +70,10 @@
                     <span class="col-lg-2"> <strong>店铺简介： </strong></span>
                     <p class="col-lg-10">{{shop.shop_intro or '无'}}</p>
                 </div>
+                <div class="row hidden" id="declineReason">
+                    <span class="col-lg-2"> <strong>被拒理由： </strong></span>
+                    <p class="col-lg-10">{{shop.declined_reason}}</p>
+                </div>
                 <a href="{{reverse_url('superShopProfile',shop.id)}}">查看店铺详情&rarr;</a>
             </div>
         </li>
@@ -67,4 +86,5 @@
         </ul>
     </nav>
 </div>
+<script src="{{static_url('js/superadmin-shop-manage.js')}}"></script>
 {% end %}

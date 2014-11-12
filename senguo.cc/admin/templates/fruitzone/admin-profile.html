@@ -1,15 +1,13 @@
-{% extends base.html %}
-
+{% extends 'base.html' %}
+{% block title%}个人信息{% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/fruitzone-admin-profile.css')}}"/>
 {% end %}
 
 {% block content%}
-<header>
-    <div class="title-box2">
-        <a href="{{reverse_url('fruitzoneAdminHome')}}" class="return-btn"></a>
-        <span class="title">个人信息</span>
-    </div>
+<header class="title-box2">
+    <a href="{{reverse_url('fruitzoneAdminHome')}}" class="return-btn"></a>
+    <span class="title">个人信息</span>
 </header>
 <div class="user-info-detail ">
   <form action="/fruitzone/admin/profile" method="post">
@@ -39,7 +37,7 @@
                     <a href="javascript:;" class="nickname pull-right s1 editInfo" id="userNickname">{{current_user.accountinfo.realname}}</a>
                 </div>
                 <div class="info-edit" style="display:none;">
-                    <input type="text" class="edit-box" id="realnameEdit" value="{{current_user.accountinfo.realname or '请设置'}}"/>
+                    <input type="text" class="edit-box" id="realnameEdit" value="{{current_user.accountinfo.realname or ''}}" placeholder="请设置"/>
                     <div class="btn-box">
                         <a href="javascript:;" class="concel-btn">取消</a>
                         <a href="javascript:;" class="sure-btn"  data-action="edit_realname">确定</a>
@@ -52,7 +50,7 @@
                     <a href="javascript:;" class="pull-right editInfo" id="userWechat">{{current_user.accountinfo.wx_username}}</a>
                 </div>
                 <div class="info-edit" style="display:none;">
-                    <input type="text" class="edit-box" placeholder="微信号的提交有助于同行、供应商找到你" id="wechatEdit" value="{{current_user.accountinfo.wx_username or '请设置'}}"/>
+                    <input type="text" class="edit-box" placeholder="微信号的提交有助于同行、供应商找到你" id="wechatEdit" value="{{current_user.accountinfo.wx_username or ''}}"/>
                     <div class="btn-box">
                         <a href="javascript:;" class="concel-btn">取消</a>
                         <a href="javascript:;" class="sure-btn" data-action="edit_wx_username">确定</a>
@@ -71,7 +69,7 @@
                     <a href="javascript:;" class="pull-right s1 editInfo" id="userMail">{{current_user.accountinfo.email}}</a>
                 </div>
                 <div class="info-edit" style="display:none;">
-                    <input type="text" class="edit-box" id="mailEdit" value="{{current_user.accountinfo.email or '请设置'}}"/>
+                    <input type="text" class="edit-box" id="mailEdit" value="{{current_user.accountinfo.email or ''}}" placeholder="请设置"/>
                     <div class="btn-box">
                         <a href="javascript:;" class="concel-btn">取消</a>
                         <a href="javascript:;" class="sure-btn" data-action="edit_email">确定</a>
@@ -115,7 +113,7 @@
                     <a href="javascript:;"  class="pull-right editInfo" id="userIntro">{{current_user.briefintro}}</a>
                 </div>
                 <div class="info-edit" style="display:none;">
-                    <textarea type="text" class="edit-box" placeholder="{{current_user.briefintro or '输入一些个人说明，好多同行想认识你'}}" id="introEdit" value="{{current_user.briefintro or '请设置'}}"></textarea>
+                    <textarea type="text" class="edit-box" placeholder="{{current_user.briefintro or '输入一些个人说明，好多同行想认识你'}}" id="introEdit" value="{{current_user.briefintro  or ''}}"></textarea>
                     <div class="btn-box">
                         <a href="javascript:;" class="concel-btn">取消</a>
                         <a href="javascript:;" class="sure-btn" data-action="edit_intro">确定</a>
@@ -146,5 +144,6 @@
         </div>
     </div>
 </div>
+<script src="{{static_url('js/sha256.js')}}"></script>
 <script src="{{static_url('js/fruitzone-admin-profile.js')}}"></script>
 {% end %}

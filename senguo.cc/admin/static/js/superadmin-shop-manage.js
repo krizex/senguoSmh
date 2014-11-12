@@ -4,11 +4,14 @@ $(document).ready(function(){
     $('.passApply').on('click',function(){Pass($(this));});
     $('.shop-list-item').each(function(){
         var status=$(this).data('status');
-        if(status=='2'||status=='3')
+        if(status=='2')
             $(this).find('.btn-box').addClass('hidden');
+        else if(status=='3')
+            {
+                $(this).find('.btn-box').addClass('hidden');
+                $('#declineReason').removeClass('hidden');
+            }
     });
-
-
 });
 
 
@@ -42,6 +45,7 @@ function Reject(evt){
     var declined_reason=evt.siblings('.decline-reason').val().trim();
     var url='/super/shopManage/';
     var new_status=3;
+    if(!declined_reason){return alert('请输入拒绝理由！')}
     var args={
         action:action,
         shop_id:shop_id,

@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, func, ForeignKey, Column
-from sqlalchemy.types import String, Integer, Text, Boolean, Float, Date, DateTime, BigInteger
+from sqlalchemy.types import String, Integer, Text, Boolean, Float, Date, BigInteger, DateTime
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -694,6 +694,21 @@ class ChargeType(MapBase, _CommonApi):
     price = Column(Float, nullable=False)
     # 详细描述，如588/三个月
     description = Column(String(32), nullable=False)
+
+class AlembicTest(MapBase):
+    __tablename__ = "__alembictest__"
+
+    id = Column(Integer, primary_key=True, nullable=True)
+    text = Column(Integer)
+
+class _VerifyCode(MapBase):
+    __tablename__ = "__verify_code__"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    wx_id = Column(String(100), unique=True)
+    code = Column(Integer)
+    create_time = Column(DateTime, default=func.now())
+    count = Column(Integer)
 
 def init_db_data():
     MapBase.metadata.create_all()

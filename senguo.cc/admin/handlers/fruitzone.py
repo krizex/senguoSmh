@@ -22,7 +22,7 @@ class Home(AdminBaseHandler):
         fruit_types = []
         for f_t in self.session.query(models.FruitType).all():
             fruit_types.append(f_t.safe_props())
-        return self.render("fruitzone/home.html", context=dict(shops=shops, fruit_types=fruit_types, now=time.time()))
+        return self.render("fruitzone/home.html", context=dict(shops=shops, fruit_types=fruit_types, now=time.time(),subpage="home"))
     
     @AdminBaseHandler.check_arguments("action")
     def post(self):
@@ -37,6 +37,7 @@ class Home(AdminBaseHandler):
                                       "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids?:list")
     def handle_filter(self):
         # 按什么排序？暂时采用id排序
+        print(self.args)
         q = self.session.query(models.Shop).order_by(models.Shop.id)#.\
             #filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
         if "city" in self.args:
@@ -69,19 +70,24 @@ class Home(AdminBaseHandler):
     @AdminBaseHandler.check_arguments("q")
     def handle_search(self):
         q = self.session.query(models.Shop).order_by(models.Shop.id).\
-            filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"])),
-                   models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
+            filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"]))#,
+                   # models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED
+                   )
         shops = []
         for shop in q.all():
             shops.append(shop.safe_props())
         return self.send_success(shops=shops)
+
+class Community(AdminBaseHandler):
+    def get(self):
+       self.render("fruitzone/community.html",context=dict(subpage="cummunity"))
 
 class AdminHome(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self):
        # 模板中通过current_user获取当前admin的相关数据，
        # 具体可以查看models.ShopAdmin中的属性
-       self.render("fruitzone/admin-home.html")
+       self.render("fruitzone/admin-home.html",context=dict(subpage="adminHome"))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "feedback_text")

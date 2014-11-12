@@ -4,20 +4,11 @@ from sqlalchemy.types import String, Integer, DateTime
 from sqlalchemy import func, Column
 from tornado.escape import url_escape
 
-from dal.db_configs import MapBase, DBSession
+from dal.db_configs import DBSession
 from settings import content, account, password
 from xml.etree import ElementTree
+from dal.models import _VerifyCode
 
-class _VerifyCode(MapBase):
-    __tablename__ = "__verify_code__"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    wx_id = Column(String(100), unique=True)
-    code = Column(Integer)
-    create_time = Column(DateTime, default=func.now())
-    count = Column(Integer)
-
-MapBase.metadata.create_all()
 
 def gen_msg_token(wx_id, phone):
     s = DBSession()
