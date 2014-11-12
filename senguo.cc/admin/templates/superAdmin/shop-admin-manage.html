@@ -32,10 +32,14 @@
         <ul class="user-list w1 list-group">
             {% for admin in context["admins"]%}
                 <li class="row list-group-item">
-                    <span class="col-lg-1 user-img">
+                    <span class="col-lg-2 user-img">
                         <img src="{{admin.accountinfo.headimgurl}}"/>
                     </span>
-                    <span class="col-lg-10">{{admin.accountinfo.nickname}}</span>
+                    <span class="col-lg-3"><strong>昵称：</strong>{{admin.accountinfo.nickname}}</span>
+                    <span class="col-lg-3"><strong>微信号：</strong>{{admin.accountinfo.wx_username or '无'}}</span>
+                    <span class="col-lg-3"><strong>手机号：</strong>{{admin.accountinfo.phone or '无'}}</span>
+                    <span class="col-lg-3"><strong>邮箱：</strong>{{admin.accountinfo.email or '无'}}</span>
+                    <span class="col-lg-4"><strong>到期时间：</strong>{{handler.timestamp_to_str(admin.expire_time)}}</span>
                     <a class="col-lg-10" href="{{reverse_url('superShopAdminProfile',admin.id)}}">查看详情&rarr;</a>
                 </li>
             {% end %}

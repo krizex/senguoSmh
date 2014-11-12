@@ -68,6 +68,12 @@
                             </span>
                         </p>
                         <p>
+                             <span class="title">
+                                <strong>到期时间：</strong>
+                                {{handler.timestamp_to_str(orders.admin.expire_time)}}
+                            </span>
+                        </p>
+                        <p>
                             <a href="{{reverse_url('superShopAdminProfile',orders.admin.id)}}">查看详情&rarr;</a>
                         </p>
                     </div>
@@ -88,12 +94,6 @@
                             <span class="title">
                                 <strong>付款金额：</strong>
                                 {{orders.charge_price}}
-                            </span>
-                        </p>
-                        <p>
-                             <span class="title">
-                                <strong>到期时间：</strong>
-
                             </span>
                         </p>
                         <p>

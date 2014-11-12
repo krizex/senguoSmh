@@ -1,62 +1,93 @@
 {% extends 'base.html' %}
 {% block content %}
 {% set admin=context['admin'] %}
-<div class="admin-left pull-left">
-    <ul class="nav nav-pills nav-stacked" role="tablist">
-        <li class="active"><a href="{{reverse_url('superShopAdminManageAll')}}">所有商家（888）</a></li>
-        <li><a href="{{reverse_url('superShopAdminManageUsing')}}">正在使用商家（88888）</a></li>
-        <li><a href="{{reverse_url('superShopAdminManageExpire')}}">到期未续商家（88888）</a></li>
-        <li><a href="{{reverse_url('superShopAdminManageCommon')}}">未付费商家（88888）</a></li>
-    </ul>
-</div>
-<div class="admin-right pull-right">
-    <h3 class="admin-title">商家个人信息</h3>
-    <div class="admin-profile-detail">
-        <ul>
-            <li>
-                <span class="title pull-left">头像</span>
-                <img src="{{admin.accountinfo.headimgurl}}" class="user-img pull-right"/>
-            </li>
-            <li>
-                <span class="title pull-left">昵称</span>
-                <span class="pull-right">{{admin.accountinfo.nickname or '无'}}</span>
-            </li>
-            <li>
-                <span class="title pull-left">真实姓名</span>
-                <span class="pull-right">{{admin.accountinfo.realname or '无'}}</span>
-            </li>
-            <li>
-                <span class="title pull-left">微信号</span>
-                <span class="pull-right">{{admin.accountinfo.wx_username or '无'}}</span>
-            </li>
-            <li>
-                <div class="info-con">
-                    <span class="title pull-left">手机号</span>
-                    <span class="pull-right">{{admin.accountinfo.phone or '无'}}</span>
-                </div>
-            </li>
-            <li>
-                <span class="title pull-left">个人邮箱</span>
-                <span class="pull-right">{{admin.accountinfo.email or '无'}}</span>
-            </li>
-            <li>
-                <span class="title pull-left">性别</span>
-                <span class="pull-right admin-sex" data-sex="{{admin.accountinfo.sex}}"></span>
-            </li>
-            <li>
-                <span class="title pull-left">出生年月</span>
-                <span class="pull-right">{{context['birthday'] or '无'}}</span>
-            </li>
-            <li>
-                <span class="title pull-left">个人说明</span>
-                <span class="pull-right">{{admin.briefintro or '无'}}</span>
-            </li>
+<div class="row">
+    <div class="admin-left pull-left col-lg-3 col-md-4">
+        <ul class="nav  nav-stacked" role="tablist">
+            <li class="active"><a href="{{reverse_url('superShopAdminManageAll')}}">所有商家（888）</a></li>
+            <li><a href="{{reverse_url('superShopAdminManageUsing')}}">正在使用商家（88888）</a></li>
+            <li><a href="{{reverse_url('superShopAdminManageExpire')}}">到期未续商家（88888）</a></li>
+            <li><a href="{{reverse_url('superShopAdminManageCommon')}}">未付费商家（88888）</a></li>
         </ul>
     </div>
-    <nav>
-        <ul class="pager">
-            <li><a href="javascript:;" onclick="history.back(-1)">&larr; 返回</a></li>
-        </ul>
-    </nav>
+    <div class="admin-right pull-right col-lg-9 col-md-8">
+        <h3 class="admin-title">商家个人信息</h3>
+        <div class="admin-profile-detail">
+            <ul>
+                <li>
+                    <span class="title pull-left">头像</span>
+                    <img src="{{admin.accountinfo.headimgurl}}" class="user-img pull-right"/>
+                </li>
+                <li>
+                    <span class="title pull-left">昵称</span>
+                    <span class="pull-right">{{admin.accountinfo.nickname or '无'}}</span>
+                </li>
+                <li>
+                    <span class="title pull-left">真实姓名</span>
+                    <span class="pull-right">{{admin.accountinfo.realname or '无'}}</span>
+                </li>
+                <li>
+                    <span class="title pull-left">微信号</span>
+                    <span class="pull-right">{{admin.accountinfo.wx_username or '无'}}</span>
+                </li>
+                <li>
+                    <div class="info-con">
+                        <span class="title pull-left">手机号</span>
+                        <span class="pull-right">{{admin.accountinfo.phone or '无'}}</span>
+                    </div>
+                </li>
+                <li>
+                    <span class="title pull-left">个人邮箱</span>
+                    <span class="pull-right">{{admin.accountinfo.email or '无'}}</span>
+                </li>
+                <li>
+                    <span class="title pull-left">性别</span>
+                    <span class="pull-right admin-sex" data-sex="{{admin.accountinfo.sex}}"></span>
+                </li>
+                <li>
+                    <span class="title pull-left">出生年月</span>
+                    <span class="pull-right">{{context['birthday'] or '无'}}</span>
+                </li>
+                <li>
+                    <span class="title pull-left">个人说明</span>
+                    <span class="pull-right">{{admin.briefintro or '无'}}</span>
+                </li>
+                <li>
+                    <span class="title pull-left">是否接入系统</span>
+                    <span class="pull-right" data-if="{{admin.privileges}}" id="ifHave"></span>
+                </li>
+                <li>
+                    <span class="title pull-left">到期时间</span>
+                    <span class="pull-right">{{handler.timestamp_to_str(admin.expire_time)}}</span>
+                </li>
+                <li>
+                    <span class="title pull-left">商城系统用户名</span>
+                    <span class="pull-right">{{admin.system_username or '无'}}</span>
+                </li>
+                <li>
+                    <span class="title pull-left">商城系统链接</span>
+                    <span class="pull-right">{{admin.system_market_url or '无'}}</span>
+                </li>
+            </ul>
+        </div>
+        <div class="profile-list">
+            <strong class="title">店铺列表</strong>
+            <ul class="row">
+            {% for shop in admin.shops %}
+                <li class="col-lg-3">
+                    <a href="{{reverse_url('superShopProfile',shop.id)}}">
+                         <img src="{{static_url('images/cry.gif')}}"/>
+                        <p>{{shop.shop_name}}</p>
+                    </a>
+                </li>
+            {% end %}
+            </ul>
+        </div>
+        <nav>
+            <ul class="pager">
+                <li><a href="javascript:;" onclick="history.back(-1)">&larr; 返回</a></li>
+            </ul>
+        </nav>
+    </div>
 </div>
 {% end %}
