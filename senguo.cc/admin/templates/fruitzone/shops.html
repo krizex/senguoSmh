@@ -26,7 +26,7 @@
         {% if context['shops']%}
             {% for shops in context['shops']%}
             <li>
-                <a href="{{reverse_url('fruitzoneAdminShop',shops.id)}}">
+                <a href="{{reverse_url('fruitzoneShop',shops.id)}}">
                     <img src="{{static_url('images/anoa-1-md.gif')}}"/>
                     <p>{{shops.shop_name}}</p>
                 </a>

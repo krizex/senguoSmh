@@ -50,6 +50,7 @@
             $(this).find('input').attr({'checked':true});
             $(this).siblings('.list-group-item').find('input').attr({'checked':false});
         });
+        $('.list-group-item').last().addClass('active');
     });
 </script>
 {%end%}

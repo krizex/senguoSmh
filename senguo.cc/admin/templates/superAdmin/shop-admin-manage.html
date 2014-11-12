@@ -20,8 +20,8 @@
 {% end %}
 
 <div class="row">
-    <div class="admin-manage-left  col-lg-3 col-md-4">
-        <ul class="nav nav-pills nav-stacked" role="tablist">
+    <div class="admin-manage-left  admin-left col-lg-3 col-md-4">
+        <ul class="nav nav-stacked" role="tablist">
             <li class="{{all_active}}"><a href="{{reverse_url('superShopAdminManageAll')}}">所有商家（）</a></li>
             <li class="{{using_active}}"><a href="{{reverse_url('superShopAdminManageUsing')}}">正在使用商家（88888）</a></li>
             <li class="{{expire_active}}"><a href="{{reverse_url('superShopAdminManageExpire')}}">到期未续商家（88888）</a></li>

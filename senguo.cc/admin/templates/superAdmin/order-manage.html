@@ -24,8 +24,8 @@
 
 {% set count =context['count']%}
 <div class="row">
-    <div class="admin-manage-left col-lg-3 col-md-4">
-        <ul class="nav nav-pills nav-stacked" role="tablist">
+    <div class="admin-manage-left admin-left col-lg-3 col-md-4">
+        <ul class="nav  nav-stacked" role="tablist">
             <li class="{{all_active}}"><a href="{{reverse_url('superOrderManageAll')}}">全部订单（{{count["all"]}}）</a></li>
             <li class="{{new_active}}"><a href="{{reverse_url('superOrderManageNew')}}">新订单（{{count["new"]}}）</a></li>
             <li class="{{process_active}}"><a href="{{reverse_url('superOrderManageProcessed')}}">已处理订单（{{count["processed"]}}）</a></li>
@@ -33,7 +33,6 @@
         </ul>
     </div>
     <div class="admin-manage-right col-lg-9 col-md-8">
-        <h3 class="admin-title">订单信息</h3>
         <div class="orders-list">
             <ul class="list-group">
                 {% for orders in context['orders']%}

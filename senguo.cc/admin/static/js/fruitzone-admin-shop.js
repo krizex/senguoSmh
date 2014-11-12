@@ -17,8 +17,12 @@ $(document).ready(function(){
        if(focusLink==''||focusLink=='None')
            $('#focusLink').attr({'href':"javascript:;"})
     });
-    console.log(focusLink);
+
+    $('#shareTo').on('click',function(){
+        alert('点击右上角分享按钮分享到朋友圈！');
+    });
 });
+
 
 function Remember(sell1,sell2){
     for(var i= 0;i<sell1.length;i++)
