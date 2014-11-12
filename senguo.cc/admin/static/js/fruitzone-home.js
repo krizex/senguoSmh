@@ -71,6 +71,7 @@ function Search(evt){
                     var cittext;
                     if(city!=province){cittext=cityArea(province,city);}
                     else{cittext=''}
+                    if(!wxusername){wxusername='无'}
                     var $list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-left"><p><span class="shop-name w1 pull-left"></span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"></em><em data="'+city+'" id="filterCity"></em></span></p><p>运营时间：<span class="live-time"></span>月</p><p><span class="shop-owner w1 pull-left">负责人：</span><span class="w2 wechat-code pull-left"></span></p></div></a></li>');
                     $list.find(".shop-name").text(shopname);
                     $list.find("#filterProvince").text(protext);
