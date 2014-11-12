@@ -47,8 +47,11 @@
 <script>
     $(document).ready(function(){
         $('.list-group-item').on('click',function(){
-            $(this).find('input').attr({'checked':true});
-            $(this).siblings('.list-group-item').find('input').attr({'checked':false});
+            var elem = $(this).find('input')[0];
+            elem.checked = true;
+            if (console){
+               console.log("now checked to ", elem.value);
+            }
         });
         $('.list-group-item').last().addClass('active');
     });
