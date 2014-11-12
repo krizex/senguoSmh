@@ -428,9 +428,22 @@ class ShopAdmin(MapBase, _AccountApi):
             o = session.query(SystemOrder).filter_by(order_id=order_id).one()
         except NoResultFound:
             return None
-
+        t_now = int(time.time())
+        # TODO 改成事物性处理，不用update来实现
+        if o.order_status == ORDER_STATUS.SUCCESS:
+            return o
+        # 更新订单状态
         o.update(session, order_status=ORDER_STATUS.SUCCESS, ali_trade_no=ali_trade_no)
-        self.update(session, role=SHOPADMIN_ROLE_TYPE.SYSTEM_USER)
+
+        if self.role != SHOPADMIN_ROLE_TYPE.SYSTEM_USER:
+            self.role = SHOPADMIN_ROLE_TYPE.SYSTEM_USER
+        # 设置过期时间
+        if t_now > self.expire_time: 
+            self.expire_time = t_now+o.charge_month*30*24*3600
+        else:
+            self.expire_time = self.expire_time + o.charge_month*30*24*3600
+        
+        session.commit()
         return o
     
 
