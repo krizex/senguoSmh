@@ -4,7 +4,6 @@ ul.system-purchase-nav li a{color: #000;font-size:1.4em;}
 ul.system-purchase-nav li.active a{color: #00D289;}
 .system-purchase-detail{padding-left: 15px;padding-right: 15px;font-size:1.4em;}
 .proper-padding {padding: 8px 14px;}
-.list-group .list-group-item{overflow:hidden;}
-.list-group .list-group-item input{position:absolute;width:100%;height:100%;top:0;left:0;opacity:0.2;margin-left:4px;z-index:100; display:block;}
-.list-group .list-group-item.active{background:#fff;color:#00D289;border-color:#fff;border-left-color:#00D289;}
-.list-group .list-group-item:hover{background:#ddd;border-color:#ddd;}
+.list-group .list-group-item{overflow:hidden;border-color:#ddd;}
+.list-group .list-group-item input{position:absolute;width:100%;height:100%;top:0;left:0;opacity:0;margin-left:4px;z-index:-100; display:block;}
+.list-group .list-group-item.active{background:#fff;color:#00D289;border-color:#ddd;border-left-color:#00D289;}
