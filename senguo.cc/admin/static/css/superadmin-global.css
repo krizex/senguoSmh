@@ -19,14 +19,11 @@ ul{padding-left:0;}
 .btn-red{background:#FF0000;}
 .btn-green{background:#009933;}
 
-.header-nav{}
+.header-nav{margin-bottom:20px;}
 .header-nav .nav{}
 .header-nav a{font-weight:bold;color:#333;}
 .header-nav li{\width:33%;text-align:center;}
-
-.admin-left{width:250px;margin-top:20px;overflow:hidden;}
-.admin-right{width:850px;margin-top:20px;overflow:hidden;}
-
+.header-nav li.active a{background:#fff;color:#00D289;}
 
 .btn-style{display:inline-block;width:80px;height:30px;text-align:center;color:#fff;border:1px solid #ddd;}
 

@@ -19,72 +19,74 @@
     {% set decline_active='active'%}
 {% end %}
 
-<div class="admin-shop-left admin-left pull-left">
-    <ul class="nav nav-pills nav-stacked shop-manage-nav" role="tablist">
-        <li class="{{all_active}}"><a href="{{reverse_url('superShopManageAll')}}">所有店铺（88888）</a></li>
-        <li class="{{applaying_active}}"><a href="{{reverse_url('superShopManageApplying')}}">正在申请接入店铺（88888）</a></li>
-        <li class="{{pass_active}}"><a href="{{reverse_url('superShopManageAccepted')}}">已经通过申请店铺（88888）</a></li>
-        <li class="{{decline_active}}"><a href="{{reverse_url('superShopManageDeclined')}}">已被拒绝店铺（88888）</a></li>
-    </ul>
-</div>
-<div class="admin-shop-right admin-right pull-right">
-    <ul class="shop-list">
-    {% for shop in context["shops"]%}
-        <li class="row shop-list-item" data-shopid="{{shop.id}}" data-status="{{shop.shop_status}}">
-            <div class="show-info">
-                <span class="col-lg-2 shop-img">
-                    <img src="{{shop.admin.accountinfo.headimgurl}}"/>
-                </span>
-                <div class="col-lg-3">
-                    <p>{{shop.shop_name}}</p>
-                    <p>{{shop.admin.accountinfo.nickname}}</p>
-                </div>
-                <div class="col-lg-3">{{handler.code_to_text("shop_city",shop.shop_city)}}</div>
-                <div class="col-lg-2 btn-box">
-                    <button type="button" class="btn-style btn-green passApply">通过</button>
-                </div>
-                <div class="col-lg-2 btn-box">
-                    <button type="button" class="btn-style btn-red rejectApply">拒绝</button>
-                    <div class="modal fade reject-box" id="rejectBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-body">
-                                    <textarea placeholder="输入你的拒绝理由" class="decline-reason"></textarea>
-                                    <button type="text" class="btn-style btn-green send-btn rejectSend">发送</button>
+<div class="row">
+    <div class="admin-shop-left  col-lg-3 col-md-4">
+        <ul class="nav nav-pills nav-stacked shop-manage-nav" role="tablist">
+            <li class="{{all_active}}"><a href="{{reverse_url('superShopManageAll')}}">所有店铺（88888）</a></li>
+            <li class="{{applaying_active}}"><a href="{{reverse_url('superShopManageApplying')}}">正在申请接入店铺（88888）</a></li>
+            <li class="{{pass_active}}"><a href="{{reverse_url('superShopManageAccepted')}}">已经通过申请店铺（88888）</a></li>
+            <li class="{{decline_active}}"><a href="{{reverse_url('superShopManageDeclined')}}">已被拒绝店铺（88888）</a></li>
+        </ul>
+    </div>
+    <div class="admin-shop-right  col-lg-9 col-md-8">
+        <ul class="shop-list">
+        {% for shop in context["shops"]%}
+            <li class="row shop-list-item" data-shopid="{{shop.id}}" data-status="{{shop.shop_status}}">
+                <div class="show-info">
+                    <span class="col-lg-2 shop-img">
+                        <img src="{{shop.admin.accountinfo.headimgurl}}"/>
+                    </span>
+                    <div class="col-lg-3">
+                        <p>{{shop.shop_name}}</p>
+                        <p>{{shop.admin.accountinfo.nickname}}</p>
+                    </div>
+                    <div class="col-lg-3">{{handler.code_to_text("shop_city",shop.shop_city)}}</div>
+                    <div class="col-lg-2 btn-box">
+                        <button type="button" class="btn-style btn-green passApply">通过</button>
+                    </div>
+                    <div class="col-lg-2 btn-box">
+                        <button type="button" class="btn-style btn-red rejectApply">拒绝</button>
+                        <div class="modal fade reject-box" id="rejectBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <textarea placeholder="输入你的拒绝理由" class="decline-reason"></textarea>
+                                        <button type="text" class="btn-style btn-green send-btn rejectSend">发送</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="hide-info">
-                <div class="row">
-                    <span class="col-lg-6">
-                        <strong>服务区域：</strong>{{handler.code_to_text("service_area",shop.shop_service_area)}}
-                    </span>
-                    <span class="col-lg-6">
-                       <strong>店面： </strong><span class="have-entity" data-real="{{shop.have_offline_entity}}"></span>
-                    </span>
+                <div class="hide-info">
+                    <div class="row">
+                        <span class="col-lg-6">
+                            <strong>服务区域：</strong>{{handler.code_to_text("service_area",shop.shop_service_area)}}
+                        </span>
+                        <span class="col-lg-6">
+                           <strong>店面： </strong><span class="have-entity" data-real="{{shop.have_offline_entity}}"></span>
+                        </span>
+                    </div>
+                    <div class="row">
+                        <span class="col-lg-2"> <strong>店铺简介： </strong></span>
+                        <p class="col-lg-10">{{shop.shop_intro or '无'}}</p>
+                    </div>
+                    <div class="row hidden" id="declineReason">
+                        <span class="col-lg-2"> <strong>被拒理由： </strong></span>
+                        <p class="col-lg-10">{{shop.declined_reason}}</p>
+                    </div>
+                    <a href="{{reverse_url('superShopProfile',shop.id)}}">查看店铺详情&rarr;</a>
                 </div>
-                <div class="row">
-                    <span class="col-lg-2"> <strong>店铺简介： </strong></span>
-                    <p class="col-lg-10">{{shop.shop_intro or '无'}}</p>
-                </div>
-                <div class="row hidden" id="declineReason">
-                    <span class="col-lg-2"> <strong>被拒理由： </strong></span>
-                    <p class="col-lg-10">{{shop.declined_reason}}</p>
-                </div>
-                <a href="{{reverse_url('superShopProfile',shop.id)}}">查看店铺详情&rarr;</a>
-            </div>
-        </li>
-    {% end %}
-    </ul>
-    <nav>
-        <ul class="pager">
-            <li><a href="" id="PrePage">&larr; 上一页</a></li>
-            <li><a href="" id="NextPage">下一页&rarr;</a></li>
+            </li>
+        {% end %}
         </ul>
-    </nav>
+        <nav>
+            <ul class="pager">
+                <li><a href="" id="PrePage">&larr; 上一页</a></li>
+                <li><a href="" id="NextPage">下一页&rarr;</a></li>
+            </ul>
+        </nav>
+    </div>
 </div>
 <script src="{{static_url('js/superadmin-shop-manage.js')}}"></script>
 {% end %}
