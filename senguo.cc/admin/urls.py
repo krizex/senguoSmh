@@ -102,6 +102,8 @@ handlers = [
 
     (r"/fruitzone/community", handlers.fruitzone.Community, {}, "fruitzoneCommunity"),
 
+    (r"/fruitzone/infowall", handlers.fruitzone.InfoWall, {}, "fruitzoneInfoWall"),
+
     (r"/fruitzone/shop/(\d+)", handlers.fruitzone.Shop, {}, "fruitzoneShop"),
 
     (r"/fruitzone/admin/shops", handlers.fruitzone.AdminShops, {}, "fuirzoneAdminShops"),

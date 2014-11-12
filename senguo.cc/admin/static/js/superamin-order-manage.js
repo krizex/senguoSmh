@@ -1,5 +1,10 @@
 $(document).ready(function(){
-    $('.accountSet').on('click',function(){Account($(this));})
+    $('.setAccount').each(function(){
+        $(this).on('click',function(){
+            $(this).parents('li').find('.set-box-item').modal('show');
+        });
+    });
+    $('.accountSet').on('click',function(){Account($(this));});
 });
 
 function Account(evt){
