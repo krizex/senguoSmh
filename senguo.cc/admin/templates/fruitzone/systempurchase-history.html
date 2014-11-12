@@ -11,7 +11,7 @@
 {% end %}
 
 {% for order in context["orders"]%}
-<ul class="list-group order-info proper-padding" id="{{order.order_id}}">
+<ul class="list-group order-info" id="{{order.order_id}}">
   <li class="list-group-item">
     <label class="pull-left">订单编号</label>
     <span class="pull-right">{{order.order_id}}</span>

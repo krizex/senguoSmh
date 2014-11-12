@@ -369,7 +369,7 @@ class SystemPurchase(AdminBaseHandler):
                     self.reverse_url("fruitzoneSystemPurchaseSystemAccount"))
             else:
                 return self.redirect(
-                    self.reverse_url("fruitzoneSystemPurchaseSystemCharge"))
+                    self.reverse_url("fruitzoneSystemPurchaseChargeTypes"))
         elif self._action == "chargeTypes":
             charge_types = self.session.query(models.ChargeType).\
                            order_by(models.ChargeType.id).all()

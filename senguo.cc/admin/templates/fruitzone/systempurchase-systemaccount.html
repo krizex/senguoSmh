@@ -11,21 +11,18 @@
 <h4>账户详情</h4>
 {% if current_user.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER%}
   {% if current_user.system_username%}
-  <ul class="list-group proper-padding">
+  <ul class="list-group">
     <li class="list-group-item">
-      <label class="pull-left">商城后台登录网址</label>
-      <span class="pull-right"><a href="http://open.wexinfruit.com/backstage">http://open.wexinfruit.com/backstage</a></span>
-      <div style="clear:both"></div>
+      <label class="">商城后台登录网址</label><br/>
+      <span class=""><a href="http://open.wexinfruit.com/backstage">http://open.wexinfruit.com/backstage</a></span>
     </li>
     <li class="list-group-item">
-      <label class="pull-left">系统登录用户名</label>
-      <span class="pull-right">{{current_user.system_username}}</span>
-      <div style="clear:both"></div>
+      <label class="">系统登录用户名</label><br />
+      <span class="">{{current_user.system_username}}</span>
     </li>
     <li class="list-group-item">
-      <label class="pull-left">商铺地址</label>
-      <a class="pull-right" href="{{current_user.system_market_url}}">{{current_user.system_market_url}}</a>
-      <div style="clear:both"></div>
+      <label class="">商铺地址</label><br />
+      <a class="" href="{{current_user.system_market_url}}">{{current_user.system_market_url}}</a>
     </li>
   </ul>
   <p class="bg-info proper-padding">您的账户密码客服已经发送到您的邮箱或者通过其他方式联系到了您，请注意查收。如果有问题请联系：<a href="mailto:wolf@senguo.cc">wolf@senguo.cc</a></p>

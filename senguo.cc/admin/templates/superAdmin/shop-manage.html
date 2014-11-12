@@ -3,6 +3,7 @@
 
 {% block content %}
 {% set action=context.get("action") %}
+{% set count=context["count"]%}
 
 {% set all_active = ""%}
 {% set applaying_active = ""%}
@@ -21,14 +22,14 @@
 
 <div class="admin-shop-left admin-left pull-left">
     <ul class="nav nav-pills nav-stacked shop-manage-nav" role="tablist">
-        <li class="{{all_active}}"><a href="{{reverse_url('superShopManageAll')}}">所有店铺（88888）</a></li>
-        <li class="{{applaying_active}}"><a href="{{reverse_url('superShopManageApplying')}}">正在申请接入店铺（88888）</a></li>
-        <li class="{{pass_active}}"><a href="{{reverse_url('superShopManageAccepted')}}">已经通过申请店铺（88888）</a></li>
-        <li class="{{decline_active}}"><a href="{{reverse_url('superShopManageDeclined')}}">已被拒绝店铺（88888）</a></li>
+        <li class="{{all_active}}"><a href="{{reverse_url('superShopManageAll')}}">所有店铺({{count['all']}})</a></li>
+        <li class="{{applaying_active}}"><a href="{{reverse_url('superShopManageApplying')}}">正在申请接入店铺({{count['applying']}})</a></li>
+        <li class="{{pass_active}}"><a href="{{reverse_url('superShopManageAccepted')}}">已经通过申请店铺({{count['accepted']}})</a></li>
+        <li class="{{decline_active}}"><a href="{{reverse_url('superShopManageDeclined')}}">已被拒绝店铺({{count['declined']}})</a></li>
     </ul>
 </div>
 <div class="admin-shop-right admin-right pull-right">
-    <ul class="shop-list">
+    <ul class="shop-list item-list">
     {% for shop in context["shops"]%}
         <li class="row shop-list-item" data-shopid="{{shop.id}}" data-status="{{shop.shop_status}}">
             <div class="show-info">

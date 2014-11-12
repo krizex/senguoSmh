@@ -39,7 +39,7 @@ class Access(SuperBaseHandler):
 class ShopAdminManage(SuperBaseHandler):
     """商家管理，基本上是信息展示"""
 
-    _page_count = 10
+    _page_count = 20
 
     def initialize(self, action):
         self._action = action
@@ -49,21 +49,28 @@ class ShopAdminManage(SuperBaseHandler):
     def get(self):
         offset = (self.args.get("page", 1)-1) * self._page_count
         q = self.session.query(models.ShopAdmin)
-        count = q.count()
+        q_all = q
         t = int(time.time())
+        q_using = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER,
+                         models.ShopAdmin.expire_time > t)
+        q_expire = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER,
+                         models.ShopAdmin.expire_time <= t)
+        q_common = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SHOP_OWNER)
+        count = {
+            "all":q.count(),
+            "using":q_using.count(),
+            "expire":q_expire.count(),
+            "common":q_common.count()
+            }
+
         if self._action == "all":
             pass
         elif self._action == "using":
-            q = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER,
-                         models.ShopAdmin.expire_time > t)
-            count = q.count()
+            q = q_using
         elif self._action == "expire":
-            q = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER,
-                         models.ShopAdmin.expire_time <= t)
-            count = q.count()
+            q = q_expire
         elif self._action == "common":
-            q = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SHOP_OWNER)
-            count = q.count()
+            q = q_common
         else:
             return self.send_error(404)
         # 排序规则id, offset 和 limit
@@ -104,7 +111,7 @@ class ShopProfile(SuperBaseHandler):
 
 
 class ShopManage(SuperBaseHandler):
-    _page_count = 10
+    _page_count = 20
     
     def initialize(self, action):
         self._action = action
@@ -114,14 +121,24 @@ class ShopManage(SuperBaseHandler):
     def get(self):
         offset = (self.args.get("page", 1) - 1) * self._page_count
         q = self.session.query(models.Shop)
+        q_all = q
+        q_applying = q.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
+        q_accepted = q.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
+        q_declined = q.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
+        count = {
+            "all":q_all.count(),
+            "applying":q_applying.count(),
+            "accepted":q_accepted.count(),
+            "declined":q_declined.count()
+            }
         if self._action == "all":
             pass
         elif self._action == "applying":
-            q = q.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
+            q = q_applying
         elif self._action == "accepted":
-            q = q.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
+            q = q_accepted
         elif self._action == "declined":
-            q = q.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
+            q = q_declined
         else:
             return self.send_error(404)
         # 排序规则id, offset 和 limit
@@ -129,7 +146,9 @@ class ShopManage(SuperBaseHandler):
         
         shops = q.all()
         # shops 是models.Shop实例的列表
-        return self.render("superAdmin/shop-manage.html", context=dict(shops = shops,subpage='shopManage',action=self._action))
+        return self.render("superAdmin/shop-manage.html", context=dict(
+                shops = shops,subpage='shopManage',action=self._action,
+                count=count))
 
     @tornado.web.authenticated
     @SuperBaseHandler.check_arguments("action")
@@ -248,10 +267,12 @@ class OrderManage(SuperBaseHandler):
             if not o:
                 return self.send_fail(error_text="订单不存在！")
             o.set_read(self.session)
-            models.ShopAdmin.set_system_info(
+            u = models.ShopAdmin.set_system_info(
                 self.session, 
-                admin_id = o.admin.id,
+                admin_id = o.admin_id,
                 system_username=self.args["system_username"],
                 system_password=self.args["system_password"], 
                 system_code=self.args["system_code"])
+            if not u:
+                return self.send_fail(error_text="该用户不存在")
             return self.send_success()

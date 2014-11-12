@@ -39,7 +39,7 @@ handlers = [
     ## 店铺申请接入管理
     # 所有店铺
     (r"/super/shopManage/", handlers.superadmin.ShopManage, {
-        "action":"all"}, "superShopManage"),
+        "action":"applying"}, "superShopManage"),
     (r"/super/shopManage/all", handlers.superadmin.ShopManage, {
         "action":"all"}, "superShopManageAll"),
     # 正在申请接入店铺
@@ -54,7 +54,7 @@ handlers = [
     
     ## 商城购买订单
     (r"/super/orderManage/", handlers.superadmin.OrderManage, {
-        "action":"all"}, "superOrderManage"),
+        "action":"new"}, "superOrderManage"),
     (r"/super/orderManage/all", handlers.superadmin.OrderManage, {
         "action":"all"}, "superOrderManageAll"),
     (r"/super/orderManage/processed", handlers.superadmin.OrderManage, {

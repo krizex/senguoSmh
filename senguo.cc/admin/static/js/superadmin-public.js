@@ -19,7 +19,7 @@ $(document).ready(function(){
         {
             pre.addClass('hidden');
         }
-    if($('.shop-list').find('li').length<10)
+    if($('.item-list').find('li').length<20)
         {
             next.addClass('hidden');
         }

@@ -3,6 +3,7 @@
 
 {% block content %}
 {% set action=context.get("action") %}
+{% set count=context.get("count")%}
 
 {% set all_active = ""%}
 {% set using_active = ""%}
@@ -21,14 +22,14 @@
 
 <div class="admin-manage-left admin-left pull-left">
     <ul class="nav nav-pills nav-stacked" role="tablist">
-        <li class="{{all_active}}"><a href="{{reverse_url('superShopAdminManageAll')}}">所有商家（）</a></li>
-        <li class="{{using_active}}"><a href="{{reverse_url('superShopAdminManageUsing')}}">正在使用商家（88888）</a></li>
-        <li class="{{expire_active}}"><a href="{{reverse_url('superShopAdminManageExpire')}}">到期未续商家（88888）</a></li>
-        <li class="{{common_active}}"><a href="{{reverse_url('superShopAdminManageCommon')}}">未付费商家（88888）</a></li>
+        <li class="{{all_active}}"><a href="{{reverse_url('superShopAdminManageAll')}}">所有商家({{count['all']}})</a></li>
+        <li class="{{using_active}}"><a href="{{reverse_url('superShopAdminManageUsing')}}">正在使用商家({{count['using']}})</a></li>
+        <li class="{{expire_active}}"><a href="{{reverse_url('superShopAdminManageExpire')}}">到期未续商家({{count['expire']}})</a></li>
+        <li class="{{common_active}}"><a href="{{reverse_url('superShopAdminManageCommon')}}">未付费商家({{count['common']}})</a></li>
     </ul>
 </div>
 <div class="admin-manage-right admin-right pull-right">
-    <ul class="user-list w1 list-group">
+    <ul class="user-list w1 list-group item-list">
         {% for admin in context["admins"]%}
             <li class="row list-group-item">
                 <span class="col-lg-1 user-img">
