@@ -37,8 +37,8 @@ class Home(AdminBaseHandler):
                                       "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids?:list")
     def handle_filter(self):
         # 按什么排序？暂时采用id排序
-        q = self.session.query(models.Shop).order_by(models.Shop.id).\
-            filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
+        q = self.session.query(models.Shop).order_by(models.Shop.id)#.\
+            #filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
         if "city" in self.args:
             q = q.filter_by(shop_city=self.args["city"])
         if "service_area" in self.args:
