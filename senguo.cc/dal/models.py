@@ -477,6 +477,7 @@ class ShopAdmin(MapBase, _AccountApi):
         admin.system_username = system_username
         admin.system_password = system_password
         admin.system_market_url = "http://open.wexinfruit.com/market/"+system_code
+        session.commit()
         return admin
 
     def __repr__(self):
