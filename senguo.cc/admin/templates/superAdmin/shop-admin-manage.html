@@ -1,12 +1,30 @@
 {% extends 'base.html' %}
+{% block title%}商家管理{% end %}
 
 {% block content %}
+{% set action=context.get("action") %}
+
+{% set all_active = ""%}
+{% set using_active = ""%}
+{% set expire_active = ""%}
+{% set common_active = ""%}
+
+{% if action == "all" %}
+    {% set all_active="active"%}
+{% elif action == "using" %}
+    {% set using_active="active"%}
+{% elif action == "expire" %}
+    {% set expire_active="active"%}
+{% else %}
+    {% set common_active='active'%}
+{% end %}
+
 <div class="admin-manage-left admin-left pull-left">
     <ul class="nav nav-pills nav-stacked" role="tablist">
-        <li class="active"><a href="{{reverse_url('superShopAdminManageAll')}}">所有商家（）</a></li>
-        <li><a href="{{reverse_url('superShopAdminManageUsing')}}">正在使用商家（88888）</a></li>
-        <li><a href="{{reverse_url('superShopAdminManageExpire')}}">到期未续商家（88888）</a></li>
-        <li><a href="{{reverse_url('superShopAdminManageCommon')}}">未付费商家（88888）</a></li>
+        <li class="{{all_active}}"><a href="{{reverse_url('superShopAdminManageAll')}}">所有商家（）</a></li>
+        <li class="{{using_active}}"><a href="{{reverse_url('superShopAdminManageUsing')}}">正在使用商家（88888）</a></li>
+        <li class="{{expire_active}}"><a href="{{reverse_url('superShopAdminManageExpire')}}">到期未续商家（88888）</a></li>
+        <li class="{{common_active}}"><a href="{{reverse_url('superShopAdminManageCommon')}}">未付费商家（88888）</a></li>
     </ul>
 </div>
 <div class="admin-manage-right admin-right pull-right">

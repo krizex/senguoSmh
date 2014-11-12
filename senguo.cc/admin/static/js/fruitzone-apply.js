@@ -55,9 +55,9 @@ function Apply(evt){
         function(res){
             if(res.success)
             {
-                console.log(args);
-                window.location.href="/fruitzone/shop/applySuccess";
                 alert("申请成功！");
+                window.location.href="/fruitzone/shop/applySuccess";
+
             }
             else  alert(res.error_text);
         },

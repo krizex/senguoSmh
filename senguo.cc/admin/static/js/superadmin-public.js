@@ -15,7 +15,10 @@ $(document).ready(function(){
     var next=$('#NextPage');
     var page=$.getUrlParam('page', 1);
     var url=window.location.pathname;
-    if(page==1) pre.css({'background':'#ddd'});
+    if(page==1)
+        {
+            pre.addClass('hidden');
+        }
     if($('.shop-list').find('li').length<10)
         {
             next.addClass('hidden');

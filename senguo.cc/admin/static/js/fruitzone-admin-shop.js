@@ -10,8 +10,14 @@ $(document).ready(function(){
 
     $('.shop-edit-btn').each(function(){shopEdit($(this));});
     $('#liveTimeEdit').on('click',function(){TimeEdit($(this))});
-
     $('#collectBox').on('click',function(){Collect();})
+
+    var focusLink=$('#focusLink').attr('href');
+    $('#focusLink').on('click',function(){
+       if(focusLink==''||focusLink=='None')
+           $('#focusLink').attr({'href':"javascript:;"})
+    });
+    console.log(focusLink);
 });
 
 function Remember(sell1,sell2){
@@ -63,8 +69,8 @@ function TimeEdit(evt){
                     {
                         var time=parseInt((res.now-res.shop_start_timestamp)/(30*24*60*60));
                         $('#liveTime').text(time);
-                        console.log(time);
                         alert('修改成功！');
+                        evt.parents('.modal').modal('hide');
                     }
 
                 }
@@ -122,6 +128,8 @@ function shopEdit(evt){
         $.postJson(url,args,
             function (res) {
                 if (res.success) {
+                    alert('修改成功！');
+                    evt.parents('.modal').modal('hide');
                     evt.parents('.editBox').find('.shopShow').text(data);
                     var fruit=window.dataObj.fruit_types;
                     evt.parents('.modal').prev('.edit-fruit-list').find('li').remove();
