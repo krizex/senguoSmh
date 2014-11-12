@@ -33,6 +33,7 @@ $(document).ready(function(){
             $(this).attr({'data-code':i});
             Filter($(this));
     });
+    $('.willOpen').on('click',function(){alert('即将开放，敬请期待！')});
 });
 
 function Search(evt){
@@ -46,8 +47,8 @@ function Search(evt){
         _xsrf: window.dataObj._xsrf
 
     };
-    
-    // 需要判断q是否为空 & action不要放在html element data属性里面（它应当是js里面的内容）
+
+    if(!q){return alert('请输入店铺名！')}
 
     $.postJson(url,args,
         function(res){
@@ -66,11 +67,18 @@ function Search(evt){
                     var livemonth=parseInt((timenow-livetime)/(30*24*60*60));
                     var nickname=shops[shop]["admin"]["accountinfo"]["nickname"];
                     var wxusername=shops[shop]["admin"]["accountinfo"]["wx_username"];
-                    var list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-left"><p><span class="shop-name w1 pull-left">'+shopname+'</span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"> </em><em data="'+city+'" id="filterCity"></em></span></p><p>运营时间：'+livemonth+'月</p><p><span class="shop-owner w1 pull-left">负责人：'+nickname+'</span><span class="w2 wechat-code pull-left">'+wxusername+'</span></p></div></a></li>');
-                    $('#homeShopList').append(list);
-                    $('#filterProvince').text(provinceArea(province));
-                    if(city!=province){$('#filterCity').text(cityArea(province,city));}
-                    // 这段替换代码逻辑有问题，应该是替换list中的"#filterProvince"
+                    var protext=provinceArea(province);
+                    var cittext;
+                    if(city!=province){cittext=cityArea(province,city);}
+                    else{cittext=''}
+                    var $list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-left"><p><span class="shop-name w1 pull-left"></span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"></em><em data="'+city+'" id="filterCity"></em></span></p><p>运营时间：<span class="live-time"></span>月</p><p><span class="shop-owner w1 pull-left">负责人：</span><span class="w2 wechat-code pull-left"></span></p></div></a></li>');
+                    $list.find(".shop-name").text(shopname);
+                    $list.find("#filterProvince").text(protext);
+                    $list.find("#filterCity").text(cittext);
+                    $list.find(".live-time").text(livemonth);
+                    $list.find(".shop-owner").text(nickname);
+                    $list.find(".wechat-code").text(wxusername);
+                    $('#homeShopList').append($list);
 
                 }
             }
@@ -132,18 +140,25 @@ function Filter(evt){
                     var livemonth=parseInt((timenow-livetime)/(30*24*60*60));
                     var nickname=shops[shop]["admin"]["accountinfo"]["nickname"];
                     var wxusername=shops[shop]["admin"]["accountinfo"]["wx_username"];
-                    console.log(wxusername);
-                    var list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-left"><p><span class="shop-name w1 pull-left">'+shopname+'</span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"> </em><em data="'+city+'" id="filterCity"></em></span></p><p>运营时间：'+livemonth+'月</p><p><span class="shop-owner w1 pull-left">负责人：'+nickname+'</span><span class="w2 wechat-code pull-left">'+wxusername+'</span></p></div></a></li>');
-                    $('#homeShopList').append(list);
-                    $('#filterProvince').text(provinceArea(province));
-                    if(city!=province){$('#filterCity').text(cityArea(province,city));}
-                    //同样处理省份的转换有问题
+                    var protext=provinceArea(province);
+                    var cittext;
+                    if(city!=province){cittext=cityArea(province,city);}
+                    else{cittext=''}
+                    if(!wxusername){wxusername='无'}
+                    var $list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-left"><p><span class="shop-name w1 pull-left"></span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"></em><em data="'+city+'" id="filterCity"></em></span></p><p>运营时间：<span class="live-time"></span>月</p><p><span class="shop-owner w1 pull-left">负责人：</span><span class="w2 wechat-code pull-left"></span></p></div></a></li>');
+                    $list.find(".shop-name").text(shopname);
+                    $list.find("#filterProvince").text(protext);
+                    $list.find("#filterCity").text(cittext);
+                    $list.find(".live-time").text(livemonth);
+                    $list.find(".shop-owner").text(nickname);
+                    $list.find(".wechat-code").text(wxusername);
+                    $('#homeShopList').append($list);
                 }
                 if(res.success&&res.shops=='')
                 {
                     $('#homeShopList').empty();
                     $('#homeShopList').append('<h5 class="text-center">无搜索结果！</h5>');
-                }// 考虑无过滤结果的情况
+                }
             }
         },
         function(){

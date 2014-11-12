@@ -28,9 +28,9 @@
     </ul>
 </div>
 <div class="admin-manage-right admin-right pull-right">
-    <ul class="user-list w1">
+    <ul class="user-list w1 list-group">
         {% for admin in context["admins"]%}
-            <li class="row">
+            <li class="row list-group-item">
                 <span class="col-lg-1 user-img">
                     <img src="{{admin.accountinfo.headimgurl}}"/>
                 </span>

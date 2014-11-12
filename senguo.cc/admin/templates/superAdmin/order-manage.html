@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title%}商家管理{% end %}
 {% block head %}
-<link rel="stylesheet" href="{{static_url('css/order-manage.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/superadmin-order-manage.css')}}"/>
 {% end %}
 
 {% block content %}
@@ -35,9 +35,9 @@
 <div class="admin-manage-right admin-right pull-right">
     <h3 class="admin-title">订单信息</h3>
     <div class="orders-list">
-        <ul>
+        <ul class="list-group">
             {% for orders in context['orders']%}
-            <li class="row" data-id="{{orders.order_id}}">
+            <li class="list-group-item row" data-id="{{orders.order_id}}">
                 <div class="col-lg-6">
                     <p>
                         <span class="title"><strong>姓名：</strong>
@@ -76,7 +76,7 @@
                     <p>
                         <span class="title">
                             <strong>下单时间：</strong>
-                            {{orders.gmt_create}}
+                            {{handler.timestamp_to_str(orders.create_date_timestamp)}}
                         </span>
                     </p>
                     <p>
@@ -92,12 +92,18 @@
                         </span>
                     </p>
                     <p>
+                         <span class="title">
+                            <strong>到期时间：</strong>
+
+                        </span>
+                    </p>
+                    <p>
                         {% if orders.order_status==2 and orders.have_read==False%}
-                        <button type="button" class="btn-green set-btn" data-toggle="modal" data-target="#setBox">设置商城后台账户</button>
+                        <button type="button" class="btn-green set-btn setAccount">设置商城后台账户</button>
                         {% end %}
                     </p>
                 </div>
-                <div class="modal fade set-box" id="setBox" tabindex="-1" role="dialog"  aria-hidden="true">
+                <div class="modal fade set-box-item" tabindex="-1" role="dialog"  aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">请输入该商户的后台系统账户信息</div>
@@ -118,7 +124,6 @@
             </li>
             {% end %}
         </ul>
-
     </div>
     <nav>
         <ul class="pager">
@@ -127,5 +132,5 @@
         </ul>
     </nav>
 </div>
-<script src="{{static_url('js/order-manage.js')}}"></script>
+<script src="{{static_url('js/superamin-order-manage.js')}}"></script>
 {% end %}

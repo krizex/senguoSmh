@@ -30,7 +30,7 @@
 .admin-manage-left .nav .active a{color:#fff;}
 
 .admin-manage-right .user-list{padding-left:20px;}
-.admin-manage-right .user-list li{width:100%;margin-bottom:10px;border:1px solid #ddd;padding:10px 0;}
+.admin-manage-right .user-list li{margin-left:0;margin-right:0;}
 .admin-manage-right .user-list li .user-img{display:inine-block;}
 .admin-manage-right .user-list li .user-img img{width:60px;height:60px;}
 .admin-manage-right .user-list li a{color:#333;line-height:60px;}
@@ -38,7 +38,7 @@
 
 /*---------------------------------------------shop-manage--------------------------------------------------*/
 .admin-shop-right .shop-list{padding-left:20px;}
-.admin-shop-right .shop-list li{width:100%;margin-bottom:10px;border:1px solid #ddd;padding:10px 0;}
+.admin-shop-right .shop-list li{border:1px solid #ddd;margin-left:0;margin-right:0;margin-bottom:20px;padding:10px 0;}
 .admin-shop-right .shop-list li .shop-img{display:inine-block;}
 .admin-shop-right .shop-list li .shop-img img{width:60px;height:60px;}
 .admin-shop-right .shop-list li a{color:#333;}
