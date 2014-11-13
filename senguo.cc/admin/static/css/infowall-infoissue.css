@@ -1,0 +1,19 @@
+.type-choose{width:100%;text-align:center;padding:1em 0;}
+.type-choose li{display:inline-block;width:25%;border-radius:2px;}
+.type-choose li a{display:block;padding:0.5em 0;}
+.type-choose li.active{background:#00D289;}
+.type-choose li.active a{color:#fff !important;}
+
+.fruit-box .fruit-list li{border:1px solid #ddd;float:left;width:60px;height:24px;overflow:hidden;margin-right:1em;margin-bottom:1em;border-radius:2px;background-color:#fff;text-align:center;font-size:1.4em;display:block;color:#333;}
+.fruit-box .fruit-list .active{border-color:#00D681;color:#00D681;}
+.fruit-box .fruit-list li:hover{cursor:pointer;border-color:#00D681;color:#00D681;}
+
+.line{border-top:1px solid #ddd !important;border-bottom:1px solid #ddd !important;}
+
+.infoBox{width:100%;border:0px;height:8em;color:#666;padding:1em;margin-bottom:0.5em;}
+.addressBox{width:100%;border:0px;height:4em;color:#666;padding:1em;margin-bottom:0.5em;}
+
+.fruit-choose{width:100%;float:left;padding:1em;}
+
+.fruit-list-box li{float:left;border:1px solid #ddd;float:left;width:60px;height:24px;overflow:hidden;margin-right:1em;margin-bottom:1em;border-radius:2px;text-align:center;background:#f2f2f2;}
+.fruit-list-box .add-fruit{float:left;border:1px solid #ddd;float:left;width:60px;height:24px;overflow:hidden;margin-right:1em;margin-bottom:1em;border-radius:2px;text-align:center;font-weight:bold;color:#ac2925;background:#f2f2f2;}

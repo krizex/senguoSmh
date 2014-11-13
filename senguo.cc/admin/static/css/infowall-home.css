@@ -1,0 +1,7 @@
+.infowall-nav{text-align:center;}
+.infowall-nav li{display:inline-block;font-size:1.4em;line-height:1.6em;}
+.infowall-nav li a{display:block;padding:0 0.5em;color:#333;}
+.infowall-nav li.active a{color:#00D289;}
+
+.right-function-btn{width:40px;height:80px;background:#AEE3C9;}
+.right-function-btn a{display:inline-block;width:40px;height:40px;font-size:2em;text-align:center;line-height:40px;color:#fff;}
