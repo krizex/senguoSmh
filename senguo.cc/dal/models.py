@@ -322,7 +322,7 @@ class Shop(MapBase, _CommonApi):
     shop_city = Column(Integer)
     shop_address_detail = Column(String(1024), nullable=False)
     shop_sales_range = Column(String(128))
-    
+
     # 是否做实体店
     have_offline_entity = Column(Boolean, default=False)
 
@@ -613,6 +613,7 @@ class Info(MapBase, _CommonApi):
     admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
 
     text = Column(String(568))
+    address = Column(String(100))
     #板块类型：供应1、求购2、其他3
     type = Column(Integer, default=INFO_TYPE.SUPPLY)
     #collect_sum = Column(Integer)
