@@ -10,6 +10,8 @@ $(document).ready(function(){
         $(this).text(Sex(sex));
 
     });
+    var whether=$('#ifHave').data('if');
+    $('#ifHave').text(hasSystem(whether));
 
     var pre=$('#PrePage');
     var next=$('#NextPage');
@@ -19,7 +21,7 @@ $(document).ready(function(){
         {
             pre.addClass('hidden');
         }
-    if($('.shop-list').find('li').length<10)
+    if($('.item-list').find('li').length<20)
         {
             next.addClass('hidden');
         }
@@ -52,3 +54,8 @@ function Sex(evt){
         return '女';
 }
 
+function hasSystem(evt){
+    if(evt=='-1')
+        return '否';
+    else return '是';
+}

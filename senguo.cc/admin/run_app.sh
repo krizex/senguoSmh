@@ -1,0 +1,1 @@
+nohup ./app.py 2>&1 &

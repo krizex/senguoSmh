@@ -3,6 +3,7 @@
 
 {% block content %}
 {% set action=context.get("action") %}
+{% set count=context["count"]%}
 
 {% set all_active = ""%}
 {% set applaying_active = ""%}
@@ -19,17 +20,18 @@
     {% set decline_active='active'%}
 {% end %}
 
+
 <div class="row">
     <div class="admin-shop-left  admin-left col-lg-3 col-md-4">
         <ul class="nav nav-stacked shop-manage-nav" role="tablist">
-            <li class="{{all_active}}"><a href="{{reverse_url('superShopManageAll')}}">所有店铺（88888）</a></li>
-            <li class="{{applaying_active}}"><a href="{{reverse_url('superShopManageApplying')}}">正在申请接入店铺（88888）</a></li>
-            <li class="{{pass_active}}"><a href="{{reverse_url('superShopManageAccepted')}}">已经通过申请店铺（88888）</a></li>
-            <li class="{{decline_active}}"><a href="{{reverse_url('superShopManageDeclined')}}">已被拒绝店铺（88888）</a></li>
+          <li class="{{all_active}}"><a href="{{reverse_url('superShopManageAll')}}">所有店铺<span class="badge count-badge">{{count['all']}}</span></a></li>
+          <li class="{{applaying_active}}"><a href="{{reverse_url('superShopManageApplying')}}">正在申请接入店铺<span class="badge count-badge">{{count['applying']}}</span></a></li>
+          <li class="{{pass_active}}"><a href="{{reverse_url('superShopManageAccepted')}}">已经通过申请店铺<span class="badge count-badge">{{count['accepted']}}</span></a></li>
+          <li class="{{decline_active}}"><a href="{{reverse_url('superShopManageDeclined')}}">已被拒绝店铺<span class="badge count-badge">{{count['declined']}}</span></a></li>
         </ul>
     </div>
     <div class="admin-shop-right  col-lg-9 col-md-8">
-        <ul class="shop-list">
+        <ul class="shop-list  item-list">
         {% for shop in context["shops"]%}
             <li class="row shop-list-item" data-shopid="{{shop.id}}" data-status="{{shop.shop_status}}">
                 <div class="show-info">

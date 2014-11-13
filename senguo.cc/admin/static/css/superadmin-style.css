@@ -57,8 +57,8 @@
 .admin-profile-detail li .title{font-weight:bold;}
 .admin-profile-detail li .user-img{width:80px;height:80px;}
 
-
-
-
-
+.profile-list{width:100%;float:left;margin-top:20px;}
+.profile-list .title{margin-top:15px;}
+.profile-list ul li{text-align:center;margin-bottom:10px;}
+.profile-list ul li img{width:120px;}
 
