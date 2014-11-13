@@ -16,8 +16,8 @@ class Home(AdminBaseHandler):
     _page_count = 20
 
     def get(self):
-        q = self.session.query(models.Shop).order_by(models.Shop.id)#\
-            #.filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
+        q = self.session.query(models.Shop).order_by(models.Shop.id)\
+            .filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
         shops = q.all()
         fruit_types = []
         for f_t in self.session.query(models.FruitType).all():
@@ -37,9 +37,8 @@ class Home(AdminBaseHandler):
                                       "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids?:list")
     def handle_filter(self):
         # 按什么排序？暂时采用id排序
-        print(self.args)
-        q = self.session.query(models.Shop).order_by(models.Shop.id)#.\
-            #filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
+        q = self.session.query(models.Shop).order_by(models.Shop.id).\
+            filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
         if "city" in self.args:
             q = q.filter_by(shop_city=self.args["city"])
         if "service_area" in self.args:
@@ -70,8 +69,8 @@ class Home(AdminBaseHandler):
     @AdminBaseHandler.check_arguments("q")
     def handle_search(self):
         q = self.session.query(models.Shop).order_by(models.Shop.id).\
-            filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"]))#,
-                   # models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED
+            filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"])),
+                   models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED
                    )
         shops = []
         for shop in q.all():
@@ -404,7 +403,6 @@ class SystemPurchase(AdminBaseHandler):
                                       "trade_no", "request_token")
     def handle_deal_finished_callback(self):
         # 检查是否合法
-        print(self.args)
         sign = self.args.pop("sign")
         signmethod = self._alipay.getSignMethod()
         if signmethod(self.args) != sign:
@@ -425,12 +423,14 @@ class SystemPurchase(AdminBaseHandler):
                 o.order_id)
         )
 
-    @tornado.web.authenticated
     def post(self):
+        if self._action == "dealNotify":
+            return self.handle_deal_notify()
+        if not self.current_user:
+            return self.send_error(403)
+
         if self._action == "chargeDetail":
             return self.handle_confirm_payment()
-        elif self._action == "dealNotify":
-            return self.handle_deal_notify()
         else:
             return self.send_error(404)
     
@@ -464,7 +464,8 @@ class SystemPurchase(AdminBaseHandler):
         #     return self.send_error(403)
         notify_data = xmltodict.parse(self.args["notify_data"])["notify"]
         # 判断该notify是否已经被处理，已处理直接返回success，未处理填补信息
-        o = self.current_user.update_order_notify_data(
+        
+        o = models.SystemOrder.update_notify_data(
             self.session, 
             order_id=int(notify_data["out_trade_no"]),
             notify_data=notify_data)
@@ -492,7 +493,7 @@ class SystemPurchase(AdminBaseHandler):
     def check_xsrf_cookie(self):
         if self._action == "dealNotify":
             Logger.info("SystemPurchase: it's a notify post from alipay, pass xsrf cookie check")
-            return 
+            return True
         return super().check_xsrf_cookie()
         
         

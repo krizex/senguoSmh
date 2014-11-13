@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    $('.rejectApply').on('click',function(){$('#rejectBox').modal('show');})
+    $('.rejectApply').on('click',function(){$(this).siblings('.reject-box').modal('show');})
     $('.rejectSend').on('click',function(){Reject($(this));});
     $('.passApply').on('click',function(){Pass($(this));});
     $('.shop-list-item').each(function(){
@@ -30,8 +30,7 @@ function Pass(evt){
         function(res){
             if(res.success)
             {
-                alert('通过申请！');
-                evt.parents('.shop-list-item').find('.btn-box').addClass('hidden');
+                evt.parents('.shop-list-item').addClass('hidden');
             }
         }
 
@@ -59,7 +58,7 @@ function Reject(evt){
             {
                 alert('拒绝成功！');
                 evt.parents('.modal').modal('hide');
-                evt.parents('.shop-list-item').find('.btn-box').addClass('hidden');
+                evt.parents('.shop-list-item').addClass('hidden');
             }
         }
 

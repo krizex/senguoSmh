@@ -446,26 +446,6 @@ class ShopAdmin(MapBase, _AccountApi):
         session.commit()
         return o
     
-
-    def update_order_notify_data(self, session, *,
-                    order_id, notify_data):
-        """更新订单notify_data[一般由阿里服务器通知]"""
-        try:
-            o = session.query(SystemOrder).filter_by(order_id=order_id).one()
-        except NoResultFound:
-            return None
-        nd = notify_data
-        o.update(session, ali_trade_no=nd["trade_no"],
-                 have_more_data=True,
-                 buyer_email=nd["buyer_email"],
-                 buyer_id=nd["buyer_id"],
-                 gmt_create=nd["gmt_create"],
-                 gmt_payment=nd.get("gmt_payment", ""),
-                 gmt_close=nd.get("gmt_close", ""),
-                 quantity=nd["quantity"],
-                 trade_status=nd["trade_status"],
-                 notify_id = nd["notify_id"])
-        return o
     @classmethod
     def set_system_info(cls,session, *,
                         admin_id, system_username, system_password, system_code):
@@ -557,6 +537,26 @@ class SystemOrder(MapBase, _CommonApi):
     def set_read(self, session):
         self.have_read = True
         session.commit()
+    @classmethod
+    def update_notify_data(cls, session, *,
+                    order_id, notify_data):
+        """更新订单notify_data[一般由阿里服务器通知]"""
+        try:
+            o = session.query(SystemOrder).filter_by(order_id=order_id).one()
+        except NoResultFound:
+            return None
+        nd = notify_data
+        o.update(session, ali_trade_no=nd["trade_no"],
+                 have_more_data=True,
+                 buyer_email=nd["buyer_email"],
+                 buyer_id=nd["buyer_id"],
+                 gmt_create=nd["gmt_create"],
+                 gmt_payment=nd.get("gmt_payment", ""),
+                 gmt_close=nd.get("gmt_close", ""),
+                 quantity=nd["quantity"],
+                 trade_status=nd["trade_status"],
+                 notify_id = nd["notify_id"])
+        return o
         
 
     # 订单id， 构成如"年月日订单当日编号", 2014110700001
