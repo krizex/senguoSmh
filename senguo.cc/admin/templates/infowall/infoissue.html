@@ -16,23 +16,27 @@
 <div class="info-content">
     <ul class="type-choose select-list">
         <span>版块选择：</span>
-        <li data-type="1" class="active white-color"><a href="javascript:;" class="text-green">供应</a></li>
-        <li data-type="2" class="white-color"><a href="javascript:;" class="text-green">求购</a></li>
-        <li data-type="3" class="white-color"><a href="javascript:;" class="text-green">其他</a></li>
+        <li data-type="1" class="active white-color typeItem"><a href="javascript:;" class="text-green">供应</a></li>
+        <li data-type="2" class="white-color typeItem"><a href="javascript:;" class="text-green">求购</a></li>
+        <li data-type="3" class="white-color otherType"><a href="javascript:;" class="text-green">其他</a></li>
     </ul>
-    <textarea placeholder="写下您的信息发布内容详情" id="infoEdit" class="infoBox line"></textarea>
-    <input type="text" placeholder="填写您的地址信息" class="addressBox line" id="addressEdit"/>
-    <div class="fruit-choose white-color">
+    <textarea placeholder="写下您的信息发布内容详情" id="infoEdit" class="infoBox line bg-white"></textarea>
+    <input type="text" placeholder="填写您的地址信息" class="addressBox line bg-white" id="addressEdit"/>
+    <div class="fruit-choose white-color bg-white">
         <p>选择水果种类：</p>
         <ul id="fruitChooseList" class="fruit-list-box">
             <a href="javascript:;" class="add-fruit" data-toggle="modal" data-target="#fruitBox">+</a>
         </ul>
     </div>
-    <div class="img-upload">
+    <div class="upload-box bg-white">
         <p>上传图片</p>
-        <input type="file"/>
+        <input type="file" class="upload-file" multiple id="fileUpload"/>
+        <a href="javascript:;" class="upload-btn">+</a>
     </div>
-    <div class="">
+    <div class="" id="imgPreview">
+
+    </div>
+    <div class="public-btn">
         <a href="javascript:;" id="infoPublic" class="btn btn-green">发布</a>
     </div>
 </div>
@@ -55,4 +59,6 @@
     </div>
 </div>
 {% end %}
-{% block bottom %}<script src="{{static_url('js/infowall-infoissue.js')}}"></script>{% end %}
+{% block bottom %}
+<script src="{{static_url('js/infowall-infoissue.js')}}"></script>
+{% end %}
