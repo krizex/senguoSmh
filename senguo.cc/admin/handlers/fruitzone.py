@@ -84,7 +84,7 @@ class Community(AdminBaseHandler):
 
 class InfoWall(AdminBaseHandler):
     def get(self):
-       return self.render("fruitzone/info-wall.html",context=dict(subpage="infowall"))
+       self.render("fruitzone/info-wall.html",context=dict(subpage="infowall"))
 
 class AdminHome(AdminBaseHandler):
     @tornado.web.authenticated

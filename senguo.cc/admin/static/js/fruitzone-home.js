@@ -17,21 +17,28 @@ $(document).ready(function(){
     $('.order-by-time').find('li').each(function(){$(this).on('click',function(){Filter($(this));});});
     $('#orderByFruit').on('click',function(){Filter($(this));});
     var i=1;
-    if(i=1){$('#PrePage').parents('li').hide();}
-    if($('#homeShopList').find('li').length<20){$('#NextPage').parents('li').hide();}
+    if(i==1){$('#PrePage').parents('li').hide();}
+    if($('#homeShopList').find('li').length<4){$('#NextPage').parents('li').hide();}
     $('#PrePage').on('click',function(){
         if(i>1)
         {
-            i=i-20;
-            $(this).attr({'data-code':i});
+            console.log(i);
+            i=i-1;
+            $(this).attr({'data-code':i/4});
+            console.log(i);
             Filter($(this));
+            $('#NextPage').parents('li').show();
+            if(i==1){$('#PrePage').parents('li').hide();}
         }
 
     });
     $('#NextPage').on('click',function(){
-            i=i+20;
-            $(this).attr({'data-code':i});
+            $(this).attr({'data-code':i*4});
+            i=i+1;
+            console.log(i);
             Filter($(this));
+            if($('#homeShopList').find('li').length<4){$('#NextPage').parents('li').hide();}
+            $('#PrePage').parents('li').show();
     });
     $('.willOpen').on('click',function(){alert('即将开放，敬请期待！')});
 });
@@ -158,7 +165,7 @@ function Filter(evt){
                 if(res.success&&res.shops=='')
                 {
                     $('#homeShopList').empty();
-                    $('#homeShopList').append('<h5 class="text-center">无搜索结果！</h5>');
+                    $('#homeShopList').append('<h5 class="text-center">无结果！</h5>');
                 }
             }
         },
