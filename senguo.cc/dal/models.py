@@ -622,7 +622,9 @@ class Info(MapBase, _CommonApi):
     fruit_img = relationship("FruitImg")
     comment = relationship("Comment")
     fruit_type = relationship("FruitType", secondary="info_fruit_link")
+    #信息的作者
     admin = relationship(ShopAdmin, uselist=False)
+    ＃信息的收藏者
     collected_admins = relationship(ShopAdmin, secondary="info_collect", uselist=True)
 
 #admin、info关系表

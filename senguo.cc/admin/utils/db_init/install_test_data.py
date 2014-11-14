@@ -22,8 +22,7 @@ test_admin_shops = [
         shop_name="草帽海贼团 娜米店", 
         shop_province=110000, shop_city=110000, 
         shop_address_detail="王府井",
-
-    shop_service_area = models.SHOP_SERVICE_AREA.HIGH_SCHOOL | models.SHOP_SERVICE_AREA.TRADE_CIRCLE,
+        shop_service_area = models.SHOP_SERVICE_AREA.HIGH_SCHOOL | models.SHOP_SERVICE_AREA.TRADE_CIRCLE,
         shop_start_timestamp = int(time.time()) - 1*30*24*3600,
         shop_status = models.SHOP_STATUS.ACCEPTED),
     dict(
