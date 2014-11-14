@@ -2,6 +2,7 @@ from handlers.base import SuperBaseHandler
 import dal.models as models
 import tornado.web
 import time
+from settings import ROOT_HOST_NAME
 
 class Access(SuperBaseHandler):
     
@@ -31,7 +32,7 @@ class Access(SuperBaseHandler):
         u = models.SuperAdmin.login_by_unionid(self.session, userinfo["unionid"])
         if not u:
             return self.write("对不起，你不属于此系统用户，我们拒绝你的加入。")
-        self.set_current_user(u)
+        self.set_current_user(u, domain=ROOT_HOST_NAME)
 
         next_url = self.get_argument("next", self.reverse_url("superHome"))
         return self.redirect(next_url)

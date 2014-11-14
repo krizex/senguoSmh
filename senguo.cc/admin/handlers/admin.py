@@ -1,6 +1,7 @@
 from handlers.base import AdminBaseHandler
 import dal.models as models
 import tornado.web
+from settings import ROOT_HOST_NAME
 
 class Access(AdminBaseHandler):
     def initialize(self, action):
@@ -25,7 +26,7 @@ class Access(AdminBaseHandler):
         u = models.ShopAdmin.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
         if not u:
             return self.send_fail(error_text = "用户名或密码错误")
-        self.set_current_user(u)
+        self.set_current_user(u, domain=ROOT_HOST_NAME)
         self.redirect(self.args.get("next", self.reverse_url("fruitzoneHome")))
         return self.send_success()
 
@@ -45,7 +46,7 @@ class Access(AdminBaseHandler):
         u = models.ShopAdmin.login_by_unionid(self.session, userinfo["unionid"])
         if not u:# 新建用户
             u = models.ShopAdmin.register_with_wx(self.session, userinfo)
-        self.set_current_user(u)
+        self.set_current_user(u, domain=ROOT_HOST_NAME)
         
         next_url = self.get_argument("next", self.reverse_url("fruitzoneHome"))
         return self.redirect(next_url)
