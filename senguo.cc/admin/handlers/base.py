@@ -145,10 +145,14 @@ class _AccountBaseHandler(GlobalBaseHandler):
             if not self._user:
                 Logger.warn("Suspicious Access", "may be trying to fuck you")
         return self._user
-    def set_current_user(self, user):
+    _ARG_DEFAULT = []
+    def set_current_user(self, user, domain=_ARG_DEFAULT):
         if not self.__account_model__ or not self.__account_cookie_name__:
             raise Exception("overwrite model to support authenticate.")
-        self.set_secure_cookie(self.__account_cookie_name__, str(user.id))
+        if domain is _AccountBaseHandler._ARG_DEFAULT:            
+            self.set_secure_cookie(self.__account_cookie_name__, str(user.id))
+        else:
+            self.set_secure_cookie(self.__account_cookie_name__, str(user.id), domain=domain)
     def clear_current_user(self):
         if not self.__account_model__ or not self.__account_cookie_name__:
             raise Exception("overwrite model to support authenticate.")
