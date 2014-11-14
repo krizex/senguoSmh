@@ -386,8 +386,8 @@ class ShopAdmin(MapBase, _AccountApi):
     feedback = relationship("Feedback")
 
     info = relationship("Info")
-    info_collect = relationship("Info", secondary="info_collect", backref="shop_admin")
-    comment = relationship("Comment", backref="shop_admin")
+    info_collect = relationship("Info", secondary="info_collect")
+    comment = relationship("Comment", backref=backref("shop_admin",uselist=False))
 
     def success_orders(self, session):
         if not hasattr(self, "_success_orders"):
@@ -613,6 +613,7 @@ class Info(MapBase, _CommonApi):
     admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
 
     text = Column(String(568))
+    address = Column(String(100))
     #板块类型：供应1、求购2、其他3
     type = Column(Integer, default=INFO_TYPE.SUPPLY)
     #collect_sum = Column(Integer)
@@ -621,6 +622,8 @@ class Info(MapBase, _CommonApi):
     fruit_img = relationship("FruitImg")
     comment = relationship("Comment")
     fruit_type = relationship("FruitType", secondary="info_fruit_link")
+    admin = relationship(ShopAdmin, uselist=False)
+    collected_admins = relationship(ShopAdmin, secondary="info_collect", uselist=True)
 
 #admin、info关系表
 class InfoCollect(MapBase, _CommonApi):

@@ -9,18 +9,17 @@ class Home(AdminBaseHandler):
 
     def get(self):
         if self._action == "supply":
-            infos = self.session.query(models.Info).filter_by(info_type = models.INFO_TYPE.SUPPLY).all()
+            infos = self.session.query(models.Info).filter_by(type = models.INFO_TYPE.SUPPLY).all()
         elif self._action == "demand":
-            infos = self.session.query(models.Info).filter_by(info_type = models.INFO_TYPE.DEMAND).all()
+            infos = self.session.query(models.Info).filter_by(type = models.INFO_TYPE.DEMAND).all()
         elif self._action == "other":
-            infos = self.session.query(models.Info).filter_by(info_type = models.INFO_TYPE.OTHER).all()
+            infos = self.session.query(models.Info).filter_by(type = models.INFO_TYPE.OTHER).all()
         else:
             return self.send_error(404)
-        return self.render("infowall/home.html", context=dict(infos=infos))
+        return self.render("infowall/home.html", context=dict(infos=infos,action=self._action))
 
 class InfoDetail(AdminBaseHandler):
 
-    @AdminBaseHandler.check_arguments("info_id:int")
     def get(self, info_id):
         try:
             info = self.session.query(models.Info).filter_by(id=info_id).one()
@@ -54,13 +53,21 @@ class InfoCollect(AdminBaseHandler):
         return self.send_success()
 
 class InfoIssue(AdminBaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        fruit_types = []
+        for f_t in self.session.query(models.FruitType).all():
+            fruit_types.append(f_t.all_props())
+        return self.render("infowall/infoissue.html", context=dict(fruit_types=fruit_types))
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("info_type:int", "text:str", "fruit_type:list", "img_url:list")
+    @AdminBaseHandler.check_arguments("info_type:int", "text:str", "address:str","fruit_type:list", "img_url:list")
     def post(self):
         info = models.Info()
         info.type = self.args["info_type"]
         info.text = self.args["text"]
+        info.address = self.args["address"]
+
         if self.args["fruit_type"]:
             for fruit_id in self.args["fruit_type"]:
                 try:
