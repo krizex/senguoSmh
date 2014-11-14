@@ -225,7 +225,7 @@ class Accountinfo(MapBase, _CommonApi):
     __tablename__ = "account_info"
     
     __protected_props__ = ["password", "phone", "email", "wx_unionid", "sex", 
-                           "realname", "headimgurl", "birthday", "wx_openid", "wx_country", "wx_province", "wx_city"]
+                           "realname", "birthday", "wx_openid", "wx_country", "wx_province", "wx_city"]
 
     def __init__(self, **kwargs):
         if not "create_date_timestamp" in kwargs:
@@ -387,7 +387,7 @@ class ShopAdmin(MapBase, _AccountApi):
 
     info = relationship("Info")
     info_collect = relationship("Info", secondary="info_collect")
-    comment = relationship("Comment", backref=backref("shop_admin",uselist=False))
+    comment = relationship("Comment")
 
     def success_orders(self, session):
         if not hasattr(self, "_success_orders"):
@@ -645,6 +645,8 @@ class Comment(MapBase, _CommonApi):
     #该评论的作者的id
     admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
     text = Column(String(100))
+    admin = relationship(ShopAdmin, uselist=False)
+
 
 class InfofruitLink(MapBase):
     """信息墙的信息的水果种类"""

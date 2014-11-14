@@ -2,6 +2,7 @@
 {% block title%}店铺管理{% end %}
 
 {% block content %}
+{% import dal.models as models %}
 {% set action=context.get("action") %}
 {% set count=context["count"]%}
 
@@ -43,6 +44,7 @@
                         <p>{{shop.admin.accountinfo.nickname}}</p>
                     </div>
                     <div class="col-lg-3">{{handler.code_to_text("shop_city",shop.shop_city)}}</div>
+                    {% if shop.shop_status==models.SHOP_STATUS.APPLYING %}
                     <div class="col-lg-2 btn-box">
                         <button type="button" class="btn-style btn-green passApply">通过</button>
                     </div>
@@ -59,6 +61,7 @@
                             </div>
                         </div>
                     </div>
+                    {% end %}
                 </div>
                 <div class="hide-info">
                     <div class="row">
@@ -73,10 +76,12 @@
                         <span class="col-lg-2"> <strong>店铺简介： </strong></span>
                         <p class="col-lg-10">{{shop.shop_intro or '无'}}</p>
                     </div>
-                    <div class="row hidden" id="declineReason">
+                    {% if shop.shop_status==models.SHOP_STATUS.DECLINED%}
+                    <div class="row" id="declineReason">
                         <span class="col-lg-2"> <strong>被拒理由： </strong></span>
                         <p class="col-lg-10">{{shop.declined_reason}}</p>
                     </div>
+                    {% end %}
                     <a href="{{reverse_url('superShopProfile',shop.id)}}">查看店铺详情&rarr;</a>
                 </div>
             </li>

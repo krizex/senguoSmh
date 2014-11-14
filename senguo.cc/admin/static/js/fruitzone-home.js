@@ -18,29 +18,31 @@ $(document).ready(function(){
     $('#orderByFruit').on('click',function(){Filter($(this));});
     var i=1;
     if(i==1){$('#PrePage').parents('li').hide();}
-    if($('#homeShopList').find('li').length<4){$('#NextPage').parents('li').hide();}
+    var shoplen=$('#homeShopList').find('li').length;
+    if(shoplen<20){$('#NextPage').parents('li').hide();}
     $('#PrePage').on('click',function(){
         if(i>1)
         {
             console.log(i);
             i=i-1;
-            $(this).attr({'data-code':i/4});
+            if(i==1){$('#PrePage').parents('li').hide();}
+            $(this).attr({'data-code':i/20});
             console.log(i);
             Filter($(this));
             $('#NextPage').parents('li').show();
-            if(i==1){$('#PrePage').parents('li').hide();}
         }
 
     });
     $('#NextPage').on('click',function(){
-            $(this).attr({'data-code':i*4});
-            i=i+1;
-            console.log(i);
+            var len=$('#homeShopList').find('li').length;
+            $(this).attr({'data-code':i*20});
+            if(len<20){i=i;$('#NextPage').parents('li').hide();}
+            else i=i+1;
             Filter($(this));
-            if($('#homeShopList').find('li').length<4){$('#NextPage').parents('li').hide();}
             $('#PrePage').parents('li').show();
     });
     $('.willOpen').on('click',function(){alert('即将开放，敬请期待！')});
+
 });
 
 function Search(evt){
@@ -79,7 +81,7 @@ function Search(evt){
                     if(city!=province){cittext=cityArea(province,city);}
                     else{cittext=''}
                     if(!wxusername){wxusername='无'}
-                    var $list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-left"><p><span class="shop-name w1 pull-left"></span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"></em><em data="'+city+'" id="filterCity"></em></span></p><p>运营时间：<span class="live-time"></span>月</p><p><span class="shop-owner w1 pull-left">负责人：<span class="owner-name"></span></span><span class="w2 wechat-code pull-left"></span></p></div></a></li>');
+                    var $list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-7-md.gif"/></div><div class="shop-info pull-left"><p class="list-info1"><span class="shop-name w1 pull-left"></span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"></em><em data="'+city+'" id="filterCity"></em></span></p><p class="list-info2">运营时间：<span class="live-time"></span>月</p><p class="list-info3"><span class="shop-owner w1 pull-left">负责人：<span class="owner-name"></span></span><span class="w2 wechat-code pull-left"></span></p></div></a></li>');
                     $list.find(".shop-name").text(shopname);
                     $list.find("#filterProvince").text(protext);
                     $list.find("#filterCity").text(cittext);
@@ -153,7 +155,7 @@ function Filter(evt){
                     if(city!=province){cittext=cityArea(province,city);}
                     else{cittext=''}
                     if(!wxusername){wxusername='无'}
-                    var $list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-1-md.gif"/></div><div class="shop-info pull-left"><p><span class="shop-name w1 pull-left"></span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"></em><em data="'+city+'" id="filterCity"></em></span></p><p>运营时间：<span class="live-time"></span>月</p><p><span class="shop-owner w1 pull-left">负责人：<span class="owner-name"></span></span><span class="w2 wechat-code pull-left"></span></p></div></a></li>');
+                    var $list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-7-md.gif"/></div><div class="shop-info pull-left"><p class="list-info1"><span class="shop-name w1 pull-left"></span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"></em><em data="'+city+'" id="filterCity"></em></span></p><p class="list-info2">运营时间：<span class="live-time"></span>月</p><p class="list-info3"><span class="shop-owner w1 pull-left">负责人：<span class="owner-name"></span></span><span class="w2 wechat-code pull-left"></span></p></div></a></li>');
                     $list.find(".shop-name").text(shopname);
                     $list.find("#filterProvince").text(protext);
                     $list.find("#filterCity").text(cittext);

@@ -38,6 +38,9 @@ function Apply(evt){
     var shop_service_area=i;
     var shop_intro=$('#shopIntro').val().trim();
     console.log(shop_province,shop_city);
+    if(shop_name.length>20){return alert('店铺名称请不要超过20个字符！')}
+    if(shop_address_detail.length>50){return alert('详细地址请不要超过500个字符！')}
+    if(shop_intro.length>300){return alert('店铺简介请不要超过300个字符！')}
     if (!shop_name || ! shop_service_area ||!shop_city||!shop_province || !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
     console.log(shop_province,shop_city);
     var args={
@@ -87,7 +90,10 @@ function reApply(evt){
     var shop_service_area=i;
     var shop_intro=$('#shopIntro').val().trim();
     var shop_id=$('#headerId').data('id');
-    if (!shop_name || ! shop_service_area ||!shop_province ||!shop_city|| !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
+    if(shop_name.length>20){return alert('店铺名称请不要超过20个字符！')}
+    if(shop_address_detail.length>50){return alert('详细地址请不要超过500个字符！')}
+    if(shop_intro.length>300){return alert('店铺简介请不要超过300个字符！')}
+    if (!shop_name || ! shop_service_area ||!shop_city||!shop_province || !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
     var args={
         shop_name:shop_name,
         shop_province:shop_province,

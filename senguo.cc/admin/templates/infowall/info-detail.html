@@ -5,14 +5,14 @@
 {% block content %}
 {% set info =context['info']%}
 <header class="title-box2">
-    <a href="" class="return-btn"></a>
+    <a href="{{reverse_url('infowallHomeSupply')}}" class="return-btn"></a>
     <span class="title">信息详情</span>
 </header>
-<div class="info-content">
+<div class="info-content bg-white">
     <div class="info-detail" data-id="{{info.id}}">
         <div class="row info-box">
             <span class="col-xs-2">
-                <img src="{{info.admin.accountinfo.headimgurl}}" class="head-img"/>
+                <img src="{{info.admin.accountinfo.headimgurl}}" class="head-img" id="headImg"/>
             </span>
             <span class="nickname">{{info.admin.accountinfo.nickname}}</span>
              <span class="row address">
@@ -20,7 +20,7 @@
                 <span class="col-xs-4 col-sm-6 text-right text-grey3 time">{{info.create_date_timestamp}}</span>
             </span>
         </div>
-        <div class="info-text">
+        <div class="info-text" id="infoText">
             {{info.text}}
         </div>
         <div class="home-fruit-list">
@@ -35,14 +35,30 @@
         </div>
         <ul class="funciont-btn-box pull-right">
             <li class="collection-btn"><a href="javascript:;">收藏<span class="number"></span></a></li>
-            <li><a href="javascript:;">分享</a></li>
+            <li><a href="javascript:;" id="shareTimeLine">分享</a></li>
+            {% if current_user %}
             <li><a href="javascript:;" data-toggle="modal" data-target="#commnetBox">评论<span class="number"></span></a></li>
+            {% else %}
+            <li><a href="{{reverse_url('fruitzoneAdminHome')}}">评论<span class="number"></span></a></li>
+            {% end %}
         </ul>
     </div>
-    <p>全部回复</p>
+    <p>全部回复：</p>
     <div class="comment-list">
         <ul>
-            <li></li>
+            {% for comment in info.comment%}
+            <li class="row">
+                <span class="col-xs-2 col-sm-1">
+                    <img src="{{comment.admin.accountinfo.headimgurl}}" class="head-img"/>
+                </span>
+                <span class="col-xs-10 col-sm-11">
+                    <span class="nickname pull-left">
+                        <span class="name">{{comment.admin.accountinfo.nickname}}</span>:
+                    </span>
+                    <div class="comment pull-left">{{comment.text}}</div>
+                </span>
+            </li>
+            {% end %}
         </ul>
     </div>
 </div>
@@ -51,7 +67,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h1>填写您的评论</h1>
+                <h5>填写您的评论</h5>
             </div>
             <div class="modal-body">
                 <textarea id="commntEdit" class="well"></textarea>

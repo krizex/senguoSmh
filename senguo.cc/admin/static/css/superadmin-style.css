@@ -53,7 +53,7 @@
 /*--------------------------------------------amin-profile----------------------------------------------------------*/
 .admin-profile-detail{width:100%;margin:0 auto;height:auto;display:block;border-top:1px solid #ddd;marign-top:20px;}
 .admin-profile-detail ul{width:100%;}
-.admin-profile-detail li{width:100%;float:left;padding:10px 0;border-bottom:1px solid #ddd;}
+.admin-profile-detail li{width:100%;float:left;padding:10px 0;border-bottom:1px solid #ddd;word-break:break-all;}
 .admin-profile-detail li .title{font-weight:bold;}
 .admin-profile-detail li .user-img{width:80px;height:80px;}
 

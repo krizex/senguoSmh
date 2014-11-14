@@ -5,6 +5,7 @@
 {% end %}
 
 {% block content %}
+{% import dal.models as models %}
 {% set subpage=context['subpage'] %}
 
 {% set all_active = ""%}
@@ -97,7 +98,7 @@
                             </span>
                         </p>
                         <p>
-                            {% if orders.order_status==2 and orders.have_read==False%}
+                            {% if orders.order_status==models.ORDER_STATUS.SUCCESS and orders.have_read==False%}
                             <button type="button" class="btn-green set-btn setAccount">设置商城后台账户</button>
                             {% end %}
                         </p>
