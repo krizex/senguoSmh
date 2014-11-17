@@ -46,8 +46,11 @@ input{border:none;}
 .text-center{text-align:center;}
 
 .bottom-nav{max-width:640px;margin:0 auto;font-size:1.4em;border-top:1px solid #ddd;padding:15px 10px;}
+.bottom-nav ul{padding-left:0px !important;}
 .bottom-nav li{text-align:center;padding:0 5px;}
 .bottom-nav li a{color:#333;display:block;}
 .bottom-nav .active a{color:#00D289;font-weight:bold;}
 
 .info-content{padding:0 1em;font-size:1.4em;width:100%;float:left;margin-bottom:10px;}
+
+.padding-right-none{padding-right:0px;}
