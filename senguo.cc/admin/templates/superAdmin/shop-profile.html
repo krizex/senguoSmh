@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block title%}商家管理{% end %}
 {% block content %}
+{% import dal.models as models %}
 {% set shop=context['shop']%}
     <div class="col-md-2"></div>
     <div class="admin-shop-right col-md-8 center-block">
@@ -76,10 +77,12 @@
                         {% end %}
                     </div>
                 </li>
-                <li class="hidden" id="declineReason">
+                {% if shop.shop_status==models.SHOP_STATUS.DECLINED%}
+                <li id="declineReason">
                     span class="title pull-left">被拒理由：</span>
                     <span class="pull-right">{{shop.declined_reason}}</span>
                 </li>
+                {% end %}
                 <li>
                     <span class="title pull-left">单次采购量：</span>
                     <span class="pull-right">{{shop.single_stock_size or '0'}}元</span>

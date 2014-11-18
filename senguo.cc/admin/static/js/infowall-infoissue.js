@@ -35,6 +35,8 @@ $(document).ready(function(){
     $('.otherType').on('click',function(){$('#addressEdit').hide();$('.fruit-choose').hide();});
     $('#infoPublic').on('click',function(){infoPublic()});
 
+    $('.')
+
 });
 
 function infoPublic() {

@@ -24,4 +24,22 @@ function collection(id,target){
             else alert('网络错误');
         }
 );
+    document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+        WeixinJSBridge.on('menu:share:timeline', function(argv){
+            share.shareTimeline();
+        });
+
+    }, false);
+
+}
+
+function weixinShareTimeline(title,desc,link,imgUrl){
+    WeixinJSBridge.invoke('shareTimeline',{
+        "img_url":imgUrl,
+        "img_width":"120",
+        "img_height":"120",
+        "link":link,
+        "desc": desc,
+        "title":title
+    });
 }

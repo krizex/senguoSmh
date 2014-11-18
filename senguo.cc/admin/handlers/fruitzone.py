@@ -14,12 +14,12 @@ import libs.xmltodict as xmltodict
 import qiniu
 
 class Home(AdminBaseHandler):
-    _page_count = 20
+    _page_count =20
 
     def get(self):
         q = self.session.query(models.Shop).order_by(models.Shop.id)\
             .filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
-        shops = q.all()
+        shops = q.limit(self._page_count).all()
         fruit_types = []
         for f_t in self.session.query(models.FruitType).all():
             fruit_types.append(f_t.safe_props())

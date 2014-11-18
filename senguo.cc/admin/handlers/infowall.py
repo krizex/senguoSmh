@@ -35,9 +35,16 @@ class InfoDetail(AdminBaseHandler):
         comment = models.Comment(text=self.args["text"], admin_id=self.current_user.id, info_id=self.args["info_id"])
         self.session.add(comment)
         self.session.commit()
-        return self.send_success()
+        com = []
+        comment.__relationship_props__=["admin"]
+        com.append(comment.safe_props())
+        return self.send_success(comment=com)
 
 class InfoCollect(AdminBaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        return self.render("fruitzone/info-collect.html")
+
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("info_id:int")

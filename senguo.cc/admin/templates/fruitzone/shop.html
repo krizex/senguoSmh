@@ -19,9 +19,11 @@
 {% if "edit" in context and context["edit"] %}
    {% set bt_edit_show = "show"%}
    {% set bt_edit_hide = "hidden"%}
+    {% set dis_sty="hidden" %}
 {% else %}
     {% set bt_edit_show = "hidden"%}
     {% set bt_edit_hide = "show"%}
+    {% set dis_sty="dis-style" %}
 {% end %}
 
 <header class="title-box2" data-shop="{{shop.id}}" id="headerId">
@@ -38,11 +40,11 @@
 <div class="detail-box">
     <p class="info-title">店铺信息</p>
     <div class="info-box1">
-        <div class="shop-info-detail">
-            <div class="logo pull-left">
-                <img src="{{static_url('images/anoa-1-md.gif')}}"/>
+        <div class="shop-info-detail row">
+            <div class="logo col-xs-5 col-sm-3">
+                <img src="{{static_url('images/anoa-2-lg.gif')}}"/>
             </div>
-            <div class="info pull-right">
+            <div class="info col-xs-7 col-sm-9">
                 <p class="shop-name">{{shop.shop_name}}</p>
                 <p>{{handler.code_to_text("shop_city",shop.shop_city)}}</p>
                 <p>服务区域：{{handler.code_to_text("service_area",shop.shop_service_area)}}</p>
@@ -58,11 +60,10 @@
                     {% end %}
                {% else %}
                     <button type="button" class="uncollect-btn">收藏</button>
-                    <p>*登录后即可收藏店铺*</p>
+                    <p><small class="text-red">*登录后即可收藏店铺*</small></p>
                {% end %}
             </div>
         </div>
-        <a href="{{shop.shop_url}}" class="focus-btn {{bt_edit_hide}}" id="focusLink">关注我的微信店铺</a>
         <div class="{{bt_edit_show}} edit-link editBox">
             <a href="javascript:;" class="focus-btn" id="linkEdit"  data-toggle="modal" data-target="#linkBox">编辑店铺链接</a>
             <a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200574697&idx=1&sn=cc6a43fcc99b5bad6cf963dc92f4babd#rd" class="check-course text-red">查看填写教程</a>
@@ -82,6 +83,7 @@
                 </div>
             </div>
         </div>
+        <a href="{{shop.shop_url}}" class="focus-btn {{dis_sty}}" id="focusLink">关注我的微信店铺</a>
     </div>
     <div class="info-box1">
         <ul class="shop-info-detail2 ">

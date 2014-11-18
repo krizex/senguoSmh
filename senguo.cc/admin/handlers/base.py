@@ -4,7 +4,7 @@ from libs.utils import Logger
 import json
 import urllib
 import traceback
-from settings import KF_APPID, KF_APPSECRET, APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET
+from settings import KF_APPID, KF_APPSECRET, APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
 import tornado.escape
 from dal.dis_dict import dis_dict
 import time
@@ -156,7 +156,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
     def clear_current_user(self):
         if not self.__account_model__ or not self.__account_cookie_name__:
             raise Exception("overwrite model to support authenticate.")
-        self.clear_cookie(self.__account_cookie_name__)
+        self.clear_cookie(self.__account_cookie_name__, domain=ROOT_HOST_NAME)
 
     def get_wx_userinfo(self, code, mode):
         return WxOauth2.get_userinfo(code, mode)

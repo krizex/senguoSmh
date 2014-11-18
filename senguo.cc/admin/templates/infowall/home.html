@@ -18,16 +18,16 @@
 
 <header class="title-box">
     <ul class="infowall-nav select-list">
-        <li class="white-color {{supply_active}}"><a href="{{reverse_url('infowallHomeSupply')}}">供应</a></li>
-        <li class="white-color {{demand_active}}"><a href="{{reverse_url('infowallHomeDemand')}}">求购</a></li>
-        <li class="white-color {{other_active}}"><a href="{{reverse_url('infowallHomeOther')}}">其他</a></li>
+        <li class="bg-white {{supply_active}}"><a href="{{reverse_url('infowallHomeSupply')}}">供应</a></li>
+        <li class="bg-white {{demand_active}}"><a href="{{reverse_url('infowallHomeDemand')}}">求购</a></li>
+        <li class="bg-white {{other_active}}"><a href="{{reverse_url('infowallHomeOther')}}">其他</a></li>
     </ul>
 </header>
 
 <div class="info-content">
     <ul class="infowall-list">
         {% for info in context['infos']%}
-        <li class="infowall-list-item" data-id="{{info.id}}}">
+        <li class="infowall-list-item bg-white" data-id="{{info.id}}">
             <div class="row info-box">
                 <span class="col-xs-2">
                     <img src="{{info.admin.accountinfo.headimgurl}}" class="head-img"/>
@@ -35,12 +35,12 @@
                 <span class="nickname">{{info.admin.accountinfo.nickname}}</span>
                  <span class="row address">
                     <span class="col-xs-6">{{info.address}}</span>
-                    <span class="col-xs-4 col-sm-6 text-right text-grey3 time">{{info.create_date_timestamp}}</span>
+                    <span class="col-xs-4 col-sm-6 text-right padding-right-none pull-right text-grey3 time">{{info.create_date_timestamp}}</span>
                 </span>
             </div>
             <div class="info-text">
                 {{info.text}}
-                <a class="text-green" href="{{reverse_url('infowallInfoDetail',info.admin_id)}}">查看全文</a>
+                <a class="text-green" href="{{reverse_url('infowallInfoDetail',info.id)}}">查看全文</a>
             </div>
             <div class="home-fruit-list">
                 {% for fruittype in info.fruit_type%}
@@ -55,7 +55,7 @@
             </div>
             <ul class="funciont-btn-box pull-right">
                 <li class="collection-btn"><a href="javascript:;">收藏<span class="number"></span></a></li>
-                <li><a href="javascript:;">分享</a></li>
+                <li><a href="javascript:;" class="shareTo">分享</a></li>
                 <li><a href="{{reverse_url('infowallInfoDetail',info.admin_id)}}">评论<span class="number"></span></a></li>
             </ul>
         </li>
@@ -67,7 +67,7 @@
     <a href="{{reverse_url('infowallInfoIssue')}}">+</a>
     <a href="javascript:;" id="backToTop">^</a>
 </div>
-<nav class="bottom-nav white-color navbar-fixed-bottom">
+<nav class="bottom-nav white-color navbar-fixed-bottom bg-white">
     <ul class="row select-list">
         <li class="col-xs-3"><a href="{{reverse_url('fruitzoneHome')}}">同行圈子</a></li>
         <li class="col-xs-3"><a href="{{reverse_url('fruitzoneCommunity')}}">社区</a></li>

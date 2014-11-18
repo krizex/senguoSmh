@@ -2,16 +2,7 @@ $(document).ready(function(){
     $('.rejectApply').on('click',function(){$(this).siblings('.reject-box').modal('show');})
     $('.rejectSend').on('click',function(){Reject($(this));});
     $('.passApply').on('click',function(){Pass($(this));});
-    $('.shop-list-item').each(function(){
-        var status=$(this).data('status');
-        if(status=='2')
-            $(this).find('.btn-box').addClass('hidden');
-        else if(status=='3')
-            {
-                $(this).find('.btn-box').addClass('hidden');
-                $('#declineReason').removeClass('hidden');
-            }
-    });
+
 });
 
 

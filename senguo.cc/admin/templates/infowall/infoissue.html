@@ -10,7 +10,7 @@
 </script>
 {% end %}
 <header class="title-box2">
-    <a href="" class="return-btn"></a>
+    <a href="{{reverse_url('infowallHomeSupply')}}" class="return-btn"></a>
     <span class="title">新信息发布</span>
 </header>
 <div class="info-content">
@@ -28,7 +28,7 @@
             <a href="javascript:;" class="add-fruit" data-toggle="modal" data-target="#fruitBox">+</a>
         </ul>
     </div>
-    <div class="upload-box bg-white">
+    <div class="upload-box bg-white hidden">
         <p>上传图片</p>
         <input type="file" class="upload-file" multiple id="fileUpload"/>
         <a href="javascript:;" class="upload-btn">+</a>
