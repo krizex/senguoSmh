@@ -2,6 +2,7 @@ __author__ = 'liaosimin'
 from handlers.base import AdminBaseHandler
 import tornado.web
 import dal.models as models
+from sqlalchemy import desc
 
 class Home(AdminBaseHandler):
     def initialize(self, action):
@@ -9,13 +10,14 @@ class Home(AdminBaseHandler):
 
     def get(self):
         if self._action == "supply":
-            infos = self.session.query(models.Info).filter_by(type = models.INFO_TYPE.SUPPLY).all()
+            q = self.session.query(models.Info).filter_by(type = models.INFO_TYPE.SUPPLY)
         elif self._action == "demand":
-            infos = self.session.query(models.Info).filter_by(type = models.INFO_TYPE.DEMAND).all()
+            q = self.session.query(models.Info).filter_by(type = models.INFO_TYPE.DEMAND)
         elif self._action == "other":
-            infos = self.session.query(models.Info).filter_by(type = models.INFO_TYPE.OTHER).all()
+            q = self.session.query(models.Info).filter_by(type = models.INFO_TYPE.OTHER)
         else:
             return self.send_error(404)
+        infos = q.order_by(desc(models.Info.create_date_timestamp)).all()
         return self.render("infowall/home.html", context=dict(infos=infos,action=self._action))
 
 class InfoDetail(AdminBaseHandler):

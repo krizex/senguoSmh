@@ -12,6 +12,7 @@ from settings import ALIPAY_PID, ALIPAY_KEY, ALIPAY_SELLER_ACCOUNT, ALIPAY_HANDL
 from libs.utils import Logger
 import libs.xmltodict as xmltodict
 import qiniu
+from qiniu.services.storage.bucket import BucketManager
 
 class Home(AdminBaseHandler):
     _page_count =20
@@ -340,6 +341,9 @@ class shopImgCallback(AdminBaseHandler):
         except:
             print(key,admin_id)
             return
+        if not shop.shop_trademark_url:  #把旧的的图片删除
+            m=BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
+            m.delete(bucket=BUCKET_SHOP_IMG,key=shop.shop_trademark_url)
         shop.update(session=self.session, shop_trademark_url="http://shopimg.qiniudn.com/"+key)
 
 class PhoneVerify(AdminBaseHandler):
