@@ -52,13 +52,11 @@ function infoEdit(evt){
         var data=evt.parents('.info-edit').find('.edit-box').val();
         // action 不要放在html里面
         if(action=='edit_email' && !regEmail.test(email))
-        {return alert("邮箱不存在!");}
+            {return alert("邮箱不存在!");}
         else if(action=='edit_sex')
-        {
-            data=sex;
-        }
+            {data=sex;}
         else if(action=='edit_birthday' && !regMonth.test(month)&&!regNumber.test(year))
-        {return alert("请输入正确的年月!");}
+             {return alert("请输入正确的年月!");}
         else if(action=='edit_birthday')
         {
             data={
@@ -67,7 +65,7 @@ function infoEdit(evt){
             }
         }
         var url="/fruitzone/admin/profile";
-        var args={action: action, data: data, _xsrf: window.dataObj._xsrf};
+        var args={action: action, data: data};
         $.postJson(url,args,
             function (res) {
                 console.log(res);
@@ -95,7 +93,7 @@ function Vrify(evt){
     if(!phone){return alert('手机号不能为空');}
 
     var url="/fruitzone/phoneVerify/gencode";
-    var args={"phone":phone,_xsrf: window.dataObj._xsrf};
+    var args={"phone":phone};
     $.postJson(url,args,
         function(res){
             if(res.success)
@@ -128,7 +126,7 @@ function TiePhone(evt){
     if(passwconf!=password){return alert('两次密码输入不一致!')}
     password = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
     var url="/fruitzone/phoneVerify/checkcode";
-    var args={phone:phone,code:code,password:password,_xsrf: window.dataObj._xsrf};
+    var args={phone:phone,code:code,password:password};
     $.postJson(url,args,
         function(res){
             if(res.success)

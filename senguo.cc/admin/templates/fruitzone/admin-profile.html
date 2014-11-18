@@ -113,7 +113,7 @@
                     <a href="javascript:;"  class="pull-right editInfo" id="userIntro">{{current_user.briefintro}}</a>
                 </div>
                 <div class="info-edit" style="display:none;">
-                    <textarea type="text" class="edit-box" placeholder="{{current_user.briefintro or '输入一些个人说明，好多同行想认识你'}}" id="introEdit" value="{{current_user.briefintro  or ''}}"></textarea>
+                    <textarea type="text" class="edit-box" placeholder="输入一些个人说明，好多同行想认识你" id="introEdit">{{current_user.briefintro  or ''}}</textarea>
                     <div class="btn-box">
                         <a href="javascript:;" class="concel-btn">取消</a>
                         <a href="javascript:;" class="sure-btn" data-action="edit_intro">确定</a>
@@ -144,6 +144,8 @@
         </div>
     </div>
 </div>
+{% end %}
+{% block bottom %}
 <script src="{{static_url('js/sha256.js')}}"></script>
 <script src="{{static_url('js/fruitzone-admin-profile.js')}}"></script>
 {% end %}

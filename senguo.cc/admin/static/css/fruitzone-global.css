@@ -10,6 +10,7 @@ a:focus{outline:none;}
 input{border:none;}
 .container{padding:0;}
 .modal-dialog{margin-top:10%!important;}
+p{word-break:break-all;}
 
 .title-box{width:100%;background:#00D681;text-align:center;height:5em;line-height:5em;box-shadow:0px 1px 2px #ccc;position:relative;position:relative;}
 .title-box .phone-box{position:relative;}

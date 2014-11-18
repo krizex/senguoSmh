@@ -37,12 +37,10 @@ function Apply(evt){
     var have_offline_entity=$('#realShop').find('.active').find('a').data('real');
     var shop_service_area=i;
     var shop_intro=$('#shopIntro').val().trim();
-    console.log(shop_province,shop_city);
     if(shop_name.length>20){return alert('店铺名称请不要超过20个字符！')}
     if(shop_address_detail.length>50){return alert('详细地址请不要超过500个字符！')}
     if(shop_intro.length>300){return alert('店铺简介请不要超过300个字符！')}
     if (!shop_name || ! shop_service_area ||!shop_city||!shop_province || !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
-    console.log(shop_province,shop_city);
     var args={
         shop_name:shop_name,
         shop_province:shop_province,
@@ -51,7 +49,6 @@ function Apply(evt){
         have_offline_entity:have_offline_entity,
         shop_service_area:shop_service_area,
         shop_intro:shop_intro,
-        _xsrf: window.dataObj._xsrf
     };
     var url="/fruitzone/shop/apply";
     $.postJson(url,args,
@@ -70,9 +67,7 @@ function Apply(evt){
 }
 
 function reApply(evt){
-    console.log('41455555');
     evt.preventDefault();
-    console.log('41455555');
     var i=0;
     if($('#serverArea li').eq(0).hasClass('active'))
         i+=1;
@@ -102,8 +97,7 @@ function reApply(evt){
         have_offline_entity:have_offline_entity,
         shop_service_area:shop_service_area,
         shop_intro:shop_intro,
-        shop_id:shop_id,
-        _xsrf: window.dataObj._xsrf
+        shop_id:shop_id
     };
     var url="/fruitzone/shop/reApply";
     $.postJson(url,args,

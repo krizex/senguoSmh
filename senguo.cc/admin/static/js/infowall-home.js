@@ -12,7 +12,7 @@ $(document).ready(function(){
         collection(id,target);
     });
 
-    $('#backToTop').on('click',function(){$(document).scrollTop($(this).animate({"top":"0px"}))});
+    $('#backToTop').on('click',function(){$(document).scrollTop($(this).animate({"top":"0px"},50))});
 
     $('.shareTo').on('click',function(){alert('点击右上方分享按钮！')});
 

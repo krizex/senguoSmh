@@ -3,8 +3,7 @@ function FeedBack(){
     var action="feedback";
     var args={
         action:action,
-        feedback_text:feedback,
-        _xsrf: window.dataObj._xsrf
+        feedback_text:feedback
     };
     var url="/fruitzone/admin/home";
     $.postJson(url,args,

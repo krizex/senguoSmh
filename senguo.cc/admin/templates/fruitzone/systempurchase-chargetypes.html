@@ -44,18 +44,20 @@
 </form>
 
 {% end %}
+{% end %}
+{% block bottom %}
 <script>
     $(document).ready(function(){
         $('.list-group-item').on('click',function(){
             var elem = $(this).find('input')[0];
             elem.checked = true;
             if (console){
-               console.log("now checked to ", elem.value);
+                console.log("now checked to ", elem.value);
             }
         });
         $('.list-group-item').last().addClass('active');
     });
 </script>
-{%end%}
+{% end %}
 
 

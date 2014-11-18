@@ -8,14 +8,6 @@ $(document).ready(function(){
     $('#commentPublic').on('click',function(){
         commit();
     });
-
-    $('#shareTimeLine').on('click',function(){
-        var title=$('#infoText').text().substr(1,10);
-        var imgUrl=$('#headImg').attr('src');
-        var link=window.location.href;
-        var desc=$('#infoText').text().substr(1,15);
-        weixinShareTimeline(title,desc,link,imgUrl);
-    })
 });
 
 function commit(){
@@ -24,14 +16,16 @@ function commit(){
     var url="/infowall/infoDetail/comment";
     var args={
         info_id:info_id,
-        text:text,
-        _xsrf: window.dataObj._xsrf
+        text:text
     };
     if(!text){return alert('请输入您的评论！');}
     if(text.length>100){return alert('评论请不要超过100个字！')}
     $.postJson(url,args,function(res){
         if(res.success)
             {
+                var c=document.getElementById('commentNumber');
+                var t= parseInt(c.innerHTML);
+                c.innerHTML=t+1;
                 var comments=res.comment;
                 for(var comment_item in comments)
                 {

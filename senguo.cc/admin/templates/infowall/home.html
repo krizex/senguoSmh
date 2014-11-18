@@ -54,9 +54,22 @@
                 <span class="img-count"><span class="number"></span>张</span>
             </div>
             <ul class="funciont-btn-box pull-right">
-                <li class="collection-btn"><a href="javascript:;">收藏<span class="number"></span></a></li>
+                {% if current_user in info.collected_admins %}
+                <li class="collection-notice">
+                    <a href="javascript:;">
+                        收藏<span class="number">{{len(info.collected_admins)}}</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="collection-btn">
+                    <a href="javascript:;">
+                        收藏
+                        <span class="number">{{len(info.collected_admins)}}</span>
+                    </a>
+                </li>
+                {% end %}
                 <li><a href="javascript:;" class="shareTo">分享</a></li>
-                <li><a href="{{reverse_url('infowallInfoDetail',info.admin_id)}}">评论<span class="number"></span></a></li>
+                <li><a href="{{reverse_url('infowallInfoDetail',info.id)}}">评论<span class="number">{{len(info.comment)}}</span></a></li>
             </ul>
         </li>
         {% end %}
