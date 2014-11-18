@@ -8,9 +8,10 @@ from dal.dis_dict import dis_dict
 import datetime, time, random
 from libs.msgverify import gen_msg_token,check_msg_token
 from libs.alipay import WapAlipay
-from settings import ALIPAY_PID, ALIPAY_KEY, ALIPAY_SELLER_ACCOUNT, ALIPAY_HANDLE_HOST
+from settings import ALIPAY_PID, ALIPAY_KEY, ALIPAY_SELLER_ACCOUNT, ALIPAY_HANDLE_HOST, ACCESS_KEY, SECRET_KEY, BUCKET_SHOP_IMG
 from libs.utils import Logger
 import libs.xmltodict as xmltodict
+import qiniu
 
 class Home(AdminBaseHandler):
     _page_count = 20
@@ -289,7 +290,11 @@ class AdminShop(AdminBaseHandler):
         #如果该店铺不属于该用户，禁止修改
         if shop not in self.current_user.shops:
             return self.send_error(403)
-        if action == "edit_shop_url":
+        if action== "edit_shop_img":
+            q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
+            token = q.upload_token(BUCKET_SHOP_IMG, expires=120, policy={"callbackUrl": self.reverse_url("fruitzoneshopImgCallback"), "callbackBody": "name=$(fname)&shop_id=$(x:shop_id)"})
+            return self.send_success(token=token, key=(time.time()))
+        elif action == "edit_shop_url":
             shop.update(session=self.session, shop_url=data)
         elif action == "edit_live_month":
             year = int(data["year"])
@@ -325,6 +330,17 @@ class AdminShop(AdminBaseHandler):
         else:
             return self.send_error(404)
         return self.send_success()
+
+class shopImgCallback(AdminBaseHandler):
+    def post(self):
+        key = self.get_argument("name")
+        admin_id = self.get_argument("admin_id")
+        try:
+            shop = self.session.query(models.Shop).query_by(id=int(admin_id)).one()
+        except:
+            print(key,admin_id)
+            return
+        shop.update(session=self.session, shop_trademark_url="http://shopimg.qiniudn.com/"+key)
 
 class PhoneVerify(AdminBaseHandler):
 

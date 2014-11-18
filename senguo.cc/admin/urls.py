@@ -107,6 +107,7 @@ handlers = [
     (r"/fruitzone/admin/shops", handlers.fruitzone.AdminShops, {}, "fuirzoneAdminShops"),
     (r"/fruitzone/admin/shopsCollect", handlers.fruitzone.AdminShopsCollect, {}, "fuirzoneAdminShopsCollect"),
     (r"/fruitzone/admin/shop/(\d+)", handlers.fruitzone.AdminShop, {}, "fruitzoneAdminShop"),
+    (r"/fruitzone/shopImgCallback", handlers.fruitzone.shopImgCallback, {}, "fruitzoneshopImgCallback"),
 
     (r"/fruitzone/phoneVerify/gencode", handlers.fruitzone.PhoneVerify, {
         "action":"gencode"}, "fruitzoneVerifyGencode"),

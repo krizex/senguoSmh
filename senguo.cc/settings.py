@@ -25,3 +25,8 @@ ALIPAY_KEY="oknunsvpq83x358worr6obs7zo2h1xxw"
 ALIPAY_SELLER_ACCOUNT = "senguo@senguo.cc"
 ALIPAY_HANDLE_HOST = "http://auth.senguo.cc"
 
+#七牛云的参数
+ACCESS_KEY = "Pm0tzHLClI6iHqxdkCbwlSwHWZycbQoRFQwdqEI_"
+SECRET_KEY = "gCjIMVE_lpW7d2bjI-AdMXDKQeE1bdtKxRInBRTH"
+BUCKET_SHOP_IMG = "shopimg"
+
