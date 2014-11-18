@@ -11,9 +11,6 @@
     <link rel="stylesheet" href="{{static_url('css/fruitzone-global.css')}}"/>
     <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
-    <script src="{{static_url('js/jquery.js')}}"></script>
-    <script src="{{static_url('js/bootstrap.min.js')}}"></script>
-    <script src="{{static_url('js/global.js')}}"></script>
     {% block head %}{% end %}
     <script>
         window.dataObj = {
@@ -24,6 +21,9 @@
 <div class="phone-box">
     {% block content %}{% end %}
 </div>
+<script src="{{static_url('js/jquery.js')}}"></script>
+<script src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script src="{{static_url('js/global.js')}}"></script>
 <script src="{{static_url('js/fruitzone-public.js')}}"></script>
 {% block bottom %}{% end %}
 </body>

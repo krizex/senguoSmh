@@ -294,7 +294,7 @@ class AdminShop(AdminBaseHandler):
         if action== "edit_shop_img":
             q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
             token = q.upload_token(BUCKET_SHOP_IMG, expires=120, policy={"callbackUrl": self.reverse_url("fruitzoneshopImgCallback"), "callbackBody": "name=$(fname)&shop_id=$(x:shop_id)"})
-            return self.send_success(token=token, key=(time.time()))
+            return self.send_success(token=token, key=str(time.time()))
         elif action == "edit_shop_url":
             shop.update(session=self.session, shop_url=data)
         elif action == "edit_live_month":

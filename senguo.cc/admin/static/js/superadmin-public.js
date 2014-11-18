@@ -35,6 +35,7 @@ $(document).ready(function(){
         page++;
         next.attr({'href':url+'?page='+page});
     });
+
 });
 
 

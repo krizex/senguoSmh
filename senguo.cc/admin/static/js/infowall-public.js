@@ -4,14 +4,15 @@ $(document).ready(function(){
             $(this).addClass('active').siblings().removeClass('active');
         });
     });
+    $('.shareTo').on('click',function(){alert('点击右上方按钮分享到朋友圈！')});
+    $('.collection-notice').on('click',function(){alert('您已收藏过该信息！')});
 });
 
 
 function collection(id,target){
     var url="/infowall/infoCollect";
     var args={
-        info_id:id,
-        _xsrf: window.dataObj._xsrf
+        info_id:id
     };
     $.postJson(url,args,function(res){
            if(res.success)
@@ -22,24 +23,6 @@ function collection(id,target){
                target.find('.number').text(parseInt(number)+1);
            }
             else alert('网络错误');
-        }
+        },function(){ return alert('网络错误！');}
 );
-    document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
-        WeixinJSBridge.on('menu:share:timeline', function(argv){
-            share.shareTimeline();
-        });
-
-    }, false);
-
-}
-
-function weixinShareTimeline(title,desc,link,imgUrl){
-    WeixinJSBridge.invoke('shareTimeline',{
-        "img_url":imgUrl,
-        "img_width":"120",
-        "img_height":"120",
-        "link":link,
-        "desc": desc,
-        "title":title
-    });
 }

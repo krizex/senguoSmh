@@ -14,8 +14,7 @@ function Pass(evt){
     var args={
         action:action,
         shop_id:shop_id,
-        new_status:new_status,
-        _xsrf:window.dataObj._xsrf
+        new_status:new_status
     };
     $.postJson(url,args,
         function(res){
@@ -40,8 +39,7 @@ function Reject(evt){
         action:action,
         shop_id:shop_id,
         new_status:new_status,
-        declined_reason:declined_reason,
-        _xsrf:window.dataObj._xsrf
+        declined_reason:declined_reason
     };
     $.postJson(url,args,
         function(res){

@@ -41,8 +41,20 @@
     <p class="info-title">店铺信息</p>
     <div class="info-box1">
         <div class="shop-info-detail row">
-            <div class="logo col-xs-5 col-sm-3">
-                <img src="{{static_url('images/anoa-2-lg.gif')}}"/>
+            <div class="logo col-xs-5 col-sm-3 {{bt_edit_show}}">
+                <div id="shopLogoUpload">
+                    <p class="text-change text-notice">点击修改</p>
+                    <form method="post" action="http://upload.qiniu.com/" enctype="multipart/form-data" id="imgForm">
+                        <img src="{{shop.shop_trademark_url}}" id="logoImg"/>
+                        <input name="key" type="hidden" value="" id="imgKey">
+                        <input name="token" type="hidden" value="" id="imgToken">
+                        <input nanme="x:shop_id" type="hidden" value="{{shop.id}}"/>
+                        <input name="file" type="file"  id="uploadImg"/>
+                     </form>
+                </div>
+            </div>
+            <div class="logo col-xs-5 col-sm-3 {{bt_edit_hide}}">
+                  <img src="{{static_url('images/anoa-2-lg.gif')}}"/>
             </div>
             <div class="info col-xs-7 col-sm-9">
                 <p class="shop-name">{{shop.shop_name}}</p>

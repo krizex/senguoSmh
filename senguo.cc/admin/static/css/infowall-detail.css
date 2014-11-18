@@ -3,7 +3,7 @@
 .info-detail .info-text{padding:0.5em 0;margin-bottom:0.5em;border-bottom:1px solid #ddd;}
 
 .info-detail .info-box{position:relative;}
-.info-detail .info-box .address{position:absolute;bottom:0;left:70px;display:inline-block;width:80%;font-size:0.9em;}
+.info-detail .info-box .address{position:absolute;bottom:0;left:70px;display:inline-block;width:90%;font-size:0.9em;}
 .info-detail .info-box .address span{overflow:hidden;height:1.4em;}
 .info-detail .info-box .nickname{position:absolute;top:0;left:70px;display:inline-block;width:80%;}
 

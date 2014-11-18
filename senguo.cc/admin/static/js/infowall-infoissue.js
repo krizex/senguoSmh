@@ -10,6 +10,7 @@ $(document).ready(function(){
     });
     $('#fruitChoose').on('click',function(){
         var fruittype=$('.fruit-list').find('.active');
+        $('#fruitChooseList').find('li').remove();
        for(var i=0;i<fruittype.length;i++)
            {
                var code=fruittype.eq(i).data('code');
@@ -35,7 +36,6 @@ $(document).ready(function(){
     $('.otherType').on('click',function(){$('#addressEdit').hide();$('.fruit-choose').hide();});
     $('#infoPublic').on('click',function(){infoPublic()});
 
-    $('.')
 
 });
 
@@ -55,8 +55,7 @@ function infoPublic() {
         text: text,
         address:address,
         fruit_type: fruit_type,
-        img_url: img_url,
-        _xsrf: window.dataObj._xsrf
+        img_url: img_url
     };
     $.postJson(url,args,function(res){
         if(res.success)

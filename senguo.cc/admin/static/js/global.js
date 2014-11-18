@@ -7,6 +7,7 @@
 })(jQuery);
 
 $.postJson = function(url, args,successCall, failCall, alwaysCall){
+    args._xsrf = window.dataObj._xsrf;
     var req = $.ajax({
         type:"post",
         url:url,

@@ -20,8 +20,7 @@ function Account(evt){
         system_username:system_username,
         system_password:system_password,
         system_code:system_code,
-        action:action,
-        _xsrf:window.dataObj._xsrf
+        action:action
     };
     $.postJson(url,args,function(res){
         if(res.success)

@@ -28,9 +28,12 @@
             <a href="javascript:;" class="add-fruit" data-toggle="modal" data-target="#fruitBox">+</a>
         </ul>
     </div>
-    <div class="upload-box bg-white hidden">
+    <div class="upload-box bg-white">
         <p>上传图片</p>
-        <input type="file" class="upload-file" multiple id="fileUpload"/>
+        <form action="" method="post">
+            <input name="token" type="hidden" value="<upload_token>">
+            <input type="file" class="upload-file" multiple id="fileUpload"/>
+        </form>
         <a href="javascript:;" class="upload-btn">+</a>
     </div>
     <div class="" id="imgPreview">

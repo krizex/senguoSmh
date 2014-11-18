@@ -23,11 +23,9 @@ $(document).ready(function(){
     $('#PrePage').on('click',function(){
         if(i>1)
         {
-            console.log(i);
             i=i-1;
             if(i==1){$('#PrePage').parents('li').hide();}
             $(this).attr({'data-code':i/20});
-            console.log(i);
             Filter($(this));
             $('#NextPage').parents('li').show();
         }
@@ -52,8 +50,7 @@ function Search(evt){
     var url="/fruitzone/";
     var args={
         q:q,
-        action:action,
-        _xsrf: window.dataObj._xsrf
+        action:action
 
     };
 
@@ -121,17 +118,15 @@ function Filter(evt){
     var url="/fruitzone/";
     var order=evt.parents('.order-by-list').find('.order-by-item').data('action');
     if(order=='cityFilter')
-        {var args = {city: city,action: action,_xsrf: window.dataObj._xsrf}}
+        {var args = {city: city,action: action}}
     else if(order=='areaFilter')
-        {var args = {service_area: service_area,action: action,_xsrf: window.dataObj._xsrf}}
+        {var args = {service_area: service_area,action: action}}
     else if(order=='liveFilter')
-        {var args = {live_month: live_month,action: action,_xsrf: window.dataObj._xsrf}}
+        {var args = {live_month: live_month,action: action}}
     else if(order=='fruitFilter')
-        {var args = {onsalefruit_ids: onsalefruit_ids,action: action,_xsrf: window.dataObj._xsrf};}
+        {var args = {onsalefruit_ids: onsalefruit_ids,action: action};}
     else if(order=='skipFilter')
-        {var args = {skip:skip,action: action,_xsrf: window.dataObj._xsrf};}
-    // 以上args中的action和_xsrf字段可以脱离出来
-    // 事实上postJson你可以重写，把_xsrf参数自动添加进去
+        {var args = {skip:skip,action: action};}
     $.postJson(url,args,
         function(res){
             if(res.success) {

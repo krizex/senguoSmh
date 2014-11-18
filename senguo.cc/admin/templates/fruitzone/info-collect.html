@@ -20,7 +20,8 @@
     </ul>
 </div>
 <ul class="collect-info-list white-color">
-    {% for info in current_user.info%}
+    {% for info in current_user.info_collect%}
+        {% if info %}
         <li>
             <a href="{{reverse_url('infowallInfoDetail',info.id)}}">
                 <img src="{{info.admin.accountinfo.headimgurl}}" class="head-img pull-left"/>
@@ -28,6 +29,9 @@
                 <span class="info-content">{{info.text}}</span>
             </a>
         </li>
+        {% else %}
+            <h3 class="text-center">暂无收藏信息!</h3>
+        {% end %}
     {% end %}
 </ul>
 {% end %}
