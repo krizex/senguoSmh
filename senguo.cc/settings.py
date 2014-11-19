@@ -29,4 +29,6 @@ ALIPAY_HANDLE_HOST = "http://auth.senguo.cc"
 ACCESS_KEY = "Pm0tzHLClI6iHqxdkCbwlSwHWZycbQoRFQwdqEI_"
 SECRET_KEY = "gCjIMVE_lpW7d2bjI-AdMXDKQeE1bdtKxRInBRTH"
 BUCKET_SHOP_IMG = "shopimg"
-
+BUCKET_INFO_IMG = "infoimg"
+SHOP_IMG_HOST = "http://shopimg.qiniudn.com/"
+INFO_IMG_HOST = "http://infoimg.qiniudn.com/"

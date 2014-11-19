@@ -3,6 +3,9 @@ from handlers.base import AdminBaseHandler
 import tornado.web
 import dal.models as models
 from sqlalchemy import desc
+import qiniu
+import time
+from settings import *
 
 class Home(AdminBaseHandler):
     def initialize(self, action):
@@ -17,7 +20,7 @@ class Home(AdminBaseHandler):
             q = self.session.query(models.Info).filter_by(type = models.INFO_TYPE.OTHER)
         else:
             return self.send_error(404)
-        infos = q.order_by(desc(models.Info.create_date_timestamp)).all()
+        infos = q.order_by(desc(models.Info.create_date)).all()
         return self.render("infowall/home.html", context=dict(infos=infos,action=self._action))
 
 class InfoDetail(AdminBaseHandler):
@@ -70,24 +73,28 @@ class InfoIssue(AdminBaseHandler):
         return self.render("infowall/infoissue.html", context=dict(fruit_types=fruit_types))
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("info_type:int", "text:str", "address:str","fruit_type:list", "img_url:list")
+    @AdminBaseHandler.check_arguments("info_type?:int", "text?:str", "address?:str", "fruit_type?:list", "img_key?:list", "action")
     def post(self):
-        info = models.Info()
-        info.type = self.args["info_type"]
-        info.text = self.args["text"]
-        info.address = self.args["address"]
+        if self.args["action"] == "issue_info":
+            info = models.Info()
+            info.type = self.args["info_type"]
+            info.text = self.args["text"]
+            info.address = self.args["address"]
 
-        if self.args["fruit_type"]:
-            for fruit_id in self.args["fruit_type"]:
-                try:
-                    fruit_type = self.session.query(models.FruitType).filter_by(id = fruit_id).one()
-                except:
-                    return self.send_error(404)
-                info.fruit_type.append(fruit_type)
-        if self.args["img_url"]:
-            for img_url in self.args["img_url"]:
-                info.fruit_img.append(models.FruitImg(img_url=img_url))
-        self.current_user.info.append(info)
-        self.session.commit()
-        return self.send_success()
-
+            if self.args["fruit_type"]:
+                for fruit_id in self.args["fruit_type"]:
+                    try:
+                        fruit_type = self.session.query(models.FruitType).filter_by(id = fruit_id).one()
+                    except:
+                        return self.send_error(404)
+                    info.fruit_type.append(fruit_type)
+            if self.args["img_key"]:
+                for key in self.args["img_key"]:
+                    info.fruit_img.append(models.FruitImg(img_url=INFO_IMG_HOST+key))
+            self.current_user.info.append(info)
+            self.session.commit()
+            return self.send_success()
+        elif self.args["action"] == "issue_img":
+            q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
+            token = q.upload_token(BUCKET_INFO_IMG, expires=120, policy={"callbackUrl": "http://auth.senguo.cc/fruitzone/infoImgCallback"})
+            return self.send_success(token=token, key=str(time.time()))

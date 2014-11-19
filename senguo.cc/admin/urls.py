@@ -109,7 +109,8 @@ handlers = [
     (r"/fruitzone/admin/InfoCollect", handlers.infowall.InfoCollect, {}, "fuirzoneAdminInfoCollect"),
 
     (r"/fruitzone/admin/shop/(\d+)", handlers.fruitzone.AdminShop, {}, "fruitzoneAdminShop"),
-    (r"/fruitzone/shopImgCallback", handlers.fruitzone.shopImgCallback, {}, "fruitzoneshopImgCallback"),
+    (r"/fruitzone/shopImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_shop_img"}, "fruitzoneshopImgCallback"),
+    (r"/fruitzone/InfoImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_info_img"}, "fruitzoneInfoImgCallback"),
 
     (r"/fruitzone/phoneVerify/gencode", handlers.fruitzone.PhoneVerify, {
         "action":"gencode"}, "fruitzoneVerifyGencode"),

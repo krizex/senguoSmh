@@ -8,7 +8,7 @@ from dal.dis_dict import dis_dict
 import datetime, time, random
 from libs.msgverify import gen_msg_token,check_msg_token
 from libs.alipay import WapAlipay
-from settings import ALIPAY_PID, ALIPAY_KEY, ALIPAY_SELLER_ACCOUNT, ALIPAY_HANDLE_HOST, ACCESS_KEY, SECRET_KEY, BUCKET_SHOP_IMG
+from settings import *
 from libs.utils import Logger
 import libs.xmltodict as xmltodict
 import qiniu
@@ -288,12 +288,11 @@ class AdminShop(AdminBaseHandler):
         action = self.args["action"]
         data = self.args["data"]
         shop = models.Shop.get_by_id(self.session, shop_id)
-        #如果该店铺不属于该用户，禁止修改
-        if shop not in self.current_user.shops:
+        if shop not in self.current_user.shops:         #如果该店铺不属于该用户，禁止修改
             return self.send_error(403)
         if action== "edit_shop_img":
             q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-            token = q.upload_token(BUCKET_SHOP_IMG, expires=120, policy={"callbackUrl": "http://auth.senguo.cc/fruitzone/shopImgCallback", "callbackBody": "key=$(key)&shop_id=%s"%shop_id})
+            token = q.upload_token(BUCKET_SHOP_IMG, expires=120, policy={"callbackUrl": "http://auth.senguo.cc/fruitzone/shopImgCallback", "callbackBody": "key=$(key)&id=%s"%shop_id})
             return self.send_success(token=token, key=str(time.time())+':'+str(shop_id))
         elif action == "edit_shop_url":
             shop.update(session=self.session, shop_url=data)
@@ -332,21 +331,40 @@ class AdminShop(AdminBaseHandler):
             return self.send_error(404)
         return self.send_success()
 
-class shopImgCallback(AdminBaseHandler):
+class QiniuCallback(AdminBaseHandler):
+
+    def initialize(self, action):
+        self._action = action
+
+
     def post(self):
-        key = self.get_argument("key")
-        shop_id = self.get_argument("shop_id")
-        try:
-            shop = self.session.query(models.Shop).filter_by(id=int(shop_id)).one()
-        except:
-            print(key,shop_id)
-            return
-        if not shop.shop_trademark_url:  #把旧的的图片删除
-            m=BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
-            m.delete(bucket=BUCKET_SHOP_IMG,key=shop.shop_trademark_url)
-        shop.update(session=self.session, shop_trademark_url="http://shopimg.qiniudn.com/"+key)
-        return self.send_success()
-    def check_xsrf_cookie(self):
+        if self._action == "edit_shop_img":
+            key = self.get_argument("key")
+            id = self.get_argument("id")
+            try:
+                shop = self.session.query(models.Shop).filter_by(id=int(id)).one()
+            except:
+                print(key,shop_id)
+                return self.send_error(404)
+            if shop.shop_trademark_url:  #先要把旧的的图片删除
+                m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
+                m.delete(bucket=BUCKET_SHOP_IMG, key=shop.shop_trademark_url)
+            shop.update(session=self.session, shop_trademark_url=SHOP_IMG_HOST+key)
+            return self.send_success()
+        elif self._action == "edit_info_img":
+            # try:
+            #     self.session.query(models.Info).filter_by(id=int(id)).one()
+            # except:
+            #     print("qiniu callback:info id %s don't exit" % id)
+            #     return self.send_error(404)
+            # fruit_img = models.FruitImg(info_id=int(id), img_url=INFO_IMG_HOST+key)
+            # self.session.add(fruit_img)
+            # self.session.commit()
+            return self.send_success()
+        return self.send_error(404)
+
+
+    def check_xsrf_cookie(self):  #必须要复写tornado自带的检查_xsrf 参数，否则回调不成功
         pass
         return
 

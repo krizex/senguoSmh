@@ -617,7 +617,7 @@ class Info(MapBase, _CommonApi):
     #板块类型：供应1、求购2、其他3
     type = Column(Integer, default=INFO_TYPE.SUPPLY)
     #collect_sum = Column(Integer)
-    create_date_timestamp = Column(DateTime, default=func.now())
+    create_date = Column(DateTime, default=func.now())
 
     fruit_img = relationship("FruitImg")
     comment = relationship("Comment")
