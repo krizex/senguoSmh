@@ -293,8 +293,8 @@ class AdminShop(AdminBaseHandler):
             return self.send_error(403)
         if action== "edit_shop_img":
             q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-            token = q.upload_token(BUCKET_SHOP_IMG, expires=120, policy={"callbackUrl": self.reverse_url("fruitzoneshopImgCallback"), "callbackBody": "name=$(fname)&shop_id=$(x:shop_id)"})
-            return self.send_success(token=token, key=str(time.time()))
+            token = q.upload_token(BUCKET_SHOP_IMG, expires=120, policy={"callbackUrl": "http://auth.senguo.cc/fruitzone/shopImgCallback", "callbackBody": "key=$(key)&shop_id=%s"%shop_id})
+            return self.send_success(token=token, key=str(time.time())+':'+str(shop_id))
         elif action == "edit_shop_url":
             shop.update(session=self.session, shop_url=data)
         elif action == "edit_live_month":
@@ -334,17 +334,21 @@ class AdminShop(AdminBaseHandler):
 
 class shopImgCallback(AdminBaseHandler):
     def post(self):
-        key = self.get_argument("name")
-        admin_id = self.get_argument("admin_id")
+        key = self.get_argument("key")
+        shop_id = self.get_argument("shop_id")
         try:
-            shop = self.session.query(models.Shop).query_by(id=int(admin_id)).one()
+            shop = self.session.query(models.Shop).filter_by(id=int(shop_id)).one()
         except:
-            print(key,admin_id)
+            print(key,shop_id)
             return
         if not shop.shop_trademark_url:  #把旧的的图片删除
             m=BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
             m.delete(bucket=BUCKET_SHOP_IMG,key=shop.shop_trademark_url)
         shop.update(session=self.session, shop_trademark_url="http://shopimg.qiniudn.com/"+key)
+        return self.send_success()
+    def check_xsrf_cookie(self):
+        pass
+        return
 
 class PhoneVerify(AdminBaseHandler):
 
