@@ -21,9 +21,9 @@ $(document).ready(function(){
     $('#shareTo').on('click',function(){
         alert('点击右上角分享按钮分享到朋友圈！');
     });
-    document.getElementById('uploadImg').addEventListener('change', handleFileSelect, false);
-});
+   imgUpload();
 
+});
 
 function Remember(sell1,sell2){
     for(var i= 0;i<sell1.length;i++)
@@ -59,17 +59,32 @@ function Collect(){
 
 function imgUpload(){
     var action="edit_shop_img";
-    var data=$('#uploadImg').val();
     var id=$('#headerId').data('shop');
     var url="/fruitzone/admin/shop/"+id;
-    var args={action: action, data: data};
+    var args={action: action};
     $.postJson(url,args,
         function (res) {
             if (res.success) {
-                $('#imgKey').val(res.key);
-                $('#imgToken').val(res.token);
-                var form = document.getElementById('imgForm');
-                form.submit();
+                $('#file_upload').uploadifive(
+                    {
+                        buttonText    : '',
+                        width: '150px',
+                        uploadScript  : 'http://upload.qiniu.com/',
+                        uploadLimit     : 50,
+                        multi    :     false,
+                        fileSizeLimit   : '10MB',
+                        'fileObjName' : 'file',
+                        'removeCompleted' : true,
+                        'formData'     : {
+                            'key':res.key,
+                            'token':res.token
+                        },
+
+                        'onUpload' :function(data){
+                            $('#logoImg').attr({'src':'http://infoimg.qiniudn.com/'+data.key});
+                        }
+
+                    });
             }
         },
         function(){
@@ -156,7 +171,6 @@ function shopEdit(evt){
         $.postJson(url,args,
             function (res) {
                 if (res.success) {
-                    alert('修改成功！');
                     evt.parents('.modal').modal('hide');
                     evt.parents('.editBox').find('.shopShow').text(data);
                     var fruit=window.dataObj.fruit_types;
@@ -175,60 +189,4 @@ function shopEdit(evt){
                 alert('网络错误！');}
         );
     });
-}
-
-function handleFileSelect (evt) {
-console.log('2222');
-    var files = evt.target.files;
-    for (var i = 0, f; f = files[i]; i++) {
-        if (!f.type.match('image.*')) {
-            continue;
-        }
-        var reader = new FileReader();
-        reader.onload = (function(theFile) {
-            return function(e) {
-                console.log(e.target.result);
-                var i = document.getElementById("logoImg");
-                i.src = event.target.result;
-                console.log($(i).width());
-                console.log($(i).height());
-                $(i).css('width','100%');
-//$(i).css('height',$(i).height()/10+'px');
-                console.log($(i).width());
-                console.log($(i).height());
-                var quality = 50;
-                i.src = jic.compress(i,quality).src;
-                console.log(i.src);
-                i.style.display = "block";
-            };
-        })(f);
-        reader.readAsDataURL(f);
-        imgUpload();
-    }
-}
-var jic = {
-    /**
-     * Receives an Image Object (can be JPG OR PNG) and returns a new Image Object compressed
-     * @param {Image} source_img_obj The source Image Object
-     * @param {Integer} quality The output quality of Image Object
-     * @return {Image} result_image_obj The compressed Image Object
-     */
-
-    compress: function(source_img_obj, quality, output_format){
-        var mime_type = "image/jpeg";
-        if(output_format!=undefined && output_format=="png"){
-            mime_type = "image/png";
-        }
-
-        var cvs = document.createElement('canvas');
-        //naturalWidth真实图片的宽度
-        cvs.width = source_img_obj.naturalWidth;
-        cvs.height = source_img_obj.naturalHeight;
-        var ctx = cvs.getContext("2d").drawImage(source_img_obj, 0, 0);
-        var newImageData = cvs.toDataURL(mime_type, quality/100);
-        var result_image_obj = new Image();
-        result_image_obj.src = newImageData;
-        return result_image_obj;
-    }
-
 }

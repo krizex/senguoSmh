@@ -30,10 +30,7 @@
     </div>
     <div class="upload-box bg-white">
         <p>上传图片</p>
-        <form action="" method="post">
-            <input name="token" type="hidden" value="<upload_token>">
-            <input type="file" class="upload-file" multiple id="fileUpload"/>
-        </form>
+        <input id="file_upload" type="file" name="file_upload" class="uploadImg" />
         <a href="javascript:;" class="upload-btn">+</a>
     </div>
     <div class="" id="imgPreview">
@@ -63,5 +60,6 @@
 </div>
 {% end %}
 {% block bottom %}
+<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>
 <script src="{{static_url('js/infowall-infoissue.js')}}"></script>
 {% end %}

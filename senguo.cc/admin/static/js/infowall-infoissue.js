@@ -36,6 +36,7 @@ $(document).ready(function(){
     $('.otherType').on('click',function(){$('#addressEdit').hide();$('.fruit-choose').hide();});
     $('#infoPublic').on('click',function(){infoPublic()});
 
+    imgUpload();
 
 });
 
@@ -47,15 +48,19 @@ function infoPublic() {
     var fruit_list=$('#fruitChooseList').find('li');
     for (var i=0;i<fruit_list.length;i++)
      {fruit_type.push(fruit_list.eq(i).data('code'))}
-    var img_url=[];
+    var img_key=[];
+    var key=$('#imgPreview').find('img').attr('data-key');
+    img_key.push(key);
     if(!text){return alert('请填写发布信息！')}
     var url = "/infowall/infoIssue";
+    var action="issue_info";
     var args = {
         info_type: info_type,
         text: text,
         address:address,
         fruit_type: fruit_type,
-        img_url: img_url
+        action:action,
+        img_key: img_key
     };
     $.postJson(url,args,function(res){
         if(res.success)
@@ -66,4 +71,42 @@ function infoPublic() {
         else alert('网络错误');
     })
 
+}
+
+function imgUpload(){
+    var action="issue_img";
+    var url="/infowall/infoIssue";
+    var args={action: action};
+    $.postJson(url,args,
+        function (res) {
+            if (res.success) {
+                $('#file_upload').uploadifive(
+                    {
+                        buttonText    : '',
+                        width: '150px',
+                        uploadScript  : 'http://upload.qiniu.com/',
+                        uploadLimit     : 50,
+                        multi    :     false,
+                        fileSizeLimit   : '10MB',
+                        'fileObjName' : 'file',
+                        'removeCompleted' : true,
+                        'formData'     : {
+                            'key':res.key,
+                            'token':res.token
+                        },
+
+                        'onUpload' :function(){
+                            $('#imgPreview').prepend('<img data-key='+res.key+'>');
+                            $('#imgPreview').find('img').attr({'src':'http://infoimg.qiniudn.com/'+res.key});
+                        },
+                        'onUploadSuccess':function(){
+
+                        }
+
+                    });
+            }
+        },
+        function(){
+            alert('网络错误！');}
+    );
 }
