@@ -21,7 +21,53 @@ $(document).ready(function(){
     $('#shareTo').on('click',function(){
         alert('点击右上角分享按钮分享到朋友圈！');
     });
-   imgUpload();
+    $('#file_upload').uploadifive(
+        {
+            buttonText    : '',
+            width: '150px',
+            uploadScript  : 'http://upload.qiniu.com/',
+            uploadLimit     : 50,
+            multi    :     false,
+            fileSizeLimit   : '10MB',
+            'fileObjName' : 'file',
+            'removeCompleted' : true,
+            'formData':{
+                'key':'',
+                'token':''
+            },
+            'onUpload' :function(){
+                var key='';
+                var token='';
+                $.ajaxSetup({
+                    async : false
+                });
+                var action="edit_shop_img";
+                var id=$('#headerId').data('shop');
+                var url="/fruitzone/admin/shop/"+id;
+                var args={action: action};
+                $.postJson(url,args,
+                    function (res) {
+                        key=res.key;
+                        token=res.token;
+                    },
+                    function(){
+                        alert('网络错误！');}
+                );
+                $('#file_upload').data('uploadifive').settings.formData = {
+                    'key':key,
+                    'token':token
+                };
+                var filename=$('#shopLogoUpload').find('.filename').text();
+                $('#logoImg').attr({'src':'http://infoimg.qiniudn.com/'+key+'?imageView/1/w/200/h/200'});
+                $('#shopLogoUpload').find('.filename').hide();
+                $('#shopLogoUpload').find('.fileinfo').hide();
+                $('#shopLogoUpload').find('.close').hide();
+            },
+            'onUploadComplete':function(){
+                alert('图像上传成功，如遇网络问题图像无法加载的情况，请刷新页面！');
+            }
+
+        });
 
 });
 
@@ -54,41 +100,6 @@ function Collect(){
         },
         function(){
             alert('网络错误！');}
-    );
-}
-
-function imgUpload(){
-    var action="edit_shop_img";
-    var id=$('#headerId').data('shop');
-    var url="/fruitzone/admin/shop/"+id;
-    var args={action: action};
-    $.postJson(url,args,
-        function (res) {
-            if (res.success) {
-                $('#file_upload').uploadifive(
-                    {
-                        buttonText    : '',
-                        width: '150px',
-                        uploadScript  : 'http://upload.qiniu.com/',
-                        uploadLimit     : 50,
-                        multi    :     false,
-                        fileSizeLimit   : '10MB',
-                        'fileObjName' : 'file',
-                        'removeCompleted' : true,
-                        'formData'     : {
-                            'key':res.key,
-                            'token':res.token
-                        },
-
-                        'onUpload' :function(data){
-                            $('#logoImg').attr({'src':'http://infoimg.qiniudn.com/'+data.key});
-                        }
-
-                    });
-            }
-        },
-        function(){
-             alert('网络错误！');}
     );
 }
 

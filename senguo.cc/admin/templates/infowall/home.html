@@ -17,11 +17,12 @@
 {% end %}
 
 <header class="title-box">
-    <ul class="infowall-nav select-list">
+    <!--<ul class="infowall-nav select-list">
         <li class="bg-white {{supply_active}}"><a href="{{reverse_url('infowallHomeSupply')}}">供应</a></li>
         <li class="bg-white {{demand_active}}"><a href="{{reverse_url('infowallHomeDemand')}}">求购</a></li>
         <li class="bg-white {{other_active}}"><a href="{{reverse_url('infowallHomeOther')}}">其他</a></li>
-    </ul>
+    </ul>-->
+    <span class="title">水果创业者的微社区</span>
 </header>
 
 <div class="info-content">
@@ -50,7 +51,6 @@
             <div class="img-list">
                 {% for fruitimg in info.fruit_img%}
                      <img src="{{fruitimg.img_url}}"/>
-                     <a href="{{fruitimg.img_url}}"></a>
                 {% end %}
                 <span class="img-count"><span class="number"></span>张</span>
             </div>
@@ -83,7 +83,7 @@
 </div>
 <nav class="bottom-nav white-color navbar-fixed-bottom bg-white">
     <ul class="row select-list">
-        <li class="col-xs-3"><a href="{{reverse_url('fruitzoneHome')}}">同行圈子</a></li>
+        <li class="col-xs-3"><a href="{{reverse_url('fruitzoneHome')}}">店铺列表</a></li>
         <li class="col-xs-3"><a href="{{reverse_url('fruitzoneCommunity')}}">社区</a></li>
         <li class="col-xs-3 active"><a href="{{reverse_url('infowallHomeSupply')}}">信息墙</a></li>
         <li class="col-xs-3"><a href="{{reverse_url('fruitzoneAdminHome')}}">个人中心</a></li>

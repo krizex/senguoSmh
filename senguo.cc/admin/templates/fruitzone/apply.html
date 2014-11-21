@@ -37,8 +37,16 @@
         {% else %}
             <input type="text" class="input-box" id="shopName" placeholder="请不要超过20个字"/>
         {% end %}
-        <p class="title" style="display:none">店铺logo<em>*</em>：</p>
-        <a class="upload-img green-color" href="#" style="display:none">点击上传图片</a>
+        <p class="title">店铺logo<em>*</em>：</p>
+        {% if "reApply" in context and context["reApply"] %}
+        <img src="{{shop.shop_trademark_url}}" id="logoImg"/>
+        {% else %}
+        <img src="" id="logoImg" style="display:none;"/>
+        {% end %}
+        <div class="upload-img green-color">
+            <input id="file_upload" type="file" name="file_upload" class="uploadImg" />
+            <p>点击上传图片</p>
+        </div>
         <p class="title">详细地址<em>*</em>：</p>
         <div class="better-address">
             <div class="dropdown select-provience pull-left" data-toggle="modal" data-target="#provinceList">
@@ -101,7 +109,7 @@
         {% end %}
     </div>
     <div class="info-box">
-        <p class="title">是否接入森果后台系统：<a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200343770&idx=1&sn=1230c48bb781da7d7e63d5dc804cbf10#rd" class="to-know">了解一下</a></p>
+        <!--<p class="title">是否接入森果后台系统：<a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200343770&idx=1&sn=1230c48bb781da7d7e63d5dc804cbf10#rd" class="to-know">了解一下</a></p>-->
         {% if "reApply" in context and context["reApply"] %}
         <input type="submit" value="提交申请" class="green" id="submitReapply"/>
         {% else %}
@@ -155,6 +163,7 @@
 {% end %}
 {% end %}
 {% block bottom %}
+<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>
 <script src="{{static_url('js/area.js')}}"></script>
 <script src="{{static_url('js/fruitzone-apply.js')}}"></script>
 {% end %}

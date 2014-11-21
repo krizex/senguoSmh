@@ -232,10 +232,12 @@ class ShopApply(AdminBaseHandler):
             shop.update(session=self.session,shop_status = models.SHOP_STATUS.APPLYING)
             return self.send_success()
 
-        elif self._action == "add_img":
-            q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-            token = q.upload_token(BUCKET_SHOP_IMG, expires=120)
-            return self.send_success(token=token, key=str(time.time()))
+class ShopApplyImg(AdminBaseHandler):
+    @tornado.web.authenticated
+    def post(self):
+        q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
+        token = q.upload_token(BUCKET_SHOP_IMG, expires=120)
+        return self.send_success(token=token, key=str(time.time()))
 
 class Shop(AdminBaseHandler):
     def get(self,id):
