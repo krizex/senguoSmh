@@ -185,7 +185,7 @@ class ShopApply(AdminBaseHandler):
         "shop_name", "shop_id?:int",
         "shop_province:int", "shop_city:int", "shop_address_detail",
         "have_offline_entity:bool", "shop_service_area:int",
-        "shop_intro")
+        "shop_intro", "img_key")
     def post(self):
         #* todo 检查合法性
 
@@ -201,7 +201,8 @@ class ShopApply(AdminBaseHandler):
                   shop_address_detail=self.args["shop_address_detail"],
                   have_offline_entity=self.args["have_offline_entity"],
                   shop_service_area=self.args["shop_service_area"],
-                  shop_intro=self.args["shop_intro"]
+                  shop_intro=self.args["shop_intro"],
+                  shop_trademark_url=SHOP_IMG_HOST+self.args["img_key"]
                )
             except DistrictCodeError as e:
                return self.send_fail(error_text = "城市编码错误！")
@@ -224,8 +225,17 @@ class ShopApply(AdminBaseHandler):
             shop.update(session=self.session,have_offline_entity = self.args["have_offline_entity"])
             shop.update(session=self.session,shop_service_area = self.args["shop_service_area"])
             shop.update(session=self.session,shop_intro = self.args["shop_intro"])
+            if shop.shop_trademark_url:  #先要把旧的的图片删除
+                m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
+                m.delete(bucket=BUCKET_SHOP_IMG, key=shop.shop_trademark_url.split('/')[3])
+            shop.update(session=self.session,shop_trademark_url = SHOP_IMG_HOST+self.args["img_key"])
             shop.update(session=self.session,shop_status = models.SHOP_STATUS.APPLYING)
             return self.send_success()
+
+        elif self._action == "add_img":
+            q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
+            token = q.upload_token(BUCKET_SHOP_IMG, expires=120)
+            return self.send_success(token=token, key=str(time.time()))
 
 class Shop(AdminBaseHandler):
     def get(self,id):

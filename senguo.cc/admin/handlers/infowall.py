@@ -73,11 +73,11 @@ class InfoIssue(AdminBaseHandler):
         return self.render("infowall/infoissue.html", context=dict(fruit_types=fruit_types))
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("info_type?:int", "text?:str", "address?:str", "fruit_type?:list", "img_key?:list", "action")
+    @AdminBaseHandler.check_arguments("text?:str", "address?:str", "fruit_type?:list", "img_key?:list", "action")
     def post(self):
         if self.args["action"] == "issue_info":
             info = models.Info()
-            info.type = self.args["info_type"]
+            #info.type = self.args["info_type"]
             info.text = self.args["text"]
             info.address = self.args["address"]
 
