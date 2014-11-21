@@ -96,5 +96,5 @@ class InfoIssue(AdminBaseHandler):
             return self.send_success()
         elif self.args["action"] == "issue_img":
             q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-            token = q.upload_token(BUCKET_INFO_IMG, expires=120, policy={"callbackUrl": "http://auth.senguo.cc/fruitzone/infoImgCallback"})
+            token = q.upload_token(BUCKET_INFO_IMG, expires=120)
             return self.send_success(token=token, key=str(time.time()))

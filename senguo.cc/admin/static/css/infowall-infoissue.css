@@ -22,6 +22,8 @@
 .upload-box:hover{cursor:pointer;}
 .upload-box .upload-file{position:absolute;width:100%;height:100%;top:0;left:0;z-index:999;}
 .upload-box .upload-btn{position:absolute;width:100%;height:100%;top:0;left:0;z-index:2;text-align:center;font-size:4em;}
+.uploadifive-button{width:100% !important;}
+.uploadifive-button input[type=file]{width:100%;}
 
 .public-btn{text-align:center;width:100%;float:left;padding-top:1em;}
 .public-btn a{display:inline-block;width:30%;color:#fff;}

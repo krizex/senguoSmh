@@ -349,7 +349,7 @@ class QiniuCallback(AdminBaseHandler):
                 return self.send_error(404)
             if shop.shop_trademark_url:  #先要把旧的的图片删除
                 m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
-                m.delete(bucket=BUCKET_SHOP_IMG, key=shop.shop_trademark_url)
+                m.delete(bucket=BUCKET_SHOP_IMG, key=shop.shop_trademark_url.split('/')[3])
             shop.update(session=self.session, shop_trademark_url=SHOP_IMG_HOST+key)
             return self.send_success()
         elif self._action == "edit_info_img":
