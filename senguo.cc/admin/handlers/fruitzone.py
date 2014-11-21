@@ -292,7 +292,8 @@ class AdminShop(AdminBaseHandler):
             return self.send_error(403)
         if action== "edit_shop_img":
             q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-            token = q.upload_token(BUCKET_SHOP_IMG, expires=120, policy={"callbackUrl": "http://auth.senguo.cc/fruitzone/shopImgCallback", "callbackBody": "key=$(key)&id=%s"%shop_id})
+            token = q.upload_token(BUCKET_SHOP_IMG, expires=120, policy={"callbackUrl": "http://auth.senguo.cc/fruitzone/shopImgCallback",
+                                                                         "callbackBody": "key=$(key)&id=%s" % shop_id, "mimeLimit": "image/*"})
             return self.send_success(token=token, key=str(time.time())+':'+str(shop_id))
         elif action == "edit_shop_url":
             shop.update(session=self.session, shop_url=data)
