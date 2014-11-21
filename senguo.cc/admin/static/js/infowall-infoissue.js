@@ -82,6 +82,7 @@ $(document).ready(function(){
 
             },
             'onUploadComplete':function(){
+                alert('上传成功！');
                 $('#imgPreview').find('img').each(function(){$(this).on('click',function(){$(this).remove()});});
             }
 

@@ -25,7 +25,7 @@
 .detail-box .sell-fruit-list .fruitsty:hover{cursor:pointer;}
 .detail-box .buy-fruit-list .fruitsty{float:left;border:1px solid #ddd;width:60px;margin-right:1%;text-align:center;color:#00D289;background:#f2f2f2;margin-right:1%;margin-bottom:0.5em;padding:0.1em 0;}
 .detail-box .buy-fruit-list .fruitsty:hover{cursor:pointer;}
-.detail-box .focus-btn{margin-top:0.5em;display:inline-block;border:1px solid #00D289;width:100%;padding:0.8em 0;text-align:center;color:#00D289;}
+.detail-box .focus-btn{margin-top:1.2em;display:inline-block;border:1px solid #00D289;width:100%;padding:0.8em 0;text-align:center;color:#00D289;}
 .detail-box .pricipal-info{margin-bottom:0.5em;width:100%;float:left;}
 .detail-box .pricipal-info img{width:5em;height:5em;margin-right:1em;}
 .detail-box .pricipal-info .info1{margin-bottom:1em;margin-top:0.5em;}
