@@ -66,6 +66,7 @@ function Search(evt){
                 {
                     var timenow=new Date().getTime()/1000;
                     var shopid=shops[shop]["id"];
+                    var shoplogo=shops[shop]['shop_trademark_url'];
                     var shopname =shops[shop]["shop_name"];
                     var livetime=shops[shop]['shop_start_timestamp'];
                     var province=shops[shop]['shop_province'];
@@ -78,7 +79,9 @@ function Search(evt){
                     if(city!=province){cittext=cityArea(province,city);}
                     else{cittext=''}
                     if(!wxusername){wxusername='无'}
-                    var $list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-7-md.gif"/></div><div class="shop-info pull-left"><p class="list-info1"><span class="shop-name w1 pull-left"></span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"></em><em data="'+city+'" id="filterCity"></em></span></p><p class="list-info2">运营时间：<span class="live-time"></span>月</p><p class="list-info3"><span class="shop-owner w1 pull-left">负责人：<span class="owner-name"></span></span><span class="w2 wechat-code pull-left"></span></p></div></a></li>');
+                    var $list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src=""/></div><div class="shop-info pull-left"><p class="list-info1"><span class="shop-name w1 pull-left"></span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"></em><em data="'+city+'" id="filterCity"></em></span></p><p class="list-info2">运营时间：<span class="live-time"></span>月</p><p class="list-info3"><span class="shop-owner w1 pull-left">负责人：<span class="owner-name"></span></span><span class="w2 wechat-code pull-left"></span></p></div></a></li>');
+                    if(!shoplogo){$list.find(".shop-logo").find('img').attr({'src':'/static/images/anoa-7-md.gif'});}
+                    else $list.find(".shop-logo").find('img').attr({'src':shoplogo});
                     $list.find(".shop-name").text(shopname);
                     $list.find("#filterProvince").text(protext);
                     $list.find("#filterCity").text(cittext);
@@ -138,6 +141,7 @@ function Filter(evt){
                 {
                     var timenow=new Date().getTime()/1000;
                     var shopid=shops[shop]["id"];
+                    var shoplogo=shops[shop]['shop_trademark_url'];
                     var shopname =shops[shop]["shop_name"];
                     var livetime=shops[shop]['shop_start_timestamp'];
                     var province=shops[shop]['shop_province'];
@@ -150,7 +154,9 @@ function Filter(evt){
                     if(city!=province){cittext=cityArea(province,city);}
                     else{cittext=''}
                     if(!wxusername){wxusername='无'}
-                    var $list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src="/static/images/anoa-7-md.gif"/></div><div class="shop-info pull-left"><p class="list-info1"><span class="shop-name w1 pull-left"></span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"></em><em data="'+city+'" id="filterCity"></em></span></p><p class="list-info2">运营时间：<span class="live-time"></span>月</p><p class="list-info3"><span class="shop-owner w1 pull-left">负责人：<span class="owner-name"></span></span><span class="w2 wechat-code pull-left"></span></p></div></a></li>');
+                    var $list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src=""/></div><div class="shop-info pull-left"><p class="list-info1"><span class="shop-name w1 pull-left"></span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"></em><em data="'+city+'" id="filterCity"></em></span></p><p class="list-info2">运营时间：<span class="live-time"></span>月</p><p class="list-info3"><span class="shop-owner w1 pull-left">负责人：<span class="owner-name"></span></span><span class="w2 wechat-code pull-left"></span></p></div></a></li>');
+                    if(!shoplogo){$list.find(".shop-logo").find('img').attr({'src':'/static/images/anoa-7-md.gif'});}
+                    else $list.find(".shop-logo").find('img').attr({'src':shoplogo});
                     $list.find(".shop-name").text(shopname);
                     $list.find("#filterProvince").text(protext);
                     $list.find("#filterCity").text(cittext);
