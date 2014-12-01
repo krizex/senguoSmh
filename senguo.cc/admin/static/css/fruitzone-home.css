@@ -54,7 +54,7 @@
 .shop-list-content .shop-list{width:100%;float:left;}
 .shop-list-content .shop-list li{position:relative;width:100%;float:left;border-bottom:1px solid #ddd;padding:0.5em;margin-bottom:0.5em;background:url("../images/next-black-2px.png") no-repeat 98% center;background-color:#fff;}
 .shop-list-content .shop-list li a{display:block;}
-.shop-list-content .shop-list .shop-logo{width:22%;}
+.shop-list-content .shop-list .shop-logo{width:22%;max-height:138px;overflow:hidden;}
 .shop-list-content .shop-list .shop-logo img{width:100%;}
 .shop-list-content .shop-list .shop-info{width:70%;color:#333;height:auto;margin-left:0.5em;}
 .shop-list-content .shop-list .shop-info p{font-size:1.5em;display:inline-block;margin-bottom:0;}
