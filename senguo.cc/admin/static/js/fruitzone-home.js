@@ -16,28 +16,28 @@ $(document).ready(function(){
     $('.order-by-area').find('li').each(function(){$(this).on('click',function(){Filter($(this));});});
     $('.order-by-time').find('li').each(function(){$(this).on('click',function(){Filter($(this));});});
     $('#orderByFruit').on('click',function(){Filter($(this));});
-    var i=1;
-    if(i==1){$('#PrePage').parents('li').hide();}
-    var shoplen=$('#homeShopList').find('li').length;
-    if(shoplen<20){$('#NextPage').parents('li').hide();}
+
+    var skip_num=0;
+    if(skip_num==0){$('#PrePage').parents('li').hide();}
     $('#PrePage').on('click',function(){
-        if(i>1)
+        $('#NextPage').parents('li').show();
+        skip_num-=list_item_num;
+        if(skip_num<=0)
         {
-            i=i-1;
-            if(i==1){$('#PrePage').parents('li').hide();}
-            $(this).attr({'data-code':i/20});
-            Filter($(this));
-            $('#NextPage').parents('li').show();
+            skip_num=0;
+            $('#PrePage').parents('li').hide();
         }
+        $(this).attr({"data-code":skip_num});
+        Filter($(this));
 
     });
     $('#NextPage').on('click',function(){
-            var len=$('#homeShopList').find('li').length;
-            $(this).attr({'data-code':i*20});
-            if(len<20){i=i;$('#NextPage').parents('li').hide();}
-            else i=i+1;
+            skip_num+=list_item_num;
+            $(this).attr({"data-code":skip_num});
             Filter($(this));
             $('#PrePage').parents('li').show();
+            if(list_num.length<list_item_num){$('#NextPage').parents('li').hide();}
+            else $('#NextPage').parents('li').show();
     });
     $('.willOpen').on('click',function(){alert('即将开放，敬请期待！')});
 
@@ -62,6 +62,13 @@ function Search(evt){
             {
                 $('#homeShopList').empty();
                 var shops=res.shops;
+                list_num=res.shops;
+                console.log(list_num.length);
+                if(list_num.length<list_item_num)
+                {
+                    $('#NextPage').parents('li').hide();
+                    $('#PrePage').parents('li').hide();
+                }
                 for(var shop in shops)
                 {
                     var timenow=new Date().getTime()/1000;
@@ -104,7 +111,8 @@ function Search(evt){
     );
 }
 
-
+var list_num=[];
+var list_item_num=$('#homeShopList').find('li').length;
 function Filter(evt){
     var action='filter';
     var city=evt.data('code');
@@ -129,10 +137,19 @@ function Filter(evt){
     else if(order=='fruitFilter')
         {var args = {onsalefruit_ids: onsalefruit_ids,action: action};}
     else if(order=='skipFilter')
-        {var args = {skip:skip,action: action};}
+        {var args = {skip:skip,action: action};$.ajaxSetup({async: false})}
     $.postJson(url,args,
         function(res){
             if(res.success) {
+                list_num=res.shops;
+                console.log(list_num.length);
+                if(list_num.length<list_item_num)
+                    {
+                        $('#NextPage').parents('li').hide();
+                        $('#PrePage').parents('li').hide();
+                    }
+                else  $('#NextPage').parents('li').show();
+                console.log(list_num);
                 evt.parents('.order-by-list').hide();
                 $('.home-pagination').show();
                 $('#homeShopList').empty();
