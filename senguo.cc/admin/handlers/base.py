@@ -8,6 +8,7 @@ from settings import KF_APPID, KF_APPSECRET, APP_OAUTH_CALLBACK_URL, MP_APPID, M
 import tornado.escape
 from dal.dis_dict import dis_dict
 import time
+import re
 
 class GlobalBaseHandler(BaseHandler):
 
@@ -211,7 +212,7 @@ class WxOauth2:
                 urllib.request.urlopen(userinfo_url).read().decode("utf-8"))
             userinfo_data = dict(
                 openid=data["openid"],
-                nickname=data["nickname"],
+                nickname=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["nickname"]),#过滤掉Emoji，否则数据库报错
                 sex=data["sex"],
                 province=data["province"],
                 city=data["city"],
