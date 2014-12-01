@@ -56,7 +56,7 @@
                 <p>{{handler.code_to_text("shop_city",shop.shop_city)}}</p>
                 <p>服务区域：{{handler.code_to_text("service_area",shop.shop_service_area)}}</p>
                 <p>店面：<span data-real="{{shop.have_offline_entity}}" id="detailsReal"></span></spanb></p>
-                <small class="text-red">部分手机浏览器会出现图像上传失败，建议更换浏览器或使用电脑上传！</small>
+                <small class="text-red {{bt_edit_show}}">部分手机浏览器会出现图像上传失败，建议更换浏览器或使用电脑上传！</small>
             </div>
            <div class="collect-box">
                {% if current_user %}
