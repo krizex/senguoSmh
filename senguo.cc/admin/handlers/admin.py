@@ -117,9 +117,9 @@ class Shelf(AdminBaseHandler):
         if shop not in self.current_user.shops:
             return self.send_error(403)
         if self._action == "single_item":
-            return self.render("", single_items = shop.single_items)
+            return self.render("admin/goods-fruit.html", single_items = shop.single_items,context=dict(subpage="goods",goodsSubpage="fruit"))
         elif self._action == "package":
-            return self.render("", packages = shop.packages)
+            return self.render("admin/goods-package.html", packages = shop.packages,context=dict(subpage="goods",goodsSubpage="package"))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")

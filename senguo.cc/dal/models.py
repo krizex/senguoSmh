@@ -367,7 +367,7 @@ class Shop(MapBase, _CommonApi):
     wx_qr_code = Column(String(1024))
 
     staffs = relationship("ShopStaff")
-    single_Items = relationship("SingleItem", uselist=True)
+    single_items = relationship("SingleItem", uselist=True)
     packages = relationship("Package", uselist=True)
 
     def __repr__(self):

@@ -51,18 +51,20 @@
                     </a>
                 </li>
                 <li class="area-info">
-                    <img src="{{static_url('images/test-img.jpg')}}" class="admin-img height50 pull-left"/>
+                    <img src="{{current_user.accountinfo.headimgurl}}" class="admin-img height50 pull-left"/>
                     <div class="admin-info area pull-right">
                         <div class="dropdown  area pull-left">
                             <button class="btn btn-default dropdown-toggle area height25 border-none" type="button" id="dropdownMenu1" data-toggle="dropdown">
+                                {{current_user.shops[0].shop_name}}
                                 <span class="caret pull-right"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Action</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Action</a></li>
+                                {% for shop in current_user.shops%}
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">{{shop.shop_name}}</a></li>
+                                {% end %}
                             </ul>
                         </div>
-                        <p class="job pull-left">森果店小二</p>
+                        <p class="job pull-left">{{current_user.accountinfo.nickname}}</p>
                     </div>
                 </li>
             </ul>
@@ -70,6 +72,12 @@
     </div>
 </div>
 <!--backstage-header-end-->
+{% set subpage = context.get("subpage", "charge")%}
+{% set goods_active = ""%}
+
+{% if subpage == 'goods'%}
+    {% set goods_active = 'active'%}
+{% end %}
 <div class="container">
     <div class="container-left pull-left">
         <ul class="nav common-left-nav">
@@ -87,7 +95,7 @@
             <li>
                 <span class="manage"><i></i>管理</span>
                 <a href="admin-orders.html">订单管理</a>
-                <a href="">商品管理</a>
+                <a href="{{reverse_url('adminShelfSingleItem',current_user.shops[0].id)}}" class="{{goods_active}}">商品管理</a>
                 <a href="admin-users.html">用户管理</a>
                 <a href="admin-staff.html">员工管理</a>
                 <a href="#">财务管理</a>
@@ -107,6 +115,7 @@
 
 <script src="{{static_url('js/jquery.js')}}"></script>
 <script src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script src="{{static_url('js/global.js')}}"></script>
 {% block bottom %}{% end %}
 </body>
 </html>
