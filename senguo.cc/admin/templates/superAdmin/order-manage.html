@@ -98,7 +98,7 @@
                             </span>
                         </p>
                         <p>
-                            {% if orders.order_status==models.ORDER_STATUS.SUCCESS and orders.have_read==False%}
+                            {% if orders.order_status==models.SYS_ORDER_STATUS.SUCCESS and orders.have_read==False%}
                             <button type="button" class="btn-green set-btn setAccount">设置商城后台账户</button>
                             {% end %}
                         </p>

@@ -358,7 +358,6 @@ class QiniuCallback(AdminBaseHandler):
             try:
                 shop = self.session.query(models.Shop).filter_by(id=int(id)).one()
             except:
-                print(key,shop_id)
                 return self.send_error(404)
             if shop.shop_trademark_url:  #先要把旧的的图片删除
                 m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
@@ -374,6 +373,18 @@ class QiniuCallback(AdminBaseHandler):
             # fruit_img = models.FruitImg(info_id=int(id), img_url=INFO_IMG_HOST+key)
             # self.session.add(fruit_img)
             # self.session.commit()
+            return self.send_success()
+        elif self._action == "edit_single_item_img":
+            key = self.get_argument("key")
+            id = self.get_argument("id")
+            try:
+                single_item = self.session.query(models.SingleItem).filter_by(id=int(id)).one()
+            except:
+                return self.send_error(404)
+            if single_item.img_url:  #先要把旧的的图片删除
+                m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
+                m.delete(bucket=BUCKET_SINGLE_ITEM_IMG, key=single_item.img_url.split('/')[3])
+            single_item.update(session=self.session, img_url=SHOP_SINFLE_ITEM_HOST+key)
             return self.send_success()
         return self.send_error(404)
 
@@ -424,8 +435,8 @@ class SystemPurchase(AdminBaseHandler):
                 return self.redirect(
                     self.reverse_url("fruitzoneSystemPurchaseChargeTypes"))
         elif self._action == "chargeTypes":
-            charge_types = self.session.query(models.ChargeType).\
-                           order_by(models.ChargeType.id).all()
+            charge_types = self.session.query(models.SysChargeType).\
+                           order_by(models.SysChargeType.id).all()
             return self.render("fruitzone/systempurchase-chargetypes.html",
                                context=dict(charge_types=charge_types))
         elif self._action == "chargeDetail":
@@ -434,7 +445,7 @@ class SystemPurchase(AdminBaseHandler):
                 charge_type_id = int(self.get_argument("charge_type"))
             except:
                 return self.write("抱歉，此商品不存在呵呵(#‵′)凸")
-            charge_type = models.ChargeType.get_by_id(
+            charge_type = models.SysChargeType.get_by_id(
                 self.session, charge_type_id)
             if not charge_type:
                 return self.write("抱歉，此商品不存在呵呵(#‵′)凸")
@@ -490,7 +501,7 @@ class SystemPurchase(AdminBaseHandler):
     def handle_confirm_payment(self):
         if self.args["pay_type"] == "alipay":
             # 判断charge_type合法性，不合法从新返回接入申请页
-            charge_data = models.ChargeType.get_by_id(self.session, self.args["charge_type"])
+            charge_data = models.SysChargeType.get_by_id(self.session, self.args["charge_type"])
             if not charge_data:
                 return self.send_fail(error_text="抱歉，此商品不存在呵呵(#‵′)凸")
             # 创建临时订单，跳转到支付宝支付页
