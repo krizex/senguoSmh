@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, func, ForeignKey, Column
-from sqlalchemy.types import String, Integer, Text, Boolean, Float, Date, BigInteger, DateTime
+from sqlalchemy.types import String, Integer, Text, Boolean, Float, Date, BigInteger, DateTime, Time , SMALLINT
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -53,6 +53,21 @@ class INFO_TYPE:
     SUPPLY = 1
     DEMAND = 2
     OTHER = 3
+
+class ORDER_STATUS:
+    """订单状态"""
+    DELETED = 0
+    ORDERED = 1
+    JH = 2
+    SH1 = 3
+    SH2 = 4
+    FINISH = 5
+    AFTER_SALE = 6
+
+class ORDER_TYPE:
+    """订单类型"""
+    NOW = 1
+    ON_TIME = 2
 
 
 ## TODO: 账户支付及账户升级功能
@@ -351,6 +366,7 @@ class Shop(MapBase, _CommonApi):
     wx_nickname = Column(String(128))
     wx_qr_code = Column(String(1024))
 
+    staffs = relationship("ShopStaff")
 
     def __repr__(self):
         return "<Shop: {0} (id={1}, code={2})>".format(
@@ -393,7 +409,7 @@ class ShopAdmin(MapBase, _AccountApi):
         if not hasattr(self, "_success_orders"):
             self._success_orders = session.query(SystemOrder).\
                                    filter_by(admin_id=self.id, 
-                                             order_status=ORDER_STATUS.SUCCESS
+                                             order_status=SYS_ORDER_STATUS.SUCCESS
                                    ).all()
         return self._success_orders
 
@@ -430,10 +446,10 @@ class ShopAdmin(MapBase, _AccountApi):
             return None
         t_now = int(time.time())
         # TODO 改成事物性处理，不用update来实现
-        if o.order_status == ORDER_STATUS.SUCCESS:
+        if o.order_status == SYS_ORDER_STATUS.SUCCESS:
             return o
         # 更新订单状态
-        o.update(session, order_status=ORDER_STATUS.SUCCESS, ali_trade_no=ali_trade_no)
+        o.update(session, order_status=SYS_ORDER_STATUS.SUCCESS, ali_trade_no=ali_trade_no)
 
         if self.role != SHOPADMIN_ROLE_TYPE.SYSTEM_USER:
             self.role = SHOPADMIN_ROLE_TYPE.SYSTEM_USER
@@ -464,13 +480,22 @@ class ShopAdmin(MapBase, _AccountApi):
         return "<ShopAdmin (nickname, id)>".format(self.accountinfo.nickname, 
                                                    self.id)
 
-
+#todo:责任区域
 class ShopStaff(MapBase, _AccountApi):
     __tablename__ = "shop_staff"
     __relationship_props__ = ["accountinfo"]
     id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
-    accountinfo = relationship(Accountinfo)
+    shop_id = Column(Integer, ForeignKey(Shop.id))
 
+    address = Column(String(100))
+    num = Column(Integer) #编号
+    work = Column(SMALLINT)
+    address1 = Column(String(100)) #责任区域一级地址（可多选，空格隔开）
+    address2 = Column(String(200)) #二级
+    remark = Column(String(500))
+
+    accountinfo = relationship(Accountinfo)
+    orders = relationship("Order") #分配给的员工的订单
 
 class Customer(MapBase, _AccountApi):
     __tablename__ = "customer"
@@ -480,6 +505,8 @@ class Customer(MapBase, _AccountApi):
 
     balance = Column(Float, default=0)
     credits = Column(Float, default=0)
+
+    orders = relationship("Order")
     addresses = relationship("Address", backref="customer")
 
 class COUNTER_TYPE:
@@ -492,7 +519,7 @@ class Counter(MapBase):
     # 初始化数据的时间戳
     init_date = Column(Date, nullable=False)
 
-class ORDER_STATUS:
+class SYS_ORDER_STATUS:
     TEMP = 1
     SUCCESS = 2
     ABORTED = 3
@@ -561,7 +588,7 @@ class SystemOrder(MapBase, _CommonApi):
 
     # 订单id， 构成如"年月日订单当日编号", 2014110700001
     order_id = Column(BigInteger, nullable=False, unique=True, primary_key=True)
-    order_status = Column(Integer, nullable=False, default=ORDER_STATUS.TEMP)
+    order_status = Column(Integer, nullable=False, default=SYS_ORDER_STATUS.TEMP)
     # 下单人
     admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
     admin  = relationship("ShopAdmin")
@@ -600,10 +627,29 @@ class Address(MapBase,  _CommonApi):
     __tablename__ = "address"
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    customer_id = Column(Integer, ForeignKey(Customer.id))
     phone = Column(String(30), nullable=False)
     receiver = Column(String(64), nullable=False)
     address_text = Column(String(1024), nullable=False)
-    owner_id = Column(Integer, ForeignKey(Customer.id))
+
+#一级地址
+class Address1(MapBase, _CommonApi):
+    __tablename__ = "address1"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    config_id = Column(Integer, ForeignKey(Config.id), nullable=False)
+    name = Column(String(50))
+    active = Column(Boolean, default=True)
+    address2 = relationship("Address2")
+#二级地址
+class Address2(MapBase, _CommonApi):
+    __tablename__ = "address2"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    address1_id = Column(Integer, ForeignKey(Address1.id), nullable=False)
+    name = Column(String(50))
+    active = Column(Boolean, default=True)
+
 
 #信息墙＝＝＝＝
 class Info(MapBase, _CommonApi):
@@ -687,6 +733,22 @@ class ShopDemandfruitLink(MapBase):
     shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
     fruit_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
 
+class OrderSingleItemLink(MapBase):
+    __tablename__ = "order_single_item_link"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    order_id = Column(Integer, ForeignKey(Order.id), nullable=False)
+    single_item_id = Column(Integer, ForeignKey(SingleItem.id), nullable=False)
+    num = Column(Integer) #单品数量
+
+class OrderPackageLink(MapBase):
+    __tablename__ = "order_package_link"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    order_id = Column(Integer, ForeignKey(Order.id), nullable=False)
+    single_item_id = Column(Integer, ForeignKey(Package.id), nullable=False)
+    num = Column(Integer) #套餐数量
+
 class ShopsCollect(MapBase, _CommonApi):
     __tablename__ = "shops_collect"
 
@@ -703,8 +765,8 @@ class Feedback(MapBase, _CommonApi):
     text = Column(String(500))
     processed = Column(Boolean, default=False)
 
-class ChargeType(MapBase, _CommonApi):
-    __tablename__ = "charge_type"
+class SysChargeType(MapBase, _CommonApi):
+    __tablename__ = "sys_charge_type"
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     # 商品名，如“森果商城系统1.0（三个月套餐）”
@@ -731,6 +793,113 @@ class _VerifyCode(MapBase):
     create_time = Column(DateTime, default=func.now())
     count = Column(Integer)
 
+#todo :如果水果
+class Order(MapBase, _CommonApi):
+    __tablename__ = "order"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
+    shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
+
+    phone = Column(String(30), nullable=False)
+    receiver = Column(String(64), nullable=False)
+    address_text = Column(String(1024), nullable=False)
+    message = Column(String(100)) #用户留言
+    status = Column(SMALLINT) #订单状态
+    type = Column(SMALLINT) #订单类型
+    remark = Column(String(100)) #商家备注
+    totalPrice = Column(Integer)
+    money_paid = Column(Boolean)
+    JH_id = Column(Integer, ForeignKey(ShopStaff.id), nullable=True) #捡货员id,(当员工被删除时可能会有问题)
+    SH1_id = Column(Integer, ForeignKey(ShopStaff.id), nullable=True) #一级送货员id
+    create_time = Column(DateTime)
+
+    single_items = relationship("SingleItem", secondary="order_single_item_link")
+    packages = relationship("Package", secondaty="order_package_link")
+    on_time = relationship("OrderOnTime", uselist=False)
+#按时达
+class OrderOnTime(MapBase):
+    __tablename__ = "order_on_time"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    order_id = Column(Integer, ForeignKey(Order.id), nullable=False)
+    period = Column(String(20)) #送货时间段（不能保存成外键，否则商家删除或修改这个时间段时这个值会变化）
+    SH2_id = Column(Integer, ForeignKey(ShopStaff.id), nullable=True) #二级送货员id
+
+#水果单品
+class SingleItem(MapBase, _CommonApi):
+    __tablename__ = "single_item"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
+    fruit_type_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
+
+    name = Column(String(20))
+    active = Column(Boolean, default=True)
+    current_saled = Column(Integer) #售出：未处理的订单数
+    saled = Column(Integer) #销量
+    storage = Column(Integer)
+    is_new = Column(Boolean) #新品
+    img_url = Column(String(500))
+    intro = Column(String(100))
+    charge_types = relationship("ChargeType") #支持多种计价方式
+#todo:
+#水果套餐
+class Package(MapBase, _CommonApi):
+    __tablename__ = "package"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
+
+    name = Column(String(20))
+    active = Column(Boolean, default=True)
+    current_saled = Column(Integer) #售出：未处理的订单数
+    saled = Column(Integer) #销量
+    img_url = Column(String(500))
+    intro = Column(String(100))
+
+#水果单品的计价类型
+class ChargeType(MapBase):
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    single_item_id = Column(Integer, ForeignKey(SingleItem.id), nullable=False)
+    price = Column(SMALLINT)#单价
+    unit = Column(String(5))#计价单位
+    number = Column(SMALLINT)#计价数量
+
+#设置
+class Config(MapBase):
+    __tablename__ = "config"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
+    print_remark = Column(String) #小票设置
+    min_charge_on_time = Column(SMALLINT) #按时达起送金额
+    min_charge_now = Column(SMALLINT) #立即送起送金额
+    stop_range = Column(SMALLINT) #下单截止时间（小时）
+    start_time_now = Column(Time) #立即送起始时间
+    end_time_now = Column(Time) #立即送结束时间
+
+    addresses = relationship("Address1") #配送地址设置
+    notices = relationship("Notice") #公告设置
+    periods = relationship("Period") #时间段设置
+
+#公告设置
+class Notice(MapBase):
+    __tablename__ = "notice"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    config_id = Column(Integer, ForeignKey(Config.id), nullable=False)
+    activity = Column(Boolean, default=False)
+    summary = Column(String(100)) #摘要
+    detail = Column(String(500)) #详情
+
+#按时达时间段设置
+class Period(MapBase):
+    __tablename__ = "period"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    config_id = Column(Integer, ForeignKey(Config.id), nullable=False)
+    activity = Column(Boolean, default=True)
+    name = Column(String(20))
+    start_time = Column(Time)
+    end_time = Column(Time)
+
 def init_db_data():
     MapBase.metadata.create_all()
     # add fruittypes to database
@@ -744,10 +913,10 @@ def init_db_data():
     else:
         print("fruit types exists in db, jump init.")
     # add chargetypes to database    
-    if not s.query(ChargeType).count():
+    if not s.query(SysChargeType).count():
         from dal.db_initdata import charge_types
         for c in charge_types:
-            s.add(ChargeType(**c))
+            s.add(SysChargeType(**c))
         s.commit()
         print("init chargetypes success")
     else:

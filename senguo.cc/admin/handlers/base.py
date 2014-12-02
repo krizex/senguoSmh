@@ -62,14 +62,14 @@ class GlobalBaseHandler(BaseHandler):
         
         if column_name == "order_status":
             text = ""
-            if code == models.ORDER_STATUS.TEMP:
+            if code == models.SYS_ORDER_STATUS.TEMP:
                 text = "待支付"
-            elif code == models.ORDER_STATUS.SUCCESS:
+            elif code == models.SYS_ORDER_STATUS.SUCCESS:
                 text = "已支付"
-            elif code == models.ORDER_STATUS.ABORTED:
+            elif code == models.SYS_ORDER_STATUS.ABORTED:
                 text = "已取消"
             else:
-                text = "ORDER_STATUS: 此编码不存在"
+                text = "SYS_ORDER_STATUS: 此编码不存在"
             return text
 
 class FrontBaseHandler(GlobalBaseHandler):

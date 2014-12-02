@@ -223,12 +223,12 @@ class OrderManage(SuperBaseHandler):
     @SuperBaseHandler.check_arguments("page?:int")
     def get(self):
         q_all = self.session.query(models.SystemOrder).filter_by(
-            order_status = models.ORDER_STATUS.SUCCESS)
+            order_status = models.SYS_ORDER_STATUS.SUCCESS)
         q_new = q_all.filter_by(have_read=False)
         q_processed = q_all.filter_by(have_read=True)
         # 被放弃或者还未付款的订单
         q_aborted = self.session.query(models.SystemOrder).filter(
-            models.SystemOrder.order_status != models.ORDER_STATUS.SUCCESS)
+            models.SystemOrder.order_status != models.SYS_ORDER_STATUS.SUCCESS)
         count = {
             "all":q_all.count(),
             "new":q_new.count(),

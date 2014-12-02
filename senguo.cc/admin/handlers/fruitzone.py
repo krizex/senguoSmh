@@ -421,8 +421,8 @@ class SystemPurchase(AdminBaseHandler):
                 return self.redirect(
                     self.reverse_url("fruitzoneSystemPurchaseChargeTypes"))
         elif self._action == "chargeTypes":
-            charge_types = self.session.query(models.ChargeType).\
-                           order_by(models.ChargeType.id).all()
+            charge_types = self.session.query(models.SysChargeType).\
+                           order_by(models.SysChargeType.id).all()
             return self.render("fruitzone/systempurchase-chargetypes.html",
                                context=dict(charge_types=charge_types))
         elif self._action == "chargeDetail":
@@ -431,7 +431,7 @@ class SystemPurchase(AdminBaseHandler):
                 charge_type_id = int(self.get_argument("charge_type"))
             except:
                 return self.write("抱歉，此商品不存在呵呵(#‵′)凸")
-            charge_type = models.ChargeType.get_by_id(
+            charge_type = models.SysChargeType.get_by_id(
                 self.session, charge_type_id)
             if not charge_type:
                 return self.write("抱歉，此商品不存在呵呵(#‵′)凸")
@@ -487,7 +487,7 @@ class SystemPurchase(AdminBaseHandler):
     def handle_confirm_payment(self):
         if self.args["pay_type"] == "alipay":
             # 判断charge_type合法性，不合法从新返回接入申请页
-            charge_data = models.ChargeType.get_by_id(self.session, self.args["charge_type"])
+            charge_data = models.SysChargeType.get_by_id(self.session, self.args["charge_type"])
             if not charge_data:
                 return self.send_fail(error_text="抱歉，此商品不存在呵呵(#‵′)凸")
             # 创建临时订单，跳转到支付宝支付页

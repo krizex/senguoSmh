@@ -2,6 +2,7 @@ from handlers.base import AdminBaseHandler
 import dal.models as models
 import tornado.web
 from settings import ROOT_HOST_NAME
+from sqlalchemy import and_, or_
 
 class Access(AdminBaseHandler):
     def initialize(self, action):
@@ -55,6 +56,53 @@ class Home(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self):
         return self.render("admin/home.html", context=dict())
+
+class Order(AdminBaseHandler):
+    def initialize(self, order_type, order_status):
+        self._order_type = order_type
+        self._order_status = order_status
+
+    @tornado.web.authenticated
+    def get(self):
+        orders = self.session.query(models.Order).filter(and_(models.Order.type == self._order_type,
+                                                              models.Order.status != models.STATUS.DELETED))
+        if self._order_status < 10:
+            orders = orders.filter(models.Order.status == self._order_status).all()
+        elif self._order_status == 10:#all
+            orders = orders.all()
+        elif self._order_status == 11:#unfinish
+            orders = orders.filter(models.Order.status.in_([models.STATUS.JH, models.STATUS.SH1, models.STATUS.SH2])).all()
+        else:
+            return self.send.send_error(404)
+        count = {"on_time_unhandle":_count(models.ORDER_TYPE.ON_TIME,models.ORDER_STATUS.ORDERED),
+                 "on_time_unfinish":_count(models.ORDER_TYPE.ON_TIME,11),
+                 "on_time_finish":_count(models.ORDER_TYPE.ON_TIME,models.ORDER_STATUS.FINISH),
+                 "now_unhandle":_count(models.ORDER_TYPE.NOW,models.ORDER_STATUS.ORDERED),
+                 "now_unfinish":_count(models.ORDER_TYPE.NOW,11),
+                 "now_finish":_count(models.ORDER_TYPE.NOW,models.ORDER_STATUS.FINISH)}
+        return self.render("", orders=orders, count=count)
+
+
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action", "data")
+    def post(self):
+        action = self.args["action"]
+        data = self.args["data"]
+        if action == "edit_period":
+            pass
+
+    def _count(self, order_type, order_status):
+        orders = self.session.query(models.Order).filter(and_(models.Order.type == self._order_type,
+                                                              models.Order.status != models.STATUS.DELETED))
+        count = 0
+        if self._order_status < 10:
+            count = orders.filter(models.Order.status == self._order_status).count()
+        elif self._order_status == 10:#all
+            count = orders.count()
+        elif self._order_status == 11:#unfinish
+            count = orders.filter(models.Order.status.in_([models.STATUS.JH, models.STATUS.SH1, models.STATUS.SH2])).count()
+        return count
+
 
 class Shelf(AdminBaseHandler):
     pass

@@ -3,6 +3,7 @@ import handlers.admin
 import handlers.superadmin
 import handlers.fruitzone
 import handlers.infowall
+import models
 
 handlers = [
     (r"/", handlers.front.Home,{}, "frontHome"),
@@ -81,7 +82,16 @@ handlers = [
         "action":"register"}, "adminRegister"),
     (r"/admin/", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
     (r"/admin/shelf", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
-    # (r"/admin/order", handlers.admin.Order, {}, "adminOrder"), 
+    (r"/admin/order/onTimeAll", handlers.admin.Order, {"order_type":models.ORDER_TYPE.ON_TIME, "order_status":10}, "adminOrderOnTimeAll"),
+    (r"/admin/order/onTimeUnhandle", handlers.admin.Order, {"order_type":models.ORDER_TYPE.ON_TIME, "order_status":models.ORDER_STATUS.ORDERED}, "adminOrderonTimeUnhandle"),
+    (r"/admin/order/onTimeUnfinish", handlers.admin.Order, {"order_type":models.ORDER_TYPE.ON_TIME, "order_status":11}, "adminOrderonTimeUnfinish"),
+    (r"/admin/order/onTimeFinish", handlers.admin.Order, {"order_type":models.ORDER_TYPE.ON_TIME, "order_status":models.ORDER_STATUS.FINISH}, "adminOrderonTimeFinish"),
+    (r"/admin/order/onTimeAfterSale", handlers.admin.Order, {"order_type":models.ORDER_TYPE.ON_TIME, "order_status":models.ORDER_STATUS.AFTER_SALE}, "adminOrderonTimeAfterSale"),
+    (r"/admin/order/NowAll", handlers.admin.Order, {"order_type":models.ORDER_TYPE.NOW, "order_status":10}, "adminOrderOnTimeAll"),
+    (r"/admin/order/NowUnhandle", handlers.admin.Order, {"order_type":models.ORDER_TYPE.NOW, "order_status":models.ORDER_STATUS.ORDERED}, "adminOrderNowUnhandle"),
+    (r"/admin/order/NowUnfinish", handlers.admin.Order, {"order_type":models.ORDER_TYPE.NOW, "order_status":11}, "adminOrderNowUnfinish"),
+    (r"/admin/order/NowFinish", handlers.admin.Order, {"order_type":models.ORDER_TYPE.NOW, "order_status":models.ORDER_STATUS.FINISH}, "adminOrderNowFinish"),
+    (r"/admin/order/NowAfterSale", handlers.admin.Order, {"order_type":models.ORDER_TYPE.NOW, "order_status":models.ORDER_STATUS.AFTER_SALE}, "adminOrderNowAfterSale"),
     # (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
     # (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
     # (r"/admin/finance", handlers.admin.Finance, {}, "adminFinance"),
