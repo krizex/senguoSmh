@@ -80,21 +80,25 @@ handlers = [
         "action":"logout"}, "adminLogout"),
     (r"/admin/register", handlers.admin.Access, {
         "action":"register"}, "adminRegister"),
+
     (r"/admin/", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
-    (r"/admin/shelf／singleItem/(\d+)", handlers.admin.Shelf, {"action":"single_item"}, "adminShelfSingleItem"),# 货架管理/商品管理
-    (r"/admin/shelf／package/(\d+)", handlers.admin.Shelf, {"action":"package"}, "adminShelfPackage"),# 货架管理/商品管理
+    (r"/admin/shelf/singleItem/(\d+)", handlers.admin.Shelf, {"action":"single_item"}, "adminShelfSingleItem"),# 货架管理/商品管理
+    (r"/admin/shelf/package/(\d+)", handlers.admin.Shelf, {"action":"package"}, "adminShelfPackage"),# 货架管理/商品管理
     (r"/admin/shelf/singleItemImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_single_item_img"}, "adminShelfSingleItemImgCallback"),
 
     (r"/admin/order/onTimeAll/(\d+)", handlers.admin.Order, {"order_type":models.ORDER_TYPE.ON_TIME, "order_status":10}, "adminOrderOnTimeAll"),
     (r"/admin/order/onTimeUnhandle/(\d+)", handlers.admin.Order, {"order_type":models.ORDER_TYPE.ON_TIME, "order_status":models.ORDER_STATUS.ORDERED}, "adminOrderonTimeUnhandle"),
     (r"/admin/order/onTimeUnfinish/(\d+)", handlers.admin.Order, {"order_type":models.ORDER_TYPE.ON_TIME, "order_status":11}, "adminOrderonTimeUnfinish"),
+
     (r"/admin/order/onTimeFinish/(\d+)", handlers.admin.Order, {"order_type":models.ORDER_TYPE.ON_TIME, "order_status":models.ORDER_STATUS.FINISH}, "adminOrderonTimeFinish"),
     (r"/admin/order/onTimeAfterSale/(\d+)", handlers.admin.Order, {"order_type":models.ORDER_TYPE.ON_TIME, "order_status":models.ORDER_STATUS.AFTER_SALE}, "adminOrderonTimeAfterSale"),
+
     (r"/admin/order/NowAll/(\d+)", handlers.admin.Order, {"order_type":models.ORDER_TYPE.NOW, "order_status":10}, "adminOrderNowAll"),
     (r"/admin/order/NowUnhandle/(\d+)", handlers.admin.Order, {"order_type":models.ORDER_TYPE.NOW, "order_status":models.ORDER_STATUS.ORDERED}, "adminOrderNowUnhandle"),
     (r"/admin/order/NowUnfinish/(\d+)", handlers.admin.Order, {"order_type":models.ORDER_TYPE.NOW, "order_status":11}, "adminOrderNowUnfinish"),
     (r"/admin/order/NowFinish/(\d+)", handlers.admin.Order, {"order_type":models.ORDER_TYPE.NOW, "order_status":models.ORDER_STATUS.FINISH}, "adminOrderNowFinish"),
     (r"/admin/order/NowAfterSale/(\d+)", handlers.admin.Order, {"order_type":models.ORDER_TYPE.NOW, "order_status":models.ORDER_STATUS.AFTER_SALE}, "adminOrderNowAfterSale"),
+
     # (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
     # (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
     # (r"/admin/finance", handlers.admin.Finance, {}, "adminFinance"),
