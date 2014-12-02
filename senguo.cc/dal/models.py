@@ -367,6 +367,8 @@ class Shop(MapBase, _CommonApi):
     wx_qr_code = Column(String(1024))
 
     staffs = relationship("ShopStaff")
+    single_Items = relationship("SingleItem", uselist=True)
+    packages = relationship("Package", uselist=True)
 
     def __repr__(self):
         return "<Shop: {0} (id={1}, code={2})>".format(
@@ -798,13 +800,14 @@ class SingleItem(MapBase, _CommonApi):
 
     name = Column(String(20))
     active = Column(Boolean, default=True)
-    current_saled = Column(Integer) #售出：未处理的订单数
+    current_saled = Column(Integer, default=0) #售出：未处理的订单数
     saled = Column(Integer) #销量
     storage = Column(Integer)
-    is_new = Column(Boolean) #新品
+    is_new = Column(Boolean, default=True) #新品
     img_url = Column(String(500))
     intro = Column(String(100))
     charge_types = relationship("ChargeType") #支持多种计价方式
+    fruit_type = relationship("FruitType", uselist=False)
 #todo:
 #水果套餐
 class Package(MapBase, _CommonApi):
