@@ -91,6 +91,7 @@ function Apply(evt){
     if(shop_address_detail.length>50){return alert('详细地址请不要超过500个字符！')}
     if(shop_intro.length>300){return alert('店铺简介请不要超过300个字符！')}
     if (!shop_name || ! shop_service_area ||!shop_city||!shop_province || !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
+    if(typeof(img_key)=='undefined') img_key='';
     var args={
         shop_name:shop_name,
         shop_province:shop_province,
