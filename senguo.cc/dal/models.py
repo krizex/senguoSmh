@@ -369,7 +369,7 @@ class Shop(MapBase, _CommonApi):
     staffs = relationship("ShopStaff")
     single_Items = relationship("SingleItem", uselist=True)
     packages = relationship("Package", uselist=True)
-
+    config = relationship("Config", uselist=False)
     def __repr__(self):
         return "<Shop: {0} (id={1}, code={2})>".format(
             self.shop_name, self.id, self.shop_code)
@@ -850,17 +850,19 @@ class ChargeType(MapBase):
 
     single_item = relationship("SingleItem", uselist=False)
 #设置
-class Config(MapBase):
+class Config(MapBase, _CommonApi):
     __tablename__ = "config"
 
-    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
-    print_remark = Column(String(100)) #小票设置
+    shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
+    receipt_msg = Column(String(100)) #小票设置
+    title = Column(String(50))
     min_charge_on_time = Column(SMALLINT) #按时达起送金额
     min_charge_now = Column(SMALLINT) #立即送起送金额
     stop_range = Column(SMALLINT) #下单截止时间（小时）
     start_time_now = Column(Time) #立即送起始时间
     end_time_now = Column(Time) #立即送结束时间
+    ontime_on = Column(Boolean, default=True)
+    now_on = Column(Boolean,default=True)
 
     addresses = relationship("Address1") #配送地址设置
     notices = relationship("Notice") #公告设置
@@ -887,7 +889,7 @@ class Period(MapBase):
     start_time = Column(Time)
     end_time = Column(Time)
 
-#一级地址
+#一级地址:
 class Address1(MapBase, _CommonApi):
     __tablename__ = "address1"
 
