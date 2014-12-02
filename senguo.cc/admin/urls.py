@@ -3,7 +3,7 @@ import handlers.admin
 import handlers.superadmin
 import handlers.fruitzone
 import handlers.infowall
-import models
+from dal import models
 
 handlers = [
     (r"/", handlers.front.Home,{}, "frontHome"),
@@ -87,7 +87,7 @@ handlers = [
     (r"/admin/order/onTimeUnfinish", handlers.admin.Order, {"order_type":models.ORDER_TYPE.ON_TIME, "order_status":11}, "adminOrderonTimeUnfinish"),
     (r"/admin/order/onTimeFinish", handlers.admin.Order, {"order_type":models.ORDER_TYPE.ON_TIME, "order_status":models.ORDER_STATUS.FINISH}, "adminOrderonTimeFinish"),
     (r"/admin/order/onTimeAfterSale", handlers.admin.Order, {"order_type":models.ORDER_TYPE.ON_TIME, "order_status":models.ORDER_STATUS.AFTER_SALE}, "adminOrderonTimeAfterSale"),
-    (r"/admin/order/NowAll", handlers.admin.Order, {"order_type":models.ORDER_TYPE.NOW, "order_status":10}, "adminOrderOnTimeAll"),
+    (r"/admin/order/NowAll", handlers.admin.Order, {"order_type":models.ORDER_TYPE.NOW, "order_status":10}, "adminOrderNowAll"),
     (r"/admin/order/NowUnhandle", handlers.admin.Order, {"order_type":models.ORDER_TYPE.NOW, "order_status":models.ORDER_STATUS.ORDERED}, "adminOrderNowUnhandle"),
     (r"/admin/order/NowUnfinish", handlers.admin.Order, {"order_type":models.ORDER_TYPE.NOW, "order_status":11}, "adminOrderNowUnfinish"),
     (r"/admin/order/NowFinish", handlers.admin.Order, {"order_type":models.ORDER_TYPE.NOW, "order_status":models.ORDER_STATUS.FINISH}, "adminOrderNowFinish"),

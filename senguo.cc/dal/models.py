@@ -489,13 +489,12 @@ class ShopStaff(MapBase, _AccountApi):
 
     address = Column(String(100))
     num = Column(Integer) #编号
-    work = Column(SMALLINT)
+    work = Column(SMALLINT, default=0) #工作类型：挑货员，捡货员
     address1 = Column(String(100)) #责任区域一级地址（可多选，空格隔开）
     address2 = Column(String(200)) #二级
     remark = Column(String(500))
 
     accountinfo = relationship(Accountinfo)
-    orders = relationship("Order") #分配给的员工的订单
 
 class Customer(MapBase, _AccountApi):
     __tablename__ = "customer"
@@ -632,24 +631,6 @@ class Address(MapBase,  _CommonApi):
     receiver = Column(String(64), nullable=False)
     address_text = Column(String(1024), nullable=False)
 
-#一级地址
-class Address1(MapBase, _CommonApi):
-    __tablename__ = "address1"
-
-    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    config_id = Column(Integer, ForeignKey(Config.id), nullable=False)
-    name = Column(String(50))
-    active = Column(Boolean, default=True)
-    address2 = relationship("Address2")
-#二级地址
-class Address2(MapBase, _CommonApi):
-    __tablename__ = "address2"
-
-    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    address1_id = Column(Integer, ForeignKey(Address1.id), nullable=False)
-    name = Column(String(50))
-    active = Column(Boolean, default=True)
-
 
 #信息墙＝＝＝＝
 class Info(MapBase, _CommonApi):
@@ -733,22 +714,6 @@ class ShopDemandfruitLink(MapBase):
     shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
     fruit_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
 
-class OrderSingleItemLink(MapBase):
-    __tablename__ = "order_single_item_link"
-
-    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    order_id = Column(Integer, ForeignKey(Order.id), nullable=False)
-    single_item_id = Column(Integer, ForeignKey(SingleItem.id), nullable=False)
-    num = Column(Integer) #单品数量
-
-class OrderPackageLink(MapBase):
-    __tablename__ = "order_package_link"
-
-    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    order_id = Column(Integer, ForeignKey(Order.id), nullable=False)
-    single_item_id = Column(Integer, ForeignKey(Package.id), nullable=False)
-    num = Column(Integer) #套餐数量
-
 class ShopsCollect(MapBase, _CommonApi):
     __tablename__ = "shops_collect"
 
@@ -811,18 +776,18 @@ class Order(MapBase, _CommonApi):
     money_paid = Column(Boolean)
     JH_id = Column(Integer, ForeignKey(ShopStaff.id), nullable=True) #捡货员id,(当员工被删除时可能会有问题)
     SH1_id = Column(Integer, ForeignKey(ShopStaff.id), nullable=True) #一级送货员id
+    SH2_id = Column(Integer, ForeignKey(ShopStaff.id), nullable=True) #二级送货员id
     create_time = Column(DateTime)
 
     single_items = relationship("SingleItem", secondary="order_single_item_link")
-    packages = relationship("Package", secondaty="order_package_link")
-    on_time = relationship("OrderOnTime", uselist=False)
+    packages = relationship("Package", secondary="order_package_link")
 #按时达
 class OrderOnTime(MapBase):
     __tablename__ = "order_on_time"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     order_id = Column(Integer, ForeignKey(Order.id), nullable=False)
     period = Column(String(20)) #送货时间段（不能保存成外键，否则商家删除或修改这个时间段时这个值会变化）
-    SH2_id = Column(Integer, ForeignKey(ShopStaff.id), nullable=True) #二级送货员id
+
 
 #水果单品
 class SingleItem(MapBase, _CommonApi):
@@ -854,8 +819,25 @@ class Package(MapBase, _CommonApi):
     img_url = Column(String(500))
     intro = Column(String(100))
 
+class OrderSingleItemLink(MapBase):
+    __tablename__ = "order_single_item_link"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    order_id = Column(Integer, ForeignKey(Order.id), nullable=False)
+    single_item_id = Column(Integer, ForeignKey(SingleItem.id), nullable=False)
+    num = Column(Integer) #单品数量
+
+class OrderPackageLink(MapBase):
+    __tablename__ = "order_package_link"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    order_id = Column(Integer, ForeignKey(Order.id), nullable=False)
+    single_item_id = Column(Integer, ForeignKey(Package.id), nullable=False)
+    num = Column(Integer) #套餐数量
+
 #水果单品的计价类型
 class ChargeType(MapBase):
+    __tablename__ = "charge_type"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     single_item_id = Column(Integer, ForeignKey(SingleItem.id), nullable=False)
     price = Column(SMALLINT)#单价
@@ -868,7 +850,7 @@ class Config(MapBase):
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
-    print_remark = Column(String) #小票设置
+    print_remark = Column(String(100)) #小票设置
     min_charge_on_time = Column(SMALLINT) #按时达起送金额
     min_charge_now = Column(SMALLINT) #立即送起送金额
     stop_range = Column(SMALLINT) #下单截止时间（小时）
@@ -899,6 +881,24 @@ class Period(MapBase):
     name = Column(String(20))
     start_time = Column(Time)
     end_time = Column(Time)
+
+#一级地址
+class Address1(MapBase, _CommonApi):
+    __tablename__ = "address1"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    config_id = Column(Integer, ForeignKey(Config.id), nullable=False)
+    name = Column(String(50))
+    active = Column(Boolean, default=True)
+    address2 = relationship("Address2")
+#二级地址
+class Address2(MapBase, _CommonApi):
+    __tablename__ = "address2"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    address1_id = Column(Integer, ForeignKey(Address1.id), nullable=False)
+    name = Column(String(50))
+    active = Column(Boolean, default=True)
 
 def init_db_data():
     MapBase.metadata.create_all()

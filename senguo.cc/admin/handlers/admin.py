@@ -105,4 +105,8 @@ class Order(AdminBaseHandler):
 
 
 class Shelf(AdminBaseHandler):
-    pass
+
+    @tornado.web.authenticated
+    def get(self):
+        pass
+
