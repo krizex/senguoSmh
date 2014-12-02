@@ -324,7 +324,7 @@ class Shop(MapBase, _CommonApi):
     declined_reason = Column(String(256), default="")
 
     admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
-    admin  = relationship("ShopAdmin")
+    admin = relationship("ShopAdmin")
 
     # 店铺标志
     shop_trademark_url = Column(String(2048))
@@ -808,6 +808,7 @@ class SingleItem(MapBase, _CommonApi):
     intro = Column(String(100))
     charge_types = relationship("ChargeType") #支持多种计价方式
     fruit_type = relationship("FruitType", uselist=False)
+    shop = relationship("Shop", uselist=False)
 #todo:
 #水果套餐
 class Package(MapBase, _CommonApi):
@@ -847,6 +848,7 @@ class ChargeType(MapBase):
     unit = Column(String(5))#计价单位
     number = Column(SMALLINT)#计价数量
 
+    single_item = relationship("SingleItem", uselist=False)
 #设置
 class Config(MapBase):
     __tablename__ = "config"

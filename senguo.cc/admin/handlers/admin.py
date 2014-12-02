@@ -2,6 +2,7 @@ from handlers.base import AdminBaseHandler
 import dal.models as models
 import tornado.web
 from settings import *
+import time
 from sqlalchemy import and_, or_
 import qiniu
 
@@ -122,17 +123,17 @@ class Shelf(AdminBaseHandler):
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")
-    def post(self, shop_id):
+    def post(self, id):
         action = self.args["action"]
         data = self.args["data"]
-        single_item_id = data["single_item_id"]
-        try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
-        except:return self.send_error(404)
-        if shop not in self.current_user.shops:
-            return self.send_error(403)
 
-        if action == "add_single_item":
-            single_item = models.SingleItem(shop_id=data["shop_id"],
+        if action == "add_single_item": #shop_id
+            try:shop = self.session.query(models.Shop).filter_by(id=id).one()
+            except:return self.send_error(404)
+            if shop.admin != self.current_user:
+                return self.send_error(403)
+
+            single_item = models.SingleItem(shop_id=id,
                                             fruit_type_id=data["fruit_type_id"],
                                             name=data["name"],
                                             saled=data["saled"],
@@ -143,37 +144,41 @@ class Shelf(AdminBaseHandler):
             self.session.add(single_item)
             self.session.commit()
             return self.send_success()
+        elif action in ["add_charge_type", "edit_active", "edit_single_item"]: #single_item_id
+            try:single_item = self.session.query(models.SingleItem).filter_by(id=id).one()
+            except:return self.send_error(404)
+            if single_item.shop.admin != self.current_user:
+                return self.send_error(403)
+
+            if action == "add_charge_type":
+                charge_type = models.ChargeType(single_item_id=id,
+                                                price=data["price"],
+                                                unit=data["unit"],
+                                                number=data["number"])
+                self.session.add(charge_type)
+                self.session.commit()
+                return self.send_success()
+            elif action == "edit_active":
+                if single_item.active == 0:
+                    single_item.active = 1
+                else:single_item.active = 0
+            elif action == "edit_single_item":
+                single_item.update(session=self.session,fruit_type_id = data["fruit_type_id"],
+                                                name = data["name"],
+                                                saled = data["saled"],
+                                                storage = data["storage"],
+                                                is_new = data["is_new"],
+                                                img_url = data["img_url"],
+                                                intro = data["intro"])
         elif action == "add_img":
             q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
             token = q.upload_token(BUCKET_SINGLE_ITEM_IMG, expires=120)
             return self.send_success(token=token, key=str(time.time()))
-        try:single_item = self.session.query(models.SingleItem).filter_by(id=single_item_id).one()
-        except:return self.send_error(404)
-        if single_item not in shop.single_items:
-            return self.send_error(403)
 
-        if action == "add_charge_type":
-            charge_type = models.ChargeType(single_item_id=data["single_item_id"],
-                                            price=data["price"],
-                                            unit=data["unit"],
-                                            number=data["number"])
-            self.session.add(single_item)
-            self.session.commit()
-            return self.send_success()
-        if action == "edit_active":
-            if single_item.active == 0:
-                single_item.active = 1
-            else:single_item.active = 0
-        if action == "edit_single_item":
-            single_item.update(session=self.session,fruit_type_id = data["fruit_type_id"],
-                                            name = data["name"],
-                                            saled = data["saled"],
-                                            storage = data["storage"],
-                                            is_new = data["is_new"],
-                                            img_url = data["img_url"],
-                                            intro = data["intro"])
-        if action == "edit_img":
+        elif action == "edit_img":
             q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
             token = q.upload_token(BUCKET_SINGLE_ITEM_IMG, expires=120, policy={"callbackUrl": "http://zone.senguo.cc/admin/shelf/singleItemImgCallback",
                                                                          "callbackBody": "key=$(key)&id=%s" % shop_id, "mimeLimit": "image/*"})
             return self.send_success(token=token, key=str(time.time())+':'+str(shop_id))
+
+        return self.send_success()

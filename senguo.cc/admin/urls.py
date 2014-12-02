@@ -81,8 +81,8 @@ handlers = [
     (r"/admin/register", handlers.admin.Access, {
         "action":"register"}, "adminRegister"),
     (r"/admin/", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
-    (r"/admin/shelf／singleItem/(\d+)", handlers.admin.Shelf, {"action":"single_item"}, "adminShelfSingleItem"),# 货架管理/商品管理
-    (r"/admin/shelf／package/(\d+)", handlers.admin.Shelf, {"action":"package"}, "adminShelfPackage"),# 货架管理/商品管理
+    (r"/admin/shelf/singleItem/(\d+)", handlers.admin.Shelf, {"action":"single_item"}, "adminShelfSingleItem"),# 货架管理/商品管理
+    (r"/admin/shelf/package/(\d+)", handlers.admin.Shelf, {"action":"package"}, "adminShelfPackage"),# 货架管理/商品管理
     (r"/admin/shelf/singleItemImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_single_item_img"}, "adminShelfSingleItemImgCallback"),
 
     (r"/admin/order/onTimeAll/(\d+)", handlers.admin.Order, {"order_type":models.ORDER_TYPE.ON_TIME, "order_status":10}, "adminOrderOnTimeAll"),
