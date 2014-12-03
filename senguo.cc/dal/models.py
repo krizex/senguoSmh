@@ -853,16 +853,18 @@ class ChargeType(MapBase):
 class Config(MapBase, _CommonApi):
     __tablename__ = "config"
 
-    shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
+    id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
     receipt_msg = Column(String(100)) #小票设置
-    title = Column(String(50))
+    title = Column(String(50)) #小票抬头
     min_charge_on_time = Column(SMALLINT) #按时达起送金额
     min_charge_now = Column(SMALLINT) #立即送起送金额
     stop_range = Column(SMALLINT) #下单截止时间（小时）
     start_time_now = Column(Time) #立即送起始时间
     end_time_now = Column(Time) #立即送结束时间
-    ontime_on = Column(Boolean, default=True)
-    now_on = Column(Boolean,default=True)
+    hire_text = Column(String(1000)) #招聘内容
+    ontime_on = Column(Boolean, default=True) #开启按时达
+    now_on = Column(Boolean,default=True) #开启立即送
+    hire_on = Column(Boolean, default=False) #开启招聘
 
     addresses = relationship("Address1") #配送地址设置
     notices = relationship("Notice") #公告设置
@@ -906,6 +908,19 @@ class Address2(MapBase, _CommonApi):
     address1_id = Column(Integer, ForeignKey(Address1.id), nullable=False)
     name = Column(String(50))
     active = Column(Boolean, default=True)
+
+#招聘申请表
+class HireForm(MapBase):
+    __tablename__ = "hire_form"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    staff_id = Column(Integer, ForeignKey(ShopStaff.id), nullable=False)
+    shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
+    work = Column(SMALLINT, default=0) #工作类型：挑货员，捡货员
+    address1 = Column(String(100)) #责任区域一级地址（可多选，空格隔开）
+    address2 = Column(String(200)) #二级
+    intro = Column(String(500)) #自我介绍
+    strength = Column(String(500)) #优势
 
 def init_db_data():
     MapBase.metadata.create_all()
