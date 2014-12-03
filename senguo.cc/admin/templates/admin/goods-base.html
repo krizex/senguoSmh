@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+{% set goodsSubpage = context.get('goodsSubpage')%}
+{% set fruit_active="" %}
+{% set package_active="" %}
+
+{% if goodsSubpage == "fruit" %}
+    {% set fruit_active = "active" %}
+{% elif goodsSubpage == "package"%}
+    {% set package_active ="active" %}
+{% end %}
+<span class="right-title">商品管理</span>
+<div class="goods-classify">
+    <ul class="classify-nav right-nav pull-left">
+        <li class="{{fruit_active}}"><a href="#">平价水果</a></li>
+        <li><a href="#">精品水果</a></li>
+        <li class="{{package_active}}"><a href="admin-goods-package.html">水果套餐</a></li>
+        <li><a href="#">其他商品</a></li>
+    </ul>
+    <div class="search-input input-group pull-right">
+        <form method="post" action="" id="post">
+            <input type="text" value="" placeholder="输入水果名称或套餐名称" class="search-con form-control"/>
+            <input type="submit" value="商品搜索" class="search-btn form-control"/>
+        </form>
+    </div>
+</div>
+<!--goods-classify-end-->
+<div class="goods-mode-lock">
+    <div class="mode-content unlock-mode pull-left">
+        <p class="lock-unlock">已开启平价水果栏目</p>
+        <p class="mode-introduce">此种模式平价水果栏目将在前台商场显示。</p>
+        <p class="set-introduce">点击右方停用，平价水果类目下的所有商品将被下架</p>
+    </div>
+    <div class="mode-set pull-right">
+        <a href="#" class="set-btn btn-style unlock-mode">设置</a>
+        <a href="#" class="stop-btn btn-style lock-mode">停用</a>
+    </div>
+</div>
+<!--goods-mode-lock-end-->
+<div class="goods-list-title">
+    <form method="post" name="" action="" id="">
+        <input type="checkbox" class="select-box"/>
+        <span class="select-all">全选</span>
+        <a href="#" class="print-btn blak-set-btn" id="">批量折扣</a>
+        <a href="#" class="blak-set-btn" id="">批量设置为新品</a>
+    </form>
+</div>
+<div class="admin-goods-list">
+    <div class="goods-list-con pull-left">
+        {% block goodsLeft %}{% end %}
+    </div>
+    <div class="shelve-list pull-left">
+        {% block goodsRight %}{% end %}
+    </div>
+</div>
+
+{% end %}

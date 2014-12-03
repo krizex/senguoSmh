@@ -65,8 +65,12 @@ class Order(AdminBaseHandler):
         self._order_status = order_status
 
     @tornado.web.authenticated
-    def get(self):
-        orders = self.session.query(models.Order).filter(and_(models.Order.type == self._order_type,
+    def get(self, id): #shop_id
+        try:shop = self.session.query(models.Shop).filter_by(id=id).one()
+        except:return self.send_error(404)
+        if shop.admin != self.current_user:
+            return self.send_error(403)
+        orders = shop.orders.filter(and_(models.Order.type == self._order_type,
                                                               models.Order.status != models.STATUS.DELETED))
         if self._order_status < 10:
             orders = orders.filter(models.Order.status == self._order_status).all()
@@ -116,10 +120,11 @@ class Shelf(AdminBaseHandler):
         except:return self.send_error(404)
         if shop not in self.current_user.shops:
             return self.send_error(403)
+        fruit_types = self.session.query(models.FruitType).all()
         if self._action == "single_item":
-            return self.render("admin/goods-fruit.html", single_items = shop.single_items,context=dict(subpage="goods",goodsSubpage="fruit"))
+            return self.render("admin/goods-fruit.html", single_items = shop.single_items,fruit_types=fruit_types,context=dict(subpage="goods",goodsSubpage="fruit"))
         elif self._action == "package":
-            return self.render("admin/goods-package.html", packages = shop.packages,context=dict(subpage="goods",goodsSubpage="package"))
+            return self.render("admin/goods-package.html", packages = shop.packages, fruit_types=fruit_types,context=dict(subpage="goods",goodsSubpage="package"))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")
@@ -180,5 +185,60 @@ class Shelf(AdminBaseHandler):
             token = q.upload_token(BUCKET_SINGLE_ITEM_IMG, expires=120, policy={"callbackUrl": "http://zone.senguo.cc/admin/shelf/singleItemImgCallback",
                                                                          "callbackBody": "key=$(key)&id=%s" % shop_id, "mimeLimit": "image/*"})
             return self.send_success(token=token, key=str(time.time())+':'+str(shop_id))
+        else:return self.send_error()
 
         return self.send_success()
+
+class Staff(AdminBaseHandler):
+    def initialize(self, action):
+        self._action = action
+
+    @tornado.web.authenticated
+    def get(self, id):
+        try:shop = self.session.query(models.Shop).filter_by(id=id).one()
+        except:return self.send_error(404)
+        if shop not in self.current_user.shops:
+            return self.send_error(403)
+        if self._action == "JH":
+            pass
+        elif self._action == "TH1":pass
+        elif self._action == "TH2":pass
+        elif self._action == "recruit":pass
+
+
+
+class Config(AdminBaseHandler):
+    @tornado.web.authenticated
+    def get(self, id):
+        try:config = self.session.query(models.Config).filter_by(id=id).one()
+        except:return self.send_error(404)
+        return self.render("shop-set,html", config=config,context=dict(subpage="shop_set")
+
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action", "data")
+    def post(self, id):
+        action = self.args["action"]
+        data = self.args["data"]
+
+        if action in ["add_addr1", "add_notice", "edit_receipt"]: #id: config_id
+            try:config = self.session.query(models.Config).filter_by(id=id).one()
+            except:return self.send_error(404)
+            if action == "add_addr1":
+                addr1 = models.Address1(name=data)
+                config.addresses.append(addr1)
+                self.session.commit()
+            elif action == "add_notice":
+                notice = models.Notice(summary=data["summary"],
+                                       detail=data["detail"])
+                config.notices.append(notice)
+                self.session.commit()
+            elif action == "edit_receipt":
+                config.update(session=self.session, receipt_msg=data["receipt_msg"],
+                              title=data["title"])
+        elif action == "add_addr2": #id: addr1_id
+            try:addr1 = self.session.query(models.Address1).filter_by(id=id).one()
+            except:return self.send_error(404)
+            addr2 = models.Address2(name=data)
+            addr1.address2.append(addr2)
+            self.session.commit()
+

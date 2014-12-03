@@ -1,0 +1,134 @@
+{% extends 'goods-base.html' %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/admin-goods-fruit.css')}}"/>
+{% end %}
+{% block goods %}
+    {% block goodsLeft %}
+    <ul>
+        {% for item in single_items %}
+            <li class="goods-list-item">
+                <input type="checkbox" class="pull-left select-box"/>
+                <div class="goods-info">
+                    <div class="shelve-action pull-left">
+                        <span class="unshelve">未上架</span>
+                        <span class="shelve" style="display:none">已上架</span>
+                    </div>
+                    <strong class="name">{{item.fruit_type.name}}</strong>
+                    <label class="id">NO.{{item.fruit_type.id}}</label>
+                    <label class="code">{{item.fruit_type.code}}</label>
+                    <strong class="storage">库存：{{item.storage}}/个</strong>
+                    <strong class="sold-out">已售出：1/个</strong>
+                    <label class="sales">销量：1</label>
+                    <a class="add-child add-btn2 pull-right">+ 增加子类型</a>
+                </div>
+                <div class="goods-img">
+                    <div class="upload-box pull-left">
+                        <span class="title">商品照片</span>
+                        <div class="img-box" >
+                            <img src=""/>
+                            <p class="upload-hint">已上传 0%</p>
+                        </div>
+                        <div class="please-choose">
+                            选择照片
+                            <input type="file" class="file-input"/>
+                        </div>
+                        <p class="upload-notice">请上传.png格式的照片，大小控制在200kb内</p>
+                        <a class="upload-btn add-btn2">确认上传</a>
+                    </div>
+                    <div class="right-box pull-right">
+                        <p>商品介绍</p>
+                        <textarea class="introduce">哈哈哈哈哈，好吃！</textarea>
+                        <div class="storage-box">
+                            <label>库存</label>
+                            <input type="number" placeholder="请输入库存"/>
+                            <label>单位</label>
+                            <div class="dropdown pull-left">
+                                <button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle">
+                                    个
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                    <li><a href="#">斤</a></li>
+                                    <li><a href="#">半个</a></li>
+                                    <li><a href="#">半斤</a></li>
+                                    <li><a href="#">份</a></li>
+                                </ul>
+                            </div>
+                            <label>销量</label>
+                            <input type="number" placeholder="请输入销量"/>
+                        </div>
+                    </div>
+                    <div class="btn-box">
+                        <a class="add-btn2">+ 增加计价方式</a>
+                        <a class="add-btn2">确认更改</a>
+                    </div>
+                </div>
+                <div class="chlid-box" style="display:none">
+                    <ul class="child-list">
+                        <li class="child-list-item">
+                        </li>
+                    </ul>
+                </div>
+                <div class="charge-box">
+                    <ul class="charge-list">
+                        <li class="charge-list-item">
+                            <div class="title">
+                                <span class="pull-left">计价方式：3元/1个</span>
+                                <a class="delete-btn pull-right" href="javascript:;">- 删除</a>
+                            </div>
+                            <div class="con">
+                                <label>价钱</label>
+                                <input type="text" value="3"/>
+                                <label>单位</label>
+                                <div class="dropdown pull-left">
+                                    <button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle">
+                                        个
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                        <li><a href="#">斤</a></li>
+                                        <li><a href="#">半个</a></li>
+                                        <li><a href="#">半斤</a></li>
+                                        <li><a href="#">份</a></li>
+                                    </ul>
+                                </div>
+                                <label>数量</label>
+                                <input type="text" value="3"/>
+                                <a class="add-btn2 pull-right" >确认更改</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        {% end %}
+    </ul>
+    <div class="users-pagination list-pagination">
+        <ul>
+            <li><a href="#" class="page-btn pre-page">&nbsp;</a></li>
+            <li>
+                <span class="page-now">2</span>/<span class="page-total">15</span>
+            </li>
+            <li><a href="#" class="page-btn next-page">&nbsp;</a></li>
+            <li><input class="input-page form-control" type="text" value="输入页码"/></li>
+            <li><a href="#" class="jump-to">跳转</a></li>
+        </ul>
+    </div>
+    {% end %}
+    {% block goodsRight %}
+        <span class="title">已上架(20)</span>
+        <div class="shelve">
+            <a href="#">苹果</a>
+
+        </div>
+        <span class="title">未上架(20)</span>
+        <div class="un-shelve">
+            <a href="#">苹果</a>
+
+        </div>
+        <a href="javascript:;" class="supply-new-item add-btn-sty">+ 申请新品种</a>
+    {% end %}
+{% end %}
+
+{% block bottom %}
+<script src="{{static_url('js/admin-goods-fruit.js')}}"></script>
+{% end %}

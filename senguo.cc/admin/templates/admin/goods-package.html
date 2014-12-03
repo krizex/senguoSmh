@@ -1,0 +1,110 @@
+{% extends 'goods-base.html' %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/admin-goods-package.css')}}"/>
+{% end %}
+{% block goods %}
+    {% block goodLeft %}
+    <ul class="goods-package-list pull-left">
+        <li class="goods-package-item">
+            <input type="checkbox" class="pull-left select-box"/>
+            <div class="goods-info">
+                <div class="shelve-action pull-left">
+                    <span class="unshelve">未上架</span>
+                    <span class="shelve" style="display:none">已上架</span>
+                </div>
+                <label class="id">NO.1</label>
+                <strong class="name">苹果</strong>
+                <label class="code">Pg</label>
+                <strong class="storage">库存：999份</strong>
+                <strong class="sold-out">已售出：1份</strong>
+                <label class="sales">销量：1</label>
+            </div>
+            <div class="goods-img">
+                <div class="upload-box pull-left">
+                    <span class="title">商品照片</span>
+                    <div class="img-box" >
+                        <img src=""/>
+                        <p class="upload-hint">已上传 0%</p>
+                    </div>
+                    <div class="please-choose">
+                        选择照片
+                        <input type="file" class="file-input"/>
+                    </div>
+                    <p class="upload-notice">请上传.png格式的照片，大小控制在200kb内</p>
+                    <a class="upload-btn add-btn2">确认上传</a>
+                </div>
+                <div class="right-box pull-right">
+                    <p>套餐名称</p>
+                    <input type="text" value="喵星人N号" class="package-name">
+                    <p>商品介绍</p>
+                    <textarea class="introduce">（套餐介绍）</textarea>
+                    <div class="package-info">
+                        <label>价钱</label>
+                        <input type="text" value="10"/>
+                        <label>库存</label>
+                        <input type="text" value="10"/>
+                        <label>销量</label>
+                        <input type="text" value="10"/>
+                    </div>
+                </div>
+                <div class="btn-box">
+                    <a class="add-btn2 change-btn">确认更改</a>
+                    <a class="add-btn2 choose-fruit" data-toggle="modal" data-target="#packageBox">选择水果</a>
+                </div>
+            </div>
+            <span class="package-title">套餐内容</span>
+            <ul class="package-fruit-item">
+                <li>
+                    <span class="id">1.</span>
+                    <span class="codename">Li</span>
+                    <span class="name">梨</span>
+                    <span class="number">1</span>
+                    <span class="units">个</span>
+                </li>
+                <li>
+                    <span class="id">2.</span>
+                    <span class="codename">Li</span>
+                    <span class="name">梨</span>
+                    <span class="number">1</span>
+                    <span class="units">个</span>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    {% end %}
+    {% block goodsRight %}
+    <div class="shelve-list pull-left">
+        <a href="#" class="add-new-package add-btn-sty">+ 添加新套餐</a>
+        <a href="javascript:;" class="supply-new-item add-btn-sty">+ 申请新品种</a>
+    </div>
+    {% end %}
+
+<div class="goods-package-fruit modal fade" id="packageBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="title pull-left" id="myModalLabel">请选择水果</span>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p class="title">已上架</p>
+                <ul class="shelve-list shelve-list-style">
+                    <li class="active"><a href="#">苹果</a><span class="checked">√</span></li>
+                    <li><a href="#">哈哈</a></li>
+                </ul>
+                <p class="title">未上架</p>
+                <ul class="unshelve-list shelve-list-style">
+                    <li><a href="#">苹果</a></li>
+                    <li><a href="#">哈哈</a></li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-box">
+                    <button type="button" class="pull-left modal-concel-btn" href="#" data-dismiss="modal">取消</button>
+                    <button type="button" class="pull-right modal-sure-btn" href="#">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
