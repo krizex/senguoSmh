@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block title%}店铺设置{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-shop-set.css')}}"/>{% end %}
+
+{% block content %}
+    {% set shopSubPage = context.get('shopSubPage') %}
+
+    {% set delivery_active = ''%}
+    {% set notice_active = '' %}
+    {% set receipt_active = ''%}
+
+    {% if shopSubPage == 'delivery_set'  %}
+        {% set delivery_active ='active' %}
+    {% elif shopSubPage == 'notice_set' %}
+        {% set notice_active ='active' %}
+    {% else %}
+        {% set receipt_active ='active' %}
+    {% end %}
+
+    <span class="right-title">商城设置</span>
+    <ul class="shop-set-nav right-nav">
+        <li class="{{delivery_active}}" id="deliverySet"><a href="#">配送设置</a></li>
+        <li class="{{notice_active}}" id="noticeSet"><a href="#">公告设置</a></li>
+        <li><a href="#">充值设置</a></li>
+        <li class="{{receipt_active}}" id="receiptSet"><a href="#">小票设置</a></li>
+    </ul>
+    <div class="set-description">
+        {% if shopSubPage == 'delivery_set' %}
+        <p>通过编辑配送地址，确定前台商城用户以及员工责任区域的地址选择项</p>
+        <p>地址增加后将不能删除和修改。</p>
+        {% elif shopSubPage == 'notice_set' %}
+        <p>编辑和修改商城水果公告栏的内容</p>
+        <p>摘要为公告栏直接显示的内容，用户可点击查看详情。</p>
+        {% elif shopSubPage == 'receipt_set' %}
+        <p>修改小票附加信息</p>
+        {% end %}
+    </div>
+    <table class="set-list table table-bordered">
+        <tr class="bg-grey2">
+            {% if shopSubPage == 'delivery_set' %}
+            <td colspan="2">一级配送地址</td>
+            <td colspan="2">二级配送地址</td>
+            {% elif shopSubPage == 'notice_set' %}
+            <td colspan="2">摘要</td>
+            <td colspan="2">详情</td>
+            {% elif shopSubPage == 'receipt_set' %}
+            <td colspan="2">小票抬头</td>
+            <td colspan="2">小票附加信息</td>
+            {% end %}
+        </tr>
+        {% if shopSubPage == 'delivery_set' %}
+        {% for address in addresses %}
+        <tr class="set-list-item" data-id="{{address.id}}">
+            <td>
+                <div class="mode action-mode" data-status="{{address.active}}">
+                    <a class="work-mode" href="javascript:;" style="display:none;">已启用</a>
+                    <a class="stop-mode" href="javascript:;" style="display:none;">未启用</a>
+                </div>
+            </td>
+            <td class="col-lg-4">
+                <ul class="addres1-box address-list">
+                    <li class="bg-green text-white">{{address.name}}</li>
+                </ul>
+            </td>
+            <td class="col-lg-6">
+                <p>已启用</p>
+                <ul class="addres2-active-box address-list">
+                    {% for address_2 in address.address2%}
+                        {% if address_2.active == True%}
+                        <li class="bg-green text-white">{{address_2.name}}</li>
+                        {% end %}
+                    {% end %}
+                </ul>
+                <p>未启用</p>
+                <ul class="addres2-unactive-box address-list">
+                    {% for address_2 in address.address2%}
+                        {% if address_2.active == False%}
+                        <li class="bg-grey text-white">{{address_2.name}}</li>
+                        {% end %}
+                    {% end %}
+                </ul>
+            </td>
+            <td>
+                <a href="#" class="edit-btn2 info-edit">编辑</a>
+            </td>
+        </tr>
+        {% end %}
+        {% end %}
+    </table>
+    {% if shopSubPage == 'delivery_set' %}
+    <a href="javascript:;" class="add-new-address1  add-btn-sty">+ 新增一级配送地址<a>
+    <table class="add-address-box table table-bordered">
+        <tr class="add-address-item">
+            <td class="mode action-mode  col-lg-1">
+                <a class="work-mode" href="javascript:;">已启用</a>
+                <a class="stop-mode" href="javascript:;" style="display:none;">未启用</a>
+            </td>
+            <td class="btn-box">
+                 <input type="text" class="address1-value pull-left address-input-box"/>
+                 <a href="javascript:;" class="address-btn bg-green pull-left address1-sure-btn"></a>
+                 <a href="javascript:;" class="address-btn bg-grey pull-left address1-cancel-btn"></a>
+            </td>
+            <td class="col-lg-6">
+                <a href="javascript:;" class="text-green add-address2-btn">+新建二级配送地址</a>
+                <ul class="add-address2-list">
+                    <li class="btn-box">
+                        <input type="text" class="address2-value pull-left address-input-box"/>
+                        <a href="javascript:;" class="address-btn bg-green pull-left address2-sure-btn">确定</a>
+                        <a href="javascript:;" class="address-btn bg-grey pull-left address2-cancel-btn">取消</a>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+    {% end %}
+{% end %}
+
+{% block bottom %}<script src="{{static_url('js/admin-shop-set.js')}}"></script>{% end %}

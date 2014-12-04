@@ -1,9 +1,5 @@
 $(document).ready(function(){
-    $('.unshelve').on('click',function(){
-        $(this).hide().siblings('.shelve').show();
-    });
-    $('.shelve').on('click',function(){
-        $(this).hide().siblings('.unshelve').show();
-    })
+    $('.unshelve').on('click',function(){worMode($(this))});
+    $('.shelve').on('click',function(){worMode($(this))});
 
 });

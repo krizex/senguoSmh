@@ -1,0 +1,21 @@
+.shop-set-nav{width:100%;}
+.shop-set-nav li{float:left;width:100px;height:40px;text-align:center;line-height:42px;border-width:2px 1px 1px;border-color:#f2f2f2;border-style:solid ;}
+.shop-set-nav li a{color:#333;font-size:14px;}
+.shop-set-nav .active{background:#f2f2f2;border-width:2px 1px 1px;border-color:#999 #ccc #f2f2f2;border-style:solid ;}
+.shop-set-nav .active a{font-weight:bold;display:block;}
+
+.set-description{width:100%;background:#f2f2f2;padding:20px;clear:both;}
+.set-description p{margin-bottom:0px;}
+
+.set-list{width:100%;margin-top:10px;}
+.set-list .set-list-item p{clear:both;margin:0;}
+.set-list .set-list-item .address-list li{float:left;padding:0 3px;margin:0 5px 5px 0;}
+
+.add-btn-sty{padding:5px 10px;margin:10px 0;}
+
+.add-address-box{width:100%;float:left;background:#e5e5e5;}
+.add-address-box td{background:#fff;}
+.add-address-box .address-btn{display:inline-block;width:24px;color:#fff;height:24px;line-height:24px;margin-left:5px;}
+.add-address-box .address-input-box{width:70%;height:24px;line-height:24px;}
+.add-address-box .add-address2-list{width:100%;}
+.add-address-box .add-address2-list li{width:100%;float:left;margin-top:5px;}

@@ -91,6 +91,7 @@ handlers = [
 
     (r"/admin/staff/(\d+)", handlers.admin.Staff, {}, "adminStaffJH"),
     (r"/admin/config/(\d+)", handlers.admin.Config, {}, "adminConfig"),
+
     # (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
     # (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
     # (r"/admin/finance", handlers.admin.Finance, {}, "adminFinance"),
