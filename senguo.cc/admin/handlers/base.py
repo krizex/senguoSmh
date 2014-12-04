@@ -175,6 +175,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 class StaffBaseHandler(_AccountBaseHandler):
     __account_model__ = models.ShopStaff
     __account_cookie_name__ = "staff_id"
+    __wexin_oauth_url_name__ = "staffOauth"
 
 class CustomerBaseHandler(_AccountBaseHandler):
     __account_model__ = models.Customer

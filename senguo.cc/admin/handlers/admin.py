@@ -271,7 +271,7 @@ class Config(AdminBaseHandler):
         data = self.args["data"]
 
         if action in ["add_addr1", "add_notice", "edit_receipt", "edit_hire"]: #id: shop_id
-            try config = self.session.query(models.Config).filter_by(id=id).one()
+            try: config = self.session.query(models.Config).filter_by(id=id).one()
             except:return self.send_error(404)
             if action == "add_addr1":
                 addr1 = models.Address1(name=data)
@@ -288,7 +288,7 @@ class Config(AdminBaseHandler):
             elif action == "edit_hire":
                 config.update(session=self.session, hire_text=data)
         elif action == "add_addr2": #id: addr1_id
-            try addr1 = self.session.query(models.Address1).filter_by(id=id).one()
+            try: addr1 = self.session.query(models.Address1).filter_by(id=id).one()
             except:return self.send_error(404)
             addr2 = models.Address2(name=data)
             addr1.address2.append(addr2)

@@ -1,0 +1,26 @@
+{% extends 'base.html'%}
+{% block head %}
+<script src="{{static_url('js/admin-login..js')}}"></script>
+{% end %}
+{% block content%}
+
+<div class="container center-block login-box">
+  <!--<h2>请选择登录方式</h2>-->
+  <div class="center-block">
+    <br/>
+    <br/>
+    <a class="btn btn-primary" href="{% raw handler.get_wexin_oauth_link(next_url=context['next_url'])%}">微信登录</a>
+    <!--<a class="btn btn-default" href="{{reverse_url('adminLogin')}}" id="PhoneLogin">手机号登录</a>-->
+  </div>
+ <!-- <div class="phone-login-box">
+        <div class="info">
+            <label class="w1">用户名:</label><input type="text" value=""/>
+        </div>
+        <div class="info">
+            <label class="w1">密码：</label><input type="text" value=""/>
+        </div>
+      <input type="submit" class="btn btn-primary" value="登录"/>
+  </div>-->
+</div>
+
+{% end %}

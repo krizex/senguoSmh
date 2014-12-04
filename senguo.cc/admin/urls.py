@@ -1,5 +1,6 @@
 import handlers.front
 import handlers.admin
+import handlers.staff
 import handlers.superadmin
 import handlers.fruitzone
 import handlers.infowall
@@ -104,7 +105,11 @@ handlers = [
     # (r"/admin/finance", handlers.admin.Finance, {}, "adminFinance"),
     # (r"/admin/settings/profile", handlers.admin.Settings, 
     #  {"action":"profile"}, "adminSettingsProfile")
-    # (r"/staff/", handlers.staff.Home, {}, "staffHome"),
+    (r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
+    (r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
+    (r"/staff/logout", handlers.staff.Access, {"action":"logout"}, "staffLogout"),
+    (r"/staff/register", handlers.staff.Access, {"action":"register"}, "staffRegister"),
+    (r"/staff/", handlers.staff.Home, {}, "staffHome"),
     # (r"/staff/...")
 
     # 水果圈子
