@@ -60,32 +60,36 @@ class Home(AdminBaseHandler):
         return self.render("admin/home.html", context=dict())
 
 class Order(AdminBaseHandler):
-    def initialize(self, order_type, order_status):
-        self._order_type = order_type
-        self._order_status = order_status
+    # def initialize(self, order_type, order_status):
+    #     self._order_type = order_type
+    #     self._order_status = order_status
 
     @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("order_type:int", "order_status:int")
     def get(self, id): #shop_id
         try:shop = self.session.query(models.Shop).filter_by(id=id).one()
         except:return self.send_error(404)
         if shop.admin != self.current_user:
-            return self.send_error(403)
-        orders = shop.orders.filter(and_(models.Order.type == self._order_type,
-                                                              models.Order.status != models.STATUS.DELETED))
-        if self._order_status < 10:
-            orders = orders.filter(models.Order.status == self._order_status).all()
-        elif self._order_status == 10:#all
+            return self.send_error(403)#必须做权限检查：可能这个shop并不属于current_user
+        order_type = self.args["order_type"]
+        order_status = self.args["order_status"]
+        orders = self.session.query(models.Order).filter_by(shop_id=id).\
+            filter(and_(models.Order.type == order_type, models.Order.status != models.STATUS.DELETED))
+        if order_status < 10:
+            orders = orders.filter(models.Order.status == order_status).all()
+        elif order_status == 10:#all
             orders = orders.all()
-        elif self._order_status == 11:#unfinish
-            orders = orders.filter(models.Order.status.in_([models.STATUS.JH, models.STATUS.SH1, models.STATUS.SH2])).all()
+        elif order_status == 11:#unfinish
+            orders = orders.filter(models.Order.status.in_(
+                [models.STATUS.JH, models.STATUS.SH1, models.STATUS.SH2])).all()
         else:
             return self.send.send_error(404)
-        count = {"on_time_unhandle":_count(models.ORDER_TYPE.ON_TIME,models.ORDER_STATUS.ORDERED),
-                 "on_time_unfinish":_count(models.ORDER_TYPE.ON_TIME,11),
-                 "on_time_finish":_count(models.ORDER_TYPE.ON_TIME,models.ORDER_STATUS.FINISH),
-                 "now_unhandle":_count(models.ORDER_TYPE.NOW,models.ORDER_STATUS.ORDERED),
-                 "now_unfinish":_count(models.ORDER_TYPE.NOW,11),
-                 "now_finish":_count(models.ORDER_TYPE.NOW,models.ORDER_STATUS.FINISH)}
+        count = {"on_time_unhandle":_count(models.ORDER_TYPE.ON_TIME, models.ORDER_STATUS.ORDERED, id),
+                 "on_time_unfinish":_count(models.ORDER_TYPE.ON_TIME, 11, id),
+                 "on_time_finish":_count(models.ORDER_TYPE.ON_TIME, models.ORDER_STATUS.FINISH, id),
+                 "now_unhandle":_count(models.ORDER_TYPE.NOW, models.ORDER_STATUS.ORDERED, id),
+                 "now_unfinish":_count(models.ORDER_TYPE.NOW, 11, id),
+                 "now_finish":_count(models.ORDER_TYPE.NOW, models.ORDER_STATUS.FINISH, id)}
         return self.render("", orders=orders, count=count)
 
 
@@ -97,16 +101,17 @@ class Order(AdminBaseHandler):
         if action == "edit_period":
             pass
 
-    def _count(self, order_type, order_status):
-        orders = self.session.query(models.Order).filter(and_(models.Order.type == self._order_type,
-                                                              models.Order.status != models.STATUS.DELETED))
+    def _count(self, order_type, order_status, shop_id):
+        orders = self.session.query(models.Order).filter_by(shop_id=id).\
+            filter(and_(models.Order.type == self._order_type,models.Order.status != models.STATUS.DELETED))
         count = 0
         if self._order_status < 10:
             count = orders.filter(models.Order.status == self._order_status).count()
         elif self._order_status == 10:#all
             count = orders.count()
         elif self._order_status == 11:#unfinish
-            count = orders.filter(models.Order.status.in_([models.STATUS.JH, models.STATUS.SH1, models.STATUS.SH2])).count()
+            count = orders.filter(models.Order.status.in_(
+                [models.STATUS.JH, models.STATUS.SH1, models.STATUS.SH2])).count()
         return count
 
 
@@ -115,7 +120,7 @@ class Shelf(AdminBaseHandler):
         self._action = action
 
     @tornado.web.authenticated
-    def get(self,shop_id):
+    def get(self, shop_id):
         try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
         except:return self.send_error(404)
         if shop not in self.current_user.shops:
@@ -128,7 +133,7 @@ class Shelf(AdminBaseHandler):
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")
-    def post(self, id):
+    def post(self, id): #shop_id/single_item_id
         action = self.args["action"]
         data = self.args["data"]
 
@@ -185,34 +190,83 @@ class Shelf(AdminBaseHandler):
             token = q.upload_token(BUCKET_SINGLE_ITEM_IMG, expires=120, policy={"callbackUrl": "http://zone.senguo.cc/admin/shelf/singleItemImgCallback",
                                                                          "callbackBody": "key=$(key)&id=%s" % shop_id, "mimeLimit": "image/*"})
             return self.send_success(token=token, key=str(time.time())+':'+str(shop_id))
-        else:return self.send_error()
+        else: return self.send_error(404)
 
         return self.send_success()
 
 class Staff(AdminBaseHandler):
-    def initialize(self, action):
-        self._action = action
-
     @tornado.web.authenticated
-    def get(self, id):
+    @AdminBaseHandler.check_arguments("action")
+    def get(self, id): #shop_id
         try:shop = self.session.query(models.Shop).filter_by(id=id).one()
         except:return self.send_error(404)
         if shop not in self.current_user.shops:
             return self.send_error(403)
-        if self._action == "JH":
-            pass
-        elif self._action == "TH1":pass
-        elif self._action == "TH2":pass
-        elif self._action == "recruit":pass
+        action = self.args["action"]
+        staffs = self.session.query(models.ShopStaff).filter_by(shop_id=id)
+        if action == "JH":
+            staffs = staffs.filter_by(work=0).all()
+        elif action == "TH1":
+            staffs = staffs.filter_by(work=1).all()
+        elif action == "TH2":
+            staffs = staffs.filter_by(work=2).all()
+        elif action == "hire":
+            hire_forms = self.session.query(models.HireForm).filter_by(shop_id=id).all()
+            return self.render("", hire_forms=hire_forms)
+        else: return self.send_error(404)
+        return self.render("", staffs=staffs)
+
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action", "data")
+    def post(self, id): #hire_form_id/staff_id
+        action = self.args["action"]
+        data = self.args["data"]
+
+        if action in ["hire_agree", "hire_refuse"]: #id = hire_form_id
+            try:hire_form = self.session.query(models.HireForm).filter_by(id=id).one()
+            except: return self.send_error(404)
+            staff = self.session.query(models.ShopStaff).filter_by(id=hire_form.staff_id).one()
+            if action == "hire_agree":
+                staff.update(session=self.session, address=hire_form.address,
+                             work=hire_form.work, address1=hire_form.address1,
+                             address2=hire_form.address2)
+                self.session.delete(hire_form)
+                self.session.commit()
+            elif action == "hire_refuse":
+                self.session.delete(hire_form)
+                self.session.commit()
+        elif action == "edit_staff":
+            try:staff = self.session.query(models.ShopStaff).filter_by(id=id).one()
+            except:return self.send_error(404)
+            staff.update(session=self.session, work=data["work"], address1=data["address1"],
+                             address2=data["address2"], remark=data["remark"])
+        else:
+            return self.send_fail()
+        return self.send_success()
 
 
 
 class Config(AdminBaseHandler):
     @tornado.web.authenticated
-    def get(self, id):
+    @AdminBaseHandler.check_arguments("action")
+    def get(self, id): #shop_id
         try:config = self.session.query(models.Config).filter_by(id=id).one()
         except:return self.send_error(404)
-        return self.render("shop-set,html", config=config,context=dict(subpage="shop_set")
+<<<<<<< HEAD
+        return self.render("shop-set.html", config=config,context=dict(subpage="shop_set")
+=======
+        action = self.args["action"]
+        if action == "delivery":
+            return self.render("", addresses=config.addresses)
+        elif action == "notice":
+            return self.render("", notices=config.notices)
+        elif action == "recharge":
+            pass
+        elif action == "receipt":
+            return self.render("", title=config.title, receipt_msg=config.receipt_msg)
+        else:
+            return self.send_error(404)
+
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")
@@ -220,8 +274,8 @@ class Config(AdminBaseHandler):
         action = self.args["action"]
         data = self.args["data"]
 
-        if action in ["add_addr1", "add_notice", "edit_receipt"]: #id: config_id
-            try:config = self.session.query(models.Config).filter_by(id=id).one()
+        if action in ["add_addr1", "add_notice", "edit_receipt", "edit_hire"]: #id: shop_id
+            try config = self.session.query(models.Config).filter_by(id=id).one()
             except:return self.send_error(404)
             if action == "add_addr1":
                 addr1 = models.Address1(name=data)
@@ -232,9 +286,11 @@ class Config(AdminBaseHandler):
                                        detail=data["detail"])
                 config.notices.append(notice)
                 self.session.commit()
-            elif action == "edit_receipt":
+            elif action == "edit_receipt": #小票设置
                 config.update(session=self.session, receipt_msg=data["receipt_msg"],
                               title=data["title"])
+            elif action == "edit_hire":
+                config.update(session=self.session, hire_text=data)
         elif action == "add_addr2": #id: addr1_id
             try:addr1 = self.session.query(models.Address1).filter_by(id=id).one()
             except:return self.send_error(404)
