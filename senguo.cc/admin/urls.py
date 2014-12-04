@@ -1,5 +1,6 @@
 import handlers.front
 import handlers.admin
+import handlers.staff
 import handlers.superadmin
 import handlers.fruitzone
 import handlers.infowall
@@ -82,7 +83,6 @@ handlers = [
         "action":"register"}, "adminRegister"),
 
     (r"/admin/", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
-
     (r"/admin/order/(\d+)", handlers.admin.Order, {}, "adminOrder"),
 
     (r"/admin/shelf/singleItem/(\d+)", handlers.admin.Shelf, {"action":"single_item"}, "adminShelfSingleItem"),# 货架管理/商品管理
@@ -96,7 +96,11 @@ handlers = [
     # (r"/admin/finance", handlers.admin.Finance, {}, "adminFinance"),
     # (r"/admin/settings/profile", handlers.admin.Settings, 
     #  {"action":"profile"}, "adminSettingsProfile")
-    # (r"/staff/", handlers.staff.Home, {}, "staffHome"),
+    (r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
+    (r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
+    (r"/staff/logout", handlers.staff.Access, {"action":"logout"}, "staffLogout"),
+    (r"/staff/register", handlers.staff.Access, {"action":"register"}, "staffRegister"),
+    (r"/staff/", handlers.staff.Home, {}, "staffHome"),
     # (r"/staff/...")
 
     # 水果圈子
