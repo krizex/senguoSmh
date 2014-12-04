@@ -37,7 +37,7 @@
         {% else %}
             <input type="text" class="input-box" id="shopName" placeholder="请不要超过20个字"/>
         {% end %}
-        <p class="title">店铺logo<em>*</em><small class="text-red">(部分手机浏览器会出现图像无法上传，建议更换浏览器或使用电脑上传！)</small>：</p>
+        <p class="title">店铺logo<small class="text-red">(部分手机浏览器会出现图像无法上传，建议申请成功后进入个人中心的店铺管理页面再进行图片上传！)</small>：</p>
         {% if "reApply" in context and context["reApply"] %}
         <img src="{{shop.shop_trademark_url}}" id="logoImg"/>
         {% else %}

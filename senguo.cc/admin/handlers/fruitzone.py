@@ -190,6 +190,9 @@ class ShopApply(AdminBaseHandler):
     def post(self):
         #* todo 检查合法性
 
+        img_url = ""
+        if self.args["img_key"]:
+            img_url = SHOP_IMG_HOST+self.args["img_key"]
         if self._action == "apply":
             # 这种检查方式效率比较低
             if len(self.current_user.shops) >= self.MAX_APPLY_COUNT:
@@ -203,9 +206,9 @@ class ShopApply(AdminBaseHandler):
                   have_offline_entity=self.args["have_offline_entity"],
                   shop_service_area=self.args["shop_service_area"],
                   shop_intro=self.args["shop_intro"],
-                  shop_trademark_url=SHOP_IMG_HOST+self.args["img_key"]
+                  shop_trademark_url=img_url
                )
-            except DistrictCodeError as e:
+            except:
                return self.send_fail(error_text = "城市编码错误！")
             return self.send_success()
 
@@ -229,7 +232,7 @@ class ShopApply(AdminBaseHandler):
             if shop.shop_trademark_url:  #先要把旧的的图片删除
                 m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
                 m.delete(bucket=BUCKET_SHOP_IMG, key=shop.shop_trademark_url.split('/')[3])
-            shop.update(session=self.session,shop_trademark_url = SHOP_IMG_HOST+self.args["img_key"])
+            shop.update(session=self.session,shop_trademark_url = img_url)
             shop.update(session=self.session,shop_status = models.SHOP_STATUS.APPLYING)
             return self.send_success()
 
