@@ -3,7 +3,7 @@ import dal.models as models
 import tornado.web
 from settings import *
 import time
-from sqlalchemy import and_, or_
+from sqlalchemy import desc, and_, or_
 import qiniu
 
 class Access(StaffBaseHandler):
@@ -58,3 +58,22 @@ class Home(StaffBaseHandler):
     @tornado.web.authenticated
     def get(self):
         return self.render("staff/home.html", context=dict())
+class order(StaffBaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        work = self.current_user.work
+        if work == 0: #JH
+            orders = self.session.query(models.Order).filter_by(
+                and_(JH_id=self.current_user.id, status=models.ORDER_STATUS.JH))
+        elif work ==1: #SH1
+            orders = self.session.query(models.Order).filter_by(
+                and_(SH1_id=self.current_user.id, status=models.ORDER_STATUS.SH1))
+        elif work ==2: #SH2
+            orders = self.session.query(models.Order).filter_by(
+                and_(SH2_id=self.current_user.id, status=models.ORDER_STATUS.SH2))
+        else:
+            pass
+        orders = orders.order_by(desc(models.Order.create_date)).all()
+        return self.render("", orders=orders)
+
+    #@tornado.web.authenticated

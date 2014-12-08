@@ -367,7 +367,7 @@ class Shop(MapBase, _CommonApi):
     wx_qr_code = Column(String(1024))
 
     staffs = relationship("ShopStaff")
-    single_items = relationship("SingleItem", uselist=True)
+    single_Items = relationship("SingleItem", uselist=True)
     packages = relationship("Package", uselist=True)
     config = relationship("Config", uselist=False)
     def __repr__(self):
@@ -491,7 +491,7 @@ class ShopStaff(MapBase, _AccountApi):
 
     address = Column(String(100))
     num = Column(Integer) #编号
-    work = Column(SMALLINT, default=0) #工作类型：挑货员，捡货员
+    work = Column(SMALLINT, default=0) #工作类型：0:JH,1:SH1,2:SH2
     address1 = Column(String(100)) #责任区域一级地址（可多选，空格隔开）
     address2 = Column(String(200)) #二级
     remark = Column(String(500))
