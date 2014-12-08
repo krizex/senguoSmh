@@ -18,7 +18,7 @@
     </script>
 </head>
 <body>
-<div class="backstage-header">
+<header class="backstage-header">
     <div class="w1200">
         <div class="logo-con height50 pull-left">
             <a href="{{reverse_url('adminHome')}}" class="navbar-brand logo height50 padding-none">
@@ -55,10 +55,10 @@
                     <div class="admin-info area pull-right">
                         <div class="dropdown  area pull-left">
                             <button class="btn btn-default dropdown-toggle area height25 border-none" type="button" id="dropdownMenu1" data-toggle="dropdown">
-                                {{current_user.shops[1].shop_name}}
-                                <span class="caret pull-right"></span>
+                                <em title="{{current_user.shops[0].shop_name}}" class="pull-left">{{current_user.shops[0].shop_name}}</em>
+                                <span class="caret pull-right no-margin-left"></span>
                             </button>
-                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
                                 {% for shop in current_user.shops%}
                                 <li role="presentation"><a role="menuitem" tabindex="-1" href="#">{{shop.shop_name}}</a></li>
                                 {% end %}
@@ -70,7 +70,7 @@
             </ul>
         </div>
     </div>
-</div>
+</header>
 <!--backstage-header-end-->
 {% set subpage = context.get("subpage")%}
 {% set goods_active = ""%}
@@ -81,7 +81,7 @@
 {% elif subpage == 'shop_set' %}
     {% set shop_set_active = 'active' %}
 {% end %}
-<div class="container">
+<main class="container">
     <div class="container-left pull-left">
         <ul class="nav common-left-nav">
             <li>
@@ -98,7 +98,7 @@
             <li>
                 <span class="manage"><i></i>管理</span>
                 <a href="admin-orders.html">订单管理</a>
-                <a href="{{reverse_url('adminShelfFruit',current_user.shops[1].id)}}" class="{{goods_active}}">商品管理</a>
+                <a href="{{reverse_url('adminShelffruit',current_user.shops[0].id)}}" class="{{goods_active}}">商品管理</a>
                 <a href="admin-users.html">用户管理</a>
                 <a href="admin-staff.html">员工管理</a>
                 <a href="#">财务管理</a>
@@ -106,7 +106,7 @@
             </li>
             <li>
                 <span class="set"><i></i>设置</span>
-                <a href="#" data-url="{{reverse_url('adminConfig',current_user.shops[1].id)}}" class="{{shop_set_active}}" id="shopPage">店铺设置</a>
+                <a href="#" data-url="{{reverse_url('adminConfig',current_user.shops[0].id)}}" class="{{shop_set_active}}" id="shopPage">店铺设置</a>
                 <a href="#">公众号设置</a>
             </li>
         </ul>
@@ -114,7 +114,7 @@
     <div class="container-right pull-right">
     {% block content %}{% end %}
     </div>
-</div>
+</main>
 
 <script src="{{static_url('js/jquery.min.js')}}"></script>
 <script src="{{static_url('js/bootstrap.min.js')}}"></script>
