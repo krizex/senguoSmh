@@ -132,10 +132,12 @@ img{border:none;}
 
 .text-green{color:#44b549;}
 .text-white{color:#fff;}
+.text-grey{color:#ccc;}
 .bg-green{background:#44b549;}
 .bg-grey{background:#ccc;}
 .bg-grey2{background:#f2f2f2;}
 
+.set-inline-block{display:inline-block;}
 
 
 input{color:#333;}
