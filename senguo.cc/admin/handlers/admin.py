@@ -3,7 +3,7 @@ import dal.models as models
 import tornado.web
 from settings import *
 import time
-from sqlalchemy import and_, or_
+from sqlalchemy import desc, and_, or_
 import qiniu
 
 class Access(AdminBaseHandler):
@@ -254,13 +254,13 @@ class Config(AdminBaseHandler):
         except:return self.send_error(404)
         action = self.args["action"]
         if action == "delivery":
-            return self.render("", addresses=config.addresses)
+            return self.render("admin/shop-set.html", addresses=config.addresses,context=dict(subpage='shop_set',shopSubPage='delivery_set'))
         elif action == "notice":
-            return self.render("", notices=config.notices)
+            return self.render("admin/shop-set.html", notices=config.notices,context=dict(subpage='shop_set',shopSubPage='notice_set'))
         elif action == "recharge":
             pass
         elif action == "receipt":
-            return self.render("", title=config.title, receipt_msg=config.receipt_msg)
+            return self.render("admin/shop-set.html", title=config.title, receipt_msg=config.receipt_msg,context=dict(subpage='shop_set',shopSubPage='receipt_set'))
         else:
             return self.send_error(404)
 
@@ -278,6 +278,9 @@ class Config(AdminBaseHandler):
                 addr1 = models.Address1(name=data)
                 config.addresses.append(addr1)
                 self.session.commit()
+                address1 = self.session.query(models.Address1).filter_by(config_id=id).\
+                order_by(desc(models.Address1.id)).first()
+                return self.send_success(address1_id=address1.id)
             elif action == "add_notice":
                 notice = models.Notice(summary=data["summary"],
                                        detail=data["detail"])
@@ -288,10 +291,25 @@ class Config(AdminBaseHandler):
                               title=data["title"])
             elif action == "edit_hire":
                 config.update(session=self.session, hire_text=data)
-        elif action == "add_addr2": #id: addr1_id
+        if action in ["add_addr2", "edit_addr1_active"]:#id: addr1_id
             try:addr1 = self.session.query(models.Address1).filter_by(id=id).one()
             except:return self.send_error(404)
-            addr2 = models.Address2(name=data)
-            addr1.address2.append(addr2)
-            self.session.commit()
-
+            if action == "add_addr2":
+                addr2 = models.Address2(name=data)
+                addr1.address2.append(addr2)
+                self.session.commit()
+            elif action == "edit_addr1_active":
+                if addr1.active:
+                    active=False
+                else:
+                    active=True
+                addr1.update(session=self.session, active=active)
+        if action =="edit_addr2_active":#id: addr2_id
+            try:addr2 = self.session.query(models.Address2).filter_by(id=id).one()
+            except:return self.send_error(404)
+            if addr2.active:
+                active=False
+            else:
+                active=True
+            addr2.update(session=self.session, active=active)
+        return self.send_success()
