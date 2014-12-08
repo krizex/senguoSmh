@@ -377,17 +377,17 @@ class QiniuCallback(AdminBaseHandler):
             # self.session.add(fruit_img)
             # self.session.commit()
             return self.send_success()
-        elif self._action == "edit_single_item_img":
+        elif self._action == "edit_fruit_img":
             key = self.get_argument("key")
             id = self.get_argument("id")
             try:
-                single_item = self.session.query(models.SingleItem).filter_by(id=int(id)).one()
+                fruit = self.session.query(models.Fruit).filter_by(id=int(id)).one()
             except:
                 return self.send_error(404)
-            if single_item.img_url:  #先要把旧的的图片删除
+            if fruit.img_url:  #先要把旧的的图片删除
                 m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
-                m.delete(bucket=BUCKET_SINGLE_ITEM_IMG, key=single_item.img_url.split('/')[3])
-            single_item.update(session=self.session, img_url=SHOP_SINFLE_ITEM_HOST+key)
+                m.delete(bucket=BUCKET_GOODS_IMG, key=fruit.img_url.split('/')[3])
+            fruit.update(session=self.session, img_url=SHOP_SINFLE_ITEM_HOST+key)
             return self.send_success()
         return self.send_error(404)
 
