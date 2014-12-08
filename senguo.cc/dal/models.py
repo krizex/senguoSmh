@@ -367,7 +367,7 @@ class Shop(MapBase, _CommonApi):
     wx_qr_code = Column(String(1024))
 
     staffs = relationship("ShopStaff")
-    single_items = relationship("SingleItem", uselist=True)
+    fruits = relationship("Fruit", uselist=True)
     packages = relationship("Package", uselist=True)
     config = relationship("Config", uselist=False)
     def __repr__(self):
@@ -491,7 +491,7 @@ class ShopStaff(MapBase, _AccountApi):
 
     address = Column(String(100))
     num = Column(Integer) #编号
-    work = Column(SMALLINT, default=0) #工作类型：挑货员，捡货员
+    work = Column(SMALLINT, default=0) #工作类型：0:JH,1:SH1,2:SH2
     address1 = Column(String(100)) #责任区域一级地址（可多选，空格隔开）
     address2 = Column(String(200)) #二级
     remark = Column(String(500))
@@ -781,7 +781,7 @@ class Order(MapBase, _CommonApi):
     SH2_id = Column(Integer, ForeignKey(ShopStaff.id), nullable=True) #二级送货员id
     create_time = Column(DateTime)
 
-    single_items = relationship("SingleItem", secondary="order_single_item_link")
+    fruits = relationship("Fruit", secondary="order_fruit_link")
     packages = relationship("Package", secondary="order_package_link")
 #按时达
 class OrderOnTime(MapBase):
@@ -792,8 +792,8 @@ class OrderOnTime(MapBase):
 
 
 #水果单品
-class SingleItem(MapBase, _CommonApi):
-    __tablename__ = "single_item"
+class Fruit(MapBase, _CommonApi):
+    __tablename__ = "fruit"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
     fruit_type_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
@@ -823,12 +823,12 @@ class Package(MapBase, _CommonApi):
     img_url = Column(String(500))
     intro = Column(String(100))
 
-class OrderSingleItemLink(MapBase):
-    __tablename__ = "order_single_item_link"
+class OrderFruitLink(MapBase):
+    __tablename__ = "order_fruit_link"
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     order_id = Column(Integer, ForeignKey(Order.id), nullable=False)
-    single_item_id = Column(Integer, ForeignKey(SingleItem.id), nullable=False)
+    fruit_id = Column(Integer, ForeignKey(Fruit.id), nullable=False)
     num = Column(Integer) #单品数量
 
 class OrderPackageLink(MapBase):
@@ -843,12 +843,12 @@ class OrderPackageLink(MapBase):
 class ChargeType(MapBase):
     __tablename__ = "charge_type"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    single_item_id = Column(Integer, ForeignKey(SingleItem.id), nullable=False)
+    fruit_id = Column(Integer, ForeignKey(Fruit.id), nullable=False)
     price = Column(SMALLINT)#单价
     unit = Column(String(5))#计价单位
     number = Column(SMALLINT)#计价数量
 
-    single_item = relationship("SingleItem", uselist=False)
+    fruit = relationship("Fruit", uselist=False)
 #设置
 class Config(MapBase, _CommonApi):
     __tablename__ = "config"

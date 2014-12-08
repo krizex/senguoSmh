@@ -126,24 +126,24 @@ class Shelf(AdminBaseHandler):
         if shop not in self.current_user.shops:
             return self.send_error(403)
         fruit_types = self.session.query(models.FruitType).all()
-        if self._action == "single_item":
-            return self.render("admin/goods-fruit.html", single_items = shop.single_items,fruit_types=fruit_types,context=dict(subpage="goods",goodsSubpage="fruit"))
+        if self._action == "fruit":
+            return self.render("admin/goods-fruit.html", fruits = shop.fruits,fruit_types=fruit_types,context=dict(subpage="goods",goodsSubpage="fruit"))
         elif self._action == "package":
             return self.render("admin/goods-package.html", packages = shop.packages, fruit_types=fruit_types,context=dict(subpage="goods",goodsSubpage="package"))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")
-    def post(self, id): #shop_id/single_item_id
+    def post(self, id): #shop_id/fruit_id
         action = self.args["action"]
         data = self.args["data"]
 
-        if action == "add_single_item": #shop_id
+        if action == "add_fruit": #shop_id
             try:shop = self.session.query(models.Shop).filter_by(id=id).one()
             except:return self.send_error(404)
             if shop.admin != self.current_user:
                 return self.send_error(403)
 
-            single_item = models.SingleItem(shop_id=id,
+            fruit = models.Fruit(shop_id=id,
                                             fruit_type_id=data["fruit_type_id"],
                                             name=data["name"],
                                             saled=data["saled"],
@@ -151,17 +151,17 @@ class Shelf(AdminBaseHandler):
                                             is_new=data["is_new"],
                                             img_url=data["img_url"],
                                             intro=data["intro"])
-            self.session.add(single_item)
+            self.session.add(fruit)
             self.session.commit()
             return self.send_success()
-        elif action in ["add_charge_type", "edit_active", "edit_single_item"]: #single_item_id
-            try:single_item = self.session.query(models.SingleItem).filter_by(id=id).one()
+        elif action in ["add_charge_type", "edit_active", "edit_fruit"]: #fruit_id
+            try:fruit = self.session.query(models.Fruit).filter_by(id=id).one()
             except:return self.send_error(404)
-            if single_item.shop.admin != self.current_user:
+            if fruit.shop.admin != self.current_user:
                 return self.send_error(403)
 
             if action == "add_charge_type":
-                charge_type = models.ChargeType(single_item_id=id,
+                charge_type = models.ChargeType(fruit_id=id,
                                                 price=data["price"],
                                                 unit=data["unit"],
                                                 number=data["number"])
@@ -169,11 +169,11 @@ class Shelf(AdminBaseHandler):
                 self.session.commit()
                 return self.send_success()
             elif action == "edit_active":
-                if single_item.active == 0:
-                    single_item.active = 1
-                else:single_item.active = 0
-            elif action == "edit_single_item":
-                single_item.update(session=self.session,fruit_type_id = data["fruit_type_id"],
+                if fruit.active == 0:
+                    fruit.active = 1
+                else:fruit.active = 0
+            elif action == "edit_fruit":
+                fruit.update(session=self.session,fruit_type_id = data["fruit_type_id"],
                                                 name = data["name"],
                                                 saled = data["saled"],
                                                 storage = data["storage"],
@@ -182,12 +182,12 @@ class Shelf(AdminBaseHandler):
                                                 intro = data["intro"])
         elif action == "add_img":
             q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-            token = q.upload_token(BUCKET_SINGLE_ITEM_IMG, expires=120)
+            token = q.upload_token(BUCKET_GOODS_IMG, expires=120)
             return self.send_success(token=token, key=str(time.time()))
 
         elif action == "edit_img":
             q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-            token = q.upload_token(BUCKET_SINGLE_ITEM_IMG, expires=120, policy={"callbackUrl": "http://zone.senguo.cc/admin/shelf/singleItemImgCallback",
+            token = q.upload_token(BUCKET_GOODS_IMG, expires=120, policy={"callbackUrl": "http://zone.senguo.cc/admin/shelf/fruitImgCallback",
                                                                          "callbackBody": "key=$(key)&id=%s" % shop_id, "mimeLimit": "image/*"})
             return self.send_success(token=token, key=str(time.time())+':'+str(shop_id))
         else: return self.send_error(404)

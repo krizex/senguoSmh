@@ -181,6 +181,7 @@ class StaffBaseHandler(_AccountBaseHandler):
 class CustomerBaseHandler(_AccountBaseHandler):
     __account_model__ = models.Customer
     __account_cookie_name__ = "customer_id"
+    __wexin_oauth_url_name__ = "customerOauth"
 
 
 class WxOauth2:

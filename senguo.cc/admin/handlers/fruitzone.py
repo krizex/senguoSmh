@@ -190,6 +190,9 @@ class ShopApply(AdminBaseHandler):
     def post(self):
         #* todo 检查合法性
 
+        img_url = ""
+        if self.args["img_key"]:
+            img_url = SHOP_IMG_HOST+self.args["img_key"]
         if self._action == "apply":
             # 这种检查方式效率比较低
             if len(self.current_user.shops) >= self.MAX_APPLY_COUNT:
@@ -203,9 +206,9 @@ class ShopApply(AdminBaseHandler):
                   have_offline_entity=self.args["have_offline_entity"],
                   shop_service_area=self.args["shop_service_area"],
                   shop_intro=self.args["shop_intro"],
-                  shop_trademark_url=SHOP_IMG_HOST+self.args["img_key"]
+                  shop_trademark_url=img_url
                )
-            except DistrictCodeError as e:
+            except:
                return self.send_fail(error_text = "城市编码错误！")
             return self.send_success()
 
@@ -229,7 +232,7 @@ class ShopApply(AdminBaseHandler):
             if shop.shop_trademark_url:  #先要把旧的的图片删除
                 m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
                 m.delete(bucket=BUCKET_SHOP_IMG, key=shop.shop_trademark_url.split('/')[3])
-            shop.update(session=self.session,shop_trademark_url = SHOP_IMG_HOST+self.args["img_key"])
+            shop.update(session=self.session,shop_trademark_url = img_url)
             shop.update(session=self.session,shop_status = models.SHOP_STATUS.APPLYING)
             return self.send_success()
 
@@ -374,17 +377,17 @@ class QiniuCallback(AdminBaseHandler):
             # self.session.add(fruit_img)
             # self.session.commit()
             return self.send_success()
-        elif self._action == "edit_single_item_img":
+        elif self._action == "edit_fruit_img":
             key = self.get_argument("key")
             id = self.get_argument("id")
             try:
-                single_item = self.session.query(models.SingleItem).filter_by(id=int(id)).one()
+                fruit = self.session.query(models.Fruit).filter_by(id=int(id)).one()
             except:
                 return self.send_error(404)
-            if single_item.img_url:  #先要把旧的的图片删除
+            if fruit.img_url:  #先要把旧的的图片删除
                 m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
-                m.delete(bucket=BUCKET_SINGLE_ITEM_IMG, key=single_item.img_url.split('/')[3])
-            single_item.update(session=self.session, img_url=SHOP_SINFLE_ITEM_HOST+key)
+                m.delete(bucket=BUCKET_GOODS_IMG, key=fruit.img_url.split('/')[3])
+            fruit.update(session=self.session, img_url=SHOP_SINFLE_ITEM_HOST+key)
             return self.send_success()
         return self.send_error(404)
 
