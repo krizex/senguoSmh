@@ -11,6 +11,8 @@ $(document).ready(function(){
     $('#submitApply').on('click',function(evt){Apply(evt);});
     $('#submitReapply').on('click',function(evt){reApply(evt);});
 
+    var key='';
+    var token='';
     $('#file_upload').uploadifive(
         {
             buttonText    : '',
@@ -27,8 +29,6 @@ $(document).ready(function(){
                 'token':''
             },
             'onUpload' :function(){
-                var key='';
-                var token='';
                 $.ajaxSetup({
                     async : false
                 });
@@ -47,13 +47,14 @@ $(document).ready(function(){
                     'key':key,
                     'token':token
                 };
-                $('#logoImg').show().attr({'src':'http://infoimg.qiniudn.com/'+key+'?imageView/1/w/200/h/200','data-key':key});
+
+            },
+            'onUploadComplete':function(){
+                //alert('图像上传成功，存在由于网络问题图像无法预览的情况，请谅解！');
+                $('#logoImg').show().attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/200/h/200','data-key':key});
                 $('.apply-box').find('.filename').hide();
                 $('.apply-box').find('.fileinfo').hide();
                 $('.apply-box').find('.close').hide();
-            },
-            'onUploadComplete':function(){
-                alert('图像上传成功，存在由于网络问题图像无法预览的情况，请谅解！');
             }
 
         });
