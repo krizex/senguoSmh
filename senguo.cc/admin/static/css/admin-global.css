@@ -1,6 +1,6 @@
 /*全局样式*/
 body{font-family:"Microsoft YaHei","arial black",sans-serif;color:#333;font-size:12px;background:#e7e8ec;}
-.w1200{width:1200px;height:auto;overflow:hidden;margin:0 auto;}
+.w1200{width:1200px;height:auto;margin:0 auto;}
 .w1165{width:1165px;height:auto;overflow:hidden;margin:0 auto;}
 ol,ul,li{list-style:none;}
 .container{width:1165px;background:#fff;border:1px solid #d1d1d1;padding:0px !important;margin-bottom:80px;margin-top:85px;}
@@ -9,9 +9,9 @@ a:hover{text-decoration:none;cursor:pointer;}
 a:focus{text-decoration:none;outline:none;}
 .form-control{font-size:12px;padding:0;}
 .dropdown-toggle{border-radius:2px;background:#fff;color:#666;border:1px solid #ccc;padding:4px 10px;}
-.dropdown-menu{min-width:0px;margin:5px 0 0;border-radius:1px;margin-left:-1px;padding:0px;}
-.dropdown-menu li a{color:#666;padding:3px 15px;}
-.dropdown-menu li a:hover{background:#6599ff;color:#fff;}
+.dropdown-menu{min-width:0px;border-radius:1px;margin-left:-1px;padding:0px;}
+.dropdown-menu li a{color:#fff;display:block;}
+.dropdown-menu li a:hover{}
 .row{margin:0;}
 textarea:focus{border-color:#29aae1;}
 .panel{border-radius:0px !important;box-shadow:none;}
@@ -49,9 +49,12 @@ img{border:none;}
 .backstage-header .header-nav .admin-img{width:50px;margin-right:5px;}
 .backstage-header .header-nav .admin-info{width:90px;text-align:center;}
 .backstage-header .header-nav .admin-info .area{display:inline-block;width:100%;background:#ff6563;color:#fff;margin-left:0px;}
+.backstage-header .header-nav .admin-info .area em{font-style:normal;display:inline-block;width:72px;font-size:12px;overflow:hidden;}
 .backstage-header .header-nav .admin-info p{font-size:16px;color:#000;line-height:25px;display:inline-block;width:100%;}
-
-
+.backstage-header .header-nav .dropdown-toggle{padding:4px;}
+.backstage-header .header-nav .dropdown-menu li{padding:0px;}
+.backstage-header .header-nav .dropdown-menu li a:hover{color:#ff6563;}
+.backstage-header .header-nav .caret{margin-top:6px;}
 /*底部样式*/
 .backstage-footer{position:fixed;bottom:0;height:60px;z-index:999;background:#999;width:100%;margin-top:20px;}
 
@@ -132,12 +135,17 @@ img{border:none;}
 
 .text-green{color:#44b549;}
 .text-white{color:#fff;}
+.text-grey{color:#ccc;}
 .bg-green{background:#44b549;}
 .bg-grey{background:#ccc;}
 .bg-grey2{background:#f2f2f2;}
 
+.set-inline-block{display:inline-block;}
 
+.no-padding{padding:0px;}
+.no-margin-left{margin-left:0px !important;}
 
+.set-width-float{width:100%;float:left;}
 input{color:#333;}
 
 

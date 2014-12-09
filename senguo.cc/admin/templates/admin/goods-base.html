@@ -12,9 +12,8 @@
 <span class="right-title">商品管理</span>
 <div class="goods-classify">
     <ul class="classify-nav right-nav pull-left">
-        <li class="{{fruit_active}}"><a href="#">平价水果</a></li>
-        <li><a href="#">精品水果</a></li>
-        <li class="{{package_active}}"><a href="admin-goods-package.html">水果套餐</a></li>
+        <li class="{{fruit_active}}"><a href="#">水果</a></li>
+        <li><a href="#">干果</a></li>
         <li><a href="#">其他商品</a></li>
     </ul>
     <div class="search-input input-group pull-right">
@@ -32,20 +31,13 @@
         <p class="set-introduce">点击右方停用，平价水果类目下的所有商品将被下架</p>
     </div>
     <div class="mode-set pull-right">
-        <a href="#" class="set-btn btn-style unlock-mode">设置</a>
-        <a href="#" class="stop-btn btn-style lock-mode">停用</a>
+        <a href="#" class="stop-btn btn-style lock-mode">全部下架</a>
     </div>
 </div>
 <!--goods-mode-lock-end-->
-<div class="goods-list-title">
-    <form method="post" name="" action="" id="">
-        <input type="checkbox" class="select-box"/>
-        <span class="select-all">全选</span>
-        <a href="#" class="print-btn blak-set-btn" id="">批量折扣</a>
-        <a href="#" class="blak-set-btn" id="">批量设置为新品</a>
-    </form>
-</div>
 <div class="admin-goods-list">
+    {% block goods %}
+    {% end %}
     <div class="goods-list-con pull-left">
         {% block goodsLeft %}{% end %}
     </div>

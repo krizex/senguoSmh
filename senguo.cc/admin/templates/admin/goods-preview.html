@@ -1,0 +1,17 @@
+{% extends 'goods-base.html' %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-goods-fruit.css')}}"/>{% end %}
+
+{% block goods %}
+    <div class="fruit-preview-list set-width-float">
+        <ul>
+            {% for fruit in fruit_types%}
+            <li>
+                <a href="">
+                    <img src="{{static_url('images/anoa-4-md.gif')}}"/>
+                    <p>{{fruit.name}}</p>
+                </a>
+            </li>
+            {% end %}
+        </ul>
+    </div>
+{% end %}

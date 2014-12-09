@@ -8,23 +8,30 @@
     <meta charset="UTF-8"/>
     <title>{% block title%} {% end %}</title>
     <link rel="stylesheet" href="{{static_url('css/bootstrap.min.css')}}"/>
-    <link rel="stylesheet" href="{{static_url('css/fruitzone-global.css')}}"/>
+    <link rel="stylesheet" href="{{static_url('css/market-global.css')}}"/>
     <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     {% block head %}{% end %}
     <script>
         window.dataObj = {
-                _xsrf: "{{handler.xsrf_token}}"};
+            _xsrf: "{{handler.xsrf_token}}"};
     </script>
 </head>
 <body>
-<div class="phone-box">
-    {% block content %}{% end %}
-</div>
-<script src="{{static_url('js/jquery.min.js')}}"></script>
-<script src="{{static_url('js/bootstrap.min.js')}}"></script>
-<script src="{{static_url('js/global.js')}}"></script>
-<script src="{{static_url('js/fruitzone-public.js')}}"></script>
-{% block bottom %}{% end %}
+    <div class="">
+        {% block content %}{% end %}
+    </div>
+    <nav class="m">
+        <ul class="n">
+            <li><a href="">店铺信息</a></li>
+            <li><a href="">购买</a></li>
+            <li><a href="">购物车</a></li>
+            <li><a href="">个人中心</a></li>
+        </ul>
+    </nav>
+    <script src="{{static_url('js/jquery.min.js')}}"></script>
+    <script src="{{static_url('js/bootstrap.min.js')}}"></script>
+    <script src="{{static_url('js/global.js')}}"></script>
+    {% block bottom %}{% end %}
 </body>
 </html>

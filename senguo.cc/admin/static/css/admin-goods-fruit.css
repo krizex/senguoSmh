@@ -79,3 +79,11 @@
 .shelve-list .un-shelve{width:100%;float:left;margin-bottom:10px;}
 .shelve-list .un-shelve a{display:inline-block;float:left;background:#999;color:#fff;width:50px;height:24px;line-height:24px;text-align:center;border-radius:1px;margin-left:15px;margin-top:10px;}
 .shelve-list .supply-new-item{padding:5px;margin-left:30%;margin-top:10px;}
+
+.fruit-preview-list{background:#f2f2f2;padding:10px;overflow:hidden;}
+.fruit-preview-list ul{width:1000px;}
+.fruit-preview-list li{width:100px;float:left;text-align:center;margin:15px 12px 0 0;background:#fff;padding:5px;border:1px solid #fff;}
+.fruit-preview-list li img{width:100%;}
+.fruit-preview-list li a{color:#333;}
+.fruit-preview-list li p{margin:3px;font-size:14px;}
+.fruit-preview-list li:hover{border-color:#ccc;}
