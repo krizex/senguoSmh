@@ -55,7 +55,7 @@
                     <div class="admin-info area pull-right">
                         <div class="dropdown  area pull-left">
                             <button class="btn btn-default dropdown-toggle area height25 border-none" type="button" id="dropdownMenu1" data-toggle="dropdown">
-                                <em title="{{current_user.shops[0].shop_name}}" class="pull-left">{{current_user.shops[0].shop_name}}</em>
+                                <em title="{{current_user.shops[0].shop_name}}" data-id="{{current_user.shops[0].id}}" class="pull-left" id="shopId">{{current_user.shops[0].shop_name}}</em>
                                 <span class="caret pull-right no-margin-left"></span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
@@ -98,7 +98,7 @@
             <li>
                 <span class="manage"><i></i>管理</span>
                 <a href="admin-orders.html">订单管理</a>
-                <a href="{{reverse_url('adminShelffruit',current_user.shops[0].id)}}" class="{{goods_active}}">商品管理</a>
+                <a href="{{reverse_url('adminShelf',current_user.shops[0].id)}}?action=home&id=0" class="{{goods_active}}">商品管理</a>
                 <a href="admin-users.html">用户管理</a>
                 <a href="admin-staff.html">员工管理</a>
                 <a href="#">财务管理</a>
@@ -106,7 +106,7 @@
             </li>
             <li>
                 <span class="set"><i></i>设置</span>
-                <a href="#" data-url="{{reverse_url('adminConfig',current_user.shops[0].id)}}" class="{{shop_set_active}}" id="shopPage">店铺设置</a>
+                <a href="{{reverse_url('adminConfig',current_user.shops[0].id)}}?action=delivery" class="{{shop_set_active}}" id="shopPage">店铺设置</a>
                 <a href="#">公众号设置</a>
             </li>
         </ul>

@@ -90,7 +90,7 @@ $(document).ready(function(){
     });
 });
 
-var shopUrl =$('#shopPage').attr('data-url');
+var shopUrl =$('#shopPage').attr('href');
 
 function address1Edit(target){
     var url=shopUrl;

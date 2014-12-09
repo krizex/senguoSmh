@@ -21,6 +21,8 @@ $(document).ready(function(){
     $('#shareTo').on('click',function(){
         alert('点击右上角分享按钮分享到朋友圈！');
     });
+    var key='';
+    var token='';
     $('#file_upload').uploadifive(
         {
             buttonText    : '',
@@ -36,8 +38,6 @@ $(document).ready(function(){
                 'token':''
             },
             'onUpload' :function(){
-                var key='';
-                var token='';
                 $.ajaxSetup({
                     async : false
                 });
@@ -57,14 +57,14 @@ $(document).ready(function(){
                     'key':key,
                     'token':token
                 };
-                var filename=$('#shopLogoUpload').find('.filename').text();
-                $('#logoImg').attr({'src':'http://infoimg.qiniudn.com/'+key+'?imageView/1/w/200/h/200'});
-                $('#shopLogoUpload').find('.filename').hide();
-                $('#shopLogoUpload').find('.fileinfo').hide();
-                $('#shopLogoUpload').find('.close').hide();
             },
             'onUploadComplete':function(){
                 alert('图像上传成功，如遇网络问题图像无法加载的情况，请刷新页面！');
+                var filename=$('#shopLogoUpload').find('.filename').text();
+                $('#logoImg').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/200/h/200'});
+                $('#shopLogoUpload').find('.filename').hide();
+                $('#shopLogoUpload').find('.fileinfo').hide();
+                $('#shopLogoUpload').find('.close').hide();
             }
 
         });

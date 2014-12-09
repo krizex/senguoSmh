@@ -129,7 +129,7 @@ class Shelf(AdminBaseHandler):
         id = self.args["id"]
         fruit_types = self.session.query(models.FruitType).all()
         if action == "home":
-            return self.render("", fruit_types=fruit_types, menus=shop.menus,
+            return self.render("admin/goods-preview.html", fruit_types=fruit_types, menus=shop.menus,
                                 context=dict(subpage="goods", goodsSubpage="fruit"))
         elif action == "fruit":
             fruits=[]

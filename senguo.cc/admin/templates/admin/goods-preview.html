@@ -6,7 +6,7 @@
         <ul>
             {% for fruit in fruit_types%}
             <li>
-                <a href="">
+                <a href="{{reverse_url('adminShelf',current_user.shops[0].id)}}?action=fruit&id={{fruit.id}}">
                     <img src="{{static_url('images/anoa-4-md.gif')}}"/>
                     <p>{{fruit.name}}</p>
                 </a>
@@ -14,4 +14,7 @@
             {% end %}
         </ul>
     </div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/admin-goods-fruit.js')}}"></script>
 {% end %}
