@@ -516,6 +516,7 @@ class Customer(MapBase, _AccountApi):
     credits = Column(Float, default=0)
 
     orders = relationship("Order")
+    cart = relationship("Cart", uselist=False)
     addresses = relationship("Address", backref="customer")
 
 class COUNTER_TYPE:
@@ -813,7 +814,7 @@ class Fruit(MapBase, _CommonApi):
     current_saled = Column(Integer, default=0) #售出：未处理的订单数
     saled = Column(Integer) #销量
     storage = Column(Integer)
-    unit = Column(String(10))#库存单位
+    unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
     tag = Column(TINYINT, default=TAG.NULL) #标签
     img_url = Column(String(500))
     intro = Column(String(100))
@@ -870,8 +871,9 @@ class ChargeType(MapBase):
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     fruit_id = Column(Integer, ForeignKey(Fruit.id), nullable=False)
     price = Column(SMALLINT)#单价
-    unit = Column(String(5))#计价单位
-    number = Column(SMALLINT)#计价数量
+    unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
+    num = Column(SMALLINT)#计价数量
+    unit_num = Column(TINYINT)#单位换算
     active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 
     fruit = relationship("Fruit", uselist=False)
@@ -882,11 +884,19 @@ class MChargeType(MapBase):
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     mgoods_id = Column(Integer, ForeignKey(MGoods.id), nullable=False)
     price = Column(SMALLINT)#单价
-    unit = Column(String(5))#计价单位
+    unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
     number = Column(SMALLINT)#计价数量
+    unit_num = Column(TINYINT)#单位换算
     active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 
     mgoods = relationship("MGoods", uselist=False)
+
+class Cart(MapBase):
+    __tablename__ = "cart"
+    id = Column(Integer, ForeignKey(Customer.id), primary_key=True, nullable=False)
+    fruits = Column(String(100))
+    mgoods = Column(String(100))
+
 #设置
 class Config(MapBase, _CommonApi):
     __tablename__ = "config"

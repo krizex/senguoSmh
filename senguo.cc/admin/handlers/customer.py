@@ -59,3 +59,60 @@ class Home(CustomerBaseHandler):
     def get(self):
         return self.render("customer/home.html", context=dict())
 
+class Market(CustomerBaseHandler):
+    @tornado.web.authenticated
+    @CustomerBaseHandler.check_arguments("action", "id?:int")
+    def get(self,id):
+        try:shop = self.session.query(models.Shop).filter_by(id=id).one()
+        except:return self.send_error(404)
+        if "id" not in self.args.keys():
+
+        action = self.args["action"]
+        id = self.args["id"]
+        if action == "fruit":
+            fruits=[]
+            for fruit in shop.fruits:
+                if fruit.fruit_type_id != 1000:#干果id
+                fruits.append(fruit)
+            re
+    def save_cart(self, fruits, mgoodses):
+        fruits_str=""
+        for fruit in fruits:
+            fruits_str += "%d:%d:%d " % (fruit["fruit_id"], fruit["charge_type_id"], fruit["num"])
+        mgoodses_str=""
+        for mgoods in mgoodses:
+            mgoodses_str += "%d:%d:%d " % (mgoods["mgoods_id"], fruit["mcharge_type_id"], fruit["num"])
+        fruits_str = fruits_str.rstrip()
+        mgoodses_str = mgoodses_str.rstrip()
+        try:cart = self.session.query(models.Cart).filter_by(id=self.current_user.id).one()
+        except:cart=None
+        if not cart:
+            self.session.add(models.Cart(id=self.current_user.id,
+                                            fruits=fruits_str,mgoods=mgoodses_str))
+        else:
+            cart.fruits = fruits_str
+            cart.mgoods = mgoodses_str
+            self.session.add(cart)
+            self.session.commit()
+    def read_cart(self, id):
+        try:cart = self.session.query(models.Cart).filter_by(id=id).one()
+        except:return None
+        fruits ＝ cart.fruits.split(' ')
+        mgoodses = cart.mgoodses.split(' ')
+        fs=[]
+        ms=[]
+        for fruit in fruits:
+            f=fruit.split(":")
+            d={}
+            d["fruit_id"]=f[0]
+            d["charge_type_id"]=f[1]
+            d["num"]=f[2]
+            fs.append(d)
+        for mgoods in mgoodses:
+            m=mgoods.split(":")
+            d={}
+            d["mgoods_id"]=m[0]
+            d["mcharge_type_id"]=m[1]
+            d["num"]=m[2]
+            ms.append(d)
+        return fs,ms

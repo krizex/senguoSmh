@@ -168,7 +168,8 @@ class Shelf(AdminBaseHandler):
                 for charge_type in data["charge_types"]:
                     fruit.charge_types.append(models.ChargeType(price=charge_type["price"],
                                                                 unit=charge_type["unit"],
-                                                                number=charge_type["number"]))
+                                                                num=charge_type["num"],
+                                                                unit_num=charge_type["unit_num"]))
                 self.session.add(fruit)
                 self.session.commit()
                 return self.send_success()
@@ -192,7 +193,8 @@ class Shelf(AdminBaseHandler):
                 charge_type = models.ChargeType(fruit_id=id,
                                                 price=data["price"],
                                                 unit=data["unit"],
-                                                number=data["number"])
+                                                num=data["num"],
+                                                unit_num=data["unit_num"])
                 self.session.add(charge_type)
                 self.session.commit()
                 return self.send_success()
