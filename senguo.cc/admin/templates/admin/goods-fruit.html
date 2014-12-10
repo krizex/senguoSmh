@@ -1,130 +1,240 @@
 {% extends 'goods-base.html' %}
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-goods-fruit.css')}}"/>{% end %}
-{% block goods %}
-    {% block goodsLeft %}
-    <ul>
-        {% for item in fruits %}
-            <li class="goods-list-item">
-                <input type="checkbox" class="pull-left select-box"/>
-                <div class="goods-info">
-                    <div class="shelve-action pull-left">
-                        <span class="unshelve">未上架</span>
-                        <span class="shelve" style="display:none">已上架</span>
-                    </div>
-                    <strong class="name">{{item.fruit_type.name}}</strong>
-                    <label class="id">NO.{{item.fruit_type.id}}</label>
-                    <label class="code">{{item.fruit_type.code}}</label>
-                    <strong class="storage">库存：{{item.storage}}/个</strong>
-                    <strong class="sold-out">已售出：1/个</strong>
-                    <label class="sales">销量：1</label>
-                    <a class="add-child add-btn2 pull-right">+ 增加子类型</a>
+{% block goodsLeft %}
+<ul class="goods-list clearfix">
+    <li class="goods-list-item">
+        <div class="goods-item-show">
+            <div class="shelve-action pull-left">
+                <span class="unshelve stop-mode">未上架</span>
+                <span class="shelve work-mode" style="display:none">已上架</span>
+            </div>
+            <div class="goods-info pull-left">
+                <div class="goods-img pull-left">
+                    <img src="{{static_url('images/anoa-1-md.gif')}}"/>
                 </div>
-                <div class="goods-img">
-                    <div class="upload-box pull-left">
-                        <span class="title">商品照片</span>
-                        <div class="img-box" >
-                            <img src=""/>
-                            <p class="upload-hint">已上传 0%</p>
-                        </div>
-                        <div class="please-choose">
-                            选择照片
-                            <input type="file" class="file-input"/>
-                        </div>
-                        <p class="upload-notice">请上传.png格式的照片，大小控制在200kb内</p>
-                        <a class="upload-btn add-btn2">确认上传</a>
-                    </div>
-                    <div class="right-box pull-right">
-                        <p>商品介绍</p>
-                        <textarea class="introduce">哈哈哈哈哈，好吃！</textarea>
-                        <div class="storage-box">
-                            <label>库存</label>
-                            <input type="number" placeholder="请输入库存"/>
-                            <label>单位</label>
-                            <div class="dropdown pull-left">
-                                <button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle">
-                                    个
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                    <li><a href="#">斤</a></li>
-                                    <li><a href="#">半个</a></li>
-                                    <li><a href="#">半斤</a></li>
-                                    <li><a href="#">份</a></li>
-                                </ul>
-                            </div>
-                            <label>销量</label>
-                            <input type="number" placeholder="请输入销量"/>
-                        </div>
-                    </div>
-                    <div class="btn-box">
-                        <a class="add-btn2">+ 增加计价方式</a>
-                        <a class="add-btn2">确认更改</a>
-                    </div>
-                </div>
-                <div class="chlid-box" style="display:none">
-                    <ul class="child-list">
-                        <li class="child-list-item">
-                        </li>
-                    </ul>
-                </div>
-                <div class="charge-box">
+                <div class="info-box pull-right">
+                    <p class="clearfix">
+                        <label class="name pull-left text-red set-right10">苹果</label>
+                        <span class="priority pull-left">排序优先级：5</span>
+                        <span class="sale pull-right">销量：666个</span>
+                    </p>
+                    <p class="clearfix">
+                        <span class="praise pull-left set-right20">点赞：666</span>
+                        <span class="comment pull-left">评论：666</span>
+                        <span class="on-sale pull-right">在售：666个</span>
+                        <span class="storage pull-right set-right20">库存：666个</span>
+                    </p>
+                    <div class="clearfix"></div>
                     <ul class="charge-list">
-                        <li class="charge-list-item">
-                            <div class="title">
-                                <span class="pull-left">计价方式：3元/1个</span>
-                                <a class="delete-btn pull-right" href="javascript:;">- 删除</a>
-                            </div>
-                            <div class="con">
-                                <label>价钱</label>
-                                <input type="text" value="3"/>
-                                <label>单位</label>
-                                <div class="dropdown pull-left">
-                                    <button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle">
-                                        个
-                                        <span class="caret"></span>
+                        <li>计价方式1:<label class="charge-type text-red set-left10">88元/2斤</label></li>
+                    </ul>
+                    <a href="#" class="edit-btn2 pull-right bg-white">编辑</a>
+                </div>
+            </div>
+        </div>
+        <div class="goods-item-edit">
+            <div class="shelve-action pull-left">
+                <span class="unshelve stop-mode">未上架</span>
+                <span class="shelve work-mode" style="display:none">已上架</span>
+            </div>
+            <div class="goods-info pull-left">
+                <div class="upload-img goods-left pull-left">
+                    <img src="{{static_url('images/anoa-1-md.gif')}}"/>
+                    <a href="javascript:;" class="btn-style2 text-grey2">上传/修改图片</a>
+                    <a href="javascript:;" class="btn-style2 text-grey2">恢复默认图</a>
+                </div>
+                <div class="goods-right pull-right">
+                    <p class="clearfix">
+                        <span class="pull-left">名称：<input type="text" class="w2"/></span>
+                        <span class="pull-right">销量：<input type="text" class="w1"/></span>
+                    </p>
+                    <p class="clearfix">
+                        <span class="pull-left">库存单位：<input type="text" class="w1 set-right20"/></span>
+                        <span class="pull-left">库存：<input type="text" class="w1"/></span>
+                        <span class="pull-right">在售：<input type="text" class="w1"/></span>
+                    </p>
+                    <p>
+                        <span class="pull-left">简介:</span>
+                        <textarea class="pull-right w3"></textarea>
+                    </p>
+                </div>
+                <div class="clearfix"></div>
+                <hr/>
+                <div class="goods-left pull-left">
+                    <p class="text-center">商品标签</p>
+                    <a href="#" class="btn-style3 text-white bg-grey">无</a>
+                    <a href="#" class="btn-style3 text-white bg-grey">显示折扣</a>
+                    <a href="#" class="btn-style3 text-white bg-grey">热卖中</a>
+                    <a href="#" class="btn-style3 text-white bg-grey">今日特价</a>
+                    <a href="#" class="btn-style3 text-white bg-grey">新品</a>
+                </div>
+                <div class=" goods-right pull-right">
+                    <p>
+                        排序优先级：<input type="text" class="w4 set-right10"/><small>(输入1-5的数字，数字越高，商品越靠前排布)</small>
+                    </p>
+                    <div class="add-charge-box bg-white set-width-float">
+                        <p class="clearfix">
+                            <span class="pull-left">计价方式</span>
+                            <a href="" class="pull-right add-btn2">+新增计价方式</a>
+                        </p>
+                        <hr/>
+                        <ul class="add-charge-list">
+                            <li>
+                                <span class="pull-left">价格：<input type="text" class="w4 set-right5"/></span>
+                                <span class="pull-left">数量：<input type="text" class="w4 set-right5"/></span>
+                                <span class="pull-left">单位：</span>
+                                <div class="btn-group pull-left set-right5">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                        个 <span class="caret"></span>
                                     </button>
-                                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                        <li><a href="#">斤</a></li>
-                                        <li><a href="#">半个</a></li>
-                                        <li><a href="#">半斤</a></li>
-                                        <li><a href="#">份</a></li>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="javascript:;">个</a></li>
+                                        <li><a href="javascript:;">份</a></li>
                                     </ul>
                                 </div>
-                                <label>数量</label>
-                                <input type="text" value="3"/>
-                                <a class="add-btn2 pull-right" >确认更改</a>
-                            </div>
-                        </li>
+                                <div class="pull-left ">=<input type="text" class="w4 set-left5 set-right5"/>个</div>
+                                <a href="javascript:;" class="delete-btn pull-right">-删除</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <hr/>
+                <div class="set-width-float">
+                    <div class="col-lg-6">
+                        <a href="javascript:;" class="modal-sure-btn pull-right">确定</a>
+                    </div>
+                    <div class="col-lg-6">
+                        <a href="javascript:;" class="modal-concel-btn">取消</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+</ul>
+<div class="add-goods-item">
+    <div class="shelve-action pull-left">
+        <span class="unshelve stop-mode">未上架</span>
+        <span class="shelve work-mode" style="display:none">已上架</span>
+    </div>
+    <div class="goods-info pull-left">
+        <div class="upload-img goods-left pull-left">
+            <img src="{{static_url('images/anoa-1-md.gif')}}" class="imgPreview"/>
+            <div class="upload-box btn-style2 green-color">
+                <input id="file_upload" type="file" name="file_upload" class="uploadImg" />
+                <p>上传/修改图片</p>
+            </div>
+            <a href="javascript:;" class="btn-style2 text-grey2">恢复默认图</a>
+        </div>
+        <div class="goods-right pull-right">
+            <p class="clearfix">
+                <span class="pull-left">名称：<input type="text" class="w2" id="goodsName"/></span>
+                <span class="pull-right">销量：<input type="text" class="w1" id="goodsSale"/></span>
+            </p>
+            <div class="clearfix set-bottom10">
+                <span class="pull-left">库存单位： </span>
+                <div class="btn-group pull-left set-right20">
+                    <button type="button" class="btn btn-default dropdown-toggle w1" data-toggle="dropdown">
+                        <span data-id="" id="goodsUnit" class="unitContent">个</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu unitlist" role="menu">
+                        <li><a href="javascript:;" data-id="1">个</a></li>
+                        <li><a href="javascript:;" data-id="2">斤</a></li>
+                        <li><a href="javascript:;" data-id="3">份</a></li>
                     </ul>
                 </div>
-            </li>
-        {% end %}
-    </ul>
-    <div class="users-pagination list-pagination">
-        <ul>
-            <li><a href="#" class="page-btn pre-page">&nbsp;</a></li>
-            <li>
-                <span class="page-now">2</span>/<span class="page-total">15</span>
-            </li>
-            <li><a href="#" class="page-btn next-page">&nbsp;</a></li>
-            <li><input class="input-page form-control" type="text" value="输入页码"/></li>
-            <li><a href="#" class="jump-to">跳转</a></li>
-        </ul>
+                <span class="pull-left">库存：<input type="text" class="w1" id="goodsStorage"/></span>
+            </div>
+            <p>
+                <span class="pull-left">简介:</span>
+                <textarea class="pull-right w3" id="goodsIntro"></textarea>
+            </p>
+        </div>
+        <div class="clearfix"></div>
+        <hr/>
+        <div class="goods-left tag-list pull-left">
+            <p class="text-center">商品标签</p>
+            <a href="javascript:;" class="btn-style3 text-white bg-grey" data-id="1">无</a>
+            <a href="javascript:;" class="btn-style3 text-white bg-grey" data-id="2">限时折扣</a>
+            <a href="javascript:;" class="btn-style3 text-white bg-grey" data-id="3">热卖中</a>
+            <a href="javascript:;" class="btn-style3 text-white bg-grey" data-id="4">今日特价</a>
+            <a href="javascript:;" class="btn-style3 text-white bg-grey" data-id="5">新品</a>
+        </div>
+        <div class=" goods-right pull-right">
+            <p>
+                排序优先级：<input type="text" class="w4 set-right10" id="goodsPriority"/>
+                <small>(输入1-5的数字，数字越高，商品越靠前排布)</small>
+            </p>
+            <div class="add-charge-box bg-white set-width-float">
+                <p class="clearfix">
+                    <span class="pull-left">计价方式</span>
+                    <a href="" class="pull-right add-btn2">+新增计价方式</a>
+                </p>
+                <hr/>
+                <ul class="add-charge-list">
+                    <li>
+                        <span class="pull-left">价格：<input type="text" class="w4 set-right5"/></span>
+                        <span class="pull-left">数量：<input type="text" class="w4 set-right5"/></span>
+                        <span class="pull-left">单位：</span>
+                        <div class="btn-group pull-left set-right5">
+                            <button type="button" class="btn btn-default dropdown-toggle w1" data-toggle="dropdown">
+                                <span data-id="" id="goodsUnit" class="unitContent">个</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu unitlist" role="menu">
+                                <li><a href="javascript:;" data-id="1">个</a></li>
+                                <li><a href="javascript:;" data-id="2">斤</a></li>
+                                <li><a href="javascript:;" data-id="3">份</a></li>
+                            </ul>
+                        </div>
+                        <div class="pull-left ">=<input type="text" class="w4 set-left5 set-right5"/>个</div>
+                        <a href="javascript:;" class="delete-btn pull-right">-删除</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <hr/>
+        <div class="set-width-float">
+            <div class="col-lg-6">
+                <a href="javascript:;" class="modal-sure-btn pull-right add-goods-sure">确定</a>
+            </div>
+            <div class="col-lg-6">
+                <a href="javascript:;" class="modal-concel-btn add-goods-concel">取消</a>
+            </div>
+        </div>
     </div>
-    {% end %}
-    {% block goodsRight %}
-        <span class="title">已上架(20)</span>
-        <div class="shelve">
-            <a href="#">苹果</a>
+</div>
+<div class="add-new-goods">+添加新商品</div>
+<div class="users-pagination list-pagination">
+    <ul>
+        <li><a href="#" class="page-btn pre-page">&nbsp;</a></li>
+        <li>
+            <span class="page-now">2</span>/<span class="page-total">15</span>
+        </li>
+        <li><a href="#" class="page-btn next-page">&nbsp;</a></li>
+        <li><input class="input-page form-control" type="text" value="输入页码"/></li>
+        <li><a href="#" class="jump-to">跳转</a></li>
+    </ul>
+</div>
+{% end %}
+{% block goodsRight %}
+    <span class="title">已上架(20)</span>
+    <div class="shelve">
+        <a href="#">苹果</a>
 
-        </div>
-        <span class="title">未上架(20)</span>
-        <div class="un-shelve">
-            <a href="#">苹果</a>
+    </div>
+    <span class="title">未上架(20)</span>
+    <div class="un-shelve">
+        <a href="#">苹果</a>
 
-        </div>
-        <a href="javascript:;" class="supply-new-item add-btn-sty">+ 申请新品种</a>
-    {% end %}
+    </div>
+    <a href="javascript:;" class="supply-new-item add-btn-sty">+ 申请新品种</a>
 {% end %}
 
-{% block bottom %}<script src="{{static_url('js/admin-goods-fruit.js')}}"></script>{% end %}
+
+{% block bottom %}
+<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>
+<script src="{{static_url('js/admin-goods-fruit.js')}}"></script>
+{% end %}

@@ -9,68 +9,52 @@
 
 .goods-mode-lock{width:100%;clear:both;background:#f2f2f2;height:80px;}
 
-.goods-list-title{width:100%;margin:10px 0;float:left;}
-.goods-list-title .select-box{float:left;border:1px solid #ccc;}
-.goods-list-title .select-all{float:left;margin-top:2px;margin-left:5px;}
-
 .admin-goods-list{width:100%;float:left;border:1px solid #ccc;}
 .admin-goods-list .goods-list-con{width:700px;font-size:14px;border-right:1px solid #ccc;margin-top:-1px;}
-.admin-goods-list .goods-list-con .goods-list-item{width:100%;float:left;padding:20px;margin-bottom:20px;background:#f3f3f3;position:relative;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
-.goods-list-item .select-box{position:absolute;left:10px;}
-.goods-list-item .goods-info{width:100%;float:left;line-height:30px;padding-left:10px !important;}
-.goods-list-item .goods-info label{font-weight:normal;float:left;margin-left:10px;}
-.goods-list-item .goods-info strong{float:left;margin-left:10px;}
 
+.goods-list-item .goods-info{padding:10px;background:#fff;margin-left:10px;width:90%;border:1px solid #ccc;background:#f3f3f3;}
+.goods-list-item .goods-info .info-box{width:80%;}
+.goods-list-item hr{border-color:#ccc;margin-top:10px;margin-bottom:10px;}
+.admin-goods-list .goods-list-con .goods-list-item{width:100%;float:left;padding:20px;margin-bottom:20px;position:relative;margin-bottom:10px;}
+.goods-list-item .goods-item-show .goods-info .goods-img{width:100px;height:100px;overflow:hidden;}
+.goods-list-item .goods-item-show .goods-info .goods-img img{width:100%;}
+.goods-list-item .goods-item-show .goods-info .info-box .charge-list{width:100%;}
+.goods-list-item .goods-item-show .goods-info .info-box .charge-list li{}
+.goods-list-item .goods-left{width:100px;padding:5px;background:#fff;margin-bottom:10px;}
+.goods-list-item .goods-right{width:80%;}
+.goods-list-item .goods-item-edit .upload-img{width:100px;}
+.goods-list-item .goods-item-edit .upload-img img{width:100%;}
+.goods-list-item .goods-item-edit .upload-img a{display:inline-block;}
+.goods-list-item .goods-item-edit .w1{width:80px;}
+.goods-list-item .goods-item-edit .w2{width:250px;}
+.goods-list-item .goods-item-edit .w3{width:420px;height:80px;}
+.goods-list-item .goods-item-edit .w4{width:50px;}
+.goods-list-item .goods-item-edit .add-charge-box{border:1px solid #ccc;padding:5px;}
+.goods-list-item .goods-item-edit .add-charge-list .dropdown-toggle{padding:3px 12px;}
 
-.goods-list-item .shelve-action:hover{cursor:pointer;}
-.goods-list-item .shelve-action span{display:inline-block;height:20px;line-height:20px;padding:0 3px;color:#fff;font-size:12px;}
-.goods-list-item .shelve-action .shelve{background:#44b549;}
-.goods-list-item .shelve-action .unshelve{background:#999;}
+.add-goods-item .goods-info{padding:10px;background:#fff;margin-left:10px;width:90%;border:1px solid #ccc;background:#f3f3f3;}
+.add-goods-item .goods-info .info-box{width:80%;}
+.add-goods-item hr{border-color:#ccc;margin-top:10px;margin-bottom:10px;}
+.add-goods-item .goods-left{width:100px;padding:5px;background:#fff;margin-bottom:10px;}
+.add-goods-item .goods-right{width:80%;}
+.add-goods-item .upload-img{width:100px;}
+.add-goods-item .upload-img img{width:100%;}
+.add-goods-item .upload-img a{display:inline-block;}
+.add-goods-item .w1{width:80px;}
+.add-goods-item .w2{width:250px;}
+.add-goods-item .w3{width:420px;height:80px;}
+.add-goods-item .w4{width:50px;}
+.add-goods-item .add-charge-box{border:1px solid #ccc;padding:5px;}
+.add-goods-item .tag-list a:focus{background:#44b549;color:#fff;}
+.add-goods-item .tag-list a:hover{background:#44b549;color:#fff;}
+.add-goods-item .tag-list a.active{background:#44b549;}
 
-.goods-list-item .goods-img{width:100%;float:left;position:relative;}
-.goods-list-item .goods-img .upload-box{background:#fff;width:40%;border:1px solid #ccc;padding:0 15px 15px 15px;}
-.goods-list-item .goods-img .upload-box .title{display:inline-block;width:100%;font-size:16px;text-align:center;line-height:30px;}
-.goods-list-item .goods-img .upload-box .img-box{width:100%;height:200px;border:1px solid #ccc;position:relative;}
-.goods-list-item .goods-img .upload-box .img-box img{}
-.goods-list-item .goods-img .upload-box .upload-hint{position:absolute;bottom:0;z-index:10;background:rgba(0,0,0,0.3);color:#fff;text-align:center;margin-bottom:0;height:30px;line-height:30px;width:100%;}
-.goods-list-item .goods-img .upload-box .please-choose{position:relative;width:100px;height:30px;line-height:30px;text-align:center;border:1px solid #ccc;margin:10px 0;}
-.goods-list-item .goods-img .upload-box .please-choose .file-input{width:100px;height:30px;position:absolute;top:0;left:0;filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0,style=0);opacity:0; -moz-opacity:0;}
-.goods-list-item .goods-img .upload-box .please-choose .file-input:hover{cursor:pointer;}
-.goods-list-item .goods-img .upload-box .upload-notice{font-size:12px;color:#666;}
-.goods-list-item .goods-img .right-box{width:58%;padding:0 15px 15px 15px;}
-.goods-list-item .goods-img .right-box .introduce{width:100%;height:200px;border:1px solid #ccc;padding:10px;}
-.goods-list-item .goods-img .right-box .storage-box{width:105%;float:left;margin-top:10px;}
-.goods-list-item .goods-img .right-box .storage-box label{float:left;margin-right:5px;line-height:30px;font-weight:normal;}
-.goods-list-item .goods-img .right-box .storage-box input{float:left;border:1px solid #ccc;width:80px;height:30px;margin-right:15px;font-size:12px;}
-.goods-list-item .goods-img .right-box .storage-box .dropdown-toggle{width:60px;margin-right:15px;}
-.goods-list-item .goods-img .right-box .storage-box .dropdown-menu{margin-top:-5px;}
-.goods-list-item .goods-img .btn-box{position:absolute;bottom:0;right:20px;}
-.goods-list-item .goods-img .btn-box a{float:right;margin-left:10px;}
+.upload-box{position:relative;height:24px;width:100px;overflow:hidden;}
+.upload-box .uploadImg{position:absolute;z-index:999;width:100%;opacity:0;}
+.upload-box p{position:absolute;top:0;}
 
-.goods-list-item .child-list{width:100%;float:left;line-height:30px;margin-top:20px;}
-.goods-list-item .child-list .child-list-item{width:100%;float:left;background:#fff;padding:10px;border:1px solid #ccc;margin-bottom:10px;}
-.goods-list-item .child-list .child-list-item:hover{background:rgba(100,220,220,0.3);}
-.goods-list-item .child-list .child-list-item .child-info{width:100%;float:left;border-bottom:1px solid #ccc;margin-bottom:10px;}
-.goods-list-item .child-list .child-list-item .child-info .shelve-action{margin:5px 0 15px;}
-.goods-list-item .child-list .child-list-item .child-info label{font-weight:normal;float:left;margin-left:8px;}
-.goods-list-item .child-list .child-list-item .child-info strong{float:left;margin-left:8px;}
-.goods-list-item .child-list .child-list-item .child-info .add-charge{padding:0 3px;}
-.goods-list-item .child-list .child-list-item .child-info .delete-btn{margin-left:5px;}
-.goods-list-item .child-list .child-list-item .child-set{width:100%;float:left;}
-.goods-list-item .child-list .child-list-item .child-set label{font-weight:normal;float:left;margin-right:8px;}
-.goods-list-item .child-list .child-list-item .child-set input{float:left;margin-right:10px;border:1px solid #ccc;width:70px;height:30px;margin-right:15px;font-size:12px;text-indent:5px;}
-.goods-list-item .child-list .child-list-item .child-set .dropdown-toggle{padding:0 10px;margin-right:10px;}
-
-.goods-list-item .charge-list{width:100%;float:left;margin-top:20px;}
-.goods-list-item .charge-list .charge-list-item{width:100%;float:left;padding:10px;border:1px solid #ccc;margin-bottom:10px;}
-.goods-list-item .charge-list .charge-list-item:hover{background:rgba(100,150,200,0.3);}
-.goods-list-item .charge-list .charge-list-item .title{width:100%;float:left;}
-.goods-list-item .charge-list .charge-list-item .title span{line-height:30px;}
-.goods-list-item .charge-list .charge-list-item .con{width:100%;float:left;margin-top:10px;}
-.goods-list-item .charge-list .charge-list-item .con input{float:left;border:1px solid #ccc;width:80px;height:30px;margin-right:15px;font-size:12px;text-align:center;}
-.goods-list-item .charge-list .charge-list-item .con label{float:left;line-height:30px;font-weight:normal;margin-right:5px;}
-.goods-list-item .charge-list .charge-list-item .con .dropdown-toggle{width:60px;margin-right:15px;padding:0 10px;height:30px;}
-.goods-list-item .charge-list .charge-list-item .con .dropdown-menu{margin-top:-5px;}
+.add-new-goods{width:40%;margin:0 auto;background:#f3f3f3;padding:10px;text-align:center;}
+.dropdown-toggle{padding:3px 12px;}
 
 .shelve-list{width:210px;overflow:hidden;}
 .shelve-list .title{display:inline-block;width:100%;height:34px;background:#f2f2f2;font-size:14px;line-height:34px;padding-left:15px;}

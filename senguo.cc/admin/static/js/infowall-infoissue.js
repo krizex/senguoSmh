@@ -35,7 +35,8 @@ $(document).ready(function(){
     $('.typeItem').on('click',function(){$('#addressEdit').show();$('.fruit-choose').show();});
     $('.otherType').on('click',function(){$('#addressEdit').hide();$('.fruit-choose').hide();});
     $('#infoPublic').on('click',function(){infoPublic()});
-
+    var key='';
+    var token='';
     $('#file_upload').uploadifive(
         {
             buttonText    : '',
@@ -52,8 +53,6 @@ $(document).ready(function(){
                 'token':''
             },
             'onUpload' :function(){
-                var key='';
-                var token='';
                 $.ajaxSetup({
                     async : false
                 });
@@ -72,6 +71,8 @@ $(document).ready(function(){
                     'key':key,
                     'token':token
                 };
+            },
+            'onUploadComplete':function(){
                 var number=$('#imgPreview').find('img').length;
                 console.log(number);
                 if(number<5) {
@@ -79,9 +80,6 @@ $(document).ready(function(){
                     $('#imgPreview').append(img);
                 }
                 else{alert('最多可上传5张图片！')}
-
-            },
-            'onUploadComplete':function(){
                 alert('上传成功！');
                 $('#imgPreview').find('img').each(function(){$(this).on('click',function(){$(this).remove()});});
             }
