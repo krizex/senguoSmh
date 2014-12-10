@@ -62,16 +62,35 @@ var fruit_id= $.getUrlParam('id');
 function addFruit(target){
     var url="/admin/shelf/"+shop_id;
     var action="add_fruit";
-    var fruit_type_id=fruit_id;
-    console.log(target);
-    var name=target.parents('.add-goods-item').find('#goodsName').text();
-    var saled=target.parents('.add-goods-item').find('#goodsSale').text();
-    var storage=target.parents('.add-goods-item').find('#goodsStorage').text();
-    var unit=target.parents('.add-goods-item').find('#goodsUnit').attr('data-id');
+    var regNumber=/^[0-9]*[1-9][0-9]*$/;
+    var fruit_type_id=parseInt(fruit_id);
+    var name=target.parents('.add-goods-item').find('#goodsName').val().trim();
+    console.log(name);
+    var saled=parseInt(target.parents('.add-goods-item').find('#goodsSale').val());
+    var storage=parseInt(target.parents('.add-goods-item').find('#goodsStorage').val());
+    var unit=parseInt(target.parents('.add-goods-item').find('#goodsUnit').attr('data-id'));
     var tag=target.parents('.add-goods-item').find('.tag-list').find('.active').data('id');
     var img_url=target.parents('.add-goods-item').find('.imgPreview').attr('data-key');
-    var intro=target.parents('.add-goods-item').find('#goodsIntro').text();
-    var priority=target.parents('.add-goods-item').find('#goodsPriority').text();
+    var intro=target.parents('.add-goods-item').find('#goodsIntro').val();
+    var priority=parseInt(target.parents('.add-goods-item').find('#goodsPriority').val());
+    var charge_type=function(){
+        this.price="";
+        this.number="";
+        this.unit=""
+    };
+    var charge_item=$('.add-charge-list').find('li');
+    for(var i=0;i<charge_item.length;i++)
+        {
+            charge_type[this.price]=charge_item.eq[i].find('.charge_price').val();
+            charge_type[this.number]=charge_item.eq[i].find('.charge_num').val();
+            charge_type[this.unit]=charge_item.eq[i].find('.charge_unit').attr('data-id');
+        }
+    if(!name||!saled||!storage||!intro){return alert('请输入相关商品信息！');}
+    if(!regNumber.test(saled)){return alert('销量只能为数字！');}
+    if(!regNumber.test(storage)){return alert('库存只能为数字！');}
+    if(!regNumber.test(priority)){return alert('优先级只能为数字！');}
+    if(priority<1||priority>5){return alert('优先级只能为1-5！');}
+    if(!charge_type){return alert('请至少填写一种计价方式！');}
     var data={
         fruit_type_id:fruit_type_id,
         name:name,
@@ -81,7 +100,8 @@ function addFruit(target){
         tag:tag,
         img_url:img_url,
         intro:intro,
-        priority:priority
+        priority:priority,
+        charge_type:charge_type
     };
     var args={
         action:action,

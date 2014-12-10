@@ -46,7 +46,7 @@ function infoEdit(evt){
         var sex=$('#sexEdit option:selected').data('sex');
         var realname=$('#realnameEdit').val();
         var regEmail=/^([a-z0-9]*[-_]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/;
-        var regNumber=/^[0-9]*[1-9][0-9]*$/
+        var regNumber=/^[0-9]*[1-9][0-9]*$/;
         var regMonth=/^((0?[1-9])|((1|2)[0-9])|30|31)$/;
         var action=evt.data('action');
         var data=evt.parents('.info-edit').find('.edit-box').val();
