@@ -1,6 +1,17 @@
 $(document).ready(function(){
     $('.tag-list a').on('click',function(){$(this).addClass('active').siblings('a').removeClass('active')});
 
+    //商品编辑框显示/收起
+    $('.edit-goods-info').on('click',function(){$(this).parents('.goods-list-item').find('.goods-item-show').addClass('hidden').siblings('.goods-item-edit').removeClass('hidden');});
+    $('.edit-goods-concel').on('click',function(){$(this).parents('.goods-list-item').find('.goods-item-show').removeClass('hidden').siblings('.goods-item-edit').addClass('hidden');});
+
+    //商品标签显示
+    $('.all-fruit-type a').each(function(){
+        var id=$(this).data('id');
+        console.log(fruit_id);
+        if(id==fruit_id){$(this).addClass('bg-pink')}
+    });
+
     //商品单位切换显示
     $('body').on('click','.unitlist li',function(){
         var unit_id=$(this).find('a').data('id');
@@ -21,15 +32,6 @@ $(document).ready(function(){
         var n=$(this).data('id');
         if(n==3)$(this).parents('.btn-group').siblings('.unit-change').removeClass('hidden');
         else $(this).parents('.btn-group').siblings('.unit-change').addClass('hidden');
-    });
-
-    //上下架状态转换
-    $('.goods-edit-active').each(function(){
-        var n=$(this).data('active');
-        switch (n){
-            case 1:$(this).find('.shelve').show().siblings('.unshelve').hide();break;
-            case 2:$(this).find('.unshelve').show().siblings('.shelve').hide();break;
-        }
     });
 
     //商品单位转换
@@ -66,16 +68,21 @@ $(document).ready(function(){
         }
     });
 
+    //上下架状态转换
+    $('.goods-edit-active').each(function(){
+        var n=$(this).data('active');
+        switch (n){
+            case 1:$(this).find('.shelve').show().siblings('.unshelve').hide();break;
+            case 2:$(this).find('.unshelve').show().siblings('.shelve').hide();break;
+        }
+    });
+
     //上下架操作
     $('.goods-edit-active').each(function(){
-        $(this).on('click',function(){
-            var n=$(this).data('active');
+        $(this).find('span').on('click',function(){
             var fruit_id=$(this).parents('.goods-list-item').data('id');
             editActive(fruit_id);
-            switch (n){
-                case 1:$(this).find('.unshelve').show().siblings('.shelve').hide();break;
-                case 2:$(this).find('.shelve').show().siblings('.unshelve').hide();break;
-            }
+            $(this).hide().siblings().show();
         });
     });
 
@@ -166,6 +173,7 @@ $(document).ready(function(){
         });
 
     //商品添加
+    $('.add-new-goods').on('click',function(){$('.add-new-goods-box').modal('show')});
     $('.add-goods-sure').on('click',function(){addEditFruit($(this),shop_id,'add_fruit')});
 
     //商品编辑
@@ -176,14 +184,21 @@ $(document).ready(function(){
         })
     });
 
-    //新增计价方式
+    //新增商品新增计价方式
     $('.addNewCharge').each(function(){
         $(this).on('click',function(){
             var item=' <li class="set-width-float"><span class="pull-left">价格：<input type="text" class="w4 set-right5 charge-price"/></span><span class="pull-left">数量：<input type="text" class="w4 set-right5 charge-num"/></span><span class="pull-left">单位：</span><div class="btn-group pull-left set-right5"><button type="button" class="btn btn-default dropdown-toggle w1" data-toggle="dropdown"><span data-id="1"  class="unitContent charge-unit goodsUnit">个</span><span class="caret"></span></button><ul class="dropdown-menu unitlist goodsUnitList" role="menu"><li><a href="javascript:;" data-id="1">个</a></li><li><a href="javascript:;" data-id="2">斤</a></li><li><a href="javascript:;" data-id="3">份</a></li></ul></div><div class="pull-left unit-change hidden">=<input type="text" class="w4 set-left5 set-right5 charge-unit-num"/>个</div><a href="javascript:;" class="delete-btn2 pull-right"></a></li>';
             $(this).parents('.add-charge-box').find('.add-charge-list').append(item);
         })
     });
+    //编辑商品新增计价方式
+    $('.editNewCharge').on('click',function(){
+        $('.add-new-charge-box').modal('show');
+        item_fruit_id=$(this).parents('.goods-list-item').data('id');
+    });
+    $('.editAddNewCharge').on('click',function(){addNewCharge($(this),item_fruit_id);});
 });
+var item_fruit_id;
 var shop_id=$('#shopId').data('id');
 var fruit_id= $.getUrlParam('id');
 
@@ -244,8 +259,8 @@ function addEditFruit(target,id,action){
     $.postJson(url,args,
         function(res){
             if(res.success){
-                alert('水果添加成功！');
-                //window.location.reload();
+                $('.add-new-goods-box').modal('hide');
+                window.location.reload();
             }
     })
 }
@@ -262,6 +277,36 @@ function editActive(id){
     $.postJson(url,args,
         function(res){
             if(res.success){
+
+            }
+        })
+}
+
+function addNewCharge(target,id){
+    var url="/admin/shelf/"+id;
+    var action='add_charge_type';
+    var charge_item=target.parents('.add-new-charge-box').find('.add-goods-charge-list');
+    var price=charge_item.find('.charge-price').val();
+    var num=charge_item.find('.charge-num').val();
+    var units=charge_item.find('.charge-unit').attr('data-id');
+    var unit_num=charge_item.find('.charge-unit-num').val();
+    if(!unit_num){unit_num=1}
+    var data={
+        fruit_id:id,
+        price:price,
+        unit:units,
+        num:num,
+        unit_num:unit_num
+    };
+    var args={
+        action:action,
+        data:data
+
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                $('.add-new-charge-box').modal('hide');
                 window.location.reload();
             }
         })

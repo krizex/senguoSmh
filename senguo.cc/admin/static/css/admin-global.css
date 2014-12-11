@@ -133,7 +133,7 @@ img{border:none;}
 
 
 /*弹出框公共样式*/
-.modal-header{background:#f2f2f2;padding-bottom:30px;font-size:14px;}
+.modal-header{background:#f2f2f2;font-size:14px;}
 .modal-sure-btn{display:inline-block;width:100px;height:34px;background:#44b549;color:#fff;border:1px solid #44b549;border-radius:1px;text-align:center;line-height:34px;}
 .modal-concel-btn{display:inline-block;width:100px;height:34px;background:#fff;color:#666;border:1px solid #ccc;border-radius:1px;text-align:center;line-height:34px;margin-left:10px;}
 .modal-footer .btn-box{width:300px;margin:0 auto;}
@@ -146,16 +146,18 @@ img{border:none;}
 .text-red{color:#E01445;}
 .text-orange{color:#E07D14;}
 .bg-green{background:#44b549;}
-.bg-pink{background:#ff6563;}
+.bg-pink{background:#ff6563 !important;}
 .bg-red{background:#E01445;}
 .bg-orange{background:#E07D14;}
 .bg-grey{background:#ccc;}
 .bg-grey2{background:#f2f2f2;}
+.bg-grey3{background:#f3f3f3;}
 .bg-white{background-color:#fff;}
 
 .set-inline-block{display:inline-block;}
 
 .no-padding{padding:0px;}
+.no-padding-bottom{padding-bottom:0px;}
 .no-margin-left{margin-left:0px !important;}
 
 .set-right5{margin-right:5px;}
@@ -167,6 +169,7 @@ img{border:none;}
 
 .set-bottom10{margin-bottom:10px;}
 
+.set-width{width:100%;}
 .set-width-float{width:100%;float:left;}
 input{color:#333;text-indent:5px;}
 
