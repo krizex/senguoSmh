@@ -12,30 +12,49 @@
             <div class="goods-info pull-left">
                 <div class="goods-img pull-left">
                     <span class="goods-tag" data-id="{{fruit.tag}}"></span>
+                    {% if fruit.img_url%}
                     <img src="http://goodsimg1.qiniudn.com/{{fruit.img_url}}?imageView/1/w/100/h/100"/>
+                    {% else %}
+                    <img src="/static/design_img/{{fruit.fruit_type.code}}.png"/>
+                    {% end %}
                 </div>
                 <div class="info-box pull-right">
                     <p class="clearfix">
                         <label class="name pull-left text-pink set-right10">{{fruit.name}}</label>
                         <span class="priority pull-left">排序优先级：{{fruit.priority}}</span>
-                        <span class="sale pull-right">销量：{{fruit.saled}}个</span>
+                        <span class="sale pull-right">
+                            销量：{{fruit.saled}}
+                            <span data-id="{{fruit.unit}}" class="good-unit"></span>
+                        </span>
                     </p>
                     <p class="clearfix">
                         <span class="praise pull-left set-right20">点赞：666</span>
                         <span class="comment pull-left">评论：666</span>
-                        <span class="on-sale pull-right">在售：{{fruit.current_saled}}个</span>
-                        <span class="storage pull-right set-right20">库存：{{fruit.storage}}<span class="good-unit" data-id="{{fruit.unit}}"></span></span>
+                        <span class="on-sale pull-right">
+                            在售：{{fruit.current_saled}}
+                            <span data-id="{{fruit.unit}}" class="good-unit"></span>
+                        </span>
+                        <span class="storage pull-right set-right20">
+                            库存：{{fruit.storage}}
+                            <span data-id="{{fruit.unit}}" class="good-unit"></span>
+                        </span>
                     </p>
                     <div class="clearfix"></div>
                     <ul class="charge-list">
                         {% for charge in fruit.charge_types %}
-                        <li>计价方式1:<label class="charge-type text-pink set-left10">{{charge.price}}元/{{charge.num}}<span class="good-unit" data-id="{{charge.unit}}"></span></label></li>
+                        <li>计价方式1:
+                            <label class="charge-type text-pink set-left10">
+                                {{charge.price}}元/{{charge.num}}
+                                <span class="good-unit" data-id="{{charge.unit}}"></span>
+                            </label>
+                        </li>
                         {% end %}
                     </ul>
                     <a href="javascript:;" class="edit-btn2 pull-right bg-white edit-goods-info">编辑</a>
                 </div>
             </div>
         </div>
+        <!--商品信息编辑start-->
         <div class="goods-item-edit add-edit-item hidden">
             <div class="goods-edit-active shelve-action pull-left" data-active="{{fruit.active}}">
                 <span class="unshelve stop-mode">已下架</span>
@@ -43,12 +62,16 @@
             </div>
             <div class="goods-info pull-left">
                 <div class="upload-img goods-left pull-left">
-                    <img src="http://goodsimg1.qiniudn.com/{{fruit.img_url}}?imageView/1/w/100/h/100" class="imgPreview" data-key="{{fruit.img_url}}"/>
+                    {% if fruit.img_url%}
+                    <img src="http://goodsimg1.qiniudn.com/{{fruit.img_url}}?imageView/1/w/100/h/100" class="imgPreview" data-key="{{fruit.img_url}}" data-code="{{fruit.fruit_type.code}}"/>
+                    {% else %}
+                    <img src="/static/design_img/{{fruit.fruit_type.code}}.png" class="imgPreview" data-key="{{fruit.img_url}}" data-code="{{fruit.fruit_type.code}}"/>
+                    {% end %}
                     <div class="upload-box btn-style2 green-color">
                         <input id="edit_file_upload" type="file" name="file_upload" class="uploadImg" />
                         <p>上传/修改图片</p>
                     </div>
-                    <a href="javascript:;" class="btn-style2 text-grey2">恢复默认图</a>
+                    <a href="javascript:;" class="btn-style2 text-grey2 edit-recover-img">恢复默认图</a>
                 </div>
                 <div class="goods-right pull-right">
                     <p class="clearfix">
@@ -69,7 +92,10 @@
                                 </ul>
                             </div>
                         <span class="pull-left">库存：<input type="text" class="w1 goodsStorage" value="{{fruit.storage}}"/></span>
-                        <span class="pull-right">在售：{{fruit.current_saled}}个</span>
+                        <span class="pull-right">
+                            在售：{{fruit.current_saled}}
+                            <span data-id="{{fruit.unit}}" class="good-unit"></span>
+                        </span>
                     </div>
                     <p>
                         <span class="pull-left">简介:</span>
@@ -97,23 +123,26 @@
                         </p>
                         <ul class="add-charge-list add-goods-charge-list set-width-float">
                             {% for charge in fruit.charge_types %}
-                            <li class="set-width-float">
-                                <span class="pull-left">价格：<input type="text" class="w4 set-right5 charge-price" value="{{charge.price}}"/></span>
-                                <span class="pull-left">数量：<input type="text" class="w4 set-right5 charge-num" value="{{charge.num}}"/></span>
-                                <span class="pull-left set-line26">单位：</span>
-                                <div class="btn-group pull-left set-right5">
-                                    <button type="button" class="btn btn-default dropdown-toggle w1" data-toggle="dropdown">
-                                        <span data-id="{{charge.unit}}" class="good-unit charge-unit unitContent"></span>
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu unitlist goodsUnitList" role="menu">
-                                        <li><a href="javascript:;" data-id="1">个</a></li>
-                                        <li><a href="javascript:;" data-id="2">斤</a></li>
-                                        <li><a href="javascript:;" data-id="3">份</a></li>
-                                    </ul>
+                            <li class="set-width-float edit-charge-list" data-id="{{charge.id}}">
+                                <span class="pull-left set-line26 set-right10">
+                                    价格：
+                                    <span class="w4 set-inline-block edit_price">{{charge.price}}</span>
+                                </span>
+                                <span class="pull-left set-line26 set-right10">
+                                    数量：
+                                    <span class="w4 set-inline-block edit_num">{{charge.num}}</span>
+                                </span>
+                                <span class="pull-left set-line26 set-right5 item-unit">
+                                    单位：
+                                    <span  data-id="{{charge.unit}}" class="good-unit charge-unit unitContent edit_unit"></span>
+                                </span>
+                                <div class="pull-left unit-change hidden set-line26">
+                                    =
+                                    <span class="set-right5 set-left5 set-inline-block edit_unit_num">{{charge.unit_num}}</span>
+                                    <span data-id="{{fruit.unit}}" class="good-unit"></span>
                                 </div>
-                                <div class="pull-left unit-change hidden">=<input type="text" class="w4 set-left5 set-right5 charge-unit-num" value="{{charge.unit_num}}"/>个</div>
-                                <a href="javascript:;" class="delete-btn2 pull-right"></a>
+                                <a href="javascript:;" class="delete-btn2 pull-right delete-charge-type" title="删除计价方式"></a>
+                                <a href="javascript:;" class="edit-btn3 pull-right set-right10 edit-charge-show" title="编辑计价方式"></a>
                             </li>
                             {% end %}
                         </ul>
@@ -131,12 +160,13 @@
                 </div>
             </div>
         </div>
+        <!--商品信息编辑end-->
     </li>
     {% end %}
 </ul>
 <a href="javascript:;" class="add-new-goods text-green center-block"><strong>+</strong>添加新商品</a>
 <!--新增商品start-->
-<div class="modal fade add-new-goods-box bs-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade add-new-goods-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog set-width-float">
         <div class="modal-content w600 center-block">
             <div class="modal-header bg-grey2">
@@ -146,12 +176,12 @@
             <div class="modal-body set-width-float bg-grey3">
                 <div class="add-goods-item add-edit-item ">
                     <div class="upload-img goods-left pull-left">
-                        <img src="{{static_url('images/anoa-1-md.gif')}}" class="imgPreview"/>
+                        <img src="{{static_url('design_img/TDSG.png')}}" class="imgPreview"/>
                         <div class="upload-box btn-style2 green-color">
                             <input id="file_upload" type="file" name="file_upload" class="uploadImg" />
                             <p>上传/修改图片</p>
                         </div>
-                        <a href="javascript:;" class="btn-style2 text-grey2">恢复默认图</a>
+                        <a href="javascript:;" class="btn-style2 text-grey2 add-recover-img">恢复默认图</a>
                     </div>
                     <div class="goods-right pull-right">
                         <p class="clearfix">
@@ -238,7 +268,7 @@
 <!--新增商品end-->
 
 <!--新增计价方式start-->
-<div class="modal fade add-new-charge-box" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade add-new-charge-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -272,6 +302,42 @@
     </div>
 </div>
 <!--新增计价方式end-->
+
+<!--编辑计价方式start-->
+<div class="modal fade edit-charge-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">编辑计价方式</h4>
+            </div>
+            <div class="modal-body set-width-float">
+                <div class="add-charge-list add-goods-charge-list set-width-float">
+                    <span class="pull-left">价格：<input type="text" class="w4 set-right5 charge-price"/></span>
+                    <span class="pull-left">数量：<input type="text" class="w4 set-right5 charge-num"/></span>
+                    <span class="pull-left">单位：</span>
+                    <div class="btn-group pull-left set-right5">
+                        <button type="button" class="btn btn-default dropdown-toggle w1" data-toggle="dropdown">
+                            <span data-id="1"  class="unitContent charge-unit goodsUnit">个</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu unitlist goodsUnitList" role="menu">
+                            <li><a href="javascript:;" data-id="1">个</a></li>
+                            <li><a href="javascript:;" data-id="2">斤</a></li>
+                            <li><a href="javascript:;" data-id="3">份</a></li>
+                        </ul>
+                    </div>
+                    <div class="pull-left unit-change hidden">=<input type="text" class="w4 set-left5 set-right5 charge-unit-num"/>个</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default bg-grey text-white" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-default bg-green text-white edit-charge-type">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--编辑计价方式end-->
 {% end %}
 {% block goodsRight %}
     <span class="title">所有水果({{len(fruit_types)}})</span>

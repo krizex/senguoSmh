@@ -866,7 +866,7 @@ class OrderMGoodsLink(MapBase):
     num = Column(Integer) #单品数量
 
 #水果单品的计价类型
-class ChargeType(MapBase):
+class ChargeType(MapBase, _CommonApi):
     __tablename__ = "charge_type"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     fruit_id = Column(Integer, ForeignKey(Fruit.id), nullable=False)

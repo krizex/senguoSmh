@@ -219,11 +219,11 @@ class Shelf(AdminBaseHandler):
             if action == "del_charge_type":
                 q.delete()
             else:
-                q.update(price=data["price"],
+                q.one().update(session=self.session,price=data["price"],
                          unit=data["unit"],
                          num=data["num"],
                          unit_num=data["unit_num"])
-
+            self.session.commit()
         elif action == "add_img":
             q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
             token = q.upload_token(BUCKET_GOODS_IMG, expires=120)
