@@ -87,7 +87,8 @@ img{border:none;}
 .add-btn-sty:hover{background:#70d674;color:#fff;}
 .add-btn2{display:inline-block;border:1px solid #ccc;background:#fff;color:#44B549;height:30px;line-height:30px;padding:0 8px;}
 .delete-btn{display:inline-block;border:1px solid #ccc;background:#fff;color:#CB2F36;height:30px;line-height:30px;padding:0 8px;}
-.btn-style2{display:inline-block;width:100%;height:24px;border:1px solid #ccc;border-top-left-radius:2px;border-top-right-radius:2px;line-height:24px;text-align:center;margin-top:5px;}
+.delete-btn2{display:inline-block;background:url("../images/container-icon.gif") no-repeat 0 5px;color:#CB2F36;height:26px;line-height:26px;padding:0 8px;}
+.btn-style2{display:inline-block;width:100% !important;height:24px;border:1px solid #ccc;border-top-left-radius:2px;border-top-right-radius:2px;line-height:24px;text-align:center;margin-top:5px;}
 .btn-style3{display:inline-block;width:100%;height:24px;border:1px solid #ccc;border-radius:1px;line-height:24px;text-align:center;margin-top:5px;}
 
 
@@ -167,7 +168,7 @@ img{border:none;}
 .set-bottom10{margin-bottom:10px;}
 
 .set-width-float{width:100%;float:left;}
-input{color:#333;}
+input{color:#333;text-indent:5px;}
 
 
 

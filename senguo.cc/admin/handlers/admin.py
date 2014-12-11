@@ -200,9 +200,9 @@ class Shelf(AdminBaseHandler):
                 return self.send_success()
             elif action == "edit_active":
                 if fruit.active == 1:
-                    fruit.active = 2
+                    fruit.update(session=self.session, active = 2)
                 elif fruit.active == 2:
-                    fruit.active = 1
+                    fruit.update(session=self.session, active = 1)
             elif action == "edit_fruit":
                 fruit.update(session=self.session,fruit_type_id = data["fruit_type_id"],
                                                 name = data["name"],
