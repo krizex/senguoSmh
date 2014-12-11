@@ -182,7 +182,40 @@ class CustomerBaseHandler(_AccountBaseHandler):
     __account_model__ = models.Customer
     __account_cookie_name__ = "customer_id"
     __wexin_oauth_url_name__ = "customerOauth"
-
+    def save_cart(self, charge_type_id,shop_id,inc,type): #inc==0:减，inc==1：增；type==0：fruit，type==1：menu
+        cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
+        if type == 0:
+            if cart.fruits:
+                d = eval(cart.fruits)
+                if inc == 1:
+                    if charge_type_id in d.keys: d[charge_type_id] += 1
+                    else: d[charge_type_id] = 1
+                else:
+                    if charge_type_id in d.keys and d[charge_type_id] !=0:
+                        d[charge_type_id] -= 1
+                cart.update(session=self.session, fruits=str(d))
+            else:
+                if inc == 1:
+                    d={charge_type_id:1}
+                    cart.update(session=self.session, fruits=str(d))
+        else:
+            if cart.mgoodses:
+                d = eval(cart.mgoodses)
+                if inc == 1:
+                    if charge_type_id in d.keys: d[charge_type_id] += 1
+                    else: d[charge_type_id] = 1
+                else:
+                    if charge_type_id in d.keys and d[charge_type_id] !=0:
+                        d[charge_type_id] -= 1
+                cart.update(session=self.session, mgoodses=str(d))
+            else:
+                if inc == 1:
+                    d={charge_type_id:1}
+                    cart.update(session=self.session, mgoodses=str(d))
+    def read_cart(self, shop_id):
+        try:cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
+        except:return None, None
+        return eval(cart.fruits),eval(cart.mgoodses)
 
 class WxOauth2:
     token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}&secret={appsecret}&code={code}&grant_type=authorization_code"
