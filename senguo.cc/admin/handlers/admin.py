@@ -213,6 +213,17 @@ class Shelf(AdminBaseHandler):
                                                 img_url = data["img_url"],
                                                 intro = data["intro"],
                                                 priority=data["priority"])
+        elif action in ["del_charge_type", "edit_charge_type"]: #charge_type_id
+            try: q = self.session.query(models.ChargeType).filter_by(id=id)
+            except:return self.send_error(404)
+            if action == "del_charge_type":
+                q.delete()
+            else:
+                q.update(price=data["price"],
+                         unit=data["unit"],
+                         num=data["num"],
+                         unit_num=data["unit_num"])
+
         elif action == "add_img":
             q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
             token = q.upload_token(BUCKET_GOODS_IMG, expires=120)

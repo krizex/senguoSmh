@@ -516,7 +516,7 @@ class Customer(MapBase, _AccountApi):
     credits = Column(Float, default=0)
 
     orders = relationship("Order")
-    cart = relationship("Cart", uselist=False)
+    carts = relationship("Cart", uselist=True)
     addresses = relationship("Address", backref="customer")
 
 class COUNTER_TYPE:
@@ -894,6 +894,7 @@ class MChargeType(MapBase):
 class Cart(MapBase):
     __tablename__ = "cart"
     id = Column(Integer, ForeignKey(Customer.id), primary_key=True, nullable=False)
+    shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
     fruits = Column(String(100))
     mgoods = Column(String(100))
 
