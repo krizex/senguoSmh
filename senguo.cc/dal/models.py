@@ -785,6 +785,7 @@ class Order(MapBase, _CommonApi):
     remark = Column(String(100)) #商家备注
     totalPrice = Column(Integer)
     money_paid = Column(Boolean)
+    today = Column(TINYINT, default=1) #送货时间1:今天 2：明天
     JH_id = Column(Integer, nullable=True) #捡货员id,(当员工被删除时可能会有问题)
     SH1_id = Column(Integer, nullable=True) #一级送货员id
     SH2_id = Column(Integer, nullable=True) #二级送货员id
@@ -891,7 +892,7 @@ class MChargeType(MapBase):
 
     mgoods = relationship("MGoods", uselist=False)
 
-class Cart(MapBase):
+class Cart(MapBase, _CommonApi):
     __tablename__ = "cart"
     id = Column(Integer, ForeignKey(Customer.id), primary_key=True, nullable=False)
     shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)

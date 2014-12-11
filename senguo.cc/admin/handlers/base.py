@@ -182,40 +182,67 @@ class CustomerBaseHandler(_AccountBaseHandler):
     __account_model__ = models.Customer
     __account_cookie_name__ = "customer_id"
     __wexin_oauth_url_name__ = "customerOauth"
-    def save_cart(self, charge_type_id,shop_id,inc,type): #inc==0:减，inc==1：增；type==0：fruit，type==1：menu
+    def save_cart(self, charge_type_id,shop_id, inc, menu_type): #inc==0 删,inc==1:减，inc==2：增；type==0：fruit，type==1：menu
         cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
-        if type == 0:
-            if cart.fruits:
-                d = eval(cart.fruits)
-                if inc == 1:
-                    if charge_type_id in d.keys: d[charge_type_id] += 1
-                    else: d[charge_type_id] = 1
-                else:
-                    if charge_type_id in d.keys and d[charge_type_id] !=0:
-                        d[charge_type_id] -= 1
-                cart.update(session=self.session, fruits=str(d))
-            else:
-                if inc == 1:
-                    d={charge_type_id:1}
-                    cart.update(session=self.session, fruits=str(d))
+        if menu_type == 0:
+            self._f("fruits")
         else:
-            if cart.mgoodses:
-                d = eval(cart.mgoodses)
-                if inc == 1:
-                    if charge_type_id in d.keys: d[charge_type_id] += 1
-                    else: d[charge_type_id] = 1
-                else:
-                    if charge_type_id in d.keys and d[charge_type_id] !=0:
-                        d[charge_type_id] -= 1
-                cart.update(session=self.session, mgoodses=str(d))
-            else:
-                if inc == 1:
-                    d={charge_type_id:1}
-                    cart.update(session=self.session, mgoodses=str(d))
+            self._f("mgoods")
+
+    def _f(self, menu):
+        if getattr(cart, menu):
+            d = eval(getattr(cart, menu))
+            if inc == 2:
+                if charge_type_id in d.keys: d[charge_type_id] += 1
+                else: d[charge_type_id] = 1
+            elif inc == 1:
+                if charge_type_id in d.keys and d[charge_type_id] !=0:
+                    d[charge_type_id] -= 1
+            elif inc == 0:
+                if charge_type_id in d.keys: del d[charge_type_id]
+            else:return
+            setattr(cart, menu, str(d))
+            self.session.add(cart)
+            self.session.commit()
+        else:
+            if inc == 2:
+                d={charge_type_id:1}
+                setattr(cart, menu, str(d))
+                self.session.add(cart)
+                self.session.commit()
+
     def read_cart(self, shop_id):
         try:cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
-        except:return None, None
-        return eval(cart.fruits),eval(cart.mgoodses)
+        except:cart = None
+        if not cart or (cart.fruits == "" and cart.mgoods == ""): #购物车为空
+            return None, None
+        fruits=[]
+        mgoodses=[]
+        if cart.fruits:
+            d = eval(cart.fruits)
+            charge_types=self.session.query(models.Charge_type).\
+                filter(models.Charge_type.id.in_(d.keys())).all()
+            charge_types = [x for x in charge_types if x.fruit.active == 1]#过滤掉下架商品
+            list = [x.id for x in charge_types]
+            for key in d.keys():#有些计价方式可能已经被删除，so购物车也要相应删除
+                if key not in list:
+                    del d[key]
+            cart.update(session=self.session, fruits=str(d)) #更新购物车
+            for charge_type in charge_types:
+                fruits.append({charge_type: d[charge_type.id]})
+        if cart.mgoods:
+            d = eval(cart.mgoods)
+            mcharge_types=self.session.query(models.mCharge_type).\
+                filter(models.mCharge_type.id.in_(d.keys())).all()
+            mcharge_types = [x for x in mcharge_types if x.mgoods.active == 1]#过滤掉下架商品
+            list = [x.id for x in mcharge_types]
+            for key in d.keys():
+                if key not in list:
+                    del d[key]
+            cart.update(session=self.session, mgoods=str(d))
+            for mcharge_type in mcharge_types:
+                mgoods.append({mcharge_type: d[mcharge_type.id]})
+        return fruits, mgoodses #返回类型是个字典列表
 
 class WxOauth2:
     token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}&secret={appsecret}&code={code}&grant_type=authorization_code"

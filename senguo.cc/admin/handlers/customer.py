@@ -70,17 +70,15 @@ class Market(CustomerBaseHandler):
             self.session.add(models.Cart(id=self.current_user.id, shop_id=shop_id))
             self.session.commit()
         action = self.args["action"]
-        cart_f,cart_m = self.read_cart(self.current_user.id)
+        cart_f, cart_m = self.read_cart(shop_id)
         if action in ["fruit", "dry_fruit"]:
-            fruits=[]
             if action == "fruit":
+                fruits = [x for x in shop.fruits if x.fruit_type_id != 1000 and x.active == 1]#水果
                 for fruit in shop.fruits:
-                    if fruit.fruit_type_id != 1000 and fruit.active == 1:#水果
+                    if fruit.fruit_type_id != 1000 and fruit.active == 1:
                     fruits.append(fruit)
             else:
-                for fruit in shop.fruits:
-                    if fruit.fruit_type_id == 1000 and fruit.active == 1:#干果
-                    fruits.append(fruit)
+                fruits = [x for x in shop.fruits if x.fruit_type_id == 1000 and x.active == 1]#水果
             fruits.sort(key=lambda f:f.priority)
             return self.render("", context=dict(fruits=fruits, cart_f=cart_f))
         elif action == "menu":
@@ -92,20 +90,37 @@ class Market(CustomerBaseHandler):
             mgoods = self.session.query(models.MGoods).filter_by(and_(menu_id=menu_id, active=1)).\
                 order_by(desc(models.MGoods.priority)).all()
             return self.render("", context=dict(mgoods=mgoods, cart_m=cart_m))
+        else: return self.send_error(404)
 
     @tornado.web.authenticated
-    @CustomerBaseHandler.check_arguments("action:int", "charge_type_id:int", "type:int")
-    #action==1: +1，action==0: -1；type==0：fruit，type==1：menu
+    @CustomerBaseHandler.check_arguments("action:int", "charge_type_id:int", "menu_type:int")
+    #action==2: +1，action==1: -1, action==0: delete；menu_type==0：fruit，menu_type==1：menu
     def post(self, shop_id):
         inc = self.args["action"]
         charge_type_id = self.args["charge_type_id"]
-        type = self.args["type"]
-        self.save_cart(charge_type_id, shop_id, inc, type)
+        menu_type = self.args["menu_type"]
+        self.save_cart(charge_type_id, shop_id, inc, menu_type)
 
 
 class Cart(CustomerBaseHandler):
     @tornado.web.authenticated
-    @CustomerBaseHandler.check_arguments("action", "menu_id?:int")
+    @CustomerBaseHandler.check_arguments("shop_id:int")
     def get(self):
+        shop_id = self.args["shop_id"]
+        try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
+        except:return self.send_error(404)
+        cart = [cart for cart in self.current_user.carts if cart.shop_id==shop_id]
+        if not cart or (cart[0].fruits=="" and cart[0].mgoods==""): #购物车为空
+            return self.redirect("")
+        cart_f, cart_m = self.read_cart(shop_id)
 
+        periods = [x for x in shop.config.periods if x.active == 1]
+        return self.render("", cart_f=cart_f, cart_m=cart_m, periods=periods)
 
+    @tornado.web.authenticated
+    @CustomerBaseHandler.check_arguments("shop_id:int", "action:str", "charge_type_id?:int", "data?")
+    def post(self):
+        action = self.args["action"]
+        shop_id = self.args["shop_id"]
+        if action == "order":
+            pass
