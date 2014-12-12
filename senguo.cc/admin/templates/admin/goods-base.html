@@ -2,19 +2,25 @@
 {% block content %}
 {% set goodsSubpage = context.get('goodsSubpage')%}
 {% set fruit_active="" %}
-{% set package_active="" %}
+{% set menu_active="" %}
+{% set home_hide="" %}
 
-{% if goodsSubpage == "fruit" %}
+{% if goodsSubpage == "home"%}
+    {% set home_hide ="hidden" %}
+{% elif goodsSubpage == "fruit" %}
     {% set fruit_active = "active" %}
-{% elif goodsSubpage == "package"%}
-    {% set package_active ="active" %}
+{% elif goodsSubpage == "menu"%}
+    {% set menu_active ="active" %}
 {% end %}
 <span class="right-title">商品管理</span>
 <div class="goods-classify">
     <ul class="classify-nav right-nav pull-left">
-        <li class="{{fruit_active}}"><a href="#">水果</a></li>
-        <li><a href="#">干果</a></li>
-        <li><a href="#">其他商品</a></li>
+        <li class="{{fruit_active}} item"><a href="{{reverse_url('adminShelf',current_user.shops[0].id)}}?action=home&id=0">水果</a></li>
+        <li class="item"><a href="">干果</a></li>
+        {% for menu in menus %}
+        <li class="item {{menu_active}}"><a href="{{reverse_url('adminShelf',current_user.shops[0].id)}}?action=menu&id=0">{{menu.name}}</a></li>
+        {% end %}
+        <li><a href="javascript:;" id="add-new-goodsType">+</a></li>
     </ul>
     <div class="search-input input-group pull-right">
         <form method="post" action="" id="post">
@@ -24,11 +30,11 @@
     </div>
 </div>
 <!--goods-classify-end-->
-<div class="goods-mode-lock">
+<div class="goods-mode-lock {{home_hide}}">
     <div class="mode-content unlock-mode pull-left">
         <p class="lock-unlock">已开启平价水果栏目</p>
-        <p class="mode-introduce">此种模式平价水果栏目将在前台商场显示。</p>
-        <p class="set-introduce">点击右方停用，平价水果类目下的所有商品将被下架</p>
+        <p class="mode-introduce">此种模式商品栏目将在前台商场显示。</p>
+        <p class="set-introduce">点击右方全部下架，该类目下的所有商品将被下架</p>
     </div>
     <div class="mode-set pull-right">
         <a href="#" class="stop-btn btn-style lock-mode">全部下架</a>
@@ -45,5 +51,28 @@
         {% block goodsRight %}{% end %}
     </div>
 </div>
-
+<!--添加新的商品分类start-->
+<div class="modal fade add-goodsType-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">新建商品分类</h4>
+            </div>
+            <div class="modal-body set-width-float">
+                <input type="text" id="type-name" placeholder="输入商品分类名称（请不要超过5个字）" class="center-block w-auto-60 text-center text-grey2 set-bottom10 set-padding-10"/>
+                <textarea id="type-intro" placeholder="分类说明（请不要超过60个字）" class="center-block w-auto-60  text-center text-grey2 set-padding-10"></textarea>
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-6">
+                    <button type="button" class="btn btn-default bg-grey text-white" data-dismiss="modal">取消</button>
+                </div>
+                <div class="col-lg-6">
+                     <button type="button" class="btn btn-default bg-green pull-left text-white" id="add-goodsType-sure">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--添加新的商品分类end-->
 {% end %}

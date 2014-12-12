@@ -130,7 +130,7 @@ class Shelf(AdminBaseHandler):
         fruit_types = self.session.query(models.FruitType).all()
         if action == "home":
             return self.render("admin/goods-preview.html", fruit_types=fruit_types, menus=shop.menus,
-                                context=dict(subpage="goods", goodsSubpage="fruit"))
+                                context=dict(subpage="goods", goodsSubpage="home"))
         elif action == "fruit":
             fruits=[]
             for fruit in shop.fruits:
@@ -141,8 +141,8 @@ class Shelf(AdminBaseHandler):
         elif action == "menu":
             try:mgoodses = self.session.query(models.MGoods).filter_by(menu_id=id).all()
             except:return self.send_error(404)
-            return self.render("admin/goods-package.html", mgoodser=mgoodses, fruit_types=fruit_types, menus=shop.menus,
-                               context=dict(subpage="goods",goodsSubpage="package"))
+            return self.render("admin/goods-menu.html", mgoodser=mgoodses, fruit_types=fruit_types, menus=shop.menus,
+                               context=dict(subpage="goods",goodsSubpage="menu"))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")

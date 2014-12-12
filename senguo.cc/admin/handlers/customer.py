@@ -74,7 +74,7 @@ class Market(CustomerBaseHandler):
         mgoods={}
         for menu in shop.menus:
             mgoods[menu.id] = menu.mgoods.sort(key=lambda f:f.priority)
-        return self.render("", context=dict(fruits, dry_fruits, mgoods=mgoods, cart_f=cart_f, cart_m=cart_m))
+        return self.render("customer/home.html", context=dict(fruits, dry_fruits, mgoods=mgoods, cart_f=cart_f, cart_m=cart_m))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int", "charge_type_id:int", "menu_type:int")
