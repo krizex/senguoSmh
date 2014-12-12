@@ -61,7 +61,6 @@ class Home(CustomerBaseHandler):
 
 class Market(CustomerBaseHandler):
     @tornado.web.authenticated
-    @CustomerBaseHandler.check_arguments("action", "menu_id?:int")
     def get(self, shop_id):
         try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
         except:return self.send_error(404)
@@ -69,28 +68,13 @@ class Market(CustomerBaseHandler):
         except:
             self.session.add(models.Cart(id=self.current_user.id, shop_id=shop_id))
             self.session.commit()
-        action = self.args["action"]
         cart_f, cart_m = self.read_cart(shop_id)
-        if action in ["fruit", "dry_fruit"]:
-            if action == "fruit":
-                fruits = [x for x in shop.fruits if x.fruit_type_id != 1000 and x.active == 1]#水果
-                for fruit in shop.fruits:
-                    if fruit.fruit_type_id != 1000 and fruit.active == 1:
-                    fruits.append(fruit)
-            else:
-                fruits = [x for x in shop.fruits if x.fruit_type_id == 1000 and x.active == 1]#水果
-            fruits.sort(key=lambda f:f.priority)
-            return self.render("", context=dict(fruits=fruits, cart_f=cart_f))
-        elif action == "menu":
-            menu_id = self.args["id"]
-            try:menu = self.session.query(models.Menu).filter_by(id=menu_id).one()
-            except:return self.send_error(404)
-            if menu not in shop.menus:
-                return self.send_error(403)
-            mgoods = self.session.query(models.MGoods).filter_by(and_(menu_id=menu_id, active=1)).\
-                order_by(desc(models.MGoods.priority)).all()
-            return self.render("", context=dict(mgoods=mgoods, cart_m=cart_m))
-        else: return self.send_error(404)
+        fruits = [x for x in shop.fruits if x.fruit_type_id != 1000 and x.active == 1].sort(key=lambda f:f.priority)#水果
+        dry_fruits = [x for x in shop.fruits if x.fruit_type_id == 1000 and x.active == 1].sort(key=lambda f:f.priority)#干果
+        mgoods={}
+        for menu in shop.menus:
+            mgoods[menu.id] = menu.mgoods.sort(key=lambda f:f.priority)
+        return self.render("", context=dict(fruits, dry_fruits, mgoods=mgoods, cart_f=cart_f, cart_m=cart_m))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int", "charge_type_id:int", "menu_type:int")
@@ -123,4 +107,23 @@ class Cart(CustomerBaseHandler):
         action = self.args["action"]
         shop_id = self.args["shop_id"]
         if action == "order":
-            pass
+            data = self.args["data"]
+            order =
+
+
+
+    def _save_goods(self, data):
+        unit = {1:"个", 2:"斤", 3:"份"}
+        charge_types = self.session.query(models.ChargeType).\
+            filter(models.ChargeType.id.in_(data["fruits"].keys())).all()
+        f_d={}
+        m_d={}
+        for charge_type in charge_types:
+            f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":data["fruits"][charge_type.id],
+                                 "charge":"%d元/%d%s" % (charge_type.price, charge_type.num, unit[charge_type.unit])}
+        mcharge_types = self.session.query(models.MChargeType).\
+            filter(models.ChargeType.id.in_(data["fruits"].keys())).all()
+        for mcharge_type in mcharge_types:
+            m_d[mcharge_type.id]={"mgoods_name":mcharge_type.mgoods.name, "num":data["mgoods"][mcharge_type.id],
+                                  "charge":"%d元/%d%s" % (mcharge_type.price, mcharge_type.num, unit[mcharge_type.unit])}
+        return f_d, m_d

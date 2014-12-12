@@ -201,7 +201,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
             elif inc == 0:
                 if charge_type_id in d.keys: del d[charge_type_id]
             else:return
-            setattr(cart, menu, str(d))
+            setattr(cart, menu, str(d))#数据库cart.fruits 保存的是字典（计价类型id：数量）
             self.session.add(cart)
             self.session.commit()
         else:
@@ -216,8 +216,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
         except:cart = None
         if not cart or (cart.fruits == "" and cart.mgoods == ""): #购物车为空
             return None, None
-        fruits=[]
-        mgoodses=[]
+        fruits={}
+        mgoodses={}
         if cart.fruits:
             d = eval(cart.fruits)
             charge_types=self.session.query(models.Charge_type).\
@@ -229,7 +229,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
                     del d[key]
             cart.update(session=self.session, fruits=str(d)) #更新购物车
             for charge_type in charge_types:
-                fruits.append({charge_type: d[charge_type.id]})
+                fruits[charge_type.id]={"charge_type": charge_type, "num": d[charge_type.id]}
         if cart.mgoods:
             d = eval(cart.mgoods)
             mcharge_types=self.session.query(models.mCharge_type).\
@@ -241,8 +241,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
                     del d[key]
             cart.update(session=self.session, mgoods=str(d))
             for mcharge_type in mcharge_types:
-                mgoods.append({mcharge_type: d[mcharge_type.id]})
-        return fruits, mgoodses #返回类型是个字典列表
+                mgoods[mcharge_type.id]={"mcharge_type": mcharge_type, "num": d[mcharge_type.id]}
+        return fruits, mgoodses
 
 class WxOauth2:
     token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}&secret={appsecret}&code={code}&grant_type=authorization_code"

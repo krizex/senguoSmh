@@ -317,9 +317,7 @@ class Config(AdminBaseHandler):
                 addr1 = models.Address1(name=data)
                 config.addresses.append(addr1)
                 self.session.commit()
-                address1 = self.session.query(models.Address1).filter_by(config_id=id).\
-                order_by(desc(models.Address1.id)).first()
-                return self.send_success(address1_id=address1.id)
+                return self.send_success(address1_id=addr1.id)#commit后id会自动生成
             elif action == "add_notice":
                 notice = models.Notice(summary=data["summary"],
                                        detail=data["detail"])

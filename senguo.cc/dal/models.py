@@ -793,8 +793,8 @@ class Order(MapBase, _CommonApi):
     create_time = Column(DateTime)
     active = Column(TINYINT, default=1)#0删除
 
-    fruits = relationship("Fruit", secondary="order_fruit_link")
-    mgoods = relationship("MGoods", secondary="order_mgoods_link")
+    charge_types = relationship("ChargeType", secondary="order_ctype_link", uselist=True)
+    mcharge_type = relationship("MChargeType", secondary="order_mtype_link", uselist=True)
 # #按时达
 # class OrderOnTime(MapBase):
 #     __tablename__ = "order_on_time"
@@ -831,6 +831,7 @@ class Menu(MapBase, _CommonApi):
 
     name = Column(String(20))
     active = Column(TINYINT, default=1)#0删除
+    mgoods = relationship("MGoods", uselist=True)
 
 
 #用户自定义的商品
@@ -850,20 +851,19 @@ class MGoods(MapBase, _CommonApi):
     priority = Column(SMALLINT, default=1)
     mcharge_types = relationship("MChargeType") #支持多种计价方式
 
-class OrderFruitLink(MapBase):
-    __tablename__ = "order_fruit_link"
+class OrderCTypeLink(MapBase):
+    __tablename__ = "order_ctype_link"
 
-    order_id = Column(Integer, ForeignKey(Order.id),primary_key=True, nullable=False)
-    fruit_id = Column(Integer, ForeignKey(Fruit.id),primary_key=True, nullable=False)
-    charge_type_id = Column(Integer)
+    order_id = Column(Integer, ForeignKey(Order.id), primary_key=True, nullable=False)
+    charge_type_id = Column(Integer, ForeignKey(ChargeType.id), primary_key=True, nullable=False)
     num = Column(Integer) #单品数量
 
-class OrderMGoodsLink(MapBase):
-    __tablename__ = "order_mgoods_link"
+class OrderMTypeLink(MapBase):
+    __tablename__ = "order_mtype_link"
 
     order_id = Column(Integer, ForeignKey(Order.id),primary_key=True, nullable=False)
     mgoods_id = Column(Integer, ForeignKey(MGoods.id),primary_key=True, nullable=False)
-    mcharge_type_id = Column(Integer)
+    mcharge_type_id = Column(Integer, ForeignKey(MChargeType.id),primary_key=True, nullable=False)
     num = Column(Integer) #单品数量
 
 #水果单品的计价类型
