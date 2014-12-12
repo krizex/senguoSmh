@@ -80,7 +80,7 @@ class Market(CustomerBaseHandler):
             else:
                 fruits = [x for x in shop.fruits if x.fruit_type_id == 1000 and x.active == 1]#水果
             fruits.sort(key=lambda f:f.priority)
-            return self.render("", context=dict(fruits=fruits, cart_f=cart_f))
+            return self.render("customer/home.html", context=dict(fruits=fruits, cart_f=cart_f))
         elif action == "menu":
             menu_id = self.args["id"]
             try:menu = self.session.query(models.Menu).filter_by(id=menu_id).one()

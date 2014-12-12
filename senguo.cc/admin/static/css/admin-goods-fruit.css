@@ -1,6 +1,6 @@
 /*----------------------------------admin-goods----------------------------------------*/
 .goods-classify{width:100%;clear:both;display:block;height:40px;border-bottom:1px solid #cfcfcf;}
-.goods-classify ul{width:420px;border-left:2px solid #f2f2f2;margin-bottom:0px;font-size:14px;}
+.goods-classify ul{border-left:2px solid #f2f2f2;margin-bottom:0px;font-size:14px;}
 .goods-classify ul li{float:left;width:100px;height:40px;line-height:40px;text-align:center;border:1px solid #f2f2f2;border-left:none;position:relative;border-bottom:1px solid #cfcfcf;}
 .goods-classify ul li a{color:#333;display:block;}
 .goods-classify ul .active{background:#f2f2f2;border-right:1px solid #cfcfcf;border-bottom:1px solid #f2f2f2;}
@@ -84,3 +84,7 @@
 .fruit-preview-list li:hover{border-color:#ccc;}
 
 .set-line26{line-height:26px;}
+.w-auto-50{width:50% !important;}
+.w-auto-60{width:60% !important;}
+
+.set-padding-10{padding:10px;}
