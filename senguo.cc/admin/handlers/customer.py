@@ -14,7 +14,7 @@ class Access(CustomerBaseHandler):
         next_url = self.get_argument('next', '')
         if self._action == "login":
             next_url = self.get_argument("next", "")
-            return self.render("customer/login.html",
+            return self.render("admin/login.html",
                                  context=dict(next_url=next_url))
         elif self._action == "logout":
             self.clear_current_user()
@@ -69,8 +69,10 @@ class Market(CustomerBaseHandler):
             self.session.add(models.Cart(id=self.current_user.id, shop_id=shop_id))
             self.session.commit()
         cart_f, cart_m = self.read_cart(shop_id)
-        fruits = [x for x in shop.fruits if x.fruit_type_id != 1000 and x.active == 1].sort(key=lambda f:f.priority)#水果
-        dry_fruits = [x for x in shop.fruits if x.fruit_type_id == 1000 and x.active == 1].sort(key=lambda f:f.priority)#干果
+        fruits = [x for x in shop.fruits if x.fruit_type_id != 1000 and x.active == 1]
+        fruits.sort(key=lambda f:f.priority)#水果
+        dry_fruits = [x for x in shop.fruits if x.fruit_type_id == 1000 and x.active == 1]
+        dry_fruits.sort(key=lambda f:f.priority)#干果
         mgoods={}
         for menu in shop.menus:
             mgoods[menu.id] = menu.mgoods.sort(key=lambda f:f.priority)
@@ -103,28 +105,62 @@ class Cart(CustomerBaseHandler):
         return self.render("", cart_f=cart_f, cart_m=cart_m, periods=periods)
 
     @tornado.web.authenticated
-    @CustomerBaseHandler.check_arguments("shop_id:int", "action:str", "charge_type_id?:int", "data?")
+    @CustomerBaseHandler.check_arguments("shop_id:int", "data")
     def post(self):
-        action = self.args["action"]
-        shop_id = self.args["shop_id"]
-        if action == "order":
-            data = self.args["data"]
-            #order =
-
-
-
-    def _save_goods(self, data):
+        data = self.args["data"]
         unit = {1:"个", 2:"斤", 3:"份"}
-        charge_types = self.session.query(models.ChargeType).\
-            filter(models.ChargeType.id.in_(data["fruits"].keys())).all()
         f_d={}
         m_d={}
-        for charge_type in charge_types:
-            f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":data["fruits"][charge_type.id],
-                                 "charge":"%d元/%d%s" % (charge_type.price, charge_type.num, unit[charge_type.unit])}
-        mcharge_types = self.session.query(models.MChargeType).\
-            filter(models.ChargeType.id.in_(data["fruits"].keys())).all()
-        for mcharge_type in mcharge_types:
-            m_d[mcharge_type.id]={"mgoods_name":mcharge_type.mgoods.name, "num":data["mgoods"][mcharge_type.id],
-                                  "charge":"%d元/%d%s" % (mcharge_type.price, mcharge_type.num, unit[mcharge_type.unit])}
-        return f_d, m_d
+        totalPrice=0
+        if "fruits" in data.keys():
+            charge_types = self.session.query(models.ChargeType).\
+                filter(models.ChargeType.id.in_(data["fruits"].keys())).all()
+            for charge_type in charge_types:
+                totalPrice += charge_type.price*data["fruits"][charge_type.id] #计算订单总价
+                charge_type.fruit.storage -= data["fruits"][charge_type.id]*charge_type.unit_num #更新库存
+                f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":data["fruits"][charge_type.id],
+                                     "charge":"%d元/%d%s" % (charge_type.price, charge_type.num, unit[charge_type.unit])}
+        if "mgoods" in data.keys():
+            mcharge_types = self.session.query(models.MChargeType).\
+                filter(models.ChargeType.id.in_(data["mgoods"].keys())).all()
+            for mcharge_type in mcharge_types:
+                totalPrice+=mcharge_type.price*data["mgoods"][mcharge_type.id]
+                mcharge_type.mgoods.storage -= data["mgoods"][mcharge_type.id]*mcharge_type.unit_num #更新库存
+                m_d[mcharge_type.id]={"mgoods_name":mcharge_type.mgoods.name, "num":data["mgoods"][mcharge_type.id],
+                                      "charge":"%d元/%d%s" % (mcharge_type.price, mcharge_type.num, unit[mcharge_type.unit])}
+
+        money_paid = False
+        pay_type = 1
+        if data["pay_type"] == 2:
+            if self.current_user.balance >= totalPrice:
+                self.current_user.balance -= totalPrice
+                self.current_user.credits += totalPrice
+                self.session.commit()
+                money_paid = True
+                pay_type = 2
+            else:return self.send_fail("余额不足")
+
+        try:period = self.session.query(models.Period).filter_by(id=data["period_id"]).one()
+        except:return self.send_fail("找不到时间段")
+
+        order = models.Order(customer_id = self.current_user.id,
+                             shop_id = self.args["shop_id"],
+                             phone = date["phone"],
+                             receiver = data["receiver"],
+                             address_text = data["address_text"],
+                             message = data["message"],
+                             type = data["type"],
+                             totalPrice=totalPrice,
+                             money_paid=money_paid,
+                             pay_type=pay_type,
+                             today = data["today"],#1:今天；2：明天
+                             start_time = period.start_time,
+                             end_time = period.end_time,
+                             fruits = f_d,
+                             mgoods = m_d)
+        self.session.add(order)
+        self.session.commit()
+        return self.send_success()
+
+
+
