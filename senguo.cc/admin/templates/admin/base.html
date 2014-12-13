@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta charset="UTF-8"/>
     <title>{% block title %}{% end %}</title>
-    <link rel="stylesheet" href="/static/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="{{static_url('css/bootstrap.min.css')}}"/>
     <link rel="stylesheet" href="{{static_url('css/admin-global.css')}}"/>
     <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
@@ -116,8 +116,8 @@
     </div>
 </main>
 
-<script src="/static/js/jquery.min.js"></script>
-<script src="/static/js/bootstrap.min.js"></script>
+<script src="{{static_url('js/jquery.min.js')}}"></script>
+<script src="{{static_url('js/bootstrap.min.js')}}"></script>
 <script src="{{static_url('js/global.js')}}"></script>
 <script src="{{static_url('js/admin-public.js')}}"></script>
 {% block bottom %}{% end %}

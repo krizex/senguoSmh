@@ -109,7 +109,7 @@ class Cart(CustomerBaseHandler):
         shop_id = self.args["shop_id"]
         if action == "order":
             data = self.args["data"]
-            order =
+            #order =
 
 
 

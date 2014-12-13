@@ -851,20 +851,6 @@ class MGoods(MapBase, _CommonApi):
     priority = Column(SMALLINT, default=1)
     mcharge_types = relationship("MChargeType") #支持多种计价方式
 
-class OrderCTypeLink(MapBase):
-    __tablename__ = "order_ctype_link"
-
-    order_id = Column(Integer, ForeignKey(Order.id), primary_key=True, nullable=False)
-    charge_type_id = Column(Integer, ForeignKey(ChargeType.id), primary_key=True, nullable=False)
-    num = Column(Integer) #单品数量
-
-class OrderMTypeLink(MapBase):
-    __tablename__ = "order_mtype_link"
-
-    order_id = Column(Integer, ForeignKey(Order.id),primary_key=True, nullable=False)
-    mgoods_id = Column(Integer, ForeignKey(MGoods.id),primary_key=True, nullable=False)
-    mcharge_type_id = Column(Integer, ForeignKey(MChargeType.id),primary_key=True, nullable=False)
-    num = Column(Integer) #单品数量
 
 #水果单品的计价类型
 class ChargeType(MapBase, _CommonApi):
@@ -891,6 +877,20 @@ class MChargeType(MapBase):
     active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 
     mgoods = relationship("MGoods", uselist=False)
+class OrderCTypeLink(MapBase):
+    __tablename__ = "order_ctype_link"
+
+    order_id = Column(Integer, ForeignKey(Order.id), primary_key=True, nullable=False)
+    charge_type_id = Column(Integer, ForeignKey(ChargeType.id), primary_key=True, nullable=False)
+    num = Column(Integer) #单品数量
+
+class OrderMTypeLink(MapBase):
+    __tablename__ = "order_mtype_link"
+
+    order_id = Column(Integer, ForeignKey(Order.id),primary_key=True, nullable=False)
+    mgoods_id = Column(Integer, ForeignKey(MGoods.id),primary_key=True, nullable=False)
+    mcharge_type_id = Column(Integer, ForeignKey(MChargeType.id),primary_key=True, nullable=False)
+    num = Column(Integer) #单品数量
 
 class Cart(MapBase, _CommonApi):
     __tablename__ = "cart"
