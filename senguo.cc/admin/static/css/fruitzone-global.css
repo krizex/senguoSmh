@@ -50,7 +50,6 @@ p{word-break:break-all;}
 .text-green{color:#00D289;}
 .text-red{color:#FF0808;}
 .text-white{color:#fff;}
-
 .text-center{text-align:center;}
 
 .border-green{border:1px solid #00D289;border-radius:2px;}
@@ -58,11 +57,10 @@ p{word-break:break-all;}
 
 .bottom-nav{max-width:640px;margin:0 auto;font-size:1.4em;border-top:1px solid #ddd;padding:15px 10px;}
 .bottom-nav li{text-align:center;padding:0 5px;}
-
 .bottom-nav li a{color:#333;display:block;}
 .bottom-nav .active a{color:#00D289;font-weight:bold;}
-.proper-padding {padding: 8px 14px;}
 
+.proper-padding {padding: 8px 14px;}
 
 .undone-box{margin-top:20px;padding:20px 0;border-top:1px solid #ddd;border-bottom:1px solid #ddd;}
 

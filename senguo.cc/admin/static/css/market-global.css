@@ -1,0 +1,34 @@
+body{font-size: 1em;font-family:"microsoft yahei";background:#f2f2f2;}
+p{clear: both;width: 100%}
+ol,ul,li{list-style:none;}
+ul{padding-left:0;}
+a:hover{text-decoration:none;}
+a:focus{text-decoration: none}
+a:focus{outline:none;}
+input{border:none;}
+.container{padding:0;}
+.modal-dialog{margin-top:10%!important;}
+.modal-body{font-size:1em;}
+.modal-footer{clear:both;}
+
+.bg-white{background:#fff;}
+.bg-green{background:#00D681;}
+.bg-grey{background:#f9f9f9;}
+.bg-grey2{background:#f2f2f2;}
+.bg-grey3{background:#E7E7E7;}
+
+.text-green{color:#00D289;}
+.text-red{color:#FF0808;}
+.text-white{color:#fff;}
+.text-center{text-align:center;}
+
+.padding-right-none{padding-right:0px;}
+.phone-box{width:100%;min-width:320px;max-width:640px;margin:0 auto;overflow:hidden;background:#F2F2F2;padding-bottom:50px;}
+
+.bottom-nav{max-width:640px;margin:0 auto;font-size:1.4em;height:50px;line-height:50px;overflow:hidden;}
+.bottom-nav ul{margin-bottom:0;}
+.bottom-nav li{text-align:center;padding:0 5px;}
+.bottom-nav li a{display:block;}
+.bottom-nav li:hover{background:#07B771;}
+.bottom-nav li:hover a{color:#fff;}
+.bottom-nav .active{background:#07B771;color:#fff;}

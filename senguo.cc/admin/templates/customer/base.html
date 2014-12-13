@@ -18,17 +18,33 @@
     </script>
 </head>
 <body>
-    <div class="">
+    <div class="container phone-box">
         {% block content %}{% end %}
+        {% set subpage = context.get("subpage", "home")%}
+
+        {% set home_active = ""%}
+        {% set community_active = ""%}
+        {% set info_active = ""%}
+        {% set adminHome_active = ""%}
+
+        {% if subpage == "home"%}
+        {% set home_active = "active"%}
+        {% elif subpage == "cummunity"%}
+        {% set community_active = "active"%}
+        {% elif subpage == "infowall"%}
+        {% set info_active = "active"%}
+        {% else %}
+        {% set adminHome_active = "active"%}
+        {% end %}
+        <nav class="bottom-nav navbar-fixed-bottom bg-green text-white">
+            <ul class="row select-list">
+                <li class="col-xs-3 col-sm-3 {{home_active}}"><a href="#" class="text-white">店铺信息</a></li>
+                <li class="col-xs-3 col-sm-3 {{community_active}}"><a href="#" class="text-white">首页</a></li>
+                <li class="col-xs-3 col-sm-3"><a href="#" class="text-white">购物车</a></li>
+                <li class="col-xs-3 col-sm-3 {{adminHome_active}}"><a href="#" class="text-white">个人中心</a></li>
+            </ul>
+        </nav>
     </div>
-    <nav class="m">
-        <ul class="n">
-            <li><a href="">店铺信息</a></li>
-            <li><a href="">购买</a></li>
-            <li><a href="">购物车</a></li>
-            <li><a href="">个人中心</a></li>
-        </ul>
-    </nav>
     <script src="{{static_url('js/jquery.min.js')}}"></script>
     <script src="{{static_url('js/bootstrap.min.js')}}"></script>
     <script src="{{static_url('js/global.js')}}"></script>

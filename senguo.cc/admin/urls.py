@@ -1,12 +1,20 @@
 import handlers.front
 import handlers.admin
 import handlers.staff
+import handlers.customer
 import handlers.superadmin
 import handlers.fruitzone
 import handlers.infowall
 from dal import models
 #todo:handlers太大会不会影响性能？
 handlers = [
+    (r"/customer/login", handlers.customer.Access, {"action":"login"}, "customerLogin"),
+    (r"/customer/oauth", handlers.customer.Access, {"action":"oauth"}, "customerOauth"),
+    (r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
+    (r"/customer/register", handlers.customer.Access, {"action":"register"}, "customerRegister"),
+    (r"/customer/", handlers.customer.Home, {}, "customerHome"),
+    (r"/customer/market/(\d+)", handlers.customer.Market, {}, "Market"),
+
     (r"/", handlers.front.Home,{}, "frontHome"),
     (r"/super/oauth", handlers.superadmin.Access,{
         "action":"oauth"}, "superOauth"),
