@@ -53,5 +53,7 @@ $(document).ready(function(){
             large_box.find('.modal-header').css({'background':bg_color});
         })
     });
+
+    $('#backTop').on('click',function(){$(document).scrollTop(0)});
 });
 function rgbToHex(r, g, b) { return ((r << 16) | (g << 8) | b).toString(16); }

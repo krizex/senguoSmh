@@ -38,3 +38,8 @@ input{border:none;}
 .bottom-nav .active{background:#07B771;color:#fff;}
 
 .set-inl-blo{display:inline-block;}
+.no-mar-btom{margin-bottom:0px;}
+
+.font12{font-size:1.2em;}
+.font14{font-size:1.4em;}
+.font16{font-size:1.6em;}

@@ -11,7 +11,7 @@ $(document).ready(function(){
 
     //商品编辑框显示/收起
     $('.edit-goods-info').on('click',function(){$(this).parents('.goods-list-item').find('.goods-item-show').addClass('hidden').siblings('.goods-item-edit').removeClass('hidden');});
-    $('.edit-goods-concel').on('click',function(){window.location.reload()});
+    $('.edit-goods-concel').on('click',function(){$(this).parents('.goods-list-item').find('.goods-item-edit').addClass('hidden').siblings('.goods-item-show').removeClass('hidden');});
 
     //商品标签显示
     $('.all-fruit-type a').each(function(){
@@ -391,10 +391,13 @@ function addEditFruit(target,id,action){
             };
             charge_types.push(charge);
         }
-    console.log(charge_types);
-    if(!name||!saled||!storage||!intro){return alert('请输入相关商品信息！');}
-    if(!regNumber.test(saled)){return alert('销量只能为数字！');}
-    if(!regNumber.test(storage)){return alert('库存只能为数字！');}
+    console.log(typeof(saled));
+    console.log(name+'---'+saled+'---'+storage+'---'+intro);
+    if(!name){return alert('请输入商品名称！');}
+    if(storage == null||storage == 'NaN'){return alert('请输入商品库存！');}
+    if(!intro){return alert('请输入商品简介！');}
+    if(saled!=0 && !regNumber.test(saled)){return alert('销量只能为数字！');}
+    if(storage!=0 && !regNumber.test(storage)){return alert('库存只能为数字！');}
     if(!regNumber.test(priority)){return alert('优先级只能为数字！');}
     if(priority<1||priority>5){return alert('优先级只能为1-5！');}
     if(action=='add_fruit'){
