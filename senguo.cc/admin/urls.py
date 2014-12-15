@@ -14,6 +14,7 @@ handlers = [
     (r"/customer/register", handlers.customer.Access, {"action":"register"}, "customerRegister"),
     (r"/customer/", handlers.customer.Home, {}, "customerHome"),
     (r"/customer/market/(\d+)", handlers.customer.Market, {}, "Market"),
+    (r"/customer/cart", handlers.customer.Cart, {}, "customerCart"),
 
     (r"/", handlers.front.Home,{}, "frontHome"),
     (r"/super/oauth", handlers.superadmin.Access,{
@@ -90,14 +91,14 @@ handlers = [
     (r"/admin/register", handlers.admin.Access, {
         "action":"register"}, "adminRegister"),
 
-    (r"/admin/", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
-    (r"/admin/order/(\d+)", handlers.admin.Order, {}, "adminOrder"),
+    (r"/admin", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
+    (r"/admin/order", handlers.admin.Order, {}, "adminOrder"),
 
-    (r"/admin/shelf/(\d+)", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
+    (r"/admin/shelf", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
     (r"/admin/shelf/fruitImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_fruit_img"}, "adminShelfFruitImgCallback"),
 
     (r"/admin/staff/(\d+)", handlers.admin.Staff, {}, "adminStaffJH"),
-    (r"/admin/config/(\d+)", handlers.admin.Config, {}, "adminConfig"),
+    (r"/admin/config", handlers.admin.Config, {}, "adminConfig"),
 
     # (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
     # (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),

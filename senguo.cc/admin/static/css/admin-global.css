@@ -52,7 +52,7 @@ img{border:none;}
 .backstage-header .header-nav .admin-info .area em{font-style:normal;display:inline-block;width:72px;font-size:12px;overflow:hidden;}
 .backstage-header .header-nav .admin-info p{font-size:16px;color:#000;line-height:25px;display:inline-block;width:100%;}
 .backstage-header .header-nav .dropdown-toggle{padding:4px;}
-.backstage-header .header-nav .dropdown-menu li{padding:0px;}
+.backstage-header .header-nav .dropdown-menu li{width:100%;padding:0px;}
 .backstage-header .header-nav .dropdown-menu li a:hover{color:#ff6563;}
 .backstage-header .header-nav .caret{margin-top:6px;}
 /*底部样式*/

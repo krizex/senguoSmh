@@ -17,6 +17,7 @@ class Access(AdminBaseHandler):
             return self.render("admin/login.html", 
                                  context=dict(next_url=next_url))
         elif self._action == "logout":
+            self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
             self.clear_current_user()
             return self.redirect(self.reverse_url("fruitzoneHome"))
         elif self._action == "oauth":
@@ -57,7 +58,21 @@ class Access(AdminBaseHandler):
 class Home(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        return self.render("admin/home.html", context=dict())
+        print("y")
+        if not self.current_shop: #设置默认店铺
+            self.current_shop=self.current_user.shops[0]
+            self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
+        return self.render("admin/base.html", context=dict())
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("shop_id:int")
+    def post(self):
+        shop_id = self.args["shop_id"]
+        try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
+        except:return self.send_error(404)
+        if shop.admin != self.current_user:
+            return self.send_error(403)#必须做权限检查：可能这个shop并不属于current_user
+        self.set_secure_cookie("shop_id", str(shop_id), domain=ROOT_HOST_NAME)
+        return self.send_success()
 
 class Order(AdminBaseHandler):
     # def initialize(self, order_type, order_status):
@@ -119,43 +134,39 @@ class Shelf(AdminBaseHandler):
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "id:int")
-    def get(self, shop_id):
-        try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
-        except:return self.send_error(404)
-        if shop not in self.current_user.shops:
-            return self.send_error(403)
+    def get(self):
+        # try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
+        # except:return self.send_error(404)
+        # if shop not in self.current_user.shops:
+        #     return self.send_error(403)
 
         action = self.args["action"]
         id = self.args["id"]
         fruit_types = self.session.query(models.FruitType).all()
         if action == "home":
-            return self.render("admin/goods-preview.html", fruit_types=fruit_types, menus=shop.menus,
+            return self.render("admin/goods-preview.html", fruit_types=fruit_types, menus=self.current_shop.menus,
                                 context=dict(subpage="goods", goodsSubpage="home"))
         elif action == "fruit":
             fruits=[]
-            for fruit in shop.fruits:
+            for fruit in self.current_shop.fruits:
                 if fruit.fruit_type_id == id:
                     fruits.append(fruit)
-            return self.render("admin/goods-fruit.html", fruits=fruits, fruit_types=fruit_types, menus=shop.menus,
+            return self.render("admin/goods-fruit.html", fruits=fruits, fruit_types=fruit_types, menus=self.current_shop.menus,
                                context=dict(subpage="goods",goodsSubpage="fruit"))
         elif action == "menu":
             try:mgoodses = self.session.query(models.MGoods).filter_by(menu_id=id).all()
             except:return self.send_error(404)
-            return self.render("admin/goods-menu.html", mgoodser=mgoodses, fruit_types=fruit_types, menus=shop.menus,
+            return self.render("admin/goods-menu.html", mgoodser=mgoodses, fruit_types=fruit_types, menus=self.current_shop.menus,
                                context=dict(subpage="goods",goodsSubpage="menu"))
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("action", "data")
-    def post(self, id): #shop_id/fruit_id
+    @AdminBaseHandler.check_arguments("action", "data", "fruit_id?:int", "charge_type_id?:int")
+    def post(self):
         action = self.args["action"]
         data = self.args["data"]
         if action in ["add_fruit", "add_menu", "edit_img"]:#shop_id
-            try:shop = self.session.query(models.Shop).filter_by(id=id).one()
-            except:return self.send_error(404)
-            if shop.admin != self.current_user:
-                return self.send_error(403)
             if action == "add_fruit":
-                fruit = models.Fruit(shop_id=id,
+                fruit = models.Fruit(shop_id=self.current_shop.id,
                                                 fruit_type_id=data["fruit_type_id"],
                                                 name=data["name"],
                                                 saled=data["saled"],
@@ -174,23 +185,24 @@ class Shelf(AdminBaseHandler):
                 self.session.commit()
                 return self.send_success()
             elif action == "add_menu":
-                self.session.add(models.Menu(shop_id=id,name=data["name"]))
+                self.session.add(models.Menu(shop_id=self.current_shop.id,name=data["name"]))
                 self.session.commit()
             elif action == "edit_img":
                 q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
                 token = q.upload_token(BUCKET_GOODS_IMG, expires=120,
                                        policy={"callbackUrl": "http://zone.senguo.cc/admin/shelf/fruitImgCallback",
-                                               "callbackBody": "key=$(key)&id=%s" % shop.id, "mimeLimit": "image/*"})
-                return self.send_success(token=token, key=str(time.time())+':'+str(shop.id))
+                                               "callbackBody": "key=$(key)&id=%s" % self.current_shop.id, "mimeLimit": "image/*"})
+                return self.send_success(token=token, key=str(time.time())+':'+str(self.current_shop.id))
 
         elif action in ["add_charge_type", "edit_active", "edit_fruit"]: #fruit_id
-            try:fruit = self.session.query(models.Fruit).filter_by(id=id).one()
+            fruit_id=self.args["fruit_id"]
+            try:fruit = self.session.query(models.Fruit).filter_by(id=fruit_id).one()
             except:return self.send_error(404)
             if fruit.shop.admin != self.current_user:
                 return self.send_error(403)
 
             if action == "add_charge_type":
-                charge_type = models.ChargeType(fruit_id=id,
+                charge_type = models.ChargeType(fruit_id=fruit_id,
                                                 price=data["price"],
                                                 unit=data["unit"],
                                                 num=data["num"],
@@ -214,7 +226,8 @@ class Shelf(AdminBaseHandler):
                                                 intro = data["intro"],
                                                 priority=data["priority"])
         elif action in ["del_charge_type", "edit_charge_type"]: #charge_type_id
-            try: q = self.session.query(models.ChargeType).filter_by(id=id)
+            charge_type_id = self.args["charge_type_id"]
+            try: q = self.session.query(models.ChargeType).filter_by(id=charge_type_id)
             except:return self.send_error(404)
             if action == "del_charge_type":
                 q.delete()

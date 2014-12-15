@@ -349,7 +349,7 @@
     <span class="title">所有水果({{len(fruit_types)}})</span>
     <div class="shelve all-fruit-type">
         {% for fruit in fruit_types%}
-        <a href="{{reverse_url('adminShelf',current_user.shops[0].id)}}?action=fruit&id={{fruit.id}}" data-id="{{fruit.id}}">{{fruit.name}}</a>
+        <a href="{{reverse_url('adminShelf')}}?action=fruit&id={{fruit.id}}" data-id="{{fruit.id}}">{{fruit.name}}</a>
         {% end %}
     </div>
 {% end %}

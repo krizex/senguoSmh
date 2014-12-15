@@ -780,21 +780,25 @@ class Order(MapBase, _CommonApi):
     receiver = Column(String(64), nullable=False)
     address_text = Column(String(1024), nullable=False)
     message = Column(String(100)) #用户留言
-    status = Column(TINYINT) #订单状态
-    type = Column(TINYINT) #订单类型
+    status = Column(TINYINT, default=ORDER_STATUS.ORDERED) #订单状态
+    type = Column(TINYINT) #订单类型 1:立即送 2：按时达
     remark = Column(String(100)) #商家备注
-    totalPrice = Column(Integer)
-    money_paid = Column(Boolean)
+    totalPrice = Column(Float)
+    money_paid = Column(Boolean, default=False)
+    pay_type = Column(TINYINT, default=1)#付款方式：1：货到付款，2：余额
     today = Column(TINYINT, default=1) #送货时间1:今天 2：明天
     JH_id = Column(Integer, nullable=True) #捡货员id,(当员工被删除时可能会有问题)
     SH1_id = Column(Integer, nullable=True) #一级送货员id
     SH2_id = Column(Integer, nullable=True) #二级送货员id
-    period_id = Column(Integer,nullable=True)
-    create_time = Column(DateTime)
+    start_time = Column(Time)
+    end_time = Column(Time)
+    create_time = Column(DateTime, default=func.now())
     active = Column(TINYINT, default=1)#0删除
 
-    charge_types = relationship("ChargeType", secondary="order_ctype_link", uselist=True)
-    mcharge_type = relationship("MChargeType", secondary="order_mtype_link", uselist=True)
+    fruits = Column(String(1000))
+    mgoods = Column(String(1000))
+    # charge_types = relationship("ChargeType", secondary="order_ctype_link", uselist=True)
+    # mcharge_type = relationship("MChargeType", secondary="order_mtype_link", uselist=True)
 # #按时达
 # class OrderOnTime(MapBase):
 #     __tablename__ = "order_on_time"
@@ -814,7 +818,7 @@ class Fruit(MapBase, _CommonApi):
     active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
     current_saled = Column(Integer, default=0) #售出：未处理的订单数
     saled = Column(Integer) #销量
-    storage = Column(Integer)
+    storage = Column(Float)
     unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
     tag = Column(TINYINT, default=TAG.NULL) #标签
     img_url = Column(String(500))
@@ -844,7 +848,7 @@ class MGoods(MapBase, _CommonApi):
     active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
     current_saled = Column(Integer, default=0) #售出：未处理的订单数
     saled = Column(Integer) #销量
-    storage = Column(Integer)
+    storage = Column(Float)
     tag = Column(TINYINT, default=TAG.NULL) #新品
     img_url = Column(String(500))
     intro = Column(String(100))
@@ -857,10 +861,10 @@ class ChargeType(MapBase, _CommonApi):
     __tablename__ = "charge_type"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     fruit_id = Column(Integer, ForeignKey(Fruit.id), nullable=False)
-    price = Column(SMALLINT)#单价
+    price = Column(Float)#单价
     unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
     num = Column(SMALLINT)#计价数量
-    unit_num = Column(TINYINT)#单位换算
+    unit_num = Column(Float, default=1)#单位换算
     active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 
     fruit = relationship("Fruit", uselist=False)
@@ -870,27 +874,27 @@ class MChargeType(MapBase):
     __tablename__ = "m_charge_type"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     mgoods_id = Column(Integer, ForeignKey(MGoods.id), nullable=False)
-    price = Column(SMALLINT)#单价
+    price = Column(Float)#单价
     unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
     number = Column(SMALLINT)#计价数量
-    unit_num = Column(TINYINT)#单位换算
+    unit_num = Column(Float, default=1)#单位换算
     active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 
     mgoods = relationship("MGoods", uselist=False)
-class OrderCTypeLink(MapBase):
-    __tablename__ = "order_ctype_link"
-
-    order_id = Column(Integer, ForeignKey(Order.id), primary_key=True, nullable=False)
-    charge_type_id = Column(Integer, ForeignKey(ChargeType.id), primary_key=True, nullable=False)
-    num = Column(Integer) #单品数量
-
-class OrderMTypeLink(MapBase):
-    __tablename__ = "order_mtype_link"
-
-    order_id = Column(Integer, ForeignKey(Order.id),primary_key=True, nullable=False)
-    mgoods_id = Column(Integer, ForeignKey(MGoods.id),primary_key=True, nullable=False)
-    mcharge_type_id = Column(Integer, ForeignKey(MChargeType.id),primary_key=True, nullable=False)
-    num = Column(Integer) #单品数量
+# class OrderCTypeLink(MapBase):
+#     __tablename__ = "order_ctype_link"
+#
+#     order_id = Column(Integer, ForeignKey(Order.id), primary_key=True, nullable=False)
+#     charge_type_id = Column(Integer, ForeignKey(ChargeType.id), primary_key=True, nullable=False)
+#     num = Column(Integer) #单品数量
+#
+# class OrderMTypeLink(MapBase):
+#     __tablename__ = "order_mtype_link"
+#
+#     order_id = Column(Integer, ForeignKey(Order.id),primary_key=True, nullable=False)
+#     mgoods_id = Column(Integer, ForeignKey(MGoods.id),primary_key=True, nullable=False)
+#     mcharge_type_id = Column(Integer, ForeignKey(MChargeType.id),primary_key=True, nullable=False)
+#     num = Column(Integer) #单品数量
 
 class Cart(MapBase, _CommonApi):
     __tablename__ = "cart"

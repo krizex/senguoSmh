@@ -16,7 +16,7 @@ $(document).ready(function(){
     //商品标签显示
     $('.all-fruit-type a').each(function(){
         var id=$(this).data('id');
-        if(id==fruit_id){$(this).addClass('bg-pink')}
+        if(id==fruit_type_id){$(this).addClass('bg-pink')}
     });
 
     //商品单位切换显示
@@ -83,7 +83,7 @@ $(document).ready(function(){
         defalutChangeUnit(storage_unit_id);
 
      });
-    $('.add-goods-sure').on('click',function(){addEditFruit($(this),shop_id,'add_fruit')});
+    $('.add-goods-sure').on('click',function(){addEditFruit($(this),'add_fruit')});
 
     //商品添加-计价方式单位换算
     $('body').on('click','.goodsUnitList a',function(){
@@ -129,8 +129,8 @@ $(document).ready(function(){
     //***商品编辑***
     $('.edit-goods-sure').each(function(){
         $(this).on('click',function(){
-            var fruit_id=$(this).parents('.goods-list-item').data('id');
-            addEditFruit($(this),fruit_id,'edit_fruit');
+
+            addEditFruit($(this),'edit_fruit');
         })
     });
 
@@ -165,7 +165,7 @@ $(document).ready(function(){
         var parent2=$(this).parents('.goods-item-edit');
         var edit_charge_box=$('.edit-charge-box');
         edit_charge_box.modal('show');
-        item_fruit_id=parent.data('id');
+        charge_type_id=parent.data('id');
         edit_price=parseInt(parent.find('.edit_price').text());
         edit_num=parseInt(parent.find('.edit_num').text());
         edit_unit_id=parseInt(parent.find('.edit_unit').attr('data-id'));
@@ -182,7 +182,7 @@ $(document).ready(function(){
         edit_charge_box.find('.unit-change-show').text(storage_unit);
     });
 
-    $('.edit-charge-type').on('click',function(){addEditCharge($(this),item_fruit_id,'edit_charge_type','.edit-charge-box')});
+    $('.edit-charge-type').on('click',function(){addEditCharge($(this),charge_type_id,'edit_charge_type','.edit-charge-box')});
 
     //商品编辑-删除计价方式
     $('.delete-charge-type').on('click',function(){
@@ -222,7 +222,7 @@ $(document).ready(function(){
                     async : false
                 });
                 var action="add_img";
-                var url="/admin/shelf/0";
+                var url="/admin/shelf";
                 var args={action: action};
                 $.postJson(url,args,
                     function (res) {
@@ -264,7 +264,7 @@ $(document).ready(function(){
                     async : false
                 });
                 var action="edit_img";
-                var url="/admin/shelf/"+shop_id;
+                var url="/admin/shelf";
                 var args={action: action};
                 $.postJson(url,args,
                     function (res) {
@@ -286,7 +286,7 @@ $(document).ready(function(){
         });
 });
 var item_fruit_id;
-var fruit_id= $.getUrlParam('id');
+var fruit_type_id= $.getUrlParam('id');
 var edit_price;
 var edit_num;
 var edit_unit_id;
@@ -294,9 +294,10 @@ var edit_unit_num;
 var change_num;
 var storage_unit_id;
 var storage_unit;
+var charge_type_id;
 
 function addGoodsType(target){
-    var url='/admin/shelf/'+shop_id;
+    var url='/admin/shelf';
     var action='add_menu';
     var add_box=target.parents('.add-goodsType-box');
     var name=add_box.find('#type-name').val();
@@ -339,12 +340,13 @@ function unitText(target,n){
 }
 
 function unitChangeShow(target,id,unit_id){
+    var unit_change=target.parents('.item-unit').siblings('.unit-change');
     if(id!=unit_id)
     {
-        target.parents('.item-unit').siblings('.unit-change').removeClass('hidden');
+        unit_change.removeClass('hidden');
     }
     else {
-        target.parents('.item-unit').siblings('.unit-change').addClass('hidden');
+        unit_change.addClass('hidden');
     }
 }
 
@@ -357,11 +359,10 @@ function popUnitChangeShow(target,id,unit_id){
     }
 }
 
-function addEditFruit(target,id,action){
-    var url="/admin/shelf/"+id;
+function addEditFruit(target,action){
+    var url="/admin/shelf";
     var action=action;
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
-    var fruit_type_id=parseInt(fruit_id);
     var name=target.parents('.add-edit-item').find('.goodsName').val();
     var saled=parseInt(target.parents('.add-edit-item').find('.goodsSale').val());
     var storage=parseInt(target.parents('.add-edit-item').find('.goodsStorage').val());
@@ -370,6 +371,7 @@ function addEditFruit(target,id,action){
     var img_url=target.parents('.add-edit-item').find('.imgPreview').attr('data-key');
     var intro=target.parents('.add-edit-item').find('.goodsIntro').val();
     var priority=parseInt(target.parents('.add-edit-item').find('.goodsPriority').val());
+    var fruit_item_id=parseInt(target.parents('.goods-list-item').data('id'));
     var charge_types=[];
     var charge_item=target.parents('.add-edit-item').find('.add-goods-charge-list').children('li');
     var price;
@@ -391,8 +393,6 @@ function addEditFruit(target,id,action){
             };
             charge_types.push(charge);
         }
-    console.log(typeof(saled));
-    console.log(name+'---'+saled+'---'+storage+'---'+intro);
     if(!name){return alert('请输入商品名称！');}
     if(storage == null||storage == 'NaN'){return alert('请输入商品库存！');}
     if(!intro){return alert('请输入商品简介！');}
@@ -400,14 +400,8 @@ function addEditFruit(target,id,action){
     if(storage!=0 && !regNumber.test(storage)){return alert('库存只能为数字！');}
     if(!regNumber.test(priority)){return alert('优先级只能为数字！');}
     if(priority<1||priority>5){return alert('优先级只能为1-5！');}
-    if(action=='add_fruit'){
-        if(!price||!num){return alert('请至少完整填写一种计价方式！');}
-        if(!regNumber.test(price)){return alert('价格只能为数字！');}
-        if(!regNumber.test(num)||!regNumber.test(unit_num)){return alert('数量只能为数字！');}
-        if(!img_url){img_url=''}
-    }
     var data={
-        fruit_type_id:fruit_type_id,
+        fruit_type_id:parseInt(fruit_type_id),
         name:name,
         saled:saled,
         storage:storage,
@@ -415,14 +409,27 @@ function addEditFruit(target,id,action){
         tag:tag,
         img_url:img_url,
         intro:intro,
-        priority:priority,
-        charge_types:charge_types
+        priority:priority
     };
-    var args={
-        action:action,
-        data:data
-
-    };
+    var args;
+    if(action=='add_fruit'){
+        if(!price||!num){return alert('请至少完整填写一种计价方式！');}
+        if(!regNumber.test(price)){return alert('价格只能为数字！');}
+        if(!regNumber.test(num)||!regNumber.test(unit_num)){return alert('数量只能为数字！');}
+        if(!img_url){data.img_url=''}
+        data.charge_types=charge_types;
+        args={
+            action:action,
+            data:data
+        };
+    }
+    if(action=='edit_fruit'){
+        args={
+            action:action,
+            data:data,
+            fruit_id:fruit_item_id
+        };
+    }
     $.postJson(url,args,
         function(res){
             if(res.success){
@@ -433,12 +440,13 @@ function addEditFruit(target,id,action){
 }
 
 function editActive(id){
-    var url="/admin/shelf/"+id;
+    var url="/admin/shelf";
     var action='edit_active';
     var data={};
     var args={
         action:action,
-        data:data
+        data:data,
+        fruit_id:id
 
     };
     $.postJson(url,args,
@@ -450,7 +458,7 @@ function editActive(id){
 }
 
 function addEditCharge(target,id,action,item){
-    var url="/admin/shelf/"+id;
+    var url="/admin/shelf";
     var action=action;
     var charge_item=target.parents(item).find('.add-goods-charge-list');
     var price=parseInt(charge_item.find('.charge-price').val());
@@ -462,28 +470,36 @@ function addEditCharge(target,id,action,item){
     if(!regNumber.test(price)){return alert('价格只能为数字！');}
     if(!unit_num){unit_num=1}
     if(!regNumber.test(num)||!regNumber.test(unit_num)){return alert('数量只能为数字！');}
+    var data;
+    var args;
     if(action=='add_charge_type'){
-            var data={
-            fruit_id:id,
+            data={
             price:price,
             unit:units,
             num:num,
             unit_num:unit_num
         };
-    }
-    else if(action=='edit_charge_type'){
-        var data={
-            price:price,
-            unit:units,
-            num:num,
-            unit_num:unit_num
-        };
-    }
-    var args={
+        args={
         action:action,
-        data:data
+        data:data,
+        fruit_id:id
 
     };
+    }
+    else if(action=='edit_charge_type'){
+        data={
+            price:price,
+            unit:units,
+            num:num,
+            unit_num:unit_num
+        };
+        args={
+        action:action,
+        data:data,
+        charge_type_id:id
+
+    };
+    }
     $.postJson(url,args,
         function(res){
             if(res.success){
@@ -495,12 +511,13 @@ function addEditCharge(target,id,action,item){
 }
 
 function deleteCharge(target,id){
-    var url="/admin/shelf/"+id;
+    var url="/admin/shelf";
     var action='del_charge_type';
     var data={};
     var args={
         action:action,
-        data:data
+        data:data,
+        charge_type_id:id
 
     };
     $.postJson(url,args,
