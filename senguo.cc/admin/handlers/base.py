@@ -204,7 +204,15 @@ class CustomerBaseHandler(_AccountBaseHandler):
     __account_model__ = models.Customer
     __account_cookie_name__ = "customer_id"
     __wexin_oauth_url_name__ = "customerOauth"
-    def save_cart(self, charge_type_id, shop_id, inc, menu_type): #inc==0 删,inc==1:减，inc==2：增；type==0：fruit，type==1：menu
+    def save_cart(self, charge_type_id, shop_id, inc, menu_type):
+        """
+        用户购物车操作函数，对购物车进行修改或者删除商品：
+        charge_type_id：要删除的商品的计价类型
+        shop_id：用户在每个店铺都有一个购物车
+        inc：购物车操作类型
+        menu_type：商品类型（fruit：系统内置，menu：商家自定义）
+        #inc==0 删,inc==1:减，inc==2：增；type==0：fruit，type==1：menu
+        """
         cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
         if menu_type == 0:
             self._f(cart, "fruits", charge_type_id, inc)
@@ -234,6 +242,9 @@ class CustomerBaseHandler(_AccountBaseHandler):
                 self.session.commit()
 
     def read_cart(self, shop_id):
+        """
+        读购物车函数，把数据库里的str转换为dict，同时删除购物车里已经过时的商品
+        """
         try:cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
         except:cart = None
         if not cart or (cart.fruits == "" and cart.mgoods == ""): #购物车为空

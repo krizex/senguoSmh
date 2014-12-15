@@ -102,7 +102,7 @@ class BaseHandler(tornado.web.RequestHandler):
         for k in kwargs:
             obj[k] = kwargs[k]
         self.write(obj)
-    def send_fail(self,error_code=None, error_text = None):
+    def send_fail(self, error_text = None, error_code=None):
         if type(error_code) == int:
             res = {"success":False, "error_code":error_code,"error_text":error_text}
         else:

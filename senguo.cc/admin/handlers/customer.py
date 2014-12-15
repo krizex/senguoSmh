@@ -108,9 +108,10 @@ class Cart(CustomerBaseHandler):
     @CustomerBaseHandler.check_arguments("shop_id:int", "fruits", "mgoods", "pay_type:int", "period_id:int",
                                          "phone:str", "receiver:str", "address_text:str", "message:str", "type:int",
                                          "today:int")
-    def post(self):
+    def post(self):#提交订单
         fruits = self.args["fruits"]
-        mgoods = self.args["mgoods"]
+        mgoods = \
+            self.args["mgoods"]
         unit = {1:"个", 2:"斤", 3:"份"}
         f_d={}
         m_d={}
@@ -162,8 +163,8 @@ class Cart(CustomerBaseHandler):
                              today=self.args["today"],#1:今天；2：明天
                              start_time=start_time,
                              end_time=end_time,
-                             fruits=f_d,
-                             mgoods=m_d)
+                             fruits=str(f_d),
+                             mgoods=str(m_d))
         self.session.add(order)
         self.session.commit()
         return self.send_success()
