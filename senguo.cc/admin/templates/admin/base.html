@@ -55,12 +55,14 @@
                     <div class="admin-info area pull-right">
                         <div class="dropdown  area pull-left">
                             <button class="btn btn-default dropdown-toggle area height25 border-none" type="button" id="dropdownMenu1" data-toggle="dropdown">
-                                <em title="{{current_user.shops[0].shop_name}}" data-id="{{current_user.shops[0].id}}" class="pull-left" id="currentShop">{{current_user.shops[0].shop_name}}</em>
+                                <em title="{{handler.current_shop.shop_name}}" class="pull-left">{{handler.current_shop.shop_name}}</em>
                                 <span class="caret pull-right no-margin-left"></span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1" id="currentShopChange">
                                 {% for shop in current_user.shops%}
-                                <li role="presentation" data-id="{{shop.id}}"><a role="menuitem" tabindex="-1" href="#">{{shop.shop_name}}</a></li>
+                                <li role="presentation" data-id="{{shop.id}}">
+                                    <a role="menuitem" tabindex="-1" href="javascript:;">{{shop.shop_name}}</a>
+                                </li>
                                 {% end %}
                             </ul>
                         </div>

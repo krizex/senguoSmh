@@ -2,87 +2,86 @@
 {% block title %}首页{% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/market-home.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 {% end %}
 {% block content %}
-<div class="slide-img"></div>
-<p class="bg-green text-white">水果单品</p>
-<ul class="goods-list">
-    <li class="goods-list-item bg-white" data-id="" data-code="">
-        <div class="goods-img col-sm-3  col-xs-3 p5">
-            <a href="javascript:;" class="check-lg-img">
-                <span class="tag bg-green text-white text-center" data-id="">hot</span>
-                <img src="{{static_url('design_img/Sl.png')}}" class="img">
-            </a>
-        </div>
-        <div class="col-sm-8 col-xs-8 p5">
-            <p>
-                <span class="pull-left text-bgcolor">新疆小李子</span>
-                <span class="pull-right text-grey">销量：8888</span>
-            </p>
-            <p class="great-number">
-                <span class="text-grey">点赞:888</span>
-            </p>
-            <div class="charge-first charge-style">
-                <span class="col-sm-4  col-xs-4 text-bgcolor p0">25元/2斤</span>
-                <span class="col-sm-6  col-xs-6  p0">
-                    <a class="minus-plus text-success bg-white" href="javascript:;">-</a>
-                    <input type="text" value="" class="number-input pull-left"/>
-                    <a class="minus-plus text-success bg-white" href="javascript:;">+</a>
-                </span>
-                <a href="javascript:;" class="pull-right toggle down p0"></a>
+<div class="slide-img">
+    <div class="">
+
+    </div>
+</div>
+<p class="bg-green text-white no-mar-btom classify-title font16">水果单品</p>
+<ul class="goods-list bg-white">
+    {% for fruit in context['fruits'] %}
+    <li class="goods-list-item {{fruit.fruit_type.code}} font16" data-id="{{fruit.id}}">
+        <div class="bg set-w100-fle">
+            <div class="goods-img col-sm-3  col-xs-3 p5">
+                <a href="javascript:;" class="check-lg-img">
+                    <span class="tag bg-green text-white text-center tagItem font8" data-id="{{fruit.tag}}">hot</span>
+                    {% if fruit.img_url %}
+                    <img src="http://goodsimg1.qiniudn.com/{{fruit.img_url}}?imageView/1/w/200/h/200" class="img">
+                    {% else %}
+                    <img src="/static/design_img/{{fruit.fruit_type.code}}.png" class="img">
+                    {% end %}
+                </a>
             </div>
-            <ul class="charge-list charge-style">
-                <li class="border-color">
-                    <span class="col-sm-4  col-xs-4 text-bgcolor p0">25元/2斤</span>
-                    <span class="col-sm-6  col-xs-6  p0">
-                        <a class="minus-plus text-success bg-white" href="javascript:;">-</a>
-                        <input type="text" value="" class="number-input pull-left"/>
-                        <a class="minus-plus text-success bg-white" href="javascript:;">+</a>
+            <input type="hidden" class="fruit_intro" value="{{fruit.intro}}"/>
+            <div class="col-sm-8 col-xs-8 p5">
+                <p>
+                    <span class="pull-left color fruit-name">{{fruit.name}}</span>
+                    <span class="pull-right text-grey">销量：{{fruit.saled}}</span>
+                </p>
+                <p class="great-number">
+                    <span class="text-grey">点赞:888</span>
+                </p>
+                <div class="charge-first charge-style color">
+                    <span class="col-sm-5  col-xs-5 text-bgcolor p0">
+                        {{fruit.charge_types[0].price}}元/{{fruit.charge_types[0].num}}
+                        <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
+                        {% if fruit.charge_types[0].unit != fruit.unit %}
+                        =
+                        {{fruit.charge_types[0].unit_num}}
+                        <span data-id="{{fruit.unit}}" class="chargeUnit"></span>
+                        {% end %}
                     </span>
-                </li>
-            </ul>
-        </div>
-        <div class="col-sm-1 col-xs-1 pull-right fruit-class text-white text-shadow">石榴</div>
-    </li>
-    <li class="goods-list-item bg-white" data-id="" data-code="">
-        <div class="goods-img col-sm-3  col-xs-3 p5">
-            <a href="javascript:;" class="check-lg-img">
-                <span class="tag bg-green text-white text-center" data-id="">hot</span>
-                <img src="{{static_url('design_img/Bl.png')}}" class="img">
-            </a>
-        </div>
-        <div class="col-sm-8 col-xs-8 p5">
-            <p>
-                <span class="pull-left text-bgcolor">新疆小李子</span>
-                <span class="pull-right text-grey">销量：8888</span>
-            </p>
-            <p class="great-number">
-                <span class="text-grey">点赞:888</span>
-            </p>
-            <div class="charge-first charge-style">
-                <span class="col-sm-4  col-xs-4 text-bgcolor p0">25元/2斤</span>
-                <span class="col-sm-6  col-xs-6  p0">
-                    <a class="minus-plus text-success bg-white" href="javascript:;">-</a>
-                    <input type="text" value="" class="number-input pull-left"/>
-                    <a class="minus-plus text-success bg-white" href="javascript:;">+</a>
-                </span>
-                <a href="javascript:;" class="pull-right toggle down p0"></a>
+                    {% if len(fruit.charge_types) >1 %}
+                    <a href="javascript:;" class="pull-left toggle down p0"></a>
+                     <span class="col-sm-6  col-xs-6  pull-right p0">
+                        <a class="minus-plus text-success bg-white pull-right" href="javascript:;">+</a>
+                        <input type="text" value="" class="number-input pull-right"/>
+                        <a class="minus-plus text-success bg-white pull-right" href="javascript:;">-</a>
+                    </span>
+                    {% end %}
+                </div>
+                <ul class="charge-list charge-style color" style="display:none">
+                    {% for charge in fruit.charge_types %}
+                    {% if charge.id !=fruit.charge_types[0].id %}
+                    <li class="border-color set-w100-fle">
+                        <span class="col-sm-5  col-xs-5 text-bgcolor p0">
+                            {{charge.price}}元/{{charge.num}}
+                            <span data-id="{{charge.unit}}" class="chargeUnit"></span>
+                            {% if charge.unit != fruit.unit %}
+                            =
+                            {{charge.unit_num}}
+                            <span data-id="{{fruit.unit}}" class="chargeUnit"></span>
+                            {% end %}
+                        </span>
+                        <span class="col-sm-6  col-xs-6  pull-right p0">
+                            <a class="minus-plus text-success bg-white pull-right" href="javascript:;">+</a>
+                            <input type="text" value="" class="number-input pull-right"/>
+                            <a class="minus-plus text-success bg-white pull-right" href="javascript:;">-</a>
+                        </span>
+                    </li>
+                    {% end %}
+                    {% end %}
+                </ul>
             </div>
-            <ul class="charge-list charge-style">
-                <li class="border-color">
-                    <span class="col-sm-4  col-xs-4 text-bgcolor p0">25元/2斤</span>
-                    <span class="col-sm-6  col-xs-6  p0">
-                        <a class="minus-plus text-success bg-white" href="javascript:;">-</a>
-                        <input type="text" value="" class="number-input pull-left"/>
-                        <a class="minus-plus text-success bg-white" href="javascript:;">+</a>
-                    </span>
-                </li>
-            </ul>
+            <div class="col-sm-1 col-xs-1 pull-right fruit-class text-white text-shadow icon-bg font11">{{fruit.fruit_type.name}}</div>
         </div>
-        <div class="col-sm-1 col-xs-1 pull-right fruit-class text-white text-shadow">梨子梨</div>
     </li>
+    {% end %}
 </ul>
-<a class="back-to-top">Top</a>
+<a class="back-to-top set-inl-blo bg-green text-white text-center font14" id="backTop">Top</a>
 <div class="modal fade large-img-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -92,13 +91,16 @@
             </div>
             <div class="modal-body set-width-float text-center">
                 <img src="" id="largeImg"/>
-                <p>哈哈哈哈哈哈</p>
+                <p class="intro font14">哈哈哈哈哈哈</p>
             </div>
             <div class="modal-footer">
-                <a href="javascript:;" class="text-white bg-green click-great text-center">赞一个</a>
+                <a href="javascript:;" class="text-white bg-green click-great text-center font18">赞一个</a>
             </div>
         </div>
     </div>
 </div>
 {% end %}
-{% block bottom %} <script src="{{static_url('js/market.home.js')}}"></script>{% end %}
+{% block bottom %}
+<script src="{{static_url('js/market.public.js')}}"></script>
+<script src="{{static_url('js/market.home.js')}}"></script>
+{% end %}

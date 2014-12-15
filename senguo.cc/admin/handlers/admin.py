@@ -62,7 +62,7 @@ class Home(AdminBaseHandler):
         if not self.current_shop: #设置默认店铺
             self.current_shop=self.current_user.shops[0]
             self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
-        return self.render("admin/home.html", context=dict())
+        return self.render("admin/base.html", context=dict())
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("shop_id:int")
     def post(self):
@@ -72,6 +72,7 @@ class Home(AdminBaseHandler):
         if shop.admin != self.current_user:
             return self.send_error(403)#必须做权限检查：可能这个shop并不属于current_user
         self.set_secure_cookie("shop_id", str(shop_id), domain=ROOT_HOST_NAME)
+        return self.send_success()
 
 class Order(AdminBaseHandler):
     # def initialize(self, order_type, order_status):

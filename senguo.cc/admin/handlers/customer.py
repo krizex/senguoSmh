@@ -57,7 +57,7 @@ class Access(CustomerBaseHandler):
 class Home(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        return self.render("customer/home.html", context=dict())
+        return self.render("", context=dict())
 
 class Market(CustomerBaseHandler):
     @tornado.web.authenticated

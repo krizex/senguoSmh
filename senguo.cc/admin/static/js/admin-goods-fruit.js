@@ -11,12 +11,12 @@ $(document).ready(function(){
 
     //商品编辑框显示/收起
     $('.edit-goods-info').on('click',function(){$(this).parents('.goods-list-item').find('.goods-item-show').addClass('hidden').siblings('.goods-item-edit').removeClass('hidden');});
-    $('.edit-goods-concel').on('click',function(){window.location.reload()});
+    $('.edit-goods-concel').on('click',function(){$(this).parents('.goods-list-item').find('.goods-item-edit').addClass('hidden').siblings('.goods-item-show').removeClass('hidden');});
 
     //商品标签显示
     $('.all-fruit-type a').each(function(){
         var id=$(this).data('id');
-        if(id==fruit_id){$(this).addClass('bg-pink')}
+        if(id==fruit_type_id){$(this).addClass('bg-pink')}
     });
 
     //商品单位切换显示
@@ -286,7 +286,7 @@ $(document).ready(function(){
         });
 });
 var item_fruit_id;
-var fruit_id= $.getUrlParam('id');
+var fruit_type_id= $.getUrlParam('id');
 var edit_price;
 var edit_num;
 var edit_unit_id;
@@ -340,12 +340,13 @@ function unitText(target,n){
 }
 
 function unitChangeShow(target,id,unit_id){
+    var unit_change=target.parents('.item-unit').siblings('.unit-change');
     if(id!=unit_id)
     {
-        target.parents('.item-unit').siblings('.unit-change').removeClass('hidden');
+        unit_change.removeClass('hidden');
     }
     else {
-        target.parents('.item-unit').siblings('.unit-change').addClass('hidden');
+        unit_change.addClass('hidden');
     }
 }
 
@@ -370,7 +371,7 @@ function addEditFruit(target,action){
     var img_url=target.parents('.add-edit-item').find('.imgPreview').attr('data-key');
     var intro=target.parents('.add-edit-item').find('.goodsIntro').val();
     var priority=parseInt(target.parents('.add-edit-item').find('.goodsPriority').val());
-    var fruit_type_id=parseInt(target.parents('.goods-list-item').data('id'));
+    var fruit_item_id=parseInt(target.parents('.goods-list-item').data('id'));
     var charge_types=[];
     var charge_item=target.parents('.add-edit-item').find('.add-goods-charge-list').children('li');
     var price;
@@ -392,22 +393,15 @@ function addEditFruit(target,action){
             };
             charge_types.push(charge);
         }
-    console.log(charge_types);
-    console.log(name+''+saled+''+storage+''+intro);
-    if(!name||!saled||!storage||!intro){return alert('请输入相关商品信息！');}
-    if(!regNumber.test(saled)){return alert('销量只能为数字！');}
-    if(!regNumber.test(storage)){return alert('库存只能为数字！');}
+    if(!name){return alert('请输入商品名称！');}
+    if(storage == null||storage == 'NaN'){return alert('请输入商品库存！');}
+    if(!intro){return alert('请输入商品简介！');}
+    if(saled!=0 && !regNumber.test(saled)){return alert('销量只能为数字！');}
+    if(storage!=0 && !regNumber.test(storage)){return alert('库存只能为数字！');}
     if(!regNumber.test(priority)){return alert('优先级只能为数字！');}
     if(priority<1||priority>5){return alert('优先级只能为1-5！');}
-    if(action=='add_fruit'){
-        if(!price||!num){return alert('请至少完整填写一种计价方式！');}
-        if(!regNumber.test(price)){return alert('价格只能为数字！');}
-        if(!regNumber.test(num)||!regNumber.test(unit_num)){return alert('数量只能为数字！');}
-        if(!img_url){img_url=''}
-        fruit_type_id=fruit_id;
-    }
     var data={
-        fruit_type_id:fruit_type_id,
+        fruit_type_id:parseInt(fruit_type_id),
         name:name,
         saled:saled,
         storage:storage,
@@ -415,15 +409,27 @@ function addEditFruit(target,action){
         tag:tag,
         img_url:img_url,
         intro:intro,
-        priority:priority,
-        charge_types:charge_types
+        priority:priority
     };
-    var args={
-        action:action,
-        data:data
-
-    };
-    if(action=='edit_fruit') args.fruit_id=fruit_id;
+    var args;
+    if(action=='add_fruit'){
+        if(!price||!num){return alert('请至少完整填写一种计价方式！');}
+        if(!regNumber.test(price)){return alert('价格只能为数字！');}
+        if(!regNumber.test(num)||!regNumber.test(unit_num)){return alert('数量只能为数字！');}
+        if(!img_url){data.img_url=''}
+        data.charge_types=charge_types;
+        args={
+            action:action,
+            data:data
+        };
+    }
+    if(action=='edit_fruit'){
+        args={
+            action:action,
+            data:data,
+            fruit_id:fruit_item_id
+        };
+    }
     $.postJson(url,args,
         function(res){
             if(res.success){
@@ -511,7 +517,7 @@ function deleteCharge(target,id){
     var args={
         action:action,
         data:data,
-        fruit_id:id
+        charge_type_id:id
 
     };
     $.postJson(url,args,

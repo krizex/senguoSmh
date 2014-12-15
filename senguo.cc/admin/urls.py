@@ -91,7 +91,7 @@ handlers = [
     (r"/admin/register", handlers.admin.Access, {
         "action":"register"}, "adminRegister"),
 
-    (r"/admin/", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
+    (r"/admin", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
     (r"/admin/order", handlers.admin.Order, {}, "adminOrder"),
 
     (r"/admin/shelf", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
