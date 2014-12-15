@@ -172,7 +172,29 @@ class AdminBaseHandler(_AccountBaseHandler):
     __account_model__ = models.ShopAdmin
     __account_cookie_name__ = "admin_id"
     __wexin_oauth_url_name__ = "adminOauth"
-    
+    current_shop = None
+    def get_current_user(self):
+        if not self.__account_model__ or not self.__account_cookie_name__:
+            raise Exception("overwrite model to support authenticate.")
+        shop_id = self.get_secure_cookie("shop_id") or b'0'
+        shop_id = int(shop_id.decode())
+        if not shop_id:
+            self.current_shop = None
+        else:
+            self.current_shop = models.Shop.get_by_id(self.session, shop_id)
+        if hasattr(self, "_user"):
+            return self._user
+
+        user_id = self.get_secure_cookie(self.__account_cookie_name__) or b'0'
+        user_id = int(user_id.decode())
+        if not user_id:
+            self._user = None
+        else:
+            self._user = self.__account_model__.get_by_id(self.session, user_id)
+            if not self._user:
+                Logger.warn("Suspicious Access", "may be trying to fuck you")
+        return self._user
+
 class StaffBaseHandler(_AccountBaseHandler):
     __account_model__ = models.ShopStaff
     __account_cookie_name__ = "staff_id"
@@ -182,24 +204,24 @@ class CustomerBaseHandler(_AccountBaseHandler):
     __account_model__ = models.Customer
     __account_cookie_name__ = "customer_id"
     __wexin_oauth_url_name__ = "customerOauth"
-    def save_cart(self, charge_type_id,shop_id, inc, menu_type): #inc==0 删,inc==1:减，inc==2：增；type==0：fruit，type==1：menu
+    def save_cart(self, charge_type_id, shop_id, inc, menu_type): #inc==0 删,inc==1:减，inc==2：增；type==0：fruit，type==1：menu
         cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
         if menu_type == 0:
-            self._f("fruits")
+            self._f(cart, "fruits", charge_type_id, inc)
         else:
-            self._f("mgoods")
+            self._f(cart, "mgoods", charge_type_id, inc)
 
-    def _f(self, menu):
+    def _f(self, cart, menu, charge_type_id, inc):
         if getattr(cart, menu):
             d = eval(getattr(cart, menu))
             if inc == 2:
-                if charge_type_id in d.keys: d[charge_type_id] += 1
+                if charge_type_id in d.keys(): d[charge_type_id] += 1
                 else: d[charge_type_id] = 1
             elif inc == 1:
-                if charge_type_id in d.keys and d[charge_type_id] !=0:
+                if charge_type_id in d.keys() and d[charge_type_id] !=0:
                     d[charge_type_id] -= 1
             elif inc == 0:
-                if charge_type_id in d.keys: del d[charge_type_id]
+                if charge_type_id in d.keys(): del d[charge_type_id]
             else:return
             setattr(cart, menu, str(d))#数据库cart.fruits 保存的是字典（计价类型id：数量）
             self.session.add(cart)
@@ -220,24 +242,26 @@ class CustomerBaseHandler(_AccountBaseHandler):
         mgoodses={}
         if cart.fruits:
             d = eval(cart.fruits)
-            charge_types=self.session.query(models.Charge_type).\
-                filter(models.Charge_type.id.in_(d.keys())).all()
+            charge_types=self.session.query(models.ChargeType).\
+                filter(models.ChargeType.id.in_(d.keys())).all()
             charge_types = [x for x in charge_types if x.fruit.active == 1]#过滤掉下架商品
-            list = [x.id for x in charge_types]
-            for key in d.keys():#有些计价方式可能已经被删除，so购物车也要相应删除
-                if key not in list:
+            l = [x.id for x in charge_types]
+            keys = list(d.keys())
+            for key in keys:#有些计价方式可能已经被删除，so购物车也要相应删除
+                if key not in l:
                     del d[key]
             cart.update(session=self.session, fruits=str(d)) #更新购物车
             for charge_type in charge_types:
                 fruits[charge_type.id]={"charge_type": charge_type, "num": d[charge_type.id]}
         if cart.mgoods:
             d = eval(cart.mgoods)
-            mcharge_types=self.session.query(models.mCharge_type).\
-                filter(models.mCharge_type.id.in_(d.keys())).all()
+            mcharge_types=self.session.query(models.MChargeType).\
+                filter(models.MChargeType.id.in_(d.keys())).all()
             mcharge_types = [x for x in mcharge_types if x.mgoods.active == 1]#过滤掉下架商品
-            list = [x.id for x in mcharge_types]
-            for key in d.keys():
-                if key not in list:
+            l = [x.id for x in mcharge_types]
+            keys = list(d.keys())
+            for key in keys:
+                if key not in l:
                     del d[key]
             cart.update(session=self.session, mgoods=str(d))
             for mcharge_type in mcharge_types:
