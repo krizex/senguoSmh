@@ -836,6 +836,7 @@ class Menu(MapBase, _CommonApi):
     name = Column(String(20))
     active = Column(TINYINT, default=1)#0删除
     mgoods = relationship("MGoods", uselist=True)
+    shop = relationship("Shop", uselist=False)
 
 
 #用户自定义的商品
@@ -849,12 +850,13 @@ class MGoods(MapBase, _CommonApi):
     current_saled = Column(Integer, default=0) #售出：未处理的订单数
     saled = Column(Integer) #销量
     storage = Column(Float)
+    unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
     tag = Column(TINYINT, default=TAG.NULL) #新品
     img_url = Column(String(500))
     intro = Column(String(100))
     priority = Column(SMALLINT, default=1)
     mcharge_types = relationship("MChargeType") #支持多种计价方式
-
+    menu = relationship("Menu", uselist=False)
 
 #水果单品的计价类型
 class ChargeType(MapBase, _CommonApi):
@@ -876,7 +878,7 @@ class MChargeType(MapBase):
     mgoods_id = Column(Integer, ForeignKey(MGoods.id), nullable=False)
     price = Column(Float)#单价
     unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
-    number = Column(SMALLINT)#计价数量
+    num = Column(SMALLINT)#计价数量
     unit_num = Column(Float, default=1)#单位换算
     active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 

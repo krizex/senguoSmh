@@ -153,52 +153,64 @@ class Shelf(AdminBaseHandler):
                     fruits.append(fruit)
             return self.render("admin/goods-fruit.html", fruits=fruits, fruit_types=fruit_types, menus=self.current_shop.menus,
                                context=dict(subpage="goods",goodsSubpage="fruit"))
-        elif action == "menu":
+        elif action == "menu":#todo 合法性检查
             try:mgoodses = self.session.query(models.MGoods).filter_by(menu_id=id).all()
             except:return self.send_error(404)
-            return self.render("admin/goods-menu.html", mgoodser=mgoodses, fruit_types=fruit_types, menus=self.current_shop.menus,
+            return self.render("admin/goods-menu.html", mgoodses=mgoodses, fruit_types=fruit_types, menus=self.current_shop.menus,
                                context=dict(subpage="goods",goodsSubpage="menu"))
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("action", "data", "fruit_id?:int", "charge_type_id?:int")
+    @AdminBaseHandler.check_arguments("action", "data", "fruit_id?:int", "charge_type_id?:int",
+                                      "menu_id?:int", "mcharge_type_id?:int")
     def post(self):
         action = self.args["action"]
-        data = self.args["data"]
-        if action in ["add_fruit", "add_menu", "edit_img"]:#shop_id
+        data = eval(self.args["data"])
+        if action in ["add_fruit", "add_mgoods"]:
+            args={}
+            args["name"] = data["name"]
+            args["saled"] = data["saled"]
+            args["storage"] = data["storage"]
+            args["unit"] = data["unit"]
+            args["tag"] = data["tag"]
+            args["img_url"] = data["img_url"]
+            args["intro"] = data["intro"]
+            args["priority"] = data["priority"]
             if action == "add_fruit":
-                fruit = models.Fruit(shop_id=self.current_shop.id,
-                                                fruit_type_id=data["fruit_type_id"],
-                                                name=data["name"],
-                                                saled=data["saled"],
-                                                storage=data["storage"],
-                                                unit=data["unit"],
-                                                tag=data["tag"],
-                                                img_url=data["img_url"],
-                                                intro=data["intro"],
-                                                priority=data["priority"])
+                args["fruit_type_id"] = data["fruit_type_id"]
+                args["shop_id"] = self.current_shop.id
+                fruit = models.Fruit(**args)
                 for charge_type in data["charge_types"]:
                     fruit.charge_types.append(models.ChargeType(price=charge_type["price"],
                                                                 unit=charge_type["unit"],
                                                                 num=charge_type["num"],
                                                                 unit_num=charge_type["unit_num"]))
                 self.session.add(fruit)
-                self.session.commit()
-                return self.send_success()
-            elif action == "add_menu":
-                self.session.add(models.Menu(shop_id=self.current_shop.id,name=data["name"]))
-                self.session.commit()
-            elif action == "edit_img":
-                q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-                token = q.upload_token(BUCKET_GOODS_IMG, expires=120,
-                                       policy={"callbackUrl": "http://zone.senguo.cc/admin/shelf/fruitImgCallback",
-                                               "callbackBody": "key=$(key)&id=%s" % self.current_shop.id, "mimeLimit": "image/*"})
-                return self.send_success(token=token, key=str(time.time())+':'+str(self.current_shop.id))
+            elif action == "add_mgoods":
+                args["menu_id"] = data["fruit_type_id"]
+                mgoods = models.MGoods(**args)
+                for charge_type in data["charge_types"]:
+                    mgoods.mcharge_types.append(models.MChargeType(price=charge_type["price"],
+                                                                unit=charge_type["unit"],
+                                                                num=charge_type["num"],
+                                                                unit_num=charge_type["unit_num"]))
+                    self.session.add(mgoods)
+            self.session.commit()
+            return self.send_success()
+        elif action == "add_menu":
+            self.session.add(models.Menu(shop_id=self.current_shop.id,name=data["name"]))
+            self.session.commit()
+        elif action == "edit_img":
+            q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
+            token = q.upload_token(BUCKET_GOODS_IMG, expires=120,
+                                   policy={"callbackUrl": "http://zone.senguo.cc/admin/shelf/fruitImgCallback",
+                                           "callbackBody": "key=$(key)&id=%s" % self.current_shop.id, "mimeLimit": "image/*"})
+            return self.send_success(token=token, key=str(time.time())+':'+str(self.current_shop.id))
 
         elif action in ["add_charge_type", "edit_active", "edit_fruit"]: #fruit_id
             fruit_id=self.args["fruit_id"]
             try:fruit = self.session.query(models.Fruit).filter_by(id=fruit_id).one()
             except:return self.send_error(404)
-            if fruit.shop.admin != self.current_user:
+            if fruit.shop != self.current_shop:
                 return self.send_error(403)
 
             if action == "add_charge_type":
@@ -230,6 +242,49 @@ class Shelf(AdminBaseHandler):
             try: q = self.session.query(models.ChargeType).filter_by(id=charge_type_id)
             except:return self.send_error(404)
             if action == "del_charge_type":
+                q.delete()
+            else:
+                q.one().update(session=self.session,price=data["price"],
+                         unit=data["unit"],
+                         num=data["num"],
+                         unit_num=data["unit_num"])
+            self.session.commit()
+        elif action in ["add_mcharge_type", "edit_m_active", "edit_mgoods"]: #menu_id
+            menu_id=self.args["menu_id"]
+            try:mgoods = self.session.query(models.MGoods).filter_by(id=menu_id).one()
+            except:return self.send_error(404)
+            if mgoods.menu.shop != self.current_shop:
+                return self.send_error(403)
+
+            if action == "add_mcharge_type":
+                mcharge_type = models.MChargeType(mgoods_id=mgoods.id,
+                                                price=data["price"],
+                                                unit=data["unit"],
+                                                num=data["num"],
+                                                unit_num=data["unit_num"])
+                self.session.add(mcharge_type)
+                self.session.commit()
+                return self.send_success()
+            elif action == "edit_m_active":
+                if mgoods.active == 1:
+                    mgoods.update(session=self.session, active = 2)
+                elif mgoods.active == 2:
+                    mgoods.update(session=self.session, active = 1)
+            elif action == "edit_mgoods":
+                mgoods.update(session=self.session, menu_id = data["menu_id"],
+                                                name = data["name"],
+                                                saled = data["saled"],
+                                                storage = data["storage"],
+                                                unit=data["unit"],
+                                                tag = data["tag"],
+                                                img_url = data["img_url"],
+                                                intro = data["intro"],
+                                                priority=data["priority"])
+        elif action in ["del_mcharge_type", "edit_mcharge_type"]: #mcharge_type_id
+            mcharge_type_id = self.args["mcharge_type_id"]
+            try: q = self.session.query(models.MChargeType).filter_by(id=mcharge_type_id)
+            except:return self.send_error(404)
+            if action == "del_mcharge_type":
                 q.delete()
             else:
                 q.one().update(session=self.session,price=data["price"],

@@ -16,9 +16,9 @@
 <div class="goods-classify">
     <ul class="classify-nav right-nav pull-left">
         <li class="{{fruit_active}} item"><a href="{{reverse_url('adminShelf')}}?action=home&id=0">水果</a></li>
-        <li class="item"><a href="">干果</a></li>
+        <li class="item"><a href="{{reverse_url('adminShelf')}}?action=fruit&id=1000">干果</a></li>
         {% for menu in menus %}
-        <li class="item {{menu_active}}"><a href="{{reverse_url('adminShelf')}}?action=menu&id=0">{{menu.name}}</a></li>
+        <li class="item {{menu_active}}"><a href="{{reverse_url('adminShelf')}}?action=menu&id={{menu.id}}">{{menu.name}}</a></li>
         {% end %}
         <li><a href="javascript:;" id="add-new-goodsType">+</a></li>
     </ul>

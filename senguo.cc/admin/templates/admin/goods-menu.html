@@ -2,7 +2,7 @@
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-goods-fruit.css')}}"/>{% end %}
 {% block goodsLeft %}
 <ul class="goods-list clearfix">
-    {% for goods in mgoodser%}
+    {% for goods in mgoodses%}
     <li class="goods-list-item" data-id="{{goods.id}}">
         <div class="goods-item-show">
             <div class="goods-edit-active shelve-action pull-left" data-active="{{goods.active}}">
@@ -15,7 +15,7 @@
                     {% if goods.img_url%}
                     <img src="http://goodsimg1.qiniudn.com/{{goods.img_url}}?imageView/1/w/100/h/100"/>
                     {% else %}
-                    <img src="/static/design_img/{{goods.fruit_type.code}}.png"/>
+                    <img src="/static/design_img/Gz.png"/>
                     {% end %}
                 </div>
                 <div class="info-box pull-right">
@@ -41,7 +41,7 @@
                     </p>
                     <div class="clearfix"></div>
                     <ul class="charge-list">
-                        {% for charge in goods.charge_types %}
+                        {% for charge in goods.mcharge_types %}
                         <li>计价方式1:
                             <label class="charge-type text-pink set-left10">
                                 {{charge.price}}元/{{charge.num}}
@@ -65,7 +65,7 @@
                     {% if goods.img_url%}
                     <img src="http://goodsimg1.qiniudn.com/{{goods.img_url}}?imageView/1/w/100/h/100" class="imgPreview" data-key="{{goods.img_url}}" data-code="{{goods.fruit_type.code}}"/>
                     {% else %}
-                    <img src="/static/design_img/{{goods.fruit_type.code}}.png" class="imgPreview" data-key="{{goods.img_url}}" data-code="{{goods.fruit_type.code}}"/>
+                    <img src="/static/design_img/Gz.png" class="imgPreview" data-key="{{goods.img_url}}" data-code="Gz"/>
                     {% end %}
                     <div class="upload-box btn-style2 green-color">
                         <input id="edit_file_upload" type="file" name="file_upload" class="uploadImg" />
@@ -116,7 +116,7 @@
                             <a href="javascript:;" class="pull-right add-btn2 editNewCharge">+新增计价方式</a>
                         </p>
                         <ul class="add-charge-list add-goods-charge-list set-width-float">
-                            {% for charge in goods.charge_types %}
+                            {% for charge in goods.mcharge_types %}
                             <li class="set-width-float edit-charge-list" data-id="{{charge.id}}">
                                 <span class="pull-left set-line26 set-right10">
                                     价格：
@@ -349,7 +349,7 @@
 <span class="title">所有水果({{len(fruit_types)}})</span>
 <div class="shelve all-fruit-type">
     {% for fruit in fruit_types%}
-    <a href="{{reverse_url('adminShelf',current_user.shops[0].id)}}?action=fruit&id={{fruit.id}}" data-id="{{fruit.id}}">{{fruit.name}}</a>
+    <a href="{{reverse_url('adminShelf')}}?action=fruit&id={{fruit.id}}" data-id="{{fruit.id}}">{{fruit.name}}</a>
     {% end %}
 </div>
 {% end %}
