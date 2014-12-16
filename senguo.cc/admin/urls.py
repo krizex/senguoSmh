@@ -14,7 +14,7 @@ handlers = [
     (r"/customer/register", handlers.customer.Access, {"action":"register"}, "customerRegister"),
     (r"/customer/", handlers.customer.Home, {}, "customerHome"),
     (r"/customer/market/(\d+)", handlers.customer.Market, {}, "Market"),
-    (r"/customer/cart", handlers.customer.Cart, {}, "customerCart"),
+    (r"/customer/cart/(\d+)", handlers.customer.Cart, {}, "customerCart"),
 
     (r"/", handlers.front.Home,{}, "frontHome"),
     (r"/super/oauth", handlers.superadmin.Access,{
