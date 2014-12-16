@@ -77,7 +77,7 @@ class Market(CustomerBaseHandler):
         for menu in shop.menus:
             mgoods[menu.id] = menu.mgoods.sort(key=lambda f:f.priority)
         return self.render("customer/home.html", context=dict(fruits=fruits, dry_fruits=dry_fruits,
-                                                              mgoods=mgoods, cart_f=cart_f, cart_m=cart_m))
+                                                              mgoods=mgoods, cart_f=cart_f, cart_m=cart_m,subpage='home'))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int", "charge_type_id:int", "menu_type:int")
@@ -87,22 +87,25 @@ class Market(CustomerBaseHandler):
         charge_type_id = self.args["charge_type_id"]
         menu_type = self.args["menu_type"]
         self.save_cart(charge_type_id, shop_id, inc, menu_type)
+        return self.send_success()
 
 
 class Cart(CustomerBaseHandler):
     @tornado.web.authenticated
-    @CustomerBaseHandler.check_arguments("shop_id:int")
-    def get(self):
-        shop_id = self.args["shop_id"]
+    def get(self,shop_id):
         try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
         except:return self.send_error(404)
-        cart = [cart for cart in self.current_user.carts if cart.shop_id==shop_id]
+        cart = [x for x in self.current_user.carts if x.shop_id==shop_id]
+        print(self.current_user.carts)
+        print(cart)
+        print(shop_id)
         if not cart or (cart[0].fruits=="" and cart[0].mgoods==""): #购物车为空
-            return self.redirect("")
+            print("yes")
+            return self.render("notice/cart-empty.html",context=dict(subpage='cart'))
         cart_f, cart_m = self.read_cart(shop_id)
 
         periods = [x for x in shop.config.periods if x.active == 1]
-        return self.render("", cart_f=cart_f, cart_m=cart_m, periods=periods)
+        return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, periods=periods,context=dict(subpage='cart'))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("shop_id:int", "fruits", "mgoods", "pay_type:int", "period_id:int",

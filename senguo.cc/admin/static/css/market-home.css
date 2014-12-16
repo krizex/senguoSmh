@@ -1,22 +1,28 @@
 .goods-list{width:100%;float:left;}
-.goods-list-item{width:100%;float:left;position:relative;margin-bottom:5px;}
-.goods-list-item .goods-img{position:relative;}
+.goods-list-item{width:100%;float:left;position:relative;padding-bottom:2px;}
+.goods-list-item .goods-img{position:relative;box-shadow:1px 1px 1px #bbb;}
 .goods-list-item .goods-img .tag{display:inline-block;position:absolute;width:30px;}
-.goods-list-item .goods-img a{width:100%;}
+.goods-list-item .goods-img a{width:100%;max-height:140px;overflow:hidden;padding:4px 4px 0;}
 .goods-list-item .goods-img img{width:100%;}
 .goods-list-item .p5{padding:5px;!important;}
 .goods-list-item .p0{padding:0px;!important;}
-.goods-list-item .great-number{margin-top:10%;}
-.goods-list-item .charge-style{line-height:30px;clear:both;}
+.goods-list-item .p05{padding:5px 0px 0px 0px;!important;}
+.goods-list-item .pl10{padding-left:10px;!important;}
+.goods-list-item .w22{width:22%;}
+.goods-list-item .w69{width:69%;}
+.goods-list-item .great-number{margin-top:10%;margin-bottom:0;}
+.goods-list-item .charge-style{clear:both;}
 .goods-list-item .charge-style span,a{display:inline-block;}
-.goods-list-item .charge-first{width:100%;float:left;margin-bottom:5px;}
+.goods-list-item .charge-style span{height:30px;line-height:30px;}
+.goods-list-item .charge-first{width:100%;float:left;}
 .goods-list-item .charge-list{}
-.goods-list-item .charge-list li{border-top:1px solid #fff;padding:5px 0;}
-.goods-list-item .minus-plus{display:inline-block;float:left;width:30px;height:30px;line-height:30px;font-weight:bold;font-size:20px;border:1px solid #ccc;text-align:center;}
-.goods-list-item .toggle{display:inline-block;width:30px;height:30px;}
-.goods-list-item .down{background:url("../images/arrow-down.gif") no-repeat 0 5px;}
-.goods-list-item .up{background:url("../images/arrow-up.gif") no-repeat 0 5px;}
-.goods-list-item .number-input{width:40%;height:30px;border:1px solid #ccc;}
+.goods-list-item .charge-list li{border-top:1px solid #fff;padding:2px 0;}
+.goods-list-item .minus-plus{display:inline-block;float:left;width:28px;height:28px;line-height:28px;font-weight:bold;font-size:20px;text-align:center;border:1px solid #ffd279;}
+.goods-list-item .toggle{display:inline-block;width:25px;height:30px;}
+.goods-list-item .disable{border-color:#ccc;color:#ccc;}
+.goods-list-item .down{background:url("../images/arrow-down.gif") no-repeat 0 5px;background-size:1.5em;}
+.goods-list-item .up{background:url("../images/arrow-up.gif") no-repeat 0 5px;background-size:1.5em;}
+.goods-list-item .number-input{width:28%;height:28px;border-top:1px solid #ffd279;border-bottom:1px solid #ffd279;text-align:center;line-height:28px;}
 .goods-list-item .fruit-class{padding:0 10px;min-width:20px;text-align:center;}
 
 .large-img-box .close{font-size:12px;opacity:1;padding:8px;}
@@ -25,3 +31,4 @@
 .large-img-box .modal-footer{padding:0px;}
 
 .back-to-top{width:30px;height:30px;line-height:30px;position:fixed;right:0;bottom:60px;}
+.classify-title{text-indent:14px;padding:5px;}

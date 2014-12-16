@@ -23,7 +23,7 @@ input{border:none;}
 
 .text-center{text-align:center;}
 
-.text-shadow{text-shadow:1px 1px #ccc;}
+.text-shadow{text-shadow:1px 1px #aaa;}
 
 .text-green{color:#44b549;}
 .text-white{color:#fff;}
@@ -47,6 +47,7 @@ input{border:none;}
 .set-inl-blo{display:inline-block;}
 .no-mar-btom{margin-bottom:0px;}
 .set-w100-fle{width:100%;float:left;}
+.set-padding0{padding:0px  !important;}
 
 .font8{font-size:0.8em;}
 .font9{font-size:0.9em;}
@@ -55,3 +56,13 @@ input{border:none;}
 .font14{font-size:1.4em;}
 .font16{font-size:1.6em;}
 .font18{font-size:1.8em;}
+
+.m-b60{margin-bottom:60px;}
+
+.message-box{position:relative;top:30%;overflow:auto;width:95%;max-width:500px;margin:auto;background-color:#fcfcfc;padding:1px;margin-top:-160px;padding-bottom:15px;border-radius:8px;box-shadow:0 0 8px #747474;overflow:hidden}
+.message-box h1{font-size:large}
+.message-box h1 span{color:#fe6565;margin-right:4px;margin-left:-20px;font-size:40px}
+.message-box p{color:#777}
+.message-box p span{color:#fe6565;margin:0 6px}
+.message-box .content{overflow:auto;max-height:300px;text-align:center;margin:30px 0;margin-top:10px;padding:15px}
+.message-box .btn{float:none;margin:5px;width:150px;background:url('../images/btn-bg.jpg') repeat;box-shadow:0 1px 3px #ccc;background-size:auto 100%;color:#fff;border-radius:10px;display:inline-block;text-decoration:none;padding:15px;font-size:large;font-weight:bold}

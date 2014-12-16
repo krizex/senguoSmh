@@ -11,11 +11,11 @@
     </div>
 </div>
 <p class="bg-green text-white no-mar-btom classify-title font16">水果单品</p>
-<ul class="goods-list bg-white">
+<ul class="goods-list bg-white fruit-list">
     {% for fruit in context['fruits'] %}
-    <li class="goods-list-item {{fruit.fruit_type.code}} font16" data-id="{{fruit.id}}">
+    <li class="goods-list-item {{fruit.fruit_type.code}} font14" data-id="{{fruit.id}}">
         <div class="bg set-w100-fle">
-            <div class="goods-img col-sm-3  col-xs-3 p5">
+            <div class="goods-img w22 pull-left">
                 <a href="javascript:;" class="check-lg-img">
                     <span class="tag bg-green text-white text-center tagItem font8" data-id="{{fruit.tag}}">hot</span>
                     {% if fruit.img_url %}
@@ -26,7 +26,7 @@
                 </a>
             </div>
             <input type="hidden" class="fruit_intro" value="{{fruit.intro}}"/>
-            <div class="col-sm-8 col-xs-8 p5">
+            <div class="w69 pull-left p5 pl10">
                 <p>
                     <span class="pull-left color fruit-name">{{fruit.name}}</span>
                     <span class="pull-right text-grey">销量：{{fruit.saled}}</span>
@@ -35,48 +35,43 @@
                     <span class="text-grey">点赞:888</span>
                 </p>
                 <div class="charge-first charge-style color">
-                    <span class="col-sm-5  col-xs-5 text-bgcolor p0">
+                    <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{fruit.charge_types[0].id}}">
                         {{fruit.charge_types[0].price}}元/{{fruit.charge_types[0].num}}
                         <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
-                        {% if fruit.charge_types[0].unit != fruit.unit %}
+                        <!--{% if fruit.charge_types[0].unit != fruit.unit %}
                         =
                         {{fruit.charge_types[0].unit_num}}
                         <span data-id="{{fruit.unit}}" class="chargeUnit"></span>
-                        {% end %}
+                        {% end %}-->
+                    </span>
+                     <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
+                        <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
+                        <input type="text" value="0" class="number-input pull-right text-orange"/>
+                        <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
                     </span>
                     {% if len(fruit.charge_types) >1 %}
-                    <a href="javascript:;" class="pull-left toggle down p0"></a>
-                     <span class="col-sm-6  col-xs-6  pull-right p0">
-                        <a class="minus-plus text-success bg-white pull-right" href="javascript:;">+</a>
-                        <input type="text" value="" class="number-input pull-right"/>
-                        <a class="minus-plus text-success bg-white pull-right" href="javascript:;">-</a>
-                    </span>
+                    <a href="javascript:;" class="pull-right toggle down p0"></a>
                     {% end %}
                 </div>
-                <ul class="charge-list charge-style color" style="display:none">
+                <ul class="charge-list charge-style color set-width-float" style="display:none">
                     {% for charge in fruit.charge_types %}
                     {% if charge.id !=fruit.charge_types[0].id %}
                     <li class="border-color set-w100-fle">
-                        <span class="col-sm-5  col-xs-5 text-bgcolor p0">
+                        <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{charge.id}}">
                             {{charge.price}}元/{{charge.num}}
                             <span data-id="{{charge.unit}}" class="chargeUnit"></span>
-                            {% if charge.unit != fruit.unit %}
-                            =
-                            {{charge.unit_num}}
-                            <span data-id="{{fruit.unit}}" class="chargeUnit"></span>
-                            {% end %}
                         </span>
-                        <span class="col-sm-6  col-xs-6  pull-right p0">
-                            <a class="minus-plus text-success bg-white pull-right" href="javascript:;">+</a>
-                            <input type="text" value="" class="number-input pull-right"/>
-                            <a class="minus-plus text-success bg-white pull-right" href="javascript:;">-</a>
+                        <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
+                            <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
+                            <input type="text" value="0" class="number-input pull-right text-orange"/>
+                            <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
                         </span>
                     </li>
                     {% end %}
                     {% end %}
                 </ul>
             </div>
-            <div class="col-sm-1 col-xs-1 pull-right fruit-class text-white text-shadow icon-bg font11">{{fruit.fruit_type.name}}</div>
+            <div class="col-sm-1 col-xs-1 pull-right fruit-class text-white text-shadow icon-bg font12">{{fruit.fruit_type.name}}</div>
         </div>
     </li>
     {% end %}

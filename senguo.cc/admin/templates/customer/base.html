@@ -15,6 +15,7 @@
     <script>
         window.dataObj = {
             _xsrf: "{{handler.xsrf_token}}"};
+
     </script>
 </head>
 <body>
@@ -22,25 +23,20 @@
         {% set subpage = context.get("subpage", "home")%}
 
         {% set home_active = ""%}
-        {% set community_active = ""%}
-        {% set info_active = ""%}
-        {% set adminHome_active = ""%}
+        {% set cart_active = ""%}
+
 
         {% if subpage == "home"%}
         {% set home_active = "active"%}
-        {% elif subpage == "cummunity"%}
-        {% set community_active = "active"%}
-        {% elif subpage == "infowall"%}
-        {% set info_active = "active"%}
-        {% else %}
-        {% set adminHome_active = "active"%}
+        {% elif subpage == "cart"%}
+        {% set cart_active = "active"%}
         {% end %}
         <nav class="bottom-nav navbar-fixed-bottom bg-green text-white">
             <ul class="row select-list">
-                <li class="col-xs-3 col-sm-3 {{home_active}}"><a href="#" class="text-white">店铺信息</a></li>
-                <li class="col-xs-3 col-sm-3 {{community_active}}"><a href="#" class="text-white">首页</a></li>
-                <li class="col-xs-3 col-sm-3"><a href="#" class="text-white">购物车</a></li>
-                <li class="col-xs-3 col-sm-3 {{adminHome_active}}"><a href="#" class="text-white">个人中心</a></li>
+                <li class="col-xs-3 col-sm-3"><a href="#" class="text-white">店铺信息</a></li>
+                <li class="col-xs-3 col-sm-3 {{home_active}}"><a href="{{reverse_url('Market',1)}}" class="text-white">首页</a></li>
+                <li class="col-xs-3 col-sm-3 {{cart_active}}"><a href="{{reverse_url('customerCart',1)}}" class="text-white">购物车</a></li>
+                <li class="col-xs-3 col-sm-3"><a href="#" class="text-white">个人中心</a></li>
             </ul>
         </nav>
         {% block content %}{% end %}
