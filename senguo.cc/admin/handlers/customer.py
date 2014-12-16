@@ -93,6 +93,7 @@ class Market(CustomerBaseHandler):
 class Cart(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self,shop_id):
+        shop_id=int(shop_id)
         try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
         except:return self.send_error(404)
         cart = [x for x in self.current_user.carts if x.shop_id==shop_id]

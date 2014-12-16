@@ -1,20 +1,81 @@
-{% extends 'base.html '%}
-{% block content%}
-     <ul class="cart-list">
-         <li>
-             <img src="" class="goods-img"/>
-             <div class="goods-info">
+{% extends 'base.html' %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/market-cart.css')}}"/>{% end %}
+{% block content %}
+     <ul class="cart-list set-w100-fle box-shadow bg-white">
+         {% for key in cart_f %}
+         <li class="cart-list-item set-w100-fle">
+             {% if cart_f[key]['charge_type'].fruit.img_url %}
+             <img src="http://goodsimg1.qiniudn.com/{{cart_f[key]['charge_type'].fruit.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15 box-shadow"/>
+             {% else %}
+             <img src="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.png" class="goods-img pull-left w15 box-shadow"/>
+             {% end %}
+             <div class="w10 pull-right delete-btn">
+                 <a href="javascript:;" class="pull-right delete-item"></a>
+             </div>
+             <div class="goods-info pull-right w75 font14 p010">
                 <p>
-                    <span class="name pull-left"></span>
-                    <span class="price pull-right">小记：88元</span>
+                    <span class="name pull-left">{{cart_f[key]['charge_type'].fruit.name}}</span>
+                    <span class="price pull-right">小记：<span class="item_total_price"></span>元</span>
                 </p>
-                 <p>
-                     <span class=""></span>
-                 </p>
+                <div class="charge-item">
+                    <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{cart_f[key]['charge_type'].id}}">
+                        <span class="item_price">{{cart_f[key]['charge_type'].price}}</span>
+                        元/{{cart_f[key]['charge_type'].num}}
+                        <span data-id="{{cart_f[key]['charge_type'].unit}}" class="chargeUnit"></span>
+                    </span>
+                    <span class="col-sm-6  col-xs-6  p0 number-change">
+                        <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
+                        <input type="text" value="{{cart_f[key]['num']}}" class="number-input pull-right text-orange item_number"/>
+                        <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
+                    </span>
+                </div>
              </div>
          </li>
+         {% end %}
      </ul>
-    <div class="">
+     <div class="bg-white bg-width center-block">
+         <div class="clearfix font18">
+             <label class="pull-left">总计：</label>
+             <span class="pull-right"><span id="list_total_price"></span>元</span>
+         </div>
+         <div class="clearfix font16">
+             <ul class="send_type nav-pills  center-block text-center type-choose">
+                 <li data-id="2" class="active"><a href="javascript:;" class="bg-white text-green">按时达</a></li>
+                 <li data-id="1" class=""><a href="javascript:;" class="bg-white text-green">立即送</a></li>
+             </ul>
+         </div>
+         <div class="send-time-choose clearfix center-block bg-grey2 box-style">
+             <div class="bg-white  text-center">
+                 <p>订单将根据您选择的时间段送达</p>
+                 <p>合理选择收货时间段，保证订单能按时送达到您的手上</p>
+             </div>
+             <ul class="send_day nav-pills font16 clearfix text-center type-choose">
+                 <li data-id="1" class="active"><a href="javascript:;" class="bg-white text-green">今天</a></li>
+                 <li data-id="2"><a href="javascript:;" class="bg-white text-green">明天</a></li>
+             </ul>
+             <ul class="send_period list-group font14 type-choose">
+                 {% for period in periods%}
+                 <li data-id="{{period.id}}" class="list-group-item">
+                     <a href="javascript:;" class="text-grey">
+                         <span class="text-grey3">{{period.name}}</span>
+                         <p>{{period.start_time}}-{{period.end_time}}</p>
+                     </a>
+                 </li>
+                 {% end %}
+             </ul>
+         </div>
+         <div class="send-address-choose clearfix center-block bg-grey2 box-style font14">
+             <p>收货人地址</p>
+             <input type="text" placeholder="输入收货人姓名" class="set"/>
+             <input type="text" placeholder="输入收货人详细地址"  class="set-width-float"/>
+             <input type="text" placeholder="输入收货人有效联系电话"  class="set-width-float"/>
+             <button>取消</button>
+             <button>确定</button>
+         </div>
+     </div>
 
-    </div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/market-public.js')}}"></script>
+<script src="{{static_url('js/market-cart.js')}}"></script>
 {% end %}

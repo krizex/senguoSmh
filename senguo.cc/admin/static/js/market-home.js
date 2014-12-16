@@ -1,11 +1,5 @@
 $(document).ready(function(){
     $('goods-list').last().addClass('m-b60');
-    //商品单位转换
-    $('.chargeUnit').each(function(){
-        var $this=$(this);
-        var id=$this.data('id');
-        unitText($this,id);
-    });
     //商品标签转换
     $('.tagItem').each(function(){
         var $this=$(this);
@@ -53,12 +47,12 @@ $(document).ready(function(){
         var $this=$(this);
         var number_input=$this.siblings('.number-input');
         if(num<=0){num=0;$this.addClass('disable');}
-        else if(num>0) goodsNum($this,1,1,number_input);
+        else if(num>0) goodsNum($this,1,0,number_input);
     });
     $('.fruit-list').find('.number-plus').on('click',function(){
         var $this=$(this);
         var number_input=$this.siblings('.number-input');
-        goodsNum($(this),2,1,number_input);
+        goodsNum($(this),2,0,number_input);
     });
 });
 var num=0;
