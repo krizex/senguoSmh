@@ -34,8 +34,8 @@
         <nav class="bottom-nav navbar-fixed-bottom bg-green text-white">
             <ul class="row select-list">
                 <li class="col-xs-3 col-sm-3"><a href="#" class="text-white">店铺信息</a></li>
-                <li class="col-xs-3 col-sm-3 {{home_active}}"><a href="{{reverse_url('Market',1)}}" class="text-white">首页</a></li>
-                <li class="col-xs-3 col-sm-3 {{cart_active}}"><a href="{{reverse_url('customerCart',1)}}" class="text-white">购物车</a></li>
+                <li class="col-xs-3 col-sm-3 {{home_active}} home_href"><a href="{{reverse_url('Market',1)}}" class="text-white" >首页</a></li>
+                <li class="col-xs-3 col-sm-3 {{cart_active}} cart_href"><a href="{{reverse_url('customerCart',1)}}" class="text-white" >购物车</a></li>
                 <li class="col-xs-3 col-sm-3"><a href="#" class="text-white">个人中心</a></li>
             </ul>
         </nav>

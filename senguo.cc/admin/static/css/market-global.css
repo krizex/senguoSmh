@@ -17,6 +17,7 @@ input{border:none;}
 .bg-grey{background:#f9f9f9 !important;}
 .bg-grey2{background:#f2f2f2 !important;}
 .bg-grey3{background:#E7E7E7 !important;}
+.bg-greyc{background:#ccc !important;}
 .bg-pink{background:#ff6563 !important;}
 .bg-red{background:#E01445 !important;}
 .bg-orange{background:#E07D14 !important;}
@@ -60,7 +61,10 @@ input{border:none;}
 .font16{font-size:1.6em;}
 .font18{font-size:1.8em;}
 
+.input-sty{border:1px solid #ccc;background:#f2f2f2;border-radius:2px;}
+
 .m-b60{margin-bottom:60px;}
+.m-r5{margin-right:5px;}
 
 .message-box{position:relative;top:30%;overflow:auto;width:95%;max-width:500px;margin:auto;background-color:#fcfcfc;padding:1px;margin-top:-160px;padding-bottom:15px;border-radius:8px;box-shadow:0 0 8px #747474;overflow:hidden}
 .message-box h1{font-size:large}
@@ -74,4 +78,5 @@ input{border:none;}
 .p0{padding:0px;!important;}
 .p05{padding:5px 0px 0px 0px;!important;}
 .pl10{padding-left:10px;!important;}
+.pr10{padding-right:10px;!important;}
 .p010{padding:0px 10px;!important;}

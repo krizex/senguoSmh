@@ -164,7 +164,7 @@ class Shelf(AdminBaseHandler):
                                       "menu_id?:int", "mcharge_type_id?:int")
     def post(self):
         action = self.args["action"]
-        data = eval(self.args["data"])
+        data = self.args["data"]
         if action in ["add_fruit", "add_mgoods"]:
             args={}
             args["name"] = data["name"]
