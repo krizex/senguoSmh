@@ -2,7 +2,7 @@ from handlers.base import AdminBaseHandler
 import dal.models as models
 import tornado.web
 from settings import *
-import time
+import time, datetime
 from sqlalchemy import desc, and_, or_
 import qiniu
 
@@ -58,7 +58,8 @@ class Access(AdminBaseHandler):
 class Home(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        print("y")
+        if not self.current_user.shops:
+            return self.write("你还没有店铺，请先申请")
         if not self.current_shop: #设置默认店铺
             self.current_shop=self.current_user.shops[0]
             self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
@@ -113,8 +114,34 @@ class Order(AdminBaseHandler):
     def post(self):
         action = self.args["action"]
         data = self.args["data"]
-        if action == "edit_period":
-            pass
+        if action == "add_period":
+            start_time = datetime.time(data["start_hour"],data["start_minute"])
+            end_time = datetime.time(data["end_hour"],data["end_minute"])
+            period = models.Period(config_id=self.current_shop.id,
+                                   name=data["name"],
+                                   start_time=start_time,
+                                   end_time=end_time)
+            self.session.add(period)
+            self.session.commit()
+            return self.send_success(period_id=period.id)
+        elif action == "edit_period":
+            period = next((x for x in self.current_shop.config.periods if x.id == data["period_id"]), None)
+            if not period:
+                return self.send_fail("没找到该时间段", 403)
+            start_time = datetime.time(data["start_hour"], data["start_minute"])
+            end_time = datetime.time(data["end_hour"], data["end_minute"])
+            period.name = data["name"]
+            period.start_time = start_time
+            period.end_time = end_time
+            self.session.commit()
+        elif action == "del_period":
+            try: q = self.session.query(models.Period).filter_by(id=int(data["period_id"]))
+            except:return self.send_error(404)
+            q.delete()
+            self.session.commit()
+        else:
+            return self.send_error(404)
+        return self.send_success()
 
     def _count(self, order_type, order_status, shop_id):
         orders = self.session.query(models.Order).filter_by(shop_id=id).\
@@ -160,11 +187,11 @@ class Shelf(AdminBaseHandler):
                                context=dict(subpage="goods",goodsSubpage="menu"))
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("action", "data", "fruit_id?:int", "charge_type_id?:int",
+    @AdminBaseHandler.check_arguments("action", "data", "id?:int", "charge_type_id?:int",
                                       "menu_id?:int", "mcharge_type_id?:int")
     def post(self):
         action = self.args["action"]
-        data = eval(self.args["data"])
+        data = self.args["data"]
         if action in ["add_fruit", "add_mgoods"]:
             args={}
             args["name"] = data["name"]
@@ -186,7 +213,7 @@ class Shelf(AdminBaseHandler):
                                                                 unit_num=charge_type["unit_num"]))
                 self.session.add(fruit)
             elif action == "add_mgoods":
-                args["menu_id"] = data["fruit_type_id"]
+                args["menu_id"] = data["menu_id"]
                 mgoods = models.MGoods(**args)
                 for charge_type in data["charge_types"]:
                     mgoods.mcharge_types.append(models.MChargeType(price=charge_type["price"],
@@ -207,8 +234,7 @@ class Shelf(AdminBaseHandler):
             return self.send_success(token=token, key=str(time.time())+':'+str(self.current_shop.id))
 
         elif action in ["add_charge_type", "edit_active", "edit_fruit"]: #fruit_id
-            fruit_id=self.args["fruit_id"]
-            try:fruit = self.session.query(models.Fruit).filter_by(id=fruit_id).one()
+            try:fruit = self.session.query(models.Fruit).filter_by(id=self.args["id"]).one()
             except:return self.send_error(404)
             if fruit.shop != self.current_shop:
                 return self.send_error(403)
@@ -228,7 +254,7 @@ class Shelf(AdminBaseHandler):
                 elif fruit.active == 2:
                     fruit.update(session=self.session, active = 1)
             elif action == "edit_fruit":
-                fruit.update(session=self.session,fruit_type_id = data["fruit_type_id"],
+                fruit.update(session=self.session,
                                                 name = data["name"],
                                                 saled = data["saled"],
                                                 storage = data["storage"],
@@ -250,8 +276,7 @@ class Shelf(AdminBaseHandler):
                          unit_num=data["unit_num"])
             self.session.commit()
         elif action in ["add_mcharge_type", "edit_m_active", "edit_mgoods"]: #menu_id
-            menu_id=self.args["menu_id"]
-            try:mgoods = self.session.query(models.MGoods).filter_by(id=menu_id).one()
+            try:mgoods = self.session.query(models.MGoods).filter_by(id=self.args["id"]).one()
             except:return self.send_error(404)
             if mgoods.menu.shop != self.current_shop:
                 return self.send_error(403)
@@ -271,7 +296,7 @@ class Shelf(AdminBaseHandler):
                 elif mgoods.active == 2:
                     mgoods.update(session=self.session, active = 1)
             elif action == "edit_mgoods":
-                mgoods.update(session=self.session, menu_id = data["menu_id"],
+                mgoods.update(session=self.session,
                                                 name = data["name"],
                                                 saled = data["saled"],
                                                 storage = data["storage"],

@@ -62,7 +62,7 @@ class Home(CustomerBaseHandler):
     @CustomerBaseHandler.check_arguments("action", "data")
     def post(self):
         action = self.args["action"]
-        data = eval(self.args["data"])
+        data = self.args["data"]
         if action == "add_address":
             address = models.Address(customer_id=self.current_user.id,
                                      phone=data["phone"],
@@ -75,10 +75,15 @@ class Home(CustomerBaseHandler):
             address = next((x for x in self.current_user.addresses if x.id == int(data["address_id"])), None)
             if not address:
                 return self.send_fail("修改地址失败", 403)
-            address.update(session=self.session,phone=data["phone"],
+            address.update(session=self.session, phone=data["phone"],
                            receiver=data["receiver"],
                            address_text=data["address_text"])
-            return self.send_success()
+        elif action == "del_address":
+            try: q = self.session.query(models.Address).filter_by(id=int(data["address_id"]))
+            except:return self.send_error(404)
+            q.delete()
+            self.session.commit()
+        return self.send_success()
 
 class Market(CustomerBaseHandler):
     @tornado.web.authenticated

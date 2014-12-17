@@ -83,7 +83,15 @@ $(document).ready(function(){
         defalutChangeUnit(storage_unit_id);
 
      });
-    $('.add-goods-sure').on('click',function(){addEditFruit($(this),'add_fruit')});
+    $('.add-goods-sure').on('click',function(){
+        var menu_type= $.getUrlParam('action');
+        if(menu_type=='fruit'){
+            addEditFruit($(this),'add_fruit')
+        }
+        else if (menu_type == 'menu'){
+            addEditFruit($(this),'add_mgoods')
+        }
+    });
 
     //商品添加-计价方式单位换算
     $('body').on('click','.goodsUnitList a',function(){
@@ -129,8 +137,13 @@ $(document).ready(function(){
     //***商品编辑***
     $('.edit-goods-sure').each(function(){
         $(this).on('click',function(){
-
-            addEditFruit($(this),'edit_fruit');
+        var menu_type= $.getUrlParam('action');
+        if(menu_type=='fruit'){
+            addEditFruit($(this),'edit_fruit')
+        }
+        else if (menu_type == 'menu'){
+            addEditFruit($(this),'edit_mgoods')
+        }
         })
     });
 
@@ -401,7 +414,7 @@ function addEditFruit(target,action){
     if(!regNumber.test(priority)){return alert('优先级只能为数字！');}
     if(priority<1||priority>5){return alert('优先级只能为1-5！');}
     var data={
-        fruit_type_id:parseInt(fruit_type_id),
+        //fruit_type_id:parseInt(fruit_type_id),
         name:name,
         saled:saled,
         storage:storage,
@@ -411,8 +424,14 @@ function addEditFruit(target,action){
         intro:intro,
         priority:priority
     };
-    var args;
     if(action=='add_fruit'){
+        data.fruit_type_id=parseInt(fruit_type_id)
+    }
+    else if(action=='add_mgoods'){
+        data.menu_id=parseInt(fruit_type_id)
+    }
+    var args;
+    if(action=='add_fruit'||action=='add_mgoods'){
         if(!price||!num){return alert('请至少完整填写一种计价方式！');}
         if(!regNumber.test(price)){return alert('价格只能为数字！');}
         if(!regNumber.test(num)||!regNumber.test(unit_num)){return alert('数量只能为数字！');}
@@ -423,11 +442,11 @@ function addEditFruit(target,action){
             data:data
         };
     }
-    if(action=='edit_fruit'){
+    if(action=='edit_fruit'||action=='edit_mgoods'){
         args={
             action:action,
             data:data,
-            fruit_id:fruit_item_id
+            id:fruit_item_id
         };
     }
     $.postJson(url,args,
@@ -441,12 +460,18 @@ function addEditFruit(target,action){
 
 function editActive(id){
     var url="/admin/shelf";
-    var action='edit_active';
     var data={};
+    var menu_type= $.getUrlParam('action');
+        if(menu_type=='fruit'){
+            action='edit_active'
+        }
+        else if (menu_type == 'menu'){
+            action='edit_m_active'
+        }
     var args={
         action:action,
         data:data,
-        fruit_id:id
+        id:id //fruit_id||mgoods_id
 
     };
     $.postJson(url,args,
