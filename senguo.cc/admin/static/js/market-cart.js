@@ -209,8 +209,7 @@ function addressAddEdit(action,name,address,phone){
 }
 
 function orderSubmit(){
-    var url=post_cart;
-    console.log(shop_id);
+    var url='';
     var fruits={};
     var mgoods={};
     var type=$('#sendType').find('.active').data('id');
@@ -224,21 +223,18 @@ function orderSubmit(){
     {
         var id=fruit_item.eq(i).find('.charge-type').data('id');
         var num=fruit_item.eq(i).find('.number-input').val();
-        var arr=[id,num];
-        fruits[i]=arr;
+        fruits[id]=parseInt(num);
     }
     var menu_item=$('.menu_item');
     for(var i=0;i<menu_item.length;i++)
     {
         var id=menu_item.eq(i).find('.charge-type').data('id');
         var num=menu_item.eq(i).find('.number-input').val();
-        var arr=[id,num];
-        mgoods[i]=arr;
+        mgoods[id]=parseInt(num);
     }
     if(!message) message='';
     if(!period_id) {return alert('请选择送货时段！')}
     var args={
-        shop_id:parseInt(shop_id),
         fruits:fruits,
         mgoods:mgoods,
         type:type,
