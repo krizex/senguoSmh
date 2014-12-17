@@ -15,7 +15,7 @@
     {% for fruit in context['fruits'] %}
     <li class="goods-list-item {{fruit.fruit_type.code}} font14" data-id="{{fruit.id}}">
         <div class="bg set-w100-fle">
-            <div class="goods-img w22 pull-left">
+            <div class="goods-img w22 pull-left box-shadow">
                 <a href="javascript:;" class="check-lg-img">
                     <span class="tag bg-green text-white text-center tagItem font8" data-id="{{fruit.tag}}">hot</span>
                     {% if fruit.img_url %}
@@ -96,6 +96,5 @@
 </div>
 {% end %}
 {% block bottom %}
-<script src="{{static_url('js/market.public.js')}}"></script>
-<script src="{{static_url('js/market.home.js')}}"></script>
+<script src="{{static_url('js/market-home.js')}}"></script>
 {% end %}

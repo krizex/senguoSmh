@@ -1,3 +1,12 @@
+$(document).ready(function(){
+    //商品单位转换
+    $('.chargeUnit').each(function(){
+        var $this=$(this);
+        var id=$this.data('id');
+        unitText($this,id);
+    });
+});
+
 function unitText(target,n){
     switch (n){
         case 1:target.text('个');break;
