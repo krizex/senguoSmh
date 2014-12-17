@@ -13,18 +13,40 @@ $(document).ready(function(){
     //商品价格总计
     list_total_price.text(totalPrice(price_list));
     //商品数量操作
-    $('.cart-list').find('.number-minus').on('click',function(){
+    $('.fruit_item').find('.number-minus').on('click',function(){
         var $this=$(this);
         var number_input=$this.siblings('.number-input');
         var number=number_input.val();
         if(number<=0){number=0;$this.addClass('disable');}
         else if(number>0) goodsNum($this,1,0,number_input,number);
     });
-    $('.cart-list').find('.number-plus').on('click',function(){
+    $('.fruit_item').find('.number-plus').on('click',function(){
         var $this=$(this);
         var number_input=$this.siblings('.number-input');
         var number=number_input.val();
         goodsNum($(this),2,0,number_input,number);
+    });
+    $('.menu_item').find('.number-minus').on('click',function(){
+        var $this=$(this);
+        var number_input=$this.siblings('.number-input');
+        var number=number_input.val();
+        if(number<=0){number=0;$this.addClass('disable');}
+        else if(number>0) goodsNum($this,1,0,number_input,number);
+    });
+    $('.menu_item').find('.number-plus').on('click',function(){
+        var $this=$(this);
+        var number_input=$this.siblings('.number-input');
+        var number=number_input.val();
+        goodsNum($(this),2,0,number_input,number);
+    });
+    //商品删除
+    $('.fruit_item').find('.delete-item').on('click',function() {
+        var $this=$(this);
+        itemDelete($this,0);
+    });
+    $('.menu_item').find('.delete-item').on('click',function() {
+        var $this=$(this);
+        itemDelete($this,1);
     });
     //类型切换增加active
     $('.type-choose li').each(function(){
@@ -152,6 +174,30 @@ function goodsNum(target,action,menu_type,item,num){
         function(){alert('网络错误')})
 }
 
+function itemDelete(target,menu_type) {
+    var url = market_href + shop_id;
+    var action = 0;
+    var parent=target.parents('.cart-list-item');
+    var charge_type_id =parent .find('.charge-type').data('id');
+    var price=parent.find('.item_price').text();
+    var args = {
+        action: action,
+        charge_type_id: charge_type_id,
+        menu_type: menu_type
+    };
+    $.postJson(url, args, function (res) {
+            if (res.success) {
+                parent.remove();
+                var t_price=parseInt(list_total_price.text());
+                t_price-=parseInt(price);
+                list_total_price.text(t_price);
+            }
+        },
+        function () {
+            alert('网络错误')
+        });
+}
+
 function addressAddEdit(action,name,address,phone){
     var url=home_href;
     var action=action;
@@ -248,6 +294,7 @@ function orderSubmit(){
         if (res.success) {
 
         }
+        else return alert(res.error_text);
     },
     function(){alert('网络错误')});
 }

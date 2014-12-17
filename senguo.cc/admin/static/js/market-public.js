@@ -11,7 +11,6 @@ $(document).ready(function(){
 var market_href='/customer/market/';
 var cart_href='/customer/cart/';
 var home_href='/customer';
-var post_cart='/customer/cart';
 
 var link=window.location.pathname;
 var shop_id= $.getNum(link);
