@@ -131,10 +131,10 @@ class Cart(CustomerBaseHandler):
         return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, periods=periods,context=dict(subpage='cart'))
 
     @tornado.web.authenticated
-    @CustomerBaseHandler.check_arguments("shop_id:int", "fruits", "mgoods", "pay_type:int", "period_id:int",
+    @CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
                                          "address_id:int", "message:str", "type:int",
                                          "today:int")
-    def post(self):#提交订单
+    def post(self,shop_id):#提交订单
         fruits = self.args["fruits"]
         mgoods = self.args["mgoods"]
         unit = {1:"个", 2:"斤", 3:"份"}
@@ -179,7 +179,7 @@ class Cart(CustomerBaseHandler):
         if not address:
             return self.send_fail("没找到地址", 404)
         order = models.Order(customer_id=self.current_user.id,
-                             shop_id=self.args["shop_id"],
+                             shop_id=int(shop_id),
                              phone=address.phone,
                              receiver=address.receiver,
                              address_text = address.address_text,
