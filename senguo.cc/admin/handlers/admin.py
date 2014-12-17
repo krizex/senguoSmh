@@ -187,8 +187,7 @@ class Shelf(AdminBaseHandler):
                                context=dict(subpage="goods",goodsSubpage="menu"))
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("action", "data", "id?:int", "charge_type_id?:int",
-                                      "menu_id?:int", "mcharge_type_id?:int")
+    @AdminBaseHandler.check_arguments("action", "data", "id?:int", "charge_type_id?:int")
     def post(self):
         action = self.args["action"]
         data = self.args["data"]
@@ -240,7 +239,7 @@ class Shelf(AdminBaseHandler):
                 return self.send_error(403)
 
             if action == "add_charge_type":
-                charge_type = models.ChargeType(fruit_id=fruit_id,
+                charge_type = models.ChargeType(fruit_id=fruit.id,
                                                 price=data["price"],
                                                 unit=data["unit"],
                                                 num=data["num"],
@@ -306,7 +305,7 @@ class Shelf(AdminBaseHandler):
                                                 intro = data["intro"],
                                                 priority=data["priority"])
         elif action in ["del_mcharge_type", "edit_mcharge_type"]: #mcharge_type_id
-            mcharge_type_id = self.args["mcharge_type_id"]
+            mcharge_type_id = self.args["charge_type_id"]
             try: q = self.session.query(models.MChargeType).filter_by(id=mcharge_type_id)
             except:return self.send_error(404)
             if action == "del_mcharge_type":

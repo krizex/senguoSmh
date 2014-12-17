@@ -462,12 +462,12 @@ function editActive(id){
     var url="/admin/shelf";
     var data={};
     var menu_type= $.getUrlParam('action');
-        if(menu_type=='fruit'){
-            action='edit_active'
-        }
-        else if (menu_type == 'menu'){
-            action='edit_m_active'
-        }
+    if(menu_type=='fruit'){
+        action='edit_active'
+    }
+    else if (menu_type == 'menu'){
+        action='edit_m_active'
+    }
     var args={
         action:action,
         data:data,
@@ -495,35 +495,29 @@ function addEditCharge(target,id,action,item){
     if(!regNumber.test(price)){return alert('价格只能为数字！');}
     if(!unit_num){unit_num=1}
     if(!regNumber.test(num)||!regNumber.test(unit_num)){return alert('数量只能为数字！');}
-    var data;
-    var args;
-    if(action=='add_charge_type'){
-            data={
+    var data={
             price:price,
             unit:units,
             num:num,
             unit_num:unit_num
         };
+    var args;
+    var menu_type= $.getUrlParam('action');
+    if(action=='add_charge_type'){
+        if(menu_type=='menu'){action='add_mcharge_type'}
         args={
         action:action,
         data:data,
-        fruit_id:id
-
-    };
+        id:id  //fruit_id 或 mgoods_id
+        };
     }
     else if(action=='edit_charge_type'){
-        data={
-            price:price,
-            unit:units,
-            num:num,
-            unit_num:unit_num
-        };
+        if(menu_type=='menu'){action='edit_mcharge_type'}
         args={
         action:action,
         data:data,
         charge_type_id:id
-
-    };
+        };
     }
     $.postJson(url,args,
         function(res){
@@ -538,6 +532,7 @@ function addEditCharge(target,id,action,item){
 function deleteCharge(target,id){
     var url="/admin/shelf";
     var action='del_charge_type';
+    if($.getUrlParam('action')=='menu'){action='del_mcharge_type'}
     var data={};
     var args={
         action:action,
