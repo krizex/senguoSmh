@@ -5,7 +5,16 @@ $(document).ready(function(){
         var id=$this.data('id');
         unitText($this,id);
     });
+    $('.home_href').attr({'href':market_href+shop_id});
+    $('.cart_href').attr({'href':cart_href+shop_id});
 });
+var market_href='/customer/market/';
+var cart_href='/customer/cart/';
+var home_href='/customer';
+var post_cart='/customer/cart';
+
+var link=window.location.pathname;
+var shop_id= $.getNum(link);
 
 function unitText(target,n){
     switch (n){

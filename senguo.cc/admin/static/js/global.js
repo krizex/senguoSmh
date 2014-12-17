@@ -19,3 +19,9 @@ $.postJson = function(url, args,successCall, failCall, alwaysCall){
     });
     req.always(alwaysCall);
 };
+(function ($) {
+    $.getNum=function(text) {
+        var value = text.replace(/[^0-9]/ig, "");
+        return value;
+    }
+})(jQuery);

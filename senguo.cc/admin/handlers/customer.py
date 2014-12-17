@@ -136,8 +136,7 @@ class Cart(CustomerBaseHandler):
                                          "today:int")
     def post(self):#提交订单
         fruits = self.args["fruits"]
-        mgoods = \
-            self.args["mgoods"]
+        mgoods = self.args["mgoods"]
         unit = {1:"个", 2:"斤", 3:"份"}
         f_d={}
         m_d={}

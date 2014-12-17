@@ -43,20 +43,23 @@ $(document).ready(function(){
 
     $('#backTop').on('click',function(){$(document).scrollTop(0)});
 
+    //商品数量操作
     $('.fruit-list').find('.number-minus').on('click',function(){
         var $this=$(this);
         var number_input=$this.siblings('.number-input');
-        if(num<=0){num=0;$this.addClass('disable');}
-        else if(num>0) goodsNum($this,1,0,number_input);
+        var number=number_input.val();
+        if(number<=0){number=0;$this.addClass('disable');}
+        else if(number>0) goodsNum($this,1,0,number_input,number);
     });
     $('.fruit-list').find('.number-plus').on('click',function(){
         var $this=$(this);
         var number_input=$this.siblings('.number-input');
-        goodsNum($(this),2,0,number_input);
+        var number=number_input.val();
+        goodsNum($(this),2,0,number_input,number);
     });
+
 });
-var num=0;
-function goodsNum(target,action,menu_type,item){
+function goodsNum(target,action,menu_type,item,num){
     var url='';
     var action=action;
     var charge_type_id=target.parents('.number-change').siblings('.charge-type').data('id');
@@ -66,22 +69,27 @@ function goodsNum(target,action,menu_type,item){
         menu_type:menu_type
     };
     $.postJson(url,args,function(res){
-        if(res.success)
-        {
-            if(action==2)
+            if(res.success)
             {
-                num++;
-                item.val(num);
-                console.log(num);
+                if(action==2)
+                {
+
+                    num++;
+                    item.val(num);
+                    console.log(item.val());
+                }
+                else if(action==1)
+                {
+                    var val=parseInt(item.val());
+                    if(val>0)
+                    {
+                        num--;
+                        item.val(num);
+                        console.log(item.val());
+                    }
+                }
             }
-            else if(action==1&&num>0)
-            {
-                num--;
-                item.val(num);
-                console.log(num);
-            }
-        }
-        else alert(res.error_text);
-    },
-    function(){alert('网络错误')})
+            else alert(res.error_text);
+        },
+        function(){alert('网络错误')})
 }
