@@ -12,7 +12,7 @@ handlers = [
     (r"/customer/oauth", handlers.customer.Access, {"action":"oauth"}, "customerOauth"),
     (r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
     (r"/customer/register", handlers.customer.Access, {"action":"register"}, "customerRegister"),
-    (r"/customer/", handlers.customer.Home, {}, "customerHome"),
+    (r"/customer", handlers.customer.Home, {}, "customerHome"),
     (r"/customer/market/(\d+)", handlers.customer.Market, {}, "Market"),
     (r"/customer/cart/(\d+)", handlers.customer.Cart, {}, "customerCart"),
 

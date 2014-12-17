@@ -58,6 +58,27 @@ class Home(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self):
         return self.render("", context=dict())
+    @tornado.web.authenticated
+    @CustomerBaseHandler.check_arguments("action", "data")
+    def post(self):
+        action = self.args["action"]
+        data = eval(self.args["data"])
+        if action == "add_address":
+            address = models.Address(customer_id=self.current_user.id,
+                                     phone=data["phone"],
+                                     receiver=data["receiver"],
+                                     address_text=data["address_text"])
+            self.session.add(address)
+            self.session.commit()
+            return self.send_success(address_id=address.id)
+        elif action == "edit_address":
+            address = next((x for x in self.current_user.addresses if x.id == int(data["address_id"])), None)
+            if not address:
+                return self.send_fail("修改地址失败", 403)
+            address.update(session=self.session,phone=data["phone"],
+                           receiver=data["receiver"],
+                           address_text=data["address_text"])
+            return self.send_success()
 
 class Market(CustomerBaseHandler):
     @tornado.web.authenticated
@@ -93,14 +114,11 @@ class Market(CustomerBaseHandler):
 class Cart(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self,shop_id):
+        shop_id = int(shop_id)
         try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
         except:return self.send_error(404)
         cart = [x for x in self.current_user.carts if x.shop_id==shop_id]
-        print(self.current_user.carts)
-        print(cart)
-        print(shop_id)
         if not cart or (cart[0].fruits=="" and cart[0].mgoods==""): #购物车为空
-            print("yes")
             return self.render("notice/cart-empty.html",context=dict(subpage='cart'))
         cart_f, cart_m = self.read_cart(shop_id)
 
@@ -109,7 +127,7 @@ class Cart(CustomerBaseHandler):
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("shop_id:int", "fruits", "mgoods", "pay_type:int", "period_id:int",
-                                         "phone:str", "receiver:str", "address_text:str", "message:str", "type:int",
+                                         "address_id:int", "message:str", "type:int",
                                          "today:int")
     def post(self):#提交订单
         fruits = self.args["fruits"]
@@ -153,11 +171,14 @@ class Cart(CustomerBaseHandler):
             except:return self.send_fail("找不到时间段")
             start_time = period.start_time
             end_time = period.end_time
+        address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
+        if not address:
+            return self.send_fail("没找到地址", 404)
         order = models.Order(customer_id=self.current_user.id,
                              shop_id=self.args["shop_id"],
-                             phone=self.args["phone"],
-                             receiver=self.args["receiver"],
-                             address_text = self.args["address_text"],
+                             phone=address.phone,
+                             receiver=address.receiver,
+                             address_text = address.address_text,
                              message=self.args["message"],
                              type=self.args["type"],
                              totalPrice=totalPrice,
