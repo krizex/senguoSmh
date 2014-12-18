@@ -198,8 +198,9 @@ class Cart(CustomerBaseHandler):
         self.session.add(order)
         self.session.commit()
 
-        self.render("notice/order-success.html")
         return self.send_success()
 
-
+class Notice(CustomerBaseHandler):
+    def get(self,shop_id):
+        return self.render("notice/order-success.html",context=dict(subpage='cart'))
 

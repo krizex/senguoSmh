@@ -84,6 +84,10 @@ $(document).ready(function(){
     });
     //订单提交
     $('#submitOrder').on('click',function(){orderSubmit();});
+
+    $('#sendNow').on('click',function(){$('.send_period').hide();$('.send_day').hide();});
+    $('#sendInTime').on('click',function(){$('.send_period').show();$('.send_day').show();});
+
 });
 var price_list=[];
 var total_price=0;
@@ -182,6 +186,7 @@ function itemDelete(target,menu_type) {
                 console.log(cart_list.find(cart_item).length);
                 if(cart_list.find(cart_item).length==1) window.location.reload();
             }
+            else return alert(res.error_text);
         },
         function () {
             alert('网络错误')
@@ -270,7 +275,8 @@ function orderSubmit(){
         mgoods[id]=parseInt(num);
     }
     if(!message) message='';
-    if(!period_id) {return alert('请选择送货时段！')}
+    if(type==2&&!period_id) {return alert('请选择送货时段！')}
+    if(type==1){period_id=0}
     var args={
         fruits:fruits,
         mgoods:mgoods,
@@ -283,7 +289,7 @@ function orderSubmit(){
     };
     $.postJson(url,args,function(res) {
         if (res.success) {
-
+            window.location.href=success_href+shop_id;
         }
         else return alert(res.error_text);
     },

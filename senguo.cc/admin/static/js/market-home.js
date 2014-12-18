@@ -53,6 +53,8 @@ $(document).ready(function(){
     });
 
 });
+link=window.location.pathname;
+shop_id= $.getNum(link);
 function goodsNum(target,action){
     var url='';
     var action=action;

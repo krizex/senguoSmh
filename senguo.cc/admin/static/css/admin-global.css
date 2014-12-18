@@ -139,11 +139,11 @@ img{border:none;}
 .modal-concel-btn{display:inline-block;width:100px;height:34px;background:#fff;color:#666;border:1px solid #ccc;border-radius:1px;text-align:center;line-height:34px;margin-left:10px;}
 .modal-footer .btn-box{width:300px;margin:0 auto;}
 
-.text-green{color:#44b549;}
+.text-green{color:#44b549 !important;}
 .text-white{color:#fff;}
 .text-grey{color:#ccc;}
 .text-grey2{color:#666;}
-.text-pink{color:#ff6666;}
+.text-pink{color:#ff6666 !important;}
 .text-red{color:#E01445;}
 .text-orange{color:#E07D14;}
 .bg-green{background:#44b549;}
