@@ -5,6 +5,7 @@ $(document).ready(function(){
         var id=$this.data('id');
         unitText($this,id);
     });
+    $('#backTop').on('click',function(){$(document).scrollTop(0)});
     $('.home_href').attr({'href':market_href+shop_id});
     $('.cart_href').attr({'href':cart_href+shop_id});
 });

@@ -41,28 +41,29 @@ $(document).ready(function(){
         })
     });
 
-    $('#backTop').on('click',function(){$(document).scrollTop(0)});
-
     //商品数量操作
-    $('.fruit-list').find('.number-minus').on('click',function(){
+    $('.goods-list').find('.number-minus').on('click',function(){
         var $this=$(this);
-        var number_input=$this.siblings('.number-input');
-        var number=number_input.val();
-        if(number<=0){number=0;$this.addClass('disable');}
-        else if(number>0) goodsNum($this,1,0,number_input,number);
+        goodsNum($this,1);
+
     });
-    $('.fruit-list').find('.number-plus').on('click',function(){
+    $('.goods-list').find('.number-plus').on('click',function(){
         var $this=$(this);
-        var number_input=$this.siblings('.number-input');
-        var number=number_input.val();
-        goodsNum($(this),2,0,number_input,number);
+        goodsNum($this,2);
     });
 
 });
-function goodsNum(target,action,menu_type,item,num){
+function goodsNum(target,action){
     var url='';
     var action=action;
+    var menu_type;
     var charge_type_id=target.parents('.number-change').siblings('.charge-type').data('id');
+    var parent=target.parents('.goods-list');
+    var item=target.siblings('.number-input');
+    var num=item.val();
+    if(parent.hasClass('fruit-list')){menu_type=0}
+    else if(parent.hasClass('menu-list')){menu_type=1}
+    if(action==1&&num<=0) {num=0;target.addClass('disable');}
     var args={
         action:action,
         charge_type_id:charge_type_id,

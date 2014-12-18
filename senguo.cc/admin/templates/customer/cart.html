@@ -34,24 +34,24 @@
          {% end %}
          {% for key in cart_m %}
          <li class="cart-list-item set-w100-fle menu_item">
-             {% if cart_m[key]['charge_type'].fruit.img_url %}
-             <img src="http://goodsimg1.qiniudn.com/{{cart_m[key]['charge_type'].fruit.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15 box-shadow"/>
+             {% if cart_m[key]['mcharge_type'].mgoods.img_url %}
+             <img src="http://goodsimg1.qiniudn.com/{{cart_m[key]['mcharge_type'].mgoods.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15 box-shadow"/>
              {% else %}
-             <img src="/static/design_img/{{cart_m[key]['charge_type'].fruit.fruit_type.code}}.png" class="goods-img pull-left w15 box-shadow"/>
+             <img src="/static/design_img/TDSG.png" class="goods-img pull-left w15 box-shadow"/>
              {% end %}
              <div class="w10 pull-right delete-btn">
                  <a href="javascript:;" class="pull-right delete-item"></a>
              </div>
              <div class="goods-info pull-right w75 font14 p010">
                  <p>
-                     <span class="name pull-left">{{cart_m[key]['charge_type'].fruit.name}}</span>
+                     <span class="name pull-left">{{cart_m[key]['mcharge_type'].mgoods.name}}</span>
                      <span class="price pull-right">小记：<span class="item_total_price"></span>元</span>
                  </p>
                  <div class="charge-item">
-                    <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{cart_m[key]['charge_type'].id}}">
-                        <span class="item_price">{{cart_m[key]['charge_type'].price}}</span>
-                        元/{{cart_m[key]['charge_type'].num}}
-                        <span data-id="{{cart_m[key]['charge_type'].unit}}" class="chargeUnit"></span>
+                    <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{cart_m[key]['mcharge_type'].id}}">
+                        <span class="item_price">{{cart_m[key]['mcharge_type'].price}}</span>
+                        元/{{cart_m[key]['mcharge_type'].num}}
+                        <span data-id="{{cart_m[key]['mcharge_type'].unit}}" class="chargeUnit"></span>
                     </span>
                     <span class="col-sm-6  col-xs-6  p0 number-change">
                         <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
@@ -124,7 +124,7 @@
              <p class="clearfix">
                  <span class="pull-left">支付方式</span>
                  <a href="#" class="text-green pull-right">充值</a>
-                 <span class="pull-right pr10">账户余额：888元</span>
+                 <span class="pull-right pr10">账户余额：{{current_user.balance}}元</span>
              </p>
              <ul id="payType" class="pay_type list-group type-choose">
                  <li data-id="1" class="active list-group-item">

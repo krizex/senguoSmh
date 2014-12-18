@@ -101,8 +101,9 @@ class Market(CustomerBaseHandler):
         dry_fruits.sort(key=lambda f:f.priority, reverse=True)#干果
         mgoods={}
         for menu in shop.menus:
-            mgoods[menu.id] = menu.mgoods.sort(key=lambda f:f.priority)
-        return self.render("customer/home.html", context=dict(fruits=fruits, dry_fruits=dry_fruits,
+            menu.mgoods.sort(key=lambda f:f.priority)
+            mgoods[menu.id] =  menu.mgoods
+        return self.render("customer/home.html", context=dict(fruits=fruits, dry_fruits=dry_fruits,menus=shop.menus,
                                                               mgoods=mgoods, cart_f=cart_f, cart_m=cart_m,subpage='home'))
 
     @tornado.web.authenticated

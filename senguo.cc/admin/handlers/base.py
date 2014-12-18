@@ -276,7 +276,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
                     del d[key]
             cart.update(session=self.session, mgoods=str(d))
             for mcharge_type in mcharge_types:
-                mgoods[mcharge_type.id]={"mcharge_type": mcharge_type, "num": d[mcharge_type.id]}
+                mgoodses[mcharge_type.id]={"mcharge_type": mcharge_type, "num": d[mcharge_type.id]}
         return fruits, mgoodses
 
 class WxOauth2:
