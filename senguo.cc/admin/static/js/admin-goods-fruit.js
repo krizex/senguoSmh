@@ -462,6 +462,7 @@ function editActive(id){
     var url="/admin/shelf";
     var data={};
     var menu_type= $.getUrlParam('action');
+    var action;
     if(menu_type=='fruit'){
         action='edit_active'
     }
