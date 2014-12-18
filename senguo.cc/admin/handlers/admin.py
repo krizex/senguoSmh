@@ -82,31 +82,23 @@ class Order(AdminBaseHandler):
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("order_type:int", "order_status:int")
-    def get(self, id): #shop_id
-        try:shop = self.session.query(models.Shop).filter_by(id=id).one()
-        except:return self.send_error(404)
-        if shop.admin != self.current_user:
-            return self.send_error(403)#必须做权限检查：可能这个shop并不属于current_user
+    #order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
+    def get(self):
         order_type = self.args["order_type"]
         order_status = self.args["order_status"]
-        orders = self.session.query(models.Order).filter_by(shop_id=id).\
-            filter(and_(models.Order.type == order_type, models.Order.status != models.STATUS.DELETED))
-        if order_status < 10:
-            orders = orders.filter(models.Order.status == order_status).all()
-        elif order_status == 10:#all
-            orders = orders.all()
-        elif order_status == 11:#unfinish
-            orders = orders.filter(models.Order.status.in_(
-                [models.STATUS.JH, models.STATUS.SH1, models.STATUS.SH2])).all()
+        if order_status == 1:
+            orders = [x for x in self.current_shop.orders if x.type == order_type and x.status == 1]
+        elif order_status == 5:#all
+            orders = [x for x in self.current_shop.orders if x.type == order_type and x.status != 0]
+        elif order_status == 2:#unfinish
+            orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in [2, 3, 4]]
+        elif order_status == 3:
+            orders = [x for x in self.current_shop.orders if x.type == order_type and x.status == 5]
+        elif order_status == 4:
+            pass
         else:
             return self.send.send_error(404)
-        count = {"on_time_unhandle":_count(models.ORDER_TYPE.ON_TIME, models.ORDER_STATUS.ORDERED, id),
-                 "on_time_unfinish":_count(models.ORDER_TYPE.ON_TIME, 11, id),
-                 "on_time_finish":_count(models.ORDER_TYPE.ON_TIME, models.ORDER_STATUS.FINISH, id),
-                 "now_unhandle":_count(models.ORDER_TYPE.NOW, models.ORDER_STATUS.ORDERED, id),
-                 "now_unfinish":_count(models.ORDER_TYPE.NOW, 11, id),
-                 "now_finish":_count(models.ORDER_TYPE.NOW, models.ORDER_STATUS.FINISH, id)}
-        return self.render("", orders=orders, count=count)
+        return self.render("", orders=orders, count=self._count())
 
 
     @tornado.web.authenticated
@@ -143,17 +135,21 @@ class Order(AdminBaseHandler):
             return self.send_error(404)
         return self.send_success()
 
-    def _count(self, order_type, order_status, shop_id):
-        orders = self.session.query(models.Order).filter_by(shop_id=id).\
-            filter(and_(models.Order.type == self._order_type,models.Order.status != models.STATUS.DELETED))
-        count = 0
-        if self._order_status < 10:
-            count = orders.filter(models.Order.status == self._order_status).count()
-        elif self._order_status == 10:#all
-            count = orders.count()
-        elif self._order_status == 11:#unfinish
-            count = orders.filter(models.Order.status.in_(
-                [models.STATUS.JH, models.STATUS.SH1, models.STATUS.SH2])).count()
+    def _count(self):
+        count = {10:0, 11:0, 12:0, 13:0, 14:0, 15:0,
+                 20:0, 21:0, 22:0, 23:0, 24:0, 25:0}
+        for order in self.current_shop.orders:
+            count[order.type*10+5] += 1
+            if order.status == 0:
+                count[order.type*10] += 1
+            if order.status == 1:
+                count[order.type*10+1] += 1
+            if order.status in [2, 3, 4]:
+                count[order.type*10+2] += 1
+            if order.status == 5:
+                count[order.type*10+3] += 1
+            if order.status == 6:
+                count[order.type*10+4] += 1
         return count
 
 
@@ -192,6 +188,8 @@ class Shelf(AdminBaseHandler):
         action = self.args["action"]
         data = self.args["data"]
         if action in ["add_fruit", "add_mgoods"]:
+            if not (data["charge_types"] and data["charge_types"]):#如果没有计价方式、打开market时会有异常
+                return self.send_fail("请至少添加一种计价方式")
             args={}
             args["name"] = data["name"]
             args["saled"] = data["saled"]

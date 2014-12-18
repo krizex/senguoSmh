@@ -113,7 +113,8 @@ class Market(CustomerBaseHandler):
         inc = self.args["action"]
         charge_type_id = self.args["charge_type_id"]
         menu_type = self.args["menu_type"]
-        self.save_cart(charge_type_id, shop_id, inc, menu_type)
+        if self.save_cart(charge_type_id, shop_id, inc, menu_type):
+            self.render("notice/cart-empty.html",context=dict(subpage='cart'))
         return self.send_success()
 
 
@@ -123,8 +124,8 @@ class Cart(CustomerBaseHandler):
         shop_id = int(shop_id)
         try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
         except:return self.send_error(404)
-        cart = [x for x in self.current_user.carts if x.shop_id==shop_id]
-        if not cart or (cart[0].fruits=="" and cart[0].mgoods==""): #购物车为空
+        cart = next((x for x in self.current_user.carts if x.shop_id==shop_id), None)
+        if not cart or (not (eval(cart.fruits) or eval(cart.mgoods))): #购物车为空
             return self.render("notice/cart-empty.html",context=dict(subpage='cart'))
         cart_f, cart_m = self.read_cart(shop_id)
 
@@ -196,6 +197,8 @@ class Cart(CustomerBaseHandler):
                              mgoods=str(m_d))
         self.session.add(order)
         self.session.commit()
+
+        self.render("notice/order-success.html")
         return self.send_success()
 
 

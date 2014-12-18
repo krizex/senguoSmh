@@ -218,28 +218,29 @@ class CustomerBaseHandler(_AccountBaseHandler):
             self._f(cart, "fruits", charge_type_id, inc)
         else:
             self._f(cart, "mgoods", charge_type_id, inc)
+        if not (eval(cart.fruits) or eval(cart.mgoods)):#购物车空了
+            return True
+        return False
 
     def _f(self, cart, menu, charge_type_id, inc):
-        if getattr(cart, menu):
-            d = eval(getattr(cart, menu))
-            if inc == 2:
+        d = eval(getattr(cart, menu))
+        if d:
+            if inc == 2:#加1
                 if charge_type_id in d.keys(): d[charge_type_id] += 1
                 else: d[charge_type_id] = 1
-            elif inc == 1:
-                if charge_type_id in d.keys() and d[charge_type_id] !=0:
+            elif inc == 1:#减1
+                if charge_type_id in d.keys():
+                    if d[charge_type_id] == 1:del d[charge_type_id]
                     d[charge_type_id] -= 1
-            elif inc == 0:
+            elif inc == 0:#删除
                 if charge_type_id in d.keys(): del d[charge_type_id]
             else:return
             setattr(cart, menu, str(d))#数据库cart.fruits 保存的是字典（计价类型id：数量）
-            self.session.add(cart)
-            self.session.commit()
         else:
             if inc == 2:
                 d={charge_type_id:1}
                 setattr(cart, menu, str(d))
-                self.session.add(cart)
-                self.session.commit()
+        self.session.commit()
 
     def read_cart(self, shop_id):
         """
