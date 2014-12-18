@@ -97,6 +97,7 @@ var receiveAddress=$('#receiveAddress');
 var receivePhone=$('#receivePhone');
 var addressList=$('.address_list');
 var cart_item=$('.cart-list-item');
+var cart_list=$('.cart-list');
 
 function totalPrice(target){
     for(var i=0;i<target.length;i++)
@@ -167,9 +168,7 @@ function itemDelete(target,menu_type) {
     var parent=target.parents('.cart-list-item');
     var charge_type_id =parent .find('.charge-type').data('id');
     var price=parent.find('.item_total_price').text();
-    console.log(price);
     var t_price=parseInt(list_total_price.text());
-    console.log(t_price);
     var args = {
         action: action,
         charge_type_id: charge_type_id,
@@ -180,6 +179,8 @@ function itemDelete(target,menu_type) {
                 t_price-=parseInt(price);
                 list_total_price.text(t_price);
                 parent.remove();
+                console.log(cart_list.find(cart_item).length);
+                if(cart_list.find(cart_item).length==1) window.location.reload();
             }
         },
         function () {
@@ -239,6 +240,7 @@ function addressAddEdit(action,name,address,phone){
             }
 
         }
+        else return alert(res.error_text);
     },
     function(){alert('网络错误')});
 }

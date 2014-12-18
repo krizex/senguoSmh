@@ -98,7 +98,7 @@ class Order(AdminBaseHandler):
             pass
         else:
             return self.send.send_error(404)
-        return self.render("", orders=orders, count=self._count())
+        return self.render("admin/orders.html", orders=orders, order_type=order_type,count=self._count(),context=dict(subpage='order'))
 
 
     @tornado.web.authenticated

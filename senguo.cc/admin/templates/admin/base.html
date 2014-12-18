@@ -76,10 +76,13 @@
 <!--backstage-header-end-->
 {% set subpage = context.get("subpage")%}
 {% set goods_active = ""%}
+{% set order_active = ""%}
 {% set shop_set_active = ""%}
 
 {% if subpage == 'goods' %}
     {% set goods_active = 'active' %}
+{% elif subpage == 'order' %}
+    {% set order_active = 'active' %}
 {% elif subpage == 'shop_set' %}
     {% set shop_set_active = 'active' %}
 {% end %}
@@ -99,7 +102,7 @@
             </li>
             <li>
                 <span class="manage"><i></i>管理</span>
-                <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1">订单管理</a>
+                <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1" class="{{order_active}}">订单管理</a>
                 <a href="{{reverse_url('adminShelf')}}?action=home&id=0" class="{{goods_active}}">商品管理</a>
                 <a href="admin-users.html">用户管理</a>
                 <a href="admin-staff.html">员工管理</a>
