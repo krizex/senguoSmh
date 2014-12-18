@@ -196,6 +196,8 @@ class Cart(CustomerBaseHandler):
                              mgoods=str(m_d))
         self.session.add(order)
         self.session.commit()
+
+        self.render("notice/order-success.html")
         return self.send_success()
 
 

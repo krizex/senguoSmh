@@ -82,21 +82,15 @@ handlers = [
 
     # (r"/super/notice/", handlers.superadmin.Notice),
     
-    (r"/admin/login", handlers.admin.Access,{
-        "action":"login"}, "adminLogin"),
-    (r"/admin/oauth", handlers.admin.Access, {
-        "action":"oauth"}, "adminOauth"),
-    (r"/admin/logout", handlers.admin.Access, {
-        "action":"logout"}, "adminLogout"),
-    (r"/admin/register", handlers.admin.Access, {
-        "action":"register"}, "adminRegister"),
-
+    (r"/admin/login", handlers.admin.Access,{"action":"login"}, "adminLogin"),
+    (r"/admin/oauth", handlers.admin.Access, {"action":"oauth"}, "adminOauth"),
+    (r"/admin/logout", handlers.admin.Access, {"action":"logout"}, "adminLogout"),
+    (r"/admin/register", handlers.admin.Access, {"action":"register"}, "adminRegister"),
     (r"/admin", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
     (r"/admin/order", handlers.admin.Order, {}, "adminOrder"),
-
     (r"/admin/shelf", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
-    (r"/admin/shelf/fruitImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_fruit_img"}, "adminShelfFruitImgCallback"),
-
+    (r"/admin/shelf/fruitImgCallback", handlers.fruitzone.QiniuCallback,
+     {"action": "edit_fruit_img"}, "adminShelfFruitImgCallback"),
     (r"/admin/staff/(\d+)", handlers.admin.Staff, {}, "adminStaffJH"),
     (r"/admin/config", handlers.admin.Config, {}, "adminConfig"),
 

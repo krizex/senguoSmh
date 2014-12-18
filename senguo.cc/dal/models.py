@@ -374,6 +374,7 @@ class Shop(MapBase, _CommonApi):
     wx_nickname = Column(String(128))
     wx_qr_code = Column(String(1024))
 
+    orders = relationship("Order")
     staffs = relationship("ShopStaff")
     fruits = relationship("Fruit", uselist=True)
     menus = relationship("Menu", uselist=True)
