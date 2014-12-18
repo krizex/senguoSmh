@@ -192,6 +192,8 @@ class Shelf(AdminBaseHandler):
         action = self.args["action"]
         data = self.args["data"]
         if action in ["add_fruit", "add_mgoods"]:
+            if not (data["charge_types"] and data["charge_types"]):#如果没有计价方式、打开market时会有异常
+                return self.send_fail("请至少添加一种计价方式")
             args={}
             args["name"] = data["name"]
             args["saled"] = data["saled"]

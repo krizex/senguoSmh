@@ -902,8 +902,8 @@ class Cart(MapBase, _CommonApi):
     __tablename__ = "cart"
     id = Column(Integer, ForeignKey(Customer.id), primary_key=True, nullable=False)
     shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
-    fruits = Column(String(100))
-    mgoods = Column(String(100))
+    fruits = Column(String(100), default='{}')
+    mgoods = Column(String(100), default='{}')
 
 #设置
 class Config(MapBase, _CommonApi):
