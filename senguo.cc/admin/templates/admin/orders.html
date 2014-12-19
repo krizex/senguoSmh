@@ -377,14 +377,14 @@
                     </li>
                 </ul>
                 {% else %}
-                <div class="w360 center-block">
+                <div class="w450 center-block">
                     <span class="tit pull-left">起送金额：</span>
                     <div class="send-money">
                         <input class="pull-left money" type="number" value="0"/>
                         <a href="#" class="edit set-inl-blo pull-left"></a>
                     </div>
                     <p class="tit">配送时间：</p>
-                    <div class="send-time w360 center-block">
+                    <div class="send-time w450 center-block">
                         <ul class="time-list">
                             {% for period in handler.current_shop.config.periods%}
                             <li class="time-list-item set-width-float time-period" data-id="{{period.id}}">
@@ -392,18 +392,56 @@
                                     <a class="work-mode" href="javascript:;">已启用</a>
                                     <a class="stop-mode" href="javascript:;" style="display:none">未启用</a>
                                 </div>
-                                <span class="time1 text-grey3">{{period.start_time}}</span>
-                                <span class="to">至</span>
-                                <span class="time2 text-grey3">{{period.end_time}}</span>
-                                <span class="time">{{period.name}}</span>
+                                <span class="time1 text-black hidden">{{period.start_time}}</span>
+                                <div>
+                                    <div class="input-group-btn pull-left">
+                                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                            <span class="time start-hour">{{period.start_time.hour}}</span>
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu choose-list hour-list" role="menu">
+                                        </ul>
+                                    </div>
+                                    <span class="pull-left tit">：</span>
+                                    <div class="input-group-btn pull-left">
+                                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                            <span class="time start-minute">{{period.start_time.minute}}</span>
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu choose-list minute-list" role="menu">
+                                        </ul>
+                                    </div>
+                                </div>
+                                <span class="pull-left to">至</span>
+                                <span class="time2 text-black hidden">{{period.end_time}}</span>
+                                <div class="input-group-btn pull-left">
+                                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                        <span class="time end-hour">{{period.end_time.hour}}</span>
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu choose-list hour-list" role="menu">
+                                    </ul>
+                                </div>
+                                <span class="pull-left tit">：</span>
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                        <span class="time end-minute">{{period.end_time.minute}}</span>
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu choose-list minute-list" role="menu">
+                                    </ul>
+                                </div>
+                                <span class="time hidden">{{period.name}}</span>
+                                <input type="text" class="period-name  pull-left text-center" value="{{period.name}}"/>
                                 <a href="javascript:;" class="delete pull-right set-inl-blo delete-time-period"></a>
-                                <a href="javascript:;" class="edit pull-right set-inl-blo edit-time-period"></a>
+                                <a href="javascript:;" class="edit pull-right set-inl-blo to-edit hidden"></a>
+                                <a href="javascript:;" class="sure-btn pull-right edit-time-period">&nbsp;</a>
                             </li>
                             {% end %}
                         </ul>
                     </div>
                 </div>
-                <p class="w360 center-block"><a href="javascript:;" class="add-new-time text-green font14">+ 添加新时段</a></p>
+                <p class="w450 center-block"><a href="javascript:;" class="add-new-time text-green font14">+ 添加新时段</a></p>
                 <div class="add-period  bg-grey2 set-width-float" style="display:none">
                     <div class="w450 center-block">
                         <div class="input-group-btn pull-left">
@@ -446,7 +484,7 @@
                         <a href="javascript:;" class="concel-btn pull-left concel-time-period">&nbsp;</a>
                     </div>
                 </div>
-                <div class="w360 center-block clearfix">
+                <div class="w450 center-block clearfix">
                     <div class="end-time clearfix">
                         <span class="pull-left tit">下单截止时间：</span>
                         <div class="input-group-btn pull-left">

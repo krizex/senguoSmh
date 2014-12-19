@@ -34,6 +34,11 @@ $(document).ready(function(){
         var $this=$(this);
         deletePeriod($this);
     });
+    //按时达配送时段编辑
+    $('.edit-time-period').on('click',function(){
+        var $this=$(this);
+        addEditPeriod($this,'edit_period');
+    });
 });
 var link='/admin/order';
 var orderType=$.getUrlParam('order_type');
@@ -51,8 +56,14 @@ function addEditPeriod(target,action){
     var url=link;
     var action=action;
     var parent;
-    if(action=='add_period'){parent=target.parents('.add-period')}
-    else if(action=='edit_period'){parent=target.parents('.time-period')}
+    var period_id;
+    if(action=='add_period'){
+        parent=target.parents('.add-period')
+    }
+    else if(action=='edit_period'){
+        parent=target.parents('.time-period');
+        period_id=target.parents('.time-period').data('id');
+    }
     var start_hour=parseInt(parent.find('.start-hour').text());
     var start_minute=parseInt(parent.find('.start-minute').text());
     var end_hour=parseInt(parent.find('.end-hour').text());
@@ -65,6 +76,7 @@ function addEditPeriod(target,action){
         end_minute:end_minute,
         name:name
     };
+    if(action=='edit_period') data.period_id=period_id;
     var args={
         action:action,
         data:data

@@ -148,6 +148,9 @@ img{border:none;}
 .text-pink{color:#ff6666 !important;}
 .text-red{color:#E01445;}
 .text-orange{color:#E07D14;}
+.text-black{color:#000;}
+.text-center{text-align:center;}
+
 .bg-green{background:#44b549;}
 .bg-pink{background:#ff6563 !important;}
 .bg-red{background:#E01445;}
