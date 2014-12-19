@@ -96,13 +96,10 @@ class Market(CustomerBaseHandler):
             self.session.commit()
         cart_f, cart_m = self.read_cart(shop_id)
         fruits = [x for x in shop.fruits if x.fruit_type_id != 1000 and x.active == 1]
-        fruits.sort(key=lambda f:f.priority, reverse=True)#水果
         dry_fruits = [x for x in shop.fruits if x.fruit_type_id == 1000 and x.active == 1]
-        dry_fruits.sort(key=lambda f:f.priority, reverse=True)#干果
         mgoods={}
         for menu in shop.menus:
-            menu.mgoods.sort(key=lambda f:f.priority)
-            mgoods[menu.id] =  menu.mgoods
+            mgoods[menu.id] = menu.mgoods
         return self.render("customer/home.html", context=dict(fruits=fruits, dry_fruits=dry_fruits,menus=shop.menus,
                                                               mgoods=mgoods, cart_f=cart_f, cart_m=cart_m,subpage='home'))
 
@@ -195,9 +192,13 @@ class Cart(CustomerBaseHandler):
                              end_time=end_time,
                              fruits=str(f_d),
                              mgoods=str(m_d))
-        self.session.add(order)
-        self.session.commit()
-
+        try:
+            self.session.add(order)
+            self.session.commit()
+        except:
+            return self.send_fail("订单提交失败")
+        cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
+        cart.update(session=self.session, fruits='{}', mgoods='{}')#清空购物车
         return self.send_success()
 
 class Notice(CustomerBaseHandler):

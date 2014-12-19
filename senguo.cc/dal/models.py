@@ -376,7 +376,7 @@ class Shop(MapBase, _CommonApi):
 
     orders = relationship("Order")
     staffs = relationship("ShopStaff")
-    fruits = relationship("Fruit", uselist=True)
+    fruits = relationship("Fruit", order_by="desc(Fruit.priority)")
     menus = relationship("Menu", uselist=True)
     config = relationship("Config", uselist=False)
     def __repr__(self):
@@ -500,7 +500,7 @@ class ShopStaff(MapBase, _AccountApi):
 
     address = Column(String(100))
     num = Column(Integer) #编号
-    work = Column(TINYINT, default=0) #工作类型：0:JH,1:SH1,2:SH2
+    work = Column(TINYINT, default=0) #工作类型：1:JH,2:SH1,3:SH2
     address1 = Column(String(100)) #责任区域一级地址（可多选，空格隔开）
     address2 = Column(String(200)) #二级
     remark = Column(String(500))
@@ -836,7 +836,7 @@ class Menu(MapBase, _CommonApi):
 
     name = Column(String(20))
     active = Column(TINYINT, default=1)#0删除
-    mgoods = relationship("MGoods", uselist=True)
+    mgoods = relationship("MGoods", order_by="desc(MGoods.priority)")
     shop = relationship("Shop", uselist=False)
 
 

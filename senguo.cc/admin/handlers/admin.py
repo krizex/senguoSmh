@@ -76,9 +76,7 @@ class Home(AdminBaseHandler):
         return self.send_success()
 
 class Order(AdminBaseHandler):
-    # def initialize(self, order_type, order_status):
-    #     self._order_type = order_type
-    #     self._order_status = order_status
+    # todo: 当订单越来越多时，current_shop.orders 会不会越来越占内存？
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("order_type:int", "order_status:int")
@@ -86,6 +84,7 @@ class Order(AdminBaseHandler):
     def get(self):
         order_type = self.args["order_type"]
         order_status = self.args["order_status"]
+        orders = []
         if order_status == 1:
             orders = [x for x in self.current_shop.orders if x.type == order_type and x.status == 1]
         elif order_status == 5:#all
@@ -131,6 +130,31 @@ class Order(AdminBaseHandler):
             except:return self.send_error(404)
             q.delete()
             self.session.commit()
+        elif action == "edit_ontime_active":
+            if self.current_shop.config.ontime_on:
+                self.current_shop.config.ontime_on = False
+            else:self.current_shop.config.ontime_on = True
+            self.session.commit()
+        elif action == "edit_now_active":
+            if self.current_shop.config.now:
+                self.current_shop.config.now = False
+            else:self.current_shop.config.now = True
+            self.session.commit()
+        if action in ["edit_remark", "edit_SH1", "edit_status", "edit_totalPrice"]:
+            order = next((x for x in self.current_shop.orders if x.id==int(data["order_id"])), None)
+            if not order:
+                return self.send_fail("没找到该订单")
+            if action == "edit_remark":
+                order.update(session=self.session, remark=data["remark"])
+            elif action == "edit_JH":
+                SH1 = next((x for x in self.current_shop.staffs if x.id == int(data["staff_id"])), None)
+                if not SH1 or SH1.work != 2:
+                    return self.send_fail("没找到该送货员")
+                order.update(session=self.session, SH1_id=int(data["staff_id"]))
+            elif action == "edit_status":
+                order.update(session=self.session, status=data["status"])
+            elif action == "edit_total_price":
+                order.update(session=self.session, totalPrice=data["totalPrice"])
         else:
             return self.send_error(404)
         return self.send_success()
