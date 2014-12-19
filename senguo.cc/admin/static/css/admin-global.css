@@ -151,11 +151,11 @@ img{border:none;}
 .text-black{color:#000;}
 .text-center{text-align:center;}
 
-.bg-green{background:#44b549;}
+.bg-green{background:#44b549 !important;;}
 .bg-pink{background:#ff6563 !important;}
 .bg-red{background:#E01445;}
 .bg-orange{background:#E07D14;}
-.bg-grey{background:#ccc;}
+.bg-grey{background:#ccc !important;}
 .bg-grey2{background:#f2f2f2;}
 .bg-grey3{background:#f3f3f3;}
 .bg-grey9{background:#999;}

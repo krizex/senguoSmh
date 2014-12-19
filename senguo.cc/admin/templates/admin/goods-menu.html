@@ -63,7 +63,7 @@
             <div class="goods-info pull-left">
                 <div class="upload-img goods-left pull-left">
                     {% if goods.img_url%}
-                    <img src="http://goodsimg1.qiniudn.com/{{goods.img_url}}?imageView/1/w/100/h/100" class="imgPreview" data-key="{{goods.img_url}}" data-code="{{goods.fruit_type.code}}"/>
+                    <img src="http://goodsimg1.qiniudn.com/{{goods.img_url}}?imageView/1/w/100/h/100" class="imgPreview" data-key="{{goods.img_url}}"/>
                     {% else %}
                     <img src="/static/design_img/Gz.png" class="imgPreview" data-key="{{goods.img_url}}" data-code="Gz"/>
                     {% end %}

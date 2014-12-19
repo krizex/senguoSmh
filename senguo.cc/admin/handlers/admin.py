@@ -130,7 +130,7 @@ class Order(AdminBaseHandler):
             except:return self.send_error(404)
             q.delete()
             self.session.commit()
-        elif action == "edit_ontime_active":
+        elif action == "edit_ontime_on":
             self.current_shop.config.ontime_on = not self.current_shop.config.ontime_on
             self.session.commit()
         elif action == "edit_min_charge_on_time":#按时达起送金额
@@ -139,8 +139,8 @@ class Order(AdminBaseHandler):
         elif action == "edit_stop_range":#下单截止时间
             self.current_shop.config.stop_range = data["stop_range"]
             self.session.commit()
-        elif action == "edit_now_active":
-            self.current_shop.config.now = not self.current_shop.config.now
+        elif action == "edit_now_on":
+            self.current_shop.config.now_on = not self.current_shop.config.now_on
             self.session.commit()
         elif action == "edit_now_config":
             start_time = datetime.time(data["start_hour"], data["start_minute"])

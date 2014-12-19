@@ -150,7 +150,7 @@ class Cart(CustomerBaseHandler):
                                      "charge":"%d元/%d%s" % (charge_type.price, charge_type.num, unit[charge_type.unit])}
         if mgoods:
             mcharge_types = self.session.query(models.MChargeType).\
-                filter(models.ChargeType.id.in_(mgoods.keys())).all()
+                filter(models.MChargeType.id.in_(mgoods.keys())).all()
             for mcharge_type in mcharge_types:
                 totalPrice+=mcharge_type.price*mgoods[str(mcharge_type.id)]
                 mcharge_type.mgoods.storage -= mgoods[str(mcharge_type.id)]*mcharge_type.unit_num #更新库存

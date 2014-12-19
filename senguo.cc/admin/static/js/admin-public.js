@@ -26,4 +26,8 @@ function shopChnage(shop_id){
     })
 }
 
+function Int(target){
+    target=parseInt(target);
+    return target;
+}
 
