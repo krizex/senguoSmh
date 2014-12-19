@@ -308,9 +308,10 @@ var change_num;
 var storage_unit_id;
 var storage_unit;
 var charge_type_id;
+var link='/admin/shelf';
 
 function addGoodsType(target){
-    var url='/admin/shelf';
+    var url=link;
     var action='add_menu';
     var add_box=target.parents('.add-goodsType-box');
     var name=add_box.find('#type-name').val();
@@ -373,7 +374,7 @@ function popUnitChangeShow(target,id,unit_id){
 }
 
 function addEditFruit(target,action){
-    var url="/admin/shelf";
+    var url=link;
     var action=action;
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
     var name=target.parents('.add-edit-item').find('.goodsName').val();
@@ -459,7 +460,7 @@ function addEditFruit(target,action){
 }
 
 function editActive(id){
-    var url="/admin/shelf";
+    var url=link;
     var data={};
     var menu_type= $.getUrlParam('action');
     var action;
@@ -484,7 +485,7 @@ function editActive(id){
 }
 
 function addEditCharge(target,id,action,item){
-    var url="/admin/shelf";
+    var url=link;
     var action=action;
     var charge_item=target.parents(item).find('.add-goods-charge-list');
     var price=parseInt(charge_item.find('.charge-price').val());
@@ -531,7 +532,7 @@ function addEditCharge(target,id,action,item){
 }
 
 function deleteCharge(target,id){
-    var url="/admin/shelf";
+    var url=link;
     var action='del_charge_type';
     if($.getUrlParam('action')=='menu'){action='del_mcharge_type'}
     var data={};
