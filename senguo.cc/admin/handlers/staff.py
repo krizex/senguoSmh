@@ -77,3 +77,32 @@ class order(StaffBaseHandler):
         return self.render("", orders=orders)
 
     #@tornado.web.authenticated
+class Hire(StaffBaseHandler):
+    @tornado.web.authenticated
+    def get(self, config_id):
+        try:config = self.session.query(models.Config).filter_by(id=config_id).one()
+        except:return self.send_error(404)
+        if not config.hire_on:
+            return self.render("")#招募已结束
+        return self.render("", config=config)
+    @tornado.web.authenticated
+    @StaffBaseHandler.check_arguments("action", "data")
+    def post(self, shop_id):
+        action = self.args["action"]
+        data = eval(self.args["data"])
+        if action == "add_hire_form":
+            shop = self.session.query(models.Shop).filter_by(id=shop_id)
+            if not shop:
+                return self.send_error(404)
+            hireform = models.HireForm(staff_id=self.current_user.id, shop_id=shop_id,
+                                intro=data["intro"], advantage=data["advantage"])
+            self.current_user.address = data["address"]
+            self.session.add(hireform)
+            self.session.commit()
+            self.current_user.accountinfo.update(session=self.session, name=data["name"], phone=data["phone"],
+                                                 email=data["email"], headimgurl=STAFF_IMG_HOST+data["headimgurl"])
+        elif action == "add_img":
+            q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
+            token = q.upload_token(BUCKET_STAFF_IMG, expires=120)
+            return self.send_success(token=token, key=str(time.time()))
+        return self.send_success()

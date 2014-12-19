@@ -131,26 +131,33 @@ class Order(AdminBaseHandler):
             q.delete()
             self.session.commit()
         elif action == "edit_ontime_active":
-            if self.current_shop.config.ontime_on:
-                self.current_shop.config.ontime_on = False
-            else:self.current_shop.config.ontime_on = True
+            self.current_shop.config.ontime_on = not self.current_shop.config.ontime_on
+            self.session.commit()
+        elif action == "edit_min_charge_on_time":#按时达起送金额
+            self.current_shop.config.min_charge_on_time = data["min_charge_on_time"]
+            self.session.commit()
+        elif action == "edit_stop_range":#下单截止时间
+            self.current_shop.config.stop_range = data["stop_range"]
             self.session.commit()
         elif action == "edit_now_active":
-            if self.current_shop.config.now:
-                self.current_shop.config.now = False
-            else:self.current_shop.config.now = True
+            self.current_shop.config.now = not self.current_shop.config.now
             self.session.commit()
-        if action in ["edit_remark", "edit_SH1", "edit_status", "edit_totalPrice"]:
+        elif action == "edit_now_config":
+            start_time = datetime.time(data["start_hour"], data["start_minute"])
+            end_time = datetime.time(data["end_hour"], data["end_minute"])
+            self.current_shop.config.update(session=self.session,min_charge_now=data["min_charge_now"],
+                                            start_time_now=start_time, end_time_now=end_time)
+        elif action in ["edit_remark", "edit_SH1", "edit_status", "edit_totalPrice"]:
             order = next((x for x in self.current_shop.orders if x.id==int(data["order_id"])), None)
             if not order:
                 return self.send_fail("没找到该订单")
             if action == "edit_remark":
                 order.update(session=self.session, remark=data["remark"])
             elif action == "edit_JH":
-                SH1 = next((x for x in self.current_shop.staffs if x.id == int(data["staff_id"])), None)
-                if not SH1 or SH1.work != 2:
+                SH2 = next((x for x in self.current_shop.staffs if x.id == int(data["staff_id"])), None)
+                if not SH2 or SH2.work != 2:
                     return self.send_fail("没找到该送货员")
-                order.update(session=self.session, SH1_id=int(data["staff_id"]))
+                order.update(session=self.session, status=2, SH2_id=int(data["staff_id"]))
             elif action == "edit_status":
                 order.update(session=self.session, status=data["status"])
             elif action == "edit_total_price":
@@ -350,46 +357,45 @@ class Shelf(AdminBaseHandler):
 class Staff(AdminBaseHandler):
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action")
-    def get(self, id): #shop_id
-        try:shop = self.session.query(models.Shop).filter_by(id=id).one()
-        except:return self.send_error(404)
-        if shop not in self.current_user.shops:
-            return self.send_error(403)
+    def get(self):
         action = self.args["action"]
-        staffs = self.session.query(models.ShopStaff).filter_by(shop_id=id)
+        staffs = self.current_shop.staffs
         if action == "JH":
-            staffs = staffs.filter_by(work=0).all()
+            staffs = [x for x in staffs if x.work == 1]
         elif action == "TH1":
-            staffs = staffs.filter_by(work=1).all()
+            staffs = [x for x in staffs if x.work == 2]
         elif action == "TH2":
-            staffs = staffs.filter_by(work=2).all()
+            staffs = [x for x in staffs if x.work == 3]
         elif action == "hire":
-            hire_forms = self.session.query(models.HireForm).filter_by(shop_id=id).all()
+            hire_forms = self.session.query(models.HireForm).filter_by(shop_id=self.current_shop.id).all()
             return self.render("", hire_forms=hire_forms)
         else: return self.send_error(404)
         return self.render("", staffs=staffs)
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")
-    def post(self, id): #hire_form_id/staff_id
+    def post(self): #hire_form_id/staff_id
         action = self.args["action"]
-        data = self.args["data"]
+        data = eval(self.args["data"])
 
         if action in ["hire_agree", "hire_refuse"]: #id = hire_form_id
-            try:hire_form = self.session.query(models.HireForm).filter_by(id=id).one()
+            try:hire_form = self.session.query(models.HireForm).filter_by(id=data["id"]).one()
             except: return self.send_error(404)
-            staff = self.session.query(models.ShopStaff).filter_by(id=hire_form.staff_id).one()
             if action == "hire_agree":
-                staff.update(session=self.session, address=hire_form.address,
-                             work=hire_form.work, address1=hire_form.address1,
-                             address2=hire_form.address2)
-                self.session.delete(hire_form)
-                self.session.commit()
+                hire_form.status = 2
+                hire_form.staff.shop_id = hire_form.shop_id
+                hire_form.staff.work = hire_form.work
             elif action == "hire_refuse":
-                self.session.delete(hire_form)
-                self.session.commit()
+                hire_form.status = 2
+            self.session.commit()
+        elif action == "edit_hire_on":
+            self.current_shop.config.hire_on = not self.current_shop.config.hire_on
+            self.session.commit()
+        elif action == "edit_hire_text":
+            self.current_shop.config.hire_text = data["hire_text"]
+            self.session.commit()
         elif action == "edit_staff":
-            try:staff = self.session.query(models.ShopStaff).filter_by(id=id).one()
+            try:staff = self.session.query(models.ShopStaff).filter_by(id=data["id"]).one()
             except:return self.send_error(404)
             staff.update(session=self.session, work=data["work"], address1=data["address1"],
                              address2=data["address2"], remark=data["remark"])

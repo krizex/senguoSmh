@@ -781,7 +781,8 @@ class Order(MapBase, _CommonApi):
     receiver = Column(String(64), nullable=False)
     address_text = Column(String(1024), nullable=False)
     message = Column(String(100)) #用户留言
-    status = Column(TINYINT, default=ORDER_STATUS.ORDERED) #订单状态
+    status = Column(TINYINT, default=ORDER_STATUS.ORDERED) #订单状态:DELETED = 0,ORDERED = 1,
+                                                           # JH = 2,SH1 = 3,SH2 = 4,FINISH = 5,AFTER_SALE = 6
     type = Column(TINYINT) #订单类型 1:立即送 2：按时达
     remark = Column(String(100)) #商家备注
     totalPrice = Column(Float)
@@ -913,13 +914,15 @@ class Config(MapBase, _CommonApi):
     id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
     receipt_msg = Column(String(100)) #小票设置
     title = Column(String(50))
-    min_charge_on_time = Column(SMALLINT) #按时达起送金额
-    min_charge_now = Column(SMALLINT) #立即送起送金额
-    stop_range = Column(SMALLINT) #下单截止时间（小时）
+    min_charge_on_time = Column(SMALLINT, default=0) #按时达起送金额
+    min_charge_now = Column(SMALLINT, default=0) #立即送起送金额
+    stop_range = Column(SMALLINT, default=0) #下单截止时间（小时）
     start_time_now = Column(Time) #立即送起始时间
     end_time_now = Column(Time) #立即送结束时间
     ontime_on = Column(Boolean, default=True)
-    now_on = Column(Boolean,default=True)
+    now_on = Column(Boolean, default=True)
+    hire_on = Column(Boolean, default=False)
+    hire_text = Column(String(1000))
 
     addresses = relationship("Address1") #配送地址设置
     notices = relationship("Notice") #公告设置
@@ -963,6 +966,19 @@ class Address2(MapBase, _CommonApi):
     address1_id = Column(Integer, ForeignKey(Address1.id), nullable=False)
     name = Column(String(50))
     active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
+
+class HireForm(MapBase):
+    __tablename__ = "hire_form"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    staff_id = Column(Integer, ForeignKey(ShopStaff.id), nullable=False)
+    shop_id = Column(Integer, nullable=False)
+    work = Column(TINYINT, default=3)#默认为SH2
+    intro = Column(String(500))
+    advantage = Column(String(500))
+    status = Column(TINYINT, default=1)#1：申请中，2：通过，3：未通过
+
+    staff = relationship("ShopStaff", uselist=False)
 
 def init_db_data():
     MapBase.metadata.create_all()

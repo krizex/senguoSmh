@@ -92,7 +92,7 @@ handlers = [
     (r"/admin/shelf", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
     (r"/admin/shelf/fruitImgCallback", handlers.fruitzone.QiniuCallback,
      {"action": "edit_fruit_img"}, "adminShelfFruitImgCallback"),
-    (r"/admin/staff/(\d+)", handlers.admin.Staff, {}, "adminStaffJH"),
+    (r"/admin/staff", handlers.admin.Staff, {}, "adminStaffJH"),
     (r"/admin/config", handlers.admin.Config, {}, "adminConfig"),
 
     # (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
@@ -104,7 +104,8 @@ handlers = [
     (r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
     (r"/staff/logout", handlers.staff.Access, {"action":"logout"}, "staffLogout"),
     (r"/staff/register", handlers.staff.Access, {"action":"register"}, "staffRegister"),
-    (r"/staff/", handlers.staff.Home, {}, "staffHome"),
+    (r"/staff", handlers.staff.Home, {}, "staffHome"),
+    (r"/staff/hire/(\d+)", handlers.staff.Hire, {}, "staffHire"),
     # (r"/staff/...")
 
     # 水果圈子
