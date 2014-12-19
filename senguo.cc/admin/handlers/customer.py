@@ -192,7 +192,6 @@ class Cart(CustomerBaseHandler):
                              end_time=end_time,
                              fruits=str(f_d),
                              mgoods=str(m_d))
-<<<<<<< HEAD
         try:
             self.session.add(order)
             self.session.commit()
@@ -200,12 +199,6 @@ class Cart(CustomerBaseHandler):
             return self.send_fail("订单提交失败")
         cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
         cart.update(session=self.session, fruits='{}', mgoods='{}')#清空购物车
-        self.render("notice/order-success.html")
-=======
-        self.session.add(order)
-        self.session.commit()
-
->>>>>>> 286fcb548625fb36d0adad3c631d3eed447d6d2c
         return self.send_success()
 
 class Notice(CustomerBaseHandler):
