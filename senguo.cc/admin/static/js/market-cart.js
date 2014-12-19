@@ -13,40 +13,20 @@ $(document).ready(function(){
     //商品价格总计
     list_total_price.text(totalPrice(price_list));
     //商品数量操作
-    $('.fruit_item').find('.number-minus').on('click',function(){
+    cart_item.find('.number-minus').on('click',function(){
         var $this=$(this);
-        var number_input=$this.siblings('.number-input');
-        var number=number_input.val();
-        if(number<=0){number=0;$this.addClass('disable');}
-        else if(number>0) goodsNum($this,1,0,number_input,number);
+        goodsNum($this,1);
     });
-    $('.fruit_item').find('.number-plus').on('click',function(){
+    cart_item.find('.number-plus').on('click',function(){
         var $this=$(this);
-        var number_input=$this.siblings('.number-input');
-        var number=number_input.val();
-        goodsNum($(this),2,0,number_input,number);
-    });
-    $('.menu_item').find('.number-minus').on('click',function(){
-        var $this=$(this);
-        var number_input=$this.siblings('.number-input');
-        var number=number_input.val();
-        if(number<=0){number=0;$this.addClass('disable');}
-        else if(number>0) goodsNum($this,1,0,number_input,number);
-    });
-    $('.menu_item').find('.number-plus').on('click',function(){
-        var $this=$(this);
-        var number_input=$this.siblings('.number-input');
-        var number=number_input.val();
-        goodsNum($(this),2,0,number_input,number);
+        goodsNum($this,2);
     });
     //商品删除
-    $('.fruit_item').find('.delete-item').on('click',function() {
+    cart_item.find('.delete-item').on('click',function() {
         var $this=$(this);
-        itemDelete($this,0);
-    });
-    $('.menu_item').find('.delete-item').on('click',function() {
-        var $this=$(this);
-        itemDelete($this,1);
+        var parent=$this.parents('.cart-list-item');
+        if(parent.hasClass('fruit_item')){itemDelete($this,0);}
+        else if(parent.hasClass('menu_item')){itemDelete($this,1);}
     });
     //类型切换增加active
     $('.type-choose li').each(function(){
@@ -104,6 +84,10 @@ $(document).ready(function(){
     });
     //订单提交
     $('#submitOrder').on('click',function(){orderSubmit();});
+
+    $('#sendNow').on('click',function(){$('.send_period').hide();$('.send_day').hide();});
+    $('#sendInTime').on('click',function(){$('.send_period').show();$('.send_day').show();});
+
 });
 var price_list=[];
 var total_price=0;
@@ -116,6 +100,8 @@ var receiveName=$('#receiveName');
 var receiveAddress=$('#receiveAddress');
 var receivePhone=$('#receivePhone');
 var addressList=$('.address_list');
+var cart_item=$('.cart-list-item');
+var cart_list=$('.cart-list');
 
 function totalPrice(target){
     for(var i=0;i<target.length;i++)
@@ -125,14 +111,20 @@ function totalPrice(target){
     return total_price;
 }
 
-function goodsNum(target,action,menu_type,item,num){
+function goodsNum(target,action){
     var url=market_href+shop_id;
     var action=action;
     var charge_type_id=target.parents('.number-change').siblings('.charge-type').data('id');
+    var menu_type;
     var parent=target.parents('.cart-list-item');
     var price=parent.find('.item_price').text();
     var item_price=target.parents('.cart-list').find('.item_total_price');
+    var item=target.siblings('.number-input');
+    var num=item.val();
     var total;
+    if(parent.hasClass('fruit_item')){menu_type=0}
+    else if(parent.hasClass('menu_item')){menu_type=1}
+    if(action==1&&num<=0) {num=0;target.addClass('disable');}
     var args={
         action:action,
         charge_type_id:charge_type_id,
@@ -179,7 +171,8 @@ function itemDelete(target,menu_type) {
     var action = 0;
     var parent=target.parents('.cart-list-item');
     var charge_type_id =parent .find('.charge-type').data('id');
-    var price=parent.find('.item_price').text();
+    var price=parent.find('.item_total_price').text();
+    var t_price=parseInt(list_total_price.text());
     var args = {
         action: action,
         charge_type_id: charge_type_id,
@@ -187,11 +180,13 @@ function itemDelete(target,menu_type) {
     };
     $.postJson(url, args, function (res) {
             if (res.success) {
-                parent.remove();
-                var t_price=parseInt(list_total_price.text());
                 t_price-=parseInt(price);
                 list_total_price.text(t_price);
+                parent.remove();
+                console.log(cart_list.find(cart_item).length);
+                if(cart_list.find(cart_item).length==1) window.location.reload();
             }
+            else return alert(res.error_text);
         },
         function () {
             alert('网络错误')
@@ -250,6 +245,7 @@ function addressAddEdit(action,name,address,phone){
             }
 
         }
+        else return alert(res.error_text);
     },
     function(){alert('网络错误')});
 }
@@ -279,7 +275,8 @@ function orderSubmit(){
         mgoods[id]=parseInt(num);
     }
     if(!message) message='';
-    if(!period_id) {return alert('请选择送货时段！')}
+    if(type==2&&!period_id) {return alert('请选择送货时段！')}
+    if(type==1){period_id=0}
     var args={
         fruits:fruits,
         mgoods:mgoods,
@@ -292,7 +289,7 @@ function orderSubmit(){
     };
     $.postJson(url,args,function(res) {
         if (res.success) {
-
+            window.location.href=success_href+shop_id;
         }
         else return alert(res.error_text);
     },

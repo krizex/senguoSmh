@@ -6,11 +6,21 @@
 {% end %}
 {% block content %}
 {% set fruits=context['fruits']%}
+{% set dry_fruits=context['dry_fruits']%}
 {% set mgoods=context['mgoods']%}
-<div class="slide-img">
-    <div class="">
-
-    </div>
+{% set menus=context['menus']%}
+<div id="notice-board" class="set-w100-fle bg-pink">
+    <img src="{{static_url('images/sticker-left.png')}}" class="sticker" id="sticker-left"  />
+    <img src="{{static_url('images/sticker-right.png')}}" class="sticker" id="sticker-right" />
+    <section class="content-wrapper box-shadow" >
+        <div id="line1"  ></div>
+        <div id="line2"  ></div>
+        <div class="content" >
+            <img src="{{static_url('images/notice-board-title.png')}}" id="title-img" alt="" />
+            <ul class="content-list" data-id="msg-list" >
+            </ul>
+        </div>
+    </section>
 </div>
 <p class="bg-green text-white no-mar-btom classify-title font16">水果单品</p>
 <ul class="goods-list bg-white fruit-list">
@@ -78,35 +88,35 @@
     </li>
     {% end %}
 </ul>
-<p class="bg-green text-white no-mar-btom classify-title font16">水果单品</p>
-<ul class="goods-list bg-white menu-list">
-    {% for key in mgoods %}
-    {% for mgood in mgoods[key]%}
-    <li class="goods-list-item  font14" data-id="{{mgood.id}}">
+{% if dry_fruits%}
+<p class="bg-green text-white no-mar-btom classify-title font16">干果单品</p>
+<ul class="goods-list bg-white fruit-list">
+    {% for dry_fruit in dry_fruits %}
+    <li class="goods-list-item {{dry_fruit.fruit_type.code}} font14" data-id="{{dry_fruit.id}}">
         <div class="bg set-w100-fle">
             <div class="goods-img w22 pull-left box-shadow">
                 <a href="javascript:;" class="check-lg-img">
-                    <span class="tag bg-green text-white text-center tagItem font8" data-id="{{mgoods[key].tag}}">hot</span>
-                    {% if mgoods[key].img_url %}
-                    <img src="http://goodsimg1.qiniudn.com/{{mgoods[key].img_url}}?imageView/1/w/200/h/200" class="img">
+                    <span class="tag bg-green text-white text-center tagItem font8" data-id="{{dry_fruit.tag}}">hot</span>
+                    {% if fruit.img_url %}
+                    <img src="http://goodsimg1.qiniudn.com/{{dry_fruit.img_url}}?imageView/1/w/200/h/200" class="img">
                     {% else %}
-                    <img src="/static/design_img/TDSG.png" class="img">
+                    <img src="/static/design_img/{{dry_fruit.fruit_type.code}}.png" class="img">
                     {% end %}
                 </a>
             </div>
-            <input type="hidden" class="fruit_intro" value="{{mgoods[key].intro}}"/>
+            <input type="hidden" class="fruit_intro" value="{{dry_fruit.intro}}"/>
             <div class="w69 pull-left p5 pl10">
                 <p>
-                    <span class="pull-left color fruit-name">{{mgoods[key].name}}</span>
-                    <span class="pull-right text-grey">销量：{{mgoods[key].saled}}</span>
+                    <span class="pull-left color fruit-name">{{dry_fruit.name}}</span>
+                    <span class="pull-right text-grey">销量：{{dry_fruit.saled}}</span>
                 </p>
                 <p class="great-number">
                     <span class="text-grey">点赞:888</span>
                 </p>
                 <div class="charge-first charge-style color">
-                    <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{mgoods[key].charge_types[0].id}}">
-                        {{mgoods[key].mcharge_types[0].price}}元/{{mgoods[key].mcharge_types[0].num}}
-                        <span data-id="{{mgood.charge_types[0].unit}}" class="chargeUnit"></span>
+                    <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{dry_fruit.charge_types[0].id}}">
+                        {{dry_fruit.charge_types[0].price}}元/{{dry_fruit.charge_types[0].num}}
+                        <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
                         <!--{% if fruit.charge_types[0].unit != fruit.unit %}
                         =
                         {{fruit.charge_types[0].unit_num}}
@@ -118,13 +128,13 @@
                         <input type="text" value="0" class="number-input pull-right text-orange"/>
                         <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
                     </span>
-                    {% if len(mgoods[key].mcharge_types) >1 %}
+                    {% if len(dry_fruit.charge_types) >1 %}
                     <a href="javascript:;" class="pull-right toggle down p0"></a>
                     {% end %}
                 </div>
                 <ul class="charge-list charge-style color set-width-float" style="display:none">
-                    {% for charge in mgoods[key].mcharge_types %}
-                    {% if charge.id !=mgoods[key].mcharge_types[0].id %}
+                    {% for charge in dry_fruit.charge_types %}
+                    {% if charge.id !=dry_fruit.charge_types[0].id %}
                     <li class="border-color set-w100-fle">
                         <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{charge.id}}">
                             {{charge.price}}元/{{charge.num}}
@@ -140,13 +150,75 @@
                     {% end %}
                 </ul>
             </div>
-            <div class="col-sm-1 col-xs-1 pull-right fruit-class text-white text-shadow icon-bg font12">{{mgoods[key].name}}</div>
+            <div class="col-sm-1 col-xs-1 pull-right fruit-class text-white text-shadow icon-bg font12">{{dry_fruit.fruit_type.name}}</div>
         </div>
     </li>
     {% end %}
+</ul>
+{% end %}
+{% for menu in menus %}
+<p class="bg-green text-white no-mar-btom classify-title font16">{{menu.name}}</p>
+<ul class="goods-list bg-white menu-list">
+    {% for mgood in mgoods[menu.id]%}
+    <li class="goods-list-item  TDSG font14" data-id="{{mgood.id}}">
+        <div class="bg set-w100-fle">
+            <div class="goods-img w22 pull-left box-shadow">
+                <a href="javascript:;" class="check-lg-img">
+                    <span class="tag bg-green text-white text-center tagItem font8" data-id="{{mgood.tag}}">hot</span>
+                    {% if mgood.img_url %}
+                    <img src="http://goodsimg1.qiniudn.com/{{mgood.img_url}}?imageView/1/w/200/h/200" class="img">
+                    {% else %}
+                    <img src="/static/design_img/TDSG.png" class="img">
+                    {% end %}
+                </a>
+            </div>
+            <input type="hidden" class="fruit_intro" value="{{mgood.intro}}"/>
+            <div class="w69 pull-left p5 pl10">
+                <p>
+                    <span class="pull-left color fruit-name">{{mgood.name}}</span>
+                    <span class="pull-right text-grey">销量：{{mgood.saled}}</span>
+                </p>
+                <p class="great-number">
+                    <span class="text-grey">点赞:888</span>
+                </p>
+                <div class="charge-first charge-style color">
+                    <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{mgood.mcharge_types[0].id}}">
+                        {{mgood.mcharge_types[0].price}}元/{{mgood.mcharge_types[0].num}}
+                        <span data-id="{{mgood.mcharge_types[0].unit}}" class="chargeUnit"></span>
+                    </span>
+                     <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
+                        <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
+                        <input type="text" value="0" class="number-input pull-right text-orange"/>
+                        <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
+                    </span>
+                    {% if len(mgood.mcharge_types) >1 %}
+                    <a href="javascript:;" class="pull-right toggle down p0"></a>
+                    {% end %}
+                </div>
+                <ul class="charge-list charge-style color set-width-float" style="display:none">
+                    {% for charge in mgood.mcharge_types %}
+                    {% if charge.id !=mgood.mcharge_types[0].id %}
+                    <li class="border-color set-w100-fle">
+                        <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{charge.id}}">
+                            {{charge.price}}元/{{charge.num}}
+                            <span data-id="{{charge.unit}}" class="chargeUnit"></span>
+                        </span>
+                        <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
+                            <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
+                            <input type="text" value="0" class="number-input pull-right text-orange"/>
+                            <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
+                        </span>
+                    </li>
+                    {% end %}
+                    {% end %}
+                </ul>
+            </div>
+            <div class="col-sm-1 col-xs-1 pull-right fruit-class text-white text-shadow icon-bg font12">{{mgood.name}}</div>
+        </div>
+    </li>
     {% end %}
 </ul>
-<a class="back-to-top set-inl-blo bg-green text-white text-center font14" id="backTop">Top</a>
+{% end %}
 <div class="modal fade large-img-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

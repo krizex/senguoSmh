@@ -1,0 +1,393 @@
+{% extends 'base.html' %}
+{% block title %}订单管理{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-order.css')}}"/>{% end %}
+{% block content %}
+<span class="right-title">订单管理</span>
+<div class="orders-mode">
+    <ul class="right-nav pull-left">
+        <li class="active">
+            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1">立即送</a>
+            <span class="number">{{count[11]}}</span>
+        </li>
+        <li>
+            <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=1">按时达</a>
+            <span class="number">{{count[21]}}</span>
+        </li>
+        <li>
+            <a href="#">周期购</a>
+            <span class="number">888</span>
+        </li>
+        <li>
+            <a href="#">预售商品</a>
+            <span class="number">888</span>
+        </li>
+    </ul>
+    <div class="search-input input-group pull-right">
+        <form method="post" action="" id="post">
+            <input type="text" value="" placeholder="输入订单信息进行搜索" class="search-con form-control"/>
+            <input type="submit" value="订单搜索" class="search-btn form-control"/>
+        </form>
+    </div>
+</div>
+<!--orders-mode-end-->
+<div class="orders-mode-lock">
+    <div class="mode-content unlock-mode pull-left">
+        <p class="lock-unlock">已开启立即送模式</p>
+        <p class="mode-introduce">下单就配送。此种模式满足用户对于商品的一种需求。</p>
+        <p class="set-introduce">点击右方设置，可以设置立即送的送达时间范围和起送金额。</p>
+    </div>
+    <div class="mode-set pull-right">
+        <a href="#" class="set-btn btn-style unlock-mode"  data-toggle="modal" data-target="#sendNowBox">设置</a>
+        <a href="#" class="stop-btn btn-style lock-mode">停用</a>
+    </div>
+</div>
+<div class="orders-list-title">
+    <ul class="right-nav pull-left">
+        <li class="active">
+            <a href="#">
+                未处理
+                <span>
+                    {% if order_type ==1 %}
+                    {{count[11]}}
+                    {% else %}
+                    {{count[21]}}
+                    {% end %}
+                </span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+            未完成
+            <span>
+                {% if order_type ==1 %}
+                {{count[12]}}
+                {% else %}
+                {{count[22]}}
+                {% end %}
+            </span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                已送达
+                <span>
+                     {% if order_type ==1 %}
+                    {{count[13]}}
+                    {% else %}
+                    {{count[23]}}
+                    {% end %}
+                </span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                售后
+                <span>
+                     {% if order_type ==1 %}
+                    {{count[14]}}
+                    {% else %}
+                    {{count[24]}}
+                    {% end %}
+                </span>
+            </a>
+        </li>
+        <li><a href="#">
+            所有订单
+            <span>
+                {% if order_type ==1 %}
+                {{count[15]}}
+                {% else %}
+                {{count[25]}}
+                {% end %}
+            </span>
+        </a>
+        </li>
+    </ul>
+    <a class="orders-recycle pull-right" href="#">订单回收站</a>
+</div>
+<!--orders-mode-lock-end-->
+<div class="order-list">
+    <div class="order-list-action">
+        <input type="checkbox" class="select-box"/>
+        <span class="select-all">全选</span>
+        <a href="#" class="print-btn blak-set-btn" id="">批量打印</a>
+        <a href="#" class="blak-set-btn" id="">批量删除</a>
+    </div>
+    <ul class="order-list-content">
+        {% for order in orders %}
+        <li class="order-list-item list-item">
+            <div class="list-title">
+                <input class="select pull-left" type="checkbox"/>
+                <label class="send pull-left">
+                    配送时间：<span class="send-time">{{order.create_time}} {{order.end_time}}</span>前
+                </label>
+                <label class="code pull-left">
+                    编号：<span class="order-code">{{order.id}}</span>
+                </label>
+                <label class="money pull-left">
+                    金额：<span class="order-code"><strong>{{order.totalPrice}}</strong>元</span>
+                    {% if order_type ==1 %}
+                    （其中小费<span class="tip">0</span>元）
+                    {% end %}
+                </label>
+                <a class="print-order pull-right" href="#">&nbsp;</a>
+                <a class="delete-order pull-right" href="#">&nbsp;</a>
+            </div>
+            <!--list-title-end-->
+            <div class="order-content">
+                <div class="order-info">
+                    <span>配送至：</span>
+                    <div class="input-group pull-left">
+                        <label id="">{{order.address_text}}</label>
+                        <input class="address form-control" type="hidden" value="{{order.address_text}}"/>
+                    </div>
+                    <div class="input-group pull-left">
+                        <label id="">{{order.receiver}}</label>
+                        <input class="name form-control" type="hidden" value="{{order.receiver}}"/>
+                    </div>
+                    <div class="input-group pull-left">
+                        <label id="">{{order.phone}}</label>
+                        <input class="phone form-control" type="hidden" value="{{order.phone}}"/>
+                    </div>
+                    <a class="address-edit edit-btn" href="javascript:;" style="display:none">&nbsp;</a>
+                    <a class="btn-style fit-btn fit-active pull-right" href="javascript:;">已适配</a>
+                </div>
+                <!--order-info-end-->
+                <div class="order-message">
+                    <span>留言：</span>
+                    <span class="message-content">{{order.message or '无'}}</span>
+                    <a href="" class="message-img">&nbsp;</a>
+                </div>
+                <div class="staff-replay">员工回复：<span>无</span></div>
+                <!--order-message-end-->
+                <div class="order-status">
+                    <div class="status-bar">
+                        <div class="status-inner" style="width:100%;"></div>
+                        <div class="status-circle" style="left:0%;"></div>
+                        <div class="status-info" style="left:0%;">
+                            <span class="status">未处理</span>
+                        </div>
+                    </div>
+                    <a class="edit-btn pull-right" href="/" style="display:none;">&nbsp;</a>
+                </div>
+                <!--order-status-end-->
+            </div>
+            <!--order-content-end-->
+            <div class="custom-order list-item-body">
+                <div class="custom-order-title">
+                    <span>下单时间：<i class="order-time">{{order.create_time}}</i></span>
+                    <span>森果号：<a class="senguo-code" href="#">y123456789</a></span>
+                    <span>积分：<i class="accumulate-point">{{order.create_time}}</i></span>
+                    {% if order.money_paid == False %}
+                    <span class="pay-status btn-style pull-right pay-btn text-pink">未支付</span>
+                    {% else %}
+                    <span class="pay-status btn-style pull-right pay-btn text-green">已支付</span>
+                    {% end %}
+                </div>
+                <div class="custom-order-list">
+                    <ul class="goods-list">
+                        {% set fruits = eval(order.fruits) %}
+                        {% set mgoods = eval(order.mgoods) %}
+                        {% for key in fruits %}
+                        <li>
+                            <span class="code">01</span>
+                            .
+                            <span class="goods-name">{{fruits[key]['fruit_name']}}</span>
+                            <span class="goods-number">{{fruits[key]['num']}}</span>
+                            ：
+                            <span class="goods-price">{{fruits[key]['charge']}}</span>
+                            *
+                            <span class="goods-number">{{fruits[key]['num']}}</span>
+                            =
+                            <span class="goods-account">3.2</span>
+                            元
+                        </li>
+                        {% end %}
+                        {% for key in mgoods %}
+                        <li>
+                            <span class="code">01</span>
+                            .
+                            <span class="goods-name">{{mgoods[key]['fruit_name']}}</span>
+                            <span class="goods-number">{{mgoods[key]['num']}}</span>
+                            ：
+                            <span class="goods-price">{{mgoods[key]['charge']}}</span>
+                            *
+                            <span class="goods-number">{{mgoods[key]['num']}}</span>
+                            =
+                            <span class="goods-account">3.2</span>
+                            元
+                        </li>
+                        {% end %}
+                    </ul>
+                    <div class="goods-total">
+                        <p>总件数<span class="goods-total-number">8</span>件</p>
+                        <p>总金额<span class="goods-total-charge">{{order.totalPrice}}</span>元</p>
+                    </div>
+                    <a class="edit-btn" href="/" style="display:none;">&nbsp;</a>
+                </div>
+                <div class="order-notice">
+                    <input type="text" value="订单备注"/>
+                </div>
+                <div class="address-adapt">
+                    <ul class="adapt-status">
+                        <li class="active">地址已适配</li>
+                        <li>地址未适配</li>
+                    </ul>
+                    <p>拣货员</p>
+                    <div class="collect-person">
+                        <span>JH-1111#</span>||
+                        <span>仓库拣货员10A</span>||
+                        <div class="input-group-btn">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                <span>1590000000</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">159111111</a></li>
+                                <li><a href="#">159111111</a></li>
+                                <li><a href="#">159111111</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p>一级配送员</p>
+                    <div class="send-person">
+                        <span>S1-2222#</span>||
+                        <span>一级送货员10A</span>||
+                        <div class="input-group-btn">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                <span>华科西边-紫松、西三舍、男</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">华科西边-紫松、西三舍、男</a></li>
+                                <li><a href="#">华科西边-紫松、西五舍、男</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="send-person-area-select">
+                        <ul class="send-person-area right-nav">
+                            <li class="active">
+                                <span>S1-2222#</span>||
+                                <span>一级送货员10A</span>||
+                                <span>华科西边-紫松、西三舍、男生宿舍A</span>||
+                                <span>1806666666</span>
+                            </li>
+                            <li>
+                                <span>S1-2222#</span>||
+                                <span>一级送货员10A</span>||
+                                <span>华科西边-紫松、西三舍、男生宿舍B</span>||
+                                <span>1806666666</span>
+                            </li>
+                        </ul>
+                        <div class="select-btn">
+                            <input type="submit" value="确认" class="sure-btn"/>
+                            <input type="button" value="取消" class="concel-btn"/>
+                        </div>
+                    </div>
+                </div>
+                <!--address-adapt-end-->
+            </div>
+            <!--custom-order-end-->
+            <div class="collapse-btn">
+                <a class="arrow-down" href="javascript:;"><img src="{{static_url('images/arrow-down.gif')}}"/></a>
+                <a class="arrow-up" href="javascript:;" style="display:none;"><img src="{{static_url('images/arrow-up.gif')}}"/></a>
+            </div>
+        </li>
+        {% end %}
+    </ul>
+</div>
+<div class="sendNowBox modal fade" id="sendNowBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="title pull-left" id="myModalLabel">立即送设置</span>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li>
+                        <span class="pull-left tit">起送金额：</span>
+                        <input class="pull-left money" type="number" value="0"/>
+                    </li>
+                    <li class="send-area">
+                        <span class="pull-left tit">配送区域：</span>
+                        <div class="input-group-btn area1">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                <span>地大</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">地大</a></li>
+                                <li><a href="#">地大</a></li>
+                            </ul>
+                        </div>
+                        <div class="input-group-btn area2">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                <span>新峰、62栋、63栋</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">新峰、62栋、63栋</a></li>
+                                <li><a href="#">新峰、62栋、63栋</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="send-time">
+                        <span class="pull-left tit">配送时间：</span>
+                        <div class="input-group-btn">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                <span>&nbsp;</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">2</a></li>
+                                <li><a href="#">18</a></li>
+                            </ul>
+                        </div>
+                        <span class="pull-left tit">：</span>
+                        <div class="input-group-btn">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                <span>&nbsp;</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">00</a></li>
+                                <li><a href="#">30</a></li>
+                            </ul>
+                        </div>
+                        <span class="pull-left tit">&nbsp;至&nbsp;</span>
+                        <div class="input-group-btn">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                <span>&nbsp;</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">2</a></li>
+                                <li><a href="#">18</a></li>
+                            </ul>
+                        </div>
+                        <span class="pull-left tit">：</span>
+                        <div class="input-group-btn">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                <span>&nbsp;</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">00</a></li>
+                                <li><a href="#">30</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-box">
+                    <button type="button" class="pull-right modal-concel-btn" href="#" data-dismiss="modal">取消</button>
+                    <button type="button" class="pull-left modal-sure-btn" href="#">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}<script src="{{static_url('js/admin-order.js')}}"></script>{% end %}

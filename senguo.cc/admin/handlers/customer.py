@@ -100,7 +100,7 @@ class Market(CustomerBaseHandler):
         mgoods={}
         for menu in shop.menus:
             mgoods[menu.id] = menu.mgoods
-        return self.render("customer/home.html", context=dict(fruits=fruits, dry_fruits=dry_fruits,
+        return self.render("customer/home.html", context=dict(fruits=fruits, dry_fruits=dry_fruits,menus=shop.menus,
                                                               mgoods=mgoods, cart_f=cart_f, cart_m=cart_m,subpage='home'))
 
     @tornado.web.authenticated
@@ -192,6 +192,7 @@ class Cart(CustomerBaseHandler):
                              end_time=end_time,
                              fruits=str(f_d),
                              mgoods=str(m_d))
+<<<<<<< HEAD
         try:
             self.session.add(order)
             self.session.commit()
@@ -200,7 +201,14 @@ class Cart(CustomerBaseHandler):
         cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
         cart.update(session=self.session, fruits='{}', mgoods='{}')#清空购物车
         self.render("notice/order-success.html")
+=======
+        self.session.add(order)
+        self.session.commit()
+
+>>>>>>> 286fcb548625fb36d0adad3c631d3eed447d6d2c
         return self.send_success()
 
-
+class Notice(CustomerBaseHandler):
+    def get(self,shop_id):
+        return self.render("notice/order-success.html",context=dict(subpage='cart'))
 

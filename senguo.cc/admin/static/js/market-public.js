@@ -5,12 +5,14 @@ $(document).ready(function(){
         var id=$this.data('id');
         unitText($this,id);
     });
+    $('#backTop').on('click',function(){$(document).scrollTop(0)});
     $('.home_href').attr({'href':market_href+shop_id});
     $('.cart_href').attr({'href':cart_href+shop_id});
 });
 var market_href='/customer/market/';
 var cart_href='/customer/cart/';
 var home_href='/customer';
+var success_href='/notice/success/';
 
 var link=window.location.pathname;
 var shop_id= $.getNum(link);
