@@ -129,7 +129,7 @@
             <div class="list-title bg-grey2">
                 <input class="select pull-left" type="checkbox"/>
                 <label class="send pull-left">
-                    配送时间：<span class="send-time">{{order.create_time}} {{order.end_time}}</span>前
+                    配送时间：<span class="send-time">{{order.create_date}} {{order.end_time}}</span>前
                 </label>
                 <label class="code pull-left">
                     编号：<span class="order-code">{{order.id}}</span>
@@ -201,9 +201,9 @@
             <!--order-content-end-->
             <div class="custom-order list-item-body set-width-float" style="display:none;">
                 <div class="custom-order-title">
-                    <span>下单时间：<i class="order-time">{{order.create_time}}</i></span>
+                    <span>下单时间：<i class="order-time">{{order.create_date}}</i></span>
                     <span>森果号：<a class="senguo-code" href="#">y123456789</a></span>
-                    <span>积分：<i class="accumulate-point">{{order.create_time}}</i></span>
+                    <span>积分：<i class="accumulate-point">{{100}}</i></span>
                     {% if order.money_paid == False %}
                     <span class="pay-status btn-style pull-right pay-btn text-pink">未支付</span>
                     {% else %}

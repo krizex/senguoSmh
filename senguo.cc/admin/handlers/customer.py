@@ -99,7 +99,7 @@ class Market(CustomerBaseHandler):
         dry_fruits = [x for x in shop.fruits if x.fruit_type_id == 1000 and x.active == 1]
         mgoods={}
         for menu in shop.menus:
-            mgoods[menu.id] = menu.mgoods
+            mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
         return self.render("customer/home.html", context=dict(fruits=fruits, dry_fruits=dry_fruits,menus=shop.menus,
                                                               mgoods=mgoods, cart_f=cart_f, cart_m=cart_m,subpage='home'))
 

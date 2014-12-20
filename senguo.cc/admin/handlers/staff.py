@@ -2,7 +2,7 @@ from handlers.base import StaffBaseHandler
 import dal.models as models
 import tornado.web
 from settings import *
-import time
+import time, datetime
 from sqlalchemy import desc, and_, or_
 import qiniu
 
@@ -60,7 +60,9 @@ class Home(StaffBaseHandler):
         return self.render("staff/home.html", page="home")
 class Order(StaffBaseHandler):
     @tornado.web.authenticated
+    @StaffBaseHandler.check_arguments("order_type")
     def get(self):
+        order_type = self.args["order_type"]
         work = self.current_user.work
         orders = []
         if work == 1: #JH
@@ -74,11 +76,19 @@ class Order(StaffBaseHandler):
                 SH2_id=self.current_user.id, status=models.ORDER_STATUS.SH2)
         else:
             pass
-        orders = orders.order_by(desc(models.Order.create_time)).all()
+        if order_type == "now":
+            orders = orders.filter_by(type=1).order_by(desc(models.Order.create_date)).all()
+        elif order_type == "on_time":
+            orders = orders.filter_by(type=2).order_by(models.Order.start_time).all()
+            day = datetime.datetime.now().day
+            orders = [x for x in orders if (x.today == 1 and x.create_date.day == day) or
+                      (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
+        else:
+            return self.send_error(404)
         return self.render("staff/orders.html", orders=orders, page="orders")
 
     @tornado.web.authenticated
-    @StaffBaseHandler.check_arguments("action", "data")
+    @StaffBaseHandler.check_arguments("action", "order_id")
     def post(self):
         action = self.args["action"]
         if action == "finish":
@@ -90,7 +100,10 @@ class Order(StaffBaseHandler):
                 status = 5
             else:
                 return self.send.fail("你还没分配工作")
-            self.current_user.update(session==self.session, status=status)
+            try:order = self.session.query(models.Order).filter_by(id=self.args["order_id"]).one()
+            except:return self.send_fail("没找到该订单", 404)
+            order.status = status
+            self.session.commit()
         return self.send_success()
 
 class Hire(StaffBaseHandler):

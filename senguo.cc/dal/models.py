@@ -794,7 +794,7 @@ class Order(MapBase, _CommonApi):
     SH2_id = Column(Integer, nullable=True) #二级送货员id
     start_time = Column(Time)
     end_time = Column(Time)
-    create_time = Column(DateTime, default=func.now())
+    create_date = Column(DateTime, default=func.now())
     active = Column(TINYINT, default=1)#0删除
 
     fruits = Column(String(1000))
@@ -917,8 +917,8 @@ class Config(MapBase, _CommonApi):
     min_charge_on_time = Column(SMALLINT, default=0) #按时达起送金额
     min_charge_now = Column(SMALLINT, default=0) #立即送起送金额
     stop_range = Column(SMALLINT, default=0) #下单截止时间（小时）
-    start_time_now = Column(Time) #立即送起始时间
-    end_time_now = Column(Time) #立即送结束时间
+    start_time_now = Column(Time,default=0) #立即送起始时间
+    end_time_now = Column(Time,default=0) #立即送结束时间
     ontime_on = Column(Boolean, default=True)
     now_on = Column(Boolean, default=True)
     hire_on = Column(Boolean, default=False)

@@ -15,34 +15,14 @@
     <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     {% block head %}{% end %}
-    <script>
-        window.dataObj = {
-                _xsrf: "{{handler.xsrf_token}}"};
-        var True = true
-			var False = false
-			var None = null
-			var page = "{{page}}"
-			switch(page){
-					case "home" :
-					$("#header-home-btn").addClass("active")
-					break;
-					case "orders" :
-					$("#header-orders-btn").addClass("active")
-					break;
-					case "history" :
-					$("#header-history-btn").addClass("active")
-					case "settings" :
-					$("#header-settings-btn").addClass("active")
-					break;
-			}
-    </script>
+
 </head>
 <body>
 		<div class="main-container container" >
 			<div class="navbar main-header">
 				<div class="navbar-inner">
 					<div class="container">
-						<div class="nav-collapse collapse">
+						<div class="nav-collapse">
 							<p class="navbar-text pull-right">
 								<a href="/staff/settings" class="user-icon" ><i class="icon-user"></i>我</a>
 							</p>
@@ -58,4 +38,25 @@
 		{% block content %}{% end %}
 		</div>
 </body>
+<script>
+        window.dataObj = {
+                _xsrf: "{{handler.xsrf_token}}"};
+        var True = true;
+        var False = false;
+        var None = null;
+        var page = "{{page}}";
+        switch(page){
+                case "home" :
+                $("#header-home-btn").addClass("active");
+                break;
+                case "orders" :
+                $("#header-orders-btn").addClass("active");
+                break;
+                case "history" :
+                $("#header-history-btn").addClass("active");
+                case "settings" :
+                $("#header-settings-btn").addClass("active");
+                break;
+        }
+</script>
 </html>
