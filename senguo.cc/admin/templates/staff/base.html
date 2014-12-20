@@ -6,9 +6,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta charset="UTF-8"/>
-    <title>haha</title>
+    <title>水果帮后台系统</title>
     <link rel="stylesheet" href="{{static_url('css/bootstrap.min.css')}}"/>
     <link rel="stylesheet" href="{{static_url('css/admin-style.css')}}"/>
+    <link rel="stylesheet" href="{{static_url('css/staff-global.css')}}" type="text/css" />
     <script src="{{static_url('js/jquery.js')}}"></script>
     <script src="{{static_url('js/bootstrap.min.js')}}"></script>
     <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
@@ -17,9 +18,44 @@
     <script>
         window.dataObj = {
                 _xsrf: "{{handler.xsrf_token}}"};
+        var True = true
+			var False = false
+			var None = null
+			var page = "{{page}}"
+			switch(page){
+					case "home" :
+					$("#header-home-btn").addClass("active")
+					break;
+					case "orders" :
+					$("#header-orders-btn").addClass("active")
+					break;
+					case "history" :
+					$("#header-history-btn").addClass("active")
+					case "settings" :
+					$("#header-settings-btn").addClass("active")
+					break;
+			}
     </script>
 </head>
 <body>
-{% block content %}{% end %}
+		<div class="main-container container" >
+			<div class="navbar main-header">
+				<div class="navbar-inner">
+					<div class="container">
+						<div class="nav-collapse collapse">
+							<p class="navbar-text pull-right">
+								<a href="/staff/settings" class="user-icon" ><i class="icon-user"></i>我</a>
+							</p>
+							<ul class="nav">
+								<li id="header-home-btn"><a href="/staff/home">首页</a></li>
+								<li id="header-orders-btn"><a href="/staff/orders">订单</a></li>
+								<li id="header-history-btn"><a href="/staff/history">记录</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		{% block content %}{% end %}
+		</div>
 </body>
 </html>

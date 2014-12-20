@@ -105,6 +105,7 @@ handlers = [
     (r"/staff/logout", handlers.staff.Access, {"action":"logout"}, "staffLogout"),
     (r"/staff/register", handlers.staff.Access, {"action":"register"}, "staffRegister"),
     (r"/staff", handlers.staff.Home, {}, "staffHome"),
+    (r"/staff/order", handlers.staff.Order, {}, "staffOrder"),
     (r"/staff/hire/(\d+)", handlers.staff.Hire, {}, "staffHire"),
     # (r"/staff/...")
 

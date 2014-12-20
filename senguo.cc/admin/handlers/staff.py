@@ -57,26 +57,42 @@ class Access(StaffBaseHandler):
 class Home(StaffBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        return self.render("staff/home.html", context=dict())
-class order(StaffBaseHandler):
+        return self.render("staff/home.html", page="home")
+class Order(StaffBaseHandler):
     @tornado.web.authenticated
     def get(self):
         work = self.current_user.work
-        if work == 0: #JH
+        orders = []
+        if work == 1: #JH
             orders = self.session.query(models.Order).filter_by(
-                and_(JH_id=self.current_user.id, status=models.ORDER_STATUS.JH))
-        elif work ==1: #SH1
+                JH_id=self.current_user.id, status=models.ORDER_STATUS.JH)
+        elif work ==2: #SH1
             orders = self.session.query(models.Order).filter_by(
-                and_(SH1_id=self.current_user.id, status=models.ORDER_STATUS.SH1))
-        elif work ==2: #SH2
+                SH1_id=self.current_user.id, status=models.ORDER_STATUS.SH1)
+        elif work ==3: #SH2
             orders = self.session.query(models.Order).filter_by(
-                and_(SH2_id=self.current_user.id, status=models.ORDER_STATUS.SH2))
+                SH2_id=self.current_user.id, status=models.ORDER_STATUS.SH2)
         else:
             pass
-        orders = orders.order_by(desc(models.Order.create_date)).all()
-        return self.render("", orders=orders)
+        orders = orders.order_by(desc(models.Order.create_time)).all()
+        return self.render("staff/orders.html", orders=orders, page="orders")
 
-    #@tornado.web.authenticated
+    @tornado.web.authenticated
+    @StaffBaseHandler.check_arguments("action", "data")
+    def post(self):
+        action = self.args["action"]
+        if action == "finish":
+            if self.current_user.work == 1:#JH
+                status = 3
+            elif self.current_user.work == 2:#SH1
+                status = 4
+            elif self.current_user.work == 3:#SH2
+                status = 5
+            else:
+                return self.send.fail("你还没分配工作")
+            self.current_user.update(session==self.session, status=status)
+        return self.send_success()
+
 class Hire(StaffBaseHandler):
     @tornado.web.authenticated
     def get(self, config_id):

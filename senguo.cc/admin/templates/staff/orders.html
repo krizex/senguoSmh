@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block head %}
+<link rel="stylesheet" href="/static/css/staff-order.css" type="text/css"/>
+<style type="text/css" media="screen and (min-width:800px)">
+  #mobile-refresh-btn{
+	displan:none;
+	}
+	#desktop-refresh-btn{
+	display:inline-block;
+	position:relative;
+	float:right;
+	bottom:auto;
+	right:-100px;
+	font-size:16px;
+</style>
+
+{% end %}
+{% block content %}
+<section data-id="content-wrapper" >
+	<div id="update-hint"  data-id="update-hint" class="hint update-hint" style="display:none;">
+		<a>有新的订单，点这里或者按刷新按钮刷新</a>
+	</div>
+	<a class="btn btn-large ib refresh-btn" id="mobile-refresh-btn" data-id="mobile-refresh-btn"  ><i class="icon-refresh"></i> 刷新</a>
+	<a class="btn btn-link ib refresh-btn" id="desktop-refresh-btn" data-id="desktop-refresh-btn"  ><i class="icon-refresh"></i> 刷新</a>
+	<div id="hint-box"  data-id="hint-box" class="hint update-hint" style="display:none;">
+		<p id="hint-msg" >刷新中...</p>
+	</div>
+	<ul class="main-list" >
+	</ul>
+</section>
+{% for order in orders %}
+<li class="order-list-item">
+	<div class="content-wrapper" >
+		<strong><span data-id="id"></span></strong>
+		<strong><span data-id="price"></span></strong>
+		<span data-id="remark-hint" style="display:none;" >展开查看备注</span>
+		<br />
+		<span data-id="deliveryTime" ></span>
+		<p >
+			订单交给：<span data-id="receiver" >{{order.receiver}}</span><span data-id="address" >{{order.address_text}}</span>
+		</p>
+		<p data-id="goods" ></p>
+		<div class="button-box" >
+			<a class="btn clear-btn" data-id="clear" ><i class="icon-ok"></i> 完成</a>
+		</div>
+	</div>
+	<div data-id="toggle" class="toggle" style="display:none;" >
+		<p>交付对象电话：<a data-id="phone">{{order.phone}}</a></p>
+		<div data-id="prev-PH-box" style="display:none;" >
+			<p>订单来自：派货员 <span data-id="prev-PH" ></span></p>
+			<p>派货员电话：<a data-id="prev-PH-phone" ></a></p>
+		</div>
+		<div data-id="remark-box" style="display:none;" >
+			<p >订单备注：<span data-id="remark">{{order.remark}}</span></p>
+		</div>
+		<div data-id="staff-msg-box" >
+			<p >员工留言：<br />
+				<input type="text" id="staff-msg" data-id="staff-msg" placeholder="在这写下想让管理员看到的消息"></input><br />
+				<a id="staff-msg-accept" data-id="staff-msg-accept" class="btn"  ><i class="icon-upload"></i> 提交员工备注</a>
+			</p>
+		</div>
+		<div class="status-bar-box" data-id="status-bar-box" >
+			<div class="status-bar" data-id="status-bar" >
+				<div class="inner" data-id="inner" ></div>
+				<div class="circle-icon" data-id="circle" ></div>
+				<div class="status-box" data-id="status-box"  >
+					<span class="status" data-id="status" ></span>
+				</div>
+			</div>
+		</div>
+	</div>
+</li>
+
+{% end %}
+{% end %}
