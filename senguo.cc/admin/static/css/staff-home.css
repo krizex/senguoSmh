@@ -1,0 +1,15 @@
+.content-wrapper {
+  padding: 10px;
+}
+span[data-id=charge] {
+  color: #005580;
+}
+span[data-id=wage] {
+  color: #115F0E;
+}
+.notice-msg {
+  background-color: #ddd;
+  padding: 5px;
+  border-radius: 5px;
+  text-shadow: 0 1px white;
+}
