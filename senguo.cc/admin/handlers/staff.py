@@ -112,13 +112,13 @@ class Hire(StaffBaseHandler):
         try:config = self.session.query(models.Config).filter_by(id=config_id).one()
         except:return self.send_error(404)
         if not config.hire_on:
-            return self.render("")#招募已结束
-        return self.render("", config=config)
+            return self.write("招募已结束")#招募已结束
+        return self.render("staff/hire.html", config=config)
     @tornado.web.authenticated
     @StaffBaseHandler.check_arguments("action", "data")
     def post(self, shop_id):
         action = self.args["action"]
-        data = eval(self.args["data"])
+        data = self.args["data"]
         if action == "add_hire_form":
             shop = self.session.query(models.Shop).filter_by(id=shop_id)
             if not shop:

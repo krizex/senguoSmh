@@ -59,11 +59,11 @@
 <div class="orders-mode-lock bg-grey2 clearfix">
     <div class="mode-content {{lock_mode}} pull-left">
         {% if order_type ==1 %}
-        <p class="lock-unlock">已{{notice}}立即送模式</p>
-        <p class="mode-introduce">下单就配送。此种模式满足用户对于商品的一种需求。</p>
+        <p class="lock-unlock">已{{notice}}立即送模式(点击右方启用按钮可以选择启用或停用立即送订单模式。)</p>
+        <p class="mode-introduce">下单就配送。</p>
         <p class="set-introduce">点击右方设置，可以设置立即送的送达时间范围和起送金额。</p>
         {% else %}
-        <p class="lock-unlock">已{{notice}}按时达模式</p>
+        <p class="lock-unlock">已{{notice}}按时达模式(点击右方启用按钮可以选择启用或停用按时达订单模式。)</p>
         <p class="mode-introduce">下单就配送。</p>
         <p class="set-introduce">点击右方设置，可以设置按时达的送达时间范围和起送金额。</p>
         {% end %}
@@ -72,15 +72,15 @@
         <a href="javascript:;" class="set-btn btn-style unlock-mode bg-green"  data-toggle="modal" data-target="#SetBox">设置</a>
         {% if order_type ==1 %}
             {% if current_shop.config.now_on==True %}
-             <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType bg-grey" id="stopNowOn">停用</a>
+             <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType" id="stopNowOn">已启用</a>
             {% else %}
-            <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType" id="stopNowOn">启用</a>
+            <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType bg-grey" id="stopNowOn">未启用</a>
             {% end %}
         {% elif order_type ==2 %}
             {% if current_shop.config.ontime_on==True %}
-            <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType bg-grey" id="stopInTime">停用</a>
+            <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType" id="stopNowOn">已启用</a>
             {% else %}
-            <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType" id="stopInTime">启用</a>
+            <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType bg-grey" id="stopInTime">未启用</a>
             {% end %}
         {% end %}
     </div>
@@ -115,15 +115,18 @@
     </div>
     <ul class="order-list-content set-width-float">
         {% for order in orders %}
+            {% set status_order='hidden'%}
+            {% set status_send='hidden'%}
+            {% set status_finish='hidden'%}
             {% if order.status == 1 %}
                 {% set order_status='' %}
-                {% set status_text='未处理'%}
+                {% set status_order='show'%}
             {% elif order.status == 4 %}
                 {% set order_status='order-status-dealing' %}
-                {% set status_text='配送中'%}
+                {% set status_send='show'%}
             {% elif order.status == 5 %}
                 {% set order_status='order-status-dealing' %}
-                {% set status_text='已完成'%}
+                {% set status_finish='show'%}
             {% end %}
         <li class="order-list-item list-item set-width-float" data-id="{{order.id}}">
             <div class="list-title bg-grey2">
@@ -159,8 +162,8 @@
                         <label id="">{{order.phone}}</label>
                         <input class="phone form-control" type="hidden" value="{{order.phone}}"/>
                     </div>
-                    <a class="address-edit edit-btn" href="javascript:;" style="display:none">&nbsp;</a>
-                    <a class="btn-style fit-btn fit-active pull-right" href="javascript:;">已适配</a>
+                    <!--<a class="address-edit edit-btn" href="javascript:;" style="display:none">&nbsp;</a>
+                    <a class="btn-style fit-btn fit-active pull-right" href="javascript:;">已适配</a>-->
                 </div>
                 <!--order-info-end-->
                 <div class="order-message set-width-float">
@@ -172,28 +175,23 @@
                 <!--order-message-end-->
                 <div class="order-status {{order_status}} set-width-float">
                     <div class="status-bar bg-grey9">
-                        <div class="status-inner bg-grey9" style="width:100%;"></div>
-                        <div class="status-circle"
-                        {% if order.status == 1 %}
-                            style="left:0%;"
-                        {% elif order.status == 4 %}
-                            style="left:50%;"
-                        {% else %}
-                            style="left:100%;"
-                        {% end %}>
+                        <div class="status-inner bg-grey9 {{status_order}}" style="width:100%;"></div>
+                        <div class="status-inner bg-grey9 {{status_send}}" style="width:50%;"></div>
+                        <div class="status-inner bg-grey9 {{status_finish}}" style="width:100%;"></div>
+                        <div class="status-circle {{status_order}} status-item status-order" style="left:0%;"></div>
+                        <div class="status-info {{status_order}} status-item" style="left:0%;">
+                            <span class="status">未处理</span>
                         </div>
-                        <div class="status-info"
-                        {% if order.status == 1 %}
-                            style="left:0%;"
-                        {% elif order.status == 4 %}
-                            style="left:50%;"
-                        {% else %}
-                            style="left:100%;"
-                        {% end %}>
-                            <span class="status">{{status_text}}</span>
+                        <div class="status-circle {{status_send}} status-item status-send" style="left:50%;"></div>
+                        <div class="status-info {{status_send}} status-item" style="left:50%;">
+                            <span class="status">配送中</span>
+                        </div>
+                        <div class="status-circle {{status_finish}} status-item status-finish" style="left:100%;"></div>
+                        <div class="status-info {{status_finish}} status-item" style="left:100%;">
+                            <span class="status">已确认收货</span>
                         </div>
                     </div>
-                    <a class="edit-btn position pull-right status_edit" href="javascript:;">&nbsp;</a>
+                    <a class="edit-btn position pull-right status_edit" href="javascript:;" style="display:none;">&nbsp;</a>
                     <a class="check-btn  position pull-right status_check" href="javascript:;" style="display:none;">&nbsp;</a>
                 </div>
                 <!--order-status-end-->
@@ -245,7 +243,7 @@
                             元
                         </p>
                     </div>
-                    <a class="edit-btn position price_edit" href="javascript:;">&nbsp;</a>
+                    <a class="edit-btn position price_edit" href="javascript:;" style="display:none;">&nbsp;</a>
                     <a class="check-btn  position price_check" href="javascript:;" style="display:none">&nbsp;</a>
                 </div>
                 <div class="order-notice clearfix">

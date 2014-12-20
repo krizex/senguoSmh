@@ -101,6 +101,10 @@ $(document).ready(function(){
         $(this).hide().siblings('.arrow-down').show();
         $('.sales-list-item').css({'border-color':'#ddd'});
     });
+    $('.order-list-item').hover(
+        function(){$(this).find('.edit-btn').show();},
+        function(){$(this).find('.edit-btn').hide();}
+    );
     //订单总金额修改
     $('.price_edit').on('click',function(){
         var $this=$(this);
@@ -114,6 +118,7 @@ $(document).ready(function(){
         var val=parent.find('.price-input').val();
         orderEdit($this,'edit_totalPrice',val)
     });
+
     //订单备注
     $('.notice_input').on('focus',function(){
         var $this=$(this);
@@ -126,8 +131,30 @@ $(document).ready(function(){
         orderEdit($this,'edit_remark',val)
     });
     //订单状态修改
+    $('.status_edit').on('click',function(){
+        var $this=$(this);
+        var parent=$this.parents('.order-status');
+        $this.hide().siblings('.status_check').show();
+        parent.addClass('order-status-dealing');
+        parent.find('.status-item').removeClass('hidden');
+        parent.find('.status-info').css({'left':'+=20px'});
+    });
+    $('.status_check').on('click',function(){window.location.reload();});
+    $('.status-order').on('click',function(){
+        orderEdit($(this),'edit_status',1)
+    });
+    $('.status-send').on('click',function(){
+        orderEdit($(this),'edit_status',4)
+    });
+    $('.status-finish').on('click',function(){
+        orderEdit($(this),'edit_status',5)
+    });
     //员工修改
-    $('.staff-edit').on('click',function(){});
+    $('.staff-edit').on('click',function(){
+        var $this=$(this);
+        var val=$this.parents('.send-person-area-select').find('.send-person-area').find('.active');
+        orderEdit($this,'edit_JH',val)
+    });
 });
 var link='/admin/order';
 var orderType=$.getUrlParam('order_type');
@@ -354,7 +381,7 @@ function orderEdit(target,action,content){
                 }
                 else if(action=='edit_status')
                 {
-
+                    window.location.reload();
                 }
                 else if(action=='edit_totalPrice')
                 {
