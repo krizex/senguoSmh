@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+{% block title %}员工管理{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-staff.css')}}"/>{% end %}
+{% block content %}
+{% set page=context.get('staffSub')%}
+{% set jh_active=''%}
+{% set th1_active=''%}
+{% set th2_active=''%}
+{% set hire_active=''%}
+{% if page=='jh' %}
+    {% set jh_active='active'%}
+{% elif page=='th1' %}
+    {% set th1_active='active'%}
+{% elif page=='th2' %}
+    {% set th2_active='active'%}
+{% elif page=='hire' %}
+    {% set hire_active='active'%}
+{% end %}
+{% set current_shop=handler.current_shop %}
+<span class="right-title">员工管理</span>
+<div class="staff-classify">
+    <ul class="classify-nav right-nav pull-left">
+        <li class="{{jh_active}}"><a href="{{reverse_url('adminStaffJH')}}?action=JH">仓库拣货</a></li>
+        <li class="{{th1_active}}"><a href="{{reverse_url('adminStaffJH')}}?action=TH1">一级配送</a></li>
+        <li class="{{th2_active}}"><a href="{{reverse_url('adminStaffJH')}}?action=TH2">二级配送</a></li>
+        <li class="{{hire_active}}"><a href="{{reverse_url('adminStaffJH')}}?action=hire">招募员工</a></li>
+    </ul>
+    <div class="search-input input-group pull-right">
+        <form method="post" action="" id="post">
+            <input type="text" value="" placeholder="输入员工编号或员工姓名进行搜索" class="search-con form-control"/>
+            <input type="submit" value="员工搜索" class="search-btn form-control"/>
+        </form>
+    </div>
+    <a href="#" class="group-send-btn pull-right" data-toggle="modal" data-target="#messageBox">群发功能</a>
+</div>
+<!--staff-classify-end-->
+<div class="staff-mode-lock">
+    {% if page=='jh' %}
+        <div class="mode-content unlock-mode pull-left">
+            <p class="lock-unlock">已开启仓库拣货环节</p>
+            <p class="mode-introduce">适用于有独立仓库拣货环节的商铺。此种模式下仓库拣货员选择框将在地址适配时出现。</p>
+            <p class="set-introduce">点击右方停用，仓库拣货员将全部下班！</p>
+        </div>
+        <div class="mode-set pull-right">
+            <a href="javascript:;" class="stop-btn btn-style lock-mode">停用</a>
+            <a href="javascript:;" class="stop-btn btn-style lock-mode"data-toggle="modal" data-target="#SetBox"></a>
+        </div>
+    {% elif page=='th1' %}
+        <div class="mode-content unlock-mode pull-left">
+            <p class="lock-unlock">已开启仓库拣货环节</p>
+            <p class="mode-introduce">适用于有独立仓库拣货环节的商铺。此种模式下仓库拣货员选择框将在地址适配时出现。</p>
+            <p class="set-introduce">点击右方停用，仓库拣货员将全部下班！</p>
+        </div>
+        <div class="mode-set pull-right">
+            <a href="javascript:;" class="stop-btn btn-style lock-mode">停用</a>
+        </div>
+    {% elif page=='th2' %}
+        <div class="mode-content unlock-mode pull-left">
+            <p class="lock-unlock">已开启仓库配送环节</p>
+            <p class="mode-introduce">适用于有独立仓库配送环节的商铺。此种模式下仓库拣货员选择框将在地址适配时出现。</p>
+            <p class="set-introduce">点击右方停用，仓库配送员将全部下班！</p>
+        </div>
+        <div class="mode-set pull-right">
+            <a href="javascript:;" class="stop-btn btn-style lock-mode">停用</a>
+        </div>
+    {% elif page=='hire' %}
+        {% set hire_on=current_shop.config.hire_on%}
+        <div class="mode-content {% if current_shop.config.hire_on==False %} lock-mode {% else %} unlock-mode {% end %} pull-left">
+            <p class="lock-unlock">已{% if hire_on==False %}<span class="lock">关闭</span>{%else%}<span class="lock">开启</span>{% end %}员工招募环节</p>
+            <p class="set-introduce">点击右方设置，生成员工招募令！</p>
+        </div>
+        <div class="mode-set pull-right">
+
+            <a href="javascript:;" class="stop-btn btn-style bg-green lock-mode" data-toggle="modal" data-target="#hireBox">设置</a>
+            {% if hire_on==False %}
+            <a href="javascript:;" class="stop-btn btn-style lock-mode" id="hire_config_off" style="display:none">已启用</a>
+            <a href="javascript:;" class="stop-btn btn-style lock-mode bg-grey" id="hire_config_on">未启用</a>
+            {% else %}
+            <a href="javascript:;" class="stop-btn btn-style lock-mode" id="hire_config_off">已启用</a>
+            <a href="javascript:;" class="stop-btn btn-style lock-mode bg-grey" id="hire_config_off" style="display:none">未启用</a>
+            {% end %}
+        </div>
+    {% end %}
+</div>
+<!--staff-mode-lock-end-->
+{% if page=='th1' %}
+<div class="staff-list-content">
+    <div class="title">
+        <span class="pull-left title-name">仓库拣货员(<span class="staff-number">3</span>)</span>
+        <a href="#" class="pull-right add-staff">+ 添加新员工</a>
+    </div>
+    <ul class="staff-list">
+        <li class="staff-list-item">
+            <div class="staff-info">
+                <div class="staff-work-mode action-mode pull-left">
+                    <a class="work-mode" href="javascript:;">已上班</a>
+                    <a class="stop-mode" href="javascript:;" style="display:none">未上班</a>
+                </div>
+                <div class="staff-personal pull-left">
+                    <img src="../src/userimages/test-img.jpg" class="staff-img pull-left"/>
+                    <div class="info pull-right">
+                        <p>
+                            <span>小黑</span>
+                            (<span>仓库</span>)
+                            ||
+                            <span>1590000000</span>
+                        </p>
+                        <p>
+                            编号:
+                            <span>JH-2222</span>
+                        </p>
+                    </div>
+                </div>
+                <a href="#" class="send-message-btn pull-left">发消息</a>
+                <a href="javascript:;" class="staff-edit-btn edit-btn2 pull-right">编辑</a>
+                <a href="admin-staff-sale.html" class="check-sale pull-right">查看销售记录</a>
+                <a href="#" class="check-order pull-right">查看任务订单</a>
+            </div>
+            <div class="staff-info-edit" style="display:none;">
+                <form method="post" name="" action="" id="">
+                    <div class="edit-detail">
+                        <div class="staff-img pull-left">
+                            <img src="../src/userimages/test-img.jpg"/>
+                            <a href="#" class="change-photo">更改照片</a>
+                        </div>
+                        <div class="staff-info-detail pull-right">
+                            <ul>
+                                <li>
+                                    <span class="info-title">用户名：</span>
+                                    <input type="text" placeholder="字母和数字组合"/>
+                                    <span class="notice">用于后台登陆（不可更改）</span>
+                                </li>
+                                <li>
+                                    <span class="info-title">密码：</span>
+                                    <input type="text" placeholder="字母和数字组合"/>
+                                    <span class="notice">用于后台登陆</span>
+                                </li>
+                                <li>
+                                    <span class="info-title">邮箱：</span>
+                                    <input type="text" placeholder="请输入有效邮箱"/>
+                                    <span class="notice">用来接收公司信息，便于及时获取公司信息</span>
+                                </li>
+                                <li>
+                                    <span class="info-title">地址：</span>
+                                    <input type="text" placeholder="请输入具体地址"/>
+                                    <span class="notice">用于合理安排工作</span>
+                                </li>
+                                <li>
+                                    <span class="info-title">姓名：</span>
+                                    <input type="text" value=""/>
+                                    <span class="info-title">电话：</span>
+                                    <input type="text" value=""/>
+                                </li>
+                                <li>
+                                    <span class="info-title">编号：</span>
+                                    <input type="text" value=""/>
+                                </li>
+                                <li>
+                                    <span class="info-title">职务：</span>
+                                    <div class="input-group-btn job-select pull-left">
+                                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                            <span>请选择</span>
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li><a href="#">仓库拣货(JH)</a></li>
+                                            <li><a href="#">一级配送(S1)</a></li>
+                                            <li><a href="#">二级配送(S2)</a></li>
+                                        </ul>
+                                    </div>
+                                    <span class="notice">若选择仓库拣货，责任区域默认为仓库，且无法修改</span>
+                                </li>
+                                <li>
+                                    <span class="info-title">责任区域：</span>
+                                    <button type="button" class="btn dropdown-toggle duty-select pull-left popup">
+                                        <span class="tit">请选择</span>
+                                        <span class="caret"></span>
+                                    </button>
+                                    <div class="area-modal popup-box" style="display:none;">
+                                        <div class="modal-header">配送区域（可多选）</div>
+                                        <ul class="area-list">
+                                            <li class="active"><a href="#">华科-西边</a></li>
+                                            <li><a href="#">华科-西边</a></li>
+                                            <li><a href="#">华科-西边</a></li>
+                                            <li><a href="#">华科-西边</a></li>
+                                        </ul>
+                                        <div class="modal-footer">
+                                            <button type="button" class="modal-sure-btn pull-left">确定</button>
+                                            <button type="button" class="modal-concel-btn">取消</button>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn dropdown-toggle duty-select2 pull-left popup">
+                                        <span class="tit">请选择请</span>
+                                        <span class="caret"></span>
+                                    </button>
+                                    <div class="area-modal popup-box" style="display:none;">
+                                        <div class="modal-header">配送区域（可多选）</div>
+                                        <ul class="area-list">
+                                            <li class="active"><a href="#">华科-西边</a></li>
+                                            <li><a href="#">华科-西边</a></li>
+                                            <li><a href="#">华科-西边</a></li>
+                                            <li><a href="#">华科-西边</a></li>
+                                        </ul>
+                                        <div class="modal-footer">
+                                            <button type="button" class="modal-sure-btn pull-left">确定</button>
+                                            <button type="button" class="modal-concel-btn">取消</button>
+                                        </div>
+                                    </div>
+                                    <span class="notice">选择以及配送区域后可选二级配送区域</span>
+                                </li>
+                                <li>
+                                    <span class="info-title">备注：</span>
+                                    <textarea class="comment"></textarea>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="action-btn">
+                        <input type="submit" class="sure-btn btn pull-left" value="确认">
+                        <a href="#" class="concel-btn btn pull-right">取消</a>
+                    </div>
+                </form>
+            </div>
+        <li>
+    </ul>
+</div>
+{% elif page=='hire' %}
+    <ul class="hire-form list-group">
+        {% for form in hire_forms %}
+        <li class="hire-form-item set-width-float list-group-item" data-id="{{form.id}}">
+            <img src="{{form.staff.accountinfo.headimgurl}}" class="pull-left img"/>
+            <div class="col-lg-2">
+                <p class="line1"><label>姓名：</label>{{form.staff.accountinfo.nickname}}</p>
+                <p><label>邮箱：</label>{{form.staff.accountinfo.email}}</p>
+            </div>
+            <div class="col-lg-2">
+                <p class="line1"><label>姓名：</label>{{form.staff.accountinfo.phone}}</p>
+                <p><label>住址：</label>{{form.staff.address}}</p>
+            </div>
+            <div class="col-lg-4">
+                <p class="line1"><label>自我介绍：</label>{{form.intro}}</p>
+                <p><label>竞争优势：</label>{{form.advantage}}</p>
+            </div>
+            <div class="col-lg-2 manage-btn pull-right">
+                <p class="line2">
+                    <label>审核状态：</label>
+                    {% if form.status == 1%}
+                    <span class="text-pink status">申请中</span>
+                    {% elif form.status == 2%}
+                    <span class="text-green status">通过</span>
+                    {% else %}
+                    <span class="text-grey status">未通过</span>
+                    {% end %}
+                </p>
+                {% if form.status == 1%}
+                <div>
+                    <button class="btn bg-green text-white pull-left accept-hire">通过</button>
+                    <button class="btn bg-pink text-white pull-right reject-hire">拒绝</button>
+                </div>
+                {% end %}
+            </div>
+        </li>
+        {% end %}
+    </ul>
+{% end %}
+<div class="modal fade" id="hireBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content recruit-apply-edit">
+            <div class="modal-body">
+                <p class="title">森果员工招募令:</p>
+                <textarea class="recruit-content" placeholder="商家填写招募信息。可填写需要招募的人数，招募岗位，需要需求及工资等信息。"></textarea>
+
+            </div>
+            <div class="modal-footer">
+                <div class="action-btn">
+                    <input type="submit" class="sure-btn btn pull-left hire-form-submit" value="提交">
+                    <a href="#" class="concel-btn btn pull-right" data-dismiss="modal">取消</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}<script src="{{static_url('js/admin-staff.js')}}"></script>{% end %}

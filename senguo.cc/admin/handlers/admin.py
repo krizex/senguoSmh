@@ -362,21 +362,24 @@ class Staff(AdminBaseHandler):
         staffs = self.current_shop.staffs
         if action == "JH":
             staffs = [x for x in staffs if x.work == 1]
+            return self.render("admin/staff.html",context=dict(subpage='staff',staffSub='jh'))
         elif action == "TH1":
             staffs = [x for x in staffs if x.work == 2]
+            return self.render("admin/staff.html",context=dict(subpage='staff',staffSub='th1'))
         elif action == "TH2":
             staffs = [x for x in staffs if x.work == 3]
+            return self.render("admin/staff.html",context=dict(subpage='staff',staffSub='th2'))
         elif action == "hire":
             hire_forms = self.session.query(models.HireForm).filter_by(shop_id=self.current_shop.id).all()
-            return self.render("", hire_forms=hire_forms)
+            return self.render("admin/staff.html", hire_forms=hire_forms,context=dict(subpage='staff',staffSub='hire'))
         else: return self.send_error(404)
-        return self.render("", staffs=staffs)
+        return self.render("admin/staff.html", staffs=staffs,context=dict(subpage='staff'))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")
     def post(self): #hire_form_id/staff_id
         action = self.args["action"]
-        data = eval(self.args["data"])
+        data = self.args["data"]
 
         if action in ["hire_agree", "hire_refuse"]: #id = hire_form_id
             try:hire_form = self.session.query(models.HireForm).filter_by(id=data["id"]).one()
@@ -386,7 +389,7 @@ class Staff(AdminBaseHandler):
                 hire_form.staff.shop_id = hire_form.shop_id
                 hire_form.staff.work = hire_form.work
             elif action == "hire_refuse":
-                hire_form.status = 2
+                hire_form.status = 3
             self.session.commit()
         elif action == "edit_hire_on":
             self.current_shop.config.hire_on = not self.current_shop.config.hire_on
