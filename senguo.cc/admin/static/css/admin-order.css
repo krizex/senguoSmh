@@ -62,7 +62,7 @@
 .order-list-item .order-status-warning .status-bar .status-inner{background:#ff6666;}
 .order-list-item .order-status-warning .status-bar .status-circle{background-position:0 -30px;}
 .order-list-item .order-status-warning .status-bar .status-info{margin-left:-25px;}
-.order-list-item .order-status .edit-btn{margin-top:-18px;margin-right:250px;}
+.order-list-item .order-status .position{margin-top:-18px;margin-right:250px;}
 
 .order-list-item .custom-order{padding:10px 20px;}
 .order-list-item .custom-order .custom-order-title{display:block;clear:both;border-top:1px solid #b2b2b2;}
@@ -75,7 +75,7 @@
 .custom-order .custom-order-list .goods-list li{margin-top:5px;}
 .custom-order .custom-order-list .goods-total{position:absolute;bottom:0;right:360px;}
 .custom-order .custom-order-list .goods-total .goods-total-charge{font-size:16px;}
-.custom-order .custom-order-list .edit-btn{display:inline-block;position:absolute;bottom:0;right:320px;}
+.custom-order .custom-order-list .position{display:inline-block;position:absolute;bottom:10px;right:320px;}
 .custom-order .order-notice{border-bottom:1px solid #b2b2b2;padding-bottom:10px;}
 .custom-order .order-notice input{width:530px;height:24px;border:1px solid #ccc;line-height:24px;text-indent:25px;color:#666;background:url("../images/container-icon.gif") no-repeat 4px -332px;}
 .custom-order .address-adapt .adapt-status{width:100%;float:left;padding:10px 0;}

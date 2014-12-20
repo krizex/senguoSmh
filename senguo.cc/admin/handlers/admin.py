@@ -160,7 +160,7 @@ class Order(AdminBaseHandler):
                 order.update(session=self.session, status=2, SH2_id=int(data["staff_id"]))
             elif action == "edit_status":
                 order.update(session=self.session, status=data["status"])
-            elif action == "edit_total_price":
+            elif action == "edit_totalPrice":
                 order.update(session=self.session, totalPrice=data["totalPrice"])
         else:
             return self.send_error(404)

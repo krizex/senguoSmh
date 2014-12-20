@@ -87,7 +87,6 @@ $(document).ready(function(){
             var num=0;
             var number=Int(goods_item.eq(j).find('.goods-number').text());
             num+=number;
-            //console.log(num);
             count.text(num);
         }
     });
@@ -102,6 +101,33 @@ $(document).ready(function(){
         $(this).hide().siblings('.arrow-down').show();
         $('.sales-list-item').css({'border-color':'#ddd'});
     });
+    //订单总金额修改
+    $('.price_edit').on('click',function(){
+        var $this=$(this);
+        var parent=$this.parents('.custom-order');
+        $this.hide().siblings('.price_check').show();
+        parent.find('.price-input').show().siblings('.price-show').hide();
+    });
+    $('.price_check').on('click',function(){
+        var $this=$(this);
+        var parent=$this.parents('.custom-order');
+        var val=parent.find('.price-input').val();
+        orderEdit($this,'edit_totalPrice',val)
+    });
+    //订单备注
+    $('.notice_input').on('focus',function(){
+        var $this=$(this);
+        $this.siblings('.notice_check').show();
+    });
+    $('.notice_check').on('click',function(){
+        var $this=$(this);
+        var parent=$this.parents('.custom-order');
+        var val=parent.find('.notice_input').val();
+        orderEdit($this,'edit_remark',val)
+    });
+    //订单状态修改
+    //员工修改
+    $('.staff-edit').on('click',function(){});
 });
 var link='/admin/order';
 var orderType=$.getUrlParam('order_type');
@@ -292,23 +318,25 @@ function SendNowConfig(){
 function orderEdit(target,action,content){
     var url='';
     var action=action;
-    var data;
+    var parent=target.parents('.order-list-item');
+    var order_id=parent.data('id');
+    var data={order_id:order_id};
     var args;
     if(action=='edit_remark')
     {
-        data={remark:content}
+        data.remark=content;
     }
     else if(action=='edit_SH1')
     {
-        data={staff_id:content}
+        data.staff_id=Int(content);
     }
     else if(action=='edit_status')
     {
-        data={status:content}
+        data.status=Int(content);
     }
     else if(action=='edit_totalPrice')
     {
-        data={totalPrice:content}
+        data.totalPrice=Int(content);
     }
     args={
         action:action,
@@ -316,7 +344,24 @@ function orderEdit(target,action,content){
     };
     $.postJson(url,args,function(res){
             if(res.success){
+                if(action=='edit_remark')
+                {
+                    target.hide();
+                }
+                else if(action=='edit_SH1')
+                {
 
+                }
+                else if(action=='edit_status')
+                {
+
+                }
+                else if(action=='edit_totalPrice')
+                {
+                    target.hide().siblings('.price_edit').show();
+                    parent.find('.price-show').show().text(content).siblings('.price-input').hide();
+                    parent.find('.order-price').text(content);
+                }
             }
             else return alert(res.error_text);
         },

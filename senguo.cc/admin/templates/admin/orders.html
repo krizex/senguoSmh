@@ -5,8 +5,20 @@
 {% set current_shop = handler.current_shop%}
 {% if order_type ==1 %}
     {% set lock_mode = current_shop.config.ontime_on %}
+    {% set type_num =1 %}
+    {% set count1=count[11]%}
+    {% set count2=count[12]%}
+    {% set count3=count[13]%}
+    {% set count4=count[14]%}
+    {% set count5=count[15]%}
 {% elif order_type ==2 %}
     {% set lock_mode = current_shop.config.now_on %}
+    {% set type_num =2 %}
+    {% set count1=count[21]%}
+    {% set count2=count[22]%}
+    {% set count3=count[23]%}
+    {% set count4=count[24]%}
+    {% set count5=count[25]%}
 {% end %}
 {% if lock_mode == True %}
     {% set lock_mode = 'unlock-mode'%}
@@ -15,6 +27,7 @@
     {% set lock_mode = 'lock-mode'%}
     {% set notice='停用'%}
 {% end %}
+
 <span class="right-title">订单管理</span>
 <div class="orders-mode clearfix">
     <ul class="right-nav pull-left order-type">
@@ -75,39 +88,19 @@
 <div class="orders-list-title">
     <ul class="right-nav pull-left order-status">
         <li>
-            {% if order_type ==1 %}
-            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1">未处理<span class="text-pink">{{count[11]}}</span></a>
-            {% else %}
-            <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=1">未处理<span class="text-pink">{{count[21]}}</span></a>
-            {% end %}
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=1">未处理<span class="text-pink">{{count1}}</span></a>
         </li>
         <li>
-            {% if order_type ==1 %}
-            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=2">未完成<span class="text-pink">{{count[12]}}</span></a>
-            {% else %}
-            <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=2">未完成<span class="text-pink">{{count[22]}}</span></a>
-            {% end %}
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=2">未完成<span class="text-pink">{{count2}}</span></a>
         </li>
         <li>
-            {% if order_type ==1 %}
-            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=3">已送达<span class="text-pink">{{count[13]}}</span></a>
-            {% else %}
-            <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=3">已送达<span class="text-pink">{{count[23]}}</span></a>
-            {% end %}
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=3">已送达<span class="text-pink">{{count3}}</span></a>
         </li>
         <li>
-            {% if order_type ==1 %}
-            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=4">售后<span class="text-pink">{{count[14]}}</span></a>
-            {% else %}
-            <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=4">售后<span class="text-pink">{{count[24]}}</span></a>
-            {% end %}
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=4">售后<span class="text-pink">{{count4}}</span></a>
         </li>
         <li>
-            {% if order_type ==1 %}
-            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=5">所有订单<span class="text-pink">{{count[15]}}</span></a>
-            {% else %}
-            <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=5">所有订单<span class="text-pink">{{count[25]}}</span></a>
-            {% end %}
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=5">所有订单<span class="text-pink">{{count5}}</span></a>
         </li>
     </ul>
     <a class="orders-recycle pull-right text-grey9" href="#">订单回收站</a>
@@ -122,7 +115,17 @@
     </div>
     <ul class="order-list-content set-width-float">
         {% for order in orders %}
-        <li class="order-list-item list-item set-width-float">
+            {% if order.status == 1 %}
+                {% set order_status='' %}
+                {% set status_text='未处理'%}
+            {% elif order.status == 4 %}
+                {% set order_status='order-status-dealing' %}
+                {% set status_text='配送中'%}
+            {% elif order.status == 5 %}
+                {% set order_status='order-status-dealing' %}
+                {% set status_text='已完成'%}
+            {% end %}
+        <li class="order-list-item list-item set-width-float" data-id="{{order.id}}">
             <div class="list-title bg-grey2">
                 <input class="select pull-left" type="checkbox"/>
                 <label class="send pull-left">
@@ -132,7 +135,7 @@
                     编号：<span class="order-code">{{order.id}}</span>
                 </label>
                 <label class="money pull-left">
-                    金额：<span class="order-code"><strong>{{order.totalPrice}}</strong>元</span>
+                    金额：<span><strong class="order-price">{{order.totalPrice}}</strong>元</span>
                     {% if order_type ==1 %}
                     （其中小费<span class="tip">0</span>元）
                     {% end %}
@@ -167,15 +170,31 @@
                 </div>
                 <div class="staff-replay">员工回复：<span>无</span></div>
                 <!--order-message-end-->
-                <div class="order-status set-width-float">
+                <div class="order-status {{order_status}} set-width-float">
                     <div class="status-bar bg-grey9">
                         <div class="status-inner bg-grey9" style="width:100%;"></div>
-                        <div class="status-circle" style="left:0%;"></div>
-                        <div class="status-info" style="left:0%;">
-                            <span class="status">未处理</span>
+                        <div class="status-circle"
+                        {% if order.status == 1 %}
+                            style="left:0%;"
+                        {% elif order.status == 4 %}
+                            style="left:50%;"
+                        {% else %}
+                            style="left:100%;"
+                        {% end %}>
+                        </div>
+                        <div class="status-info"
+                        {% if order.status == 1 %}
+                            style="left:0%;"
+                        {% elif order.status == 4 %}
+                            style="left:50%;"
+                        {% else %}
+                            style="left:100%;"
+                        {% end %}>
+                            <span class="status">{{status_text}}</span>
                         </div>
                     </div>
-                    <a class="edit-btn pull-right" href="/" style="display:none;">&nbsp;</a>
+                    <a class="edit-btn position pull-right status_edit" href="javascript:;">&nbsp;</a>
+                    <a class="check-btn  position pull-right status_check" href="javascript:;" style="display:none;">&nbsp;</a>
                 </div>
                 <!--order-status-end-->
             </div>
@@ -220,12 +239,18 @@
                     </ul>
                     <div class="goods-total">
                         <p>总件数<span class="goods-total-number">8</span>件</p>
-                        <p>总金额<span class="goods-total-charge">{{order.totalPrice}}</span>元</p>
+                        <p>总金额
+                            <span class="goods-total-charge price-show">{{order.totalPrice}}</span>
+                            <input type="text" value="{{order.totalPrice}}" class="total_price_input price-input" style="display:none"/>
+                            元
+                        </p>
                     </div>
-                    <a class="edit-btn" href="/" style="display:none;">&nbsp;</a>
+                    <a class="edit-btn position price_edit" href="javascript:;">&nbsp;</a>
+                    <a class="check-btn  position price_check" href="javascript:;" style="display:none">&nbsp;</a>
                 </div>
-                <div class="order-notice">
-                    <input type="text" value="订单备注"/>
+                <div class="order-notice clearfix">
+                    <input type="text" placeholder="订单备注" class="notice_input pull-left" value="{{order.remark or ''}}"/>
+                    <a class="check-btn  notice_check pull-left" href="javascript:;" style="display:none">&nbsp;</a>
                 </div>
                 <div class="address-adapt">
                     <!--<ul class="adapt-status">
@@ -263,15 +288,18 @@
                     </div>-->
                     <div class="send-person-area-select">
                         <ul class="send-person-area right-nav">
-                            <li class="active">
-                                <span>S1-2222#</span>||
-                                <span>一级送货员10A</span>||
-                                <span>华科西边-紫松、西三舍、男生宿舍A</span>||
-                                <span>1806666666</span>
-                            </li>
+                            {% for staff in current_shop.staffs%}
+                                {% if staff.work == 2%}
+                                <li class="active" data-id="{{staff.id}}">
+                                    <span>S2-{{staff.id}}</span>||
+                                    <span>送货员{{staff.accountinfo.username}}</span>||
+                                    <span>{{staff.accountinfo.phone}}</span>
+                                </li>
+                                {% end %}
+                            {% end %}
                         </ul>
                         <div class="select-btn">
-                            <input type="submit" value="确认" class="sure-btn"/>
+                            <input type="submit" value="确认" class="sure-btn staff-edit"/>
                             <input type="button" value="取消" class="concel-btn"/>
                         </div>
                     </div>
