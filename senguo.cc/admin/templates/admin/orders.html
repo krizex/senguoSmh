@@ -286,14 +286,12 @@
                     </div>-->
                     <div class="send-person-area-select">
                         <ul class="send-person-area right-nav">
-                            {% for staff in current_shop.staffs%}
-                                {% if staff.work == 2%}
-                                <li class="active" data-id="{{staff.id}}">
-                                    <span>S2-{{staff.id}}</span>||
-                                    <span>送货员{{staff.accountinfo.username}}</span>||
-                                    <span>{{staff.accountinfo.phone}}</span>
+                            {% for SH2 in SH2s%}
+                                <li class="active" data-id="{{SH2.id}}">
+                                    <span>S2-{{SH2.id}}</span>||
+                                    <span>送货员{{SH2.accountinfo.realname}}</span>||
+                                    <span>{{SH2.accountinfo.phone}}</span>
                                 </li>
-                                {% end %}
                             {% end %}
                         </ul>
                         <div class="select-btn">

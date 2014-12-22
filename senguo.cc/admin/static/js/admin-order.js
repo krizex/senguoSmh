@@ -152,8 +152,8 @@ $(document).ready(function(){
     //员工修改
     $('.staff-edit').on('click',function(){
         var $this=$(this);
-        var val=$this.parents('.send-person-area-select').find('.send-person-area').find('.active');
-        orderEdit($this,'edit_JH',val)
+        var val=$this.parents('.send-person-area-select').find('.send-person-area').find('.active').data('id');
+        orderEdit($this,'edit_SH2',val)
     });
 });
 var link='/admin/order';
@@ -353,7 +353,7 @@ function orderEdit(target,action,content){
     {
         data.remark=content;
     }
-    else if(action=='edit_SH1')
+    else if(action=='edit_SH2')
     {
         data.staff_id=Int(content);
     }
@@ -375,7 +375,7 @@ function orderEdit(target,action,content){
                 {
                     target.hide();
                 }
-                else if(action=='edit_SH1')
+                else if(action=='edit_SH2')
                 {
 
                 }
