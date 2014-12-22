@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}个人中心{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/market-center.css')}}"/>
+{% end %}
+{% block content %}
+    <div class="user-info box-style bg-white m-b10 clearfix font14">
+        <img src="{{current_user.accountinfo.headimgurl}}" class="img pull-left col-xs-3"/>
+        <div class="info pull-left col-xs-9">
+            <p>
+                <span class="pull-left">{{current_user.accountinfo.nickname}}</span>
+                <span data-id="{{current_user.accountinfo.sex}}" class="user-sex pull-left"></span>
+            </p>
+            <p class="code">用户编号：{{current_user.accountinfo.id}}</p>
+        </div>
+    </div>
+    <div class="box-style bg-white m-b10 clearfix font14 pb0">
+        <p class="title">全部订单</p>
+        <ul class="center-nav row text-center m-b0 clearfix">
+            <li class="col-sm-4 col-xs-4 prl0">
+                <a href="#">
+                    <p class="text-grey3 p05">待收货</p>
+                    <p class="text-pink">{{count[4]}}</p>
+                </a>
+            </li>
+            <li class="col-sm-4 col-xs-4 prl0">
+                <a href="#">
+                    <p class="text-grey3 p05">已完成</p>
+                    <p class="text-grey2">{{count[5]}}</p>
+                </a>
+            </li>
+            <li class="col-sm-4 col-xs-4 prl0">
+                <a href="#">
+                    <p class="text-grey3 p05">售后订单</p>
+                    <p class="text-pink">{{count[6]}}</p>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="bg-white m-b10 clearfix font14">
+        <ul class="list-group m-b0">
+            <li class="list-group-item radius0 clearfix">
+                <span class="pull-left">积分&nbsp;&nbsp;{{current_user.credits}}</span>
+                <a href="#" class="pull-right text-grey3">积分商城</a>
+            </li>
+            <li class="list-group-item radius0 clearfix">
+                <span class="pull-left">余额&nbsp;&nbsp;{{current_user.balance}}</span>
+                <a href="#" class="pull-right text-grey3">余额充值</a>
+            </li>
+        </ul>
+    </div>
+    <div class="box-style bg-white m-b10 text-center"><a href="javascript:;" class="text-green font16">签到</a></div>
+{% end %}
+{% block bottom %}<script src="{{static_url('js/market-center.js')}}"></script>{% end %}
