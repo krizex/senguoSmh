@@ -15,16 +15,16 @@
         </div>
     </div>
     <div class="box-style bg-white m-b10 clearfix font14 pb0">
-        <p class="title">全部订单</p>
+        <p class="title text-green font11">全部订单</p>
         <ul class="center-nav row text-center m-b0 clearfix">
             <li class="col-sm-4 col-xs-4 prl0">
-                <a href="#">
+                <a href="{{reverse_url('customerOrder',1)}}?action=waiting">
                     <p class="text-grey3 p05">待收货</p>
                     <p class="text-pink">{{count[4]}}</p>
                 </a>
             </li>
             <li class="col-sm-4 col-xs-4 prl0">
-                <a href="#">
+                <a href="">
                     <p class="text-grey3 p05">已完成</p>
                     <p class="text-grey2">{{count[5]}}</p>
                 </a>
@@ -49,6 +49,48 @@
             </li>
         </ul>
     </div>
+    <div class="box-style bg-white pb0 m-b10 clearfix font14">
+        <p class="title text-green font11 clearfix">
+            <span class="pull-left">收货地址</span>
+            <a href="javascript:;" class="text-green pull-right add-address">+添加收货地址</a>
+        </p>
+        <ul class="list-group m-b0 address-list">
+            {% for address in current_user.addresses%}
+            <li class="address-item list-group-item radius0 clearfix" data-id="{{address.id}}">
+                <span class="pull-left col-sm-3 p5 item_name">{{address.receiver}}</span>
+                <span class="pull-left col-sm-3 p5 item_phone">{{address.phone}}</span>
+                <span class="pull-left col-sm-4 p5 item_address">{{address.address_text}}</span>
+                <a href="javascript:;" class="delete-btn pull-right delete-address"></a>
+                <a href="javascript:;" class="edit-btn m-r10 pull-right edit-address"></a>
+            </li>
+            {% end %}
+        </ul>
+    </div>
     <div class="box-style bg-white m-b10 text-center"><a href="javascript:;" class="text-green font16">签到</a></div>
+    <div class="address-box modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header clearfix">
+                     <h5 class="title pull-left" id="myModalLabel">收货地址</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                </div>
+                <div class="modal-body font14">
+                    <div class="w60 center-block">
+                        <p>收货人</p>
+                        <input type="text" id="address_name"/>
+                        <p>电话</p>
+                        <input type="text" id="address_phone"/>
+                        <p>收货地址</p>
+                        <input type="text" id="address_address"/>
+                    </div>
+                </div>
+                <div class="modal-footer text-center">
+                    <button class="btn bg-green text-white addressEdit" style="display:none">确定</button>
+                    <button class="btn bg-green text-white addressAdd" style="display:none">确定</button>
+                    <button data-dismiss="modal" class="btn bg-greyc text-white">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% end %}
 {% block bottom %}<script src="{{static_url('js/market-center.js')}}"></script>{% end %}

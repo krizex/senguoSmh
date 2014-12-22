@@ -7,7 +7,7 @@ a:focus{text-decoration: none}
 a:focus{outline:none;}
 input{border:none;}
 .container{padding:0;}
-.modal-dialog{margin-top:10%!important;width:100%;max-width:300px;}
+.modal-dialog{margin-top:10%!important;max-width:640px;}
 .modal-header{padding:10px;}
 .modal-body{font-size:1em;padding:10px;}
 .modal-footer{clear:both;}
@@ -65,6 +65,7 @@ input{border:none;}
 
 .m-b60{margin-bottom:60px;}
 .m-r5{margin-right:5px;}
+.m-r10{margin-right:10px;}
 .m-b10{margin-bottom:10px;}
 .m-b0{margin-bottom:0px !important;}
 .radius0{border-radius:0px !important;}

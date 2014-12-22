@@ -58,11 +58,11 @@ class Access(AdminBaseHandler):
 class Home(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        if not self.current_user.shops:
-            return self.write("你还没有店铺，请先申请")
-        if not self.current_shop: #设置默认店铺
-            self.current_shop=self.current_user.shops[0]
-            self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
+        # if not self.current_user.shops:
+        #     return self.write("你还没有店铺，请先申请")
+        # if not self.current_shop: #设置默认店铺
+        #     self.current_shop=self.current_user.shops[0]
+        #     self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
         return self.render("admin/base.html", context=dict())
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("shop_id:int")
@@ -97,7 +97,10 @@ class Order(AdminBaseHandler):
             pass
         else:
             return self.send.send_error(404)
-        return self.render("admin/orders.html", orders=orders, order_type=order_type,count=self._count(),context=dict(subpage='order'))
+        SH2s = self.session.query(models.ShopStaff).join(models.HireLink).filter(
+            models.HireLink.shop_id == self.current_shop.id, models.HireLink.work == 3).all()
+        return self.render("admin/orders.html", orders=orders, order_type=order_type, SH2s=SH2s,
+                           count=self._count(), context=dict(subpage='order'))
 
 
     @tornado.web.authenticated
@@ -147,17 +150,17 @@ class Order(AdminBaseHandler):
             end_time = datetime.time(data["end_hour"], data["end_minute"])
             self.current_shop.config.update(session=self.session,min_charge_now=data["min_charge_now"],
                                             start_time_now=start_time, end_time_now=end_time)
-        elif action in ["edit_remark", "edit_SH1", "edit_status", "edit_totalPrice"]:
+        elif action in ["edit_remark", "edit_SH2", "edit_status", "edit_totalPrice"]:
             order = next((x for x in self.current_shop.orders if x.id==int(data["order_id"])), None)
             if not order:
                 return self.send_fail("没找到该订单")
             if action == "edit_remark":
                 order.update(session=self.session, remark=data["remark"])
-            elif action == "edit_JH":
+            elif action == "edit_SH2":
                 SH2 = next((x for x in self.current_shop.staffs if x.id == int(data["staff_id"])), None)
-                if not SH2 or SH2.work != 2:
+                if not SH2:
                     return self.send_fail("没找到该送货员")
-                order.update(session=self.session, status=2, SH2_id=int(data["staff_id"]))
+                order.update(session=self.session, status=4, SH2_id=int(data["staff_id"]))
             elif action == "edit_status":
                 order.update(session=self.session, status=data["status"])
             elif action == "edit_totalPrice":
@@ -363,15 +366,18 @@ class Staff(AdminBaseHandler):
         subpage=''
         staffSub=''
         if action == "JH":
-            staffs = [x for x in staffs if x.work == 1]
+            hire_links = self.session.query(models.HireLink).filter_by(shop_id=self.current_shop.id, work=1).all()
+            staffs = [x for x in staffs if x.id in [hire_link.staff_id for hire_link in hire_links]]
             subpage='staff'
             staffSub='jh'
         elif action == "SH1":
-            staffs = [x for x in staffs if x.work == 2]
+            hire_links = self.session.query(models.HireLink).filter_by(shop_id=self.current_shop.id, work=2).all()
+            staffs = [x for x in staffs if x.id in [hire_link.staff_id for hire_link in hire_links]]
             subpage='staff'
             staffSub='sh1'
         elif action == "SH2":
-            staffs = [x for x in staffs if x.work == 3]
+            hire_links = self.session.query(models.HireLink).filter_by(shop_id=self.current_shop.id, work=3).all()
+            staffs = [x for x in staffs if x.id in [hire_link.staff_id for hire_link in hire_links]]
             subpage='staff'
             staffSub='sh2'
         elif action == "hire":

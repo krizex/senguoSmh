@@ -501,6 +501,7 @@ class ShopStaff(MapBase, _AccountApi):
     address = Column(String(100))#员工住址
 
     accountinfo = relationship(Accountinfo)
+    shops = relationship("Shop", secondary="hire_link")
 
 class HireLink(MapBase):
     __tablename__ = "hire_link"

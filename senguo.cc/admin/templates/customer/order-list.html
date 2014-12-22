@@ -4,33 +4,40 @@
 <link rel="stylesheet" href="{{static_url('css/market-center.css')}}"/>
 {% end %}
 {% block content %}
-q<li class="order-list-item" >
-    <a data-id="link" href="">
-        <header >
-            <p>订单编号：<span data-id="id"></span></p>
-            <img class="icon" src="http://st0.wexinfruit.com/img/designs/icon-arrow-right.png"/>
-        </header>
-    </a>
-    <div class="content" >
-        <p class="p1" >商品：<span data-id="summary"></span>
-            <br />
-            送至：<span data-id="address"></span>
-        </p>
-        <p class="p2" >
-            <span data-id="deliveryTime">预计今天12:15~12:45送达</span>
-            <a data-id="cancel" class="cancel" > 取消订单</a>
-            <span class="price-box"><span data-id="price" class="price" ></span>元</span>
-        </p>
-        <div class="status-bar-box" data-id="status-bar-box" >
-            <div class="status-bar" data-id="status-bar" >
-                <div class="inner" data-id="inner" ></div>
-                <div class="circle-icon" data-id="circle" ></div>
-                <div class="status-box" data-id="status-box"  >
-                    <span class="status" data-id="status" ></span>
+<ul>
+    {% for order in orders %}
+    <li class="order-list-item" >
+        <a data-id="link" href="">
+            <header >
+                <p>订单编号：<span data-id="id">{{order.id}}</span></p>
+                <img class="icon" src="{{static_url('images/icon-arrow-right.png')}}"/>
+            </header>
+        </a>
+        <div class="content" >
+            <p class="p1" >商品：
+                <span data-id="summary">
+
+                </span>
+                <br />
+                送至：<span data-id="address"></span>
+            </p>
+            <p class="p2" >
+                <span data-id="deliveryTime">预计今天12:15~12:45送达</span>
+                <a data-id="cancel" class="cancel" > 取消订单</a>
+                <span class="price-box"><span data-id="price" class="price" ></span>元</span>
+            </p>
+            <div class="status-bar-box" data-id="status-bar-box" >
+                <div class="status-bar" data-id="status-bar" >
+                    <div class="inner" data-id="inner" ></div>
+                    <div class="circle-icon" data-id="circle" ></div>
+                    <div class="status-box" data-id="status-box"  >
+                        <span class="status" data-id="status" ></span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</li>
+    </li>
+    {% end %}
+</ul>
 {% end %}
 {% block bottom %}<script src="{{static_url('js/market-center.js')}}"></script>{% end %}

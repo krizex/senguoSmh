@@ -15,6 +15,7 @@ handlers = [
     (r"/customer", handlers.customer.Home, {}, "customerHome"),
     (r"/customer/market/(\d+)", handlers.customer.Market, {}, "Market"),
     (r"/customer/cart/(\d+)", handlers.customer.Cart, {}, "customerCart"),
+    (r"/customer/orders/(\d+)", handlers.customer.Order, {}, "customerOrder"),
     (r"/notice/success/(\d+)", handlers.customer.Notice, {}, "noticeSuccess"),
 
     (r"/", handlers.front.Home,{}, "frontHome"),

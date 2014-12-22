@@ -39,14 +39,14 @@
             <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=1" class="text-grey3">按时达</a>
             <span class="number text-pink">{{count[21]}}</span>
         </li>
-        <li class="text-center col-lg-3">
+        <!--<li class="text-center col-lg-3">
             <a href="#" class="text-grey3">周期购</a>
             <span class="number text-pink">888</span>
         </li>
         <li class="text-center col-lg-3">
             <a href="#" class="text-grey3">预售商品</a>
             <span class="number text-pink">888</span>
-        </li>
+        </li>-->
     </ul>
     <div class="search-input input-group pull-right">
         <form method="post" action="" id="post">
@@ -286,14 +286,12 @@
                     </div>-->
                     <div class="send-person-area-select">
                         <ul class="send-person-area right-nav">
-                            {% for staff in current_shop.staffs%}
-                                {% if staff.work == 2%}
-                                <li class="active" data-id="{{staff.id}}">
-                                    <span>S2-{{staff.id}}</span>||
-                                    <span>送货员{{staff.accountinfo.username}}</span>||
-                                    <span>{{staff.accountinfo.phone}}</span>
+                            {% for SH2 in SH2s%}
+                                <li class="active" data-id="{{SH2.id}}">
+                                    <span>S2-{{SH2.id}}</span>||
+                                    <span>送货员{{SH2.accountinfo.realname}}</span>||
+                                    <span>{{SH2.accountinfo.phone}}</span>
                                 </li>
-                                {% end %}
                             {% end %}
                         </ul>
                         <div class="select-btn">

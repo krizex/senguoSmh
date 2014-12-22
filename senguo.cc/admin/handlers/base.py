@@ -173,32 +173,45 @@ class AdminBaseHandler(_AccountBaseHandler):
     __account_cookie_name__ = "admin_id"
     __wexin_oauth_url_name__ = "adminOauth"
     current_shop = None
-    def get_current_user(self):
-        if not self.__account_model__ or not self.__account_cookie_name__:
-            raise Exception("overwrite model to support authenticate.")
-        shop_id = self.get_secure_cookie("shop_id") or b'0'
+    def prepare(self):#todo:下面那句话突然不行了，why
+        #shop_id = self.get_secure_cookie("shop_id") or b'0'
+        shop_id=self.get_secure_cookie("shop_id") if not self.get_secure_cookie("shop_id") else b'0'
         shop_id = int(shop_id.decode())
-        if not shop_id:
-            self.current_shop = None
+        if not self.current_user.shops:
+            return self.finish("你还没有店铺，请先申请")
+        if not shop_id:#初次登陆，默认选择一个店铺
+            self.current_shop = self.current_user.shops[0]
+            self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
+            return
+        if not next((x for x in self.current_user.shops if x.id == shop_id), None):
+            return self.finish('你没有这个店铺')
         else:
             self.current_shop = models.Shop.get_by_id(self.session, shop_id)
-        if hasattr(self, "_user"):
-            return self._user
-
-        user_id = self.get_secure_cookie(self.__account_cookie_name__) or b'0'
-        user_id = int(user_id.decode())
-        if not user_id:
-            self._user = None
-        else:
-            self._user = self.__account_model__.get_by_id(self.session, user_id)
-            if not self._user:
-                Logger.warn("Suspicious Access", "may be trying to fuck you")
-        return self._user
 
 class StaffBaseHandler(_AccountBaseHandler):
     __account_model__ = models.ShopStaff
     __account_cookie_name__ = "staff_id"
     __wexin_oauth_url_name__ = "staffOauth"
+    shop_id = None
+    def prepare(self):
+        cookie = self.get_secure_cookie("staff_shop_id")
+        if not cookie:shop_id=b'0'
+        else:shop_id=cookie
+        #shop_id = self.get_secure_cookie("staff_shop_id") or b'0'
+        shop_id = int(shop_id.decode())
+        if not self.current_user.shops:
+            return self.finish("你还没有店铺，请先申请")
+        if not shop_id:
+            shop_id = self.current_user.shops[0].id
+            self.set_secure_cookie("staff_shop_id", str(self.shop_id), domain=ROOT_HOST_NAME)
+        elif not next((x for x in self.current_user.shops if x.id == shop_id), None):
+            return self.finish('你不是这个店铺的员工,可能已经被解雇了')
+        self.shop_id = shop_id
+        hirelink = self.session.query(models.HireLink).filter_by(
+            staff_id=self.current_user.id, shop_id=self.shop_id).one()
+        self.current_user.work = hirelink.work
+
+
 
 class CustomerBaseHandler(_AccountBaseHandler):
     __account_model__ = models.Customer

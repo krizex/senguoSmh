@@ -63,7 +63,11 @@ class Order(StaffBaseHandler):
     @StaffBaseHandler.check_arguments("order_type")
     def get(self):
         order_type = self.args["order_type"]
-        work = self.current_user.work
+        q = self.session.query(models.HireLink).filter_by(staff_id=self.current_user.id, shop_id=self.shop_id)
+        if not q:
+            return self.send_error(404)
+        work = q.one().work()
+        self.current_user.work = work #增加work属性
         orders = []
         if work == 1: #JH
             orders = self.session.query(models.Order).filter_by(
