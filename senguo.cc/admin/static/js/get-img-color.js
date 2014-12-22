@@ -21,3 +21,23 @@ function getImgColor(target,text_item,bg_item,url){
     target.css({'background':'rgba('+red+','+green+','+blue+',0.1)'});
 }
 function rgbToHex(r, g, b) { return ((r << 16) | (g << 8) | b).toString(16); }
+
+function demo(target){
+    var url='';
+    var action='';
+    var data={
+
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,function(res){
+            if(res.success){
+
+            }
+            else return alert(res.error_text)
+        },function(){return alert('网络错误！')}
+    );
+
+}

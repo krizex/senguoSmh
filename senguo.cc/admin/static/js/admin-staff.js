@@ -30,6 +30,13 @@ $(document).ready(function(){
         $this.hide().siblings('#hire_config_on').show();
         $this.parents('.mode-set').siblings('.mode-content').removeClass('unlock-mode').addClass('lock-mode').find('.lock').text('关闭');
     });
+
+    $('.staffEdit').on('click',function(){
+        var $this=$(this);
+        staffEdit($this);
+    });
+
+    toggle('.staff-info','.staff-info-edit');
 });
 
 function hireConfig(target,action,val){
@@ -66,6 +73,33 @@ function hireConfig(target,action,val){
                 target.parents('.manage-btn').find('.status').removeClass('text-pink').addClass('text-grey').text('未通过');
             }
         }
-    },function(){}
+        else return alert(res.error_text)
+    },function(){return alert('网络错误！')}
     )
+}
+
+function staffEdit(target){
+    var url='';
+    var action='edit_staff';
+    var parent=target.parents('.staff-info-detail');
+    var id=target.data('id');
+    var remark=parent.find('.staff-remark').val();
+    if(!remark) remark='';
+    var data={
+        staff_id:id,
+        remark:remark
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    console.log(args);
+    $.postJson(url,args,function(res){
+        if(res.success){
+            parent.hide();
+        }
+        else return alert(res.error_text)
+    },function(){return alert('网络错误！')}
+    );
+
 }

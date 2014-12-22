@@ -363,12 +363,12 @@ class Staff(AdminBaseHandler):
         if action == "JH":
             staffs = [x for x in staffs if x.work == 1]
             return self.render("admin/staff.html",context=dict(subpage='staff',staffSub='jh'))
-        elif action == "TH1":
+        elif action == "SH1":
             staffs = [x for x in staffs if x.work == 2]
-            return self.render("admin/staff.html",context=dict(subpage='staff',staffSub='th1'))
-        elif action == "TH2":
+            return self.render("admin/staff.html",context=dict(subpage='staff',staffSub='sh1'))
+        elif action == "SH2":
             staffs = [x for x in staffs if x.work == 3]
-            return self.render("admin/staff.html",context=dict(subpage='staff',staffSub='th2'))
+            return self.render("admin/staff.html",staffs=staffs,context=dict(subpage='staff',staffSub='sh2'))
         elif action == "hire":
             hire_forms = self.session.query(models.HireForm).filter_by(shop_id=self.current_shop.id).all()
             return self.render("admin/staff.html", hire_forms=hire_forms,context=dict(subpage='staff',staffSub='hire'))
@@ -400,8 +400,7 @@ class Staff(AdminBaseHandler):
         elif action == "edit_staff":
             try:staff = self.session.query(models.ShopStaff).filter_by(id=data["id"]).one()
             except:return self.send_error(404)
-            staff.update(session=self.session, work=data["work"], address1=data["address1"],
-                             address2=data["address2"], remark=data["remark"])
+            staff.update(session=self.session, remark=data["remark"])
         else:
             return self.send_fail()
         return self.send_success()
