@@ -81,7 +81,7 @@ class FrontBaseHandler(GlobalBaseHandler):
 class _AccountBaseHandler(GlobalBaseHandler):
     # overwrite this to specify which account is used
     __account_model__ = None
-    __account_cookie_name__ = ""
+    __account_cookie_name__ = "user_id"
     __login_url_name__ = ""
     __wexin_oauth_url_name__ = ""
 
@@ -165,14 +165,15 @@ class _AccountBaseHandler(GlobalBaseHandler):
     
 class SuperBaseHandler(_AccountBaseHandler):
     __account_model__ = models.SuperAdmin
-    __account_cookie_name__ = "super_id"
+    #__account_cookie_name__ = "super_id"
     __wexin_oauth_url_name__ = "superOauth"
 
 class AdminBaseHandler(_AccountBaseHandler):
     __account_model__ = models.ShopAdmin
-    __account_cookie_name__ = "admin_id"
+    #__account_cookie_name__ = "admin_id"
     __wexin_oauth_url_name__ = "adminOauth"
     current_shop = None
+    @tornado.web.authenticated
     def prepare(self):#todo:下面那句话突然不行了，why
         #shop_id = self.get_secure_cookie("shop_id") or b'0'
         shop_id=self.get_secure_cookie("shop_id") if not self.get_secure_cookie("shop_id") else b'0'
@@ -190,9 +191,10 @@ class AdminBaseHandler(_AccountBaseHandler):
 
 class StaffBaseHandler(_AccountBaseHandler):
     __account_model__ = models.ShopStaff
-    __account_cookie_name__ = "staff_id"
+    #__account_cookie_name__ = "staff_id"
     __wexin_oauth_url_name__ = "staffOauth"
     shop_id = None
+    @tornado.web.authenticated
     def prepare(self):
         shop_id = self.get_secure_cookie("staff_shop_id") or b'0'
         shop_id = int(shop_id.decode())
@@ -210,7 +212,7 @@ class StaffBaseHandler(_AccountBaseHandler):
 
 class CustomerBaseHandler(_AccountBaseHandler):
     __account_model__ = models.Customer
-    __account_cookie_name__ = "customer_id"
+    #__account_cookie_name__ = "customer_id"
     __wexin_oauth_url_name__ = "customerOauth"
     def save_cart(self, charge_type_id, shop_id, inc, menu_type):
         """
