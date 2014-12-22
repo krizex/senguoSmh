@@ -360,20 +360,26 @@ class Staff(AdminBaseHandler):
     def get(self):
         action = self.args["action"]
         staffs = self.current_shop.staffs
+        subpage=''
+        staffSub=''
         if action == "JH":
             staffs = [x for x in staffs if x.work == 1]
-            return self.render("admin/staff.html",context=dict(subpage='staff',staffSub='jh'))
+            subpage='staff'
+            staffSub='jh'
         elif action == "TH1":
             staffs = [x for x in staffs if x.work == 2]
-            return self.render("admin/staff.html",context=dict(subpage='staff',staffSub='th1'))
+            subpage='staff'
+            staffSub='th1'
         elif action == "TH2":
             staffs = [x for x in staffs if x.work == 3]
-            return self.render("admin/staff.html",context=dict(subpage='staff',staffSub='th2'))
+            subpage='staff'
+            staffSub='th2'
         elif action == "hire":
             hire_forms = self.session.query(models.HireForm).filter_by(shop_id=self.current_shop.id).all()
-            return self.render("admin/staff.html", hire_forms=hire_forms,context=dict(subpage='staff',staffSub='hire'))
+            return self.render("admin/staff.html", hire_forms=hire_forms,
+                               context=dict(subpage='staff',staffSub='hire'))
         else: return self.send_error(404)
-        return self.render("admin/staff.html", staffs=staffs,context=dict(subpage='staff'))
+        return self.render("admin/staff.html", staffs=staffs, context=dict(subpage=subpage,staffSub=staffSub))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")
@@ -386,8 +392,7 @@ class Staff(AdminBaseHandler):
             except: return self.send_error(404)
             if action == "hire_agree":
                 hire_form.status = 2
-                hire_form.staff.shop_id = hire_form.shop_id
-                hire_form.staff.work = hire_form.work
+                self.session.add(models.HireLink(staff_id=hire_form.staff_id, shop_id=hire_form.shop_id))
             elif action == "hire_refuse":
                 hire_form.status = 3
             self.session.commit()
@@ -397,8 +402,15 @@ class Staff(AdminBaseHandler):
         elif action == "edit_hire_text":
             self.current_shop.config.hire_text = data["hire_text"]
             self.session.commit()
+        elif action == "edit_active":
+            try:hire_link = self.session.query(models.HireLink).filter_by(
+                staff_id=data["staff_id"],shop_id=self.current_shop.id).one()
+            except:return self.send_error(404)
+            active = 1 if hire_link.active==2 else 2
+            hire_link.update(session=self.session, action=active)
         elif action == "edit_staff":
-            try:staff = self.session.query(models.ShopStaff).filter_by(id=data["id"]).one()
+            try:hire_link = self.session.query(models.HireLink).filter_by(
+                staff_id=data["staff_id"],shop_id=self.current_shop.id).one()
             except:return self.send_error(404)
             staff.update(session=self.session, work=data["work"], address1=data["address1"],
                              address2=data["address2"], remark=data["remark"])

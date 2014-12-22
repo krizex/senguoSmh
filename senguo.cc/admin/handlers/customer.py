@@ -57,7 +57,15 @@ class Access(CustomerBaseHandler):
 class Home(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        return self.render("", context=dict())
+        count={4:0,5:0,6:0}#4:待收货，5：已完成，6：售后订单
+        for order in self.current_user.orders:
+            if order.status in [2,3,4]:
+                count[4]+=1
+            elif order.status == 5:
+                count[5]+=1
+            elif order.status == 6:
+                count[6]+=1
+        return self.render("", count=count)
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action", "data")
     def post(self):
@@ -110,8 +118,8 @@ class Market(CustomerBaseHandler):
         inc = self.args["action"]
         charge_type_id = self.args["charge_type_id"]
         menu_type = self.args["menu_type"]
-        if self.save_cart(charge_type_id, shop_id, inc, menu_type):
-            self.render("notice/cart-empty.html",context=dict(subpage='cart'))
+        self.save_cart(charge_type_id, shop_id, inc, menu_type)
+        #    self.render("notice/cart-empty.html",context=dict(subpage='cart'))
         return self.send_success()
 
 
