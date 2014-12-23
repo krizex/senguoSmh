@@ -90,7 +90,6 @@ $(document).ready(function(){
 
             number=Int(item.eq(j).text());
             num+=number;
-            console.log(num);
             count.text(num);
         }
     });
@@ -154,6 +153,9 @@ $(document).ready(function(){
         orderEdit($(this),'edit_status',5)
     });
     //员工修改
+    $('.send-person-area').find('li').on('click',function(){
+        $(this).addClass('active').siblings().removeClass('active');
+    });
     $('.staff-edit').on('click',function(){
         var $this=$(this);
         var val=$this.parents('.send-person-area-select').find('.send-person-area').find('.active').data('id');
@@ -381,7 +383,7 @@ function orderEdit(target,action,content){
                 }
                 else if(action=='edit_SH2')
                 {
-
+                    window.location.reload();
                 }
                 else if(action=='edit_status')
                 {
