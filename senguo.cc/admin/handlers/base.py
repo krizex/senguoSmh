@@ -82,7 +82,7 @@ class FrontBaseHandler(GlobalBaseHandler):
 class _AccountBaseHandler(GlobalBaseHandler):
     # overwrite this to specify which account is used
     __account_model__ = None
-    __account_cookie_name__ = "user_id"
+    __account_cookie_name__ = ""
     __login_url_name__ = ""
     __wexin_oauth_url_name__ = ""
 
@@ -166,12 +166,12 @@ class _AccountBaseHandler(GlobalBaseHandler):
     
 class SuperBaseHandler(_AccountBaseHandler):
     __account_model__ = models.SuperAdmin
-    #__account_cookie_name__ = "super_id"
+    __account_cookie_name__ = "super_id"
     __wexin_oauth_url_name__ = "superOauth"
 
 class AdminBaseHandler(_AccountBaseHandler):
     __account_model__ = models.ShopAdmin
-    #__account_cookie_name__ = "admin_id"
+    __account_cookie_name__ = "admin_id"
     __wexin_oauth_url_name__ = "adminOauth"
     current_shop = None
     @tornado.web.authenticated
@@ -191,15 +191,12 @@ class AdminBaseHandler(_AccountBaseHandler):
 
 class StaffBaseHandler(_AccountBaseHandler):
     __account_model__ = models.ShopStaff
-    #__account_cookie_name__ = "staff_id"
+    __account_cookie_name__ = "staff_id"
     __wexin_oauth_url_name__ = "staffOauth"
     shop_id = None
     @tornado.web.authenticated
     def prepare(self):
-        cookie = self.get_secure_cookie("staff_shop_id")
-        if not cookie:shop_id=b'0'
-        else:shop_id=cookie
-        #shop_id = self.get_secure_cookie("staff_shop_id") or b'0'
+        shop_id = self.get_secure_cookie("staff_shop_id") or b'0'
         shop_id = int(shop_id.decode())
         if not self.current_user.shops:
             return self.finish("你还没有店铺，请先申请")
@@ -217,7 +214,7 @@ class StaffBaseHandler(_AccountBaseHandler):
 
 class CustomerBaseHandler(_AccountBaseHandler):
     __account_model__ = models.Customer
-    #__account_cookie_name__ = "customer_id"
+    __account_cookie_name__ = "customer_id"
     __wexin_oauth_url_name__ = "customerOauth"
     @tornado.web.authenticated
     def save_cart(self, charge_type_id, shop_id, inc, menu_type):

@@ -9,7 +9,9 @@ import qiniu
 class Access(StaffBaseHandler):
     def initialize(self, action):
         self._action = action
-
+    def prepare(self):
+        """prepare会在get、post等函数运行前运行，如果不想父类的prepare函数起作用的话就把他覆盖掉"""
+        pass
     def get(self):
         next_url = self.get_argument('next', '')
         if self._action == "login":
@@ -55,9 +57,19 @@ class Access(StaffBaseHandler):
         return self.redirect(next_url)
 
 class Home(StaffBaseHandler):
+    def prepare(self):
+        pass
     @tornado.web.authenticated
     def get(self):
         return self.render("staff/home.html", page="home")
+    @tornado.web.authenticated
+    @StaffBaseHandler.check_arguments("shop_id:int")
+    def post(self):#店铺切换
+        shop_id = self.args["shop_id"]
+        if not next((x for x in self.current_user.shops if x.id == shop_id), None):
+            return self.send_error(404)
+        self.set_secure_cookie("shop_id", str(shop_id), domain=ROOT_HOST_NAME)
+        return self.send_success()
 class Order(StaffBaseHandler):
     @tornado.web.authenticated
     @StaffBaseHandler.check_arguments("order_type")
@@ -66,7 +78,7 @@ class Order(StaffBaseHandler):
         q = self.session.query(models.HireLink).filter_by(staff_id=self.current_user.id, shop_id=self.shop_id)
         if not q:
             return self.send_error(404)
-        work = q.one().work()
+        work = q.one().work
         self.current_user.work = work #增加work属性
         orders = []
         if work == 1: #JH
@@ -132,8 +144,10 @@ class Hire(StaffBaseHandler):
             self.current_user.address = data["address"]
             self.session.add(hireform)
             self.session.commit()
-            self.current_user.accountinfo.update(session=self.session, name=data["name"], phone=data["phone"],
-                                                 email=data["email"], headimgurl=STAFF_IMG_HOST+data["headimgurl"])
+            kwargs = {name:data["name"], phone:data["phone"], email:data["email"]}
+            if not data["headimgurl"]:
+                kwargs["headimgurl"] = STAFF_IMG_HOST+data["headimgurl"]
+            self.current_user.accountinfo.update(session=self.session, **kwargs)
         elif action == "add_img":
             q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
             token = q.upload_token(BUCKET_STAFF_IMG, expires=120)
