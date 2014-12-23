@@ -14,9 +14,9 @@
             <p class="code">用户编号：{{current_user.accountinfo.id}}</p>
         </div>
     </div>
-    <div class="box-style bg-white m-b10 clearfix font14 pb0">
-        <p class="title text-green font11">全部订单</p>
-        <ul class="center-nav row text-center m-b0 clearfix">
+    <div class="box-style bg-white m-b10 clearfix pb0">
+        <p class="title text-green font14">全部订单</p>
+        <ul class="center-nav row text-center m-b0 clearfix font13">
             <li class="col-sm-4 col-xs-4 prl0">
                 <a href="{{reverse_url('customerOrder',1)}}?action=waiting">
                     <p class="text-grey3 p05">待收货</p>
@@ -24,7 +24,7 @@
                 </a>
             </li>
             <li class="col-sm-4 col-xs-4 prl0">
-                <a href="">
+                <a href="{{reverse_url('customerOrder',1)}}?action=finish">
                     <p class="text-grey3 p05">已完成</p>
                     <p class="text-grey2">{{count[5]}}</p>
                 </a>
@@ -49,17 +49,21 @@
             </li>
         </ul>
     </div>
-    <div class="box-style bg-white pb0 m-b10 clearfix font14">
+    <div class="box-style bg-white pb0 m-b10 clearfix">
         <p class="title text-green font11 clearfix">
-            <span class="pull-left">收货地址</span>
-            <a href="javascript:;" class="text-green pull-right add-address">+添加收货地址</a>
+            <span class="pull-left font13">收货地址管理</span>
+            <a href="javascript:;" class="text-green pull-right add-address font11 m-r10">+添加收货地址</a>
         </p>
         <ul class="list-group m-b0 address-list">
             {% for address in current_user.addresses%}
             <li class="address-item list-group-item radius0 clearfix" data-id="{{address.id}}">
-                <span class="pull-left col-sm-3 p5 item_name">{{address.receiver}}</span>
-                <span class="pull-left col-sm-3 p5 item_phone">{{address.phone}}</span>
-                <span class="pull-left col-sm-4 p5 item_address">{{address.address_text}}</span>
+                <div class="col-sm-10">
+                    <p class="clearfix m-b0 font13">
+                        <span class="pull-left item_name">{{address.receiver}}</span>
+                        <span class="pull-right item_phone">{{address.phone}}</span>
+                    </p>
+                    <p class="item_address font12 m-b0">{{address.address_text}}</p>
+                </div>
                 <a href="javascript:;" class="delete-btn pull-right delete-address"></a>
                 <a href="javascript:;" class="edit-btn m-r10 pull-right edit-address"></a>
             </li>

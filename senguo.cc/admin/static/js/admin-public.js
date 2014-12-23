@@ -25,12 +25,6 @@ function shopChnage(shop_id){
 
     })
 }
-
-function Int(target){
-    target=parseInt(target);
-    return target;
-}
-
 function toggle(trigger,target){
     $(trigger).on('click',function(){
         $(this).siblings(target).toggle();

@@ -25,3 +25,9 @@ $.postJson = function(url, args,successCall, failCall, alwaysCall){
         return value;
     }
 })(jQuery);
+
+
+function Int(target){
+    target=parseInt(target);
+    return target;
+}

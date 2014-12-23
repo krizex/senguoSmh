@@ -224,3 +224,10 @@ class Order(CustomerBaseHandler):
             orders = [x for x in self.current_user.orders if x.shop_id == int(shop_id) and x.status == 5]
         else:return self.send_error(404)
         return self.render("customer/order-list.html", orders=orders, context=dict(subpage='center'))
+
+class OrderDetail(CustomerBaseHandler):
+    @tornado.web.authenticated
+    def get(self,order_id):
+        try:order = self.session.query(models.Order).filter_by(id=order_id).one()
+        except:return self.send_error(404)
+        return self.render("customer/order-detail.html", order=order)
