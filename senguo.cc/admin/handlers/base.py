@@ -9,6 +9,7 @@ import tornado.escape
 from dal.dis_dict import dis_dict
 import time
 import re
+import tornado.web
 
 class GlobalBaseHandler(BaseHandler):
 
@@ -174,9 +175,8 @@ class AdminBaseHandler(_AccountBaseHandler):
     __wexin_oauth_url_name__ = "adminOauth"
     current_shop = None
     @tornado.web.authenticated
-    def prepare(self):#todo:下面那句话突然不行了，why
-        #shop_id = self.get_secure_cookie("shop_id") or b'0'
-        shop_id=self.get_secure_cookie("shop_id") if not self.get_secure_cookie("shop_id") else b'0'
+    def prepare(self):
+        shop_id = self.get_secure_cookie("shop_id") or b'0'
         shop_id = int(shop_id.decode())
         if not self.current_user.shops:
             return self.finish("你还没有店铺，请先申请")
@@ -202,7 +202,7 @@ class StaffBaseHandler(_AccountBaseHandler):
             return self.finish("你还没有店铺，请先申请")
         if not shop_id:
             shop_id = self.current_user.shops[0].id
-            self.set_secure_cookie("staff_shop_id", str(self.shop_id), domain=ROOT_HOST_NAME)
+            self.set_secure_cookie("staff_shop_id", str(shop_id), domain=ROOT_HOST_NAME)
         elif not next((x for x in self.current_user.shops if x.id == shop_id), None):
             return self.finish('你不是这个店铺的员工,可能已经被解雇了')
         self.shop_id = shop_id
@@ -214,6 +214,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
     __account_model__ = models.Customer
     #__account_cookie_name__ = "customer_id"
     __wexin_oauth_url_name__ = "customerOauth"
+    @tornado.web.authenticated
     def save_cart(self, charge_type_id, shop_id, inc, menu_type):
         """
         用户购物车操作函数，对购物车进行修改或者删除商品：

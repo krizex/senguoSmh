@@ -17,7 +17,9 @@ from qiniu.services.storage.bucket import BucketManager
 
 class Home(AdminBaseHandler):
     _page_count =20
-
+    def prepare(self):
+        """prepare会在get、post等函数运行前运行，如果不想父类的prepare函数起作用的话就把他覆盖掉"""
+        pass
     def get(self):
         q = self.session.query(models.Shop).order_by(desc(models.Shop.id))\
             .filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
