@@ -7,10 +7,12 @@ $(document).ready(function(){
     //时间选项
     for(var i=0;i<=23;i++)
     {
+        if(i<=9) i='0'+i;
         $('.hour-list').append('<li>'+i+'</li>');
     }
     for(var i=0;i<=59;i++)
     {
+        if(i<=9) i='0'+i;
         $('.minute-list').append('<li>'+i+'</li>');
     }
     $('.choose-list li').on('click',function(){
@@ -79,14 +81,16 @@ $(document).ready(function(){
     });
     //商品件数统计
     $('.custom-order').each(function(){
-        var goods_item=$(this).find('.item');
+        var item=$(this).find('.item').find('.goods-number');
         var count=$(this).find('.goods-total-number');
-        for(var j=0;j<goods_item.length;j++)
+        var num=0;
+        var number;
+        for(var j=0;j<item.length;j++)
         {
-            console.log(j);
-            var num=0;
-            var number=Int(goods_item.eq(j).find('.goods-number').text());
+
+            number=Int(item.eq(j).text());
             num+=number;
+            console.log(num);
             count.text(num);
         }
     });

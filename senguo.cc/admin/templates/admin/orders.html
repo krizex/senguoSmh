@@ -358,7 +358,7 @@
                         <span class="pull-left tit">配送时间：</span>
                         <div class="input-group-btn">
                             <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
-                                <span class="time" id="NowStartHour">{{current_shop.config.start_time_now.hour or 0}}</span>
+                                <span class="time" id="NowStartHour">{{current_shop.config.start_time_now.hour or 00}}</span>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu hour-list choose-list" role="menu">
@@ -368,7 +368,7 @@
                         <span class="pull-left tit">：</span>
                         <div class="input-group-btn">
                             <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
-                                <span class="time" id="NowStartMinute">{{current_shop.config.start_time_now.minute or 0}}</span>
+                                <span class="time" id="NowStartMinute">{{current_shop.config.start_time_now.minute or 00}}</span>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu  minute-list choose-list" role="menu">
@@ -377,7 +377,7 @@
                         <span class="pull-left tit">&nbsp;至&nbsp;</span>
                         <div class="input-group-btn">
                             <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
-                                <span class="time" id="NowEndHour">{{current_shop.config.end_time_now.hour or 0}}</span>
+                                <span class="time" id="NowEndHour">{{current_shop.config.end_time_now.hour or 00}}</span>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu hour-list choose-list" role="menu">
@@ -386,7 +386,7 @@
                         <span class="pull-left tit">：</span>
                         <div class="input-group-btn">
                             <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
-                                <span class="time" id="NowEndMinute">{{current_shop.config.end_time_now.hour or 0}}</span>
+                                <span class="time" id="NowEndMinute">{{current_shop.config.end_time_now.minute or 00}}</span>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu minute-list choose-list" role="menu">
