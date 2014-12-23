@@ -50,9 +50,9 @@
 .w4{width:50px;}
 .w600{width:600px;}
 
-.tag-list a:focus{background:#44b549;color:#fff;}
-.tag-list a:hover{background:#44b549;color:#fff;}
-.tag-list a.active{background:#44b549;}
+.tag-list a:focus{background:#44b549 !important;color:#fff;}
+.tag-list a:hover{background:#44b549 !important;color:#fff;}
+.tag-list a.active{background:#44b549 !important;}
 
 .goods-edit-active:hover{cursor:pointer;}
 
