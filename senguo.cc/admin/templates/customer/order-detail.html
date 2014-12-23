@@ -1,0 +1,138 @@
+{% extends 'detail-base.html' %}
+{% block title %}我的订单{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/market-order-detail.css')}}"/>
+{% end %}
+{% block top %}订单详情{% end %}
+{% block content %}
+{% if order.status ==4 or order.status ==1 %}
+    {% set left='left50' %}
+    {% set width='width50'%}
+{% elif order.status == 5%}
+    {% set left='left100' %}
+    {% set width='width100' %}
+{% end %}
+{% set fruits=eval(order.fruits)%}
+{% set mgoods=eval(order.mgoods)%}
+<section class="main-container">
+    <header class="head-title clearfix">
+        <div class="circle-icon pull-left bg-green img-circle" >
+            <img src="{{static_url('images/order-icon.png')}}" alt="￥" />
+        </div>
+        <h4 class="pull-left">订单详情</h4>
+        <span class="order-status bg-green text-white pull-right font14">{{order.status}}</span>
+    </header>
+    <hr />
+    <div class="data-box" >
+        <div class="content" >
+            <p>订单编号：<span>{{order.id}}</span></p>
+            <p>下单时间：<span>{{order.create_date}}</span></p>
+            <p>配送时间：<span>{{order.start_time}}~{{order.end_time}}</span></p>
+            <p>收货地址：<span>{{order.address_text}}</span></p>
+            <p>联系电话：<span>{{order.phone}}</span></p>
+            <p>订单备注：<span>{{order.message or '无'}}</span></p>
+            <ul class="goods-list">
+                {% for key in  fruits%}
+                <li class="orderview-goods-item" >
+                    <div class="icon-container"  style="display:none;">
+                        <img src="/static/design_img/Cz.png" class="icon"/>
+                    </div>
+                    <div class="content-list-wrapper">
+                        <ul class="content-list bg">
+                            <li class="l1" >
+                                <span class="name color">{{fruits[key]['fruit_name']}}</span>
+                            </li>
+                            <li class="l2" >
+                                <span class="charge">{{fruits[key]['charge']}}</span>
+                                <span class="number-box" >
+                                    <span class="number">{{fruits[key]['num']}}</span>
+                                    <span class="bundle text-pink">x1</span>
+                                </span>
+                            </li>
+                            <li class="l3 color" >
+                                <div class="circle-icon bg-color" >
+                                    <img src="{{static_url('images/money-icon.png')}}" alt="￥" />
+                                </div>
+                                <span>小计：<span class="price">888</span>元</span>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                {% end %}
+                {% for key in  mgoods%}
+                <li class="orderview-goods-item" >
+                    <div class="icon-container"  style="display:none;">
+                        <img src="/static/design_img/Cz.png" class="icon"/>
+                    </div>
+                    <div class="content-list-wrapper">
+                        <ul class="content-list bg">
+                            <li class="l1" >
+                                <span class="name color">{{mgoods[key]['mgoods_name']}}</span>
+                            </li>
+                            <li class="l2" >
+                                <span class="charge">{{mgoods[key]['charge']}}</span>
+                                <span class="number-box" >
+                                    <span class="number">{{mgoods[key]['num']}}</span>
+                                    <span class="bundle text-pink">x1</span>
+                                </span>
+                            </li>
+                            <li class="l3 color" >
+                                <div class="circle-icon bg-color" >
+                                    <img src="{{static_url('images/money-icon.png')}}" alt="￥" />
+                                </div>
+                                <span>小计：<span class="price">888</span>元</span>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                {% end %}
+            </ul>
+            <p class="total-price" >
+                合计：
+                <span data-id="total-price">{{order.totalPrice}}</span>元
+                <!--<span data-id="includeFreight">
+                    (含运费<span data-id="freight"></span>元)
+                </span>-->
+            </p>
+        </div>
+    </div>
+    <hr />
+    <div id="status-box" >
+        {% if order.status ==1 %}
+        <div class="hint">
+            <p>订单还未开始处理</p>
+        </div>
+        {% end %}
+        <div class="status-bar-box">
+            <div class="status-bar">
+                <div class="inner bg-green {{width}}"></div>
+                <div class="circle-icon bg-green {{left}}"></div>
+                <div class="status-box {{left}}">
+                    <span class="status">
+                        {% if order.status ==1 %}
+                        已下单
+                        {% elif order.status == 4%}
+                        配送中
+                        {% else %}
+                        已送达
+                        {% end %}
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% if order.status !=1 %}
+        <p class="text-center">点击下方电话，可以直接拨号询问订单处理状态~^o^~</p>
+        {% end %}
+        <ul class="status-list list">
+            
+        </ul>
+    </div>
+    <hr />
+    <div class="text-center" >
+        <a class="btn bg-green text-white">再次下单</a>
+    </div>
+    <div id="box-border">
+    </div>
+</section>
+{% end %}
+{% block bottom %}<script src="{{static_url('js/market-order.js')}}"></script>{% end %}

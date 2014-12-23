@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta charset="UTF-8"/>
+    <title>{% block title%} {% end %}</title>
+    <link rel="stylesheet" href="{{static_url('css/bootstrap.min.css')}}"/>
+    <link rel="stylesheet" href="{{static_url('css/market-global.css')}}"/>
+    <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    {% block head %}{% end %}
+    <script>
+        window.dataObj = {
+            _xsrf: "{{handler.xsrf_token}}"};
+
+    </script>
+</head>
+<body>
+    <header class="detail-header bg-green text-white center-block">
+        <a href="javascript:history.back(-1)" class="return-btn pull-left"></a>
+        <span class="title pull-left font16">{% block top %}{% end %}</span>
+    </header>
+    <main class="container phone-box">
+        {% block content %}{% end %}
+        <a class="back-to-top set-inl-blo bg-green text-white text-center font14" id="backTop">Top</a>
+    </main>
+<script src="{{static_url('js/jquery.min.js')}}"></script>
+<script src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script src="{{static_url('js/global.js')}}"></script>
+<script src="{{static_url('js/market-public.js')}}"></script>
+{% block bottom %}{% end %}
+</body>
+</html>

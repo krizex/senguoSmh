@@ -225,4 +225,11 @@ class Order(CustomerBaseHandler):
             orders = [x for x in orders if x.status == 1 or x.status == 4]
         elif action == "finish":
             orders = [x for x in orders if x.status == 5 ]
-        return self.render("customer/order-list.html", orders=orders,context=dict(subpage='center'))
+        return self.render("customer/order-list.html", orders=orders)
+
+class OrderDetail(CustomerBaseHandler):
+    @tornado.web.authenticated
+    def get(self,order_id):
+        try:order = self.session.query(models.Order).filter_by(id=order_id).one()
+        except:return self.send_error(404)
+        return self.render("customer/order-detail.html", order=order)

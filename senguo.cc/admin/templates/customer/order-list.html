@@ -1,36 +1,56 @@
-{% extends 'base.html' %}
+{% extends 'detail-base.html' %}
 {% block title %}我的订单{% end %}
 {% block head %}
-<link rel="stylesheet" href="{{static_url('css/market-center.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/market-order-list.css')}}"/>
 {% end %}
+{% block top %}我的订单{% end %}
 {% block content %}
-<ul class="bg-white">
+<ul class="order-list bg-white">
     {% for order in orders %}
-    <li class="order-list-item" >
-        <a data-id="link" href="">
-            <header >
-                <p>订单编号：<span data-id="id">{{order.id}}</span></p>
+    {% set left=''%}
+    {% set width=''%}
+    {% if order.status ==4 %}
+        {% set left='left50' %}
+        {% set width='width50'%}
+    {% elif order.status == 5%}
+        {% set left='left100' %}
+        {% set width='width100' %}
+    {% end %}
+     <li class="order-list-item" >
+        <a href="{{reverse_url('customerOrderDetail',order.id)}}" class="detail-link">
+            <header class="font14">
+                <span class="pull-left">订单编号：<span>{{order.id}}</span></span>
                 <img class="icon" src="{{static_url('images/icon-arrow-right.png')}}"/>
+                <span class="pull-right p010">物流详情</span>
             </header>
         </a>
         <div class="content" >
-            <p class="p1" >商品：
-                <span data-id="summary">
-
-                </span>
-                送至：<span data-id="address">{{order.address_text}}</span>
-            </p>
+            <p class="p1" >送至：<span>{{order.address_text}}</span></p>
             <p class="p2" >
-                <span data-id="deliveryTime">预计今天{{order.start_time}}~{{order.end_time}}送达</span>
-                <a data-id="cancel" class="cancel" > 取消订单</a>
-                <span class="price-box"><span class="price">{{order.totalPrice}}</span>元</span>
+                <span>预计：今天&nbsp;&nbsp;{{order.start_time}}~{{order.end_time}}&nbsp;&nbsp;送达</span>
+                <span class="price-box pull-right text-pink"><span class="price font18">{{order.totalPrice}}</span>元</span>
             </p>
-            <div class="status-bar-box" data-id="status-bar-box" >
-                <div class="status-bar" data-id="status-bar" >
-                    <div class="inner" data-id="inner" ></div>
-                    <div class="circle-icon" data-id="circle" ></div>
-                    <div class="status-box" data-id="status-box"  >
-                        <span class="status" data-id="status" ></span>
+            <p>
+                {% if order.status ==1 %}
+                <a class="cancel">取消订单</a>
+                {% else %}
+                <span>订单已开始处理</span>
+                {% end %}
+            </p>
+            <div class="status-bar-box">
+                <div class="status-bar">
+                    <div class="inner {{width}}"></div>
+                    <div class="circle-icon {{left}}"></div>
+                    <div class="status-box {{left}}">
+                        <span class="status">
+                            {% if order.status ==1 %}
+                            已下单
+                            {% elif order.status == 4%}
+                            配送中
+                            {% else %}
+                            已送达
+                            {% end %}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -39,4 +59,4 @@
     {% end %}
 </ul>
 {% end %}
-{% block bottom %}<script src="{{static_url('js/market-center.js')}}"></script>{% end %}
+{% block bottom %}<script src="{{static_url('js/market-order.js')}}"></script>{% end %}
