@@ -196,7 +196,10 @@ class StaffBaseHandler(_AccountBaseHandler):
     shop_id = None
     @tornado.web.authenticated
     def prepare(self):
-        shop_id = self.get_secure_cookie("staff_shop_id") or b'0'
+        cookie = self.get_secure_cookie("staff_shop_id")
+        if not cookie:shop_id=b'0'
+        else:shop_id=cookie
+        #shop_id = self.get_secure_cookie("staff_shop_id") or b'0'
         shop_id = int(shop_id.decode())
         if not self.current_user.shops:
             return self.finish("你还没有店铺，请先申请")
@@ -206,8 +209,10 @@ class StaffBaseHandler(_AccountBaseHandler):
         elif not next((x for x in self.current_user.shops if x.id == shop_id), None):
             return self.finish('你不是这个店铺的员工,可能已经被解雇了')
         self.shop_id = shop_id
-        self.current_user.work = self.session.query(models.HireLink).filter_by(
-            staff_id=self.current_user.id, shop_id=self.shop_id).one().work
+        hirelink = self.session.query(models.HireLink).filter_by(
+            staff_id=self.current_user.id, shop_id=self.shop_id).one()
+        self.current_user.work = hirelink.work
+
 
 
 class CustomerBaseHandler(_AccountBaseHandler):

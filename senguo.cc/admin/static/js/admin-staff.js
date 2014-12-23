@@ -7,13 +7,13 @@ $(document).ready(function(){
     //通过申请
     $('.accept-hire').on('click',function(){
         var $this=$(this);
-        var id=$this.parents('.hire-form-item').data('id');
+        var id=$this.parents('.hire-form').data('id');
         hireConfig($this,'hire_agree',id);
     });
     //拒绝申请
     $('.reject-hire').on('click',function(){
         var $this=$(this);
-        var id=$this.parents('.hire-form-item').data('id');
+        var id=$this.parents('.hire-form').data('id');
         hireConfig($this,'hire_refuse',id);
     });
     //启用招募令
@@ -30,6 +30,17 @@ $(document).ready(function(){
         $this.hide().siblings('#hire_config_on').show();
         $this.parents('.mode-set').siblings('.mode-content').removeClass('unlock-mode').addClass('lock-mode').find('.lock').text('关闭');
     });
+    //员工备注添加
+    $('.staffEdit').on('click',function(){
+        var $this=$(this);
+        staffEdit($this);
+    });
+
+    toggle('.staff-info','.staff-info-edit');
+    //员工上下班
+    $('.staff-work-mode').on('click',function(){
+
+    })
 });
 
 function hireConfig(target,action,val){
@@ -57,15 +68,41 @@ function hireConfig(target,action,val){
             $('.modal').modal('hide');
             if(action=='hire_agree')
             {
-                target.parents('.manage-btn').find('.btn').hide();
-                target.parents('.manage-btn').find('.status').removeClass('text-pink').addClass('text-green').text('通过');
+                target.parents('.staff-list-item').find('.hire-status').removeClass('bg-pink').addClass('bg-green').text('通过');
             }
             else if(action=='hire_refuse')
             {
-                target.parents('.manage-btn').find('.btn').hide();
-                target.parents('.manage-btn').find('.status').removeClass('text-pink').addClass('text-grey').text('未通过');
+                target.parents('.staff-list-item').find('.hire-status').removeClass('bg-pink').addClass('bg-grey').text('未通过');
             }
+            target.parents('.staff-list-item').find('.staff-info-edit').hide();
         }
-    },function(){}
+        else return alert(res.error_text)
+    },function(){return alert('网络错误！')}
     )
+}
+
+function staffEdit(target){
+    var url='';
+    var action='edit_staff';
+    var parent=target.parents('.staff-info-detail');
+    var id=target.data('id');
+    var remark=parent.find('.staff-remark').val();
+    if(!remark) remark='';
+    var data={
+        staff_id:id,
+        remark:remark
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    console.log(args);
+    $.postJson(url,args,function(res){
+        if(res.success){
+            parent.hide();
+        }
+        else return alert(res.error_text)
+    },function(){return alert('网络错误！')}
+    );
+
 }

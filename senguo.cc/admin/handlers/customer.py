@@ -67,7 +67,7 @@ class Home(CustomerBaseHandler):
                 count[5]+=1
             elif order.status == 6:
                 count[6]+=1
-        return self.render("", count=count)
+        return self.render("customer/personal-center.html", count=count,context=dict(subpage='center'))
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action", "data")
     def post(self):
@@ -215,3 +215,14 @@ class Notice(CustomerBaseHandler):
     def get(self,shop_id):
         return self.render("notice/order-success.html",context=dict(subpage='cart'))
 
+class Order(CustomerBaseHandler):
+    @tornado.web.authenticated
+    @CustomerBaseHandler.check_arguments("action")
+    def get(self,shop_id):
+        action = self.args["action"]
+        orders = self.current_user.orders
+        if action == "waiting":
+            orders = [x for x in orders if x.status == 1 or x.status == 4]
+        elif action == "finish":
+            orders = [x for x in orders if x.status == 5 ]
+        return self.render("customer/order-list.html", orders=orders,context=dict(subpage='center'))

@@ -1,0 +1,21 @@
+.box-style{border:1px solid #ddd;padding:10px 0;}
+.user-info{position:relative;}
+.user-info .img{max-width:100px;}
+.user-info .code{margin-top:6%;}
+.user-info .user-sex{display:inline-block;background:url('../images/container-icon2.png') no-repeat;width:12px;height:20px;}
+.user-info .female{background-position: -20px -13px;}
+.user-info .male{background-position:0 -28px;}
+
+.title{text-indent:20px;}
+.center-nav{}
+.center-nav li{border-left:1px solid #ddd;border-top:1px solid #ddd;}
+.center-nav li p{margin-bottom:5px !important;}
+
+.edit-btn{background:url("../images/container-icon.gif") no-repeat 10px -41px;display:inline-block;height:28px;line-height:28px;padding:0 15px;}
+.delete-btn{display:inline-block;background:url("../images/container-icon.gif") no-repeat 0 3px;height:26px;line-height:26px;padding:0 10px;}
+
+.address-item{padding:5px 15px;border:none;border-top:1px solid #ddd;}
+.address-box .modal-body{padding:10px 20px;}
+.address-box .modal-body p{margin-bottom:5px;margin-top:5px;}
+.address-box .modal-body .w60{width:70%;}
+.address-box .modal-body input{width:100%;border:1px solid #ccc;padding:2px;}

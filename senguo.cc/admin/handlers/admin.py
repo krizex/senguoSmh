@@ -372,16 +372,16 @@ class Staff(AdminBaseHandler):
             staffs = [x for x in staffs if x.id in [hire_link.staff_id for hire_link in hire_links]]
             subpage='staff'
             staffSub='jh'
-        elif action == "TH1":
+        elif action == "SH1":
             hire_links = self.session.query(models.HireLink).filter_by(shop_id=self.current_shop.id, work=2).all()
             staffs = [x for x in staffs if x.id in [hire_link.staff_id for hire_link in hire_links]]
             subpage='staff'
-            staffSub='th1'
-        elif action == "TH2":
+            staffSub='sh1'
+        elif action == "SH2":
             hire_links = self.session.query(models.HireLink).filter_by(shop_id=self.current_shop.id, work=3).all()
             staffs = [x for x in staffs if x.id in [hire_link.staff_id for hire_link in hire_links]]
             subpage='staff'
-            staffSub='th2'
+            staffSub='sh2'
         elif action == "hire":
             hire_forms = self.session.query(models.HireForm).filter_by(shop_id=self.current_shop.id).all()
             return self.render("admin/staff.html", hire_forms=hire_forms,
@@ -420,8 +420,7 @@ class Staff(AdminBaseHandler):
             try:hire_link = self.session.query(models.HireLink).filter_by(
                 staff_id=data["staff_id"],shop_id=self.current_shop.id).one()
             except:return self.send_error(404)
-            staff.update(session=self.session, work=data["work"], address1=data["address1"],
-                             address2=data["address2"], remark=data["remark"])
+            staff.update(session=self.session, remark=data["remark"])
         else:
             return self.send_fail()
         return self.send_success()

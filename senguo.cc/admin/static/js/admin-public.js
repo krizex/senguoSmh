@@ -31,3 +31,14 @@ function Int(target){
     return target;
 }
 
+function toggle(trigger,target){
+    $(trigger).on('click',function(){
+        $(this).siblings(target).toggle();
+    })
+}
+
+function hide(trigger,target){
+    $(trigger).on('click',function(){
+        target.hide();
+    })
+}

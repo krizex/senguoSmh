@@ -28,6 +28,8 @@
 
 .classify-title{text-indent:14px;padding:5px;}
 
+.modal-dialog{width:100%;max-width:300px;}
+
 #notice-board{position:relative;}
 #notice-board #title-img{margin-top:20px;width:190px;}
 #notice-board #line1,#notice-board #line2{float:left;display:inline-block;height:205px;border-right:2px solid #f9edd9}#notice-board li{margin:15px;font-size:15px}
@@ -41,3 +43,4 @@
 #notice-board .content-wrapper .content{position:absolute;top:0;overflow-y:auto;width:100%;left:0;text-align:center;}
 #notice-board .content-list{font-size:16px;color:#999}
 #notice-board .content-list strong{color:#fd7271;font-weight:normal}
+
