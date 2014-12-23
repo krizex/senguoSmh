@@ -9,7 +9,9 @@ import qiniu
 class Access(AdminBaseHandler):
     def initialize(self, action):
         self._action = action
-
+    def prepare(self):
+        """prepare会在get、post等函数运行前运行，如果不想父类的prepare函数起作用的话就把他覆盖掉"""
+        pass
     def get(self):
         next_url = self.get_argument('next', '')
         if self._action == "login":
