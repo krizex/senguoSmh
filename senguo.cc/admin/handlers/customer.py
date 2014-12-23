@@ -9,9 +9,6 @@ import qiniu
 class Access(CustomerBaseHandler):
     def initialize(self, action):
         self._action = action
-    def prepare(self):
-        """prepare会在get、post等函数运行前运行，如果不想父类的prepare函数起作用的话就把他覆盖掉"""
-        pass
     def get(self):
         next_url = self.get_argument('next', '')
         if self._action == "login":
@@ -218,14 +215,15 @@ class Notice(CustomerBaseHandler):
 class Order(CustomerBaseHandler):
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action")
-    def get(self,shop_id):
+    def get(self, shop_id):
         action = self.args["action"]
-        orders = self.current_user.orders
-        if action == "waiting":
-            orders = [x for x in orders if x.status == 1 or x.status == 4]
-        elif action == "finish":
-            orders = [x for x in orders if x.status == 5 ]
-        return self.render("customer/order-list.html", orders=orders)
+        orders = []
+        if action == "waiting":#待收货
+            orders = [x for x in self.current_user.orders if x.shop_id == int(shop_id) and x.status in (1, 2, 3, 4)]
+        elif action == "finish":#已完成
+            orders = [x for x in self.current_user.orders if x.shop_id == int(shop_id) and x.status == 5]
+        else:return self.send_error(404)
+        return self.render("customer/order-list.html", orders=orders, context=dict(subpage='center'))
 
 class OrderDetail(CustomerBaseHandler):
     @tornado.web.authenticated

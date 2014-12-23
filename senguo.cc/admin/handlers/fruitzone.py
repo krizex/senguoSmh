@@ -200,7 +200,7 @@ class ShopApply(AdminBaseHandler):
             if len(self.current_user.shops) >= self.MAX_APPLY_COUNT:
                 return self.send_fail(error_text="您申请的店铺数量超过限制！最多能申请{0}家".format(self.MAX_APPLY_COUNT))
             try:
-               self.current_user.add_shop(self.session,
+               self.session.add(models.ShopTemp(self.session, admin_id=self.current_user.id,
                   shop_name=self.args["shop_name"],
                   shop_province=self.args["shop_province"],
                   shop_city = self.args["shop_city"],
@@ -209,9 +209,10 @@ class ShopApply(AdminBaseHandler):
                   shop_service_area=self.args["shop_service_area"],
                   shop_intro=self.args["shop_intro"],
                   shop_trademark_url=img_url
-               )
+               ))
+               self.session.commit()
             except:
-               return self.send_fail(error_text = "城市编码错误！")
+               return self.send_fail(error_text = "店铺申请失败，具体原因请联系森果")
             return self.send_success()
 
         elif self._action == "reApply":
@@ -219,23 +220,23 @@ class ShopApply(AdminBaseHandler):
                 return  self.send_error(404)
             shop_id = self.args["shop_id"]
             try:
-                shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
+                shop_temp = self.session.query(models.ShopTemp).filter_by(id=shop_id).one()
             except:
-                shop = None
-            if not shop:
+                shop_temp = None
+            if not shop_temp:
                 return self.send_error(404)
-            shop.update(session=self.session,shop_name = self.args["shop_name"])
-            shop.update(session=self.session,shop_province = self.args["shop_province"])
-            shop.update(session=self.session,shop_city = self.args["shop_city"])
-            shop.update(session=self.session,shop_address_detail = self.args["shop_address_detail"])
-            shop.update(session=self.session,have_offline_entity = self.args["have_offline_entity"])
-            shop.update(session=self.session,shop_service_area = self.args["shop_service_area"])
-            shop.update(session=self.session,shop_intro = self.args["shop_intro"])
-            if shop.shop_trademark_url:  #先要把旧的的图片删除
+            shop_temp.update(session=self.session, shop_name=self.args["shop_name"],
+                        shop_province=self.args["shop_province"],
+                        shop_city=self.args["shop_city"],
+                        shop_address_detail=self.args["shop_address_detail"],
+                        have_offline_entity=self.args["have_offline_entity"],
+                        shop_service_area=self.args["shop_service_area"],
+                        shop_intro=self.args["shop_intro"],
+                        shop_status = models.SHOP_STATUS.APPLYING)
+            if (not img_url) and shop_temp.shop_trademark_url:  #先要把旧的的图片删除
                 m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
                 m.delete(bucket=BUCKET_SHOP_IMG, key=shop.shop_trademark_url.split('/')[3])
-            shop.update(session=self.session,shop_trademark_url = img_url)
-            shop.update(session=self.session,shop_status = models.SHOP_STATUS.APPLYING)
+                shop_temp.update(session=self.session, shop_trademark_url=img_url)
             return self.send_success()
 
 class ShopApplyImg(AdminBaseHandler):
@@ -274,7 +275,9 @@ class Shop(AdminBaseHandler):
 class AdminShops(AdminBaseHandler):
    @tornado.web.authenticated
    def get(self):
-       return self.render("fruitzone/shops.html", context=dict(shops=self.current_user.shops,collect=False))
+       shop_temps = self.session.query(models.ShopTemp).filter_by(admin_id=self.current_user.id).all()
+       return self.render("fruitzone/shops.html", context=dict(shops=self.current_user.shops,
+                                                               shop_temps=shop_temps, collect=False))
 
 class AdminShopsCollect(AdminBaseHandler):
    @tornado.web.authenticated

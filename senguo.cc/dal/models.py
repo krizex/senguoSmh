@@ -294,25 +294,22 @@ class SuperAdmin(MapBase, _AccountApi):
     def __repr__(self):
         return "<SuperAdmin ({nickname}, {id})>".\
             format(id=self.id, nickname=self.accountinfo.nickname)
-
-class Shop(MapBase, _CommonApi):
-    __relationship_props__ = ["admin", "demand_fruits", "onsale_fruits"]
-    
-    
+class ShopTemp(MapBase, _CommonApi):
+    """申请中和拒绝的店铺放在临时表中"""
     def __init__(self, **kwargs):
-        if "shop_province" in kwargs or "shop_city" in kwargs:
+        if ("shop_province" in kwargs) and ("shop_city" in kwargs):
             if not self._check_city_code(
                     kwargs["shop_province"], kwargs["shop_city"]):
                 raise DistrictCodeError
         # 如果没有二级city，将city设为province
         if not "shop_city" in kwargs:
-            kwargs["shop_city"] = "shop_province"
+            kwargs["shop_city"] = kwargs["shop_province"]
 
         if not "create_date_timestamp" in kwargs:
             kwargs["create_date_timestamp"] = time.time()
 
         super().__init__(**kwargs)
-    
+
     def _check_city_code(self, shop_province, shop_city):
         if shop_province not in dis_dict.keys():
             return False
@@ -322,6 +319,26 @@ class Shop(MapBase, _CommonApi):
             return False
         return True
 
+    __tablename__ = "shop_temp"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    admin_id = Column(Integer,nullable=False)
+    shop_name = Column(String(128), nullable=False)
+    create_date_timestamp = Column(Integer, nullable=False)
+    shop_status = Column(Integer, default=SHOP_STATUS.APPLYING)
+    declined_reason = Column(String(256), default="")
+    shop_trademark_url = Column(String(2048))
+    shop_service_area = Column(Integer, default=SHOP_SERVICE_AREA.OTHERS)
+    # 地址
+    shop_province = Column(Integer)
+    shop_city = Column(Integer)
+    shop_address_detail = Column(String(1024), nullable=False)
+    # 是否做实体店
+    have_offline_entity = Column(Boolean, default=False)
+    # 店铺介绍
+    shop_intro = Column(String(568))
+class Shop(MapBase, _CommonApi):
+    __relationship_props__ = ["admin", "demand_fruits", "onsale_fruits"]
     __tablename__ = "shop"
     
     id = Column(Integer, primary_key=True, nullable=False)
@@ -329,7 +346,6 @@ class Shop(MapBase, _CommonApi):
     shop_code = Column(String(128), nullable=False, default="not set")
     create_date_timestamp = Column(Integer, nullable=False)
     shop_status = Column(Integer, default=SHOP_STATUS.APPLYING)
-    declined_reason = Column(String(256), default="")
 
     admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
     admin = relationship("ShopAdmin")
