@@ -3,13 +3,23 @@
 <link rel="stylesheet" href="{{static_url('css/staff-home.css')}}" type="text/css" />
 {% end %}
 {% block content %}
-<section data-id="content-wrapper" class="content-wrapper" >
-	<p data-id="notice-msg" class="notice-msg" style="display:none;" ></p>
-    <div class="user-img center-block"><img src="{{current_user.accountinfo.headimgurl}}" class="img-circle"/></div>
+<section class="content-wrapper" >
+	<p class="notice-msg" style="display:none;" ></p>
+    <div class="user-img center-block">
+        <img src="{{current_user.accountinfo.headimgurl}}" class="img-circle"/>
+    </div>
 	<h3 class="name">{{current_user.accountinfo.nickname}}</h3>
 	<h5 class="username">{{current_user.accountinfo.realname}}</h5>
- 	<h5 >职务：-<span class="job" ></span></h5>
-    <a href="/staff/order" class="btn btn-large text-white bg-green">当前订单</a>
+ 	<h5 >职务：-<span class="job" >
+        {% if current_user.work == 1%}
+        捡货员
+        {% elif current_user.work == 2%}
+        送货员
+        {% else %}
+        送货员
+        {% end %}
+ 	</span></h5>
+    <a href="{{reverse_url('staffOrder')}}?order_type=now" class="btn btn-large text-white bg-green">当前订单</a>
 	<hr />
 	<div class="charge-money-box" data-id="charge-money-box">
 		<h4><strong >已收货款：<span data-id="current-charge-money" >0</span>元</strong></h4>
@@ -22,8 +32,4 @@
 		<p>工资在结清后会由管理员进行更改</p>
 	</div>
 </section>
-<script type="text/javascript">
-document.querySelector('.job').innerText = '送货'
-</script>
 {% end %}
-{% block bottom %}<script type="text/javascript" src="{{static_url('js/staff-home.js')}}"></script>{% end %}

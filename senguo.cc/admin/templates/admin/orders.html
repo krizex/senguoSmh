@@ -191,8 +191,10 @@
                             <span class="status">已确认收货</span>
                         </div>
                     </div>
+                    {% if order.status!=5 %}
                     <a class="edit-btn position pull-right status_edit" href="javascript:;" style="display:none;">&nbsp;</a>
                     <a class="check-btn  position pull-right status_check" href="javascript:;" style="display:none;">&nbsp;</a>
+                    {% end %}
                 </div>
                 <!--order-status-end-->
             </div>
@@ -243,47 +245,17 @@
                             元
                         </p>
                     </div>
+                    {% if order.status!=5 %}
                     <a class="edit-btn position price_edit" href="javascript:;" style="display:none;">&nbsp;</a>
                     <a class="check-btn  position price_check" href="javascript:;" style="display:none">&nbsp;</a>
+                    {% end %}
                 </div>
                 <div class="order-notice clearfix">
                     <input type="text" placeholder="订单备注" class="notice_input pull-left" value="{{order.remark or ''}}"/>
                     <a class="check-btn  notice_check pull-left" href="javascript:;" style="display:none">&nbsp;</a>
                 </div>
                 <div class="address-adapt">
-                    <!--<ul class="adapt-status">
-                        <li class="active">地址已适配</li>
-                        <li>地址未适配</li>
-                    </ul>
-                    <p>拣货员</p>
-                    <div class="collect-person">
-                        <span>JH-1111#</span>||
-                        <span>仓库拣货员10A</span>||
-                        <div class="input-group-btn">
-                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
-                                <span>1590000000</span>
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="#">159111111</a></li>
-                            </ul>
-                        </div>
-                    </div>-->
                     <p>一级配送员</p>
-                    <!--<div class="send-person">
-                        <span>S1-2222#</span>||
-                        <span>一级送货员10A</span>||
-                        <div class="input-group-btn">
-                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
-                                <span>华科西边-紫松、西三舍、男</span>
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="#">华科西边-紫松、西三舍、男</a></li>
-                                <li><a href="#">华科西边-紫松、西五舍、男</a></li>
-                            </ul>
-                        </div>
-                    </div>-->
                     <div class="send-person-area-select">
                         <ul class="send-person-area right-nav">
                             {% for SH2 in SH2s%}
@@ -294,10 +266,12 @@
                                 </li>
                             {% end %}
                         </ul>
+                        {% if order.status!=5 %}
                         <div class="select-btn">
                             <input type="submit" value="确认" class="sure-btn staff-edit"/>
                             <input type="button" value="取消" class="concel-btn"/>
                         </div>
+                        {% end %}
                     </div>
                 </div>
                 <!--address-adapt-end-->
@@ -331,29 +305,6 @@
                         <span class="pull-left tit">起送金额：</span>
                         <input class="pull-left money" type="number" value="{{current_shop.config.min_charge_now or 0}}" id="sendNowMoney"/>
                     </li>
-                   <!-- <li class="send-area">
-                        <span class="pull-left tit">配送区域：</span>
-                        <div class="input-group-btn area1">
-                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
-                                <span>地大</span>
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="#">地大</a></li>
-                                <li><a href="#">地大</a></li>
-                            </ul>
-                        </div>
-                        <div class="input-group-btn area2">
-                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
-                                <span>新峰、62栋、63栋</span>
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="#">新峰、62栋、63栋</a></li>
-                                <li><a href="#">新峰、62栋、63栋</a></li>
-                            </ul>
-                        </div>
-                    </li>-->
                     <li class="send-time set-width-float">
                         <span class="pull-left tit">配送时间：</span>
                         <div class="input-group-btn">
@@ -526,9 +477,9 @@
                 <div class="btn-box">
                     <button type="button" class="pull-right modal-concel-btn" href="javascript:;" data-dismiss="modal">取消</button>
                     {% if order_type ==1 %}
-                    <button type="button" class="pull-left modal-sure-btn" href="#" id="sendNowConfig">确认</button>
+                    <button type="button" class="pull-left modal-sure-btn" href="javascript:;" id="sendNowConfig">确认</button>
                     {% else %}
-                    <button type="button" class="pull-left modal-sure-btn" href="#">确认</button>
+                    <button type="button" class="pull-left modal-sure-btn" href="javascript:;" data-dismiss="modal">确认</button>
                     {% end %}
                 </div>
             </div>

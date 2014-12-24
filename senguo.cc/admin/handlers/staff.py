@@ -57,8 +57,8 @@ class Access(StaffBaseHandler):
         return self.redirect(next_url)
 
 class Home(StaffBaseHandler):
-    def prepare(self):
-        pass
+    #def prepare(self):
+    #    pass
     @tornado.web.authenticated
     def get(self):
         return self.render("staff/home.html", page="home")
@@ -81,6 +81,7 @@ class Order(StaffBaseHandler):
         work = q.one().work
         self.current_user.work = work #增加work属性
         orders = []
+        page = ''
         if work == 1: #JH
             orders = self.session.query(models.Order).filter_by(
                 JH_id=self.current_user.id, status=models.ORDER_STATUS.JH)
@@ -94,14 +95,16 @@ class Order(StaffBaseHandler):
             pass
         if order_type == "now":
             orders = orders.filter_by(type=1).order_by(desc(models.Order.create_date)).all()
+            page='now'
         elif order_type == "on_time":
             orders = orders.filter_by(type=2).order_by(models.Order.start_time).all()
             day = datetime.datetime.now().day
             orders = [x for x in orders if (x.today == 1 and x.create_date.day == day) or
                       (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
+            page = 'on_time'
         else:
             return self.send_error(404)
-        return self.render("staff/orders.html", orders=orders, page="orders")
+        return self.render("staff/orders.html", orders=orders, page=page)
 
     @tornado.web.authenticated
     @StaffBaseHandler.check_arguments("action", "order_id")

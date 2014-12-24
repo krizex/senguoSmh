@@ -8,7 +8,6 @@
     <meta charset="UTF-8"/>
     <title>员工后台管理系统</title>
     <link rel="stylesheet" href="{{static_url('css/bootstrap.min.css')}}"/>
-    <link rel="stylesheet" href="{{static_url('css/admin-style.css')}}"/>
     <link rel="stylesheet" href="{{static_url('css/staff-global.css')}}" type="text/css" />
     <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
@@ -16,30 +15,49 @@
 </head>
 <body>
     <div class="main-container container bg-white" >
-        <div class="header"></div>
+        <div class="header text-center bg-green text-white font16 shop_change" data-toggle="modal" data-target="#shopList">
+            {{current_user.shop_id}}
+            <span class="caret"></span>
+        </div>
         {% block content %}{% end %}
         <div class="footer">
             {% set home_active='' %}
-            {% set order_active='' %}
+            {% set now_active='' %}
+            {% set time_active='' %}
             {% if page == 'home' %}
                 {% set home_active='active' %}
-            {% elif page == 'orders' %}
-                {% set order_active='active' %}
+            {% elif page == 'now' %}
+                {% set now_active='active' %}
+            {% elif page == 'on_time' %}
+                {% set time_active='active' %}
             {% end %}
             <ul class="bottom-nav row font14 bg-green navbar-fixed-bottom">
                 <li id="header-home-btn" class="col-xs-3 col-sm-3 {{home_active}}">
                     <a href="{{reverse_url('staffHome')}}" class="text-white">首页</a>
                 </li>
-                <li id="header-orders-btn" class="col-xs-3 col-sm-3 {{order_active}}">
-                    <a href="{{reverse_url('staffOrder')}}" class="text-white">按时达</a>
+                <li id="header-orders-btn" class="col-xs-3 col-sm-3 {{now_active}}">
+                    <a href="{{reverse_url('staffOrder')}}?order_type=now" class="text-white">立即送</a>
                 </li>
-                <li id="header-orders-btn" class="col-xs-3 col-sm-3 {{order_active}}">
-                    <a href="{{reverse_url('staffOrder')}}" class="text-white">立即送</a>
+                <li id="header-orders-btn" class="col-xs-3 col-sm-3 {{time_active}}">
+                    <a href="{{reverse_url('staffOrder')}}?order_type=on_time" class="text-white">按时达</a>
                 </li>
                 <li id="header-history-btn" class="col-xs-3 col-sm-3">
                     <a href="{{reverse_url('staffHome')}}" class="text-white">记录</a>
                 </li>
             </ul>
+        </div>
+    </div>
+    <div class="modal fade shop-list-box" id="shopList" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <ul class="list-group well mb-0 shop-list">
+                    {% for shop in current_user.shops%}
+                    <li data-id="{{shop.id}}" class="list-group-item font14">
+                        <a tabindex="-1" href="javascript:;" class="text-green">{{shop.shop_name}}</a>
+                    </li>
+                    {% end %}
+                </ul>
+            </div>
         </div>
     </div>
 </body>
@@ -50,5 +68,6 @@
 <script src="{{static_url('js/jquery.min.js')}}"></script>
 <script src="{{static_url('js/bootstrap.min.js')}}"></script>
 <script src="{{static_url('js/global.js')}}"></script>
+<script src="{{static_url('js/staff-public.js')}}"></script>
 {% block bottom %}{% end %}
 </html>
