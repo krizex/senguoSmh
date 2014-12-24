@@ -58,7 +58,7 @@ class Home(CustomerBaseHandler):
     def get(self):
         count={4:0,5:0,6:0}#4:待收货，5：已完成，6：售后订单
         for order in self.current_user.orders:
-            if order.status in [2,3,4]:
+            if order.status in [1,2,3,4]:
                 count[4]+=1
             elif order.status == 5:
                 count[5]+=1
@@ -95,6 +95,7 @@ class Home(CustomerBaseHandler):
 class Market(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self, shop_id):
+        self.set_cookie("market_shop_id", shop_id)
         try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
         except:return self.send_error(404)
         try:cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
@@ -124,23 +125,25 @@ class Market(CustomerBaseHandler):
 
 class Cart(CustomerBaseHandler):
     @tornado.web.authenticated
-    def get(self,shop_id):
-        shop_id = int(shop_id)
-        try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
-        except:return self.send_error(404)
-        cart = next((x for x in self.current_user.carts if x.shop_id==shop_id), None)
+    def get(self):
+        shop_id = int(self.get_cookie("market_shop_id"))  #todo：如果没有cookie呢？
+        shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
+        if not shop:return self.send_error(404)
+        cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
         if not cart or (not (eval(cart.fruits) or eval(cart.mgoods))): #购物车为空
             return self.render("notice/cart-empty.html",context=dict(subpage='cart'))
         cart_f, cart_m = self.read_cart(shop_id)
 
         periods = [x for x in shop.config.periods if x.active == 1]
-        return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, periods=periods,context=dict(subpage='cart'))
+        return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m,
+                           periods=periods, context=dict(subpage='cart'))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
                                          "address_id:int", "message:str", "type:int",
                                          "today:int")
-    def post(self,shop_id):#提交订单
+    def post(self):#提交订单
+        shop_id = int(self.get_cookie("market_shop_id"))
         fruits = self.args["fruits"]
         mgoods = self.args["mgoods"]
         unit = {1:"个", 2:"斤", 3:"份"}
@@ -209,15 +212,17 @@ class Cart(CustomerBaseHandler):
         return self.send_success()
 
 class Notice(CustomerBaseHandler):
-    def get(self,shop_id):
+    def get(self):
         return self.render("notice/order-success.html",context=dict(subpage='cart'))
 
 class Order(CustomerBaseHandler):
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action")
-    def get(self, shop_id):
+    def get(self):
         action = self.args["action"]
         orders = []
+        if action == "all":#全部
+            orders = [x for x in self.current_user.orders if x.status in (1, 2, 3, 4,5)]
         if action == "waiting":#待收货
             orders = [x for x in self.current_user.orders if x.status in (1, 2, 3, 4)]
         elif action == "finish":#已完成
@@ -228,6 +233,11 @@ class Order(CustomerBaseHandler):
 class OrderDetail(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self,order_id):
-        try:order = self.session.query(models.Order).filter_by(id=order_id).one()
-        except:return self.send_error(404)
-        return self.render("customer/order-detail.html", order=order)
+        order = next((x for x in self.current_user.orders if x.id == int(order_id)), None)
+        if not order:return self.send_error(404)
+        charge_types = self.session.query(models.ChargeType).filter(
+            models.ChargeType.id.in_(eval(order.fruits).keys())).all()
+        mcharge_types = self.session.query(models.MChargeType).filter(
+            models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
+        return self.render("customer/order-detail.html", order=order,
+                           charge_types=charge_types, mcharge_types=mcharge_types)

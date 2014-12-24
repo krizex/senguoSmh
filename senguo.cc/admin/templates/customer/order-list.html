@@ -5,6 +5,9 @@
 {% end %}
 {% block top %}我的订单{% end %}
 {% block content %}
+{% if len(orders) == 0%}
+    <h4 class="text-center">暂无订单！</h4>
+{% end %}
 <ul class="order-list bg-white">
     {% for order in orders %}
     {% set left=''%}

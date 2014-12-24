@@ -172,11 +172,11 @@ class ShopApply(AdminBaseHandler):
 
             return self.render("fruitzone/apply.html", context=dict(reApply=False))
         elif self._action == "reApply":
-            if not "shop_id" in self.args:
-                return  self.send_error(404)
+            if "shop_id" not in self.args:
+                return self.send_error(404)
             shop_id = self.args["shop_id"]
             try:
-                shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
+                shop = self.session.query(models.ShopTemp).filter_by(id=shop_id).one()
             except:
                 shop = None
             if not shop:
@@ -199,20 +199,19 @@ class ShopApply(AdminBaseHandler):
             # 这种检查方式效率比较低
             if len(self.current_user.shops) >= self.MAX_APPLY_COUNT:
                 return self.send_fail(error_text="您申请的店铺数量超过限制！最多能申请{0}家".format(self.MAX_APPLY_COUNT))
-            try:
-               self.session.add(models.ShopTemp(self.session, admin_id=self.current_user.id,
-                  shop_name=self.args["shop_name"],
-                  shop_province=self.args["shop_province"],
-                  shop_city = self.args["shop_city"],
-                  shop_address_detail=self.args["shop_address_detail"],
-                  have_offline_entity=self.args["have_offline_entity"],
-                  shop_service_area=self.args["shop_service_area"],
-                  shop_intro=self.args["shop_intro"],
-                  shop_trademark_url=img_url
-               ))
-               self.session.commit()
-            except:
-               return self.send_fail(error_text = "店铺申请失败，具体原因请联系森果")
+            #try:
+            self.session.add(models.ShopTemp(admin_id=self.current_user.id,
+              shop_name=self.args["shop_name"],
+              shop_province=self.args["shop_province"],
+              shop_city = self.args["shop_city"],
+              shop_address_detail=self.args["shop_address_detail"],
+              have_offline_entity=self.args["have_offline_entity"],
+              shop_service_area=self.args["shop_service_area"],
+              shop_intro=self.args["shop_intro"],
+              shop_trademark_url=img_url))
+            self.session.commit()
+            #except:
+               #return self.send_fail(error_text = "店铺申请失败，具体原因请联系森果")
             return self.send_success()
 
         elif self._action == "reApply":

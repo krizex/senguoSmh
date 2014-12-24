@@ -50,7 +50,7 @@ class Access(AdminBaseHandler):
             return self.redirect(self.reverse_url("adminLogin"))
         # 尝试登录
         u = models.ShopAdmin.login_by_unionid(self.session, userinfo["unionid"])
-        if not u:# 新建用户
+        if not u:  #新建用户
             u = models.ShopAdmin.register_with_wx(self.session, userinfo)
         self.set_current_user(u, domain=ROOT_HOST_NAME)
         
@@ -167,6 +167,19 @@ class Order(AdminBaseHandler):
                 order.update(session=self.session, status=data["status"])
             elif action == "edit_totalPrice":
                 order.update(session=self.session, totalPrice=data["totalPrice"])
+        elif action == "search":
+            order = self.session.query(models.Order).filter(and_(
+                models.Order.id == int(data["order_id"]), models.Order.shop_id == self.current_shop.id))
+            if order:
+                order = order.one().safe_props()
+            else:order = {}
+            Staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
+                models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
+            SH2s=[]
+            for staff in Staffs:
+                SH2s.append(staff.safe_props())
+            return self.send_success(order=order, SH2s=SH2s)
+
         else:
             return self.send_error(404)
         return self.send_success()
@@ -430,65 +443,52 @@ class Staff(AdminBaseHandler):
 class Config(AdminBaseHandler):
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action")
-    def get(self, id): #shop_id
-        try:config = self.session.query(models.Config).filter_by(id=id).one()
+    def get(self):
+        try:config = self.session.query(models.Config).filter_by(id=self.current_shop.id).one()
         except:return self.send_error(404)
         action = self.args["action"]
         if action == "delivery":
-            return self.render("admin/shop-set.html", addresses=config.addresses,context=dict(subpage='shop_set',shopSubPage='delivery_set'))
+            return self.render("admin/shop-address-set.html", addresses=config.addresses,context=dict(subpage='shop_set',shopSubPage='delivery_set'))
         elif action == "notice":
-            return self.render("admin/shop-set.html", notices=config.notices,context=dict(subpage='shop_set',shopSubPage='notice_set'))
+            return self.render("admin/shop-notice-set.html", notices=config.notices,context=dict(subpage='shop_set',shopSubPage='notice_set'))
         elif action == "recharge":
             pass
         elif action == "receipt":
-            return self.render("admin/shop-set.html", title=config.title, receipt_msg=config.receipt_msg,context=dict(subpage='shop_set',shopSubPage='receipt_set'))
+            return self.render("admin/shop-receipt-set.html", title=config.title, receipt_msg=config.receipt_msg,context=dict(subpage='shop_set',shopSubPage='receipt_set'))
         else:
             return self.send_error(404)
 
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")
-    def post(self, id):
+    def post(self):
         action = self.args["action"]
         data = self.args["data"]
 
         if action in ["add_addr1", "add_notice", "edit_receipt", "edit_hire"]: #id: shop_id
-            try: config = self.session.query(models.Config).filter_by(id=id).one()
-            except:return self.send_error(404)
             if action == "add_addr1":
                 addr1 = models.Address1(name=data)
-                config.addresses.append(addr1)
+                self.current_shop.config.addresses.append(addr1)
                 self.session.commit()
                 return self.send_success(address1_id=addr1.id)#commit后id会自动生成
             elif action == "add_notice":
                 notice = models.Notice(summary=data["summary"],
                                        detail=data["detail"])
-                config.notices.append(notice)
+                self.current_shop.config.notices.append(notice)
                 self.session.commit()
             elif action == "edit_receipt": #小票设置
-                config.update(session=self.session, receipt_msg=data["receipt_msg"],
-                              title=data["title"])
-            elif action == "edit_hire":
-                config.update(session=self.session, hire_text=data)
-        if action in ["add_addr2", "edit_addr1_active"]:#id: addr1_id
-            try:addr1 = self.session.query(models.Address1).filter_by(id=id).one()
-            except:return self.send_error(404)
+                self.current_shop.config.update(session=self.session,
+                                                receipt_msg=data["receipt_msg"],title=data["title"])
+        if action in ["add_addr2", "edit_addr1_active"]:
+            addr1 = next((x for x in self.current_shop.config.addresses if x.id==data["addr1_id"]), None)
             if action == "add_addr2":
-                addr2 = models.Address2(name=data)
+                addr2 = models.Address2(name=data["name"])
                 addr1.address2.append(addr2)
                 self.session.commit()
             elif action == "edit_addr1_active":
-                if addr1.active:
-                    active=False
-                else:
-                    active=True
-                addr1.update(session=self.session, active=active)
+                addr1.update(session=self.session, active=not addr1.active)
         if action =="edit_addr2_active":#id: addr2_id
-            try:addr2 = self.session.query(models.Address2).filter_by(id=id).one()
+            try:addr2 = self.session.query(models.Address2).filter_by(id=data["addr2_id"]).one()
             except:return self.send_error(404)
-            if addr2.active:
-                active=False
-            else:
-                active=True
-            addr2.update(session=self.session, active=active)
+            addr2.update(session=self.session, active=not addr2.active)
         return self.send_success()

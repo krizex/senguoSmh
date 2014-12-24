@@ -322,7 +322,7 @@ class ShopTemp(MapBase, _CommonApi):
     __tablename__ = "shop_temp"
 
     id = Column(Integer, primary_key=True, nullable=False)
-    admin_id = Column(Integer,nullable=False)
+    admin_id = Column(Integer,ForeignKey("shop_admin.id"),nullable=False)
     shop_name = Column(String(128), nullable=False)
     create_date_timestamp = Column(Integer, nullable=False)
     shop_status = Column(Integer, default=SHOP_STATUS.APPLYING)
@@ -337,7 +337,14 @@ class ShopTemp(MapBase, _CommonApi):
     have_offline_entity = Column(Boolean, default=False)
     # 店铺介绍
     shop_intro = Column(String(568))
+
+    admin = relationship("ShopAdmin")
+
 class Shop(MapBase, _CommonApi):
+    def __init__(self, **kwargs):
+        self.config=Config()
+        super().__init__(**kwargs)
+
     __relationship_props__ = ["admin", "demand_fruits", "onsale_fruits"]
     __tablename__ = "shop"
     
@@ -345,7 +352,7 @@ class Shop(MapBase, _CommonApi):
     shop_name = Column(String(128), nullable=False)
     shop_code = Column(String(128), nullable=False, default="not set")
     create_date_timestamp = Column(Integer, nullable=False)
-    shop_status = Column(Integer, default=SHOP_STATUS.APPLYING)
+    shop_status = Column(Integer, default=SHOP_STATUS.ACCEPTED)
 
     admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
     admin = relationship("ShopAdmin")
@@ -446,7 +453,7 @@ class ShopAdmin(MapBase, _AccountApi):
             del kwargs["shops"]
 
         sp = Shop(**kwargs)
-        sp.config=Config()
+        #sp.config=Config()
         s = session
         s.add(self)
         self.shops.append(sp)
@@ -815,6 +822,7 @@ class Order(MapBase, _CommonApi):
     JH_id = Column(Integer, nullable=True) #捡货员id,(当员工被删除时可能会有问题)
     SH1_id = Column(Integer, nullable=True) #一级送货员id
     SH2_id = Column(Integer, nullable=True) #二级送货员id
+    staff_remark = Column(String(100)) #员工备注（订单可能出状况了）
     start_time = Column(Time)
     end_time = Column(Time)
     create_date = Column(DateTime, default=func.now())
@@ -898,7 +906,7 @@ class ChargeType(MapBase, _CommonApi):
     fruit = relationship("Fruit", uselist=False)
 
 #用户自定义商品的计价类型
-class MChargeType(MapBase, _CommonApi):
+class MChargeType(MapBase):
     __tablename__ = "m_charge_type"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     mgoods_id = Column(Integer, ForeignKey(MGoods.id), nullable=False)

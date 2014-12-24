@@ -289,7 +289,7 @@ function orderSubmit(){
     };
     $.postJson(url,args,function(res) {
         if (res.success) {
-            window.location.href=success_href+shop_id;
+            window.location.href=success_href;
         }
         else return alert(res.error_text);
     },

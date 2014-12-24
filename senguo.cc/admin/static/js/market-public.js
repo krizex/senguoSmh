@@ -6,18 +6,21 @@ $(document).ready(function(){
         unitText($this,id);
     });
     $('#backTop').on('click',function(){$(document).scrollTop(0)});
-    $('.home_href').attr({'href':market_href+shopId});
-    $('.cart_href').attr({'href':cart_href+shopId});
+    var strCookie=document.cookie;
+    var arrCookie=strCookie.split("; ");
+    for(var i=0;i<arrCookie.length;i++){
+        var arr=arrCookie[i].split("=");
+        if("market_shop_id"==arr[0]){
+            shop_id=arr[1];
+            break;
+        }
+    }
+    $('.home_href').attr({'href':market_href+Int(shop_id)});
 });
 var market_href='/customer/market/';
-var cart_href='/customer/cart/';
 var home_href='/customer';
-var success_href='/notice/success/';
-
-var link=window.location.pathname;
-var shop_id= $.getNum(link);
-var shopId=shop_id;
-
+var success_href='/notice/success';
+var shop_id;
 
 function unitText(target,n){
     switch (n){

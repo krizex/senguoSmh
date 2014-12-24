@@ -194,6 +194,7 @@ class StaffBaseHandler(_AccountBaseHandler):
     __account_cookie_name__ = "staff_id"
     __wexin_oauth_url_name__ = "staffOauth"
     shop_id = None
+    shop_name = None
     @tornado.web.authenticated
     def prepare(self):
         shop_id = self.get_secure_cookie("staff_shop_id") or b'0'
@@ -206,6 +207,7 @@ class StaffBaseHandler(_AccountBaseHandler):
         elif not next((x for x in self.current_user.shops if x.id == shop_id), None):
             return self.finish('你不是这个店铺的员工,可能已经被解雇了')
         self.shop_id = shop_id
+        self.shop_name = next(x for x in self.current_user.shops if x.id == shop_id).shop_name
         hirelink = self.session.query(models.HireLink).filter_by(
             staff_id=self.current_user.id, shop_id=self.shop_id).one()
         self.current_user.work = hirelink.work

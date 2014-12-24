@@ -66,7 +66,7 @@ $(document).ready(function(){
         var $this=$(this);
         orderTypeActive($this,'edit_now_on');
     });
-    $('#stopInTime').on('click',function(){
+    $('#stopOnTime').on('click',function(){
         var $this=$(this);
         orderTypeActive($this,'edit_ontime_on');
 

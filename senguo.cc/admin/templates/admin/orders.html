@@ -78,9 +78,9 @@
             {% end %}
         {% elif order_type ==2 %}
             {% if current_shop.config.ontime_on==True %}
-            <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType" id="stopNowOn">已启用</a>
+            <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType" id="stopOnTime">已启用</a>
             {% else %}
-            <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType bg-grey" id="stopInTime">未启用</a>
+            <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType bg-grey" id="stopOnTime">未启用</a>
             {% end %}
         {% end %}
     </div>
@@ -118,8 +118,8 @@
             {% set status_order='hidden'%}
             {% set status_send='hidden'%}
             {% set status_finish='hidden'%}
+            {% set order_status='' %}
             {% if order.status == 1 %}
-                {% set order_status='' %}
                 {% set status_order='show'%}
             {% elif order.status == 4 %}
                 {% set order_status='order-status-dealing' %}
