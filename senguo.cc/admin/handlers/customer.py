@@ -219,9 +219,9 @@ class Order(CustomerBaseHandler):
         action = self.args["action"]
         orders = []
         if action == "waiting":#待收货
-            orders = [x for x in self.current_user.orders if x.shop_id == int(shop_id) and x.status in (1, 2, 3, 4)]
+            orders = [x for x in self.current_user.orders if x.status in (1, 2, 3, 4)]
         elif action == "finish":#已完成
-            orders = [x for x in self.current_user.orders if x.shop_id == int(shop_id) and x.status == 5]
+            orders = [x for x in self.current_user.orders if x.status == 5]
         else:return self.send_error(404)
         return self.render("customer/order-list.html", orders=orders, context=dict(subpage='center'))
 

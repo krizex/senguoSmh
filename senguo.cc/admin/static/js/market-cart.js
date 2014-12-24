@@ -167,7 +167,7 @@ function goodsNum(target,action){
 }
 
 function itemDelete(target,menu_type) {
-    var url = market_href + shop_id;
+    var url = market_href;
     var action = 0;
     var parent=target.parents('.cart-list-item');
     var charge_type_id =parent .find('.charge-type').data('id');

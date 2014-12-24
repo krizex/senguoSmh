@@ -6,8 +6,8 @@ $(document).ready(function(){
         unitText($this,id);
     });
     $('#backTop').on('click',function(){$(document).scrollTop(0)});
-    $('.home_href').attr({'href':market_href+shop_id});
-    $('.cart_href').attr({'href':cart_href+shop_id});
+    $('.home_href').attr({'href':market_href+shopId});
+    $('.cart_href').attr({'href':cart_href+shopId});
 });
 var market_href='/customer/market/';
 var cart_href='/customer/cart/';
@@ -16,6 +16,8 @@ var success_href='/notice/success/';
 
 var link=window.location.pathname;
 var shop_id= $.getNum(link);
+var shopId=shop_id;
+
 
 function unitText(target,n){
     switch (n){

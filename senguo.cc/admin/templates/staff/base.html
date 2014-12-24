@@ -14,7 +14,7 @@
     {% block head %}{% end %}
 </head>
 <body>
-    <div class="main-container container bg-white" >
+    <div class="main-container container" >
         <div class="header text-center bg-green text-white font16 shop_change" data-toggle="modal" data-target="#shopList">
             {{current_user.shop_id}}
             <span class="caret"></span>
@@ -24,12 +24,15 @@
             {% set home_active='' %}
             {% set now_active='' %}
             {% set time_active='' %}
+            {% set history_active='' %}
             {% if page == 'home' %}
                 {% set home_active='active' %}
             {% elif page == 'now' %}
                 {% set now_active='active' %}
             {% elif page == 'on_time' %}
                 {% set time_active='active' %}
+            {% elif page == 'history' %}
+                {% set history_active='active' %}
             {% end %}
             <ul class="bottom-nav row font14 bg-green navbar-fixed-bottom">
                 <li id="header-home-btn" class="col-xs-3 col-sm-3 {{home_active}}">
@@ -41,8 +44,8 @@
                 <li id="header-orders-btn" class="col-xs-3 col-sm-3 {{time_active}}">
                     <a href="{{reverse_url('staffOrder')}}?order_type=on_time" class="text-white">按时达</a>
                 </li>
-                <li id="header-history-btn" class="col-xs-3 col-sm-3">
-                    <a href="{{reverse_url('staffHome')}}" class="text-white">记录</a>
+                <li id="header-history-btn" class="col-xs-3 col-sm-3 {{history_active}}">
+                    <a href="{{reverse_url('staffOrder')}}?order_type=history" class="text-white">记录</a>
                 </li>
             </ul>
         </div>

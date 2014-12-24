@@ -19,6 +19,7 @@
         送货员
         {% end %}
  	</span></h5>
+    <h5>员工编号：{{current_user.id}}</h5>
     <a href="{{reverse_url('staffOrder')}}?order_type=now" class="btn btn-large text-white bg-green">当前订单</a>
 	<hr />
 	<div class="charge-money-box" data-id="charge-money-box">

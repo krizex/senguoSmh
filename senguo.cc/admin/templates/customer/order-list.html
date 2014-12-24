@@ -19,7 +19,8 @@
      <li class="order-list-item" >
         <a href="{{reverse_url('customerOrderDetail',order.id)}}" class="detail-link">
             <header class="font14">
-                <span class="pull-left">订单编号：<span>{{order.id}}</span></span>
+                <span class="pull-left pr10">订单编号：{{order.id}}</span>
+                <span class="pull-left pl10 text-pink">{{order.shop.shop_name}}</span>
                 <img class="icon" src="{{static_url('images/icon-arrow-right.png')}}"/>
                 <span class="pull-right p010">物流详情</span>
             </header>

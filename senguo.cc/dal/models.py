@@ -822,6 +822,7 @@ class Order(MapBase, _CommonApi):
 
     fruits = Column(String(1000))
     mgoods = Column(String(1000))
+    shop = relationship("Shop", uselist=False,join_depth=1)
     # charge_types = relationship("ChargeType", secondary="order_ctype_link", uselist=True)
     # mcharge_type = relationship("MChargeType", secondary="order_mtype_link", uselist=True)
 # #按时达

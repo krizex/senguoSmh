@@ -102,6 +102,9 @@ class Order(StaffBaseHandler):
             orders = [x for x in orders if (x.today == 1 and x.create_date.day == day) or
                       (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
             page = 'on_time'
+        elif order_type == "history":
+            orders = [x for x in orders if x.status==5]
+            page = 'history'
         else:
             return self.send_error(404)
         return self.render("staff/orders.html", orders=orders, page=page)
