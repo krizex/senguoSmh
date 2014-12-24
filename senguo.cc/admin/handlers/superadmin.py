@@ -122,33 +122,34 @@ class ShopManage(SuperBaseHandler):
     def get(self):
         offset = (self.args.get("page", 1) - 1) * self._page_count
         q = self.session.query(models.Shop)
-        q_all = q
-        q_applying = q.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
-        q_accepted = q.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
-        q_declined = q.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
+        q_temp = self.session.query(models.ShopTemp)
+        q_applying = q_temp.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
+        q_declined = q_temp.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
+        #q_accepted = q.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
         count = {
-            "all":q_all.count(),
+            "all":q.count()+q_temp.count(),
             "applying":q_applying.count(),
-            "accepted":q_accepted.count(),
+            "accepted":q.count(),
             "declined":q_declined.count()
             }
+        name = "ShopTemp"
         if self._action == "all":
             pass
         elif self._action == "applying":
             q = q_applying
         elif self._action == "accepted":
-            q = q_accepted
+            name = "Shop"
         elif self._action == "declined":
             q = q_declined
         else:
             return self.send_error(404)
         # 排序规则id, offset 和 limit
-        q = q.order_by(models.Shop.id.desc()).offset(offset).limit(self._page_count)
+        q = q.order_by(getattr(models, name).id.desc()).offset(offset).limit(self._page_count)
         
         shops = q.all()
         # shops 是models.Shop实例的列表
         return self.render("superAdmin/shop-manage.html", context=dict(
-                shops = shops,subpage='shopManage',action=self._action,
+                shops = shops,subpage='shopManage', action=self._action,
                 count=count))
 
     @tornado.web.authenticated
@@ -161,18 +162,28 @@ class ShopManage(SuperBaseHandler):
             return self.send(400)
     @SuperBaseHandler.check_arguments("shop_id:int", "new_status:int", "declined_reason?")
     def handle_updateStatus(self):
-        shop = models.Shop.get_by_id(self.session, self.args["shop_id"])
-        if not shop:
+        shop_temp = models.ShopTemp.get_by_id(self.session, self.args["shop_id"])
+        if not shop_temp:
             return self.send_error(403)
         if not self.args["new_status"] in models.SHOP_STATUS.DATA_LIST:
             return self.send_error(400)
 
         if self.args["new_status"] == models.SHOP_STATUS.DECLINED:
-            shop.update(self.session, shop_status = self.args["new_status"],
+            shop_temp.update(self.session, shop_status = self.args["new_status"],
                         declined_reason=self.args["declined_reason"])
-        else:
-            shop.update(self.session, shop_status = self.args["new_status"])
-            
+        else:#把临时表的内容复制到shop表
+            self.session.add(models.Shop(admin_id=shop_temp.admin_id,
+                                         shop_name=shop_temp.shop_name,
+                                         create_date_timestamp=shop_temp.create_date_timestamp,
+                                         shop_trademark_url=shop_temp.shop_trademark_url,
+                                         shop_service_area=shop_temp.shop_service_area,
+                                         shop_province=shop_temp.shop_province,
+                                         shop_city=shop_temp.shop_city,
+                                         shop_address_detail=shop_temp.shop_address_detail,
+                                         have_offline_entity=shop_temp.have_offline_entity,
+                                         shop_intro=shop_temp.shop_intro))
+            self.session.delete(shop_temp)
+            self.session.commit()
         return self.send_success()
 
 class Feedback(SuperBaseHandler):

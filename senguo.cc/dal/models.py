@@ -322,7 +322,7 @@ class ShopTemp(MapBase, _CommonApi):
     __tablename__ = "shop_temp"
 
     id = Column(Integer, primary_key=True, nullable=False)
-    admin_id = Column(Integer,nullable=False)
+    admin_id = Column(Integer,ForeignKey("shop_admin.id"),nullable=False)
     shop_name = Column(String(128), nullable=False)
     create_date_timestamp = Column(Integer, nullable=False)
     shop_status = Column(Integer, default=SHOP_STATUS.APPLYING)
@@ -337,7 +337,14 @@ class ShopTemp(MapBase, _CommonApi):
     have_offline_entity = Column(Boolean, default=False)
     # 店铺介绍
     shop_intro = Column(String(568))
+
+    admin = relationship("ShopAdmin")
+
 class Shop(MapBase, _CommonApi):
+    def __init__(self, **kwargs):
+        self.config=Config()
+        super().__init__(**kwargs)
+
     __relationship_props__ = ["admin", "demand_fruits", "onsale_fruits"]
     __tablename__ = "shop"
     
@@ -345,7 +352,7 @@ class Shop(MapBase, _CommonApi):
     shop_name = Column(String(128), nullable=False)
     shop_code = Column(String(128), nullable=False, default="not set")
     create_date_timestamp = Column(Integer, nullable=False)
-    shop_status = Column(Integer, default=SHOP_STATUS.APPLYING)
+    shop_status = Column(Integer, default=SHOP_STATUS.ACCEPTED)
 
     admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
     admin = relationship("ShopAdmin")
@@ -390,7 +397,8 @@ class Shop(MapBase, _CommonApi):
     wx_nickname = Column(String(128))
     wx_qr_code = Column(String(1024))
 
-    orders = relationship("Order")
+    orders = relationship("Order",primaryjoin="and_(Shop.id==Address.user_id, "
+                        "Address.email.startswith('tony'))")
     staffs = relationship("ShopStaff", secondary="hire_link")
     fruits = relationship("Fruit", order_by="desc(Fruit.priority)")
     menus = relationship("Menu", uselist=True)
@@ -446,7 +454,7 @@ class ShopAdmin(MapBase, _AccountApi):
             del kwargs["shops"]
 
         sp = Shop(**kwargs)
-        sp.config=Config()
+        #sp.config=Config()
         s = session
         s.add(self)
         self.shops.append(sp)

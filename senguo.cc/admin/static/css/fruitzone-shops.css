@@ -7,7 +7,7 @@
 .shops-list li a p{font-size:1.4em;color:#333;padding-top:0.5em;}
 .shops-list .add-shops a{font-size:8em;font-weight:bold;color:#00D289;width:100%;height:160px;display:inline-block;line-height:160px;padding:0;}
 .shops-list .status{display:inline-block;position:absolute;z-index:999;top:0;left:0;width:100%;height:160px;line-height:160px;text-align:center;font-size:2.2em;color:#333;background:rgba(255,255,255,0.6);}
-
+.shops-list .edit{position:absolute;z-index:999;top:40px;left:0;width:100%;font-size:14px;color:#333;}
 .shop-list li em{font-style:normal;font-size:1em;}
 
 
