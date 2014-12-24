@@ -16,7 +16,7 @@
 <body>
     <div class="main-container container bg-white" >
         <div class="header text-center bg-green text-white font16 shop_change" data-toggle="modal" data-target="#shopList">
-            {{current_user.shop_id}}
+            {{handler.shop_name}}
             <span class="caret"></span>
         </div>
         {% block content %}{% end %}

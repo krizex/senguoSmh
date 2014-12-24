@@ -107,9 +107,11 @@ class Order(StaffBaseHandler):
         return self.render("staff/orders.html", orders=orders, page=page)
 
     @tornado.web.authenticated
-    @StaffBaseHandler.check_arguments("action", "order_id")
+    @StaffBaseHandler.check_arguments("action", "order_id:int", "data")
     def post(self):
         action = self.args["action"]
+        try:order = self.session.query(models.Order).filter_by(id=self.args["order_id"]).one()
+        except:return self.send_fail("没找到该订单", 404)
         if action == "finish":
             if self.current_user.work == 1:#JH
                 status = 3
@@ -119,10 +121,10 @@ class Order(StaffBaseHandler):
                 status = 5
             else:
                 return self.send.fail("你还没分配工作")
-            try:order = self.session.query(models.Order).filter_by(id=self.args["order_id"]).one()
-            except:return self.send_fail("没找到该订单", 404)
             order.status = status
-            self.session.commit()
+        elif action == "remark":
+            order.staff_remark = self.args["data"]
+        self.session.commit()
         return self.send_success()
 
 class Hire(StaffBaseHandler):

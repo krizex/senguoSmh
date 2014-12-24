@@ -32,20 +32,20 @@
             <p>联系电话：<span>{{order.phone}}</span></p>
             <p>订单备注：<span>{{order.message or '无'}}</span></p>
             <ul class="goods-list">
-                {% for key in  fruits%}
+                {% for charge_type in  charge_types%}
                 <li class="orderview-goods-item" >
-                    <div class="icon-container"  style="display:none;">
-                        <img src="/static/design_img/Cz.png" class="icon"/>
+                    <div class="icon-container">
+                        <img src="{{charge_type.fruit.img_url}}" class="icon"/>
                     </div>
                     <div class="content-list-wrapper">
                         <ul class="content-list bg">
                             <li class="l1" >
-                                <span class="name color">{{fruits[key]['fruit_name']}}</span>
+                                <span class="name color">{{fruits[charge_type.id]['fruit_name']}}</span>
                             </li>
                             <li class="l2" >
-                                <span class="charge">{{fruits[key]['charge']}}</span>
+                                <span class="charge">{{fruits[charge_type.id]['charge']}}</span>
                                 <span class="number-box" >
-                                    <span class="number">{{fruits[key]['num']}}</span>
+                                    <span class="number">{{fruits[charge_type.id]['num']}}</span>
                                     <span class="bundle text-pink">x1</span>
                                 </span>
                             </li>
@@ -59,20 +59,20 @@
                     </div>
                 </li>
                 {% end %}
-                {% for key in  mgoods%}
+                {% for mcharge_type in mcharge_types%}
                 <li class="orderview-goods-item" >
-                    <div class="icon-container"  style="display:none;">
-                        <img src="/static/design_img/Cz.png" class="icon"/>
+                    <div class="icon-container">
+                        <img src="{{mcharge_type.mgood.img_url}}" class="icon"/>
                     </div>
                     <div class="content-list-wrapper">
                         <ul class="content-list bg">
                             <li class="l1" >
-                                <span class="name color">{{mgoods[key]['mgoods_name']}}</span>
+                                <span class="name color">{{mgoods[mcharge_type.id]['mgoods_name']}}</span>
                             </li>
                             <li class="l2" >
-                                <span class="charge">{{mgoods[key]['charge']}}</span>
+                                <span class="charge">{{mgoods[mcharge_type.id]['charge']}}</span>
                                 <span class="number-box" >
-                                    <span class="number">{{mgoods[key]['num']}}</span>
+                                    <span class="number">{{mgoods[mcharge_type.id]['num']}}</span>
                                     <span class="bundle text-pink">x1</span>
                                 </span>
                             </li>

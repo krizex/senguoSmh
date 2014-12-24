@@ -397,8 +397,7 @@ class Shop(MapBase, _CommonApi):
     wx_nickname = Column(String(128))
     wx_qr_code = Column(String(1024))
 
-    orders = relationship("Order",primaryjoin="and_(Shop.id==Address.user_id, "
-                        "Address.email.startswith('tony'))")
+    orders = relationship("Order")
     staffs = relationship("ShopStaff", secondary="hire_link")
     fruits = relationship("Fruit", order_by="desc(Fruit.priority)")
     menus = relationship("Menu", uselist=True)
@@ -823,6 +822,7 @@ class Order(MapBase, _CommonApi):
     JH_id = Column(Integer, nullable=True) #捡货员id,(当员工被删除时可能会有问题)
     SH1_id = Column(Integer, nullable=True) #一级送货员id
     SH2_id = Column(Integer, nullable=True) #二级送货员id
+    staff_remark = Column(String(100)) #员工备注（订单可能出状况了）
     start_time = Column(Time)
     end_time = Column(Time)
     create_date = Column(DateTime, default=func.now())
@@ -905,7 +905,7 @@ class ChargeType(MapBase, _CommonApi):
     fruit = relationship("Fruit", uselist=False)
 
 #用户自定义商品的计价类型
-class MChargeType(MapBase, _CommonApi):
+class MChargeType(MapBase):
     __tablename__ = "m_charge_type"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     mgoods_id = Column(Integer, ForeignKey(MGoods.id), nullable=False)

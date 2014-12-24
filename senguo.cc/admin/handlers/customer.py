@@ -95,6 +95,7 @@ class Home(CustomerBaseHandler):
 class Market(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self, shop_id):
+        self.set_cookie("market_shop_id", shop_id)
         try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
         except:return self.send_error(404)
         try:cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
@@ -124,17 +125,18 @@ class Market(CustomerBaseHandler):
 
 class Cart(CustomerBaseHandler):
     @tornado.web.authenticated
-    def get(self,shop_id):
-        shop_id = int(shop_id)
-        try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
-        except:return self.send_error(404)
-        cart = next((x for x in self.current_user.carts if x.shop_id==shop_id), None)
+    def get(self):
+        shop_id = int(self.get_cookie("market_shop_id"))  #todo：如果没有cookie呢？
+        shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
+        if not shop:return self.send_error(404)
+        cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
         if not cart or (not (eval(cart.fruits) or eval(cart.mgoods))): #购物车为空
             return self.render("notice/cart-empty.html",context=dict(subpage='cart'))
         cart_f, cart_m = self.read_cart(shop_id)
 
         periods = [x for x in shop.config.periods if x.active == 1]
-        return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, periods=periods,context=dict(subpage='cart'))
+        return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m,
+                           periods=periods, context=dict(subpage='cart'))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
@@ -228,6 +230,11 @@ class Order(CustomerBaseHandler):
 class OrderDetail(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self,order_id):
-        try:order = self.session.query(models.Order).filter_by(id=order_id).one()
-        except:return self.send_error(404)
-        return self.render("customer/order-detail.html", order=order)
+        order = next((x for x in self.current_user.orders if x.id == int(order_id)), None)
+        if not order:return self.send_error(404)
+        charge_types = self.session.query(models.ChargeType).filter(
+            models.ChargeType.id.in_(eval(order.fruits).keys())).all()
+        mcharge_types = self.session.query(models.MChargeType).filter(
+            models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
+        return self.render("customer/order-detail.html", order=order,
+                           charge_types=charge_types, mcharge_types=mcharge_types)
