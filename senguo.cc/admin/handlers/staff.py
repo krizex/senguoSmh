@@ -68,7 +68,7 @@ class Home(StaffBaseHandler):
         shop_id = self.args["shop_id"]
         if not next((x for x in self.current_user.shops if x.id == shop_id), None):
             return self.send_error(404)
-        self.set_secure_cookie("shop_id", str(shop_id), domain=ROOT_HOST_NAME)
+        self.set_secure_cookie("staff_shop_id", str(shop_id), domain=ROOT_HOST_NAME)
         return self.send_success()
 
 class Order(StaffBaseHandler):
@@ -84,19 +84,19 @@ class Order(StaffBaseHandler):
         orders = []
         page = ''
         if work == 1: #JH
-            orders = self.session.query(models.Order).filter_by(
+            orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
                 JH_id=self.current_user.id, status=models.ORDER_STATUS.JH)
         elif work ==2: #SH1
-            orders = self.session.query(models.Order).filter_by(
+            orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
                 SH1_id=self.current_user.id, status=models.ORDER_STATUS.SH1)
         elif work ==3: #SH2
-            orders = self.session.query(models.Order).filter_by(
+            orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
                 SH2_id=self.current_user.id, status=models.ORDER_STATUS.SH2)
         else:
             pass
         if order_type == "now":
-            orders = orders.filter_by(type=1).order_by(desc(models.Order.create_date)).all()
-            page='now'
+            orders = orders.filter_by(type=1).order_by(models.Order.create_date).all()
+            page = 'now'
         elif order_type == "on_time":
             orders = orders.filter_by(type=2).order_by(models.Order.start_time).all()
             day = datetime.datetime.now().day
@@ -148,12 +148,17 @@ class Hire(StaffBaseHandler):
             shop = self.session.query(models.Shop).filter_by(id=shop_id)
             if not shop:
                 return self.send_error(404)
-            hireform = models.HireForm(staff_id=self.current_user.id, shop_id=shop_id,
-                                intro=data["intro"], advantage=data["advantage"])
+            hireform = self.session.query(models.HireForm).filter_by(
+                staff_id=self.current_user.id, shop_id=shop_id)
+            if hireform:
+                hireform.one().intro = data["intro"]
+                hireform.one().advantage = data["advantage"]
+            else:
+                self.session.add(models.HireForm(staff_id=self.current_user.id, shop_id=shop_id,
+                                intro=data["intro"], advantage=data["advantage"]))
             self.current_user.address = data["address"]
-            self.session.add(hireform)
             self.session.commit()
-            kwargs = {name:data["name"], phone:data["phone"], email:data["email"]}
+            kwargs = {"name":data["name"], "phone":data["phone"], "email":data["email"]}
             if not data["headimgurl"]:
                 kwargs["headimgurl"] = STAFF_IMG_HOST+data["headimgurl"]
             self.current_user.accountinfo.update(session=self.session, **kwargs)

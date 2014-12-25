@@ -409,7 +409,8 @@ class Staff(AdminBaseHandler):
         data = self.args["data"]
 
         if action in ["hire_agree", "hire_refuse"]: #id = hire_form_id
-            try:hire_form = self.session.query(models.HireForm).filter_by(id=data["id"]).one()
+            try:hire_form = self.session.query(models.HireForm).filter_by(
+                staff_id=data["id"], shop_id=self.current_shop.id).one()
             except: return self.send_error(404)
             if action == "hire_agree":
                 hire_form.status = 2

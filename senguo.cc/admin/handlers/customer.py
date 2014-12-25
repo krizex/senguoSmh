@@ -2,7 +2,7 @@ from handlers.base import CustomerBaseHandler
 import dal.models as models
 import tornado.web
 from settings import *
-import time
+import datetime
 from sqlalchemy import desc, and_
 import qiniu
 
@@ -184,11 +184,17 @@ class Cart(CustomerBaseHandler):
             except:return self.send_fail("找不到时间段")
             start_time = period.start_time
             end_time = period.end_time
+        elif self.args["type"] == 1:#立即送
+            now = datetime.datetime.now()
+            try:config = self.session.query(models.Config).filter_by(id=shop_id).one()
+            except:return self.send_fail("找不到店铺")
+            start_time = datetime.time(now.hour, now.minute, now.second)
+            end_time = datetime.time(config.end_time_now.hour, config.end_time_now.minute)
         address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
         if not address:
             return self.send_fail("没找到地址", 404)
         order = models.Order(customer_id=self.current_user.id,
-                             shop_id=int(shop_id),
+                             shop_id=shop_id,
                              phone=address.phone,
                              receiver=address.receiver,
                              address_text = address.address_text,

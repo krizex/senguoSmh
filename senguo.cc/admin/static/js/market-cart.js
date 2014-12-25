@@ -259,7 +259,7 @@ function orderSubmit(){
     var period_id=$('#sendPeriod').find('.active').data('id');
     var address_id=$('#addressType').find('.active').data('id');
     var pay_type=$('#payType').find('.active').data('id');
-    var message=$('#messageCon').text();
+    var message=$('#messageCon').val();
     var fruit_item=$('.fruit_item');
     for(var i=0;i<fruit_item.length;i++)
     {
