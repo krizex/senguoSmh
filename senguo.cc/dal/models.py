@@ -1002,15 +1002,14 @@ class Address2(MapBase, _CommonApi):
 class HireForm(MapBase):
     __tablename__ = "hire_form"
 
-    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    staff_id = Column(Integer, ForeignKey(ShopStaff.id), nullable=False)
-    shop_id = Column(Integer, nullable=False)
+    staff_id = Column(Integer, ForeignKey(ShopStaff.id), primary_key=True, nullable=False)
+    shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
     work = Column(TINYINT, default=3)#默认为SH2
     intro = Column(String(500))
     advantage = Column(String(500))
     status = Column(TINYINT, default=1)#1：申请中，2：通过，3：未通过
 
-    staff = relationship("ShopStaff", uselist=False)
+    staff = relationship("ShopStaff", uselist=False, join_depth=2)
 
 def init_db_data():
     MapBase.metadata.create_all()

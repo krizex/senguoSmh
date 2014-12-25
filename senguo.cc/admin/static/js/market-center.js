@@ -65,10 +65,10 @@ function addressEdit(target,action){
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
     if(!name) {return alert('请填写收货人姓名！');}
     if(!phone) {return alert('请填写收货人电话！');}
-    if(!regPhone.test(phone)){return alert('该手机号不存在！');}
+    if(!regPhone.test(phone)){return alert('请填写正确的手机号！');}
     if(!address) {return alert('请填写收货人地址！');}
     if(name>10) {return alert('姓名请不要超过10个字！');}
-    if(address>20) {return alert('地址请不要超过20个字！');}
+    if(address>30) {return alert('地址请不要超过30个字！');}
     var data={
         receiver:name,
         phone:phone,

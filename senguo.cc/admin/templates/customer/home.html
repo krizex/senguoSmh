@@ -12,6 +12,8 @@
 {% set dry_fruits=context['dry_fruits']%}
 {% set mgoods=context['mgoods']%}
 {% set menus=context['menus']%}
+{% set cart_f=context['cart_f'] %}
+{% set cart_m=context['cart_m'] %}
 <div id="notice-board" class="set-w100-fle bg-pink">
     <img src="{{static_url('images/sticker-left.png')}}" class="sticker" id="sticker-left"  />
     <img src="{{static_url('images/sticker-right.png')}}" class="sticker" id="sticker-right" />
@@ -61,9 +63,10 @@
                         {% end %}-->
                     </span>
                     {% end %}
+                    {% set value = cart_f[fruit.charge_types[0].id]["num"] if fruit.charge_types[0].id in cart_f else 0%}
                      <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
                         <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
-                        <input type="text" value="0" class="number-input pull-right text-orange"/>
+                        <input type="text" value="{{value}}" class="number-input pull-right text-orange"/>
                         <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
                     </span>
                     {% if len(fruit.charge_types) >1 %}
@@ -73,6 +76,7 @@
                 <ul class="charge-list charge-style color set-width-float" style="display:none">
                     {% for charge in fruit.charge_types %}
                     {% if charge.id !=fruit.charge_types[0].id %}
+                        {% set value = cart_f[charge.id]["num"] if charge.id in cart_f else 0%}
                     <li class="border-color set-w100-fle">
                         <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{charge.id}}">
                             {{charge.price}}元/{{charge.num}}
@@ -80,7 +84,7 @@
                         </span>
                         <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
                             <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
-                            <input type="text" value="0" class="number-input pull-right text-orange"/>
+                            <input type="text" value="{{value}}}" class="number-input pull-right text-orange"/>
                             <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
                         </span>
                     </li>
@@ -131,8 +135,9 @@
                     </span>
                     {% end %}
                      <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
+                         {% set value = cart_f[dry_fruit.charge_types[0].id]["num"] if dry_fruit.charge_types[0].id in cart_f else 0%}
                         <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
-                        <input type="text" value="0" class="number-input pull-right text-orange"/>
+                        <input type="text" value="{{value}}" class="number-input pull-right text-orange"/>
                         <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
                     </span>
                     {% if len(dry_fruit.charge_types) >1 %}
@@ -142,6 +147,7 @@
                 <ul class="charge-list charge-style color set-width-float" style="display:none">
                     {% for charge in dry_fruit.charge_types %}
                     {% if charge.id !=dry_fruit.charge_types[0].id %}
+                    {% set value = cart_f[charge.id]["num"] if charge.id in cart_f else 0%}
                     <li class="border-color set-w100-fle">
                         <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{charge.id}}">
                             {{charge.price}}元/{{charge.num}}
@@ -149,7 +155,7 @@
                         </span>
                         <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
                             <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
-                            <input type="text" value="0" class="number-input pull-right text-orange"/>
+                            <input type="text" value="{{value}}" class="number-input pull-right text-orange"/>
                             <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
                         </span>
                     </li>
@@ -195,8 +201,9 @@
                         <span data-id="{{mgood.mcharge_types[0].unit}}" class="chargeUnit"></span>
                     </span>
                      <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
+                         {% set value = cart_m[mgood.mcharge_types[0].id]["num"] if mgood.mcharge_types[0].id in cart_m else 0%}
                         <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
-                        <input type="text" value="0" class="number-input pull-right text-orange"/>
+                        <input type="text" value="{{value}}" class="number-input pull-right text-orange"/>
                         <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
                     </span>
                     {% end %}
@@ -207,6 +214,7 @@
                 <ul class="charge-list charge-style color set-width-float" style="display:none">
                     {% for charge in mgood.mcharge_types %}
                     {% if charge.id !=mgood.mcharge_types[0].id %}
+                    {% set value = cart_m[charge.id]["num"] if charge.id in cart_m else 0%}
                     <li class="border-color set-w100-fle">
                         <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{charge.id}}">
                             {{charge.price}}元/{{charge.num}}
@@ -214,7 +222,7 @@
                         </span>
                         <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
                             <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
-                            <input type="text" value="0" class="number-input pull-right text-orange"/>
+                            <input type="text" value="{{value}}" class="number-input pull-right text-orange"/>
                             <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
                         </span>
                     </li>

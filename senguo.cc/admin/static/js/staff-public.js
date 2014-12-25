@@ -11,7 +11,7 @@ function shopChange(id){
     $.postJson(url,args,function(res){
         if(res.success){
             $('shop-list-box').modal('hide');
-            //window.location.reload();
+            window.location.reload();
         }
         else return alert(res.error_text)
     },function(){

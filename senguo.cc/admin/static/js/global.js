@@ -31,3 +31,10 @@ function Int(target){
     target=parseInt(target);
     return target;
 }
+
+function checkTime(i)
+{
+    if (i<10)
+    {i="0" + i}
+    return i
+}

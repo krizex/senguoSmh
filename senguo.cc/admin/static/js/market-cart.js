@@ -1,5 +1,7 @@
 $(document).ready(function(){
     $('.address_list li').eq(0).addClass('active');
+    mincharge_now=$('.mincharge_now').find('.mincharge').text();
+    mincharge_intime=$('.mincharge_intime').find('.mincharge').text();
     //商品价格小计
     item_total_price.each(function(){
         var $this=$(this);
@@ -11,7 +13,10 @@ $(document).ready(function(){
         price_list.push(total);
     });
     //商品价格总计
-    list_total_price.text(totalPrice(price_list));
+    total_price=totalPrice(price_list);
+    list_total_price.text(total_price);
+    //按时达最低起送金额提示
+    if(total_price<mincharge_intime) $('.mincharge_intime').show();
     //商品数量操作
     cart_item.find('.number-minus').on('click',function(){
         var $this=$(this);
@@ -84,9 +89,60 @@ $(document).ready(function(){
     });
     //订单提交
     $('#submitOrder').on('click',function(){orderSubmit();});
+    //立即送模式选择/立即送最低起送金额提示
+    var time=new Date();
+    var time_now=checkTime(time.getHours())+':'+checkTime(time.getMinutes())+':'+checkTime(time.getSeconds());
+    $('#sendNow').on('click',function(){
+        var $this=$(this);
+        var end_time=$('.now_endtime').text();
+        if(time_now<=end_time)
+        {
+            $this.parents('li').addClass('active').siblings('li').removeClass('active');
+            $('.send_period').hide();
+            $('.send_day').hide();
+            $('.send_now').show();
+            if(total_price<mincharge_now){
+                $('.mincharge_now').show();
+                $('.mincharge_intime').hide();
+            }
+        }
+        else {
+            $this.parents('li').removeClass('active').siblings('li').addClass('active');
+            return alert('不小心超过了"立即送"的送货时间呢，请选择"按时达"时间段！')
+        }
+    });
+    //按时达模式选择
+    $('#sendInTime').on('click',function(){
+        var $this=$(this);
+        $this.parents('li').addClass('active').siblings('li').removeClass('active');
+        $('.send_period').show();
+        $('.send_day').show();
+        $('.send_now').hide();
+    });
+    //按时达根据当前时间选择时间段
+    var stop_range=$('.stop-range').val();
+    $('.send_period li').each(function(){
+        var $this=$(this);
+        var intime_startHour=$this.find('.intime_startHour').val();
+        var intime_startMin=$this.find('.intime_startMin').val();
+        var time=checkTime(Int(intime_startHour)-Int(stop_range))+':'+checkTime(intime_startMin)+':00';
+        $(this).on('click',function(){
+            var today=$('#sendDay').find('.active').data('id');
+            if(today==1) {
+                if (time >= time_now) $this.addClass('active');
+                else {
+                    $this.removeClass('active');
+                    return alert('抱歉，已超过了该送货时间段的下单时间!请选择下一个时间段！');
+                }
+            }
 
-    $('#sendNow').on('click',function(){$('.send_period').hide();$('.send_day').hide();});
-    $('#sendInTime').on('click',function(){$('.send_period').show();$('.send_day').show();});
+        });
+    });
+
+    //选择今天送货
+    $('#send_today').on('click',function(){
+
+    });
 
 });
 var price_list=[];
@@ -102,6 +158,8 @@ var receivePhone=$('#receivePhone');
 var addressList=$('.address_list');
 var cart_item=$('.cart-list-item');
 var cart_list=$('.cart-list');
+var mincharge_now;
+var mincharge_intime;
 
 function totalPrice(target){
     for(var i=0;i<target.length;i++)
@@ -143,6 +201,8 @@ function goodsNum(target,action){
                     var t_price=parseInt(list_total_price.text());
                     t_price+=parseInt(price);
                     list_total_price.text(t_price);
+                    var type=$('#sendType').find('.active').data('id');
+                    mincharge(type,t_price);
 
                 }
                 else if(action==1)
@@ -157,17 +217,31 @@ function goodsNum(target,action){
                         var t_price=parseInt(list_total_price.text());
                         t_price-=parseInt(price);
                         list_total_price.text(t_price);
+                        var type=$('#sendType').find('.active').data('id');
+                        mincharge(type,t_price);
                     }
                 }
+
 
             }
             else alert(res.error_text);
         },
         function(){alert('网络错误')})
 }
+function mincharge(n,price){
+    if(n==2&&price<mincharge_intime){
+        $('.mincharge_intime').show();
+        $('.mincharge_now').hide();
+    }
+    else $('.mincharge_intime').hide();
+    if(n==1&&price<mincharge_now){
+        $('.mincharge_now').show();
+        $('.mincharge_intime').hide();
+    }
+}
 
 function itemDelete(target,menu_type) {
-    var url = market_href;
+    var url = market_href+shop_id;
     var action = 0;
     var parent=target.parents('.cart-list-item');
     var charge_type_id =parent .find('.charge-type').data('id');
@@ -182,8 +256,8 @@ function itemDelete(target,menu_type) {
             if (res.success) {
                 t_price-=parseInt(price);
                 list_total_price.text(t_price);
-                parent.remove();
-                console.log(cart_list.find(cart_item).length);
+                var type=$('#sendType').find('.active').data('id');
+                mincharge(type,t_price);
                 if(cart_list.find(cart_item).length==1) window.location.reload();
             }
             else return alert(res.error_text);
@@ -259,7 +333,7 @@ function orderSubmit(){
     var period_id=$('#sendPeriod').find('.active').data('id');
     var address_id=$('#addressType').find('.active').data('id');
     var pay_type=$('#payType').find('.active').data('id');
-    var message=$('#messageCon').text();
+    var message=$('#messageCon').val();
     var fruit_item=$('.fruit_item');
     for(var i=0;i<fruit_item.length;i++)
     {

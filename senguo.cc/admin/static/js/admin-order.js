@@ -4,6 +4,12 @@ $(document).ready(function(){
     var order_status_item=$('.order-status').find('li');
     addActive(order_type_item,orderType);
     addActive(order_status_item,orderStatus);
+    //时间格式
+    $('.timer').each(function(){
+        var $this=$(this);
+        var time=$this.text();
+        $this.text(checkTime(time));
+    });
     //时间选项
     for(var i=0;i<=23;i++)
     {
@@ -179,15 +185,18 @@ function addEditPeriod(target,action){
     var action=action;
     var parent;
     var period_id;
+    var startTime;
+    var endTime;
+    var periodName;
     if(action=='add_period'){
         parent=target.parents('.add-period')
     }
     else if(action=='edit_period'){
         parent=target.parents('.time-period');
         period_id=target.parents('.time-period').data('id');
-        var startTime=parent.find('.startTime');
-        var endTime=parent.find('.endTime');
-        var periodName=parent.find('.periodName');
+        startTime=parent.find('.startTime');
+        endTime=parent.find('.EndTime');
+        periodName=parent.find('.periodName');
     }
     var start_hour=parseInt(parent.find('.start-hour').text());
     var start_minute=parseInt(parent.find('.start-minute').text());
@@ -213,12 +222,12 @@ function addEditPeriod(target,action){
                     parent.remove();
                     var $item=$(' <li class="time-list-item set-width-float time-period" data-id=""><div class="staff-work-mode action-mode pull-left"><a class="work-mode" href="javascript:;">已启用</a><a class="stop-mode" href="javascript:;" style="display:none">未启用</a></div><span class="time1 text-black show_item pull-left startTime"></span><div class="edit_item hidden"><div class="input-group-btn pull-left"><button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><span class="time start-hour"></span><span class="caret"></span></button><ul class="dropdown-menu choose-list hour-list" role="menu"></ul></div><span class="pull-left tit">：</span><div class="input-group-btn pull-left"><button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><span class="time start-minute"></span><span class="caret"></span></button><ul class="dropdown-menu choose-list minute-list" role="menu"></ul></div></div><span class="pull-left to">至</span><span class="time2 text-black show_item pull-left EndTime"></span><div class="edit_item hidden"><div class="input-group-btn pull-left"><button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><span class="time end-hour"></span><span class="caret"></span></button><ul class="dropdown-menu choose-list hour-list" role="menu"></ul></div><span class="pull-left tit">：</span><div class="input-group-btn"><button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><span class="time end-minute"></span><span class="caret"></span></button><ul class="dropdown-menu choose-list minute-list" role="menu"></ul></div></div><span class="time show_item periodName"></span><input type="text" class="period-name  pull-left text-center edit_item hidden" value=""/><a href="javascript:;" class="delete pull-right set-inl-blo delete-time-period"></a><a href="javascript:;" class="edit pull-right set-inl-blo to-edit-period show_item"></a><a href="javascript:;" class="sure-btn pull-right edit_item hidden edit-time-period">&nbsp;</a></li>');
                     $item.attr({'data-id':res.period_id});
-                    $item.find('.startTime').text(start_hour+':'+start_minute+':00');
-                    $item.find('.start-hour').text(start_hour);
-                    $item.find('.start-minute').text(start_minute);
-                    $item.find('.EndTime').text(end_hour+':'+end_minute+':00');
-                    $item.find('.end-hour').text(end_hour);
-                    $item.find('.end-minute').text(end_minute);
+                    $item.find('.startTime').text(checkTime(start_hour)+':'+checkTime(start_minute)+':00');
+                    $item.find('.start-hour').text(checkTime(start_hour));
+                    $item.find('.start-minute').text(checkTime(start_minute));
+                    $item.find('.EndTime').text(checkTime(end_hour)+':'+checkTime(end_minute)+':00');
+                    $item.find('.end-hour').text(checkTime(end_hour));
+                    $item.find('.end-minute').text(checkTime(end_minute));
                     $item.find('.periodName').text(name);
                     $item.find('.period-name').val(name);
                     for(var i=0;i<=23;i++)
@@ -231,10 +240,9 @@ function addEditPeriod(target,action){
                     }
                     $('.time-list').append($item);
                 }
-                else {
-                    console.log(name);
-                    startTime.text(start_hour+':'+start_minute+':00');
-                    endTime.text(end_hour+':'+end_minute+':00');
+                else if(action=='edit_period'){
+                    startTime.text(checkTime(start_hour)+':'+checkTime(start_minute)+':00');
+                    endTime.text(checkTime(end_hour)+':'+checkTime(end_minute)+':00');
                     periodName.text(name);
                     parent.find('.show_item').show();
                     parent.find('.edit_item').addClass('hidden');

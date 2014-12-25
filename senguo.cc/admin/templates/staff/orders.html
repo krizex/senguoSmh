@@ -24,10 +24,12 @@
     <li class="order-list-item bg-white mb-10">
         <div class="title bg-grey">
             <h4 class="pl-10">订单编号：{{order.id}}</h4>
+            {% if order.status != 5%}
             <div class="button-box" >
                 <button class="btn clear-btn text-white bg-green mr-5 staff_remark" data-id="{{order.id}}">订单备注</button>
                 <button class="btn clear-btn text-white bg-green order_finish" data-id="{{order.id}}">完成</button>
             </div>
+            {% end %}
         </div>
         <div class="content">
             <p>总金额：<strong class="font14 text-pink">{{order.totalPrice}}元</strong></p>
@@ -96,7 +98,7 @@
                 <textarea class="remark-input"></textarea>
             </div>
             <div class="modal-footer text-center">
-                <button class="btn bg-green text-white">提交</button>
+                <button class="btn bg-green text-white remark_submit">提交</button>
                 <button class="btn bg-grey3 text-white" data-dismiss="modal">关闭</button>
             </div>
         </div>
