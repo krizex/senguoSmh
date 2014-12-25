@@ -54,6 +54,7 @@ animate {-webkit-transition: 0.2s linear;-o-transition: 0.2s linear;-ms-transiti
 .main-container .content-wrapper {margin-left: 10px;}
 
 .mb-0{margin-bottom:0px !important;}
+.mb-10{margin-bottom:10px !important;}
 .mr-5{margin-right:5px !important;}
 .btn{border-radius:2px !important;}
 .pl-10{padding-left:10px;}

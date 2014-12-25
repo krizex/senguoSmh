@@ -5,7 +5,8 @@
 .w-per9{width:90%;}
 
 .cart-list{padding:5px;border-radius:3px;}
-.cart-list-item{position:relative;padding:5px 0;}
+.cart-list-item{position:relative;border-bottom:1px solid #fff;}
+.cart-list-item .bg{padding:5px 0;}
 .cart-list-item .goods-img{border-radius:2px;}
 .cart-list-item .w15{width:15%;}
 .cart-list-item .w75{width:75%;}
@@ -23,7 +24,7 @@
 
 .send_day{overflow:hidden;}
 .send_day li{width:40%;margin-right:10px;}
-.send_day li a{display:block;border-radius:0px;padding:0.5em 0;}
+.send_day li a{display:block;border-radius:0px;padding:0.2em 0;}
 .send_day li.active a{background:#00D681 !important;border-radius:2px;color:#fff !important;}
 
 .send_period .list-group-item{padding:5px 15px;border-left:4px solid #ddd;}

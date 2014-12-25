@@ -3,6 +3,9 @@
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/market-home.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
+<script>
+
+</script>
 {% end %}
 {% block content %}
 {% set fruits=context['fruits']%}
@@ -47,6 +50,7 @@
                     <span class="text-grey">点赞:888</span>
                 </p>
                 <div class="charge-first charge-style color">
+                    {% if fruit.charge_types %}
                     <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{fruit.charge_types[0].id}}">
                         {{fruit.charge_types[0].price}}元/{{fruit.charge_types[0].num}}
                         <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
@@ -56,6 +60,7 @@
                         <span data-id="{{fruit.unit}}" class="chargeUnit"></span>
                         {% end %}-->
                     </span>
+                    {% end %}
                      <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
                         <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
                         <input type="text" value="0" class="number-input pull-right text-orange"/>
@@ -114,6 +119,7 @@
                     <span class="text-grey">点赞:888</span>
                 </p>
                 <div class="charge-first charge-style color">
+                    {% if dry_fruit.charge_types %}
                     <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{dry_fruit.charge_types[0].id}}">
                         {{dry_fruit.charge_types[0].price}}元/{{dry_fruit.charge_types[0].num}}
                         <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
@@ -123,6 +129,7 @@
                         <span data-id="{{fruit.unit}}" class="chargeUnit"></span>
                         {% end %}-->
                     </span>
+                    {% end %}
                      <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
                         <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
                         <input type="text" value="0" class="number-input pull-right text-orange"/>
@@ -182,6 +189,7 @@
                     <span class="text-grey">点赞:888</span>
                 </p>
                 <div class="charge-first charge-style color">
+                    {% if mgood.mcharge_types %}
                     <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{mgood.mcharge_types[0].id}}">
                         {{mgood.mcharge_types[0].price}}元/{{mgood.mcharge_types[0].num}}
                         <span data-id="{{mgood.mcharge_types[0].unit}}" class="chargeUnit"></span>
@@ -191,6 +199,7 @@
                         <input type="text" value="0" class="number-input pull-right text-orange"/>
                         <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
                     </span>
+                    {% end %}
                     {% if len(mgood.mcharge_types) >1 %}
                     <a href="javascript:;" class="pull-right toggle down p0"></a>
                     {% end %}

@@ -13,27 +13,27 @@ hr{margin:10px 0;}
 .head-title img{width:3.5em;padding:8px;}
 .goods-list{margin:15px auto;box-shadow:0 0 3px #bbb}
 
-.orderview-goods-item{position:relative;border-bottom:3px solid #fff;height:70px;background-color:#fff;font-size:15px;font-weight:bold;text-shadow:0 1px 1px #fcfcfc;color:#555;width:100%}
+.orderview-goods-item{position:relative;border-bottom:3px solid #fff;height:64px;background-color:#fff;font-size:15px;font-weight:bold;text-shadow:0 1px 1px #fcfcfc;color:#555;width:100%}
 .orderview-goods-item:last-child{border:none}
 .orderview-goods-item .charge{font-size:small;color:#888}
-.orderview-goods-item .circle-icon{float:left;width:22px;height:22px;border-radius:11px;margin-right:5px}
-.orderview-goods-item .circle-icon img{width:8.8px;position:relative;top:3px}
+.orderview-goods-item .circle-icon{float:left;width:18px;height:18px;border-radius:11px;margin-right:5px}
+.orderview-goods-item .circle-icon img{width:8.8px;position:relative;top:-1px}
 .orderview-goods-item .icon-container{display:inline-block;position:absolute;left:0;z-index:10}
-.orderview-goods-item .icon-container img{height:70px;width:auto}
+.orderview-goods-item .icon-container img{width:60px;}
 .orderview-goods-item .content-list-wrapper{display:inline-block;width:100%}
 .orderview-goods-item .content-list-wrapper .content-list{margin-left:63px;padding:0;padding-left:10px}
 .orderview-goods-item ul{height:70px}
 .orderview-goods-item li{height:21.333333333333332px}
 .orderview-goods-item span{display:inline-block;margin-top:5px}
 .orderview-goods-item .name{margin-top:5px}
-.orderview-goods-item .l3 span{margin-top:2px}
+.orderview-goods-item .l3 span{margin-top:0}
 .orderview-goods-item .price{margin:0}
 .orderview-goods-item .number-box{position:relative;top:-10px;float:right;margin-right:10px}
-.orderview-goods-item .number-box .number{color:#fe6565;font-size:20px;text-shadow:0 1px 1px #888;float:left}
+.orderview-goods-item .number-box .number{font-size:20px;text-shadow:0 1px 1px #888;float:left}
 .orderview-goods-item .number-box .bundle{margin-top:9px;display:inline-block;width:40px}
-.orderview-goods-item .name{font-size:normal}
+.orderview-goods-item .name{font-weight:normal}
 .orderview-goods-item .remove{position:absolute;right:8px;margin-top:8px}
-.orderview-goods-item .l3{font-size:normal}
+.orderview-goods-item .l3{font-weight:normal}
 
 .icon-container.plan-icon{height:70px;width:66.93227091633466px;padding:0;overflow:hidden;background-color:#fff;position:absolute;display:inline-block}
 .icon-container.plan-icon .icon{margin:-1px;height:35px;width:33.46613545816733px}

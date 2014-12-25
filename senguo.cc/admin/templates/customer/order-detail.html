@@ -2,6 +2,7 @@
 {% block title %}我的订单{% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/market-order-detail.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 {% end %}
 {% block top %}订单详情{% end %}
 {% block content %}
@@ -33,9 +34,13 @@
             <p>订单备注：<span>{{order.message or '无'}}</span></p>
             <ul class="goods-list">
                 {% for charge_type in  charge_types%}
-                <li class="orderview-goods-item" >
+                <li class="orderview-goods-item {{charge_type.fruit.fruit_type.code}}">
                     <div class="icon-container">
-                        <img src="{{charge_type.fruit.img_url}}" class="icon"/>
+                        {% if charge_type.fruit.img_url%}
+                        <img src="http://goodsimg1.qiniudn.com/{{charge_type.fruit.img_url}}?imageView/1/w/100/h/100" class="icon"/>
+                        {% else %}
+                        <img src="/static/design_img/{{charge_type.fruit.fruit_type.code}}.png" class="icon"/>
+                        {% end %}
                     </div>
                     <div class="content-list-wrapper">
                         <ul class="content-list bg">
@@ -44,25 +49,29 @@
                             </li>
                             <li class="l2" >
                                 <span class="charge">{{fruits[charge_type.id]['charge']}}</span>
-                                <span class="number-box" >
+                                <span class="number-box color" >
                                     <span class="number">{{fruits[charge_type.id]['num']}}</span>
-                                    <span class="bundle text-pink">x1</span>
+                                    <span class="bundle">x1</span>
                                 </span>
                             </li>
                             <li class="l3 color" >
-                                <div class="circle-icon bg-color" >
+                                <div class="circle-icon bg-color text-center" >
                                     <img src="{{static_url('images/money-icon.png')}}" alt="￥" />
                                 </div>
-                                <span>小计：<span class="price">888</span>元</span>
+                                <span>小计：<span class="price">{{charge_type.price}}</span>元</span>
                             </li>
                         </ul>
                     </div>
                 </li>
                 {% end %}
                 {% for mcharge_type in mcharge_types%}
-                <li class="orderview-goods-item" >
+                <li class="orderview-goods-item TDSG" >
                     <div class="icon-container">
-                        <img src="{{mcharge_type.mgood.img_url}}" class="icon"/>
+                        {% if mcharge_type.mgoods.img_url%}
+                        <img src="http://goodsimg1.qiniudn.com/{{mcharge_type.mgoods.img_url}}?imageView/1/w/100/h/100" class="icon"/>
+                        {% else %}
+                        <img src="{{static_url('design_img/TDSG.png')}}" class="icon"/>
+                        {% end %}
                     </div>
                     <div class="content-list-wrapper">
                         <ul class="content-list bg">
@@ -77,10 +86,10 @@
                                 </span>
                             </li>
                             <li class="l3 color" >
-                                <div class="circle-icon bg-color" >
+                                <div class="circle-icon bg-color text-center" >
                                     <img src="{{static_url('images/money-icon.png')}}" alt="￥" />
                                 </div>
-                                <span>小计：<span class="price">888</span>元</span>
+                                <span>小计：<span class="price">{{mcharge_type.price}}</span>元</span>
                             </li>
                         </ul>
                     </div>
