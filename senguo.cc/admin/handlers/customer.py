@@ -229,7 +229,7 @@ class Order(CustomerBaseHandler):
         orders = []
         if action == "all":#全部
             orders = [x for x in self.current_user.orders if x.status in (1, 2, 3, 4,5)]
-        if action == "waiting":#待收货
+        elif action == "waiting":#待收货
             orders = [x for x in self.current_user.orders if x.status in (1, 2, 3, 4)]
         elif action == "finish":#已完成
             orders = [x for x in self.current_user.orders if x.status == 5]

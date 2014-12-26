@@ -39,13 +39,18 @@
             {% if order.remark %}
             <p>订单备注：<span data-id="remark">{{order.remark}}</span></p>
             {% end %}
-            <p data-id="deliveryTime">配送时间：{{order.start_time}}~{{order.end_time}}</p>
+            <p data-id="deliveryTime">配送时间：今天<span class="send_date"></span>{{order.start_time}}~{{order.end_time}}</p>
             <p>
                 收货人信息：
                 <span>{{order.receiver}}</span>
                 <span>{{order.address_text}}</span>
                 <span>{{order.phone}}</span>
             </p>
+            <input type="hidden" value="{{order.create_date}}" class="create_time"/>
+            <input type="hidden" value="{{order.create_date.year}}" class="create_year"/>
+            <input type="hidden" value="{{order.create_date.month}}" class="create_month"/>
+            <input type="hidden" value="{{order.create_date.day}}" class="create_day"/>
+            <input type="hidden" value="{{order.today}}" class="send_day"/>
         </div>
         <div class="toggle p-10" style="display:none">
             <hr/>
@@ -71,15 +76,7 @@
                     <div class="inner {{width}}"></div>
                     <div class="circle-icon {{left}}"></div>
                     <div class="status-box {{left}}">
-                        <span class="status">
-                            {% if order.status ==1 %}
-                            已下单
-                            {% elif order.status == 4%}
-                            配送中
-                            {% else %}
-                            已送达
-                            {% end %}
-                        </span>
+                        <span class="status" data-id="{{order.status}}"></span>
                     </div>
                 </div>
             </div>

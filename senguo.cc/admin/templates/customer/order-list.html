@@ -12,10 +12,11 @@
     {% for order in orders %}
     {% set left=''%}
     {% set width=''%}
-    {% if order.status ==4 %}
+    {% set status=order.status %}
+    {% if status ==4 %}
         {% set left='left50' %}
         {% set width='width50'%}
-    {% elif order.status == 5%}
+    {% elif status == 5%}
         {% set left='left100' %}
         {% set width='width100' %}
     {% end %}
@@ -31,14 +32,22 @@
         <div class="content" >
             <p class="p1" >送至：<span>{{order.address_text}}</span></p>
             <p class="p2" >
-                <span>预计：今天&nbsp;&nbsp;{{order.start_time}}~{{order.end_time}}&nbsp;&nbsp;送达</span>
+                <input type="hidden" value="{{order.create_date}}" class="create_time"/>
+                <input type="hidden" value="{{order.create_date.year}}" class="create_year"/>
+                <input type="hidden" value="{{order.create_date.month}}" class="create_month"/>
+                <input type="hidden" value="{{order.create_date.day}}" class="create_day"/>
+                <input type="hidden" value="{{order.today}}" class="send_day"/>
+                <input type="hidden" value="{{order.status}}" class="order_status"/>
+                <span>
+                    <span class="un-arrive">预计</span>：<span class="send_date">今天</span>&nbsp;&nbsp;{{order.start_time}}~{{order.end_time}}&nbsp;&nbsp;送达
+                </span>
                 <span class="price-box pull-right text-pink"><span class="price font18">{{order.totalPrice}}</span>元</span>
             </p>
             <p>
                 {% if order.status ==1 %}
                 <a class="cancel">取消订单</a>
                 {% else %}
-                <span>订单已开始处理</span>
+                <span class="status_notice">订单已开始处理</span>
                 {% end %}
             </p>
             <div class="status-bar-box">
@@ -47,9 +56,9 @@
                     <div class="circle-icon {{left}}"></div>
                     <div class="status-box {{left}}">
                         <span class="status">
-                            {% if order.status ==1 %}
+                            {% if status ==1 %}
                             已下单
-                            {% elif order.status == 4%}
+                            {% elif status == 4%}
                             配送中
                             {% else %}
                             已送达

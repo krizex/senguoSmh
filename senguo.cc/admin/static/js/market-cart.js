@@ -1,7 +1,7 @@
 $(document).ready(function(){
     $('.address_list li').eq(0).addClass('active');
-    mincharge_now=$('.mincharge_now').find('.mincharge').text();
-    mincharge_intime=$('.mincharge_intime').find('.mincharge').text();
+    mincharge_now=Int($('.mincharge_now').find('.mincharge').text());
+    mincharge_intime=Int($('.mincharge_intime').find('.mincharge').text());
     //商品价格小计
     item_total_price.each(function(){
         var $this=$(this);
@@ -101,6 +101,7 @@ $(document).ready(function(){
             $('.send_period').hide();
             $('.send_day').hide();
             $('.send_now').show();
+            total_price=Int(list_total_price.text());
             if(total_price<mincharge_now){
                 $('.mincharge_now').show();
                 $('.mincharge_intime').hide();
@@ -118,6 +119,11 @@ $(document).ready(function(){
         $('.send_period').show();
         $('.send_day').show();
         $('.send_now').hide();
+        $('.mincharge_now').hide();
+        total_price=Int(list_total_price.text());
+        if(total_price<mincharge_intime){
+            $('.mincharge_intime').show();
+        }
     });
     //按时达根据当前时间选择时间段
     var stop_range=$('.stop-range').val();
@@ -229,14 +235,19 @@ function goodsNum(target,action){
         function(){alert('网络错误')})
 }
 function mincharge(n,price){
-    if(n==2&&price<mincharge_intime){
-        $('.mincharge_intime').show();
-        $('.mincharge_now').hide();
+    if(n==2){
+        if(price<mincharge_intime){
+            $('.mincharge_intime').show();
+            $('.mincharge_now').hide();
+        }
+        else $('.mincharge_intime').hide();
     }
-    else $('.mincharge_intime').hide();
-    if(n==1&&price<mincharge_now){
-        $('.mincharge_now').show();
-        $('.mincharge_intime').hide();
+    if(n==1){
+        if(price<mincharge_now){
+            $('.mincharge_now').show();
+            $('.mincharge_intime').hide();
+        }
+        else $('.mincharge_now').hide();
     }
 }
 
