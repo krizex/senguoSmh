@@ -129,6 +129,8 @@ class Order(StaffBaseHandler):
                 status = 4
             elif self.current_user.work == 3:#SH2
                 status = 5
+                if not order.money_paid:
+                    self.hirelink.money += order.totalPrice
             else:
                 return self.send.fail("你还没分配工作")
             order.status = status

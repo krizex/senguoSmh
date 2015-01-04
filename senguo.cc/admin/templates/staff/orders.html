@@ -14,12 +14,16 @@
     {% set mgoods=eval(order.mgoods)%}
     {% set left=''%}
     {% set width=''%}
+    {% set money_paid = '未支付' %}
     {% if order.status ==4 %}
         {% set left='left50' %}
         {% set width='width50'%}
     {% elif order.status == 5%}
         {% set left='left100' %}
         {% set width='width100' %}
+    {% end %}
+    {% if order.money_paid %}
+        {% set money_paid = '已支付' %}
     {% end %}
     <li class="order-list-item bg-white mb-10">
         <div class="title bg-grey">
@@ -32,7 +36,7 @@
             {% end %}
         </div>
         <div class="content">
-            <p>总金额：<strong class="font14 text-pink">{{order.totalPrice}}元</strong></p>
+            <p>总金额：<strong class="font14 text-pink">{{order.totalPrice}}元</strong><span class="pl-10">{{money_paid}}</span></p>
             {% if order.message %}
             <p>用户留言：{{order.message}}</p>
             {% end %}

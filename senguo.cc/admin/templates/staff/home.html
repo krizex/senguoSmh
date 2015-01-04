@@ -23,7 +23,7 @@
     <a href="{{reverse_url('staffOrder')}}?order_type=now" class="btn btn-large text-white bg-green">当前订单</a>
 	<hr />
 	<div class="charge-money-box" data-id="charge-money-box">
-		<h4><strong >已收货款：<span data-id="current-charge-money" >0</span>元</strong></h4>
+		<h4><strong >已收货款：<span data-id="current-charge-money" >{{handler.hirelink.money}}</span>元</strong></h4>
 		<p>货款需要交给管理员，并由管理员在系统中标记为已经结算</p>
 	</div>
     <hr />
