@@ -13,19 +13,19 @@
                 <a class="work-mode" href="javascript:;">已启用</a>
             </div>
         </td>
-        <td class="col-lg-4 address-show">{{title or '无'}}</td>
-        <td class="col-lg-4 address-edit"  style="display:none;"><textarea>{{title or '无'}}</textarea></td>
-        <td class="col-lg-6 address-show">{{receipt_msg or '无'}}</td>
-        <td class="col-lg-6 address-edit" style="display:none;"> <textarea>{{receipt_msg or '无'}}</textarea></td>
+        <td class="col-lg-4 address-show receipt-head-con">{{title or '无'}}</td>
+        <td class="col-lg-4 address-edit"  style="display:none;"><textarea class="receipt-head">{{title or '无'}}</textarea></td>
+        <td class="col-lg-6 address-show receipt-msg-con">{{receipt_msg or '无'}}</td>
+        <td class="col-lg-6 address-edit" style="display:none;"> <textarea class="receipt-msg">{{receipt_msg or '无'}}</textarea></td>
         <td class="address-show">
             <a href="javascript:;" class="edit-btn2 info-edit">编辑</a>
         </td>
         <td class="address-edit" style="display:none;">
-            <a href="javascript:;" class="edit-btn2 info-sure">确定</a>
+            <a href="javascript:;" class="edit-btn2 info-sure edit-receipt-notice">确定</a>
         </td>
     </tr>
 </table>
-<a href="javascript:;" class="add-new-address1  add-btn-sty" data-toggle="modal" data-target="#noticeBox">+ 新建小票内容</a>
+<!--<a href="javascript:;" class="add-new-address1  add-btn-sty" data-toggle="modal" data-target="#noticeBox">+ 新建小票内容</a>-->
 <div class="modal fade text-grey3" id="noticeBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

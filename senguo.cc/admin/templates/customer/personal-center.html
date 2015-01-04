@@ -17,19 +17,25 @@
     <div class="box-style bg-white m-b10 clearfix pb0">
         <p class="title font14"><a href="{{reverse_url('customerOrder')}}?action=all" class="text-green">全部订单</a></p>
         <ul class="center-nav row text-center m-b0 clearfix font13">
-            <li class="col-sm-4 col-xs-4 prl0">
+            <li class="col-sm-3 col-xs-3 prl0">
+                <a href="{{reverse_url('customerOrder')}}?action=waiting">
+                    <p class="text-grey3 p05">未处理</p>
+                    <p class="text-pink"></p>
+                </a>
+            </li>
+            <li class="col-sm-3 col-xs-3 prl0">
                 <a href="{{reverse_url('customerOrder')}}?action=waiting">
                     <p class="text-grey3 p05">待收货</p>
                     <p class="text-pink">{{count[4]}}</p>
                 </a>
             </li>
-            <li class="col-sm-4 col-xs-4 prl0">
+            <li class="col-sm-3 col-xs-3 prl0">
                 <a href="{{reverse_url('customerOrder')}}?action=finish">
                     <p class="text-grey3 p05">已完成</p>
                     <p class="text-grey2">{{count[5]}}</p>
                 </a>
             </li>
-            <li class="col-sm-4 col-xs-4 prl0">
+            <li class="col-sm-3 col-xs-3 prl0">
                 <a href="#">
                     <p class="text-grey3 p05">售后订单</p>
                     <p class="text-pink">{{count[6]}}</p>

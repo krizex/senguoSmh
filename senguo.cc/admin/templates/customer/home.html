@@ -18,11 +18,14 @@ var height=(window.screen.height)/8;
     <img src="{{static_url('images/sticker-left.png')}}" class="sticker" id="sticker-left"  />
     <img src="{{static_url('images/sticker-right.png')}}" class="sticker" id="sticker-right" />
     <section class="content-wrapper box-shadow" >
-        <div id="line1"  ></div>
-        <div id="line2"  ></div>
+        <div id="line1"></div>
+        <div id="line2"></div>
         <div class="content" >
             <img src="{{static_url('images/notice-board-title.png')}}" id="title-img" alt="" />
             <ul class="content-list" data-id="msg-list" >
+                {% for notice in context['notices'] %}
+                <li>{{notice.summary}}({{notice.detail}})</li>
+                {% end %}
             </ul>
         </div>
     </section>

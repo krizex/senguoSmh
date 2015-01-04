@@ -265,6 +265,7 @@ function itemDelete(target,menu_type) {
     };
     $.postJson(url, args, function (res) {
             if (res.success) {
+                parent.remove();
                 t_price-=parseInt(price);
                 list_total_price.text(t_price);
                 var type=$('#sendType').find('.active').data('id');

@@ -57,7 +57,7 @@ class Home(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self):
         count={4:0,5:0,6:0}#4:待收货，5：已完成，6：售后订单
-        for order in self.current_user.orders:
+        for order in  .current_user.orders:
             if order.status in [1,2,3,4]:
                 count[4]+=1
             elif order.status == 5:
@@ -109,7 +109,7 @@ class Market(CustomerBaseHandler):
         for menu in shop.menus:
             mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
         return self.render("customer/home.html", context=dict(fruits=fruits, dry_fruits=dry_fruits,menus=shop.menus,
-                                                              mgoods=mgoods, cart_f=cart_f, cart_m=cart_m,subpage='home'))
+                                                              mgoods=mgoods, cart_f=cart_f, cart_m=cart_m,subpage='home',notices=shop.config.notices))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int", "charge_type_id:int", "menu_type:int")
