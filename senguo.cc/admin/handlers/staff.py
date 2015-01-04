@@ -145,7 +145,10 @@ class Hire(StaffBaseHandler):
         try:config = self.session.query(models.Config).filter_by(id=config_id).one()
         except:return self.send_error(404)
         if not config.hire_on:
-            return self.write("招募已结束")#招募已结束
+            return self.write("<center><font color='green'>招募已结束</font></center>")  # 招募已结束
+        for shop in self.current_user.shops:
+            if shop.id == int(config_id):return self.write("<center><font color='green'>"
+                                                           "你已经是该店铺的员工</font></center>")
         return self.render("staff/hire.html", config=config)
     @tornado.web.authenticated
     @StaffBaseHandler.check_arguments("action", "data")
