@@ -56,15 +56,17 @@ class Access(CustomerBaseHandler):
 class Home(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        count={4:0,5:0,6:0}#4:待收货，5：已完成，6：售后订单
+        count = {3: 0, 4: 0, 5: 0, 6: 0}  # 3:未处理 4:待收货，5：已完成，6：售后订单
         for order in self.current_user.orders:
-            if order.status in [1,2,3,4]:
-                count[4]+=1
+            if order.status == 1:
+                count[3] += 1
+            elif order.status in (2, 3, 4):
+                count[4] += 1
             elif order.status == 5:
-                count[5]+=1
+                count[5] += 1
             elif order.status == 6:
-                count[6]+=1
-        return self.render("customer/personal-center.html", count=count,context=dict(subpage='center'))
+                count[6] += 1
+        return self.render("customer/personal-center.html", count=count, context=dict(subpage='center'))
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action", "data")
     def post(self):
@@ -89,6 +91,11 @@ class Home(CustomerBaseHandler):
             try: q = self.session.query(models.Address).filter_by(id=int(data["address_id"]))
             except:return self.send_error(404)
             q.delete()
+            self.session.commit()
+        elif action == "cancel_order":
+            order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
+            if not order:return self.send_error(404)
+            order.status = 0
             self.session.commit()
         return self.send_success()
 
@@ -177,19 +184,25 @@ class Cart(CustomerBaseHandler):
                 money_paid = True
                 pay_type = 2
             else:return self.send_fail("余额不足")
+
+        #按时达/立即送 的时间段处理
         start_time = 0
         end_time = 0
+        try:config = self.session.query(models.Config).filter_by(id=shop_id).one()
+        except:return self.send_fail("找不到店铺")
         if self.args["type"] == 2: #按时达
             try:period = self.session.query(models.Period).filter_by(id=self.args["period_id"]).one()
             except:return self.send_fail("找不到时间段")
+            if int(self.args["today"]) == 1 and period.start_time.hour - config.stop_range < datetime.datetime.now().hour:
+                return self.send_fail("下单失败：已超过了该送货时间段的下单时间!请选择下一个时间段！")
             start_time = period.start_time
             end_time = period.end_time
         elif self.args["type"] == 1:#立即送
             now = datetime.datetime.now()
-            try:config = self.session.query(models.Config).filter_by(id=shop_id).one()
-            except:return self.send_fail("找不到店铺")
             start_time = datetime.time(now.hour, now.minute, now.second)
             end_time = datetime.time(config.end_time_now.hour, config.end_time_now.minute)
+
+        #送货地址处理
         address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
         if not address:
             return self.send_fail("没找到地址", 404)
