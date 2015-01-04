@@ -532,6 +532,7 @@ class HireLink(MapBase):
     staff_id = Column(Integer, ForeignKey(ShopStaff.id), primary_key=True)
     shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True)
     work = Column(TINYINT, default=3) #工作类型：1:JH,2:SH1,3:SH2
+    money = Column(Float, default=0)  # 已收货款
     address1 = Column(String(100)) #责任区域一级地址（可多选，空格隔开）
     address2 = Column(String(200)) #二级
     remark = Column(String(500))

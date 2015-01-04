@@ -416,6 +416,9 @@ class PhoneVerify(AdminBaseHandler):
 
     @AdminBaseHandler.check_arguments("phone:str")
     def handle_gencode(self):
+        a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first() 
+        if a and a != self.current_user.accountinfo:
+            return self.send_fail(error_text="手机号已经绑定其他账号")
         gen_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, phone=self.args["phone"])
         return self.send_success()
 
