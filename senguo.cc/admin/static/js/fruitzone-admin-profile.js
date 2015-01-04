@@ -40,9 +40,9 @@ function time(evt) {
 
 function infoEdit(evt){
     evt.on('click',function(){
-        var email=$('#mailEdit').val();
-        var year=$('#yearEdit').val();
-        var month=$('#monthEdit').val();
+        var email=$('#mailEdit').val().trim();
+        var year=$('#yearEdit').val().trim();
+        var month=$('#monthEdit').val().trim();
         var sex=$('#sexEdit option:selected').data('sex');
         var realname=$('#realnameEdit').val();
         var regEmail=/^([a-z0-9]*[-_]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/;
@@ -55,14 +55,17 @@ function infoEdit(evt){
             {return alert("邮箱不存在!");}
         else if(action=='edit_sex')
             {data=sex;}
-        else if(action=='edit_birthday' && !regMonth.test(month)&&!regNumber.test(year))
-             {return alert("请输入正确的年月!");}
         else if(action=='edit_birthday')
         {
-            data={
-                year:$('#yearEdit').val().trim(),
-                month:$('#monthEdit').val().trim()
-            }
+            if(!regMonth.test(month)||!regYear.test(year)||!month || !year)
+                return alert("请输入正确的年月!");
+            else
+                {
+                    data={
+                        year:$('#yearEdit').val().trim(),
+                        month:$('#monthEdit').val().trim()
+                    }
+                }
         }
         var url="/fruitzone/admin/profile";
         var args={action: action, data: data};
@@ -78,7 +81,9 @@ function infoEdit(evt){
                     else if(data=='2'){$('#userSex').text('女');}
                     evt.parents('li').find('.info-edit').hide();
                     $('#serSex').attr({'data-sex':data});
-                }},
+                }
+                else alert('请填写正确的信息！');
+            },
             function(){
                 alert('网络错误！');}
         );
@@ -102,7 +107,7 @@ function Vrify(evt){
                 alert('验证码已发送到您的手机,请注意查收！');
 
             }
-            else alert('手机号有错误!');
+            else alert(res.error_text);
         },
         function(){
             alert('网络错误！');}
