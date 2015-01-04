@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{static_url('css/market-home.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 <script>
-
+var height=(window.screen.height)/8;
 </script>
 {% end %}
 {% block content %}
@@ -32,7 +32,7 @@
     {% for fruit in fruits %}
     <li class="goods-list-item {{fruit.fruit_type.code}} font14" data-id="{{fruit.id}}">
         <div class="bg set-w100-fle">
-            <div class="goods-img w22 pull-left box-shadow">
+            <div class="goods-img pull-left box-shadow">
                 <a href="javascript:;" class="check-lg-img">
                     <span class="tag bg-green text-white text-center tagItem font8" data-id="{{fruit.tag}}">hot</span>
                     {% if fruit.img_url %}
@@ -84,7 +84,7 @@
                         </span>
                         <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
                             <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
-                            <input type="text" value="{{value}}}" class="number-input pull-right text-orange"/>
+                            <input type="text" value="{{value}}" class="number-input pull-right text-orange"/>
                             <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
                         </span>
                     </li>

@@ -7,11 +7,16 @@ $(document).ready(function(){
         tagText($this,id);
     });
     //商品分类标签高度修正
-    var item_height=$('.goods-list-item').eq(0).find('.goods-img').height();
     $('.fruit-class').each(function(){
         var $this=$(this);
         var num=$this.text().length;
-        $(this).css({'height':item_height+'px','line-height':item_height/num+'px'});
+        $this.css({'height':(height+4)+'px','line-height':height/num+'px'});
+    });
+    $('.goods-img').each(function(){
+        var $this=$(this);
+        $this.css({'width':height+'px','height':height+'px'});
+        $this.find('a').css({'height':height+'px','width':height+'px'});
+        $this.find('img').css({'height':height+'px'});
     });
     //计价方式折叠/显示
     $('.charge-first').each(function(){
