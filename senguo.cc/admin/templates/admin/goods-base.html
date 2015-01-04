@@ -2,23 +2,22 @@
 {% block content %}
 {% set goodsSubpage = context.get('goodsSubpage')%}
 {% set fruit_active="" %}
-{% set menu_active="" %}
+{% set home_active = "" %}
 {% set home_hide="" %}
 
 {% if goodsSubpage == "home"%}
     {% set home_hide ="hidden" %}
+    {% set home_active = "active" %}
 {% elif goodsSubpage == "fruit" %}
     {% set fruit_active = "active" %}
-{% elif goodsSubpage == "menu"%}
-    {% set menu_active ="active" %}
 {% end %}
 <span class="right-title">商品管理</span>
 <div class="goods-classify">
     <ul class="classify-nav right-nav pull-left">
-        <li class="{{fruit_active}} item"><a href="{{reverse_url('adminShelf')}}?action=home&id=0">水果</a></li>
-        <li class="item"><a href="{{reverse_url('adminShelf')}}?action=fruit&id=1000">干果</a></li>
+        <li class="{{fruit_active}} {{home_active}} item"><a href="{{reverse_url('adminShelf')}}?action=home&id=0">水果</a></li>
+        <li class="item dry_active"><a href="{{reverse_url('adminShelf')}}?action=fruit&id=1000">干果</a></li>
         {% for menu in menus %}
-        <li class="item {{menu_active}}"><a href="{{reverse_url('adminShelf')}}?action=menu&id={{menu.id}}">{{menu.name}}</a></li>
+        <li class="item menu_active" data-id="{{menu.id}}"><a href="{{reverse_url('adminShelf')}}?action=menu&id={{menu.id}}">{{menu.name}}</a></li>
         {% end %}
         <li><a href="javascript:;" id="add-new-goodsType">+</a></li>
     </ul>
