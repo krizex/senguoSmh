@@ -92,11 +92,6 @@ class Home(CustomerBaseHandler):
             except:return self.send_error(404)
             q.delete()
             self.session.commit()
-        elif action == "cancel_order":
-            order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
-            if not order:return self.send_error(404)
-            order.status = 0
-            self.session.commit()
         return self.send_success()
 
 class Market(CustomerBaseHandler):
@@ -240,14 +235,26 @@ class Order(CustomerBaseHandler):
     def get(self):
         action = self.args["action"]
         orders = []
-        if action == "all":#全部
-            orders = [x for x in self.current_user.orders if x.status in (1, 2, 3, 4, 5)]
+        if action == "unhandled":  # 未处理
+            orders = [x for x in self.current_user.orders if x.status == 1]
         elif action == "waiting":#待收货
-            orders = [x for x in self.current_user.orders if x.status in (1, 2, 3, 4)]
+            orders = [x for x in self.current_user.orders if x.status in (2, 3, 4)]
         elif action == "finish":#已完成
             orders = [x for x in self.current_user.orders if x.status == 5]
         else:return self.send_error(404)
         return self.render("customer/order-list.html", orders=orders, context=dict(subpage='center'))
+
+    @tornado.web.authenticated
+    @CustomerBaseHandler.check_arguments("action", "data")
+    def post(self):
+        action = self.args["action"]
+        data = self.args["data"]
+        if action == "cancel_order":
+            order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
+            if not order:return self.send_error(404)
+            order.status = 0
+            self.session.commit()
+        return self.send_success()
 
 class OrderDetail(CustomerBaseHandler):
     @tornado.web.authenticated
