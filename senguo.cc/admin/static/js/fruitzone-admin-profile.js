@@ -102,7 +102,7 @@ function Vrify(evt){
                 alert('验证码已发送到您的手机,请注意查收！');
 
             }
-            else alert('手机号有错误!');
+            else alert(res.error_text);
         },
         function(){
             alert('网络错误！');}

@@ -197,8 +197,7 @@ class ShopApply(AdminBaseHandler):
             # 这种检查方式效率比较低
             if len(self.current_user.shops) >= self.MAX_APPLY_COUNT:
                 return self.send_fail(error_text="您申请的店铺数量超过限制！最多能申请{0}家".format(self.MAX_APPLY_COUNT))
-            try:
-               self.current_user.add_shop(self.session,
+            self.current_user.add_shop(self.session,
                   shop_name=self.args["shop_name"],
                   shop_province=self.args["shop_province"],
                   shop_city = self.args["shop_city"],
@@ -208,8 +207,6 @@ class ShopApply(AdminBaseHandler):
                   shop_intro=self.args["shop_intro"],
                   shop_trademark_url=img_url
                )
-            except:
-               return self.send_fail(error_text = "城市编码错误！")
             return self.send_success()
 
         elif self._action == "reApply":
@@ -401,6 +398,9 @@ class PhoneVerify(AdminBaseHandler):
 
     @AdminBaseHandler.check_arguments("phone:str")
     def handle_gencode(self):
+        a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first() 
+        if a and a != self.current_user.accountinfo:
+            return self.send_fail(error_text="手机号已经绑定其他账号")
         gen_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, phone=self.args["phone"])
         return self.send_success()
 
