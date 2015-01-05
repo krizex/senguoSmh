@@ -4,23 +4,22 @@
 <link rel="stylesheet" href="{{static_url('css/market-center.css')}}"/>
 {% end %}
 {% block content %}
-    <div class="user-info box-style bg-white m-b10 clearfix font14">
-        <img src="{{current_user.accountinfo.headimgurl}}" class="img pull-left col-xs-3"/>
-        <div class="info pull-left col-xs-9">
+    <div class="user-info box-style bg-white m-b10 clearfix font14 text-center">
+        <img src="{{current_user.accountinfo.headimgurl}}" class="img img-circle"/>
+        <div class="info">
             <p>
-                <span class="pull-left">{{current_user.accountinfo.nickname}}</span>
-                <span data-id="{{current_user.accountinfo.sex}}" class="user-sex pull-left"></span>
+                <span>{{current_user.accountinfo.nickname}}</span>
+                <span data-id="{{current_user.accountinfo.sex}}" class="user-sex"></span>
             </p>
-            <p class="code">用户编号：{{current_user.accountinfo.id}}</p>
         </div>
     </div>
     <div class="box-style bg-white m-b10 clearfix pb0">
-        <p class="title font14"><a href="{{reverse_url('customerOrder')}}?action=all" class="text-green">全部订单</a></p>
+        <p class="title font14"><a href="#" class="text-green">全部订单</a></p>
         <ul class="center-nav row text-center m-b0 clearfix font13">
             <li class="col-sm-3 col-xs-3 prl0">
-                <a href="{{reverse_url('customerOrder')}}?action=waiting">
+                <a href="{{reverse_url('customerOrder')}}?action=unhandled">
                     <p class="text-grey3 p05">未处理</p>
-                    <p class="text-pink"></p>
+                    <p class="text-pink">{{count[3]}}</p>
                 </a>
             </li>
             <li class="col-sm-3 col-xs-3 prl0">

@@ -89,8 +89,18 @@
                  {% set unactive='active'%}
              {% end %}
              <ul id="sendType" class="send_type w-per6 nav-pills  center-block">
-                 <li data-id="2" class="{{active}}"><a href="javascript:;" class="bg-white text-green" id="sendInTime">按时达</a></li>
-                 <li data-id="1" class="{{unactive}}"><a href="javascript:;" class="bg-white text-green" id="sendNow">立即送</a></li>
+                 <li data-id="2" class="{{active}}">
+                     <a href="javascript:;" class="bg-white text-green" id="sendInTime">
+                         <p>按时达</p>
+                         <p class="font9">起送价：{{config.min_charge_on_time or 0}}元</p>
+                     </a>
+                 </li>
+                 <li data-id="1" class="{{unactive}}">
+                     <a href="javascript:;" class="bg-white text-green" id="sendNow">
+                         <p>立即送</p>
+                         <p class="font9">起送价：{{config.min_charge_now or 0}}元</p>
+                     </a>
+                 </li>
              </ul>
          </div>
          <div class="send-time-choose clearfix center-block bg-grey2 box-style">

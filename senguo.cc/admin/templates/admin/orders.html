@@ -49,10 +49,8 @@
         </li>-->
     </ul>
     <div class="search-input input-group pull-right">
-        <form method="post" action="" id="post">
-            <input type="text" value="" placeholder="输入订单信息进行搜索" class="search-con form-control"/>
-            <input type="submit" value="订单搜索" class="search-btn form-control"/>
-        </form>
+         <input type="text" value="" placeholder="输入订单编号进行搜索" class="search-con form-control"/>
+         <input type="submit" value="订单搜索" class="search-btn form-control order-search"/>
     </div>
 </div>
 <!--orders-mode-end-->
@@ -110,25 +108,12 @@
     <div class="order-list-action set-width-float">
         <input type="checkbox" class="select-box pull-left"/>
         <span class="select-all pull-left">全选</span>
-        <a href="#" class="print-btn blak-set-btn" id="">批量打印</a>
-        <a href="#" class="blak-set-btn" id="">批量删除</a>
+        <a href="javascript:;" class="print-btn blak-set-btn">批量打印</a>
+        <a href="javascript:;" class="blak-set-btn">批量删除</a>
     </div>
     <ul class="order-list-content set-width-float">
         {% for order in orders %}
-            {% set status_order='hidden'%}
-            {% set status_send='hidden'%}
-            {% set status_finish='hidden'%}
-            {% set order_status='' %}
-            {% if order.status == 1 %}
-                {% set status_order='show'%}
-            {% elif order.status == 4 %}
-                {% set order_status='order-status-dealing' %}
-                {% set status_send='show'%}
-            {% elif order.status == 5 %}
-                {% set order_status='order-status-dealing' %}
-                {% set status_finish='show'%}
-            {% end %}
-        <li class="order-list-item list-item set-width-float" data-id="{{order.id}}">
+        <li class="order-list-item list-item set-width-float" data-id="{{order.id}}" data-type="{{order.type}}">
             <div class="list-title bg-grey2">
                 <input class="select pull-left" type="checkbox"/>
                 <label class="send pull-left">
@@ -139,27 +124,25 @@
                 </label>
                 <label class="money pull-left">
                     金额：<span><strong class="order-price">{{order.totalPrice}}</strong>元</span>
-                    {% if order_type ==1 %}
-                    （其中小费<span class="tip">0</span>元）
-                    {% end %}
+                    <span class="tips">（其中小费<span class="tip">0</span>元）</span>
                 </label>
-                <a class="print-order pull-right te" href="#">&nbsp;</a>
-                <a class="delete-order pull-right" href="#">&nbsp;</a>
+                <a class="print-order pull-right te" href="javascript:;">&nbsp;</a>
+                <a class="delete-order pull-right" href="javascript:;">&nbsp;</a>
             </div>
             <!--list-title-end-->
             <div class="order-content set-width-float">
                 <div class="order-info set-width-float">
                     <span>配送至：</span>
                     <div class="input-group pull-left">
-                        <label id="">{{order.address_text}}</label>
+                        <label class="address">{{order.address_text}}</label>
                         <input class="address form-control" type="hidden" value="{{order.address_text}}"/>
                     </div>
                     <div class="input-group pull-left">
-                        <label id="">{{order.receiver}}</label>
+                        <label class="name">{{order.receiver}}</label>
                         <input class="name form-control" type="hidden" value="{{order.receiver}}"/>
                     </div>
                     <div class="input-group pull-left">
-                        <label id="">{{order.phone}}</label>
+                        <label class="phone">{{order.phone}}</label>
                         <input class="phone form-control" type="hidden" value="{{order.phone}}"/>
                     </div>
                     <!--<a class="address-edit edit-btn" href="javascript:;" style="display:none">&nbsp;</a>
@@ -169,32 +152,30 @@
                 <div class="order-message set-width-float">
                     <span>留言：</span>
                     <span class="message-content">{{order.message or '无'}}</span>
-                    <a href="" class="message-img set-inl-blo">&nbsp;</a>
+                    <a href="javascript:;" class="message-img set-inl-blo">&nbsp;</a>
                 </div>
                 <div class="staff-replay">员工回复：<span>无</span></div>
                 <!--order-message-end-->
-                <div class="order-status {{order_status}} set-width-float">
+                <div class="order-status set-width-float" data-id="{{order.status}}">
                     <div class="status-bar bg-grey9">
-                        <div class="status-inner bg-grey9 {{status_order}}" style="width:100%;"></div>
-                        <div class="status-inner bg-grey9 {{status_send}}" style="width:50%;"></div>
-                        <div class="status-inner bg-grey9 {{status_finish}}" style="width:100%;"></div>
-                        <div class="status-circle {{status_order}} status-item status-order" style="left:0%;"></div>
-                        <div class="status-info {{status_order}} status-item" style="left:0%;">
+                        <div class="status-inner bg-grey9 status_order hidden" style="width:100%;"></div>
+                        <div class="status-inner bg-grey9 status_send hidden" style="width:50%;"></div>
+                        <div class="status-inner bg-grey9 status_finish hidden" style="width:100%;"></div>
+                        <div class="status-circle status_order status-item status-order hidden" style="left:0%;"></div>
+                        <div class="status-info status_order status-item hidden" style="left:0%;">
                             <span class="status">未处理</span>
                         </div>
-                        <div class="status-circle {{status_send}} status-item status-send" style="left:50%;"></div>
-                        <div class="status-info {{status_send}} status-item" style="left:50%;">
+                        <div class="status-circle status_send status-item status-send hidden" style="left:50%;"></div>
+                        <div class="status-info status_send status-item hidden" style="left:50%;">
                             <span class="status">配送中</span>
                         </div>
-                        <div class="status-circle {{status_finish}} status-item status-finish" style="left:100%;"></div>
-                        <div class="status-info {{status_finish}} status-item" style="left:100%;">
+                        <div class="status-circle status_finish status-item status-finish hidden" style="left:100%;"></div>
+                        <div class="status-info status_finish status-item hidden" style="left:100%;">
                             <span class="status">已确认收货</span>
                         </div>
                     </div>
-                    {% if order.status!=5 %}
                     <a class="edit-btn position pull-right status_edit" href="javascript:;" style="display:none;">&nbsp;</a>
                     <a class="check-btn  position pull-right status_check" href="javascript:;" style="display:none;">&nbsp;</a>
-                    {% end %}
                 </div>
                 <!--order-status-end-->
             </div>
@@ -204,11 +185,7 @@
                     <span>下单时间：<i class="order-time">{{order.create_date}}</i></span>
                     <span>森果号：<a class="senguo-code" href="#">y123456789</a></span>
                     <span>积分：<i class="accumulate-point">{{100}}</i></span>
-                    {% if order.money_paid == False %}
-                    <span class="pay-status btn-style pull-right pay-btn text-pink">未支付</span>
-                    {% else %}
-                    <span class="pay-status btn-style pull-right pay-btn text-green">已支付</span>
-                    {% end %}
+                    <span class="pay-status btn-style pull-right pay-btn text-pink" data-pay="{{order.money_paid}}">未支付</span>
                 </div>
                 <div class="custom-order-list clearfix">
                     <ul class="goods-list">
@@ -245,10 +222,8 @@
                             元
                         </p>
                     </div>
-                    {% if order.status!=5 %}
                     <a class="edit-btn position price_edit" href="javascript:;" style="display:none;">&nbsp;</a>
                     <a class="check-btn  position price_check" href="javascript:;" style="display:none">&nbsp;</a>
-                    {% end %}
                 </div>
                 <div class="order-notice clearfix">
                     <input type="text" placeholder="订单备注" class="notice_input pull-left" value="{{order.remark or ''}}"/>
@@ -260,18 +235,16 @@
                         <ul class="send-person-area right-nav">
                             {% for SH2 in SH2s%}
                                 <li class="active" data-id="{{SH2.id}}">
-                                    <span>S2-{{SH2.id}}</span>||
-                                    <span>送货员{{SH2.accountinfo.realname}}</span>||
-                                    <span>{{SH2.accountinfo.phone}}</span>
+                                    <span class="sender-code">S2-{{SH2.id}}</span>||
+                                    <span>送货员<span class="sender-name">{{SH2.accountinfo.realname}}</span></span>||
+                                    <span class="sender-phone">{{SH2.accountinfo.phone}}</span>
                                 </li>
                             {% end %}
                         </ul>
-                        {% if order.status!=5 %}
                         <div class="select-btn">
                             <input type="submit" value="确认" class="sure-btn staff-edit"/>
                             <input type="button" value="取消" class="concel-btn"/>
                         </div>
-                        {% end %}
                     </div>
                 </div>
                 <!--address-adapt-end-->

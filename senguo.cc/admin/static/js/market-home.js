@@ -1,4 +1,22 @@
 $(document).ready(function(){
+    //公告滚动
+    $('#position li').first().addClass('on');
+    var slider =
+        Swipe(document.getElementById('slider'), {
+            auto: 3000,
+            continuous: true,
+            callback: function(pos) {
+
+                var i = bullets.length;
+                while (i--) {
+                    bullets[i].className = ' ';
+                }
+                bullets[pos].className = 'on';
+
+            }
+        });
+    var bullets = document.getElementById('position').getElementsByTagName('li');
+
     $('goods-list').last().addClass('m-b60');
     //商品标签转换
     $('.tagItem').each(function(){
@@ -10,13 +28,25 @@ $(document).ready(function(){
     $('.fruit-class').each(function(){
         var $this=$(this);
         var num=$this.text().length;
-        $this.css({'height':(height+4)+'px','line-height':height/num+'px'});
+        $this.css({'height':(s_height+4)+'px','line-height':s_height/num+'px'});
     });
+    //商品图片高度修正
     $('.goods-img').each(function(){
         var $this=$(this);
-        $this.css({'width':height+'px','height':height+'px'});
-        $this.find('a').css({'height':height+'px','width':height+'px'});
-        $this.find('img').css({'height':height+'px'});
+        $this.css({'width':s_height+'px','height':s_height+'px'});
+        $this.find('a').css({'height':s_height+'px','width':s_height+'px'});
+        $this.find('img').css({'height':s_height+'px'});
+    });
+    //商品点赞高度修正
+    $('.great-number').each(function(){
+        var $this=$(this);
+        if(s_width>1024) $this.css({'height':s_height/1.8+'px','line-height':s_height/1.8+'px'});
+        else $this.css({'height':s_height/3+'px','line-height':s_height/3+'px'});
+    });
+    $('.w69').each(function(){
+        var $this=$(this);
+        if(s_width>1024) $this.css({'width':'75%'});
+        else $this.css({'width':'69%'});
     });
     //计价方式折叠/显示
     $('.charge-first').each(function(){

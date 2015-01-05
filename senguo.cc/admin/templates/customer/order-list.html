@@ -20,7 +20,7 @@
         {% set left='left100' %}
         {% set width='width100' %}
     {% end %}
-     <li class="order-list-item" >
+     <li class="order-list-item" data-id="{{order.id}}">
         <a href="{{reverse_url('customerOrderDetail',order.id)}}" class="detail-link">
             <header class="font14">
                 <span class="pull-left pr10">订单编号：{{order.id}}</span>
@@ -45,7 +45,7 @@
             </p>
             <p>
                 {% if order.status ==1 %}
-                <a class="cancel">取消订单</a>
+                <a class="cancel order-concel" href="javascript:;">取消订单</a>
                 {% else %}
                 <span class="status_notice">订单已开始处理</span>
                 {% end %}
