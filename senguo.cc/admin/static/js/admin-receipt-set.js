@@ -1,13 +1,13 @@
 $(document).ready(function(){
-    $('.add-receipt-notice').on('click',function(){
-        receiptAdd();
+    $('.edit-receipt-notice').on('click',function(){
+        receiptEdit();
     });
 });
-function receiptAdd(){
+function receiptEdit(){
     var url=link;
     var action="edit_receipt";
-    var title=$('.new-receipt-title').val();
-    var receipt_msg=$('.new-receipt-detail').val();
+    var title=$('.receipt-head').val();
+    var receipt_msg=$('.receipt-msg').val();
     if(!title){return alert('请输入小票抬头！')}
     if(!receipt_msg){ receipt_msg=''}
     var data={
@@ -21,6 +21,8 @@ function receiptAdd(){
     $.postJson(url,args,
         function(res){
             if(res.success){
+                $('.receipt-head-con').text(title);
+                $('.receipt-msg-con').text(receipt_msg);
                 $('#noticeBox').modal('hide');
             }
         })

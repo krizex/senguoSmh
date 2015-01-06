@@ -38,13 +38,39 @@ $(document).ready(function(){
             }
         }
     });
-
+    //取消订单
+    $('.order-concel').each(function() {
+        var $this = $(this);
+        var id=$this.parents('.order-list-item').data('id');
+        $this.on('click', function () {
+            orderConcel($this,id);
+        });
+    });
 
 });
+var order_href='/customer/orders';
 function statusText(target,n){
     switch (n){
         case 1:target.text('配送中').addClass('text-green');break;
         case 4:target.text('配送中').addClass('text-green');break;
         case 5:target.text('已送达').addClass('text-grey');break;
     }
+}
+
+function orderConcel(target,id){
+    var url=order_href;
+    var action='cancel_order';
+    var data={
+        order_id:id
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,function(res){
+        if(res.success){
+            target.parents('.order-list-item').remove();
+        }
+        else return alert(res.error_text)
+    },function(){return alert('网络错误！')})
 }

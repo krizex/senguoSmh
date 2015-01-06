@@ -140,6 +140,8 @@ class Order(StaffBaseHandler):
         return self.send_success()
 
 class Hire(StaffBaseHandler):
+    def prepare(self):
+        pass
     @tornado.web.authenticated
     def get(self, config_id):
         try:config = self.session.query(models.Config).filter_by(id=config_id).one()
@@ -159,12 +161,12 @@ class Hire(StaffBaseHandler):
             shop = self.session.query(models.Shop).filter_by(id=shop_id)
             if not shop:
                 return self.send_error(404)
-            hireform = self.session.query(models.HireForm).filter_by(
-                staff_id=self.current_user.id, shop_id=shop_id)
-            if hireform:
-                hireform.one().intro = data["intro"]
-                hireform.one().advantage = data["advantage"]
-            else:
+            try:
+                hireform = self.session.query(models.HireForm).filter_by(
+                staff_id=self.current_user.id, shop_id=shop_id).one()
+                hireform.intro = data["intro"]
+                hireform.advantage = data["advantage"]
+            except:
                 self.session.add(models.HireForm(staff_id=self.current_user.id, shop_id=shop_id,
                                 intro=data["intro"], advantage=data["advantage"]))
             self.current_user.address = data["address"]

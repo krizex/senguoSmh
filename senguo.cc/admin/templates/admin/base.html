@@ -18,6 +18,13 @@
     </script>
 </head>
 <body>
+{% set current_shop = handler.current_shop %}
+{% set num=0 %}
+{% for order in current_shop.orders %}
+    {% if order.type==1 and order.status==1 %}
+    {% set num=num+1%}
+    {% end %}
+{% end %}
 <header class="backstage-header">
     <div class="w1200">
         <div class="logo-con height50 pull-left">
@@ -29,25 +36,25 @@
         </div>
         <div class="header-nav height50 pull-right">
             <ul class="navbar">
-                <li class="line50">
-                    <a href="#">
+               <li class="line50">
+                    <a href="javascript:;" class="developing">
                         <i class="notice-img height50 pull-left"></i>
                         实时消息
-                        <span>185</span>
+                        <span>0</span>
                     </a>
                 </li>
                 <li class="active send-now line50">
-                    <a href="#">
+                    <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1">
                         <i class="send-img height50 pull-left"></i>
                         立即送
-                        <span>88</span>
+                        <span>{{num}}</span>
                     </a>
                 </li>
-                <li class="line50">
-                    <a href="#">
+               <li class="line50">
+                    <a href="javascript:;" class="developing">
                         <i class="message-img height50 pull-left"></i>
                         留言
-                        <span>10</span>
+                        <span>0</span>
                     </a>
                 </li>
                 <li class="area-info">
@@ -55,7 +62,7 @@
                     <div class="admin-info area pull-right">
                         <div class="dropdown  area pull-left">
                             <button class="btn btn-default dropdown-toggle area height25 border-none" type="button" id="dropdownMenu1" data-toggle="dropdown">
-                                <em title="{{handler.current_shop.shop_name}}" class="pull-left">{{handler.current_shop.shop_name}}</em>
+                                <em title="{{current_shop.shop_name}}" class="pull-left">{{current_shop.shop_name}}</em>
                                 <span class="caret pull-right no-margin-left"></span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1" id="currentShopChange">
@@ -94,28 +101,27 @@
         <ul class="nav common-left-nav">
             <li>
                 <span class="count"><i></i>统计</span>
-                <a href="#">销量统计</a>
-                <a href="#">用户统计</a>
-                <a href="#">售后统计</a>
-                <a href="#">流量统计</a>
+                <a href="javascript:;" class="developing">销量统计</a>
+                <a href="javascript:;" class="developing">用户统计</a>
+                <a href="javascript:;" class="developing">售后统计</a>
+                <a href="javascript:;" class="developing">流量统计</a>
             </li>
             <li>
                 <span class="server"><i></i>客服</span>
-                <a href="#">消息与评价</a>
+                <a href="javascript:;" class="developing">消息与评价</a>
             </li>
             <li>
                 <span class="manage"><i></i>管理</span>
                 <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1" class="{{order_active}}">订单管理</a>
                 <a href="{{reverse_url('adminShelf')}}?action=home&id=0" class="{{goods_active}}">商品管理</a>
-                <a href="admin-users.html">用户管理</a>
+                <a href="javascript:;" class="developing">用户管理</a>
                 <a href="{{reverse_url('adminStaffJH')}}?action=SH2" class="{{staff_active}}">员工管理</a>
-                <a href="#">财务管理</a>
-                <a href="#">活动管理</a>
+                <a href="javascript:;" class="developing">财务管理</a>
+                <a href="javascript:;" class="developing">活动管理</a>
             </li>
             <li>
                 <span class="set"><i></i>设置</span>
-                <a href="{{reverse_url('adminConfig')}}?action=delivery" class="{{shop_set_active}}" id="shopPage">店铺设置</a>
-                <a href="#">公众号设置</a>
+                <a href="{{reverse_url('adminConfig')}}?action=notice" class="{{shop_set_active}}" id="shopPage">店铺设置</a>
             </li>
         </ul>
     </div>

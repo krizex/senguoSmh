@@ -4,7 +4,8 @@
 <link rel="stylesheet" href="{{static_url('css/market-home.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 <script>
-var height=(window.screen.height)/8;
+var s_height=(window.screen.height)/8;
+var s_width=window.screen.width;
 </script>
 {% end %}
 {% block content %}
@@ -14,20 +15,29 @@ var height=(window.screen.height)/8;
 {% set menus=context['menus']%}
 {% set cart_f=context['cart_f'] %}
 {% set cart_m=context['cart_m'] %}
-<div id="notice-board" class="set-w100-fle bg-pink">
-    <img src="{{static_url('images/sticker-left.png')}}" class="sticker" id="sticker-left"  />
-    <img src="{{static_url('images/sticker-right.png')}}" class="sticker" id="sticker-right" />
-    <section class="content-wrapper box-shadow" >
-        <div id="line1"  ></div>
-        <div id="line2"  ></div>
-        <div class="content" >
-            <img src="{{static_url('images/notice-board-title.png')}}" id="title-img" alt="" />
-            <ul class="content-list" data-id="msg-list" >
-            </ul>
+{% set notices=context['notices'] %}
+<div class="notice-board bg-green">
+    <div id="slider" class="swipe" style="visibility: visible;">
+        <div class="swipe-wrap">
+            {% for notice in notices%}
+            <figure>
+                <div class="wrap text-center text-white font16">
+                    {{notice.detail}}
+                </div>
+            </figure>
+            {% end %}
         </div>
-    </section>
+    </div>
+    <nav class="circle">
+        <ul id="position">
+            {% for notice in notices%}
+            <li></li>
+            {% end %}
+        </ul>
+    </nav>
 </div>
-<p class="bg-green text-white no-mar-btom classify-title font16">水果单品</p>
+
+<p class="bg-green text-white no-mar-btom classify-title font16" id="fruitPosition">水果单品</p>
 <ul class="goods-list bg-white fruit-list">
     {% for fruit in fruits %}
     <li class="goods-list-item {{fruit.fruit_type.code}} font14" data-id="{{fruit.id}}">
@@ -56,18 +66,13 @@ var height=(window.screen.height)/8;
                     <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{fruit.charge_types[0].id}}">
                         {{fruit.charge_types[0].price}}元/{{fruit.charge_types[0].num}}
                         <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
-                        <!--{% if fruit.charge_types[0].unit != fruit.unit %}
-                        =
-                        {{fruit.charge_types[0].unit_num}}
-                        <span data-id="{{fruit.unit}}" class="chargeUnit"></span>
-                        {% end %}-->
                     </span>
                     {% end %}
                     {% set value = cart_f[fruit.charge_types[0].id]["num"] if fruit.charge_types[0].id in cart_f else 0%}
                      <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
-                        <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
-                        <input type="text" value="{{value}}" class="number-input pull-right text-orange"/>
-                        <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
+                        <a class="minus-plus text-green bg-white pull-right number-plus" href="javascript:;">+</a>
+                        <input type="text" value="{{value}}" class="number-input pull-right text-green" readonly/>
+                        <a class="minus-plus text-green bg-white pull-right number-minus" href="javascript:;">-</a>
                     </span>
                     {% if len(fruit.charge_types) >1 %}
                     <a href="javascript:;" class="pull-right toggle down p0"></a>
@@ -83,9 +88,9 @@ var height=(window.screen.height)/8;
                             <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                         </span>
                         <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
-                            <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
-                            <input type="text" value="{{value}}" class="number-input pull-right text-orange"/>
-                            <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
+                            <a class="minus-plus text-green bg-white pull-right number-plus" href="javascript:;">+</a>
+                            <input type="text" value="{{value}}" class="number-input pull-right text-green" readonly/>
+                            <a class="minus-plus text-green bg-white pull-right number-minus" href="javascript:;">-</a>
                         </span>
                     </li>
                     {% end %}
@@ -98,7 +103,7 @@ var height=(window.screen.height)/8;
     {% end %}
 </ul>
 {% if dry_fruits%}
-<p class="bg-green text-white no-mar-btom classify-title font16">干果单品</p>
+<p class="bg-green text-white no-mar-btom classify-title font16" id="dryFruitPosition">干果单品</p>
 <ul class="goods-list bg-white fruit-list">
     {% for dry_fruit in dry_fruits %}
     <li class="goods-list-item {{dry_fruit.fruit_type.code}} font14" data-id="{{dry_fruit.id}}">
@@ -136,9 +141,9 @@ var height=(window.screen.height)/8;
                     {% end %}
                      <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
                          {% set value = cart_f[dry_fruit.charge_types[0].id]["num"] if dry_fruit.charge_types[0].id in cart_f else 0%}
-                        <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
-                        <input type="text" value="{{value}}" class="number-input pull-right text-orange"/>
-                        <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
+                        <a class="minus-plus text-green bg-white pull-right number-plus" href="javascript:;">+</a>
+                        <input type="text" value="{{value}}" class="number-input pull-right text-green"/>
+                        <a class="minus-plus text-green bg-white pull-right number-minus" href="javascript:;">-</a>
                     </span>
                     {% if len(dry_fruit.charge_types) >1 %}
                     <a href="javascript:;" class="pull-right toggle down p0"></a>
@@ -154,9 +159,9 @@ var height=(window.screen.height)/8;
                             <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                         </span>
                         <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
-                            <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
-                            <input type="text" value="{{value}}" class="number-input pull-right text-orange"/>
-                            <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
+                            <a class="minus-plus text-green bg-white pull-right number-plus" href="javascript:;">+</a>
+                            <input type="text" value="{{value}}" class="number-input pull-right text-green"/>
+                            <a class="minus-plus text-green bg-white pull-right number-minus" href="javascript:;">-</a>
                         </span>
                     </li>
                     {% end %}
@@ -170,8 +175,10 @@ var height=(window.screen.height)/8;
 </ul>
 {% end %}
 {% for menu in menus %}
-<p class="bg-green text-white no-mar-btom classify-title font16">{{menu.name}}</p>
-<ul class="goods-list bg-white menu-list">
+    {% if mgoods[menu.id] %}
+    <p class="bg-green text-white no-mar-btom classify-title font16" id="menu{{menu.id}}">{{menu.name}}</p>
+    <ul class="goods-list bg-white menu-list">
+    {% end %}
     {% for mgood in mgoods[menu.id]%}
     <li class="goods-list-item  TDSG font14" data-id="{{mgood.id}}">
         <div class="bg set-w100-fle">
@@ -202,9 +209,9 @@ var height=(window.screen.height)/8;
                     </span>
                      <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
                          {% set value = cart_m[mgood.mcharge_types[0].id]["num"] if mgood.mcharge_types[0].id in cart_m else 0%}
-                        <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
-                        <input type="text" value="{{value}}" class="number-input pull-right text-orange"/>
-                        <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
+                        <a class="minus-plus text-green bg-white pull-right number-plus" href="javascript:;">+</a>
+                        <input type="text" value="{{value}}" class="number-input pull-right text-green"/>
+                        <a class="minus-plus text-green bg-white pull-right number-minus" href="javascript:;">-</a>
                     </span>
                     {% end %}
                     {% if len(mgood.mcharge_types) >1 %}
@@ -221,9 +228,9 @@ var height=(window.screen.height)/8;
                             <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                         </span>
                         <span class="col-sm-6  col-xs-6  pull-right p0 number-change">
-                            <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
-                            <input type="text" value="{{value}}" class="number-input pull-right text-orange"/>
-                            <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
+                            <a class="minus-plus text-green bg-white pull-right number-plus" href="javascript:;">+</a>
+                            <input type="text" value="{{value}}" class="number-input pull-right text-green"/>
+                            <a class="minus-plus text-green bg-white pull-right number-minus" href="javascript:;">-</a>
                         </span>
                     </li>
                     {% end %}
@@ -236,6 +243,7 @@ var height=(window.screen.height)/8;
     {% end %}
 </ul>
 {% end %}
+
 <div class="modal fade large-img-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -254,6 +262,34 @@ var height=(window.screen.height)/8;
     </div>
 </div>
 {% end %}
+{% block toTop %}
+<ul class="right-nav">
+    <li class="set-inl-blo bg-grey3 text-green text-center font14" data-toggle="modal" data-target="#goods-classify">分类</li>
+    <li class="set-inl-blo bg-grey3 text-green text-center font14" id="backTop">置顶</li>
+</ul>
+<div class="modal fade classify"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" id="goods-classify">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body set-width-float text-center">
+                <ul class="font16">
+                    {% if fruits%}
+                    <li class="bg-green"><a href="#fruitPosition" class="text-white" data-dismiss="modal">水果</a></li>
+                    {% end %}
+                    {% if dry_fruits%}
+                    <li><a href="#dryFruitPosition" class="text-green" data-dismiss="modal">干果</a></li>
+                    {% end %}
+                    {% for menu in menus %}
+                        {% if mgoods[menu.id] %}
+                        <li><a href="#menu{{menu.id}}" class="text-green" data-dismiss="modal">{{menu.name}}</a></li>
+                        {% end %}
+                    {% end %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
 {% block bottom %}
+<script src="{{static_url('js/swipe.js')}}"></script>
 <script src="{{static_url('js/market-home.js')}}"></script>
 {% end %}

@@ -152,7 +152,7 @@ class Market(CustomerBaseHandler):
         for menu in shop.menus:
             mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
         return self.render("customer/home.html", context=dict(fruits=fruits, dry_fruits=dry_fruits,menus=shop.menus,
-                                                              mgoods=mgoods, cart_f=cart_f, cart_m=cart_m,subpage='home'))
+                                                              mgoods=mgoods, cart_f=cart_f, cart_m=cart_m,subpage='home',notices=shop.config.notices))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int", "charge_type_id:int", "menu_type:int")

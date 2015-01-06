@@ -3,7 +3,9 @@ $(document).ready(function(){
         var shop_id=$(this).data('id');
         shopChnage(shop_id);
     });
-
+    $('.developing').on('click',function(){
+        alert('此功能暂未开放！');
+    });
 });
 
 var shop_id=$('#currentShop').data('id');

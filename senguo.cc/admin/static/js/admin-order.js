@@ -1,4 +1,44 @@
 $(document).ready(function(){
+    //订单状态数据显示
+    var order_item=$('.order-list-item');
+    order_item.each(function(){
+       var $this=$(this);
+       var type=$this.data('type');
+       var status_item=$this.find('.order-status');
+       var ordered=$this.find('.status_order');
+       var sended=$this.find('.status_send');
+       var finished=$this.find('.status_finish');
+       var tip=$this.find('.tips');
+       var edit=$this.find('.edit-btn');
+       var check=$this.find('.check-btn');
+       var select=$this.find('.select-btn');
+       var pay=$this.find('.pay-status');
+       var paid=pay.data('pay');
+       var status=status_item.data('id');
+        //订单状态
+        if(status==1){
+            ordered.removeClass('hidden');
+        }
+       else if(status==4)
+        {
+            status_item.addClass('order-status-dealing');
+            sended.removeClass('hidden');
+        }
+        else if(status==5)
+        {
+            edit.remove();
+            check.remove();
+            select.remove();
+            finished.removeClass('hidden');
+            status_item.addClass('order-status-dealing');
+        }
+        //立即送消费显示
+        if(type==1) tip.removeClass('hidden');
+        //支付状态
+        if(paid=='True'){
+            pay.text('已支付').removeClass('text-pink').addClass('text-green');
+        }
+    });
     //导航栏active样式
     var order_type_item=$('.order-type').find('li');
     var order_status_item=$('.order-status').find('li');
@@ -167,6 +207,8 @@ $(document).ready(function(){
         var val=$this.parents('.send-person-area-select').find('.send-person-area').find('.active').data('id');
         orderEdit($this,'edit_SH2',val)
     });
+    //订单搜索
+    $('.order-search').on('click',function(){orderSearch()});
 });
 var link='/admin/order';
 var orderType=$.getUrlParam('order_type');
@@ -178,6 +220,34 @@ function addActive(target,id){
         if(i+1==id)
             target.eq(i).addClass('active');
     }
+}
+
+function orderSearch(){
+    var url=link;
+    var action='search';
+    var order_id=Int($('.search-con').val());
+    var data={
+        order_id:order_id
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,function(res){
+            if(res.success){
+                var id;
+                var item=$('.order-list-item');
+                for(var i=1;i<item.length;i++)
+                {
+                    id=item[i].data('id');
+                    if(id==order_id)
+                    item[i].show().siblings('.order-list-item').hide();
+                }
+            }
+            else return alert(res.error_text);
+        },
+        function(){return alert('网络错误！')}
+    )
 }
 
 function addEditPeriod(target,action){

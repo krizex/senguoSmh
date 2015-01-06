@@ -1,24 +1,24 @@
 .goods-list{width:100%;float:left;margin:0px;}
-.goods-list-item{width:100%;float:left;position:relative;padding-bottom:2px;}
+.goods-list-item{width:100%;float:left;position:relative;padding:2px;}
 .goods-list-item .goods-img{position:relative;overflow:hidden;border:4px solid #fff;}
 .goods-list-item .goods-img .tag{display:inline-block;position:absolute;width:30px;}
 .goods-list-item .goods-img a{width:100%;overflow:hidden;}
 .goods-list-item .goods-img img{}
 .goods-list-item .w22{width:20%;}
 .goods-list-item .w69{width:69%;}
-.goods-list-item .great-number{margin-top:10%;margin-bottom:0;}
+.goods-list-item .great-number{margin-bottom:0;}
 .goods-list-item .charge-style{clear:both;}
 .goods-list-item .charge-style span,a{display:inline-block;}
-.goods-list-item .charge-style span{height:30px;line-height:30px;}
-.goods-list-item .charge-first{width:100%;float:left;margin-top:3%;}
+.goods-list-item .charge-style span{height:24px;line-height:24px;}
+.goods-list-item .charge-first{width:100%;float:left;}
 .goods-list-item .charge-list{}
 .goods-list-item .charge-list li{border-top:1px solid #fff;padding:2px 0;}
-.goods-list-item .minus-plus{display:inline-block;float:left;width:28px;height:28px;line-height:28px;font-weight:bold;font-size:20px;text-align:center;border:1px solid #ffd279;}
-.goods-list-item .toggle{display:inline-block;width:25px;height:30px;}
+.goods-list-item .minus-plus{display:inline-block;float:left;width:24px;height:22px;line-height:22px;font-weight:bold;font-size:20px;text-align:center;box-shadow:1px 1px 2px #aaa;}
+.goods-list-item .toggle{display:inline-block;width:25px;height:24px;}
 .goods-list-item .disable{border-color:#ccc;color:#ccc;}
 .goods-list-item .down{background:url("../images/arrow-down.gif") no-repeat 0 5px;background-size:1.5em;}
 .goods-list-item .up{background:url("../images/arrow-up.gif") no-repeat 0 5px;background-size:1.5em;}
-.goods-list-item .number-input{width:28%;height:28px;border-top:1px solid #ffd279;border-bottom:1px solid #ffd279;text-align:center;line-height:28px;}
+.goods-list-item .number-input{width:28%;height:28px;text-align:center;line-height:28px;}
 .goods-list-item .fruit-class{padding:0 10px;min-width:20px;max-width:50px;text-align:center;}
 
 .large-img-box .close{font-size:12px;opacity:1;padding:8px;}
@@ -26,21 +26,22 @@
 .large-img-box .click-great{display:inline-block;width:100%;padding:10px;}
 .large-img-box .modal-footer{padding:0px;}
 
-.classify-title{text-indent:14px;padding:5px;}
+.classify-title{text-indent:14px;padding:5px;border-radius:5px;margin-bottom:5px;}
 
 .modal-dialog{width:100%;max-width:300px;}
 
-#notice-board{position:relative;}
-#notice-board #title-img{margin-top:20px;width:190px;}
-#notice-board #line1,#notice-board #line2{float:left;display:inline-block;height:205px;border-right:2px solid #f9edd9}#notice-board li{margin:15px;font-size:15px}
-#notice-board li p{margin:3px}
-#notice-board #line1{width:50px;margin-right:-52px}
-#notice-board #line2{width:54px;margin-right:-56px}
-#notice-board .sticker{position:absolute;z-index:10;top:3px;width:55px;height:auto}
-#notice-board #sticker-left{left:0}
-#notice-board #sticker-right{right:0}
-#notice-board .content-wrapper{background-color:#fdfbe9;position:relative;overflow:hidden;margin:20px;padding:0 15px;height:194px;background-image:url('../images/notice-board-bg.jpg');background-size:auto 28px;box-shadow:0px 0px 8px #ff6563;}
-#notice-board .content-wrapper .content{position:absolute;top:0;overflow-y:auto;width:100%;left:0;text-align:center;}
-#notice-board .content-list{font-size:16px;color:#999}
-#notice-board .content-list strong{color:#fd7271;font-weight:normal}
+.notice-board{border:5px solid #fff;min-height:120px;position:relative;}
+.notice-board .swipe{overflow:hidden;visibility: hidden;position:relative;}
+.notice-board .swipe .wrap{margin-top:10px;}
+.notice-board .swipe-wrap {overflow:hidden;position:relative;}
+.notice-board .swipe-wrap > figure {float:left;width:100%;position:relative;}
+.notice-board .circle{position:absolute;bottom:10px;width:100%;}
+.notice-board #position{text-align:center;list-style:none;margin:0;padding:0}
+.notice-board #position li{display:inline-block;width:10px;height:10px;border-radius:10px;border:1px solid #fff;margin:0 2px;cursor:pointer}
+.notice-board #position li.on{background:#fff;}
 
+.right-nav{position:fixed;bottom:80px;width:40px;}
+.right-nav li{width:40px;height:40px;float:left;line-height:40px;margin-bottom:2px;}
+
+.classify .modal-dialog{margin-top:0px;max-width:800px !important;}
+.classify a{display:block;}
