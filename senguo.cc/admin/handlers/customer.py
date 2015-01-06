@@ -2,8 +2,8 @@ from handlers.base import CustomerBaseHandler
 import dal.models as models
 import tornado.web
 from settings import *
-import datetime
-from sqlalchemy import desc, and_
+import datetime, time
+from sqlalchemy import desc, and_, or_
 import qiniu
 
 class Access(CustomerBaseHandler):
@@ -56,15 +56,15 @@ class Access(CustomerBaseHandler):
 class Home(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        count = {3: 0, 4: 0, 5: 0, 6: 0}  # 3:未处理 4:待收货，5：已完成，6：售后订单
+        count = {3: 0, 4: 0, 5: 0, 6: 0}  # 3:未处理 4:待收货，5：已送达，6：售后订单
         for order in self.current_user.orders:
             if order.status == 1:
                 count[3] += 1
             elif order.status in (2, 3, 4):
                 count[4] += 1
-            elif order.status == 5:
+            elif order.status in (5, 6):
                 count[5] += 1
-            elif order.status == 6:
+            elif order.status == 10:
                 count[6] += 1
         return self.render("customer/personal-center.html", count=count, context=dict(subpage='center'))
     @tornado.web.authenticated
@@ -115,28 +115,60 @@ class ShopProfile(CustomerBaseHandler):
         address = self.code_to_text("shop_city", shop.shop_city) + " " + shop.shop_address_detail
         service_area = self.code_to_text("service_area", shop.shop_service_area)
         staffs = self.session.query(models.HireLink).filter_by(shop_id=shop_id).all()
-        shop_members_id = [shop.id]+[x.staff_id for x in staffs]
+        shop_members_id = [shop.admin_id]+[x.staff_id for x in staffs]
         headimgurls = self.session.query(models.Accountinfo.headimgurl).filter(models.Accountinfo.id.in_(shop_members_id)).all()
         return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days, fans_sum=fans_sum, order_sum=order_sum,
                            goods_sum=goods_sum, address=address, service_area=service_area, headimgurls=headimgurls,
-                           comments=self.get_comments(shop_id, 2),context=dict(subpage='shop'))
+                           comments=self.get_comments(shop_id, page_size=2), context=dict(subpage='shop'))
 
     @tornado.web.authenticated
     def post(self, shop_id):
+        shop_id = self.get_cookie("market_shop_id")
         self.session.add(models.CustomerShopFollow(customer_id=self.current_user.id, shop_id=shop_id))
         self.session.commit()
         return self.send_success()
 
-class Comment(CustomerBaseHandler):
-    @tornado.web.authenticated
+class Members(CustomerBaseHandler):
     def get(self):
         shop_id = int(self.get_cookie("market_shop_id"))
-        comments = self.get_comments(shop_id, 10)
+        admin_id = self.session.query(models.Shop.admin_id).filter_by(id=shop_id).first()
+        if not admin_id:
+            return self.send_error(404)
+        admin_id = admin_id[0]
+        members = self.session.query(models.Accountinfo, models.HireLink.work).filter(
+            models.HireLink.shop_id == shop_id, or_(models.Accountinfo.id == models.HireLink.staff_id,
+                                                    models.Accountinfo.id == admin_id)).all()
+        member_list = []
+        def work(id, w):
+            if id == admin_id:
+                return "店长"
+            elif w == 1:
+                return "挑货"
+            else:
+                return "送货"
+        for member in members:
+            member_list.append({"img":member[0].headimgurl,
+                                "name":member[0].nickname,
+                                "birthday":time.strftime("%Y-%m", time.localtime(member[0].birthday)),
+                                "work":work(member[0].id,member[1]),
+                                "phone":member[0].phone,
+                                "wx_username":member[0].wx_username})
+        return self.render("", member_list=member_list)
+
+class Comment(CustomerBaseHandler):
+    @tornado.web.authenticated
+    @CustomerBaseHandler.check_arguments("page:int")
+    def get(self):
+        shop_id = int(self.get_cookie("market_shop_id"))
+        page = self.args["page"]
+        comments = self.get_comments(shop_id, page, 10)
         date_list = []
         for comment in comments:
             date_list.append({"img": comment[0], "name": comment[1],
                               "comment": comment[2], "time": self.timedelta(comment[3])})
-        return self.render("customer/comment.html", date_list=date_list)
+        if page == 0:
+            return self.render("customer/comment.html", date_list=date_list)
+        return self.write(date_list=date_list)
 
 class Market(CustomerBaseHandler):
     @tornado.web.authenticated
@@ -160,7 +192,8 @@ class Market(CustomerBaseHandler):
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int", "charge_type_id:int", "menu_type:int")
     #action==2: +1，action==1: -1, action==0: delete；menu_type==0：fruit，menu_type==1：menu
-    def post(self, shop_id):
+    def post(self):
+        shop_id = int(self.get_cookie("market_shop_id"))
         inc = self.args["action"]
         charge_type_id = self.args["charge_type_id"]
         menu_type = self.args["menu_type"]
@@ -298,6 +331,7 @@ class Order(CustomerBaseHandler):
         if action == "cancel_order":
             order.status = 0
         elif action == "comment":
+            order.status = 6
             order.comment_create_date = datetime.datetime.now()
             order.comment = data["comment"]
         self.session.commit()

@@ -17,6 +17,7 @@ handlers = [
     (r"/customer/cart", handlers.customer.Cart, {}, "customerCart"),
     (r"/customer/orders", handlers.customer.Order, {}, "customerOrder"),
     (r"/customer/orders/detail/(\d+)", handlers.customer.OrderDetail, {}, "customerOrderDetail"),
+    (r"/customer/members", handlers.customer.Members, {}, "customerMembers"),
     (r"/customer/shopProfile/(\d+)", handlers.customer.ShopProfile, {}, "customerShopProfile"),
     (r"/customer/comment", handlers.customer.Comment, {}, "customerComment"),
     (r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
@@ -67,7 +68,7 @@ handlers = [
     # 已被拒绝店铺
     (r"/super/shopManage/declined", handlers.superadmin.ShopManage, {
         "action":"declined"}, "superShopManageDeclined"),
-    
+
     ## 商城购买订单
     (r"/super/orderManage/", handlers.superadmin.OrderManage, {
         "action":"new"}, "superOrderManage"),
@@ -79,14 +80,14 @@ handlers = [
         "action":"new"}, "superOrderManageNew"),
     (r"/super/orderManage/aborted", handlers.superadmin.OrderManage, {
         "action":"aborted"}, "superOrderManageAborted"),
-    
+
     ## 用户反馈
     (r"/super/feedback/", handlers.superadmin.Feedback, {"action":"all"}, "superFeedback"),
     (r"/super/feedback/unprocessed", handlers.superadmin.Feedback, {"action":"unprocessed"}, "superFeedbackUnprocessed"),
     (r"/super/feedback/processed", handlers.superadmin.Feedback, {"action":"processed"}, "superFeedbackProcessed"),
 
     # (r"/super/notice/", handlers.superadmin.Notice),
-    
+
     (r"/admin/login", handlers.admin.Access,{"action":"login"}, "adminLogin"),
     (r"/admin/oauth", handlers.admin.Access, {"action":"oauth"}, "adminOauth"),
     (r"/admin/logout", handlers.admin.Access, {"action":"logout"}, "adminLogout"),
@@ -102,7 +103,7 @@ handlers = [
     # (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
     # (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
     # (r"/admin/finance", handlers.admin.Finance, {}, "adminFinance"),
-    # (r"/admin/settings/profile", handlers.admin.Settings, 
+    # (r"/admin/settings/profile", handlers.admin.Settings,
     #  {"action":"profile"}, "adminSettingsProfile")
     (r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
     (r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
@@ -149,7 +150,7 @@ handlers = [
     (r"/infowall/infoDetail/comment", handlers.infowall.InfoDetail, {}, "infowallInfoDetailComment"),
     (r"/infowall/infoCollect", handlers.infowall.InfoCollect, {}, "infowallInfoCollect"),
     (r"/infowall/infoIssue", handlers.infowall.InfoIssue, {}, "infowallInfoIssue"),
-    
+
 
     (r"/fruitzone/systemPurchase/", handlers.fruitzone.SystemPurchase, {
         "action":"home"}, "fruitzoneSystemPurchase"),

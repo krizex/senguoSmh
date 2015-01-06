@@ -817,8 +817,8 @@ class Order(MapBase, _CommonApi):
     receiver = Column(String(64), nullable=False)
     address_text = Column(String(1024), nullable=False)
     message = Column(String(100)) #用户留言
-    status = Column(TINYINT, default=ORDER_STATUS.ORDERED) #订单状态:DELETED = 0,ORDERED = 1,
-                                                           # JH = 2,SH1 = 3,SH2 = 4,FINISH = 5,AFTER_SALE = 6
+    status = Column(TINYINT, default=ORDER_STATUS.ORDERED)  # 订单状态:DELETED = 0,ORDERED = 1, JH = 2,SH1 = 3
+                                                           # #SH2 = 4,Received=5，FINISH = 6, AFTER_SALE = 10
     type = Column(TINYINT) #订单类型 1:立即送 2：按时达
     remark = Column(String(100)) #商家备注
     totalPrice = Column(Float)
