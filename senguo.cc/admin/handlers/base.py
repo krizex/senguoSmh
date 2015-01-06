@@ -297,11 +297,11 @@ class CustomerBaseHandler(_AccountBaseHandler):
                 mgoodses[mcharge_type.id]={"mcharge_type": mcharge_type, "num": d[mcharge_type.id]}
         return fruits, mgoodses
 
-    def get_comments(self, shop_id, limit):
+    def get_comments(self, shop_id, page=0, page_size=2):
         return self.session.query(models.Accountinfo.headimgurl, models.Accountinfo.nickname,
                                   models.Order.comment, models.Order.comment_create_date).\
             filter(models.Order.shop_id == shop_id, models.Order.customer_id == models.Accountinfo.id).\
-            order_by(desc(models.Order.comment_create_date)).limit(limit).all()
+            order_by(desc(models.Order.comment_create_date)).offset(page).limit(page_size).all()
 
     def timedelta(self, date):
         if not date:
