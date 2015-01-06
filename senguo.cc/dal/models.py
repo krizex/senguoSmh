@@ -551,6 +551,11 @@ class Customer(MapBase, _AccountApi):
     carts = relationship("Cart", uselist=True)
     addresses = relationship("Address", backref="customer")
 
+class CustomerShopFollow(MapBase, _CommonApi):  # 用户关注店铺
+    __tablename__ = "customer_shop_follow"
+    customer_id = Column(Integer, ForeignKey(Customer.id), primary_key=True, nullable=False)
+    shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
+
 class COUNTER_TYPE:
     SYSTEM_ORDER_COUNTER = 1
 
@@ -824,6 +829,8 @@ class Order(MapBase, _CommonApi):
     SH1_id = Column(Integer, nullable=True) #一级送货员id
     SH2_id = Column(Integer, nullable=True) #二级送货员id
     staff_remark = Column(String(100)) #员工备注（订单可能出状况了）
+    comment = Column(String(300))  # 评论
+    comment_create_date = Column(DateTime)
     start_time = Column(Time)
     end_time = Column(Time)
     create_date = Column(DateTime, default=func.now())

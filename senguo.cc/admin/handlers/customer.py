@@ -93,6 +93,47 @@ class Home(CustomerBaseHandler):
             q.delete()
             self.session.commit()
         return self.send_success()
+class ShopProfile(CustomerBaseHandler):
+    @tornado.web.authenticated
+    def get(self, shop_id):
+        shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
+        if not shop:
+            return self.send_error(404)
+        #是否关注判断
+        follow = True
+        if not self.session.query(models.CustomerShopFollow).filter_by(
+                customer_id=self.current_user.id, shop_id=shop_id).first():
+            follow = False
+        operate_days = (datetime.datetime.now() - datetime.datetime.fromtimestamp(shop.create_date_timestamp)).days
+        fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop_id).count()
+        order_sum = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
+        goods_sum = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count() + \
+                    self.session.query(models.MGoods).join(models.Menu).filter(
+                        models.Menu.shop_id == shop_id, models.Menu.active == 1).count()
+        address = self.code_to_text("shop_city", shop.shop_city) + " " + shop.shop_address_detail
+        service_area = self.code_to_text("service_area", shop.shop_service_area)
+        staffs = self.session.query(models.HireLink).filter_by(shop_id=shop_id).all()
+        shop_members_id = [shop.id]+[x.staff_id for x in staffs]
+        headimgurls = self.session.query(models.Accountinfo.headimgurl).filter(models.Accountinfo.id.in_(shop_members_id)).all()
+        return self.render("", follow=follow, operate_days=operate_days, fans_sum=fans_sum, order_sum=order_sum,
+                           goods_sum=goods_sum, address=address, service_area=service_area, headimgurls=headimgurls,
+                           comments=self.get_comments(shop_id, 2))
+
+    @tornado.web.authenticated
+    def post(self, shop_id):
+        self.session.add(CustomerShopFollow(customer_id=self.current_user.id, shop_id=shop_id))
+        self.session.commit()
+        return self.send_success()
+
+class Comment(CustomerBaseHandler):
+    @tornado.web.authenticated
+    def get(self, shop_id):
+        comments = self.get_comments(shop_id, 10)
+        date_list = []
+        for comment in comments:
+            date_list.append({"img": comment[0], "name": comment[1],
+                              "comment": comment[2], "time": self.timedelta(comment[3])})
+        return self.render("", date_list=date_list)
 
 class Market(CustomerBaseHandler):
     @tornado.web.authenticated
@@ -248,12 +289,15 @@ class Order(CustomerBaseHandler):
     @CustomerBaseHandler.check_arguments("action", "data")
     def post(self):
         action = self.args["action"]
-        data = self.args["data"]
+        data = eval(self.args["data"])
+        order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
+        if not order:return self.send_error(404)
         if action == "cancel_order":
-            order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
-            if not order:return self.send_error(404)
             order.status = 0
-            self.session.commit()
+        elif action == "comment":
+            order.comment_create_date = datetime.datetime.now()
+            order.comment = data["comment"]
+        self.session.commit()
         return self.send_success()
 
 class OrderDetail(CustomerBaseHandler):

@@ -44,7 +44,7 @@ class GlobalBaseHandler(BaseHandler):
             return text
 
         #将商店审核状态编码转换为文字显示
-        if column_name == "shop_status":
+        elif column_name == "shop_status":
             if code == models.SHOP_STATUS.APPLYING:
                 text = "审核中"
             elif code == models.SHOP_STATUS.ACCEPTED:
@@ -53,16 +53,14 @@ class GlobalBaseHandler(BaseHandler):
                 text = "拒绝申请"
             return text
 
-
         #将城市编码转换为文字显示（可以由城市编码算出城市所在省份的编码）
-        if column_name == "shop_city":
+        elif column_name == "shop_city":
             text += dis_dict[int(code/10000)*10000]["name"]
             if "city" in dis_dict[int(code/10000)*10000].keys():
-                text += " "
-                text += dis_dict[int(code/10000)*10000]["city"][code]["name"]
+                text += " " + dis_dict[int(code/10000)*10000]["city"][code]["name"]
             return text
         
-        if column_name == "order_status":
+        elif column_name == "order_status":
             text = ""
             if code == models.SYS_ORDER_STATUS.TEMP:
                 text = "待支付"
@@ -296,6 +294,27 @@ class CustomerBaseHandler(_AccountBaseHandler):
             for mcharge_type in mcharge_types:
                 mgoodses[mcharge_type.id]={"mcharge_type": mcharge_type, "num": d[mcharge_type.id]}
         return fruits, mgoodses
+
+    def get_comments(self, shop_id, limit):
+        return self.session.query(models.Accountinfo.headimgurl, models.Accountinfo.nickname,
+                                  models.Order.comment, models.Order.comment_create_date).\
+            filter(models.Order.shop_id == shop_id, models.Order.customer_id == models.Accountinfo.id).\
+            order_by(desc(models.Order.comment_create_date)).limit(limit).all()
+
+    def timedelta(self, date):
+        timedelta = datetime.datetime.now()-date
+        if timedelta.days >= 365:
+            return "%d年前" % (timedelta.days/365)
+        elif timedelta.days >= 30:
+            return "%d月前" % (timedelta.days/30)
+        elif timedelta.days > 0:
+            return "%d天前" % timedelta.days
+        elif timedelta.seconds >= 3600:
+            return "%d小时前" % (timedelta.seconds/3600)
+        elif timedelta.seconds >= 60:
+            return "%d分钟前" % (timedelta.seconds/60)
+        else:
+            return "%d秒前" % timedelta.seconds
 
 class WxOauth2:
     token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}&secret={appsecret}&code={code}&grant_type=authorization_code"
