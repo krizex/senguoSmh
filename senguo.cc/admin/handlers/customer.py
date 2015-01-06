@@ -123,19 +123,20 @@ class ShopProfile(CustomerBaseHandler):
 
     @tornado.web.authenticated
     def post(self, shop_id):
-        self.session.add(CustomerShopFollow(customer_id=self.current_user.id, shop_id=shop_id))
+        self.session.add(models.CustomerShopFollow(customer_id=self.current_user.id, shop_id=shop_id))
         self.session.commit()
         return self.send_success()
 
 class Comment(CustomerBaseHandler):
     @tornado.web.authenticated
-    def get(self, shop_id):
+    def get(self):
+        shop_id = int(self.get_cookie("market_shop_id"))
         comments = self.get_comments(shop_id, 10)
         date_list = []
         for comment in comments:
             date_list.append({"img": comment[0], "name": comment[1],
                               "comment": comment[2], "time": self.timedelta(comment[3])})
-        return self.render("", date_list=date_list)
+        return self.render("customer/comment.html", date_list=date_list)
 
 class Market(CustomerBaseHandler):
     @tornado.web.authenticated

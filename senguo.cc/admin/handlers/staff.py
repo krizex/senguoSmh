@@ -172,7 +172,7 @@ class Hire(StaffBaseHandler):
             self.current_user.address = data["address"]
             self.session.commit()
             kwargs = {"name":data["name"], "phone":data["phone"], "email":data["email"]}
-            if not data["headimgurl"]:
+            if data["headimgurl"]:
                 kwargs["headimgurl"] = STAFF_IMG_HOST+data["headimgurl"]
             self.current_user.accountinfo.update(session=self.session, **kwargs)
         elif action == "add_img":
