@@ -10,6 +10,8 @@ from dal.dis_dict import dis_dict
 import time
 import re
 import tornado.web
+from sqlalchemy import desc
+import datetime
 
 class GlobalBaseHandler(BaseHandler):
 
@@ -302,6 +304,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
             order_by(desc(models.Order.comment_create_date)).limit(limit).all()
 
     def timedelta(self, date):
+        if not date:
+            return "1年前"
         timedelta = datetime.datetime.now()-date
         if timedelta.days >= 365:
             return "%d年前" % (timedelta.days/365)

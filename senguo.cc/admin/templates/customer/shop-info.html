@@ -1,14 +1,18 @@
 {% extends 'base.html' %}
 {% block head %}<link rel="stylesheet" href="{{static_url('css/market-shop.css')}}"/>{% end %}
 {% block content %}
- <div class="info1 bg-white clearfix">
-     <img src="{{static_url('images/anoa-4-md.gif')}}" class="pull-left">
-     <div class="pull-left p010">
-        <p>火星大水果店</p>
-        <p>店铺ID：<span class="text-green">88888</span></p>
-        <p>
-            <div class="">
 
+ <div class="info1 bg-white clearfix">
+     <img src="{{shop.shop_trademark_url or static_url('design_img/TDSG.png')}}" class="pull-left col-xs-2 col-sm-2 col-md-2 col-lg-2">
+     <div class="pull-left p010">
+        <p>{{shop.shop_name}}</p>
+        <p>店铺ID：<span class="text-green">{{shop.id}}</span></p>
+        <p>
+            <div class="btn text-green font9 bg-grey">
+                <p>初来乍到</p>
+                <div class="status-inner">
+                    <div class="status-bar"></div>
+                </div>
             </div>
             <a href="javascript:;" class="btn text-green font9 bg-grey">店铺关注</a>
         </p>
@@ -17,59 +21,62 @@
  <ul class="info2 nav nav-tabs text-center bg-white">
      <li class="col-lg-3">
         <p>运营时间</p>
-        <p class="text-grey">888天</p>
+        <p class="text-grey">{{operate_days or 0}}天</p>
      </li>
      <li class="col-lg-3">
          <p>粉丝</p>
-         <p class="text-grey">888个</p>
+         <p class="text-grey">{{fans_sum or 0}}个</p>
      </li>
      <li class="col-lg-3">
          <p>总订单数</p>
-         <p class="text-grey">888个</p>
+         <p class="text-grey">{{order_sum}}个</p>
      </li>
      <li class="col-lg-3">
          <p>商品种类</p>
-         <p class="text-grey">888种</p>
+         <p class="text-grey">{{goods_sum or 0}}种</p>
      </li>
  </ul>
 <div class="shop-box bg-white">
     <p class="title font16">店铺简介：</p>
-    <p>哈哈哈哈哈哈哈哈</p>
+    <p>{{shop.shop_intro or '无'}}</p>
 </div>
 <div class="shop-box bg-white">
     <p class="title font16">店铺信息：</p>
     <ul class="shop-info">
-        <li>位置：哈哈哈哈哈火星大道</li>
-        <li>服务区域：银河系及周边</li>
-        <li>联系电话：223333333</li>
+        <li>位置：{{address}}</li>
+        <li>服务区域：{{service_area}}</li>
+        <li>联系电话：{{shop.admin.accountinfo.phone}}</li>
     </ul>
 </div>
 <div class="shop-box bg-white clearfix">
     <p class="title clearfix">
-        <span class="pull-left font16">店铺成员（8）：</span>
+        <span class="pull-left font16">店铺成员（{{len(headimgurls)}}）：</span>
         <a href="#" class="pull-right text-grey">查看成员信息》</a>
     </p>
     <ul class="staff-img">
-        <li class="pull-left"><img src="{{static_url('images/anoa-4-md.gif')}}"></li>
-        <li class="pull-left"><img src="{{static_url('images/anoa-4-md.gif')}}"></li>
+        {% for staff_img in headimgurls %}
+        <li class="pull-left"><img src="{{staff_img[0]}}"></li>
+        {% end %}
     </ul>
 </div>
 <div class="shop-box bg-white clearfix">
     <p class="title clearfix">
-        <span class="pull-left font16">店铺评价（8）：</span>
+        <span class="pull-left font16">店铺评价（{{len(comments)}}）：</span>
         <a href="#" class="pull-right text-grey">更多》</a>
     </p>
     <ul class="user-comment">
+        {% for comment in comments %}
         <li class="comment-item">
-            <img src="{{static_url('images/anoa-4-md.gif')}}" class="pull-left">
+            <img src="{{comment[0]}}" class="pull-left">
             <div class="pull-left p010">
                 <p class="clearfix">
-                    <span class="pull-left">火星人</span>
-                    <span class="pull-right">一亿年前</span>
+                    <span class="pull-left">{{comment[1]}}</span>
+                    <span class="pull-right">{{handler.timedelta(comment[3])}}</span>
                 </p>
-                <p>挺好的，^_^</p>
+                <p>{{comment[2] or '无'}}</p>
             </div>
         </li>
+        {% end %}
     </ul>
 </div>
 {% end %}

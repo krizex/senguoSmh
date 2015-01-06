@@ -15,9 +15,10 @@ $(document).ready(function(){
             break;
         }
     }
-    $('.home_href').attr({'href':market_href+Int(shop_id)});
+    $('.shop_href').attr({'href':shop_href+Int(shop_id)});
 });
-var market_href='/customer/market/';
+var shop_href='/customer/shopProfile/';
+var market_href='/customer/market';
 var home_href='/customer';
 var success_href='/notice/success';
 var shop_id;

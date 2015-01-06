@@ -93,9 +93,11 @@ class Home(CustomerBaseHandler):
             q.delete()
             self.session.commit()
         return self.send_success()
+
 class ShopProfile(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self, shop_id):
+        self.set_cookie("market_shop_id", shop_id)
         shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
         if not shop:
             return self.send_error(404)
@@ -115,9 +117,9 @@ class ShopProfile(CustomerBaseHandler):
         staffs = self.session.query(models.HireLink).filter_by(shop_id=shop_id).all()
         shop_members_id = [shop.id]+[x.staff_id for x in staffs]
         headimgurls = self.session.query(models.Accountinfo.headimgurl).filter(models.Accountinfo.id.in_(shop_members_id)).all()
-        return self.render("", follow=follow, operate_days=operate_days, fans_sum=fans_sum, order_sum=order_sum,
+        return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days, fans_sum=fans_sum, order_sum=order_sum,
                            goods_sum=goods_sum, address=address, service_area=service_area, headimgurls=headimgurls,
-                           comments=self.get_comments(shop_id, 2))
+                           comments=self.get_comments(shop_id, 2),context=dict(subpage='shop'))
 
     @tornado.web.authenticated
     def post(self, shop_id):
@@ -137,8 +139,8 @@ class Comment(CustomerBaseHandler):
 
 class Market(CustomerBaseHandler):
     @tornado.web.authenticated
-    def get(self, shop_id):
-        self.set_cookie("market_shop_id", shop_id)
+    def get(self):
+        shop_id = int(self.get_cookie("market_shop_id"))
         try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
         except:return self.send_error(404)
         try:cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
