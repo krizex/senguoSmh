@@ -3,45 +3,51 @@
 {% block content %}
 
  <div class="info1 bg-white clearfix">
-     <img src="{{shop.shop_trademark_url or static_url('design_img/TDSG.png')}}" class="pull-left col-xs-2 col-sm-2 col-md-2 col-lg-2">
-     <div class="pull-left p010">
-        <p>{{shop.shop_name}}</p>
+     <div class="col-xs-3 col-sm-3 col-md-2 col-lg-2 shop-logo p5">
+         <img src="{{shop.shop_trademark_url or static_url('design_img/TDSG.png')}}">
+     </div>
+     <div class="col-xs-9 col-sm-9 col-md-10 col-lg-10 p5">
+        <p class="font14">{{shop.shop_name}}</p>
         <p>店铺ID：<span class="text-green">{{shop.id}}</span></p>
-        <p>
-            <div class="btn text-green font9 bg-grey">
-                <p>初来乍到</p>
-                <div class="status-inner">
-                    <div class="status-bar"></div>
-                </div>
-            </div>
-            <a href="javascript:;" class="btn text-green font9 bg-grey">店铺关注</a>
-        </p>
+     </div>
+     <div class="col-xs-9 col-sm-9 col-md-10 col-lg-10 p5">
+         <div class="level-box btn text-green font9 bg-grey col-xs-5 col-sm-5 col-md-5 col-lg-5">
+             <p>初来乍到</p>
+             <div class="status-inner">
+                 <div class="status-bar"></div>
+             </div>
+         </div>
+         {% if follow%}
+         <a href="javascript:;" class="btn text-green font9 bg-grey col-xs-5 col-sm-5 col-md-5 col-lg-5 pull-right">店铺签到</a>
+         {% else %}
+         <a href="javascript:;" class="btn text-green font9 bg-grey col-xs-5 col-sm-5 col-md-5 col-lg-5 pull-right" id="focus-shop">店铺关注</a>
+         {% end %}
      </div>
  </div>
- <ul class="info2 nav nav-tabs text-center bg-white">
-     <li class="col-lg-3">
+ <ul class="info2 text-center bg-white clearfix">
+     <li class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
         <p>运营时间</p>
         <p class="text-grey">{{operate_days or 0}}天</p>
      </li>
-     <li class="col-lg-3">
+     <li class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
          <p>粉丝</p>
          <p class="text-grey">{{fans_sum or 0}}个</p>
      </li>
-     <li class="col-lg-3">
+     <li class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
          <p>总订单数</p>
          <p class="text-grey">{{order_sum}}个</p>
      </li>
-     <li class="col-lg-3">
+     <li class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
          <p>商品种类</p>
          <p class="text-grey">{{goods_sum or 0}}种</p>
      </li>
  </ul>
 <div class="shop-box bg-white">
-    <p class="title font16">店铺简介：</p>
+    <p class="title font14">店铺简介：</p>
     <p>{{shop.shop_intro or '无'}}</p>
 </div>
 <div class="shop-box bg-white">
-    <p class="title font16">店铺信息：</p>
+    <p class="title font14">店铺信息：</p>
     <ul class="shop-info">
         <li>位置：{{address}}</li>
         <li>服务区域：{{service_area}}</li>
@@ -50,7 +56,7 @@
 </div>
 <div class="shop-box bg-white clearfix">
     <p class="title clearfix">
-        <span class="pull-left font16">店铺成员（{{len(headimgurls)}}）：</span>
+        <span class="pull-left font14">店铺成员（{{len(headimgurls)}}）：</span>
         <a href="#" class="pull-right text-grey">查看成员信息》</a>
     </p>
     <ul class="staff-img">
@@ -61,14 +67,16 @@
 </div>
 <div class="shop-box bg-white clearfix">
     <p class="title clearfix">
-        <span class="pull-left font16">店铺评价（{{len(comments)}}）：</span>
-        <a href="#" class="pull-right text-grey">更多》</a>
+        <span class="pull-left font14">店铺评价（{{len(comments)}}）：</span>
+        <a href="{{reverse_url('customerComment')}}" class="pull-right text-grey">更多》</a>
     </p>
     <ul class="user-comment">
         {% for comment in comments %}
-        <li class="comment-item">
-            <img src="{{comment[0]}}" class="pull-left">
-            <div class="pull-left p010">
+        <li class="comment-item set-w100-fle">
+            <div class="img-box col-sm-2 col-xs-2 col-md-2 col-lg-1 p5">
+                <img src="{{comment[0]}}" class="img">
+            </div>
+            <div class="col-sm-10 col-xs-10 col-md-10 col-lg-11 p5">
                 <p class="clearfix">
                     <span class="pull-left">{{comment[1]}}</span>
                     <span class="pull-right">{{handler.timedelta(comment[3])}}</span>
@@ -79,4 +87,9 @@
         {% end %}
     </ul>
 </div>
+{% if not follow %}
+<div class="text-white navbar-fixed-bottom bg-green foucus-notice text-center font16">点击关注店铺后点此进入商城^_^</div>
 {% end %}
+{% end %}
+
+{% block bottom %}<script src="{{static_url('js/market-shop.js')}}"></script>{% end %}

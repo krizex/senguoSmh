@@ -1,0 +1,18 @@
+{% extends 'detail-base.html' %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/market-comment.css')}}"/>{% end %}
+{% block top %}店铺评价{% end %}
+{% block content %}
+{% if date_list %}
+{% import json %}
+<script>
+    window.dataObj.comments={% raw json.dumps(date_list) %}
+</script>
+{% end %}
+<ul class="commnent-list" id="commnent-list">
+
+</ul>
+<a href="javascript:;" id="getMore" class="btn text-green bg-white">更多评价</a>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/market-comment.js')}}"></script>
+{% end %}
