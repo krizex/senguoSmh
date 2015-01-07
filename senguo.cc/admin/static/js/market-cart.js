@@ -137,18 +137,53 @@ $(document).ready(function(){
             if(today==1) {
                 if (time >= time_now) $this.addClass('active');
                 else {
-                    $this.removeClass('active').css({'border-color':'#ddd'});
+                    $this.removeClass('active').addClass('border-grey');
                     return alert('抱歉，已超过了该送货时间段的下单时间!请选择下一个时间段！');
                 }
             }
-
+            else $this.removeClass('border-grey');
         });
     });
 
-    //选择今天送货
-    $('#send_today').on('click',function(){
-
-    });
+    //按时达/立即送被关闭情况
+    var intime_on=$('.send-intime').data('config');
+    var now_on=$('.send-now').data('config');
+    if(intime_on=='False'){
+        $('.send-intime').removeClass('active').find('p').addClass('text-grey3');
+        $('.send-now').addClass('active');
+        $('.send_day').remove();
+        $('.send_period').remove();
+        $('.send_now').show();
+        $('.send-intime').on('click',function(){
+            $(this).removeClass('active');
+            if(now_on=='True'){
+                $('.send-now').addClass('active');
+                $('.send_now').show();
+            }
+            alert('按时达模式已关闭，请选择立即送模式！');
+        })
+    }
+    if(now_on=='False'){
+        $('.send-now').removeClass('active').find('p').addClass('text-grey3');
+        $('.send-intime').addClass('active');
+        $('.send_day').show();
+        $('.send_period').show();
+        $('.send_now').remove();
+        $('.send-now').on('click',function(){
+            $(this).removeClass('active');
+            if(intime_on=='True'){
+                $('.send-intime').addClass('active');
+                $('.send_day').show();
+                $('.send_period').show();
+            }
+            else $('.send-intime').removeClass('active');
+            alert('立即送模式已关闭，请选择按时达模式！');
+        })
+    }
+    if(intime_on=='False'&&now_on=='False'){
+        $('.send-now').removeClass('active');
+        $('.send-intime').removeClass('active');
+    }
 
 });
 var price_list=[];
@@ -363,6 +398,7 @@ function orderSubmit(){
     if(!message) message='';
     if(type==2&&!period_id) {return alert('请选择送货时段！')}
     if(type==1){period_id=0}
+    if(!type){return alert('请选择送货时段！')}
     var args={
         fruits:fruits,
         mgoods:mgoods,
