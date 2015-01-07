@@ -132,12 +132,12 @@ $(document).ready(function(){
         var intime_startHour=$this.find('.intime_startHour').val();
         var intime_startMin=$this.find('.intime_startMin').val();
         var time=checkTime(Int(intime_startHour)-Int(stop_range))+':'+checkTime(intime_startMin)+':00';
-        $(this).on('click',function(){
+        $this.on('click',function(){
             var today=$('#sendDay').find('.active').data('id');
             if(today==1) {
                 if (time >= time_now) $this.addClass('active');
                 else {
-                    $this.removeClass('active');
+                    $this.removeClass('active').css({'border-color':'#ddd'});
                     return alert('抱歉，已超过了该送货时间段的下单时间!请选择下一个时间段！');
                 }
             }

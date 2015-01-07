@@ -31,6 +31,9 @@
         </a>
         <div class="content" >
             <p class="p1" >送至：<span>{{order.address_text}}</span></p>
+            {% if order.remark%}
+            <p>备注信息：{{order.remark}}</p>
+            {% end %}
             <p class="p2" >
                 <input type="hidden" value="{{order.create_date}}" class="create_time"/>
                 <input type="hidden" value="{{order.create_date.year}}" class="create_year"/>
@@ -50,6 +53,11 @@
                 <span class="status_notice">订单已开始处理</span>
                 {% end %}
             </p>
+            {% if order.comment%}
+            <p>评价：{{order.comment}}</p>
+            {% end %}
+            {% if status !=5%}
+            {% if status !=6%}
             <div class="status-bar-box">
                 <div class="status-bar">
                     <div class="inner {{width}}"></div>
@@ -60,16 +68,39 @@
                             已下单
                             {% elif status == 4%}
                             配送中
-                            {% else %}
-                            已送达
                             {% end %}
                         </span>
                     </div>
                 </div>
             </div>
+            {% end %}
+            {% end %}
+            {% if status ==5 %}
+            <div class="clearfix btn-box">
+                <button class="btn bg-pink text-white pull-right comment-btn m-r10">评价</button>
+                <button class="btn bg-grey2 pull-right after-sale m-r10">退款/售后</button>
+            </div>
+            {% end %}
         </div>
     </li>
     {% end %}
 </ul>
+<div class="modal fade comment-box" id="commentBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">评价</h4>
+            </div>
+            <div class="modal-body set-width-float text-center">
+                <textarea class="comment-input center-block"></textarea>
+            </div>
+            <div class="modal-footer text-center">
+                <button class="btn bg-green text-white comment_submit">提交</button>
+                <button class="btn bg-grey3 text-white" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% end %}
 {% block bottom %}<script src="{{static_url('js/market-order.js')}}"></script>{% end %}

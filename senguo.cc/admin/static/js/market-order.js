@@ -21,7 +21,12 @@ $(document).ready(function(){
             if(status==5){
                 $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
                 $this.find('.un-arrive').text('已送达');
-                $this.find('.status_notice').text('已送达');
+                $this.find('.status_notice').text('已送达').addClass('text-green');
+            }
+            else if(status==6){
+                $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
+                $this.find('.un-arrive').text('已送达');
+                $this.find('.status_notice').text('已评价').addClass('text-green');
             }
         }
         else if(send_day==2){
@@ -34,7 +39,12 @@ $(document).ready(function(){
             if(status==5){
                 $this.find('.send_date').text(create_year+'-'+create_month+'-'+(create_day+1));
                 $this.find('.un-arrive').text('已送达');
-                $this.find('.status_notice').text('已送达');
+                $this.find('.status_notice').text('已送达').addClass('text-green');
+            }
+            else if(status==6){
+                $this.find('.send_date').text(create_year+'-'+create_month+'-'+(create_day+1));
+                $this.find('.un-arrive').text('已送达');
+                $this.find('.status_notice').text('已评价').addClass('text-green');
             }
         }
     });
@@ -46,7 +56,22 @@ $(document).ready(function(){
             orderConcel($this,id);
         });
     });
+    //评价
+    var index;
+    var comment_order_id;
+    $('.comment-btn').each(function(){
+        var $this = $(this);
+        $this.on('click', function () {
+            $('#commentBox').modal('show');
+            index=$this.parents('.order-list-item').index();
+            comment_order_id=$this.parents('.order-list-item').data('id');
+        });
 
+    });
+    $('.comment_submit').on('click', function () {
+        var comment=$('.comment-input').val();
+        orderComment(index,comment_order_id,comment);
+    });
 });
 var order_href='/customer/orders';
 function statusText(target,n){
@@ -54,6 +79,7 @@ function statusText(target,n){
         case 1:target.text('配送中').addClass('text-green');break;
         case 4:target.text('配送中').addClass('text-green');break;
         case 5:target.text('已送达').addClass('text-grey');break;
+        case 6:target.text('已评价').addClass('text-grey');break;
     }
 }
 
@@ -70,6 +96,27 @@ function orderConcel(target,id){
     $.postJson(url,args,function(res){
         if(res.success){
             target.parents('.order-list-item').remove();
+        }
+        else return alert(res.error_text)
+    },function(){return alert('网络错误！')})
+}
+
+function orderComment(id,order_id,comment){
+    var url=order_href;
+    var action='comment';
+    if(!comment){return alert('请输入您的评论！')}
+    var data={
+        order_id:order_id,
+        comment:comment
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,function(res){
+        if(res.success){
+           $('.order-list-item').eq(id).remove();
+            $('#commentBox').modal('hide');
         }
         else return alert(res.error_text)
     },function(){return alert('网络错误！')})

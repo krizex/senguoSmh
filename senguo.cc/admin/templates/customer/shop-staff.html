@@ -3,25 +3,29 @@
 {% block top %}店铺成员信息{% end %}
 {% block content %}
   <ul class="staff-list">
+      {% for member in member_list%}
       <li class="staff-item bg-white clearfix">
           <div class="staff-info set-w100-fle">
-              <div class="pull-left">
-                  <img src="{{static_url('images/anoa-4-md.gif')}}" class="pull-left">
-                  <div class="pull-right p010">
-                      <p>呵呵呵呵呵</p>
-                      <p>出生年月：2888年6月</p>
-                      <p>职位：店长</p>
+              <div class="col-lg-8 col-md-8 col-xs-8 col-sm-8">
+                  <div class="col-lg-4 col-md-4 col-xs-2 col-sm-2 img">
+                      <img src="{{member['img']}}">
+                  </div>
+                  <div class="pull-left p010">
+                      <p>{{member['name']}}</p>
+                      <p>出生年月：{{member['birthday']}}</p>
+                      <p>职位：{{member['work']}}</p>
                   </div>
               </div>
-              <div class="pull-right">
-                    <a href="javascript:;" class="collect-btn btn text-green">收藏</a>
+              <div class="col-lg-4 col-md-4 col-xs-4 col-sm-4 p0">
+                    <a href="javascript:;" class="collect-btn btn text-green pull-right">收藏</a>
               </div>
           </div>
           <ul class="staff-info set-w100-fle">
-              <li>手机号：8888888</li>
-              <li>微信号：8888888</li>
-              <li>QQ：8888888</li>
+              <li>手机号：{{member['phone']}}</li>
+              <li>微信号：{{member['wx_username']  or '无'}}</li>
+              <!--<li>QQ：8888888</li>-->
           </ul>
       </li>
+      {% end %}
   </ul>
 {% end %}

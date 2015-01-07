@@ -153,7 +153,7 @@ class Members(CustomerBaseHandler):
                                 "work":work(member[0].id,member[1]),
                                 "phone":member[0].phone,
                                 "wx_username":member[0].wx_username})
-        return self.render("", member_list=member_list)
+        return self.render("customer/shop-staff.html", member_list=member_list)
 
 class Comment(CustomerBaseHandler):
     @tornado.web.authenticated
@@ -168,7 +168,7 @@ class Comment(CustomerBaseHandler):
                               "comment": comment[2], "time": self.timedelta(comment[3])})
         if page == 0:
             return self.render("customer/comment.html", date_list=date_list)
-        return self.write(date_list=date_list)
+        return self.write(dict(date_list=date_list))
 
 class Market(CustomerBaseHandler):
     @tornado.web.authenticated
@@ -318,6 +318,8 @@ class Order(CustomerBaseHandler):
             orders = [x for x in self.current_user.orders if x.status in (2, 3, 4)]
         elif action == "finish":#已完成
             orders = [x for x in self.current_user.orders if x.status == 5]
+        elif action == "all":
+            orders = self.current_user.orders
         else:return self.send_error(404)
         return self.render("customer/order-list.html", orders=orders, context=dict(subpage='center'))
 
@@ -325,7 +327,7 @@ class Order(CustomerBaseHandler):
     @CustomerBaseHandler.check_arguments("action", "data")
     def post(self):
         action = self.args["action"]
-        data = eval(self.args["data"])
+        data = self.args["data"]
         order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
         if not order:return self.send_error(404)
         if action == "cancel_order":

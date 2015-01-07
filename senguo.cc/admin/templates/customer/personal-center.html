@@ -14,7 +14,10 @@
         </div>
     </div>
     <div class="box-style bg-white m-b10 clearfix pb0">
-        <p class="title font14"><a href="#" class="text-green">全部订单</a></p>
+        <p class="title  clearfix">
+            <a href="#" class="text-green pull-left font14">全部订单</a>
+            <a href="{{reverse_url('customerOrder')}}?action=all" class="text-grey2 pull-right pr10">查看全部订单></a>
+        </p>
         <ul class="center-nav row text-center m-b0 clearfix font13">
             <li class="col-sm-3 col-xs-3 prl0">
                 <a href="{{reverse_url('customerOrder')}}?action=unhandled">
@@ -30,7 +33,7 @@
             </li>
             <li class="col-sm-3 col-xs-3 prl0">
                 <a href="{{reverse_url('customerOrder')}}?action=finish">
-                    <p class="text-grey3 p05">已完成</p>
+                    <p class="text-grey3 p05">已送达</p>
                     <p class="text-grey2">{{count[5]}}</p>
                 </a>
             </li>

@@ -19,7 +19,7 @@ $(document).ready(function(){
     var send_day=$('.send_day').val();
     if(send_day==1){
         $('.send_date').text('今天');
-        if(status==5){
+        if(status==5||status==6){
             $('.send_date').text(create_year+'-'+create_month+'-'+create_day);
         }
     }
@@ -30,7 +30,7 @@ $(document).ready(function(){
         else{
             $('.send_date').text('明天');
         }
-        if(status==5){
+        if(status==5||status==6){
             $('.send_date').text(create_year+'-'+create_month+'-'+(create_day+1));
         }
     }
@@ -39,8 +39,9 @@ $(document).ready(function(){
 });
 function statusText(target,n){
     switch (n){
-        case 1:target.text('配送中').addClass('text-green');break;
-        case 4:target.text('配送中').addClass('text-green');break;
-        case 5:target.text('已送达').addClass('text-grey');break;
+        case 1:target.text('未处理');break;
+        case 4:target.text('配送中');break;
+        case 5:target.text('已送达');break;
+        case 6:target.text('已评价');break;
     }
 }

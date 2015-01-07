@@ -57,7 +57,7 @@
 <div class="shop-box bg-white clearfix">
     <p class="title clearfix">
         <span class="pull-left font14">店铺成员（{{len(headimgurls)}}）：</span>
-        <a href="#" class="pull-right text-grey">查看成员信息》</a>
+        <a href="{{reverse_url('customerMembers')}}" class="pull-right text-grey">查看成员信息》</a>
     </p>
     <ul class="staff-img">
         {% for staff_img in headimgurls %}
@@ -68,7 +68,7 @@
 <div class="shop-box bg-white clearfix">
     <p class="title clearfix">
         <span class="pull-left font14">店铺评价（{{len(comments)}}）：</span>
-        <a href="{{reverse_url('customerComment')}}" class="pull-right text-grey">更多》</a>
+        <a href="{{reverse_url('customerComment')}}?page=0" class="pull-right text-grey">更多》</a>
     </p>
     <ul class="user-comment">
         {% for comment in comments %}

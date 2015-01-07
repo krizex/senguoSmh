@@ -23,5 +23,6 @@
 .order-list-item .status-bar-box .width0{width:0;}
 .order-list-item .status-bar-box .width50{width:50%;}
 .order-list-item .status-bar-box .width100{width:100%;}
-
+.order-list-item .btn-box .btn{width:100px;}
+.comment-input{width:80%;}
 
