@@ -87,7 +87,11 @@ class Order(AdminBaseHandler):
         order_type = self.args["order_type"]
         order_status = self.args["order_status"]
         orders = []
-        if order_status == 1:
+        if order_type == 10:  # 搜索订单，order_status为order_id
+            orders = self.session.query(models.Order).filter(and_(
+                models.Order.id == order_status, models.Order.shop_id == self.current_shop.id)).all()
+            order_type = 1
+        elif order_status == 1:
             orders = [x for x in self.current_shop.orders if x.type == order_type and x.status == 1]
         elif order_status == 5:#all
             orders = [x for x in self.current_shop.orders if x.type == order_type and x.status != 0]
@@ -167,18 +171,38 @@ class Order(AdminBaseHandler):
                 order.update(session=self.session, status=data["status"])
             elif action == "edit_totalPrice":
                 order.update(session=self.session, totalPrice=data["totalPrice"])
-        elif action == "search":
-            order = self.session.query(models.Order).filter(and_(
-                models.Order.id == int(data["order_id"]), models.Order.shop_id == self.current_shop.id))
-            if order:
-                order = order.one().safe_props()
-            else:order = {}
-            Staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
-                models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
-            SH2s=[]
-            for staff in Staffs:
-                SH2s.append(staff.safe_props())
-            return self.send_success(order=order, SH2s=SH2s)
+        # elif action == "search":
+        #     order = self.session.query(models.Order).filter(and_(
+        #         models.Order.id == int(data["order_id"]), models.Order.shop_id == self.current_shop.id)).first()
+        #     if order:
+        #         order.__protected_props__ = [customer_id, shop_id, today, JH_id, SH1_id, comment, comment_create_date,
+        #                                      start_time, end_time, create_date, active, fruits, mgoods]
+        #         out_data = order.safe_props()
+        #         out_data["sent_time"] = "%d:%d ~ %d:%d" % (order.start_time.hour, order.start_time.minute,
+        #                                               order.end_time.hour, order.end_time.minute)
+        #         out_data["goods"] = []
+        #         fruits = eval(order.fruits)
+        #         for key in fruits:
+        #             out_data["goods"].append("%s:%s*%d" % (fruits[key]["fruit_name"],fruits[key]["charge"],
+        #                                                  fruits[key]["num"]))
+        #         mgoods = eval(order.mgoods)
+        #         for key in mgoods:
+        #             out_data["goods"].append("%s:%s*%d" % (mgoods[key]["mgoods_name"],mgoods[key]["charge"],
+        #                                                  mgoods[key]["num"]))
+        #         out_data = {"sent_time": "%d:%d ~ %d:%d" % (order.start_time.hour, order.start_time.minute,
+        #                                                  order.end_time.hour, order.end_time.minute),
+        #                     "id": order.id,
+        #                     "total_price": order.totalPrice,
+        #                     "phone": order.phone,
+        #                     "receiver": order.receiver}
+        #
+        #     else:order = {}
+        #     Staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
+        #         models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
+        #     SH2s=[]
+        #     for staff in Staffs:
+        #         SH2s.append(staff.safe_props())
+        #     return self.send_success(order=order, SH2s=SH2s)
 
         else:
             return self.send_error(404)

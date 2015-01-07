@@ -130,7 +130,7 @@ class ShopProfile(CustomerBaseHandler):
 
 class Members(CustomerBaseHandler):
     def get(self):
-        shop_id = int(self.get_cookie("market_shop_id"))
+        shop_id = self.shop_id
         admin_id = self.session.query(models.Shop.admin_id).filter_by(id=shop_id).first()
         if not admin_id:
             return self.send_error(404)
@@ -173,7 +173,7 @@ class Comment(CustomerBaseHandler):
 class Market(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        shop_id = int(self.get_cookie("market_shop_id"))
+        shop_id = self.shop_id
         try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
         except:return self.send_error(404)
         try:cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
@@ -193,7 +193,7 @@ class Market(CustomerBaseHandler):
     @CustomerBaseHandler.check_arguments("action:int", "charge_type_id:int", "menu_type:int")
     #action==2: +1，action==1: -1, action==0: delete；menu_type==0：fruit，menu_type==1：menu
     def post(self):
-        shop_id = int(self.get_cookie("market_shop_id"))
+        shop_id = self.shop_id
         inc = self.args["action"]
         charge_type_id = self.args["charge_type_id"]
         menu_type = self.args["menu_type"]
@@ -205,7 +205,7 @@ class Market(CustomerBaseHandler):
 class Cart(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        shop_id = int(self.get_cookie("market_shop_id"))  #todo：如果没有cookie呢？
+        shop_id = self.shop_id
         shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
         if not shop:return self.send_error(404)
         cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
@@ -222,7 +222,7 @@ class Cart(CustomerBaseHandler):
                                          "address_id:int", "message:str", "type:int",
                                          "today:int")
     def post(self):#提交订单
-        shop_id = int(self.get_cookie("market_shop_id"))
+        shop_id = self.shop_id
         fruits = self.args["fruits"]
         mgoods = self.args["mgoods"]
         unit = {1:"个", 2:"斤", 3:"份"}
