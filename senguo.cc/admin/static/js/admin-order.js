@@ -224,31 +224,12 @@ function addActive(target,id){
 }
 
 function orderSearch(){
-    var url=link;
-    var action='search';
     var order_id=Int($('.search-con').val());
-    var data={
-        order_id:order_id
-    };
-    var args={
-        action:action,
-        data:data
-    };
-    $.postJson(url,args,function(res){
-            if(res.success){
-                var id;
-                var item=$('.order-list-item');
-                for(var i=1;i<item.length;i++)
-                {
-                    id=item[i].data('id');
-                    if(id==order_id)
-                    item[i].show().siblings('.order-list-item').hide();
-                }
-            }
-            else return alert(res.error_text);
-        },
-        function(){return alert('网络错误！')}
-    )
+    var url='order?order_type=10&order_status='+order_id;
+    $.getItem(url,function(){
+        window.location.href=url;
+    })
+
 }
 
 function addEditPeriod(target,action){

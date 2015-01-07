@@ -131,9 +131,11 @@
             </div>
         </div>
         <p class="text-center phone-notice" style="display:none">点击下方电话，可以直接拨号询问订单处理状态~^o^~</p>
+        {% if order.status==4%}
         <ul class="status-list list">
 
         </ul>
+        {% end %}
     </div>
     <hr />
     <div class="text-center" >

@@ -8,6 +8,13 @@
 {% if len(orders) == 0%}
     <h4 class="text-center">暂无订单！</h4>
 {% end %}
+<ul class="order-nav text-center m-b0 clearfix font13 bg-white">
+    <li data-action="all"><a href="{{reverse_url('customerOrder')}}?action=all">全部</a></li>
+    <li data-action="unhandled"><a href="{{reverse_url('customerOrder')}}?action=unhandled">未处理</a></li>
+    <li data-action="waiting"><a href="{{reverse_url('customerOrder')}}?action=waiting">待收货</a></li>
+    <li data-action="finish"><a href="{{reverse_url('customerOrder')}}?action=finish">已送达</a></li>
+    <li data-action=""><a href="#">退款/售后</a></li>
+</ul>
 <ul class="order-list bg-white">
     {% for order in orders %}
     {% set left=''%}

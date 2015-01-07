@@ -72,6 +72,16 @@ $(document).ready(function(){
         var comment=$('.comment-input').val();
         orderComment(index,comment_order_id,comment);
     });
+    //导航active
+    var link_action= $.getUrlParam('action');
+    $('.order-nav li').each(function(){
+        var $this=$(this);
+        var action=$this.data('action');
+        if(action==link_action){
+            $this.addClass('active');
+        }
+    });
+
 });
 var order_href='/customer/orders';
 function statusText(target,n){
