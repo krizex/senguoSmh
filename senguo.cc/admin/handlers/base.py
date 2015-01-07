@@ -297,10 +297,11 @@ class CustomerBaseHandler(_AccountBaseHandler):
                 mgoodses[mcharge_type.id]={"mcharge_type": mcharge_type, "num": d[mcharge_type.id]}
         return fruits, mgoodses
 
-    def get_comments(self, shop_id, page=0, page_size=2):
+    def get_comments(self, shop_id, page=0, page_size=5):
         return self.session.query(models.Accountinfo.headimgurl, models.Accountinfo.nickname,
                                   models.Order.comment, models.Order.comment_create_date).\
-            filter(models.Order.shop_id == shop_id, models.Order.customer_id == models.Accountinfo.id).\
+            filter(models.Order.shop_id == shop_id, models.Order.status == 6,
+                   models.Order.customer_id == models.Accountinfo.id).\
             order_by(desc(models.Order.comment_create_date)).offset(page).limit(page_size).all()
 
     def timedelta(self, date):
@@ -319,6 +320,17 @@ class CustomerBaseHandler(_AccountBaseHandler):
             return "%d分钟前" % (timedelta.seconds/60)
         else:
             return "%d秒前" % timedelta.seconds
+
+    @property
+    def shop_id(self):
+        shop_id = self.get_cookie("market_shop_id")
+        if not shop_id:
+            return self.redirect("/customer/shopProfile/1")  #todo 这里应该重定向到商铺列表
+        shop_id = int(shop_id)
+        if not self.session.query(models.CustomerShopFollow).filter_by(
+                customer_id=self.current_user.id, shop_id=shop_id).first():
+            return self.redirect("/customer/shopProfile/1")  #todo 这里应该重定向到商铺列表
+        return shop_id
 
 class WxOauth2:
     token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}&secret={appsecret}&code={code}&grant_type=authorization_code"
