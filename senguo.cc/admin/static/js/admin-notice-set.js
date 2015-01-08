@@ -1,7 +1,9 @@
 $(document).ready(function(){
+    //添加公告
     $('.add-new-notice').on('click',function(){
         noticeAdd();
     });
+    //公告启用状态显示
     $('.notice_active').each(function(){
         var $this=$(this);
         var status=$this.data('status');
@@ -10,8 +12,13 @@ $(document).ready(function(){
             case status=2:$this.find('.work-mode').hide().siblings('.stop-mode').show();break;
         }
     });
+    //公告启用/停用
     $('.notice_active').on('click',function(){
         noticeActive($(this));
+    });
+    //公告编辑
+    $('.notice_edit').on('click',function(){
+        noticeEdit($(this));
     });
 });
 function noticeAdd(){
@@ -33,6 +40,36 @@ function noticeAdd(){
         function(res){
             if(res.success){
                 $('#noticeBox').modal('hide');
+            }
+        })
+}
+function noticeEdit(target){
+    var url=link;
+    var action="edit_notice";
+    var parent=target.parents('.set-list-item');
+    var notice_id=parent.data('id');
+    var summary=parent.find('.notice_summary').val();
+    var detail=parent.find('.notice_detail').val();
+    if(!summary){return alert('摘要不能为空！')}
+    if(!detail){return alert('详情不能为空！')}
+    var data={
+        notice_id:notice_id,
+        summary:summary,
+        detail:detail
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                parent.find('.notice_summary').val(summary);
+                parent.find('.notice_detail').val(detail);
+                parent.find('.summary').text(summary);
+                parent.find('.detail').text(detail);
+                target.find('.address-edit').hide();
+                target.find('.address-show').show();
             }
         })
 }
