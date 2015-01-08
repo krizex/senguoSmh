@@ -240,7 +240,7 @@ class Cart(CustomerBaseHandler):
                 filter(models.ChargeType.id.in_(fruits.keys())).all()
             for charge_type in charge_types:
                 totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
-                charge_type.fruit.storage -= fruits[str(charge_type.id)]*charge_type.unit_num #更新库存
+                charge_type.fruit.storage -= fruits[str(charge_type.id)]*charge_type.unit_num*charge_type.num #更新库存
                 f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
                                      "charge":"%d元/%d%s" % (charge_type.price, charge_type.num, unit[charge_type.unit])}
         if mgoods:
@@ -248,7 +248,7 @@ class Cart(CustomerBaseHandler):
                 filter(models.MChargeType.id.in_(mgoods.keys())).all()
             for mcharge_type in mcharge_types:
                 totalPrice+=mcharge_type.price*mgoods[str(mcharge_type.id)]
-                mcharge_type.mgoods.storage -= mgoods[str(mcharge_type.id)]*mcharge_type.unit_num #更新库存
+                mcharge_type.mgoods.storage -= mgoods[str(mcharge_type.id)]*mcharge_type.unit_num*mcharge_type.num #更新库存
                 m_d[mcharge_type.id]={"mgoods_name":mcharge_type.mgoods.name, "num":mgoods[str(mcharge_type.id)],
                                       "charge":"%d元/%d%s" % (mcharge_type.price, mcharge_type.num, unit[mcharge_type.unit])}
 

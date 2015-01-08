@@ -907,7 +907,7 @@ class ChargeType(MapBase, _CommonApi):
     fruit_id = Column(Integer, ForeignKey(Fruit.id), nullable=False)
     price = Column(Float)#单价
     unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
-    num = Column(SMALLINT)#计价数量
+    num = Column(Float)#计价数量
     unit_num = Column(Float, default=1)#单位换算
     active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 
@@ -920,7 +920,7 @@ class MChargeType(MapBase):
     mgoods_id = Column(Integer, ForeignKey(MGoods.id), nullable=False)
     price = Column(Float)#单价
     unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
-    num = Column(SMALLINT)#计价数量
+    num = Column(Float)#计价数量
     unit_num = Column(Float, default=1)#单位换算
     active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 
@@ -984,7 +984,7 @@ class Period(MapBase):
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     config_id = Column(Integer, ForeignKey(Config.id), nullable=False)
-    active = Column(TINYINT, default=1)
+    active = Column(TINYINT, default=1)  #1:开启 2：关闭
     name = Column(String(20))
     start_time = Column(Time)
     end_time = Column(Time)

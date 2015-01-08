@@ -2,9 +2,11 @@ from handlers.base import AdminBaseHandler
 import dal.models as models
 import tornado.web
 from settings import *
-import time, datetime
+import time
+import datetime
 from sqlalchemy import desc, and_, or_
 import qiniu
+from dal.dis_dict import dis_dict
 
 class Access(AdminBaseHandler):
     def initialize(self, action):
@@ -98,7 +100,7 @@ class Order(AdminBaseHandler):
         elif order_status == 2:#unfinish
             orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in [2, 3, 4]]
         elif order_status == 3:
-            orders = [x for x in self.current_shop.orders if x.type == order_type and x.status == 5]
+            orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in (5, 6)]
         elif order_status == 4:
             pass
         else:
@@ -124,15 +126,18 @@ class Order(AdminBaseHandler):
             self.session.add(period)
             self.session.commit()
             return self.send_success(period_id=period.id)
-        elif action == "edit_period":
+        elif action in ("edit_period", "edit_period_active"):
             period = next((x for x in self.current_shop.config.periods if x.id == data["period_id"]), None)
             if not period:
                 return self.send_fail("没找到该时间段", 403)
-            start_time = datetime.time(data["start_hour"], data["start_minute"])
-            end_time = datetime.time(data["end_hour"], data["end_minute"])
-            period.name = data["name"]
-            period.start_time = start_time
-            period.end_time = end_time
+            if action == "edit_period":
+                start_time = datetime.time(data["start_hour"], data["start_minute"])
+                end_time = datetime.time(data["end_hour"], data["end_minute"])
+                period.name = data["name"]
+                period.start_time = start_time
+                period.end_time = end_time
+            elif action == "edit_period_active":
+                period.active = 1 if period.active == 2 else 1
             self.session.commit()
         elif action == "del_period":
             try: q = self.session.query(models.Period).filter_by(id=int(data["period_id"]))
@@ -215,13 +220,13 @@ class Order(AdminBaseHandler):
             count[order.type*10+5] += 1
             if order.status == 0:
                 count[order.type*10] += 1
-            if order.status == 1:
+            elif order.status == 1:
                 count[order.type*10+1] += 1
-            if order.status in [2, 3, 4]:
+            elif order.status in (2, 3, 4):
                 count[order.type*10+2] += 1
-            if order.status == 5:
+            elif order.status in (5, 6):
                 count[order.type*10+3] += 1
-            if order.status == 6:
+            elif order.status == 10:
                 count[order.type*10+4] += 1
         return count
 
@@ -528,4 +533,42 @@ class Config(AdminBaseHandler):
             self.session.commit()
         else:
             return self.send_error(404)
+        return self.send_success()
+
+class ShopConfig(AdminBaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        address = self.code_to_text("shop_city", self.current_shop.shop_city) +\
+                  " " + self.current_shop.shop_address_detail
+        service_area = self.code_to_text("service_area", self.current_shop.shop_service_area)
+        return self.render("", address=address, service_area=service_area, shop=self.current_shop)
+
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action", "data")
+    def post(self):
+        action = self.args["action"]
+        data = self.args["data"]
+        shop = self.current_shop
+        if action == "edit_shop_name":
+            shop.shop_name = data["shop_name"]
+        elif action == "edit_shop_img":
+            q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
+            token = q.upload_token(BUCKET_SHOP_IMG, expires=120, policy={"callbackUrl": "http://auth.senguo.cc/fruitzone/shopImgCallback",
+                                                                         "callbackBody": "key=$(key)&id=%s" % shop.id, "mimeLimit": "image/*"})
+            return self.send_success(token=token, key=str(time.time())+':'+str(shop.id))
+        elif action == "edit_shop_intro":
+            shop.shop_intro = data["shop_intro"]
+        elif action == "edit_address":
+            shop_city = data["shop_city"]
+            shop_address_detail = data["shop_address_detail"]
+            if shop_city/10000*10000 not in dis_dict:
+                return self.send_fail("没有该省份")
+            shop.shop_province = code/10000*10000
+            shop.shop_city = shop_city
+            shop.shop_address_detail = shop_address_detail
+        elif action == "edit_shop_service_area":
+            shop.shop_service_area = data["shop_service_area"]
+        elif action == "edit_have_offline_entity":
+            shop.have_offline_entity = data["have_offline_entity"]
+        self.session.commit()
         return self.send_success()
