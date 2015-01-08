@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="{{static_url('css/market-order-list.css')}}"/>
 {% end %}
 {% block top %}我的订单{% end %}
+{%block back%}{{reverse_url('customerHome')}}{% end %}
 {% block content %}
 {% if len(orders) == 0%}
     <h4 class="text-center">暂无订单！</h4>

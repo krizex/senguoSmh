@@ -34,12 +34,18 @@ $(document).ready(function(){
             $('.send_date').text(create_year+'-'+create_month+'-'+(create_day+1));
         }
     }
-
-
+    removeDom();
 });
+function removeDom(){
+    $('.create_time').remove();
+    $('.create_year').remove();
+    $('.create_month').remove();
+    $('.create_day').remove();
+    $('.send_day').remove();
+}
 function statusText(target,n){
     switch (n){
-        case 1:target.text('未处理');break;
+        case 1:target.text('已下单');break;
         case 4:target.text('配送中');break;
         case 5:target.text('已送达');break;
         case 6:target.text('已评价');break;
