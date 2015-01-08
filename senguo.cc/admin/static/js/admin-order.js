@@ -210,6 +210,10 @@ $(document).ready(function(){
     });
     //订单搜索
     $('.order-search').on('click',function(){orderSearch()});
+    //订单打印
+    $('.print-order').on('click',function(){
+        orderPrint($(this));
+    });
 });
 var link='/admin/order';
 var orderType=$.getUrlParam('order_type');
@@ -230,6 +234,48 @@ function orderSearch(){
         window.location.href=url;
     })
 
+}
+
+function orderPrint(target){
+    var parent=target.parents('.order-list-item');
+    var order_id=parent.data('id');
+    var order_time=parent.find('.order-time').text();
+    var delivery_time=parent.find('.send-time').text();
+    var receiver=parent.find('.name').first().text();
+    var address=parent.find('.address').first().text();
+    var phone=parent.find('.phone').first().text();
+    var remark=parent.find('.message-content').first().text();
+    var paid=parent.find('.pay-status').text();
+    var totalPrice=parent.find('.goods-total-charge').text();
+    var goods=parent.find('.goods-list')[0].innerHTML;
+    $.getItem('/static/items/admin/order-print-page.html',function(data){
+        var $item=$(data);
+        $item.find('.notes-head').text();
+        $item.find('.orderId').text(order_id);
+        $item.find('.orderTime').text(order_time);
+        $item.find('.deliveryTime').text(delivery_time);
+        $item.find('.address').text(address);
+        $item.find('.receiver').text(receiver);
+        $item.find('.phone').text(phone);
+        $item.find('.remark').text(remark);
+        $item.find('.remark').text(remark);
+        $item.find('.totalPrice').text(totalPrice);
+        $item.find('.goods-list')[0].innerHTML=goods;
+        console.log($item.find('.goods-list')[0].innerHTML);
+        if (paid == true) {
+            $item.find('.moneyPaid').text('已支付');
+        } else {
+            $item.find('.moneyPaid').text('未支付');
+        }
+       var OpenWindow = window.open("","","width=500,height=600");
+        OpenWindow.document.body.style.margin = "0";
+        OpenWindow.document.body.style.marginTop = "15px";
+        var box = OpenWindow.document.createElement('div');
+        box.innerHTML=$item[0].innerHTML;
+        OpenWindow.document.body.appendChild(box);
+        OpenWindow.document.close();
+        OpenWindow.print();
+    })
 }
 
 function addEditPeriod(target,action){

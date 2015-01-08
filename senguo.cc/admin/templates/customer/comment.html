@@ -8,11 +8,15 @@
     window.dataObj.comments={% raw json.dumps(date_list) %}
 </script>
 {% end %}
+{% if date_list %}
 <ul class="commnent-list" id="commnent-list">
 
 </ul>
 <a href="javascript:;" id="getMore" class="btn text-green bg-white center-block">更多评价</a>
 <div class="btn text-green bg-white center-block no-more" style="display:none;">没有更多了</div>
+{% else %}
+<h4 class="text-center">暂无评价！</h4>
+{% end %}
 {% end %}
 {% block bottom %}
 <script src="{{static_url('js/market-comment.js')}}"></script>

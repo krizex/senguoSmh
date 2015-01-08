@@ -89,13 +89,13 @@
                  {% set unactive='active'%}
              {% end %}
              <ul id="sendType" class="send_type w-per6 nav-pills  center-block">
-                 <li data-id="2" class="{{active}}">
+                 <li data-id="2" class="{{active}} send-intime" data-config="{{config.ontime_on}}">
                      <a href="javascript:;" class="bg-white text-green" id="sendInTime">
                          <p>按时达</p>
                          <p class="font9">起送价：{{config.min_charge_on_time or 0}}元</p>
                      </a>
                  </li>
-                 <li data-id="1" class="{{unactive}}">
+                 <li data-id="1" class="{{unactive}} send-now" data-config="{{config.now_on}}">
                      <a href="javascript:;" class="bg-white text-green" id="sendNow">
                          <p>立即送</p>
                          <p class="font9">起送价：{{config.min_charge_now or 0}}元</p>
