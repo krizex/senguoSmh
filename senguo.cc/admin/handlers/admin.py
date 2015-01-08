@@ -490,7 +490,7 @@ class Config(AdminBaseHandler):
         action = self.args["action"]
         data = self.args["data"]
 
-        if action in ["add_addr1", "add_notice", "edit_receipt", "edit_hire"]: #id: shop_id
+        if action in ["add_addr1", "add_notice", "edit_receipt", "edit_hire"]:
             if action == "add_addr1":
                 addr1 = models.Address1(name=data)
                 self.current_shop.config.addresses.append(addr1)
@@ -504,7 +504,7 @@ class Config(AdminBaseHandler):
             elif action == "edit_receipt": #小票设置
                 self.current_shop.config.update(session=self.session,
                                                 receipt_msg=data["receipt_msg"],title=data["title"])
-        if action in ["add_addr2", "edit_addr1_active"]:
+        elif action in ["add_addr2", "edit_addr1_active"]:
             addr1 = next((x for x in self.current_shop.config.addresses if x.id==data["addr1_id"]), None)
             if action == "add_addr2":
                 addr2 = models.Address2(name=data["name"])
@@ -512,8 +512,16 @@ class Config(AdminBaseHandler):
                 self.session.commit()
             elif action == "edit_addr1_active":
                 addr1.update(session=self.session, active=not addr1.active)
-        if action =="edit_addr2_active":#id: addr2_id
+        elif action =="edit_addr2_active":#id: addr2_id
             try:addr2 = self.session.query(models.Address2).filter_by(id=data["addr2_id"]).one()
             except:return self.send_error(404)
             addr2.update(session=self.session, active=not addr2.active)
+        elif action == "edit_notice_active":  # notice_id
+            notice = next((x for x in self.current_shop.config.addresses if x.id == data["notice_id"]), None)
+            if not notice:
+                return self.send_error(404)
+            notice.active = 1 if notice.active == 2 else 2
+            self.session.commit()
+        else:
+            return self.send_error(404)
         return self.send_success()

@@ -974,7 +974,7 @@ class Notice(MapBase):
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     config_id = Column(Integer, ForeignKey(Config.id), nullable=False)
-    active = Column(TINYINT, default=1)
+    active = Column(TINYINT, default=1)  # 1：开启 2：关闭
     summary = Column(String(100)) #摘要
     detail = Column(String(500)) #详情
 

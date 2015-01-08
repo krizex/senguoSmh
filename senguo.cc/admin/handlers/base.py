@@ -302,7 +302,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
                                   models.Order.comment, models.Order.comment_create_date).\
             filter(models.Order.shop_id == shop_id, models.Order.status == 6,
                    models.Order.customer_id == models.Accountinfo.id).\
-            order_by(desc(models.Order.comment_create_date)).offset(page).limit(page_size).all()
+            order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
 
     def timedelta(self, date):
         if not date:
