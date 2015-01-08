@@ -516,11 +516,15 @@ class Config(AdminBaseHandler):
             try:addr2 = self.session.query(models.Address2).filter_by(id=data["addr2_id"]).one()
             except:return self.send_error(404)
             addr2.update(session=self.session, active=not addr2.active)
-        elif action == "edit_notice_active":  # notice_id
+        elif action in ("edit_notice_active", "edit_notice"):  # notice_id
             notice = next((x for x in self.current_shop.config.notices if x.id == data["notice_id"]), None)
             if not notice:
                 return self.send_error(404)
-            notice.active = 1 if notice.active == 2 else 2
+            if action == "edit_notice_active":
+                notice.active = 1 if notice.active == 2 else 2
+            elif action == "edit_notice":
+                notice.summary = data["summary"]
+                notice.detail = data["detail"]
             self.session.commit()
         else:
             return self.send_error(404)
