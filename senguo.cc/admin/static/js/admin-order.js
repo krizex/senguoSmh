@@ -108,12 +108,28 @@ $(document).ready(function(){
         stopRange($('#stopRange'),range);
     });
 
-    //配送模式开启/关闭
+    //立即送模式开启/关闭
     $('#stopNowOn').on('click',function(){
+        var $this=$(this);
+        if(confirm('立即送模式被关闭后用户下单时将不可选择该模式，确认要关闭立即送模式吗？'))
+        {
+            orderTypeActive($this,'edit_now_on');
+        }
+    });
+    $('#startNowOn').on('click',function(){
         var $this=$(this);
         orderTypeActive($this,'edit_now_on');
     });
+    //按时达模式开启/关闭
     $('#stopOnTime').on('click',function(){
+        var $this=$(this);
+        if(confirm('按时达模式被关闭后用户下单时将不可选择该模式，确认要关闭按时达模式吗？'))
+        {
+            orderTypeActive($this,'edit_ontime_on');
+        }
+
+    });
+    $('#startOnTime').on('click',function(){
         var $this=$(this);
         orderTypeActive($this,'edit_ontime_on');
 
@@ -239,6 +255,7 @@ function orderSearch(){
 function orderPrint(target){
     var parent=target.parents('.order-list-item');
     var order_id=parent.data('id');
+    var shop_name=$('#shop_name').text();
     var order_time=parent.find('.order-time').text();
     var delivery_time=parent.find('.send-time').text();
     var receiver=parent.find('.name').first().text();
@@ -248,9 +265,10 @@ function orderPrint(target){
     var paid=parent.find('.pay-status').text();
     var totalPrice=parent.find('.goods-total-charge').text();
     var goods=parent.find('.goods-list')[0].innerHTML;
+    var print_remark=parent.find('.receipt-remark').val();
     $.getItem('/static/items/admin/order-print-page.html',function(data){
         var $item=$(data);
-        $item.find('.notes-head').text();
+        $item.find('.notes-head').text(shop_name);
         $item.find('.orderId').text(order_id);
         $item.find('.orderTime').text(order_time);
         $item.find('.deliveryTime').text(delivery_time);
@@ -258,16 +276,15 @@ function orderPrint(target){
         $item.find('.receiver').text(receiver);
         $item.find('.phone').text(phone);
         $item.find('.remark').text(remark);
-        $item.find('.remark').text(remark);
         $item.find('.totalPrice').text(totalPrice);
         $item.find('.goods-list')[0].innerHTML=goods;
-        console.log($item.find('.goods-list')[0].innerHTML);
+        $item.find('.print-remark').text(print_remark);
         if (paid == true) {
             $item.find('.moneyPaid').text('已支付');
         } else {
             $item.find('.moneyPaid').text('未支付');
         }
-       var OpenWindow = window.open("","","width=500,height=600");
+        var OpenWindow = window.open("","","width=500,height=600");
         OpenWindow.document.body.style.margin = "0";
         OpenWindow.document.body.style.marginTop = "15px";
         var box = OpenWindow.document.createElement('div');

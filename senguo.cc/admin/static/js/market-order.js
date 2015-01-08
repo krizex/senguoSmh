@@ -81,7 +81,7 @@ $(document).ready(function(){
             $this.addClass('active');
         }
     });
-
+    removeDom();
 });
 var order_href='/customer/orders';
 function statusText(target,n){
@@ -125,9 +125,21 @@ function orderComment(id,order_id,comment){
     };
     $.postJson(url,args,function(res){
         if(res.success){
-           $('.order-list-item').eq(id).remove();
-            $('#commentBox').modal('hide');
+           var parent=$('.order-list-item').eq(id);
+           parent.find('.btn-box').remove();
+           parent.find('.notice').text('已送达');
+           parent.find('.content').append('<p>评价：'+comment+'</p>');
+           $('#commentBox').modal('hide');
         }
         else return alert(res.error_text)
     },function(){return alert('网络错误！')})
+}
+
+function removeDom(){
+    $('.create_time').remove();
+    $('.create_year').remove();
+    $('.create_month').remove();
+    $('.create_day').remove();
+    $('.send_day').remove();
+    $('.order_status').remove();
 }

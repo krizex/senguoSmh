@@ -1,0 +1,134 @@
+{% extends 'shop-set-base.html' %}
+{% block title%}店铺信息设置{% end %}
+{% set shop=handler.current_shop %}
+{% block setcontent %}
+<ul>
+    <li>
+        <span class="w1 pull-left set-inl-blo">店铺名称</span>
+        <div class="w2 pull-left">
+            <span>{{shop.shop_name}}</span>
+            <input type="text" value="{{shop.shop_name}}"/>
+        </div>
+        <div class="pull-right">
+            <a class="info_edit" href="javascript:;">修改</a>
+            <p>（一个月只能申请修改一次）</p>
+        </div>
+    </li>
+    <li>
+        <span class="w1 pull-left set-inl-blo">店铺logo</span>
+        <div class="w2 pull-left">
+           <img src="{{shop.shop_trademark_url}}">
+        </div>
+        <div class="pull-right">
+            <a class="info_edit" href="javascript:;">修改</a>
+            <p>（一个月只能申请修改一次）</p>
+        </div>
+    </li>
+    <li>
+        <span class="w1 pull-left set-inl-blo">店铺ID</span>
+        <div class="w2 pull-left">{{shop.id}}</div>
+    </li>
+    <li>
+        <span class="w1 pull-left set-inl-blo">店铺名称</span>
+        <div class="w2 pull-left">
+            <p>{{shop.shop_intro}}</p>
+            <textarea>{{shop.shop_intro}}</textarea>
+        </div>
+        <div class="pull-right">
+            <a class="info_edit" href="javascript:;">修改</a>
+            <p>（一个月只能申请修改一次）</p>
+        </div>
+    </li>
+    <li>
+        <span class="w1 pull-left set-inl-blo">店铺地址</span>
+        <div class="w2 pull-left">
+            <span>{{shop.shop_province}}{{shop_city}}{{shop_address_detail}}</span>
+            <div class="better-address">
+                <div class="dropdown select-provience pull-left" data-toggle="modal" data-target="#provinceList">
+                    <button class="btn btn-default dropdown-toggle" type="button">
+                        <span  id="provinceAddress" data-code="{{shop.shop_province or ''}}" class="reProvince">选择省份</span>
+                        <span class="caret"></span>
+                    </button>
+                </div>
+                <div class="dropdown select-provience pull-left select-city" data-toggle="modal" data-target="#cityList">
+                    <button class="btn btn-default dropdown-toggle" type="button">
+                        <span id="cityAddress" data-code="{{shop.shop_city or ''}}" class="reCity">选择城市</span>
+                        <span class="caret"></span>
+                    </button>
+                </div>
+            </div>
+            <input type="text" class="input-box input1" placeholder="{{shop.shop_address_detail or '请填详细地址'}}" id="addressDetail" value="{{shop.shop_address_detail or ''}}"/>
+        </div>
+        <div class="pull-right">
+            <a class="info_edit" href="javascript:;">修改</a>
+            <p>（一个月只能申请修改一次）</p>
+        </div>
+    </li>
+    <li>
+        <span class="w1 pull-left set-inl-blo">配送区域</span>
+        <div class="w2 pull-left">
+            <span>{{shop.shop_service_area}}</span>
+            <input type="text" value="{{shop_service_area}}"/>
+        </div>
+        <div class="pull-right">
+            <a class="info_edit" href="javascript:;">修改</a>
+        </div>
+    </li>
+    <li>
+        <span class="w1 pull-left set-inl-blo">实体店情况</span>
+        <div class="w2 pull-left">
+            <span>{{shop.have_offline_entity}}</span>
+            <input type="text" value=""/>
+        </div>
+        <div class="pull-right">
+            <a class="info_edit" href="javascript:;">修改</a>
+        </div>
+    </li>
+</ul>
+<div class="modal fade select-popbox" id="provinceList" tabindex="-1" role="dialog" aria-labelledby="provinceAddress" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">省份选择</h4>
+            </div>
+            <div class="modal-body">
+                <div class="address-list province-list select-list">
+                    <ul class="provinceList">
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-style" data-dismiss="modal" id="provinceSelect">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade select-popbox" id="cityList" tabindex="-1" role="dialog" aria-labelledby="provinceAddress" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">城市选择</h4>
+            </div>
+            <div class="modal-body">
+                <div class="address-list city-list select-list">
+                    <ul class="cityList">
+                        <li>请先选择省份</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-style" data-dismiss="modal" id="citySelect">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>
+<script src="{{static_url('js/area.js')}}"></script>
+<script src="{{static_url('js/admin-info-set.js')}}"></script>
+{% end %}
