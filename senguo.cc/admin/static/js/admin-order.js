@@ -415,6 +415,7 @@ function sendMoney(target,money){
 function stopRange(target,range){
     var url='';
     var action='edit_stop_range';
+    if(!range){range=0;}
     var args={
         action:action,
         data:{stop_range:range}

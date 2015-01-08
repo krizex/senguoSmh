@@ -146,7 +146,7 @@ class Order(AdminBaseHandler):
             self.current_shop.config.min_charge_on_time = data["min_charge_on_time"]
             self.session.commit()
         elif action == "edit_stop_range":#下单截止时间
-            self.current_shop.config.stop_range = data["stop_range"]
+            self.current_shop.config.stop_range = data["stop_range"] or 0
             self.session.commit()
         elif action == "edit_now_on":
             self.current_shop.config.now_on = not self.current_shop.config.now_on
@@ -517,7 +517,7 @@ class Config(AdminBaseHandler):
             except:return self.send_error(404)
             addr2.update(session=self.session, active=not addr2.active)
         elif action == "edit_notice_active":  # notice_id
-            notice = next((x for x in self.current_shop.config.addresses if x.id == data["notice_id"]), None)
+            notice = next((x for x in self.current_shop.config.notices if x.id == data["notice_id"]), None)
             if not notice:
                 return self.send_error(404)
             notice.active = 1 if notice.active == 2 else 2
