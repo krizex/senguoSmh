@@ -261,13 +261,12 @@ function orderPrint(target){
         $item.find('.remark').text(remark);
         $item.find('.totalPrice').text(totalPrice);
         $item.find('.goods-list')[0].innerHTML=goods;
-        console.log($item.find('.goods-list')[0].innerHTML);
         if (paid == true) {
             $item.find('.moneyPaid').text('已支付');
         } else {
             $item.find('.moneyPaid').text('未支付');
         }
-       var OpenWindow = window.open("","","width=500,height=600");
+        var OpenWindow = window.open("","","width=500,height=600");
         OpenWindow.document.body.style.margin = "0";
         OpenWindow.document.body.style.marginTop = "15px";
         var box = OpenWindow.document.createElement('div');
