@@ -116,10 +116,14 @@ class ShopProfile(CustomerBaseHandler):
         service_area = self.code_to_text("service_area", shop.shop_service_area)
         staffs = self.session.query(models.HireLink).filter_by(shop_id=shop_id).all()
         shop_members_id = [shop.admin_id]+[x.staff_id for x in staffs]
-        headimgurls = self.session.query(models.Accountinfo.headimgurl).filter(models.Accountinfo.id.in_(shop_members_id)).all()
-        return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days, fans_sum=fans_sum, order_sum=order_sum,
-                           goods_sum=goods_sum, address=address, service_area=service_area, headimgurls=headimgurls,
-                           comments=self.get_comments(shop_id, page_size=2), context=dict(subpage='shop'))
+        headimgurls = self.session.query(models.Accountinfo.headimgurl).\
+            filter(models.Accountinfo.id.in_(shop_members_id)).all()
+        comment_sum = self.session.query(models.Order).filter_by(status=6).count()
+        return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
+                           fans_sum=fans_sum, order_sum=order_sum,goods_sum=goods_sum, address=address,
+                           service_area=service_area, headimgurls=headimgurls,
+                           comments=self.get_comments(shop_id, page_size=2), comment_sum=comment_sum,
+                           context=dict(subpage='shop'))
 
     @tornado.web.authenticated
     def post(self, shop_id):
@@ -186,8 +190,10 @@ class Market(CustomerBaseHandler):
         mgoods={}
         for menu in shop.menus:
             mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
-        return self.render("customer/home.html", context=dict(fruits=fruits, dry_fruits=dry_fruits,menus=shop.menus,
-                                                              mgoods=mgoods, cart_f=cart_f, cart_m=cart_m,subpage='home',notices=shop.config.notices))
+        notices = [x for x in shop.config.notices if x.active == 1]
+        return self.render("customer/home.html",
+                           context=dict(fruits=fruits, dry_fruits=dry_fruits,menus=shop.menus,mgoods=mgoods,
+                                        cart_f=cart_f, cart_m=cart_m,subpage='home', notices=notices))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int", "charge_type_id:int", "menu_type:int")
@@ -274,6 +280,11 @@ class Cart(CustomerBaseHandler):
             start_time = datetime.time(now.hour, now.minute, now.second)
             end_time = datetime.time(config.end_time_now.hour, config.end_time_now.minute)
 
+        #按时达/立即送 开启/关闭
+        if config.ontime_on == False and self.args["type"] == 2:
+            return self.send_fail('该店铺已把“按时达”关闭，请选择“立即送”')
+        if config.now_on == False and self.args["type"] == 1:
+            return self.send_fail('该店铺已把“立即送”关闭，请选择“按时达”')
         #送货地址处理
         address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
         if not address:
@@ -316,8 +327,15 @@ class Order(CustomerBaseHandler):
             orders = [x for x in self.current_user.orders if x.status == 1]
         elif action == "waiting":#待收货
             orders = [x for x in self.current_user.orders if x.status in (2, 3, 4)]
-        elif action == "finish":#已完成
-            orders = [x for x in self.current_user.orders if x.status == 5]
+        elif action == "finish":#已送达/完成
+            order5 = []
+            order6 = []
+            for x in self.current_user.orders:
+                if x.status == 5:
+                    order5.append(x)
+                if x.status == 6:
+                    order6.append(x)
+            orders = order5 + order6
         elif action == "all":
             orders = self.current_user.orders
         else:return self.send_error(404)
