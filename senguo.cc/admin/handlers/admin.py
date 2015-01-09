@@ -137,7 +137,7 @@ class Order(AdminBaseHandler):
                 period.start_time = start_time
                 period.end_time = end_time
             elif action == "edit_period_active":
-                period.active = 1 if period.active == 2 else 1
+                period.active = 1 if period.active == 2 else 2
             self.session.commit()
         elif action == "del_period":
             try: q = self.session.query(models.Period).filter_by(id=int(data["period_id"]))
