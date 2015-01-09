@@ -26,7 +26,7 @@
 .new-notice-detail{width:60%;height:100px;}
 
 .info-set-list{padding:0 15px;}
-.info-set-list li{border-bottom:1px solid #ccc;padding:15px 5px;}
+.info-set-list .item{border-bottom:1px solid #ccc;padding:15px 5px;}
 .info-set-list .w1{width:20%;}
 .logo-box{width:80px;height:80px;display:inline-block;text-align:center;position:relative;}
 .logo-box #logoImg{width:100%;margin-bottom:5px;}
@@ -36,3 +36,11 @@
 .logo-box .upload-btn{position:absolute;width:80px;height:80px;top:0;left:0;z-index:2;text-align:center;font-size:4em;}
 .logo-box .uploadifive-button{width:80px !important;height:80px !important;}
 .logo-box .uploadifive-button input[type=file]{width:80px !important;height:80px !important;}
+.dropdown-menu li{width:60px;border-bottom:1px solid #ddd;}
+.dropdown-menu li:hover{background-color:#3071a9;color:#fff;}
+.info-set-list textarea{width:300px;}
+
+.address-list .active{background:#00D681;color:#fff;}
+.address-list li:hover{background:#00D681;color:#fff;cursor:pointer;}
+
+input{height:30px;line-height:30px;color:#666;}

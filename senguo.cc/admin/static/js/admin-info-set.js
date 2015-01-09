@@ -12,6 +12,14 @@ $(document).ready(function(){
         if(text=='True') $this.text('有');
         else $this.text('没有');
     });
+
+    $('.offline_entity-list li').on('click',function(){
+        var $this=$(this);
+        var val=$this.data('id');
+        var text=$this.text();
+        $('#offline_entity').text(text).attr({'data-id':val});
+
+    });
     var key='';
     var token='';
     $('#file_upload').uploadifive(
@@ -83,10 +91,9 @@ function infoEdit(target){
     var url="";
     var action_name=target.data('id');
     var data={};
-    var action,shop_name,shop_intro,shop_city,shop_address_detail;
+    var action,shop_name,shop_intro,shop_city,shop_address_detail,have_offline_entity,address,entity_text;
     if(action_name=='name')
         {
-            console.log(222);
             action='edit_shop_name';
             shop_name=$('.shop_name').val().trim();
             if(shop_name.length>20){return alert('店铺名称请不要超过20个字符！')}
@@ -103,6 +110,7 @@ function infoEdit(target){
     {
         action='edit_address';
         shop_city=$('#cityAddress').attr('data-code');
+        address=$('#provinceAddress').text()+$('#cityAddress').text()+$('#addressDetail').val();
         shop_address_detail=$('#addressDetail').val().trim();
         if(shop_address_detail.length>50){return alert('详细地址请不要超过500个字符！')}
         data={
@@ -110,8 +118,15 @@ function infoEdit(target){
             shop_address_detail:shop_address_detail
         };
     }
-    //var have_offline_entity=$('#realShop').find('.active').find('a').data('real');
-    //var shop_service_area=i;
+    else if(action_name=='entity')
+    {
+        action='edit_have_offline_entity';
+        var entity=$('#offline_entity').attr('data-id');
+        if(entity==1) have_offline_entity='True';
+        else have_offline_entity='False';
+        entity_text=$('#offline_entity').text();
+        data={have_offline_entity:have_offline_entity};
+    }
     var args={
         action:action,
         data:data
@@ -120,8 +135,23 @@ function infoEdit(target){
         function(res){
             if(res.success)
             {
-
-
+                if(action_name=='name')
+                {
+                   $('.name').text(shop_name);
+                }
+                else if(action_name=='intro')
+                {
+                    $('.intro').text(shop_intro);
+                }
+                else if(action_name=='address')
+                {
+                    $('.address').text(address);
+                }
+                else if(action_name=='entity')
+                {
+                    $('.entity').text(entity_text);
+                }
+                target.hide().siblings('.info_edit').show().parents('li').find('.info_show').show().siblings('.info_hide').hide();
             }
             else  alert(res.error_text);
         },
