@@ -13,6 +13,7 @@ handlers = [
     (r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
     (r"/customer/register", handlers.customer.Access, {"action":"register"}, "customerRegister"),
     (r"/customer", handlers.customer.Home, {}, "customerHome"),
+    (r"/customer/profile", handlers.customer.CustomerProfile, {}, "customerProfile"),
     (r"/customer/market", handlers.customer.Market, {}, "Market"),
     (r"/customer/cart", handlers.customer.Cart, {}, "customerCart"),
     (r"/customer/orders", handlers.customer.Order, {}, "customerOrder"),
@@ -138,10 +139,10 @@ handlers = [
     (r"/fruitzone/shopImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_shop_img"}, "fruitzoneshopImgCallback"),
     (r"/fruitzone/InfoImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_info_img"}, "fruitzoneInfoImgCallback"),
 
-    (r"/fruitzone/phoneVerify/gencode", handlers.fruitzone.PhoneVerify, {
-        "action":"gencode"}, "fruitzoneVerifyGencode"),
-    (r"/fruitzone/phoneVerify/checkcode", handlers.fruitzone.PhoneVerify,{
-        "action":"checkcode"}, "fruitzoneCheckcode"),
+    (r"/fruitzone/phoneVerify", handlers.fruitzone.PhoneVerify, {
+        "action":"admin"}, "fruitzonePhoneVerify"),
+    (r"/customer/phoneVerify", handlers.fruitzone.PhoneVerify, {
+        "action":"customer"}, "customerPhoneVerify"),
 
     #信息墙
     (r"/infowall/supply", handlers.infowall.Home, {"action": "supply"}, "infowallHomeSupply"),

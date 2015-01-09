@@ -1,4 +1,4 @@
-from handlers.base import AdminBaseHandler
+from handlers.base import AdminBaseHandler, _AccountBaseHandler
 import dal.models as models
 import tornado.web
 from  dal.db_configs import DBSession
@@ -400,16 +400,24 @@ class QiniuCallback(AdminBaseHandler):
         pass
         return
 
-class PhoneVerify(AdminBaseHandler):
+class PhoneVerify(_AccountBaseHandler):
 
     def initialize(self, action):
-        self._action = action
+        if action == "admin":
+            self.__account_model__ = models.ShopAdmin
+            self.__account_cookie_name__ = "admin_id"
+            self.__wexin_oauth_url_name__ = "adminOauth"
+        elif action == "customer":
+            self.__account_model__ = models.Customer
+            self.__account_cookie_name__ = "customer_id"
+            self.__wexin_oauth_url_name__ = "customerOauth"
 
     @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action:str")
     def post(self):
-        if self._action == "gencode":
+        if self.args["action"] == "gencode":
             self.handle_gencode()
-        elif self._action == "checkcode":
+        elif self.args["action"] == "checkcode":
             self.handle_checkcode()
         else:
             return self.send_error(404)
@@ -417,8 +425,11 @@ class PhoneVerify(AdminBaseHandler):
     @AdminBaseHandler.check_arguments("phone:str")
     def handle_gencode(self):
         a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first() 
-        if a and a != self.current_user.accountinfo:
-            return self.send_fail(error_text="手机号已经绑定其他账号")
+        if a:
+            if a != self.current_user.accountinfo:
+                return self.send_fail(error_text="手机号已经绑定其他账号")
+            else:
+                return self.send_fail(error_text="手机号已绑定，无需重复绑定")
         gen_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, phone=self.args["phone"])
         return self.send_success()
 
@@ -578,5 +589,3 @@ class SystemPurchase(AdminBaseHandler):
             return False
         
         return True
-            
-        

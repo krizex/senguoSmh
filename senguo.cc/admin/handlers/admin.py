@@ -153,6 +153,9 @@ class Order(AdminBaseHandler):
         elif action == "edit_stop_range":#下单截止时间
             self.current_shop.config.stop_range = data["stop_range"] or 0
             self.session.commit()
+        elif action == "edit_freight_on_time":
+            self.current_shop.config.freight_on_time = data["freight_on_time"] or 0
+            self.session.commit()
         elif action == "edit_now_on":
             self.current_shop.config.now_on = not self.current_shop.config.now_on
             self.session.commit()
@@ -161,6 +164,9 @@ class Order(AdminBaseHandler):
             end_time = datetime.time(data["end_hour"], data["end_minute"])
             self.current_shop.config.update(session=self.session,min_charge_now=data["min_charge_now"],
                                             start_time_now=start_time, end_time_now=end_time)
+        elif action == "edit_freight_now":
+            self.current_shop.config.freight_now = data["freight_now"] or 0
+            self.session.commit()
         elif action in ["edit_remark", "edit_SH2", "edit_status", "edit_totalPrice"]:
             order = next((x for x in self.current_shop.orders if x.id==int(data["order_id"])), None)
             if not order:
@@ -566,8 +572,8 @@ class ShopConfig(AdminBaseHandler):
             shop.shop_province = shop_city//10000*10000
             shop.shop_city = shop_city
             shop.shop_address_detail = shop_address_detail
-        elif action == "edit_shop_service_area":
-            shop.shop_service_area = data["shop_service_area"]
+        elif action == "edit_deliver_area":
+            shop.deliver_area = data["deliver_area"]
         elif action == "edit_have_offline_entity":
             shop.have_offline_entity = data["have_offline_entity"]
         self.session.commit()
