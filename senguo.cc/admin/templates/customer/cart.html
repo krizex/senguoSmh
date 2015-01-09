@@ -72,12 +72,20 @@
          {% end %}
      </ul>
      <div class="bg-white bg-width center-block">
-         <div class="clearfix font18">
-             <label class="pull-left">总计：</label>
+         <div class="clearfix font14 text-pink">
+             <label class="pull-left">商品金额：</label>
              <span class="pull-right"><span id="list_total_price"></span>元</span>
          </div>
-         <p class="text-center text-pink mincharge_intime" style="display:none">(抱歉，您的订单金额未达到"按时达"最低消费金额<span class="mincharge">{{config.min_charge_on_time}}</span>元)</p>
-         <p class="text-center text-pink mincharge_now" style="display:none">(抱歉，您的订单金额未达到"立即送"最低消费金额<span class="mincharge">{{config.min_charge_now}}</span>元)</p>
+         <div class="clearfix font14 text-pink">
+             <label class="pull-left">配送费：</label>
+             <span class="pull-right"><span id="freight_money">{{config.freight_on_time}}</span>元</span>
+         </div>
+         <div class="clearfix font14 text-pink">
+             <label class="pull-left">实付金额：</label>
+             <span class="pull-right"><span id="final_price"></span>元</span>
+         </div>
+         <p class="text-center text-pink mincharge_intime" style="display:none">(抱歉，您的商品总金额未达到"按时达"起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元)</p>
+         <p class="text-center text-pink mincharge_now" style="display:none">(抱歉，您的商品总金额未达到"立即送"起送价金额<span class="mincharge">{{config.min_charge_now}}</span>元)</p>
          <div class="clearfix font16 text-center">
              {% set active=''%}
              {% set unactive=''%}
@@ -88,17 +96,23 @@
                  {% set active=''%}
                  {% set unactive='active'%}
              {% end %}
-             <ul id="sendType" class="send_type w-per6 nav-pills  center-block">
+             <ul id="sendType" class="send_type nav-pills  center-block">
                  <li data-id="2" class="{{active}} send-intime" data-config="{{config.ontime_on}}">
                      <a href="javascript:;" class="bg-white text-green" id="sendInTime">
                          <p>按时达</p>
-                         <p class="font9">起送价：{{config.min_charge_on_time or 0}}元</p>
+                         <p class="font8">
+                             起送价：{{config.min_charge_on_time or 0}}元
+                             配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元
+                         </p>
                      </a>
                  </li>
                  <li data-id="1" class="{{unactive}} send-now" data-config="{{config.now_on}}">
                      <a href="javascript:;" class="bg-white text-green" id="sendNow">
                          <p>立即送</p>
-                         <p class="font9">起送价：{{config.min_charge_now or 0}}元</p>
+                         <p class="font8">
+                             起送价：{{config.min_charge_now or 0}}元
+                             配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元
+                         </p>
                      </a>
                  </li>
              </ul>
@@ -109,7 +123,7 @@
                  <p>合理选择收货时间段，保证订单能按时送达到您的手上</p>
              </div>
              {% if periods %}
-             <ul id="sendDay" class="send_day w-per6 nav-pills font16 clearfix text-center type-choose">
+             <ul id="sendDay" class="send_day nav-pills font16 clearfix text-center type-choose">
                  <li data-id="1" class="active" id="send_today"><a href="javascript:;" class="bg-white text-green">今天</a></li>
                  <li data-id="2" id="send_tomorrow"><a href="javascript:;" class="bg-white text-green">明天</a></li>
              </ul>

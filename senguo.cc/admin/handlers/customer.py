@@ -101,7 +101,7 @@ class CustomerProfile(CustomerBaseHandler):
        # 具体可以查看models.ShopAdmin中的属性
        time_tuple = time.localtime(self.current_user.accountinfo.birthday)
        birthday = time.strftime("%Y-%m", time_tuple)
-       self.render("", context=dict(birthday=birthday))
+       self.render("customer/profile.html", context=dict(birthday=birthday))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action", "data")

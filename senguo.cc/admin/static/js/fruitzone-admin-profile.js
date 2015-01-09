@@ -47,31 +47,31 @@ function infoEdit(evt){
         var realname=$('#realnameEdit').val();
         var regEmail=/^([a-z0-9]*[-_]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/;
         var regNumber=/^[0-9]*[1-9][0-9]*$/;
-        var regMonth=/^((0?[1-9])|((1|2)[0-9])|30|31)$/;
+        var regYear=/^(?!0000)[0-9]{4}$/;
+        var regMonth=/^(0?[1-9]|[1][012])$/;
         var action=evt.data('action');
         var data=evt.parents('.info-edit').find('.edit-box').val();
         // action 不要放在html里面
         if(action=='edit_email' && !regEmail.test(email))
-            {return alert("邮箱不存在!");}
+        {return alert("邮箱不存在!");}
         else if(action=='edit_sex')
-            {data=sex;}
+        {data=sex;}
         else if(action=='edit_birthday')
         {
             if(!regMonth.test(month)||!regYear.test(year)||!month || !year)
                 return alert("请输入正确的年月!");
             else
-                {
-                    data={
-                        year:$('#yearEdit').val().trim(),
-                        month:$('#monthEdit').val().trim()
-                    }
+            {
+                data={
+                    year:$('#yearEdit').val().trim(),
+                    month:$('#monthEdit').val().trim()
                 }
+            }
         }
         var url="/fruitzone/admin/profile";
         var args={action: action, data: data};
         $.postJson(url,args,
             function (res) {
-                console.log(res);
                 if (res.success) {
                     evt.parents('li').find('a.editInfo').text(data).css({'color':'#a8a8a8'});
                     evt.parents('li').find('#userBirthday').text(data.year+'-'+data.month).css({'color':'#a8a8a8'});
@@ -82,7 +82,7 @@ function infoEdit(evt){
                     evt.parents('li').find('.info-edit').hide();
                     $('#serSex').attr({'data-sex':data});
                 }
-                else alert('请填写正确的信息！');
+                else alert(res.error_text);
             },
             function(){
                 alert('网络错误！');}
@@ -96,9 +96,9 @@ function Vrify(evt){
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
     if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return alert("电话貌似有错o(╯□╰)o");}
     if(!phone){return alert('手机号不能为空');}
-
-    var url="/fruitzone/phoneVerify/gencode";
-    var args={"phone":phone};
+    var action='gencode';
+    var url="/fruitzone/phoneVerify?action=admin";
+    var args={action:action,phone:phone};
     $.postJson(url,args,
         function(res){
             if(res.success)
@@ -121,7 +121,6 @@ function TiePhone(evt){
     var password=$('#loginPassword').val();
     var passwconf=$('#passwordConfirm').val();
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
-    //var regPassword=/^[\@A-Za-z0-9\!\#\$\%\^\&\*\.\~]{6,22}$/;
     if(!phone){return alert('请输入手机号');}
     if(!code){return alert('请输入验证码');}
     if(!password){return alert('请设置您的手机登录密码！');}
@@ -130,14 +129,14 @@ function TiePhone(evt){
     if(password.length<6){return alert('密码至少为6位！')}
     if(passwconf!=password){return alert('两次密码输入不一致!')}
     password = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
-    var url="/fruitzone/phoneVerify/checkcode";
-    var args={phone:phone,code:code,password:password};
+    var action='checkcode';
+    var url="/fruitzone/phoneVerify?action=admin";
+    var args={action:action,phone:phone,code:code,password:password};
     $.postJson(url,args,
         function(res){
             if(res.success)
             {
                 $('#phoneNumber').text(phone).css({'color':'#a8a8a8'});
-                alert('绑定成功！');
                 $('#tieBox').modal("hide");
             }
             else alert(res.error_text);

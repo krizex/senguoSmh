@@ -5,13 +5,15 @@
 {% end %}
 {% block content %}
     <div class="user-info box-style bg-white m-b10 clearfix font14 text-center">
-        <img src="{{current_user.accountinfo.headimgurl}}" class="img img-circle"/>
-        <div class="info">
-            <p>
-                <span>{{current_user.accountinfo.nickname}}</span>
-                <span data-id="{{current_user.accountinfo.sex}}" class="user-sex"></span>
-            </p>
-        </div>
+        <a href="{{reverse_url('customerProfile')}}">
+            <img src="{{current_user.accountinfo.headimgurl}}" class="img img-circle"/>
+            <div class="info">
+                <p>
+                    <span>{{current_user.accountinfo.nickname}}</span>
+                    <span data-id="{{current_user.accountinfo.sex}}" class="user-sex"></span>
+                </p>
+            </div>
+        </a>
     </div>
     <div class="box-style bg-white m-b10 clearfix pb0">
         <p class="title  clearfix">

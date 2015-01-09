@@ -119,6 +119,11 @@ $(document).ready(function(){
         var range=$('#stopRange').text();
         stopRange($('#stopRange'),range);
     });
+    //按时达配送费
+    $('.sendfreight').on('click',function(){
+        var freight=$('#freight_intime').val().trim();
+        FreightOnTime($('#freight_intime'),freight);
+    });
     //立即送模式开启/关闭
     $('#stopNowOn').on('click',function(){
         var $this=$(this);
@@ -482,14 +487,35 @@ function stopRange(target,range){
     )
 }
 
+function FreightOnTime(target,freight){
+    var url='';
+    var action='edit_freight_on_time';
+    if(!freight){freight=0;}
+    var args={
+        action:action,
+        data:{freight_on_time:freight}
+    };
+    $.postJson(url,args,function(res){
+            if(res.success){
+                target.text(freight);
+            }
+            else return alert(res.error_text);
+        },
+        function(){return alert('网络错误！')}
+    )
+}
+
 function SendNowConfig(){
     var url='';
     var action='edit_now_config';
     var min_charge_now=Int($('#sendNowMoney').val());
+    var freight_now=Int($('#freight_now').val());
     var start_hour=Int($('#NowStartHour').text());
     var start_minute=Int($('#NowStartMinute').text());
     var end_hour=Int($('#NowEndHour').text());
     var end_minute=Int($('#NowEndMinute').text());
+    if(min_charge_now==null||min_charge_now=='') min_charge_now=0;
+    if(freight_now==null||freight_now=='') freight_now=0;
     if(min_charge_now>200){return alert('最低起送价请不要超过200元!')}
     var args={
         action:action,
@@ -498,7 +524,8 @@ function SendNowConfig(){
             start_minute:start_minute,
             end_hour:end_hour,
             end_minute:end_minute,
-            min_charge_now:min_charge_now
+            min_charge_now:min_charge_now,
+            freight_now:freight_now
         }
     };
     $.postJson(url,args,function(res){
