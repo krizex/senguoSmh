@@ -2,7 +2,7 @@
 {% block title%}店铺信息设置{% end %}
 {% block setcontent %}
 <ul class="info-set-list">
-    <li class="clearfix">
+    <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">店铺名称</span>
         <div class="w2 pull-left">
             <span class="info_show name">{{current_shop.shop_name}}</span>
@@ -13,7 +13,7 @@
             <a class="info_sure" href="javascript:;" data-id="name" style="display:none">确定</a>
         </div>
     </li>
-    <li class="clearfix">
+    <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">店铺logo</span>
         <div class="w2 pull-left logo-box">
            <img src="{{current_shop.shop_trademark_url}}" id="logoImg">
@@ -23,11 +23,11 @@
             </div>
         </div>
     </li>
-    <li class="clearfix">
+    <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">店铺ID</span>
         <div class="w2 pull-left">{{current_shop.id}}</div>
     </li>
-    <li class="clearfix">
+    <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">店铺简介</span>
         <div class="w2 pull-left">
             <p class="info_show intro">{{current_shop.shop_intro}}</p>
@@ -38,18 +38,18 @@
             <a class="info_sure" href="javascript:;" data-id="intro" style="display:none">确定</a>
         </div>
     </li>
-    <li class="clearfix">
+    <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">店铺地址</span>
         <div class="w2 pull-left">
             <span class="info_show address">{{address}}</span>
             <div class="info_hide" style="display:none">
-                <div class="dropdown select-provience pull-left" data-toggle="modal" data-target="#provinceList">
+                <div class="dropdown select-provience pull-left set-right10" data-toggle="modal" data-target="#provinceList">
                     <button class="btn btn-default dropdown-toggle" type="button">
                         <span  id="provinceAddress" data-code="{{current_shop.shop_province or ''}}" class="reProvince">选择省份</span>
                         <span class="caret"></span>
                     </button>
                 </div>
-                <div class="dropdown select-provience pull-left select-city" data-toggle="modal" data-target="#cityList">
+                <div class="dropdown pull-left select-city set-right10" data-toggle="modal" data-target="#cityList">
                     <button class="btn btn-default dropdown-toggle" type="button">
                         <span id="cityAddress" data-code="{{current_shop.shop_city or ''}}" class="reCity">选择城市</span>
                         <span class="caret"></span>
@@ -64,21 +64,31 @@
             <a class="info_sure" href="javascript:;" data-id="address" style="display:none">确定</a>
         </div>
     </li>
-    <li class="clearfix">
+    <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">配送区域</span>
         <div class="w2 pull-left">
-            <span class="info_show service_area">{{service_area}}</span>
-            <input class="info_hide" type="text" value="{{service_area}}" style="display:none"/>
+            <span class="info_show"></span>
+            <input class="info_hide" type="text" value="" style="display:none"/>
         </div>
         <div class="pull-right">
             <a class="info_edit" href="javascript:;">修改</a>
             <a class="info_sure" href="javascript:;" data-id="area" style="display:none">确定</a>
         </div>
     </li>
-    <li class="clearfix">
+    <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">实体店情况</span>
         <div class="w2 pull-left ">
             <span class="offline_entity info_show">{{current_shop.have_offline_entity}}</span>
+            <div class="dropdown info_hide" style="display:none">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+                    <span class="offline_entity" id="offline_entity">{{current_shop.have_offline_entity}}</span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu offline_entity-list" role="menu" aria-labelledby="dropdownMenu1">
+                    <li role="presentation" data-id="1" class="text-center">有</li>
+                    <li role="presentation" data-id="2" class="text-center">没有</li>
+                </ul>
+            </div>
         </div>
         <div class="pull-right">
             <a class="info_edit" href="javascript:;">修改</a>
@@ -95,13 +105,13 @@
             </div>
             <div class="modal-body">
                 <div class="address-list province-list select-list">
-                    <ul class="provinceList">
+                    <ul class="provinceList font14">
                     </ul>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-style" data-dismiss="modal" id="provinceSelect">确定</button>
+                <button type="button" class="btn bg-green text-white" data-dismiss="modal" id="provinceSelect">确定</button>
             </div>
         </div>
     </div>
@@ -115,14 +125,14 @@
             </div>
             <div class="modal-body">
                 <div class="address-list city-list select-list">
-                    <ul class="cityList">
+                    <ul class="cityList font14">
                         <li>请先选择省份</li>
                     </ul>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-style" data-dismiss="modal" id="citySelect">确定</button>
+                <button type="button" class="btn bg-green text-white" data-dismiss="modal" id="citySelect">确定</button>
             </div>
         </div>
     </div>

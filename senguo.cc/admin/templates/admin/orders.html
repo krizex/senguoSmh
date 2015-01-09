@@ -338,8 +338,8 @@
                         <ul class="time-list">
                             {% for period in current_shop.config.periods%}
                             <li class="time-list-item set-width-float time-period" data-id="{{period.id}}">
-                                <div class="staff-work-mode action-mode pull-left">
-                                    <a class="work-mode" href="javascript:;">已启用</a>
+                                <div class="staff-work-mode action-mode pull-left period-action" data-id="{{period.active}}">
+                                    <a class="work-mode" href="javascript:;" style="display:none">已启用</a>
                                     <a class="stop-mode" href="javascript:;" style="display:none">未启用</a>
                                 </div>
                                 <span class="time1 text-black show_item pull-left startTime">{{period.start_time}}</span>

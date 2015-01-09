@@ -96,6 +96,18 @@ $(document).ready(function(){
         var $this=$(this);
         addEditPeriod($this,'edit_period');
     });
+    //按时达配送时间段启用/停用
+    $('.period-action').each(function(){
+        var $this=$(this);
+        var active=$this.data('id');
+        if(active==1) $this.find('.work-mode').show().siblings('.stop-mode').hide();
+        else $this.find('.work-mode').hide().siblings('.stop-mode').show();
+    });
+    $('body').on('click','.period-action',function(){
+        var $this=$(this);
+        var active=$this.data('id');
+        activePeriod($this,active);
+    });
     //按时达起送金额
     $('.sendMoney').on('click',function(){
         var $this=$(this);
@@ -107,7 +119,6 @@ $(document).ready(function(){
         var range=$('#stopRange').text();
         stopRange($('#stopRange'),range);
     });
-
     //立即送模式开启/关闭
     $('#stopNowOn').on('click',function(){
         var $this=$(this);
@@ -388,6 +399,30 @@ function deletePeriod(target){
     $.postJson(url,args,function(res){
             if(res.success){
                 parent.remove();
+            }
+            else return alert(res.error_text);
+        },
+        function(){return alert('网络错误！')}
+    )
+}
+
+function activePeriod(target,active){
+    var url=link;
+    var action='edit_period_active';
+    var parent=target.parents('.time-period');
+    var period_id=parent.data('id');
+    var data={
+        period_id:period_id
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,function(res){
+            if(res.success){
+                console.log(active);
+                if(active==1) target.find('.work-mode').hide().siblings('.stop-mode').show();
+                else target.find('.work-mode').show().siblings('.stop-mode').hide();
             }
             else return alert(res.error_text);
         },
