@@ -10,7 +10,7 @@ $(document).ready(function(){
 
     }
 
-    $('.provinceList li').click(function() {
+    $('body').on('click','.provinceList li',function() {
         var pcode=$(this).data('code');
         var pro=$(this).text();
         $('.cityList').empty();
@@ -35,7 +35,7 @@ $(document).ready(function(){
 
     });
 
-    $('#province-select li').click(function() {
+    $('body').on('click','#province-select li',function() {
         var pcode=$(this).data('code');
         $('#city-select ul').empty();
         for(var code in area[pcode]['city'])

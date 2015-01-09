@@ -99,6 +99,7 @@ handlers = [
      {"action": "edit_fruit_img"}, "adminShelfFruitImgCallback"),
     (r"/admin/staff", handlers.admin.Staff, {}, "adminStaffJH"),
     (r"/admin/config", handlers.admin.Config, {}, "adminConfig"),
+    (r"/admin/config/shop", handlers.admin.ShopConfig, {}, "adminShopConfig"),
 
     # (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
     # (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),

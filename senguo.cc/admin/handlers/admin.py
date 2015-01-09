@@ -541,7 +541,7 @@ class ShopConfig(AdminBaseHandler):
         address = self.code_to_text("shop_city", self.current_shop.shop_city) +\
                   " " + self.current_shop.shop_address_detail
         service_area = self.code_to_text("service_area", self.current_shop.shop_service_area)
-        return self.render("", address=address, service_area=service_area, shop=self.current_shop)
+        return self.render("admin/shop-info-set.html", address=address, service_area=service_area, shop=self.current_shop,context=dict(shopSubPage='info_set'))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")
