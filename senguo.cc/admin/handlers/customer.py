@@ -94,6 +94,39 @@ class Home(CustomerBaseHandler):
             self.session.commit()
         return self.send_success()
 
+class CustomerProfile(CustomerBaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+       # 模板中通过current_user获取当前admin的相关数据，
+       # 具体可以查看models.ShopAdmin中的属性
+       time_tuple = time.localtime(self.current_user.accountinfo.birthday)
+       birthday = time.strftime("%Y-%m", time_tuple)
+       self.render("", context=dict(birthday=birthday))
+
+    @tornado.web.authenticated
+    @CustomerBaseHandler.check_arguments("action", "data")
+    def post(self):
+        action = self.args["action"]
+        data = self.args["data"]
+
+        if action == "edit_realname":
+            self.current_user.accountinfo.update(session=self.session, realname=data)
+        elif action == "edit_email":
+            self.current_user.accountinfo.update(session=self.session, email=data)
+        elif action == "edit_sex":
+            self.current_user.accountinfo.update(session=self.session, sex=data)
+        elif action == "edit_birthday":
+            year = int(data["year"])
+            month = int(data["month"])
+            try:
+                birthday = datetime.datetime(year=year, month=month, day=19)
+            except ValueError as e:
+                return self.send_fail("月份必须为1~12")
+            self.current_user.accountinfo.update(session=self.session, birthday=time.mktime(birthday.timetuple()))
+        else:
+            return self.send_error(404)
+        return self.send_success()
+
 class ShopProfile(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self, shop_id):

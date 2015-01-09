@@ -362,6 +362,7 @@ class Shop(MapBase, _CommonApi):
     
     # 服务区域，SHOP_SERVICE_AREA
     shop_service_area = Column(Integer, default=SHOP_SERVICE_AREA.OTHERS)
+    deliver_area = Column(String(100))  # 配送区域
 
     # 地址
     shop_province = Column(Integer)
@@ -955,7 +956,9 @@ class Config(MapBase, _CommonApi):
     receipt_msg = Column(String(100)) #小票设置
     title = Column(String(50))
     min_charge_on_time = Column(SMALLINT, default=0) #按时达起送金额
+    freight_on_time = Column(SMALLINT, default=0)  # 按时达运费
     min_charge_now = Column(SMALLINT, default=0) #立即送起送金额
+    freight_now = Column(SMALLINT, default=0)  # 立即送运费
     stop_range = Column(SMALLINT, default=0) #下单截止时间（小时）
     start_time_now = Column(Time,default=0) #立即送起始时间
     end_time_now = Column(Time,default=0) #立即送结束时间
