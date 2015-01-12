@@ -488,7 +488,7 @@ class Config(AdminBaseHandler):
         elif action == "recharge":
             pass
         elif action == "receipt":
-            return self.render("admin/shop-receipt-set.html", title=config.title, receipt_msg=config.receipt_msg,context=dict(subpage='shop_set',shopSubPage='receipt_set'))
+            return self.render("admin/shop-receipt-set.html", receipt_msg=config.receipt_msg,context=dict(subpage='shop_set',shopSubPage='receipt_set'))
         else:
             return self.send_error(404)
 
@@ -535,6 +535,11 @@ class Config(AdminBaseHandler):
                 notice.summary = data["summary"]
                 notice.detail = data["detail"]
             self.session.commit()
+        elif action == "edit_recipe_img":
+            q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
+            token = q.upload_token(BUCKET_SHOP_IMG, expires=120, policy={"callbackUrl": "http://zone.senguo.cc/fruitzone/shopImgCallback",
+                                                                         "callbackBody": "key=$(key)&id=%s&type=2" % shop.id, "mimeLimit": "image/*"})
+            return self.send_success(token=token, key=str(time.time())+':'+str(shop.id))
         else:
             return self.send_error(404)
         return self.send_success()

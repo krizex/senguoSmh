@@ -361,15 +361,26 @@ class QiniuCallback(AdminBaseHandler):
     def post(self):
         if self._action == "edit_shop_img":
             key = self.get_argument("key")
-            id = self.get_argument("id")
-            try:
-                shop = self.session.query(models.Shop).filter_by(id=int(id)).one()
-            except:
-                return self.send_error(404)
-            if shop.shop_trademark_url:  #先要把旧的的图片删除
-                m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
-                m.delete(bucket=BUCKET_SHOP_IMG, key=shop.shop_trademark_url.split('/')[3])
-            shop.update(session=self.session, shop_trademark_url=SHOP_IMG_HOST+key)
+            id = int(self.get_argument("id"))
+            type = int(self.get_argument("type"))
+            if type == 1:
+                try:
+                    shop = self.session.query(models.Shop).filter_by(id=id).one()
+                except:
+                    return self.send_error(404)
+                if shop.shop_trademark_url:  #先要把旧的的图片删除
+                    m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
+                    m.delete(bucket=BUCKET_SHOP_IMG, key=shop.shop_trademark_url.split('/')[3])
+                shop.update(session=self.session, shop_trademark_url=SHOP_IMG_HOST+key)
+            elif type == 2:
+                try:
+                    config = self.session.query(models.Config).filter_by(id=id).one()
+                except:
+                    return self.send_error(404)
+                if config.receipt_img:  #先要把旧的的图片删除
+                    m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
+                    m.delete(bucket=BUCKET_SHOP_IMG, key=config.receipt_img.split('/')[3])
+                config.update(session=self.session, receipt_img=SHOP_IMG_HOST+key)
             return self.send_success()
         elif self._action == "edit_info_img":
             # try:
