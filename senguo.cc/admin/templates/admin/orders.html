@@ -256,6 +256,7 @@
                 <!--address-adapt-end-->
             </div>
             <input type="hidden" value="{{current_shop.config.receipt_msg}}" class="receipt-remark"/>
+            <input type="hidden" value="{{current_shop.config.receipt_img}}" class="receipt-img"/>
             <!--custom-order-end-->
             <div class="collapse-btn">
                 <a class="arrow-down" href="javascript:;"><img src="{{static_url('images/arrow-down.gif')}}"/></a>
@@ -452,12 +453,12 @@
                                 <span class="time timer" id="stopRange">{{current_shop.config.stop_range or 0}}</span>
                                 <span class="caret"></span>
                             </button>
-                            <ul class="dropdown-menu choose-list hour-list stop-list" role="menu">
+                            <ul class="dropdown-menu choose-list minute-list stop-list" role="menu">
                             </ul>
                         </div>
                         <a href="javascript:;" class="edit set-inl-blo pull-left stopRange"></a>
                     </div>
-                    <p class="notice text-grey9">截止时间是指在某送货时间段前N个小时用户将不能选择该时段配送</p>
+                    <p class="notice text-grey9">截止时间是指在某送货时间段前N分钟用户将不能选择该时段配送</p>
                 </div>
                 {% end %}
             </div>

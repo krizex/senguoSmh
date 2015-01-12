@@ -124,7 +124,7 @@
 .sendIntimeBox .tit{line-height:24px;font-size:14px}
 .sendIntimeBox .to{margin:0 5px;line-height:28px;}
 .time-list .time-list-item{padding:5px 0;border-bottom:1px solid #ccc;}
-.time-list .time-list-item .action-mode{margin-right:10px;margin-right:15px;}
+.time-list .time-list-item .action-mode{margin-right:15px;margin-top:5px;}
 .time-list .time-list-item .show_item{line-height:28px;margin-left:10px;}
 
 .add-period{padding:8px 0 8px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}

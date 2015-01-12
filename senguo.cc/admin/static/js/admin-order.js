@@ -282,7 +282,8 @@ function orderPrint(target){
     var totalPrice=parent.find('.goods-total-charge').text();
     var goods=parent.find('.goods-list')[0].innerHTML;
     var print_remark=parent.find('.receipt-remark').val();
-    $.getItem('/static/items/admin/order-print-page.html',function(data){
+    var print_img=parent.find('.receipt-img').val();
+    $.getItem('/static/items/admin/order-print-page.html?v=2015-01-12',function(data){
         var $item=$(data);
         $item.find('.notes-head').text(shop_name);
         $item.find('.orderId').text(order_id);
@@ -295,6 +296,9 @@ function orderPrint(target){
         $item.find('.totalPrice').text(totalPrice);
         $item.find('.goods-list')[0].innerHTML=goods;
         $item.find('.print-remark').text(print_remark);
+        console.log($item.find('.shop-img img').attr('src'));
+        //if(!print_img) $item.find('.shop-img').remove();
+        //else $item.find('.shop-img img').attr({'src':print_img});
         if (paid == true) {
             $item.find('.moneyPaid').text('已支付');
         } else {

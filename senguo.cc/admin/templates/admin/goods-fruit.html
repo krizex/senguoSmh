@@ -3,7 +3,7 @@
 {% block goodsLeft %}
 <ul class="goods-list clearfix">
     {% for fruit in fruits%}
-    <li class="goods-list-item" data-id="{{fruit.id}}">
+    <li class="goods-list-item goods-item" data-id="{{fruit.id}}">
         <div class="goods-item-show">
             <div class="goods-edit-active shelve-action pull-left" data-active="{{fruit.active}}">
                 <span class="unshelve stop-mode">已下架</span>
@@ -62,6 +62,7 @@
             </div>
             <div class="goods-info pull-left">
                 <div class="upload-img goods-left pull-left">
+                    <span class="goods-tag" data-id="{{fruit.tag}}"></span>
                     {% if fruit.img_url%}
                     <img src="http://goodsimg1.qiniudn.com/{{fruit.img_url}}?imageView/1/w/100/h/100" class="imgPreview" data-key="{{fruit.img_url}}" data-code="{{fruit.fruit_type.code}}"/>
                     {% else %}

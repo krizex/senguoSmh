@@ -91,7 +91,7 @@ $(document).ready(function(){
     $('.add-new-goods').on('click',function(){
         var max_goods_num=$('.goods-list').find('.goods-list-item').length;
         if(max_goods_num<5){
-            $('.add-new-goods-box').modal('show').load('/static/items/admin/add-new-goods.html').find('.unit-change').addClass('hidden');
+            $('.add-new-goods-box').modal('show').load('/static/items/admin/add-new-goods.html?v=20150112').find('.unit-change').addClass('hidden');
         }
         else alert('该分类下最多可添加5种水果！如仍需添加请选择其他分类！');
         defalutChangeUnit(storage_unit_id);
@@ -112,7 +112,8 @@ $(document).ready(function(){
         var $this=$(this);
         $this.addClass('active').siblings('a').removeClass('active');
         var id=$this.data('id');
-        var tag=$this.parents('.add-goods-item').find('.goods-tag');
+        var tag=$this.parents('.goods-item').find('.goods-tag');
+        tag.removeClass('bg-green');
         switch (id){
             case 1:tag.hide();break;
             case 2:tag.show().text('SALE').css({'background-color':'#e07d14'});break;

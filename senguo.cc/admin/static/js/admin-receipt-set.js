@@ -23,8 +23,8 @@ $(document).ready(function(){
                 $.ajaxSetup({
                     async : false
                 });
-                var action="add_img";
-                var url="/fruitzone/shop/apply/addImg";
+                var action="edit_recipe_img";
+                var url="/admin/config";
                 var args={action: action};
                 $.postJson(url,args,
                     function (res) {
