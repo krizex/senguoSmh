@@ -953,8 +953,7 @@ class Config(MapBase, _CommonApi):
     __tablename__ = "config"
 
     id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
-    receipt_msg = Column(String(100)) #小票设置
-    title = Column(String(50))
+    receipt_msg = Column(String(100)) #小票附加信息设置
     min_charge_on_time = Column(SMALLINT, default=0) #按时达起送金额
     freight_on_time = Column(SMALLINT, default=0)  # 按时达运费
     min_charge_now = Column(SMALLINT, default=0) #立即送起送金额
