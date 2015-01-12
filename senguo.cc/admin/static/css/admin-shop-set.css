@@ -44,3 +44,5 @@
 .address-list li:hover{background:#00D681;color:#fff;cursor:pointer;}
 
 input{height:30px;line-height:30px;color:#666;}
+.receipt-img img{height:40px;}
+.receipt-msg{height:80px;}

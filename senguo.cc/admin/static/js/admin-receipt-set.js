@@ -40,7 +40,8 @@ $(document).ready(function(){
                 };
             },
             'onUploadComplete':function(){
-                $('#logoImg').show().attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/200/h/200','data-key':key});
+                $('#logoImg').show().attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/200/h/200'});
+                $('.receipt-img img').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/200/h/200'});
                 $('.logo-box').find('.filename').hide();
                 $('.logo-box').find('.fileinfo').hide();
                 $('.logo-box').find('.close').hide();
@@ -51,12 +52,10 @@ $(document).ready(function(){
 function receiptEdit(){
     var url=link;
     var action="edit_receipt";
-    var title=$('.receipt-head').val();
     var receipt_msg=$('.receipt-msg').val();
-    if(!title){return alert('请输入小票抬头！')}
     if(!receipt_msg){ receipt_msg=''}
+    if(receipt_msg.length>200){return alert('小票附加消息请不要超过200个字！');}
     var data={
-        title:title,
         receipt_msg:receipt_msg
     };
     var args={
@@ -66,7 +65,6 @@ function receiptEdit(){
     $.postJson(url,args,
         function(res){
             if(res.success){
-                $('.receipt-head-con').text(title);
                 $('.receipt-msg-con').text(receipt_msg);
                 $('#noticeBox').modal('hide');
             }
