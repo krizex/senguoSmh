@@ -41,8 +41,8 @@ $(document).ready(function(){
                 $.ajaxSetup({
                     async : false
                 });
-                var action="add_img";
-                var url="/fruitzone/shop/apply/addImg";
+                var action="edit_shop_img";
+                var url="";
                 var args={action: action};
                 $.postJson(url,args,
                     function (res) {

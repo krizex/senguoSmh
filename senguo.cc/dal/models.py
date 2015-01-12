@@ -917,7 +917,7 @@ class ChargeType(MapBase, _CommonApi):
     fruit = relationship("Fruit", uselist=False)
 
 #用户自定义商品的计价类型
-class MChargeType(MapBase):
+class MChargeType(MapBase, _CommonApi):
     __tablename__ = "m_charge_type"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     mgoods_id = Column(Integer, ForeignKey(MGoods.id), nullable=False)

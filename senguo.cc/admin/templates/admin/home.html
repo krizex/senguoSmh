@@ -2,6 +2,7 @@
 {% block title %}首页{% end %}
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-index.css')}}"/>{% end %}
 {% block content %}
+{% set shop = handler.current_shop %}
 <div class="index-title">
     <div class="pull-left title-style">
         <div class="pull-left title-style2 bg1">
@@ -20,7 +21,7 @@
     <div class="pull-right title-style">
         <div class="pull-left title-style2 bg3">
             <a href="#">
-                <span class="total-order"><i></i>450</span>
+                <span class="total-order"><i></i>{{len(shop.orders) or 0}}</span>
                 <p>总订单数</p>
             </a>
         </div>

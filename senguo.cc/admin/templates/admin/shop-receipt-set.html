@@ -4,7 +4,7 @@
 {% block setcontent %}
 <table class="set-list table table-bordered">
     <tr class="bg-grey2">
-        <td colspan="2">小票抬头</td>
+        <td colspan="2">小票附加图片</td>
         <td colspan="2">小票附加消息</td>
     </tr>
     <tr class="set-list-item">
@@ -13,8 +13,16 @@
                 <a class="work-mode" href="javascript:;">已启用</a>
             </div>
         </td>
-        <td class="col-lg-4 address-show receipt-head-con">{{title or '无'}}</td>
-        <td class="col-lg-4 address-edit"  style="display:none;"><textarea class="receipt-head">{{title or '无'}}</textarea></td>
+        <td class="col-lg-4 address-show receipt-img"><img src="images/"/></td>
+        <td class="col-lg-4 address-edit"  style="display:none;">
+            <div class="logo-box">
+                <img src="{{current_shop.shop_trademark_url}}" id="logoImg">
+                <div class="upload-img green-color">
+                    <input id="file_upload" type="file" name="file_upload" class="uploadImg" />
+                    <span class="title set-inl-blo text-white text-center">点击修改</span>
+                </div>
+            </div>
+        </td>
         <td class="col-lg-6 address-show receipt-msg-con">{{receipt_msg or '无'}}</td>
         <td class="col-lg-6 address-edit" style="display:none;"> <textarea class="receipt-msg">{{receipt_msg or '无'}}</textarea></td>
         <td class="address-show">
@@ -26,29 +34,9 @@
     </tr>
 </table>
 <!--<a href="javascript:;" class="add-new-address1  add-btn-sty" data-toggle="modal" data-target="#noticeBox">+ 新建小票内容</a>-->
-<div class="modal fade text-grey3" id="noticeBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="myModalLabel">新建小票内容</h4>
-            </div>
-            <div class="modal-body ">
-                <p class="clearfix">
-                    <span class="pull-left set-right10 col-lg-3">小票抬头</span>
-                    <input type="text" class="new-receipt-title pull-left"/>
-                </p>
-                <div class="clearfix">
-                    <span class="pull-left set-right10 col-lg-3">小票附加消息</span>
-                    <textarea class="new-receipt-detail pull-left"></textarea>
-                </div>
-            </div>
-            <div class="modal-footer text-center">
-                <button class="btn bg-green text-white add-receipt-notice">确定</button>
-                <button class="btn btn-default" data-dismiss="modal">取消</button>
-            </div>
-        </div>
-    </div>
 </div>
 {% end %}
-{% block setbottom %}<script src="{{static_url('js/admin-receipt-set.js')}}"></script>{% end %}
+{% block setbottom %}
+<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>
+<script src="{{static_url('js/admin-receipt-set.js')}}"></script>
+{% end %}

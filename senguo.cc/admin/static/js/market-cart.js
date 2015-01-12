@@ -93,12 +93,16 @@ $(document).ready(function(){
     var time=new Date();
     var time_now=checkTime(time.getHours())+':'+checkTime(time.getMinutes())+':'+checkTime(time.getSeconds());
     //按时达根据当前时间选择时间段
-    var stop_range=$('.stop-range').val();
+    var stop_range=Int($('.stop-range').val());
     $('.send_period li').each(function(){
         var $this=$(this);
-        var intime_startHour=$this.find('.intime_startHour').val();
-        var intime_startMin=$this.find('.intime_startMin').val();
-        var time=checkTime(Int(intime_startHour)-Int(stop_range))+':'+checkTime(intime_startMin)+':00';
+        var intime_startHour=Int($this.find('.intime_startHour').val());
+        var intime_startMin=Int($this.find('.intime_startMin').val());
+        var time;
+        if(stop_range<=intime_startMin){
+            time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
+        }
+        else time=checkTime(intime_startHour-1)+':'+checkTime(60-(stop_range-intime_startMin))+':00';
         $this.on('click',function(){
             var today=$('#sendDay').find('.active').data('id');
             if(today==1) {

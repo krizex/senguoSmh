@@ -77,7 +77,7 @@ class Home(AdminBaseHandler):
 
         sys_notices = self.session.query(models.SysNotice).all()
         self.session.commit()
-        return self.render("admin/base.html", new_order_sum=new_order_sum, order_sum=order_sum,
+        return self.render("admin/home.html", new_order_sum=new_order_sum, order_sum=order_sum,
                            new_follower_sum=new_follower_sum, follower_sum=follower_sum,
                            sys_notices=sys_notices, context=dict())
     @tornado.web.authenticated
@@ -552,8 +552,8 @@ class Config(AdminBaseHandler):
         elif action == "edit_recipe_img":
             q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
             token = q.upload_token(BUCKET_SHOP_IMG, expires=120, policy={"callbackUrl": "http://zone.senguo.cc/fruitzone/shopImgCallback",
-                                                                         "callbackBody": "key=$(key)&id=%s&type=2" % shop.id, "mimeLimit": "image/*"})
-            return self.send_success(token=token, key=str(time.time())+':'+str(shop.id))
+                                                                         "callbackBody": "key=$(key)&id=%s&type=2" % self.current_shop.id, "mimeLimit": "image/*"})
+            return self.send_success(token=token, key=str(time.time())+':'+str(self.current_shop.id))
         else:
             return self.send_error(404)
         return self.send_success()
