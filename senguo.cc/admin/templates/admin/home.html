@@ -7,13 +7,13 @@
     <div class="pull-left title-style">
         <div class="pull-left title-style2 bg1">
             <a href="#">
-                <span class="new-order"><i></i>450</span>
+                <span class="new-order"><i></i>{{new_order_sum}}</span>
                 <p>新增订单</p>
             </a>
         </div>
         <div class="pull-right title-style2 bg2">
             <a href="#">
-                <span class="new-user"><i></i>450</span>
+                <span class="new-user"><i></i>{{new_follower_sum}}</span>
                 <p>新增用户</p>
             </a>
         </div>
@@ -21,13 +21,13 @@
     <div class="pull-right title-style">
         <div class="pull-left title-style2 bg3">
             <a href="#">
-                <span class="total-order"><i></i>{{len(shop.orders) or 0}}</span>
+                <span class="total-order"><i></i>{{order_sum}}</span>
                 <p>总订单数</p>
             </a>
         </div>
         <div class="pull-right title-style2 bg4">
             <a href="#">
-                <span class="total-user"><i></i>450</span>
+                <span class="total-user"><i></i>{{follower_sum}}</span>
                 <p>总用户数</p>
             </a>
         </div>
@@ -36,15 +36,19 @@
 <div class="index-notice-list">
     <span class="title">系统公告</span>
     <ul class="notice-list">
+        {% for new_sys_notice in new_sys_notices %}
         <li>
-            <a href="#" target="_blank">系统公告</a>
+            <a href="#" target="_blank">{{new_sys_notice.title}}</a>
             <i class="new-btn">NEW</i>
-            <span>2014-10-31</span>
+            <span>{{new_sys_notice.create_date}}</span>
         </li>
+        {% end %}
+        {% for sys_notice in sys_notices %}
         <li>
-            <a href="#" target="_blank">系统公告</a>
-            <span>2014-10-31</span>
+            <a href="#" target="_blank">{{sys_notice.title}}</a>
+            <span>{{sys_notice.create_date}}</span>
         </li>
+        {% end %}
     </ul>
 </div>
 {% end %}

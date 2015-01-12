@@ -75,11 +75,14 @@ class Home(AdminBaseHandler):
         new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
         self.current_shop.new_follower_sum = follower_sum
 
-        sys_notices = self.session.query(models.SysNotice).all()
+        new_sys_notices = self.session.query(models.SysNotice).\
+            filter((models.SysNotice.create_time >= datetime.datetime.now()-datetime.timedelta(10))).all()
+        sys_notices = self.session.query(models.SysNotice).\
+            filter((models.SysNotice.create_time < datetime.datetime.now()-datetime.timedelta(10))).all()
         self.session.commit()
         return self.render("admin/home.html", new_order_sum=new_order_sum, order_sum=order_sum,
                            new_follower_sum=new_follower_sum, follower_sum=follower_sum,
-                           sys_notices=sys_notices, context=dict())
+                           new_sys_notices=new_sys_notices, sys_notices=sys_notices, context=dict())
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("shop_id:int")
     def post(self):
