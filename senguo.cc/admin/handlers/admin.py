@@ -67,7 +67,19 @@ class Home(AdminBaseHandler):
         # if not self.current_shop: #设置默认店铺
         #     self.current_shop=self.current_user.shops[0]
         #     self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
-        return self.render("admin/base.html", context=dict())
+        order_sum = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).count()
+        new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+        self.current_shop.new_order_sum = order_sum
+
+        follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
+        new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
+        self.current_shop.new_follower_sum = follower_sum
+
+        sys_notices = self.session.query(models.SysNotice).all()
+        self.session.commit()
+        return self.render("admin/base.html", new_order_sum=new_order_sum, order_sum=order_sum,
+                           new_follower_sum=new_follower_sum, follower_sum=follower_sum,
+                           sys_notices=sys_notices, context=dict())
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("shop_id:int")
     def post(self):
@@ -133,6 +145,8 @@ class Order(AdminBaseHandler):
             if action == "edit_period":
                 start_time = datetime.time(data["start_hour"], data["start_minute"])
                 end_time = datetime.time(data["end_hour"], data["end_minute"])
+                if start_time >= end_time:
+                    return self.send_fail("时间段开始时间必须比结束时间小")
                 period.name = data["name"]
                 period.start_time = start_time
                 period.end_time = end_time
@@ -150,7 +164,7 @@ class Order(AdminBaseHandler):
         elif action == "edit_min_charge_on_time":#按时达起送金额
             self.current_shop.config.min_charge_on_time = data["min_charge_on_time"]
             self.session.commit()
-        elif action == "edit_stop_range":#下单截止时间
+        elif action == "edit_stop_range":#下单截止时间（分钟）
             self.current_shop.config.stop_range = data["stop_range"] or 0
             self.session.commit()
         elif action == "edit_freight_on_time":

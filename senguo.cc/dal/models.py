@@ -391,6 +391,8 @@ class Shop(MapBase, _CommonApi):
     shop_start_timestamp = Column(Integer)
     # 团队人数
     team_size = Column(Integer)
+    new_order_sum = Column(Integer, default=0)
+    new_follower_sum = Column(Integer, default=0)
 
     have_wx_mp = Column(Boolean)
     wxapi_token = Column(String(128))
@@ -959,7 +961,7 @@ class Config(MapBase, _CommonApi):
     freight_on_time = Column(SMALLINT, default=0)  # 按时达运费
     min_charge_now = Column(SMALLINT, default=0) #立即送起送金额
     freight_now = Column(SMALLINT, default=0)  # 立即送运费
-    stop_range = Column(SMALLINT, default=0) #下单截止时间（小时）
+    stop_range = Column(SMALLINT, default=0) #下单截止时间（分钟）
     start_time_now = Column(Time,default=0) #立即送起始时间
     end_time_now = Column(Time,default=0) #立即送结束时间
     ontime_on = Column(Boolean, default=True)
@@ -1021,6 +1023,14 @@ class HireForm(MapBase):
     status = Column(TINYINT, default=1)#1：申请中，2：通过，3：未通过
 
     staff = relationship("ShopStaff", uselist=False, join_depth=2)
+
+class SysNotice(MapBase):  #系统公告
+    __tablename__ = "sys_notice"
+
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    title = Column(String(100), nullable=False)
+    detail = Column(String(1000), nullable=False)
+    create_time = Column(DateTime, default=func.now())
 
 def init_db_data():
     MapBase.metadata.create_all()
