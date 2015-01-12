@@ -86,7 +86,8 @@ $(document).ready(function(){
 var order_href='/customer/orders';
 function statusText(target,n){
     switch (n){
-        case 1:target.text('配送中').addClass('text-green');break;
+        case 0:target.text('已取消').addClass('text-grey');break;
+        case 1:target.text('已下单').addClass('text-green');break;
         case 4:target.text('配送中').addClass('text-green');break;
         case 5:target.text('已送达').addClass('text-grey');break;
         case 6:target.text('已评价').addClass('text-grey');break;
@@ -105,7 +106,9 @@ function orderConcel(target,id){
     };
     $.postJson(url,args,function(res){
         if(res.success){
-            target.parents('.order-list-item').remove();
+            target.parents('.order-list-item').find('.status-bar-box').hide();
+            target.parents('.order-list-item').find('.send-time').hide();
+            target.parents('.order-list-item').find('.cancel').text('订单已取消').addClass('text-grey').removeClass('order-concel');
         }
         else return alert(res.error_text)
     },function(){return alert('网络错误！')})

@@ -6,9 +6,6 @@
 {% block top %}我的订单{% end %}
 {%block back%}{{reverse_url('customerHome')}}{% end %}
 {% block content %}
-{% if len(orders) == 0%}
-    <h4 class="text-center">暂无订单！</h4>
-{% end %}
 <ul class="order-nav text-center m-b0 clearfix font13 bg-white">
     <li data-action="all"><a href="{{reverse_url('customerOrder')}}?action=all">全部</a></li>
     <li data-action="unhandled"><a href="{{reverse_url('customerOrder')}}?action=unhandled">未处理</a></li>
@@ -16,6 +13,9 @@
     <li data-action="finish"><a href="{{reverse_url('customerOrder')}}?action=finish">已送达</a></li>
     <li data-action=""><a href="#">退款/售后</a></li>
 </ul>
+{% if len(orders) == 0%}
+<h4 class="text-center">暂无订单！</h4>
+{% end %}
 <ul class="order-list bg-white">
     {% for order in orders %}
     {% set left=''%}
@@ -42,21 +42,25 @@
             {% if order.remark%}
             <p>备注信息：{{order.remark}}</p>
             {% end %}
-            <p class="p2" >
+            <p class="p2">
                 <input type="hidden" value="{{order.create_date}}" class="create_time"/>
                 <input type="hidden" value="{{order.create_date.year}}" class="create_year"/>
                 <input type="hidden" value="{{order.create_date.month}}" class="create_month"/>
                 <input type="hidden" value="{{order.create_date.day}}" class="create_day"/>
                 <input type="hidden" value="{{order.today}}" class="send_day"/>
                 <input type="hidden" value="{{order.status}}" class="order_status"/>
-                <span>
+                {% if order.status !=0 %}
+                <span class="send-time">
                     <span class="un-arrive">预计</span>：<span class="send_date">今天</span>&nbsp;&nbsp;{{order.start_time}}~{{order.end_time}}&nbsp;&nbsp;送达
                 </span>
+                {% end %}
                 <span class="price-box pull-right text-pink"><span class="price font18">{{order.totalPrice}}</span>元</span>
             </p>
             <p>
                 {% if order.status ==1 %}
                 <a class="cancel order-concel" href="javascript:;">取消订单</a>
+                {% elif order.status ==0 %}
+                <span class="status_notice text-grey">订单已取消</span>
                 {% else %}
                 <span class="status_notice">订单已开始处理</span>
                 {% end %}
@@ -64,24 +68,16 @@
             {% if order.comment%}
             <p>评价：{{order.comment}}</p>
             {% end %}
-            {% if status !=5%}
-            {% if status !=6%}
+            {% if status ==1 or status ==4 %}
             <div class="status-bar-box">
                 <div class="status-bar">
                     <div class="inner {{width}}"></div>
                     <div class="circle-icon {{left}}"></div>
                     <div class="status-box {{left}}">
-                        <span class="status">
-                            {% if status ==1 %}
-                            已下单
-                            {% elif status == 4%}
-                            配送中
-                            {% end %}
-                        </span>
+                        <span class="status order-status">{{order.status}}</span>
                     </div>
                 </div>
             </div>
-            {% end %}
             {% end %}
             {% if status ==5 %}
             <div class="clearfix btn-box">
