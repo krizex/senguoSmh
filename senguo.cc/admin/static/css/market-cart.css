@@ -20,7 +20,7 @@
 .send_type{border:1px solid #f2f2f2;border-top-left-radius:2px;border-top-right-radius:2px;overflow:hidden;margin-bottom:0px;}
 .send_type li{width:49%;}
 .send_type li a{display:block;border-radius:0px;padding:0.5em 0;}
-.send_type li.active a{background:#f2f2f2 !important;font-weight:bold;}
+.send_type li.active a{background:#f2f2f2 !important;}
 
 .send_day{overflow:hidden;}
 .send_day li{width:40%;margin-right:10px;}

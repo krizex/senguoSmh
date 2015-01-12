@@ -8,7 +8,7 @@ $(document).ready(function(){
     });
     $('.offline_entity').each(function(){
         var $this=$(this);
-        var text=$this.text;
+        var text=$this.text();
         if(text=='True') $this.text('有');
         else $this.text('没有');
     });
@@ -118,12 +118,20 @@ function infoEdit(target){
             shop_address_detail:shop_address_detail
         };
     }
+    else if(action_name=='area')
+    {
+        action='edit_deliver_area';
+        var deliver_area=$('.deliver-area').val().trim();
+        data={
+            deliver_area:deliver_area
+        }
+    }
     else if(action_name=='entity')
     {
         action='edit_have_offline_entity';
         var entity=$('#offline_entity').attr('data-id');
-        if(entity==1) have_offline_entity='True';
-        else have_offline_entity='False';
+        if(entity==1) have_offline_entity=1;
+        else have_offline_entity=0;
         entity_text=$('#offline_entity').text();
         data={have_offline_entity:have_offline_entity};
     }
@@ -147,9 +155,13 @@ function infoEdit(target){
                 {
                     $('.address').text(address);
                 }
+                else if(action_name=='area')
+                {
+                    $('.area').text(deliver_area);
+                }
                 else if(action_name=='entity')
                 {
-                    $('.entity').text(entity_text);
+                    $('.offline_entity').text(entity_text);
                 }
                 target.hide().siblings('.info_edit').show().parents('li').find('.info_show').show().siblings('.info_hide').hide();
             }

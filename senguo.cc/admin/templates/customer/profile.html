@@ -1,0 +1,115 @@
+{% extends 'detail-base.html' %}
+{% block title %}个人信息{% end %}
+{% block top %}个人信息{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/market-profile.css')}}"/>
+{% end %}
+
+{% block content%}
+<div class="user-info-detail">
+    <ul>
+        <li class="item">
+            <div class="info-con">
+                <span class="title img-title pull-left">头像</span>
+                <a href="javascript:;"><img src="{{current_user.accountinfo.headimgurl}}" class="user-img pull-right"/></a>
+            </div>
+        </li>
+        <li class="item">
+            <div class="info-con">
+                <span class="title pull-left">昵称</span>
+                <a href="javascript:;" class="nickname pull-right s1 editInfo">{{current_user.accountinfo.nickname or '无'}}</a>
+            </div>
+        </li>
+        <li class="item">
+            <div class="info-con">
+                <span class="title pull-left">真实姓名</span>
+                <a href="javascript:;" class="nickname pull-right s1 editInfo" id="userRealname">{{current_user.accountinfo.realname}}</a>
+            </div>
+            <div class="info-edit" style="display:none;">
+                <input type="text" class="edit-box" id="realnameEdit" value="{{current_user.accountinfo.realname or ''}}" placeholder="请设置"/>
+                <div class="btn-box">
+                    <a href="javascript:;" class="btn concel-btn text-white">取消</a>
+                    <a href="javascript:;" class="btn sure-btn text-white"  data-action="realname">确定</a>
+                </div>
+            </div>
+        </li>
+        <li class="item">
+            <div class="info-con">
+                <span class="title pull-left">手机号</span>
+                <a href="javascript:;" class="pull-right  tiephone" data-toggle="modal" data-target="#tieBox" id="phoneNumber">{{current_user.accountinfo.phone}}</a>
+            </div>
+        </li>
+        <li class="item">
+            <div class="info-con">
+                <span class="title pull-left">邮箱</span>
+                <a href="javascript:;" class="pull-right s1 editInfo" id="userMail">{{current_user.accountinfo.email}}</a>
+            </div>
+            <div class="info-edit" style="display:none;">
+                <input type="text" class="edit-box" id="mailEdit" value="{{current_user.accountinfo.email or ''}}" placeholder="请设置"/>
+                <div class="btn-box">
+                    <a href="javascript:;" class="btn concel-btn text-white">取消</a>
+                    <a href="javascript:;" class="btn sure-btn text-white" data-action="email">确定</a>
+                </div>
+            </div>
+        </li>
+        <li class="w1 item">
+            <div class="info-con" data-toggle="modal" data-target="#sexBox">
+                <span class="title pull-left">性别</span>
+                <a href="javascript:;" class="pull-right s1" id="userSex" data-id="{{current_user.accountinfo.sex}}"></a>
+            </div>
+        </li>
+        <li class="item">
+            <div class="info-con">
+                <span class="title pull-left">生日</span>
+                <a href="javascript:;" class="pull-right editInfo" id="userBirthday">{{context['birthday'] or '请设置'}}</a>
+            </div>
+            <div class="info-edit" style="display:none;">
+                <input type="text" class="edit-box" placeholder="请输入您的出生年份 例如：2014" id="yearEdit" value=""/>
+                <input type="text" class="edit-box" placeholder="请输入您的出生月份 例如：05" id="monthEdit" value=""/>
+                <div class="btn-box">
+                    <a href="javascript:;" class="btn concel-btn text-white">取消</a>
+                    <a href="javascript:;" class="btn sure-btn text-white" data-action="birthday">确定</a>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="modal fade tie-popbox" id="tieBox" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="tie-info">
+                    <div class="phone-number">
+                        <input type="text" placeholder="输入手机号" class="phone input1 pull-left" id="enterPhone"/>
+                        <input type="submit" value="获取验证码" class="get-code pull-right bg-green" id="getVrify"/>
+                    </div>
+                    <input type="text" placeholder="输入收到的短信验证码" class="input1" id="enterVrify"/>
+                    <input type="password" placeholder="设置一个手机号登陆密码" class="input1" id="loginPassword"/>
+                    <input type="password" placeholder="密码确认" class="input1" id="passwordConfirm"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn pull-left concel-btn" data-dismiss="modal">取消</button>
+                <button type="button" class="btn pull-right tie-btn bg-green"  id="tiePhone">绑定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade sex-popbox" id="sexBox" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <ul class="list-group sex-list font14">
+                    <li class="list-group-item" data-id="1">男</li>
+                    <li class="list-group-item" data-id="2">女</li>
+                    <li class="list-group-item" data-id="0">其他</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/sha256.js')}}"></script>
+<script src="{{static_url('js/market-profile.js')}}"></script>
+{% end %}

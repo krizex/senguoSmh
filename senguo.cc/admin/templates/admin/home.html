@@ -1,2 +1,49 @@
 {% extends 'base.html' %}
 {% block title %}首页{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-index.css')}}"/>{% end %}
+{% block content %}
+<div class="index-title">
+    <div class="pull-left title-style">
+        <div class="pull-left title-style2 bg1">
+            <a href="#">
+                <span class="new-order"><i></i>450</span>
+                <p>新增订单</p>
+            </a>
+        </div>
+        <div class="pull-right title-style2 bg2">
+            <a href="#">
+                <span class="new-user"><i></i>450</span>
+                <p>新增用户</p>
+            </a>
+        </div>
+    </div>
+    <div class="pull-right title-style">
+        <div class="pull-left title-style2 bg3">
+            <a href="#">
+                <span class="total-order"><i></i>450</span>
+                <p>总订单数</p>
+            </a>
+        </div>
+        <div class="pull-right title-style2 bg4">
+            <a href="#">
+                <span class="total-user"><i></i>450</span>
+                <p>总用户数</p>
+            </a>
+        </div>
+    </div>
+</div>
+<div class="index-notice-list">
+    <span class="title">系统公告</span>
+    <ul class="notice-list">
+        <li>
+            <a href="#" target="_blank">系统公告</a>
+            <i class="new-btn">NEW</i>
+            <span>2014-10-31</span>
+        </li>
+        <li>
+            <a href="#" target="_blank">系统公告</a>
+            <span>2014-10-31</span>
+        </li>
+    </ul>
+</div>
+{% end %}

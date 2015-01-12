@@ -163,10 +163,8 @@ class Order(AdminBaseHandler):
             start_time = datetime.time(data["start_hour"], data["start_minute"])
             end_time = datetime.time(data["end_hour"], data["end_minute"])
             self.current_shop.config.update(session=self.session,min_charge_now=data["min_charge_now"],
-                                            start_time_now=start_time, end_time_now=end_time)
-        elif action == "edit_freight_now":
-            self.current_shop.config.freight_now = data["freight_now"] or 0
-            self.session.commit()
+                                            start_time_now=start_time, end_time_now=end_time,
+                                            freight_now=data["freight_now"] or 0)
         elif action in ["edit_remark", "edit_SH2", "edit_status", "edit_totalPrice"]:
             order = next((x for x in self.current_shop.orders if x.id==int(data["order_id"])), None)
             if not order:
