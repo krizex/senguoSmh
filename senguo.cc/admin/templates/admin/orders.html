@@ -333,20 +333,26 @@
                 {% else %}
                 <div class="w450 center-block">
                     <span class="tit pull-left t1">起送金额：</span>
-                    <div class="send-money clearfix">
-                        <input class="pull-left money" type="number" value="{{current_shop.config.min_charge_on_time or 0}}" id="sendMoney"/>
-                        <a href="javascript:;" class="edit set-inl-blo pull-left sendMoney"></a>
+                    <div class="send-money clearfix to-edit-item">
+                        <span class="show_value show_item pull-left tit">{{current_shop.config.min_charge_on_time or 0}}</span>
+                        <input class="pull-left money edit_item hidden" type="number" value="{{current_shop.config.min_charge_on_time or 0}}" id="sendMoney"/>
+                        <span class="tit pull-left set-left10">元</span>
+                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden sendMoney pl">&nbsp;</a>
+                        <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
                     </div>
                     <span class="tit pull-left t1">配送费：</span>
-                    <div class="send-freight clearfix">
-                        <input class="pull-left freight" type="number" value="{{current_shop.config.freight_on_time or 0}}" id="freight_intime"/>
-                        <a href="javascript:;" class="edit set-inl-blo pull-left sendfreight"></a>
+                    <div class="send-freight clearfix to-edit-item">
+                        <span class="show_value show_item pull-left tit">{{current_shop.config.freight_on_time or 0}}</span>
+                        <input class="pull-left freight edit_item hidden" type="number" value="{{current_shop.config.freight_on_time or 0}}" id="freight_intime"/>
+                        <span class="tit pull-left set-left10">元</span>
+                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden sendfreight">&nbsp;</a>
+                        <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
                     </div>
                     <p class="tit clearfix">配送时间：</p>
                     <div class="send-time w450 center-block">
                         <ul class="time-list">
                             {% for period in current_shop.config.periods%}
-                            <li class="time-list-item set-width-float time-period" data-id="{{period.id}}">
+                            <li class="time-list-item set-width-float time-period to-edit-item" data-id="{{period.id}}">
                                 <div class="staff-work-mode action-mode pull-left period-action" data-id="{{period.active}}">
                                     <a class="work-mode" href="javascript:;" style="display:none">已启用</a>
                                     <a class="stop-mode" href="javascript:;" style="display:none">未启用</a>
@@ -394,8 +400,8 @@
                                 </div>
                                 <span class="time show_item periodName">{{period.name}}</span>
                                 <input type="text" class="period-name  pull-left text-center edit_item hidden" value="{{period.name}}"/>
-                                <a href="javascript:;" class="delete pull-right set-inl-blo delete-time-period"></a>
-                                <a href="javascript:;" class="edit pull-right set-inl-blo to-edit-period show_item"></a>
+                                <a href="javascript:;" class="delete pull-right set-inl-blo delete-time-period" style="display:none"></a>
+                                <a href="javascript:;" class="edit pull-right set-inl-blo to-edit show_item" style="display:none"></a>
                                 <a href="javascript:;" class="sure-btn pull-right edit_item hidden edit-time-period">&nbsp;</a>
                             </li>
                             {% end %}
@@ -404,59 +410,23 @@
                 </div>
                 <p class="w450 center-block"><a href="javascript:;" class="add-new-time text-green font14">+ 添加新时段</a></p>
                 <div class="add-period  bg-grey2 set-width-float" style="display:none">
-                    <div class="w450 center-block">
-                        <div class="input-group-btn pull-left">
-                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
-                                <span class="time start-hour">00</span>
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu choose-list hour-list" role="menu">
-                            </ul>
-                        </div>
-                        <span class="pull-left tit">：</span>
-                        <div class="input-group-btn pull-left">
-                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
-                                <span class="time start-minute">00</span>
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu choose-list minute-list" role="menu">
-                            </ul>
-                        </div>
-                        <span class="pull-left tit">&nbsp;至&nbsp;</span>
-                        <div class="input-group-btn pull-left">
-                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
-                                <span class="time end-hour">00</span>
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu choose-list hour-list" role="menu">
-                            </ul>
-                        </div>
-                        <span class="pull-left tit">：</span>
-                        <div class="input-group-btn">
-                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
-                                <span class="time end-minute">00</span>
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu choose-list minute-list" role="menu">
-                            </ul>
-                        </div>
-                        <input type="text" class="period-name  pull-left" placeholder="时段名称"/>
-                        <a href="javascript:;" class="sure-btn pull-left add-time-period">&nbsp;</a>
-                        <a href="javascript:;" class="concel-btn pull-left concel-time-period">&nbsp;</a>
-                    </div>
+
                 </div>
                 <div class="w450 center-block clearfix">
-                    <div class="end-time clearfix">
+                    <div class="end-time clearfix to-edit-item">
                         <span class="pull-left tit">下单截止时间：</span>
-                        <div class="input-group-btn pull-left">
+                        <span class="show_item pull-left show_value tit">{{current_shop.config.stop_range or 0}}</span>
+                        <div class="input-group-btn pull-left edit_item hidden">
                             <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
                                 <span class="time timer" id="stopRange">{{current_shop.config.stop_range or 0}}</span>
                                 <span class="caret"></span>
                             </button>
-                            <ul class="dropdown-menu choose-list minute-list stop-list" role="menu">
+                            <ul class="dropdown-menu choose-list stop-minute-list stop-list" role="menu">
                             </ul>
                         </div>
-                        <a href="javascript:;" class="edit set-inl-blo pull-left stopRange"></a>
+                        <span class="pull-left tit set-left10">分钟</span>
+                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden stopRange">&nbsp;</a>
+                        <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
                     </div>
                     <p class="notice text-grey9">截止时间是指在某送货时间段前N分钟用户将不能选择该时段配送</p>
                 </div>

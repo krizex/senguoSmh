@@ -418,6 +418,8 @@ function orderSubmit(){
     var pay_type=$('#payType').find('.active').data('id');
     var message=$('#messageCon').val();
     var fruit_item=$('.fruit_item');
+    var mincharge_intime=Int($('.mincharge_intime .mincharge').text());
+    var mincharge_now=Int($('.mincharge_now .mincharge').text());
     for(var i=0;i<fruit_item.length;i++)
     {
         var id=fruit_item.eq(i).find('.charge-type').data('id');
@@ -432,8 +434,14 @@ function orderSubmit(){
         mgoods[id]=parseInt(num);
     }
     if(!message) message='';
-    if(type==2&&!period_id) {return alert('请选择送货时段！')}
-    if(type==1){period_id=0}
+    if(type==2) {
+        if(total_price<mincharge_intime) return alert('您的订单未达到按时达最低起送金额！');
+        if(!period_id) return alert('请选择送货时段！');
+    }
+    if(type==1){
+        period_id=0;
+        if(total_price<mincharge_now) return alert('您的订单未达到立即送最低起送金额！');
+    }
     if(!type){return alert('请选择送货时段！')}
     var args={
         fruits:fruits,

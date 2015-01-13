@@ -1,4 +1,13 @@
 $(document).ready(function(){
+    $('.to-edit-item').hover(function(){
+       var $this=$(this);
+        $this.find('.edit').show();
+        $this.find('.delete').show();
+    },function(){
+        var $this=$(this);
+        $this.find('.edit').hide();
+        $this.find('.delete').hide();
+    });
     $('.send-person-area li').first().addClass('active');
     //订单状态数据显示
     var order_item=$('.order-list-item');
@@ -62,33 +71,58 @@ $(document).ready(function(){
         if(i<=9) i='0'+i;
         $('.minute-list').append('<li>'+i+'</li>');
     }
+    for(var i=0;i<=60;i=Int(i)+5)//截止时间
+    {
+        if(i<9) i='0'+i;
+        $('.stop-minute-list').append('<li>'+i+'</li>');
+    }
     $('body').on('click','.choose-list li',function(){
         var $this=$(this);
         var time=$this.text();
         $this.parents('.input-group-btn').find('.time').text(time);
     });
     //按时达配送时段添加
-    $('.add-time-period').on('click',function(){
-        var $this=$(this);
-       addEditPeriod($this,'add_period');
-    });
-    $('.add-new-time').on('click',function(){
+    $('.add-new-time').on('click',function(){//添加显示
         var max=$('.time-list').find('.time-list-item').length;
-        if(max<5) $('.add-period').show();
+        if(max<5) {
+            $.getItem('/static/items/admin/add-period-item.html',function(data){
+                var $item=$(data);
+                for(var i=0;i<=23;i++)
+                {
+                    if(i<=9) i='0'+i;
+                    $item.find('.hour-list').append('<li>'+i+'</li>');
+                }
+                for(var i=0;i<=59;i++)
+                {
+                    if(i<=9) i='0'+i;
+                    $item.find('.minute-list').append('<li>'+i+'</li>');
+                }
+                $('.add-period').append($item).show();
+            });
+
+
+        }
         else return alert('至多能添加五个时段！');
     });
-    $('.concel-time-period').on('click',function(){
-        $('.add-period').hide();
+    $('body').on('click','.add-time-period',function(){//添加确认
+        var $this=$(this);
+        addEditPeriod($this,'add_period');
+    });
+    $('body').on('click','.concel-time-period',function(){//添加取消
+        $('.add-period').hide().empty();
     });
     //按时达配送时段删除
     $('body').on('click','.delete-time-period',function(){
-        var $this=$(this);
-        deletePeriod($this);
+        if(confirm('确认删除该时段吗？')){
+            var $this=$(this);
+            deletePeriod($this);
+        }
+
     });
     //按时达配送时段编辑
-    $('body').on('click','.to-edit-period',function(){
+    $('body').on('click','.to-edit',function(){
         var $this=$(this);
-        var parent=$this.parents('.time-period');
+        var parent=$this.parents('.to-edit-item');
         parent.find('.show_item').hide();
         parent.find('.edit_item').removeClass('hidden');
     });
@@ -296,9 +330,8 @@ function orderPrint(target){
         $item.find('.totalPrice').text(totalPrice);
         $item.find('.goods-list')[0].innerHTML=goods;
         $item.find('.print-remark').text(print_remark);
-        console.log($item.find('.shop-img img').attr('src'));
-        //if(!print_img) $item.find('.shop-img').remove();
-        //else $item.find('.shop-img img').attr({'src':print_img});
+        if(!print_img) $item.find('.shop-img').remove();
+        else $item.find('.shop-img img').attr({'src':print_img});
         if (paid == true) {
             $item.find('.moneyPaid').text('已支付');
         } else {
@@ -333,11 +366,16 @@ function addEditPeriod(target,action){
         endTime=parent.find('.EndTime');
         periodName=parent.find('.periodName');
     }
-    var start_hour=parseInt(parent.find('.start-hour').text());
-    var start_minute=parseInt(parent.find('.start-minute').text());
-    var end_hour=parseInt(parent.find('.end-hour').text());
-    var end_minute=parseInt(parent.find('.end-minute').text());
+    var start_hour=parent.find('.start-hour').text();
+    var start_minute=parent.find('.start-minute').text();
+    var end_hour=parent.find('.end-hour').text();
+    var end_minute=parent.find('.end-minute').text();
     var name=parent.find('.period-name').val();
+    if(start_hour+':'+start_minute>=end_hour+':'+end_minute) return alert('起始时间必须小于截止时间！');
+    start_hour=Int(start_hour);
+    start_minute=Int(start_minute);
+    end_hour=Int(end_hour);
+    end_minute=Int(end_minute);
     var data={
         start_hour:start_hour,
         start_minute:start_minute,
@@ -465,7 +503,11 @@ function sendMoney(target,money){
     };
     $.postJson(url,args,function(res){
             if(res.success){
+                var parent=target.parents('.to-edit-item');
                 target.val(money);
+                parent.find('.show_item').show();
+                parent.find('.edit_item').addClass('hidden');
+                parent.find('.show_value').text(money);
             }
             else return alert(res.error_text);
         },
@@ -483,7 +525,11 @@ function stopRange(target,range){
     };
     $.postJson(url,args,function(res){
             if(res.success){
+                var parent=target.parents('.to-edit-item');
                 target.text(range);
+                parent.find('.show_item').show();
+                parent.find('.edit_item').addClass('hidden');
+                parent.find('.show_value').text(range);
             }
             else return alert(res.error_text);
         },
@@ -501,7 +547,11 @@ function FreightOnTime(target,freight){
     };
     $.postJson(url,args,function(res){
             if(res.success){
+                var parent=target.parents('.to-edit-item');
                 target.text(freight);
+                parent.find('.show_item').show();
+                parent.find('.edit_item').addClass('hidden');
+                parent.find('.show_value').text(freight);
             }
             else return alert(res.error_text);
         },
