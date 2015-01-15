@@ -4,7 +4,11 @@
 <link rel="stylesheet" href="{{static_url('css/market-home.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 <script>
-var s_height=(window.screen.height)/8;
+var s_height;
+var w_height=window.screen.height;
+if(w_height<=800)
+    s_height=w_height/8;
+else  s_height=800/8;
 var s_width=window.screen.width;
 </script>
 {% end %}
