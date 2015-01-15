@@ -169,6 +169,11 @@ class SuperBaseHandler(_AccountBaseHandler):
     __account_cookie_name__ = "super_id"
     __wexin_oauth_url_name__ = "superOauth"
 
+class FruitzoneBaseHandler(_AccountBaseHandler):
+    __account_model__ = models.ShopAdmin
+    __account_cookie_name__ = "admin_id"
+    __wexin_oauth_url_name__ = "adminOauth"
+
 class AdminBaseHandler(_AccountBaseHandler):
     __account_model__ = models.ShopAdmin
     __account_cookie_name__ = "admin_id"
@@ -176,18 +181,18 @@ class AdminBaseHandler(_AccountBaseHandler):
     current_shop = None
     @tornado.web.authenticated
     def prepare(self):
+        """这个函数在get、post等函数运行前运行"""
         shop_id = self.get_secure_cookie("shop_id") or b'0'
         shop_id = int(shop_id.decode())
         if not self.current_user.shops:
             return self.finish("你还没有店铺，请先申请")
-        if not shop_id:#初次登陆，默认选择一个店铺
+        shop = next((x for x in self.current_user.shops if x.id == shop_id), None)
+        if not shop_id or not shop:#初次登陆，默认选择一个店铺
             self.current_shop = self.current_user.shops[0]
             self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
             return
-        if not next((x for x in self.current_user.shops if x.id == shop_id), None):
-            return self.finish('你没有这个店铺')
         else:
-            self.current_shop = models.Shop.get_by_id(self.session, shop_id)
+            self.current_shop = shop
 
 class StaffBaseHandler(_AccountBaseHandler):
     __account_model__ = models.ShopStaff
