@@ -823,6 +823,8 @@ class Order(MapBase, _CommonApi):
     status = Column(TINYINT, default=ORDER_STATUS.ORDERED)  # 订单状态:DELETED = 0,ORDERED = 1, JH = 2,SH1 = 3
                                                            # #SH2 = 4,Received=5，FINISH = 6, AFTER_SALE = 10
     type = Column(TINYINT) #订单类型 1:立即送 2：按时达
+    freight = Column(SMALLINT, default=0)  # 订单运费
+    tip = Column(SMALLINT, default=0)  # 小费（暂时只有立即送可提供运费）
     remark = Column(String(100)) #商家备注
     totalPrice = Column(Float)
     money_paid = Column(Boolean, default=False)
