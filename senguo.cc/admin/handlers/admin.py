@@ -529,7 +529,7 @@ class Config(AdminBaseHandler):
                 self.session.commit()
             elif action == "edit_receipt": #小票设置
                 self.current_shop.config.update(session=self.session,
-                                                receipt_msg=data["receipt_msg"],title=data["title"])
+                                                receipt_msg=data["receipt_msg"])
         elif action in ["add_addr2", "edit_addr1_active"]:
             addr1 = next((x for x in self.current_shop.config.addresses if x.id==data["addr1_id"]), None)
             if action == "add_addr2":

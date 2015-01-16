@@ -1,6 +1,7 @@
 $(document).ready(function(){
     $('.edit-receipt-notice').on('click',function(){
-        receiptEdit();
+        var $this=$(this);
+        receiptEdit($this);
     });
     var key='';
     var token='';
@@ -49,12 +50,12 @@ $(document).ready(function(){
 
         });
 });
-function receiptEdit(){
+function receiptEdit(target){
     var url=link;
     var action="edit_receipt";
     var receipt_msg=$('.receipt-msg').val();
     if(!receipt_msg){ receipt_msg=''}
-    if(receipt_msg.length>200){return alert('小票附加消息请不要超过200个字！');}
+    if(receipt_msg.length>20){return alert('小票附加消息请不要超过20个字！');}
     var data={
         receipt_msg:receipt_msg
     };
@@ -66,7 +67,8 @@ function receiptEdit(){
         function(res){
             if(res.success){
                 $('.receipt-msg-con').text(receipt_msg);
-                $('#noticeBox').modal('hide');
+                target.parents('.set-list-item').find('.address-show').show();
+                target.parents('.set-list-item').find('.address-edit').hide();
             }
         })
 }

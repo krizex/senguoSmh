@@ -4,12 +4,6 @@ $(document).ready(function(){
         $this.parents('.set-list-item').find('.address-show').hide();
         $this.parents('.set-list-item').find('.address-edit').show();
     });
-    $('.info-sure').on('click',function(){
-        var $this=$(this);
-        $this.parents('.set-list-item').find('.address-edit').hide();
-        $this.parents('.set-list-item').find('.address-show').show();
-    });
-
     $('.set-list-item .action-mode').each(function(){
         var $this=$(this);
         var status=$this.data('status');

@@ -6,10 +6,11 @@
 <script>
 var s_height;
 var w_height=window.screen.height;
-if(w_height<=800)
-    s_height=w_height/8;
-else  s_height=800/8;
 var s_width=window.screen.width;
+if(s_width<=800)
+    s_height=w_height/8.5;
+else  s_height=800/8;
+console.log(w_height+''+s_width);
 </script>
 {% end %}
 {% block content %}
@@ -26,7 +27,8 @@ var s_width=window.screen.width;
             {% for notice in notices%}
             <figure>
                 <div class="wrap text-center text-white font16">
-                    {{notice.detail}}
+                    <label>{{notice.summary}}</label>
+                    <p>{{notice.detail}}</p>
                 </div>
             </figure>
             {% end %}
@@ -46,7 +48,7 @@ var s_width=window.screen.width;
     {% for fruit in fruits %}
     <li class="goods-list-item {{fruit.fruit_type.code}} font14" data-id="{{fruit.id}}">
         <div class="bg set-w100-fle">
-            <div class="goods-img pull-left box-shadow">
+            <div class="goods-img pull-left box-shadow m-r10">
                 <a href="javascript:;" class="check-lg-img">
                     <span class="tag bg-green text-white text-center tagItem font8" data-id="{{fruit.tag}}">hot</span>
                     {% if fruit.img_url %}
@@ -57,7 +59,7 @@ var s_width=window.screen.width;
                 </a>
             </div>
             <input type="hidden" class="fruit_intro" value="{{fruit.intro}}"/>
-            <div class="w69 pull-left p5 pl10">
+            <div class="col-lg-9 col-md-9 col-xs-7 col-sm-9 p0">
                 <p>
                     <span class="pull-left color fruit-name">{{fruit.name}}</span>
                     <span class="pull-right text-grey">销量：{{fruit.saled}}</span>
