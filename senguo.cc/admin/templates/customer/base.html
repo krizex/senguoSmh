@@ -43,8 +43,8 @@
     </main>
     <footer class="bottom-nav navbar-fixed-bottom bg-green text-white font14">
         <ul class="row select-list">
-            <li class="col-xs-3 col-sm-3 {{shop_active}}"><a href="{{reverse_url('customerShopProfile',1)}}" class="text-white shop_href">店铺信息</a></li>
-            <li class="col-xs-3 col-sm-3 {{home_active}}"><a href="{{reverse_url('Market')}}" class="text-white" >首页</a></li>
+            <li class="col-xs-3 col-sm-3 {{shop_active}}"><a href="{{reverse_url('customerShopProfile')}}" class="text-white shop_href">店铺信息</a></li>
+            <li class="col-xs-3 col-sm-3 {{home_active}}"><a href="{{reverse_url('Market',shop_code)}}" class="text-white" >首页</a></li>
             <li class="col-xs-3 col-sm-3 {{cart_active}}"><a href="{{reverse_url('customerCart')}}" class="text-white" >购物车</a></li>
             <li class="col-xs-3 col-sm-3 {{center_active}}"><a href="{{reverse_url('customerHome')}}" class="text-white">个人中心</a></li>9
         </ul>
