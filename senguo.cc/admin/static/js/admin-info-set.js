@@ -1,4 +1,6 @@
 $(document).ready(function(){
+    var code=$('.shop_code').val();
+    if(code!=='not set') $('.link_notice').show();
     $('.area-choose-list li').each(function(){
         $(this).on('click',function(){
             if($(this).hasClass('active'))
