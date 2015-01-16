@@ -577,6 +577,12 @@ class ShopConfig(AdminBaseHandler):
             shop.shop_name = data["shop_name"]
         elif action == "edit_shop_img":
             return self.send_qiniu_token("shop", shop.id)
+        elif action == "edit_shop_code":
+            if len(data["shop_code"]) < 4:
+                return self.send_fail("至少要4位")
+            if self.session.query(models.Shop).filter_by(shop_code=data["shop_code"]).first():
+                return self.send_fail("代号已被注册，请另选其他代号")
+            shop.shop_code = data["shop_code"]
         elif action == "edit_shop_intro":
             shop.shop_intro = data["shop_intro"]
         elif action == "edit_address":
