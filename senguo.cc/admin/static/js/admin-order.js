@@ -392,7 +392,7 @@ function addEditPeriod(target,action){
     $.postJson(url,args,function(res){
             if(res.success){
                 if(action=='add_period'){
-                    parent.remove();
+                    parent.empty().hide();
                     var item_url='/static/items/admin/send-period-item.html';
                     $.getItem(item_url,function(data){
                         var $item=$(data);
