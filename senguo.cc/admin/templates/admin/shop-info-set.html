@@ -24,8 +24,19 @@
         </div>
     </li>
     <li class="item clearfix">
-        <span class="w1 pull-left set-inl-blo">店铺ID</span>
-        <div class="w2 pull-left">{{current_shop.id}}</div>
+        <span class="w1 pull-left set-inl-blo">店铺号</span>
+        <div class="w2 pull-left">
+            <span class="info_show code">{{current_shop.shop_code or '请设置'}}</span>
+            <input class="info_hide shop_code" type="text" value="{{current_shop.shop_code or '请设置'}}" style="display:none"/>
+            <span class="text-pink">(用于生成您的商城店铺链接，如没有进行设置将无法进入您的商城)</span>
+            <span style="display:none" class="link_notice pull-right">您的店铺链接：
+                <a href="#" class="shop_link">http://zone.senguo.cc/shop/<span class="code"></span></a>
+            </span>
+        </div>
+        <div class="pull-right">
+            <a class="info_edit" href="javascript:;">修改</a>
+            <a class="info_sure" href="javascript:;" data-id="code" style="display:none">确定</a>
+        </div>
     </li>
     <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">店铺简介</span>
