@@ -314,7 +314,7 @@ $(document).ready(function(){
        var fruit_id=$this.parents('.goods-item').data('id');
        var action="edit_fruit_img";
        var url="/admin/shelf";
-       var args={action: action,fruit_id:fruit_id};
+       var args={action: action,id:fruit_id};
        $this.uploadifive(
            {
                buttonText    : '',
