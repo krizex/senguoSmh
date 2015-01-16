@@ -554,10 +554,7 @@ class Config(AdminBaseHandler):
                 notice.detail = data["detail"]
             self.session.commit()
         elif action == "edit_recipe_img":
-            q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-            token = q.upload_token(BUCKET_SHOP_IMG, expires=120, policy={"callbackUrl": "http://zone.senguo.cc/fruitzone/shopImgCallback",
-                                                                         "callbackBody": "key=$(key)&id=%s&type=2" % self.current_shop.id, "mimeLimit": "image/*"})
-            return self.send_success(token=token, key=str(time.time())+':'+str(self.current_shop.id))
+            return self.send_qiniu_token("receipt", self.current_shop.id)
         else:
             return self.send_error(404)
         return self.send_success()
@@ -579,10 +576,7 @@ class ShopConfig(AdminBaseHandler):
         if action == "edit_shop_name":
             shop.shop_name = data["shop_name"]
         elif action == "edit_shop_img":
-            q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-            token = q.upload_token(BUCKET_SHOP_IMG, expires=120, policy={"callbackUrl": "http://auth.senguo.cc/fruitzone/shopImgCallback",
-                                                                         "callbackBody": "key=$(key)&id=%s" % shop.id, "mimeLimit": "image/*"})
-            return self.send_success(token=token, key=str(time.time())+':'+str(shop.id))
+            return self.send_qiniu_token("shop", shop.id)
         elif action == "edit_shop_intro":
             shop.shop_intro = data["shop_intro"]
         elif action == "edit_address":

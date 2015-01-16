@@ -366,7 +366,7 @@ class QiniuCallback(FruitzoneBaseHandler):
                 m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
                 m.delete(bucket=BUCKET_SHOP_IMG, key=shop.shop_trademark_url.split('/')[3])
             shop.update(session=self.session, shop_trademark_url=SHOP_IMG_HOST+key)
-        elif action == "recepit":
+        elif action == "receipt":
             try:
                 config = self.session.query(models.Config).filter_by(id=id).one()
             except:
