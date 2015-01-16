@@ -258,7 +258,7 @@ class Cart(CustomerBaseHandler):
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
-                                         "address_id:int", "message:str", "type:int",
+                                         "address_id:int", "message:str", "type:int", "tip?:int",
                                          "today:int")
     def post(self):#提交订单
         shop_id = self.shop_id
@@ -272,6 +272,8 @@ class Cart(CustomerBaseHandler):
             charge_types = self.session.query(models.ChargeType).\
                 filter(models.ChargeType.id.in_(fruits.keys())).all()
             for charge_type in charge_types:
+                if fruits[str(charge_type.id)] == 0:  # 有可能num为0，直接忽略掉
+                    continue
                 totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
                 charge_type.fruit.storage -= fruits[str(charge_type.id)]*charge_type.unit_num*charge_type.num #更新库存
                 f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
@@ -280,28 +282,25 @@ class Cart(CustomerBaseHandler):
             mcharge_types = self.session.query(models.MChargeType).\
                 filter(models.MChargeType.id.in_(mgoods.keys())).all()
             for mcharge_type in mcharge_types:
-                totalPrice+=mcharge_type.price*mgoods[str(mcharge_type.id)]
+                if mgoods[str(mcharge_type.id)] == 0:    # 有可能num为0，直接忽略掉
+                    continue
+                totalPrice += mcharge_type.price*mgoods[str(mcharge_type.id)]
                 mcharge_type.mgoods.storage -= mgoods[str(mcharge_type.id)]*mcharge_type.unit_num*mcharge_type.num #更新库存
                 m_d[mcharge_type.id]={"mgoods_name":mcharge_type.mgoods.name, "num":mgoods[str(mcharge_type.id)],
                                       "charge":"%d元/%d%s" % (mcharge_type.price, mcharge_type.num, unit[mcharge_type.unit])}
 
-        money_paid = False
-        pay_type = 1
-        if self.args["pay_type"] == 2:
-            if self.current_user.balance >= totalPrice:
-                self.current_user.balance -= totalPrice
-                self.current_user.credits += totalPrice
-                self.session.commit()
-                money_paid = True
-                pay_type = 2
-            else:return self.send_fail("余额不足")
-
         #按时达/立即送 的时间段处理
         start_time = 0
         end_time = 0
+        freight = 0
+        tip = 0
         try:config = self.session.query(models.Config).filter_by(id=shop_id).one()
         except:return self.send_fail("找不到店铺")
         if self.args["type"] == 2: #按时达
+            if totalPrice < config.min_charge_on_time:
+                return self.send_fail("订单总价没达到起送价，请再增加商品")
+            freight = config.freight_on_time  # 运费
+            totalPrice += freight
             try:period = self.session.query(models.Period).filter_by(id=self.args["period_id"]).one()
             except:return self.send_fail("找不到时间段")
             if int(self.args["today"]) == 1 and period.start_time.hour*60 + period.start_time.minute - \
@@ -310,6 +309,11 @@ class Cart(CustomerBaseHandler):
             start_time = period.start_time
             end_time = period.end_time
         elif self.args["type"] == 1:#立即送
+            if totalPrice < config.min_charge_now:
+                return self.send_fail("订单总价没达到起送价，请再增加商品")
+            freight = config.freight_now
+            totalPrice += freight
+            tip = self.args["tip"]  # 立即送的小费
             now = datetime.datetime.now()
             start_time = datetime.time(now.hour, now.minute, now.second)
             end_time = datetime.time(config.end_time_now.hour, config.end_time_now.minute)
@@ -323,6 +327,19 @@ class Cart(CustomerBaseHandler):
         address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
         if not address:
             return self.send_fail("没找到地址", 404)
+
+        # 已支付、付款类型、余额、积分处理
+        money_paid = False
+        pay_type = 1
+        if self.args["pay_type"] == 2:
+            if self.current_user.balance >= totalPrice:
+                self.current_user.balance -= totalPrice
+                self.current_user.credits += totalPrice
+                self.session.commit()
+                money_paid = True
+                pay_type = 2
+            else:return self.send_fail("余额不足")
+
         order = models.Order(customer_id=self.current_user.id,
                              shop_id=shop_id,
                              phone=address.phone,
@@ -330,6 +347,8 @@ class Cart(CustomerBaseHandler):
                              address_text = address.address_text,
                              message=self.args["message"],
                              type=self.args["type"],
+                             freight=freight,
+                             tip=tip,
                              totalPrice=totalPrice,
                              money_paid=money_paid,
                              pay_type=pay_type,

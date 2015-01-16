@@ -1,4 +1,4 @@
-from handlers.base import AdminBaseHandler, _AccountBaseHandler
+from handlers.base import FruitzoneBaseHandler, _AccountBaseHandler
 import dal.models as models
 import tornado.web
 from  dal.db_configs import DBSession
@@ -15,11 +15,8 @@ import libs.xmltodict as xmltodict
 import qiniu
 from qiniu.services.storage.bucket import BucketManager
 
-class Home(AdminBaseHandler):
+class Home(FruitzoneBaseHandler):
     _page_count =20
-    def prepare(self):
-        """prepare会在get、post等函数运行前运行，如果不想父类的prepare函数起作用的话就把他覆盖掉"""
-        pass
     def get(self):
         q = self.session.query(models.Shop).order_by(desc(models.Shop.id))\
             .filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
@@ -29,7 +26,7 @@ class Home(AdminBaseHandler):
             fruit_types.append(f_t.safe_props())
         return self.render("fruitzone/home.html", context=dict(shops=shops, fruit_types=fruit_types, now=time.time(),subpage="home"))
     
-    @AdminBaseHandler.check_arguments("action")
+    @FruitzoneBaseHandler.check_arguments("action")
     def post(self):
         action = self.args["action"]
         if action == "filter":
@@ -38,7 +35,7 @@ class Home(AdminBaseHandler):
             return self.handle_search()
         else:
             return self.send_error(403)
-    @AdminBaseHandler.check_arguments("skip?:int","limit?:int",
+    @FruitzoneBaseHandler.check_arguments("skip?:int","limit?:int",
                                       "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids?:list")
     def handle_filter(self):
         # 按什么排序？暂时采用id排序
@@ -71,7 +68,7 @@ class Home(AdminBaseHandler):
             shops.append(shop.safe_props())
         return self.send_success(shops=shops)
 
-    @AdminBaseHandler.check_arguments("q")
+    @FruitzoneBaseHandler.check_arguments("q")
     def handle_search(self):
         q = self.session.query(models.Shop).order_by(desc(models.Shop.id)).\
             filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"])),
@@ -82,11 +79,11 @@ class Home(AdminBaseHandler):
             shops.append(shop.safe_props())
         return self.send_success(shops=shops)
 
-class Community(AdminBaseHandler):
+class Community(FruitzoneBaseHandler):
     def get(self):
        return self.render("fruitzone/community.html",context=dict(subpage="cummunity"))
 
-class AdminHome(AdminBaseHandler):
+class AdminHome(FruitzoneBaseHandler):
     @tornado.web.authenticated
     def get(self):
        # 模板中通过current_user获取当前admin的相关数据，
@@ -94,7 +91,7 @@ class AdminHome(AdminBaseHandler):
        self.render("fruitzone/admin-home.html",context=dict(subpage="adminHome"))
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("action", "feedback_text")
+    @FruitzoneBaseHandler.check_arguments("action", "feedback_text")
     def post(self):
         if self.args["action"] == "feedback":
             feedback = models.Feedback(
@@ -107,7 +104,7 @@ class AdminHome(AdminBaseHandler):
         else:
             return self.send_error(404)
 
-class AdminProfile(AdminBaseHandler):
+class AdminProfile(FruitzoneBaseHandler):
     @tornado.web.authenticated
     def get(self):
        # 模板中通过current_user获取当前admin的相关数据，
@@ -117,7 +114,7 @@ class AdminProfile(AdminBaseHandler):
        self.render("fruitzone/admin-profile.html", context=dict(birthday=birthday))
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("action", "data")
+    @FruitzoneBaseHandler.check_arguments("action", "data")
     def post(self):
         action = self.args["action"]
         data = self.args["data"]
@@ -150,18 +147,18 @@ class AdminProfile(AdminBaseHandler):
             return self.send_error(404)
         return self.send_success()
 
-class ApplySuccess(AdminBaseHandler):
+class ApplySuccess(FruitzoneBaseHandler):
     def get(self):
         return self.render("fruitzone/apply-success.html")
 	
-class ShopApply(AdminBaseHandler):
+class ShopApply(FruitzoneBaseHandler):
     MAX_APPLY_COUNT = 15
 
     def initialize(self, action):
         self._action = action
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("shop_id?:int")
+    @FruitzoneBaseHandler.check_arguments("shop_id?:int")
     def get(self):
         if self._action == "apply":
             if not self.current_user.accountinfo.phone or \
@@ -184,7 +181,7 @@ class ShopApply(AdminBaseHandler):
             return self.render("fruitzone/apply.html", context=dict(shop=shop,reApply=True))
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments(
+    @FruitzoneBaseHandler.check_arguments(
         "shop_name", "shop_id?:int",
         "shop_province:int", "shop_city:int", "shop_address_detail",
         "have_offline_entity:bool", "shop_service_area:int",
@@ -238,14 +235,14 @@ class ShopApply(AdminBaseHandler):
                 shop_temp.update(session=self.session, shop_trademark_url=img_url)
             return self.send_success()
 
-class ShopApplyImg(AdminBaseHandler):
+class ShopApplyImg(FruitzoneBaseHandler):
     @tornado.web.authenticated
     def post(self):
         q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
         token = q.upload_token(BUCKET_SHOP_IMG, expires=120)
         return self.send_success(token=token, key=str(time.time()))
 
-class Shop(AdminBaseHandler):
+class Shop(FruitzoneBaseHandler):
     def get(self,id):
         try:
             shop = self.session.query(models.Shop).filter_by(id=id).one()
@@ -260,7 +257,7 @@ class Shop(AdminBaseHandler):
 
     #收藏店铺
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("shop_id:int")
+    @FruitzoneBaseHandler.check_arguments("shop_id:int")
     def post(self,shop_id):
         try:
             shop = self.session.query(models.Shop).filter_by(id = shop_id).one()
@@ -271,19 +268,19 @@ class Shop(AdminBaseHandler):
         return self.send_success()
 
 
-class AdminShops(AdminBaseHandler):
+class AdminShops(FruitzoneBaseHandler):
    @tornado.web.authenticated
    def get(self):
        shop_temps = self.session.query(models.ShopTemp).filter_by(admin_id=self.current_user.id).all()
        return self.render("fruitzone/shops.html", context=dict(shops=self.current_user.shops,
                                                                shop_temps=shop_temps, collect=False))
 
-class AdminShopsCollect(AdminBaseHandler):
+class AdminShopsCollect(FruitzoneBaseHandler):
    @tornado.web.authenticated
    def get(self):
        return self.render("fruitzone/shops.html", context=dict(shops=self.current_user.shops_collect,collect=True))
 
-class AdminShop(AdminBaseHandler):
+class AdminShop(FruitzoneBaseHandler):
     @tornado.web.authenticated
     def get(self,id):
         try:
@@ -303,7 +300,7 @@ class AdminShop(AdminBaseHandler):
                                                                fruit_types=fruit_types, now=time.time()))
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("action", "data")
+    @FruitzoneBaseHandler.check_arguments("action", "data")
     def post(self,shop_id):
         action = self.args["action"]
         data = self.args["data"]
@@ -352,7 +349,7 @@ class AdminShop(AdminBaseHandler):
             return self.send_error(404)
         return self.send_success()
 
-class QiniuCallback(AdminBaseHandler):
+class QiniuCallback(FruitzoneBaseHandler):
 
     def initialize(self, action):
         self._action = action
@@ -424,7 +421,7 @@ class PhoneVerify(_AccountBaseHandler):
             self.__wexin_oauth_url_name__ = "customerOauth"
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("action:str")
+    @FruitzoneBaseHandler.check_arguments("action:str")
     def post(self):
         if self.args["action"] == "gencode":
             self.handle_gencode()
@@ -433,7 +430,7 @@ class PhoneVerify(_AccountBaseHandler):
         else:
             return self.send_error(404)
 
-    @AdminBaseHandler.check_arguments("phone:str")
+    @FruitzoneBaseHandler.check_arguments("phone:str")
     def handle_gencode(self):
         a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first() 
         if a:
@@ -444,14 +441,14 @@ class PhoneVerify(_AccountBaseHandler):
         gen_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, phone=self.args["phone"])
         return self.send_success()
 
-    @AdminBaseHandler.check_arguments("phone:str", "code:int","password")
+    @FruitzoneBaseHandler.check_arguments("phone:str", "code:int","password")
     def handle_checkcode(self):
         if not check_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, code=self.args["code"]):
            return self.send_fail(error_text="验证码过期或者不正确")
         self.current_user.accountinfo.update(self.session, phone=self.args["phone"],password=self.args["password"])
         return self.send_success()
 
-class SystemPurchase(AdminBaseHandler):
+class SystemPurchase(FruitzoneBaseHandler):
     """后台购买相关页面"""
     def initialize(self, action):
         self._action = action
@@ -494,7 +491,7 @@ class SystemPurchase(AdminBaseHandler):
         else:
             return self.send_error(404)
 
-    @AdminBaseHandler.check_arguments("sign", "result", "out_trade_no", 
+    @FruitzoneBaseHandler.check_arguments("sign", "result", "out_trade_no",
                                       "trade_no", "request_token")
     def handle_deal_finished_callback(self):
         # 检查是否合法
@@ -529,7 +526,7 @@ class SystemPurchase(AdminBaseHandler):
         else:
             return self.send_error(404)
     
-    @AdminBaseHandler.check_arguments("charge_type:int", "pay_type")
+    @FruitzoneBaseHandler.check_arguments("charge_type:int", "pay_type")
     def handle_confirm_payment(self):
         if self.args["pay_type"] == "alipay":
             # 判断charge_type合法性，不合法从新返回接入申请页
@@ -544,7 +541,7 @@ class SystemPurchase(AdminBaseHandler):
                 return self.send_fail(error_text="系统繁忙，请稍后重试")
             return self.redirect(url)
 
-    @AdminBaseHandler.check_arguments(
+    @FruitzoneBaseHandler.check_arguments(
         "service", "v","sec_id","sign","notify_data")
     def handle_deal_notify(self):
         # 验证签名
