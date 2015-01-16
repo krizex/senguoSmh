@@ -24,19 +24,6 @@ $(document).ready(function(){
         var id=$this.data('id');
         tagText($this,id);
     });
-    //商品分类标签高度修正
-    $('.fruit-class').each(function(){
-        var $this=$(this);
-        var num=$this.text().length;
-        $this.css({'height':(s_height+4)+'px','line-height':s_height/num+'px'});
-    });
-    //商品图片高度修正
-    $('.goods-img').each(function(){
-        var $this=$(this);
-        $this.css({'width':s_height+'px','height':s_height+'px'});
-        $this.find('a').css({'height':s_height+'px','width':s_height+'px'});
-        $this.find('img').css({'height':s_height+'px'});
-    });
     //商品点赞高度修正
     $('.great-number').each(function(){
         var $this=$(this);
@@ -70,7 +57,6 @@ $(document).ready(function(){
             large_box.find('.intro').text(fruit_intro);
         })
     });
-
     //商品数量操作
     $('.goods-list').find('.number-minus').on('click',function(){
         var $this=$(this);
@@ -80,6 +66,13 @@ $(document).ready(function(){
     $('.goods-list').find('.number-plus').on('click',function(){
         var $this=$(this);
         goodsNum($this,2);
+    });
+    //分类选择
+    $('.goods-class-choose li').on('click',function(){
+        var $this=$(this);
+        var g_class=$this.data('class');
+        var top=$('#'+g_class+'').offset().top;
+        $('html, body').animate({scrollTop:top}, 300);
     });
 
 });
@@ -108,7 +101,6 @@ function goodsNum(target,action){
 
                     num++;
                     item.val(num);
-                    console.log(item.val());
                 }
                 else if(action==1)
                 {
@@ -117,7 +109,6 @@ function goodsNum(target,action){
                     {
                         num--;
                         item.val(num);
-                        console.log(item.val());
                     }
                 }
             }

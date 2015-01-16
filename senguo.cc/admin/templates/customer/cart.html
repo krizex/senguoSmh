@@ -84,8 +84,8 @@
              <label class="pull-left">实付金额：</label>
              <span class="pull-right"><span id="final_price"></span>元</span>
          </div>
-         <p class="text-center text-pink mincharge_intime" style="display:none">(抱歉，您的商品总金额未达到"按时达"起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元)</p>
-         <p class="text-center text-pink mincharge_now" style="display:none">(抱歉，您的商品总金额未达到"立即送"起送价金额<span class="mincharge">{{config.min_charge_now}}</span>元)</p>
+         <p class="text-center text-pink mincharge_intime" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"按时达"起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元</p>
+         <p class="text-center text-pink mincharge_now" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"立即送"起送价金额<span class="mincharge">{{config.min_charge_now}}</span>元</p>
          <div class="clearfix font16 text-center">
              {% set active=''%}
              {% set unactive=''%}
@@ -118,9 +118,9 @@
              </ul>
          </div>
          <div class="send-time-choose clearfix center-block bg-grey2 box-style">
-             <div class="bg-white  text-center">
-                 <p>订单将根据您选择的时间段送达</p>
-                 <p>合理选择收货时间段，保证订单能按时送达到您的手上</p>
+             <div class="bg-white  text-center p05">
+                 <p class="intime-intro" style="display:none">订单将根据您选择的时间段送达合理选择收货时间段，保证订单能按时送达到您的手上</p>
+                 <p class="now-intro" style="display:none">订单将在<span class="text-green">30</span>分钟内送到您的手上，请保持电话畅通</p>
              </div>
              {% if periods %}
              <ul id="sendDay" class="send_day nav-pills font16 clearfix text-center type-choose">
@@ -145,6 +145,14 @@
              <input type="hidden" class="stop-range" value="{{config.stop_range}}"/>
              {% end %}
              <ul class="send_now list-group font14" style="display:none">
+                 <li class="list-group-item clearfix bg-grey2">
+                     <p class="text-center text-pink">送货员太辛苦，打赏点小费吧\(╯▼╰)/ </p>
+                     <ul class="tip-list type-choose">
+                         <li class="btn text-green text-center bg-white" data-id="1">1元</li>
+                         <li class="btn text-green text-center bg-white" data-id="2">2元</li>
+                         <li class="btn text-green text-center bg-white" data-id="5">5元</li>
+                     </ul>
+                 </li>
                  <li class="list-group-item">
                      送货时间：
                      <span class="now_startime">{{config.start_time_now}}</span>~
