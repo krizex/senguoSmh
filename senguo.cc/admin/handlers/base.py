@@ -12,6 +12,8 @@ import re
 import tornado.web
 from sqlalchemy import desc
 import datetime
+import qiniu
+from settings import *
 
 class GlobalBaseHandler(BaseHandler):
 
@@ -163,7 +165,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
     def get_wx_userinfo(self, code, mode):
         return WxOauth2.get_userinfo(code, mode)
         
-    
+    def send_qiniu_token(self, action, id):
+        q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
+        token = q.upload_token(BUCKET_SHOP_IMG, expires=120,
+                               policy={"callbackUrl": "http://zone.senguo.cc/fruitzone/imgcallback",
+                                       "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
+        return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
+
 class SuperBaseHandler(_AccountBaseHandler):
     __account_model__ = models.SuperAdmin
     __account_cookie_name__ = "super_id"
@@ -330,11 +338,11 @@ class CustomerBaseHandler(_AccountBaseHandler):
     def shop_id(self):
         shop_id = self.get_cookie("market_shop_id")
         if not shop_id:
-            return self.redirect("/customer/shopProfile/1")  #todo 这里应该重定向到商铺列表
+            return self.redirect("/customer/market/1")  #todo 这里应该重定向到商铺列表
         shop_id = int(shop_id)
         if not self.session.query(models.CustomerShopFollow).filter_by(
                 customer_id=self.current_user.id, shop_id=shop_id).first():
-            return self.redirect("/customer/shopProfile/1")  #todo 这里应该重定向到商铺列表
+            return self.redirect("/customer/market/1")  #todo 这里应该重定向到商铺列表
         return shop_id
 
 class WxOauth2:

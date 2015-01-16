@@ -10,7 +10,7 @@
          <li class="cart-list-item set-w100-fle fruit_item {{cart_f[key]['charge_type'].fruit.fruit_type.code}}">
              <div class="bg set-w100-fle color">
                  {% if cart_f[key]['charge_type'].fruit.img_url %}
-                 <img src="http://goodsimg1.qiniudn.com/{{cart_f[key]['charge_type'].fruit.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15 box-shadow"/>
+                 <img src="{{cart_f[key]['charge_type'].fruit.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15 box-shadow"/>
                  {% else %}
                  <img src="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.png" class="goods-img pull-left w15 box-shadow"/>
                  {% end %}
@@ -42,7 +42,7 @@
          <li class="cart-list-item set-w100-fle menu_item TDSG">
              <div class="bg set-w100-fle color">
                  {% if cart_m[key]['mcharge_type'].mgoods.img_url %}
-                 <img src="http://goodsimg1.qiniudn.com/{{cart_m[key]['mcharge_type'].mgoods.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15 box-shadow"/>
+                 <img src="{{cart_m[key]['mcharge_type'].mgoods.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15 box-shadow"/>
                  {% else %}
                  <img src="/static/design_img/TDSG.png" class="goods-img pull-left w15 box-shadow"/>
                  {% end %}

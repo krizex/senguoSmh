@@ -1,5 +1,5 @@
 __author__ = 'liaosimin'
-from handlers.base import AdminBaseHandler
+from handlers.base import FruitzoneBaseHandler
 import tornado.web
 import dal.models as models
 from sqlalchemy import desc
@@ -7,7 +7,7 @@ import qiniu
 import time
 from settings import *
 
-class Home(AdminBaseHandler):
+class Home(FruitzoneBaseHandler):
     def initialize(self, action):
         self._action = action
 
@@ -23,7 +23,7 @@ class Home(AdminBaseHandler):
         infos = q.order_by(desc(models.Info.create_date)).all()
         return self.render("infowall/home.html", context=dict(infos=infos,action=self._action))
 
-class InfoDetail(AdminBaseHandler):
+class InfoDetail(FruitzoneBaseHandler):
 
     def get(self, info_id):
         try:
@@ -35,7 +35,7 @@ class InfoDetail(AdminBaseHandler):
         return self.render("infowall/info-detail.html", context=dict(info=info))
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("info_id:int", "text:str")
+    @FruitzoneBaseHandler.check_arguments("info_id:int", "text:str")
     def post(self):
         comment = models.Comment(text=self.args["text"], admin_id=self.current_user.id, info_id=self.args["info_id"])
         self.session.add(comment)
@@ -45,14 +45,14 @@ class InfoDetail(AdminBaseHandler):
         com.append(comment.safe_props())
         return self.send_success(comment=com)
 
-class InfoCollect(AdminBaseHandler):
+class InfoCollect(FruitzoneBaseHandler):
     @tornado.web.authenticated
     def get(self):
         return self.render("fruitzone/info-collect.html")
 
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("info_id:int")
+    @FruitzoneBaseHandler.check_arguments("info_id:int")
     def post(self):
         try:
             info = self.session.query(models.Info).filter_by(id=self.args["info_id"]).one()
@@ -64,7 +64,7 @@ class InfoCollect(AdminBaseHandler):
         self.session.commit()
         return self.send_success()
 
-class InfoIssue(AdminBaseHandler):
+class InfoIssue(FruitzoneBaseHandler):
     @tornado.web.authenticated
     def get(self):
         fruit_types = []
@@ -73,7 +73,7 @@ class InfoIssue(AdminBaseHandler):
         return self.render("infowall/infoissue.html", context=dict(fruit_types=fruit_types))
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("text?:str", "address?:str", "fruit_type?:list", "img_key?:list", "action")
+    @FruitzoneBaseHandler.check_arguments("text?:str", "address?:str", "fruit_type?:list", "img_key?:list", "action")
     def post(self):
         if self.args["action"] == "issue_info":
             info = models.Info()

@@ -14,12 +14,12 @@ handlers = [
     (r"/customer/register", handlers.customer.Access, {"action":"register"}, "customerRegister"),
     (r"/customer", handlers.customer.Home, {}, "customerHome"),
     (r"/customer/profile", handlers.customer.CustomerProfile, {}, "customerProfile"),
-    (r"/customer/market", handlers.customer.Market, {}, "Market"),
+    (r"/shop/(\w+)", handlers.customer.Market, {}, "Market"),
     (r"/customer/cart", handlers.customer.Cart, {}, "customerCart"),
     (r"/customer/orders", handlers.customer.Order, {}, "customerOrder"),
     (r"/customer/orders/detail/(\d+)", handlers.customer.OrderDetail, {}, "customerOrderDetail"),
     (r"/customer/members", handlers.customer.Members, {}, "customerMembers"),
-    (r"/customer/shopProfile/(\d+)", handlers.customer.ShopProfile, {}, "customerShopProfile"),
+    (r"/customer/shopProfile", handlers.customer.ShopProfile, {}, "customerShopProfile"),
     (r"/customer/comment", handlers.customer.Comment, {}, "customerComment"),
     (r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
 
@@ -96,8 +96,6 @@ handlers = [
     (r"/admin", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
     (r"/admin/order", handlers.admin.Order, {}, "adminOrder"),
     (r"/admin/shelf", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
-    (r"/admin/shelf/fruitImgCallback", handlers.fruitzone.QiniuCallback,
-     {"action": "edit_fruit_img"}, "adminShelfFruitImgCallback"),
     (r"/admin/staff", handlers.admin.Staff, {}, "adminStaffJH"),
     (r"/admin/config", handlers.admin.Config, {}, "adminConfig"),
     (r"/admin/config/shop", handlers.admin.ShopConfig, {}, "adminShopConfig"),
@@ -136,8 +134,6 @@ handlers = [
     (r"/fruitzone/admin/InfoCollect", handlers.infowall.InfoCollect, {}, "fuirzoneAdminInfoCollect"),
 
     (r"/fruitzone/admin/shop/(\d+)", handlers.fruitzone.AdminShop, {}, "fruitzoneAdminShop"),
-    (r"/fruitzone/shopImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_shop_img"}, "fruitzoneshopImgCallback"),
-    (r"/fruitzone/InfoImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_info_img"}, "fruitzoneInfoImgCallback"),
 
     (r"/fruitzone/phoneVerify", handlers.fruitzone.PhoneVerify, {
         "action":"admin"}, "fruitzonePhoneVerify"),
@@ -170,6 +166,13 @@ handlers = [
     (r"/fruitzone/systemPurchase/dealSuccess", handlers.fruitzone.SystemPurchase, {
         "action":"dealSuccess"}, "fruitzoneSystemPurchaseDealSuccess"),
     (r"/fruitzone/systemPurchase/dealNotify", handlers.fruitzone.SystemPurchase, {
-        "action":"dealNotify"}, "fruitzoneSystemPurchaseDealNotify")
+        "action":"dealNotify"}, "fruitzoneSystemPurchaseDealNotify"),
+
+    (r"/fruitzone/imgcallback", handlers.fruitzone.QiniuCallback, {"action":"" }, "imgCallback"),
+    (r"/fruitzone/shopImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_shop_img"}, "fruitzoneshopImgCallback"),
+    (r"/fruitzone/InfoImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_info_img"}, "fruitzoneInfoImgCallback"),
+    (r"/admin/shelf/fruitImgCallback", handlers.fruitzone.QiniuCallback,
+     {"action": "edit_fruit_img"}, "adminShelfFruitImgCallback"),
+
 ]
 

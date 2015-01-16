@@ -308,10 +308,7 @@ class AdminShop(FruitzoneBaseHandler):
         if shop not in self.current_user.shops:         #如果该店铺不属于该用户，禁止修改
             return self.send_error(403)
         if action== "edit_shop_img":
-            q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-            token = q.upload_token(BUCKET_SHOP_IMG, expires=120, policy={"callbackUrl": "http://auth.senguo.cc/fruitzone/shopImgCallback",
-                                                                         "callbackBody": "key=$(key)&id=%s" % shop_id, "mimeLimit": "image/*"})
-            return self.send_success(token=token, key=str(time.time())+':'+str(shop_id))
+            return self.send_qiniu_token("shop", shop_id)
         elif action == "edit_shop_url":
             shop.update(session=self.session, shop_url=data)
         elif action == "edit_live_month":
@@ -356,28 +353,28 @@ class QiniuCallback(FruitzoneBaseHandler):
 
 
     def post(self):
-        if self._action == "edit_shop_img":
-            key = self.get_argument("key")
-            id = int(self.get_argument("id"))
-            type = int(self.get_argument("type"))
-            if type == 1:
-                try:
-                    shop = self.session.query(models.Shop).filter_by(id=id).one()
-                except:
-                    return self.send_error(404)
-                if shop.shop_trademark_url:  #先要把旧的的图片删除
-                    m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
-                    m.delete(bucket=BUCKET_SHOP_IMG, key=shop.shop_trademark_url.split('/')[3])
-                shop.update(session=self.session, shop_trademark_url=SHOP_IMG_HOST+key)
-            elif type == 2:
-                try:
-                    config = self.session.query(models.Config).filter_by(id=id).one()
-                except:
-                    return self.send_error(404)
-                if config.receipt_img:  #先要把旧的的图片删除
-                    m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
-                    m.delete(bucket=BUCKET_SHOP_IMG, key=config.receipt_img.split('/')[3])
-                config.update(session=self.session, receipt_img=SHOP_IMG_HOST+key)
+        key = self.get_argument("key")
+        id = int(self.get_argument("id"))
+        action = self.get_argument("action")
+
+        if action == "shop":
+            try:
+                shop = self.session.query(models.Shop).filter_by(id=id).one()
+            except:
+                return self.send_error(404)
+            if shop.shop_trademark_url:  #先要把旧的的图片删除
+                m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
+                m.delete(bucket=BUCKET_SHOP_IMG, key=shop.shop_trademark_url.split('/')[3])
+            shop.update(session=self.session, shop_trademark_url=SHOP_IMG_HOST+key)
+        elif action == "receipt":
+            try:
+                config = self.session.query(models.Config).filter_by(id=id).one()
+            except:
+                return self.send_error(404)
+            if config.receipt_img:  #先要把旧的的图片删除
+                m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
+                m.delete(bucket=BUCKET_SHOP_IMG, key=config.receipt_img.split('/')[3])
+            config.update(session=self.session, receipt_img=SHOP_IMG_HOST+key)
             return self.send_success()
         elif self._action == "edit_info_img":
             # try:
@@ -389,17 +386,15 @@ class QiniuCallback(FruitzoneBaseHandler):
             # self.session.add(fruit_img)
             # self.session.commit()
             return self.send_success()
-        elif self._action == "edit_fruit_img":
-            key = self.get_argument("key")
-            id = self.get_argument("id")
+        elif action == "fruit":
             try:
-                fruit = self.session.query(models.Fruit).filter_by(id=int(id)).one()
+                fruit = self.session.query(models.Fruit).filter_by(id=id).one()
             except:
                 return self.send_error(404)
             if fruit.img_url:  #先要把旧的的图片删除
                 m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
-                m.delete(bucket=BUCKET_GOODS_IMG, key=fruit.img_url.split('/')[3])
-            fruit.update(session=self.session, img_url=SHOP_SINFLE_ITEM_HOST+key)
+                m.delete(bucket=BUCKET_SHOP_IMG, key=fruit.img_url.split('/')[3])
+            fruit.update(session=self.session, img_url=SHOP_IMG_HOST+key)
             return self.send_success()
         return self.send_error(404)
 

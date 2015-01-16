@@ -260,7 +260,7 @@ class Accountinfo(MapBase, _CommonApi):
 
     # 账户访问信息 (phone/email, password)/(wx_unionid)用来登录
     phone = Column(String(32), unique=True, default=None)
-    email = Column(String(64), unique=True, default=None)
+    email = Column(String(64), default=None)
     password = Column(String(128), default=None)
     wx_unionid = Column(String(64), unique=True)
     

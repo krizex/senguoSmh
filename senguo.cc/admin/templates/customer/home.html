@@ -44,7 +44,7 @@
                 <a href="javascript:;" class="check-lg-img">
                     <span class="tag bg-green text-white text-center tagItem font8" data-id="{{fruit.tag}}">hot</span>
                     {% if fruit.img_url %}
-                    <img src="http://goodsimg1.qiniudn.com/{{fruit.img_url}}?imageView/1/w/200/h/200" class="img">
+                    <img src="{{fruit.img_url}}?imageView/1/w/200/h/200" class="img">
                     {% else %}
                     <img src="/static/design_img/{{fruit.fruit_type.code}}.png" class="img">
                     {% end %}
@@ -112,7 +112,7 @@
                 <a href="javascript:;" class="check-lg-img">
                     <span class="tag bg-green text-white text-center tagItem font8" data-id="{{dry_fruit.tag}}">hot</span>
                     {% if fruit.img_url %}
-                    <img src="http://goodsimg1.qiniudn.com/{{dry_fruit.img_url}}?imageView/1/w/200/h/200" class="img">
+                    <img src="{{dry_fruit.img_url}}?imageView/1/w/200/h/200" class="img">
                     {% else %}
                     <img src="/static/design_img/{{dry_fruit.fruit_type.code}}.png" class="img">
                     {% end %}
@@ -188,7 +188,7 @@
                 <a href="javascript:;" class="check-lg-img">
                     <span class="tag bg-green text-white text-center tagItem font8" data-id="{{mgood.tag}}">hot</span>
                     {% if mgood.img_url %}
-                    <img src="http://goodsimg1.qiniudn.com/{{mgood.img_url}}?imageView/1/w/200/h/200" class="img">
+                    <img src="{{mgood.img_url}}?imageView/1/w/200/h/200" class="img">
                     {% else %}
                     <img src="/static/design_img/TDSG.png" class="img">
                     {% end %}

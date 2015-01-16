@@ -312,10 +312,9 @@ $(document).ready(function(){
    $('.edit_upload').each(function(){
        var $this=$(this);
        var fruit_id=$this.parents('.goods-item').data('id');
-       var action="edit_img";
+       var action="edit_fruit_img";
        var url="/admin/shelf";
-       var args={action: action,fruit_id:fruit_id};
-       console.log(args);
+       var args={action: action,id:fruit_id};
        $this.uploadifive(
            {
                buttonText    : '',
@@ -332,7 +331,6 @@ $(document).ready(function(){
                    'token':''
                },
                'onUpload' :function(){
-                   console.log(23333);
                    $.ajaxSetup({
                        async : false
                    });
