@@ -26,6 +26,8 @@ function noticeAdd(){
     var action="add_notice";
     var summary=$('.new-notice-title').val();
     var detail=$('.new-notice-detail').val();
+    if(summary.length>15){return alert('摘要请不要超过15个字！')}
+    if(detail.length>200){return alert('详情请不要超过200个字！')}
     if(!summary){return alert('请输入摘要！')}
     if(!detail){return alert('请输入详情！')}
     var data={
@@ -41,7 +43,9 @@ function noticeAdd(){
             if(res.success){
                 $('#noticeBox').modal('hide');
             }
-        })
+            else return alert(res.error_text);
+        },
+        function(){alert('网络错误')});
 }
 function noticeEdit(target){
     var url=link;
@@ -50,6 +54,8 @@ function noticeEdit(target){
     var notice_id=parent.data('id');
     var summary=parent.find('.notice_summary').val();
     var detail=parent.find('.notice_detail').val();
+    if(summary.length>15){return alert('摘要请不要超过15个字！')}
+    if(detail.length>200){return alert('详情请不要超过200个字！')}
     if(!summary){return alert('摘要不能为空！')}
     if(!detail){return alert('详情不能为空！')}
     var data={
@@ -68,10 +74,12 @@ function noticeEdit(target){
                 parent.find('.notice_detail').val(detail);
                 parent.find('.summary').text(summary);
                 parent.find('.detail').text(detail);
-                target.find('.address-edit').hide();
-                target.find('.address-show').show();
+                parent.find('.address-edit').hide();
+                parent.find('.address-show').show();
             }
-        })
+            else return alert(res.error_text);
+        },
+        function(){alert('网络错误')});
 }
 
 function noticeActive(target){
@@ -94,5 +102,7 @@ function noticeActive(target){
                 }
                 else target.find('.work-mode').show().siblings('.stop-mode').hide();
             }
-        })
+            else return alert(res.error_text);
+        },
+        function(){alert('网络错误')});
 }

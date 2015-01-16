@@ -43,11 +43,6 @@ $(document).ready(function(){
         if(s_width>1024) $this.css({'height':s_height/1.8+'px','line-height':s_height/1.8+'px'});
         else $this.css({'height':s_height/3+'px','line-height':s_height/3+'px'});
     });
-    $('.w69').each(function(){
-        var $this=$(this);
-        if(s_width>1024) $this.css({'width':'75%'});
-        else $this.css({'width':'69%'});
-    });
     //计价方式折叠/显示
     $('.charge-first').each(function(){
         var $this=$(this);

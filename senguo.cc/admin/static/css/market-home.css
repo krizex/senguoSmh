@@ -18,7 +18,7 @@
 .goods-list-item .disable{border-color:#ccc;color:#ccc;}
 .goods-list-item .down{background:url("../images/arrow-down.gif") no-repeat 0 5px;background-size:1.5em;}
 .goods-list-item .up{background:url("../images/arrow-up.gif") no-repeat 0 5px;background-size:1.5em;}
-.goods-list-item .number-input{width:28%;height:28px;text-align:center;line-height:28px;}
+.goods-list-item .number-input{width:28%;height:24px;text-align:center;line-height:24px;}
 .goods-list-item .fruit-class{padding:0 10px;min-width:20px;max-width:50px;text-align:center;}
 
 .large-img-box .close{font-size:12px;opacity:1;padding:8px;}

@@ -45,4 +45,7 @@
 
 input{height:30px;line-height:30px;color:#666;}
 .receipt-img img{height:40px;}
-.receipt-msg{height:80px;}
+.receipt-msg{width:80%;overflow:hidden;height:80px;}
+
+.notice_summary{width:60%;margin-bottom:10px;overflow:hidden;}
+.notice_detail{width:80%;overflow:hidden;}
