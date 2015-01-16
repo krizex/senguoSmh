@@ -172,11 +172,11 @@ class Hire(StaffBaseHandler):
             self.current_user.address = data["address"]
             self.session.commit()
             kwargs = {"name":data["name"], "phone":data["phone"], "email":data["email"]}
-            if data["headimgurl"]:
-                kwargs["headimgurl"] = STAFF_IMG_HOST+data["headimgurl"]
+            # if data["headimgurl"]:
+            #     kwargs["headimgurl"] = STAFF_IMG_HOST+data["headimgurl"]
             self.current_user.accountinfo.update(session=self.session, **kwargs)
-        elif action == "add_img":
-            q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-            token = q.upload_token(BUCKET_STAFF_IMG, expires=120)
-            return self.send_success(token=token, key=str(time.time()))
+        # elif action == "add_img":
+        #     q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
+        #     token = q.upload_token(BUCKET_STAFF_IMG, expires=120)
+        #     return self.send_success(token=token, key=str(time.time()))
         return self.send_success()

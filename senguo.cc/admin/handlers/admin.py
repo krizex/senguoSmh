@@ -322,12 +322,13 @@ class Shelf(AdminBaseHandler):
         elif action == "add_menu":
             self.session.add(models.Menu(shop_id=self.current_shop.id,name=data["name"]))
             self.session.commit()
-        elif action == "edit_img":
-            q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-            token = q.upload_token(BUCKET_GOODS_IMG, expires=120,
-                                   policy={"callbackUrl": "http://zone.senguo.cc/admin/shelf/fruitImgCallback",
-                                           "callbackBody": "key=$(key)&id=%s" % self.current_shop.id, "mimeLimit": "image/*"})
-            return self.send_success(token=token, key=str(time.time())+':'+str(self.current_shop.id))
+        elif action == "edit_fruit_img":
+            return self.send_qiniu_token("fruit", self.args["id"])
+            # q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
+            # token = q.upload_token(BUCKET_GOODS_IMG, expires=120,
+            #                        policy={"callbackUrl": "http://zone.senguo.cc/admin/shelf/fruitImgCallback",
+            #                                "callbackBody": "key=$(key)&id=%s" % self.current_shop.id, "mimeLimit": "image/*"})
+            # return self.send_success(token=token, key=str(time.time())+':'+str(self.current_shop.id))
 
         elif action in ["add_charge_type", "edit_active", "edit_fruit"]: #fruit_id
             try:fruit = self.session.query(models.Fruit).filter_by(id=self.args["id"]).one()

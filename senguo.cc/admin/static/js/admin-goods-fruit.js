@@ -296,13 +296,13 @@ $(document).ready(function(){
                 };
             },
             'onUploadComplete':function(){
-                $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://goodsimg1.qiniudn.com/'+key+'?imageView/1/w/100/h/100','data-key':key});
+                $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/100/h/100','data-key':key});
             }
 
         });
 
     //商品编辑-图片上传
-    $('#edit_file_upload').uploadifive(
+    $('.edit_file_upload').uploadifive(
         {
             buttonText    : '',
             width: '150px',
@@ -321,9 +321,10 @@ $(document).ready(function(){
                 $.ajaxSetup({
                     async : false
                 });
-                var action="edit_img";
+                var action="edit_fruit_img";
                 var url="/admin/shelf";
-                var args={action: action};
+                var fruit_id=$(this).parents('.goods-item').data('id');
+                var args={action: action,id:fruit_id};
                 $.postJson(url,args,
                     function (res) {
                         key=res.key;
@@ -338,7 +339,7 @@ $(document).ready(function(){
                 };
             },
             'onUploadComplete':function(){
-                $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://goodsimg1.qiniudn.com/'+key+'?imageView/1/w/100/h/100','data-key':key});
+                $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/100/h/100','data-key':key});
             }
 
         });

@@ -13,7 +13,7 @@
                 <div class="goods-img pull-left">
                     <span class="goods-tag" data-id="{{goods.tag}}"></span>
                     {% if goods.img_url%}
-                    <img src="http://goodsimg1.qiniudn.com/{{goods.img_url}}?imageView/1/w/100/h/100"/>
+                    <img src="{{goods.img_url}}?imageView/1/w/100/h/100"/>
                     {% else %}
                     <img src="/static/design_img/Gz.png"/>
                     {% end %}
@@ -64,12 +64,12 @@
                 <div class="upload-img goods-left pull-left">
                     <span class="goods-tag" data-id="{{goods.tag}}"></span>
                     {% if goods.img_url%}
-                    <img src="http://goodsimg1.qiniudn.com/{{goods.img_url}}?imageView/1/w/100/h/100" class="imgPreview" data-key="{{goods.img_url}}"/>
+                    <img src="{{goods.img_url}}?imageView/1/w/100/h/100" class="imgPreview" data-key="{{goods.img_url}}"/>
                     {% else %}
                     <img src="/static/design_img/Gz.png" class="imgPreview" data-key="{{goods.img_url}}" data-code="Gz"/>
                     {% end %}
                     <div class="upload-box btn-style2 green-color">
-                        <input id="edit_file_upload" type="file" name="file_upload" class="uploadImg" />
+                        <input id="edit_file_upload" type="file" name="file_upload" class="uploadImg edit_file_upload" />
                         <p>上传/修改图片</p>
                     </div>
                     <a href="javascript:;" class="btn-style2 text-grey2 edit-recover-img">恢复默认图</a>

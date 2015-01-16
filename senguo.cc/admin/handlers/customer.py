@@ -313,7 +313,8 @@ class Cart(CustomerBaseHandler):
                 return self.send_fail("订单总价没达到起送价，请再增加商品")
             freight = config.freight_now
             totalPrice += freight
-            tip = self.args["tip"]  # 立即送的小费
+            if "tip" in self.args:
+                tip = self.args["tip"]  # 立即送的小费
             now = datetime.datetime.now()
             start_time = datetime.time(now.hour, now.minute, now.second)
             end_time = datetime.time(config.end_time_now.hour, config.end_time_now.minute)

@@ -12,6 +12,8 @@ import re
 import tornado.web
 from sqlalchemy import desc
 import datetime
+import qiniu
+from settings import *
 
 class GlobalBaseHandler(BaseHandler):
 
@@ -163,7 +165,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
     def get_wx_userinfo(self, code, mode):
         return WxOauth2.get_userinfo(code, mode)
         
-    
+    def send_qiniu_token(self, action, id):
+        q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
+        token = q.upload_token(BUCKET_SHOP_IMG, expires=120,
+                               policy={"callbackUrl": "http://zone.senguo.cc/fruitzone/imgcallback",
+                                       "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
+        return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
+
 class SuperBaseHandler(_AccountBaseHandler):
     __account_model__ = models.SuperAdmin
     __account_cookie_name__ = "super_id"
