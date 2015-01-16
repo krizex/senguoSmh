@@ -338,11 +338,12 @@ class CustomerBaseHandler(_AccountBaseHandler):
     def shop_id(self):
         shop_id = self.get_cookie("market_shop_id")
         if not shop_id:
-            return self.redirect("/customer/market/1")  #todo 这里应该重定向到商铺列表
+            shop_id = 0
+            #return self.redirect("/shop/1")  #todo 这里应该重定向到商铺列表
         shop_id = int(shop_id)
-        if not self.session.query(models.CustomerShopFollow).filter_by(
-                customer_id=self.current_user.id, shop_id=shop_id).first():
-            return self.redirect("/customer/market/1")  #todo 这里应该重定向到商铺列表
+        # if not self.session.query(models.CustomerShopFollow).filter_by(
+        #         customer_id=self.current_user.id, shop_id=shop_id).first():
+        #     return self.redirect("/customer/market/1")  #todo 这里应该重定向到商铺列表
         return shop_id
 
 class WxOauth2:
