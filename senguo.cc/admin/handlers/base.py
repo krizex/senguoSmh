@@ -336,15 +336,23 @@ class CustomerBaseHandler(_AccountBaseHandler):
 
     @property
     def shop_id(self):
+        if hasattr(self, "_shop_id"):
+            return self._shop_id
         shop_id = self.get_cookie("market_shop_id")
         if not shop_id:
             shop_id = 0
             #return self.redirect("/shop/1")  #todo 这里应该重定向到商铺列表
-        shop_id = int(shop_id)
+        self._shop_id = int(shop_id)
         # if not self.session.query(models.CustomerShopFollow).filter_by(
         #         customer_id=self.current_user.id, shop_id=shop_id).first():
         #     return self.redirect("/customer/market/1")  #todo 这里应该重定向到商铺列表
-        return shop_id
+        return self._shop_id
+    @property
+    def shop_code(self):
+        if hasattr(self, "_shop_code"):
+            return self._shop_code
+        self._shop_code = self.session.query(models.Shop).filter_by(id=self.shop_id).one().shop_code
+        return self._shop_code
 
 class WxOauth2:
     token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}&secret={appsecret}&code={code}&grant_type=authorization_code"

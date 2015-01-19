@@ -19,7 +19,7 @@ $(document).ready(function(){
     $('.staff_href').attr({'href':staff_href+Int(shop_id)});
 });
 var shop_href='/customer/shopProfile';
-var market_href='/customer/market';
+var market_href='/shop/none';
 var home_href='/customer';
 var success_href='/notice/success';
 var staff_href='/staff/hire/';
