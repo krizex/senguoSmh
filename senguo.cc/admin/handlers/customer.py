@@ -317,6 +317,7 @@ class Cart(CustomerBaseHandler):
             totalPrice += freight
             if "tip" in self.args:
                 tip = self.args["tip"]  # 立即送的小费
+                totalPrice += tip
             now = datetime.datetime.now()
             start_time = datetime.time(now.hour, now.minute, now.second)
             end_time = datetime.time(config.end_time_now.hour, config.end_time_now.minute)
