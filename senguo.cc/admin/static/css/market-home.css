@@ -1,11 +1,9 @@
 .goods-list{width:100%;float:left;margin:0px;}
-.goods-list-item{width:100%;float:left;position:relative;padding:2px;}
-.goods-list-item .goods-img{position:relative;overflow:hidden;border:4px solid #fff;margin-right:3%;}
+.goods-list-item{width:100%;float:left;position:relative;overflow:hidden;margin-bottom:2px;}
+.goods-list-item .goods-img{position:relative;overflow:hidden;max-height:102px;}
 .goods-list-item .goods-img .tag{display:inline-block;position:absolute;width:30px;}
-.goods-list-item .goods-img a{width:100%;overflow:hidden;}
-.goods-list-item .goods-img img{}
-.goods-list-item .w22{width:20%;}
-.goods-list-item .w69{width:69%;}
+.goods-list-item .goods-img a{width:100%;overflow:hidden;padding:2px;}
+.goods-list-item .goods-img img{width:100%;max-width:100px;max-height:100px;border:4px solid #fff;}
 .goods-list-item .great-number{margin-bottom:0;}
 .goods-list-item .charge-style{clear:both;}
 .goods-list-item .charge-style span,a{display:inline-block;}
@@ -19,7 +17,9 @@
 .goods-list-item .down{background:url("../images/arrow-down.gif") no-repeat 0 5px;background-size:1.5em;}
 .goods-list-item .up{background:url("../images/arrow-up.gif") no-repeat 0 5px;background-size:1.5em;}
 .goods-list-item .number-input{width:28%;height:24px;text-align:center;line-height:24px;}
-.goods-list-item .fruit-class{padding:0 10px;min-width:20px;max-width:40px;text-align:center;word-break:break-all;}
+.goods-list-item .fruit-class{padding:0 10px;text-align:center;word-break:break-all;max-width:50px;}
+.goods-list-item .fruit-class .class-inner{max-width:20px;min-width:20px;margin:0 auto;}
+.goods-list-item .fruit-name{margin-top:5px;}
 
 .large-img-box .close{font-size:12px;opacity:1;padding:8px;}
 .large-img-box img{width:100%;margin-bottom:10px;}
@@ -27,7 +27,6 @@
 .large-img-box .modal-footer{padding:0px;}
 
 .classify-title{text-indent:14px;padding:5px;border-radius:5px;margin-bottom:5px;}
-
 .modal-dialog{width:100%;max-width:300px;}
 
 .notice-board{border:5px solid #fff;min-height:120px;position:relative;}
