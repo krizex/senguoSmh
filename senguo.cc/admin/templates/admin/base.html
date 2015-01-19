@@ -71,6 +71,9 @@
                                     <a role="menuitem" tabindex="-1" href="javascript:;">{{shop.shop_name}}</a>
                                 </li>
                                 {% end %}
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="{{reverse_url('adminLogout')}}">退出登录</a>
+                                </li>
                             </ul>
                         </div>
                         <p class="job pull-left">{{current_user.accountinfo.nickname}}</p>

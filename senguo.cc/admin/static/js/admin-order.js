@@ -1,9 +1,10 @@
 $(document).ready(function(){
-    $('.to-edit-item').hover(function(){
-       var $this=$(this);
+    $('body').on('mouseenter','.time-period',function(){
+        var $this=$(this);
         $this.find('.edit').show();
-        $this.find('.delete').show();
-    },function(){
+        $this.find('.delete').show();}
+        );
+    $('body').on('mouseleave','.time-period',function(){
         var $this=$(this);
         $this.find('.edit').hide();
         $this.find('.delete').hide();
@@ -123,22 +124,32 @@ $(document).ready(function(){
     $('body').on('click','.to-edit',function(){
         var $this=$(this);
         var parent=$this.parents('.to-edit-item');
-        parent.find('.show_item').hide();
-        parent.find('.edit_item').removeClass('hidden');
         parent.hover(function(){
             var $this=$(this);
             $this.find('.edit').hide();
-            $this.find('.delete').hide();
+            $this.find('.delete').show();
         },function(){
             var $this=$(this);
             $this.find('.edit').hide();
-            $this.find('.delete').hide();
+            $this.find('.delete').show();
         });
+        parent.find('.show_item').hide();
+        parent.find('.edit').hide();
+        parent.find('.edit_item').removeClass('hidden');
     });
     $('body').on('click','.edit-time-period',function(){
         var $this=$(this);
-        var parent=$this.parents('.time-period');
+        var parent=$this.parents('.to-edit-item');
+        parent.find('.delete').show();
         addEditPeriod($this,'edit_period');
+        parent.find('.delete').hide();
+        parent.hover(function(){
+            parent.find('.edit').show();
+            parent.find('.delete').show();
+        },function(){
+            parent.find('.edit').hide();
+            parent.find('.delete').hide();
+        });
     });
     //按时达配送时间段启用/停用
     $('.period-action').each(function(){
@@ -370,8 +381,8 @@ function addEditPeriod(target,action){
         parent=target.parents('.add-period')
     }
     else if(action=='edit_period'){
-        parent=target.parents('.time-period');
-        period_id=target.parents('.time-period').data('id');
+        parent=target.parents('.time-list-item');
+        period_id=target.parents('.time-list-item').data('id');
         startTime=parent.find('.startTime');
         endTime=parent.find('.EndTime');
         periodName=parent.find('.periodName');
@@ -403,7 +414,7 @@ function addEditPeriod(target,action){
             if(res.success){
                 if(action=='add_period'){
                     parent.empty().hide();
-                    var item_url='/static/items/admin/send-period-item.html?v=20150119';
+                    var item_url='/static/items/admin/send-period-item.html?v=2015-0119';
                     $.getItem(item_url,function(data){
                         var $item=$(data);
                         $item.attr({'data-id':res.period_id});
@@ -424,13 +435,6 @@ function addEditPeriod(target,action){
                             $item.find('.minute-list').append('<li>'+checkTime(i)+'</li>');
                         }
                         $('.time-list').append($item);
-                        $item.hover(function(){
-                            $item.find('.edit').show();
-                            $item.find('.delete').show();
-                        },function(){
-                            $item.find('.edit').hide();
-                            $item.find('.delete').hide();
-                        });
                     });
 
                 }
@@ -440,6 +444,7 @@ function addEditPeriod(target,action){
                     periodName.text(name);
                     parent.find('.show_item').show();
                     parent.find('.edit_item').addClass('hidden');
+
                 }
             }
             else return alert(res.error_text);
@@ -451,7 +456,7 @@ function addEditPeriod(target,action){
 function deletePeriod(target){
     var url=link;
     var action='del_period';
-    var parent=target.parents('.time-period');
+    var parent=target.parents('.time-list-item');
     var period_id=parent.data('id');
     var data={
         period_id:period_id
@@ -473,7 +478,7 @@ function deletePeriod(target){
 function activePeriod(target,active){
     var url=link;
     var action='edit_period_active';
-    var parent=target.parents('.time-period');
+    var parent=target.parents('.time-list-item');
     var period_id=parent.data('id');
     var data={
         period_id:period_id

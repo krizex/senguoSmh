@@ -90,9 +90,11 @@ $(document).ready(function(){
     $('.info_sure').each(function(){
         var $this=$(this);
         $this.on('click',function(){
-            if(confirm('店铺号用于您的商城链接，设置后将不可更改，是否确定使用该店铺号？')){
+            if($this.hasClass('code_sure')&&confirm('店铺号用于您的商城链接，设置后将不可更改，是否确定使用该店铺号？'))
+            {
                 infoEdit($this);
             }
+            else infoEdit($this);
         });
     });
 });
