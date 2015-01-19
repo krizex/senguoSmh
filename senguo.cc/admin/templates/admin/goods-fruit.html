@@ -178,15 +178,6 @@
 </div>
 <!--编辑计价方式end-->
 {% end %}
-{% block goodsRight %}
-    <span class="title">所有水果({{len(fruit_types)}})</span>
-    <div class="shelve all-fruit-type">
-        {% for fruit in fruit_types%}
-        <a href="{{reverse_url('adminShelf')}}?action=fruit&id={{fruit.id}}" data-id="{{fruit.id}}">{{fruit.name}}</a>
-        {% end %}
-    </div>
-{% end %}
-
 
 {% block bottom %}
 <script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>

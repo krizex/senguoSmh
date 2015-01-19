@@ -25,8 +25,10 @@ $(document).ready(function(){
 
     //商品标签显示
     $('.all-fruit-type a').each(function(){
-        var id=$(this).data('id');
-        if(id==fruit_type_id){$(this).addClass('bg-pink')}
+        var $this=$(this);
+        var id=$this.data('id');
+        var classify=$this.data('class');
+        if(id==fruit_type_id&&classify==link_action){$this.addClass('bg-pink')}
     });
 
     //商品单位切换显示
