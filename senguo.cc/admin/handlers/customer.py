@@ -56,7 +56,6 @@ class Access(CustomerBaseHandler):
 class Home(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        shop_code = self.session.query(models.Shop).filter_by(id=self.shop_id).one().shop_code
         count = {3: 0, 4: 0, 5: 0, 6: 0}  # 3:未处理 4:待收货，5：已送达，6：售后订单
         for order in self.current_user.orders:
             if order.status == 1:
@@ -67,7 +66,7 @@ class Home(CustomerBaseHandler):
                 count[5] += 1
             elif order.status == 10:
                 count[6] += 1
-        return self.render("customer/personal-center.html", count=count, shop_code=shop_code, context=dict(subpage='center'))
+        return self.render("customer/personal-center.html", count=count, context=dict(subpage='center'))
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action", "data")
     def post(self):
@@ -158,7 +157,7 @@ class ShopProfile(CustomerBaseHandler):
                            fans_sum=fans_sum, order_sum=order_sum,goods_sum=goods_sum, address=address,
                            service_area=service_area, headimgurls=headimgurls,
                            comments=self.get_comments(shop_id, page_size=2), comment_sum=comment_sum,
-                           shop_code=shop.shop_code, context=dict(subpage='shop'))
+                           context=dict(subpage='shop'))
 
     @tornado.web.authenticated
     def post(self, shop_id):
@@ -227,14 +226,14 @@ class Market(CustomerBaseHandler):
         for menu in shop.menus:
             mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
         notices = [x for x in shop.config.notices if x.active == 1]
-        return self.render("customer/home.html", shop_code=shop_code,
+        return self.render("customer/home.html",
                            context=dict(fruits=fruits, dry_fruits=dry_fruits,menus=shop.menus,mgoods=mgoods,
                                         cart_f=cart_f, cart_m=cart_m, subpage='home', notices=notices))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int", "charge_type_id:int", "menu_type:int")
     #action==2: +1，action==1: -1, action==0: delete；menu_type==0：fruit，menu_type==1：menu
-    def post(self):
+    def post(self, shop_code):
         shop_id = self.shop_id
         inc = self.args["action"]
         charge_type_id = self.args["charge_type_id"]
@@ -257,7 +256,7 @@ class Cart(CustomerBaseHandler):
 
         periods = [x for x in shop.config.periods if x.active == 1]
         return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m,config=shop.config,
-                           periods=periods, shop_code=shop.shop_code, context=dict(subpage='cart'))
+                           periods=periods, context=dict(subpage='cart'))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
@@ -318,6 +317,7 @@ class Cart(CustomerBaseHandler):
             totalPrice += freight
             if "tip" in self.args:
                 tip = self.args["tip"]  # 立即送的小费
+                totalPrice += tip
             now = datetime.datetime.now()
             start_time = datetime.time(now.hour, now.minute, now.second)
             end_time = datetime.time(config.end_time_now.hour, config.end_time_now.minute)
