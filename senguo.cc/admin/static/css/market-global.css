@@ -7,7 +7,7 @@ a:focus{text-decoration: none}
 a:focus{outline:none;}
 input{border:none;}
 .container{padding:0;}
-.modal-dialog{margin-top:10%!important;max-width:640px;}
+.modal-dialog{margin:0px;margin-top:10%!important;max-width:640px;}
 .modal-header{padding:10px;}
 .modal-body{font-size:1em;padding:10px;}
 .modal-footer{clear:both;}

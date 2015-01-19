@@ -47,3 +47,5 @@
 
 .message-input{padding:0.5em 1em;}
 .border-grey{border-color:#ddd;}
+.tip-list li{width:32%;margin-right:1%;}
+.tip-list li.active{background:#00d681 !important;color:#fff !important;}

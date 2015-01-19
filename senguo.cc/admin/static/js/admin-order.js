@@ -125,9 +125,19 @@ $(document).ready(function(){
         var parent=$this.parents('.to-edit-item');
         parent.find('.show_item').hide();
         parent.find('.edit_item').removeClass('hidden');
+        parent.hover(function(){
+            var $this=$(this);
+            $this.find('.edit').hide();
+            $this.find('.delete').hide();
+        },function(){
+            var $this=$(this);
+            $this.find('.edit').hide();
+            $this.find('.delete').hide();
+        });
     });
     $('body').on('click','.edit-time-period',function(){
         var $this=$(this);
+        var parent=$this.parents('.time-period');
         addEditPeriod($this,'edit_period');
     });
     //按时达配送时间段启用/停用
@@ -392,8 +402,8 @@ function addEditPeriod(target,action){
     $.postJson(url,args,function(res){
             if(res.success){
                 if(action=='add_period'){
-                    parent.remove();
-                    var item_url='/static/items/admin/send-period-item.html';
+                    parent.empty().hide();
+                    var item_url='/static/items/admin/send-period-item.html?v=20150119';
                     $.getItem(item_url,function(data){
                         var $item=$(data);
                         $item.attr({'data-id':res.period_id});
@@ -414,6 +424,13 @@ function addEditPeriod(target,action){
                             $item.find('.minute-list').append('<li>'+checkTime(i)+'</li>');
                         }
                         $('.time-list').append($item);
+                        $item.hover(function(){
+                            $item.find('.edit').show();
+                            $item.find('.delete').show();
+                        },function(){
+                            $item.find('.edit').hide();
+                            $item.find('.delete').hide();
+                        });
                     });
 
                 }

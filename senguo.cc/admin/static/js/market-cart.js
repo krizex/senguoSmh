@@ -125,6 +125,8 @@ $(document).ready(function(){
         $('.send_day').remove();
         $('.send_period').remove();
         $('.send_now').show();
+        $('.intime-intro').hide();
+        $('.now-intro').show();
         $('#freight_money').text(freigh_now);
         $('#final_price').text(total_price+freigh_now);
         $('.send-intime').on('click',function(){
@@ -132,11 +134,15 @@ $(document).ready(function(){
             if(now_on=='True'){
                 $('.send-now').addClass('active');
                 $('.send_now').show();
+                $('.intime-intro').hide();
+                $('.now-intro').show();
             }
-            alert('按时达模式已关闭，请选择立即送模式！');
+            else alert('按时达模式已关闭，请选择立即送模式！');
         })
     }
     else{
+        $('.intime-intro').show();
+        $('.now-intro').hide();
         $('#freight_money').text(freigh_ontime);
         $('#final_price').text(total_price+freigh_ontime);
         //按时达模式选择
@@ -147,6 +153,8 @@ $(document).ready(function(){
             $('.send_day').show();
             $('.send_now').hide();
             $('.mincharge_now').hide();
+            $('.intime-intro').show();
+            $('.now-intro').hide();
             total_price=Int(list_total_price.text());
             $('#freight_money').text(freigh_ontime);
             $('#final_price').text(total_price+freigh_ontime);
@@ -161,6 +169,8 @@ $(document).ready(function(){
         $('.send_day').show();
         $('.send_period').show();
         $('.send_now').remove();
+        $('.intime-intro').show();
+        $('.now-intro').hide();
         $('#freight_money').text(freigh_ontime);
         $('#final_price').text(total_price+freigh_ontime);
         $('.send-now').on('click',function(){
@@ -169,12 +179,17 @@ $(document).ready(function(){
                 $('.send-intime').addClass('active');
                 $('.send_day').show();
                 $('.send_period').show();
+                $('.intime-intro').show();
+                $('.now-intro').hide();
             }
             else $('.send-intime').removeClass('active');
             alert('立即送模式已关闭，请选择按时达模式！');
         })
     }
     else{
+        $('.send_now').show();
+        $('.intime-intro').hide();
+        $('.now-intro').show();
         $('#freight_money').text(freigh_now);
         $('#final_price').text(total_price+freigh_now);
         //立即送模式选择/立即送最低起送金额提示
@@ -187,6 +202,8 @@ $(document).ready(function(){
                 $('.send_period').hide();
                 $('.send_day').hide();
                 $('.send_now').show();
+                $('.intime-intro').hide();
+                $('.now-intro').show();
                 total_price=Int(list_total_price.text());
                 $('#freight_money').text(freigh_now);
                 $('#final_price').text(total_price+freigh_now);
@@ -206,8 +223,14 @@ $(document).ready(function(){
         $('.send-intime').removeClass('active');
         $('#freight_money').text(0);
         $('#final_price').text(0);
+        $('.send_now').hide();
+        $('.intime-intro').hide();
+        $('.now-intro').hide();
     }
     if(intime_on=='True'&&now_on=='True'){
+        $('.send_now').hide();
+        $('.intime-intro').show();
+        $('.now-intro').hide();
         $('#freight_money').text(freigh_ontime);
         $('#final_price').text(total_price+freigh_ontime);
     }
@@ -418,8 +441,11 @@ function orderSubmit(){
     var pay_type=$('#payType').find('.active').data('id');
     var message=$('#messageCon').val();
     var fruit_item=$('.fruit_item');
-    var mincharge_intime=Int($('.mincharge_intime .mincharge').text());
-    var mincharge_now=Int($('.mincharge_now .mincharge').text());
+    var mincharge_intime=Number($('.mincharge_intime .mincharge').text());
+    var mincharge_now=Number($('.mincharge_now .mincharge').text());
+    var tip=$('.tip-list').find('.active').data('id');
+    total_price=Number($('#list_total_price').text());
+    if(!tip) tip=0;
     for(var i=0;i<fruit_item.length;i++)
     {
         var id=fruit_item.eq(i).find('.charge-type').data('id');
@@ -451,7 +477,8 @@ function orderSubmit(){
         period_id:period_id,
         address_id:address_id,
         pay_type:pay_type,
-        message:message
+        message:message,
+        tip:tip
     };
     $.postJson(url,args,function(res) {
         if (res.success) {

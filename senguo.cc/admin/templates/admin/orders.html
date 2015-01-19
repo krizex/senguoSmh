@@ -130,7 +130,9 @@
                 </label>
                 <label class="money pull-left">
                     金额：<span><strong class="order-price">{{order.totalPrice}}</strong>元</span>
-                    <span class="tips">（其中小费<span class="tip">0</span>元）</span>
+                    {% if order_type ==1 %}
+                    <span class="tips">（其中小费<span class="tip">{{order.tip}}</span>元）</span>
+                    {% end %}
                 </label>
                 <a class="print-order pull-right te" href="javascript:;">&nbsp;</a>
                 <a class="delete-order pull-right" href="javascript:;">&nbsp;</a>

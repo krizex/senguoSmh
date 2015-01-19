@@ -1,4 +1,6 @@
 $(document).ready(function(){
+    var code=$('.shop_code').val();
+    if(code!=='not set') $('.link_notice').show();
     $('.area-choose-list li').each(function(){
         $(this).on('click',function(){
             if($(this).hasClass('active'))
@@ -91,7 +93,7 @@ function infoEdit(target){
     var url="";
     var action_name=target.data('id');
     var data={};
-    var action,shop_name,shop_intro,shop_city,shop_address_detail,have_offline_entity,address,entity_text;
+    var action,shop_name,shop_intro,shop_city,shop_address_detail,have_offline_entity,address,entity_text,shop_code;
     if(action_name=='name')
         {
             action='edit_shop_name';
@@ -99,6 +101,15 @@ function infoEdit(target){
             if(shop_name.length>20){return alert('店铺名称请不要超过20个字符！')}
             data={shop_name:shop_name};
         }
+    else if(action_name=='code')
+    {
+        var reg=/^\w+$/;
+        action='edit_shop_code';
+        shop_code=$('.shop_code').val().trim();
+        if(!reg.test(shop_code)){return alert('店铺号只能为字母、数字以及下划线组成！')}
+        if(shop_code.length<4){return alert('店铺号至少为4位数！')}
+        data={shop_code:shop_code};
+    }
     else if(action_name=='intro')
     {
         action='edit_shop_intro';
@@ -146,6 +157,12 @@ function infoEdit(target){
                 if(action_name=='name')
                 {
                    $('.name').text(shop_name);
+                }
+                else if(action_name=='code')
+                {
+                    $('.code').text(shop_code);
+                    $('.shop_link').attr({'src':'http://zone.senguo.cc/shop/'+shop_code});
+                    $('.link_notice').show();
                 }
                 else if(action_name=='intro')
                 {

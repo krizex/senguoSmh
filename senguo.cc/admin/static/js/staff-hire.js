@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var key;
+    /*var key;
     var token;
     $('#edit_file_upload').uploadifive(
         {
@@ -40,7 +40,7 @@ $(document).ready(function(){
                 $('.hire-img').attr({'src':'http://7tszl5.com2.z0.glb.qiniudn.com/'+key+'?imageView/1/w/100/h/100','data-id':key});
             }
 
-        });
+        });*/
         $('.hire-apply-submit').on('click',function(){hireApply()});
 });
 
