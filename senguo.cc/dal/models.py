@@ -558,6 +558,7 @@ class CustomerShopFollow(MapBase, _CommonApi):  # 用户关注店铺
     __tablename__ = "customer_shop_follow"
     customer_id = Column(Integer, ForeignKey(Customer.id), primary_key=True, nullable=False)
     shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
+    create_time = Column(DateTime, default=func.now())
 
 class COUNTER_TYPE:
     SYSTEM_ORDER_COUNTER = 1

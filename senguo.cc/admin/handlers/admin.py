@@ -423,6 +423,47 @@ class Shelf(AdminBaseHandler):
 
         return self.send_success()
 
+class Follower(AdminBaseHandler):
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action:str", "order_by:str", "page:int", "wd?:str")
+    def get(self):
+        action = self.args["action"]
+        order_by = self.args["order_by"]
+        page = self.args["page"]
+        page_size = 20
+        if action in ("all", "old"):
+            if action == "all":
+                q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+                    filter(models.CustomerShopFollow.shop_id == self.current_shop.id)
+            else:
+                return self.send_error(404)
+            if order_by == "time":
+                q = q.order_by(desc(models.CustomerShopFollow.create_time))
+            elif order_by == "credits":
+                q = q.order_by(desc(models.Customer.credits))
+            elif order_by == "balance":
+                q = q.order_by(desc(models.Customer.balance))
+            customers = q.offset(page*page_size).limit(page_size).all()
+        elif action == "search":
+            wd = self.args["wd"]
+            if wd.isdigit():
+                customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+                    filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+                    join(models.Accountinfo).filter(models.Accountinfo.phone == int(wd)).all()
+            else:
+                customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+                    filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+                    join(models.Accountinfo).filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),
+                                                        models.Accountinfo.realname.like("%%%s%%" % wd))).all()
+        else:
+            return self.send_error(404)
+        for x in range(0, len(customers)):
+            shop_names = self.session.query(models.Shop.shop_name).join(models.CustomerShopFollow).\
+                filter(models.CustomerShopFollow.customer_id == customers[x].id).all()
+            customers[x].shop_names = [y[0] for y in shop_names]
+
+        return self.render("", customers=customers)
+
 class Staff(AdminBaseHandler):
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action")
