@@ -5,32 +5,34 @@
 {% set shop = handler.current_shop %}
 <div class="index-title">
     <div class="pull-left title-style">
-        <div class="pull-left title-style2 bg1">
+        <div class="pull-left title-style2 new-item">
             <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1">
                 <span class="new-order"><i></i>{{new_order_sum}}</span>
                 <p>新增订单</p>
             </a>
         </div>
-        <div class="pull-right title-style2 bg2">
+        <div class="pull-right title-style2  new-item">
             <a href="#">
                 <span class="new-user"><i></i>{{new_follower_sum}}</span>
                 <p>新增用户</p>
             </a>
         </div>
+        <div class="line"></div>
     </div>
     <div class="pull-right title-style">
-        <div class="pull-left title-style2 bg3">
+        <div class="pull-left title-style2 item">
             <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1">
                 <span class="total-order"><i></i>{{order_sum}}</span>
                 <p>总订单数</p>
             </a>
         </div>
-        <div class="pull-right title-style2 bg4">
+        <div class="pull-right title-style2 item">
             <a href="#">
                 <span class="total-user"><i></i>{{follower_sum}}</span>
                 <p>总用户数</p>
             </a>
         </div>
+        <div class="line"></div>
     </div>
 </div>
 <div class="index-notice-list">
