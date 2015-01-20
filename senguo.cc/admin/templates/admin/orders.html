@@ -36,11 +36,11 @@
 <span class="right-title">订单管理</span>
 <div class="orders-mode clearfix">
     <ul class="right-nav pull-left order-type">
-        <li class="text-center col-lg-3">
+        <li class="text-center col-lg-3 col-md-3">
             <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1" class="text-grey3">立即送</a>
             <span class="number text-pink">{{count[11]}}</span>
         </li>
-        <li class="text-center col-lg-3">
+        <li class="text-center col-lg-3 col-md-3">
             <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=1" class="text-grey3">按时达</a>
             <span class="number text-pink">{{count[21]}}</span>
         </li>
@@ -63,11 +63,11 @@
     <div class="mode-content {{lock_mode}} pull-left">
         {% if order_type ==1 %}
         <p class="lock-unlock">已{{notice}}立即送模式(点击右方{{notice2}}按钮可{{notice2}}立即送订单模式。)</p>
-        <p class="mode-introduce">下单就配送。</p>
+        <p class="mode-introduce">用户下单完成，商家即要对订单打包并进行配送。满足用户对于商品的及时送达需求。</p>
         <p class="set-introduce">点击右方设置，可以设置立即送的送达时间范围和起送金额。</p>
         {% else %}
         <p class="lock-unlock">已{{notice}}按时达模式(点击右方{{notice2}}按钮可{{notice2}}按时达订单模式。)</p>
-        <p class="mode-introduce">下单就配送。</p>
+        <p class="mode-introduce">根据商家设置的送货时间段进行配送。订单集中处理，节省配送成本。</p>
         <p class="set-introduce">点击右方设置，可以设置按时达的送达时间范围和起送金额。</p>
         {% end %}
     </div>
@@ -100,7 +100,7 @@
             <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=3">已送达<span class="text-pink">{{count3}}</span></a>
         </li>
         <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=4">售后<span class="text-pink">{{count4}}</span></a>
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=4">售后/退款<span class="text-pink">{{count4}}</span></a>
         </li>
         <li>
             <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=5">所有订单<span class="text-pink">{{count5}}</span></a>
@@ -403,7 +403,7 @@
                                 <span class="time show_item periodName">{{period.name}}</span>
                                 <input type="text" class="period-name  pull-left text-center edit_item hidden" value="{{period.name}}"/>
                                 <a href="javascript:;" class="delete pull-right set-inl-blo delete-time-period" style="display:none"></a>
-                                <a href="javascript:;" class="edit pull-right set-inl-blo to-edit show_item" style="display:none"></a>
+                                <a href="javascript:;" class="edit pull-right set-inl-blo to-edit" style="display:none"></a>
                                 <a href="javascript:;" class="sure-btn pull-right edit_item hidden edit-time-period">&nbsp;</a>
                             </li>
                             {% end %}

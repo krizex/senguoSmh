@@ -7,7 +7,7 @@ a:focus{text-decoration: none}
 a:focus{outline:none;}
 input{border:none;}
 .container{padding:0;}
-.modal-dialog{margin:0px;margin-top:10%!important;max-width:640px;}
+.modal-dialog{margin:0px auto;margin-top:10%!important;max-width:640px;}
 .modal-header{padding:10px;}
 .modal-body{font-size:1em;padding:10px;}
 .modal-footer{clear:both;}
@@ -87,6 +87,7 @@ input{border:none;}
 .p010{padding:0px 10px !important;}
 .prl0{padding-left:0px !important;padding-right:0px !important;}
 .pb0{padding-bottom:0px !important;}
+.plr5{padding:0 5px !important;}
 
 .back-to-top{width:30px;height:30px;line-height:30px;position:fixed;right:0;bottom:60px;}
 

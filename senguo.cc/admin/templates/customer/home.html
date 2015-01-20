@@ -40,19 +40,19 @@
     {% for fruit in fruits %}
     <li class="goods-list-item {{fruit.fruit_type.code}} font14" data-id="{{fruit.id}}">
         <div class="bg set-w100-fle">
-            <div class="goods-img pull-left box-shadow">
+            <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
                 <a href="javascript:;" class="check-lg-img">
                     <span class="tag bg-green text-white text-center tagItem font8" data-id="{{fruit.tag}}">hot</span>
                     {% if fruit.img_url %}
-                    <img src="{{fruit.img_url}}?imageView/1/w/200/h/200" class="img">
+                    <img src="{{fruit.img_url}}?imageView/1/w/200/h/200" class="img box-shadow">
                     {% else %}
-                    <img src="/static/design_img/{{fruit.fruit_type.code}}.png" class="img">
+                    <img src="/static/design_img/{{fruit.fruit_type.code}}.png" class="img box-shadow">
                     {% end %}
-                    <script>fiximg('goods-img','check-lg-img','img');//商品图片高度修正</script>
+
                 </a>
             </div>
             <input type="hidden" class="fruit_intro" value="{{fruit.intro}}"/>
-            <div class="col-lg-9 col-md-9 col-xs-7 col-sm-9 p0">
+            <div class="col-lg-9 col-md-9 col-xs-8 col-sm-9 plr5">
                 <p>
                     <span class="pull-left color fruit-name">{{fruit.name}}</span>
                     <span class="pull-right text-grey">销量：{{fruit.saled}}</span>
@@ -96,8 +96,9 @@
                     {% end %}
                 </ul>
             </div>
-            <div class="col-sm-1 col-xs-1 pull-right fruit-class text-white text-shadow icon-bg font11">{{fruit.fruit_type.name}}</div>
-            <script>fixclass('fruit-class')</script>
+            <div class="col-lg-1 col-md-1 col-xs-1 col-sm-1 p0 pull-right fruit-class text-white text-shadow icon-bg font11">
+                <div class="class-inner">{{fruit.fruit_type.name}}</div>
+             </div>
         </div>
     </li>
     {% end %}
@@ -108,19 +109,18 @@
     {% for dry_fruit in dry_fruits %}
     <li class="goods-list-item {{dry_fruit.fruit_type.code}} font14" data-id="{{dry_fruit.id}}">
         <div class="bg set-w100-fle">
-            <div class="goods-img w22 pull-left box-shadow">
+            <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
                 <a href="javascript:;" class="check-lg-img">
                     <span class="tag bg-green text-white text-center tagItem font8" data-id="{{dry_fruit.tag}}">hot</span>
                     {% if fruit.img_url %}
-                    <img src="{{dry_fruit.img_url}}?imageView/1/w/200/h/200" class="img">
+                    <img src="{{dry_fruit.img_url}}?imageView/1/w/200/h/200" class="img box-shadow">
                     {% else %}
-                    <img src="/static/design_img/{{dry_fruit.fruit_type.code}}.png" class="img">
+                    <img src="/static/design_img/{{dry_fruit.fruit_type.code}}.png" class="img box-shadow">
                     {% end %}
-                    <script>fiximg('goods-img','check-lg-img','img');//商品图片高度修正</script>
                 </a>
             </div>
             <input type="hidden" class="fruit_intro" value="{{dry_fruit.intro}}"/>
-            <div class="col-lg-9 col-md-9 col-xs-7 col-sm-9 p0">
+            <div class="col-lg-9 col-md-9 col-xs-8 col-sm-9 plr5">
                 <p>
                     <span class="pull-left color fruit-name">{{dry_fruit.name}}</span>
                     <span class="pull-right text-grey">销量：{{dry_fruit.saled}}</span>
@@ -169,8 +169,7 @@
                     {% end %}
                 </ul>
             </div>
-            <div class="col-sm-1 col-xs-1 pull-right fruit-class text-white text-shadow icon-bg font11">{{dry_fruit.fruit_type.name}}</div>
-            <script>fixclass('fruit-class')</script>
+            <div class="col-lg-1 col-md-1 col-xs-1 col-sm-1 p0 pull-right fruit-class text-white text-shadow icon-bg font11"><div class="class-inner">{{dry_fruit.fruit_type.name}}</div></div>
         </div>
     </li>
     {% end %}
@@ -184,19 +183,18 @@
     {% for mgood in mgoods[menu.id]%}
     <li class="goods-list-item  TDSG font14" data-id="{{mgood.id}}">
         <div class="bg set-w100-fle">
-            <div class="goods-img w22 pull-left box-shadow">
+            <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
                 <a href="javascript:;" class="check-lg-img">
                     <span class="tag bg-green text-white text-center tagItem font8" data-id="{{mgood.tag}}">hot</span>
                     {% if mgood.img_url %}
-                    <img src="{{mgood.img_url}}?imageView/1/w/200/h/200" class="img">
+                    <img src="{{mgood.img_url}}?imageView/1/w/200/h/200" class="img box-shadow">
                     {% else %}
-                    <img src="/static/design_img/TDSG.png" class="img">
+                    <img src="/static/design_img/TDSG.png" class="img box-shadow">
                     {% end %}
-                    <script>fiximg('goods-img','check-lg-img','img');//商品图片高度修正</script>
                 </a>
             </div>
             <input type="hidden" class="fruit_intro" value="{{mgood.intro}}"/>
-            <div class="col-lg-9 col-md-9 col-xs-7 col-sm-9 p0">
+            <div class="col-lg-9 col-md-9 col-xs-8 col-sm-9 plr5">
                 <p>
                     <span class="pull-left color fruit-name">{{mgood.name}}</span>
                     <span class="pull-right text-grey">销量：{{mgood.saled}}</span>
@@ -240,8 +238,8 @@
                     {% end %}
                 </ul>
             </div>
-            <div class="col-sm-1 col-xs-1 pull-right fruit-class text-white text-shadow icon-bg font11">{{mgood.name}}</div>
-            <script>fixclass('fruit-class')</script>
+            <div class="col-lg-1 col-md-1 col-xs-1 col-sm-1 p0 pull-right fruit-class text-white text-shadow icon-bg font11"><div class="class-inner">{{mgood.name}}</div></div>
+            <script>fixclass('fruit-class','great-number','img','class-inner')</script>
         </div>
     </li>
     {% end %}

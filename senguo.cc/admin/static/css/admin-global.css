@@ -96,7 +96,8 @@ img{border:none;}
 /*搜索框样式*/
 .search-input{}
 .search-input input{float:left;}
-.search-input .search-con{width:266px;height:28px;border:1px solid #d9d9d9;color:#999;line-height:28px;text-indent:30px;background:url("../images/search-icon.gif") no-repeat 8px center;}
+.search-input .search-con{width:180px;height:28px;border:1px solid #d9d9d9;color:#999;line-height:28px;text-indent:30px;background:url("../images/search-icon.gif") no-repeat 8px center;}
+.search-input .search-con:focus{width:266px;}
 .search-input .search-btn{width:70px;height:28px;border:1px solid #d9d9d9;border-left:none;border-top-right-radius:2px;border-bottom-right-radius:2px;background:#f2f2f2;color:#666;}
 
 /*模式开启、停用、设置样式*/
@@ -171,6 +172,7 @@ img{border:none;}
 .set-left10{margin-left:10px;}
 .set-right20{margin-right:20px;}
 .set-left20{margin-left:20px;}
+.mb-0{margin-bottom:0px;}
 
 .set-bottom10{margin-bottom:10px;}
 

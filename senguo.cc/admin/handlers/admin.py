@@ -357,7 +357,7 @@ class Shelf(AdminBaseHandler):
                                                 storage = data["storage"],
                                                 unit=data["unit"],
                                                 tag = data["tag"],
-                                                img_url = data["img_url"],
+                                                #img_url = data["img_url"],
                                                 intro = data["intro"],
                                                 priority=data["priority"])
         elif action in ["del_charge_type", "edit_charge_type"]: #charge_type_id
@@ -399,7 +399,7 @@ class Shelf(AdminBaseHandler):
                                                 storage = data["storage"],
                                                 unit=data["unit"],
                                                 tag = data["tag"],
-                                                img_url = data["img_url"],
+                                                #img_url = data["img_url"],
                                                 intro = data["intro"],
                                                 priority=data["priority"])
         elif action in ["del_mcharge_type", "edit_mcharge_type"]: #mcharge_type_id

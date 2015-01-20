@@ -24,12 +24,6 @@ $(document).ready(function(){
         var id=$this.data('id');
         tagText($this,id);
     });
-    //商品点赞高度修正
-    $('.great-number').each(function(){
-        var $this=$(this);
-        if(s_width>1024) $this.css({'height':s_height/1.8+'px','line-height':s_height/1.8+'px'});
-        else $this.css({'height':s_height/3+'px','line-height':s_height/3+'px'});
-    });
     //计价方式折叠/显示
     $('.charge-first').each(function(){
         var $this=$(this);
@@ -76,7 +70,6 @@ $(document).ready(function(){
     });
 
 });
-
 function goodsNum(target,action){
     var url='';
     var action=action;
