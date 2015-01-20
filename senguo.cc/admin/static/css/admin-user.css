@@ -1,0 +1,40 @@
+.users-order-by{overflow:hidden;height:40px;border-bottom:2px solid #999;}
+.users-order-by ul{margin-left:-1px;position:absolute;font-size:14px;}
+.users-order-by ul li{float:left;width:100px;height:40px;line-height:40px;text-align:center;}
+.users-order-by ul li a{display:inline-block;color:#333;border-left:1px solid #cbcbcb;font-size:14px;width:100%;height:16px;line-height:16px;}
+.users-order-by ul li a span{color:#ff6666;}
+.users-order-by ul .active{border-bottom:2px solid #ff6666;}
+.users-order-by ul .active a{font-weight:bold;color:#ff6666;}
+.dropdown-menu{left:0 !important;margin-top:-1px;}
+.dropdown-menu li a{padding:3px 0;}
+
+.group-select{width:74px;height:26px;color:#666;}
+.groups{margin-top:10px;margin-right:20px;}
+.users-list-action{padding:8px 0 12px;border:1px solid #cdcdcd;border-bottom:none;margin-top:10px;}
+.users-list-action .check-all{float:left;margin:9px 3px 0 15px;}
+.users-list-action .move{display:inline-block;margin-top:7px;margin-left:5px;}
+
+.users-list{height:auto;border:1px solid #cdcdcd;border-top:none;}
+.users-list .users-list-item{height:auto;border-top:1px solid #cdcdcd;}
+.users-list .users-list-item:hover{background:#f2f2f2;}
+.users-list li .show-info{padding:10px;height:70px;}
+.users-list li .show-info .check-box{margin:0 10px 0 25px;}
+.users-list li .show-info .user-img{width:50px;height:50px;}
+.users-list li .show-info .user-info{width:150px;margin-left:20px;margin-top:3px;}
+.users-list li .show-info .user-info .user-name{margin-bottom:8px;}
+.users-list li .show-info .user-info .user-name .user-sex{width:14px;height:14px;background:url("../images/container-icon2.png") no-repeat;margin-left:5px;margin-top:2px;}
+.users-list li .show-info .user-info .user-name .women{background-position:-21px -16px;}
+.users-list li .show-info .user-info .user-name .men{background-position:0px -32px;}
+.users-list li .show-info .user-info .user-info-con{line-height:16px;}
+.users-list li .show-info .user-info .user-info-con .user-level{width:24px;height:14px;background:#f7c468;}
+.users-list li .show-info .user-info .user-info-con .level-price{font-weight:bold;}
+.users-list li .show-info .user-info  .user-info-con .user-account{background:url("../images/container-icon2.png") no-repeat;padding-left:15px;font-weight:bold;}
+.users-list li .show-info .history-order{text-decoration:underline;line-height:50px;}
+
+.users-list li .hide-info{height:auto;}
+.users-list li .hide-info .personal-info{padding:0 50px;margin-top:10px;}
+.users-list li .hide-info .focus-shop{border-left:1px solid #ccc;min-height:140px;padding:10px 0 10px 50px;}
+.users-list li .hide-info .focus-shop .focus-shop-list li{border:1px solid #ddd;width:144px;height:28px;line-height:28px;margin-right:30px;border-radius:1px;margin-bottom:10px;overflow:hidden;}
+.users-list li .hide-info .focus-shop .send-address{display:inline-block;width:388px;height:26px;line-height:26px;text-indent:10px;border:1px solid #ccc;}
+.users-list li .hide-info .focus-shop .address-list{width:388px;border:1px solid #ccc;border-top:none;overflow:hidden;padding:5px 15px 10px 15px;}
+.users-list li .hide-info .focus-shop .address-list li{border-bottom:1px solid #ccc;padding:5px 0;}

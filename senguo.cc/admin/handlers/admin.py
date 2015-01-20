@@ -462,7 +462,7 @@ class Follower(AdminBaseHandler):
                 filter(models.CustomerShopFollow.customer_id == customers[x].id).all()
             customers[x].shop_names = [y[0] for y in shop_names]
 
-        return self.render("", customers=customers)
+        return self.render("admin/user-manage.html", customers=customers,context=dict(subpage='user'))
 
 class Staff(AdminBaseHandler):
     @tornado.web.authenticated
@@ -606,7 +606,7 @@ class ShopConfig(AdminBaseHandler):
         address = self.code_to_text("shop_city", self.current_shop.shop_city) +\
                   " " + self.current_shop.shop_address_detail
         service_area = self.code_to_text("service_area", self.current_shop.shop_service_area)
-        return self.render("admin/shop-info-set.html", address=address, service_area=service_area, context=dict(shopSubPage='info_set'))
+        return self.render("admin/shop-info-set.html", address=address, service_area=service_area, context=dict(subpage='shop_set',shopSubPage='info_set'))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")
