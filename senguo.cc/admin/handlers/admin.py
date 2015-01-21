@@ -94,6 +94,29 @@ class Home(AdminBaseHandler):
         self.set_secure_cookie("shop_id", str(shop_id), domain=ROOT_HOST_NAME)
         return self.send_success()
 
+class Comment(AdminBaseHandler):
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("page:int")
+    def get(self):
+        return self.render("", comments=self.get_comments(self.current_shop.id, self.args["page"], 20))
+
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action", "reply:str", "order_id:int")
+    def post(self):
+        action = self.args["action"]
+        reply = self.args["reply"]
+        order_id = self.args["order_id"]
+        if action == "reply":
+            try:
+                order = self.session(models.Order).filter_by(id=order_id).one()
+            except:
+                return self.send_error(404)
+            if order.shop_id != self.current_shop.id:
+                return self.send_error(403)
+            order.comment_reply = reply
+            self.session.commit()
+        return self.send_success()
+
 class Order(AdminBaseHandler):
     # todo: 当订单越来越多时，current_shop.orders 会不会越来越占内存？
 
@@ -620,9 +643,13 @@ class ShopConfig(AdminBaseHandler):
             return self.send_qiniu_token("shop", shop.id)
         elif action == "edit_shop_code":
             if len(data["shop_code"]) < 4:
-                return self.send_fail("至少要4位")
+                return self.send_fail("店铺号至少要4位")
             if self.session.query(models.Shop).filter_by(shop_code=data["shop_code"]).first():
-                return self.send_fail("代号已被注册，请另选其他代号")
+                return self.send_fail("店铺号已被注册")
+            reserve_code = ('senguo', 'senguocc', 'shuiguobang', 'shuiguo', '0000', '1111', '2222', '3333',
+                            '4444', '5555', '6666', '7777', '8888', '9999')
+            if data["shop_code"] in reserve_code:
+                return self.send_fail("该店铺号为系统保留号，不允许注册")
             shop.shop_code = data["shop_code"]
         elif action == "edit_shop_intro":
             shop.shop_intro = data["shop_intro"]
