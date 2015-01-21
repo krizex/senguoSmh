@@ -172,6 +172,31 @@ class _AccountBaseHandler(GlobalBaseHandler):
                                        "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
         return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 
+    def get_comments(self, shop_id, page=0, page_size=5):
+        return self.session.query(models.Accountinfo.headimgurl, models.Accountinfo.nickname,
+                                  models.Order.comment, models.Order.comment_create_date, models.Order.id).\
+            filter(models.Order.shop_id == shop_id, models.Order.status == 6,
+                   models.Order.customer_id == models.Accountinfo.id).\
+            order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+
+    def timedelta(self, date):
+        if not date:
+            return "1年前"
+        timedelta = datetime.datetime.now()-date
+        if timedelta.days >= 365:
+            return "%d年前" % (timedelta.days/365)
+        elif timedelta.days >= 30:
+            return "%d月前" % (timedelta.days/30)
+        elif timedelta.days > 0:
+            return "%d天前" % timedelta.days
+        elif timedelta.seconds >= 3600:
+            return "%d小时前" % (timedelta.seconds/3600)
+        elif timedelta.seconds >= 60:
+            return "%d分钟前" % (timedelta.seconds/60)
+        else:
+            return "%d秒前" % timedelta.seconds
+
+
 class SuperBaseHandler(_AccountBaseHandler):
     __account_model__ = models.SuperAdmin
     __account_cookie_name__ = "super_id"
@@ -310,29 +335,6 @@ class CustomerBaseHandler(_AccountBaseHandler):
                 mgoodses[mcharge_type.id]={"mcharge_type": mcharge_type, "num": d[mcharge_type.id]}
         return fruits, mgoodses
 
-    def get_comments(self, shop_id, page=0, page_size=5):
-        return self.session.query(models.Accountinfo.headimgurl, models.Accountinfo.nickname,
-                                  models.Order.comment, models.Order.comment_create_date).\
-            filter(models.Order.shop_id == shop_id, models.Order.status == 6,
-                   models.Order.customer_id == models.Accountinfo.id).\
-            order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
-
-    def timedelta(self, date):
-        if not date:
-            return "1年前"
-        timedelta = datetime.datetime.now()-date
-        if timedelta.days >= 365:
-            return "%d年前" % (timedelta.days/365)
-        elif timedelta.days >= 30:
-            return "%d月前" % (timedelta.days/30)
-        elif timedelta.days > 0:
-            return "%d天前" % timedelta.days
-        elif timedelta.seconds >= 3600:
-            return "%d小时前" % (timedelta.seconds/3600)
-        elif timedelta.seconds >= 60:
-            return "%d分钟前" % (timedelta.seconds/60)
-        else:
-            return "%d秒前" % timedelta.seconds
 
     @property
     def shop_id(self):

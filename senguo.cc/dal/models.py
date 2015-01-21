@@ -837,6 +837,7 @@ class Order(MapBase, _CommonApi):
     staff_remark = Column(String(100)) #员工备注（订单可能出状况了）
     comment = Column(String(300))  # 评论
     comment_create_date = Column(DateTime)
+    comment_reply = Column(String(300))  # 商家回复评论
     start_time = Column(Time)
     end_time = Column(Time)
     create_date = Column(DateTime, default=func.now())
