@@ -1,10 +1,3 @@
-.users-order-by{overflow:hidden;height:40px;border-bottom:2px solid #999;}
-.users-order-by ul{margin-left:-1px;position:absolute;font-size:14px;}
-.users-order-by ul li{float:left;width:100px;height:40px;line-height:40px;text-align:center;}
-.users-order-by ul li a{display:inline-block;color:#333;border-left:1px solid #cbcbcb;font-size:14px;width:100%;height:16px;line-height:16px;}
-.users-order-by ul li a span{color:#ff6666;}
-.users-order-by ul .active{border-bottom:2px solid #ff6666;}
-.users-order-by ul .active a{font-weight:bold;color:#ff6666;}
 .dropdown-menu{left:0 !important;margin-top:-1px;}
 .dropdown-menu li a{padding:3px 0;}
 

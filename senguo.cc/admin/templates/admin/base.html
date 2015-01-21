@@ -90,6 +90,7 @@
 {% set shop_set_active = ""%}
 {% set staff_active = ""%}
 {% set user_active = ""%}
+{% set comment_active = ""%}
 
 {% if subpage == 'goods' %}
     {% set goods_active = 'active' %}
@@ -101,6 +102,8 @@
     {% set staff_active = 'active' %}
 {% elif subpage == 'user' %}
     {% set user_active = 'active' %}
+{% elif subpage == 'comment' %}
+    {% set comment_active = 'active' %}
 {% end %}
 <main class="container">
     <div class="container-left pull-left">
@@ -114,7 +117,7 @@
             </li>
             <li>
                 <span class="server"><i></i>客服</span>
-                <a href="#" class="">消息与评价</a>
+                <a href="{{reverse_url('adminComment')}}?page=0" class="">消息与评价</a>
             </li>
             <li>
                 <span class="manage"><i></i>管理</span>

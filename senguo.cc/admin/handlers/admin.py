@@ -98,7 +98,7 @@ class Comment(AdminBaseHandler):
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("page:int")
     def get(self):
-        return self.render("", comments=self.get_comments(self.current_shop.id, self.args["page"], 20))
+        return self.render("admin/comment.html", comments=self.get_comments(self.current_shop.id, self.args["page"], 20),context=dict(subpage='comment'))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "reply:str", "order_id:int")
@@ -108,7 +108,7 @@ class Comment(AdminBaseHandler):
         order_id = self.args["order_id"]
         if action == "reply":
             try:
-                order = self.session(models.Order).filter_by(id=order_id).one()
+                order = self.session.query(models.Order).filter_by(id=order_id).one()
             except:
                 return self.send_error(404)
             if order.shop_id != self.current_shop.id:
