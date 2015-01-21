@@ -278,7 +278,7 @@ class Order(AdminBaseHandler):
 class Shelf(AdminBaseHandler):
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("action", "id:int")
+    @AdminBaseHandler.check_arguments("action", "id?:int")
     def get(self):
         # try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
         # except:return self.send_error(404)
@@ -286,23 +286,32 @@ class Shelf(AdminBaseHandler):
         #     return self.send_error(403)
 
         action = self.args["action"]
-        id = self.args["id"]
         fruit_types = self.session.query(models.FruitType).all()
+        fruit_type_d = {}
+        for fruit_type in fruit_types:
+            fruit_type_d[fruit_type.id] = {"code": fruit_type.code, "name": fruit_type.name, "sum": 0}
         if action == "home":
             return self.render("admin/goods-preview.html", fruit_types=fruit_types, menus=self.current_shop.menus,
                                 context=dict(subpage="goods", goodsSubpage="home"))
-        elif action == "fruit":
+        elif action in ("all", "fruit"):
             fruits=[]
-            for fruit in self.current_shop.fruits:
-                if fruit.fruit_type_id == id:
-                    fruits.append(fruit)
-            return self.render("admin/goods-fruit.html", fruits=fruits, fruit_types=fruit_types, menus=self.current_shop.menus,
-                               context=dict(subpage="goods",goodsSubpage="fruit"))
+            if action == "all":
+                fruits = self.current_shop.fruits
+                for fruit in self.current_shop.fruits:
+                    fruit_type_d[fruit.fruit_type_id]["sum"] += 1
+            elif action == "fruit":
+                for fruit in self.current_shop.fruits:
+                    if fruit.fruit_type_id == self.args["id"]:
+                        fruits.append(fruit)
+                    fruit_type_d[fruit.fruit_type_id]["sum"] += 1
+            return self.render("admin/goods-fruit.html", fruits=fruits, fruit_type_d=fruit_type_d,
+                               menus=self.current_shop.menus,
+                               context=dict(subpage="goods", goodsSubpage="fruit"))
         elif action == "menu":#todo 合法性检查
-            try:mgoodses = self.session.query(models.MGoods).filter_by(menu_id=id).all()
+            try:mgoodses = self.session.query(models.MGoods).filter_by(menu_id=self.args["id"]).all()
             except:return self.send_error(404)
-            return self.render("admin/goods-menu.html", mgoodses=mgoodses, fruit_types=fruit_types, menus=self.current_shop.menus,
-                               context=dict(subpage="goods",goodsSubpage="menu"))
+            return self.render("admin/goods-menu.html", mgoodses=mgoodses, menus=self.current_shop.menus,
+                               context=dict(subpage="goods", goodsSubpage="menu"))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data", "id?:int", "charge_type_id?:int")
