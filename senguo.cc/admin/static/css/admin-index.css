@@ -1,10 +1,11 @@
 .index-title{width:100%;float:left;}
-.index-title .title-style{width:49%;}
+.index-title .title-style{width:49%;position:relative;}
 .index-title .title-style2{width:50%;padding:25px 0;}
-.index-title .bg1{background:#6ab7e3;}
-.index-title .bg2{background:#7cb9e5;}
-.index-title .bg3{background:#49d785;}
-.index-title .bg4{background:#60d296;}
+.index-title .new-item{background:#6ab7e3;}
+.index-title .new-item:hover{background:#7cb9e5;}
+.index-title .item{background:#49d785;}
+.index-title .item:hover{background:#60d296;}
+.index-title .line{width:1px;height:50px;background:#fff;position:absolute;left:222px;top:25px;}
 .index-title a{color:#fff;text-align:center;}
 .index-title a:hover{text-decoration:none;}
 .index-title a span{font-size:20px;display:inline-block;width:100%;}

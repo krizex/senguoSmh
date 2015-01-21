@@ -180,7 +180,8 @@ img{border:none;}
 .set-width-float{width:100%;float:left;}
 input{color:#333;text-indent:5px;}
 
-.font14{font-size:14px;}
+.font12{font-size:12px !important;}
+.font14{font-size:14px !important;}
 
 .item-hide{display:none;}
 

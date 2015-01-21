@@ -167,6 +167,7 @@ function infoEdit(target){
                 if(action_name=='name')
                 {
                    $('.name').text(shop_name);
+                   $('#shop_name').text(shop_name).attr({'title':shop_name});
                 }
                 else if(action_name=='code')
                 {
@@ -186,7 +187,7 @@ function infoEdit(target){
                 }
                 else if(action_name=='area')
                 {
-                    $('.area').text(deliver_area);
+                    $('.deliver_area').text(deliver_area);
                 }
                 else if(action_name=='entity')
                 {
