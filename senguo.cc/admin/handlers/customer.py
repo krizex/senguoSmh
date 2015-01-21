@@ -214,7 +214,8 @@ class Market(CustomerBaseHandler):
         shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
         if not shop:
             return self.send_error(404)
-        self.set_cookie("market_shop_id", str(shop.id))
+        self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
+        self._shop_code = shop.shop_code
         try:cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).one()
         except:
             self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))
