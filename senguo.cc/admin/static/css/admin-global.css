@@ -153,6 +153,7 @@ img{border:none;}
 .text-pink{color:#ff6666 !important;}
 .text-red{color:#E01445;}
 .text-orange{color:#E07D14;}
+.text-orange2{color:#ec6b10}
 .text-black{color:#000;}
 .text-center{text-align:center;}
 
@@ -192,6 +193,8 @@ input{color:#333;text-indent:5px;}
 
 .font12{font-size:12px !important;}
 .font14{font-size:14px !important;}
+.font16{font-size:16px !important;}
+.font18{font-size:18px !important;}
 
 .item-hide{display:none;}
 

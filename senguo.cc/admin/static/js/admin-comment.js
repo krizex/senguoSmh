@@ -4,8 +4,6 @@ $(document).ready(function(){
         order_id=Int($this.parents('li').find('.order_id').text());
         $this.on('click',function(){
             $('.reply-box').modal('show');
-            console.log(order_id);
-
         });
     });
     //回复
@@ -16,7 +14,7 @@ $(document).ready(function(){
     $('.page-now').text(page+1);
     $('.page-total').text(totalt_page);
     var user_number=$('.comment-list-item').length;
-    getpPage(page,'http://zone.senguo.cc/admin/comment?page=',user_number);
+    getpPage(page,'/admin/comment?page=',user_number);
 
 });
 var order_id;

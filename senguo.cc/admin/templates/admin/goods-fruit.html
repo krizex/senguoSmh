@@ -1,6 +1,9 @@
 {% extends 'goods-base.html' %}
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-goods-fruit.css')}}"/>{% end %}
 {% block goodsLeft %}
+<div class="fruit-left-title">
+    已选择：<span class="fruit-type set-right10 text-pink"></span>已建立{{len(fruits)}}种类别的"<span class="fruit-type text-pink"></span>"，在售<span class="fruit-shelve-num text-pink"></span>种
+</div>
 <ul class="goods-list clearfix">
     {% for fruit in fruits%}
     <li class="goods-list-item goods-item" data-id="{{fruit.id}}">
@@ -178,7 +181,59 @@
 </div>
 <!--编辑计价方式end-->
 {% end %}
-
+{% block goodsRight %}
+<div class="shelve-list pull-left">
+    <div class="fruit-right-title clearfix">
+        <span class="tit font14">水果速选框</span>
+        <button class="btn bg-green text-white font12 pull-right" id="preview_choose">图片速选</button>
+    </div>
+    <span class="title set-inl-blo set-width-float bg-grey2">已上架(<span class="shelve-num"></span>)</span>
+    <div class="shelveList shelve-list type-class">
+        {% for key in fruit_type_d %}
+        {% if fruit_type_d[key]['sum'] !=0 %}
+        <a href="{{reverse_url('adminShelf')}}?action=fruit&id={{key}}" data-id="{{key}}" data-class="fruit" class="text-white" data-code="{{fruit_type_d[key]['code']}}">
+           <span class="name">{{fruit_type_d[key]['name']}}</span>
+           (<span class="num">{{fruit_type_d[key]['sum']}}</span>)
+        </a>
+        {% end %}
+        {% end %}
+    </div>
+    <span class="title set-inl-blo set-width-float bg-grey2">未上架(<span class="unshelve-num"></span>)</span>
+    <div class="unshelveList shelve-list type-class">
+        {% for key in fruit_type_d %}
+        {% if fruit_type_d[key]['sum'] == 0 %}
+        <a href="{{reverse_url('adminShelf')}}?action=fruit&id={{key}}" data-id="{{key}}" data-class="fruit" class="text-white" data-code="{{fruit_type_d[key]['code']}}">
+            <span class="name">{{fruit_type_d[key]['name']}}</span>
+            <span style="display:none">(<span class="num">{{fruit_type_d[key]['sum']}}</span>)</span>
+        </a>
+        {% end %}
+        {% end %}
+    </div>
+    <hr/>
+    <p class="text-center">如没有您需要上架的水果种类，请关注“森果”公众号，将您需要的水果种类反馈到森果公众平台上。</p>
+</div>
+<div class="modal fade "  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" id="preview_box">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body set-width-float">
+                <h4 class="text-center text-white">图片速选框</h4>
+                <hr/>
+                <div class="preview-box">
+                    <ul class="preview-shelve-list preview-list clearfix">
+                    </ul>
+                </div>
+                <input type="hidden" id="fruit_type" value="{{fruit_type_d}}"/>
+                <p class="clearfix">
+                    <button class="btn pull-right bg-white preview-prepage" style="display:none">上一页</button>
+                    <button class="btn pull-right bg-white preview-nextpage">下一页</button>
+                </p>
+                <hr/>
+                <p class="clearfix"><button class="btn pull-right" data-dismiss="modal">返回文字速选框</button></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
 {% block bottom %}
 <script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>
 <script src="{{static_url('js/admin-goods-fruit.js')}}"></script>

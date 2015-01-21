@@ -68,12 +68,12 @@
 .dropdown-toggle{padding:3px 12px;}
 
 .shelve-list{width:210px;overflow:hidden;border-left:1px solid #ccc;margin-left:-1px;}
-.shelve-list .title{display:inline-block;width:100%;height:34px;background:#f2f2f2;font-size:14px;line-height:34px;padding-left:15px;}
-.shelve-list .shelve{width:100%;float:left;margin-bottom:10px;}
-.shelve-list .shelve a{display:inline-block;float:left;background:#44b549;color:#fff;width:50px;height:24px;line-height:24px;text-align:center;border-radius:1px;margin-left:15px;margin-top:10px;}
-.shelve-list .un-shelve{width:100%;float:left;margin-bottom:10px;}
-.shelve-list .un-shelve a{display:inline-block;float:left;background:#999;color:#fff;width:50px;height:24px;line-height:24px;text-align:center;border-radius:1px;margin-left:15px;margin-top:10px;}
-.shelve-list .supply-new-item{padding:5px;margin-left:30%;margin-top:10px;}
+.shelve-list .title{height:34px;font-size:14px;line-height:34px;padding-left:15px;}
+.shelve-list .shelve-list{margin-bottom:10px;width:240px;}
+.shelve-list .shelve-list a{display:inline-block;float:left;width:60px;height:24px;line-height:24px;text-align:center;border-radius:1px;margin-left:8px;margin-top:10px;}
+.shelve-list .shelveList a{background:#44b549;}
+.shelve-list .unshelveList a{background:#999;}
+.shelve-list a.active{background:#ff6563;}
 
 .fruit-preview-list{background:#f2f2f2;padding:10px;overflow:hidden;}
 .fruit-preview-list ul{padding-left:35px;}
@@ -88,3 +88,15 @@
 .w-auto-60{width:60% !important;}
 
 .set-padding-10{padding:10px;}
+.fruit-left-title{padding:10px;border-bottom:1px solid #ddd;}
+.fruit-right-title{padding:10px;border-bottom:1px solid #ddd;}
+.fruit-right-title .btn{border-radius:0px;padding:3px 8px;}
+.fruit-right-title .tit{line-height:26px;padding-left:20px;}
+
+#preview_box .modal-dialog{width:1200px;margin:0 auto;}
+#preview_box .modal-body{padding-top:0px;}
+.preview-box{position:relative;height:420px;overflow:hidden;}
+.preview-list{width:1250px;position:absolute;}
+.preview-list li{float:left;height:120px;margin-right:25px;margin-bottom:25px;padding:5px;border:2px solid #fff;overflow:hidden;text-align:center;}
+.preview-list li img{width:80px;height::80px;}
+.preview-list li p{height:30px;line-height:30px;margin-bottom:0px;font-size:14px;}
