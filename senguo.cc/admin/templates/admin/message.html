@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}用户管理{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-message.css')}}"/>{% end %}
+{% block content %}
+<span class="right-title">消息与评价</span>
+<div class="users-order-by">
+    <ul class="right-nav pull-left">
+        <li class="active"><a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0">所有评价</a></li>
+        <li><a href="{{reverse_url('adminStaffFollower')}}?action=old&&order_by=time&&page=0">收藏的评价</a></li>
+    </ul>
+    <div class="search-input input-group pull-right">
+</div>
+{% if len(customers) != 0%}
+<ul class=" ">
+    {% for customer in customers %}
+    <li class="">
+        <img src=""/>
+        <div class="">
+            <p>
+
+            </p>
+            <p>
+
+            </p>
+        </div>
+
+    </li>
+    {% end %}
+</ul>
+<div class="users-pagination list-pagination">
+    <ul>
+        <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+        <li>
+            <span class="page-now"></span>/<span class="page-total">{{len(customers)/20}}</span>
+        </li>
+        <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+        <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+        <li><a href="javascript:;" class="jump-to">跳转</a></li>
+    </ul>
+</div>
+{% else %}
+<h4 class="text-center">无用户信息！</h4>
+{% end %}
+{% end %}
+{% block bottom %}<script src="{{static_url('js/admin-message.js')}}"></script>{% end %}
