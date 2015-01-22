@@ -38,3 +38,29 @@ function hide(trigger,target){
         target.hide();
     })
 }
+
+function getpPage(page,url,list){
+    if(page===0) $('.pre-page').hide();
+    else{
+        $('.pre-page').on('click',function(){
+            var $this=$(this);
+            $this.attr({'href':url+(page-1)});
+        });
+    }
+    if(list<20){
+        $('.jump-to').hide();
+        $('.input-page').hide();
+        $('.next-page').hide();
+    }
+    else{
+        $('.next-page').on('click',function(){
+            var $this=$(this);
+            $this.attr({'href':url+(page+1)});
+        });
+    }
+    $('.jump-to').on('click',function(){
+        var $this=$(this);
+        var page=Int($('.input-page').val().trim());
+        $this.attr({'href':url+page});
+    });
+}
