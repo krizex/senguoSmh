@@ -1,158 +1,44 @@
 {% extends 'base.html' %}
-{% block title %}消息与评价{% end %}
+{% block title %}用户统计{% end %}
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-count.css')}}"/>{% end %}
 {% block content %}
 <span class="right-title">用户分析</span>
-<div class="">
-    <a href="javascript:;" class="pre_month"> < </a>
-    <span></span>
-    <a href="javascript:;" class="next_month"> > </a>
+<div class="box">
+    <div class="month-change center-block font18">
+        <a href="javascript:;" class="pre_month text-grey2"> < </a>
+        <span class="">
+            <span class="year"></span>年
+            <span class="month"></span>月
+        </span>
+        <a href="javascript:;" class="next_month text-grey2"> > </a>
+    </div>
+    <div id="user_trend" style="height:400px"></div>
+    <p class="text-center">新增用户数</p>
+    <hr/>
+    <p class="tit font16">详细数据</p>
+    <table class="detail-count text-center">
+        <tr class="bg-grey2">
+            <td>时间</td>
+            <td>新增用户</td>
+            <td>总用户数</td>
+        </tr>
+    </table>
+    <div class="users-pagination list-pagination clearfix">
+        <ul>
+            <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+            <li>
+                <span class="page-now"></span>/<span class="page-total"></span>
+            </li>
+            <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+            <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+            <li><a href="javascript:;" class="jump-to">跳转</a></li>
+        </ul>
+    </div>
+    <hr/>
+    <div id="user_sex" style="height:400px"></div>
 </div>
-<div id="user_trend" style="height:400px"></div>
-<div id="user_sex" style="height:400px"></div>
 {% end %}
 {% block bottom %}
-<script src="{{static_url('js/echcarts.js')}}"></script>
-<script type="text/javascript">
-    // 路径配置
-    require.config({
-        paths: {
-            echarts: '/static/js'
-        }
-    });
-    require(
-            [
-                'echarts',
-                'echarts/chart/bar',
-                'echarts/chart/line',
-                'echarts/chart/pie'
-            ],
-            function (ec) {
-                var myChart = ec.init($('#user_trend'));
-                myChart.showLoading({
-                    text: '正在努力的读取数据中...'
-                });
-                // ajax getting data...............
-
-                // ajax callback
-                myChart.hideLoading();
-                var option = {
-                    tooltip : {
-                        trigger: 'axis'
-                    },
-                    toolbox: {
-                        show : true,
-                        feature : {
-                            mark : {show: true},
-                            dataView : {show: true, readOnly: false},
-                            magicType: {show: true, type: ['line', 'bar']},
-                            restore : {show: true},
-                            saveAsImage : {show: true}
-                        }
-                    },
-                    calculable : true,
-                    legend: {
-                        data:['新增用户','总用户']
-                    },
-                    xAxis : [
-                        {
-                            type : 'category',
-                            data : []
-                        }
-                    ],
-                    yAxis : [
-                        {
-                            type : 'value',
-                            name : '增长趋势',
-                            axisLabel : {
-                                formatter: '{value}'
-                            }
-                        },
-                        {
-                        }
-                    ],
-                    series : [
-
-                        {
-                            name:'新增用户',
-                            type:'bar',
-                            data:[]
-                        },
-                        {
-                            name:'总用户',
-                            type:'bar',
-                            data:[]
-                        },
-                    ]
-                };
-        myChart.setOption(option);
-        myChart.clear();
-        myChart.dispose();
-        },
-        function (ec) {
-            var myChart = ec.init($('#user_sex'));
-            myChart.showLoading({
-                text: '正在努力的读取数据中...'
-            });
-            // ajax getting data...............
-
-            // ajax callback
-            myChart.hideLoading();
-            option = {
-                title : {
-                    text: '某站点用户访问来源',
-                    subtext: '纯属虚构',
-                    x:'center'
-                },
-                tooltip : {
-                    trigger: 'item',
-                    formatter: "{a} <br/>{b} : {c} ({d}%)"
-                },
-                legend: {
-                    orient : 'vertical',
-                    x : 'left',
-                    data:['男','女','未知']
-                },
-                toolbox: {
-                    show : true,
-                    feature : {
-                        mark : {show: true},
-                        dataView : {show: true, readOnly: false},
-                        magicType : {
-                            show: true,
-                            type: ['pie', 'funnel'],
-                            option: {
-                                funnel: {
-                                    x: '25%',
-                                    width: '50%',
-                                    funnelAlign: 'left',
-                                    max: 1548
-                                }
-                            }
-                        },
-                        restore : {show: true},
-                        saveAsImage : {show: true}
-                    }
-                },
-                calculable : true,
-                series : [
-                    {
-                        name:'访问来源',
-                        type:'pie',
-                        radius : '55%',
-                        center: ['50%', '60%'],
-                        data:[
-                            {value:335, name:'男'},
-                            {value:310, name:'女'},
-                            {value:234, name:'未知'},
-                        ]
-                    }
-                ]
-            };
-            myChart.setOption(option);
-            myChart.clear();
-            myChart.dispose();
-        }
-    );
-</script>
+<script src="{{static_url('js/echarts.js')}}"></script>
+<script src="{{static_url('js/admin-count.js')}}"></script>
 {% end %}

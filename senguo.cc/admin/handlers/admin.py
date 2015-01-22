@@ -97,7 +97,7 @@ class Home(AdminBaseHandler):
 class FollowerStatic(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        return self.render("")
+        return self.render("admin/count.html",context=dict(subpage='userstatic'))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action:str", "page?:int")
@@ -129,7 +129,7 @@ class FollowerStatic(AdminBaseHandler):
                 data[x] = 0
             for follower in followers:
                 data[follower.create_time.day] += 1
-            return self.write(data)
+            return self.send_success(data=data)
         elif action == "table":
             page = self.args["page"]
             s = self.session.query(models.CustomerShopFollow.create_time, func.count()).\
@@ -150,7 +150,7 @@ class FollowerStatic(AdminBaseHandler):
                     i += 1
                 else:
                     data.append(((datetime.datetime.now() - datetime.timedelta(x)).strftime('%y-%m-%d'), 0, total))
-            return self.write(data)
+            return self.send_success(data=data)
         elif action == "sex":
             male_sum = self.session.query(models.Accountinfo).\
                 join(models.CustomerShopFollow,
@@ -165,7 +165,7 @@ class FollowerStatic(AdminBaseHandler):
                 join(models.CustomerShopFollow,
                      models.Accountinfo.id == models.CustomerShopFollow.customer_id).\
                 filter(models.CustomerShopFollow.shop_id == self.current_shop.id).count()
-            return self.write(male_sum=male_sum, female_sum=female_sum, total=total)
+            return self.send_success(male_sum=male_sum, female_sum=female_sum, total=total)
 
 class Comment(AdminBaseHandler):
     @tornado.web.authenticated

@@ -1,0 +1,5 @@
+.box{border:1px solid #ccc;padding:10px 0;}
+.box .tit{text-indent:30px;line-height:30px;}
+.month-change{width:150px;margin-top:10px;margin-bottom:10px;}
+.detail-count{width:100%;}
+.detail-count td{height:30px;line-height:30px;border-bottom:1px solid #ccc;}

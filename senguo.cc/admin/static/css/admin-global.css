@@ -125,7 +125,7 @@ img{border:none;}
 .stop-mode:hover{color:#fff;}
 
 /*分页样式*/
-.list-pagination{width:100%;float:left;margin-top:20px;margin-bottom:10px;}
+.list-pagination{width:100%;margin-top:20px;margin-bottom:10px;}
 .list-pagination ul{float:right;margin-right:20px;}
 .list-pagination li{float:left;margin-left:5px;line-height:28px;}
 .list-pagination .page-btn{display:inline-block;width:26px;height:26px;border:1px solid #ccc;border-radius:1px;background:url("../images/container-icon.gif") no-repeat;}
