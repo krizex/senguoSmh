@@ -1,7 +1,7 @@
 $(document).ready(function(){
     $('.show-info').on('click',function(){
         var $this=$(this);
-        $this.siblings('.hide-info').slideToggle(100);
+        $this.parents('li').find('.hide-info').slideToggle(100);
     });
     //用户性别
     $('.user-sex').each(function(){

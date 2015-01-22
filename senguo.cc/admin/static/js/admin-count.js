@@ -6,9 +6,15 @@ $(document).ready(function(){
     $('.year').text(current_year);
     $('.month').text(current_month);
     //详细数据统计
-    if(n==0){$('.pre-page').hide();}
-    $('.page-now').text(n+1);
     gettable(0);
+    if(n==0){$('.pre-page').hide();}
+    if((n+1)==page_sum){
+        $('.next-page').hide();
+        $('.input-page').hide();
+        $('.jump-to').hide();
+    }
+    $('.page-now').text(n+1);
+    $('.page-total').text(page_sum);
     $('.pre-page').on('click',function(){
         n=n-1;
         if(n==0){
@@ -21,9 +27,15 @@ $(document).ready(function(){
     });
     $('.next-page').on('click',function(){
         n=n+1;
-        $('.pre-page').show();
-        $('.page-now').text(n+1);
-        gettable(n);
+        if(n==page_sum){
+            $('.next-page').hide();
+        }
+        else {
+            $('.pre-page').show();
+            $('.page-now').text(n+1);
+            gettable(n);
+        }
+
     });
     $('.jump-to').on('click',function(){
         var page=Int($('.input-page').val())-1;
@@ -82,6 +94,11 @@ $(document).ready(function(){
                         }
                     },
                     {
+                        type : 'value',
+                        name : '增长趋势',
+                        axisLabel : {
+                            formatter: '{value}'
+                        }
                     }
                 ],
                 series : [
@@ -146,7 +163,7 @@ $(document).ready(function(){
                 legend: {
                     orient : 'vertical',
                     x : 'left',
-                    data:['男'+male_sum+'','女'+female_sum+'','未知'+unknow_sex+'']
+                    data:['男','女','未知']
                 },
                 toolbox: {
                     show : true,
@@ -197,6 +214,7 @@ var female_sum;
 var male_sum;
 var total_sex;
 var unknow_sex;
+var page_sum;
 var i=0;
 var n=0;
 
@@ -215,6 +233,9 @@ function count(action,page){
                     male_sum=res.male_sum;
                     total_sex=res.total;
                     unknow_sex=(total_sex-male_sum-female_sum);
+                }
+                if(action=='table'){
+                    page_sum=res.page_sum;
                 }
             }
             else return alert(res.error_text);
@@ -242,12 +263,17 @@ function gettable(page){
 function getcurve(i,options,myChart){
     options.xAxis[0].data=[];
     options.series[0].data=[];
+    console.log(options.xAxis[0].data);
+    console.log(options.series[0].data);
     count('curve',i);
     for(var date in data){
         var day=date;
         var num=data[date];
-        options.xAxis[0].data.push(day);
+        options.xAxis[0].data.push(day+'号');
         options.series[0].data.push(num);
     }
+    myChart.refresh();
     myChart.setOption(options);
+    console.log(options.xAxis[0].data);
+    console.log(options.series[0].data);
 }

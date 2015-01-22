@@ -1,14 +1,18 @@
 $(document).ready(function(){
     $('.reply').each(function(){
         var $this=$(this);
-        order_id=Int($this.parents('li').find('.order_id').text());
+        var parent=$this.parents('li');
+        order_id=Int(parent.find('.order_id').text());
         $this.on('click',function(){
-            $('.reply-box').modal('show');
+            item_index=parent.index();
+            $('.reply-box').modal('show').data({'id':item_index});
         });
+
     });
     //回复
     $('.reply-sure').on('click',function(){
-        replay(order_id);
+        var index=$('.reply-box').data('id');
+        replay(order_id,index);
     });
     //翻页
     $('.page-now').text(page+1);
@@ -20,8 +24,9 @@ $(document).ready(function(){
 var order_id;
 var page=Int($.getUrlParam('page'));
 var totalt_page=Math.ceil($('.page-total').text());
+var item_index;
 
-function replay(id){
+function replay(id,index){
     var url='';
     var action='reply';
     var reply=$('.reply-content').val().trim();
@@ -34,6 +39,7 @@ function replay(id){
             if(res.success)
             {
                 $('.reply-box').modal('hide');
+                $('.comment-list-item').eq(index).find('.reply_word').text(reply);
             }
             else alert(res.error_text);
         },

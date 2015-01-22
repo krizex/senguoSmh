@@ -123,8 +123,50 @@ $(document).ready(function(){
                 var $item=$(data);
                 if(typeof(code)=='undefined') $item.find('.imgPreview').attr({'src':'/static/design_img/TDSG.png'});
                 else $item.find('.imgPreview').attr({'src':'/static/design_img/'+code+'.png'});
-                add_goods_box.append($item).modal('show')
-            })
+                upload_item=$item.find('#file_upload');
+                add_goods_box.append($item).modal('show');
+                //商品添加-图片上传
+                upload_item.uploadifive(
+                    {
+                        buttonText    : '',
+                        width: '150px',
+                        uploadScript  : 'http://upload.qiniu.com/',
+                        uploadLimit     : 10,
+                        multi    :     false,
+                        fileSizeLimit   : '10MB',
+                        'fileObjName' : 'file',
+                        'removeCompleted' : true,
+                        'fileType':'*.gif;*.png;*.jpg;*,jpeg',
+                        'formData':{
+                            'key':'',
+                            'token':''
+                        },
+                        'onUpload' :function(){
+                            $.ajaxSetup({
+                                async : false
+                            });
+                            var action="add_img";
+                            var url="/admin/shelf";
+                            var args={action: action};
+                            $.postJson(url,args,
+                                function (res) {
+                                    key=res.key;
+                                    token=res.token;
+                                },
+                                function(){
+                                    alert('网络错误！');}
+                            );
+                            $('#file_upload').data('uploadifive').settings.formData = {
+                                'key':key,
+                                'token':token
+                            };
+                        },
+                        'onUploadComplete':function(){
+                            $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/100/h/100','data-key':key});
+                        }
+
+                    });
+            });
         }
         else alert('该分类下最多可添加5种水果！如仍需添加请选择其他分类！');
         defalutChangeUnit(storage_unit_id);
@@ -261,63 +303,18 @@ $(document).ready(function(){
         popUnitChangeShow(edit_charge_box,edit_unit_id,storage_unit_id);
         edit_charge_box.empty();
 
-        $.getItem('/static/items/admin/edit-chargetype.html',function(data){
-            var $item=$(data);
+        $.getItem('/static/items/admin/edit-chargetype.html',function(data) {
+            var $item = $(data);
             $item.find('.charge-price').val(edit_price);
             $item.find('.charge-num').val(edit_num);
-            $item.find('.charge-unit').attr({'data-id':edit_unit_id});
-            unitText($item.find('.charge-unit'),edit_unit_id);
+            $item.find('.charge-unit').attr({'data-id': edit_unit_id});
+            unitText($item.find('.charge-unit'), edit_unit_id);
             $item.find('.charge-unit-num').val(edit_unit_num);
             $item.find('.unit-change-show').text(storage_unit);
-            if(edit_unit_id!==storage_unit_id) $item.find('.unit-change').removeClass('hidden');
-            else $item.find('.unit-change').addClass('hidden');
-            upload_item=$item.find('#file_upload');
+            if (edit_unit_id !== storage_unit_id) $item.find('.unit-change').removeClass('hidden');
             edit_charge_box.append($item).modal('show');
-            console.log(upload_item+'222222');
-            //商品添加-图片上传
-            upload_item.uploadifive(
-                {
-                    buttonText    : '',
-                    width: '150px',
-                    uploadScript  : 'http://upload.qiniu.com/',
-                    uploadLimit     : 10,
-                    multi    :     false,
-                    fileSizeLimit   : '10MB',
-                    'fileObjName' : 'file',
-                    'removeCompleted' : true,
-                    'fileType':'*.gif;*.png;*.jpg;*,jpeg',
-                    'formData':{
-                        'key':'',
-                        'token':''
-                    },
-                    'onUpload' :function(){
-                        console.log(22222);
-                        $.ajaxSetup({
-                            async : false
-                        });
-                        var action="add_img";
-                        var url="/admin/shelf";
-                        var args={action: action};
-                        $.postJson(url,args,
-                            function (res) {
-                                key=res.key;
-                                token=res.token;
-                            },
-                            function(){
-                                alert('网络错误！');}
-                        );
-                        $('#file_upload').data('uploadifive').settings.formData = {
-                            'key':key,
-                            'token':token
-                        };
-                    },
-                    'onUploadComplete':function(){
-                        $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/100/h/100','data-key':key});
-                    }
 
-                });
         });
-
     });
 
     $('body').on('click','.edit-charge-type',function(){addEditCharge($(this),charge_type_id,'edit_charge_type','.edit-charge-box')});
@@ -334,7 +331,11 @@ $(document).ready(function(){
     $('.edit-recover-img').on('click',function(){
         var $this=$(this);
         var code=$this.parents('.upload-img').find('.imgPreview').data('code');
-        $this.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/'+code+'.png'});
+        if(typeof(code)=='undefined')
+        {
+            $this.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/TDSG.png'});
+        }
+        else $this.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/'+code+'.png'});
     });
 
 

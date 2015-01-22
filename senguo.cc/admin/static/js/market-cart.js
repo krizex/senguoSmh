@@ -445,6 +445,7 @@ function orderSubmit(){
     var mincharge_now=Number($('.mincharge_now .mincharge').text());
     var tip=$('.tip-list').find('.active').data('id');
     total_price=Number($('#list_total_price').text());
+    if(!address_id){return alert('请填写您的收货地址！');}
     if(!tip) tip=0;
     for(var i=0;i<fruit_item.length;i++)
     {
