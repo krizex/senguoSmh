@@ -110,7 +110,7 @@ class FollowerStatic(AdminBaseHandler):
                  31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m-1]
             return date.replace(day=d, month=m, year=y)
         action = self.args["action"]
-        page_size = 15
+
         if action == "curve":
             page = self.args["page"]
             if page == 0:
@@ -122,7 +122,8 @@ class FollowerStatic(AdminBaseHandler):
                 start_date = datetime.datetime(date.year, date.month, 1)
                 end_date = datetime.datetime(date.year, date.month, date.day)
             followers = self.session.query(models.CustomerShopFollow).\
-                filter(models.CustomerShopFollow.create_time >= start_date,
+                filter(models.CustomerShopFollow.shop_id == self.current_shop.id,
+                       models.CustomerShopFollow.create_time >= start_date,
                        models.CustomerShopFollow.create_time <= end_date).all()
             data = {}
             for x in range(1, end_date.day+1):  # 初始化数据
@@ -130,27 +131,44 @@ class FollowerStatic(AdminBaseHandler):
             for follower in followers:
                 data[follower.create_time.day] += 1
             return self.write(data)
+
         elif action == "table":
             page = self.args["page"]
+            page_size = 15
+
+            start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
+            end_date = datetime.datetime.now() - datetime.timedelta(page*page_size)
+
             s = self.session.query(models.CustomerShopFollow.create_time, func.count()).\
                 filter_by(shop_id=self.current_shop.id).\
+                filter(models.CustomerShopFollow.create_time >= start_date,
+                       models.CustomerShopFollow.create_time <= end_date).\
                 group_by(func.year(models.CustomerShopFollow.create_time),
                          func.month(models.CustomerShopFollow.create_time),
                          func.day(models.CustomerShopFollow.create_time)).\
-                order_by(desc(models.CustomerShopFollow.create_time)).\
-                offset(page*page_size).limit(page_size).all()
+                order_by(desc(models.CustomerShopFollow.create_time)).all()
+
             total = self.session.query(models.CustomerShopFollow).\
-                filter_by(shop_id=self.current_shop.id).count()
+                filter_by(shop_id=self.current_shop.id).\
+                filter(models.CustomerShopFollow.create_time <= end_date).count()
             data = []
             i = 0
             for x in range(0, 15):
-                if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x:
-                    data.append((s[i][0].strftime('%y-%m-%d'), s[i][1], total))
+                date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
+                if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
+                    data.append((date.strftime('%y-%m-%d'), s[i][1], total))
                     total -= s[i][1]
                     i += 1
                 else:
-                    data.append(((datetime.datetime.now() - datetime.timedelta(x)).strftime('%y-%m-%d'), 0, total))
-            return self.write(data)
+                    data.append((date.strftime('%y-%m-%d'), 0, total))
+                if total <= 0:
+                    break
+            first_follower = self.session.query(models.CustomerShopFollow).\
+                filter_by(shop_id=self.current_shop.id).\
+                order_by(models.CustomerShopFollow.create_time).first()
+            page_sum = (datetime.datetime.now() - first_follower.create_time).days//15 + 1
+            return self.write({"page_sum":page_sum, "data": data})
+
         elif action == "sex":
             male_sum = self.session.query(models.Accountinfo).\
                 join(models.CustomerShopFollow,
