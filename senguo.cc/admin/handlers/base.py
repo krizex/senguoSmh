@@ -227,7 +227,7 @@ class AdminBaseHandler(_AccountBaseHandler):
         else:
             self.current_shop = shop
 
-    def monthdelta(date, delta):
+    def monthdelta(self, date, delta):
         m, y = (date.month+delta) % 12, date.year + (date.month+delta-1) // 12
         if not m:
             m = 12
