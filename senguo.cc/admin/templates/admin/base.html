@@ -92,6 +92,7 @@
 {% set user_active = ""%}
 {% set comment_active = ""%}
 {% set user_static_active='' %}
+{% set order_static_active='' %}
 
 {% if subpage == 'goods' %}
     {% set goods_active = 'active' %}
@@ -107,6 +108,8 @@
     {% set comment_active = 'active' %}
 {% elif subpage == 'userstatic' %}
     {% set user_static_active = 'active' %}
+{% elif subpage == 'orderstatic' %}
+    {% set order_static_active = 'active' %}
 {% end %}
 <main class="container">
     <div class="container-left pull-left">
@@ -114,6 +117,7 @@
             <li>
                 <span class="count"><i></i>统计</span>
                 <a href="javascript:;" class="developing">销量统计</a>
+                <a href="{{reverse_url('adminOrderStatic')}}" class="{{order_static_active}}">订单统计</a>
                 <a href="{{reverse_url('adminFollowerStatic')}}" class="{{user_static_active}}">用户统计</a>
                 <a href="javascript:;" class="developing">售后统计</a>
                 <a href="javascript:;" class="developing">流量统计</a>

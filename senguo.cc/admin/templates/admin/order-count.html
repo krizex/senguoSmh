@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}用户统计{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-count.css')}}"/>{% end %}
+{% block content %}
+<span class="right-title">订单统计</span>
+<div class="box">
+    <p class="tit font16">月走势图</p>
+    <div class="month-change center-block font18">
+        <a href="javascript:;" class="pre_month text-grey2"> < </a>
+        <span class="">
+            <span class="year"></span>年
+            <span class="month"></span>月
+        </span>
+        <a href="javascript:;" class="next_month text-grey2"> > </a>
+    </div>
+    <div class="change-box">
+        <ul id="order_trend-change" class="change-list pull-right">
+            <li><a href="javascript:;" class="text-grey3">订单量/个</a></li>
+            <li><a href="javascript:;" class="text-grey3">订单金额/个</a></li>
+        </ul>
+    </div>
+    <div id="order_trend" style="height:400px"></div>
+    <hr/>
+    <p class="tit font16">下单时间统计</p>
+    <div id="order_time" style="height:400px"></div>
+    <hr/>
+    <p class="tit font16">收货时间统计</p>
+    <div id="receive_time" style="height:400px"></div>
+    <hr/>
+    <p class="tit font16">详细数据</p>
+    <table class="detail-count text-center">
+        <tr class="bg-grey2">
+            <td>时间</td>
+            <td>新增用户</td>
+            <td>总用户数</td>
+        </tr>
+    </table>
+    <div class="users-pagination list-pagination clearfix">
+        <ul>
+            <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+            <li>
+                <span class="page-now"></span>/<span class="page-total"></span>
+            </li>
+            <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+            <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+            <li><a href="javascript:;" class="jump-to">跳转</a></li>
+        </ul>
+    </div>
+    <hr/>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/echarts.js')}}"></script>
+<script src="{{static_url('js/admin-order-count.js')}}"></script>
+{% end %}

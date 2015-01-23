@@ -97,7 +97,7 @@ class Home(AdminBaseHandler):
 class OrderStatic(AdminBaseHandler):
 
     def get(self):
-        return self.render("")
+        return self.render("admin/order-count.html",context=dict(subpage='orderstatic'))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action:str")

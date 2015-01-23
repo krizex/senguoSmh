@@ -1,4 +1,9 @@
 $(document).ready(function(){
+    $('.change-list li').on('click',function(){
+        var $this=$(this);
+        $this.addClass('active').siblings('li').removeClass('active');
+    });
+    $('.change-list li').eq(0).addClass('active');
     //获取当前日期
     var current_date=new Date();
     var current_year=current_date.getFullYear();
@@ -41,7 +46,7 @@ $(document).ready(function(){
         var page=Int($('.input-page').val())-1;
         gettable(page);
     });
-    //新增用户统计
+    //月走势
     require.config({
         paths: {
             echarts:'/static/js'
@@ -59,7 +64,7 @@ $(document).ready(function(){
             myChart.showLoading({
                 text: '正在努力的读取数据中...'
             });
-            count('curve',0);
+            count('sum',0,11);
             myChart.hideLoading();
             var options={
                 tooltip : {
@@ -77,11 +82,12 @@ $(document).ready(function(){
                 },
                 calculable : true,
                 legend: {
-                    data:['新增用户']
+                    data:['单日总量','按时达','立即送','货到付款','余额支付']
                 },
                 xAxis : [
                     {
                         type : 'category',
+                        boundaryGap : false,
                         data : []
                     }
                 ],
@@ -93,18 +99,31 @@ $(document).ready(function(){
                             formatter: '{value}'
                         }
                     },
-                    {
-                        type : 'value',
-                        name : '增长趋势',
-                        axisLabel : {
-                            formatter: '{value}'
-                        }
-                    }
                 ],
                 series : [
                     {
                         name:'新增用户',
-                        type:'bar',
+                        type:'line',
+                        data:[]
+                    },
+                    {
+                        name:'按时达',
+                        type:'line',
+                        data:[]
+                    },
+                    {
+                        name:'立即送',
+                        type:'line',
+                        data:[]
+                    },
+                    {
+                        name:'货到付款',
+                        type:'line',
+                        data:[]
+                    },
+                    {
+                        name:'余额支付',
+                        type:'line',
                         data:[]
                     },
                 ],
@@ -116,7 +135,7 @@ $(document).ready(function(){
                     borderColor: '#eee'
                 }
             };
-            getcurve(0,options,myChart);
+            getSum(0,1,options,myChart,0);
             //月份切换
             $('.pre_month').on('click',function(){
                 i=i-1;
@@ -218,25 +237,17 @@ var page_sum;
 var i=0;
 var n=0;
 
-function count(action,page){
+function count(action,page,type){
     var args={
         action:action,
-        page:page
+        page:page,
+        type:type
     };
     var url='';
     $.ajaxSetup({async:false});
     $.postJson(url,args,function(res){
             if(res.success){
                 data=res.data;
-                if(action=='sex'){
-                    female_sum=res.female_sum;
-                    male_sum=res.male_sum;
-                    total_sex=res.total;
-                    unknow_sex=(total_sex-male_sum-female_sum);
-                }
-                if(action=='table'){
-                    page_sum=res.page_sum;
-                }
             }
             else return alert(res.error_text);
         },
@@ -260,15 +271,15 @@ function gettable(page){
     }
 }
 
-function getcurve(i,options,myChart){
+function getSum(page,type,options,myChart,i){
     options.xAxis[0].data=[];
     options.series[0].data=[];
-    count('curve',i);
+    count('sum',page,type);
     for(var date in data){
         var day=date;
         var num=data[date];
         options.xAxis[0].data.push(day+'号');
-        options.series[0].data.push(num);
+        options.series[i].data.push(num);
     }
     myChart.refresh();
     myChart.setOption(options);
