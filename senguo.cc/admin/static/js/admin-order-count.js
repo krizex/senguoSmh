@@ -327,9 +327,12 @@ $(document).ready(function(){
             typeChange('#receive_time_change ','recive_time',options3,myChart3);
         }
     );
+    //详细数据
+    gettable('order_table',0,'.detail-count');
+    listPage('.detail-pagination',detail_page_sum,'order_table','.detail-count');
 });
 var data;
-var page_sum;
+var detail_page_sum;
 var trend=0;
 var n=0;
 
@@ -344,6 +347,7 @@ function count(action,page,type){
     $.postJson(url,args,function(res){
             if(res.success){
                 data=res.data;
+                if(action=='order_table'){detail_page_sum=res.page_sum;}
             }
             else return alert(res.error_text);
         },
@@ -352,19 +356,28 @@ function count(action,page,type){
         });
 }
 
-function gettable(page){
-    count('table',page);
-    $('.detail-count').find('.item').remove();
-    for(var key in data){
-        var $item=$('<tr class="item"><td class="time"></td><td class="new_user"></td><td class="total_user"></td></tr>');
-        var date=data[key][0];
-        var new_user=data[key][1];
-        var total=data[key][2];
-        $item.find('.time').text(date);
-        $item.find('.new_user').text(new_user);
-        $item.find('.total_user').text(total);
-        $('.detail-count').append($item);
+function gettable(action,page,dom){
+    count(action,page);
+    $(dom).find('.item').remove();
+    if(action=='order_table'){
+        for(var key in data){
+            var $item=$('<tr class="item"><td class="time"></td><td class="day_order"></td><td class="total_order"></td><td class="day_money"></td><td class="total_money"></td><td class="price"></td></tr>');
+            var date=data[key][0];
+            var day_order=data[key][1];
+            var total_order=data[key][2];
+            var day_money=data[key][3];
+            var total_money=data[key][4];
+            $item.find('.time').text(date);
+            $item.find('.day_order').text(day_order);
+            $item.find('.total_order').text(total_order);
+            $item.find('.day_money').text(day_money+'元');
+            $item.find('.total_money').text(total_money+'元');
+            if(day_order==0) $item.find('.price').text(0+'元');
+            else $item.find('.price').text(day_money/day_order)+'元';
+            $(dom).append($item);
+        }
     }
+
 }
 
 function getSum(page,type,options,myChart){
@@ -415,8 +428,51 @@ function typeChange(dom,action,options,mychart){
         var $this = $(this);
         var type = $this.data('id');
         getCount(action,0,type,options,mychart);
-        console.log(dom)
-
     });
 
+}
+
+function listPage(dom,page_sum,action,item){
+    if(n==0){$(dom).find('.pre-page').hide();}
+    if((n+1)==page_sum){
+        $(dom).find('.next-page').hide();
+        $(dom).find('.input-page').hide();
+        $(dom).find('.jump-to').hide();
+    }
+    $(dom).find('.page-now').text(n+1);
+    $(dom).find('.page-total').text(page_sum);
+
+    $(dom).find('.pre-page').on('click',function(){
+        n=n-1;
+        if(n==0){
+            $(dom).find('.pre-page').hide();
+        }
+        if(n>-1) {
+                gettable(action,n,item);
+                $(dom).find('.next-page').show();
+                $(dom).find('.page-now').text(n+1);
+            }
+    });
+    $(dom).find('.next-page').on('click',function(){
+        n=n+1;
+        if(n!=page_sum){
+            $(dom).find('.pre-page').show();
+            $(dom).find('.page-now').text(n+1);
+            gettable(action,n,item);
+        }
+        if(n==page_sum-1) {
+            $(dom).find('.next-page').hide();
+        }
+
+    });
+    $(dom).find('.jump-to').on('click',function(){
+        var page=Int($(dom).find('.input-page').val());
+        if(page_sum>page-1>0){
+            n=page-1;
+            gettable(action,page-1,item);
+            $(dom).find('.pre-page').show();
+            $(dom).find('.page-now').text(page);
+        }
+        if(page==page_sum) $(dom).find('.next-page').hide();
+    });
 }

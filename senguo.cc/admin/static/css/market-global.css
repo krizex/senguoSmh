@@ -21,6 +21,7 @@ input{border:none;}
 .bg-pink{background:#ff6563 !important;}
 .bg-red{background:#E01445 !important;}
 .bg-orange{background:#E07D14 !important;}
+.bg-pale-green{background:#EAF7E7 !important;}
 
 .text-center{text-align:center;}
 
@@ -40,13 +41,12 @@ input{border:none;}
 .padding-right-none{padding-right:0px;}
 .phone-box{width:100%;min-width:320px;max-width:800px;margin:0 auto;overflow:hidden;background:#F2F2F2;padding-bottom:50px;}
 
-.bottom-nav{max-width:800px;margin:0 auto;height:40px;line-height:40px;overflow:hidden;}
+.bottom-nav{max-width:800px;margin:0 auto;height:40px;line-height:40px;overflow:hidden;background:url('../images/huabian_white.png') repeat-x;}
 .bottom-nav ul{margin-bottom:0;}
 .bottom-nav li{text-align:center;padding:0 5px;}
 .bottom-nav li a{display:block;}
-.bottom-nav li:hover{background:#07B771;}
-.bottom-nav li:hover a{color:#fff;}
-.bottom-nav .active{background:#07B771;color:#fff;}
+.bottom-nav li:hover a{color:#80c26b;}
+.bottom-nav .active{color:#80c26b;}
 
 .set-inl-blo{display:inline-block;}
 .no-mar-btom{margin-bottom:0px;}

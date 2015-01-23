@@ -18,28 +18,35 @@ $(document).ready(function(){
     $('.pre-page').on('click',function(){
         n=n-1;
         if(n==0){
-            $('.next-page').hide();
+            $('.pre-page').hide();
         }
-        else {
+        if(n>-1) {
             gettable(n);
+            $('.next-page').show();
             $('.page-now').text(n+1);
         }
     });
     $('.next-page').on('click',function(){
         n=n+1;
-        if(n==page_sum){
-            $('.next-page').hide();
-        }
-        else {
+        if(n!=page_sum){
             $('.pre-page').show();
             $('.page-now').text(n+1);
             gettable(n);
         }
+        if(n==page_sum-1) {
+            $('.next-page').hide();
+        }
 
     });
     $('.jump-to').on('click',function(){
-        var page=Int($('.input-page').val())-1;
-        gettable(page);
+        var page=Int($('.input-page').val());
+        if(page_sum>page-1>0){
+            n=page-1;
+            gettable(page);
+            $('.pre-page').show();
+            $('.page-now').text(page);
+        }
+        if(page==page_sum) $('.next-page').hide();
     });
     //新增用户统计
     require.config({

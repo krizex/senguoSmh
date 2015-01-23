@@ -2,8 +2,6 @@
 {% block title %}首页{% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/market-home.css')}}"/>
-<link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
-<script src="{{static_url('js/market-img-fix.js')}}"></script>
 {% end %}
 {% block content %}
 {% set fruits=context['fruits']%}
@@ -38,67 +36,61 @@
 <p class="bg-green text-white no-mar-btom classify-title font16" id="fruitPosition">水果单品</p>
 <ul class="goods-list bg-white fruit-list">
     {% for fruit in fruits %}
-    <li class="goods-list-item {{fruit.fruit_type.code}} font14" data-id="{{fruit.id}}">
-        <div class="bg set-w100-fle">
-            <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
-                <a href="javascript:;" class="check-lg-img">
-                    <span class="tag bg-green text-white text-center tagItem font8" data-id="{{fruit.tag}}">hot</span>
-                    {% if fruit.img_url %}
-                    <img src="{{fruit.img_url}}?imageView/1/w/200/h/200" class="img box-shadow">
-                    {% else %}
-                    <img src="/static/design_img/{{fruit.fruit_type.code}}.png" class="img box-shadow">
-                    {% end %}
-
-                </a>
+    <li class="goods-list-item bg-pale-green font14 text-grey toggle" data-id="{{fruit.id}}">
+        <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
+            <a href="javascript:;" class="check-lg-img">
+                <span class="tag bg-green text-white text-center tagItem font8" data-id="{{fruit.tag}}">hot</span>
+                {% if fruit.img_url %}
+                <img src="{{fruit.img_url}}?imageView/1/w/200/h/200" class="img box-shadow">
+                {% else %}
+                <img src="/static/design_img/{{fruit.fruit_type.code}}.png" class="img box-shadow">
+                {% end %}
+            </a>
+        </div>
+        <input type="hidden" class="fruit_intro" value="{{fruit.intro}}"/>
+        <div class="col-lg-10 col-md-10 col-xs-9 col-sm-10 plr5">
+            <p>
+                <span class="pull-left color fruit-name">{{fruit.name}}</span>
+                <span class="pull-right text-grey">销量：{{fruit.saled}}</span>
+            </p>
+            <p class="great-number">
+                <span>点赞:888</span>
+            </p>
+            <div class="charge-first charge-style color">
+                {% if fruit.charge_types %}
+                <span class="col-sm-6 col-xs-6 text-bgcolor p0 charge-type line36" data-id="{{fruit.charge_types[0].id}}">
+                    {{fruit.charge_types[0].price}}元/{{fruit.charge_types[0].num}}
+                    <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
+                </span>
+                {% end %}
+                {% set value = cart_f[fruit.charge_types[0].id]["num"] if fruit.charge_types[0].id in cart_f else 0%}
+                 <span class="pull-right p0 number-change">
+                    <a class="minus-plus text-green bg-white pull-right number-plus line36" href="javascript:;">+</a>
+                    <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line36" readonly/>
+                    <a class="minus-plus text-green bg-white pull-right number-minus line36" href="javascript:;">-</a>
+                </span>
+                {% if len(fruit.charge_types) >1 %}
+                <span class="arrow set-inl-blo"></span>
+                {% end %}
             </div>
-            <input type="hidden" class="fruit_intro" value="{{fruit.intro}}"/>
-            <div class="col-lg-9 col-md-9 col-xs-8 col-sm-9 plr5">
-                <p>
-                    <span class="pull-left color fruit-name">{{fruit.name}}</span>
-                    <span class="pull-right text-grey">销量：{{fruit.saled}}</span>
-                </p>
-                <p class="great-number">
-                    <span class="text-grey">点赞:888</span>
-                </p>
-                <div class="charge-first charge-style color">
-                    {% if fruit.charge_types %}
-                    <span class="col-sm-5 col-xs-5 text-bgcolor p0 charge-type" data-id="{{fruit.charge_types[0].id}}">
-                        {{fruit.charge_types[0].price}}元/{{fruit.charge_types[0].num}}
-                        <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
+            <ul class="charge-list charge-style color set-width-float" style="display:none">
+                {% for charge in fruit.charge_types %}
+                {% if charge.id !=fruit.charge_types[0].id %}
+                    {% set value = cart_f[charge.id]["num"] if charge.id in cart_f else 0%}
+                <li class="border-color set-w100-fle">
+                    <span class="col-sm-5  col-xs-5 text-bgcolor p0 charge-type" data-id="{{charge.id}}">
+                        {{charge.price}}元/{{charge.num}}
+                        <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                     </span>
-                    {% end %}
-                    {% set value = cart_f[fruit.charge_types[0].id]["num"] if fruit.charge_types[0].id in cart_f else 0%}
-                     <span class="col-sm-5  col-xs-5  pull-right p0 number-change">
+                    <span class="pull-right number-change">
                         <a class="minus-plus text-green bg-white pull-right number-plus" href="javascript:;">+</a>
                         <input type="text" value="{{value}}" class="number-input pull-right text-green" readonly/>
                         <a class="minus-plus text-green bg-white pull-right number-minus" href="javascript:;">-</a>
                     </span>
-                    {% if len(fruit.charge_types) >1 %}
-                    <a href="javascript:;" class="pull-right toggle down p0"></a>
-                    {% end %}
-                </div>
-                <ul class="charge-list charge-style color set-width-float" style="display:none">
-                    {% for charge in fruit.charge_types %}
-                    {% if charge.id !=fruit.charge_types[0].id %}
-                        {% set value = cart_f[charge.id]["num"] if charge.id in cart_f else 0%}
-                    <li class="border-color set-w100-fle">
-                        <span class="col-sm-5  col-xs-5 text-bgcolor p0 charge-type" data-id="{{charge.id}}">
-                            {{charge.price}}元/{{charge.num}}
-                            <span data-id="{{charge.unit}}" class="chargeUnit"></span>
-                        </span>
-                        <span class="col-sm-5  col-xs-5  pull-right p0 number-change">
-                            <a class="minus-plus text-green bg-white pull-right number-plus" href="javascript:;">+</a>
-                            <input type="text" value="{{value}}" class="number-input pull-right text-green" readonly/>
-                            <a class="minus-plus text-green bg-white pull-right number-minus" href="javascript:;">-</a>
-                        </span>
-                    </li>
-                    {% end %}
-                    {% end %}
-                </ul>
-            </div>
-            <div class="col-lg-1 col-md-1 col-xs-1 col-sm-1 p0 pull-right fruit-class text-white text-shadow icon-bg font11">
-                <div class="class-inner">{{fruit.fruit_type.name}}</div>
-             </div>
+                </li>
+                {% end %}
+                {% end %}
+            </ul>
         </div>
     </li>
     {% end %}
@@ -107,69 +99,66 @@
 <p class="bg-green text-white no-mar-btom classify-title font16" id="dryFruitPosition">干果单品</p>
 <ul class="goods-list bg-white fruit-list">
     {% for dry_fruit in dry_fruits %}
-    <li class="goods-list-item {{dry_fruit.fruit_type.code}} font14" data-id="{{dry_fruit.id}}">
-        <div class="bg set-w100-fle">
-            <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
-                <a href="javascript:;" class="check-lg-img">
-                    <span class="tag bg-green text-white text-center tagItem font8" data-id="{{dry_fruit.tag}}">hot</span>
-                    {% if fruit.img_url %}
-                    <img src="{{dry_fruit.img_url}}?imageView/1/w/200/h/200" class="img box-shadow">
-                    {% else %}
-                    <img src="/static/design_img/{{dry_fruit.fruit_type.code}}.png" class="img box-shadow">
-                    {% end %}
-                </a>
+    <li class="goods-list-item bg-pale-green font14" data-id="{{dry_fruit.id}}">
+        <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
+            <a href="javascript:;" class="check-lg-img">
+                <span class="tag bg-green text-white text-center tagItem font8" data-id="{{dry_fruit.tag}}">hot</span>
+                {% if fruit.img_url %}
+                <img src="{{dry_fruit.img_url}}?imageView/1/w/200/h/200" class="img box-shadow">
+                {% else %}
+                <img src="/static/design_img/{{dry_fruit.fruit_type.code}}.png" class="img box-shadow">
+                {% end %}
+            </a>
+        </div>
+        <input type="hidden" class="fruit_intro" value="{{dry_fruit.intro}}"/>
+        <div class="col-lg-9 col-md-9 col-xs-8 col-sm-9 plr5">
+            <p>
+                <span class="pull-left color fruit-name">{{dry_fruit.name}}</span>
+                <span class="pull-right text-grey">销量：{{dry_fruit.saled}}</span>
+            </p>
+            <p class="great-number">
+                <span class="text-grey">点赞:888</span>
+            </p>
+            <div class="charge-first charge-style color">
+                {% if dry_fruit.charge_types %}
+                <span class="col-sm-5  col-xs-5 text-bgcolor p0 charge-type" data-id="{{dry_fruit.charge_types[0].id}}">
+                    {{dry_fruit.charge_types[0].price}}元/{{dry_fruit.charge_types[0].num}}
+                    <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
+                    <!--{% if fruit.charge_types[0].unit != fruit.unit %}
+                    =
+                    {{fruit.charge_types[0].unit_num}}
+                    <span data-id="{{fruit.unit}}" class="chargeUnit"></span>
+                    {% end %}-->
+                </span>
+                {% end %}
+                 <span class="pull-right number-change">
+                     {% set value = cart_f[dry_fruit.charge_types[0].id]["num"] if dry_fruit.charge_types[0].id in cart_f else 0%}
+                    <a class="minus-plus text-green bg-white pull-right number-plus" href="javascript:;">+</a>
+                    <input type="text" value="{{value}}" class="number-input pull-right text-green"/>
+                    <a class="minus-plus text-green bg-white pull-right number-minus" href="javascript:;">-</a>
+                </span>
+                {% if len(dry_fruit.charge_types) >1 %}
+                <a href="javascript:;" class="pull-right toggle down p0"></a>
+                {% end %}
             </div>
-            <input type="hidden" class="fruit_intro" value="{{dry_fruit.intro}}"/>
-            <div class="col-lg-9 col-md-9 col-xs-8 col-sm-9 plr5">
-                <p>
-                    <span class="pull-left color fruit-name">{{dry_fruit.name}}</span>
-                    <span class="pull-right text-grey">销量：{{dry_fruit.saled}}</span>
-                </p>
-                <p class="great-number">
-                    <span class="text-grey">点赞:888</span>
-                </p>
-                <div class="charge-first charge-style color">
-                    {% if dry_fruit.charge_types %}
-                    <span class="col-sm-5  col-xs-5 text-bgcolor p0 charge-type" data-id="{{dry_fruit.charge_types[0].id}}">
-                        {{dry_fruit.charge_types[0].price}}元/{{dry_fruit.charge_types[0].num}}
-                        <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
-                        <!--{% if fruit.charge_types[0].unit != fruit.unit %}
-                        =
-                        {{fruit.charge_types[0].unit_num}}
-                        <span data-id="{{fruit.unit}}" class="chargeUnit"></span>
-                        {% end %}-->
+            <ul class="charge-list charge-style color set-width-float" style="display:none">
+                {% for charge in dry_fruit.charge_types %}
+                {% if charge.id !=dry_fruit.charge_types[0].id %}
+                {% set value = cart_f[charge.id]["num"] if charge.id in cart_f else 0%}
+                <li class="border-color set-w100-fle">
+                    <span class="col-sm-5  col-xs-5 text-bgcolor p0 charge-type" data-id="{{charge.id}}">
+                        {{charge.price}}元/{{charge.num}}
+                        <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                     </span>
-                    {% end %}
-                     <span class="col-sm-5  col-xs-5 pull-right p0 number-change">
-                         {% set value = cart_f[dry_fruit.charge_types[0].id]["num"] if dry_fruit.charge_types[0].id in cart_f else 0%}
+                    <span class="number-change pull-right">
                         <a class="minus-plus text-green bg-white pull-right number-plus" href="javascript:;">+</a>
                         <input type="text" value="{{value}}" class="number-input pull-right text-green"/>
                         <a class="minus-plus text-green bg-white pull-right number-minus" href="javascript:;">-</a>
                     </span>
-                    {% if len(dry_fruit.charge_types) >1 %}
-                    <a href="javascript:;" class="pull-right toggle down p0"></a>
-                    {% end %}
-                </div>
-                <ul class="charge-list charge-style color set-width-float" style="display:none">
-                    {% for charge in dry_fruit.charge_types %}
-                    {% if charge.id !=dry_fruit.charge_types[0].id %}
-                    {% set value = cart_f[charge.id]["num"] if charge.id in cart_f else 0%}
-                    <li class="border-color set-w100-fle">
-                        <span class="col-sm-5  col-xs-5 text-bgcolor p0 charge-type" data-id="{{charge.id}}">
-                            {{charge.price}}元/{{charge.num}}
-                            <span data-id="{{charge.unit}}" class="chargeUnit"></span>
-                        </span>
-                        <span class="col-sm-5  col-xs-5  pull-right p0 number-change">
-                            <a class="minus-plus text-green bg-white pull-right number-plus" href="javascript:;">+</a>
-                            <input type="text" value="{{value}}" class="number-input pull-right text-green"/>
-                            <a class="minus-plus text-green bg-white pull-right number-minus" href="javascript:;">-</a>
-                        </span>
-                    </li>
-                    {% end %}
-                    {% end %}
-                </ul>
-            </div>
-            <div class="col-lg-1 col-md-1 col-xs-1 col-sm-1 p0 pull-right fruit-class text-white text-shadow icon-bg font11"><div class="class-inner">{{dry_fruit.fruit_type.name}}</div></div>
+                </li>
+                {% end %}
+                {% end %}
+            </ul>
         </div>
     </li>
     {% end %}
@@ -181,69 +170,68 @@
     <ul class="goods-list bg-white menu-list">
     {% end %}
     {% for mgood in mgoods[menu.id]%}
-    <li class="goods-list-item  TDSG font14" data-id="{{mgood.id}}">
-        <div class="bg set-w100-fle">
-            <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
-                <a href="javascript:;" class="check-lg-img">
-                    <span class="tag bg-green text-white text-center tagItem font8" data-id="{{mgood.tag}}">hot</span>
-                    {% if mgood.img_url %}
-                    <img src="{{mgood.img_url}}?imageView/1/w/200/h/200" class="img box-shadow">
-                    {% else %}
-                    <img src="/static/design_img/TDSG.png" class="img box-shadow">
-                    {% end %}
-                </a>
+    <li class="goods-list-item  bg-pale-green font14" data-id="{{mgood.id}}">
+        <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
+            <a href="javascript:;" class="check-lg-img">
+                <span class="tag bg-green text-white text-center tagItem font8" data-id="{{mgood.tag}}">hot</span>
+                {% if mgood.img_url %}
+                <img src="{{mgood.img_url}}?imageView/1/w/200/h/200" class="img box-shadow">
+                {% else %}
+                <img src="/static/design_img/TDSG.png" class="img box-shadow">
+                {% end %}
+            </a>
+        </div>
+        <input type="hidden" class="fruit_intro" value="{{mgood.intro}}"/>
+        <div class="col-lg-9 col-md-9 col-xs-8 col-sm-9 plr5">
+            <p>
+                <span class="pull-left color fruit-name">{{mgood.name}}</span>
+                <span class="pull-right text-grey">销量：{{mgood.saled}}</span>
+            </p>
+            <p class="great-number">
+                <span class="text-grey">点赞:888</span>
+            </p>
+            <div class="charge-first charge-style color">
+                {% if mgood.mcharge_types %}
+                <span class="col-sm-5  col-xs-5 text-bgcolor p0 charge-type" data-id="{{mgood.mcharge_types[0].id}}">
+                    {{mgood.mcharge_types[0].price}}元/{{mgood.mcharge_types[0].num}}
+                    <span data-id="{{mgood.mcharge_types[0].unit}}" class="chargeUnit"></span>
+                </span>
+                 <span class="col-sm-5 col-xs-5  pull-right p0 number-change">
+                     {% set value = cart_m[mgood.mcharge_types[0].id]["num"] if mgood.mcharge_types[0].id in cart_m else 0%}
+                    <a class="minus-plus text-green bg-white pull-right number-plus" href="javascript:;">+</a>
+                    <input type="text" value="{{value}}" class="number-input pull-right text-green"/>
+                    <a class="minus-plus text-green bg-white pull-right number-minus" href="javascript:;">-</a>
+                </span>
+                {% end %}
+                {% if len(mgood.mcharge_types) >1 %}
+                <a href="javascript:;" class="pull-right toggle down p0"></a>
+                {% end %}
             </div>
-            <input type="hidden" class="fruit_intro" value="{{mgood.intro}}"/>
-            <div class="col-lg-9 col-md-9 col-xs-8 col-sm-9 plr5">
-                <p>
-                    <span class="pull-left color fruit-name">{{mgood.name}}</span>
-                    <span class="pull-right text-grey">销量：{{mgood.saled}}</span>
-                </p>
-                <p class="great-number">
-                    <span class="text-grey">点赞:888</span>
-                </p>
-                <div class="charge-first charge-style color">
-                    {% if mgood.mcharge_types %}
-                    <span class="col-sm-5  col-xs-5 text-bgcolor p0 charge-type" data-id="{{mgood.mcharge_types[0].id}}">
-                        {{mgood.mcharge_types[0].price}}元/{{mgood.mcharge_types[0].num}}
-                        <span data-id="{{mgood.mcharge_types[0].unit}}" class="chargeUnit"></span>
+            <ul class="charge-list charge-style color set-width-float" style="display:none">
+                {% for charge in mgood.mcharge_types %}
+                {% if charge.id !=mgood.mcharge_types[0].id %}
+                {% set value = cart_m[charge.id]["num"] if charge.id in cart_m else 0%}
+                <li class="border-color set-w100-fle">
+                    <span class="col-sm-5  col-xs-5 text-bgcolor p0 charge-type" data-id="{{charge.id}}">
+                        {{charge.price}}元/{{charge.num}}
+                        <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                     </span>
-                     <span class="col-sm-5 col-xs-5  pull-right p0 number-change">
-                         {% set value = cart_m[mgood.mcharge_types[0].id]["num"] if mgood.mcharge_types[0].id in cart_m else 0%}
+                    <span class="pull-right number-change">
                         <a class="minus-plus text-green bg-white pull-right number-plus" href="javascript:;">+</a>
                         <input type="text" value="{{value}}" class="number-input pull-right text-green"/>
                         <a class="minus-plus text-green bg-white pull-right number-minus" href="javascript:;">-</a>
                     </span>
-                    {% end %}
-                    {% if len(mgood.mcharge_types) >1 %}
-                    <a href="javascript:;" class="pull-right toggle down p0"></a>
-                    {% end %}
-                </div>
-                <ul class="charge-list charge-style color set-width-float" style="display:none">
-                    {% for charge in mgood.mcharge_types %}
-                    {% if charge.id !=mgood.mcharge_types[0].id %}
-                    {% set value = cart_m[charge.id]["num"] if charge.id in cart_m else 0%}
-                    <li class="border-color set-w100-fle">
-                        <span class="col-sm-5  col-xs-5 text-bgcolor p0 charge-type" data-id="{{charge.id}}">
-                            {{charge.price}}元/{{charge.num}}
-                            <span data-id="{{charge.unit}}" class="chargeUnit"></span>
-                        </span>
-                        <span class="col-sm-5  col-xs-5  pull-right p0 number-change">
-                            <a class="minus-plus text-green bg-white pull-right number-plus" href="javascript:;">+</a>
-                            <input type="text" value="{{value}}" class="number-input pull-right text-green"/>
-                            <a class="minus-plus text-green bg-white pull-right number-minus" href="javascript:;">-</a>
-                        </span>
-                    </li>
-                    {% end %}
-                    {% end %}
-                </ul>
-            </div>
-            <div class="col-lg-1 col-md-1 col-xs-1 col-sm-1 p0 pull-right fruit-class text-white text-shadow icon-bg font11"><div class="class-inner">{{mgood.name}}</div></div>
-            <script>fixclass('fruit-class','great-number','img','class-inner')</script>
+                </li>
+                {% end %}
+                {% end %}
+            </ul>
         </div>
     </li>
     {% end %}
 </ul>
+<script>
+    document.
+</script>
 {% end %}
 
 <div class="modal fade large-img-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
