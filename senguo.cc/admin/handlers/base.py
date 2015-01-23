@@ -227,6 +227,14 @@ class AdminBaseHandler(_AccountBaseHandler):
         else:
             self.current_shop = shop
 
+    def monthdelta(date, delta):
+        m, y = (date.month+delta) % 12, date.year + (date.month+delta-1) // 12
+        if not m:
+            m = 12
+        d = [31, 29 if y % 4 == 0 and not y % 400 == 0 else 28,
+             31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m-1]
+        return date.replace(day=d, month=m, year=y)
+
 class StaffBaseHandler(_AccountBaseHandler):
     __account_model__ = models.ShopStaff
     __account_cookie_name__ = "staff_id"
