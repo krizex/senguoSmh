@@ -94,6 +94,119 @@ class Home(AdminBaseHandler):
         self.set_secure_cookie("shop_id", str(shop_id), domain=ROOT_HOST_NAME)
         return self.send_success()
 
+class OrderStatic(AdminBaseHandler):
+
+    def get(self):
+        return self.render("")
+
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action:str")
+    def post(self):
+        action = self.args["action"]
+        if action == "sum":
+            return self.sum()
+        elif action == "order_time":
+            return self.order_time()
+        elif action == "recive_time":
+            pass
+        elif action == "":
+            pass
+
+    @AdminBaseHandler.check_arguments("page:int", "type:int")
+    def sum(self):
+        page = self.args["page"]
+        type= self.args["type"]
+        if page == 0:
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, now.month, 1)
+            end_date = now
+        else:
+            date = self.monthdelta(datetime.datetime.now(), page)
+            start_date = datetime.datetime(date.year, date.month, 1)
+            end_date = datetime.datetime(date.year, date.month, date.day)
+
+        q = self.session.query(models.Order.id, models.Order.create_date, models.Order.totalPrice). \
+            filter(models.Order.shop_id == self.current_shop.id,
+                   models.Order.create_date >= start_date,
+                   models.Order.create_date <= end_date)
+
+        type_mod = type % 10
+        if type_mod == 1:
+            orders = q.all()
+        elif type_mod == 2:
+            orders = q.filter(models.Order.type == 2).all()
+        elif type_mod == 3:
+            orders = q.filter(models.Order.type == 1).all()
+        elif type_mod == 4:
+            orders = q.filter(models.Order.pay_type == 1).all()
+        elif type_mod == 5:
+            orders = q.filter(models.Order.pay_type == 2).all()
+        else:
+            return self.send_error(404)
+
+        data = {}
+        for x in range(1, end_date.day+1):  # 初始化数据
+            data[x] = 0
+        if type // 10 == 1:
+            for order in orders:
+                data[order[1].day] += 1
+        elif type // 10 == 2:
+            for order in orders:
+                data[order[1].day] += order[2]
+        else:
+            return self.send_error(404)
+        return self.send_success(data=data)
+
+    @AdminBaseHandler.check_arguments("type:int")
+    def order_time(self):
+        type = self.args["type"]
+        if type == 1:  # 今天数据
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, now.month, now.day, 0)
+            end_date = datetime.datetime(now.year, now.month, now.day, 23)
+        elif type == 2:  # 昨天数据
+            now = datetime.datetime.now() - datetime.timedelta(1)
+            start_date = datetime.datetime(now.year, now.month, now.day, 0)
+            end_date = datetime.datetime(now.year, now.month, now.day, 23)
+        else:
+            return self.send_error(404)
+        ss = self.session.query(func.hour(models.Order.create_date), func.count()).\
+            filter(models.Order.create_date >= start_date,
+                   models.Order.create_date <= end_date).\
+            group_by(func.hour(models.Order.create_date)).all()
+        data = {}
+        for key in range(0,24):
+            data[key] = 0
+        for s in ss:
+            data[s[0]] = s[1]
+        return self.send_success(data=data)
+
+
+    @AdminBaseHandler.check_arguments("type:int")
+    def recive_time(self):
+        type = self.args["type"]
+        if type == 1:
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, now.month, now.day, 0)
+            end_date = datetime.datetime(now.year, now.month, now.day, 23)
+        elif type == 2:
+            now = datetime.datetime.now() - datetime.timedelta(1)
+            start_date = datetime.datetime(now.year, now.month, now.day, 0)
+            end_date = datetime.datetime(now.year, now.month, now.day, 23)
+        else:
+            return self.send_error(404)
+        orders = self.session.query(models.Order.type, models.Order.start_time, models.Order.end_time).\
+            filter(models.Order.create_date >= start_date,
+                   models.Order.create_date <= end_date).all()
+        data = {}
+        for key in range(0, 24):
+            data[key] = 0
+        # for order in orders:
+        #     if order[0] == 1:
+        #         data[order[]]
+        return self.send_success(data=data)
+
+
 class FollowerStatic(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self):
@@ -102,13 +215,6 @@ class FollowerStatic(AdminBaseHandler):
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action:str", "page?:int")
     def post(self):
-        def monthdelta(date, delta):
-            m, y = (date.month+delta) % 12, date.year + (date.month+delta-1) // 12
-            if not m:
-                m = 12
-            d = [31, 29 if y % 4 == 0 and not y % 400 == 0 else 28,
-                 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m-1]
-            return date.replace(day=d, month=m, year=y)
         action = self.args["action"]
 
         if action == "curve":
@@ -118,7 +224,7 @@ class FollowerStatic(AdminBaseHandler):
                 start_date = datetime.datetime(now.year, now.month, 1)
                 end_date = now
             else:
-                date = monthdelta(datetime.datetime.now(), page)
+                date = self.monthdelta(datetime.datetime.now(), page)
                 start_date = datetime.datetime(date.year, date.month, 1)
                 end_date = datetime.datetime(date.year, date.month, date.day)
             followers = self.session.query(models.CustomerShopFollow).\
@@ -156,11 +262,11 @@ class FollowerStatic(AdminBaseHandler):
             for x in range(0, 15):
                 date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
                 if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
-                    data.append((date.strftime('%y-%m-%d'), s[i][1], total))
+                    data.append((date.strftime('%Y-%m-%d'), s[i][1], total))
                     total -= s[i][1]
                     i += 1
                 else:
-                    data.append((date.strftime('%y-%m-%d'), 0, total))
+                    data.append((date.strftime('%Y-%m-%d'), 0, total))
                 if total <= 0:
                     break
             first_follower = self.session.query(models.CustomerShopFollow).\

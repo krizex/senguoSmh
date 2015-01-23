@@ -94,6 +94,7 @@ handlers = [
     (r"/admin/logout", handlers.admin.Access, {"action":"logout"}, "adminLogout"),
     (r"/admin/register", handlers.admin.Access, {"action":"register"}, "adminRegister"),
     (r"/admin", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
+    (r"/admin/ostatic", handlers.admin.OrderStatic, {}, "adminOrderStatic"),
     (r"/admin/fstatic", handlers.admin.FollowerStatic, {}, "adminFollowerStatic"),
     (r"/admin/order", handlers.admin.Order, {}, "adminOrder"),
     (r"/admin/comment", handlers.admin.Comment, {}, "adminComment"),
