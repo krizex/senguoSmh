@@ -97,7 +97,7 @@ class Home(AdminBaseHandler):
 class FollowerStatic(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        return self.render("admin/count.html",context=dict(subpage='userstatic'))
+        return self.render("admin/user-count.html",context=dict(subpage='userstatic'))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action:str", "page?:int")
