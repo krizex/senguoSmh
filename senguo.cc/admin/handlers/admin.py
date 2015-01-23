@@ -109,8 +109,8 @@ class OrderStatic(AdminBaseHandler):
             return self.order_time()
         elif action == "recive_time":
             return self.recive_time()
-        elif action == "detail":
-            pass
+        elif action == "order_table":
+            return self.order_table()
 
     @AdminBaseHandler.check_arguments("page:int", "type:int")
     def sum(self):
@@ -205,11 +205,52 @@ class OrderStatic(AdminBaseHandler):
         for key in range(0, 24):
             data[key] = 0
         for order in orders:
-            if order[0] == 1:
+            if order[0] == 1:  # 立即送收货时间估计
                 data[order[1].hour + (order[1].minute+stop_range)//60] += 1
-            else:
+            else:  # 按时达收货时间估计
                 data[(order[1].hour+order[2].hour)//2] += 1
         return self.send_success(data=data)
+
+    @AdminBaseHandler.check_arguments("page:int")
+    def order_table(self):
+        page = self.args["page"]
+        page_size = 15
+
+        start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
+        end_date = datetime.datetime.now() - datetime.timedelta(page*page_size)
+
+        s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
+            filter_by(shop_id=self.current_shop.id).\
+            filter(models.Order.create_date >= start_date,
+                   models.Order.create_date <= end_date).\
+            group_by(func.year(models.Order.create_date),
+                     func.month(models.Order.create_date),
+                     func.day(models.Order.create_date)).\
+            order_by(desc(models.Order.create_date)).all()
+
+        total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
+            filter_by(shop_id=self.current_shop.id).\
+            filter(models.Order.create_date <= end_date).all()
+        total = list(total[0])
+        data = []
+        i = 0
+        for x in range(0, 15):
+            date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
+            if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
+                data.append((date.strftime('%Y-%m-%d'), s[i][1], total[1], s[i][2], total[0]))
+                total[1] -= s[i][1]
+                total[0] -= s[i][2]
+                i += 1
+            else:
+                data.append((date.strftime('%Y-%m-%d'), 0, total[1], 0, total[0]))
+            if total[1] <= 0:
+                break
+        first_order = self.session.query(models.Order).\
+            filter_by(shop_id=self.current_shop.id).\
+            order_by(models.Order.create_date).first()
+        page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
+        return self.send_success(page_sum=page_sum, data=data)
+
 
 
 class FollowerStatic(AdminBaseHandler):
