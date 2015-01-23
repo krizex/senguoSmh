@@ -3,50 +3,17 @@ $(document).ready(function(){
         var $this=$(this);
         $this.addClass('active').siblings('li').removeClass('active');
     });
-    $('.change-list li').eq(0).addClass('active');
+    $('.change-list').each(function(){
+        var $this=$(this);
+        $this.find('li').eq(0).addClass('active');
+    });
     //获取当前日期
     var current_date=new Date();
     var current_year=current_date.getFullYear();
     var current_month=current_date.getMonth()+1;
     $('.year').text(current_year);
     $('.month').text(current_month);
-    //详细数据统计
-    gettable(0);
-    if(n==0){$('.pre-page').hide();}
-    if((n+1)==page_sum){
-        $('.next-page').hide();
-        $('.input-page').hide();
-        $('.jump-to').hide();
-    }
-    $('.page-now').text(n+1);
-    $('.page-total').text(page_sum);
-    $('.pre-page').on('click',function(){
-        n=n-1;
-        if(n==0){
-            $('.next-page').hide();
-        }
-        else {
-            gettable(n);
-            $('.page-now').text(n+1);
-        }
-    });
-    $('.next-page').on('click',function(){
-        n=n+1;
-        if(n==page_sum){
-            $('.next-page').hide();
-        }
-        else {
-            $('.pre-page').show();
-            $('.page-now').text(n+1);
-            gettable(n);
-        }
 
-    });
-    $('.jump-to').on('click',function(){
-        var page=Int($('.input-page').val())-1;
-        gettable(page);
-    });
-    //月走势
     require.config({
         paths: {
             echarts:'/static/js'
@@ -59,14 +26,177 @@ $(document).ready(function(){
             'echarts/chart/line',
             'echarts/chart/pie'
         ],
+        //月走势
         function (ec) {
-            var myChart = ec.init(document.getElementById('user_trend'));
+            var myChart = ec.init(document.getElementById('order_trend'));
             myChart.showLoading({
                 text: '正在努力的读取数据中...'
             });
-            count('sum',0,11);
             myChart.hideLoading();
-            var options={
+            var options = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                toolbox: {
+                    show: true,
+                    feature: {
+                        mark: {show: true},
+                        magicType: {show: true, type: ['line', 'bar']},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                    }
+
+                },
+                calculable: true,
+                legend: {
+                    data: ['单日总量', '按时达', '立即送', '货到付款', '余额支付']
+
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: []
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '增长趋势',
+                        axisLabel: {
+                            formatter: '{value}'
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: '单日总量',
+                        type: 'line',
+                        data: [],
+                        markPoint: {
+                            data: [
+                                {type: 'max', name: '最大值'},
+                                {type: 'min', name: '最小值'}
+                            ]
+                        },
+                        markLine: {
+                            data: [
+                                {type: 'average', name: '平均值'}
+                            ]
+                        }
+                    },
+                    {
+                        name: '按时达',
+                        type: 'line',
+                        data: [],
+                        markPoint: {
+                            data: [
+                                {type: 'max', name: '最大值'},
+                                {type: 'min', name: '最小值'}
+                            ]
+                        },
+                        markLine: {
+                            data: [
+                                {type: 'average', name: '平均值'}
+                            ]
+                        }
+                    },
+                    {
+                        name: '立即送',
+                        type: 'line',
+                        data: [],
+                        markPoint: {
+                            data: [
+                                {type: 'max', name: '最大值'},
+                                {type: 'min', name: '最小值'}
+                            ]
+                        },
+                        markLine: {
+                            data: [
+                                {type: 'average', name: '平均值'}
+                            ]
+                        }
+                    },
+                    {
+                        name: '货到付款',
+                        type: 'line',
+                        data: [],
+                        markPoint: {
+                            data: [
+                                {type: 'max', name: '最大值'},
+                                {type: 'min', name: '最小值'}
+                            ]
+                        },
+                        markLine: {
+                            data: [
+                                {type: 'average', name: '平均值'}
+                            ]
+                        }
+                    },
+                    {
+                        name: '余额支付',
+                        type: 'line',
+                        data: [],
+                        markPoint: {
+                            data: [
+                                {type: 'max', name: '最大值'},
+                                {type: 'min', name: '最小值'}
+                            ]
+                        },
+                        markLine: {
+                            data: [
+                                {type: 'average', name: '平均值'}
+                            ]
+                        }
+                    }
+                ],
+                color: ['#b6a2de', '#2ec7c9', '#5ab1ef', '#ffb980', '#d87a80',
+                    '#8d98b3', '#e5cf0d', '#97b552', '#95706d', '#dc69aa',
+                    '#07a2a4', '#9a7fd1', '#588dd5', '#f5994e', '#c05050',
+                    '#59678c', '#c9ab00', '#7eb00a', '#6f5553', '#c14089']
+            };
+            getSum(0, 1, options, myChart);
+            //月走势切换
+            $('#order_trend_change li').on('click', function () {
+                var $this = $(this);
+                var type = $this.data('id');
+                getSum(trend, type, options, myChart);
+
+            });
+            //月份切换
+            $('.pre_month').on('click', function () {
+                var type = $('#order_trend_change').find('.active').data('id');
+                trend = trend - 1;
+                getSum(trend, type, options, myChart);
+                var year = Int($('.year').text());
+                var month = Int($('.month').text());
+                if (month == 1) {
+
+                    $('.year').text(year - 1);
+                    $('.month').text(12);
+                }
+                else $('.month').text(month - 1);
+            });
+            $('.next_month').on('click', function () {
+                trend = trend + 1;
+                var type = $('#order_trend_change').find('.active').data('id');
+                getSum(trend, type, options, myChart);
+                var year = Int($('.year').text());
+                var month = Int($('.month').text());
+                if (month == 12) {
+                    $('.year').text(year + 1);
+                    $('.month').text(1);
+                }
+                else $('.month').text(month + 1);
+            });
+
+            //下单时间统计
+            var myChart2 = ec.init(document.getElementById('order_time'));
+            myChart2.showLoading({
+                text: '正在努力的读取数据中...'
+            });
+            myChart2.hideLoading();
+            var options2={
                 tooltip : {
                     trigger: 'axis'
                 },
@@ -74,15 +204,16 @@ $(document).ready(function(){
                     show : true,
                     feature : {
                         mark : {show: true},
-                        dataView : {show: true, readOnly: false},
                         magicType: {show: true, type: ['line', 'bar']},
                         restore : {show: true},
                         saveAsImage : {show: true}
                     }
+
                 },
                 calculable : true,
                 legend: {
-                    data:['单日总量','按时达','立即送','货到付款','余额支付']
+                    data:['下单时间']
+
                 },
                 xAxis : [
                     {
@@ -98,125 +229,24 @@ $(document).ready(function(){
                         axisLabel : {
                             formatter: '{value}'
                         }
-                    },
-                ],
-                series : [
-                    {
-                        name:'新增用户',
-                        type:'line',
-                        data:[]
-                    },
-                    {
-                        name:'按时达',
-                        type:'line',
-                        data:[]
-                    },
-                    {
-                        name:'立即送',
-                        type:'line',
-                        data:[]
-                    },
-                    {
-                        name:'货到付款',
-                        type:'line',
-                        data:[]
-                    },
-                    {
-                        name:'余额支付',
-                        type:'line',
-                        data:[]
-                    },
-                ],
-                color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
-                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
-                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
-                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089'],
-                grid: {
-                    borderColor: '#eee'
-                }
-            };
-            getSum(0,1,options,myChart,0);
-            //月份切换
-            $('.pre_month').on('click',function(){
-                i=i-1;
-                getcurve(i,options,myChart);
-                var year=Int($('.year').text());
-                var month=Int($('.month').text());
-                if(month==1)
-                {
-
-                    $('.year').text(year-1);
-                    $('.month').text(12);
-                }
-                else $('.month').text(month-1);
-            });
-            $('.next_month').on('click',function(){
-                i=i+1;
-                getcurve(i,options,myChart);
-                var year=Int($('.year').text());
-                var month=Int($('.month').text());
-                if(month==12)
-                {
-                    $('.year').text(year+1);
-                    $('.month').text(1);
-                }
-                else $('.month').text(month+1);
-            });
-
-            //性别统计
-            var myChart2 = ec.init(document.getElementById('user_sex'));
-            myChart2.showLoading({
-                text: '正在努力的读取数据中...'
-            });
-            count('sex',0);
-            myChart2.hideLoading();
-            var options2={
-                title : {
-                    text: '用户性别',
-                    x:'center'
-                },
-                tooltip : {
-                    trigger: 'item',
-                    formatter: "{a} <br/>{b} : {c} ({d}%)"
-                },
-                legend: {
-                    orient : 'vertical',
-                    x : 'left',
-                    data:['男','女','未知']
-                },
-                toolbox: {
-                    show : true,
-                    feature : {
-                        mark : {show: true},
-                        dataView : {show: true, readOnly: false},
-                        magicType : {
-                            show: true,
-                            type: ['pie', 'funnel'],
-                            option: {
-                                funnel: {
-                                    x: '25%',
-                                    width: '50%',
-                                    funnelAlign: 'left',
-                                    max: 1548
-                                }
-                            }
-                        },
-                        restore : {show: true},
-                        saveAsImage : {show: true}
                     }
-                },
-                calculable : true,
+                ],
                 series : [
                     {
-                        name:'访问来源',
-                        type:'pie',
-                        radius : '55%',
-                        center: ['50%', '60%'],
-                        data:[
-                            {value:male_sum, name:'男'},
-                            {value:female_sum, name:'女'},
-                            {value:unknow_sex, name:'未知'},
-                        ]
+                        name:'下单时间',
+                        type:'line',
+                        data:[],
+                        markPoint : {
+                            data : [
+                                {type : 'max', name: '最大值'},
+                                {type : 'min', name: '最小值'}
+                            ]
+                        },
+                        markLine : {
+                            data : [
+                                {type : 'average', name: '平均值'}
+                            ]
+                        }
                     }
                 ],
                 color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
@@ -224,17 +254,83 @@ $(document).ready(function(){
                     '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
                     '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
             };
-            myChart2.setOption(options2);
+            getCount('order_time',0,1,options2,myChart2);
+            //下单时间统计切换
+            typeChange('#order_time_change ','order_time',options2,myChart2);
+
+            //收货时间统计
+            var myChart3 = ec.init(document.getElementById('receive_time'));
+            myChart3.showLoading({
+                text: '正在努力的读取数据中...'
+            });
+            myChart3.hideLoading();
+            var options3={
+                tooltip : {
+                    trigger: 'axis'
+                },
+                toolbox: {
+                    show : true,
+                    feature : {
+                        mark : {show: true},
+                        magicType: {show: true, type: ['line', 'bar']},
+                        restore : {show: true},
+                        saveAsImage : {show: true}
+                    }
+
+                },
+                calculable : true,
+                legend: {
+                    data:['下单时间']
+
+                },
+                xAxis : [
+                    {
+                        type : 'category',
+                        boundaryGap : false,
+                        data : []
+                    }
+                ],
+                yAxis : [
+                    {
+                        type : 'value',
+                        name : '增长趋势',
+                        axisLabel : {
+                            formatter: '{value}'
+                        }
+                    }
+                ],
+                series : [
+                    {
+                        name:'下单时间',
+                        type:'line',
+                        data:[],
+                        markPoint : {
+                            data : [
+                                {type : 'max', name: '最大值'},
+                                {type : 'min', name: '最小值'}
+                            ]
+                        },
+                        markLine : {
+                            data : [
+                                {type : 'average', name: '平均值'}
+                            ]
+                        }
+                    }
+                ],
+                color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
+                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
+                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
+                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
+            };
+            getCount('recive_time',0,1,options3,myChart3);
+            //下单时间统计切换
+            typeChange('#receive_time_change ','recive_time',options3,myChart3);
         }
     );
 });
 var data;
-var female_sum;
-var male_sum;
-var total_sex;
-var unknow_sex;
 var page_sum;
-var i=0;
+var trend=0;
 var n=0;
 
 function count(action,page,type){
@@ -271,16 +367,56 @@ function gettable(page){
     }
 }
 
-function getSum(page,type,options,myChart,i){
+function getSum(page,type,options,myChart){
+    options.xAxis[0].data=[];
+    for(var j=0;j<options.series.length;j++){
+        options.series[j].data=[];
+    }
+    myChart.clear();
+    count('sum',page,type);
+    for(var date in data){
+        var day=date;
+        var num1=data[date][1];
+        var num2=data[date][2];
+        var num3=data[date][3];
+        var num4=data[date][4];
+        var num5=data[date][5];
+        options.xAxis[0].data.push(day+'号');
+        options.series[0].data.push(num1);
+        options.series[1].data.push(num2);
+        options.series[2].data.push(num3);
+        options.series[3].data.push(num4);
+        options.series[4].data.push(num5);
+
+    }
+    myChart.refresh();
+    myChart.setOption(options);
+}
+
+function getCount(action,page,type,options,myChart){
     options.xAxis[0].data=[];
     options.series[0].data=[];
-    count('sum',page,type);
+    myChart.clear();
+    count(action,page,type);
     for(var date in data){
         var day=date;
         var num=data[date];
         options.xAxis[0].data.push(day+'号');
-        options.series[i].data.push(num);
+        options.series[0].data.push(num);
+
     }
     myChart.refresh();
     myChart.setOption(options);
+
+}
+
+function typeChange(dom,action,options,mychart){
+    $(dom).find('li').on('click', function () {
+        var $this = $(this);
+        var type = $this.data('id');
+        getCount(action,0,type,options,mychart);
+        console.log(dom)
+
+    });
+
 }

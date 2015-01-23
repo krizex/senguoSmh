@@ -14,17 +14,29 @@
         <a href="javascript:;" class="next_month text-grey2"> > </a>
     </div>
     <div class="change-box">
-        <ul id="order_trend-change" class="change-list pull-right">
-            <li><a href="javascript:;" class="text-grey3">订单量/个</a></li>
-            <li><a href="javascript:;" class="text-grey3">订单金额/个</a></li>
+        <ul id="order_trend_change" class="change-list pull-left">
+            <li data-id="1"><a href="javascript:;" class="text-grey3">订单量/个</a></li>
+            <li data-id="2"><a href="javascript:;" class="text-grey3">订单金额/元</a></li>
         </ul>
     </div>
     <div id="order_trend" style="height:400px"></div>
-    <hr/>
+    <hr class="clearfix"/>
     <p class="tit font16">下单时间统计</p>
+    <div class="change-box">
+        <ul id="order_time_change" class="change-list pull-left">
+            <li data-id="1"><a href="javascript:;" class="text-grey3">累计数据/个</a></li>
+            <li data-id="2"><a href="javascript:;" class="text-grey3">昨日数据/元</a></li>
+        </ul>
+    </div>
     <div id="order_time" style="height:400px"></div>
     <hr/>
     <p class="tit font16">收货时间统计</p>
+    <div class="change-box">
+        <ul id="receive_time_change" class="change-list pull-left">
+            <li data-id="1"><a href="javascript:;" class="text-grey3">累计数据/个</a></li>
+            <li data-id="2"><a href="javascript:;" class="text-grey3">昨日数据/元</a></li>
+        </ul>
+    </div>
     <div id="receive_time" style="height:400px"></div>
     <hr/>
     <p class="tit font16">详细数据</p>

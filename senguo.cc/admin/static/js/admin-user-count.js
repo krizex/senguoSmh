@@ -69,7 +69,6 @@ $(document).ready(function(){
                     show : true,
                     feature : {
                         mark : {show: true},
-                        dataView : {show: true, readOnly: false},
                         magicType: {show: true, type: ['line', 'bar']},
                         restore : {show: true},
                         saveAsImage : {show: true}
@@ -82,6 +81,7 @@ $(document).ready(function(){
                 xAxis : [
                     {
                         type : 'category',
+                        boundaryGap : false,
                         data : []
                     }
                 ],
@@ -90,7 +90,9 @@ $(document).ready(function(){
                         type : 'value',
                         name : '增长趋势',
                         axisLabel : {
-                            formatter: '{value}'
+                            formatter: '{value}',
+                            max:200
+
                         }
                     },
                     {
@@ -169,10 +171,9 @@ $(document).ready(function(){
                     show : true,
                     feature : {
                         mark : {show: true},
-                        dataView : {show: true, readOnly: false},
                         magicType : {
                             show: true,
-                            type: ['pie', 'funnel'],
+                            type: ['pie'],
                             option: {
                                 funnel: {
                                     x: '25%',
@@ -263,6 +264,7 @@ function gettable(page){
 function getcurve(i,options,myChart){
     options.xAxis[0].data=[];
     options.series[0].data=[];
+    myChart.clear();
     count('curve',i);
     for(var date in data){
         var day=date;
