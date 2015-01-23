@@ -34,7 +34,7 @@
 </div>
 <ul class="users-list clearfix">
     {% for customer in customers %}
-    <li class="users-list-item set-w100-fle">
+    <li class="users-list-item  clearfix">
         <div class="show-info set-w100-fle">
             <img class="user-img pull-left" src="{{customer.accountinfo.headimgurl}}"/>
             <div class="user-info pull-left">
@@ -47,7 +47,7 @@
             </div>
             <a href="#" class="history-order pull-right">查看历史订单</a>
         </div>
-        <div class="hide-info set-w100-fle" style="display:none;">
+        <div class="hide-info set-w100-fle bg-white" style="display:none;">
             <div class="personal-info pull-left">
                 <p class="text-grey9">个人信息</p>
                 <p>姓名：{{customer.accountinfo.realname or '无'}}</p>
