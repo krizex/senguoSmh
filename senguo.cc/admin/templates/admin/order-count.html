@@ -40,7 +40,7 @@
     <div id="receive_time" style="height:400px"></div>
     <hr/>
     <p class="tit font16">详细数据</p>
-    <table class="detail-count text-center">
+    <table class="detail-count text-center table-count">
         <tr class="bg-grey2">
             <td>时间</td>
             <td>日订单数</td>
@@ -62,6 +62,29 @@
         </ul>
     </div>
     <hr/>
+    <p class="tit font16">购买回头率</p>
+    <table class="detail-rate text-center table-count">
+        <tr class="bg-grey2">
+            <td>时间</td>
+            <td>新增老用户订单</td>
+            <td>累计老用户订单</td>
+            <td>新增订单</td>
+            <td>累计总订单</td>
+            <td>日回头率</td>
+            <td>累计回头率</td>
+        </tr>
+    </table>
+    <div class="rate-pagination list-pagination clearfix">
+        <ul>
+            <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+            <li>
+                <span class="page-now"></span>/<span class="page-total"></span>
+            </li>
+            <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+            <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+            <li><a href="javascript:;" class="jump-to">跳转</a></li>
+        </ul>
+    </div>
 </div>
 {% end %}
 {% block bottom %}

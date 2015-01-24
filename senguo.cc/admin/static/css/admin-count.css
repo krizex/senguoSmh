@@ -1,8 +1,8 @@
 .box{border:1px solid #ccc;padding:10px 0;}
 .box .tit{text-indent:30px;line-height:30px;}
 .month-change{width:180px;margin-top:10px;margin-bottom:10px;}
-.detail-count{width:100%;}
-.detail-count td{height:30px;line-height:30px;border-bottom:1px solid #ccc;}
+.table-count{width:100%;}
+.table-count td{height:30px;line-height:30px;border-bottom:1px solid #ccc;}
 
 .change-list{margin-left:60px;}
 .change-list li{border-left:2px solid #fff;padding-left:14px;}

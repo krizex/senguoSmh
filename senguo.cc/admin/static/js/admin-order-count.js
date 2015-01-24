@@ -330,6 +330,9 @@ $(document).ready(function(){
     //详细数据
     gettable('order_table',0,'.detail-count');
     listPage('.detail-pagination',detail_page_sum,'order_table','.detail-count');
+    //购买回头率
+    gettable2('order_table',0,'.detail-rate');
+    listPage('.rate-pagination',detail_page_sum,'order_table','.detail-rate');
 });
 var data;
 var detail_page_sum;
@@ -356,28 +359,48 @@ function count(action,page,type){
         });
 }
 
-function gettable(action,page,dom){
+function gettable(action,page,dom) {
+    count(action, page);
+    $(dom).find('.item').remove();
+    for (var key in data) {
+        var $item = $('<tr class="item"><td class="time"></td><td class="day_order"></td><td class="total_order"></td><td class="day_money"></td><td class="total_money"></td><td class="price"></td></tr>');
+        var date = data[key][0];
+        var day_order = data[key][1];
+        var total_order = data[key][2];
+        var day_money = data[key][3];
+        var total_money = data[key][4];
+        $item.find('.time').text(date);
+        $item.find('.day_order').text(day_order);
+        $item.find('.total_order').text(total_order);
+        $item.find('.day_money').text(day_money + '元');
+        $item.find('.total_money').text(total_money + '元');
+        if (day_order == 0) $item.find('.price').text(0 + '元');
+        else $item.find('.price').text(day_money / day_order + '元');
+        $(dom).append($item);
+    }
+}
+
+function gettable2(action,page,dom){
     count(action,page);
     $(dom).find('.item').remove();
-    if(action=='order_table'){
-        for(var key in data){
-            var $item=$('<tr class="item"><td class="time"></td><td class="day_order"></td><td class="total_order"></td><td class="day_money"></td><td class="total_money"></td><td class="price"></td></tr>');
-            var date=data[key][0];
-            var day_order=data[key][1];
-            var total_order=data[key][2];
-            var day_money=data[key][3];
-            var total_money=data[key][4];
-            $item.find('.time').text(date);
-            $item.find('.day_order').text(day_order);
-            $item.find('.total_order').text(total_order);
-            $item.find('.day_money').text(day_money+'元');
-            $item.find('.total_money').text(total_money+'元');
-            if(day_order==0) $item.find('.price').text(0+'元');
-            else $item.find('.price').text(day_money/day_order)+'元';
-            $(dom).append($item);
-        }
+    for(var key in data){
+        var $item=$('<tr class="item"><td class="time"></td><td class="new_old_order"></td><td class="total_old_order"></td><td class="new_order"></td><td class="total_order"></td><td class="back_date"></td><td class="total_date"></td></tr>');
+        var date=data[key][0];
+        var new_old_order=data[key][5];
+        var total_old_order=data[key][6];
+        var new_order=data[key][1];
+        var total_order=data[key][2];
+        $item.find('.time').text(date);
+        $item.find('.new_old_order').text(new_old_order);
+        $item.find('.total_old_order').text(total_old_order);
+        $item.find('.new_order').text(new_order);
+        $item.find('.total_order').text(total_order);
+        if(new_old_order==0) $item.find('.back_date').text(0+'%');
+        else $item.find('.back_date').text(percentNum(new_old_order,new_order));
+        if(total_old_order==0) $item.find('.total_date').text(0+'%');
+        else $item.find('.total_date').text(percentNum(total_old_order,total_order));
+        $(dom).append($item);
     }
-
 }
 
 function getSum(page,type,options,myChart){
@@ -448,7 +471,8 @@ function listPage(dom,page_sum,action,item){
             $(dom).find('.pre-page').hide();
         }
         if(n>-1) {
-                gettable(action,n,item);
+               if(dom=='.detail-count') gettable(action,n,item);
+               else if(dom=='.detail-rate') gettable2(action,n,item);
                 $(dom).find('.next-page').show();
                 $(dom).find('.page-now').text(n+1);
             }
@@ -458,7 +482,8 @@ function listPage(dom,page_sum,action,item){
         if(n!=page_sum){
             $(dom).find('.pre-page').show();
             $(dom).find('.page-now').text(n+1);
-            gettable(action,n,item);
+            if(dom=='.detail-count') gettable(action,n,item);
+            else if(dom=='.detail-rate') gettable2(action,n,item);
         }
         if(n==page_sum-1) {
             $(dom).find('.next-page').hide();
@@ -469,7 +494,8 @@ function listPage(dom,page_sum,action,item){
         var page=Int($(dom).find('.input-page').val());
         if(page_sum>page-1>0){
             n=page-1;
-            gettable(action,page-1,item);
+            if(dom=='.detail-count') gettable(action,page-1,item);
+            else if(dom=='.detail-rate') gettable2(action,page-1,item);
             $(dom).find('.pre-page').show();
             $(dom).find('.page-now').text(page);
         }

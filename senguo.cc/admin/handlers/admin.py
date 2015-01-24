@@ -111,8 +111,6 @@ class OrderStatic(AdminBaseHandler):
             return self.recive_time()
         elif action == "order_table":
             return self.order_table()
-        elif action == "back_rate":
-            return self.back_rate()
 
     @AdminBaseHandler.check_arguments("page:int", "type:int")
     def sum(self):
