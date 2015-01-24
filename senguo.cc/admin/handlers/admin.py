@@ -111,6 +111,8 @@ class OrderStatic(AdminBaseHandler):
             return self.recive_time()
         elif action == "order_table":
             return self.order_table()
+        elif action == "back_rate":
+            return self.back_rate()
 
     @AdminBaseHandler.check_arguments("page:int", "type:int")
     def sum(self):
@@ -219,6 +221,7 @@ class OrderStatic(AdminBaseHandler):
         start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
         end_date = datetime.datetime.now() - datetime.timedelta(page*page_size)
 
+        # 日订单数，日总订单金额
         s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
             filter_by(shop_id=self.current_shop.id).\
             filter(models.Order.create_date >= start_date,
@@ -228,21 +231,51 @@ class OrderStatic(AdminBaseHandler):
                      func.day(models.Order.create_date)).\
             order_by(desc(models.Order.create_date)).all()
 
+        # 总订单数
         total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
             filter_by(shop_id=self.current_shop.id).\
             filter(models.Order.create_date <= end_date).all()
         total = list(total[0])
+
+        # 日老用户订单数
+        ids = self.old_follower_ids(self.current_shop.id)
+        s_old = self.session.query(models.Order.create_date, func.count()).\
+            filter(models.Order.create_date >= start_date,
+                   models.Order.create_date <= end_date,
+                   models.Order.customer_id.in_(ids)).\
+            group_by(func.year(models.Order.create_date),
+                     func.month(models.Order.create_date),
+                     func.day(models.Order.create_date)).\
+            order_by(desc(models.Order.create_date)).all()
+
+        # 总老用户订单数
+        old_total = self.session.query(func.count()).\
+            filter(models.Order.create_date <= end_date,
+                   models.Order.customer_id.in_(ids)).all()
+        old_total = old_total[0][0]
+
+
         data = []
         i = 0
+        j = 0
+        # data的封装格式为：[日期，日订单数，累计订单数，日订单总金额，累计订单总金额，日老用户订单数，累计老用户订单数]
         for x in range(0, 15):
             date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
             if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
-                data.append((date.strftime('%Y-%m-%d'), s[i][1], total[1], s[i][2], total[0]))
-                total[1] -= s[i][1]
-                total[0] -= s[i][2]
-                i += 1
+                if j < len(s_old) and (datetime.datetime.now()-s_old[j][0]).days == x+(page*page_size):
+                    data.append((date.strftime('%Y-%m-%d'), s[i][1], total[1], s[i][2], total[0], s_old[j][1], old_total))
+                    total[1] -= s[i][1]
+                    total[0] -= s[i][2]
+                    old_total -= s_old[j][1]
+                    i += 1
+                    j += 1
+                else:
+                    data.append((date.strftime('%Y-%m-%d'), s[i][1], total[1], s[i][2], total[0], 0, old_total))
+                    total[1] -= s[i][1]
+                    total[0] -= s[i][2]
+                    i += 1
             else:
-                data.append((date.strftime('%Y-%m-%d'), 0, total[1], 0, total[0]))
+                data.append((date.strftime('%Y-%m-%d'), 0, total[1], 0, total[0], 0, old_total))
             if total[1] <= 0:
                 break
         first_order = self.session.query(models.Order).\
@@ -250,6 +283,14 @@ class OrderStatic(AdminBaseHandler):
             order_by(models.Order.create_date).first()
         page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
         return self.send_success(page_sum=page_sum, data=data)
+
+    def old_follower_ids(self, shop_id):
+        q = self.session.query(models.Order.customer_id).\
+            filter_by(shop_id=shop_id).\
+            group_by(models.Order.customer_id).\
+            having(func.count(models.Order.customer_id) > 1).all()
+        ids = [x[0] for x in q]
+        return ids
 
 
 
