@@ -7,12 +7,16 @@ a:focus{text-decoration: none}
 a:focus{outline:none;}
 input{border:none;}
 .container{padding:0;}
+.modal{}
 .modal-dialog{margin:0px auto;margin-top:10%!important;max-width:640px;}
-.modal-header{padding:10px;}
-.modal-body{font-size:1em;padding:10px;}
+.modal-content{position:relative;}
+.modal-header{background:url('../images/huabian_palegreen.png') repeat-x;padding:0px;height:52px;line-height:52px;position:absolute;z-index:10;width:100%;border-bottom:0px;border-top-left-radius:6px;border-top-right-radius:6px;}
+.modal-title{line-height:50px;}
+.modal-header .close{font-size:28px !important;}
+.modal-body{font-size:1em;padding:0;padding-top:48px;}
 .modal-footer{clear:both;}
 
-.bg-white{background-color:#fff !important;}
+.bg-white{background-color:#fff !important;}s
 .bg-green{background-color:#00D681 !important;}
 .bg-grey{background-color:#f9f9f9 !important;}
 .bg-grey2{background-color:#f2f2f2 !important;}
@@ -28,6 +32,7 @@ input{border:none;}
 .text-shadow{text-shadow:1px 1px #aaa;}
 
 .text-green{color:#00D681 !important;}
+.text-green2{color:#065D05 !important;}
 .text-white{color:#fff !important;}
 .text-grey{color:#666 !important;}
 .text-grey2{color:#ccc !important;}
@@ -41,7 +46,7 @@ input{border:none;}
 .padding-right-none{padding-right:0px;}
 .phone-box{width:100%;min-width:320px;max-width:800px;margin:0 auto;overflow:hidden;background:#F2F2F2;padding-bottom:50px;}
 
-.bottom-nav{max-width:800px;margin:0 auto;height:40px;line-height:40px;overflow:hidden;background:url('../images/huabian_white.png') repeat-x;}
+.bottom-nav{max-width:800px;margin:0 auto;height:60px;line-height:60px;overflow:hidden;background:url('../images/huabian_white.png') repeat-x;}
 .bottom-nav ul{margin-bottom:0;}
 .bottom-nav li{text-align:center;padding:0 5px;}
 .bottom-nav li a{display:block;}

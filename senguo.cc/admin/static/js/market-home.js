@@ -1,4 +1,9 @@
 $(document).ready(function(){
+    //商品加减
+    $('.to-add').on('click',function(){
+        var $this=$(this);
+        $this.hide().siblings('.number-change').show();
+    });
     //公告滚动
     $('#position li').first().addClass('on');
     var slider =
@@ -20,12 +25,11 @@ $(document).ready(function(){
     $('goods-list').last().addClass('m-b60');
 
     var img_width=$('.img')[0].width;
-    var box_height=$('.check-lg-img')[0].height;
     $('.great-number').each(function(){
-        $(this).css({'line-height':img_width/2+'px'});
+        $(this).css({'line-height':(img_width/2-3)+'px'});
     });
     $('.show-box').each(function(){
-        $(this).css({'height':box_height+'px'});
+        $(this).css({'height':(img_width+4)+'px'});
     });
     //商品标签转换
     $('.tagItem').each(function(){
@@ -34,11 +38,12 @@ $(document).ready(function(){
         tagText($this,id);
     });
     //计价方式折叠/显示
-    $('.charge-first').each(function(){
+    $('.toggle').each(function(){
         var $this=$(this);
+        var parent=$this.parents('.goods-list-item');
         var charge_list=$this.parents('.goods-list-item').find('.charge-list');
-        $this.find('.toggle').on('click',function(){
-            $(this).toggleClass('up');
+        $this.on('click',function(){
+            parent.toggleClass('arrow');
             charge_list.toggle();
 
         })
@@ -49,13 +54,11 @@ $(document).ready(function(){
         var parent=$this.parents('.goods-list-item');
         var img_url=$this.find('.img').attr('src');
         var fruit_name=parent.find('.fruit-name').text();
-        var bg_color=parent.find('.fruit-class').css('background');
         var fruit_intro=parent.find('.fruit_intro').val();
         $this.on('click',function(){
             var large_box=$('.large-img-box');
             large_box.modal('show');
             large_box.find('#largeImg').attr({'src':img_url});
-            large_box.find('.modal-header').css({'background':bg_color});
             large_box.find('.modal-title').text(fruit_name);
             large_box.find('.intro').text(fruit_intro);
         })
