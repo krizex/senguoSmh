@@ -810,6 +810,15 @@ class _VerifyCode(MapBase):
     create_time = Column(DateTime, default=func.now())
     count = Column(Integer)
 
+class FruitFavour(MapBase):
+    __tablename__ = "__fruit_favour__"
+
+    customer_id = Column(Integer, primary_key=True, nullable=False)
+    f_m_id = Column(Integer, primary_key=True, nullable=False)  #fruit/mgoods id
+    type = Column(TINYINT, primary_key=True, nullable=False)  # 0：fruit，1：mgoods
+    create_date = Column(Date, default=func.curdate())
+
+
 #todo :如果水果
 class Order(MapBase, _CommonApi):
     __tablename__ = "order"
@@ -868,6 +877,7 @@ class Fruit(MapBase, _CommonApi):
     current_saled = Column(Integer, default=0) #售出：未处理的订单数
     saled = Column(Integer) #销量
     storage = Column(Float)
+    favour = Column(Integer, default=0)  # 赞
     unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
     tag = Column(TINYINT, default=TAG.NULL) #标签
     img_url = Column(String(500))
@@ -899,6 +909,7 @@ class MGoods(MapBase, _CommonApi):
     current_saled = Column(Integer, default=0) #售出：未处理的订单数
     saled = Column(Integer) #销量
     storage = Column(Float)
+    favour = Column(Integer, default=0)  # 赞
     unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
     tag = Column(TINYINT, default=TAG.NULL) #新品
     img_url = Column(String(500))

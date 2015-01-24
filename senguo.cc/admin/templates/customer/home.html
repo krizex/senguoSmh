@@ -43,7 +43,7 @@
         {% set farrow_active='arrow'%}
         {% set ftoggle_active='toggle'%}
     {% end %}
-    <li class="goods-list-item bg-pale-green font14 text-grey {{farrow_active}}" data-id="{{fruit.id}}">
+    <li class="goods-list-item bg-pale-green font14 text-grey {{farrow_active}}" data-id="{{fruit.id}}" data-type="fruit" data-num="{{fruit.storage}}">
         <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
             <a href="javascript:;" class="check-lg-img">
                 <span class="tag bg-green text-white text-center tagItem font8" data-id="{{fruit.tag}}">hot</span>
@@ -62,14 +62,14 @@
                     <span class="pull-right text-grey sale">{{fruit.saled}}</span>
                 </p>
                 <p class="great-number">
-                    <span>888</span>
+                    <span class="great">{{fruit.favour}}</span>
                 </p>
                 <div class="charge-first charge-style  font12">
                     {% if fruit.charge_types %}
-                <span class="col-sm-6 col-xs-6 text-bgcolor p0 charge-type line34 height34" data-id="{{fruit.charge_types[0].id}}">
-                    {{fruit.charge_types[0].price}}元/{{fruit.charge_types[0].num}}
-                    <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
-                </span>
+                    <span class="col-sm-6 col-xs-6 text-bgcolor p0 charge-type line34 height34" data-id="{{fruit.charge_types[0].id}}">
+                        {{fruit.charge_types[0].price}}元/{{fruit.charge_types[0].num}}
+                        <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
+                    </span>
                     {% end %}
                     {% set value = cart_f[fruit.charge_types[0].id]["num"] if fruit.charge_types[0].id in cart_f else 0%}
                  <span class="to-add line34 height34 text-center font16 text-grey2 bg-white pull-right">+</span>
@@ -113,7 +113,7 @@
             {% set darrow_active='arrow'%}
             {% set dtoggle_active='toggle'%}
         {% end %}
-        <li class="goods-list-item bg-pale-green font14 text-grey {{darrow_active}}" data-id="{{dry_fruit.id}}">
+        <li class="goods-list-item bg-pale-green font14 text-grey {{darrow_active}}" data-id="{{dry_fruit.id}}" data-type="fruit" data-num="{{dry_fruit.storage}}">
             <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
                 <a href="javascript:;" class="check-lg-img">
                     <span class="tag bg-green text-white text-center tagItem font8" data-id="{{dry_fruit.tag}}">hot</span>
@@ -132,7 +132,7 @@
                         <span class="pull-right text-grey sale">{{dry_fruit.saled}}</span>
                     </p>
                     <p class="great-number">
-                        <span>888</span>
+                        <span  class="great">{{dry_fruit.favour}}</span>
                     </p>
                     <div class="charge-first charge-style  font12">
                         {% if dry_fruit.charge_types %}
@@ -186,7 +186,7 @@
             {% set marrow_active='arrow'%}
             {% set mtoggle_active='toggle'%}
         {% end %}
-        <li class="goods-list-item  bg-pale-green font14 text-grey {{marrow_active}}" data-id="{{mgood.id}}">
+        <li class="goods-list-item  bg-pale-green font14 text-grey {{marrow_active}}" data-id="{{mgood.id}}" data-type="menu" data-num="{{mgood.storage}}">
             <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
                 <a href="javascript:;" class="check-lg-img">
                     <span class="tag bg-green text-white text-center tagItem font8" data-id="{{mgood.tag}}">hot</span>
@@ -205,7 +205,7 @@
                         <span class="pull-right text-grey sale">{{mgood.saled}}</span>
                     </p>
                     <p class="great-number">
-                        <span>888</span>
+                        <span  class="great">{{mgood.favour}}</span>
                     </p>
                     <div class="charge-first charge-style  font12">
                         {% if mgood.mcharge_types %}
@@ -273,6 +273,7 @@
 <div class="modal fade classify"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" id="goods-classify">
     <div class="modal-dialog">
         <div class="modal-content">
+            <div class="modal-header"></div>
             <div class="modal-body set-width-float text-center">
                 <ul class="font16 goods-class-choose type-choose list-group">
                     {% if fruits%}

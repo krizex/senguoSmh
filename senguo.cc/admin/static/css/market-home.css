@@ -47,8 +47,11 @@
 
 .classify .modal-dialog{margin-top:0px;max-width:800px !important;}
 .classify a{display:block;}
+.classify li{border:0px;}
 
 .line34{line-height:32px;}
 .width34{width:32px;}
 .w3{width:25%;}
 .w7{width:75%;}
+
+.sold-out{position:absolute;width:100%;height:100%;z-index:999;background:url('../images/sold_out.png') no-repeat center center;background-color:rgba(0,0,0,0.2);}

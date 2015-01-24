@@ -1,4 +1,12 @@
 $(document).ready(function(){
+    //售完状态
+    $('.goods-list-item').each(function(){
+        var $this=$(this);
+        var num=Int($this.data('num'));
+        if(num==0){
+            $this.css({'background-color':'#ccc'}).append('<div class="sold-out"><div class="out"></div></div>')
+        }
+    });
     //商品加减
     $('.to-add').on('click',function(){
         var $this=$(this);
@@ -52,16 +60,25 @@ $(document).ready(function(){
     $('.check-lg-img').each(function(){
         var $this=$(this);
         var parent=$this.parents('.goods-list-item');
+        var type=$this.parents('.goods-list-item').data('type');
+        var id=$this.parents('.goods-list-item').data('id');
         var img_url=$this.find('.img').attr('src');
         var fruit_name=parent.find('.fruit-name').text();
         var fruit_intro=parent.find('.fruit_intro').val();
         $this.on('click',function(){
             var large_box=$('.large-img-box');
-            large_box.modal('show');
+            large_box.modal('show').attr({'data-id':id,'data-type':type});
             large_box.find('#largeImg').attr({'src':img_url});
             large_box.find('.modal-title').text(fruit_name);
             large_box.find('.intro').text(fruit_intro);
         })
+    });
+    //点赞
+    $('.click-great').on('click',function(){
+        var large_box=$('.large-img-box');
+        var type=large_box.data('type');
+        var id=large_box.data('id');
+        great(type,id);
     });
     //商品数量操作
     $('.goods-list').find('.number-minus').on('click',function(){
@@ -116,6 +133,38 @@ function goodsNum(target,action){
                         item.val(num);
                     }
                 }
+            }
+            else alert(res.error_text);
+        },
+        function(){alert('网络错误')})
+}
+
+function great(type,id){
+    var url='';
+    var menu_type;
+    var action=3;
+    if(type=='fruit') menu_type=0;
+    else if(type=='menu') menu_type=1;
+    var args={
+        action:action,
+        charge_type_id:id,
+        menu_type:menu_type
+    };
+    $.postJson(url,args,function(res){
+            if(res.success)
+            {
+                $('.goods-list-item').each(function(){
+                    var $this=$(this);
+                    var type=$this.data('type');
+                    var goods_id=$this.data('id');
+                    console.log(type);
+                    console.log(goods_id);
+                    if(type==type&&goods_id==id){
+                        var num=$this.find('.great').text();
+                        $this.find('.great').text(Int(num)+1);
+                    }
+                });
+                $('.large-img-box').modal('hide');
             }
             else alert(res.error_text);
         },

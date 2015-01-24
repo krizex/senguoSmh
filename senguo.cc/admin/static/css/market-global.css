@@ -46,12 +46,24 @@ input{border:none;}
 .padding-right-none{padding-right:0px;}
 .phone-box{width:100%;min-width:320px;max-width:800px;margin:0 auto;overflow:hidden;background:#F2F2F2;padding-bottom:50px;}
 
-.bottom-nav{max-width:800px;margin:0 auto;height:60px;line-height:60px;overflow:hidden;background:url('../images/huabian_white.png') repeat-x;}
+.bottom-nav{max-width:800px;margin:0 auto;height:60px;line-height:90px;overflow:hidden;background:url('../images/huabian_white.png') repeat-x;}
 .bottom-nav ul{margin-bottom:0;}
 .bottom-nav li{text-align:center;padding:0 5px;}
-.bottom-nav li a{display:block;}
-.bottom-nav li:hover a{color:#80c26b;}
-.bottom-nav .active{color:#80c26b;}
+.bottom-nav li a{display:block;background-size:24px !important;}
+.bottom-nav li:hover a{color:#80c26b !important;}
+.bottom-nav .active a{color:#80c26b !important;}
+.bottom-nav .home{background:url('../images/home.png') no-repeat center 10px;}
+.bottom-nav .goods{background:url('../images/goods.png') no-repeat center 10px;}
+.bottom-nav .cart{background:url('../images/cart.png') no-repeat center 10px;}
+.bottom-nav .my{background:url('../images/my.png') no-repeat center 10px;background-size:22px !important;}
+.bottom-nav li:hover .home{background:url('../images/home_green.png') no-repeat center 10px;}
+.bottom-nav li:hover .goods{background:url('../images/goods_green.png') no-repeat center 10px;}
+.bottom-nav li:hover .cart{background:url('../images/cart_green.png') no-repeat center 10px;}
+.bottom-nav li:hover .my{background:url('../images/my_green.png') no-repeat center 10px;background-size:22px !important;}
+.bottom-nav .active .home{background:url('../images/home_green.png') no-repeat center 10px;}
+.bottom-nav .active .goods{background:url('../images/goods_green.png') no-repeat center 10px;}
+.bottom-nav .active .cart{background:url('../images/cart_green.png') no-repeat center 10px;}
+.bottom-nav .active .my{background:url('../images/my_green.png') no-repeat center 10px;background-size:22px !important;}
 
 .set-inl-blo{display:inline-block;}
 .no-mar-btom{margin-bottom:0px;}
