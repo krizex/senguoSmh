@@ -16,7 +16,7 @@
 .goods-list-item .number-plus{right:0;}
 .goods-list-item .number-minus{left:0;}
 .goods-list-item .disable{border-color:#ccc;color:#ccc;}
-.goods-list-item .arrow{background:url('../images/arrow.png') no-repeat;width:21px;height:46px;position:absolute;right:0;bottom:0;}
+.arrow{background:url('../images/arrow.png') no-repeat right bottom;}
 
 .large-img-box .close{font-size:12px;opacity:1;padding:8px;}
 .large-img-box img{width:100%;margin-bottom:10px;}
@@ -41,3 +41,8 @@
 
 .classify .modal-dialog{margin-top:0px;max-width:800px !important;}
 .classify a{display:block;}
+
+.line34{line-height:34px;}
+.width34{width:34px;}
+.w3{width:25%;}
+.w7{width:75%;}

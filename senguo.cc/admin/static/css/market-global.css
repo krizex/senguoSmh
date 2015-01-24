@@ -12,16 +12,16 @@ input{border:none;}
 .modal-body{font-size:1em;padding:10px;}
 .modal-footer{clear:both;}
 
-.bg-white{background:#fff !important;}
-.bg-green{background:#00D681 !important;}
-.bg-grey{background:#f9f9f9 !important;}
-.bg-grey2{background:#f2f2f2 !important;}
-.bg-grey3{background:#E7E7E7 !important;}
-.bg-greyc{background:#ccc !important;}
-.bg-pink{background:#ff6563 !important;}
-.bg-red{background:#E01445 !important;}
-.bg-orange{background:#E07D14 !important;}
-.bg-pale-green{background:#EAF7E7 !important;}
+.bg-white{background-color:#fff !important;}
+.bg-green{background-color:#00D681 !important;}
+.bg-grey{background-color:#f9f9f9 !important;}
+.bg-grey2{background-color:#f2f2f2 !important;}
+.bg-grey3{background-color:#E7E7E7 !important;}
+.bg-greyc{background-color:#ccc !important;}
+.bg-pink{background-color:#ff6563 !important;}
+.bg-red{background-color:#E01445 !important;}
+.bg-orange{background-color:#E07D14 !important;}
+.bg-pale-green{background-color:#EAF7E7 !important;}
 
 .text-center{text-align:center;}
 

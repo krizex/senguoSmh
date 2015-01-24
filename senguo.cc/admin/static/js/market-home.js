@@ -18,6 +18,15 @@ $(document).ready(function(){
     var bullets = document.getElementById('position').getElementsByTagName('li');
 
     $('goods-list').last().addClass('m-b60');
+
+    var img_width=$('.img')[0].width;
+    var box_height=$('.check-lg-img')[0].height;
+    $('.great-number').each(function(){
+        $(this).css({'line-height':img_width/2+'px'});
+    });
+    $('.show-box').each(function(){
+        $(this).css({'height':box_height+'px'});
+    });
     //商品标签转换
     $('.tagItem').each(function(){
         var $this=$(this);
