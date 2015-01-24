@@ -456,6 +456,7 @@ function typeChange(dom,action,options,mychart){
 }
 
 function listPage(dom,page_sum,action,item){
+    console.log(dom);
     if(n==0){$(dom).find('.pre-page').hide();}
     if((n+1)==page_sum){
         $(dom).find('.next-page').hide();
@@ -471,8 +472,8 @@ function listPage(dom,page_sum,action,item){
             $(dom).find('.pre-page').hide();
         }
         if(n>-1) {
-               if(dom=='.detail-count') gettable(action,n,item);
-               else if(dom=='.detail-rate') gettable2(action,n,item);
+               if(dom=='.detail-pagination') gettable(action,n,item);
+               else if(dom=='.rate-pagination') gettable2(action,n,item);
                 $(dom).find('.next-page').show();
                 $(dom).find('.page-now').text(n+1);
             }
@@ -482,8 +483,8 @@ function listPage(dom,page_sum,action,item){
         if(n!=page_sum){
             $(dom).find('.pre-page').show();
             $(dom).find('.page-now').text(n+1);
-            if(dom=='.detail-count') gettable(action,n,item);
-            else if(dom=='.detail-rate') gettable2(action,n,item);
+            if(dom=='.detail-pagination') gettable(action,n,item);
+            else if(dom=='.rate-pagination') gettable2(action,n,item);
         }
         if(n==page_sum-1) {
             $(dom).find('.next-page').hide();
@@ -494,8 +495,8 @@ function listPage(dom,page_sum,action,item){
         var page=Int($(dom).find('.input-page').val());
         if(page_sum>page-1>0){
             n=page-1;
-            if(dom=='.detail-count') gettable(action,page-1,item);
-            else if(dom=='.detail-rate') gettable2(action,page-1,item);
+            if(dom=='.detail-pagination') gettable(action,page-1,item);
+            else if(dom=='.rate-pagination') gettable2(action,page-1,item);
             $(dom).find('.pre-page').show();
             $(dom).find('.page-now').text(page);
         }
