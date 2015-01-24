@@ -247,10 +247,10 @@ class OrderStatic(AdminBaseHandler):
             order_by(desc(models.Order.create_date)).all()
 
         # 总老用户订单数
-        old_total = self.session.query(func.count()).\
+        old_total = self.session.query(models.Order).\
+            filter_by(shop_id=self.current_shop.id).\
             filter(models.Order.create_date <= end_date,
-                   models.Order.customer_id.in_(ids)).all()
-        old_total = old_total[0][0]
+                   models.Order.customer_id.in_(ids)).count()
 
 
         data = []
