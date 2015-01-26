@@ -3,6 +3,7 @@ import dal.models as models
 import tornado.web
 import time
 from settings import ROOT_HOST_NAME
+from sqlalchemy import exists
 
 class Access(SuperBaseHandler):
     
@@ -288,3 +289,42 @@ class OrderManage(SuperBaseHandler):
             if not u:
                 return self.send_fail(error_text="该用户不存在")
             return self.send_success()
+
+
+class User(SuperBaseHandler):
+    @tornado.web.authenticated
+    @SuperBaseHandler.check_arguments("action:str", "page:int")
+    def get(self):
+        action = self.args["action"]
+        page = self.args["page"]
+        page_size = 20
+
+        q = self.session.query(models.Accountinfo.id,
+                                       models.Accountinfo.headimgurl,
+                                       models.Accountinfo.nickname,
+                                       models.Accountinfo.sex,
+                                       models.Accountinfo.wx_province,
+                                       models.Accountinfo.wx_city,
+                                       models.Accountinfo.phone)
+        if action == "all":
+            pass
+        elif action == "admin":
+            q = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id))
+        elif action == "customer":
+            q = q.join(models.CustomerShopFollow, models.CustomerShopFollow.customer_id == models.Accountinfo.id).\
+                join(models.Shop, models.CustomerShopFollow.shop_id == models.Shop.id)
+        elif action == "phone":
+            q = q.filter(models.Accountinfo.phone != '')
+        else:
+            return self.send_error(404)
+        sum = q.count()
+        users = q.offset(page*page_size).limit(page_size).all()
+        for i in range(len(users)):
+            f_names = self.session.query(models.Shop.shop_name).\
+                join(models.CustomerShopFollow).\
+                filter(models.CustomerShopFollow.customer_id == users[i][0]).all()
+            h_names = self.session.query(models.Shop.shop_name).filter_by(admin_id=users[i][0]).all()
+            users[i] = list(users[i])
+            users[i].append([x[0] for x in f_names])
+            users[i].append([x[0] for x in h_names])
+        return self.send_success(data=users, sum=sum)
