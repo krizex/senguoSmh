@@ -305,7 +305,10 @@ class Cart(CustomerBaseHandler):
                 if fruits[str(charge_type.id)] == 0:  # 有可能num为0，直接忽略掉
                     continue
                 totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
-                charge_type.fruit.storage -= fruits[str(charge_type.id)]*charge_type.unit_num*charge_type.num #更新库存
+                num = fruits[str(charge_type.id)]*charge_type.unit_num*charge_type.num
+                charge_type.fruit.storage -= num  # 更新库存
+                charge_type.fruit.saled += num  # 更新销量
+                charge_type.fruit.current_saled += num  # 更新售出
                 if charge_type.fruit.storage < 0:
                     return self.send_fail("库存不足")
                 f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
@@ -317,7 +320,10 @@ class Cart(CustomerBaseHandler):
                 if mgoods[str(mcharge_type.id)] == 0:    # 有可能num为0，直接忽略掉
                     continue
                 totalPrice += mcharge_type.price*mgoods[str(mcharge_type.id)]
-                mcharge_type.mgoods.storage -= mgoods[str(mcharge_type.id)]*mcharge_type.unit_num*mcharge_type.num #更新库存
+                num = mgoods[str(mcharge_type.id)]*mcharge_type.unit_num*mcharge_type.num #更新库存
+                mcharge_type.mgoods.storage -= num  # 更新库存
+                mcharge_type.mgoods.saled -= num  # 更新销量
+                mcharge_type.mgoods.current_saled -= num  # 更新售出
                 if mcharge_type.mgoods.storage < 0:
                     return self.send_fail("库存不足")
                 m_d[mcharge_type.id]={"mgoods_name":mcharge_type.mgoods.name, "num":mgoods[str(mcharge_type.id)],

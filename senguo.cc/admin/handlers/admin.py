@@ -279,7 +279,10 @@ class OrderStatic(AdminBaseHandler):
         first_order = self.session.query(models.Order).\
             filter_by(shop_id=self.current_shop.id).\
             order_by(models.Order.create_date).first()
-        page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
+        if first_order:  # 新开的店铺一个order都没有
+            page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
+        else:
+            page_sum = 0
         return self.send_success(page_sum=page_sum, data=data)
 
     def old_follower_ids(self, shop_id):
@@ -357,7 +360,10 @@ class FollowerStatic(AdminBaseHandler):
             first_follower = self.session.query(models.CustomerShopFollow).\
                 filter_by(shop_id=self.current_shop.id).\
                 order_by(models.CustomerShopFollow.create_time).first()
-            page_sum = (datetime.datetime.now() - first_follower.create_time).days//15 + 1
+            if first_follower:
+                page_sum = (datetime.datetime.now() - first_follower.create_time).days//15 + 1
+            else:
+                page_sum = 0
             return self.send_success(page_sum=page_sum, data=data)
 
         elif action == "sex":

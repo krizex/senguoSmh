@@ -86,6 +86,7 @@ handlers = [
     (r"/super/feedback/", handlers.superadmin.Feedback, {"action":"all"}, "superFeedback"),
     (r"/super/feedback/unprocessed", handlers.superadmin.Feedback, {"action":"unprocessed"}, "superFeedbackUnprocessed"),
     (r"/super/feedback/processed", handlers.superadmin.Feedback, {"action":"processed"}, "superFeedbackProcessed"),
+    (r"/super/user", handlers.superadmin.User, {}, "superUser"),
 
     # (r"/super/notice/", handlers.superadmin.Notice),
 
