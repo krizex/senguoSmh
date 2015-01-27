@@ -1,92 +1,87 @@
 {% extends 'base.html' %}
 {% block title %}购物车{% end %}
-{% block head %}
-<link rel="stylesheet" href="{{static_url('css/market-cart.css')}}"/>
-<link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
-{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/market-cart.css')}}"/>{% end %}
 {% block content %}
-     <ul class="cart-list set-w100-fle box-shadow bg-white">
+     <div class="rainshed"></div>
+     <ul class="cart-list set-w100-fle mt48">
          {% for key in cart_f %}
-         <li class="cart-list-item set-w100-fle fruit_item {{cart_f[key]['charge_type'].fruit.fruit_type.code}}">
-             <div class="bg set-w100-fle color">
-                 {% if cart_f[key]['charge_type'].fruit.img_url %}
-                 <img src="{{cart_f[key]['charge_type'].fruit.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15 box-shadow"/>
-                 {% else %}
-                 <img src="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.png" class="goods-img pull-left w15 box-shadow"/>
-                 {% end %}
-                 <div class="w10 pull-right delete-btn">
-                     <a href="javascript:;" class="pull-right delete-item"></a>
-                 </div>
-                 <div class="goods-info pull-right w75 font14 p010">
-                    <p>
-                        <span class="name pull-left">{{cart_f[key]['charge_type'].fruit.name}}</span>
-                        <span class="price pull-right">小记：<span class="item_total_price"></span>元</span>
-                    </p>
-                    <div class="charge-item">
-                        <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{cart_f[key]['charge_type'].id}}">
-                            <span class="item_price">{{cart_f[key]['charge_type'].price}}</span>
-                            元/{{cart_f[key]['charge_type'].num}}
-                            <span data-id="{{cart_f[key]['charge_type'].unit}}" class="chargeUnit"></span>
-                        </span>
-                        <span class="col-sm-6  col-xs-6  p0 number-change">
-                            <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
-                            <input type="text" value="{{cart_f[key]['num']}}" class="number-input pull-right text-orange item_number"/>
-                            <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
-                        </span>
-                    </div>
-                 </div>
-             </div>
+         <li class="cart-list-item set-w100-fle fruit_item bg-white text-grey m-b5">
+             {% if cart_f[key]['charge_type'].fruit.img_url %}
+             <img src="{{cart_f[key]['charge_type'].fruit.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15"/>
+             {% else %}
+             <img src="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.png" class="goods-img pull-left w15"/>
+             {% end %}
+             <div class="goods-info pull-left font14 p010">
+                <p>
+                    <span class="name pull-left">{{cart_f[key]['charge_type'].fruit.name}}</span>
+                    <span class="price pull-left">￥<span class="item_total_price"></span>元</span>
+                </p>
+                <span class="p0 charge-type" data-id="{{cart_f[key]['charge_type'].id}}">
+                    <span class="item_price">{{cart_f[key]['charge_type'].price}}</span>
+                    元/{{cart_f[key]['charge_type'].num}}
+                    <span data-id="{{cart_f[key]['charge_type'].unit}}" class="chargeUnit"></span>
+                </span>
+              </div>
+              <div class="action-box">
+                <span class="pull-left number-change set-inl-blo">
+                    <a class="minus-plus text-green bg-white number-plus text-center font18" href="javascript:;">+</a>
+                    <input type="text" value="{{cart_f[key]['num']}}" class="number-input item_number text-center"/>
+                    <a class="minus-plus text-green bg-white number-minus text-center font18" href="javascript:;">-</a>
+                </span>
+                <div class="pull-right delete-btn">
+                    <a href="javascript:;" class="pull-right delete-item text-center font18 text-grey">x</a>
+                </div>
+              </div>
          </li>
          {% end %}
          {% for key in cart_m %}
-         <li class="cart-list-item set-w100-fle menu_item TDSG">
-             <div class="bg set-w100-fle color">
-                 {% if cart_m[key]['mcharge_type'].mgoods.img_url %}
-                 <img src="{{cart_m[key]['mcharge_type'].mgoods.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15 box-shadow"/>
-                 {% else %}
-                 <img src="/static/design_img/TDSG.png" class="goods-img pull-left w15 box-shadow"/>
-                 {% end %}
-                 <div class="w10 pull-right delete-btn">
-                     <a href="javascript:;" class="pull-right delete-item"></a>
-                 </div>
-                 <div class="goods-info pull-right w75 font14 p010">
-                     <p>
-                         <span class="name pull-left">{{cart_m[key]['mcharge_type'].mgoods.name}}</span>
-                         <span class="price pull-right">小记：<span class="item_total_price"></span>元</span>
-                     </p>
-                     <div class="charge-item">
-                        <span class="col-sm-4  col-xs-4 text-bgcolor p0 charge-type" data-id="{{cart_m[key]['mcharge_type'].id}}">
-                            <span class="item_price">{{cart_m[key]['mcharge_type'].price}}</span>
-                            元/{{cart_m[key]['mcharge_type'].num}}
-                            <span data-id="{{cart_m[key]['mcharge_type'].unit}}" class="chargeUnit"></span>
-                        </span>
-                        <span class="col-sm-6  col-xs-6  p0 number-change">
-                            <a class="minus-plus text-orange bg-white pull-right number-plus" href="javascript:;">+</a>
-                            <input type="text" value="{{cart_m[key]['num']}}" class="number-input pull-right text-orange item_number"/>
-                            <a class="minus-plus text-orange bg-white pull-right number-minus" href="javascript:;">-</a>
-                        </span>
-                     </div>
+         <li class="cart-list-item set-w100-fle menu_item bg-white text-grey m-b5">
+             {% if cart_m[key]['mcharge_type'].mgoods.img_url %}
+             <img src="{{cart_m[key]['mcharge_type'].mgoods.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15"/>
+             {% else %}
+             <img src="/static/design_img/TDSG.png" class="goods-img pull-left w15"/>
+             {% end %}
+             <div class="goods-info pull-left font14 p010">
+                 <p>
+                     <span class="name pull-left">{{cart_m[key]['mcharge_type'].mgoods.name}}</span>
+                     <span class="price pull-left">￥<span class="item_total_price"></span>元</span>
+                 </p>
+                <span class="p0 charge-type" data-id="{{cart_m[key]['mcharge_type'].id}}">
+                    <span class="item_price">{{cart_m[key]['mcharge_type'].price}}</span>
+                        元/{{cart_m[key]['mcharge_type'].num}}
+                     <span data-id="{{cart_m[key]['mcharge_type'].unit}}" class="chargeUnit"></span
+                </span>
+             </div>
+             <div class="action-box">
+                <span class="pull-left number-change set-inl-blo">
+                    <a class="minus-plus text-green bg-white number-plus text-center font18" href="javascript:;">+</a>
+                    <input type="text" value="{{cart_m[key]['num']}}" class="number-input item_number text-center"/>
+                    <a class="minus-plus text-green bg-white number-minus text-center font18" href="javascript:;">-</a>
+                </span>
+                 <div class="pull-right delete-btn">
+                     <a href="javascript:;" class="pull-right delete-item text-center font18 text-grey">x</a>
                  </div>
              </div>
          </li>
          {% end %}
      </ul>
-     <div class="bg-white bg-width center-block">
-         <div class="clearfix font14 text-pink">
-             <label class="pull-left">商品金额：</label>
-             <span class="pull-right"><span id="list_total_price"></span>元</span>
+     <div class="bg-width center-block text-grey">
+         <div class="clearfix font14">
+             <span class="pull-right tit2 text-right"><span id="list_total_price"></span>元</span>
+             <label class="pull-right tit">商品金额：</label>
          </div>
-         <div class="clearfix font14 text-pink">
-             <label class="pull-left">配送费：</label>
-             <span class="pull-right"><span id="freight_money">{{config.freight_on_time}}</span>元</span>
+         <div class="clearfix font14">
+             <span class="pull-right tit2 text-right"><span id="freight_money">{{config.freight_on_time}}</span>元</span>
+             <label class="pull-right tit">配送费：</label>
          </div>
-         <div class="clearfix font14 text-pink">
-             <label class="pull-left">实付金额：</label>
-             <span class="pull-right"><span id="final_price"></span>元</span>
+         <div class="clearfix font14 m-b10">
+             <span class="pull-right tit2 text-right"><span id="final_price"></span>元</span>
+             <label class="pull-right tit">实付金额：</label>
          </div>
          <p class="text-center text-pink mincharge_intime" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"按时达"起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元</p>
          <p class="text-center text-pink mincharge_now" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"立即送"起送价金额<span class="mincharge">{{config.min_charge_now}}</span>元</p>
-         <div class="clearfix font16 text-center">
+         <div class="clearfix font16 text-center bg-white">
+             <p class="text-left">收货时间</p>
              {% set active=''%}
              {% set unactive=''%}
              {% if periods %}
@@ -98,8 +93,8 @@
              {% end %}
              <ul id="sendType" class="send_type nav-pills  center-block">
                  <li data-id="2" class="{{active}} send-intime" data-config="{{config.ontime_on}}">
-                     <a href="javascript:;" class="bg-white text-green" id="sendInTime">
-                         <p>按时达</p>
+                     <a href="javascript:;" class="bg-white text-grey" id="sendInTime">
+                         <p class="top">按时达</p>
                          <p class="font8">
                              起送价：{{config.min_charge_on_time or 0}}元
                              配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元
@@ -107,8 +102,8 @@
                      </a>
                  </li>
                  <li data-id="1" class="{{unactive}} send-now" data-config="{{config.now_on}}">
-                     <a href="javascript:;" class="bg-white text-green" id="sendNow">
-                         <p>立即送</p>
+                     <a href="javascript:;" class="bg-white text-grey" id="sendNow">
+                         <p class="top">立即送</p>
                          <p class="font8">
                              起送价：{{config.min_charge_now or 0}}元
                              配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元

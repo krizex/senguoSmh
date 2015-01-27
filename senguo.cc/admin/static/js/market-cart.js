@@ -265,9 +265,9 @@ function totalPrice(target){
 function goodsNum(target,action){
     var url=market_href;
     var action=action;
-    var charge_type_id=target.parents('.number-change').siblings('.charge-type').data('id');
     var menu_type;
     var parent=target.parents('.cart-list-item');
+    var charge_type_id=parent.find('.charge-type').data('id');
     var price=parent.find('.item_price').text();
     var item_price=target.parents('.cart-list').find('.item_total_price');
     var item=target.siblings('.number-input');
