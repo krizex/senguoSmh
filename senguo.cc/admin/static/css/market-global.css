@@ -10,10 +10,10 @@ input{border:none;}
 .modal{}
 .modal-dialog{margin:0px auto;margin-top:10%!important;max-width:640px;}
 .modal-content{position:relative;}
-.modal-header{background:url('../images/huabian_green.png') repeat-x;padding:0px;height:46px;line-height:46px;position:absolute;z-index:10;width:100%;border-bottom:0px;border-top-left-radius:6px;border-top-right-radius:6px;}
-.modal-title{line-height:50px;}
-.modal-header .close{font-size:28px !important;}
-.modal-body{font-size:1em;padding:0;padding-top:48px;}
+.modal-header{background:url('../images/huabian_green.png') repeat-x;padding:0px;height:46px;line-height:46px;position:absolute;z-index:10;width:100%;border-bottom:0px;border-top-left-radius:6px;border-top-right-radius:6px;color:#fff;}
+.modal-title{line-height:40px;text-indent:14px;}
+.modal-header .close{font-size:28px !important;margin-right:14px;margin-top:3px;}
+.modal-body{font-size:1em;padding:0;padding-top:48px !important;}
 .modal-footer{clear:both;}
 
 .bg-white{background-color:#fff !important;}
@@ -51,7 +51,7 @@ input{border:none;}
 .bottom-nav li a{display:block;background-size:2em !important;}
 .bottom-nav li:hover a{color:#80c26b !important;}
 .bottom-nav .active a{color:#80c26b !important;}
-.bottom-nav .home{background:url('../images/home.png') no-repeat center 7px;}
+.bottom-nav .home{background:url('../images/a%20.svg') no-repeat center 7px;}
 .bottom-nav .goods{background:url('../images/goods.png') no-repeat center 6px;}
 .bottom-nav .cart{background:url('../images/cart.png') no-repeat center 6px;}
 .bottom-nav .my{background:url('../images/my.png') no-repeat center 6px;background-size:1.8em !important;}
@@ -113,7 +113,7 @@ input{border:none;}
 
 .return-btn{display:inline-block;width:20%;height:3em;position:absolute;left:0;background:url('../images/back-white-2px.png') no-repeat 1em center;}
 
-.detail-header{height:40px;line-height:40px;position:relative;max-width:800px;min-width:320px;}
+.detail-header{background:url('../images/huabian_green.png') repeat-x;height:40px;line-height:40px;position:relative;max-width:800px;min-width:320px;}
 .detail-header .title{padding-left:2em;}
 
 .border-c{border:1px solid #ccc;}

@@ -2,7 +2,7 @@ $(document).ready(function(){
     var sex_id=$('.user-sex').data('id');
     sex($('.user-sex'),sex_id);
     //收货地址编辑
-    $('body').on('click','.edit-address',function(){
+    $('body').find('.edit-address').hammer().on('tap',function(){
         var $this=$(this);
         var parent=$this.parents('.address-item');
         item_id=parent.index();
@@ -17,12 +17,12 @@ $(document).ready(function(){
         $('#address_phone').val(phone);
         $('#address_address').val(address);
     });
-    $('.addressEdit').on('click',function(){
+    $('.addressEdit').hammer().on('tap',function(){
         var $this=$(this);
         addressEdit($this,'edit_address');
     });
     //添加收货地址
-    $('.add-address').on('click',function(){
+    $('.add-address').hammer().on('tap',function(){
         var max= $('.address-list').find('.address-item').length;
         if(max<5){
             $('.address-box').modal('show');
@@ -31,15 +31,17 @@ $(document).ready(function(){
         }
        else return alert('最多可添加五个收货地址！');
     });
-    $('.addressAdd').on('click',function(){
+    $('.addressAdd').hammer().on('tap',function(){
         var $this=$(this);
         addressEdit($this,'add_address');
     });
     //收货地址删除
-    $('body').on('click','.delete-address',function(){
-        var $this=$(this);
-        var id=$this.parents('.address-item').attr('data-id');
-        addressDel($this,id);
+    $('body').find('.delete-address').hammer().on('tap',function(){
+        if(confirm('确认删除该收货地址吗？')){
+            var $this=$(this);
+            var id=$this.parents('.address-item').attr('data-id');
+            addressDel($this,id);
+        }
     });
 });
 var name;

@@ -19,15 +19,15 @@
     </script>
 </head>
 <body>
-    <header class="detail-header bg-green text-white center-block">
+    <header class="detail-header text-white center-block">
         <a href="{%block back%}javascript:history.back(-1){% end %}" class="return-btn pull-left"></a>
         <span class="title pull-left font16">{% block top %}{% end %}</span>
     </header>
     <main class="container phone-box">
         {% block content %}{% end %}
-        <a class="back-to-top set-inl-blo bg-green text-white text-center font14" id="backTop">Top</a>
     </main>
 <script src="{{static_url('js/jquery.min.js')}}"></script>
+<script src="{{static_url('js/hammer.min.js')}}"></script>
 <script src="{{static_url('js/bootstrap.min.js')}}"></script>
 <script src="{{static_url('js/global.js')}}"></script>
 <script src="{{static_url('js/market-public.js')}}"></script>
