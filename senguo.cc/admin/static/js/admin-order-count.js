@@ -375,7 +375,7 @@ function gettable(action,page,dom) {
         $item.find('.day_money').text(day_money + '元');
         $item.find('.total_money').text(total_money + '元');
         if (day_order == 0) $item.find('.price').text(0 + '元');
-        else $item.find('.price').text(day_money / day_order + '元');
+        else $item.find('.price').text(mathFloat(day_money / day_order) + '元');
         $(dom).append($item);
     }
 }

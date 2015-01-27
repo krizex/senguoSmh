@@ -17,7 +17,7 @@ $(document).ready(function(){
         }
     });
     //分类选择
-    $('.goods-class-choose li').on('click',function(){
+    $('.goods-class-choose li').hammer().on('tap',function(){
         var $this=$(this);
         var g_class=$this.data('class');
         var text=$this.text();
@@ -89,7 +89,7 @@ $(document).ready(function(){
         var img_url=$this.find('.img').attr('src');
         var fruit_name=parent.find('.fruit-name').text();
         var fruit_intro=parent.find('.fruit_intro').val();
-        $this.on('click',function(){
+        $this.hammer().on('tap',function(){
             var large_box=$('.large-img-box');
             large_box.modal('show').attr({'data-id':id,'data-type':type});
             large_box.find('#largeImg').attr({'src':img_url});
@@ -98,25 +98,25 @@ $(document).ready(function(){
         })
     });
     //点赞
-    $('.click-great').on('click',function(){
+    $('.click-great').hammer().on('tap',function(){
         var large_box=$('.large-img-box');
         var type=large_box.data('type');
         var id=large_box.data('id');
         great(type,id);
     });
     //首次添加商品
-    $('.to-add').on('click',function(){
+    $('.to-add').hammer().on('tap',function(){
         var $this=$(this);
         goodsNum($this.siblings('.number-change').find('.number-plus'),2);
         $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
     });
     //商品数量操作
-    $('.goods-list').find('.number-minus').on('click',function(){
+    $('.goods-list').find('.number-minus').hammer().on('tap',function(){
         var $this=$(this);
         goodsNum($this,1);
 
     });
-    $('.goods-list').find('.number-plus').on('click',function(){
+    $('.goods-list').find('.number-plus').hammer().on('tap',function(){
         var $this=$(this);
         goodsNum($this,2);
     });

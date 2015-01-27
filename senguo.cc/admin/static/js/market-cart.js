@@ -8,7 +8,7 @@ $(document).ready(function(){
         var parent=$this.parents('.cart-list-item');
         var num=parent.find('.item_number').val();
         var price=parent.find('.item_price').text();
-        var total=num*price;
+        var total=mathFloat(num*price);
         $this.text(total);
         price_list.push(total);
     });
@@ -18,25 +18,27 @@ $(document).ready(function(){
     //按时达最低起送金额提示
     if(total_price<mincharge_intime) $('.mincharge_intime').show();
     //商品数量操作
-    cart_item.find('.number-minus').on('click',function(){
+    cart_item.find('.number-minus').hammer().on('tap',function(){
         var $this=$(this);
         goodsNum($this,1);
     });
-    cart_item.find('.number-plus').on('click',function(){
+    cart_item.find('.number-plus').hammer().on('tap',function(){
         var $this=$(this);
         goodsNum($this,2);
     });
     //商品删除
-    cart_item.find('.delete-item').on('click',function() {
-        var $this=$(this);
-        var parent=$this.parents('.cart-list-item');
-        if(parent.hasClass('fruit_item')){itemDelete($this,0);}
-        else if(parent.hasClass('menu_item')){itemDelete($this,1);}
+    cart_item.find('.delete-item').hammer().on('tap',function(){
+        if(confirm('确认删除该商品吗？//(ㄒoㄒ)//')){
+            var $this=$(this);
+            var parent=$this.parents('.cart-list-item');
+            if(parent.hasClass('fruit_item')){itemDelete($this,0);}
+            else if(parent.hasClass('menu_item')){itemDelete($this,1);}
+        }
     });
     //类型切换增加active
     $('.type-choose li').each(function(){
         var $this=$(this);
-        $this.on('click',function(){$this.addClass('active').siblings().removeClass('active');})
+        $this.hammer().on('tap',function(){$this.addClass('active').siblings().removeClass('active');})
     });
     //收货地址添加
     var max=$('.address_list li').length;
@@ -44,10 +46,10 @@ $(document).ready(function(){
         addressBox.removeClass('hidden');
         $('.to-add-address').addClass('hidden');
     }
-    $('#receiveCancel').on('click',function(){
+    $('#receiveCancel').hammer().on('tap',function(){
         addressBox.addClass('hidden');
     });
-    $('.to-add-address').on('click',function(){
+    $('.to-add-address').hammer().on('tap',function(){
         if(max<5) {
             addressBox.toggleClass('hidden');
             receiveAdd.show();
@@ -58,7 +60,7 @@ $(document).ready(function(){
         }
         else return alert('至多能添加五个收获地址！');
     });
-    receiveAdd.on('click',function(){
+    receiveAdd.hammer().on('tap',function(){
         var name=receiveName.val();
         var address=receiveAddress.val();
         var phone=receivePhone.val();
@@ -67,7 +69,7 @@ $(document).ready(function(){
     });
 
     //收货地址编辑
-    $('.to-edit-address').on('click',function(){
+    $('.to-edit-address').hammer().on('tap',function(){
         addressBox.removeClass('hidden');
         receiveAdd.hide();
         receiveEdit.removeClass('hidden');
@@ -81,14 +83,14 @@ $(document).ready(function(){
         receiveAddress.val(address);
         receivePhone.val(phone);
     });
-    receiveEdit.on('click',function(){
+    receiveEdit.hammer().on('tap',function(){
         var name=receiveName.val();
         var address=receiveAddress.val();
         var phone=receivePhone.val();
         addressAddEdit('edit_address',name,address,phone);
     });
     //订单提交
-    $('#submitOrder').on('click',function(){orderSubmit();});
+    $('#submitOrder').hammer().on('tap',function(){orderSubmit();});
     //
     var time=new Date();
     var time_now=checkTime(time.getHours())+':'+checkTime(time.getMinutes())+':'+checkTime(time.getSeconds());
@@ -103,7 +105,7 @@ $(document).ready(function(){
             time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
         }
         else time=checkTime(intime_startHour-1)+':'+checkTime(60-(stop_range-intime_startMin))+':00';
-        $this.on('click',function(){
+        $this.hammer().on('tap',function(){
             var today=$('#sendDay').find('.active').data('id');
             if(today==1) {
                 if (time >= time_now) $this.addClass('active');
@@ -129,7 +131,7 @@ $(document).ready(function(){
         $('.now-intro').show();
         $('#freight_money').text(freigh_now);
         $('#final_price').text(total_price+freigh_now);
-        $('.send-intime').on('click',function(){
+        $('.send-intime').hammer().on('tap',function(){
             $(this).removeClass('active');
             if(now_on=='True'){
                 $('.send-now').addClass('active');
@@ -146,7 +148,7 @@ $(document).ready(function(){
         $('#freight_money').text(freigh_ontime);
         $('#final_price').text(total_price+freigh_ontime);
         //按时达模式选择
-        $('#sendInTime').on('click',function(){
+        $('#sendInTime').hammer().on('tap',function(){
             var $this=$(this);
             $this.parents('li').addClass('active').siblings('li').removeClass('active');
             $('.send_period').show();
@@ -155,7 +157,7 @@ $(document).ready(function(){
             $('.mincharge_now').hide();
             $('.intime-intro').show();
             $('.now-intro').hide();
-            total_price=Int(list_total_price.text());
+            total_price=mathFloat(list_total_price.text());
             $('#freight_money').text(freigh_ontime);
             $('#final_price').text(total_price+freigh_ontime);
             if(total_price<mincharge_intime){
@@ -173,7 +175,7 @@ $(document).ready(function(){
         $('.now-intro').hide();
         $('#freight_money').text(freigh_ontime);
         $('#final_price').text(total_price+freigh_ontime);
-        $('.send-now').on('click',function(){
+        $('.send-now').hammer().on('tap',function(){
             $(this).removeClass('active');
             if(intime_on=='True'){
                 $('.send-intime').addClass('active');
@@ -193,7 +195,7 @@ $(document).ready(function(){
         $('#freight_money').text(freigh_now);
         $('#final_price').text(total_price+freigh_now);
         //立即送模式选择/立即送最低起送金额提示
-        $('#sendNow').on('click',function(){
+        $('#sendNow').hammer().on('tap',function(){
             var $this=$(this);
             var end_time=$('.now_endtime').text();
             if(time_now<=end_time)
@@ -204,7 +206,7 @@ $(document).ready(function(){
                 $('.send_now').show();
                 $('.intime-intro').hide();
                 $('.now-intro').show();
-                total_price=Int(list_total_price.text());
+                total_price=mathFloat(list_total_price.text());
                 $('#freight_money').text(freigh_now);
                 $('#final_price').text(total_price+freigh_now);
                 if(total_price<mincharge_now){
@@ -257,7 +259,7 @@ var freigh_now=Int($('.freigh_now').text());
 function totalPrice(target){
     for(var i=0;i<target.length;i++)
     {
-        total_price+=parseInt(target[i]);
+        total_price+=parseFloat(target[i]);
     }
     return total_price;
 }
@@ -289,13 +291,13 @@ function goodsNum(target,action){
 
                     num++;
                     item.val(num);
-                    total=num*price;
+                    total=mathFloat(num*price);
                     parent.find('.item_total_price').text(total);
-                    var t_price=Int(list_total_price.text());
-                    var freight=Int($('#freight_money').text());
-                    t_price+=parseInt(price);
-                    list_total_price.text(t_price);
-                    $('#final_price').text(t_price+freight);
+                    var t_price=mathFloat(list_total_price.text());
+                    var freight=mathFloat($('#freight_money').text());
+                    t_price+=mathFloat(price);
+                    list_total_price.text(mathFloat(t_price));
+                    $('#final_price').text(mathFloat(t_price+freight));
                     var type=$('#sendType').find('.active').data('id');
                     mincharge(type,t_price);
 
@@ -307,16 +309,18 @@ function goodsNum(target,action){
                     {
                         num--;
                         item.val(num);
-                        total=num*price;
+                        total=mathFloat(num*price);
                         parent.find('.item_total_price').text(total);
-                        var t_price=Int(list_total_price.text());
-                        var freight=Int($('#freight_money').text());
-                        t_price-=Int(price);
-                        list_total_price.text(t_price);
-                        $('#final_price').text(t_price+freight);
+                        var t_price=mathFloat(list_total_price.text());
+                        var freight=mathFloat($('#freight_money').text());
+                        t_price-=mathFloat(price);
+                        list_total_price.text(mathFloat(t_price));
+                        $('#final_price').text(mathFloat(t_price+freight));
                         var type=$('#sendType').find('.active').data('id');
                         mincharge(type,t_price);
+                        if(val==1) parent.remove();
                     }
+
                 }
 
 

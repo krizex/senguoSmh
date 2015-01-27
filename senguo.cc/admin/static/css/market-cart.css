@@ -2,6 +2,12 @@
 .bg-width{width:100%;padding:10px;}
 .w-per6{width:60%;}
 .w-per9{width:90%;}
+.list-group .active{background:#fff;border-color:#ddd;border-left:2px solid #00D681;}
+.list-group-item:first-child{border-radius:0px;}
+.list-group-item:last-child{border-radius:0px;}
+.list-group-item{padding:10px 15px;border-left:2px solid #ddd;}
+.list-group-item:hover{background:#fff;border-color:#ddd;border-left:2px solid #00D681;}
+.list-group-item.active:hover{background:#fff;border-color:#ddd;border-left-color:#00D681;}
 
 .cart-list{padding:10px;border-radius:3px;}
 .cart-list-item{position:relative;border:1px solid #eee;padding:5px;}
@@ -23,39 +29,33 @@
 .cart-list-item .delete-btn a{display:inline-block;width:32px;height:32px;line-height:32px;}
 .cart-list-item .name{min-width:90px;}
 
-.send_type{border:1px solid #f2f2f2;border-top-left-radius:2px;border-top-right-radius:2px;overflow:hidden;margin-bottom:0px;}
+.send_type{border-top-left-radius:2px;border-top-right-radius:2px;overflow:hidden;margin-bottom:0px;}
 .send_type li{width:49%;}
 .send_type li a{display:block;border-radius:2px;border:1px solid #ccc;}
 .send_type li a p{margin-bottom:0px;margin-top:3px;letter-spacing:-1px;}
+.send_type li a p:last-child{margin-bottom:3px;}
 .send_type li.active .top{color:#00D289;}
 
-.send_day{overflow:hidden;}
+.send_day{overflow:hidden;width:80%;}
 .send_day li{width:40%;margin-right:10px;}
 .send_day li a{display:block;border-radius:0px;padding:0.2em 0;}
 .send_day li.active a{background:#00D681 !important;border-radius:2px;color:#fff !important;}
 
-.send_period .list-group-item{padding:5px 15px;border-left:4px solid #ddd;}
-.send_period .list-group-item:hover{background:#fff;border-color:#ddd;border-left:4px solid #00D681;}
-.send_period .active{background:#fff;border-color:#ddd;border-left:4px solid #00D681;}
+.send_period .active .period_name{color:#00D289 !important;}
 .send_period p{margin:0px;}
+.period_name{min-width:80px;}
 
-.pay_type .list-group-item{padding:5px 15px;border-left:4px solid #ddd;}
-.pay_type .list-group-item:hover{background:#fff;border-color:#ddd;border-left:4px solid #00D681;}
-.pay_type .active{background:#fff;border-color:#ddd;border-left:4px solid #00D681;}
-.pay_type .active span{color:#00D681 !important;}
-.pay_type p{margin:0px;}
+.pay_type .title{width:90px;}
+.pay_type .active .title{color:#00D681 !important;}
 
-.address_list .list-group-item{padding:5px 15px;border-left:4px solid #ddd;}
-.address_list .list-group-item:hover{background:#fff;border-color:#ddd;border-left:4px solid #00D681;}
-.address_list .active{background:#fff;border-color:#ddd;border-left:4px solid #00D681;}
+.address-box .tit{width:15%;min-width:50px;}
+.send-address-choose input{width:84%;padding:0.5em;margin-bottom:5px;}
 
-
-.send-address-choose input{padding:0.5em;margin-bottom:5px;}
-
-.message-input{padding:0.5em 1em;}
+.message-input{padding:10px 15px;}
 .border-grey{border-color:#ddd;}
 .tip-list li{width:32%;margin-right:1%;}
 .tip-list li.active{background:#00d681 !important;color:#fff !important;}
 
 .tit{width:80px;}
 .tit2{width:60px;}
+

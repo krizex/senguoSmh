@@ -3,7 +3,7 @@
 {% block head %}<link rel="stylesheet" href="{{static_url('css/market-cart.css')}}"/>{% end %}
 {% block content %}
      <div class="rainshed"></div>
-     <ul class="cart-list set-w100-fle mt48">
+     <ul class="cart-list set-w100-fle mt42 m-b0">
          {% for key in cart_f %}
          <li class="cart-list-item set-w100-fle fruit_item bg-white text-grey m-b5">
              {% if cart_f[key]['charge_type'].fruit.img_url %}
@@ -25,7 +25,7 @@
               <div class="action-box">
                 <span class="pull-left number-change set-inl-blo">
                     <a class="minus-plus text-green bg-white number-plus text-center font18" href="javascript:;">+</a>
-                    <input type="text" value="{{cart_f[key]['num']}}" class="number-input item_number text-center"/>
+                    <input type="text" value="{{cart_f[key]['num']}}" class="number-input item_number text-center" readonly/>
                     <a class="minus-plus text-green bg-white number-minus text-center font18" href="javascript:;">-</a>
                 </span>
                 <div class="pull-right delete-btn">
@@ -55,7 +55,7 @@
              <div class="action-box">
                 <span class="pull-left number-change set-inl-blo">
                     <a class="minus-plus text-green bg-white number-plus text-center font18" href="javascript:;">+</a>
-                    <input type="text" value="{{cart_m[key]['num']}}" class="number-input item_number text-center"/>
+                    <input type="text" value="{{cart_m[key]['num']}}" class="number-input item_number text-center" readonly/>
                     <a class="minus-plus text-green bg-white number-minus text-center font18" href="javascript:;">-</a>
                 </span>
                  <div class="pull-right delete-btn">
@@ -66,71 +66,68 @@
          {% end %}
      </ul>
      <div class="bg-width center-block text-grey">
-         <div class="clearfix font14">
+         <div class="clearfix font16">
              <span class="pull-right tit2 text-right"><span id="list_total_price"></span>元</span>
-             <label class="pull-right tit">商品金额：</label>
+             <span class="pull-left tit">商品金额：</span>
          </div>
-         <div class="clearfix font14">
+         <div class="clearfix font16">
              <span class="pull-right tit2 text-right"><span id="freight_money">{{config.freight_on_time}}</span>元</span>
-             <label class="pull-right tit">配送费：</label>
+             <span class="pull-left tit">配送费：</span>
          </div>
-         <div class="clearfix font14 m-b10">
+         <div class="clearfix font16 m-b10">
              <span class="pull-right tit2 text-right"><span id="final_price"></span>元</span>
-             <label class="pull-right tit">实付金额：</label>
+             <span class="pull-left tit">实付金额：</span>
          </div>
          <p class="text-center text-pink mincharge_intime" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"按时达"起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元</p>
          <p class="text-center text-pink mincharge_now" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"立即送"起送价金额<span class="mincharge">{{config.min_charge_now}}</span>元</p>
-         <div class="clearfix font16 text-center bg-white">
-             <p class="text-left">收货时间</p>
+         <div class="send-time-choose clearfix center-block bg-white box-style font14">
+             <p class="text-left font11 text-grey3">收货时间</p>
              {% set active=''%}
              {% set unactive=''%}
              {% if periods %}
-                 {% set active='active'%}
-                 {% set unactive=''%}
+             {% set active='active'%}
+             {% set unactive=''%}
              {% else %}
-                 {% set active=''%}
-                 {% set unactive='active'%}
+             {% set active=''%}
+             {% set unactive='active'%}
              {% end %}
-             <ul id="sendType" class="send_type nav-pills  center-block">
-                 <li data-id="2" class="{{active}} send-intime" data-config="{{config.ontime_on}}">
+             <ul id="sendType" class="send_type nav-pills  center-block text-center">
+                 <li data-id="2" class="{{active}} send-intime pull-left" data-config="{{config.ontime_on}}">
                      <a href="javascript:;" class="bg-white text-grey" id="sendInTime">
                          <p class="top">按时达</p>
-                         <p class="font8">
+                         <p class="font9">
                              起送价：{{config.min_charge_on_time or 0}}元
                              配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元
                          </p>
                      </a>
                  </li>
-                 <li data-id="1" class="{{unactive}} send-now" data-config="{{config.now_on}}">
+                 <li data-id="1" class="{{unactive}} send-now pull-right" data-config="{{config.now_on}}">
                      <a href="javascript:;" class="bg-white text-grey" id="sendNow">
                          <p class="top">立即送</p>
-                         <p class="font8">
+                         <p class="font9">
                              起送价：{{config.min_charge_now or 0}}元
                              配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元
                          </p>
                      </a>
                  </li>
              </ul>
-         </div>
-         <div class="send-time-choose clearfix center-block bg-grey2 box-style">
-             <div class="bg-white  text-center p05">
+             <div class="bg-white text-center p05">
                  <p class="intime-intro" style="display:none">订单将根据您选择的时间段送达合理选择收货时间段，保证订单能按时送达到您的手上</p>
                  <p class="now-intro" style="display:none">订单将在<span class="text-green">30</span>分钟内送到您的手上，请保持电话畅通</p>
              </div>
              {% if periods %}
-             <ul id="sendDay" class="send_day nav-pills font16 clearfix text-center type-choose">
-                 <li data-id="1" class="active" id="send_today"><a href="javascript:;" class="bg-white text-green">今天</a></li>
-                 <li data-id="2" id="send_tomorrow"><a href="javascript:;" class="bg-white text-green">明天</a></li>
+             <ul id="sendDay" class="send_day nav-pills clearfix text-center type-choose center-block m-b10">
+                 <li data-id="1" class="active pull-left" id="send_today"><a href="javascript:;" class="bg-white text-green">今天</a></li>
+                 <li data-id="2" id="send_tomorrow" class="pull-right"><a href="javascript:;" class="bg-white text-green">明天</a></li>
              </ul>
-             <ul id="sendPeriod" class="send_period list-group font14 type-choose">
+             <ul id="sendPeriod" class="send_period list-group  type-choose">
                  {% for period in periods%}
-                 <li data-id="{{period.id}}" class="list-group-item">
-                     <a href="javascript:;" class="text-grey">
-                         <span class="text-grey3">{{period.name}}</span>
-                         <p>
-                             {{period.start_time}}~
-                             <span class="intime_endtime">{{period.end_time}}</span>
-                         </p>
+                 <li data-id="{{period.id}}" class="list-group-item clearfix ">
+                     <a href="javascript:;" class="text-grey clearfix">
+                         <span class="text-grey3 pull-left set-inl-blo period_name">{{period.name}}</span>
+                         <span class="pull-left">
+                             {{period.start_time}} - <span class="intime_endtime">{{period.end_time}}</span>
+                         </span>
                          <input type="hidden" class="intime_startHour" value="{{period.start_time.hour}}"/>
                          <input type="hidden" class="intime_startMin" value="{{period.start_time.minute}}"/>
                      </a>
@@ -139,13 +136,13 @@
              </ul>
              <input type="hidden" class="stop-range" value="{{config.stop_range}}"/>
              {% end %}
-             <ul class="send_now list-group font14" style="display:none">
+             <ul class="send_now list-group" style="display:none">
                  <li class="list-group-item clearfix bg-grey2">
                      <p class="text-center text-pink">送货员太辛苦，打赏点小费吧\(╯▼╰)/ </p>
                      <ul class="tip-list type-choose">
-                         <li class="btn text-green text-center bg-white" data-id="1">1元</li>
-                         <li class="btn text-green text-center bg-white" data-id="2">2元</li>
-                         <li class="btn text-green text-center bg-white" data-id="5">5元</li>
+                         <li class="btn text-green text-center bg-white pull-left" data-id="1">1元</li>
+                         <li class="btn text-green text-center bg-white pull-left" data-id="2">2元</li>
+                         <li class="btn text-green text-center bg-white pull-left" data-id="5">5元</li>
                      </ul>
                  </li>
                  <li class="list-group-item">
@@ -155,8 +152,8 @@
                  </li>
              </ul>
          </div>
-         <div class="send-address-choose clearfix center-block bg-grey2 box-style font14">
-             <p>收货人地址</p>
+         <div class="send-address-choose clearfix center-block bg-white box-style font14">
+             <p class="font11 text-grey3">收货人地址</p>
              <ul id="addressType" class="address_list list-group type-choose">
                  {% for address in current_user.addresses%}
                  <li data-id="{{address.id}}" class="list-group-item clearfix item">
@@ -165,47 +162,55 @@
                          <span class="address pr10">{{address.address_text}}</span>
                          <span class="phone">{{address.phone}}</span>
                      </a>
-                     <a class="text-green pull-right to-edit-address">+编辑收货地址</a>
+                     <a class="text-green pull-right to-edit-address">+编辑</a>
                  </li>
                  {% end %}
              </ul>
-             <a class="text-green pull-right to-add-address">+添加新收货地址</a>
-             <div class="address-box hidden">
-                 <input type="text" placeholder="输入收货人姓名" class="w-per9 center-block" id="receiveName"/>
-                 <input type="text" placeholder="输入收货人详细地址"  class="w-per9 center-block" id="receiveAddress"/>
-                 <input type="text" placeholder="输入收货人有效联系电话"  class="w-per9 center-block" id="receivePhone"/>
+             <p class="clearfix"><a class="text-green pull-right to-add-address">+添加</a></p>
+             <div class="address-box hidden center-block">
+                 <p>
+                     <span class="tit set-inl-blo pull-left">姓名：</span>
+                     <input type="text" placeholder="输入收货人姓名" class="input-sty bg-white pull-left" id="receiveName"/>
+                 </p>
+                 <p>
+                     <span class="tit set-inl-blo pull-left">地址：</span>
+                     <input type="text" placeholder="输入收货人详细地址"  class="input-sty bg-white pull-left" id="receiveAddress"/>
+                 </p>
+                 <p>
+                     <span class="tit set-inl-blo pull-left">电话：</span>
+                     <input type="text" placeholder="输入收货人有效联系电话"  class="input-sty bg-white pull-left" id="receivePhone"/>
+                 </p>
                  <div class="w-per9 center-block">
-                     <button class="btn text-white bg-green pull-right" id="receiveAdd">确定</button>
-                     <button class="btn text-white bg-green pull-right hidden" id="receiveEdit">确定</button>
+                     <button class="btn text-white pull-right bg-green" id="receiveAdd">确定</button>
+                     <button class="btn text-white pull-right bg-green hidden" id="receiveEdit">确定</button>
                      <button class="btn text-grey3 bg-greyc pull-right m-r5" id="receiveCancel">取消</button>
                  </div>
              </div>
          </div>
-         <div class="send-address-choose clearfix center-block bg-grey2 box-style font14">
+         <div class="send-address-choose clearfix center-block bg-white box-style font14">
              <p class="clearfix">
-                 <span class="pull-left">支付方式</span>
+                 <span class="pull-left font11 text-grey3">支付方式</span>
                  <a href="#" class="text-green pull-right">充值</a>
                  <span class="pull-right pr10">账户余额：{{current_user.balance}}元</span>
              </p>
              <ul id="payType" class="pay_type list-group type-choose">
-                 <li data-id="1" class="active list-group-item">
+                 <li data-id="1" class="active list-group-item clearfix">
                      <a href="javascript:;" class="text-grey">
-                         <span class="text-grey3">货到付款</span>
-                         <p>送货员送货时交付现金</p>
+                         <span class="text-grey3 pull-left title set-inl-blo">货到付款</span>
+                         <span class="pull-left">送货员送货时交付现金</span>
                      </a>
                  </li>
-                 <li data-id="2" class="list-group-item">
+                 <li data-id="2" class="list-group-item clearfix">
                      <a href="javascript:;" class="text-grey">
-                         <span class="text-grey3">余额支付</span>
-                         <p>提前支付</p>
+                         <span class="text-grey3 pull-left title set-inl-blo">余额支付</span>
+                         <span class="pull-left">提前支付</span>
                      </a>
                  </li>
              </ul>
          </div>
-        <input id="messageCon" class="message-input input-sty box-style center-block font14" type="text" value="" placeholder="有什么想给我们留言的吗？">
+        <input id="messageCon" class="message-input input-sty box-style center-block font14 bg-white" type="text" value="" placeholder="留个言调戏下客服吧？(⊙_⊙)">
         <button id="submitOrder" class="sub-btn w-per6 bg-green text-white text-center center-block btn">提交订单</button>
      </div>
-    <div class="m-b60"></div>
 {% end %}
 {% block bottom %}
 <script src="{{static_url('js/market-cart.js')}}"></script>
