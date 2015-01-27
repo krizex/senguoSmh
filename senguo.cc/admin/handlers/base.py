@@ -196,6 +196,14 @@ class _AccountBaseHandler(GlobalBaseHandler):
         else:
             return "%d秒前" % timedelta.seconds
 
+    def write_error(self, status_code, **kwargs):
+        if status_code == 404:
+            self.render('notice/404.html')
+        elif status_code == 500:
+            self.render('notice/500.html')
+        else:
+            super(RequestHandler, self).write_error(status_code, **kwargs)
+
 
 class SuperBaseHandler(_AccountBaseHandler):
     __account_model__ = models.SuperAdmin
