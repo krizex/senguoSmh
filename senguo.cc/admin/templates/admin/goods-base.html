@@ -2,19 +2,17 @@
 {% block content %}
 {% set goodsSubpage = context.get('goodsSubpage')%}
 {% set fruit_active="" %}
-{% set home_active = "" %}
 {% set home_hide="" %}
 
 {% if goodsSubpage == "home"%}
     {% set home_hide ="hidden" %}
-    {% set home_active = "active" %}
 {% elif goodsSubpage == "fruit" %}
     {% set fruit_active = "active" %}
 {% end %}
 <span class="right-title">商品管理</span>
 <div class="goods-classify">
     <ul class="classify-nav right-nav pull-left">
-        <li class="{{fruit_active}} {{home_active}} item"><a href="{{reverse_url('adminShelf')}}?action=home&id=0">水果</a></li>
+        <li class="{{fruit_active}} item"><a href="{{reverse_url('adminShelf')}}?action=fruit&id=1">水果</a></li>
         <li class="item dry_active"><a href="{{reverse_url('adminShelf')}}?action=fruit&id=1000">干果</a></li>
         {% for menu in menus %}
         <li class="item menu_active" data-id="{{menu.id}}"><a href="{{reverse_url('adminShelf')}}?action=menu&id={{menu.id}}">{{menu.name}}</a></li>
@@ -36,19 +34,19 @@
         <p class="set-introduce">点击右方全部下架，该类目下的所有商品将被下架</p>
     </div>
     <div class="mode-set pull-right">
+        <a href="{{reverse_url('adminShelf')}}?action=all" class="stop-btn btn-style bg-green">查看已上架</a>
         <a href="#" class="stop-btn btn-style lock-mode">全部下架</a>
     </div>
 </div>
 <!--goods-mode-lock-end-->
 <div class="admin-goods-list">
-    {% block goods %}
-    {% end %}
+    {% block left %}
     <div class="goods-list-con pull-left">
         {% block goodsLeft %}{% end %}
     </div>
-    <div class="shelve-list pull-left">
-        {% block goodsRight %}{% end %}
-    </div>
+    {% end %}
+    {% block goodsRight %}
+    {% end %}
 </div>
 <!--添加新的商品分类start-->
 <div class="modal fade add-goodsType-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

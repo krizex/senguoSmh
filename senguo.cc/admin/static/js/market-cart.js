@@ -265,9 +265,9 @@ function totalPrice(target){
 function goodsNum(target,action){
     var url=market_href;
     var action=action;
-    var charge_type_id=target.parents('.number-change').siblings('.charge-type').data('id');
     var menu_type;
     var parent=target.parents('.cart-list-item');
+    var charge_type_id=parent.find('.charge-type').data('id');
     var price=parent.find('.item_price').text();
     var item_price=target.parents('.cart-list').find('.item_total_price');
     var item=target.siblings('.number-input');
@@ -445,6 +445,7 @@ function orderSubmit(){
     var mincharge_now=Number($('.mincharge_now .mincharge').text());
     var tip=$('.tip-list').find('.active').data('id');
     total_price=Number($('#list_total_price').text());
+    if(!address_id){return alert('请填写您的收货地址！');}
     if(!tip) tip=0;
     for(var i=0;i<fruit_item.length;i++)
     {

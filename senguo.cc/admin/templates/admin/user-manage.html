@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}用户管理{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-user.css')}}"/>{% end %}
+{% block content %}
+<span class="right-title">用户管理</span>
+<div class="orders-list-title right-title2">
+    <ul class="right-nav pull-left">
+        <li class="active">
+            <a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0">所有用户</a>
+        </li>
+        <li>
+            <a href="{{reverse_url('adminStaffFollower')}}?action=old&&order_by=time&&page=0">老用户</a>
+        </li>
+    </ul>
+    <div class="search-input input-group pull-right">
+        <input type="text" value="" placeholder="输入手机号、用户昵称、姓名" class="search-con form-control"/>
+        <input type="submit" value="用户搜索" class="search-btn form-control"/>
+    </div>
+</div>
+{% if len(customers) != 0%}
+<div class="users-list-action clearfix bg-grey2">
+    <span class="pull-left move font14">用户数({{len(customers) or 0}})</span>
+    <div class="input-group-btn group-select move-to pull-right set-right10">
+        <button type="button" class="btn dropdown-toggle font12" data-toggle="dropdown">
+            <span>排序规则</span>
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu font12" role="menu">
+            <li class="text-center"><a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0">关注时间</a></li>
+            <li class="text-center"><a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=credits&&page=0">商城积分</a></li>
+            <li class="text-center"><a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=balance&&page=0">账户余额</a></li>
+        </ul>
+    </div>
+</div>
+<ul class="users-list clearfix">
+    {% for customer in customers %}
+    <li class="users-list-item  clearfix">
+        <div class="show-info set-w100-fle">
+            <img class="user-img pull-left" src="{{customer.accountinfo.headimgurl}}"/>
+            <div class="user-info pull-left">
+                <span class="user-name set-inl-blo">{{customer.accountinfo.nickname}}<i class="user-sex pull-right set-inl-blo" data-id="{{customer.accountinfo.sex}}"></i></span>
+                <div class="user-info-con">
+                    <!--<span class="user-level text-white text-center">Lv3</span>
+                    <span class="level-price text-grey2">566</span>-->
+                    <span class="user-account text-grey2">{{customer.credits}}元</span>
+                </div>
+            </div>
+            <a href="#" class="history-order pull-right">查看历史订单</a>
+        </div>
+        <div class="hide-info set-w100-fle bg-white" style="display:none;">
+            <div class="personal-info pull-left">
+                <p class="text-grey9">个人信息</p>
+                <p>姓名：{{customer.accountinfo.realname or '无'}}</p>
+                <p>手机：{{customer.accountinfo.phone or '无'}}</p>
+                <p>生日：{{customer.accountinfo.birthday or '无'}}</p>
+            </div>
+            <div class="focus-shop pull-left">
+                <p class="text-grey9">关注的店铺</p>
+                <ul class="focus-shop-list">
+                    {% for name in customer.shop_names %}
+                    <li class="text-center bg-grey3 pull-left">{{name}}</li>
+                    {% end %}
+                </ul>
+                <span class="send-address bg-grey2 text-grey2">送货地址</span>
+                <ul class="address-list">
+                    {% for address in customer.addresses %}
+                    <li class="set-w100-fle">
+                        <p class="address">{{address.address_text}}-{{address.receiver}}</p>
+                        <p class="phone">电话：{{address.phone}}</p>
+                    </li>
+                   {% end %}
+                </ul>
+            </div>
+        </div>
+    </li>
+    {% end %}
+</ul>
+<div class="users-pagination list-pagination">
+    <ul>
+        <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+        <li>
+            <span class="page-now"></span>/<span class="page-total">{{len(customers)/20}}</span>
+        </li>
+        <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+        <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+        <li><a href="javascript:;" class="jump-to">跳转</a></li>
+    </ul>
+</div>
+{% else %}
+ <h4 class="text-center">无用户信息！</h4>
+{% end %}
+{% end %}
+{% block bottom %}<script src="{{static_url('js/admin-user.js')}}"></script>{% end %}

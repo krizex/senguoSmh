@@ -83,6 +83,7 @@ function hireApply(){
         if(res.success){
             return alert('申请成功！');
         }
+        else return alert(res.error_text);
     },
     function(){
         return alert('网络错误！');

@@ -23,26 +23,56 @@ $(document).ready(function(){
     $('.edit-goods-info').on('click',function(){$(this).parents('.goods-list-item').find('.goods-item-show').addClass('hidden').siblings('.goods-item-edit').removeClass('hidden');});
     $('.edit-goods-concel').on('click',function(){$(this).parents('.goods-list-item').find('.goods-item-edit').addClass('hidden').siblings('.goods-item-show').removeClass('hidden');});
 
-    //商品标签显示
-    $('.all-fruit-type a').each(function(){
-        var id=$(this).data('id');
-        if(id==fruit_type_id){$(this).addClass('bg-pink')}
+    //当前商品所在分类
+    $('.type-class a').each(function(){
+        var $this=$(this);
+        var id=$this.data('id');
+        var classify=$this.data('class');
+        if(id==fruit_type_id&&classify==link_action){$this.addClass('active')}
     });
-
+    $('.shelve-num').text($('.shelveList').find('a').length);
+    $('.unshelve-num').text($('.unshelveList').find('a').length);
+    $('.fruit-type').text($('.type-class .active').find('.name').text());
+    $('.fruit-shelve-num').text($('.type-class .active').find('.num').text());
+    //图片速选框
+    $('#preview_choose').on('click',function(){
+        $.getItem('/static/items/admin/preview-item.html?v=20-15-01-21',function(data){
+           var fruit_type=$('#fruit_type').val();
+           fruit_type=eval("("+fruit_type+")");
+           for(var key in fruit_type )
+           {
+               var $item=$(data);
+               $item.find('.link').attr({'href':'/admin/shelf?action=fruit&id='+key});
+               $item.find('.img').attr({'src':'/static/design_img/'+fruit_type[key]['code']+'.png'});
+               $item.find('.name').text(fruit_type[key]['name']+'('+fruit_type[key]['sum']+')');
+               if(fruit_type[key]['sum']!==0) $item.css({'border-color':'#44b549'});
+               $('.preview-shelve-list').append($item);
+           }
+        });
+        $('#preview_box').modal('show');
+    });
+    $('.preview-prepage').on('click',function(){
+        $('.preview-list').animate({top:'0px'});
+        $('.preview-prepage').hide();
+        $('.preview-nextpage').show();
+    });
+    $('.preview-nextpage').on('click',function(){
+       $('.preview-list').animate({top:'-420px'});
+        $('.preview-prepage').show();
+        $('.preview-nextpage').hide();
+    });
     //商品单位切换显示
     $('body').on('click','.unitlist li',function(){
-        var unit_id=$(this).find('a').data('id');
-        var unit=$(this).find('a').text();
-        $(this).parents('.item-unit').find('.unitContent').attr({'data-id':unit_id}).text(unit);
+        var $this=$(this);
+        var unit_id=$this.find('a').data('id');
+        var unit=$this.find('a').text();
+        $this.parents('.item-unit').find('.unitContent').attr({'data-id':unit_id}).text(unit);
     });
-
-
     //商品单位转换
     $('.good-unit').each(function(){
         var n=$(this).data('id');
         unitText($(this),n);
     });
-
     //商品标签转换
     $('.goods-tag').each(function(){
         var $this=$(this);
@@ -55,7 +85,6 @@ $(document).ready(function(){
             case 5:$this.text('NEW').addClass('bg-green');break;
         }
     });
-
     //商品标签显示
     $('.goods-item-edit').find('.tag-list').each(function(){
         var $this=$(this);
@@ -66,7 +95,6 @@ $(document).ready(function(){
                 if(tag.data('id')==n) tag.addClass('active');
             }
     });
-
     //上下架状态转换
     $('.goods-edit-active').each(function(){
         var $this=$(this);
@@ -76,22 +104,69 @@ $(document).ready(function(){
             case 2:$this.find('.unshelve').show().siblings('.shelve').hide();break;
         }
     });
-
     //上下架操作
     $('.goods-edit-active').each(function(){
         var $this=$(this);
         $this.find('span').on('click',function(){
+            var $this=$(this);
             var fruit_id=$this.parents('.goods-list-item').data('id');
             editActive(fruit_id);
-            $this.hide().siblings().show();
+            $this.hide().siblings('span').show();
         });
     });
-
     //***商品添加***
     $('.add-new-goods').on('click',function(){
         var max_goods_num=$('.goods-list').find('.goods-list-item').length;
+        var code=$('.type-class .active').data('code');
         if(max_goods_num<5){
-            add_goods_box.modal('show').load('/static/items/admin/add-new-goods.html?v=20150112').find('.unit-change').addClass('hidden');
+            $.getItem('/static/items/admin/add-new-goods.html?v=20150112',function(data){
+                var $item=$(data);
+                if(typeof(code)=='undefined') $item.find('.imgPreview').attr({'src':'/static/design_img/TDSG.png'});
+                else $item.find('.imgPreview').attr({'src':'/static/design_img/'+code+'.png'});
+                upload_item=$item.find('#file_upload');
+                add_goods_box.append($item).modal('show');
+                //商品添加-图片上传
+                upload_item.uploadifive(
+                    {
+                        buttonText    : '',
+                        width: '150px',
+                        uploadScript  : 'http://upload.qiniu.com/',
+                        uploadLimit     : 10,
+                        multi    :     false,
+                        fileSizeLimit   : '10MB',
+                        'fileObjName' : 'file',
+                        'removeCompleted' : true,
+                        'fileType':'*.gif;*.png;*.jpg;*,jpeg',
+                        'formData':{
+                            'key':'',
+                            'token':''
+                        },
+                        'onUpload' :function(){
+                            $.ajaxSetup({
+                                async : false
+                            });
+                            var action="add_img";
+                            var url="/admin/shelf";
+                            var args={action: action};
+                            $.postJson(url,args,
+                                function (res) {
+                                    key=res.key;
+                                    token=res.token;
+                                },
+                                function(){
+                                    alert('网络错误！');}
+                            );
+                            $('#file_upload').data('uploadifive').settings.formData = {
+                                'key':key,
+                                'token':token
+                            };
+                        },
+                        'onUploadComplete':function(){
+                            $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/100/h/100','data-key':key});
+                        }
+
+                    });
+            });
         }
         else alert('该分类下最多可添加5种水果！如仍需添加请选择其他分类！');
         defalutChangeUnit(storage_unit_id);
@@ -228,63 +303,18 @@ $(document).ready(function(){
         popUnitChangeShow(edit_charge_box,edit_unit_id,storage_unit_id);
         edit_charge_box.empty();
 
-        $.getItem('/static/items/admin/edit-chargetype.html',function(data){
-            var $item=$(data);
+        $.getItem('/static/items/admin/edit-chargetype.html',function(data) {
+            var $item = $(data);
             $item.find('.charge-price').val(edit_price);
             $item.find('.charge-num').val(edit_num);
-            $item.find('.charge-unit').attr({'data-id':edit_unit_id});
-            unitText($item.find('.charge-unit'),edit_unit_id);
+            $item.find('.charge-unit').attr({'data-id': edit_unit_id});
+            unitText($item.find('.charge-unit'), edit_unit_id);
             $item.find('.charge-unit-num').val(edit_unit_num);
             $item.find('.unit-change-show').text(storage_unit);
-            if(edit_unit_id!==storage_unit_id) $item.find('.unit-change').removeClass('hidden');
-            else $item.find('.unit-change').addClass('hidden');
-            upload_item=$item.find('#file_upload');
+            if (edit_unit_id !== storage_unit_id) $item.find('.unit-change').removeClass('hidden');
             edit_charge_box.append($item).modal('show');
-            console.log(upload_item+'222222');
-            //商品添加-图片上传
-            upload_item.uploadifive(
-                {
-                    buttonText    : '',
-                    width: '150px',
-                    uploadScript  : 'http://upload.qiniu.com/',
-                    uploadLimit     : 10,
-                    multi    :     false,
-                    fileSizeLimit   : '10MB',
-                    'fileObjName' : 'file',
-                    'removeCompleted' : true,
-                    'fileType':'*.gif;*.png;*.jpg;*,jpeg',
-                    'formData':{
-                        'key':'',
-                        'token':''
-                    },
-                    'onUpload' :function(){
-                        console.log(22222);
-                        $.ajaxSetup({
-                            async : false
-                        });
-                        var action="add_img";
-                        var url="/admin/shelf";
-                        var args={action: action};
-                        $.postJson(url,args,
-                            function (res) {
-                                key=res.key;
-                                token=res.token;
-                            },
-                            function(){
-                                alert('网络错误！');}
-                        );
-                        $('#file_upload').data('uploadifive').settings.formData = {
-                            'key':key,
-                            'token':token
-                        };
-                    },
-                    'onUploadComplete':function(){
-                        $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/100/h/100','data-key':key});
-                    }
 
-                });
         });
-
     });
 
     $('body').on('click','.edit-charge-type',function(){addEditCharge($(this),charge_type_id,'edit_charge_type','.edit-charge-box')});
@@ -301,7 +331,11 @@ $(document).ready(function(){
     $('.edit-recover-img').on('click',function(){
         var $this=$(this);
         var code=$this.parents('.upload-img').find('.imgPreview').data('code');
-        $this.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/'+code+'.png'});
+        if(typeof(code)=='undefined')
+        {
+            $this.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/TDSG.png'});
+        }
+        else $this.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/'+code+'.png'});
     });
 
 

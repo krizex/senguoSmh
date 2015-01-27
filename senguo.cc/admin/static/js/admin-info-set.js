@@ -1,6 +1,12 @@
 $(document).ready(function(){
     var code=$('.shop_code').val();
-    if(code!=='not set') $('.link_notice').show();
+    if(code!=='not set') {
+        $('.link_notice').show();
+    }
+    else {
+        $('.notice_word').show();
+        $('.code_set').show();
+    }
     $('.area-choose-list li').each(function(){
         $(this).on('click',function(){
             if($(this).hasClass('active'))
@@ -84,7 +90,11 @@ $(document).ready(function(){
     $('.info_sure').each(function(){
         var $this=$(this);
         $this.on('click',function(){
-            infoEdit($this);
+            if($this.hasClass('code_sure')&&confirm('店铺号用于您的商城链接，设置后将不可更改，是否确定使用该店铺号？'))
+            {
+                infoEdit($this);
+            }
+            else infoEdit($this);
         });
     });
 });
@@ -157,12 +167,15 @@ function infoEdit(target){
                 if(action_name=='name')
                 {
                    $('.name').text(shop_name);
+                   $('#shop_name').text(shop_name).attr({'title':shop_name});
                 }
                 else if(action_name=='code')
                 {
                     $('.code').text(shop_code);
-                    $('.shop_link').attr({'src':'http://zone.senguo.cc/shop/'+shop_code});
+                    $('.shop_link').attr({'href':'http://zone.senguo.cc/shop/'+shop_code});
                     $('.link_notice').show();
+                    $('.notice_word').hide();
+                    $('.code_set').hide();
                 }
                 else if(action_name=='intro')
                 {
@@ -174,7 +187,7 @@ function infoEdit(target){
                 }
                 else if(action_name=='area')
                 {
-                    $('.area').text(deliver_area);
+                    $('.deliver_area').text(deliver_area);
                 }
                 else if(action_name=='entity')
                 {

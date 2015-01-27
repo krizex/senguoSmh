@@ -12,9 +12,19 @@
                 </a>
             </li>
             {% end %}
+            {% for menu in menus %}
+            <li>
+                <a href="{{reverse_url('adminShelf')}}?action=menu&id={{menu.id}}">
+                    <img src="/static/design_img/TDSG.png"/>
+                    <p>{{menu.name}}</p>
+                </a>
+            </li>
+            {% end %}
         </ul>
     </div>
 {% end %}
+{% block left %}{% end %}
+{% block goodsRight %}{% end %}
 {% block bottom %}
 <script src="{{static_url('js/admin-goods-fruit.js')}}"></script>
 {% end %}

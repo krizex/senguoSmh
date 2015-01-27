@@ -4,7 +4,7 @@ import tornado.web
 from settings import *
 import time
 import datetime
-from sqlalchemy import desc, and_, or_
+from sqlalchemy import func, desc, and_, or_
 import qiniu
 from dal.dis_dict import dis_dict
 
@@ -92,6 +92,317 @@ class Home(AdminBaseHandler):
         if shop.admin != self.current_user:
             return self.send_error(403)#必须做权限检查：可能这个shop并不属于current_user
         self.set_secure_cookie("shop_id", str(shop_id), domain=ROOT_HOST_NAME)
+        return self.send_success()
+
+class OrderStatic(AdminBaseHandler):
+
+    def get(self):
+        return self.render("admin/order-count.html",context=dict(subpage='orderstatic'))
+
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action:str")
+    def post(self):
+        action = self.args["action"]
+        if action == "sum":
+            return self.sum()
+        elif action == "order_time":
+            return self.order_time()
+        elif action == "recive_time":
+            return self.recive_time()
+        elif action == "order_table":
+            return self.order_table()
+
+    @AdminBaseHandler.check_arguments("page:int", "type:int")
+    def sum(self):
+        page = self.args["page"]
+        type= self.args["type"]
+        if page == 0:
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, now.month, 1)
+            end_date = now
+        else:
+            date = self.monthdelta(datetime.datetime.now(), page)
+            start_date = datetime.datetime(date.year, date.month, 1)
+            end_date = datetime.datetime(date.year, date.month, date.day)
+
+        orders = self.session.query(models.Order.id, models.Order.create_date,
+                                    models.Order.totalPrice, models.Order.type,
+                                    models.Order.pay_type). \
+            filter(models.Order.shop_id == self.current_shop.id,
+                   models.Order.create_date >= start_date,
+                   models.Order.create_date <= end_date).all()
+
+        data = {}
+        for x in range(1, end_date.day+1):  # 初始化数据
+            data[x] = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+        if type == 1:
+            for order in orders:
+                data[order[1].day][1] += 1
+                if order[3] == 2:
+                    data[order[1].day][2] += 1
+                else:
+                    data[order[1].day][3] += 1
+                if order[4] == 1:
+                    data[order[1].day][4] += 1
+                else:
+                    data[order[1].day][5] += 1
+        elif type == 2:
+            for order in orders:
+                data[order[1].day][1] += order[2]
+                if order[3] == 2:
+                    data[order[1].day][2] += order[2]
+                else:
+                    data[order[1].day][3] += order[2]
+                if order[4] == 1:
+                    data[order[1].day][4] += order[2]
+                else:
+                    data[order[1].day][5] += order[2]
+        else:
+            return self.send_error(404)
+        return self.send_success(data=data)
+
+    @AdminBaseHandler.check_arguments("type:int")
+    def order_time(self):
+        type = self.args["type"]
+        q = self.session.query(func.hour(models.Order.create_date), func.count()).\
+                filter_by(shop_id=self.current_shop.id)
+        if type == 1:  # 累计数据
+            pass
+        elif type == 2:  # 昨天数据
+            now = datetime.datetime.now() - datetime.timedelta(1)
+            start_date = datetime.datetime(now.year, now.month, now.day, 0)
+            end_date = datetime.datetime(now.year, now.month, now.day, 23)
+            q = q.filter(models.Order.create_date >= start_date,
+                       models.Order.create_date <= end_date)
+        else:
+            return self.send_error(404)
+        ss = q.group_by(func.hour(models.Order.create_date)).all()
+        data = {}
+        for key in range(0, 24):
+            data[key] = 0
+        for s in ss:
+            data[s[0]] = s[1]
+        return self.send_success(data=data)
+
+
+    @AdminBaseHandler.check_arguments("type:int")
+    def recive_time(self):
+        type = self.args["type"]
+        q = self.session.query(models.Order.type, models.Order.start_time, models.Order.end_time).\
+            filter_by(shop_id=self.current_shop.id)
+        if type == 1:
+            orders = q.all()
+        elif type == 2:
+            now = datetime.datetime.now() - datetime.timedelta(1)
+            start_date = datetime.datetime(now.year, now.month, now.day, 0)
+            end_date = datetime.datetime(now.year, now.month, now.day, 23)
+            orders = q.filter(models.Order.create_date >= start_date,
+                              models.Order.create_date <= end_date).all()
+        else:
+            return self.send_error(404)
+        stop_range = self.current_shop.config.stop_range
+        data = {}
+        for key in range(0, 24):
+            data[key] = 0
+        for order in orders:
+            if order[0] == 1:  # 立即送收货时间估计
+                data[order[1].hour + (order[1].minute+stop_range)//60] += 1
+            else:  # 按时达收货时间估计
+                data[(order[1].hour+order[2].hour)//2] += 1
+        return self.send_success(data=data)
+
+    @AdminBaseHandler.check_arguments("page:int")
+    def order_table(self):
+        page = self.args["page"]
+        page_size = 15
+
+        start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
+        end_date = datetime.datetime.now() - datetime.timedelta(page*page_size)
+
+        # 日订单数，日总订单金额
+        s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
+            filter_by(shop_id=self.current_shop.id).\
+            filter(models.Order.create_date >= start_date,
+                   models.Order.create_date <= end_date).\
+            group_by(func.year(models.Order.create_date),
+                     func.month(models.Order.create_date),
+                     func.day(models.Order.create_date)).\
+            order_by(desc(models.Order.create_date)).all()
+
+        # 总订单数
+        total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
+            filter_by(shop_id=self.current_shop.id).\
+            filter(models.Order.create_date <= end_date).all()
+        total = list(total[0])
+
+        # 日老用户订单数
+        ids = self.old_follower_ids(self.current_shop.id)
+        s_old = self.session.query(models.Order.create_date, func.count()).\
+            filter(models.Order.create_date >= start_date,
+                   models.Order.create_date <= end_date,
+                   models.Order.customer_id.in_(ids)).\
+            group_by(func.year(models.Order.create_date),
+                     func.month(models.Order.create_date),
+                     func.day(models.Order.create_date)).\
+            order_by(desc(models.Order.create_date)).all()
+
+        # 总老用户订单数
+        old_total = self.session.query(models.Order).\
+            filter_by(shop_id=self.current_shop.id).\
+            filter(models.Order.create_date <= end_date,
+                   models.Order.customer_id.in_(ids)).count()
+
+
+        data = []
+        i = 0
+        j = 0
+        # data的封装格式为：[日期，日订单数，累计订单数，日订单总金额，累计订单总金额，日老用户订单数，累计老用户订单数]
+        for x in range(0, 15):
+            date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
+            if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
+                if j < len(s_old) and (datetime.datetime.now()-s_old[j][0]).days == x+(page*page_size):
+                    data.append((date.strftime('%Y-%m-%d'), s[i][1], total[1], s[i][2], total[0], s_old[j][1], old_total))
+                    total[1] -= s[i][1]
+                    total[0] -= s[i][2]
+                    old_total -= s_old[j][1]
+                    i += 1
+                    j += 1
+                else:
+                    data.append((date.strftime('%Y-%m-%d'), s[i][1], total[1], s[i][2], total[0], 0, old_total))
+                    total[1] -= s[i][1]
+                    total[0] -= s[i][2]
+                    i += 1
+            else:
+                data.append((date.strftime('%Y-%m-%d'), 0, total[1], 0, total[0], 0, old_total))
+            if total[1] <= 0:
+                break
+        first_order = self.session.query(models.Order).\
+            filter_by(shop_id=self.current_shop.id).\
+            order_by(models.Order.create_date).first()
+        if first_order:  # 新开的店铺一个order都没有
+            page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
+        else:
+            page_sum = 0
+        return self.send_success(page_sum=page_sum, data=data)
+
+    def old_follower_ids(self, shop_id):
+        q = self.session.query(models.Order.customer_id).\
+            filter_by(shop_id=shop_id).\
+            group_by(models.Order.customer_id).\
+            having(func.count(models.Order.customer_id) > 1).all()
+        ids = [x[0] for x in q]
+        return ids
+
+
+
+class FollowerStatic(AdminBaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        return self.render("admin/user-count.html",context=dict(subpage='userstatic'))
+
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action:str", "page?:int")
+    def post(self):
+        action = self.args["action"]
+
+        if action == "curve":
+            page = self.args["page"]
+            if page == 0:
+                now = datetime.datetime.now()
+                start_date = datetime.datetime(now.year, now.month, 1)
+                end_date = now
+            else:
+                date = self.monthdelta(datetime.datetime.now(), page)
+                start_date = datetime.datetime(date.year, date.month, 1)
+                end_date = datetime.datetime(date.year, date.month, date.day)
+            followers = self.session.query(models.CustomerShopFollow).\
+                filter(models.CustomerShopFollow.shop_id == self.current_shop.id,
+                       models.CustomerShopFollow.create_time >= start_date,
+                       models.CustomerShopFollow.create_time <= end_date).all()
+            data = {}
+            for x in range(1, end_date.day+1):  # 初始化数据
+                data[x] = 0
+            for follower in followers:
+                data[follower.create_time.day] += 1
+            return self.send_success(data=data)
+
+        elif action == "table":
+            page = self.args["page"]
+            page_size = 15
+
+            start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
+            end_date = datetime.datetime.now() - datetime.timedelta(page*page_size)
+
+            s = self.session.query(models.CustomerShopFollow.create_time, func.count()).\
+                filter_by(shop_id=self.current_shop.id).\
+                filter(models.CustomerShopFollow.create_time >= start_date,
+                       models.CustomerShopFollow.create_time <= end_date).\
+                group_by(func.year(models.CustomerShopFollow.create_time),
+                         func.month(models.CustomerShopFollow.create_time),
+                         func.day(models.CustomerShopFollow.create_time)).\
+                order_by(desc(models.CustomerShopFollow.create_time)).all()
+
+            total = self.session.query(models.CustomerShopFollow).\
+                filter_by(shop_id=self.current_shop.id).\
+                filter(models.CustomerShopFollow.create_time <= end_date).count()
+            data = []
+            i = 0
+            for x in range(0, 15):
+                date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
+                if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
+                    data.append((date.strftime('%Y-%m-%d'), s[i][1], total))
+                    total -= s[i][1]
+                    i += 1
+                else:
+                    data.append((date.strftime('%Y-%m-%d'), 0, total))
+                if total <= 0:
+                    break
+            first_follower = self.session.query(models.CustomerShopFollow).\
+                filter_by(shop_id=self.current_shop.id).\
+                order_by(models.CustomerShopFollow.create_time).first()
+            if first_follower:
+                page_sum = (datetime.datetime.now() - first_follower.create_time).days//15 + 1
+            else:
+                page_sum = 0
+            return self.send_success(page_sum=page_sum, data=data)
+
+        elif action == "sex":
+            male_sum = self.session.query(models.Accountinfo).\
+                join(models.CustomerShopFollow,
+                     models.Accountinfo.id == models.CustomerShopFollow.customer_id).\
+                filter(models.CustomerShopFollow.shop_id == self.current_shop.id,
+                       models.Accountinfo.sex == 1).count()
+            female_sum = self.session.query(models.Accountinfo).\
+                join(models.CustomerShopFollow,
+                     models.Accountinfo.id == models.CustomerShopFollow.customer_id).\
+                filter(models.CustomerShopFollow.shop_id == self.current_shop.id, models.Accountinfo.sex == 2).count()
+            total = self.session.query(models.Accountinfo).\
+                join(models.CustomerShopFollow,
+                     models.Accountinfo.id == models.CustomerShopFollow.customer_id).\
+                filter(models.CustomerShopFollow.shop_id == self.current_shop.id).count()
+            return self.send_success(male_sum=male_sum, female_sum=female_sum, total=total)
+
+class Comment(AdminBaseHandler):
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("page:int")
+    def get(self):
+        return self.render("admin/comment.html", comments=self.get_comments(self.current_shop.id, self.args["page"], 20),context=dict(subpage='comment'))
+
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action", "reply:str", "order_id:int")
+    def post(self):
+        action = self.args["action"]
+        reply = self.args["reply"]
+        order_id = self.args["order_id"]
+        if action == "reply":
+            try:
+                order = self.session.query(models.Order).filter_by(id=order_id).one()
+            except:
+                return self.send_error(404)
+            if order.shop_id != self.current_shop.id:
+                return self.send_error(403)
+            order.comment_reply = reply
+            self.session.commit()
         return self.send_success()
 
 class Order(AdminBaseHandler):
@@ -255,7 +566,7 @@ class Order(AdminBaseHandler):
 class Shelf(AdminBaseHandler):
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("action", "id:int")
+    @AdminBaseHandler.check_arguments("action", "id?:int")
     def get(self):
         # try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
         # except:return self.send_error(404)
@@ -263,23 +574,35 @@ class Shelf(AdminBaseHandler):
         #     return self.send_error(403)
 
         action = self.args["action"]
-        id = self.args["id"]
         fruit_types = self.session.query(models.FruitType).all()
+        fruit_type_d = {}
+        for fruit_type in fruit_types:
+            fruit_type_d[fruit_type.id] = {"code": fruit_type.code, "name": fruit_type.name, "sum": 0}
         if action == "home":
             return self.render("admin/goods-preview.html", fruit_types=fruit_types, menus=self.current_shop.menus,
                                 context=dict(subpage="goods", goodsSubpage="home"))
-        elif action == "fruit":
+        elif action in ("all", "fruit"):
             fruits=[]
-            for fruit in self.current_shop.fruits:
-                if fruit.fruit_type_id == id:
-                    fruits.append(fruit)
-            return self.render("admin/goods-fruit.html", fruits=fruits, fruit_types=fruit_types, menus=self.current_shop.menus,
-                               context=dict(subpage="goods",goodsSubpage="fruit"))
+            if action == "all":
+                fruits = self.current_shop.fruits
+                for fruit in self.current_shop.fruits:
+                    if fruit.active == 1:
+                        fruit_type_d[fruit.fruit_type_id]["sum"] += 1
+            elif action == "fruit":
+                for fruit in self.current_shop.fruits:
+                    if fruit.fruit_type_id == self.args["id"]:
+                        fruits.append(fruit)
+                    if fruit.active == 1:
+                        fruit_type_d[fruit.fruit_type_id]["sum"] += 1
+            del fruit_type_d[1000]  # 把干果删掉
+            return self.render("admin/goods-fruit.html", fruits=fruits, fruit_type_d=fruit_type_d,
+                               menus=self.current_shop.menus,
+                               context=dict(subpage="goods", goodsSubpage="fruit"))
         elif action == "menu":#todo 合法性检查
-            try:mgoodses = self.session.query(models.MGoods).filter_by(menu_id=id).all()
+            try:mgoodses = self.session.query(models.MGoods).filter_by(menu_id=self.args["id"]).all()
             except:return self.send_error(404)
-            return self.render("admin/goods-menu.html", mgoodses=mgoodses, fruit_types=fruit_types, menus=self.current_shop.menus,
-                               context=dict(subpage="goods",goodsSubpage="menu"))
+            return self.render("admin/goods-menu.html", mgoodses=mgoodses, menus=self.current_shop.menus,
+                               context=dict(subpage="goods", goodsSubpage="menu"))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data", "id?:int", "charge_type_id?:int")
@@ -357,7 +680,7 @@ class Shelf(AdminBaseHandler):
                                                 storage = data["storage"],
                                                 unit=data["unit"],
                                                 tag = data["tag"],
-                                                img_url = data["img_url"],
+                                                #img_url = data["img_url"],
                                                 intro = data["intro"],
                                                 priority=data["priority"])
         elif action in ["del_charge_type", "edit_charge_type"]: #charge_type_id
@@ -399,7 +722,7 @@ class Shelf(AdminBaseHandler):
                                                 storage = data["storage"],
                                                 unit=data["unit"],
                                                 tag = data["tag"],
-                                                img_url = data["img_url"],
+                                                #img_url = data["img_url"],
                                                 intro = data["intro"],
                                                 priority=data["priority"])
         elif action in ["del_mcharge_type", "edit_mcharge_type"]: #mcharge_type_id
@@ -422,6 +745,47 @@ class Shelf(AdminBaseHandler):
         else: return self.send_error(404)
 
         return self.send_success()
+
+class Follower(AdminBaseHandler):
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action:str", "order_by:str", "page:int", "wd?:str")
+    def get(self):
+        action = self.args["action"]
+        order_by = self.args["order_by"]
+        page = self.args["page"]
+        page_size = 20
+        if action in ("all", "old"):
+            if action == "all":
+                q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+                    filter(models.CustomerShopFollow.shop_id == self.current_shop.id)
+            else:
+                return self.send_error(404)
+            if order_by == "time":
+                q = q.order_by(desc(models.CustomerShopFollow.create_time))
+            elif order_by == "credits":
+                q = q.order_by(desc(models.Customer.credits))
+            elif order_by == "balance":
+                q = q.order_by(desc(models.Customer.balance))
+            customers = q.offset(page*page_size).limit(page_size).all()
+        elif action == "search":
+            wd = self.args["wd"]
+            if wd.isdigit():
+                customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+                    filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+                    join(models.Accountinfo).filter(models.Accountinfo.phone == int(wd)).all()
+            else:
+                customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+                    filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+                    join(models.Accountinfo).filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),
+                                                        models.Accountinfo.realname.like("%%%s%%" % wd))).all()
+        else:
+            return self.send_error(404)
+        for x in range(0, len(customers)):
+            shop_names = self.session.query(models.Shop.shop_name).join(models.CustomerShopFollow).\
+                filter(models.CustomerShopFollow.customer_id == customers[x].id).all()
+            customers[x].shop_names = [y[0] for y in shop_names]
+
+        return self.render("admin/user-manage.html", customers=customers,context=dict(subpage='user'))
 
 class Staff(AdminBaseHandler):
     @tornado.web.authenticated
@@ -565,7 +929,7 @@ class ShopConfig(AdminBaseHandler):
         address = self.code_to_text("shop_city", self.current_shop.shop_city) +\
                   " " + self.current_shop.shop_address_detail
         service_area = self.code_to_text("service_area", self.current_shop.shop_service_area)
-        return self.render("admin/shop-info-set.html", address=address, service_area=service_area, context=dict(shopSubPage='info_set'))
+        return self.render("admin/shop-info-set.html", address=address, service_area=service_area, context=dict(subpage='shop_set',shopSubPage='info_set'))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")
@@ -579,9 +943,13 @@ class ShopConfig(AdminBaseHandler):
             return self.send_qiniu_token("shop", shop.id)
         elif action == "edit_shop_code":
             if len(data["shop_code"]) < 4:
-                return self.send_fail("至少要4位")
+                return self.send_fail("店铺号至少要4位")
             if self.session.query(models.Shop).filter_by(shop_code=data["shop_code"]).first():
-                return self.send_fail("代号已被注册，请另选其他代号")
+                return self.send_fail("店铺号已被注册")
+            reserve_code = ('senguo', 'senguocc', 'shuiguobang', 'shuiguo', '0000', '1111', '2222', '3333',
+                            '4444', '5555', '6666', '7777', '8888', '9999')
+            if data["shop_code"] in reserve_code:
+                return self.send_fail("该店铺号为系统保留号，不允许注册")
             shop.shop_code = data["shop_code"]
         elif action == "edit_shop_intro":
             shop.shop_intro = data["shop_intro"]

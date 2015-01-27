@@ -129,10 +129,28 @@ class Order(StaffBaseHandler):
                 status = 4
             elif self.current_user.work == 3:#SH2
                 status = 5
-                if not order.money_paid:
+                if not order.money_paid:  # 订单未付款
                     self.hirelink.money += order.totalPrice
+
+                # 更新fruit 的 current_saled
+                fruits = eval(order.fruits)
+                if fruits:
+                    ss = self.session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
+                        filter(models.ChargeType.id.in_(fruits.keys())).all()
+                    for s in ss:
+                        num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
+                        s[0].current_saled -= num
+
+                # 更新mgood 的 current_saled
+                mgoods = eval(order.mgoods)
+                if mgoods:
+                    ss = self.session.query(models.MGoods, models.MChargeType).join(models.MChargeType).\
+                        filter(models.MChargeType.id.in_(mgoods.keys())).all()
+                    for s in ss:
+                        num = mgoods[s[1].id]["num"]*s[1].unit_num*s[1].num
+                        s[0].current_saled -= num
             else:
-                return self.send.fail("你还没分配工作")
+                return self.send.fail("你还没分配工作，请联系商家")
             order.status = status
         elif action == "remark":
             order.staff_remark = self.args["data"]

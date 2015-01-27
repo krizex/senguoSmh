@@ -233,14 +233,42 @@ class Market(CustomerBaseHandler):
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int", "charge_type_id:int", "menu_type:int")
-    #action==2: +1，action==1: -1, action==0: delete；menu_type==0：fruit，menu_type==1：menu
+    #action(2: +1，1: -1, 0: delete, 3: 赞+1)；menu_type(0：fruit，1：menu)
     def post(self, shop_code):
         shop_id = self.shop_id
-        inc = self.args["action"]
+        action = self.args["action"]
         charge_type_id = self.args["charge_type_id"]
         menu_type = self.args["menu_type"]
-        self.save_cart(charge_type_id, shop_id, inc, menu_type)
-        #    self.render("notice/cart-empty.html",context=dict(subpage='cart'))
+        if action == 3:
+            favour = self.session.query(models.FruitFavour).\
+                filter_by(customer_id=self.current_user.id,
+                          f_m_id=charge_type_id, type=menu_type).first()
+            if favour:
+                if favour.create_date == datetime.date.today():
+                    return self.send_fail("亲，你今天已经为该商品点过赞了，一天只能赞一次哦")
+                else:  # 今天没点过赞，更新时间
+                    favour.create_date = datetime.date.today()
+            else:  # 没找到点赞记录，插入一条
+                self.session.add(models.FruitFavour(customer_id=self.current_user.id,
+                          f_m_id=charge_type_id, type=menu_type))
+            # 商品赞+1
+            if menu_type == 0:
+                try:
+                    f = self.session.query(models.Fruit).filter_by(id=charge_type_id).one()
+                except:
+                    return self.send_error(404)
+            elif menu_type == 1:
+                try:
+                    f = self.session.query(models.MGoods).filter_by(id=charge_type_id).one()
+                except:
+                    return self.send_error(404)
+            else:
+                return self.send_error(404)
+            f.favour += 1
+            self.session.commit()
+
+        else:  # 更新购物车
+            self.save_cart(charge_type_id, shop_id, action, menu_type)
         return self.send_success()
 
 
@@ -278,7 +306,12 @@ class Cart(CustomerBaseHandler):
                 if fruits[str(charge_type.id)] == 0:  # 有可能num为0，直接忽略掉
                     continue
                 totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
-                charge_type.fruit.storage -= fruits[str(charge_type.id)]*charge_type.unit_num*charge_type.num #更新库存
+                num = fruits[str(charge_type.id)]*charge_type.unit_num*charge_type.num
+                charge_type.fruit.storage -= num  # 更新库存
+                charge_type.fruit.saled += num  # 更新销量
+                charge_type.fruit.current_saled += num  # 更新售出
+                if charge_type.fruit.storage < 0:
+                    return self.send_fail("库存不足")
                 f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
                                      "charge":"%d元/%d%s" % (charge_type.price, charge_type.num, unit[charge_type.unit])}
         if mgoods:
@@ -288,7 +321,12 @@ class Cart(CustomerBaseHandler):
                 if mgoods[str(mcharge_type.id)] == 0:    # 有可能num为0，直接忽略掉
                     continue
                 totalPrice += mcharge_type.price*mgoods[str(mcharge_type.id)]
-                mcharge_type.mgoods.storage -= mgoods[str(mcharge_type.id)]*mcharge_type.unit_num*mcharge_type.num #更新库存
+                num = mgoods[str(mcharge_type.id)]*mcharge_type.unit_num*mcharge_type.num #更新库存
+                mcharge_type.mgoods.storage -= num  # 更新库存
+                mcharge_type.mgoods.saled -= num  # 更新销量
+                mcharge_type.mgoods.current_saled -= num  # 更新售出
+                if mcharge_type.mgoods.storage < 0:
+                    return self.send_fail("库存不足")
                 m_d[mcharge_type.id]={"mgoods_name":mcharge_type.mgoods.name, "num":mgoods[str(mcharge_type.id)],
                                       "charge":"%d元/%d%s" % (mcharge_type.price, mcharge_type.num, unit[mcharge_type.unit])}
 

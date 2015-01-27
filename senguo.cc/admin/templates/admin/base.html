@@ -71,6 +71,9 @@
                                     <a role="menuitem" tabindex="-1" href="javascript:;">{{shop.shop_name}}</a>
                                 </li>
                                 {% end %}
+                                <li role="presentation">
+                                    <a role="menuitem" tabindex="-1" href="{{reverse_url('adminLogout')}}">退出登录</a>
+                                </li>
                             </ul>
                         </div>
                         <p class="job pull-left">{{current_user.accountinfo.nickname}}</p>
@@ -86,6 +89,10 @@
 {% set order_active = ""%}
 {% set shop_set_active = ""%}
 {% set staff_active = ""%}
+{% set user_active = ""%}
+{% set comment_active = ""%}
+{% set user_static_active='' %}
+{% set order_static_active='' %}
 
 {% if subpage == 'goods' %}
     {% set goods_active = 'active' %}
@@ -95,29 +102,38 @@
     {% set shop_set_active = 'active' %}
 {% elif subpage == 'staff' %}
     {% set staff_active = 'active' %}
+{% elif subpage == 'user' %}
+    {% set user_active = 'active' %}
+{% elif subpage == 'comment' %}
+    {% set comment_active = 'active' %}
+{% elif subpage == 'userstatic' %}
+    {% set user_static_active = 'active' %}
+{% elif subpage == 'orderstatic' %}
+    {% set order_static_active = 'active' %}
 {% end %}
 <main class="container">
     <div class="container-left pull-left">
         <ul class="nav common-left-nav">
             <li>
                 <span class="count"><i></i>统计</span>
-                <a href="javascript:;" class="developing">销量统计</a>
-                <a href="javascript:;" class="developing">用户统计</a>
-                <a href="javascript:;" class="developing">售后统计</a>
-                <a href="javascript:;" class="developing">流量统计</a>
+                <!--<a href="javascript:;" class="developing">销量统计</a>-->
+                <a href="{{reverse_url('adminOrderStatic')}}" class="{{order_static_active}}">订单统计</a>
+                <a href="{{reverse_url('adminFollowerStatic')}}" class="{{user_static_active}}">用户统计</a>
+                <!--<a href="javascript:;" class="developing">售后统计</a>
+                <a href="javascript:;" class="developing">流量统计</a>-->
             </li>
             <li>
                 <span class="server"><i></i>客服</span>
-                <a href="javascript:;" class="developing">消息与评价</a>
+                <a href="{{reverse_url('adminComment')}}?page=0" class="">消息与评价</a>
             </li>
             <li>
                 <span class="manage"><i></i>管理</span>
                 <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1" class="{{order_active}}">订单管理</a>
-                <a href="{{reverse_url('adminShelf')}}?action=home&id=0" class="{{goods_active}}">商品管理</a>
-                <a href="javascript:;" class="developing">用户管理</a>
+                <a href="{{reverse_url('adminShelf')}}?action=fruit&id=1" class="{{goods_active}}">商品管理</a>
+                <a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0" class="{{user_active}}">用户管理</a>
                 <a href="{{reverse_url('adminStaffJH')}}?action=SH2" class="{{staff_active}}">员工管理</a>
-                <a href="javascript:;" class="developing">财务管理</a>
-                <a href="javascript:;" class="developing">活动管理</a>
+                <!--<a href="javascript:;" class="developing">财务管理</a>
+                <a href="javascript:;" class="developing">活动管理</a>-->
             </li>
             <li>
                 <span class="set"><i></i>设置</span>

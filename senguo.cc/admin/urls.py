@@ -30,7 +30,7 @@ handlers = [
         "action":"logout"}, "superLogout" ),
 
     ################ 超级管理员后台
-    (r"/super/", handlers.superadmin.ShopAdminManage, {
+    (r"/super", handlers.superadmin.ShopAdminManage, {
         "action":"all"},"superHome"),
 
     ## 水果商家信息展示
@@ -86,6 +86,7 @@ handlers = [
     (r"/super/feedback/", handlers.superadmin.Feedback, {"action":"all"}, "superFeedback"),
     (r"/super/feedback/unprocessed", handlers.superadmin.Feedback, {"action":"unprocessed"}, "superFeedbackUnprocessed"),
     (r"/super/feedback/processed", handlers.superadmin.Feedback, {"action":"processed"}, "superFeedbackProcessed"),
+    (r"/super/user", handlers.superadmin.User, {}, "superUser"),
 
     # (r"/super/notice/", handlers.superadmin.Notice),
 
@@ -94,8 +95,12 @@ handlers = [
     (r"/admin/logout", handlers.admin.Access, {"action":"logout"}, "adminLogout"),
     (r"/admin/register", handlers.admin.Access, {"action":"register"}, "adminRegister"),
     (r"/admin", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
+    (r"/admin/ostatic", handlers.admin.OrderStatic, {}, "adminOrderStatic"),
+    (r"/admin/fstatic", handlers.admin.FollowerStatic, {}, "adminFollowerStatic"),
     (r"/admin/order", handlers.admin.Order, {}, "adminOrder"),
+    (r"/admin/comment", handlers.admin.Comment, {}, "adminComment"),
     (r"/admin/shelf", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
+    (r"/admin/follower", handlers.admin.Follower, {}, "adminStaffFollower"),
     (r"/admin/staff", handlers.admin.Staff, {}, "adminStaffJH"),
     (r"/admin/config", handlers.admin.Config, {}, "adminConfig"),
     (r"/admin/config/shop", handlers.admin.ShopConfig, {}, "adminShopConfig"),
@@ -117,7 +122,7 @@ handlers = [
     # 水果圈子
 
     # 主页
-    (r"/fruitzone/", handlers.fruitzone.Home, {}, "fruitzoneHome"),
+    (r"/fruitzone", handlers.fruitzone.Home, {}, "fruitzoneHome"),
     (r"/fruitzone/admin/home", handlers.fruitzone.AdminHome, {}, "fruitzoneAdminHome"),
     (r"/fruitzone/admin/profile", handlers.fruitzone.AdminProfile, {}, "fruitzoneAdminProfile"),
     (r"/fruitzone/shop/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),
