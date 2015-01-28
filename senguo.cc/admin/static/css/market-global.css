@@ -51,18 +51,18 @@ input{border:none;}
 .bottom-nav li a{display:block;background-size:2em !important;}
 .bottom-nav li:hover a{color:#80c26b !important;}
 .bottom-nav .active a{color:#80c26b !important;}
-.bottom-nav .home{background:url('../images/a%20.svg') no-repeat center 7px;}
-.bottom-nav .goods{background:url('../images/goods.png') no-repeat center 6px;}
-.bottom-nav .cart{background:url('../images/cart.png') no-repeat center 6px;}
-.bottom-nav .my{background:url('../images/my.png') no-repeat center 6px;background-size:1.8em !important;}
-.bottom-nav li:hover .home{background:url('../images/home_green.png') no-repeat center 7px;}
-.bottom-nav li:hover .goods{background:url('../images/goods_green.png') no-repeat center 6px;}
-.bottom-nav li:hover .cart{background:url('../images/cart_green.png') no-repeat center 6px;}
-.bottom-nav li:hover .my{background:url('../images/my_green.png') no-repeat center 6px;}
-.bottom-nav .active .home{background:url('../images/home_green.png') no-repeat center 7px;}
-.bottom-nav .active .goods{background:url('../images/goods_green.png') no-repeat center 6px;}
-.bottom-nav .active .cart{background:url('../images/cart_green.png') no-repeat center 6px;}
-.bottom-nav .active .my{background:url('../images/my_green.png') no-repeat center 6px;}
+.bottom-nav .home{background:url('../svg/home.svg') no-repeat center 7px;}
+.bottom-nav .goods{background:url('../svg/goods.svg') no-repeat center 6px;}
+.bottom-nav .cart{background:url('../svg/cart.svg') no-repeat center 6px;}
+.bottom-nav .my{background:url('../svg/my.svg') no-repeat center 8px;background-size:1.8em !important;}
+.bottom-nav li:hover .home{background:url('../svg/home_green.svg') no-repeat center 7px;}
+.bottom-nav li:hover .goods{background:url('../svg/goods_green.svg') no-repeat center 6px;}
+.bottom-nav li:hover .cart{background:url('../svg/cart_green.svg') no-repeat center 6px;}
+.bottom-nav li:hover .my{background:url('../svg/my_green.svg') no-repeat center 8px;}
+.bottom-nav .active .home{background:url('../svg/home_green.svg') no-repeat center 7px;}
+.bottom-nav .active .goods{background:url('../svg/goods_green.svg') no-repeat center 6px;}
+.bottom-nav .active .cart{background:url('../svg/cart_green.svg') no-repeat center 6px;}
+.bottom-nav .active .my{background:url('../svg/my_green.svg') no-repeat center 8px;}
 
 .set-inl-blo{display:inline-block;}
 .no-mar-btom{margin-bottom:0px;}

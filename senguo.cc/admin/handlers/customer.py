@@ -160,8 +160,10 @@ class ShopProfile(CustomerBaseHandler):
                            context=dict(subpage='shop'))
 
     @tornado.web.authenticated
-    def post(self, shop_id):
-        shop_id = self.get_cookie("market_shop_id")
+    def post(self):
+        shop_id = self.shop_id
+        if not shop_id:
+            return self.send_fail()
         self.session.add(models.CustomerShopFollow(customer_id=self.current_user.id, shop_id=shop_id))
         self.session.commit()
         return self.send_success()
@@ -216,9 +218,11 @@ class Market(CustomerBaseHandler):
             return self.send_error(404)
         self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
         self._shop_code = shop.shop_code
-        try:cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).one()
-        except:
-            self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))
+        if not self.session.query(models.CustomerShopFollow).filter_by(
+                customer_id=self.current_user.id, shop_id=shop.id).first():
+            return self.redirect("/customer/shopProfile")  # 还没关注的话就重定向到店铺信息页
+        if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
+            self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
             self.session.commit()
         cart_f, cart_m = self.read_cart(shop.id)
         fruits = [x for x in shop.fruits if x.fruit_type_id != 1000 and x.active == 1]
@@ -311,7 +315,7 @@ class Cart(CustomerBaseHandler):
                 charge_type.fruit.saled += num  # 更新销量
                 charge_type.fruit.current_saled += num  # 更新售出
                 if charge_type.fruit.storage < 0:
-                    return self.send_fail("库存不足")
+                    return self.send_fail('"%s"库存不足' % charge_type.fruit.name)
                 f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
                                      "charge":"%d元/%d%s" % (charge_type.price, charge_type.num, unit[charge_type.unit])}
         if mgoods:
@@ -321,12 +325,12 @@ class Cart(CustomerBaseHandler):
                 if mgoods[str(mcharge_type.id)] == 0:    # 有可能num为0，直接忽略掉
                     continue
                 totalPrice += mcharge_type.price*mgoods[str(mcharge_type.id)]
-                num = mgoods[str(mcharge_type.id)]*mcharge_type.unit_num*mcharge_type.num #更新库存
+                num = mgoods[str(mcharge_type.id)]*mcharge_type.unit_num*mcharge_type.num
                 mcharge_type.mgoods.storage -= num  # 更新库存
                 mcharge_type.mgoods.saled -= num  # 更新销量
                 mcharge_type.mgoods.current_saled -= num  # 更新售出
                 if mcharge_type.mgoods.storage < 0:
-                    return self.send_fail("库存不足")
+                    return self.send_fail('"%s"库存不足' % mcharge_type.mgoods.name)
                 m_d[mcharge_type.id]={"mgoods_name":mcharge_type.mgoods.name, "num":mgoods[str(mcharge_type.id)],
                                       "charge":"%d元/%d%s" % (mcharge_type.price, mcharge_type.num, unit[mcharge_type.unit])}
 

@@ -118,6 +118,7 @@ $(document).ready(function(){
     $('.add-new-goods').on('click',function(){
         var max_goods_num=$('.goods-list').find('.goods-list-item').length;
         var code=$('.type-class .active').data('code');
+        add_goods_box.empty();
         if(max_goods_num<5){
             $.getItem('/static/items/admin/add-new-goods.html?v=20150112',function(data){
                 var $item=$(data);
