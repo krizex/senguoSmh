@@ -150,7 +150,7 @@ class ShopManage(SuperBaseHandler):
         shops = q.all()
         # shops 是models.Shop实例的列表
         return self.render("superAdmin/shop-manage.html", context=dict(
-                shops = shops,subpage='shopManage', action=self._action,
+                shops = shops,subpage='shop', action=self._action,
                 count=count))
 
     @tornado.web.authenticated
@@ -327,4 +327,4 @@ class User(SuperBaseHandler):
             users[i] = list(users[i])
             users[i].append([x[0] for x in f_names])
             users[i].append([x[0] for x in h_names])
-        return self.send_success(data=users, sum=sum)
+        return self.send_success(data=users, sum=sum,context=dict(subpage='user',action=action))

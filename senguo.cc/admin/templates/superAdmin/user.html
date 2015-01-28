@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title%}用户管理{% end %}
+
+{% block content %}
+{% import dal.models as models %}
+{% set action=context.get("action") %}
+{% set count=context["count"]%}
+
+{% set all_active = ""%}
+{% set admin_active = ""%}
+{% set customer_active = ""%}
+{% set phone_active = ""%}
+
+{% if action == "all" %}
+    {% set all_active="active"%}
+{% elif action == "admin" %}
+    {% set admin_active="active"%}
+{% elif action == "customer" %}
+    {% set customer_active="active"%}
+{% else %}
+    {% set phone_active='active'%}
+{% end %}
+
+
+<div class="row">
+    <div class="admin-shop-left  admin-left col-lg-3 col-md-4">
+        <ul class="nav nav-stacked shop-manage-nav" role="tablist">
+            <li class="{{all_active}}"><a href="{{reverse_url('superUser')}}?action=all&&page=0">所有用户<span class="badge count-badge">{{count['all']}}</span></a></li>
+            <li class="{{admin_active}}"><a href="{{reverse_url('superUser')}}?action=admin&&page=0"><span class="badge count-badge">{{count['applying']}}</span></a></li>
+            <li class="{{customer_active}}"><a href="{{reverse_url('superUser')}}?action=customer&&page=0">商城用户<span class="badge count-badge">{{count['accepted']}}</span></a></li>
+            <li class="{{phone_active}}"><a href="{{reverse_url('superUser')}}?action=phone&&page=0">已绑定手机号<span class="badge count-badge">{{count['declined']}}</span></a></li>
+        </ul>
+    </div>
+    <div class="admin-shop-right  col-lg-9 col-md-8">
+        <ul class="shop-list  item-list">
+            {% for shop in context["shops"]%}
+            <li class="row shop-list-item" data-shopid="{{shop.id}}" data-status="{{shop.shop_status}}">
+                <div class="show-info">
+                    <span class="col-lg-2 shop-img">
+                        <img src="{{shop.admin.accountinfo.headimgurl}}"/>
+                    </span>
+                    <div class="col-lg-3">
+                        <p>{{shop.shop_name}}</p>
+                        <p>{{shop.admin.accountinfo.nickname}}</p>
+                    </div>
+                    <div class="col-lg-3">{{handler.code_to_text("shop_city",shop.shop_city)}}</div>
+                    {% if shop.shop_status==models.SHOP_STATUS.APPLYING %}
+                    <div class="col-lg-2 btn-box">
+                        <button type="button" class="btn-style btn-green passApply">通过</button>
+                    </div>
+                    <div class="col-lg-2 btn-box">
+                        <button type="button" class="btn-style btn-red rejectApply">拒绝</button>
+                        <div class="modal fade reject-box" id="rejectBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <textarea placeholder="输入你的拒绝理由" class="decline-reason"></textarea>
+                                        <button type="text" class="btn-style btn-green send-btn rejectSend">发送</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% end %}
+                </div>
+                <div class="hide-info">
+                    <div class="row">
+                        <span class="col-lg-6">
+                            <strong>服务区域：</strong>{{handler.code_to_text("service_area",shop.shop_service_area)}}
+                        </span>
+                        <span class="col-lg-6">
+                           <strong>店面： </strong><span class="have-entity" data-real="{{shop.have_offline_entity}}"></span>
+                        </span>
+                    </div>
+                    <div class="row">
+                        <span class="col-lg-2"> <strong>店铺简介： </strong></span>
+                        <p class="col-lg-10">{{shop.shop_intro or '无'}}</p>
+                    </div>
+                    {% if shop.shop_status==models.SHOP_STATUS.DECLINED%}
+                    <div class="row" id="declineReason">
+                        <span class="col-lg-2"> <strong>被拒理由： </strong></span>
+                        <p class="col-lg-10">{{shop.declined_reason}}</p>
+                    </div>
+                    {% end %}
+                    <a href="{{reverse_url('superShopProfile',shop.id)}}">查看店铺详情&rarr;</a>
+                </div>
+            </li>
+            {% end %}
+        </ul>
+        <nav>
+            <ul class="pager">
+                <li><a href="" id="PrePage">&larr; 上一页</a></li>
+                <li><a href="" id="NextPage">下一页&rarr;</a></li>
+            </ul>
+        </nav>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/superadmin-shop-manage.js')}}"></script>
+{% end %}

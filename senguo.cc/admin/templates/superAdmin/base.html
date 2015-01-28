@@ -19,34 +19,46 @@
     </script>
 </head>
 <body>
-{% set subpage = context.get("subpage", "shopAadminManage")%}
+{% set subpage = context.get("subpage", "user")%}
 
-{% set shop_admin_active = ""%}
+{% set user_active = ""%}
 {% set shop_active = ""%}
-{% set order_active = ""%}
+{% set banlance_active = ""%}
+{% set notice_active = ""%}
 
-{% if subpage == "shopAadminManage"%}
-    {% set shop_admin_active = "active"%}
-{% elif subpage == "shopManage"%}
+{% if subpage == "user"%}
+    {% set user_active = "active"%}
+{% elif subpage == "shop"%}
     {% set shop_active = "active"%}
+{% elif subpage == "banlance"%}
+    {% set banlance_active = "active"%}
 {% else %}
-    {% set order_active = "active"%}
+    {% set notice_active = "active"%}
 {% end %}
 
 <header class="top_head">
     <ul class="nav header-nav container" role="tablist">
-        <li role="presentation" class="{{shop_active}}">
-            <a href="{{reverse_url('superShopManage')}}" class="p0">统计</a>
+        <li role="presentation" class="">
+            <a href="" class="p0">统计</a>
         </li>
         <li role="presentation" class="{{shop_active}}">
             <a href="{{reverse_url('superShopManage')}}" class="p0">店铺</a>
         </li>
-        <li role="presentation" class="{{shop_admin_active}}">
+        <li role="presentation" class="{{user_active}}">
+            <a href="{{reverse_url('superUser')}}?action=all&&page=0" class="p0">用户</a>
+        </li>
+        <li role="presentation" class="{{banlance_active}}">
+            <a href="{{reverse_url('superOrderManage')}}" class="p0">余额</a>
+        </li>
+        <li role="presentation" class="{{notice_active}}">
+            <a href="{{reverse_url('superOrderManage')}}" class="p0">通知</a>
+        </li>
+        <!--<li role="presentation" class="">
             <a href="{{reverse_url('superShopAdminManage')}}" class="p0">商家管理</a>
         </li>
-        <li role="presentation" class="{{order_active}}">
+        <li role="presentation" class="">
             <a href="{{reverse_url('superOrderManage')}}" class="p0">商城接入管理</a>
-        </li>
+        </li>-->
     </ul>
 </header>
 <div class="container">
