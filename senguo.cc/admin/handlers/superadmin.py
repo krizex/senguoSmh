@@ -320,11 +320,11 @@ class User(SuperBaseHandler):
         sum = q.count()
         users = q.offset(page*page_size).limit(page_size).all()
         for i in range(len(users)):
-            f_names = self.session.query(models.Shop.shop_name).\
+            f_names = self.session.query(models.Shop.id, models.Shop.shop_name).\
                 join(models.CustomerShopFollow).\
                 filter(models.CustomerShopFollow.customer_id == users[i][0]).all()
-            h_names = self.session.query(models.Shop.shop_name).filter_by(admin_id=users[i][0]).all()
+            h_names = self.session.query(models.Shop.id, models.Shop.shop_name).filter_by(admin_id=users[i][0]).all()
             users[i] = list(users[i])
-            users[i].append([x[0] for x in f_names])
-            users[i].append([x[0] for x in h_names])
+            users[i].append(f_names)
+            users[i].append(h_names)
         return self.send_success(data=users, sum=sum)
