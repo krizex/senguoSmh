@@ -379,7 +379,7 @@ class IncStatic(SuperBaseHandler):
 
         data = {}
         for x in range(1, end_date.day+1):  # 初始化数据
-            data[x] = {1: 0, 2: 0, 3: 0, 4: 0}
+            data[x] = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
 
         def count(infos, i):
             for info in infos:
@@ -391,30 +391,11 @@ class IncStatic(SuperBaseHandler):
         count(customer_infos, 3)
         count(phone_infos, 4)
 
-        return self.send_success(data=data)
-
-    @SuperBaseHandler.check_arguments("page:int")
-    def table(self):
-        page = self.args["page"]
-        page_size = 15
-
-        start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
-        end_date = datetime.datetime.now() - datetime.timedelta(page*page_size)
-
-        q = self.session.query(models.Accountinfo.create_date_timestamp, func.count()).\
-            filter(models.Accountinfo.create_date_timestamp >= start_date.timestamp(),
-                   models.Accountinfo.create_date_timestamp <= end_date.timestamp()).\
-            group_by(func.DATE(models.Accountinfo.create_date_timestamp)).\
-            order_by(models.Accountinfo.create_date_timestamp.desc())
-
-        all_infos = q.all()
-        admin_infos = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).all()  # 至少有一家店铺
-        customer_infos = q.filter(exists().where(models.Accountinfo.id == models.Customer.id)).all()
-        phone_infos = q.filter(models.Accountinfo.phone != '').all()
         total = self.session.query(models.Accountinfo).count()
 
-        data = {}
-        for x in range(1, end_date.day+1):  # 初始化数据
-            data[x] = {1: 0, 2: 0, 3: 0, 4: 0}
-
-        return self.send_success(data=data)
+        for x in range(1, end_date.day+1)[::-1]:
+            data[x][5] = total
+            total -= data[x][1]
+        first_info = self.session.query(models.Accountinfo).first()
+        page_sum = (datetime.datetime.now() - datetime.datetime.fromtimestamp(first_info.create_date_timestamp)).days//30 + 1
+        return self.send_success(data=data, page_sum=page_sum)
