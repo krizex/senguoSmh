@@ -13,11 +13,11 @@
 .cart-list-item{position:relative;border:1px solid #eee;padding:5px;}
 .cart-list-item .bg{padding:5px 0;}
 .cart-list-item .goods-img{border-radius:2px;}
-.cart-list-item .w15{width:15%;}
+.cart-list-item .w15{width:50px;}
 .cart-list-item .w75{width:75%;}
 .cart-list-item .w10{width:10%;}
 .cart-list-item .goods-info{height:100%;}
-.cart-list-item .charge-type{position:absolute;bottom:5px;left:15%;width:130px;padding-left:12px !important;}
+.cart-list-item .charge-type{position:absolute;bottom:5px;left:55px;width:130px;padding-left:12px !important;}
 .cart-list-item .action-box{position:absolute;right:5px;top:25%;}
 .cart-list-item .charge-item{height:30px;line-height:30px;position:absolute;bottom:0;}
 .cart-list-item .number-change{position:relative;width:100px;}
@@ -31,9 +31,10 @@
 
 .send_type{border-top-left-radius:2px;border-top-right-radius:2px;overflow:hidden;margin-bottom:0px;}
 .send_type li{width:49%;}
-.send_type li a{display:block;border-radius:2px;border:1px solid #ccc;}
+.send_type li a{display:block;border-radius:4px;border:1px solid #ccc;}
 .send_type li a p{margin-bottom:0px;margin-top:3px;letter-spacing:-1px;}
 .send_type li a p:last-child{margin-bottom:3px;}
+.send_type li.active a{border-color:#00D289;}
 .send_type li.active .top{color:#00D289;}
 
 .send_day{overflow:hidden;width:80%;}
@@ -48,8 +49,8 @@
 .pay_type .title{width:90px;}
 .pay_type .active .title{color:#00D681 !important;}
 
-.address-box .tit{width:15%;min-width:50px;}
-.send-address-choose input{width:84%;padding:0.5em;margin-bottom:5px;}
+.address-box .tit{width:15%;min-width:50px;line-height:2.5em;}
+.send-address-choose input{width:84%;height:2.5em;line-height:2.5em;text-indent:14px;margin-bottom:5px;}
 
 .message-input{padding:10px 15px;}
 .border-grey{border-color:#ddd;}

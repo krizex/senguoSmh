@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="{{static_url('css/market-center.css')}}"/>
 {% end %}
 {% block content %}
+    <div class="rainshed_green text-center font18 text-white">我的</div>
     <div class="user-info box-style bg-white m-b10 clearfix font14 text-center">
         <a href="{{reverse_url('customerProfile')}}">
             <img src="{{current_user.accountinfo.headimgurl}}" class="img img-circle"/>
@@ -15,92 +16,92 @@
             </div>
         </a>
     </div>
-    <div class="box-style bg-white m-b10 clearfix pb0">
-        <p class="title  clearfix">
-            <a href="#" class="text-green pull-left font14">全部订单</a>
-            <a href="{{reverse_url('customerOrder')}}?action=all" class="text-grey2 pull-right pr10">查看全部订单></a>
+    <div class="bg-white m-b10 clearfix font14 box-style">
+        <span class="pull-left">积分&nbsp;&nbsp;{{current_user.credits}}</span>
+        <span class="pull-right">余额&nbsp;&nbsp;{{current_user.balance}}</span>
+    </div>
+    <div class="box-style bg-white pb0 m-b10 clearfix font14">
+        <p class="title clearfix">
+            <span class="pull-left ">我的收藏</span>
         </p>
-        <ul class="center-nav row text-center m-b0 clearfix font13">
+        <p class="title clearfix border-td  address-manage">
+            <span class="pull-left">我的地址管理</span>
+            <a href="javascript:;" class="text-green3 pull-right add-address  m-r10 address_item" style="display:none;">+添加收货地址</a>
+        </p>
+        <ul class="list-group m-b0 address-list address_item  clearfix font9" style="display:none;">
+            {% for address in current_user.addresses%}
+            <li class="address-item list-group-item radius0 clearfix" data-id="{{address.id}}">
+                <p class="clearfix m-b0">
+                    <span class="pull-left item_name">{{address.receiver}}</span>
+                    <span class="pull-right item_phone">{{address.phone}}</span>
+                </p>
+                <p class="item_address m-b0">{{address.address_text}}</p>
+                <p class="clearfix">
+                    <a href="javascript:;" class="delete-btn pull-right delete-address"></a>
+                    <a href="javascript:;" class="edit-btn m-r10 pull-right edit-address"></a>
+                </p>
+            </li>
+            {% end %}
+        </ul>
+    </div>
+    <div class="box-style bg-white m-b10 clearfix pb0">
+        <p class="title  clearfix font14">
+            <span class="pull-left ">我的订单</span>
+            <a href="{{reverse_url('customerOrder')}}?action=all" class="text-grey pull-right">查看全部订单>></a>
+        </p>
+        <ul class="center-nav row text-center m-b0 clearfix font13 center-block">
             <li class="col-sm-3 col-xs-3 prl0">
                 <a href="{{reverse_url('customerOrder')}}?action=unhandled">
-                    <p class="text-grey3 p05">未处理</p>
+                    <p class="text-grey3">未处理</p>
                     <p class="text-pink">{{count[3]}}</p>
                 </a>
             </li>
             <li class="col-sm-3 col-xs-3 prl0">
                 <a href="{{reverse_url('customerOrder')}}?action=waiting">
-                    <p class="text-grey3 p05">待收货</p>
+                    <p class="text-grey3">待收货</p>
                     <p class="text-pink">{{count[4]}}</p>
                 </a>
             </li>
             <li class="col-sm-3 col-xs-3 prl0">
                 <a href="{{reverse_url('customerOrder')}}?action=finish">
-                    <p class="text-grey3 p05">已送达</p>
+                    <p class="text-grey3">已送达</p>
                     <p class="text-grey2">{{count[5]}}</p>
                 </a>
             </li>
             <li class="col-sm-3 col-xs-3 prl0">
                 <a href="#">
-                    <p class="text-grey3 p05">售后订单</p>
+                    <p class="text-grey3">售后订单</p>
                     <p class="text-pink">{{count[6]}}</p>
                 </a>
             </li>
         </ul>
     </div>
-    <div class="bg-white m-b10 clearfix font14">
-        <ul class="list-group m-b0">
-            <li class="list-group-item radius0 clearfix">
-                <span class="pull-left">积分&nbsp;&nbsp;{{current_user.credits}}</span>
-                <a href="#" class="pull-right text-grey3">积分商城</a>
-            </li>
-            <li class="list-group-item radius0 clearfix">
-                <span class="pull-left">余额&nbsp;&nbsp;{{current_user.balance}}</span>
-                <a href="#" class="pull-right text-grey3">余额充值</a>
-            </li>
-        </ul>
-    </div>
-    <div class="box-style bg-white pb0 m-b10 clearfix">
-        <p class="title text-green font11 clearfix">
-            <span class="pull-left font13">收货地址管理</span>
-            <a href="javascript:;" class="text-green pull-right add-address font11 m-r10">+添加收货地址</a>
-        </p>
-        <ul class="list-group m-b0 address-list">
-            {% for address in current_user.addresses%}
-            <li class="address-item list-group-item radius0 clearfix" data-id="{{address.id}}">
-                <div class="col-sm-10">
-                    <p class="clearfix m-b0 font13">
-                        <span class="pull-left item_name">{{address.receiver}}</span>
-                        <span class="pull-right item_phone">{{address.phone}}</span>
-                    </p>
-                    <p class="item_address font12 m-b0">{{address.address_text}}</p>
-                </div>
-                <a href="javascript:;" class="delete-btn pull-right delete-address"></a>
-                <a href="javascript:;" class="edit-btn m-r10 pull-right edit-address"></a>
-            </li>
-            {% end %}
-        </ul>
-    </div>
-    <div class="box-style bg-white m-b10 text-center"><a href="javascript:;" class="text-green font16">签到</a></div>
     <div class="address-box modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header clearfix">
-                     <h4 class="title pull-left" id="myModalLabel">收货地址</h4>
+                     <h4 class="title pull-left modal-title" id="myModalLabel">收货地址</h4>
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                 </div>
                 <div class="modal-body font14">
                     <div class="w60 center-block">
-                        <p>收货人</p>
-                        <input type="text" id="address_name"/>
-                        <p>电话</p>
-                        <input type="text" id="address_phone"/>
-                        <p>收货地址</p>
-                        <input type="text" id="address_address"/>
+                        <p class="clearfix">
+                            <span class="pull-left tit set-inl-blo">收货人：</span>
+                            <input type="text" id="address_name" class="pull-left"s/>
+                        </p>
+                        <p class="clearfix">
+                            <span class="pull-left tit set-inl-blo">电话：</span>
+                            <input type="text" id="address_phone" class="pull-left"s/>
+                        </p>
+                        <p class="clearfix">
+                            <span class="pull-left tit set-inl-blo">收货地址：</span>
+                            <input type="text" id="address_address" class="pull-left"s/>
+                        </p>
                     </div>
                 </div>
                 <div class="modal-footer text-center">
-                    <button class="btn bg-green text-white addressEdit" style="display:none">确定</button>
-                    <button class="btn bg-green text-white addressAdd" style="display:none">确定</button>
+                    <button class="btn bg-green3 text-white addressEdit" style="display:none">确定</button>
+                    <button class="btn bg-green3 text-white addressAdd" style="display:none">确定</button>
                     <button data-dismiss="modal" class="btn bg-greyc text-white">取消</button>
                 </div>
             </div>

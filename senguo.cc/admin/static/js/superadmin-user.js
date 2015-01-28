@@ -48,7 +48,7 @@ function getContent(action,page){
                     var phone=user[6];
                     var fshop=user[7];
                     var oshop=user[8];
-                    if(!phone) phone='无';
+                    if(!phone) phone='未绑定';
                     $item.find('.img').attr({'src':img});
                     $item.find('.name').text(name).attr({'data-sex':sex});
                     $item.find('.city').text(province+city);

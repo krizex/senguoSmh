@@ -95,7 +95,7 @@
                     </span>
                     </div>
                 </div>
-                <ul class="charge-list charge-style color set-width-float font12{{ftoggle_active}}" style="display:none">
+                <ul class="charge-list charge-style color set-width-float font12 {{ftoggle_active}}" style="display:none">
                     {% for charge in fruit.charge_types %}
                     {% if charge.id !=fruit.charge_types[0].id %}
                     {% set value = cart_f[charge.id]["num"] if charge.id in cart_f else 0%}
