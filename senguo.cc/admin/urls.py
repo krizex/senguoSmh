@@ -88,6 +88,10 @@ handlers = [
     (r"/super/feedback/processed", handlers.superadmin.Feedback, {"action":"processed"}, "superFeedbackProcessed"),
     (r"/super/user", handlers.superadmin.User, {}, "superUser"),
 
+    # 统计
+    (r"/super/incstatic", handlers.superadmin.IncStatic, {}, "superIncStatic"),
+
+
     # (r"/super/notice/", handlers.superadmin.Notice),
 
     (r"/admin/login", handlers.admin.Access,{"action":"login"}, "adminLogin"),

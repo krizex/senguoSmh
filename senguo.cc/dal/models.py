@@ -256,7 +256,7 @@ class Accountinfo(MapBase, _CommonApi):
         super().__init__(**kwargs)
     
     id = Column(Integer, primary_key=True, nullable=False)
-    create_date_timestamp = Column(Integer, nullable=False)    
+    create_date_timestamp = Column(Integer, nullable=False)
 
     # 账户访问信息 (phone/email, password)/(wx_unionid)用来登录
     phone = Column(String(32), unique=True, default=None)

@@ -1,9 +1,9 @@
 from handlers.base import SuperBaseHandler
 import dal.models as models
 import tornado.web
-import time
+import time, datetime
 from settings import ROOT_HOST_NAME
-from sqlalchemy import exists
+from sqlalchemy import exists, func, extract, DATE
 
 class Access(SuperBaseHandler):
     
@@ -337,3 +337,84 @@ class User(SuperBaseHandler):
             users[i].append(f_names)
             users[i].append(h_names)
         return self.send_success(data=users, sum=sum)
+
+
+class IncStatic(SuperBaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        return self.render("")
+
+    @tornado.web.authenticated
+    @SuperBaseHandler.check_arguments("action:str")
+    def post(self):
+        action = self.args["action"]
+        if action == "curve":
+            return self.curve()
+        elif action == "table":
+            return self.table()
+        else:
+            return self.error(404)
+
+    @SuperBaseHandler.check_arguments("page:int")
+    def curve(self):
+        page = self.args["page"]
+
+        if page == 0:
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, now.month, 1)
+            end_date = now
+        else:
+            date = self.monthdelta(datetime.datetime.now(), page)
+            start_date = datetime.datetime(date.year, date.month, 1)
+            end_date = datetime.datetime(date.year, date.month, date.day)
+
+        q = self.session.query(models.Accountinfo.id, models.Accountinfo.create_date_timestamp).\
+            filter(models.Accountinfo.create_date_timestamp >= start_date.timestamp(),
+                   models.Accountinfo.create_date_timestamp <= end_date.timestamp())
+
+        all_infos = q.all()
+        admin_infos = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).all()  # 至少有一家店铺
+        customer_infos = q.filter(exists().where(models.Accountinfo.id == models.Customer.id)).all()
+        phone_infos = q.filter(models.Accountinfo.phone != '').all()
+
+        data = {}
+        for x in range(1, end_date.day+1):  # 初始化数据
+            data[x] = {1: 0, 2: 0, 3: 0, 4: 0}
+
+        def count(infos, i):
+            for info in infos:
+                day = datetime.datetime.fromtimestamp(info[1]).day
+                data[day][i] += 1
+
+        count(all_infos, 1)
+        count(admin_infos, 2)
+        count(customer_infos, 3)
+        count(phone_infos, 4)
+
+        return self.send_success(data=data)
+
+    @SuperBaseHandler.check_arguments("page:int")
+    def table(self):
+        page = self.args["page"]
+        page_size = 15
+
+        start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
+        end_date = datetime.datetime.now() - datetime.timedelta(page*page_size)
+
+        q = self.session.query(models.Accountinfo.create_date_timestamp, func.count()).\
+            filter(models.Accountinfo.create_date_timestamp >= start_date.timestamp(),
+                   models.Accountinfo.create_date_timestamp <= end_date.timestamp()).\
+            group_by(func.DATE(models.Accountinfo.create_date_timestamp)).\
+            order_by(models.Accountinfo.create_date_timestamp.desc())
+
+        all_infos = q.all()
+        admin_infos = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).all()  # 至少有一家店铺
+        customer_infos = q.filter(exists().where(models.Accountinfo.id == models.Customer.id)).all()
+        phone_infos = q.filter(models.Accountinfo.phone != '').all()
+        total = self.session.query(models.Accountinfo).count()
+
+        data = {}
+        for x in range(1, end_date.day+1):  # 初始化数据
+            data[x] = {1: 0, 2: 0, 3: 0, 4: 0}
+
+        return self.send_success(data=data)
