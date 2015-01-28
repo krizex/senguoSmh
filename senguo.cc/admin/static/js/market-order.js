@@ -52,7 +52,7 @@ $(document).ready(function(){
     $('.order-concel').each(function() {
         var $this = $(this);
         var id=$this.parents('.order-list-item').data('id');
-        $this.on('click', function () {
+        $this.hammer().on('tap', function () {
             orderConcel($this,id);
         });
     });
@@ -61,14 +61,14 @@ $(document).ready(function(){
     var comment_order_id;
     $('.comment-btn').each(function(){
         var $this = $(this);
-        $this.on('click', function () {
+        $this.hammer().on('tap', function () {
             $('#commentBox').modal('show');
             index=$this.parents('.order-list-item').index();
             comment_order_id=$this.parents('.order-list-item').data('id');
         });
 
     });
-    $('.comment_submit').on('click', function () {
+    $('.comment_submit').hammer().on('tap', function () {
         var comment=$('.comment-input').val();
         orderComment(index,comment_order_id,comment);
     });

@@ -10,13 +10,13 @@ input{border:none;}
 .modal{}
 .modal-dialog{margin:0px auto;margin-top:10%!important;max-width:640px;}
 .modal-content{position:relative;}
-.modal-header{background:url('../images/huabian_green.png') repeat-x;padding:0px;height:46px;line-height:46px;position:absolute;z-index:10;width:100%;border-bottom:0px;border-top-left-radius:6px;border-top-right-radius:6px;}
-.modal-title{line-height:50px;}
-.modal-header .close{font-size:28px !important;}
-.modal-body{font-size:1em;padding:0;padding-top:48px;}
+.modal-header{background:url('../images/huabian_green.png') repeat-x;padding:0px;height:46px;line-height:46px;position:absolute;z-index:10;width:100%;border-bottom:0px;border-top-left-radius:6px;border-top-right-radius:6px;color:#fff;}
+.modal-title{line-height:40px;text-indent:14px;}
+.modal-header .close{font-size:28px !important;margin-right:14px;margin-top:3px;}
+.modal-body{font-size:1em;padding:0;padding-top:48px !important;}
 .modal-footer{clear:both;}
 
-.bg-white{background-color:#fff !important;}s
+.bg-white{background-color:#fff !important;}
 .bg-green{background-color:#00D681 !important;}
 .bg-grey{background-color:#f9f9f9 !important;}
 .bg-grey2{background-color:#f2f2f2 !important;}
@@ -45,24 +45,24 @@ input{border:none;}
 .padding-right-none{padding-right:0px;}
 .phone-box{width:100%;min-width:320px;max-width:800px;margin:0 auto;overflow:hidden;padding-bottom:50px;}
 
-.bottom-nav{max-width:800px;margin:0 auto;height:55px;line-height:96px;overflow:hidden;background:url('../images/huabian_white.png') repeat-x;}
+.bottom-nav{max-width:800px;margin:0 auto;height:55px;line-height:92px;overflow:hidden;background:url('../images/huabian_white.png') repeat-x;}
 .bottom-nav ul{margin-bottom:0;}
 .bottom-nav li{text-align:center;padding:0 5px;}
 .bottom-nav li a{display:block;background-size:2em !important;}
 .bottom-nav li:hover a{color:#80c26b !important;}
 .bottom-nav .active a{color:#80c26b !important;}
-.bottom-nav .home{background:url('../images/home.png') no-repeat center 8px;}
-.bottom-nav .goods{background:url('../images/goods.png') no-repeat center 8px;}
-.bottom-nav .cart{background:url('../images/cart.png') no-repeat center 8px;}
-.bottom-nav .my{background:url('../images/my.png') no-repeat center 8px;background-size:1.8em !important;}
-.bottom-nav li:hover .home{background:url('../images/home_green.png') no-repeat center 8px;}
-.bottom-nav li:hover .goods{background:url('../images/goods_green.png') no-repeat center 8px;}
-.bottom-nav li:hover .cart{background:url('../images/cart_green.png') no-repeat center 8px;}
-.bottom-nav li:hover .my{background:url('../images/my_green.png') no-repeat center 8px;}
-.bottom-nav .active .home{background:url('../images/home_green.png') no-repeat center 8px;}
-.bottom-nav .active .goods{background:url('../images/goods_green.png') no-repeat center 8px;}
-.bottom-nav .active .cart{background:url('../images/cart_green.png') no-repeat center 8px;}
-.bottom-nav .active .my{background:url('../images/my_green.png') no-repeat center 8px;}
+.bottom-nav .home{background:url('../images/a%20.svg') no-repeat center 7px;}
+.bottom-nav .goods{background:url('../images/goods.png') no-repeat center 6px;}
+.bottom-nav .cart{background:url('../images/cart.png') no-repeat center 6px;}
+.bottom-nav .my{background:url('../images/my.png') no-repeat center 6px;background-size:1.8em !important;}
+.bottom-nav li:hover .home{background:url('../images/home_green.png') no-repeat center 7px;}
+.bottom-nav li:hover .goods{background:url('../images/goods_green.png') no-repeat center 6px;}
+.bottom-nav li:hover .cart{background:url('../images/cart_green.png') no-repeat center 6px;}
+.bottom-nav li:hover .my{background:url('../images/my_green.png') no-repeat center 6px;}
+.bottom-nav .active .home{background:url('../images/home_green.png') no-repeat center 7px;}
+.bottom-nav .active .goods{background:url('../images/goods_green.png') no-repeat center 6px;}
+.bottom-nav .active .cart{background:url('../images/cart_green.png') no-repeat center 6px;}
+.bottom-nav .active .my{background:url('../images/my_green.png') no-repeat center 6px;}
 
 .set-inl-blo{display:inline-block;}
 .no-mar-btom{margin-bottom:0px;}
@@ -86,10 +86,11 @@ input{border:none;}
 .m-b5{margin-bottom:5px;}
 .m-b10{margin-bottom:10px;}
 .m-b0{margin-bottom:0px !important;}
-.mt48{margin-top:48px;}
+.mt42{margin-top:42px;}
 .radius0{border-radius:0px !important;}
 
 .message-box{position:relative;top:30%;overflow:auto;width:95%;max-width:500px;margin:auto;background-color:#fcfcfc;padding:1px;margin-top:-160px;padding-bottom:15px;border-radius:8px;box-shadow:0 0 8px #747474;overflow:hidden}
+.message-box .bg-header{background:url('../images/huabian_hua.png') repeat-x;height:46px;}
 .message-box h1{font-size:large}
 .message-box h1 span{color:#fe6565;margin-right:4px;margin-left:-20px;font-size:40px}
 .message-box p{color:#777}
@@ -106,18 +107,18 @@ input{border:none;}
 .prl0{padding-left:0px !important;padding-right:0px !important;}
 .pb0{padding-bottom:0px !important;}
 .plr5{padding:0 5px !important;}
-
+.pl5{padding-left:5px !important;}
 
 .back-to-top{width:30px;height:30px;line-height:30px;position:fixed;right:0;bottom:60px;}
 
 .return-btn{display:inline-block;width:20%;height:3em;position:absolute;left:0;background:url('../images/back-white-2px.png') no-repeat 1em center;}
 
-.detail-header{height:40px;line-height:40px;position:relative;max-width:800px;min-width:320px;}
+.detail-header{background:url('../images/huabian_green.png') repeat-x;height:40px;line-height:40px;position:relative;max-width:800px;min-width:320px;}
 .detail-header .title{padding-left:2em;}
 
 .border-c{border:1px solid #ccc;}
-.rainshed{background:url('../images/huabian_hua.png') repeat-x;height:46px;line-height:46px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;}
-.rainshed_green{background:url('../images/huabian_green.png') repeat-x;height:46px;line-height:46px;width:100%;max-width:800px;}
+.rainshed{background:url('../images/huabian_hua.png') repeat-x;height:40px;line-height:40px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;}
+.rainshed_green{background:url('../images/huabian_green.png') repeat-x;height:40px;line-height:40px;width:100%;max-width:800px;}
 
 .desaturate{filter:grayscale(100%);-webkit-filter:grayscale(100%);-moz-filter:grayscale(100%);-ms-filter:grayscale(100%);-o-filter:grayscale(100%);filter: url('../svg/saturate.svg#greyscale');filter:gray;}
 

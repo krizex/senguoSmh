@@ -43,6 +43,11 @@ function checkTime(i)
     {i="0" + i}
     return i
 }
-function percentNum(num, num2) {
-    return (Math.round(num/num2*10000)/100.00+"%");
+function percentNum(num,num2){
+    return Math.round(num/num2*10000)/100.00+"%";
 }
+
+function mathFloat(target){
+    return Math.round(target*1000)/1000;
+}
+

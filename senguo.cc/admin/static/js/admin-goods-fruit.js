@@ -228,7 +228,7 @@ $(document).ready(function(){
             if(max_charge_num<5){
                 $.getItem('/static/items/admin/chargetype-item.html',function(data){
                     var $item=$(data);
-                    $item.find('.charge-unit').data('id',storage_unit_id).text(storage_unit);
+                    $item.find('.charge-unit').attr('data-id',storage_unit_id).text(storage_unit);
                     parent.find('.add-charge-list').append($item);
                 });
             }

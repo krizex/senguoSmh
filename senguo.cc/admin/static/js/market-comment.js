@@ -1,7 +1,7 @@
 $(document).ready(function(){
     var item_url='/static/items/customer/comment-list-item.html';
     getComment(item_url);
-    $('#getMore').on('click',function(){
+    $('#getMore').hammer().on('tap',function(){
         var url='/customer/comment?page='+page;
         getMore(url);
         page++;

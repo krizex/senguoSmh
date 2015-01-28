@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    $('.info-con').on('click',function(){$(this).siblings('.info-edit').slideToggle();});
+    $('.info-con').hammer().on('tap',function(){$(this).siblings('.info-edit').slideToggle();});
 
     $('a.editInfo').each(function(){
         if($(this).text() =='None'||$(this).text() =='')
@@ -12,14 +12,14 @@ $(document).ready(function(){
     });
     //信息编辑
     $('.info-edit').find('.concel-btn').each(function(){
-        $(this).on('click',function(){$(this).parents('.info-edit').hide();})
+        $(this).hammer().on('tap',function(){$(this).parents('.info-edit').hide();})
     });
     $('.info-edit').find('.sure-btn').each(function(){infoEdit($(this))});
     //手机验证
-    $('#getVrify').on('click',function(evt){Vrify(evt);});
-    $('#tiePhone').on('click',function(evt){TiePhone(evt);});
+    $('#getVrify').hammer().on('tap',function(evt){Vrify(evt);});
+    $('#tiePhone').hammer().on('tap',function(evt){TiePhone(evt);});
     //性别编辑
-    $('body').on('click','.sex-list li',function(){
+    $('body').find('.sex-list li').hammer().on('tap',function(){
        var $this=$(this);
        var sex=$this.data('id');
        var text=$this.text();
@@ -55,7 +55,7 @@ function time(evt) {
 
 
 function infoEdit(target){
-    target.on('click',function(){
+    target.hammer().on('tap',function(){
         var email, year,month,realname;
         var regEmail=/^([a-z0-9]*[-_]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/;
         var regNumber=/^[0-9]*[1-9][0-9]*$/;
