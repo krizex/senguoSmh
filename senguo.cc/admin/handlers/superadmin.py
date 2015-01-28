@@ -293,8 +293,12 @@ class OrderManage(SuperBaseHandler):
 
 class User(SuperBaseHandler):
     @tornado.web.authenticated
-    @SuperBaseHandler.check_arguments("action:str", "page:int")
     def get(self):
+        return self.render("")
+
+    @tornado.web.authenticated
+    @SuperBaseHandler.check_arguments("action:str", "page:int")
+    def post(self):
         action = self.args["action"]
         page = self.args["page"]
         page_size = 20
@@ -306,6 +310,12 @@ class User(SuperBaseHandler):
                                        models.Accountinfo.wx_province,
                                        models.Accountinfo.wx_city,
                                        models.Accountinfo.phone)
+        sum = {}
+        sum["all"] = q.count()
+        sum["admin"] = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).count()
+        sum["customer"] = q.join(models.CustomerShopFollow, models.CustomerShopFollow.customer_id == models.Accountinfo.id).\
+                join(models.Shop, models.CustomerShopFollow.shop_id == models.Shop.id).count()
+        sum["phone"] = q.filter(models.Accountinfo.phone != '').count()
         if action == "all":
             pass
         elif action == "admin":
@@ -317,7 +327,6 @@ class User(SuperBaseHandler):
             q = q.filter(models.Accountinfo.phone != '')
         else:
             return self.send_error(404)
-        sum = q.count()
         users = q.offset(page*page_size).limit(page_size).all()
         for i in range(len(users)):
             f_names = self.session.query(models.Shop.id, models.Shop.shop_name).\
