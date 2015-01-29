@@ -6,22 +6,18 @@ $(document).ready(function(){
     $('.year').text(current_year);
     $('.month').text(current_month);
     //详细数据统计
-    gettable(0);
     if(n==0){$('.pre-page').hide();}
     if((n+1)==page_sum){
         $('.next-page').hide();
         $('.input-page').hide();
         $('.jump-to').hide();
     }
-    $('.page-now').text(n+1);
-    $('.page-total').text(page_sum);
     $('.pre-page').on('click',function(){
         n=n-1;
         if(n==0){
             $('.pre-page').hide();
         }
         if(n>-1) {
-            gettable(n);
             $('.next-page').show();
             $('.page-now').text(n+1);
         }
@@ -31,7 +27,6 @@ $(document).ready(function(){
         if(n!=page_sum){
             $('.pre-page').show();
             $('.page-now').text(n+1);
-            gettable(n);
         }
         if(n==page_sum-1) {
             $('.next-page').hide();
@@ -42,7 +37,6 @@ $(document).ready(function(){
         var page=Int($('.input-page').val());
         if(page_sum>page-1>0){
             n=page-1;
-            gettable(page);
             $('.pre-page').show();
             $('.page-now').text(page);
         }
@@ -66,7 +60,6 @@ $(document).ready(function(){
             myChart.showLoading({
                 text: '正在努力的读取数据中...'
             });
-            count('curve',0);
             myChart.hideLoading();
             var options={
                 tooltip : {
@@ -83,7 +76,7 @@ $(document).ready(function(){
                 },
                 calculable : true,
                 legend: {
-                    data:['新增用户']
+                    data:['总用户','商城用户','卖家数','已绑定手机号']
                 },
                 xAxis : [
                     {
@@ -97,8 +90,7 @@ $(document).ready(function(){
                         type : 'value',
                         name : '增长趋势',
                         axisLabel : {
-                            formatter: '{value}',
-                            max:200
+                            formatter: '{value}'
 
                         }
                     },
@@ -113,8 +105,67 @@ $(document).ready(function(){
                 series : [
                     {
                         name:'总用户',
-                        type:['bar','line'],
-                        data:[]
+                        type:'line',
+                        data:[],
+                        markPoint : {
+                            data : [
+                                {type : 'max', name: '最大值'},
+                                {type : 'min', name: '最小值'}
+                            ]
+                        },
+                        markLine : {
+                            data : [
+                                {type : 'average', name: '平均值'}
+                            ]
+                        }
+                    },
+                    {
+                        name:'商城用户',
+                        type:'line',
+                        data:[],
+                        markPoint : {
+                            data : [
+                                {type : 'max', name: '最大值'},
+                                {type : 'min', name: '最小值'}
+                            ]
+                        },
+                        markLine : {
+                            data : [
+                                {type : 'average', name: '平均值'}
+                            ]
+                        }
+                    },
+                    {
+                        name:'卖家数',
+                        type:'line',
+                        data:[],
+                        markPoint : {
+                            data : [
+                                {type : 'max', name: '最大值'},
+                                {type : 'min', name: '最小值'}
+                            ]
+                        },
+                        markLine : {
+                            data : [
+                                {type : 'average', name: '平均值'}
+                            ]
+                        }
+                    },
+                    {
+                        name:'已绑定手机号',
+                        type:'line',
+                        data:[],
+                        markPoint : {
+                            data : [
+                                {type : 'max', name: '最大值'},
+                                {type : 'min', name: '最小值'}
+                            ]
+                        },
+                        markLine : {
+                            data : [
+                                {type : 'average', name: '平均值'}
+                            ]
+                        }
                     },
                 ],
                 color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
@@ -153,6 +204,7 @@ $(document).ready(function(){
                 else $('.month').text(month+1);
             });
         }
+
     );
 });
 var data;
@@ -168,44 +220,51 @@ function count(action,page){
     var url='';
     $.ajaxSetup({async:false});
     $.postJson(url,args,function(res){
-            if(res.success){
-                data=res.data;
-                page_sum=res.page_sum
+        if(res.success){
+            data=res.data;
+            page_sum=res.page_sum;
 
-            }
-            else return alert(res.error_text);
-        },
-        function(){
-            return alert('网络错误！');
-        });
+        }
+        else return alert(res.error_text);
+    },
+    function(){
+        return alert('网络错误！');
+    });
 }
 
-function gettable(page){
-    count('table',page);
-    $('.detail-count').find('.item').remove();
-    for(var key in data){
-        var $item=$('<tr class="item"><td class="time"></td><td class="new_user"></td><td class="total_user"></td></tr>');
-        var date=data[key][0];
-        var new_user=data[key][1];
-        var total=data[key][2];
-        $item.find('.time').text(date);
-        $item.find('.new_user').text(new_user);
-        $item.find('.total_user').text(total);
-        $('.detail-count').append($item);
-    }
-}
 
 function getcurve(i,options,myChart){
     options.xAxis[0].data=[];
     options.series[0].data=[];
+    options.series[1].data=[];
+    options.series[2].data=[];
+    options.series[3].data=[];
     myChart.clear();
+    $('.detail-count').find('.item').remove();
     count('curve',i);
-    for(var date in data){
-        var day=date;
-        var num=data[date];
+    for(var key in data){
+        var day=key;
+        var day_total_user=data[key][1];
+        var shop_user=data[key][2];
+        var saler=data[key][3];
+        var tie_phone=data[key][4];
+        var total_user=data[key][5];
+        var $item=$('<tr class="item"><td class="time"></td><td class="shop_user"></td><td class="saler"></td><td class="tie_phone"></td><td class="day_total_user"></td><td class="total_user"></td></tr>');
+        $item.find('.time').text(day);
+        $item.find('.day_total_user').text(day_total_user);
+        $item.find('.shop_user').text(shop_user);
+        $item.find('.saler').text(saler);
+        $item.find('.tie_phone').text(tie_phone);
+        $item.find('.total_user').text(total_user);
+        $('.detail-count').append($item);
         options.xAxis[0].data.push(day+'号');
-        options.series[0].data.push(num);
+        options.series[0].data.push(day_total_user);
+        options.series[1].data.push(shop_user);
+        options.series[2].data.push(saler);
+        options.series[3].data.push(tie_phone);
     }
     myChart.refresh();
     myChart.setOption(options);
+    $('.page-now').text(n+1);
+    $('.page-total').text(page_sum);
 }

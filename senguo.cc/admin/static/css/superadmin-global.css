@@ -4,6 +4,7 @@ ul{padding-left:0;}
 
 .text-grey{color:#333 !important;}
 .text-grey a{color:#333 !important;}
+.bg-grey2{background:#f2f2f2;}
 
 .width1{width:100%;}
 
@@ -30,13 +31,29 @@ ul{padding-left:0;}
 .concel-btn{background:#999;float:left;color:#fff;}
 .sure-btn{background:#00D289;float:right;color:#fff;}
 
-.admin-left{}
+.admin-left{width:230px;}
 .admin-left li{border-bottom:1px solid #ddd;}
 .admin-left li.active a{background:#fff;color:#009933 !important;}
 .admin-left a{color:#333;}
+
+.admin-right{width:900px;}
 
 .count-badge{margin-left:10px;text-indent:0;}
 p{word-break:break-all;}
 .p0{padding:0px !important;}
 .mt5{margin-top:5px;}
 a{color:#44b549;}
+
+/*分页样式*/
+.list-pagination{width:100%;margin-top:20px;margin-bottom:10px;}
+.list-pagination ul{float:right;margin-right:20px;}
+.list-pagination li{float:left;margin-left:5px;line-height:28px;}
+.list-pagination .page-btn{display:inline-block;width:26px;height:26px;border:1px solid #ccc;border-radius:1px;background:url("../images/container-icon.gif") no-repeat;}
+.list-pagination .pre-page{background-position:-34px -207px;}
+.list-pagination .pre-page:hover{background-color:#f2f2f2;}
+.list-pagination .pre-page:foucus{background-color:#f2f2f2;}
+.list-pagination .next-page{background-position:-58px -214px;}
+.list-pagination .next-page:hover{background-color:#f2f2f2;}
+.list-pagination .next-page:foucus{background-color:#f2f2f2;}
+.list-pagination .input-page{;width:60px;height:26px;border:1px solid #ccc;border-radius:1px;color:#999;text-align:center;}
+.list-pagination .jump-to{display:inline-block;width:60px;height:26px;border:1px solid #ccc;border-radius:1px;text-align:center;color:#666;line-height:26px;}
