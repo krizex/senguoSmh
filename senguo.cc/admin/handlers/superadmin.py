@@ -342,7 +342,7 @@ class User(SuperBaseHandler):
 class IncStatic(SuperBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        return self.render("")
+        return self.render("superAdmin/count.html",context=dict(subpage='count'))
 
     @tornado.web.authenticated
     @SuperBaseHandler.check_arguments("action:str")

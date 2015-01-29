@@ -31,19 +31,41 @@
             </li>
         </ul>
     </div>
-    <div class="admin-shop-right  col-lg-9 col-md-8">
-        <ul class="user-list  item-list list-group">
-
-        </ul>
-        <nav>
-            <ul class="pager">
-                <li><a href="javascript:;" id="PrePage">&larr; 上一页</a></li>
-                <li><a href="javascript:;" id="NextPage">下一页&rarr;</a></li>
+    <div class="box">
+        <div class="month-change center-block font18">
+            <a href="javascript:;" class="pre_month text-grey2"> < </a>
+        <span class="">
+            <span class="year"></span>年
+            <span class="month"></span>月
+        </span>
+            <a href="javascript:;" class="next_month text-grey2"> > </a>
+        </div>
+        <div id="user_trend" style="height:400px"></div>
+        <hr/>
+        <p class="tit font16">详细数据</p>
+        <table class="detail-count text-center table-count">
+            <tr class="bg-grey2">
+                <td>时间</td>
+                <td>新增用户</td>
+                <td>总用户数</td>
+            </tr>
+        </table>
+        <div class="users-pagination list-pagination clearfix">
+            <ul>
+                <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+                <li>
+                    <span class="page-now"></span>/<span class="page-total"></span>
+                </li>
+                <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+                <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+                <li><a href="javascript:;" class="jump-to">跳转</a></li>
             </ul>
-        </nav>
+        </div>
+        <hr/>
     </div>
 </div>
 {% end %}
 {% block bottom %}
+<script src="{{static_url('js/echarts.js')}}"></script>
 <script src="{{static_url('js/superadmin-user.js')}}"></script>
 {% end %}

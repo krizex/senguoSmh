@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title%}统计{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/superadmin-count.css')}}"/>{% end %}
+{% block content %}
+<div class="row">
+    <div class="admin-shop-left  admin-left col-lg-3 col-md-4">
+        <ul class="nav nav-stacked shop-manage-nav text-right" role="tablist">
+            <li class="all nav_item active">
+                <a href="javascript:;">用户增长</a>
+            </li>
+            <li class="admin nav_item">
+                <a href="javascript:;">用户属性分布</a>
+            </li>
+            <li class="customer nav_item">
+                <a href="javascript:;">店铺数据</a>
+            </li>
+            <li class="phone nav_item">
+                <a href="javascript:;">入驻申请</a>
+            </li>
+        </ul>
+    </div>
+    <div class="admin-shop-right  col-lg-9 col-md-8">
+        <ul class="user-list  item-list list-group">
+
+        </ul>
+        <nav>
+            <ul class="pager">
+                <li><a href="javascript:;" id="PrePage">&larr; 上一页</a></li>
+                <li><a href="javascript:;" id="NextPage">下一页&rarr;</a></li>
+            </ul>
+        </nav>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/superadmin-count.js')}}"></script>
+{% end %}

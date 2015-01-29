@@ -19,28 +19,22 @@
     </script>
 </head>
 <body class="bg-pale-green">
-    <div class="container phone-box">
-        {% set subpage = context.get("subpage", "home")%}
+{% set subpage = context.get("subpage", "home")%}
 
-        {% set shop_active = ""%}
-        {% set home_active = ""%}
-        {% set cart_active = ""%}
-        {% set center_active = ""%}
+{% set shop_active = ""%}
+{% set home_active = ""%}
+{% set cart_active = ""%}
+{% set center_active = ""%}
 
-        {% if subpage == "shop" %}
-            {% set shop_active = "active"%}
-        {% elif subpage == "home"%}
-            {% set home_active = "active"%}
-        {% elif subpage == "cart"%}
-            {% set cart_active = "active"%}
-        {% elif subpage == "center"%}
-            {% set center_active = "active"%}
-        {% end %}
-        {% block content %}{% end %}
-        {% block toTop %}
-        <!--<a class="back-to-top set-inl-blo bg-green text-white text-center font14" id="backTop">Top</a>-->
-        {% end %}
-    </div>
+{% if subpage == "shop" %}
+{% set shop_active = "active"%}
+{% elif subpage == "home"%}
+{% set home_active = "active"%}
+{% elif subpage == "cart"%}
+{% set cart_active = "active"%}
+{% elif subpage == "center"%}
+{% set center_active = "active"%}
+{% end %}
     <div class="bottom-nav navbar-fixed-bottom font14">
         <ul class="row select-list">
             <li class="col-xs-3 col-sm-3 {{shop_active}}">
@@ -56,6 +50,12 @@
                 <a href="{{reverse_url('customerHome')}}" class="text-grey my">我的</a>
             </li>9
         </ul>
+    </div>
+    <div class="container phone-box">
+        {% block content %}{% end %}
+        {% block toTop %}
+        <!--<a class="back-to-top set-inl-blo bg-green text-white text-center font14" id="backTop">Top</a>-->
+        {% end %}
     </div>
     <script src="{{static_url('js/jquery.min.js')}}"></script>
     <script src="{{static_url('js/hammer.min.js')}}"></script>

@@ -227,16 +227,12 @@ $(document).ready(function(){
             count.text(num);
         }
     });
-    $('.arrow-down').click(function(){
-        $(this).parents('.list-item').find('.list-item-body').slideDown(100);
-        $(this).hide().siblings('.arrow-up').show();
-        $(this).parents('.list-item').siblings('.list-item').find('.list-item-body').slideUp(100).siblings().find('.arrow-up').hide().siblings('.arrow-down').show();
+    $('.order-content').on('click',function(){
+        var $this=$(this);
+        $this.parents('.list-item').find('.list-item-body').slideToggle(100);
+        $this.parents('.list-item').find('.arrow-down').toggle().siblings('.arrow-up').toggle();
+        $this.parents('.list-item').siblings('.list-item').find('.list-item-body').slideUp(100).siblings().find('.arrow-up').hide().siblings('.arrow-down').show();
         $('.sales-list-item').css({'border-color':'#29aae1'});
-    });
-    $('.arrow-up').click(function(){
-        $(this).parents('.list-item').find('.list-item-body').slideUp(100);
-        $(this).hide().siblings('.arrow-down').show();
-        $('.sales-list-item').css({'border-color':'#ddd'});
     });
     $('.order-list-item').hover(
         function(){$(this).find('.edit-btn').show();},

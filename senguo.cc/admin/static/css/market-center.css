@@ -1,6 +1,8 @@
 .box-style{padding:10px;}
 .user-info{position:relative;}
-.user-info .img{max-width:100px;width:40%;}
+.user-info .bg{width:100%;}
+.user-info .user-img{position:absolute;width:100%;height:100%;z-index:10;left:0;top:0;}
+.user-info .img{max-width:100px;width:40%;border:2px solid #fff;margin-top:10%;}
 .user-info .code{margin-top:6%;}
 .user-info .user-sex{display:inline-block;background:url('../images/container-icon2.png') no-repeat;width:12px;height:16px;}
 .user-info .female{background-position: -20px -13px;}

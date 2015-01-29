@@ -91,6 +91,7 @@ $(document).ready(function(){
         var fruit_intro=parent.find('.fruit_intro').val();
         $this.hammer().on('tap',function(){
             var large_box=$('.large-img-box');
+            console.log(id);
             large_box.modal('show').attr({'data-id':id,'data-type':type});
             large_box.find('#largeImg').attr({'src':img_url});
             large_box.find('.modal-title').text(fruit_name);
@@ -100,8 +101,8 @@ $(document).ready(function(){
     //点赞
     $('.click-great').hammer().on('tap',function(){
         var large_box=$('.large-img-box');
-        var type=large_box.data('type');
-        var id=large_box.data('id');
+        var type=large_box.attr('data-type');
+        var id=large_box.attr('data-id');
         great(type,id);
     });
     //首次添加商品

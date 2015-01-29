@@ -4,9 +4,10 @@
 <link rel="stylesheet" href="{{static_url('css/market-center.css')}}"/>
 {% end %}
 {% block content %}
-    <div class="rainshed_green text-center font18 text-white">我的</div>
-    <div class="user-info box-style bg-white m-b10 clearfix font14 text-center">
-        <a href="{{reverse_url('customerProfile')}}">
+    <div class="rainshed2 text-center font18 text-white"></div>
+    <div class="user-info box-style bg-white m-b10 clearfix font14 text-center mt42 p0">
+        <img src="{{static_url('images/rooftop.jpg')}}" class="bg"/>
+        <a href="{{reverse_url('customerProfile')}}" class="user-img text-grey3">
             <img src="{{current_user.accountinfo.headimgurl}}" class="img img-circle"/>
             <div class="info">
                 <p>
@@ -17,8 +18,8 @@
         </a>
     </div>
     <div class="bg-white m-b10 clearfix font14 box-style">
-        <span class="pull-left">积分&nbsp;&nbsp;{{current_user.credits}}</span>
-        <span class="pull-right">余额&nbsp;&nbsp;{{current_user.balance}}</span>
+        <div class="w50 pull-left text-center border-rd">积分&nbsp;&nbsp;{{current_user.credits}}</div>
+        <div class="w50 pull-left text-center">余额&nbsp;&nbsp;{{current_user.balance}}</div>
     </div>
     <div class="box-style bg-white pb0 m-b10 clearfix font14">
         <p class="title clearfix">
@@ -28,7 +29,7 @@
             <span class="pull-left">我的地址管理</span>
             <a href="javascript:;" class="text-green3 pull-right add-address  m-r10 address_item" style="display:none;">+添加收货地址</a>
         </p>
-        <ul class="list-group m-b0 address-list address_item  clearfix font9" style="display:none;">
+        <ul class="list-group m-b0 address-list address_item  clearfix" style="display:none;">
             {% for address in current_user.addresses%}
             <li class="address-item list-group-item radius0 clearfix" data-id="{{address.id}}">
                 <p class="clearfix m-b0">
@@ -49,7 +50,7 @@
             <span class="pull-left ">我的订单</span>
             <a href="{{reverse_url('customerOrder')}}?action=all" class="text-grey pull-right">查看全部订单>></a>
         </p>
-        <ul class="center-nav row text-center m-b0 clearfix font13 center-block">
+        <ul class="center-nav row text-center m-b0 clearfix font12 center-block">
             <li class="col-sm-3 col-xs-3 prl0">
                 <a href="{{reverse_url('customerOrder')}}?action=unhandled">
                     <p class="text-grey3">未处理</p>

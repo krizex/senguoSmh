@@ -19,13 +19,15 @@
 </head>
 <body>
 {% set subpage = context.get("subpage", "user")%}
-
+{% set count_active = ""%}
 {% set user_active = ""%}
 {% set shop_active = ""%}
 {% set banlance_active = ""%}
 {% set notice_active = ""%}
 
-{% if subpage == "user"%}
+{% if subpage == "count"%}
+    {% set count_active = "active"%}
+{% elif subpage == "user"%}
     {% set user_active = "active"%}
 {% elif subpage == "shop"%}
     {% set shop_active = "active"%}
@@ -37,8 +39,8 @@
 
 <header class="top_head">
     <ul class="nav header-nav container" role="tablist">
-        <li role="presentation" class="">
-            <a href="" class="p0">统计</a>
+        <li role="presentation" class="count_active">
+            <a href="{{reverse_url('superIncStatic')}}" class="p0">统计</a>
         </li>
         <li role="presentation" class="{{shop_active}}">
             <a href="{{reverse_url('superShopManage')}}" class="p0">店铺</a>

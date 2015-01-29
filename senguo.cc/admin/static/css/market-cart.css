@@ -2,12 +2,12 @@
 .bg-width{width:100%;padding:10px;}
 .w-per6{width:60%;}
 .w-per9{width:90%;}
-.list-group .active{background:#fff;border-color:#ddd;border-left:2px solid #00D681;}
+.list-group .active{background:#fff;border-color:#ddd;border-left:2px solid #33CC66;}
 .list-group-item:first-child{border-radius:0px;}
 .list-group-item:last-child{border-radius:0px;}
 .list-group-item{padding:10px 15px;border-left:2px solid #ddd;}
-.list-group-item:hover{background:#fff;border-color:#ddd;border-left:2px solid #00D681;}
-.list-group-item.active:hover{background:#fff;border-color:#ddd;border-left-color:#00D681;}
+.list-group-item:hover{background:#fff;border-color:#ddd;border-left:2px solid #ddd;}
+.list-group-item.active:hover{background:#fff;border-color:#ddd;border-left-color:#33CC66;}
 
 .cart-list{padding:10px;border-radius:3px;}
 .cart-list-item{position:relative;border:1px solid #eee;padding:5px;}
@@ -34,20 +34,20 @@
 .send_type li a{display:block;border-radius:4px;border:1px solid #ccc;}
 .send_type li a p{margin-bottom:0px;margin-top:3px;letter-spacing:-1px;}
 .send_type li a p:last-child{margin-bottom:3px;}
-.send_type li.active a{border-color:#00D289;}
-.send_type li.active .top{color:#00D289;}
+.send_type li.active a{border-color:#33CC66;}
+.send_type li.active .top{color:#33CC66;}
 
 .send_day{overflow:hidden;width:80%;}
 .send_day li{width:40%;margin-right:10px;}
 .send_day li a{display:block;border-radius:0px;padding:0.2em 0;}
-.send_day li.active a{background:#00D681 !important;border-radius:2px;color:#fff !important;}
+.send_day li.active a{background:#33CC66 !important;border-radius:2px;color:#fff !important;}
 
-.send_period .active .period_name{color:#00D289 !important;}
+.send_period .active .period_name{color:#33CC66 !important;}
 .send_period p{margin:0px;}
 .period_name{min-width:80px;}
 
 .pay_type .title{width:90px;}
-.pay_type .active .title{color:#00D681 !important;}
+.pay_type .active .title{color:#33CC66 !important;}
 
 .address-box .tit{width:15%;min-width:50px;line-height:2.5em;}
 .send-address-choose input{width:84%;height:2.5em;line-height:2.5em;text-indent:14px;margin-bottom:5px;}
@@ -55,7 +55,7 @@
 .message-input{padding:10px 15px;}
 .border-grey{border-color:#ddd;}
 .tip-list li{width:32%;margin-right:1%;}
-.tip-list li.active{background:#00d681 !important;color:#fff !important;}
+.tip-list li.active{background:#33CC66 !important;color:#fff !important;}
 
 .tit{width:80px;}
 .tit2{width:60px;}
