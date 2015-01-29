@@ -4,6 +4,7 @@ import tornado.web
 import time, datetime
 from settings import ROOT_HOST_NAME
 from sqlalchemy import exists, func, extract, DATE
+from dal.dis_dict import dis_dict
 
 class Access(SuperBaseHandler):
     
@@ -294,7 +295,20 @@ class OrderManage(SuperBaseHandler):
 class User(SuperBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        return self.render("")
+        q = self.session.query(models.Accountinfo.id,
+                                       models.Accountinfo.headimgurl,
+                                       models.Accountinfo.nickname,
+                                       models.Accountinfo.sex,
+                                       models.Accountinfo.wx_province,
+                                       models.Accountinfo.wx_city,
+                                       models.Accountinfo.phone)
+        sum = {}
+        sum["all"] = q.count()
+        sum["admin"] = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).count()
+        sum["customer"] = q.join(models.CustomerShopFollow, models.CustomerShopFollow.customer_id == models.Accountinfo.id).\
+                join(models.Shop, models.CustomerShopFollow.shop_id == models.Shop.id).count()
+        sum["phone"] = q.filter(models.Accountinfo.phone != '').count()
+        return self.render("", sum=sum)
 
     @tornado.web.authenticated
     @SuperBaseHandler.check_arguments("action:str", "page:int")
@@ -310,12 +324,7 @@ class User(SuperBaseHandler):
                                        models.Accountinfo.wx_province,
                                        models.Accountinfo.wx_city,
                                        models.Accountinfo.phone)
-        sum = {}
-        sum["all"] = q.count()
-        sum["admin"] = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).count()
-        sum["customer"] = q.join(models.CustomerShopFollow, models.CustomerShopFollow.customer_id == models.Accountinfo.id).\
-                join(models.Shop, models.CustomerShopFollow.shop_id == models.Shop.id).count()
-        sum["phone"] = q.filter(models.Accountinfo.phone != '').count()
+
         if action == "all":
             pass
         elif action == "admin":
@@ -336,7 +345,7 @@ class User(SuperBaseHandler):
             users[i] = list(users[i])
             users[i].append(f_names)
             users[i].append(h_names)
-        return self.send_success(data=users, sum=sum)
+        return self.send_success(data=users)
 
 
 class IncStatic(SuperBaseHandler):
@@ -397,5 +406,105 @@ class IncStatic(SuperBaseHandler):
             data[x][5] = total
             total -= data[x][1]
         first_info = self.session.query(models.Accountinfo).first()
-        page_sum = (datetime.datetime.now() - datetime.datetime.fromtimestamp(first_info.create_date_timestamp)).days//30 + 1
+        page_sum = (datetime.datetime.now() - datetime.datetime.
+                    fromtimestamp(first_info.create_date_timestamp)).days//30 + 1
         return self.send_success(data=data, page_sum=page_sum)
+
+
+class DistributStatic(SuperBaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        return self.render("")
+
+    @tornado.web.authenticated
+    def post(self):
+        total = self.session.query(models.Accountinfo).count()
+        sex = self.session.query(models.Accountinfo.sex, func.count()).group_by(models.Accountinfo.sex).all()
+        province = self.session.query(models.Accountinfo.wx_province, func.count()).\
+            group_by(models.Accountinfo.wx_province).all()
+        city = self.session.query(models.Accountinfo.wx_city, func.count()).\
+            group_by(models.Accountinfo.wx_city).all()
+        return self.send_success(total=total, sex=sex, province=province, city=city)
+
+
+class ShopStatic(SuperBaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        return self.render("")
+
+    @tornado.web.authenticated
+    @SuperBaseHandler.check_arguments("action:str")
+    def post(self):
+        action = self.args["action"]
+
+        if action == "num":
+            return self.num()
+
+        elif action == "province":
+            provinces = self.session.query(models.Shop.shop_province, func.count()).\
+                group_by(models.Shop.shop_province).all()
+            data = []
+            for province in provinces:
+                data.append((dis_dict[province[0]]["name"], province[1]))
+
+        elif action == "city":
+            cities = self.session.query(models.Shop.shop_city, func.count()).\
+                group_by(models.Shop.shop_city).all()
+            data = []
+            for city in cities:
+                code = city[0]
+                if "city" in dis_dict[city[0]//10000*10000]:
+                    name = dis_dict[city[0]//10000*10000]["city"][code]["name"]
+                else:
+                    name = dis_dict[city[0]]["name"]
+                data.append((name, city[1]))
+        else:
+            return self.send_fail()
+        total = self.session.query(models.Shop).count()
+        return self.send_success(data=data, total=total)
+
+    @SuperBaseHandler.check_arguments("page:int")
+    def num(self):
+        page = self.args["page"]
+        if page == 0:
+            now = datetime.datetime.now()
+            start_date = datetime.datetime(now.year, now.month, 1)
+            end_date = now
+        else:
+            date = self.monthdelta(datetime.datetime.now(), page)
+            start_date = datetime.datetime(date.year, date.month, 1)
+            end_date = datetime.datetime(date.year, date.month, date.day)
+
+        # 日订单数，日总订单金额
+        s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
+            filter(models.Order.create_date >= start_date,
+                   models.Order.create_date <= end_date).\
+            group_by(func.year(models.Order.create_date),
+                     func.month(models.Order.create_date),
+                     func.day(models.Order.create_date)).\
+            order_by(models.Order.create_date.desc()).all()
+
+        # 总订单数
+        total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
+            filter(models.Order.create_date <= end_date).all()
+        total = list(total[0])
+
+        data = []
+        i = 0
+        date = end_date
+        # data的封装格式为：[日期，日，日订单数，累计订单数，日订单总金额，累计订单总金额]
+        while 1:
+            date -= datetime.timedelta(1)
+            if i < len(s) and s[i][0].date() == date.date():
+                data.append((date.strftime('%Y-%m-%d'), date.day, s[i][1], total[1], s[i][2], total[0]))
+                total[1] -= s[i][1]
+                total[0] -= s[i][2]
+                i += 1
+            else:
+                data.append((date.strftime('%Y-%m-%d'), date.day, 0, total[1], 0, total[0]))
+            if date <= start_date:
+                break
+        first_order = self.session.query(models.Order).\
+            order_by(models.Order.create_date).first()
+        page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
+        return self.send_success(page_sum=page_sum, data=data)
