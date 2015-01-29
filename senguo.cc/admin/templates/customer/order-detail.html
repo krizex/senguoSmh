@@ -69,7 +69,7 @@
                                 <div class="circle-icon bg-color text-center" >
                                     <img src="{{static_url('images/money-icon.png')}}" alt="￥" />
                                 </div>
-                                <span>小计：<span class="price">{{charge_type.price*fruits[charge_type.id]['num']}}</span>元</span>
+                                <span>小计：<span class="price">{{round(charge_type.price*fruits[charge_type.id]['num'], 2)}}</span>元</span>
                             </li>
                         </ul>
                     </div>
