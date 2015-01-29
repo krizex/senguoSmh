@@ -90,6 +90,8 @@ handlers = [
 
     # 统计
     (r"/super/incstatic", handlers.superadmin.IncStatic, {}, "superIncStatic"),
+    (r"/super/dstatic", handlers.superadmin.DistributStatic, {}, "superDStatic"),
+    (r"/super/shopstatic", handlers.superadmin.ShopStatic, {}, "superShopStatic"),
 
 
     # (r"/super/notice/", handlers.superadmin.Notice),

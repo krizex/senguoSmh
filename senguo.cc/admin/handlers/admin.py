@@ -754,6 +754,9 @@ class Follower(AdminBaseHandler):
         order_by = self.args["order_by"]
         page = self.args["page"]
         page_size = 20
+
+        count = 1
+
         if action in ("all", "old"):
             if action == "all":
                 q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
@@ -766,6 +769,7 @@ class Follower(AdminBaseHandler):
                 q = q.order_by(desc(models.Customer.credits))
             elif order_by == "balance":
                 q = q.order_by(desc(models.Customer.balance))
+            count = q.count()
             customers = q.offset(page*page_size).limit(page_size).all()
         elif action == "search":
             wd = self.args["wd"]
@@ -785,7 +789,7 @@ class Follower(AdminBaseHandler):
                 filter(models.CustomerShopFollow.customer_id == customers[x].id).all()
             customers[x].shop_names = [y[0] for y in shop_names]
 
-        return self.render("admin/user-manage.html", customers=customers,context=dict(subpage='user'))
+        return self.render("admin/user-manage.html", customers=customers, count=count, context=dict(subpage='user'))
 
 class Staff(AdminBaseHandler):
     @tornado.web.authenticated
@@ -829,7 +833,10 @@ class Staff(AdminBaseHandler):
             except: return self.send_error(404)
             if action == "hire_agree":
                 hire_form.status = 2
-                self.session.add(models.HireLink(staff_id=hire_form.staff_id, shop_id=hire_form.shop_id))
+                try:
+                    self.session.add(models.HireLink(staff_id=hire_form.staff_id, shop_id=hire_form.shop_id))
+                except:
+                    return self.send_fail("申请表已经通过")
             elif action == "hire_refuse":
                 hire_form.status = 3
             self.session.commit()
