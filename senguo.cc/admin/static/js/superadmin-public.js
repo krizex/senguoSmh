@@ -1,5 +1,8 @@
 $(document).ready(function(){
-
+    $('.nav_item').on('click',function(){
+        var $this=$(this);
+        $this.addClass('active').siblings('.nav_item').removeClass('active');
+    });
     $('.have-entity').each(function(){
         var entity=$(this).data('real');
         $(this).text(Have(entity));
@@ -13,31 +16,8 @@ $(document).ready(function(){
     var whether=$('#ifHave').data('if');
     $('#ifHave').text(hasSystem(whether));
 
-    var pre=$('#PrePage');
-    var next=$('#NextPage');
-    var page=$.getUrlParam('page', 1);
-    var url=window.location.pathname;
-    if(page==1)
-        {
-            pre.addClass('hidden');
-        }
-    if($('.item-list').find('li').length<20)
-        {
-            next.addClass('hidden');
-        }
-    pre.on('click',function(){
-       if(page>1) {
-            page--;
-            pre.attr({'href': url + '?page=' + page});
-        }
-    });
-    next.on('click',function(){
-        page++;
-        next.attr({'href':url+'?page='+page});
-    });
-
 });
-
+var item_link='/static/items/superAdmin';
 
 function Have(evt){
     if(evt=='True')
@@ -59,4 +39,8 @@ function hasSystem(evt){
     if(evt=='-1')
         return '否';
     else return '是';
+}
+
+function page(){
+
 }

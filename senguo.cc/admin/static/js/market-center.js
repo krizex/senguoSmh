@@ -1,6 +1,9 @@
 $(document).ready(function(){
     var sex_id=$('.user-sex').data('id');
     sex($('.user-sex'),sex_id);
+    $('.address-manage').hammer().on('tap',function(){
+        $('.address_item').toggle();
+    });
     //收货地址编辑
     $('body').find('.edit-address').hammer().on('tap',function(){
         var $this=$(this);

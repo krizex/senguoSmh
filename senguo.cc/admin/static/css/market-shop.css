@@ -1,14 +1,18 @@
 p{margin-bottom:0px;}
 .info1{padding:5px;}
-.info2 li{padding:0px;}
-.shop-logo img{width:100%;}
-.shop-box{padding:8px;margin:5px;box-shadow:1px 1px 5px #aaa;}
-.shop-box .title{border-bottom:1px solid #eee;padding-bottom:5px;}
+.info2{padding:10px;border-top:1px solid #f7f7f7;}
+.info2 li{padding:0px;border-right:1px solid #f3f3f3;}
+.info2 li:last-child{border-right:0px;}
+.shop-logo img{width:80px;height:80px;}
+.shop-box{padding:10px;margin:10px;}
+.shop-box .title{border-bottom:1px solid #ddd;padding-bottom:5px;}
 .shop-info{}
-.shop-info li{border-bottom:1px solid #eee;padding:5px;}
-.staff-img li{margin-right:5px;margin-right:5px;}
-.staff-img li img{width:60px;height:60px;}
-.user-comment .comment-item{border-bottom:1px solid #ddd;padding-top:5px;}
+.shop-info li{border-bottom:1px solid #ddd;padding:10px 0;}
+.staff-img{margin-top:10px;margin-bottom:5px;}
+.staff-img li{margin-right:5px;}
+.staff-img li img{width:50px;height:50px;}
+.user-comment .comment-item{border-bottom:1px solid #ddd;padding:10px 0;}
 .user-comment .img-box{}
-.user-comment .img{width:100%;}
+.user-comment .img{width:40px;}
 .foucus-notice{max-width:800px;margin:0 auto;height:40px;line-height:40px;overflow:hidden;z-index:9999;}
+.w8{width:75%;}

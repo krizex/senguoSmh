@@ -151,7 +151,7 @@ class ShopManage(SuperBaseHandler):
         shops = q.all()
         # shops 是models.Shop实例的列表
         return self.render("superAdmin/shop-manage.html", context=dict(
-                shops = shops,subpage='shopManage', action=self._action,
+                shops = shops,subpage='shop', action=self._action,
                 count=count))
 
     @tornado.web.authenticated
@@ -308,7 +308,7 @@ class User(SuperBaseHandler):
         sum["customer"] = q.join(models.CustomerShopFollow, models.CustomerShopFollow.customer_id == models.Accountinfo.id).\
                 join(models.Shop, models.CustomerShopFollow.shop_id == models.Shop.id).count()
         sum["phone"] = q.filter(models.Accountinfo.phone != '').count()
-        return self.render("", sum=sum)
+        return self.render("superAdmin/user.html", sum=sum, context=dict(subpage='user'))
 
     @tornado.web.authenticated
     @SuperBaseHandler.check_arguments("action:str", "page:int")
