@@ -295,18 +295,11 @@ class OrderManage(SuperBaseHandler):
 class User(SuperBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        q = self.session.query(models.Accountinfo.id,
-                                       models.Accountinfo.headimgurl,
-                                       models.Accountinfo.nickname,
-                                       models.Accountinfo.sex,
-                                       models.Accountinfo.wx_province,
-                                       models.Accountinfo.wx_city,
-                                       models.Accountinfo.phone)
+        q = self.session.query(models.Accountinfo)
         sum = {}
         sum["all"] = q.count()
         sum["admin"] = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).count()
-        sum["customer"] = q.join(models.CustomerShopFollow, models.CustomerShopFollow.customer_id == models.Accountinfo.id).\
-                join(models.Shop, models.CustomerShopFollow.shop_id == models.Shop.id).count()
+        sum["customer"] = q.filter(exists().where(models.Accountinfo.id == models.CustomerShopFollow.customer_id)).count()
         sum["phone"] = q.filter(models.Accountinfo.phone != '').count()
         return self.render("superAdmin/user.html", sum=sum, context=dict(subpage='user'))
 
@@ -330,8 +323,7 @@ class User(SuperBaseHandler):
         elif action == "admin":
             q = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id))
         elif action == "customer":
-            q = q.join(models.CustomerShopFollow, models.CustomerShopFollow.customer_id == models.Accountinfo.id).\
-                join(models.Shop, models.CustomerShopFollow.shop_id == models.Shop.id)
+            q = q.filter(exists().where(models.Accountinfo.id == models.CustomerShopFollow.customer_id))
         elif action == "phone":
             q = q.filter(models.Accountinfo.phone != '')
         else:

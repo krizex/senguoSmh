@@ -4,7 +4,7 @@ import tornado.web
 from settings import *
 import time
 import datetime
-from sqlalchemy import func, desc, and_, or_
+from sqlalchemy import func, desc, and_, or_, exists
 import qiniu
 from dal.dis_dict import dis_dict
 
@@ -384,12 +384,30 @@ class FollowerStatic(AdminBaseHandler):
 
 class Comment(AdminBaseHandler):
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("page:int")
+    @AdminBaseHandler.check_arguments("action:str", "page:int")
     def get(self):
-        return self.render("admin/comment.html", comments=self.get_comments(self.current_shop.id, self.args["page"], 20),context=dict(subpage='comment'))
+        action = self.args["action"]
+        page = self.args["page"]
+        page_size = 20
+
+        if action == "all":
+            comments = self.get_comments(self.current_shop.id, page, page_size)
+        elif action == "favor":
+            s = self.session.query(models.ShopFavorComment.order_id).\
+                filter(models.ShopFavorComment.shop_id == self.current_shop.id).all()
+            order_ids = [x[0] for x in s]
+            comments = self.session.query(models.Accountinfo.headimgurl, models.Accountinfo.nickname,
+                                          models.Order.comment, models.Order.comment_create_date, models.Order.id,
+                                          models.Order.comment_reply).\
+                filter(models.Order.id.in_(order_ids), models.Order.status == 6,
+                       models.Order.customer_id == models.Accountinfo.id).\
+                order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+        else:
+            return self.send_error(404)
+        return self.render("admin/comment.html", comments=comments, context=dict(subpage='comment'))
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("action", "reply:str", "order_id:int")
+    @AdminBaseHandler.check_arguments("action", "reply?:str", "order_id:int")
     def post(self):
         action = self.args["action"]
         reply = self.args["reply"]
@@ -403,6 +421,15 @@ class Comment(AdminBaseHandler):
                 return self.send_error(403)
             order.comment_reply = reply
             self.session.commit()
+        elif action == "favor":
+            try:
+                self.session.add(models.ShopFavorComment(shop_id=self.current_shop.id, order_id=order_id))
+                self.session.commit()
+            except:
+                return self.send_fail("已收藏成功")
+        else:
+            return self.send_error(404)
+
         return self.send_success()
 
 class Order(AdminBaseHandler):
@@ -761,11 +788,12 @@ class Follower(AdminBaseHandler):
             if action == "all":
                 q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
                     filter(models.CustomerShopFollow.shop_id == self.current_shop.id)
+                if order_by == "time":
+                    q = q.order_by(desc(models.CustomerShopFollow.create_time))
             else:
-                return self.send_error(404)
-            if order_by == "time":
-                q = q.order_by(desc(models.CustomerShopFollow.create_time))
-            elif order_by == "credits":
+                q = self.session.query(models.Customer).\
+                    filter(exists().where(models.Customer.id == models.Order.customer_id))
+            if order_by == "credits":
                 q = q.order_by(desc(models.Customer.credits))
             elif order_by == "balance":
                 q = q.order_by(desc(models.Customer.balance))
