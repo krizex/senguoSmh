@@ -404,7 +404,7 @@ class Comment(AdminBaseHandler):
                 order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
         else:
             return self.send_error(404)
-        return self.render("admin/comment.html", comments=comments, context=dict(subpage='comment'))
+        return self.render("admin/comment.html", action = action, comments=comments, context=dict(subpage='comment'))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "reply?:str", "order_id:int")

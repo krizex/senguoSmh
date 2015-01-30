@@ -1,180 +1,180 @@
 .TDSG .color{color:#8cbd03}
 .TDSG .bg-color{background-color:#8cbd03}
 .TDSG .bg{background-color:#f9ffe8}
-.TDSG .icon-bg{background-color:#c8e0aa}
+.TDSG .icon-bg{border-color:#c8e0aa transparent transparent transparent;}
 .Hlg .color{color:#ee6e8c}
 .Hlg .bg{background-color:#fcfbff}
 .Hlg .bg-color{background-color:#ee6e8c}
-.Hlg .icon-bg{background-color:#ece9f5}
+.Hlg .icon-bg{border-color:#ece9f5 transparent transparent transparent;}
 .Qpg .color{color:#5cb56c}
 .Qpg .bg-color{background-color:#5cb56c}
 .Qpg .bg{background-color:#f7fffa}
-.Qpg .icon-bg{background-color:#8effb6}
+.Qpg .icon-bg{border-color:#8effb6 transparent transparent transparent;}
 .Xg .color{color:#ee6e8c}
 .Xg .bg-color{background-color:#ee6e8c}
 .Xg .bg{background-color:#fff6f6}
-.Xg .icon-bg{background-color:#fd9292}
+.Xg .icon-bg{border-color:#fd9292 transparent transparent transparent;}
 .Yt .color{color:#5cb56c}
 .Yt .bg-color{background-color:#5cb56c}
 .Yt .bg{background-color:#e1ffee}
-.Yt .icon-bg{background-color:#ece9f5}
+.Yt .icon-bg{border-color:#ece9f5 transparent transparent transparent;}
 .Lz .color{color:#ee6e8c}
 .Lz .bg-color{background-color:#ee6e8c}
 .Lz .bg{background-color:#fff9f5}
-.Lz .icon-bg{background-color:#fecfac}
+.Lz .icon-bg{border-color:#fecfac transparent transparent transparent;}
 .Nm .color{color:#c0cb04}
 .Nm .bg-color{background-color:#c0cb04}
 .Nm .bg{background-color:#f9fae9}
-.Nm .icon-bg{background-color:#f1f962}
+.Nm .icon-bg{border-color:#f1f962 transparent transparent transparent;}
 .Pt .color{color:#ed3b94}
 .Pt .bg-color{background-color:#ed3b94}
 .Pt .bg{background-color:#fffafb}
-.Pt .icon-bg{background-color:#ff95b5}
+.Pt .icon-bg{border-color:#ff95b5 transparent transparent transparent;}
 .Xiangg .color{color:#a6c63c}
 .Xiangg .bg-color{background-color:#a6c63c}
 .Xiangg .bg{background-color:#fcffef}
-.Xiangg .icon-bg{background-color:#d7ec74}
+.Xiangg .icon-bg{border-color:#d7ec74 transparent transparent transparent;}
 .Li .color{color:#edb800}
 .Li .bg-color{background-color:#edb800}
 .Li .bg{background-color:#fffcef}
-.Li .icon-bg{background-color:#fee768}
+.Li .icon-bg{border-color:#fee768 transparent transparent transparent;}
 .Xfq .color{color:#f85853}
 .Xfq .bg-color{background-color:#f85853}
 .Xfq .bg{background-color:#fff9f9}
-.Xfq .icon-bg{background-color:#ffa4b1}
+.Xfq .icon-bg{border-color:#ffa4b1 transparent transparent transparent;}
 .Qli .color{color:#97ca27}
 .Qli .bg-color{background-color:#97ca27}
 .Qli .bg{background-color:#fafff4}
-.Qli .icon-bg{background-color:#b3e973}
+.Qli .icon-bg{border-color:#b3e973 transparent transparent transparent;}
 .Jz .color{color:#fbab2d}
 .Jz .bg-color{background-color:#fbab2d}
 .Jz .bg{background-color:#fffcf2}
-.Jz .icon-bg{background-color:#ffce54}
+.Jz .icon-bg{border-color:#ffce54 transparent transparent transparent;}
 .Pg .color{color:#f25c5c}
 .Pg .bg-color{background-color:#f25c5c}
 .Pg .bg{background-color:#fff8f8}
-.Pg .icon-bg{background-color:#ff8989}
+.Pg .icon-bg{border-color:#ff8989 transparent transparent transparent;}
 .Xj .color{color:#dcc203}
 .Xj .bg-color{background-color:#dcc203}
 .Xj .bg{background-color:#fffdf3}
-.Xj .icon-bg{background-color:#ffee6f}
+.Xj .icon-bg{border-color:#ffee6f transparent transparent transparent;}
 .Tz .color{color:#b3c802}
 .Tz .bg-color{background-color:#b3c802}
 .Tz .bg{background-color:#fdfff0}
-.Tz .icon-bg{background-color:#e4f45f}
+.Tz .icon-bg{border-color:#e4f45f transparent transparent transparent;}
 .Mg .color{color:#f8bc14}
 .Mg .bg-color{background-color:#f8bc14}
 .Mg .bg{background-color:#fffdef}
-.Mg .icon-bg{background-color:#ffef60}
+.Mg .icon-bg{border-color:#ffef60 transparent transparent transparent;}
 .Mht .color{color:#8cbd03}
 .Mht .bg-color{background-color:#8cbd03}
 .Mht .bg{background-color:#fdfff2}
-.Mht .icon-bg{background-color:#d1ff53}
+.Mht .icon-bg{border-color:#d1ff53 transparent transparent transparent;}
 .Mug .color{color:#fd9242}
 .Mug .bg-color{background-color:#fd9242}
 .Mug .bg{background-color:#fffdf4}
-.Mug .icon-bg{background-color:#fec366}
+.Mug .icon-bg{border-color:#fec366 transparent transparent transparent;}
 .Ll .color{color:#dab954}
 .Ll .bg-color{background-color:#dab954}
 .Ll .bg{background-color:#fffef2}
-.Ll .icon-bg{background-color:#ffe38c}
+.Ll .icon-bg{border-color:#ffe38c transparent transparent transparent;}
 .Yz .color{color:#f3ca1b}
 .Yz .bg-color{background-color:#f3ca1b}
 .Yz .bg{background-color:#fffff1}
-.Yz .icon-bg{background-color:#ffee73}
+.Yz .icon-bg{border-color:#ffee73 transparent transparent transparent;}
 .Hmg .color{color:#ffa030}
 .Hmg .bg-color{background-color:#ffa030}
 .Hmg .bg{background-color:#fffbf1}
-.Hmg .icon-bg{background-color:#ffd279}
+.Hmg .icon-bg{border-color:#ffd279 transparent transparent transparent;}
 .Dz .color{color:#e95b34}
 .Dz .bg-color{background-color:#e95b34}
 .Dz .bg{background-color:#fffaf8}
-.Dz .icon-bg{background-color:#ff7b4f}
+.Dz .icon-bg{border-color:#ff7b4f transparent transparent transparent;}
 .Sl .color{color:#e43b40}
 .Sl .bg-color{background-color:#e43b40}
 .Sl .bg{background-color:#fff6f5}
-.Sl .icon-bg{background-color:#ff6e67}
+.Sl .icon-bg{border-color:#ff6e67 transparent transparent transparent;}
 .Smt .color{color:#e66}
 .Smt .bg-color{background-color:#e66}
 .Smt .bg{background-color:#fffbfb}
-.Smt .icon-bg{background-color:#ffb8b8}
+.Smt .icon-bg{border-color:#ffb8b8 transparent transparent transparent;}
 .Yez .color{color:#856458}
 .Yez .bg-color{background-color:#856458}
 .Yez .bg{background-color:#fffbf8}
-.Yez .icon-bg{background-color:#e9ded7}
+.Yez .icon-bg{border-color:#e9ded7 transparent transparent transparent;}
 .Cz .color{color:#fbab2d}
 .Cz .bg-color{background-color:#fbab2d}
 .Cz .bg{background-color:#fffcf2}
-.Cz .icon-bg{background-color:#ffce54}
+.Cz .icon-bg{border-color:#ffce54 transparent transparent transparent;}
 .Bdg .color{color:#93724c}
 .Bdg .bg-color{background-color:#93724c}
 .Bdg .bg{background-color:#fffbf8}
-.Bdg .icon-bg{background-color:#ffd2ae}
+.Bdg .icon-bg{border-color:#ffd2ae transparent transparent transparent;}
 .Blm .color{color:#a5a026}
 .Blm .bg-color{background-color:#a5a026}
 .Blm .bg{background-color:#fffef2}
-.Blm .icon-bg{background-color:#fff185}
+.Blm .icon-bg{border-color:#fff185 transparent transparent transparent;}
 .Sz .color{color:#df143a}
 .Sz .bg-color{background-color:#df143a}
 .Sz .bg{background-color:#fff8f9}
-.Sz .icon-bg{background-color:#fe7e8a}
+.Sz .icon-bg{border-color:#fe7e8a transparent transparent transparent;}
 .Gy .color{color:#916231}
 .Gy .bg-color{background-color:#916231}
 .Gy .bg{background-color:#fffaef}
-.Gy .icon-bg{background-color:#ffebbc}
+.Gy .icon-bg{border-color:#ffebbc transparent transparent transparent;}
 .Pp .color{color:#f07d06}
 .Pp .bg-color{background-color:#f07d06}
 .Pp .bg{background-color:#fff8ee}
-.Pp .icon-bg{background-color:#ffd087}
+.Pp .icon-bg{border-color:#ffd087 transparent transparent transparent;}
 .Hz .color{color:#bd2408}
 .Hz .bg-color{background-color:#bd2408}
 .Hz .bg{background-color:#fff8f3}
-.Hz .icon-bg{background-color:#ff846e}
+.Hz .icon-bg{border-color:#ff846e transparent transparent transparent;}
 .Bl .color{color:#878f2f}
 .Bl .bg-color{background-color:#878f2f}
 .Bl .bg{background-color:#ffe}
-.Bl .icon-bg{background-color:#e4e06b}
+.Bl .icon-bg{border-color:#e4e06b transparent transparent transparent;}
 .Shiz .color{color:#f78f1e}
 .Shiz .bg-color{background-color:#f78f1e}
 .Shiz .bg{background-color:#fff9ef}
-.Shiz .icon-bg{background-color:#ffc051}
+.Shiz .icon-bg{border-color:#ffc051 transparent transparent transparent;}
 .Shanzhu .color{color:#9e1b39}
 .Shanzhu .bg-color{background-color:#9e1b39}
 .Shanzhu .bg{background-color:#fff8fa}
-.Shanzhu .icon-bg{background-color:#fa6a8b}
+.Shanzhu .icon-bg{border-color:#fa6a8b transparent transparent transparent;}
 .Dhg .color{color:#e8aa02}
 .Dhg .bg-color{background-color:#e8aa02}
 .Dhg .bg{background-color:#fffdf6}
-.Dhg .icon-bg{background-color:#ffe26d}
+.Dhg .icon-bg{border-color:#ffe26d transparent transparent transparent;}
 .Cm .color{color:#e61211}
 .Cm .bg-color{background-color:#e61211}
 .Cm .bg{background-color:#fff8f4}
-.Cm .icon-bg{background-color:#fa6253}
+.Cm .icon-bg{border-color:#fa6253 transparent transparent transparent;}
 .Xlg .color{color:#c2642c}
 .Xlg .bg-color{background-color:#c2642c}
 .Xlg .bg{background-color:#fffbf8}
-.Xlg .icon-bg{background-color:#f8b289}
+.Xlg .icon-bg{border-color:#f8b289 transparent transparent transparent;}
 .Gz .color{color:#5b212b}
 .Gz .bg-color{background-color:#5b212b}
 .Gz .bg{background-color:#fffff4}
-.Gz .icon-bg{background-color:#e8eb7a}
+.Gz .icon-bg{border-color:#e8eb7a transparent transparent transparent;}
 .Hbl .color{color:#511539}
 .Hbl .bg-color{background-color:#511539}
 .Hbl .bg{background-color:#fffbfd}
-.Hbl .icon-bg{background-color:#f88ece}
+.Hbl .icon-bg{border-color:#f88ece transparent transparent transparent;}
 .Yangt .color{color:#deaa03}
 .Yangt .bg-color{background-color:#deaa03}
 .Yangt .bg{background-color:#fffdf5}
-.Yangt .icon-bg{background-color:#fede47}
+.Yangt .icon-bg{border-color:#fede47 transparent transparent transparent;}
 .Het .color{color:#a86d2e}
 .Het .bg-color{background-color:#a86d2e}
 .Het .bg{background-color:#fffcf4}
-.Het .icon-bg{background-color:#f8b668}
+.Het .icon-bg{border-color:#f8b668 transparent transparent transparent;}
 .Xjj .color{color:#fbab2d}
 .Xjj .bg-color{background-color:#fbab2d}
 .Xjj .bg{background-color:#fffcf2}
-.Xjj .icon-bg{background-color:#ffce54}
+.Xjj .icon-bg{border-color:#ffce54 transparent transparent transparent;}
 .Ganguo .color{color:#a86d2e}
 .Ganguo .bg-color{background-color:#a86d2e}
 .Ganguo .bg{background-color:#fffcf4}
-.Ganguo .icon-bg{background-color:#f8b668}
+.Ganguo .icon-bg{border-color:#f8b668 transparent transparent transparent;}
