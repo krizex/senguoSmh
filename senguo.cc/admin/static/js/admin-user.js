@@ -17,7 +17,7 @@ $(document).ready(function(){
     getpPage(page,'/admin/follower?action=all&&order_by=time&&page=',user_number);
     $('.search-btn').on('click',function(){
         var search=$('.search-con').val().trim();
-        window.location.href='admin/follower?action=search&&order_by=time&&page=0&&wd='+search;
+        window.location.href='follower?action=search&&order_by=time&&page=0&&wd='+search;
     });
 });
 var page=Int($.getUrlParam('page'));
