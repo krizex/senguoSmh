@@ -57,3 +57,6 @@ a{color:#44b549;}
 .list-pagination .next-page:foucus{background-color:#f2f2f2;}
 .list-pagination .input-page{;width:60px;height:26px;border:1px solid #ccc;border-radius:1px;color:#999;text-align:center;}
 .list-pagination .jump-to{display:inline-block;width:60px;height:26px;border:1px solid #ccc;border-radius:1px;text-align:center;color:#666;line-height:26px;}
+
+.set-inl-blo{display:inline-block;}
+a:focus{text-decoration:none;}

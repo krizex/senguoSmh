@@ -103,8 +103,7 @@ $(document).ready(function(){
                         type : 'value',
                         name : '增长趋势',
                         axisLabel : {
-                            formatter: '{value}',
-                            max:200
+                            formatter: '{value}'
 
                         }
                     },

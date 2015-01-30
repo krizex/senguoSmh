@@ -351,7 +351,7 @@ class User(SuperBaseHandler):
 class IncStatic(SuperBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        return self.render("superAdmin/count.html",context=dict(subpage='count'))
+        return self.render("superAdmin/count-user.html",context=dict(subpage='count',subcount='user'))
 
     @tornado.web.authenticated
     @SuperBaseHandler.check_arguments("action:str")
@@ -414,7 +414,7 @@ class IncStatic(SuperBaseHandler):
 class DistributStatic(SuperBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        return self.render("")
+        return self.render("superAdmin/count-attribute.html",context=dict(subpage='count',subcount='attribute'))
 
     @tornado.web.authenticated
     def post(self):
@@ -430,7 +430,7 @@ class DistributStatic(SuperBaseHandler):
 class ShopStatic(SuperBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        return self.render("")
+        return self.render("superAdmin/count-shop.html",context=dict(subpage='count',subcount='shop'))
 
     @tornado.web.authenticated
     @SuperBaseHandler.check_arguments("action:str")

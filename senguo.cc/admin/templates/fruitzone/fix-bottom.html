@@ -18,7 +18,6 @@
 {% set adminHome_active = "active"%}
 {% end %}
 
-{% block mainpage%}{% end %}
 <nav class="bottom-nav white-color navbar-fixed-bottom">
     <ul class="row select-list">
         <li class="col-xs-3 col-sm-3 {{home_active}}"><a href="{{reverse_url('fruitzoneHome')}}">店铺列表</a></li>
@@ -27,4 +26,6 @@
         <li class="col-xs-3 col-sm-3 {{adminHome_active}}"><a href="{{reverse_url('fruitzoneAdminHome')}}">个人中心</a></li>
     </ul>
 </nav>
+{% block mainpage%}{% end %}
+
 {% end %}
