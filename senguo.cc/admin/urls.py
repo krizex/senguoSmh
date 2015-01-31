@@ -129,6 +129,7 @@ handlers = [
 
     # 主页
     (r"/fruitzone", handlers.fruitzone.Home, {}, "fruitzoneHome"),
+    (r"/fruitzone/", handlers.fruitzone.Home, {}, "fruitzoneHome"),
     (r"/fruitzone/admin/home", handlers.fruitzone.AdminHome, {}, "fruitzoneAdminHome"),
     (r"/fruitzone/admin/profile", handlers.fruitzone.AdminProfile, {}, "fruitzoneAdminProfile"),
     (r"/fruitzone/shop/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),
