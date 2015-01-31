@@ -56,8 +56,11 @@
 
 .sold-out{position:absolute;width:100%;height:100%;z-index:99;background:url('../images/sold_out.png') no-repeat center center;background-color:rgba(0,0,0,0);top:0;}
 
-.top-title{position:absolute;max-width:800px;width:100%;}
+.top-title{position:absolute;max-width:800px;width:100%;z-index:100;}
 .top-title .inner{position:relative;}
-.top-title .tit{width:22%;max-width:100px;background:url('../images/classify.png') no-repeat right center;position:absolute;left:0;font-weight:bold;background-size:1.4em;text-indent:2%;}
+.top-title .tit{width:24%;max-width:100px;background:url('../images/classify.png') no-repeat right center;position:absolute;left:0;font-weight:bold;background-size:1.4em;text-indent:3%;}
 .top-title .classify{text-align:center;width:100%;}
 .fix-sty{position:fixed;top:0px;z-index:999;}
+
+.type-choose{width:24%;max-width:100px;margin-top:-4px;height:auto;overflow:hidden;}
+.type-choose li{height:40px;line-height:40px;text-indent:14px;border-bottom:1px  solid #fff;}

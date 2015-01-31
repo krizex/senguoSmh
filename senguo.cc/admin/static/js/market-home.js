@@ -1,5 +1,11 @@
 $(document).ready(function(){
     var top_title=$('.top-title');
+    $('.choose-classify').on('click',function(){
+        $('.goods-class-choose').slideToggle(100);
+    });
+    $('.goods-class-choose li').on('click',function(){
+        $('.goods-class-choose').slideUp(100);
+    });
     //分类导航置顶
     var fruit_dist=$('#fruitPosition').offset().top/2;
     $(window).scroll(function(){

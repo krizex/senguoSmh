@@ -34,11 +34,24 @@
         </ul>
     </nav>
 </div>
-<div class="text-white no-mar-btom top-title rainshed_green font16">
-    <p class="inner">
-        <a href="javascript:;" data-toggle="modal" data-target="#goods-classify" class="text-white tit">分类</a>
+<div class="no-mar-btom top-title">
+    <div class="inner rainshed_green text-white font16">
+        <a href="javascript:;"  class="text-white tit choose-classify">分类</a>
         <span class="classify text-center set-inl-blo">水果单品</span>
-    </p>
+    </div>
+    <ul class="font16 goods-class-choose type-choose clearfix">
+        {% if fruits%}
+        <li class="text-green bg-pale-green set-w100-fle" data-class="fruitPosition">水果单品</li>
+        {% end %}
+        {% if dry_fruits%}
+        <li class="text-green bg-pale-green set-w100-fle" data-class="dryFruitPosition">干果单品</li>
+        {% end %}
+        {% for menu in menus %}
+        {% if mgoods[menu.id] %}
+        <li class="text-green  bg-pale-green set-w100-fle" data-class="menu{{menu.id}}">{{menu.name}}</li>
+        {% end %}
+        {% end %}
+    </ul>
 </div>
 <p class="text-white no-mar-btom classify-title font18 text-center rainshed_green" id="fruitPosition">水果单品</p>
 <ul class="goods-list bg-white fruit-list">
@@ -329,30 +342,6 @@
             </div>
             <div class="modal-footer">
                 <a href="javascript:;" class="click-great text-center font18 text-grey3">赞一个</a>
-            </div>
-        </div>
-    </div>
-</div>
-{% end %}
-{% block toTop %}
-<div class="modal fade classify"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" id="goods-classify">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header text-center text-white font18">商品分类</div>
-            <div class="modal-body set-width-float text-center">
-                <ul class="font16 goods-class-choose type-choose list-group">
-                    {% if fruits%}
-                    <li class="text-green list-group-item" data-dismiss="modal" data-class="fruitPosition">水果单品</li>
-                    {% end %}
-                    {% if dry_fruits%}
-                    <li class="text-green list-group-item" data-dismiss="modal" data-class="dryFruitPosition">干果单品</li>
-                    {% end %}
-                    {% for menu in menus %}
-                        {% if mgoods[menu.id] %}
-                        <li class="text-green list-group-item" data-dismiss="modal" data-class="menu{{menu.id}}">{{menu.name}}</li>
-                        {% end %}
-                    {% end %}
-                </ul>
             </div>
         </div>
     </div>
