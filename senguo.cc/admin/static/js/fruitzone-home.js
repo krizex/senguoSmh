@@ -188,6 +188,7 @@ function Filter(evt){
                     $('#homeShopList').append('<h5 class="text-center">无结果！</h5>');
                 }
             }
+            else return alert(res.error_text);
         },
         function(){
             alert('网络错误！');
