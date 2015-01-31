@@ -38,16 +38,28 @@
     <div class="bottom-nav navbar-fixed-bottom font14">
         <ul class="row select-list">
             <li class="col-xs-3 col-sm-3 {{shop_active}}">
-                <a href="{{reverse_url('customerShopProfile')}}" class="text-grey shop_href home">店铺</a>
+                <a href="{{reverse_url('customerShopProfile')}}" class="text-grey shop_href home">
+                    <em></em>
+                    <p>店铺</p>
+                </a>
             </li>
             <li class="col-xs-3 col-sm-3 {{home_active}}">
-                <a href="{{reverse_url('Market',handler.shop_code)}}" class="text-grey goods" >商品</a>
+                <a href="{{reverse_url('Market',handler.shop_code)}}" class="text-grey goods" >
+                    <em></em>
+                    <p>商品</p>
+                </a>
             </li>
             <li class="col-xs-3 col-sm-3 {{cart_active}}">
-                <a href="{{reverse_url('customerCart')}}" class="text-grey cart" >果篮</a>
+                <a href="{{reverse_url('customerCart')}}" class="text-grey cart" >
+                    <em></em>
+                    <p>果篮</p>
+                </a>
             </li>
             <li class="col-xs-3 col-sm-3 {{center_active}}">
-                <a href="{{reverse_url('customerHome')}}" class="text-grey my">我的</a>
+                <a href="{{reverse_url('customerHome')}}" class="text-grey my">
+                    <em></em>
+                    <p>我的</p>
+                </a>
             </li>9
         </ul>
     </div>

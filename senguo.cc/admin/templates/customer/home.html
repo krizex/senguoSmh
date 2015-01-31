@@ -13,6 +13,7 @@
 {% set cart_m=context['cart_m'] %}
 {% set notices=context['notices'] %}
 <div class="notice-board">
+    {% if notices %}
     <div id="slider" class="swipe" style="visibility: visible;">
         <div class="swipe-wrap">
             {% for notice in notices%}
@@ -33,14 +34,20 @@
             {% end %}
         </ul>
     </nav>
+    {% else %}
+    <img src="{{static_url('images/banner.jpg')}}"/>
+    {% end %}
 </div>
 <div class="no-mar-btom top-title">
     <div class="inner rainshed_green text-white font16">
-        <a href="javascript:;"  class="text-white tit choose-classify">分类</a>
+        <a href="javascript:;"  class="text-white tit choose-classify">
+            <span>分类</span>
+            <em class="set-inl-blo pull-right"></em>
+        </a>
         <span class="classify text-center set-inl-blo">水果单品</span>
     </div>
-    <ul class="font16 goods-class-choose type-choose clearfix">
-        {% if fruits%}
+    <ul class="font16 goods-class-choose type-choose clearfix" style="display:none">
+        {% if fruits %}
         <li class="text-green bg-pale-green set-w100-fle" data-class="fruitPosition">水果单品</li>
         {% end %}
         {% if dry_fruits%}
@@ -82,6 +89,11 @@
                         <span class="pull-right text-grey sale font12">销量：<span class="color">{{fruit.saled}}</span></span>
                     </p>
                     <p class="great-number font12">
+                        {% if fruit.favour%}
+                        <em class="red-heart"></em>
+                        {% else %}
+                        <em class="gray-heart"></em>
+                        {% end %}
                         <span class="great">{{fruit.favour}}</span>
                     </p>
                     <div class="charge-first charge-style  font16 color">
@@ -101,11 +113,11 @@
                             {% set hidden ='show'%}
                             {% set show ='hidden'%}
                         {% end %}
-                        <span class="to-add line34 height34 text-center font16 text-green bg-white pull-right {{show}} forbid_click">+</span>
+                        <span class="to-add pull-right {{show}} forbid_click"></span>
                         <span class="pull-right p0 number-change {{hidden}} forbid_click">
-                        <a class="minus-plus text-green bg-white pull-right number-plus line34 height34 text-center font16" href="javascript:;">+</a>
+                        <a class="minus-plus pull-right number-plus" href="javascript:;"></a>
                         <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
-                        <a class="minus-plus text-green bg-white pull-right number-minus line34 height34 text-center font16" href="javascript:;">-</a>
+                        <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                     </span>
                     </div>
                 </div>
@@ -127,18 +139,18 @@
                             {{charge.price}}元/{{charge.num}}
                             <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                         </span>
-                        <span class="to-add line34 height34 text-center font16 text-green bg-white pull-right {{show}} forbid_click">+</span>
+                        <span class="to-add pull-right {{show}} forbid_click"></span>
                         <span class="pull-right p0 number-change {{hidden}} forbid_click">
-                        <a class="minus-plus text-green bg-white pull-right number-plus line34 height34 text-center font16" href="javascript:;">+</a>
+                        <a class="minus-plus pull-right number-plus" href="javascript:;"></a>
                         <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
-                        <a class="minus-plus text-green bg-white pull-right number-minus line34 height34 text-center font16" href="javascript:;">-</a>
+                        <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                     </span>
                     </li>
                     {% end %}
                     {% end %}
                 </ul>
             </div>
-            <span class="{{farrow_active}} icon-bg"></span>
+            <span class="{{farrow_active}} icon-bg toggle_icon"></span>
         </div>
     </li>
     {% end %}
@@ -173,6 +185,11 @@
                             <span class="pull-right text-grey sale font12"><span class="color">{{dry_fruit.saled}}</span></span>
                         </p>
                         <p class="great-number font12">
+                            {% if dry_fruit.favour%}
+                            <em class="red-heart"></em>
+                            {% else %}
+                            <em class="gray-heart"></em>
+                            {% end %}
                             <span  class="great">{{dry_fruit.favour}}</span>
                         </p>
                         <div class="charge-first charge-style  font16 color">
@@ -192,11 +209,11 @@
                             {% set hidden ='show'%}
                             {% set show ='hidden'%}
                             {% end %}
-                            <span class="to-add line34 height34 text-center font16 text-green bg-white pull-right {{show}} forbid_click">+</span>
+                            <span class="to-add pull-right {{show}} forbid_click"></span>
                             <span class="pull-right p0 number-change {{hidden}} forbid_click">
-                                <a class="minus-plus text-green bg-white pull-right number-plus line34 height34 text-center font16" href="javascript:;">+</a>
+                                <a class="minus-plus  pull-right number-plus" href="javascript:;"></a>
                                 <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
-                                <a class="minus-plus text-green bg-white pull-right number-minus line34 height34 text-center font16" href="javascript:;">-</a>
+                                <a class="minus-plus pull-right number-minus " href="javascript:;"></a>
                             </span>
                         </div>
                     </div>
@@ -218,18 +235,18 @@
                                 {{charge.price}}元/{{charge.num}}
                                 <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                             </span>
-                            <span class="to-add line34 height34 text-center font16 text-green bg-white pull-right {{show}} forbid_click">+</span>
+                            <span class="to-add pull-right {{show}} forbid_click"></span>
                             <span class="pull-right p0 number-change {{hidden}} forbid_click">
-                                <a class="minus-plus text-green bg-white pull-right number-plus line34 height34 text-center font16" href="javascript:;">+</a>
+                                <a class="minus-plus pull-right number-plus" href="javascript:;"></a>
                                 <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
-                                <a class="minus-plus text-green bg-white pull-right number-minus line34 height34 text-center font16" href="javascript:;">-</a>
+                                <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                             </span>
                         </li>
                         {% end %}
                         {% end %}
                     </ul>
                 </div>
-                <span class="{{darrow_active}} icon-bg"></span>
+                <span class="{{darrow_active}} icon-bg toggle_icon"></span>
             </div>
         </li>
         {% end %}
@@ -267,7 +284,12 @@
                             <span class="pull-right text-grey sale font12"><span class="color">{{mgood.saled}}</span></span>
                         </p>
                         <p class="great-number font12">
-                            <span  class="great">{{mgood.favour}}</span>
+                            {% if mgood.favour%}
+                            <em class="red-heart"></em>
+                            {% else %}
+                            <em class="gray-heart"></em>
+                            {% end %}
+                            <span class="great">{{mgood.favour}}</span>
                         </p>
                         <div class="charge-first charge-style font16 color">
                             {% if mgood.mcharge_types %}
@@ -286,11 +308,11 @@
                             {% set hidden ='show'%}
                             {% set show ='hidden'%}
                             {% end %}
-                            <span class="to-add line34 height34 text-center font16 text-green bg-white pull-right {{show}} forbid_click">+</span>
+                            <span class="to-add pull-right {{show}} forbid_click"></span>
                              <span class="pull-right p0 number-change {{hidden}} forbid_click">
-                                <a class="minus-plus text-green bg-white pull-right number-plus line34 height34 text-center font16" href="javascript:;">+</a>
+                                <a class="minus-plus  pull-right number-plus " href="javascript:;"></a>
                                 <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
-                                <a class="minus-plus text-green bg-white pull-right number-minus line34 height34 text-center font16" href="javascript:;">-</a>
+                                <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                             </span>
                         </div>
                     </div>
@@ -312,18 +334,18 @@
                                 {{charge.price}}元/{{charge.num}}
                                 <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                             </span>
-                            <span class="to-add line34 height34 text-center font16 text-green bg-white pull-right {{show}} forbid_click">+</span>
+                            <span class="to-add pull-right {{show}} forbid_click"></span>
                              <span class="pull-right p0 number-change {{hidden}} forbid_click">
-                                <a class="minus-plus text-green bg-white pull-right number-plus line34 height34 text-center font16" href="javascript:;">+</a>
+                                <a class="minus-plus pull-right number-plus" href="javascript:;"></a>
                                 <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
-                                <a class="minus-plus text-green bg-white pull-right number-minus line34 height34 text-center font16" href="javascript:;">-</a>
+                                <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                             </span>
                         </li>
                         {% end %}
                         {% end %}
                     </ul>
                 </div>
-                <span class="{{marrow_active}} icon-bg"></span>
+                <span class="{{marrow_active}} icon-bg toggle_icon"></span>
             </div>
         </li>
         {% end %}

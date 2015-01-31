@@ -48,24 +48,26 @@ input{border:none;}
 .padding-right-none{padding-right:0px;}
 .phone-box{width:100%;min-width:320px;max-width:800px;margin:0 auto;overflow:hidden;padding-bottom:50px;}
 
-.bottom-nav{max-width:800px;margin:0 auto;height:55px;line-height:92px;overflow:hidden;background:url('../images/huabian_white.png') repeat-x;}
+.bottom-nav{max-width:800px;margin:0 auto;height:46px;overflow:hidden;background:url('../svg/rainshed_white.svg') repeat-x;}
 .bottom-nav ul{margin-bottom:0;}
-.bottom-nav li{text-align:center;padding:0 5px;}
-.bottom-nav li a{display:block;background-size:2em !important;}
+.bottom-nav li{text-align:center;position:relative;height:46px;}
+.bottom-nav li a{display:block;background-size:2em !important;padding-top:8px;}
+.bottom-nav li a em{display:inline-block;background:url('../svg/icon_list.svg') no-repeat;width:20px;height:20px;margin:0 auto;}
+.bottom-nav li a p{margin-top:-6px;}
 .bottom-nav li:hover a{color:#80c26b !important;}
 .bottom-nav .active a{color:#80c26b !important;}
-.bottom-nav .home{background:url('../svg/home.svg') no-repeat center 7px;}
-.bottom-nav .goods{background:url('../svg/goods.svg') no-repeat center 5px;}
-.bottom-nav .cart{background:url('../svg/cart.svg') no-repeat center 6px;}
-.bottom-nav .my{background:url('../svg/my.svg') no-repeat center 8px;background-size:1.8em !important;}
-.bottom-nav li:hover .home{background:url('../svg/home_green.svg') no-repeat center 7px;}
-.bottom-nav li:hover .goods{background:url('../svg/goods_green.svg') no-repeat center 5px;}
-.bottom-nav li:hover .cart{background:url('../svg/cart_green.svg') no-repeat center 6px;}
-.bottom-nav li:hover .my{background:url('../svg/my_green.svg') no-repeat center 8px;}
-.bottom-nav .active .home{background:url('../svg/home_green.svg') no-repeat center 7px;}
-.bottom-nav .active .goods{background:url('../svg/goods_green.svg') no-repeat center 5px;}
-.bottom-nav .active .cart{background:url('../svg/cart_green.svg') no-repeat center 6px;}
-.bottom-nav .active .my{background:url('../svg/my_green.svg') no-repeat center 8px;}
+.bottom-nav .home em{background-position:-93px -43px;}
+.bottom-nav .goods em{background-position:-124px -43px;}
+.bottom-nav .cart em{background-position:-150px -43px;}
+.bottom-nav .my em{background-position:-179px -43px;}
+.bottom-nav li:hover .home em{background-position:-94px -69px;}
+.bottom-nav li:hover .goods em{background-position:-124px -69px;}
+.bottom-nav li:hover .cart em{background-position:-154px -69px;}
+.bottom-nav li:hover .my em{background-position:-181px -69px;}
+.bottom-nav .active .home em{background-position:-94px -69px;}
+.bottom-nav .active .goods em{background-position:-124px -69px;}
+.bottom-nav .active .cart em{background-position:-154px -69px;}
+.bottom-nav .active .my em{background-position:-181px -69px;}
 
 .set-inl-blo{display:inline-block;}
 .no-mar-btom{margin-bottom:0px;}
@@ -79,7 +81,6 @@ input{border:none;}
 .font14{font-size:1.4em;}
 .font16{font-size:1.6em;}
 .font18{font-size:1.8em;}
-
 
 .input-sty{border:1px solid #ccc;background:#f2f2f2;border-radius:2px;}
 
@@ -127,8 +128,6 @@ input{border:none;}
 .rainshed_green{background:url('../images/huabian_green.png') repeat-x;height:40px;line-height:40px;width:100%;max-width:800px;}
 
 .desaturate{filter:grayscale(100%);-webkit-filter:grayscale(100%);-moz-filter:grayscale(100%);-ms-filter:grayscale(100%);-o-filter:grayscale(100%);filter: url('../svg/saturate.svg#greyscale');filter: grayscale(100%);filter:gray;}
-
-.sale_tag{background:url('../images/sale_tag.png') no-repeat;}
 
 .border-ca{border:1px solid #ddd;}
 .border-bd{border-bottom:1px solid #ddd;}
