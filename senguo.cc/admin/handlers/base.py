@@ -174,7 +174,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
     def get_comments(self, shop_id, page=0, page_size=5):
         return self.session.query(models.Accountinfo.headimgurl, models.Accountinfo.nickname,
-                                  models.Order.comment, models.Order.comment_create_date, models.Order.id).\
+                                  models.Order.comment, models.Order.comment_create_date, models.Order.id,
+                                  models.Order.comment_reply).\
             filter(models.Order.shop_id == shop_id, models.Order.status == 6,
                    models.Order.customer_id == models.Accountinfo.id).\
             order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()

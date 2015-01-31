@@ -152,9 +152,9 @@ class ShopProfile(CustomerBaseHandler):
         shop_members_id = [shop.admin_id]+[x.staff_id for x in staffs]
         headimgurls = self.session.query(models.Accountinfo.headimgurl).\
             filter(models.Accountinfo.id.in_(shop_members_id)).all()
-        comment_sum = self.session.query(models.Order).filter_by(status=6).count()
+        comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
         return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
-                           fans_sum=fans_sum, order_sum=order_sum,goods_sum=goods_sum, address=address,
+                           fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
                            service_area=service_area, headimgurls=headimgurls,
                            comments=self.get_comments(shop_id, page_size=2), comment_sum=comment_sum,
                            context=dict(subpage='shop'))
@@ -303,6 +303,10 @@ class Cart(CustomerBaseHandler):
         f_d={}
         m_d={}
         totalPrice=0
+
+        if not (fruits or mgoods):
+            return self.send_fail('请至少选择一种商品')
+
         if fruits:
             charge_types = self.session.query(models.ChargeType).\
                 filter(models.ChargeType.id.in_(fruits.keys())).all()
@@ -387,8 +391,11 @@ class Cart(CustomerBaseHandler):
                 pay_type = 2
             else:return self.send_fail("余额不足")
 
+        count = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
+        num = str(shop_id) + str(count)
         order = models.Order(customer_id=self.current_user.id,
                              shop_id=shop_id,
+                             num=num,
                              phone=address.phone,
                              receiver=address.receiver,
                              address_text = address.address_text,

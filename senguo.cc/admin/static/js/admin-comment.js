@@ -14,6 +14,13 @@ $(document).ready(function(){
         var index=$('.reply-box').data('id');
         replay(order_id,index);
     });
+    //收藏
+    $('.collect').on('click',function(){
+        var $this=$(this);
+        var parent=$this.parents('li');
+        order_id=Int(parent.find('.order_id').text());
+        collect($this,order_id);
+    });
     //翻页
     $('.page-now').text(page+1);
     $('.page-total').text(totalt_page);
@@ -40,6 +47,23 @@ function replay(id,index){
             {
                 $('.reply-box').modal('hide');
                 $('.comment-list-item').eq(index).find('.reply_word').text(reply);
+            }
+            else alert(res.error_text);
+        },
+        function(){alert('网络错误')})
+}
+
+function collect(target,id){
+    var url='';
+    var action='favor';
+    var args={
+        order_id:id,
+        action:action
+    };
+    $.postJson(url,args,function(res){
+            if(res.success)
+            {
+                target.remove();
             }
             else alert(res.error_text);
         },

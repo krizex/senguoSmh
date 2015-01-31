@@ -6,10 +6,10 @@
     <div class="orders-list-title right-title2">
         <ul class="right-nav pull-left">
             <li class="active">
-                <a href="{{reverse_url('adminComment')}}?page=0">所有评价</a>
+                <a href="{{reverse_url('adminComment')}}?action=all&&page=0">所有评价</a>
             </li>
             <li>
-                <a href="{{reverse_url('adminComment')}}?page=0">收藏的评价</a>
+                <a href="{{reverse_url('adminComment')}}?action=favor&&page=0">收藏的评价</a>
             </li>
         </ul>
     </div>
@@ -23,7 +23,9 @@
                 <div class="col-lg-5 col-md-5 col-xs-5 col-sm-5 p0">
                     <p class="user-name line-30">{{comment[1]}}</p>
                     <p class="text-grey9">{{comment[2]}}</p>
-                    <p class="saler_reply">商家回复：<span class="reply_word"></span></p>
+                    {% if comment[5] %}
+                    <p class="saler_reply">商家回复：{{comment[5]}}<span class="reply_word"></span></p>
+                    {% end %}
                 </div>
                 <div class="pull-left">
                     <p class="line-30">{{comment[3]}}</p>

@@ -29,27 +29,27 @@
                     <p>上传头像</p>
                 </div>-->
             </div>
-            <div class="info-detail pull-right">
+            <div class="info-detail pull-left">
                 <ul>
-                    <li>
-                        <span class="info-title">姓名：</span>
-                        <input class="hire-name" value="{{current_user.accountinfo.nickname}}">
-                        <span class="notice">用于后台登陆（不可更改）</span>
+                    <li class="pull-left">
+                        <span class="info-title pull-left">姓名：</span>
+                        <input class="hire-name pull-left" value="{{current_user.accountinfo.nickname}}">
+                        <span class="notice pull-left">用于后台登陆（不可更改）</span>
                     </li>
                     <li>
-                        <span class="info-title">电话：</span>
-                        <input class="hire-phone" value="{{current_user.accountinfo.phone}}">
-                        <span class="notice">用于后台登陆</span>
+                        <span class="info-title pull-left">电话：</span>
+                        <input class="hire-phone pull-left" value="{{current_user.accountinfo.phone}}">
+                        <span class="notice pull-left">用于后台登陆</span>
                     </li>
                     <li>
-                        <span class="info-title">邮箱：</span>
-                        <input class="hire-email" value="{{current_user.accountinfo.email}}">
-                        <span class="notice">用来接收公司信息，便于及时获取公司信息</span>
+                        <span class="info-title pull-left">邮箱：</span>
+                        <input class="hire-email pull-left" value="{{current_user.accountinfo.email}}">
+                        <span class="notice pull-left">用来接收公司信息，便于及时获取公司信息</span>
                     </li>
                     <li>
-                        <span class="info-title">住址：</span>
-                        <input class="hire-address" placeholder="">
-                        <span class="notice">用于合理安排工作</span>
+                        <span class="info-title pull-left">住址：</span>
+                        <input class="hire-address pull-left" placeholder="">
+                        <span class="notice pull-left">用于合理安排工作</span>
                     </li>
                     <!--<li>
                         <span class="info-title">职务：</span>
@@ -93,19 +93,19 @@
                         <span class="notice">选择一级配送区域后可选二级配送区域</span>
                     </li>-->
                     <li>
-                        <span class="info-title">自我介绍：</span>
-                        <textarea class="hire-introduce introduce"></textarea>
+                        <span class="info-title pull-left">自我介绍：</span>
+                        <textarea class="hire-introduce introduce pull-left"></textarea>
                     </li>
                     <li>
-                        <span class="info-title">竞争优势：</span>
-                        <textarea class="hire-advantage advantage"></textarea>
+                        <span class="info-title pull-left">竞争优势：</span>
+                        <textarea class="hire-advantage advantage pull-left"></textarea>
                     </li>
                 </ul>
             </div>
         </div>
         <div class="action-btn">
             <input type="submit" class="sure-btn btn pull-left hire-apply-submit" value="提交">
-            <a href="javascript:history.back(-1);" class="concel-btn btn pull-right">返回</a>
+            <a href="javascript:history.go(-1);" class="concel-btn btn pull-right">返回</a>
         </div>
     </main>
 <script src="{{static_url('js/jquery.min.js')}}"></script>

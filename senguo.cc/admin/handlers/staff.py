@@ -76,10 +76,12 @@ class Order(StaffBaseHandler):
     @StaffBaseHandler.check_arguments("order_type")
     def get(self):
         order_type = self.args["order_type"]
-        q = self.session.query(models.HireLink).filter_by(staff_id=self.current_user.id, shop_id=self.shop_id)
-        if not q:
+        try:
+            hirelink = self.session.query(models.HireLink).\
+                filter_by(staff_id=self.current_user.id, shop_id=self.shop_id).one()
+        except:
             return self.send_error(404)
-        work = q.one().work
+        work = hirelink.work
         self.current_user.work = work #增加work属性
         orders = []
         page = ''
@@ -99,7 +101,7 @@ class Order(StaffBaseHandler):
             history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
                                   models.Order.SH2_id==self.current_user.id, models.Order.status.in_([5,6]))
         else:
-            pass
+            return self.send_error(404)
         if order_type == "now":
             orders = orders.filter_by(type=1).order_by(models.Order.create_date).all()
             page = 'now'

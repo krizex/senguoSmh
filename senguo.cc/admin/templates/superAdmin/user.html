@@ -3,35 +3,35 @@
 {% block head %}<link rel="stylesheet" href="{{static_url('css/superadmin-user.css')}}"/>{% end %}
 {% block content %}
 <div class="row">
-    <div class="admin-shop-left  admin-left col-lg-3 col-md-4">
+    <div class="admin-left pull-left">
         <ul class="nav nav-stacked shop-manage-nav text-right" role="tablist">
             <li class="all nav_item active">
                 <a href="javascript:;">
                     所有用户
-                    (<span class="count">{{sum["all"]}}</span>)
+                    (<span class="count">{{sum['all']}}</span>)
                 </a>
             </li>
             <li class="admin nav_item">
                 <a href="javascript:;">
                     卖家
-                    (<span class="count">{{sum["admin"]}}</span>)
+                    (<span class="count">{{sum['admin']}}</span>)
                 </a>
             </li>
             <li class="customer nav_item">
                 <a href="javascript:;">
                     商城用户
-                    (<span class="count">{{sum["customer"]}}</span>)
+                    (<span class="count">{{sum['customer']}}</span>)
                 </a>
             </li>
             <li class="phone nav_item">
                 <a href="javascript:;">
                     已绑定手机号
-                    (<span class="count">{{sum["phone"]}}</span>)
+                    (<span class="count">{{sum['phone']}}</span>)
                 </a>
             </li>
         </ul>
     </div>
-    <div class="admin-shop-right  col-lg-9 col-md-8">
+    <div class="admin-right pull-right">
         <ul class="user-list  item-list list-group">
 
         </ul>

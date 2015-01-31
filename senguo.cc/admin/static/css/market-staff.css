@@ -3,5 +3,5 @@
 .staff-item p{margin-bottom:5px;}
 .staff-item .staff-info{padding:5px;}
 .staff-item .staff-info li{border-bottom:1px solid #f2f2f2;padding:3px;}
-.staff-item .img img{width:100%;}
+.staff-item .img img{width:60px;height:60px;}
 .collect-btn{border:1px solid #33CC66;padding:3px 15px;border-radius:2px;}

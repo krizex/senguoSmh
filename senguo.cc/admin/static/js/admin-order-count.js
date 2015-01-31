@@ -280,7 +280,7 @@ $(document).ready(function(){
                 },
                 calculable : true,
                 legend: {
-                    data:['下单时间']
+                    data:['收货时间']
 
                 },
                 xAxis : [
@@ -301,7 +301,7 @@ $(document).ready(function(){
                 ],
                 series : [
                     {
-                        name:'下单时间',
+                        name:'收货时间',
                         type:'line',
                         data:[],
                         markPoint : {
@@ -332,12 +332,13 @@ $(document).ready(function(){
     listPage('.detail-pagination',detail_page_sum,'order_table','.detail-count');
     //购买回头率
     gettable2('order_table',0,'.detail-rate');
-    listPage('.rate-pagination',detail_page_sum,'order_table','.detail-rate');
+    listPage2('.rate-pagination',detail_page_sum,'order_table','.detail-rate');
 });
 var data;
 var detail_page_sum;
 var trend=0;
 var n=0;
+var m=0;
 
 function count(action,page,type){
     var args={
@@ -456,7 +457,6 @@ function typeChange(dom,action,options,mychart){
 }
 
 function listPage(dom,page_sum,action,item){
-    console.log(dom);
     if(n==0){$(dom).find('.pre-page').hide();}
     if((n+1)==page_sum){
         $(dom).find('.next-page').hide();
@@ -472,19 +472,17 @@ function listPage(dom,page_sum,action,item){
             $(dom).find('.pre-page').hide();
         }
         if(n>-1) {
-               if(dom=='.detail-pagination') gettable(action,n,item);
-               else if(dom=='.rate-pagination') gettable2(action,n,item);
+               gettable(action,n,item);
                 $(dom).find('.next-page').show();
                 $(dom).find('.page-now').text(n+1);
             }
     });
     $(dom).find('.next-page').on('click',function(){
-        n=n+1;
+        if(n<page_sum) n=n+1;
         if(n!=page_sum){
             $(dom).find('.pre-page').show();
             $(dom).find('.page-now').text(n+1);
-            if(dom=='.detail-pagination') gettable(action,n,item);
-            else if(dom=='.rate-pagination') gettable2(action,n,item);
+            gettable(action,n,item);
         }
         if(n==page_sum-1) {
             $(dom).find('.next-page').hide();
@@ -493,13 +491,63 @@ function listPage(dom,page_sum,action,item){
     });
     $(dom).find('.jump-to').on('click',function(){
         var page=Int($(dom).find('.input-page').val());
-        if(page_sum>page-1>0){
-            n=page-1;
-            if(dom=='.detail-pagination') gettable(action,page-1,item);
-            else if(dom=='.rate-pagination') gettable2(action,page-1,item);
-            $(dom).find('.pre-page').show();
-            $(dom).find('.page-now').text(page);
+        if(page>0){
+            if(page_sum>page-1>0){
+                n=page-1;
+                gettable(action,page-1,item);
+                $(dom).find('.pre-page').show();
+                $(dom).find('.page-now').text(page);
+            }
+            if(page==page_sum) $(dom).find('.next-page').hide();
         }
-        if(page==page_sum) $(dom).find('.next-page').hide();
+
+    });
+}
+
+function listPage2(dom,page_sum,action,item){
+    if(m==0){$(dom).find('.pre-page').hide();}
+    if((m+1)==page_sum){
+        $(dom).find('.next-page').hide();
+        $(dom).find('.input-page').hide();
+        $(dom).find('.jump-to').hide();
+    }
+    $(dom).find('.page-now').text(m+1);
+    $(dom).find('.page-total').text(page_sum);
+
+    $(dom).find('.pre-page').on('click',function(){
+        m=m-1;
+        if(m==0){
+            $(dom).find('.pre-page').hide();
+        }
+        if(m>-1) {
+            gettable2(action,m,item);
+            $(dom).find('.next-page').show();
+            $(dom).find('.page-now').text(m+1);
+        }
+    });
+    $(dom).find('.next-page').on('click',function(){
+        if(m<page_sum) m=m+1;
+        if(m!=page_sum){
+            $(dom).find('.pre-page').show();
+            $(dom).find('.page-now').text(m+1);
+            gettable2(action,m,item);
+        }
+        if(m==page_sum-1) {
+            $(dom).find('.next-page').hide();
+        }
+
+    });
+    $(dom).find('.jump-to').on('click',function(){
+        var page=Int($(dom).find('.input-page').val());
+        if(page>0){
+            if(page_sum>page-1>0){
+                m=page-1;
+                gettable2(action,page-1,item);
+                $(dom).find('.pre-page').show();
+                $(dom).find('.page-now').text(page);
+            }
+            if(page==page_sum) $(dom).find('.next-page').hide();
+        }
+
     });
 }

@@ -36,7 +36,6 @@ function getContent(action,page){
            if(res.success){
                $('.user-list').empty();
                 var users=res.data;
-                var count=res.sum;
                 for(var i=0;i<users.length;i++){
                     var $item=$(item);
                     var user=users[i];
@@ -57,10 +56,6 @@ function getContent(action,page){
                     pushItem(oshop,$item,'.own-shop');
                     $('.user-list').append($item);
                 }
-               $('.all').find('.count').text(count['all']);
-               $('.admin').find('.count').text(count['admin']);
-               $('.customer').find('.count').text(count['customer']);
-               $('.phone').find('.count').text(count['phone']);
            }
            else return alert(res.error_text);
         },

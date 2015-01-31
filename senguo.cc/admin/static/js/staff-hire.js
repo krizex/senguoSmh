@@ -81,7 +81,7 @@ function hireApply(){
     };
     $.postJson(url,args,function(res){
         if(res.success){
-            return alert('申请成功！');
+           if(confirm('申请成功')) window.history.go(-1);
         }
         else return alert(res.error_text);
     },

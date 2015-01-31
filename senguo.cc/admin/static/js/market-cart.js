@@ -105,7 +105,7 @@ $(document).ready(function(){
             time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
         }
         else time=checkTime(intime_startHour-1)+':'+checkTime(60-(stop_range-intime_startMin))+':00';
-        $this.hammer().on('tap',function(){
+        $this.on('click',function(){
             var today=$('#sendDay').find('.active').data('id');
             if(today==1) {
                 if (time >= time_now) $this.addClass('active');
@@ -131,7 +131,7 @@ $(document).ready(function(){
         $('.now-intro').show();
         $('#freight_money').text(freigh_now);
         $('#final_price').text(total_price+freigh_now);
-        $('.send-intime').hammer().on('tap',function(){
+        $('.send-intime').on('click',function(){
             $(this).removeClass('active');
             if(now_on=='True'){
                 $('.send-now').addClass('active');
@@ -148,7 +148,7 @@ $(document).ready(function(){
         $('#freight_money').text(freigh_ontime);
         $('#final_price').text(total_price+freigh_ontime);
         //按时达模式选择
-        $('#sendInTime').hammer().on('tap',function(){
+        $('#sendInTime').on('click',function(){
             var $this=$(this);
             $this.parents('li').addClass('active').siblings('li').removeClass('active');
             $('.send_period').show();
@@ -175,7 +175,7 @@ $(document).ready(function(){
         $('.now-intro').hide();
         $('#freight_money').text(freigh_ontime);
         $('#final_price').text(total_price+freigh_ontime);
-        $('.send-now').hammer().on('tap',function(){
+        $('.send-now').on('click',function(){
             $(this).removeClass('active');
             if(intime_on=='True'){
                 $('.send-intime').addClass('active');
@@ -195,7 +195,7 @@ $(document).ready(function(){
         $('#freight_money').text(freigh_now);
         $('#final_price').text(total_price+freigh_now);
         //立即送模式选择/立即送最低起送金额提示
-        $('#sendNow').hammer().on('tap',function(){
+        $('#sendNow').on('click',function(){
             var $this=$(this);
             var end_time=$('.now_endtime').text();
             if(time_now<=end_time)
@@ -236,7 +236,12 @@ $(document).ready(function(){
         $('#freight_money').text(freigh_ontime);
         $('#final_price').text(total_price+freigh_ontime);
     }
-
+    //打赏小费
+    $('.tip-list li').on('click',function(){
+        var $this=$(this);
+        if($this.hasClass('active')) $this.removeClass('active');
+        else $this.addClass('active').siblings('li').removeClass('active');
+    })
 });
 var price_list=[];
 var total_price=0;

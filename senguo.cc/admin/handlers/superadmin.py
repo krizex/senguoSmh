@@ -343,7 +343,7 @@ class User(SuperBaseHandler):
 class IncStatic(SuperBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        return self.render("")
+        return self.render("superAdmin/count-user.html",context=dict(subpage='count',subcount='user'))
 
     @tornado.web.authenticated
     @SuperBaseHandler.check_arguments("action:str")
@@ -351,8 +351,6 @@ class IncStatic(SuperBaseHandler):
         action = self.args["action"]
         if action == "curve":
             return self.curve()
-        elif action == "table":
-            return self.table()
         else:
             return self.error(404)
 
@@ -397,16 +395,20 @@ class IncStatic(SuperBaseHandler):
         for x in range(1, end_date.day+1)[::-1]:
             data[x][5] = total
             total -= data[x][1]
+        l = []
+        for key in data:
+            l.append((end_date.strftime('%Y-%m-') + str(key), key, data[key][1],
+                      data[key][2], data[key][3], data[key][4], data[key][5]))
         first_info = self.session.query(models.Accountinfo).first()
         page_sum = (datetime.datetime.now() - datetime.datetime.
                     fromtimestamp(first_info.create_date_timestamp)).days//30 + 1
-        return self.send_success(data=data, page_sum=page_sum)
+        return self.send_success(data=l[::-1], page_sum=page_sum)
 
 
 class DistributStatic(SuperBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        return self.render("")
+        return self.render("superAdmin/count-attribute.html",context=dict(subpage='count',subcount='attribute'))
 
     @tornado.web.authenticated
     def post(self):
@@ -422,7 +424,7 @@ class DistributStatic(SuperBaseHandler):
 class ShopStatic(SuperBaseHandler):
     @tornado.web.authenticated
     def get(self):
-        return self.render("")
+        return self.render("superAdmin/count-shop.html",context=dict(subpage='count',subcount='shop'))
 
     @tornado.web.authenticated
     @SuperBaseHandler.check_arguments("action:str")
@@ -486,7 +488,6 @@ class ShopStatic(SuperBaseHandler):
         date = end_date
         # data的封装格式为：[日期，日，日订单数，累计订单数，日订单总金额，累计订单总金额]
         while 1:
-            date -= datetime.timedelta(1)
             if i < len(s) and s[i][0].date() == date.date():
                 data.append((date.strftime('%Y-%m-%d'), date.day, s[i][1], total[1], s[i][2], total[0]))
                 total[1] -= s[i][1]
@@ -494,9 +495,10 @@ class ShopStatic(SuperBaseHandler):
                 i += 1
             else:
                 data.append((date.strftime('%Y-%m-%d'), date.day, 0, total[1], 0, total[0]))
+            date -= datetime.timedelta(1)
             if date <= start_date:
                 break
         first_order = self.session.query(models.Order).\
             order_by(models.Order.create_date).first()
-        page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
+        page_sum = (datetime.datetime.now() - first_order.create_date).days//30 + 1
         return self.send_success(page_sum=page_sum, data=data)

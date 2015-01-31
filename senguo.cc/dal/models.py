@@ -826,6 +826,7 @@ class Order(MapBase, _CommonApi):
     customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
     shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
 
+    num = Column(String(15), nullable=False)  # 订单编号
     phone = Column(String(30), nullable=False)
     receiver = Column(String(64), nullable=False)
     address_text = Column(String(1024), nullable=False)
@@ -1046,6 +1047,12 @@ class SysNotice(MapBase):  #系统公告
     title = Column(String(100), nullable=False)
     detail = Column(String(1000), nullable=False)
     create_time = Column(DateTime, default=func.now())
+
+class ShopFavorComment(MapBase):  # 店铺收藏评论关系表
+    __tablename__ = "shop_favor_comment"
+
+    shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
+    order_id = Column(Integer, ForeignKey(Order.id), primary_key=True, nullable=False)
 
 def init_db_data():
     MapBase.metadata.create_all()

@@ -2,6 +2,7 @@
 {% block title %}首页{% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/market-home.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 {% end %}
 {% block content %}
 {% set fruits=context['fruits']%}
@@ -12,6 +13,7 @@
 {% set cart_m=context['cart_m'] %}
 {% set notices=context['notices'] %}
 <div class="notice-board">
+    {% if notices %}
     <div id="slider" class="swipe" style="visibility: visible;">
         <div class="swipe-wrap">
             {% for notice in notices%}
@@ -32,14 +34,33 @@
             {% end %}
         </ul>
     </nav>
+    {% else %}
+    <img src="{{static_url('images/banner.jpg')}}"/>
+    {% end %}
 </div>
-<div class="text-white no-mar-btom top-title rainshed_green font16">
-    <p class="inner">
-        <a href="javascript:;" data-toggle="modal" data-target="#goods-classify" class="text-white tit font11">分类</a>
+<div class="no-mar-btom top-title">
+    <div class="inner rainshed_green text-white font16">
+        <a href="javascript:;"  class="text-white tit choose-classify">
+            <span>分类</span>
+            <em class="set-inl-blo pull-right"></em>
+        </a>
         <span class="classify text-center set-inl-blo">水果单品</span>
-    </p>
+    </div>
+    <ul class="font16 goods-class-choose type-choose clearfix" style="display:none">
+        {% if fruits %}
+        <li class="text-green bg-pale-green set-w100-fle" data-class="fruitPosition">水果单品</li>
+        {% end %}
+        {% if dry_fruits%}
+        <li class="text-green bg-pale-green set-w100-fle" data-class="dryFruitPosition">干果单品</li>
+        {% end %}
+        {% for menu in menus %}
+        {% if mgoods[menu.id] %}
+        <li class="text-green  bg-pale-green set-w100-fle" data-class="menu{{menu.id}}">{{menu.name}}</li>
+        {% end %}
+        {% end %}
+    </ul>
 </div>
-<p class="text-white no-mar-btom classify-title font16 text-center rainshed_green" id="fruitPosition">水果单品</p>
+<p class="text-white no-mar-btom classify-title font18 text-center rainshed_green" id="fruitPosition">水果单品</p>
 <ul class="goods-list bg-white fruit-list">
     {% for fruit in fruits %}
     {% set farrow_active=''%}
@@ -48,8 +69,8 @@
         {% set farrow_active='arrow'%}
         {% set ftoggle_active='toggle'%}
     {% end %}
-    <li class="goods-list-item font14 text-grey " data-id="{{fruit.id}}" data-type="fruit" data-num="{{fruit.storage}}">
-        <div class="clearfix box bg-pale-green {{farrow_active}}">
+    <li class="goods-list-item font10 text-grey {{fruit.fruit_type.code}}" data-id="{{fruit.id}}" data-type="fruit" data-num="{{fruit.storage}}">
+        <div class="clearfix box bg">
             <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
                 <a href="javascript:;" class="check-lg-img">
                     <span class="tag text-white text-center tagItem font8" data-id="{{fruit.tag}}"></span>
@@ -64,13 +85,18 @@
             <div class="col-lg-10 col-md-10 col-xs-9 col-sm-10 pull-right p0 pl5">
                 <div class="show-box {{ftoggle_active}}">
                     <p>
-                        <span class="pull-left color fruit-name font12">{{fruit.name}}</span>
-                        <span class="pull-right text-grey sale">{{fruit.saled}}</span>
+                        <span class="pull-left color fruit-name font16">{{fruit.name}}</span>
+                        <span class="pull-right text-grey sale font12">销量：<span class="color">{{fruit.saled}}</span></span>
                     </p>
-                    <p class="great-number">
+                    <p class="great-number font12">
+                        {% if fruit.favour%}
+                        <em class="red-heart"></em>
+                        {% else %}
+                        <em class="gray-heart"></em>
+                        {% end %}
                         <span class="great">{{fruit.favour}}</span>
                     </p>
-                    <div class="charge-first charge-style  font12">
+                    <div class="charge-first charge-style  font16 color">
                         {% if fruit.charge_types %}
                     <span class="pull-left text-bgcolor p0 charge-type line34 height34 forbid_click" data-id="{{fruit.charge_types[0].id}}">
                         {{fruit.charge_types[0].price}}元/{{fruit.charge_types[0].num}}
@@ -87,15 +113,15 @@
                             {% set hidden ='show'%}
                             {% set show ='hidden'%}
                         {% end %}
-                        <span class="to-add line34 height34 text-center font16 text-green bg-white pull-right {{show}} forbid_click">+</span>
+                        <span class="to-add pull-right {{show}} forbid_click"></span>
                         <span class="pull-right p0 number-change {{hidden}} forbid_click">
-                        <a class="minus-plus text-green bg-white pull-right number-plus line34 height34 text-center font16" href="javascript:;">+</a>
+                        <a class="minus-plus pull-right number-plus" href="javascript:;"></a>
                         <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
-                        <a class="minus-plus text-green bg-white pull-right number-minus line34 height34 text-center font16" href="javascript:;">-</a>
+                        <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                     </span>
                     </div>
                 </div>
-                <ul class="charge-list charge-style color set-width-float font12 {{ftoggle_active}}" style="display:none">
+                <ul class="charge-list charge-style color set-width-float font16 {{ftoggle_active}} color" style="display:none">
                     {% for charge in fruit.charge_types %}
                     {% if charge.id !=fruit.charge_types[0].id %}
                     {% set value = cart_f[charge.id]["num"] if charge.id in cart_f else 0%}
@@ -113,23 +139,24 @@
                             {{charge.price}}元/{{charge.num}}
                             <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                         </span>
-                        <span class="to-add line34 height34 text-center font16 text-green bg-white pull-right {{show}} forbid_click">+</span>
+                        <span class="to-add pull-right {{show}} forbid_click"></span>
                         <span class="pull-right p0 number-change {{hidden}} forbid_click">
-                        <a class="minus-plus text-green bg-white pull-right number-plus line34 height34 text-center font16" href="javascript:;">+</a>
+                        <a class="minus-plus pull-right number-plus" href="javascript:;"></a>
                         <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
-                        <a class="minus-plus text-green bg-white pull-right number-minus line34 height34 text-center font16" href="javascript:;">-</a>
+                        <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                     </span>
                     </li>
                     {% end %}
                     {% end %}
                 </ul>
             </div>
+            <span class="{{farrow_active}} icon-bg toggle_icon"></span>
         </div>
     </li>
     {% end %}
 </ul>
 {% if dry_fruits%}
-    <p class="text-white no-mar-btom classify-title font16 text-center rainshed_green" id="dryFruitPosition">干果单品</p>
+    <p class="text-white no-mar-btom classify-title font18 text-center rainshed_green" id="dryFruitPosition">干果单品</p>
     <ul class="goods-list bg-white fruit-list">
         {% for dry_fruit in dry_fruits %}
         {% set darrow_active=''%}
@@ -138,8 +165,8 @@
             {% set darrow_active='arrow'%}
             {% set dtoggle_active='toggle'%}
         {% end %}
-        <li class="goods-list-item font14 text-grey" data-id="{{dry_fruit.id}}" data-type="fruit" data-num="{{dry_fruit.storage}}">
-            <div class="clearfix box bg-pale-green {{darrow_active}}">
+        <li class="goods-list-item font10 text-grey Ganguo" data-id="{{dry_fruit.id}}" data-type="fruit" data-num="{{dry_fruit.storage}}">
+            <div class="clearfix box bg">
                 <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
                     <a href="javascript:;" class="check-lg-img">
                         <span class="tag text-white text-center tagItem font8" data-id="{{dry_fruit.tag}}"></span>
@@ -154,13 +181,18 @@
                 <div class="col-lg-10 col-md-10 col-xs-9 col-sm-10 pull-right pl5">
                     <div class="show-box {{dtoggle_active}}">
                         <p>
-                            <span class="pull-left color fruit-name font12">{{dry_fruit.name}}</span>
-                            <span class="pull-right text-grey sale">{{dry_fruit.saled}}</span>
+                            <span class="pull-left color fruit-name font16">{{dry_fruit.name}}</span>
+                            <span class="pull-right text-grey sale font12"><span class="color">{{dry_fruit.saled}}</span></span>
                         </p>
-                        <p class="great-number">
+                        <p class="great-number font12">
+                            {% if dry_fruit.favour%}
+                            <em class="red-heart"></em>
+                            {% else %}
+                            <em class="gray-heart"></em>
+                            {% end %}
                             <span  class="great">{{dry_fruit.favour}}</span>
                         </p>
-                        <div class="charge-first charge-style  font12">
+                        <div class="charge-first charge-style  font16 color">
                             {% if dry_fruit.charge_types %}
                             <span class="pull-left text-bgcolor p0 charge-type line34 height34 forbid_click" data-id="{{dry_fruit.charge_types[0].id}}">
                                 {{dry_fruit.charge_types[0].price}}元/{{dry_fruit.charge_types[0].num}}
@@ -177,15 +209,15 @@
                             {% set hidden ='show'%}
                             {% set show ='hidden'%}
                             {% end %}
-                            <span class="to-add line34 height34 text-center font16 text-green bg-white pull-right {{show}} forbid_click">+</span>
+                            <span class="to-add pull-right {{show}} forbid_click"></span>
                             <span class="pull-right p0 number-change {{hidden}} forbid_click">
-                                <a class="minus-plus text-green bg-white pull-right number-plus line34 height34 text-center font16" href="javascript:;">+</a>
+                                <a class="minus-plus  pull-right number-plus" href="javascript:;"></a>
                                 <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
-                                <a class="minus-plus text-green bg-white pull-right number-minus line34 height34 text-center font16" href="javascript:;">-</a>
+                                <a class="minus-plus pull-right number-minus " href="javascript:;"></a>
                             </span>
                         </div>
                     </div>
-                    <ul class="charge-list charge-style color set-width-float font12 {{dtoggle_active}}" style="display:none">
+                    <ul class="charge-list charge-style color set-width-float font16 {{dtoggle_active}} color" style="display:none">
                         {% for charge in dry_fruit.charge_types %}
                         {% if charge.id !=dry_fruit.charge_types[0].id %}
                         {% set value = cart_f[charge.id]["num"] if charge.id in cart_f else 0%}
@@ -203,17 +235,18 @@
                                 {{charge.price}}元/{{charge.num}}
                                 <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                             </span>
-                            <span class="to-add line34 height34 text-center font16 text-green bg-white pull-right {{show}} forbid_click">+</span>
+                            <span class="to-add pull-right {{show}} forbid_click"></span>
                             <span class="pull-right p0 number-change {{hidden}} forbid_click">
-                                <a class="minus-plus text-green bg-white pull-right number-plus line34 height34 text-center font16" href="javascript:;">+</a>
+                                <a class="minus-plus pull-right number-plus" href="javascript:;"></a>
                                 <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
-                                <a class="minus-plus text-green bg-white pull-right number-minus line34 height34 text-center font16" href="javascript:;">-</a>
+                                <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                             </span>
                         </li>
                         {% end %}
                         {% end %}
                     </ul>
                 </div>
+                <span class="{{darrow_active}} icon-bg toggle_icon"></span>
             </div>
         </li>
         {% end %}
@@ -221,7 +254,7 @@
 {% end %}
 {% for menu in menus %}
     {% if mgoods[menu.id] %}
-    <p class="text-white no-mar-btom classify-title font16 text-center rainshed_green" id="menu{{menu.id}}">{{menu.name}}</p>
+    <p class="text-white no-mar-btom classify-title font18 text-center rainshed_green" id="menu{{menu.id}}">{{menu.name}}</p>
     <ul class="goods-list bg-white menu-list">
     {% end %}
     {% for mgood in mgoods[menu.id]%}
@@ -231,8 +264,8 @@
             {% set marrow_active='arrow'%}
             {% set mtoggle_active='toggle'%}
         {% end %}
-        <li class="goods-list-item  font14 text-grey" data-id="{{mgood.id}}" data-type="menu" data-num="{{mgood.storage}}">
-            <div class="clearfix box bg-pale-green {{marrow_active}}">
+        <li class="goods-list-item  font10 text-grey TDSG" data-id="{{mgood.id}}" data-type="menu" data-num="{{mgood.storage}}">
+            <div class="clearfix box bg">
                 <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
                     <a href="javascript:;" class="check-lg-img">
                         <span class="tag text-white text-center tagItem font8" data-id="{{mgood.tag}}"></span>
@@ -247,13 +280,18 @@
                 <div class="col-lg-10 col-md-10 col-xs-9 col-sm-10 pull-right pl5">
                     <div class="show-box {{mtoggle_active}}">
                         <p>
-                            <span class="pull-left color fruit-name font12">{{mgood.name}}</span>
-                            <span class="pull-right text-grey sale">{{mgood.saled}}</span>
+                            <span class="pull-left color fruit-name font16 color">{{mgood.name}}</span>
+                            <span class="pull-right text-grey sale font12"><span class="color">{{mgood.saled}}</span></span>
                         </p>
-                        <p class="great-number">
-                            <span  class="great">{{mgood.favour}}</span>
+                        <p class="great-number font12">
+                            {% if mgood.favour%}
+                            <em class="red-heart"></em>
+                            {% else %}
+                            <em class="gray-heart"></em>
+                            {% end %}
+                            <span class="great">{{mgood.favour}}</span>
                         </p>
-                        <div class="charge-first charge-style font12">
+                        <div class="charge-first charge-style font16 color">
                             {% if mgood.mcharge_types %}
                             <span class="pull-left text-bgcolor p0 charge-type line34 height34 forbid_click" data-id="{{mgood.mcharge_types[0].id}}">
                                 {{mgood.mcharge_types[0].price}}元/{{mgood.mcharge_types[0].num}}
@@ -270,15 +308,15 @@
                             {% set hidden ='show'%}
                             {% set show ='hidden'%}
                             {% end %}
-                            <span class="to-add line34 height34 text-center font16 text-green bg-white pull-right {{show}} forbid_click">+</span>
+                            <span class="to-add pull-right {{show}} forbid_click"></span>
                              <span class="pull-right p0 number-change {{hidden}} forbid_click">
-                                <a class="minus-plus text-green bg-white pull-right number-plus line34 height34 text-center font16" href="javascript:;">+</a>
+                                <a class="minus-plus  pull-right number-plus " href="javascript:;"></a>
                                 <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
-                                <a class="minus-plus text-green bg-white pull-right number-minus line34 height34 text-center font16" href="javascript:;">-</a>
+                                <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                             </span>
                         </div>
                     </div>
-                    <ul class="charge-list charge-style color set-width-float font12 {{mtoggle_active}}" style="display:none">
+                    <ul class="charge-list charge-style color set-width-float font16 {{mtoggle_active}} color" style="display:none">
                         {% for charge in mgood.mcharge_types %}
                         {% if charge.id !=mgood.mcharge_types[0].id %}
                         {% set value = cart_m[charge.id]["num"] if charge.id in cart_m else 0%}
@@ -296,17 +334,18 @@
                                 {{charge.price}}元/{{charge.num}}
                                 <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                             </span>
-                            <span class="to-add line34 height34 text-center font16 text-green bg-white pull-right {{show}} forbid_click">+</span>
+                            <span class="to-add pull-right {{show}} forbid_click"></span>
                              <span class="pull-right p0 number-change {{hidden}} forbid_click">
-                                <a class="minus-plus text-green bg-white pull-right number-plus line34 height34 text-center font16" href="javascript:;">+</a>
+                                <a class="minus-plus pull-right number-plus" href="javascript:;"></a>
                                 <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
-                                <a class="minus-plus text-green bg-white pull-right number-minus line34 height34 text-center font16" href="javascript:;">-</a>
+                                <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                             </span>
                         </li>
                         {% end %}
                         {% end %}
                     </ul>
                 </div>
+                <span class="{{marrow_active}} icon-bg toggle_icon"></span>
             </div>
         </li>
         {% end %}
@@ -321,34 +360,10 @@
             </div>
             <div class="modal-body set-width-float text-center">
                 <img src="" id="largeImg"/>
-                <p class="intro font14">哈哈哈哈哈哈</p>
+                <p class="intro font16">哈哈哈哈哈哈</p>
             </div>
             <div class="modal-footer">
                 <a href="javascript:;" class="click-great text-center font18 text-grey3">赞一个</a>
-            </div>
-        </div>
-    </div>
-</div>
-{% end %}
-{% block toTop %}
-<div class="modal fade classify"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" id="goods-classify">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header text-center text-white font18">商品分类</div>
-            <div class="modal-body set-width-float text-center">
-                <ul class="font16 goods-class-choose type-choose list-group">
-                    {% if fruits%}
-                    <li class="text-green list-group-item" data-dismiss="modal" data-class="fruitPosition">水果单品</li>
-                    {% end %}
-                    {% if dry_fruits%}
-                    <li class="text-green list-group-item" data-dismiss="modal" data-class="dryFruitPosition">干果单品</li>
-                    {% end %}
-                    {% for menu in menus %}
-                        {% if mgoods[menu.id] %}
-                        <li class="text-green list-group-item" data-dismiss="modal" data-class="menu{{menu.id}}">{{menu.name}}</li>
-                        {% end %}
-                    {% end %}
-                </ul>
             </div>
         </div>
     </div>
