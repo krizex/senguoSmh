@@ -2,7 +2,7 @@ $(document).ready(function(){
     $('.filter-box a').on('click',function(){$(this).addClass('active').siblings().removeClass('active');});
     $('#searchSubmit').on('click',function(evt){Search(evt);});
     $('#province-select').find('li').on('click',function(){
-        if($('#city-select').find('li').length==0)
+        if($('#city-select ul').find('li').length==0)
         {
             Filter($(this));
         }
@@ -126,7 +126,7 @@ function Filter(evt){
         var code=fruit.eq(i).data('code');
         onsalefruit_ids.push(code);
     }
-    var url="/fruitzone/";
+    var url="";
     var order=evt.parents('.order-by-list').find('.order-by-item').data('action');
     if(order=='cityFilter')
         {var args = {city: city,action: action}}
