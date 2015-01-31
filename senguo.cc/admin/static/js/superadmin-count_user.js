@@ -182,6 +182,7 @@ $(document).ready(function(){
                     borderColor: '#eee'
                 }
             };
+
             getcurve(0,options,myChart);
             //月份切换
             $('.pre_month').on('click',function(){
@@ -251,14 +252,13 @@ function getcurve(i,options,myChart){
     myChart.clear();
     $('.detail-count').find('.item').remove();
     count('curve',i);
-    for(var key in data){
-        var day=key;
-        var day_total_user=data[key][1];
-        var shop_user=data[key][2];
-        var saler=data[key][3];
-        var tie_phone=data[key][4];
-        var total_user=data[key][5];
-        var date=data[key][6];
+    for(var d in data){
+        var day_total_user=d[2];
+        var shop_user=d[3];
+        var saler=d[4];
+        var tie_phone=d[5];
+        var total_user=d[6];
+        var date=d[0];
         var $item=$('<tr class="item"><td class="time"></td><td class="shop_user"></td><td class="saler"></td><td class="tie_phone"></td><td class="day_total_user"></td><td class="total_user"></td></tr>');
         $item.find('.time').text(date);
         $item.find('.day_total_user').text(day_total_user);
@@ -267,7 +267,7 @@ function getcurve(i,options,myChart){
         $item.find('.tie_phone').text(tie_phone);
         $item.find('.total_user').text(total_user);
         $('.detail-count').append($item);
-        options.xAxis[0].data.push(day+'号');
+        options.xAxis[0].data.push(d[1]+'号');
         options.series[0].data.push(day_total_user);
         options.series[1].data.push(shop_user);
         options.series[2].data.push(saler);
@@ -282,14 +282,13 @@ function getcurve(i,options,myChart){
 function gettable(page){
     $('.detail-count').find('.item').remove();
     count('curve',page);
-    for(var key in data){
-        var day=key;
-        var day_total_user=data[key][1];
-        var shop_user=data[key][2];
-        var saler=data[key][3];
-        var tie_phone=data[key][4];
-        var total_user=data[key][5];
-        var date=data[key][6];
+    for(var d in data){
+        var day_total_user=d[2];
+        var shop_user=d[3];
+        var saler=d[4];
+        var tie_phone=d[5];
+        var total_user=d[6];
+        var date=d[0];
         var $item=$('<tr class="item"><td class="time"></td><td class="shop_user"></td><td class="saler"></td><td class="tie_phone"></td><td class="day_total_user"></td><td class="total_user"></td></tr>');
         $item.find('.time').text(date);
         $item.find('.day_total_user').text(day_total_user);
