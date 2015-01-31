@@ -27,7 +27,7 @@
     {% end %}
     <li class="order-list-item bg-white mb-10">
         <div class="title bg-grey">
-            <h4 class="pl-10">订单编号：{{order.id}}</h4>
+            <h4 class="pl-10">订单编号：{{order.num}}</h4>
             {% if order.status != 5%}
             <div class="button-box" >
                 <button class="btn clear-btn text-white bg-green mr-5 staff_remark" data-id="{{order.id}}">订单备注</button>

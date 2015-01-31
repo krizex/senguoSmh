@@ -442,9 +442,9 @@ class Order(AdminBaseHandler):
         order_type = self.args["order_type"]
         order_status = self.args["order_status"]
         orders = []
-        if order_type == 10:  # 搜索订单，order_status为order_id
-            orders = self.session.query(models.Order).filter(and_(
-                models.Order.id == order_status, models.Order.shop_id == self.current_shop.id)).all()
+        if order_type == 10:  # 搜索订单：为了格式统一，order_status为order.num
+            orders = self.session.query(models.Order).\
+                filter_by(num=order_status, shop_id=self.current_shop.id).all()
             order_type = 1
         elif order_status == 1:
             orders = [x for x in self.current_shop.orders if x.type == order_type and x.status == 1]
