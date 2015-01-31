@@ -10,10 +10,10 @@ input{border:none;}
 .modal{}
 .modal-dialog{margin:0px auto;margin-top:10%!important;max-width:640px;}
 .modal-content{position:relative;}
-.modal-header{background:url('../images/huabian_green.png') repeat-x;padding:0px;height:46px;line-height:46px;position:absolute;z-index:10;width:100%;border-bottom:0px;border-top-left-radius:6px;border-top-right-radius:6px;color:#fff;}
+.modal-header{background:url('../images/huabian_green.png') repeat-x;padding:0px;height:40px;line-height:40px;position:absolute;z-index:10;width:100%;border-bottom:0px;border-top-left-radius:6px;border-top-right-radius:6px;color:#fff;}
 .modal-title{line-height:40px;text-indent:14px;}
 .modal-header .close{font-size:28px !important;margin-right:14px;margin-top:3px;}
-.modal-body{font-size:1em;padding:0;padding-top:48px !important;}
+.modal-body{font-size:1em;padding:0;padding-top:38px !important;}
 .modal-footer{clear:both;}
 
 .bg-white{background-color:#fff !important;}
