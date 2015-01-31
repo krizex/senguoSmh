@@ -1,8 +1,10 @@
 $(document).ready(function(){
     $('.filter-box a').on('click',function(){$(this).addClass('active').siblings().removeClass('active');});
     $('#searchSubmit').on('click',function(evt){Search(evt);});
-    $('#province-select').find('li').on('click',function(){
-        if($('#city-select ul').find('li').length==0)
+    $('.province-select').find('li').on('click',function(){
+        var $this=$(this);
+        var pro=$this.text();
+        if(pro=='北京市'||pro=='天津市'||pro=='上海市'||pro=='香港'||pro=='澳门')
         {
             Filter($(this));
         }
@@ -142,14 +144,12 @@ function Filter(evt){
         function(res){
             if(res.success) {
                 list_num=res.shops;
-                console.log(list_num.length);
                 if(list_num.length<list_item_num)
                     {
                         $('#NextPage').parents('li').hide();
                         $('#PrePage').parents('li').hide();
                     }
                 else  $('#NextPage').parents('li').show();
-                console.log(list_num);
                 evt.parents('.order-by-list').hide();
                 $('.home-pagination').show();
                 $('#homeShopList').empty();
