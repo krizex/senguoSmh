@@ -126,7 +126,7 @@
                     ~ {{order.end_time.hour}}:{{order.end_time.minute}}</span>
                 </label>
                 <label class="code pull-left">
-                    编号：<span class="order-code">{{order.id}}</span>
+                    订单编号：<span class="order-code">{{order.num}}</span>
                 </label>
                 <label class="money pull-left">
                     金额：<span><strong class="order-price">{{order.totalPrice}}</strong>元</span>
@@ -191,7 +191,7 @@
             <div class="custom-order list-item-body set-width-float" style="display:none;">
                 <div class="custom-order-title">
                     <span>下单时间：<i class="order-time">{{order.create_date}}</i></span>
-                    <span>森果号：<a class="senguo-code" href="#">y123456789</a></span>
+                    <!--<span>森果号：<a class="senguo-code" href="#">y123456789</a></span>-->
                     <span>积分：<i class="accumulate-point">{{100}}</i></span>
                     <span class="pay-status btn-style pull-right pay-btn text-pink" data-pay="{{order.money_paid}}">未支付</span>
                 </div>

@@ -826,6 +826,7 @@ class Order(MapBase, _CommonApi):
     customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
     shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
 
+    num = Column(String(15), nullable=False)  # 订单编号
     phone = Column(String(30), nullable=False)
     receiver = Column(String(64), nullable=False)
     address_text = Column(String(1024), nullable=False)
