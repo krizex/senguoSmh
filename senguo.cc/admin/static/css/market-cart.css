@@ -21,10 +21,10 @@
 .cart-list-item .action-box{position:absolute;right:5px;top:30%;}
 .cart-list-item .charge-item{height:30px;line-height:30px;position:absolute;bottom:0;}
 .cart-list-item .number-change{position:relative;width:100px;}
-.cart-list-item .minus-plus{display:inline-block;float:left;width:32px;height:32px;line-height:32px;font-weight:bold;border-radius:50%;border:1px solid #E4EBE6;position:absolute;z-index:10;}
-.cart-list-item .number-input{width:70px;position:absolute;left:16px;top:1px;height:30px;border:1px solid #E4EBE6;}
-.cart-list-item .number-plus{right:0;}
-.cart-list-item .number-minus{left:0;}
+.cart-list-item .minus-plus{display:inline-block;float:left;width:30px;height:30px;background:url('../svg/icon_list.svg') no-repeat;position:absolute;z-index:10;}
+.cart-list-item .number-input{width:28%;width:70px;position:absolute;left:14px;height:28px;line-height:28px;top:0;border:1px solid #f7f7f8;}
+.cart-list-item .number-plus{right:0;background-position:-91px 0px;}
+.cart-list-item .number-minus{left:0;background-position:-56px 0px;}
 .cart-list-item .disable{border-color:#ccc;color:#ccc;}
 .cart-list-item .delete-btn a{display:inline-block;width:32px;height:32px;line-height:32px;}
 .cart-list-item .name{min-width:90px;}

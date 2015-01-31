@@ -23,6 +23,9 @@ $(document).ready(function(){
         var fruitlist=$('<li data-code="'+fruit[code]['id']+'"></li>').text(fruit[code]['name']);
         $('.fruit-list').append(fruitlist);
     }
+    $('.pause-now').on('click',function(){
+        alert('系统封测期，暂停申请一周!');
+    })
 
 });
 

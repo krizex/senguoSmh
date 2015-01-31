@@ -252,7 +252,8 @@ function getcurve(i,options,myChart){
     myChart.clear();
     $('.detail-count').find('.item').remove();
     count('curve',i);
-    for(var d in data){
+    for(var i=0;i<data.length;i++){
+        var d=data[i];
         var day_total_user=d[2];
         var shop_user=d[3];
         var saler=d[4];
@@ -267,11 +268,11 @@ function getcurve(i,options,myChart){
         $item.find('.tie_phone').text(tie_phone);
         $item.find('.total_user').text(total_user);
         $('.detail-count').append($item);
-        options.xAxis[0].data.push(d[1]+'号');
-        options.series[0].data.push(day_total_user);
-        options.series[1].data.push(shop_user);
-        options.series[2].data.push(saler);
-        options.series[3].data.push(tie_phone);
+        options.xAxis[0].data.unshift(d[1]+'号');
+        options.series[0].data.unshift(day_total_user);
+        options.series[1].data.unshift(shop_user);
+        options.series[2].data.unshift(saler);
+        options.series[3].data.unshift(tie_phone);
     }
     myChart.refresh();
     myChart.setOption(options);
@@ -282,7 +283,8 @@ function getcurve(i,options,myChart){
 function gettable(page){
     $('.detail-count').find('.item').remove();
     count('curve',page);
-    for(var d in data){
+    for(var i=0;i<data.length;i++){
+        var d=data[i];
         var day_total_user=d[2];
         var shop_user=d[3];
         var saler=d[4];

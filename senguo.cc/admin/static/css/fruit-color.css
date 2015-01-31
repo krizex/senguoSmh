@@ -1,48 +1,37 @@
 .TDSG .color{color:#8cbd03}
-.TDSG .bg-color{background-color:#8cbd03}
 .TDSG .bg{background-color:#f9ffe8}
 .TDSG .icon-bg{border-color:#c8e0aa transparent transparent transparent;}
-.Hlg .color{color:#ee6e8c}
-.Hlg .bg{background-color:#fcfbff}
-.Hlg .bg-color{background-color:#ee6e8c}
-.Hlg .icon-bg{border-color:#ece9f5 transparent transparent transparent;}
-.Qpg .color{color:#5cb56c}
-.Qpg .bg-color{background-color:#5cb56c}
-.Qpg .bg{background-color:#f7fffa}
-.Qpg .icon-bg{border-color:#8effb6 transparent transparent transparent;}
-.Xg .color{color:#ee6e8c}
-.Xg .bg-color{background-color:#ee6e8c}
-.Xg .bg{background-color:#fff6f6}
-.Xg .icon-bg{border-color:#fd9292 transparent transparent transparent;}
-.Yt .color{color:#5cb56c}
-.Yt .bg-color{background-color:#5cb56c}
-.Yt .bg{background-color:#e1ffee}
-.Yt .icon-bg{border-color:#ece9f5 transparent transparent transparent;}
-.Lz .color{color:#ee6e8c}
-.Lz .bg-color{background-color:#ee6e8c}
-.Lz .bg{background-color:#fff9f5}
-.Lz .icon-bg{border-color:#fecfac transparent transparent transparent;}
-.Nm .color{color:#c0cb04}
-.Nm .bg-color{background-color:#c0cb04}
-.Nm .bg{background-color:#f9fae9}
-.Nm .icon-bg{border-color:#f1f962 transparent transparent transparent;}
-.Pt .color{color:#ed3b94}
-.Pt .bg-color{background-color:#ed3b94}
-.Pt .bg{background-color:#fffafb}
-.Pt .icon-bg{border-color:#ff95b5 transparent transparent transparent;}
-.Xiangg .color{color:#a6c63c}
-.Xiangg .bg-color{background-color:#a6c63c}
-.Xiangg .bg{background-color:#fcffef}
-.Xiangg .icon-bg{border-color:#d7ec74 transparent transparent transparent;}
-.Li .color{color:#edb800}
-.Li .bg-color{background-color:#edb800}
-.Li .bg{background-color:#fffcef}
-.Li .icon-bg{border-color:#fee768 transparent transparent transparent;}
+.Hlg .color{color:#EE6E8C}
+.Hlg .bg{background-color:#FCFBFF}
+.Hlg .icon-bg{border-color:#EE6E8C transparent transparent transparent;}
+.Qpg .color{color:#5CB56C}
+.Qpg .bg{background-color:#F7FFFA}
+.Qpg .icon-bg{border-color:#5CB56C transparent transparent transparent;}
+.Xg .color{color:#EE618C}
+.Xg .bg{background-color:#FFF6F6}
+.Xg .icon-bg{border-color:#EE618C transparent transparent transparent;}
+.Yt .color{color:#E23457}
+.Yt .bg{background-color:#FFF7F8}
+.Yt .icon-bg{border-color:#E23457 transparent transparent transparent;}
+.Lz .color{color:#F97060}
+.Lz .bg{background-color:#FFF9F5}
+.Lz .icon-bg{border-color:#F97060 transparent transparent transparent;}
+.Nm .color{color:#COCBO4}
+.Nm .bg{background-color:#F9FAE9}
+.Nm .icon-bg{border-color:#COCBO4 transparent transparent transparent;}
+.Pt .color{color:#ED3B94}
+.Pt .bg{background-color:#FFFAFB}
+.Pt .icon-bg{border-color:#ED3B94 transparent transparent transparent;}
+.Xiangg .color{color:#A6C63C}
+.Xiangg .bg{background-color:#FCFFEF}
+.Xiangg .icon-bg{border-color:#A6C63C transparent transparent transparent;}
+.Li .color{color:#EDB800}
+.Li .bg{background-color:#FFFCEF}
+.Li .icon-bg{border-color:#EDB800 transparent transparent transparent;}
 .Xfq .color{color:#f85853}
-.Xfq .bg-color{background-color:#f85853}
-.Xfq .bg{background-color:#fff9f9}
-.Xfq .icon-bg{border-color:#ffa4b1 transparent transparent transparent;}
-.Qli .color{color:#97ca27}
+.Xfq .bg{background-color:#F85853}
+.Xfq .icon-bg{border-color:#F85853 transparent transparent transparent;}
+.Qli .color{color:#F85853}
 .Qli .bg-color{background-color:#97ca27}
 .Qli .bg{background-color:#fafff4}
 .Qli .icon-bg{border-color:#b3e973 transparent transparent transparent;}

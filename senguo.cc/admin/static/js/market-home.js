@@ -1,5 +1,11 @@
 $(document).ready(function(){
     var top_title=$('.top-title');
+    $('.choose-classify').on('click',function(){
+        $('.goods-class-choose').slideToggle(100);
+    });
+    $('.goods-class-choose li').on('click',function(){
+        $('.goods-class-choose').slideUp(100);
+    });
     //分类导航置顶
     var fruit_dist=$('#fruitPosition').offset().top/2;
     $(window).scroll(function(){
@@ -74,7 +80,7 @@ $(document).ready(function(){
         var forbid_click=$this.parents('.goods-list-item').find('.forbid_click');
         $this.mouseup(function(e){
             if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
-                parent.find('.box').toggleClass('arrow');
+                parent.find('.toggle_icon').toggleClass('arrow');
                 charge_list.slideToggle(50);
             }
         })
@@ -186,7 +192,7 @@ function great(type,id){
                     var goods_id=$this.data('id');
                     if(type==type&&goods_id==id){
                         var num=$this.find('.great').text();
-                        $this.find('.great').text(Int(num)+1);
+                        $this.find('.great').text(Int(num)+1).siblings('em').addClass('red-heart');
                     }
                 });
                 $('.large-img-box').modal('hide');
