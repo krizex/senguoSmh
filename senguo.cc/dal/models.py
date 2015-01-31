@@ -186,7 +186,15 @@ class _AccountApi(_CommonApi):
     def register_with_wx(cls, session, wx_userinfo):
         # 判断是否在本账户里存在该用户
         u = cls.login_by_unionid(session, wx_userinfo["unionid"])
-        if u: return u
+        if u:
+            # 已存在用户，则更新微信信息
+            u.accountinfo.wx_country=wx_userinfo["country"]
+            u.accountinfo.wx_province=wx_userinfo["province"]
+            u.accountinfo.wx_city=wx_userinfo["city"]
+            u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
+            u.accountinfo.nickname = wx_userinfo["nickname"]
+            session.commit()
+            return u
         # 判断是否在基本信息表里存在该用户
         
         try:
@@ -196,6 +204,7 @@ class _AccountApi(_CommonApi):
         # 基本账户中存在该账户，直接添加
         if account_info:
             u = cls(id=account_info.id)
+
             session.add(u)
             session.commit()
             return u

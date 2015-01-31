@@ -51,9 +51,9 @@ class Access(AdminBaseHandler):
         if not userinfo:
             return self.redirect(self.reverse_url("adminLogin"))
         # 尝试登录
-        u = models.ShopAdmin.login_by_unionid(self.session, userinfo["unionid"])
-        if not u:  #新建用户
-            u = models.ShopAdmin.register_with_wx(self.session, userinfo)
+        # u = models.ShopAdmin.login_by_unionid(self.session, userinfo["unionid"])
+        # if not u:  #新建用户
+        u = models.ShopAdmin.register_with_wx(self.session, userinfo)
         self.set_current_user(u, domain=ROOT_HOST_NAME)
         
         next_url = self.get_argument("next", self.reverse_url("fruitzoneHome"))
