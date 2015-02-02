@@ -16,8 +16,9 @@ p{margin-bottom:0px;}
 .user-comment .img{width:40px;}
 .foucus-notice{max-width:800px;margin:0 auto;height:40px;line-height:40px;overflow:hidden;z-index:9999;}
 .w8{width:75%;}
-.level-box em{width:12px;height:18px;background:url('../svg/icon_list.svg') -142px -18px;margin-right:5px;}
-.level-box p{line-height:18px;}
+.level-box{height:35px;line-height:35px;}
+.level-box em{width:12px;height:18px;background:url('../svg/icon_list.svg') -142px -18px;margin-right:5px;font-style:normal;line-height:18px;}
+.sign-box{height:35px;line-height:35px;}
 .sign-box em{width:17px;height:14px;background:url('../svg/icon_list.svg') -166px -18px;margin-right:5px;}
 .area-icon{width:14px;height:22px;background:url('../svg/icon_list.svg') -74px -69px;margin-right:5px;}
-.phone-icon{width:16px;height:26px;background:url('../svg/icon_list.svg') -46px -68px;margin-right:5px;}
+.phone-icon{width:18px;height:26px;background:url('../svg/icon_list.svg') -46px -68px;margin-right:5px;}

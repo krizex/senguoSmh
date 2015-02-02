@@ -2,7 +2,7 @@ $(document).ready(function(){
     count();
     $('.sub-nav li').on('click',function(){
         var $this=$(this);
-        $this.addClass('active');
+        $this.addClass('active').siblings().removeClass('active');
         var index=$this.index();
         $('.table-count').eq(index-1).show().siblings('.table-count').hide();
     });
@@ -24,7 +24,8 @@ function count(){
                     var sex=sex_list[key][0];
                     var num=sex_list[key][1];
                     if(sex==1) sex='男';
-                    else sex='女';
+                    else if(sex==2) sex='女';
+                    else sex='未知';
                     $item.find('.sex').text(sex);
                     $item.find('.user').text(num);
                     $item.find('.percent').text(percentNum(num,total));

@@ -25,6 +25,6 @@
 .address-box .modal-body .tit{width:80px;line-height:30px;}
 .address-box .modal-body input{width:220px;border:1px solid #ccc;height:30px;line-height:30px;text-indent:14px;}
 
-.collect-icon{width:11px;height:12px;background:url('../svg/icon_list.svg') -126px 0px;margin-right:5px;}
+.collect-icon{width:16px;height:12px;background:url('../svg/icon_list.svg') -126px 0px;margin-right:5px;}
 .address-icon{width:16px;height:12px;background:url('../svg/icon_list.svg') -147px 0px;margin-right:5px;}
-.order-icon{width:12px;height:12px;background:url('../svg/icon_list.svg') -172px 0px;margin-right:5px;}
+.order-icon{width:16px;height:12px;background:url('../svg/icon_list.svg') -172px 0px;margin-right:5px;}

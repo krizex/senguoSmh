@@ -44,7 +44,6 @@ $(document).ready(function(){
             $('#city-select ul').append(city);
             $('#city-select li').eq(0).addClass('active');
             $('#city-select li').click(function(){$(this).addClass('active').siblings().removeClass('active');$(this).parents('.order-by-list').hide();});
-            city_num=city_num+1;
         }
     });
 
@@ -52,7 +51,6 @@ $(document).ready(function(){
 
 
 });
-var city_num=0;
 function provinceArea(procode){
         var pro=area[procode]['name'];
         return pro;

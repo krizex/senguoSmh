@@ -32,6 +32,7 @@
                     <a href="javascript:;" class="pull-right delete-item text-center font18 text-grey">x</a>
                 </div>
               </div>
+            </div>
          </li>
          {% end %}
          {% for key in cart_m %}
@@ -54,9 +55,9 @@
              </div>
              <div class="action-box">
                 <span class="pull-left number-change set-inl-blo">
-                    <a class="minus-plus text-green bg-white number-plus text-center font18" href="javascript:;">+</a>
+                    <a class="minus-plus text-green bg-white number-plus text-center font18" href="javascript:;"></a>
                     <input type="text" value="{{cart_m[key]['num']}}" class="number-input item_number text-center" readonly/>
-                    <a class="minus-plus text-green bg-white number-minus text-center font18" href="javascript:;">-</a>
+                    <a class="minus-plus text-green bg-white number-minus text-center font18" href="javascript:;"></a>
                 </span>
                  <div class="pull-right delete-btn">
                      <a href="javascript:;" class="pull-right delete-item text-center font18 text-grey">x</a>
@@ -137,14 +138,14 @@
              <input type="hidden" class="stop-range" value="{{config.stop_range}}"/>
              {% end %}
              <ul class="send_now list-group" style="display:none">
-                 <li class="list-group-item clearfix bg-grey2">
+                <!-- <li class="list-group-item clearfix bg-grey2">
                      <p class="text-center text-pink">送货员太辛苦，打赏点小费吧\(╯▼╰)/ </p>
                      <ul class="tip-list font14">
                          <li class="btn text-green text-center bg-white pull-left" data-id="1">1元</li>
                          <li class="btn text-green text-center bg-white pull-left" data-id="2">2元</li>
                          <li class="btn text-green text-center bg-white pull-left" data-id="5">5元</li>
                      </ul>
-                 </li>
+                 </li>-->
                  <li class="list-group-item font14">
                      送货时间：
                      <span class="now_startime">{{config.start_time_now}}</span>~
@@ -167,7 +168,7 @@
                  {% end %}
              </ul>
              <p class="clearfix"><a class="text-green pull-right to-add-address font14">+添加</a></p>
-             <div class="address-box hidden center-block">
+             <div class="address-box hidden center-block font14">
                  <p>
                      <span class="tit set-inl-blo pull-left">姓名：</span>
                      <input type="text" placeholder="输入收货人姓名" class="input-sty bg-white pull-left" id="receiveName"/>
