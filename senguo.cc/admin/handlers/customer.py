@@ -205,7 +205,7 @@ class Comment(CustomerBaseHandler):
         date_list = []
         for comment in comments:
             date_list.append({"img": comment[0], "name": comment[1],
-                              "comment": comment[2], "time": self.timedelta(comment[3]), "reply":comment[4]})
+                              "comment": comment[2], "time": self.timedelta(comment[3]), "reply":comment[5]})
         if page == 0:
             return self.render("customer/comment.html", date_list=date_list)
         return self.write(dict(date_list=date_list))
@@ -282,7 +282,7 @@ class Market(CustomerBaseHandler):
         return self.send_success()
 
 
-    @CustomerBaseHandler.check_arguments("fruits:dict", "mgoods:dict")
+    @CustomerBaseHandler.check_arguments("fruits", "mgoods")
     def cart_list(self):
         fruits = self.args["fruits"]
         mgoods = self.args["mgoods"]

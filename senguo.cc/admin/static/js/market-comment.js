@@ -47,7 +47,8 @@ function commentItem(comment_list){
         $item.find('.user-name').text(name);
         $item.find('.comment-time').text(time);
         $item.find('.comment-text').text(comment);
-        if(reply!=''){$item.find('.reply-text').text(reply);}
+        if(reply!='' && reply!=null){$item.find('.reply-text').text(reply);}
+        else $item.find('.comment').hide();
         $('#commnent-list').append($item);
     }
 }
