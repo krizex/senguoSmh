@@ -1,4 +1,10 @@
 $(document).ready(function(){
+    //添加到购物车
+    $('.bottom-nav').find('li').addClass('add_cart');
+    $('.add_cart a').on('click',function(){
+        var link=$(this).attr('href');
+        addCart(link);
+    });
     var top_title=$('.top-title');
     $('.choose-classify').on('click',function(){
         $('.goods-class-choose').slideToggle(100);
@@ -132,43 +138,61 @@ $(document).ready(function(){
     });
 });
 function goodsNum(target,action){
-    var url='';
-    var action=action;
-    var menu_type;
-    var change=target.parents('.number-change');
-    var charge_type_id=change.siblings('.charge-type').data('id');
-    var parent=target.parents('.goods-list');
     var item=target.siblings('.number-input');
+    var change=target.parents('.number-change');
     var num=item.val();
-    if(parent.hasClass('fruit-list')){menu_type=0}
-    else if(parent.hasClass('menu-list')){menu_type=1}
     if(action==1&&num<=0) {num=0;target.addClass('disable');}
+    if(action==2)
+    {
+
+        num++;
+        item.val(num);
+    }
+    else if(action==1)
+    {
+        var val=parseInt(item.val());
+        if(val>0)
+        {
+            num--;
+            item.val(num);
+            if(val==1){
+                change.addClass('hidden').siblings('.to-add').removeClass('hidden');
+            }
+        }
+    }
+}
+
+function addCart(link){
+    event.preventDefault();
+    var url='';
+    var fruits={};
+    var mgoods={};
+    var fruits_list=$('.fruit-list');
+    var mgoods_list=$('.menu-list');
+    for(var i=0;i<fruits_list.length;i++){
+        var fruit=fruits_list.eq(i).find('.number-input');
+        for(var i=0;i<fruit.length;i++){
+            var num=fruit.eq(i).val().trim();
+            var id=fruit.eq(i).parents('.number-change').siblings('.charge-type').data('id');
+            fruits[id]=num;
+        }
+    }
+    for(var i=0;i<mgoods_list.length;i++){
+        var mgood=mgoods_list.eq(i).find('.number-input');
+        for(var i=0;i<mgood.length;i++){
+            var num=mgood.eq(i).val().trim();
+            var id=mgood.eq(i).parents('.number-change').siblings('.charge-type').data('id');
+            mgoods[id]=num;
+        }
+    }
     var args={
-        action:action,
-        charge_type_id:charge_type_id,
-        menu_type:menu_type
+        fruits:fruits,
+        mgoods:mgoods
     };
     $.postJson(url,args,function(res){
             if(res.success)
             {
-                if(action==2)
-                {
-
-                    num++;
-                    item.val(num);
-                }
-                else if(action==1)
-                {
-                    var val=parseInt(item.val());
-                    if(val>0)
-                    {
-                        num--;
-                        item.val(num);
-                        if(val==1){
-                            change.addClass('hidden').siblings('.to-add').removeClass('hidden');
-                        }
-                    }
-                }
+                //window.location.href=link;
             }
             else alert(res.error_text);
         },
