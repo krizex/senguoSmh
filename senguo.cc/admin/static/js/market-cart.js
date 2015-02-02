@@ -14,7 +14,7 @@ $(document).ready(function(){
     });
     //商品价格总计
     total_price=totalPrice(price_list);
-    list_total_price.text(total_price);
+    list_total_price.text(mathFloat(total_price));
     //按时达最低起送金额提示
     if(total_price<mincharge_intime) $('.mincharge_intime').show();
     //商品数量操作
@@ -130,7 +130,7 @@ $(document).ready(function(){
         $('.intime-intro').hide();
         $('.now-intro').show();
         $('#freight_money').text(freigh_now);
-        $('#final_price').text(total_price+freigh_now);
+        $('#final_price').text(mathFloat(total_price+freigh_now));
         $('.send-intime').on('click',function(){
             $(this).removeClass('active');
             if(now_on=='True'){
@@ -146,7 +146,7 @@ $(document).ready(function(){
         $('.intime-intro').show();
         $('.now-intro').hide();
         $('#freight_money').text(freigh_ontime);
-        $('#final_price').text(total_price+freigh_ontime);
+        $('#final_price').text(mathFloat(total_price+freigh_ontime));
         //按时达模式选择
         $('#sendInTime').on('click',function(){
             var $this=$(this);
@@ -159,7 +159,7 @@ $(document).ready(function(){
             $('.now-intro').hide();
             total_price=mathFloat(list_total_price.text());
             $('#freight_money').text(freigh_ontime);
-            $('#final_price').text(total_price+freigh_ontime);
+            $('#final_price').text(mathFloat(total_price+freigh_ontime));
             if(total_price<mincharge_intime){
                 $('.mincharge_intime').show();
             }
@@ -174,7 +174,7 @@ $(document).ready(function(){
         $('.intime-intro').show();
         $('.now-intro').hide();
         $('#freight_money').text(freigh_ontime);
-        $('#final_price').text(total_price+freigh_ontime);
+        $('#final_price').text(mathFloat(total_price+freigh_ontime));
         $('.send-now').on('click',function(){
             $(this).removeClass('active');
             if(intime_on=='True'){
@@ -193,7 +193,7 @@ $(document).ready(function(){
         $('.intime-intro').hide();
         $('.now-intro').show();
         $('#freight_money').text(freigh_now);
-        $('#final_price').text(total_price+freigh_now);
+        $('#final_price').text(mathFloat(total_price+freigh_now));
         //立即送模式选择/立即送最低起送金额提示
         $('#sendNow').on('click',function(){
             var $this=$(this);
@@ -208,7 +208,7 @@ $(document).ready(function(){
                 $('.now-intro').show();
                 total_price=mathFloat(list_total_price.text());
                 $('#freight_money').text(freigh_now);
-                $('#final_price').text(total_price+freigh_now);
+                $('#final_price').text(mathFloat(total_price+freigh_now));
                 if(total_price<mincharge_now){
                     $('.mincharge_now').show();
                     $('.mincharge_intime').hide();
@@ -234,7 +234,7 @@ $(document).ready(function(){
         $('.intime-intro').show();
         $('.now-intro').hide();
         $('#freight_money').text(freigh_ontime);
-        $('#final_price').text(total_price+freigh_ontime);
+        $('#final_price').text(mathFloat(total_price+freigh_ontime));
     }
     //打赏小费
     $('.tip-list li').on('click',function(){
