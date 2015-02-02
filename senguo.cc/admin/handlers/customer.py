@@ -225,6 +225,7 @@ class Market(CustomerBaseHandler):
             self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
             self.session.commit()
         cart_f, cart_m = self.read_cart(shop.id)
+        cart_count = len(cart_f) + len(cart_m)
         fruits = [x for x in shop.fruits if x.fruit_type_id != 1000 and x.active == 1]
         dry_fruits = [x for x in shop.fruits if x.fruit_type_id == 1000 and x.active == 1]
         mgoods={}
@@ -232,49 +233,84 @@ class Market(CustomerBaseHandler):
             mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
         notices = [x for x in shop.config.notices if x.active == 1]
         return self.render("customer/home.html",
-                           context=dict(fruits=fruits, dry_fruits=dry_fruits,menus=shop.menus,mgoods=mgoods,
-                                        cart_f=cart_f, cart_m=cart_m, subpage='home', notices=notices))
+                           context=dict(fruits=fruits, dry_fruits=dry_fruits, menus=shop.menus, mgoods=mgoods,
+                                        cart_count=cart_count, subpage='home', notices=notices))
 
     @tornado.web.authenticated
-    @CustomerBaseHandler.check_arguments("action:int", "charge_type_id:int", "menu_type:int")
-    #action(2: +1，1: -1, 0: delete, 3: 赞+1)；menu_type(0：fruit，1：menu)
+    @CustomerBaseHandler.check_arguments("action:int")
+    #action(2: +1，1: -1, 0: delete, 3: 赞+1, 4:商城首页打包发送的购物车)；
     def post(self, shop_code):
-        shop_id = self.shop_id
         action = self.args["action"]
+        if action == 3:
+            return self.favour()
+        elif action == 4:
+            return cart_list()
+        elif action in (2, 1, 0):  # 更新购物车
+            return self.cart(action)
+
+
+    @CustomerBaseHandler.check_arguments("charge_type_id:int", "menu_type:int")  # menu_type(0：fruit，1：menu)
+    def favour(self):
         charge_type_id = self.args["charge_type_id"]
         menu_type = self.args["menu_type"]
-        if action == 3:
-            favour = self.session.query(models.FruitFavour).\
-                filter_by(customer_id=self.current_user.id,
-                          f_m_id=charge_type_id, type=menu_type).first()
-            if favour:
-                if favour.create_date == datetime.date.today():
-                    return self.send_fail("亲，你今天已经为该商品点过赞了，一天只能赞一次哦")
-                else:  # 今天没点过赞，更新时间
-                    favour.create_date = datetime.date.today()
-            else:  # 没找到点赞记录，插入一条
-                self.session.add(models.FruitFavour(customer_id=self.current_user.id,
-                          f_m_id=charge_type_id, type=menu_type))
-            # 商品赞+1
-            if menu_type == 0:
-                try:
-                    f = self.session.query(models.Fruit).filter_by(id=charge_type_id).one()
-                except:
-                    return self.send_error(404)
-            elif menu_type == 1:
-                try:
-                    f = self.session.query(models.MGoods).filter_by(id=charge_type_id).one()
-                except:
-                    return self.send_error(404)
-            else:
+        favour = self.session.query(models.FruitFavour).\
+            filter_by(customer_id=self.current_user.id,
+                      f_m_id=charge_type_id, type=menu_type).first()
+        if favour:
+            if favour.create_date == datetime.date.today():
+                return self.send_fail("亲，你今天已经为该商品点过赞了，一天只能对一个商品赞一次哦")
+            else:  # 今天没点过赞，更新时间
+                favour.create_date = datetime.date.today()
+        else:  # 没找到点赞记录，插入一条
+            self.session.add(models.FruitFavour(customer_id=self.current_user.id,
+                      f_m_id=charge_type_id, type=menu_type))
+        # 商品赞+1
+        if menu_type == 0:
+            try:
+                f = self.session.query(models.Fruit).filter_by(id=charge_type_id).one()
+            except:
                 return self.send_error(404)
-            f.favour += 1
-            self.session.commit()
-
-        else:  # 更新购物车
-            self.save_cart(charge_type_id, shop_id, action, menu_type)
+        elif menu_type == 1:
+            try:
+                f = self.session.query(models.MGoods).filter_by(id=charge_type_id).one()
+            except:
+                return self.send_error(404)
+        else:
+            return self.send_error(404)
+        f.favour += 1
+        self.session.commit()
         return self.send_success()
 
+
+    @CustomerBaseHandler.check_arguments("fruits:dict", "mgoods:dict")
+    def cart_list(self):
+        fruits = self.args["fruits"]
+        mgoods = self.args["mgoods"]
+
+        cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=self.shop_id).one()
+        cart_fruits = eval(cart.fruits)
+        cart_mgoods = eval(cart.mgoods)
+        for key in fruits:
+            if key in cart_fruits:
+                cart_fruits[key] += fruits[key]
+            else:
+                cart_fruits[key] = fruits[key]
+        for key in mgoods:
+            if key in cart_mgoods:
+                cart_mgoods[key] += mgoods[key]
+            else:
+                cart_mgoods[key] = mgoods[key]
+        cart.fruits = cart_fruits
+        cart.mgoods = cart_mgoods
+        self.commit()
+        return self.send_success()
+
+    @CustomerBaseHandler.check_arguments("charge_type_id:int", "menu_type:int")
+    def cart(self, action):
+        charge_type_id = self.args["charge_type_id"]
+        menu_type = self.args["menu_type"]
+        self.save_cart(charge_type_id, self.shop_id, action, menu_type)
+        return self.send_success()
 
 class Cart(CustomerBaseHandler):
     @tornado.web.authenticated

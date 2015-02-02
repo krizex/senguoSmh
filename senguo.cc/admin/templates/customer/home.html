@@ -9,8 +9,6 @@
 {% set dry_fruits=context['dry_fruits']%}
 {% set mgoods=context['mgoods']%}
 {% set menus=context['menus']%}
-{% set cart_f=context['cart_f'] %}
-{% set cart_m=context['cart_m'] %}
 {% set notices=context['notices'] %}
 <div class="notice-board">
     {% if notices %}
@@ -103,20 +101,10 @@
                         <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
                     </span>
                         {% end %}
-                        {% set value = cart_f[fruit.charge_types[0].id]["num"] if fruit.charge_types[0].id in cart_f else 0%}
-                        {% set hidden =''%}
-                        {% set show =''%}
-                        {%if value==0%}
-                            {% set hidden ='hidden'%}
-                            {% set show ='show'%}
-                        {% else %}
-                            {% set hidden ='show'%}
-                            {% set show ='hidden'%}
-                        {% end %}
-                        <span class="to-add pull-right {{show}} forbid_click"></span>
-                        <span class="pull-right p0 number-change {{hidden}} forbid_click">
+                        <span class="to-add pull-right show forbid_click"></span>
+                        <span class="pull-right p0 number-change hidden forbid_click">
                         <a class="minus-plus pull-right number-plus" href="javascript:;"></a>
-                        <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
+                        <input type="text" value="0" class="number-input pull-right text-green text-center line34 height34" readonly/>
                         <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                     </span>
                     </div>
@@ -124,25 +112,17 @@
                 <ul class="charge-list charge-style color set-width-float font16 {{ftoggle_active}} color" style="display:none">
                     {% for charge in fruit.charge_types %}
                     {% if charge.id !=fruit.charge_types[0].id %}
-                    {% set value = cart_f[charge.id]["num"] if charge.id in cart_f else 0%}
                     {% set hidden =''%}
                     {% set show =''%}
-                    {%if value==0%}
-                        {% set hidden ='hidden'%}
-                        {% set show ='show'%}
-                    {% else %}
-                        {% set hidden ='show'%}
-                        {% set show ='hidden'%}
-                    {% end %}
                     <li class="border-color set-w100-fle">
                         <span class="pull-left text-bgcolor p0 charge-type forbid_click" data-id="{{charge.id}}">
                             {{charge.price}}元/{{charge.num}}
                             <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                         </span>
-                        <span class="to-add pull-right {{show}} forbid_click"></span>
-                        <span class="pull-right p0 number-change {{hidden}} forbid_click">
+                        <span class="to-add pull-right show forbid_click"></span>
+                        <span class="pull-right p0 number-change hidden forbid_click">
                         <a class="minus-plus pull-right number-plus" href="javascript:;"></a>
-                        <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
+                        <input type="text" value="0" class="number-input pull-right text-green text-center line34 height34" readonly/>
                         <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                     </span>
                     </li>
@@ -199,20 +179,10 @@
                                 <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
                             </span>
                             {% end %}
-                            {% set value = cart_f[dry_fruit.charge_types[0].id]["num"] if dry_fruit.charge_types[0].id in cart_f else 0%}
-                            {% set hidden =''%}
-                            {% set show =''%}
-                            {%if value==0%}
-                            {% set hidden ='hidden'%}
-                            {% set show ='show'%}
-                            {% else %}
-                            {% set hidden ='show'%}
-                            {% set show ='hidden'%}
-                            {% end %}
-                            <span class="to-add pull-right {{show}} forbid_click"></span>
-                            <span class="pull-right p0 number-change {{hidden}} forbid_click">
+                            <span class="to-add pull-right show forbid_click"></span>
+                            <span class="pull-right p0 number-change hidden forbid_click">
                                 <a class="minus-plus  pull-right number-plus" href="javascript:;"></a>
-                                <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
+                                <input type="text" value="0" class="number-input pull-right text-green text-center line34 height34" readonly/>
                                 <a class="minus-plus pull-right number-minus " href="javascript:;"></a>
                             </span>
                         </div>
@@ -220,25 +190,15 @@
                     <ul class="charge-list charge-style color set-width-float font16 {{dtoggle_active}} color" style="display:none">
                         {% for charge in dry_fruit.charge_types %}
                         {% if charge.id !=dry_fruit.charge_types[0].id %}
-                        {% set value = cart_f[charge.id]["num"] if charge.id in cart_f else 0%}
-                        {% set hidden =''%}
-                        {% set show =''%}
-                        {%if value==0%}
-                        {% set hidden ='hidden'%}
-                        {% set show ='show'%}
-                        {% else %}
-                        {% set hidden ='show'%}
-                        {% set show ='hidden'%}
-                        {% end %}
                         <li class="border-color set-w100-fle">
                             <span class="pull-left text-bgcolor p0 charge-type forbid_click" data-id="{{charge.id}}">
                                 {{charge.price}}元/{{charge.num}}
                                 <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                             </span>
-                            <span class="to-add pull-right {{show}} forbid_click"></span>
-                            <span class="pull-right p0 number-change {{hidden}} forbid_click">
+                            <span class="to-add pull-right show forbid_click"></span>
+                            <span class="pull-right p0 number-change hidden forbid_click">
                                 <a class="minus-plus pull-right number-plus" href="javascript:;"></a>
-                                <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
+                                <input type="text" value="0" class="number-input pull-right text-green text-center line34 height34" readonly/>
                                 <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                             </span>
                         </li>
@@ -298,20 +258,10 @@
                                 <span data-id="{{mgood.mcharge_types[0].unit}}" class="chargeUnit"></span>
                             </span>
                             {% end %}
-                            {% set value = cart_m[mgood.mcharge_types[0].id]["num"] if mgood.mcharge_types[0].id in cart_m else 0%}
-                            {% set hidden =''%}
-                            {% set show =''%}
-                            {%if value==0%}
-                            {% set hidden ='hidden'%}
-                            {% set show ='show'%}
-                            {% else %}
-                            {% set hidden ='show'%}
-                            {% set show ='hidden'%}
-                            {% end %}
-                            <span class="to-add pull-right {{show}} forbid_click"></span>
-                             <span class="pull-right p0 number-change {{hidden}} forbid_click">
+                            <span class="to-add pull-right show forbid_click"></span>
+                             <span class="pull-right p0 number-change hidden forbid_click">
                                 <a class="minus-plus  pull-right number-plus " href="javascript:;"></a>
-                                <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
+                                <input type="text" value="0" class="number-input pull-right text-green text-center line34 height34" readonly/>
                                 <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                             </span>
                         </div>
@@ -319,25 +269,15 @@
                     <ul class="charge-list charge-style color set-width-float font16 {{mtoggle_active}} color" style="display:none">
                         {% for charge in mgood.mcharge_types %}
                         {% if charge.id !=mgood.mcharge_types[0].id %}
-                        {% set value = cart_m[charge.id]["num"] if charge.id in cart_m else 0%}
-                        {% set hidden =''%}
-                        {% set show =''%}
-                        {%if value==0%}
-                        {% set hidden ='hidden'%}
-                        {% set show ='show'%}
-                        {% else %}
-                        {% set hidden ='show'%}
-                        {% set show ='hidden'%}
-                        {% end %}
                         <li class="border-color set-w100-fle">
                             <span class="pull-left text-bgcolor p0 charge-type forbid_click" data-id="{{charge.id}}">
                                 {{charge.price}}元/{{charge.num}}
                                 <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                             </span>
-                            <span class="to-add pull-right {{show}} forbid_click"></span>
-                             <span class="pull-right p0 number-change {{hidden}} forbid_click">
+                            <span class="to-add pull-right show forbid_click"></span>
+                             <span class="pull-right p0 number-change hidden forbid_click">
                                 <a class="minus-plus pull-right number-plus" href="javascript:;"></a>
-                                <input type="text" value="{{value}}" class="number-input pull-right text-green text-center line34 height34" readonly/>
+                                <input type="text" value="0" class="number-input pull-right text-green text-center line34 height34" readonly/>
                                 <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                             </span>
                         </li>

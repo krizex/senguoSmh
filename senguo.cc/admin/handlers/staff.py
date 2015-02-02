@@ -183,9 +183,10 @@ class Hire(StaffBaseHandler):
                 return self.send_error(404)
             try:
                 hireform = self.session.query(models.HireForm).filter_by(
-                staff_id=self.current_user.id, shop_id=shop_id).one()
+                    staff_id=self.current_user.id, shop_id=shop_id).one()
                 hireform.intro = data["intro"]
                 hireform.advantage = data["advantage"]
+                hireform.status = 1
             except:
                 self.session.add(models.HireForm(staff_id=self.current_user.id, shop_id=shop_id,
                                 intro=data["intro"], advantage=data["advantage"]))
