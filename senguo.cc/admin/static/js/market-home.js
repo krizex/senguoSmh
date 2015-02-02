@@ -165,6 +165,7 @@ function goodsNum(target,action){
 function addCart(link){
     event.preventDefault();
     var url='';
+    var action = 4;
     var fruits={};
     var mgoods={};
     var fruits_list=$('.fruit-list');
@@ -173,26 +174,27 @@ function addCart(link){
         var fruit=fruits_list.eq(i).find('.number-input');
         for(var i=0;i<fruit.length;i++){
             var num=fruit.eq(i).val().trim();
-            var id=fruit.eq(i).parents('.number-change').siblings('.charge-type').data('id');
-            fruits[id]=num;
+            var id=parseInt(fruit.eq(i).parents('.number-change').siblings('.charge-type').data('id'));
+            if(num!=''){fruits[id]=parseInt(num)}
         }
     }
     for(var i=0;i<mgoods_list.length;i++){
         var mgood=mgoods_list.eq(i).find('.number-input');
         for(var i=0;i<mgood.length;i++){
             var num=mgood.eq(i).val().trim();
-            var id=mgood.eq(i).parents('.number-change').siblings('.charge-type').data('id');
-            mgoods[id]=num;
+            var id=parseInt(mgood.eq(i).parents('.number-change').siblings('.charge-type').data('id'));
+            if(num!=''){mgoods[id]=parseInt(num)}
         }
     }
     var args={
+        action:action,
         fruits:fruits,
         mgoods:mgoods
     };
     $.postJson(url,args,function(res){
             if(res.success)
             {
-                //window.location.href=link;
+                window.location.href=link;
             }
             else alert(res.error_text);
         },

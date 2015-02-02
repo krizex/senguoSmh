@@ -244,7 +244,7 @@ class Market(CustomerBaseHandler):
         if action == 3:
             return self.favour()
         elif action == 4:
-            return cart_list()
+            return self.cart_list()
         elif action in (2, 1, 0):  # 更新购物车
             return self.cart(action)
 
@@ -291,18 +291,20 @@ class Market(CustomerBaseHandler):
         cart_fruits = eval(cart.fruits)
         cart_mgoods = eval(cart.mgoods)
         for key in fruits:
+            key = int(key)
             if key in cart_fruits:
-                cart_fruits[key] += fruits[key]
+                cart_fruits[key] += fruits[str(key)]
             else:
-                cart_fruits[key] = fruits[key]
+                cart_fruits[key] = fruits[str(key)]
         for key in mgoods:
+            key = int(key)
             if key in cart_mgoods:
-                cart_mgoods[key] += mgoods[key]
+                cart_mgoods[key] += mgoods[str(key)]
             else:
-                cart_mgoods[key] = mgoods[key]
-        cart.fruits = cart_fruits
-        cart.mgoods = cart_mgoods
-        self.commit()
+                cart_mgoods[key] = mgoods[str(key)]
+        cart.fruits = str(cart_fruits)
+        cart.mgoods = str(cart_mgoods)
+        self.session.commit()
         return self.send_success()
 
     @CustomerBaseHandler.check_arguments("charge_type_id:int", "menu_type:int")
