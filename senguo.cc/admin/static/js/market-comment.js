@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var item_url='/static/items/customer/comment-list-item.html';
+    var item_url='/static/items/customer/comment-list-item.html?v=2015-02-02';
     getComment(item_url);
     $('#getMore').hammer().on('tap',function(){
         var url='/customer/comment?page='+page;
@@ -41,11 +41,13 @@ function commentItem(comment_list){
         var name=comment_list[i]['name'];
         var time=comment_list[i]['time'];
         var comment=comments[i]['comment'];
+        var reply=comments[i]['reply'];
         if(comment==''||comment==null){comment='无'}
         $item.find('.user-img').attr({'src':img});
         $item.find('.user-name').text(name);
         $item.find('.comment-time').text(time);
         $item.find('.comment-text').text(comment);
+        if(reply!=''){$item.find('.reply-text').text(reply);}
         $('#commnent-list').append($item);
     }
 }
