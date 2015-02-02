@@ -8,9 +8,9 @@
             <li class="active">
                 <a href="{{reverse_url('adminComment')}}?action=all&&page=0">所有评价</a>
             </li>
-            <li>
+            <!--<li>
                 <a href="{{reverse_url('adminComment')}}?action=favor&&page=0">收藏的评价</a>
-            </li>
+            </li>-->
         </ul>
     </div>
     {% if len(comments) != 0 %}
@@ -34,7 +34,7 @@
                     </p>
                 </div>
                 <div class="pull-right">
-                    <button class="btn bg-green text-white collect">星标</button>
+                    <!--<button class="btn bg-green text-white collect">星标</button>-->
                     <button class="btn bg-green text-white reply">回复</button>
                 </div>
             </li>
