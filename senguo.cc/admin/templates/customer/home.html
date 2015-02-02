@@ -59,15 +59,17 @@
     </ul>
 </div>
 <p class="text-white no-mar-btom classify-title font18 text-center rainshed_green" id="fruitPosition">水果单品</p>
-<ul class="goods-list bg-white fruit-list">
+<ul class="goods-list  fruit-list">
     {% for fruit in fruits %}
     {% set farrow_active=''%}
     {% set ftoggle_active=''%}
+    {% set fradius_active=''%}
     {%if len(fruit.charge_types) >1 %}
         {% set farrow_active='arrow'%}
         {% set ftoggle_active='toggle'%}
+        {% set fradius_active='radius'%}
     {% end %}
-    <li class="goods-list-item font10 text-grey {{fruit.fruit_type.code}}" data-id="{{fruit.id}}" data-type="fruit" data-num="{{fruit.storage}}">
+    <li class="goods-list-item font10 text-grey {{fruit.fruit_type.code}} {{fradius_active}}" data-id="{{fruit.id}}" data-type="fruit" data-num="{{fruit.storage}}">
         <div class="clearfix box bg">
             <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
                 <a href="javascript:;" class="check-lg-img">
@@ -137,15 +139,17 @@
 </ul>
 {% if dry_fruits%}
     <p class="text-white no-mar-btom classify-title font18 text-center rainshed_green" id="dryFruitPosition">干果单品</p>
-    <ul class="goods-list bg-white fruit-list">
+    <ul class="goods-list fruit-list">
         {% for dry_fruit in dry_fruits %}
         {% set darrow_active=''%}
         {% set dtoggle_active=''%}
+        {% set dradius_active=''%}
         {%if len(dry_fruit.charge_types) >1 %}
             {% set darrow_active='arrow'%}
             {% set dtoggle_active='toggle'%}
+            {% set dradius_active='radius'%}
         {% end %}
-        <li class="goods-list-item font10 text-grey Ganguo" data-id="{{dry_fruit.id}}" data-type="fruit" data-num="{{dry_fruit.storage}}">
+        <li class="goods-list-item font10 text-grey Ganguo  {{dradius_active}}" data-id="{{dry_fruit.id}}" data-type="fruit" data-num="{{dry_fruit.storage}}">
             <div class="clearfix box bg">
                 <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
                     <a href="javascript:;" class="check-lg-img">
@@ -158,7 +162,7 @@
                     </a>
                 </div>
                 <input type="hidden" class="fruit_intro" value="{{dry_fruit.intro}}"/>
-                <div class="col-lg-10 col-md-10 col-xs-9 col-sm-10 pull-right pl5">
+                <div class="col-lg-10 col-md-10 col-xs-9 col-sm-10 pull-right p0 pl5">
                     <div class="show-box {{dtoggle_active}}">
                         <p>
                             <span class="pull-left color fruit-name font16">{{dry_fruit.name}}</span>
@@ -215,16 +219,18 @@
 {% for menu in menus %}
     {% if mgoods[menu.id] %}
     <p class="text-white no-mar-btom classify-title font18 text-center rainshed_green" id="menu{{menu.id}}">{{menu.name}}</p>
-    <ul class="goods-list bg-white menu-list">
+    <ul class="goods-list menu-list">
     {% end %}
     {% for mgood in mgoods[menu.id]%}
         {% set marrow_active=''%}
         {% set mtoggle_active=''%}
+        {% set mradius_active=''%}
         {%if len(mgood.mcharge_types) >1 %}
             {% set marrow_active='arrow'%}
             {% set mtoggle_active='toggle'%}
+            {% set mradius_active='radius'%}
         {% end %}
-        <li class="goods-list-item  font10 text-grey TDSG" data-id="{{mgood.id}}" data-type="menu" data-num="{{mgood.storage}}">
+        <li class="goods-list-item  font10 text-grey TDSG {{mradius_active}}" data-id="{{mgood.id}}" data-type="menu" data-num="{{mgood.storage}}">
             <div class="clearfix box bg">
                 <div class="goods-img col-lg-2 col-md-2 col-xs-3 col-sm-2 p0">
                     <a href="javascript:;" class="check-lg-img">
@@ -237,7 +243,7 @@
                     </a>
                 </div>
                 <input type="hidden" class="fruit_intro" value="{{mgood.intro}}"/>
-                <div class="col-lg-10 col-md-10 col-xs-9 col-sm-10 pull-right pl5">
+                <div class="col-lg-10 col-md-10 col-xs-9 col-sm-10 pull-right p0 pl5">
                     <div class="show-box {{mtoggle_active}}">
                         <p>
                             <span class="pull-left color fruit-name font16 color">{{mgood.name}}</span>

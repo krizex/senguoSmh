@@ -11,13 +11,13 @@
         <p class="font12">店铺ID：<span class="">{{shop.id}}</span></p>
      </div>
      <div class="col-xs-9 col-sm-9 col-md-10 col-lg-10 p5">
-         <div class="level-box btn text-green3 font9 border-ca w49">
-             <p><em class="set-inl-blo"></em>初来乍到</p>
+         <div class="level-box btn text-green3 font9 border-ca w49 p0">
+             <p><em class="set-inl-blo text-white text-center">1</em>初来乍到</p>
          </div>
          {% if follow%}
-         <a href="javascript:;" class="btn text-green3 font9 border-ca pull-right w49 sign-box"><em class="set-inl-blo"></em>店铺签到</a>
+         <a href="javascript:;" class="btn text-green3 font9 border-ca pull-right w49 sign-box p0"><em class="set-inl-blo"></em>店铺签到</a>
          {% else %}
-         <a href="javascript:;" class="btn text-green3 font9 border-ca pull-right w49 sign-box" id="focus-shop"><em class="set-inl-blo"></em>店铺关注</a>
+         <a href="javascript:;" class="btn text-green3 font9 border-ca pull-right w49 sign-box p0" id="focus-shop"><em class="set-inl-blo"></em>店铺关注</a>
          {% end %}
      </div>
  </div>
@@ -40,8 +40,8 @@
      </li>
  </ul>
 <div class="shop-box bg-white">
-    <p class="title font16">店铺信息：</p>
-    <ul class="shop-info text-grey6 font14">
+    <p class="title font14">店铺信息：</p>
+    <ul class="shop-info text-grey6 font12">
         <li>位置：{{address}}</li>
         <li>配送区域：{{shop.deliver_area or '无'}}<em class="area-icon set-inl-blo pull-right"></em></li>
         <li>联系电话：{{shop.admin.accountinfo.phone}}<em class="phone-icon set-inl-blo pull-right"></em></li>
@@ -50,9 +50,9 @@
 </div>
 <div class="shop-box bg-white clearfix">
     <p class="title clearfix">
-        <span class="pull-left font16">店铺成员（{{len(headimgurls)}}）：</span>
-        <a href="{{reverse_url('customerMembers')}}" class="pull-right text-grey font14 m-r5">查看更多>></a>
-        <a href="#" class="staff_href pull-right text-green3 pr10 font14">+加入该店</a>
+        <span class="pull-left font14">店铺成员（{{len(headimgurls)}}）：</span>
+        <a href="{{reverse_url('customerMembers')}}" class="pull-right text-grey font12 m-r5">查看更多>></a>
+        <a href="#" class="staff_href pull-right text-green3 pr10 font12">+加入该店</a>
     </p>
     <ul class="staff-img clearfix">
         {% for staff_img in headimgurls %}
@@ -62,8 +62,8 @@
 </div>
 <div class="shop-box bg-white clearfix">
     <p class="title clearfix">
-        <span class="pull-left font16">店铺评价（{{comment_sum}}）：</span>
-        <a href="{{reverse_url('customerComment')}}?page=0" class="pull-right text-grey font14 m-r5">查看更多>></a>
+        <span class="pull-left font14">店铺评价（{{comment_sum}}）：</span>
+        <a href="{{reverse_url('customerComment')}}?page=0" class="pull-right text-grey font12 m-r5">查看更多>></a>
     </p>
     <ul class="user-comment">
         {% for comment in comments %}

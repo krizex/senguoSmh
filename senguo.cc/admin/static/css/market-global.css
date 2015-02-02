@@ -1,4 +1,4 @@
-body{font-size: 1em;font-family:"microsoft yahei";}
+body{font-size: 1em;font-family:"microsoft yahei";background:url('../svg/bg.svg');}
 p{clear: both;width: 100%}
 ol,ul,li{list-style:none;}
 ul{padding-left:0;}
@@ -117,9 +117,9 @@ input{border:none;}
 
 .back-to-top{width:30px;height:30px;line-height:30px;position:fixed;right:0;bottom:60px;}
 
-.return-btn{display:inline-block;width:20%;height:3em;position:absolute;left:0;background:url('../images/back-white-2px.png') no-repeat 1em center;}
+.return-btn{display:inline-block;width:20%;height:42px;position:absolute;left:0;background:url('../images/back-white-2px.png') no-repeat 10px center;}
 
-.detail-header{background:url('../images/huabian_green.png') repeat-x;height:40px;line-height:40px;position:relative;max-width:800px;min-width:320px;}
+.detail-header{background:url('../svg/rainshed_green.svg') repeat-x;height:42px;line-height:42px;position:relative;max-width:800px;min-width:320px;}
 .detail-header .title{padding-left:2em;}
 
 .border-c{border:1px solid #ccc;}

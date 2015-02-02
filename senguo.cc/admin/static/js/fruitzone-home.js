@@ -1,14 +1,16 @@
 $(document).ready(function(){
     $('.filter-box a').on('click',function(){$(this).addClass('active').siblings().removeClass('active');});
     $('#searchSubmit').on('click',function(evt){Search(evt);});
-    $('.province-select').find('li').on('click',function(){
+    $('#province-select li').on('click',function(){
         var $this=$(this);
         var pro=$this.text();
         if(pro=='北京市'||pro=='天津市'||pro=='上海市'||pro=='香港'||pro=='澳门')
         {
             Filter($(this));
         }
-        else $('.city-select').find('li').each(function(){$(this).on('click',function(){Filter($(this));});});
+    });
+    $('#city-select li').on('click',function(){
+            Filter($(this));
     });
 
     /* 这种实现点击事件处理的方法效率低，建议采用事件代理，可以参考这篇文章：http://chajn.org/project/javascript-events-responding-user/
@@ -55,7 +57,6 @@ function Search(evt){
         action:action
 
     };
-
     if(!q){return alert('请输入店铺名！')}
 
     $.postJson(url,args,
@@ -65,7 +66,6 @@ function Search(evt){
                 $('#homeShopList').empty();
                 var shops=res.shops;
                 list_num=res.shops;
-                console.log(list_num.length);
                 if(list_num.length<list_item_num)
                 {
                     $('#NextPage').parents('li').hide();

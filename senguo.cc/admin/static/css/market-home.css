@@ -1,5 +1,5 @@
-.goods-list{width:100%;float:left;margin:0px;background:url('../svg/bg.svg')}
-.goods-list-item{width:100%;float:left;position:relative;overflow:hidden;margin-bottom:5px;}
+.goods-list{width:100%;float:left;margin:0px;}
+.goods-list-item{width:100%;float:left;position:relative;overflow:hidden;margin-bottom:5px;border:1px solid #ddd;}
 .goods-list-item .goods-img{position:relative;overflow:hidden;max-width:98px !important;max-height:98px;}
 .goods-list-item .goods-img .tag{display:inline-block;position:absolute;}
 .goods-list-item .goods-img a{width:100%;overflow:hidden;padding:2px;}
@@ -7,12 +7,12 @@
 .goods-list-item .great-number{margin-bottom:0;}
 .goods-list-item .great-number em{background:url('../svg/icon_list.svg') no-repeat 0 center;display:inline-block;width:10px;height:10px;}
 .goods-list-item .great-number .gray-heart{background-position:-42px -13px;}
-.goods-list-item .great-number .red-heart{background-position:-42px 2px;}
+.goods-list-item .great-number .red-heart{background-position:-42px 1px;}
 .goods-list-item .charge-style{clear:both;}
 .goods-list-item .charge-style span,a{display:inline-block;}
 .goods-list-item .charge-first{width:100%;float:left;}
-.goods-list-item .charge-list{padding-right:30px;}
-.goods-list-item .charge-list li{height:40px;line-height:40px;margin:2px 0;padding-top:2px;}
+.goods-list-item .charge-list{padding-right:35px;}
+.goods-list-item .charge-list li{height:36px;line-height:36px;margin:2px 0;padding-top:2px;}
 .goods-list-item .number-change{position:relative;width:100px;}
 .goods-list-item .minus-plus{display:inline-block;float:left;width:30px;height:30px;background:url('../svg/icon_list.svg') no-repeat;position:absolute;z-index:10;}
 .goods-list-item .number-input{width:28%;width:70px;position:absolute;left:14px;height:28px;line-height:28px;top:0;border:1px solid #f7f7f8;}
@@ -21,7 +21,8 @@
 .goods-list-item .to-add{display:inline-block;width:30px;height:30px;background:url('../svg/icon_list.svg') no-repeat;background-position:-91px 0px;}
 .goods-list-item .disable{border-color:#ccc;color:#ccc;}
 .goods-list-item .box{width:100%;height:100%;padding:5px 0;}
-.arrow{display:inline-block;position:absolute;bottom:0;right:0;width:0;height:0;border-style:solid;border-width:30px 30px 0 0;transform:rotateX(45deg);-webkit-transform:rotateX(45deg);margin-bottom:-4px;}
+.arrow{display:inline-block;position:absolute;bottom:-2px;right:-5px;width:0;height:0;border-style:solid;border-width:30px 14px 15px;transform-origin:top;transform:rotate(35deg);-ms-transform:rotate(35deg);-moz-transform:rotate(35deg);-webkit-transform:rotate(35deg);-o-transform:rotate(35deg); }
+.radius{background:url('../svg/bg.svg') no-repeat;}
 .show-box{padding-right:35px;margin-top:-5px;}
 .sale{height:26px;line-height:26px}
 .click-great{background:url('../images/heart.png') no-repeat 35% center;background-size:20px;}
@@ -29,7 +30,7 @@
 .sale_tag{background:url('../svg/icon_list.svg') no-repeat 0px 0px;width:38px;height:38px;left:0;top:0}
 .new_tag{background:url('../svg/icon_list.svg') no-repeat 0px -68px;width:38px;height:47px;right:8px;bottom:10px}
 .hot_tag{background:url('../svg/icon_list.svg') no-repeat 0px -43px;width:58px;height:18px;left:8px;top:10px;}
-.limit_tag{background:url('../svg/icon_list.svg') no-repeat 0px -126px;width:50px;height:50px;right:9px;bottom:8px}
+.limit_tag{background:url('../svg/icon_list.svg') no-repeat 0px -126px;width:50px;height:50px;right:6px;bottom:8px}
 
 .large-img-box .close{font-size:12px;opacity:1;padding:8px;margin-right:0px;margin-top:0px;}
 .large-img-box img{width:100%;margin-bottom:10px;}
@@ -62,12 +63,12 @@
 .w3{width:25%;}
 .w7{width:75%;}
 
-.sold-out{position:absolute;width:100%;height:100%;z-index:99;background:url('../svg/sold_out.svg') no-repeat center center;background-color:rgba(0,0,0,0);top:0;background-size:20%;}
+.sold-out{position:absolute;width:100%;height:100%;z-index:99;background:url('../svg/sold_out.svg') no-repeat center center;background-color:rgba(0,0,0,0);top:0;}
 
 .top-title{position:absolute;max-width:800px;width:100%;z-index:100;}
 .top-title .inner{position:relative;}
 .top-title .tit{width:24%;max-width:100px;position:absolute;left:0;font-weight:bold;background-size:1.4em;text-indent:3%;}
-.top-title .tit em{background:url('../svg/icon_list.svg') no-repeat -65px -43px;width:14px;height:12px;margin-top:10px;}
+.top-title .tit em{background:url('../svg/icon_list.svg') no-repeat -95px -64.5px;width:30px;height:33px;margin-top:10px;background-size:300px;}
 .top-title .classify{text-align:center;width:100%;}
 .fix-sty{position:fixed;top:0px;z-index:999;}
 

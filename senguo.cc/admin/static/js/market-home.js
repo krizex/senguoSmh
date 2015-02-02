@@ -41,21 +41,23 @@ $(document).ready(function(){
     });
     //公告滚动
     $('#position li').first().addClass('on');
-    var slider =
-        Swipe(document.getElementById('slider'), {
-            auto: 3000,
-            continuous: true,
-            callback: function(pos) {
+    if($('#position li').length>0){
+        var slider =
+            Swipe(document.getElementById('slider'), {
+                auto: 3000,
+                continuous: true,
+                callback: function(pos) {
 
-                var i = bullets.length;
-                while (i--) {
-                    bullets[i].className = ' ';
+                    var i = bullets.length;
+                    while (i--) {
+                        bullets[i].className = ' ';
+                    }
+                    bullets[pos].className = 'on';
+
                 }
-                bullets[pos].className = 'on';
-
-            }
-        });
-    var bullets = document.getElementById('position').getElementsByTagName('li');
+            });
+        var bullets = document.getElementById('position').getElementsByTagName('li');
+    }
 
     $('goods-list').last().addClass('m-b60');
 
@@ -81,6 +83,7 @@ $(document).ready(function(){
         $this.mouseup(function(e){
             if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
                 parent.find('.toggle_icon').toggleClass('arrow');
+                parent.toggleClass('radius');
                 charge_list.slideToggle(50);
             }
         })

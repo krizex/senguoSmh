@@ -1,11 +1,15 @@
 $(document).ready(function(){
     var code=$('.shop_code').val();
-    if(code!=='not set') {
-        $('.link_notice').show();
-    }
-    else {
+    if(code=='not set'||code=='请设置') {
         $('.notice_word').show();
         $('.code_set').show();
+    }
+    else {
+        $('.link_notice').show();
+        //店铺二维码
+        var shop_link=$('.shop_link').text();
+        var shop_code=$('.shop_link').find('.code').text();
+        $('#shop_link_img').qrcode({render: "canvas",width: 100,height:100,text: shop_link ,typeNumber  : -1});
     }
     $('.area-choose-list li').each(function(){
         $(this).on('click',function(){
@@ -80,7 +84,7 @@ $(document).ready(function(){
     $('.reProvince').text(provinceArea(proc));
     if(citc!=proc)
     {$('.reCity').text(cityArea(proc,citc));}
-
+    //店铺信息编辑
     $('.info_edit').each(function(){
         var $this=$(this);
         $this.on('click',function(){
@@ -173,6 +177,7 @@ function infoEdit(target){
                 {
                     $('.code').text(shop_code);
                     $('.shop_link').attr({'href':'http://zone.senguo.cc/shop/'+shop_code});
+                    $('#shop_link_img').qrcode({render: "canvas",width: 100,height:100,text: 'http://zone.senguo.cc/shop/'+shop_code ,typeNumber  : -1});
                     $('.link_notice').show();
                     $('.notice_word').hide();
                     $('.code_set').hide();

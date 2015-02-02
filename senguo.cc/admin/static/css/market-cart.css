@@ -18,7 +18,7 @@
 .cart-list-item .w10{width:10%;}
 .cart-list-item .goods-info{height:100%;}
 .cart-list-item .charge-type{position:absolute;bottom:5px;left:55px;width:130px;padding-left:12px !important;}
-.cart-list-item .action-box{position:absolute;right:5px;top:30%;}
+.cart-list-item .action-box{position:absolute;right:5px;top:32%;}
 .cart-list-item .charge-item{height:30px;line-height:30px;position:absolute;bottom:0;}
 .cart-list-item .number-change{position:relative;width:100px;}
 .cart-list-item .minus-plus{display:inline-block;float:left;width:30px;height:30px;background:url('../svg/icon_list.svg') no-repeat;position:absolute;z-index:10;}
@@ -49,8 +49,8 @@
 .pay_type .title{width:90px;}
 .pay_type .active .title{color:#33CC66 !important;}
 
-.address-box .tit{width:15%;min-width:50px;line-height:2.5em;}
-.send-address-choose input{width:84%;height:2.5em;line-height:2.5em;text-indent:14px;margin-bottom:5px;}
+.address-box .tit{width:15%;min-width:50px;line-height:30px;}
+.send-address-choose input{width:84%;height:30px;line-height:30px;text-indent:14px;margin-bottom:5px;}
 
 .message-input{padding:10px 15px;}
 .border-grey{border-color:#ddd;}

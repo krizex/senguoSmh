@@ -205,7 +205,7 @@ class Comment(CustomerBaseHandler):
         date_list = []
         for comment in comments:
             date_list.append({"img": comment[0], "name": comment[1],
-                              "comment": comment[2], "time": self.timedelta(comment[3])})
+                              "comment": comment[2], "time": self.timedelta(comment[3]), "reply":comment[4]})
         if page == 0:
             return self.render("customer/comment.html", date_list=date_list)
         return self.write(dict(date_list=date_list))
