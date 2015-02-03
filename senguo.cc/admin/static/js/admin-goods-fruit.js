@@ -1,8 +1,15 @@
 $(document).ready(function(){
+    //查看已上架
+    $('.check-shelf').on('click',function(){
+        var $this=$(this);
+        var link_id= $.getUrlParam('id');
+        if(link_id<1000) $this.attr({'href':'/admin/shelf?action=all&id=1'});
+        else $this.attr({'href':'/admin/shelf?action=all&id=1001'});
+    });
     //导航acitve样式
     var link_id= $.getUrlParam('id');
     var link_action= $.getUrlParam('action');
-    if(link_id==1000) $('.dry_active').addClass('active').siblings('li').removeClass('active');
+    if(link_id>1000) $('.dry_active').addClass('active').siblings('li').removeClass('active');
     $('.menu_active').each(function(){
         var $this=$(this);
         var name=$this.data('id');
@@ -45,7 +52,7 @@ $(document).ready(function(){
                $item.find('.link').attr({'href':'/admin/shelf?action=fruit&id='+key});
                $item.find('.img').attr({'src':'/static/design_img/'+fruit_type[key]['code']+'.png'});
                $item.find('.name').text(fruit_type[key]['name']+'('+fruit_type[key]['sum']+')');
-               if(fruit_type[key]['sum']!==0) $item.css({'border-color':'#44b549'});
+               //if(fruit_type[key]['sum']!==0) $item.css({'border-color':'#44b549'});
                $('.preview-shelve-list').append($item);
            }
         });

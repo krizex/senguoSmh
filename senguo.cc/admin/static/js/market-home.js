@@ -114,9 +114,8 @@ $(document).ready(function(){
         var img_url=$this.find('.img').attr('src');
         var fruit_name=parent.find('.fruit-name').text();
         var fruit_intro=parent.find('.fruit_intro').val();
-        $this.hammer().on('tap',function(){
+        $this.on('click',function(){
             var large_box=$('.large-img-box');
-            console.log(id);
             large_box.modal('show').attr({'data-id':id,'data-type':type});
             large_box.find('#largeImg').attr({'src':img_url});
             large_box.find('.modal-title').text(fruit_name);

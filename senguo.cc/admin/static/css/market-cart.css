@@ -1,4 +1,4 @@
-.box-style{width:100%;padding:10px;margin-bottom:10px;}
+.box-style{width:100%;padding:10px;}
 .bg-width{width:100%;padding:10px;}
 .w-per6{width:60%;}
 .w-per9{width:90%;}
@@ -52,11 +52,12 @@
 .address-box .tit{width:15%;min-width:50px;line-height:30px;}
 .send-address-choose input{width:84%;height:30px;line-height:30px;text-indent:14px;margin-bottom:5px;}
 
-.message-input{padding:10px 15px;}
+.message-input{padding:10px 15px;width:98% !important;}
 .border-grey{border-color:#ddd;}
 .tip-list li{width:32%;margin-right:1%;}
 .tip-list li.active{background:#33CC66 !important;color:#fff !important;}
 
 .tit{width:80px;}
 .tit2{width:60px;}
+.bottom-line{}
 

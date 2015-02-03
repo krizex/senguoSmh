@@ -94,6 +94,7 @@ input{border:none;}
 .m-b10{margin-bottom:10px;}
 .m-b0{margin-bottom:0px !important;}
 .mt42{margin-top:36px;}
+.mt10{margin-top:10px;}
 .radius0{border-radius:0px !important;}
 
 .message-box{position:relative;top:30%;overflow:auto;width:95%;max-width:500px;margin:auto;background-color:#fcfcfc;padding:1px;margin-top:-160px;padding-bottom:15px;border-radius:8px;box-shadow:0 0 8px #747474;overflow:hidden}

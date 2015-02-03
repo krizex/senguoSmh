@@ -12,8 +12,8 @@
 <span class="right-title">商品管理</span>
 <div class="goods-classify">
     <ul class="classify-nav right-nav pull-left">
-        <li class="{{fruit_active}} item"><a href="{{reverse_url('adminShelf')}}?action=fruit&id=1">水果</a></li>
-        <li class="item dry_active"><a href="{{reverse_url('adminShelf')}}?action=fruit&id=1001">干果</a></li>
+        <li class="{{fruit_active}} item"><a href="{{reverse_url('adminShelf')}}?action=fruit&&id=1">水果</a></li>
+        <li class="item dry_active"><a href="{{reverse_url('adminShelf')}}?action=fruit&&id=1001">干果</a></li>
         {% for menu in menus %}
         <li class="item menu_active" data-id="{{menu.id}}"><a href="{{reverse_url('adminShelf')}}?action=menu&id={{menu.id}}">{{menu.name}}</a></li>
         {% end %}
@@ -34,7 +34,7 @@
         <p class="set-introduce">点击右方全部下架，该类目下的所有商品将被下架</p>
     </div>
     <div class="mode-set pull-right">
-        <a href="{{reverse_url('adminShelf')}}?action=all" class="stop-btn btn-style bg-green">查看已上架</a>
+        <a href="{{reverse_url('adminShelf')}}?action=all" class="stop-btn btn-style bg-green check-shelf">查看已上架</a>
         <a href="#" class="stop-btn btn-style lock-mode">全部下架</a>
     </div>
 </div>
