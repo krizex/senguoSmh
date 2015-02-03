@@ -593,35 +593,37 @@ class Order(AdminBaseHandler):
 class Shelf(AdminBaseHandler):
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("action", "id?:int")
+    @AdminBaseHandler.check_arguments("action", "id:int")
     def get(self):
-        # try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
-        # except:return self.send_error(404)
-        # if shop not in self.current_user.shops:
-        #     return self.send_error(403)
-
         action = self.args["action"]
-        fruit_types = self.session.query(models.FruitType).all()
+
         fruit_type_d = {}
+        if self.args["id"] < 1000:
+            fruit_types = self.session.query(models.FruitType).filter("id < 1000").all()
+        else:
+            fruit_types = self.session.query(models.FruitType).filter("id > 1000").all()
         for fruit_type in fruit_types:
             fruit_type_d[fruit_type.id] = {"code": fruit_type.code, "name": fruit_type.name, "sum": 0}
-        if action == "home":
-            return self.render("admin/goods-preview.html", fruit_types=fruit_types, menus=self.current_shop.menus,
-                                context=dict(subpage="goods", goodsSubpage="home"))
-        elif action in ("all", "fruit"):
+
+        if action in ("all", "fruit"):
             fruits=[]
             if action == "all":
-                fruits = self.current_shop.fruits
-                for fruit in self.current_shop.fruits:
+                for fruit in self.current_shop.fruits:  # 水果/干果 过滤
+                    if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000) or\
+                        (self.args["id"] > 1000 and fruit.fruit_type_id < 1000) or fruit.fruit_type_id == 1000:
+                        continue
+                    fruits.append(fruit)
                     if fruit.active == 1:
                         fruit_type_d[fruit.fruit_type_id]["sum"] += 1
             elif action == "fruit":
                 for fruit in self.current_shop.fruits:
                     if fruit.fruit_type_id == self.args["id"]:
                         fruits.append(fruit)
+                    if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000) or\
+                        (self.args["id"] > 1000 and fruit.fruit_type_id < 1000) or fruit.fruit_type_id == 1000:
+                        continue
                     if fruit.active == 1:
                         fruit_type_d[fruit.fruit_type_id]["sum"] += 1
-            del fruit_type_d[1000]  # 把干果删掉
             return self.render("admin/goods-fruit.html", fruits=fruits, fruit_type_d=fruit_type_d,
                                menus=self.current_shop.menus,
                                context=dict(subpage="goods", goodsSubpage="fruit"))

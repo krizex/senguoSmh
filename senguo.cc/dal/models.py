@@ -1067,14 +1067,15 @@ def init_db_data():
     MapBase.metadata.create_all()
     # add fruittypes to database
     s = DBSession()
-    if not s.query(FruitType).count():
-        from dal.db_initdata import fruit_types as fruits
+    from dal.db_initdata import fruit_types as fruits
+    if s.query(FruitType).count() >= len(fruits):
+        print("fruit types exists in db, jump init.")
+    else:
         for fruit in fruits:
-            s.add(FruitType(name=fruit["name"], code=fruit["code"]))
+            if not s.query(FruitType).get(fruit["id"]):
+                s.add(FruitType(id=fruit["id"], name=fruit["name"], code=fruit["code"]))
         s.commit()
         print("init fruittypes success")
-    else:
-        print("fruit types exists in db, jump init.")
     # add chargetypes to database    
     if not s.query(SysChargeType).count():
         from dal.db_initdata import charge_types
