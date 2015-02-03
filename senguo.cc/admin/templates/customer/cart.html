@@ -15,14 +15,14 @@
                 <div class="clearfix">
                     <span class="name pull-left">{{cart_f[key]['charge_type'].fruit.name}}</span>
                     <span class="price pull-left">￥<span class="item_total_price"></span>元</span>
-                </p>
+                </div>
                 <span class="p0 charge-type pull-left" data-id="{{cart_f[key]['charge_type'].id}}">
                     <span class="item_price">{{cart_f[key]['charge_type'].price}}</span>
                     元/{{cart_f[key]['charge_type'].num}}
                     <span data-id="{{cart_f[key]['charge_type'].unit}}" class="chargeUnit"></span>
                 </span>
               </div>
-              <div class="action-box">
+              <div class="action-box font14">
                 <span class="pull-left number-change set-inl-blo">
                     <a class="minus-plus text-green bg-white number-plus text-center font18" href="javascript:;"></a>
                     <input type="text" value="{{cart_f[key]['num']}}" class="number-input item_number text-center" readonly/>
@@ -32,7 +32,6 @@
                     <a href="javascript:;" class="pull-right delete-item text-center font18 text-grey">x</a>
                 </div>
               </div>
-            </div>
          </li>
          {% end %}
          {% for key in cart_m %}
@@ -43,17 +42,17 @@
              <img src="/static/design_img/TDSG.png" class="goods-img pull-left w15"/>
              {% end %}
              <div class="goods-info pull-left font14 p010">
-                 <p>
+                 <div class="clearfix">
                      <span class="name pull-left">{{cart_m[key]['mcharge_type'].mgoods.name}}</span>
                      <span class="price pull-left">￥<span class="item_total_price"></span>元</span>
-                 </p>
+                 </div>
                 <span class="p0 charge-type" data-id="{{cart_m[key]['mcharge_type'].id}}">
                     <span class="item_price">{{cart_m[key]['mcharge_type'].price}}</span>
                         元/{{cart_m[key]['mcharge_type'].num}}
                      <span data-id="{{cart_m[key]['mcharge_type'].unit}}" class="chargeUnit"></span
                 </span>
              </div>
-             <div class="action-box">
+             <div class="action-box font14">
                 <span class="pull-left number-change set-inl-blo">
                     <a class="minus-plus text-green bg-white number-plus text-center font18" href="javascript:;"></a>
                     <input type="text" value="{{cart_m[key]['num']}}" class="number-input item_number text-center" readonly/>
@@ -82,7 +81,7 @@
          <p class="text-center text-pink mincharge_intime" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"按时达"起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元</p>
          <p class="text-center text-pink mincharge_now" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"立即送"起送价金额<span class="mincharge">{{config.min_charge_now}}</span>元</p>
          <div class="send-time-choose clearfix center-block bg-white box-style">
-             <p class="text-left text-grey3 font16">收货时间</p>
+             <p class="text-left text-grey3 font12">收货时间</p>
              {% set active=''%}
              {% set unactive=''%}
              {% if periods %}
@@ -121,7 +120,7 @@
                  <li data-id="1" class="active pull-left" id="send_today"><a href="javascript:;" class="bg-white text-green">今天</a></li>
                  <li data-id="2" id="send_tomorrow" class="pull-right"><a href="javascript:;" class="bg-white text-green">明天</a></li>
              </ul>
-             <ul id="sendPeriod" class="send_period list-group  type-choose font14">
+             <ul id="sendPeriod" class="send_period list-group  type-choose font12">
                  {% for period in periods%}
                  <li data-id="{{period.id}}" class="list-group-item clearfix ">
                      <a href="javascript:;" class="text-grey clearfix">
@@ -154,8 +153,8 @@
              </ul>
          </div>
          <div class="send-address-choose clearfix center-block bg-white box-style">
-             <p class="text-grey3 font16">收货人地址</p>
-             <ul id="addressType" class="address_list list-group type-choose font14">
+             <p class="text-grey3 font14">收货人地址</p>
+             <ul id="addressType" class="address_list list-group type-choose font12">
                  {% for address in current_user.addresses%}
                  <li data-id="{{address.id}}" class="list-group-item clearfix item">
                      <a href="javascript:;" class="text-grey3 pull-left">
@@ -167,8 +166,8 @@
                  </li>
                  {% end %}
              </ul>
-             <p class="clearfix"><a class="text-green pull-right to-add-address font14">+添加</a></p>
-             <div class="address-box hidden center-block font14">
+             <p class="clearfix"><a class="text-green pull-right to-add-address font12">+添加</a></p>
+             <div class="address-box hidden center-block font12">
                  <p>
                      <span class="tit set-inl-blo pull-left">姓名：</span>
                      <input type="text" placeholder="输入收货人姓名" class="input-sty bg-white pull-left" id="receiveName"/>
@@ -190,11 +189,11 @@
          </div>
          <div class="send-address-choose clearfix center-block bg-white box-style">
              <p class="clearfix">
-                 <span class="pull-left text-grey3 font16">支付方式</span>
-                 <a href="#" class="text-green pull-right font14">充值</a>
-                 <span class="pull-right pr10 font14">账户余额：{{current_user.balance}}元</span>
+                 <span class="pull-left text-grey3 font14">支付方式</span>
+                 <a href="#" class="text-green pull-right font12">充值</a>
+                 <span class="pull-right pr10 font12">账户余额：{{current_user.balance}}元</span>
              </p>
-             <ul id="payType" class="pay_type list-group type-choose font14">
+             <ul id="payType" class="pay_type list-group type-choose font12">
                  <li data-id="1" class="active list-group-item clearfix">
                      <a href="javascript:;" class="text-grey">
                          <span class="text-grey3 pull-left title set-inl-blo">货到付款</span>

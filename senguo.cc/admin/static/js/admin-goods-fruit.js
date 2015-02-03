@@ -79,10 +79,10 @@ $(document).ready(function(){
         var n=$this.data('id');
         switch (n){
             case 1:$this.hide();break;
-            case 2:$this.text('SALE').addClass('bg-orange');break;
-            case 3:$this.text('HOT').addClass('bg-red');break;
-            case 4:$this.text('SALE').addClass('bg-pink');break;
-            case 5:$this.text('NEW').addClass('bg-green');break;
+            case 2:$this.addClass('limit_tag');break;
+            case 3:$this.addClass('hot_tag');break;
+            case 4:$this.addClass('sale_tag');break;
+            case 5:$this.addClass('new_tag');break;
         }
     });
     //商品标签显示
@@ -192,10 +192,10 @@ $(document).ready(function(){
         tag.removeClass('bg-green');
         switch (id){
             case 1:tag.hide();break;
-            case 2:tag.show().text('SALE').css({'background-color':'#e07d14'});break;
-            case 3:tag.show().text('HOT').css({'background-color':'#e01445'});break;
-            case 4:tag.show().text('SALE').css({'background-color':'#ff6563'});break;
-            case 5:tag.show().text('NEW').css({'background-color':'#44b549'});break;
+            case 2:tag.show().removeClass('hot_tag sale_tag new_tag').addClass('limit_tag');break;
+            case 3:tag.show().removeClass('limit_tag sale_tag new_tag').addClass('hot_tag');break;
+            case 4:tag.show().removeClass('hot_tag limit_tag new_tag').addClass('sale_tag');break;
+            case 5:tag.show().removeClass('hot_tag sale_tag limit_tag').addClass('new_tag');break;
         }
     });
 

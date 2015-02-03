@@ -163,7 +163,6 @@ function goodsNum(target,action){
 }
 
 function addCart(link){
-    event.preventDefault();
     var url='';
     var action = 4;
     var fruits={};
@@ -172,18 +171,18 @@ function addCart(link){
     var mgoods_list=$('.menu-list');
     for(var i=0;i<fruits_list.length;i++){
         var fruit=fruits_list.eq(i).find('.number-input');
-        for(var i=0;i<fruit.length;i++){
-            var num=fruit.eq(i).val().trim();
-            var id=parseInt(fruit.eq(i).parents('.number-change').siblings('.charge-type').data('id'));
-            if(num!=''){fruits[id]=parseInt(num)}
+        for(var j=0;j<fruit.length;j++){
+            var num=fruit.eq(j).val().trim();
+            var id=fruit.eq(j).parents('.number-change').siblings('.charge-type').data('id');
+            if(num!=''&&num!=0){fruits[id]=Int(num)}
         }
     }
     for(var i=0;i<mgoods_list.length;i++){
         var mgood=mgoods_list.eq(i).find('.number-input');
-        for(var i=0;i<mgood.length;i++){
-            var num=mgood.eq(i).val().trim();
-            var id=parseInt(mgood.eq(i).parents('.number-change').siblings('.charge-type').data('id'));
-            if(num!=''){mgoods[id]=parseInt(num)}
+        for(var j=0;j<mgood.length;j++){
+            var num=mgood.eq(j).val().trim();
+            var id=mgood.eq(j).parents('.number-change').siblings('.charge-type').data('id');
+            if(num!=''&&num!=0){mgoods[id]=Int(num)}
         }
     }
     var args={
@@ -191,14 +190,17 @@ function addCart(link){
         fruits:fruits,
         mgoods:mgoods
     };
-    $.postJson(url,args,function(res){
-            if(res.success)
-            {
-                window.location.href=link;
-            }
-            else alert(res.error_text);
-        },
-        function(){alert('网络错误')})
+    if(!isEmptyObj(fruits)||!isEmptyObj(mgoods)){
+        event.preventDefault();
+        $.postJson(url,args,function(res){
+                if(res.success)
+                {
+                    window.location.href=link;
+                }
+                else alert(res.error_text);
+            },
+            function(){alert('网络错误')})
+    }
 }
 
 function great(type,id){
