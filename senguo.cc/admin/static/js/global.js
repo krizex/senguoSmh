@@ -51,3 +51,7 @@ function mathFloat(target){
     return Math.round(target*1000)/1000;
 }
 
+function isEmptyObj(obj){
+    for(var n in obj){return false}
+    return true;
+}

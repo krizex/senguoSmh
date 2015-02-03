@@ -94,7 +94,7 @@ input{border:none;}
 .radius0{border-radius:0px !important;}
 
 .message-box{position:relative;top:30%;overflow:auto;width:95%;max-width:500px;margin:auto;background-color:#fcfcfc;padding:1px;margin-top:-160px;padding-bottom:15px;border-radius:8px;box-shadow:0 0 8px #747474;overflow:hidden}
-.message-box .bg-header{background:url('../images/huabian_hua.png') repeat-x;height:46px;}
+.message-box .bg-header{background:url('../svg/rainshed2.svg') repeat-x;height:46px;}
 .message-box h1{font-size:large}
 .message-box h1 span{color:#fe6565;margin-right:4px;margin-left:-20px;font-size:40px}
 .message-box p{color:#777}
@@ -135,3 +135,5 @@ input{border:none;}
 .border-rd{border-right:1px solid #ddd;}
 .w49{width:49%;}
 .w50{width:50%;}
+
+input[type=text]:focus{box-shadow:0px;border-color:#f7f7f8 !important;}

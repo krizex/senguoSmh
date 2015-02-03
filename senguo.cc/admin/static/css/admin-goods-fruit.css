@@ -16,13 +16,13 @@
 .goods-list-item .goods-info .info-box{width:80%;}
 .goods-list-item hr{border-color:#ccc;margin-top:10px;margin-bottom:10px;}
 .admin-goods-list .goods-list-con .goods-list-item{width:100%;float:left;padding:10px 10px 0;position:relative;}
-.goods-list-item .goods-item-show .goods-info .goods-img{width:100px;height:100px;overflow:hidden;}
+.goods-list-item .goods-item-show .goods-info .goods-img{width:100px;height:100px;overflow:hidden;position:relative;}
 .goods-list-item .goods-item-show .goods-info .goods-img img{width:100%;}
 .goods-list-item .goods-item-show .goods-info .info-box .charge-list{width:100%;}
 .goods-list-item .goods-item-show .goods-info .info-box .charge-list li{}
 .goods-list-item .goods-left{width:100px;padding:5px;background:#fff;margin-bottom:10px;}
 .goods-list-item .goods-right{width:80%;}
-.goods-list-item .goods-item-edit .upload-img{width:100px;}
+.goods-list-item .goods-item-edit .upload-img{width:100px;position:relative;}
 .goods-list-item .goods-item-edit .upload-img img{width:100%;}
 .goods-list-item .goods-item-edit .upload-img a{display:inline-block;}
 
@@ -31,7 +31,7 @@
 .add-goods-item hr{border-color:#ccc;margin-top:10px;margin-bottom:10px;}
 .add-goods-item .goods-left{width:100px;padding:5px;background:#fff;margin-bottom:10px;}
 .add-goods-item .goods-right{width:80%;}
-.add-goods-item .upload-img{width:100px;}
+.add-goods-item .upload-img{width:100px;position:relative;}
 .add-goods-item .upload-img img{width:100%;}
 .add-goods-item .upload-img a{display:inline-block;}
 
@@ -100,3 +100,8 @@
 .preview-list li{float:left;height:120px;margin-right:25px;margin-bottom:25px;padding:5px;border:2px solid #fff;overflow:hidden;text-align:center;}
 .preview-list li img{width:80px;height::80px;}
 .preview-list li p{height:30px;line-height:30px;margin-bottom:0px;font-size:14px;}
+
+.sale_tag{background:url('../svg/icon_list.svg') no-repeat 0px 0px;width:38px;height:38px;left:0;top:0}
+.new_tag{background:url('../svg/icon_list.svg') no-repeat 0px -68px;width:38px;height:47px;right:8px;top:40px}
+.hot_tag{background:url('../svg/icon_list.svg') no-repeat 0px -43px;width:58px;height:18px;left:8px;top:10px;}
+.limit_tag{background:url('../svg/icon_list.svg') no-repeat 0px -126px;width:50px;height:50px;right:5px;top:50px}

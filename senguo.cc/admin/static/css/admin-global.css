@@ -132,10 +132,10 @@ img{border:none;}
 .list-pagination .page-btn{display:inline-block;width:26px;height:26px;border:1px solid #ccc;border-radius:1px;background:url("../images/container-icon.gif") no-repeat;}
 .list-pagination .pre-page{background-position:-34px -207px;}
 .list-pagination .pre-page:hover{background-color:#f2f2f2;}
-.list-pagination .pre-page:foucus{background-color:#f2f2f2;}
+.list-pagination .pre-page:focus{background-color:#f2f2f2;}
 .list-pagination .next-page{background-position:-58px -214px;}
 .list-pagination .next-page:hover{background-color:#f2f2f2;}
-.list-pagination .next-page:foucus{background-color:#f2f2f2;}
+.list-pagination .next-page:focus{background-color:#f2f2f2;}
 .list-pagination .input-page{;width:60px;height:26px;border:1px solid #ccc;border-radius:1px;color:#999;text-align:center;}
 .list-pagination .jump-to{display:inline-block;width:60px;height:26px;border:1px solid #ccc;border-radius:1px;text-align:center;color:#666;line-height:26px;}
 
