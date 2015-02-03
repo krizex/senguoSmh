@@ -13,7 +13,7 @@
 <div class="goods-classify">
     <ul class="classify-nav right-nav pull-left">
         <li class="{{fruit_active}} item"><a href="{{reverse_url('adminShelf')}}?action=fruit&id=1">水果</a></li>
-        <li class="item dry_active"><a href="{{reverse_url('adminShelf')}}?action=fruit&id=1000">干果</a></li>
+        <li class="item dry_active"><a href="{{reverse_url('adminShelf')}}?action=fruit&id=1001">干果</a></li>
         {% for menu in menus %}
         <li class="item menu_active" data-id="{{menu.id}}"><a href="{{reverse_url('adminShelf')}}?action=menu&id={{menu.id}}">{{menu.name}}</a></li>
         {% end %}

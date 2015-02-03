@@ -226,8 +226,8 @@ class Market(CustomerBaseHandler):
             self.session.commit()
         cart_f, cart_m = self.read_cart(shop.id)
         cart_count = len(cart_f) + len(cart_m)
-        fruits = [x for x in shop.fruits if x.fruit_type_id != 1000 and x.active == 1]
-        dry_fruits = [x for x in shop.fruits if x.fruit_type_id == 1000 and x.active == 1]
+        fruits = [x for x in shop.fruits if x.fruit_type_id < 1000 and x.active == 1]
+        dry_fruits = [x for x in shop.fruits if x.fruit_type_id > 1000 and x.active == 1]
         mgoods={}
         for menu in shop.menus:
             mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]

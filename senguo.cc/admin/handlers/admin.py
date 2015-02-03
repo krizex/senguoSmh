@@ -593,35 +593,37 @@ class Order(AdminBaseHandler):
 class Shelf(AdminBaseHandler):
 
     @tornado.web.authenticated
-    @AdminBaseHandler.check_arguments("action", "id?:int")
+    @AdminBaseHandler.check_arguments("action", "id:int")
     def get(self):
-        # try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
-        # except:return self.send_error(404)
-        # if shop not in self.current_user.shops:
-        #     return self.send_error(403)
-
         action = self.args["action"]
-        fruit_types = self.session.query(models.FruitType).all()
+
         fruit_type_d = {}
+        if self.args["id"] < 1000:
+            fruit_types = self.session.query(models.FruitType).filter("id < 1000").all()
+        else:
+            fruit_types = self.session.query(models.FruitType).filter("id > 1000").all()
         for fruit_type in fruit_types:
             fruit_type_d[fruit_type.id] = {"code": fruit_type.code, "name": fruit_type.name, "sum": 0}
-        if action == "home":
-            return self.render("admin/goods-preview.html", fruit_types=fruit_types, menus=self.current_shop.menus,
-                                context=dict(subpage="goods", goodsSubpage="home"))
-        elif action in ("all", "fruit"):
+
+        if action in ("all", "fruit"):
             fruits=[]
             if action == "all":
-                fruits = self.current_shop.fruits
-                for fruit in self.current_shop.fruits:
+                for fruit in self.current_shop.fruits:  # 水果/干果 过滤
+                    if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000) or\
+                        (self.args["id"] > 1000 and fruit.fruit_type_id < 1000) or fruit.fruit_type_id == 1000:
+                        continue
+                    fruits.append(fruit)
                     if fruit.active == 1:
                         fruit_type_d[fruit.fruit_type_id]["sum"] += 1
             elif action == "fruit":
                 for fruit in self.current_shop.fruits:
                     if fruit.fruit_type_id == self.args["id"]:
                         fruits.append(fruit)
+                    if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000) or\
+                        (self.args["id"] > 1000 and fruit.fruit_type_id < 1000) or fruit.fruit_type_id == 1000:
+                        continue
                     if fruit.active == 1:
                         fruit_type_d[fruit.fruit_type_id]["sum"] += 1
-            del fruit_type_d[1000]  # 把干果删掉
             return self.render("admin/goods-fruit.html", fruits=fruits, fruit_type_d=fruit_type_d,
                                menus=self.current_shop.menus,
                                context=dict(subpage="goods", goodsSubpage="fruit"))
@@ -645,7 +647,7 @@ class Shelf(AdminBaseHandler):
             args["storage"] = data["storage"]
             args["unit"] = data["unit"]
             args["tag"] = data["tag"]
-            args["img_url"] = data["img_url"]
+            args["img_url"] = SHOP_IMG_HOST + data["img_url"]
             args["intro"] = data["intro"]
             args["priority"] = data["priority"]
             if action == "add_fruit":
@@ -674,11 +676,6 @@ class Shelf(AdminBaseHandler):
             self.session.commit()
         elif action == "edit_fruit_img":
             return self.send_qiniu_token("fruit", self.args["id"])
-            # q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-            # token = q.upload_token(BUCKET_GOODS_IMG, expires=120,
-            #                        policy={"callbackUrl": "http://zone.senguo.cc/admin/shelf/fruitImgCallback",
-            #                                "callbackBody": "key=$(key)&id=%s" % self.current_shop.id, "mimeLimit": "image/*"})
-            # return self.send_success(token=token, key=str(time.time())+':'+str(self.current_shop.id))
 
         elif action in ["add_charge_type", "edit_active", "edit_fruit"]: #fruit_id
             try:fruit = self.session.query(models.Fruit).filter_by(id=self.args["id"]).one()
@@ -765,9 +762,7 @@ class Shelf(AdminBaseHandler):
                          unit_num=data["unit_num"])
             self.session.commit()
         elif action == "add_img":
-            q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-            token = q.upload_token(BUCKET_GOODS_IMG, expires=120)
-            return self.send_success(token=token, key=str(time.time()))
+            return self.send_qiniu_token("add", 0)
 
         else: return self.send_error(404)
 

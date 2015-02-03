@@ -396,6 +396,8 @@ class QiniuCallback(FruitzoneBaseHandler):
                 m.delete(bucket=BUCKET_SHOP_IMG, key=fruit.img_url.split('/')[3])
             fruit.update(session=self.session, img_url=SHOP_IMG_HOST+key)
             return self.send_success()
+        elif action == "add":  #什么都不用做
+            return self.send_success()
         return self.send_error(404)
 
 
