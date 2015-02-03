@@ -1,4 +1,4 @@
-body{font-size: 1em;font-family:"microsoft yahei";background:url('../svg/bg.svg');}
+body{font-size: 1em;font-family:"microsoft yahei";}
 p{clear: both;width: 100%}
 ol,ul,li{list-style:none;}
 ul{padding-left:0;}
@@ -6,7 +6,10 @@ a:hover{text-decoration:none;}
 a:focus{text-decoration: none}
 a:focus{outline:none;}
 input{border:none;}
-.container{padding:0;}
+.container{padding:0;z-index:2;}
+.body-container{position:absolute;width:100%;height:100%;z-index:2;}
+.body_bg{width:100%;height:100%;z-index:1;position:fixed;background:url('../svg/bg.svg');top:0;}
+
 .modal{}
 .modal-dialog{margin:0px auto;margin-top:10%!important;max-width:640px;}
 .modal-content{position:relative;}

@@ -21,30 +21,6 @@
         <div class="w50 pull-left text-center border-rd">积分&nbsp;&nbsp;{{current_user.credits}}</div>
         <div class="w50 pull-left text-center">余额&nbsp;&nbsp;{{current_user.balance}}</div>
     </div>
-    <div class="box-style bg-white pb0 m-b10 clearfix">
-        <p class="title clearfix">
-            <span class="pull-left font14"><em class="collect-icon set-inl-blo"></em>我的收藏</span>
-        </p>
-        <p class="title clearfix border-td  address-manage">
-            <span class="pull-left font14"><em class="address-icon set-inl-blo"></em>我的地址管理</span>
-            <a href="javascript:;" class="text-green3 pull-right add-address  m-r10 address_item font14" style="display:none;">+添加收货地址</a>
-        </p>
-        <ul class="list-group m-b0 address-list address_item  clearfix" style="display:none;">
-            {% for address in current_user.addresses%}
-            <li class="address-item list-group-item radius0 clearfix" data-id="{{address.id}}">
-                <p class="clearfix m-b0">
-                    <span class="pull-left item_name">{{address.receiver}}</span>
-                    <span class="pull-right item_phone">{{address.phone}}</span>
-                </p>
-                <p class="item_address m-b0">{{address.address_text}}</p>
-                <p class="clearfix">
-                    <a href="javascript:;" class="delete-btn pull-right delete-address"></a>
-                    <a href="javascript:;" class="edit-btn m-r10 pull-right edit-address"></a>
-                </p>
-            </li>
-            {% end %}
-        </ul>
-    </div>
     <div class="box-style bg-white m-b10 clearfix pb0">
         <p class="title  clearfix">
             <span class="pull-left font14"><em class="order-icon set-inl-blo"></em>我的订单</span>
@@ -75,6 +51,30 @@
                     <p class="text-pink">{{count[6]}}</p>
                 </a>
             </li>
+        </ul>
+    </div>
+    <div class="box-style bg-white pb0 m-b10 clearfix">
+        <p class="title clearfix">
+            <span class="pull-left font14"><em class="collect-icon set-inl-blo"></em>我的收藏</span>
+        </p>
+        <p class="title clearfix border-td  address-manage">
+            <span class="pull-left font14"><em class="address-icon set-inl-blo"></em>我的地址管理</span>
+            <a href="javascript:;" class="text-green3 pull-right add-address  m-r10 address_item font14" style="display:none;">+添加收货地址</a>
+        </p>
+        <ul class="list-group m-b0 address-list address_item  clearfix" style="display:none;">
+            {% for address in current_user.addresses%}
+            <li class="address-item list-group-item radius0 clearfix" data-id="{{address.id}}">
+                <p class="clearfix m-b0">
+                    <span class="pull-left item_name">{{address.receiver}}</span>
+                    <span class="pull-right item_phone">{{address.phone}}</span>
+                </p>
+                <p class="item_address m-b0">{{address.address_text}}</p>
+                <p class="clearfix">
+                    <a href="javascript:;" class="delete-btn pull-right delete-address"></a>
+                    <a href="javascript:;" class="edit-btn m-r10 pull-right edit-address"></a>
+                </p>
+            </li>
+            {% end %}
         </ul>
     </div>
     <div class="address-box modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

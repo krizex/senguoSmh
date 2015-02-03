@@ -64,16 +64,14 @@ $(document).ready(function(){
             });
         var bullets = document.getElementById('position').getElementsByTagName('li');
     }
-
+    //公告详情
+    $('.notice-item').on('click',function(){
+        var $this=$(this);
+        var detail=$this.find('.notice-detail').val();
+        $('.detail-box').modal('show');
+        $('.detail-box').find('.detail').text(detail);
+    });
     $('goods-list').last().addClass('m-b60');
-
-    var img_width=$('.img')[0].width;
-    $('.great-number').each(function(){
-        $(this).css({'line-height':(img_width/2-3)+'px'});
-    });
-    $('.show-box').each(function(){
-        $(this).css({'height':(img_width+4)+'px'});
-    });
     //商品标签转换
     $('.tagItem').each(function(){
         var $this=$(this);
@@ -89,11 +87,23 @@ $(document).ready(function(){
         $this.mouseup(function(e){
             if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
                 parent.find('.toggle_icon').toggleClass('arrow');
-                parent.toggleClass('radius');
+                parent.toggleClass('pr35');
+                parent.find('.back-shape').toggle();
+                parent.find('.number-change').toggleClass('mr40');
                 charge_list.slideToggle(50);
             }
         })
 
+    });
+    $('.back-shape').on('click',function(){
+        var $this=$(this);
+        var parent=$this.parents('.goods-list-item');
+        var charge_list=$this.parents('.goods-list-item').find('.charge-list');
+        parent.toggleClass('pr35');
+        parent.find('.toggle_icon').toggleClass('arrow');
+        $this.toggle();
+        parent.find('.number-change').toggleClass('mr40');
+        charge_list.slideToggle(50);
     });
     //查看大图
     $('.check-lg-img').each(function(){

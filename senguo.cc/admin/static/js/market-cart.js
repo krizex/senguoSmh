@@ -324,6 +324,7 @@ function goodsNum(target,action){
                         var type=$('#sendType').find('.active').data('id');
                         mincharge(type,t_price);
                         if(val==1) parent.remove();
+                        if(cart_list.find('.cart-list-item').length==0) window.location.reload();
                     }
 
                 }
@@ -372,7 +373,6 @@ function itemDelete(target,menu_type) {
                 var freight=Int($('#freight_money').text());
                 mincharge(type,t_price);
                 $('#final_price').text(t_price+freight);
-                console.log(cart_list.find('.cart-list-item').length);
                 if(cart_list.find('.cart-list-item').length==0) window.location.reload();
             }
             else return alert(res.error_text);
