@@ -160,15 +160,36 @@ class ShopProfile(CustomerBaseHandler):
                            context=dict(subpage='shop'))
 
     @tornado.web.authenticated
+    @CustomerBaseHandler.check_arguments("action:str")
     def post(self):
         shop_id = self.shop_id
-        if not shop_id:
-            return self.send_fail()
-        try:
-            self.session.add(models.CustomerShopFollow(customer_id=self.current_user.id, shop_id=shop_id))
+        action = self.args["action"]
+        if action == "favour":
+            if not shop_id:
+                return self.send_fail()
+            try:
+                self.session.add(models.CustomerShopFollow(customer_id=self.current_user.id, shop_id=shop_id))
+                self.session.commit()
+            except:
+                return self.send_fail("已关注成功")
+        elif action == "signin":
+            signin = self.session.query(models.ShopSignIn).filter_by(
+                customer_id=self.current_user.id, shop_id=shop_id).first()
+            if signin:
+                if signin.last_date == datetime.date.today():
+                    return self.send_fail("亲，你今天已经签到了，一天只能签到一次哦")
+                else:  # 今天没签到
+                    if datetime.date.today() - signin.last_date == datetime.timedelta(1):  # 判断是否连续签到
+                        self.current_user.credits += signin.keep_days
+                        signin.keep_days += 1
+                    else:
+                        self.current_user.credits += 1
+                        signin.keep_days = 1
+                    signin.last_date = datetime.date.today()
+
+            else:  # 没找到签到记录，插入一条
+                self.session.add(models.ShopSignIn(customer_id=self.current_user.id, shop_id=shop_id))
             self.session.commit()
-        except:
-            return self.send_fail("已关注成功")
         return self.send_success()
 
 class Members(CustomerBaseHandler):

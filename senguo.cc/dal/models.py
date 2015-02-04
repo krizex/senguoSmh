@@ -827,6 +827,13 @@ class FruitFavour(MapBase):
     type = Column(TINYINT, primary_key=True, nullable=False)  # 0：fruit，1：mgoods
     create_date = Column(Date, default=func.curdate())
 
+class ShopSignIn(MapBase):
+    __tablename__ = "__shop_sign_in__"  # 店铺签到表
+
+    customer_id = Column(Integer, primary_key=True, nullable=False)
+    shop_id = Column(Integer, primary_key=True, nullable=False)
+    keep_days = Column(Integer, default=1)  # 已连续签到天数
+    last_date = Column(Date, default=func.curdate())  # 最后一次签到的日期
 
 #todo :如果水果
 class Order(MapBase, _CommonApi):
