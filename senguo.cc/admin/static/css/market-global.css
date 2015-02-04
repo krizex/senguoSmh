@@ -8,7 +8,7 @@ a:focus{outline:none;}
 input{border:none;}
 .container{padding:0;z-index:2;}
 .body-container{position:absolute;width:100%;height:100%;z-index:2;}
-.body_bg{width:100%;height:100%;z-index:1;position:fixed;background:url('../svg/bg.svg');top:0;}
+.body_bg{width:100%;height:100%;z-index:1;position:fixed;background:url('../svg/bg.svg');background-size:10px 10px;top:0;}
 
 .modal{}
 .modal-dialog{margin:0px auto;margin-top:10%!important;max-width:640px;}
@@ -51,26 +51,26 @@ input{border:none;}
 .padding-right-none{padding-right:0px;}
 .phone-box{width:100%;min-width:320px;max-width:800px;margin:0 auto;overflow:hidden;padding-bottom:50px;}
 
-.bottom-nav{max-width:800px;margin:0 auto;height:46px;overflow:hidden;background:url('../svg/rainshed_white.svg') repeat-x;}
+.bottom-nav{max-width:800px;margin:0 auto;height:50px;overflow:hidden;background:url('../svg/rainshed_white.svg') repeat-x;}
 .bottom-nav ul{margin-bottom:0;}
 .bottom-nav li{text-align:center;position:relative;height:46px;}
-.bottom-nav li a{display:block;background-size:2em !important;padding-top:8px;}
-.bottom-nav li a em{display:inline-block;background:url('../svg/icon_list.svg') no-repeat;width:20px;height:20px;margin:0 auto;}
+.bottom-nav li a{display:block;background-size:2em !important;padding-top:10px;}
+.bottom-nav li a em{display:inline-block;background:url('../svg/icon_list.svg') no-repeat;width:20px;height:20px;margin:0 auto;background-size:120px 180px;}
 .bottom-nav li a p{margin-top:-6px;}
 .bottom-nav li:hover a{color:#80c26b !important;}
 .bottom-nav .active a{color:#80c26b !important;}
-.bottom-nav .home em{background-position:-93px -43px;}
-.bottom-nav .goods em{background-position:-124px -43px;}
-.bottom-nav .cart em{background-position:-150px -43px;}
-.bottom-nav .my em{background-position:-179px -43px;}
-.bottom-nav li:hover .home em{background-position:-94px -69px;}
-.bottom-nav li:hover .goods em{background-position:-124px -69px;}
-.bottom-nav li:hover .cart em{background-position:-154px -69px;}
-.bottom-nav li:hover .my em{background-position:-181px -69px;}
-.bottom-nav .active .home em{background-position:-94px -69px;}
-.bottom-nav .active .goods em{background-position:-124px -69px;}
-.bottom-nav .active .cart em{background-position:-154px -69px;}
-.bottom-nav .active .my em{background-position:-181px -69px;}
+.bottom-nav .home em{background-position:0 0;}
+.bottom-nav .goods em{background-position:-26px 0px;}
+.bottom-nav .cart em{background-position:-50px 0px;}
+.bottom-nav .my em{background-position:-75px 0px;}
+.bottom-nav li:hover .home em{background-position:0 -24px;}
+.bottom-nav li:hover .goods em{background-position:-26px -24px;}
+.bottom-nav li:hover .cart em{background-position:-50px -24px;}
+.bottom-nav li:hover .my em{background-position:-75px -24px;}
+.bottom-nav .active .home em{background-position:0px -24px;}
+.bottom-nav .active .goods em{background-position:-26px -24px;}
+.bottom-nav .active .cart em{background-position:-50px -24px;}
+.bottom-nav .active .my em{background-position:-75px -24px;}
 
 .set-inl-blo{display:inline-block;}
 .no-mar-btom{margin-bottom:0px;}
@@ -131,7 +131,7 @@ input{border:none;}
 .rainshed2{background:url('../svg/rainshed1.svg') repeat-x;height:42px;line-height:42px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;}
 .rainshed_green{background:url('../svg/rainshed_green.svg') repeat-x;height:42px;line-height:42px;width:100%;max-width:800px;}
 
-.desaturate{filter:grayscale(100%);-webkit-filter:grayscale(100%);-moz-filter:grayscale(100%);-ms-filter:grayscale(100%);-o-filter:grayscale(100%);filter: url('../svg/saturate.svg#greyscale');filter: grayscale(100%);filter:gray;}
+.desaturate{filter:grayscale(100%);-webkit-filter:grayscale(100%);-moz-filter:grayscale(100%);-ms-filter:grayscale(100%);-o-filter:grayscale(100%);filter: url('../svg/saturate.svg#greyscale');filter: grayscale(100%);filter:gray;filter: grayscale(1)}
 
 .border-ca{border:1px solid #ddd;}
 .border-bd{border-bottom:1px solid #ddd;}

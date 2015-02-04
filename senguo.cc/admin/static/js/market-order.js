@@ -61,7 +61,7 @@ $(document).ready(function(){
     var comment_order_id;
     $('.comment-btn').each(function(){
         var $this = $(this);
-        $this.hammer().on('tap', function () {
+        $this.on('click', function () {
             $('#commentBox').modal('show');
             index=$this.parents('.order-list-item').index();
             comment_order_id=$this.parents('.order-list-item').data('id');

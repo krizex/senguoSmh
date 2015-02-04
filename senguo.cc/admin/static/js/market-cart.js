@@ -1,4 +1,6 @@
 $(document).ready(function(){
+    if(!freigh_ontime) freigh_ontime=0;
+    if(!freigh_now) freigh_now=0;
     $('.address_list li').eq(0).addClass('active');
     mincharge_now=Int($('.mincharge_now').find('.mincharge').text());
     mincharge_intime=Int($('.mincharge_intime').find('.mincharge').text());

@@ -14,11 +14,22 @@
          <div class="level-box btn text-green3 font9 border-ca w49 p0">
              <p><em class="set-inl-blo text-white text-center">1</em>初来乍到</p>
          </div>
+         {% set sign_acitve='' %}
+         {% set sign_text='' %}
+         {% set follow_acitve='' %}
          {% if follow%}
-         <a href="javascript:;" class="btn text-green3 font9 border-ca pull-right w49 sign-box p0" id="signin-shop"><em class="set-inl-blo"></em>店铺签到</a>
+             {% set follow_acitve='hidden' %}
          {% else %}
-         <a href="javascript:;" class="btn text-green3 font9 border-ca pull-right w49 sign-box p0" id="focus-shop"><em class="set-inl-blo"></em>店铺关注</a>
+            {% set follow_acitve='show' %}
          {% end %}
+         {% if signin %}
+            {% set sign_acitve='bg-grey' %}
+            {% set sign_text='已签到' %}
+         {% else %}
+            {% set sign_text='店铺签到' %}
+         {% end %}
+         <a href="javascript:;" class="btn text-green3 font9 border-ca pull-right w49 sign-box p0 {{sign_acitve}}" id="signin-shop"><em class="set-inl-blo"></em><span class="sign_text">{{sign_text}}</span></a>
+         <a href="javascript:;" class="btn text-green3 font9 border-ca pull-right w49 sign-box p0 {{follow_acitve}}" id="focus-shop"><em class="set-inl-blo"></em>店铺关注</a>
      </div>
  </div>
  <ul class="info2 text-center bg-white clearfix font12">
