@@ -12,7 +12,7 @@
             </a>
         </div>
         <div class="pull-right title-style2  new-item">
-            <a href="#">
+            <a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0">
                 <span class="new-user"><i></i>{{new_follower_sum}}</span>
                 <p>新增用户</p>
             </a>
@@ -27,7 +27,7 @@
             </a>
         </div>
         <div class="pull-right title-style2 item">
-            <a href="#">
+            <a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0">
                 <span class="total-user"><i></i>{{follower_sum}}</span>
                 <p>总用户数</p>
             </a>

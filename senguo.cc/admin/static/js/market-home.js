@@ -42,7 +42,10 @@ $(document).ready(function(){
         var $this=$(this);
         var num=Int($this.data('num'));
         if(num<=0){
-            $this.append('<div class="sold-out"><div class="out"></div></div>').find('.box').addClass('desaturate');
+            $this.append('<div class="sold-out"><div class="out"></div></div>').find('.box').addClass('desaturate').find('.arrow').css({'border-color':'transparent #B6B6B6 transparent transparent'});
+            $this.find('.sold-out').css({'background-color':'rgba(0,0,0,0.1)'});
+            $this.find('.bg').css({'background':'#FCFCFC'});
+            $this.find('.color').css({'color':'#757575'});
         }
     });
     //公告滚动

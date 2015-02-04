@@ -96,28 +96,62 @@ $(document).ready(function(){
     var time_now=checkTime(time.getHours())+':'+checkTime(time.getMinutes())+':'+checkTime(time.getSeconds());
     //按时达根据当前时间选择时间段
     var stop_range=Int($('.stop-range').val());
-    $('.send_period li').each(function(){
-        var $this=$(this);
-        var intime_startHour=Int($this.find('.intime_startHour').val());
-        var intime_startMin=Int($this.find('.intime_startMin').val());
-        var time;
-        if(stop_range<=intime_startMin){
-            time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
-        }
-        else time=checkTime(intime_startHour-1)+':'+checkTime(60-(stop_range-intime_startMin))+':00';
-        $this.on('click',function(){
-            var today=$('#sendDay').find('.active').data('id');
-            if(today==1) {
-                if (time >= time_now) $this.addClass('active');
-                else {
-                    $this.removeClass('active').addClass('border-grey');
-                    return alert('抱歉，已超过了该送货时间段的下单时间!请选择下一个时间段！');
-                }
+    var today=$('#sendDay').find('.active').data('id');
+    if(today==1) {
+        $('.send_period li').each(function(){
+            var $this=$(this);
+            var intime_startHour=Int($this.find('.intime_startHour').val());
+            var intime_startMin=Int($this.find('.intime_startMin').val());
+            var time;
+            if(stop_range<=intime_startMin){
+                time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
             }
-            else $this.removeClass('border-grey');
+            else{
+                time=checkTime(intime_startHour-1)+':'+checkTime(60-(stop_range-intime_startMin))+':00';
+            }
+            if (time < time_now) {
+                $this.removeClass('available').addClass('not_available').removeClass('active');
+            }
+            $('.send_period .available').first().addClass('active');
+            $this.on('click',function(){
+                if($this.hasClass('available')) {
+                    var today_now = $('#sendDay').find('.active').data('id');
+                    if (today_now == 1 && time >= time_now) {
+                        $this.addClass('active');
+                    }
+                }
+                else return alert('抱歉，已超过了该送货时间段的下单时间!请选择下一个时间段！');
+           });
+        });}
+        $('.send_period li').on('click',function(){
+            var $this=$(this);
+            if($this.hasClass('available')) {$this.addClass('active').siblings().removeClass('active')}
+        });
+    //按时达选择今天
+    $('#send_today').on('click',function(){
+        $('.send_period li').each(function(){
+            var $this=$(this);
+            var intime_startHour=Int($this.find('.intime_startHour').val());
+            var intime_startMin=Int($this.find('.intime_startMin').val());
+            var time;
+            if(stop_range<=intime_startMin){
+                time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
+            }
+            else{
+                time=checkTime(intime_startHour-1)+':'+checkTime(60-(stop_range-intime_startMin))+':00';
+            }
+            if (time < time_now) {$this.removeClass('available').addClass('not_available').removeClass('active');}
+            $('.send_period .available').first().addClass('active').siblings().removeClass('active');
         });
     });
-
+    //按时达选择明天
+    $('#send_tomorrow').on('click',function(){
+        $('.send_period li').each(function(){
+            var $this=$(this);
+            $this.addClass('available').removeClass('not_available');
+        });
+        $('.send_period li').first().addClass('active').siblings().removeClass('active');
+    });
     //按时达/立即送模式选择
     var intime_on=$('.send-intime').data('config');
     var now_on=$('.send-now').data('config');

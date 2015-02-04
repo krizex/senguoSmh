@@ -12,7 +12,7 @@
 .cart-list{padding:10px;border-radius:3px;}
 .cart-list-item{position:relative;border:1px solid #eee;padding:5px;}
 .cart-list-item .bg{padding:5px 0;}
-.cart-list-item .goods-img{border-radius:2px;}
+.cart-list-item .goods-img{border-radius:2px;width:50px;}
 .cart-list-item .w15{width:50px;}
 .cart-list-item .w75{width:75%;}
 .cart-list-item .w10{width:10%;}
@@ -30,8 +30,8 @@
 .cart-list-item .name{min-width:90px;}
 
 .send_type{border-top-left-radius:2px;border-top-right-radius:2px;overflow:hidden;margin-bottom:0px;}
-.send_type li{width:49%;}
-.send_type li a{display:block;border-radius:4px;border:1px solid #ccc;}
+.send_type li{}
+.send_type li a{display:block;border-radius:4px;}
 .send_type li a p{margin-bottom:0px;margin-top:3px;letter-spacing:-1px;}
 .send_type li a p:last-child{margin-bottom:3px;}
 .send_type li.active a{border-color:#33CC66;}
@@ -61,3 +61,7 @@
 .tit2{width:60px;}
 .bottom-line{}
 
+.available{color:#333 !important;}
+.available span{color:#333 !important;}
+.not_available{border-color:#ddd;color:#ccc !important;}
+.not_available span{color:#ccc !important;}
