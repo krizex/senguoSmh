@@ -171,10 +171,21 @@ class ShopManage(SuperBaseHandler):
             return self.send_error(400)
 
         if self.args["new_status"] == models.SHOP_STATUS.DECLINED:
-            shop_temp.update(self.session, shop_status = self.args["new_status"],
+            shop_temp.update(self.session, shop_status=3,
                         declined_reason=self.args["declined_reason"])
-        else:#把临时表的内容复制到shop表
-            self.session.add(models.Shop(admin_id=shop_temp.admin_id,
+        else:
+            if shop_temp.shop_status == 2:
+                return self.send_error("店铺已经申请成功")
+
+            # 把临时表的内容复制到shop表
+            period1 = models.Period(name="中午", start_time="12:00", end_time="12:30")
+            period2 = models.Period(name="下午", start_time="17:30", end_time="18:00")
+            period3 = models.Period(name="晚上", start_time="21:00", end_time="22:00")
+
+            config = models.Config()
+            config.periods.extend([period1, period2, period3])
+
+            shop = models.Shop(admin_id=shop_temp.admin_id,
                                          shop_name=shop_temp.shop_name,
                                          create_date_timestamp=shop_temp.create_date_timestamp,
                                          shop_trademark_url=shop_temp.shop_trademark_url,
@@ -183,8 +194,11 @@ class ShopManage(SuperBaseHandler):
                                          shop_city=shop_temp.shop_city,
                                          shop_address_detail=shop_temp.shop_address_detail,
                                          have_offline_entity=shop_temp.have_offline_entity,
-                                         shop_intro=shop_temp.shop_intro))
-            self.session.delete(shop_temp)
+                                         shop_intro=shop_temp.shop_intro)
+            shop.config = config
+
+            self.session.add(shop)
+            shop_temp.shop_status = 3
             self.session.commit()
         return self.send_success()
 

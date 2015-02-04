@@ -396,6 +396,16 @@ class QiniuCallback(FruitzoneBaseHandler):
                 m.delete(bucket=BUCKET_SHOP_IMG, key=fruit.img_url.split('/')[3])
             fruit.update(session=self.session, img_url=SHOP_IMG_HOST+key)
             return self.send_success()
+        elif action == "mgoods":
+            try:
+                mgoods = self.session.query(models.MGoods).filter_by(id=id).one()
+            except:
+                return self.send_error(404)
+            if mgoods.img_url:  #先要把旧的的图片删除
+                m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
+                m.delete(bucket=BUCKET_SHOP_IMG, key=mgoods.img_url.split('/')[3])
+            fruit.update(session=self.session, img_url=SHOP_IMG_HOST+key)
+            return self.send_success()
         elif action == "add":  #什么都不用做
             return self.send_success()
         return self.send_error(404)

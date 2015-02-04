@@ -164,8 +164,11 @@ class ShopProfile(CustomerBaseHandler):
         shop_id = self.shop_id
         if not shop_id:
             return self.send_fail()
-        self.session.add(models.CustomerShopFollow(customer_id=self.current_user.id, shop_id=shop_id))
-        self.session.commit()
+        try:
+            self.session.add(models.CustomerShopFollow(customer_id=self.current_user.id, shop_id=shop_id))
+            self.session.commit()
+        except:
+            return self.send_fail("已关注成功")
         return self.send_success()
 
 class Members(CustomerBaseHandler):

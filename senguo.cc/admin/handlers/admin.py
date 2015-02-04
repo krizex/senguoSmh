@@ -676,6 +676,8 @@ class Shelf(AdminBaseHandler):
             self.session.commit()
         elif action == "edit_fruit_img":
             return self.send_qiniu_token("fruit", self.args["id"])
+        elif action == "edit_mgoods_img":
+            return self.send_qiniu_token("mgoods", self.args["id"])
 
         elif action in ["add_charge_type", "edit_active", "edit_fruit"]: #fruit_id
             try:fruit = self.session.query(models.Fruit).filter_by(id=self.args["id"]).one()
