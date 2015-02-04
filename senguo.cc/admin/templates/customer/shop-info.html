@@ -8,14 +8,14 @@
      </div>
      <div class="col-xs-9 col-sm-9 col-md-10 col-lg-10 p5">
         <p class="font16">{{shop.shop_name}}</p>
-        <p class="font12">店铺ID：<span class="">{{shop.id}}</span></p>
+        <p class="font12">店铺号：<span class="">{{shop.shop_code}}</span></p>
      </div>
      <div class="col-xs-9 col-sm-9 col-md-10 col-lg-10 p5">
          <div class="level-box btn text-green3 font9 border-ca w49 p0">
              <p><em class="set-inl-blo text-white text-center">1</em>初来乍到</p>
          </div>
          {% if follow%}
-         <a href="javascript:;" class="btn text-green3 font9 border-ca pull-right w49 sign-box p0"><em class="set-inl-blo"></em>店铺签到</a>
+         <a href="javascript:;" class="btn text-green3 font9 border-ca pull-right w49 sign-box p0" id="signin-shop"><em class="set-inl-blo"></em>店铺签到</a>
          {% else %}
          <a href="javascript:;" class="btn text-green3 font9 border-ca pull-right w49 sign-box p0" id="focus-shop"><em class="set-inl-blo"></em>店铺关注</a>
          {% end %}

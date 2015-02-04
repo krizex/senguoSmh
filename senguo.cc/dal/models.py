@@ -350,9 +350,9 @@ class ShopTemp(MapBase, _CommonApi):
     admin = relationship("ShopAdmin")
 
 class Shop(MapBase, _CommonApi):
-    def __init__(self, **kwargs):
-        self.config=Config()
-        super().__init__(**kwargs)
+    # def __init__(self, **kwargs):
+    #     self.config=Config()
+    #     super().__init__(**kwargs)
 
     __relationship_props__ = ["admin", "demand_fruits", "onsale_fruits"]
     __tablename__ = "shop"
@@ -827,6 +827,13 @@ class FruitFavour(MapBase):
     type = Column(TINYINT, primary_key=True, nullable=False)  # 0：fruit，1：mgoods
     create_date = Column(Date, default=func.curdate())
 
+class ShopSignIn(MapBase):
+    __tablename__ = "__shop_sign_in__"  # 店铺签到表
+
+    customer_id = Column(Integer, primary_key=True, nullable=False)
+    shop_id = Column(Integer, primary_key=True, nullable=False)
+    keep_days = Column(Integer, default=1)  # 已连续签到天数
+    last_date = Column(Date, default=func.curdate())  # 最后一次签到的日期
 
 #todo :如果水果
 class Order(MapBase, _CommonApi):
@@ -953,21 +960,8 @@ class MChargeType(MapBase, _CommonApi):
     active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 
     mgoods = relationship("MGoods", uselist=False)
-# class OrderCTypeLink(MapBase):
-#     __tablename__ = "order_ctype_link"
-#
-#     order_id = Column(Integer, ForeignKey(Order.id), primary_key=True, nullable=False)
-#     charge_type_id = Column(Integer, ForeignKey(ChargeType.id), primary_key=True, nullable=False)
-#     num = Column(Integer) #单品数量
-#
-# class OrderMTypeLink(MapBase):
-#     __tablename__ = "order_mtype_link"
-#
-#     order_id = Column(Integer, ForeignKey(Order.id),primary_key=True, nullable=False)
-#     mgoods_id = Column(Integer, ForeignKey(MGoods.id),primary_key=True, nullable=False)
-#     mcharge_type_id = Column(Integer, ForeignKey(MChargeType.id),primary_key=True, nullable=False)
-#     num = Column(Integer) #单品数量
 
+# 购物车 格式为 {charge_type_id:num}
 class Cart(MapBase, _CommonApi):
     __tablename__ = "cart"
     id = Column(Integer, ForeignKey(Customer.id), primary_key=True, nullable=False)
@@ -982,13 +976,13 @@ class Config(MapBase, _CommonApi):
     id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
     receipt_msg = Column(String(100)) #小票附加信息设置
     receipt_img = Column(String(1000))  # 小票图片url
-    min_charge_on_time = Column(SMALLINT, default=0) #按时达起送金额
+    min_charge_on_time = Column(SMALLINT, default=3) #按时达起送金额
     freight_on_time = Column(SMALLINT, default=0)  # 按时达运费
-    min_charge_now = Column(SMALLINT, default=0) #立即送起送金额
-    freight_now = Column(SMALLINT, default=0)  # 立即送运费
+    min_charge_now = Column(SMALLINT, default=25) #立即送起送金额
+    freight_now = Column(SMALLINT, default=2)  # 立即送运费
     stop_range = Column(SMALLINT, default=0) #下单截止时间（分钟）
-    start_time_now = Column(Time,default=0) #立即送起始时间
-    end_time_now = Column(Time,default=0) #立即送结束时间
+    start_time_now = Column(Time,default="9:00") #立即送起始时间
+    end_time_now = Column(Time,default="23:00") #立即送结束时间
     ontime_on = Column(Boolean, default=True)
     now_on = Column(Boolean, default=True)
     hire_on = Column(Boolean, default=False)
