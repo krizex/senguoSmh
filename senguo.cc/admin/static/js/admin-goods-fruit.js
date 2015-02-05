@@ -1,8 +1,15 @@
 $(document).ready(function(){
+    //查看已上架
+    $('.check-shelf').on('click',function(){
+        var $this=$(this);
+        var link_id= $.getUrlParam('id');
+        if(link_id<1000) $this.attr({'href':'/admin/shelf?action=all&id=1'});
+        else $this.attr({'href':'/admin/shelf?action=all&id=1001'});
+    });
     //导航acitve样式
     var link_id= $.getUrlParam('id');
     var link_action= $.getUrlParam('action');
-    if(link_id>=1000) $('.dry_active').addClass('active').siblings('li').removeClass('active');
+    if(link_id>1000) $('.dry_active').addClass('active').siblings('li').removeClass('active');
     $('.menu_active').each(function(){
         var $this=$(this);
         var name=$this.data('id');
@@ -45,7 +52,7 @@ $(document).ready(function(){
                $item.find('.link').attr({'href':'/admin/shelf?action=fruit&id='+key});
                $item.find('.img').attr({'src':'/static/design_img/'+fruit_type[key]['code']+'.png'});
                $item.find('.name').text(fruit_type[key]['name']+'('+fruit_type[key]['sum']+')');
-               if(fruit_type[key]['sum']!==0) $item.css({'border-color':'#44b549'});
+               //if(fruit_type[key]['sum']!==0) $item.css({'border-color':'#44b549'});
                $('.preview-shelve-list').append($item);
            }
         });
@@ -118,6 +125,8 @@ $(document).ready(function(){
     $('.add-new-goods').on('click',function(){
         var max_goods_num=$('.goods-list').find('.goods-list-item').length;
         var code=$('.type-class .active').data('code');
+        var key='';
+        var token='';
         add_goods_box.empty();
         if(max_goods_num<5){
             $.getItem('/static/items/admin/add-new-goods.html?v=20150112',function(data){
@@ -137,7 +146,29 @@ $(document).ready(function(){
                         fileSizeLimit   : '10MB',
                         'fileObjName' : 'file',
                         'removeCompleted' : true,
-                        'fileType':'*.gif;*.png;*.jpg;*,jpeg',
+                        'fileType':'*.gif;*.png;*.jpg;*.jpeg;*.svg;*.JPG;*.JPEG;*.PNG;*.GIF;*.bmp;*.BMP;',
+                        'onAddQueueItem' : function(file){
+                            var fileName = file.name;
+                            var ext = fileName.substring(fileName.lastIndexOf(".")+1,fileName.length);
+                            switch (ext) {
+                                case 'jpg':
+                                case 'JPG':
+                                case 'jpeg':
+                                case 'JPEG':
+                                case 'png':
+                                case 'PNG':
+                                case 'gif':
+                                case 'GIF':
+                                case 'bmp':
+                                case 'BMP':
+                                case 'svg':
+                                    break;
+                                default:
+                                    alert("无效的文件格式！");
+                                    $this.uploadifive('cancel', file);
+                                    break;
+                            }
+                        },
                         'formData':{
                             'key':'',
                             'token':''
@@ -299,7 +330,6 @@ $(document).ready(function(){
         edit_unit_num=parseFloat(parent.find('.edit_unit_num').text());
         storage_unit=parent2.find('.storage-unit').text();
         storage_unit_id=Int(parent2.find('.storage-unit').data('id'));
-        console.log(storage_unit_id);
         change_num=edit_unit_num;
         popUnitChangeShow(edit_charge_box,edit_unit_id,storage_unit_id);
         edit_charge_box.empty();
@@ -334,33 +364,56 @@ $(document).ready(function(){
         var code=$this.parents('.upload-img').find('.imgPreview').data('code');
         if(typeof(code)=='undefined')
         {
-            $this.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/TDSG.png'});
+            $this.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/TDSG.png','data-key':''});
         }
-        else $this.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/'+code+'.png'});
+        else $this.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/'+code+'.png','data-key':''});
     });
-
-
-    var key='';
-    var token='';
 
     //商品编辑-图片上传
    $('.edit_upload').each(function(){
        var $this=$(this);
+       var key='';
+       var token='';
        var fruit_id=$this.parents('.goods-item').data('id');
-       var action="edit_fruit_img";
-       var url="/admin/shelf";
+       var link_action= $.getUrlParam('action');
+       var action;
+       var url="";
+       if(link_action=='fruit') action="edit_fruit_img";
+       else if(link_action=='menu') action="edit_mgoods_img";
        var args={action: action,id:fruit_id};
        $this.uploadifive(
            {
                buttonText    : '',
                width: '150px',
                uploadScript  : 'http://upload.qiniu.com/',
-               uploadLimit     : 10,
                multi    :     false,
+               'auto':true,
                fileSizeLimit   : '10MB',
                'fileObjName' : 'file',
                'removeCompleted' : true,
-               'fileType':'*.gif;*.png;*.jpg;*,jpeg',
+               'fileType':'*.gif;*.png;*.jpg;*.jpeg;*.svg;*.JPG;*.JPEG;*.PNG;*.GIF;*.bmp;*.BMP;',
+               'onAddQueueItem' : function(file){
+                   var fileName = file.name;
+                   var ext = fileName.substring(fileName.lastIndexOf(".")+1,fileName.length);
+                   switch (ext) {
+                       case 'jpg':
+                       case 'JPG':
+                       case 'jpeg':
+                       case 'JPEG':
+                       case 'png':
+                       case 'PNG':
+                       case 'gif':
+                       case 'GIF':
+                       case 'bmp':
+                       case 'BMP':
+                       case 'svg':
+                           break;
+                       default:
+                           alert("无效的文件格式！");
+                           $this.uploadifive('cancel', file);
+                           break;
+                   }
+               },
                'formData':{
                    'key':'',
                    'token':''
@@ -381,6 +434,9 @@ $(document).ready(function(){
                        'key':key,
                        'token':token
                    };
+               },
+               'onUploadError' : function(file, errorCode, errorMsg, errorString) {
+                   alert('The file ' + file.name + ' could not be uploaded: ' + errorString);
                },
                'onUploadComplete':function(){
                    $this.parents('.upload-img').find('.imgPreview').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/100/h/100','data-key':key});
@@ -555,7 +611,7 @@ function addEditFruit(target,action){
         function(res){
             if(res.success){
                 add_goods_box.modal('hide');
-                window.location.reload();
+                //window.location.reload();
             }
             else return alert(res.error_text);
         },

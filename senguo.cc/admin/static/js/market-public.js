@@ -17,6 +17,7 @@ $(document).ready(function(){
     }
     //$('.shop_href').attr({'href':shop_href+Int(shop_id)});
     $('.staff_href').attr({'href':staff_href+Int(shop_id)});
+    //微信Api
 });
 var shop_href='/customer/shopProfile';
 var market_href='/shop/none';

@@ -42,7 +42,10 @@ $(document).ready(function(){
         var $this=$(this);
         var num=Int($this.data('num'));
         if(num<=0){
-            $this.append('<div class="sold-out"><div class="out"></div></div>').find('.box').addClass('desaturate');
+            $this.append('<div class="sold-out"><div class="out"></div></div>').find('.box').addClass('desaturate').find('.arrow').css({'border-color':'transparent #B6B6B6 transparent transparent'});
+            $this.find('.sold-out').css({'background-color':'rgba(0,0,0,0.1)'});
+            $this.find('.bg').css({'background':'#FCFCFC'});
+            $this.find('.color').css({'color':'#757575'});
         }
     });
     //公告滚动
@@ -64,16 +67,14 @@ $(document).ready(function(){
             });
         var bullets = document.getElementById('position').getElementsByTagName('li');
     }
-
+    //公告详情
+    $('.notice-item').on('click',function(){
+        var $this=$(this);
+        var detail=$this.find('.notice-detail').val();
+        $('.detail-box').modal('show');
+        $('.detail-box').find('.detail').text(detail);
+    });
     $('goods-list').last().addClass('m-b60');
-
-    var img_width=$('.img')[0].width;
-    $('.great-number').each(function(){
-        $(this).css({'line-height':(img_width/2-3)+'px'});
-    });
-    $('.show-box').each(function(){
-        $(this).css({'height':(img_width+4)+'px'});
-    });
     //商品标签转换
     $('.tagItem').each(function(){
         var $this=$(this);
@@ -89,11 +90,23 @@ $(document).ready(function(){
         $this.mouseup(function(e){
             if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
                 parent.find('.toggle_icon').toggleClass('arrow');
-                parent.toggleClass('radius');
+                parent.toggleClass('pr35');
+                parent.find('.back-shape').toggle();
+                parent.find('.number-change').toggleClass('mr40');
                 charge_list.slideToggle(50);
             }
         })
 
+    });
+    $('.back-shape').on('click',function(){
+        var $this=$(this);
+        var parent=$this.parents('.goods-list-item');
+        var charge_list=$this.parents('.goods-list-item').find('.charge-list');
+        parent.toggleClass('pr35');
+        parent.find('.toggle_icon').toggleClass('arrow');
+        $this.toggle();
+        parent.find('.number-change').toggleClass('mr40');
+        charge_list.slideToggle(50);
     });
     //查看大图
     $('.check-lg-img').each(function(){
@@ -104,9 +117,8 @@ $(document).ready(function(){
         var img_url=$this.find('.img').attr('src');
         var fruit_name=parent.find('.fruit-name').text();
         var fruit_intro=parent.find('.fruit_intro').val();
-        $this.hammer().on('tap',function(){
+        $this.on('click',function(){
             var large_box=$('.large-img-box');
-            console.log(id);
             large_box.modal('show').attr({'data-id':id,'data-type':type});
             large_box.find('#largeImg').attr({'src':img_url});
             large_box.find('.modal-title').text(fruit_name);

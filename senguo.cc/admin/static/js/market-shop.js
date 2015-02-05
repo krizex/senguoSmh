@@ -5,19 +5,25 @@ $(document).ready(function(){
 });
 function focus(){
     var url='';
-    action = "favour";
+    var action = "favour";
     var args={action: action};
-    $.postJson(url,args,function(){
-       $('.foucus-notice').remove();
+    $.postJson(url,args,function(res){
+        if(res.success){
+            $('.foucus-notice').remove();
+            $('#focus-shop').addClass('hidden');
+            $('#signin-shop').removeClass('hidden');
+        }
+        else return alert(res.error_text);
     })
 }
 function signin(){
     var url='';
-    action = "signin";
+    var action = "signin";
     var args={action: action};
     $.postJson(url,args,function(res){
-        if(!res.success){
-            return alert(res.error_text);
+        if(res.success){
+            $('#signin-shop').addClass('bg-grey').find('.sign_text').text('已签到');
         }
+        else return alert(res.error_text);
     })
 }

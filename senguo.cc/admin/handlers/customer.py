@@ -140,6 +140,12 @@ class ShopProfile(CustomerBaseHandler):
         if not self.session.query(models.CustomerShopFollow).filter_by(
                 customer_id=self.current_user.id, shop_id=shop_id).first():
             follow = False
+        # 今天是否关注
+        signin = False
+        q=self.session.query(models.ShopSignIn).filter_by(
+                          customer_id=self.current_user.id, shop_id=shop_id).first()
+        if q and q.last_date == datetime.date.today():
+            signin = True
         operate_days = (datetime.datetime.now() - datetime.datetime.fromtimestamp(shop.create_date_timestamp)).days
         fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop_id).count()
         order_sum = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
@@ -155,7 +161,7 @@ class ShopProfile(CustomerBaseHandler):
         comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
         return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
                            fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
-                           service_area=service_area, headimgurls=headimgurls,
+                           service_area=service_area, headimgurls=headimgurls, signin=signin,
                            comments=self.get_comments(shop_id, page_size=2), comment_sum=comment_sum,
                            context=dict(subpage='shop'))
 

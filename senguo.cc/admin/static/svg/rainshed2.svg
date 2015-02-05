@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="40.971px" height="42.342px" viewBox="0 0 40.971 42.342" enable-background="new 0 0 40.971 42.342" xml:space="preserve">
+	 viewBox="0 0 40 42" enable-background="new 0 0 40 42" xml:space="preserve">
 <g>
-	<path fill-rule="evenodd" clip-rule="evenodd" fill="#33CC66" stroke="#42B364" stroke-width="0.2286" stroke-miterlimit="10" d="
-		M20.714,30.084c-0.086,6.771-4.6,12.258-10.17,12.258c-5.571,0-10.085-5.486-10.17-12.258L0.345,0.028L20.656,0L20.714,30.084z"/>
-	<path fill-rule="evenodd" clip-rule="evenodd" fill="#BEFF97" stroke="#42B364" stroke-width="0.2286" stroke-miterlimit="10" d="
-		M40.854,30.084c-0.086,6.771-4.6,12.258-10.171,12.258c-5.57,0-10.084-5.486-10.17-12.258L20.485,0.028L40.825,0L40.854,30.084z"/>
+	<path fill="#33CC66" d="M10,41.8c-5.4,0-9.8-5.3-9.8-11.8S4.6,18.2,10,18.2s9.8,5.3,9.8,11.8S15.4,41.8,10,41.8z"/>
+	<path fill="#42B364" d="M10,18.5c5.2,0,9.5,5.2,9.5,11.5S15.2,41.5,10,41.5S0.5,36.3,0.5,30S4.8,18.5,10,18.5 M10,18
+		C4.5,18,0,23.4,0,30s4.5,12,10,12s10-5.4,10-12S15.5,18,10,18L10,18z"/>
 </g>
+<g>
+	<rect x="0.2" y="0.2" fill="#33CC66" width="19.5" height="29.5"/>
+	<path fill="#42B364" d="M19.5,0.5v29h-19v-29H19.5 M20,0H0v30h20V0L20,0z"/>
+</g>
+<rect x="0.5" fill="#33CC66" width="19" height="30.2"/>
+<g>
+	<path fill="#BEFF97" d="M30,41.8c-5.4,0-9.8-5.3-9.8-11.8s4.4-11.8,9.8-11.8s9.8,5.3,9.8,11.8S35.4,41.8,30,41.8z"/>
+	<path fill="#42B364" d="M30,18.5c5.2,0,9.5,5.2,9.5,11.5S35.2,41.5,30,41.5s-9.5-5.2-9.5-11.5S24.8,18.5,30,18.5 M30,18
+		c-5.5,0-10,5.4-10,12s4.5,12,10,12s10-5.4,10-12S35.5,18,30,18L30,18z"/>
+</g>
+<g>
+	<rect x="20.2" y="0.2" fill="#BEFF97" width="19.5" height="29.5"/>
+	<path fill="#42B364" d="M39.5,0.5v29h-19v-29H39.5 M40,0H20v30h20V0L40,0z"/>
+</g>
+<rect x="20.5" fill="#BEFF97" width="19" height="30.2"/>
 </svg>

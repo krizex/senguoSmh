@@ -65,7 +65,7 @@
          </li>
          {% end %}
      </ul>
-     <div class="bg-width center-block text-grey">
+     <div class="bg-width center-block text-grey bg-white">
          <div class="clearfix font14">
              <span class="pull-right tit2 text-right"><span id="list_total_price"></span>元</span>
              <span class="pull-right tit">商品金额：</span>
@@ -81,7 +81,7 @@
          <p class="text-center text-pink mincharge_intime" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"按时达"起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元</p>
          <p class="text-center text-pink mincharge_now" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"立即送"起送价金额<span class="mincharge">{{config.min_charge_now}}</span>元</p>
          <div class="send-time-choose clearfix center-block bg-white box-style">
-             <p class="text-left text-grey3 font12">收货时间</p>
+             <p class="text-left text-grey3 font14">收货时间</p>
              {% set active=''%}
              {% set unactive=''%}
              {% if periods %}
@@ -91,38 +91,41 @@
              {% set active=''%}
              {% set unactive='active'%}
              {% end %}
-             <ul id="sendType" class="send_type nav-pills  center-block text-center">
-                 <li data-id="2" class="{{active}} send-intime pull-left" data-config="{{config.ontime_on}}">
+             <ul id="sendType" class="send_type list-group">
+                 {% if config.ontime_on == True%}
+                 <li data-id="2" class="{{active}} send-intime  list-group-item" data-config="{{config.ontime_on}}">
                      <a href="javascript:;" class="bg-white text-grey" id="sendInTime">
-                         <p class="top font14">按时达</p>
-                         <p class="font12">
-                             起送价：{{config.min_charge_on_time or 0}}元
-                             配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元
+                         <p class="top">
+                             <span class="font14 m-r5">按时达</span>
+                             <span class="font8">起送价：{{config.min_charge_on_time or 0}}元</span>
+                             <span class="font8">配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元</span>
                          </p>
+                         <p>订单将根据您选择的时间段送达合理选择收货时间段，保证订单能按时送达到您的手上</p>
                      </a>
                  </li>
-                 <li data-id="1" class="{{unactive}} send-now pull-right" data-config="{{config.now_on}}">
+                 {% end %}
+                 {% if config.now_on == True%}
+                 <li data-id="1" class="{{unactive}} send-now list-group-item" data-config="{{config.now_on}}">
                      <a href="javascript:;" class="bg-white text-grey" id="sendNow">
-                         <p class="top font14">立即送</p>
-                         <p class="font12">
-                             起送价：{{config.min_charge_now or 0}}元
-                             配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元
+                         <p class="top">
+                             <span class="font14 m-r5">立即送</span>
+                             <span class="font8">起送价：{{config.min_charge_now or 0}}元</span>
+                             <span class="font8">配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元</span>
                          </p>
+                         <p>订单将在30分钟内送到您的手上，请保持电话畅通</p>
                      </a>
                  </li>
+                 {% end %}
              </ul>
-             <div class="bg-white text-center p05">
-                 <p class="intime-intro" style="display:none">订单将根据您选择的时间段送达合理选择收货时间段，保证订单能按时送达到您的手上</p>
-                 <p class="now-intro" style="display:none">订单将在<span class="text-green">30</span>分钟内送到您的手上，请保持电话畅通</p>
-             </div>
+             {% if config.ontime_on == True%}
              {% if periods %}
-             <ul id="sendDay" class="send_day nav-pills clearfix text-center type-choose center-block m-b10 font14">
+             <ul id="sendDay" class="send_day nav-pills clearfix text-center type-choose m-b10 font14 mt10 pl10">
                  <li data-id="1" class="active pull-left" id="send_today"><a href="javascript:;" class="bg-white text-green">今天</a></li>
                  <li data-id="2" id="send_tomorrow" class="pull-right"><a href="javascript:;" class="bg-white text-green">明天</a></li>
              </ul>
-             <ul id="sendPeriod" class="send_period list-group  type-choose font12">
+             <ul id="sendPeriod" class="send_period list-group  font12">
                  {% for period in periods%}
-                 <li data-id="{{period.id}}" class="list-group-item clearfix ">
+                 <li data-id="{{period.id}}" class="list-group-item clearfix available">
                      <a href="javascript:;" class="text-grey clearfix">
                          <span class="text-grey3 pull-left set-inl-blo period_name">{{period.name}}</span>
                          <span class="pull-left">
@@ -136,7 +139,9 @@
              </ul>
              <input type="hidden" class="stop-range" value="{{config.stop_range}}"/>
              {% end %}
-             <ul class="send_now list-group" style="display:none">
+             {% end %}
+             {% if config.now_on == True%}
+             <ul class="send_now list-group mt10" style="display:none">
                 <!-- <li class="list-group-item clearfix bg-grey2">
                      <p class="text-center text-pink">送货员太辛苦，打赏点小费吧\(╯▼╰)/ </p>
                      <ul class="tip-list font14">
@@ -151,6 +156,7 @@
                      <span class="now_endtime">{{config.end_time_now}}</span>
                  </li>
              </ul>
+             {% end %}
          </div>
          <div class="send-address-choose clearfix center-block bg-white box-style">
              <p class="text-grey3 font14">收货人地址</p>
@@ -208,8 +214,9 @@
                  </li>
              </ul>
          </div>
-        <input id="messageCon" class="message-input input-sty box-style center-block font14 bg-white" type="text" value="" placeholder="留个言调戏下客服吧？(⊙_⊙)">
-        <button id="submitOrder" class="sub-btn w-per6 bg-green text-white text-center center-block btn">提交订单</button>
+        <input id="messageCon" class="message-input input-sty box-style center-block font14 bg-white bg-grey" type="text" value="" placeholder="留个言调戏下客服吧？(⊙_⊙)">
+        <button id="submitOrder" class="sub-btn w-per6 bg-green text-white text-center center-block btn mt10">提交订单</button>
+         <div class="bottom-line"></div>
      </div>
 {% end %}
 {% block bottom %}

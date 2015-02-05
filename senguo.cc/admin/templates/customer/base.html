@@ -63,16 +63,20 @@
             </li>9
         </ul>
     </div>
-    <div class="container phone-box">
-        {% block content %}{% end %}
-        {% block toTop %}
-        <!--<a class="back-to-top set-inl-blo bg-green text-white text-center font14" id="backTop">Top</a>-->
-        {% end %}
+    <div class="body_bg"></div>
+    <div class="body-container">
+        <div class="container phone-box">
+            {% block content %}{% end %}
+            {% block toTop %}
+            <!--<a class="back-to-top set-inl-blo bg-green text-white text-center font14" id="backTop">Top</a>-->
+            {% end %}
+        </div>
     </div>
     <script src="{{static_url('js/jquery.min.js')}}"></script>
     <script src="{{static_url('js/hammer.min.js')}}"></script>
     <script src="{{static_url('js/bootstrap.min.js')}}"></script>
     <script src="{{static_url('js/global.js')}}"></script>
+    <script src="{{static_url('js/jweixin-1.0.js')}}"></script>
     <script src="{{static_url('js/market-public.js')}}"></script>
     {% block bottom %}{% end %}
 </body>

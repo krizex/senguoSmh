@@ -24,7 +24,7 @@
 .order-list-item .status-bar-box .width50{width:50%;}
 .order-list-item .status-bar-box .width100{width:100%;}
 .order-list-item .btn-box .btn{width:100px;}
-.comment-input{width:80%;}
+.comment-input{width:80%;height:100px;}
 .order-nav{box-shadow:0px 1px 2px #aaa;}
 .order-nav li{float:left;width:20%;border-bottom:2px solid #fff;}
 .order-nav li a{display:block;color:#333;padding:10px 0;}
