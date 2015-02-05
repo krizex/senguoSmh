@@ -10,31 +10,22 @@
 {% set mgoods=context['mgoods']%}
 {% set menus=context['menus']%}
 {% set notices=context['notices'] %}
-    <div class="notice-board">
-        {% if notices %}
-        <div id="slider" class="swipe" style="visibility: visible;">
-            <div class="swipe-wrap">
-                {% for notice in notices%}
-                <figure>
-                    <div class="wrap text-center text-brown font16 notice-item">
-                        <label class="title">{{notice.summary}}</label>
-                        <img src="{{static_url('images/banner.jpg')}}"/>
-                        <input type="hidden" value="{{notice.detail}}" class="notice-detail"/>
-                    </div>
-                </figure>
-                {% end %}
+    <div class="notice-box">
+        <div class="notice-board">
+            {% if notices %}
+            <input type="hidden" value="{{notices}}" id="notice_con"/>
+            <div id="slider" class="swipe" style="visibility: visible;">
+                <div class="swipe-wrap">
+                </div>
             </div>
+            <nav class="circle">
+                <ul id="position">
+                </ul>
+            </nav>
+            {% else %}
+            <img src="{{static_url('images/banner.jpg')}}" class="img"/>
+            {% end %}
         </div>
-        <nav class="circle">
-            <ul id="position">
-                {% for notice in notices%}
-                <li></li>
-                {% end %}
-            </ul>
-        </nav>
-        {% else %}
-        <img src="{{static_url('images/banner.jpg')}}"/>
-        {% end %}
     </div>
     {% if fruits %}
     <div class="no-mar-btom top-title">
@@ -59,8 +50,8 @@
             {% end %}
         </ul>
     </div>
-    <p class="text-white no-mar-btom classify-title font18 text-center rainshed_green" id="fruitPosition">水果单品</p>
-    <ul class="goods-list  fruit-list">
+    <!--<p class="text-white no-mar-btom classify-title font18 text-center rainshed_green" id="fruitPosition">水果单品</p>-->
+    <ul class="goods-list  fruit-list" id="fruitPosition">
         {% for fruit in fruits %}
         {% set farrow_active=''%}
         {% set ftoggle_active=''%}
@@ -82,7 +73,7 @@
                         {% if fruit.img_url %}
                         <img src="{{fruit.img_url}}?imageView/1/w/200/h/200" class="img">
                         {% else %}
-                        <img src="/static/design_img/{{fruit.fruit_type.code}}.png" class="img">
+                        <img src="/static/design_img/{{fruit.fruit_type.code}}.gif" class="img">
                         {% end %}
                     </a>
                 </div>
@@ -137,7 +128,7 @@
                         {% end %}
                     </ul>
                 </div>
-                <span class="{{fradius_active}} back-shape set-inl-blo bg"></span>
+                <span class="{{fradius_active}} back-shape bg"></span>
                 <span class="{{farrow_active}} icon-bg toggle_icon"></span>
             </div>
         </li>
@@ -168,7 +159,7 @@
                         {% if fruit.img_url %}
                         <img src="{{dry_fruit.img_url}}?imageView/1/w/200/h/200" class="img">
                         {% else %}
-                        <img src="/static/design_img/{{dry_fruit.fruit_type.code}}.png" class="img">
+                        <img src="/static/design_img/{{dry_fruit.fruit_type.code}}.gif" class="img">
                         {% end %}
                     </a>
                 </div>
@@ -221,7 +212,7 @@
                         {% end %}
                     </ul>
                 </div>
-                <span class="{{dradius_active}} back-shape set-inl-blo bg"></span>
+                <span class="{{dradius_active}} back-shape bg"></span>
                 <span class="{{darrow_active}} icon-bg toggle_icon"></span>
             </div>
         </li>
@@ -254,7 +245,7 @@
                         {% if mgood.img_url %}
                         <img src="{{mgood.img_url}}?imageView/1/w/200/h/200" class="img">
                         {% else %}
-                        <img src="/static/design_img/TDSG.png" class="img">
+                        <img src="/static/design_img/TDSG.gif" class="img">
                         {% end %}
                     </a>
                 </div>
@@ -307,7 +298,7 @@
                         {% end %}
                     </ul>
                 </div>
-                <span class="{{mradius_active}} back-shape set-inl-blo bg"></span>
+                <span class="{{mradius_active}} back-shape bg"></span>
                 <span class="{{marrow_active}} icon-bg toggle_icon"></span>
             </div>
         </li>

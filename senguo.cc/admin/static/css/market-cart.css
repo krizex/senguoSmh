@@ -1,4 +1,5 @@
-.box-style{width:100%;padding:10px;}
+.box-style{width:100%;margin-top:20px;}
+.list-group{margin-bottom:10px;}
 .bg-width{width:100%;padding:10px;}
 .w-per6{width:60%;}
 .w-per9{width:90%;}
@@ -30,7 +31,7 @@
 .cart-list-item .name{min-width:90px;}
 
 .send_type{border-top-left-radius:2px;border-top-right-radius:2px;overflow:hidden;margin-bottom:0px;}
-.send_type li{}
+.send_type li{padding:1px 15px;}
 .send_type li a{display:block;border-radius:4px;}
 .send_type li a p{margin-bottom:0px;margin-top:3px;letter-spacing:-1px;}
 .send_type li a p:last-child{margin-bottom:3px;}
@@ -51,6 +52,8 @@
 
 .address-box .tit{width:15%;min-width:50px;line-height:30px;}
 .send-address-choose input{width:84%;height:30px;line-height:30px;text-indent:14px;margin-bottom:5px;}
+.send-address-choose .address{width:85%;}
+.send-address-choose .to-edit-address{width:15%;}
 
 .message-input{padding:10px 15px;width:95% !important;}
 .border-grey{border-color:#ddd;}
@@ -67,4 +70,4 @@
 .not_available span{color:#ccc !important;}
 
 .list-group{padding:0 10px;}
-.type-choose .list-group-item{padding:20px 15px;}
+.list-group-item{padding:16px 15px;}

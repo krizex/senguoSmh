@@ -9,7 +9,7 @@
              {% if cart_f[key]['charge_type'].fruit.img_url %}
              <img src="{{cart_f[key]['charge_type'].fruit.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15"/>
              {% else %}
-             <img src="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.png" class="goods-img pull-left w15"/>
+             <img src="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.gif" class="goods-img pull-left w15"/>
              {% end %}
              <div class="goods-info pull-left font14 p010">
                 <div class="clearfix">
@@ -39,7 +39,7 @@
              {% if cart_m[key]['mcharge_type'].mgoods.img_url %}
              <img src="{{cart_m[key]['mcharge_type'].mgoods.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15"/>
              {% else %}
-             <img src="/static/design_img/TDSG.png" class="goods-img pull-left w15"/>
+             <img src="/static/design_img/TDSG.gif" class="goods-img pull-left w15"/>
              {% end %}
              <div class="goods-info pull-left font14 p010">
                  <div class="clearfix">
@@ -96,11 +96,11 @@
                  <li data-id="2" class="{{active}} send-intime  list-group-item" data-config="{{config.ontime_on}}">
                      <a href="javascript:;" class="bg-white text-grey" id="sendInTime">
                          <p class="top">
-                             <span class="font14 m-r5">按时达</span>
+                             <span class="font16 m-r5">按时达</span>
                              <span class="font8">起送价：{{config.min_charge_on_time or 0}}元</span>
                              <span class="font8">配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元</span>
                          </p>
-                         <p>订单将根据您选择的时间段送达合理选择收货时间段，保证订单能按时送达到您的手上</p>
+                         <p>订单将根据您选择的时间段送达</p>
                      </a>
                  </li>
                  {% end %}
@@ -108,7 +108,7 @@
                  <li data-id="1" class="{{unactive}} send-now list-group-item" data-config="{{config.now_on}}">
                      <a href="javascript:;" class="bg-white text-grey" id="sendNow">
                          <p class="top">
-                             <span class="font14 m-r5">立即送</span>
+                             <span class="font16 m-r5">立即送</span>
                              <span class="font8">起送价：{{config.min_charge_now or 0}}元</span>
                              <span class="font8">配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元</span>
                          </p>
@@ -163,12 +163,12 @@
              <ul id="addressType" class="address_list list-group type-choose font12">
                  {% for address in current_user.addresses%}
                  <li data-id="{{address.id}}" class="list-group-item clearfix item">
-                     <a href="javascript:;" class="text-grey3 pull-left">
+                     <a href="javascript:;" class="text-grey3 pull-left address">
                          <span class="name pr10">{{address.receiver}}</span>
                          <span class="address pr10">{{address.address_text}}</span>
                          <span class="phone">{{address.phone}}</span>
                      </a>
-                     <a class="text-green pull-right to-edit-address">+编辑</a>
+                     <a class="text-green pull-right to-edit-address text-center">+编辑</a>
                  </li>
                  {% end %}
              </ul>

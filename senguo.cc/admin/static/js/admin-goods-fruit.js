@@ -50,7 +50,7 @@ $(document).ready(function(){
            {
                var $item=$(data);
                $item.find('.link').attr({'href':'/admin/shelf?action=fruit&id='+key});
-               $item.find('.img').attr({'src':'/static/design_img/'+fruit_type[key]['code']+'.png'});
+               $item.find('.img').attr({'src':'/static/design_img/'+fruit_type[key]['code']+'.gif'});
                $item.find('.name').text(fruit_type[key]['name']+'('+fruit_type[key]['sum']+')');
                //if(fruit_type[key]['sum']!==0) $item.css({'border-color':'#44b549'});
                $('.preview-shelve-list').append($item);
@@ -129,10 +129,10 @@ $(document).ready(function(){
         var token='';
         add_goods_box.empty();
         if(max_goods_num<5){
-            $.getItem('/static/items/admin/add-new-goods.html?v=20150112',function(data){
+            $.getItem('/static/items/admin/add-new-goods.html?v=20150205',function(data){
                 var $item=$(data);
-                if(typeof(code)=='undefined') $item.find('.imgPreview').attr({'src':'/static/design_img/TDSG.png'});
-                else $item.find('.imgPreview').attr({'src':'/static/design_img/'+code+'.png'});
+                if(typeof(code)=='undefined') $item.find('.imgPreview').attr({'src':'/static/design_img/TDSG.gif'});
+                else $item.find('.imgPreview').attr({'src':'/static/design_img/'+code+'.gif'});
                 upload_item=$item.find('#file_upload');
                 add_goods_box.append($item).modal('show');
                 //商品添加-图片上传
@@ -370,17 +370,13 @@ $(document).ready(function(){
     });
 
     //商品编辑-图片上传
+    $.ajaxSetup({
+        async : false
+    });
    $('.edit_upload').each(function(){
        var $this=$(this);
        var key='';
        var token='';
-       var fruit_id=$this.parents('.goods-item').data('id');
-       var link_action= $.getUrlParam('action');
-       var action;
-       var url="";
-       if(link_action=='fruit') action="edit_fruit_img";
-       else if(link_action=='menu') action="edit_mgoods_img";
-       var args={action: action,id:fruit_id};
        $this.uploadifive(
            {
                buttonText    : '',
@@ -418,10 +414,23 @@ $(document).ready(function(){
                    'key':'',
                    'token':''
                },
+               'onFallback':function(){
+                    return alert('您的浏览器不支持此插件！请更换其他浏览器！');
+               },
+               'onProgress':function(){
+                   return alert('888888！');
+               },
+               'onUploadFile':function(){
+                   return alert('999999！');
+               },
                'onUpload' :function(){
-                   $.ajaxSetup({
-                       async : false
-                   });
+                   var fruit_id=$this.parents('.goods-item').data('id');
+                   var link_action= $.getUrlParam('action');
+                   var action;
+                   var url="";
+                   if(link_action=='fruit') action="edit_fruit_img";
+                   else if(link_action=='menu') action="edit_mgoods_img";
+                   var args={action: action,id:fruit_id};
                    $.postJson(url,args,
                        function (res) {
                            key=res.key;
@@ -435,8 +444,8 @@ $(document).ready(function(){
                        'token':token
                    };
                },
-               'onUploadError' : function(file, errorCode, errorMsg, errorString) {
-                   alert('The file ' + file.name + ' could not be uploaded: ' + errorString);
+               'onError' : function(file, fileType, data) {
+                   alert('The file ' + file.name + ' could not be uploaded: ' + fileType+data);
                },
                'onUploadComplete':function(){
                    $this.parents('.upload-img').find('.imgPreview').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/100/h/100','data-key':key});
