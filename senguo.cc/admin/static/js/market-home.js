@@ -49,19 +49,19 @@ $(document).ready(function(){
         }
     });
     //公告滚动
-    var notice_con=$('#notice_con').val();
-    console.log(notice_con);
+    var notice_con=window.dataObj.notices;
     $.ajaxSetup({'async':false});
     $.getItem('/static/items/customer/notice-item.html',function(data){
         notice_item=data;
-        for(var notice in notice_con){
-            var summary=notice['summary'];
-            var detail=notice['detail'];
+        for(var i=0;i<notice_con.length;i++){
+            var summary=notice_con[i][0];
+            var detail=notice_con[i][1];
             var item=$(notice_item);
+            console.log();
             item.find('.title').text(summary);
             item.find('.notice-detail').val(detail);
             $('.swipe-wrap').append(item);
-            $('#position ul').append('<li></li>');
+            $('#position').append('<li></li>');
         }
         $('#position li').first().addClass('on');
         if($('#position li').length>0){

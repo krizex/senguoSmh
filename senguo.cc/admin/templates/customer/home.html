@@ -9,11 +9,16 @@
 {% set dry_fruits=context['dry_fruits']%}
 {% set mgoods=context['mgoods']%}
 {% set menus=context['menus']%}
-{% set notices=context['notices'] %}
+{% set notices=context['notices']%}
+{% if notices %}
+{% import json%}
+<script>
+    window.dataObj.notices = {% raw json.dumps(context["notices"]) %}
+</script>
+{% end %}
     <div class="notice-box">
         <div class="notice-board">
             {% if notices %}
-            <input type="hidden" value="{{notices}}" id="notice_con"/>
             <div id="slider" class="swipe" style="visibility: visible;">
                 <div class="swipe-wrap">
                 </div>
@@ -23,7 +28,7 @@
                 </ul>
             </nav>
             {% else %}
-            <img src="{{static_url('images/banner.jpg')}}" class="img"/>
+            <img src="{{static_url('images/banner.jpg')}}" class="default-img img"/>
             {% end %}
         </div>
     </div>
@@ -51,7 +56,7 @@
         </ul>
     </div>
     <!--<p class="text-white no-mar-btom classify-title font18 text-center rainshed_green" id="fruitPosition">水果单品</p>-->
-    <ul class="goods-list  fruit-list" id="fruitPosition">
+    <ul class="goods-list  fruit-list mt42" id="fruitPosition">
         {% for fruit in fruits %}
         {% set farrow_active=''%}
         {% set ftoggle_active=''%}

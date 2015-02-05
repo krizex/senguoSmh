@@ -1,223 +1,232 @@
 {% extends 'base.html' %}
 {% block title %}购物车{% end %}
-{% block head %}<link rel="stylesheet" href="{{static_url('css/market-cart.css')}}"/>{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/market-cart.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
+{% end %}
 {% block content %}
-     <div class="rainshed"></div>
-     <ul class="cart-list set-w100-fle mt42 m-b0">
-         {% for key in cart_f %}
-         <li class="cart-list-item set-w100-fle fruit_item bg-white text-grey m-b5">
-             {% if cart_f[key]['charge_type'].fruit.img_url %}
-             <img src="{{cart_f[key]['charge_type'].fruit.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15"/>
-             {% else %}
-             <img src="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.gif" class="goods-img pull-left w15"/>
-             {% end %}
-             <div class="goods-info pull-left font14 p010">
-                <div class="clearfix">
-                    <span class="name pull-left">{{cart_f[key]['charge_type'].fruit.name}}</span>
-                    <span class="price pull-left">￥<span class="item_total_price"></span>元</span>
+    <div class="rainshed"></div>
+    <div class="bg-box">
+        <ul class="cart-list set-w100-fle mt42 m-b0">
+            {% for key in cart_f %}
+            <li class="cart-list-item set-w100-fle fruit_item text-grey m-b5 {{cart_f[key]['code']}}">
+                <div class="box bg set-w100-fle">
+                    {% if cart_f[key]['charge_type'].fruit.img_url %}
+                    <img src="{{cart_f[key]['charge_type'].fruit.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15"/>
+                    {% else %}
+                    <img src="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.gif" class="goods-img pull-left w15"/>
+                    {% end %}
+                    <div class="goods-info pull-left font14 p010">
+                        <div class="clearfix">
+                            <span class="name pull-left color">{{cart_f[key]['charge_type'].fruit.name}}</span>
+                            <span class="price pull-left">￥<span class="item_total_price"></span>元</span>
+                        </div>
+                    <span class="p0 charge-type pull-left color" data-id="{{cart_f[key]['charge_type'].id}}">
+                        <span class="item_price">{{cart_f[key]['charge_type'].price}}</span>
+                        元/{{cart_f[key]['charge_type'].num}}
+                        <span data-id="{{cart_f[key]['charge_type'].unit}}" class="chargeUnit"></span>
+                    </span>
+                    </div>
+                    <div class="action-box font14">
+                    <span class="pull-left number-change set-inl-blo">
+                        <a class="minus-plus text-green bg-white number-plus text-center font18" href="javascript:;"></a>
+                        <input type="text" value="{{cart_f[key]['num']}}" class="number-input item_number text-center" readonly/>
+                        <a class="minus-plus text-green bg-white number-minus text-center font18" href="javascript:;"></a>
+                    </span>
+                        <div class="pull-right delete-btn">
+                            <a href="javascript:;" class="pull-right delete-item text-center font18 text-grey">x</a>
+                        </div>
+                    </div>
                 </div>
-                <span class="p0 charge-type pull-left" data-id="{{cart_f[key]['charge_type'].id}}">
-                    <span class="item_price">{{cart_f[key]['charge_type'].price}}</span>
-                    元/{{cart_f[key]['charge_type'].num}}
-                    <span data-id="{{cart_f[key]['charge_type'].unit}}" class="chargeUnit"></span>
-                </span>
-              </div>
-              <div class="action-box font14">
-                <span class="pull-left number-change set-inl-blo">
-                    <a class="minus-plus text-green bg-white number-plus text-center font18" href="javascript:;"></a>
-                    <input type="text" value="{{cart_f[key]['num']}}" class="number-input item_number text-center" readonly/>
-                    <a class="minus-plus text-green bg-white number-minus text-center font18" href="javascript:;"></a>
-                </span>
-                <div class="pull-right delete-btn">
-                    <a href="javascript:;" class="pull-right delete-item text-center font18 text-grey">x</a>
+            </li>
+            {% end %}
+            {% for key in cart_m %}
+            <li class="cart-list-item set-w100-fle menu_item TDSG text-grey m-b5">
+                <div class="box bg set-w100-fle">
+                    {% if cart_m[key]['mcharge_type'].mgoods.img_url %}
+                    <img src="{{cart_m[key]['mcharge_type'].mgoods.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15"/>
+                    {% else %}
+                    <img src="/static/design_img/TDSG.gif" class="goods-img pull-left w15"/>
+                    {% end %}
+                    <div class="goods-info pull-left font14 p010">
+                        <div class="clearfix">
+                            <span class="name pull-left color">{{cart_m[key]['mcharge_type'].mgoods.name}}</span>
+                            <span class="price pull-left">￥<span class="item_total_price"></span>元</span>
+                        </div>
+                        <span class="p0 charge-type color" data-id="{{cart_m[key]['mcharge_type'].id}}">
+                            <span class="item_price">{{cart_m[key]['mcharge_type'].price}}</span>
+                                元/{{cart_m[key]['mcharge_type'].num}}
+                             <span data-id="{{cart_m[key]['mcharge_type'].unit}}" class="chargeUnit"></span
+                        </span>
+                    </div>
+                    <div class="action-box font14">
+                        <span class="pull-left number-change set-inl-blo">
+                            <a class="minus-plus text-green bg-white number-plus text-center font18" href="javascript:;"></a>
+                            <input type="text" value="{{cart_m[key]['num']}}" class="number-input item_number text-center" readonly/>
+                            <a class="minus-plus text-green bg-white number-minus text-center font18" href="javascript:;"></a>
+                        </span>
+                        <div class="pull-right delete-btn">
+                            <a href="javascript:;" class="pull-right delete-item text-center font18 text-grey">x</a>
+                        </div>
+                    </div>
+                 </div>
+            </li>
+            {% end %}
+        </ul>
+        <div class="bg-width center-block text-grey bg-white">
+            <div class="clearfix font14 p010">
+                <span class="pull-right tit2 text-right"><span id="list_total_price"></span>元</span>
+                <span class="pull-right tit">商品金额：</span>
+            </div>
+            <div class="clearfix font14 p010">
+                <span class="pull-right tit2 text-right"><span id="freight_money">{{config.freight_on_time}}</span>元</span>
+                <span class="pull-right tit">配送费：</span>
+            </div>
+            <div class="clearfix m-b10 font14 p010">
+                <span class="pull-right tit2 text-right"><span id="final_price"></span>元</span>
+                <span class="pull-right tit">实付金额：</span>
+            </div>
+            <p class="text-center text-pink mincharge_intime" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"按时达"起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元</p>
+            <p class="text-center text-pink mincharge_now" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"立即送"起送价金额<span class="mincharge">{{config.min_charge_now}}</span>元</p>
+            <div class="send-time-choose clearfix center-block bg-white box-style">
+                <p class="text-left text-grey3 font14">收货时间</p>
+                {% set active=''%}
+                {% set unactive=''%}
+                {% if periods %}
+                {% set active='active'%}
+                {% set unactive=''%}
+                {% else %}
+                {% set active=''%}
+                {% set unactive='active'%}
+                {% end %}
+                <ul id="sendType" class="send_type list-group">
+                    {% if config.ontime_on == True%}
+                    <li data-id="2" class="{{active}} send-intime  list-group-item" data-config="{{config.ontime_on}}">
+                        <a href="javascript:;" class="bg-white text-grey" id="sendInTime">
+                            <p class="top">
+                                <span class="font16 m-r5">按时达</span>
+                                <span class="font8">起送价：{{config.min_charge_on_time or 0}}元</span>
+                                <span class="font8">配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元</span>
+                            </p>
+                            <p>订单将根据您选择的时间段送达</p>
+                        </a>
+                    </li>
+                    {% end %}
+                    {% if config.now_on == True%}
+                    <li data-id="1" class="{{unactive}} send-now list-group-item" data-config="{{config.now_on}}">
+                        <a href="javascript:;" class="bg-white text-grey" id="sendNow">
+                            <p class="top">
+                                <span class="font16 m-r5">立即送</span>
+                                <span class="font8">起送价：{{config.min_charge_now or 0}}元</span>
+                                <span class="font8">配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元</span>
+                            </p>
+                            <p>订单将在30分钟内送到您的手上，请保持电话畅通</p>
+                        </a>
+                    </li>
+                    {% end %}
+                </ul>
+                {% if config.ontime_on == True%}
+                {% if periods %}
+                <ul id="sendDay" class="send_day nav-pills clearfix text-center type-choose m-b10 font14 mt10 pl10">
+                    <li data-id="1" class="active pull-left" id="send_today"><a href="javascript:;" class="bg-white text-green">今天</a></li>
+                    <li data-id="2" id="send_tomorrow" class="pull-right"><a href="javascript:;" class="bg-white text-green">明天</a></li>
+                </ul>
+                <ul id="sendPeriod" class="send_period list-group  font12">
+                    {% for period in periods%}
+                    <li data-id="{{period.id}}" class="list-group-item clearfix available">
+                        <a href="javascript:;" class="text-grey clearfix">
+                            <span class="text-grey3 pull-left set-inl-blo period_name">{{period.name}}</span>
+                             <span class="pull-left">
+                                 {{period.start_time}} - <span class="intime_endtime">{{period.end_time}}</span>
+                             </span>
+                            <input type="hidden" class="intime_startHour" value="{{period.start_time.hour}}"/>
+                            <input type="hidden" class="intime_startMin" value="{{period.start_time.minute}}"/>
+                        </a>
+                    </li>
+                    {% end %}
+                </ul>
+                <input type="hidden" class="stop-range" value="{{config.stop_range}}"/>
+                {% end %}
+                {% end %}
+                {% if config.now_on == True%}
+                <ul class="send_now list-group mt10" style="display:none">
+                    <!-- <li class="list-group-item clearfix bg-grey2">
+                         <p class="text-center text-pink">送货员太辛苦，打赏点小费吧\(╯▼╰)/ </p>
+                         <ul class="tip-list font14">
+                             <li class="btn text-green text-center bg-white pull-left" data-id="1">1元</li>
+                             <li class="btn text-green text-center bg-white pull-left" data-id="2">2元</li>
+                             <li class="btn text-green text-center bg-white pull-left" data-id="5">5元</li>
+                         </ul>
+                     </li>-->
+                    <li class="list-group-item font14">
+                        送货时间：
+                        <span class="now_startime">{{config.start_time_now}}</span>~
+                        <span class="now_endtime">{{config.end_time_now}}</span>
+                    </li>
+                </ul>
+                {% end %}
+            </div>
+            <div class="send-address-choose clearfix center-block bg-white box-style">
+                <p class="text-grey3 font14">收货人地址</p>
+                <ul id="addressType" class="address_list list-group type-choose font12">
+                    {% for address in current_user.addresses%}
+                    <li data-id="{{address.id}}" class="list-group-item clearfix item">
+                        <a href="javascript:;" class="text-grey3 pull-left address">
+                            <span class="name pr10">{{address.receiver}}</span>
+                            <span class="address pr10">{{address.address_text}}</span>
+                            <span class="phone">{{address.phone}}</span>
+                        </a>
+                        <a class="text-green pull-right to-edit-address text-center">+编辑</a>
+                    </li>
+                    {% end %}
+                </ul>
+                <p class="clearfix"><a class="text-green pull-right to-add-address font12">+添加</a></p>
+                <div class="address-box hidden center-block font12">
+                    <p>
+                        <span class="tit set-inl-blo pull-left">姓名：</span>
+                        <input type="text" placeholder="输入收货人姓名" class="input-sty bg-white pull-left" id="receiveName"/>
+                    </p>
+                    <p>
+                        <span class="tit set-inl-blo pull-left">地址：</span>
+                        <input type="text" placeholder="输入收货人详细地址"  class="input-sty bg-white pull-left" id="receiveAddress"/>
+                    </p>
+                    <p>
+                        <span class="tit set-inl-blo pull-left">电话：</span>
+                        <input type="text" placeholder="输入收货人有效联系电话"  class="input-sty bg-white pull-left" id="receivePhone"/>
+                    </p>
+                    <div class="w-per9 center-block">
+                        <button class="btn text-white pull-right bg-green" id="receiveAdd">确定</button>
+                        <button class="btn text-white pull-right bg-green hidden" id="receiveEdit">确定</button>
+                        <button class="btn text-grey3 bg-greyc pull-right m-r5" id="receiveCancel">取消</button>
+                    </div>
                 </div>
-              </div>
-         </li>
-         {% end %}
-         {% for key in cart_m %}
-         <li class="cart-list-item set-w100-fle menu_item bg-white text-grey m-b5">
-             {% if cart_m[key]['mcharge_type'].mgoods.img_url %}
-             <img src="{{cart_m[key]['mcharge_type'].mgoods.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15"/>
-             {% else %}
-             <img src="/static/design_img/TDSG.gif" class="goods-img pull-left w15"/>
-             {% end %}
-             <div class="goods-info pull-left font14 p010">
-                 <div class="clearfix">
-                     <span class="name pull-left">{{cart_m[key]['mcharge_type'].mgoods.name}}</span>
-                     <span class="price pull-left">￥<span class="item_total_price"></span>元</span>
-                 </div>
-                <span class="p0 charge-type" data-id="{{cart_m[key]['mcharge_type'].id}}">
-                    <span class="item_price">{{cart_m[key]['mcharge_type'].price}}</span>
-                        元/{{cart_m[key]['mcharge_type'].num}}
-                     <span data-id="{{cart_m[key]['mcharge_type'].unit}}" class="chargeUnit"></span
-                </span>
-             </div>
-             <div class="action-box font14">
-                <span class="pull-left number-change set-inl-blo">
-                    <a class="minus-plus text-green bg-white number-plus text-center font18" href="javascript:;"></a>
-                    <input type="text" value="{{cart_m[key]['num']}}" class="number-input item_number text-center" readonly/>
-                    <a class="minus-plus text-green bg-white number-minus text-center font18" href="javascript:;"></a>
-                </span>
-                 <div class="pull-right delete-btn">
-                     <a href="javascript:;" class="pull-right delete-item text-center font18 text-grey">x</a>
-                 </div>
-             </div>
-         </li>
-         {% end %}
-     </ul>
-     <div class="bg-width center-block text-grey bg-white">
-         <div class="clearfix font14">
-             <span class="pull-right tit2 text-right"><span id="list_total_price"></span>元</span>
-             <span class="pull-right tit">商品金额：</span>
-         </div>
-         <div class="clearfix font14">
-             <span class="pull-right tit2 text-right"><span id="freight_money">{{config.freight_on_time}}</span>元</span>
-             <span class="pull-right tit">配送费：</span>
-         </div>
-         <div class="clearfix m-b10 font14">
-             <span class="pull-right tit2 text-right"><span id="final_price"></span>元</span>
-             <span class="pull-right tit">实付金额：</span>
-         </div>
-         <p class="text-center text-pink mincharge_intime" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"按时达"起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元</p>
-         <p class="text-center text-pink mincharge_now" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"立即送"起送价金额<span class="mincharge">{{config.min_charge_now}}</span>元</p>
-         <div class="send-time-choose clearfix center-block bg-white box-style">
-             <p class="text-left text-grey3 font14">收货时间</p>
-             {% set active=''%}
-             {% set unactive=''%}
-             {% if periods %}
-             {% set active='active'%}
-             {% set unactive=''%}
-             {% else %}
-             {% set active=''%}
-             {% set unactive='active'%}
-             {% end %}
-             <ul id="sendType" class="send_type list-group">
-                 {% if config.ontime_on == True%}
-                 <li data-id="2" class="{{active}} send-intime  list-group-item" data-config="{{config.ontime_on}}">
-                     <a href="javascript:;" class="bg-white text-grey" id="sendInTime">
-                         <p class="top">
-                             <span class="font16 m-r5">按时达</span>
-                             <span class="font8">起送价：{{config.min_charge_on_time or 0}}元</span>
-                             <span class="font8">配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元</span>
-                         </p>
-                         <p>订单将根据您选择的时间段送达</p>
-                     </a>
-                 </li>
-                 {% end %}
-                 {% if config.now_on == True%}
-                 <li data-id="1" class="{{unactive}} send-now list-group-item" data-config="{{config.now_on}}">
-                     <a href="javascript:;" class="bg-white text-grey" id="sendNow">
-                         <p class="top">
-                             <span class="font16 m-r5">立即送</span>
-                             <span class="font8">起送价：{{config.min_charge_now or 0}}元</span>
-                             <span class="font8">配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元</span>
-                         </p>
-                         <p>订单将在30分钟内送到您的手上，请保持电话畅通</p>
-                     </a>
-                 </li>
-                 {% end %}
-             </ul>
-             {% if config.ontime_on == True%}
-             {% if periods %}
-             <ul id="sendDay" class="send_day nav-pills clearfix text-center type-choose m-b10 font14 mt10 pl10">
-                 <li data-id="1" class="active pull-left" id="send_today"><a href="javascript:;" class="bg-white text-green">今天</a></li>
-                 <li data-id="2" id="send_tomorrow" class="pull-right"><a href="javascript:;" class="bg-white text-green">明天</a></li>
-             </ul>
-             <ul id="sendPeriod" class="send_period list-group  font12">
-                 {% for period in periods%}
-                 <li data-id="{{period.id}}" class="list-group-item clearfix available">
-                     <a href="javascript:;" class="text-grey clearfix">
-                         <span class="text-grey3 pull-left set-inl-blo period_name">{{period.name}}</span>
-                         <span class="pull-left">
-                             {{period.start_time}} - <span class="intime_endtime">{{period.end_time}}</span>
-                         </span>
-                         <input type="hidden" class="intime_startHour" value="{{period.start_time.hour}}"/>
-                         <input type="hidden" class="intime_startMin" value="{{period.start_time.minute}}"/>
-                     </a>
-                 </li>
-                 {% end %}
-             </ul>
-             <input type="hidden" class="stop-range" value="{{config.stop_range}}"/>
-             {% end %}
-             {% end %}
-             {% if config.now_on == True%}
-             <ul class="send_now list-group mt10" style="display:none">
-                <!-- <li class="list-group-item clearfix bg-grey2">
-                     <p class="text-center text-pink">送货员太辛苦，打赏点小费吧\(╯▼╰)/ </p>
-                     <ul class="tip-list font14">
-                         <li class="btn text-green text-center bg-white pull-left" data-id="1">1元</li>
-                         <li class="btn text-green text-center bg-white pull-left" data-id="2">2元</li>
-                         <li class="btn text-green text-center bg-white pull-left" data-id="5">5元</li>
-                     </ul>
-                 </li>-->
-                 <li class="list-group-item font14">
-                     送货时间：
-                     <span class="now_startime">{{config.start_time_now}}</span>~
-                     <span class="now_endtime">{{config.end_time_now}}</span>
-                 </li>
-             </ul>
-             {% end %}
-         </div>
-         <div class="send-address-choose clearfix center-block bg-white box-style">
-             <p class="text-grey3 font14">收货人地址</p>
-             <ul id="addressType" class="address_list list-group type-choose font12">
-                 {% for address in current_user.addresses%}
-                 <li data-id="{{address.id}}" class="list-group-item clearfix item">
-                     <a href="javascript:;" class="text-grey3 pull-left address">
-                         <span class="name pr10">{{address.receiver}}</span>
-                         <span class="address pr10">{{address.address_text}}</span>
-                         <span class="phone">{{address.phone}}</span>
-                     </a>
-                     <a class="text-green pull-right to-edit-address text-center">+编辑</a>
-                 </li>
-                 {% end %}
-             </ul>
-             <p class="clearfix"><a class="text-green pull-right to-add-address font12">+添加</a></p>
-             <div class="address-box hidden center-block font12">
-                 <p>
-                     <span class="tit set-inl-blo pull-left">姓名：</span>
-                     <input type="text" placeholder="输入收货人姓名" class="input-sty bg-white pull-left" id="receiveName"/>
-                 </p>
-                 <p>
-                     <span class="tit set-inl-blo pull-left">地址：</span>
-                     <input type="text" placeholder="输入收货人详细地址"  class="input-sty bg-white pull-left" id="receiveAddress"/>
-                 </p>
-                 <p>
-                     <span class="tit set-inl-blo pull-left">电话：</span>
-                     <input type="text" placeholder="输入收货人有效联系电话"  class="input-sty bg-white pull-left" id="receivePhone"/>
-                 </p>
-                 <div class="w-per9 center-block">
-                     <button class="btn text-white pull-right bg-green" id="receiveAdd">确定</button>
-                     <button class="btn text-white pull-right bg-green hidden" id="receiveEdit">确定</button>
-                     <button class="btn text-grey3 bg-greyc pull-right m-r5" id="receiveCancel">取消</button>
-                 </div>
-             </div>
-         </div>
-         <div class="send-address-choose clearfix center-block bg-white box-style">
-             <p class="clearfix">
-                 <span class="pull-left text-grey3 font14">支付方式</span>
-                 <a href="#" class="text-green pull-right font12">充值</a>
-                 <span class="pull-right pr10 font12">账户余额：{{current_user.balance}}元</span>
-             </p>
-             <ul id="payType" class="pay_type list-group type-choose font12">
-                 <li data-id="1" class="active list-group-item clearfix">
-                     <a href="javascript:;" class="text-grey">
-                         <span class="text-grey3 pull-left title set-inl-blo">货到付款</span>
-                         <span class="pull-left">送货员送货时交付现金</span>
-                     </a>
-                 </li>
-                 <li data-id="2" class="list-group-item clearfix">
-                     <a href="javascript:;" class="text-grey">
-                         <span class="text-grey3 pull-left title set-inl-blo">余额支付</span>
-                         <span class="pull-left">提前支付</span>
-                     </a>
-                 </li>
-             </ul>
-         </div>
-        <input id="messageCon" class="message-input input-sty box-style center-block font14 bg-white bg-grey" type="text" value="" placeholder="留个言调戏下客服吧？(⊙_⊙)">
-        <button id="submitOrder" class="sub-btn w-per6 bg-green text-white text-center center-block btn mt10">提交订单</button>
-         <div class="bottom-line"></div>
-     </div>
+            </div>
+            <div class="send-address-choose clearfix center-block bg-white box-style">
+                <p class="clearfix">
+                    <span class="pull-left text-grey3 font14">支付方式</span>
+                    <a href="#" class="text-green pull-right font12">充值</a>
+                    <span class="pull-right pr10 font12">账户余额：{{current_user.balance}}元</span>
+                </p>
+                <ul id="payType" class="pay_type list-group type-choose font12">
+                    <li data-id="1" class="active list-group-item clearfix">
+                        <a href="javascript:;" class="text-grey">
+                            <span class="text-grey3 pull-left title set-inl-blo">货到付款</span>
+                            <span class="pull-left">送货员送货时交付现金</span>
+                        </a>
+                    </li>
+                    <li data-id="2" class="list-group-item clearfix">
+                        <a href="javascript:;" class="text-grey">
+                            <span class="text-grey3 pull-left title set-inl-blo">余额支付</span>
+                            <span class="pull-left">提前支付</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <input id="messageCon" class="message-input input-sty box-style center-block font14 bg-white bg-grey" type="text" value="" placeholder="留个言调戏下客服吧？(⊙_⊙)">
+            <button id="submitOrder" class="sub-btn w-per6 bg-green text-white text-center center-block btn mt10 clearfix">提交订单</button>
+        </div>
+        <div class="bottom-line"></div>
+    </div>
 {% end %}
 {% block bottom %}
 <script src="{{static_url('js/market-cart.js')}}"></script>

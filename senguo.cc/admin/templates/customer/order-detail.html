@@ -20,7 +20,7 @@
 {% end %}
 {% set fruits=eval(order.fruits)%}
 {% set mgoods=eval(order.mgoods)%}
-<section class="main-container">
+<section class="main-container bg-white">
     <header class="head-title clearfix">
         <div class="circle-icon pull-left bg-green img-circle" >
             <img src="{{static_url('images/order-icon.png')}}" alt="￥" />
@@ -91,9 +91,9 @@
                             </li>
                             <li class="l2" >
                                 <span class="charge">{{mgoods[mcharge_type.id]['charge']}}</span>
-                                <span class="number-box" >
+                                <span class="number-box color" >
                                     <span class="number">{{mgoods[mcharge_type.id]['num']}}</span>
-                                    <span class="bundle text-pink">x1</span>
+                                    <span class="bundle">x1</span>
                                 </span>
                             </li>
                             <li class="l3 color" >
