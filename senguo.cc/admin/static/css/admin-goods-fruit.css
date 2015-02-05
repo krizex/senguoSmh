@@ -101,10 +101,10 @@
 .preview-list li img{width:80px;height:80px;}
 .preview-list li p{height:30px;line-height:30px;margin-bottom:0px;font-size:14px;}
 
-.sale_tag{background:url('../svg/icon_list.svg') no-repeat 0px -106px;width:52px;height:52px;background-size:120px 180px;}
-.new_tag{background:url('../svg/icon_list.svg') no-repeat -82px -72px;width:38px;height:47px;background-size:120px 180px;}
-.hot_tag{background:url('../svg/icon_list.svg') no-repeat 0px -164px;width:58px;height:18px;background-size:120px 180px;}
-.limit_tag{background:url('../svg/icon_list.svg') no-repeat -70px -128px;width:52px;height:52px;background-size:120px 180px;}
+.sale_tag{background:url('../svg/icon_list_1.svg') no-repeat 0px -106px;width:52px;height:52px;background-size:120px 180px;}
+.new_tag{background:url('../svg/icon_list_1.svg') no-repeat -82px -72px;width:38px;height:47px;background-size:120px 180px;}
+.hot_tag{background:url('../svg/icon_list_1.svg') no-repeat 0px -164px;width:58px;height:18px;background-size:120px 180px;}
+.limit_tag{background:url('../svg/icon_list_1.svg') no-repeat -70px -128px;width:52px;height:52px;background-size:120px 180px;}
 
 .goods-item-show .sale_tag{top:0;left:0}
 .goods-item-show .new_tag{right:0;bottom:2px;}
