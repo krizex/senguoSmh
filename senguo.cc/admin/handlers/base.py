@@ -336,7 +336,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
                     del d[key]
             cart.update(session=self.session, fruits=str(d)) #更新购物车
             for charge_type in charge_types:
-                fruits[charge_type.id]={"charge_type": charge_type, "num": d[charge_type.id]}
+                fruits[charge_type.id] = {"charge_type": charge_type, "num": d[charge_type.id],
+                                          "code": charge_type.fruit.fruit_type.code}
         if cart.mgoods:
             d = eval(cart.mgoods)
             mcharge_types=self.session.query(models.MChargeType).\
@@ -376,27 +377,13 @@ class CustomerBaseHandler(_AccountBaseHandler):
 class WxOauth2:
     token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}&secret={appsecret}&code={code}&grant_type=authorization_code"
     userinfo_url = "https://api.weixin.qq.com/sns/userinfo?access_token={access_token}&openid={openid}"
+    jsapi_ticket_url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={access_token}&type=jsapi"
+
     @classmethod
     def get_userinfo(cls, code, mode):
-        # 需要改成异步请求
-        if mode == "kf": # 从PC来的登录请求
-            token_url = cls.token_url.format(
-                code=code, appid=KF_APPID, appsecret=KF_APPSECRET)
-        elif mode == "mp":
-            token_url = cls.token_url.format(
-                code=code, appid=MP_APPID, appsecret=MP_APPSECRET)
-        # 获取access_token
-        try:
-            data = json.loads(
-                urllib.request.urlopen(token_url).read().decode("utf-8"))
-            print(data)
-            access_token = data["access_token"]
-            openid = data["openid"]
-        except Exception as e:
-            Logger.warn("WxOauth2 Error", "获取access_token失败，注意是否存在攻击")
-            traceback.print_exc()
+        access_token, openid = cls.get_access_token_openid(code, mode)
+        if not access_token:
             return None
-        
         userinfo_url = cls.userinfo_url.format(access_token=access_token, openid=openid)
         try:            
             data = json.loads(
@@ -418,3 +405,37 @@ class WxOauth2:
             return None
         
         return userinfo_data
+
+    @classmethod
+    def get_jsapi_ticket(cls, code, mode):
+        access_token, openid = cls.get_access_token_openid(code, mode)
+        if not access_token:
+            return None
+        jsapi_ticket_url = cls.jsapi_ticket_url.format(access_token=access_token)
+
+        data = json.loads(urllib.request.urlopen(jsapi_ticket_url).read().decode("utf-8"))
+        if data["errcode"] == 0:
+            return data["ticket"]
+        else:
+            print("获取jsapi_ticket出错：", data)
+            return None
+
+
+    @classmethod
+    def get_access_token_openid(cls, code, mode):  # access_token接口调用有次数上限，最好全局变量缓存
+        # 需要改成异步请求
+        if mode == "kf": # 从PC来的登录请求
+            token_url = cls.token_url.format(
+                code=code, appid=KF_APPID, appsecret=KF_APPSECRET)
+        elif mode == "mp":
+            token_url = cls.token_url.format(
+                code=code, appid=MP_APPID, appsecret=MP_APPSECRET)
+        # 获取access_token
+        try:
+            data = json.loads(urllib.request.urlopen(token_url).read().decode("utf-8"))
+            print(data)
+        except Exception as e:
+            Logger.warn("WxOauth2 Error", "获取access_token失败，注意是否存在攻击")
+            traceback.print_exc()
+            return None
+        return data["access_token"], data["openid"]

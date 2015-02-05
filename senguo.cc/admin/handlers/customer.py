@@ -255,10 +255,11 @@ class Market(CustomerBaseHandler):
         mgoods={}
         for menu in shop.menus:
             mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
-        notices = [x for x in shop.config.notices if x.active == 1]
+        notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
         return self.render("customer/home.html",
                            context=dict(fruits=fruits, dry_fruits=dry_fruits, menus=shop.menus, mgoods=mgoods,
-                                        cart_count=cart_count, subpage='home', notices=notices))
+                                        cart_count=cart_count, subpage='home'),
+                           notices=dict(notices=notices))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int")
@@ -350,7 +351,7 @@ class Cart(CustomerBaseHandler):
         cart_f, cart_m = self.read_cart(shop_id)
 
         periods = [x for x in shop.config.periods if x.active == 1]
-        return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m,config=shop.config,
+        return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
                            periods=periods, context=dict(subpage='cart'))
 
     @tornado.web.authenticated

@@ -50,9 +50,6 @@ class Access(AdminBaseHandler):
         userinfo = self.get_wx_userinfo(code, mode)
         if not userinfo:
             return self.redirect(self.reverse_url("adminLogin"))
-        # 尝试登录
-        # u = models.ShopAdmin.login_by_unionid(self.session, userinfo["unionid"])
-        # if not u:  #新建用户
         u = models.ShopAdmin.register_with_wx(self.session, userinfo)
         self.set_current_user(u, domain=ROOT_HOST_NAME)
         
@@ -647,7 +644,8 @@ class Shelf(AdminBaseHandler):
             args["storage"] = data["storage"]
             args["unit"] = data["unit"]
             args["tag"] = data["tag"]
-            args["img_url"] = SHOP_IMG_HOST + data["img_url"]
+            if not data["img_url"]:  # 前端可能上传图片不成功，发来一个空的
+                args["img_url"] = SHOP_IMG_HOST + data["img_url"]
             args["intro"] = data["intro"]
             args["priority"] = data["priority"]
             if action == "add_fruit":
@@ -679,7 +677,7 @@ class Shelf(AdminBaseHandler):
         elif action == "edit_mgoods_img":
             return self.send_qiniu_token("mgoods", self.args["id"])
 
-        elif action in ["add_charge_type", "edit_active", "edit_fruit"]: #fruit_id
+        elif action in ["add_charge_type", "edit_active", "edit_fruit", "default_fruit_img"]:  # fruit_id
             try:fruit = self.session.query(models.Fruit).filter_by(id=self.args["id"]).one()
             except:return self.send_error(404)
             if fruit.shop != self.current_shop:
@@ -709,6 +707,11 @@ class Shelf(AdminBaseHandler):
                                                 #img_url = data["img_url"],
                                                 intro = data["intro"],
                                                 priority=data["priority"])
+
+            elif action == "default_fruit_img":  # 恢复默认图
+                fruit.img_url = ''
+                self.session.commit()
+
         elif action in ["del_charge_type", "edit_charge_type"]: #charge_type_id
             charge_type_id = self.args["charge_type_id"]
             try: q = self.session.query(models.ChargeType).filter_by(id=charge_type_id)
@@ -721,7 +724,7 @@ class Shelf(AdminBaseHandler):
                          num=data["num"],
                          unit_num=data["unit_num"])
             self.session.commit()
-        elif action in ["add_mcharge_type", "edit_m_active", "edit_mgoods"]: #menu_id
+        elif action in ["add_mcharge_type", "edit_m_active", "edit_mgoods", "default_mgoods_img"]: #mgoods_id
             try:mgoods = self.session.query(models.MGoods).filter_by(id=self.args["id"]).one()
             except:return self.send_error(404)
             if mgoods.menu.shop != self.current_shop:
@@ -751,6 +754,10 @@ class Shelf(AdminBaseHandler):
                                                 #img_url = data["img_url"],
                                                 intro = data["intro"],
                                                 priority=data["priority"])
+            elif action == "default_mgoods_img":  # 恢复默认图
+                mgoods.img_url = ''
+                self.session.commit()
+
         elif action in ["del_mcharge_type", "edit_mcharge_type"]: #mcharge_type_id
             mcharge_type_id = self.args["charge_type_id"]
             try: q = self.session.query(models.MChargeType).filter_by(id=mcharge_type_id)
@@ -789,7 +796,7 @@ class Follower(AdminBaseHandler):
                     q = q.order_by(desc(models.CustomerShopFollow.create_time))
             else:
                 q = self.session.query(models.Customer).\
-                    filter(exists().where(models.Customer.id == models.Order.customer_id))
+                    join(models.Order).filter(models.Order.shop_id == self.current_shop.id).distinct()
             if order_by == "credits":
                 q = q.order_by(desc(models.Customer.credits))
             elif order_by == "balance":

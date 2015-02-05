@@ -2,7 +2,7 @@ $(document).ready(function(){
     //导航acitve样式
     var link_id= $.getUrlParam('id');
     var link_action= $.getUrlParam('action');
-    if(link_id==1000) $('.dry_active').addClass('active').siblings('li').removeClass('active');
+    if(link_id>=1000) $('.dry_active').addClass('active').siblings('li').removeClass('active');
     $('.menu_active').each(function(){
         var $this=$(this);
         var name=$this.data('id');

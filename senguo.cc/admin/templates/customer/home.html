@@ -9,7 +9,7 @@
 {% set dry_fruits=context['dry_fruits']%}
 {% set mgoods=context['mgoods']%}
 {% set menus=context['menus']%}
-{% set notices=context['notices'] %}
+
 <div class="notice-board">
     {% if notices %}
     <div id="slider" class="swipe" style="visibility: visible;">
@@ -17,7 +17,7 @@
             {% for notice in notices%}
             <figure>
                 <div class="wrap text-center text-brown font16">
-                    <label class="title">{{notice.summary}}</label>
+                    <label class="title">{{}}</label>
                     <!--<p class="detail">{{notice.detail}}</p>-->
                     <img src="{{static_url('images/banner.jpg')}}"/>
                 </div>
