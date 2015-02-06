@@ -22,7 +22,7 @@ function signin(){
     var args={action: action};
     $.postJson(url,args,function(res){
         if(res.success){
-            $('#signin-shop').addClass('bg-grey').find('.sign_text').text('已签到');
+            $('#signin-shop').addClass('bg-grey3 text-white').find('.sign_text').text('已签到');
         }
         else return alert(res.error_text);
     })

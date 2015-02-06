@@ -118,12 +118,13 @@ input{border:none;}
 .pl5{padding-left:5px !important;}
 .pt5{padding-top:5px !important;}
 .pt10{padding-top:10px !important;}
+.pt36{padding-top:36px !important;}
 
 .back-to-top{width:30px;height:30px;line-height:30px;position:fixed;right:0;bottom:60px;}
 
 .return-btn{display:inline-block;width:20%;height:42px;position:absolute;left:0;background:url('../images/back-white-2px.png') no-repeat 10px 6px;}
 
-.detail-header{background:url('../svg/rainshed_green_1.svg') repeat-x;height:42px;line-height:36px;position:relative;max-width:800px;min-width:320px;}
+.detail-header{background:url('../svg/rainshed_green_1.svg') repeat-x;height:42px;line-height:36px;position:fixed;max-width:800px;min-width:320px;z-index:666;width:100%;}
 .detail-header .title{padding-left:2em;}
 
 .border-c{border:1px solid #ccc;}
@@ -139,6 +140,6 @@ input{border:none;}
 .border-rd{border-right:1px solid #ddd;}
 .w49{width:49%;}
 .w50{width:50%;}
-
-input[type=text]:focus{box-shadow:0px;border-color:#f7f7f8 !important;}
+input{outline:none;}
+input[type=text]:focus{box-shadow:0px;border-color:#f7f7f8 !important;outline:none;}
 .b-radius0{border-radius:0px !important;}

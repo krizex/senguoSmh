@@ -49,7 +49,7 @@
                     <p>商品</p>
                 </a>
             </li>
-            <li class="col-xs-3 col-sm-3 {{cart_active}}">
+            <li class="col-xs-3 col-sm-3 {{cart_active}} cart_item">
                 <a href="{{reverse_url('customerCart')}}" class="text-grey cart" >
                     <em></em>
                     <p>果篮</p>
@@ -72,6 +72,7 @@
             {% end %}
         </div>
     </div>
+    {% block other %}{% end %}
     <script src="{{static_url('js/jquery.min.js')}}"></script>
     <script src="{{static_url('js/hammer.min.js')}}"></script>
     <script src="{{static_url('js/bootstrap.min.js')}}"></script>
