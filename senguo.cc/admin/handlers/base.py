@@ -214,6 +214,15 @@ class _AccountBaseHandler(GlobalBaseHandler):
              31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m-1]
         return date.replace(day=d, month=m, year=y)
 
+    def signature(self, noncestr, timestamp, url):
+        jsapi_ticket = WxOauth2.get_jsapi_ticket()
+        string = "jsapi_ticket={jsapi_ticket}&noncestr={noncestr}&timestamp={timestamp}&url={url}".\
+            format(jsapi_ticket=jsapi_ticket, noncestr=noncestr, timestamp=timestamp, url=url)
+
+        h = hashlib.sha1(string.encode())
+        return h.hexdigest()
+
+
 class SuperBaseHandler(_AccountBaseHandler):
     __account_model__ = models.SuperAdmin
     __account_cookie_name__ = "super_id"
@@ -374,14 +383,6 @@ class CustomerBaseHandler(_AccountBaseHandler):
             return self._shop_code
         self._shop_code = self.session.query(models.Shop).filter_by(id=self.shop_id).one().shop_code
         return self._shop_code
-
-    def signature(self, noncestr, timestamp, url):
-        jsapi_ticket = WxOauth2.get_jsapi_ticket()
-        string = "jsapi_ticket={jsapi_ticket}&noncestr={noncestr}&timestamp={timestamp}&url={url}".\
-            format(jsapi_ticket=jsapi_ticket, noncestr=noncestr, timestamp=timestamp, url=url)
-
-        h = hashlib.sha1(string.encode())
-        return h.hexdigest()
 
 jsapi_ticket = {"jsapi_ticket": '', "create_timestamp": 0}  # 用全局变量存好，避免每次都要申请
 access_token = {"access_token": '', "create_timestamp": 0}
