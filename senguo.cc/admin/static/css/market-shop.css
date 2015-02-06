@@ -23,3 +23,4 @@ p{margin-bottom:0px;}
 background-size:120px 180px;}
 .area-icon{width:14px;height:22px;background:url('../svg/icon_list_1.svg') 0 -48px;margin-right:5px;background-size:120px 180px;}
 .phone-icon{width:18px;height:26px;background:url('../svg/icon_list_1.svg') -20px -48px;margin-right:5px;background-size:120px 180px;}
+.fix-title{position:fixed;z-index:666;}

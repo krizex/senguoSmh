@@ -15,11 +15,12 @@ $(document).ready(function(){
             break;
         }
     }
-    //$('.shop_href').attr({'href':shop_href+Int(shop_id)});
     $('.staff_href').attr({'href':staff_href+Int(shop_id)});
 
     //微信Api
-    wexin();
+    $('.share_to').on('click',function(){
+        wexin();
+    });
     wx.config({
         debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
         appId: 'wx0ed17cdc9020a96e', // 必填，公众号的唯一标识
@@ -31,7 +32,7 @@ $(document).ready(function(){
     wx.ready(function(){
         wx.onMenuShareTimeline({
             title: '哈哈哈哈哈'+'一家不错的水果O2O店铺，快来关注吧~ ', // 分享标题
-            link: '', // 分享链接
+            link:current_link, // 分享链接
             imgUrl: '', // 分享图标
             success: function () {
                 // 用户确认分享后执行的回调函数
@@ -43,7 +44,7 @@ $(document).ready(function(){
         wx.onMenuShareAppMessage({
             title: '哈哈哈哈哈', // 分享标题
             desc: "一家不错的水果O2O店铺，快来关注吧~ ", // 分享描述
-            link:"",
+            link:current_link,
             imgUrl: "", // 分享图标
             type: '' // 分享类型,music、video或link，不填默认为link
         });
@@ -58,6 +59,7 @@ var shop_id;
 var noncestr_val;
 var timestamp_val;
 var signature_val;
+var current_link=window.location.href;
 
 function unitText(target,n){
     switch (n){
@@ -112,7 +114,7 @@ function tagText(target,n){
 
 function wexin(){
     var url='/wexin';
-    var link= window.location.href;
+    var link= current_link;
     var args={url: link};
     $.ajaxSetup({'async':false});
     $.postJson(url,args,function(res){

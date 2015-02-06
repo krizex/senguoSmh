@@ -51,38 +51,39 @@ $(document).ready(function(){
     });
     //公告滚动
     var notice_con=window.dataObj.notices;
-    $.ajaxSetup({'async':false});
-    $.getItem('/static/items/customer/notice-item.html',function(data){
-        notice_item=data;
-        for(var i=0;i<notice_con.length;i++){
-            var summary=notice_con[i][0];
-            var detail=notice_con[i][1];
-            var item=$(notice_item);
-            console.log();
-            item.find('.title').text(summary);
-            item.find('.notice-detail').val(detail);
-            $('.swipe-wrap').append(item);
-            $('#position').append('<li></li>');
-        }
-        $('#position li').first().addClass('on');
-        if($('#position li').length>0){
-            var slider =
-                Swipe(document.getElementById('slider'), {
-                    auto: 3000,
-                    continuous: true,
-                    callback: function(pos) {
+    if(typeof(notice_con)!='undefined'){
+        $.ajaxSetup({'async':false});
+        $.getItem('/static/items/customer/notice-item.html',function(data){
+            notice_item=data;
+            for(var i=0;i<notice_con.length;i++){
+                var summary=notice_con[i][0];
+                var detail=notice_con[i][1];
+                var item=$(notice_item);
+                item.find('.title').text(summary);
+                item.find('.notice-detail').val(detail);
+                $('.swipe-wrap').append(item);
+                $('#position').append('<li></li>');
+            }
+            $('#position li').first().addClass('on');
+            if($('#position li').length>0){
+                var slider =
+                    Swipe(document.getElementById('slider'), {
+                        auto: 3000,
+                        continuous: true,
+                        callback: function(pos) {
 
-                        var i = bullets.length;
-                        while (i--) {
-                            bullets[i].className = ' ';
+                            var i = bullets.length;
+                            while (i--) {
+                                bullets[i].className = ' ';
+                            }
+                            bullets[pos].className = 'on';
+
                         }
-                        bullets[pos].className = 'on';
-
-                    }
-                });
-            var bullets = document.getElementById('position').getElementsByTagName('li');
-        }
-    });
+                    });
+                var bullets = document.getElementById('position').getElementsByTagName('li');
+            }
+        });
+    }
     //公告详情
     $('body').on('click','.notice-item',function(){
         var $this=$(this);
