@@ -493,13 +493,15 @@ class Notice(CustomerBaseHandler):
     def get(self):
         return self.render("notice/order-success.html",context=dict(subpage='cart'))
 
+class Wexin(CustomerBaseHandler):
     @CustomerBaseHandler.check_arguments("url:str")
     def post(self):
         noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
         timestamp = datetime.datetime.now().timestamp()
         url = self.args["url"]
 
-        return self.send_success(signature=self.signature(noncestr, timestamp, url))
+        return self.send_success(noncestr=noncestr, timestamp=timestamp,
+                                 signature=self.signature(noncestr, timestamp, url))
 
 
 

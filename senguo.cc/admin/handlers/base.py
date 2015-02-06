@@ -383,6 +383,9 @@ class CustomerBaseHandler(_AccountBaseHandler):
         h = hashlib.sha1(string.encode())
         return h.hexdigest()
 
+jsapi_ticket = {"jsapi_ticket": '', "create_timestamp": 0}  # 用全局变量存好，避免每次都要申请
+access_token = {"access_token": '', "create_timestamp": 0}
+
 class WxOauth2:
     token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}" \
                 "&secret={appsecret}&code={code}&grant_type=authorization_code"
@@ -441,6 +444,10 @@ class WxOauth2:
 
     @classmethod
     def get_jsapi_ticket(cls):
+        global jsapi_ticket
+        if datetime.datetime.now().timestamp() - jsapi_ticket["create_timestamp"]\
+                < 7100 and jsapi_ticket["jsapi_ticket"]:  # jsapi_ticket过期时间为7200s，但为了保险起见7100s刷新一次
+            return jsapi_ticket["jsapi_ticket"]
         access_token = cls.get_client_access_token()
         if not access_token:
             return None
@@ -448,6 +455,8 @@ class WxOauth2:
 
         data = json.loads(urllib.request.urlopen(jsapi_ticket_url).read().decode("utf-8"))
         if data["errcode"] == 0:
+            jsapi_ticket["jsapi_ticket"] = data["ticket"]
+            jsapi_ticket["create_timestamp"] = datetime.datetime.now().timestamp()
             return data["ticket"]
         else:
             print("获取jsapi_ticket出错：", data)
@@ -455,8 +464,15 @@ class WxOauth2:
 
     @classmethod
     def get_client_access_token(cls):  # 微信接口调用所需要的access_token,不需要用户授权
+        global access_token
+        if datetime.datetime.now().timestamp() - access_token["create_timestamp"]\
+                < 7100 and access_token["access_token"]:  # jsapi_ticket过期时间为7200s，但为了保险起见7100s刷新一次
+            return access_token["access_token"]
+
         data = json.loads(urllib.request.urlopen(cls.client_access_token_url).read().decode("utf-8"))
         if "access_token" in data:
+            access_token["access_token"] = data["access_token"]
+            access_token["create_timestamp"] = datetime.datetime.now().timestamp()
             return data["access_token"]
         else:
             print("获取微信接口调用的access_token出错：", data)

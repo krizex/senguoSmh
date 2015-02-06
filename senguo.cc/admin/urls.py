@@ -22,6 +22,7 @@ handlers = [
     (r"/customer/shopProfile", handlers.customer.ShopProfile, {}, "customerShopProfile"),
     (r"/customer/comment", handlers.customer.Comment, {}, "customerComment"),
     (r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
+    (r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
 
     (r"/", handlers.front.Home,{}, "frontHome"),
     (r"/super/oauth", handlers.superadmin.Access,{
