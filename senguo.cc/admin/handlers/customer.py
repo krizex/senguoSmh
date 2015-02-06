@@ -248,6 +248,7 @@ class Market(CustomerBaseHandler):
         if not shop:
             return self.send_error(404)
         self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
+        self.set_cookie("shop_name", shop.shop_name)
         self._shop_code = shop.shop_code
         if not self.session.query(models.CustomerShopFollow).filter_by(
                 customer_id=self.current_user.id, shop_id=shop.id).first():
@@ -263,9 +264,10 @@ class Market(CustomerBaseHandler):
         for menu in shop.menus:
             mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
         notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
+        self.set_cookie("cart_count", str(cart_count))
         return self.render("customer/home.html",
                            context=dict(fruits=fruits, dry_fruits=dry_fruits, menus=shop.menus, mgoods=mgoods,
-                                        cart_count=cart_count, subpage='home',notices=notices))
+                                        cart_count=cart_count, subpage='home', notices=notices))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int")
