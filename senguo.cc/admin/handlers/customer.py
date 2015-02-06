@@ -5,6 +5,7 @@ from settings import *
 import datetime, time
 from sqlalchemy import desc, and_, or_
 import qiniu
+import random
 
 class Access(CustomerBaseHandler):
     def initialize(self, action):
@@ -492,6 +493,17 @@ class Cart(CustomerBaseHandler):
 class Notice(CustomerBaseHandler):
     def get(self):
         return self.render("notice/order-success.html",context=dict(subpage='cart'))
+
+    @CustomerBaseHandler.check_arguments("url:str")
+    def post(self):
+        noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
+        timestamp = datetime.datetime.now().timestamp()
+        url = self.args["url"]
+
+        return self.send_success(signature=self.signature(noncestr, timestamp, url))
+
+
+
 
 class Order(CustomerBaseHandler):
     @tornado.web.authenticated

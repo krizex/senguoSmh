@@ -3,6 +3,7 @@ import dal.models as models
 from libs.utils import Logger
 import json
 import urllib
+import hashlib
 import traceback
 from settings import KF_APPID, KF_APPSECRET, APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
 import tornado.escape
@@ -374,9 +375,20 @@ class CustomerBaseHandler(_AccountBaseHandler):
         self._shop_code = self.session.query(models.Shop).filter_by(id=self.shop_id).one().shop_code
         return self._shop_code
 
+    def signature(self, noncestr, timestamp, url):
+        jsapi_ticket = WxOauth2.get_jsapi_ticket()
+        string = "jsapi_ticket={jsapi_ticket}&noncestr={noncestr}&timestamp={timestamp}&url={url}".\
+            format(jsapi_ticket=jsapi_ticket, noncestr=noncestr, timestamp=timestamp, url=url)
+
+        h = hashlib.sha1(string.encode())
+        return h.hexdigest()
+
 class WxOauth2:
-    token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}&secret={appsecret}&code={code}&grant_type=authorization_code"
+    token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}" \
+                "&secret={appsecret}&code={code}&grant_type=authorization_code"
     userinfo_url = "https://api.weixin.qq.com/sns/userinfo?access_token={access_token}&openid={openid}"
+    client_access_token_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential" \
+                              "&appid={appid}&secret={appsecret}".format(appid=MP_APPID, appsecret=MP_APPSECRET)
     jsapi_ticket_url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={access_token}&type=jsapi"
 
     @classmethod
@@ -406,23 +418,10 @@ class WxOauth2:
         
         return userinfo_data
 
-    @classmethod
-    def get_jsapi_ticket(cls, code, mode):
-        access_token, openid = cls.get_access_token_openid(code, mode)
-        if not access_token:
-            return None
-        jsapi_ticket_url = cls.jsapi_ticket_url.format(access_token=access_token)
-
-        data = json.loads(urllib.request.urlopen(jsapi_ticket_url).read().decode("utf-8"))
-        if data["errcode"] == 0:
-            return data["ticket"]
-        else:
-            print("获取jsapi_ticket出错：", data)
-            return None
-
 
     @classmethod
     def get_access_token_openid(cls, code, mode):  # access_token接口调用有次数上限，最好全局变量缓存
+                                                   #这是需要用户授权才能获取的access_token
         # 需要改成异步请求
         if mode == "kf": # 从PC来的登录请求
             token_url = cls.token_url.format(
@@ -439,3 +438,26 @@ class WxOauth2:
             traceback.print_exc()
             return None
         return data["access_token"], data["openid"]
+
+    @classmethod
+    def get_jsapi_ticket(cls):
+        access_token = cls.get_client_access_token()
+        if not access_token:
+            return None
+        jsapi_ticket_url = cls.jsapi_ticket_url.format(access_token=access_token)
+
+        data = json.loads(urllib.request.urlopen(jsapi_ticket_url).read().decode("utf-8"))
+        if data["errcode"] == 0:
+            return data["ticket"]
+        else:
+            print("获取jsapi_ticket出错：", data)
+            return None
+
+    @classmethod
+    def get_client_access_token(cls):  # 微信接口调用所需要的access_token,不需要用户授权
+        data = json.loads(urllib.request.urlopen(cls.client_access_token_url).read().decode("utf-8"))
+        if "access_token" in data:
+            return data["access_token"]
+        else:
+            print("获取微信接口调用的access_token出错：", data)
+            return None

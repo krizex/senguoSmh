@@ -12,7 +12,7 @@ from dal.models import _VerifyCode
 
 def gen_msg_token(wx_id, phone):
     s = DBSession()
-    code = "".join(random.sample("123456789", 6))
+    code = "".join(random.sample("123456789", 4))
     
     def post():
 
