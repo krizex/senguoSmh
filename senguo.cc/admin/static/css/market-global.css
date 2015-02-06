@@ -140,6 +140,8 @@ input{border:none;}
 .border-rd{border-right:1px solid #ddd;}
 .w49{width:49%;}
 .w50{width:50%;}
-input{outline:none;}
+input{outline:none;-webkit-appearance:none;}
 input[type=text]:focus{box-shadow:0px;border-color:#f7f7f8 !important;outline:none;}
 .b-radius0{border-radius:0px !important;}
+
+.cart_num{position:absolute;display:inline-block;width:18px;height:18px;border-radius:50%;top:8px;margin-left:10px;}

@@ -19,6 +19,10 @@ $(document).ready(function(){
         var search=$('.search-con').val().trim();
         window.location.href='follower?action=search&&order_by=time&&page=0&&wd='+search;
     });
+    //导航active样式
+    if(user_type=='all') $('.all_user').addClass('active');
+    else if(user_type=='old') $('.old_user').addClass('active');
 });
 var page=Int($.getUrlParam('page'));
+var user_type= $.getUrlParam('action');
 var totalt_page=Math.ceil($('.page-total').text());

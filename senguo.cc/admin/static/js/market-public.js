@@ -6,21 +6,17 @@ $(document).ready(function(){
         unitText($this,id);
     });
     $('#backTop').on('click',function(){$(document).scrollTop(0)});
-    var strCookie=document.cookie;
-    var arrCookie=strCookie.split("; ");
-    for(var i=0;i<arrCookie.length;i++){
-        var arr=arrCookie[i].split("=");
-        if("market_shop_id"==arr[0]){
-            shop_id=arr[1];
-            break;
-        }
-    }
+    //从cookie中提取数据
+    shop_id=getCookie('market_shop_id');
+    shop_name=getCookie('shop_name');
+    cart_count=getCookie('cart_count');
     $('.staff_href').attr({'href':staff_href+Int(shop_id)});
+    //显示商品数量
+    if(cart_count!=0) $('.cart_num').show().text(cart_count);
+    //设置title
+    document.title=shop_name+'一家不错的水果O2O店铺，快来关注吧~';
 
-    //微信Api
-    $('.share_to').on('click',function(){
-        wexin();
-    });
+    /*微信Api
     wx.config({
         debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
         appId: 'wx0ed17cdc9020a96e', // 必填，公众号的唯一标识
@@ -48,7 +44,7 @@ $(document).ready(function(){
             imgUrl: "", // 分享图标
             type: '' // 分享类型,music、video或link，不填默认为link
         });
-    });
+    });*/
 });
 var shop_href='/customer/shopProfile';
 var market_href='/shop/none';
@@ -56,10 +52,29 @@ var home_href='/customer';
 var success_href='/notice/success';
 var staff_href='/staff/hire/';
 var shop_id;
+var shop_name;
+var cart_count;
 var noncestr_val;
 var timestamp_val;
 var signature_val;
 var current_link=window.location.href;
+
+
+function getCookie(name){
+    var arr=document.cookie.match(new RegExp("(^| )"+name+"=([^;]*)(;|$)"));
+    if(arr!=null){
+        return unescape(arr[2]);
+    }
+    return null;
+}
+
+function SetCookie(name,value,days){
+    var days=arguments[2]?arguments[2]:30; //此 cookie 将被保存 30 天
+    var exp=new Date();    //new Date("December 31, 9998");
+    exp.setTime(exp.getTime() + days*86400000);
+    document.cookie=name + "="+ escape (value) + ";expires=" + exp.toGMTString();
+}
+
 
 function unitText(target,n){
     switch (n){

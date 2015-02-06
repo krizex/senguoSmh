@@ -153,7 +153,7 @@ $(document).ready(function(){
         goodsNum($this.siblings('.number-change').find('.number-plus'),2);
         $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
         //果篮显示商品种类数
-        if(cart_num==0) {$('.cart_item').append('<span class="cart_num bg-pink text-white">0</span>');}
+        if(cart_num==0) {$('.cart_num').show();}
         if($this.hasClass('add_cart_num')){
             cart_num++;
             $('.cart_num').text(cart_num);
