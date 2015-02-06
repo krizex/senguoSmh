@@ -27,7 +27,10 @@ $(document).ready(function(){
     $('#add-goodsType-sure').on('click',function(){addGoodsType($(this))});
 
     //商品编辑框显示/收起
-    $('.edit-goods-info').on('click',function(){$(this).parents('.goods-list-item').find('.goods-item-show').addClass('hidden').siblings('.goods-item-edit').removeClass('hidden');});
+    $('.edit-goods-info').on('click',function(){
+        $(this).parents('.goods-list-item').find('.goods-item-show').addClass('hidden').siblings('.goods-item-edit').removeClass('hidden');
+
+    });
     $('.edit-goods-concel').on('click',function(){$(this).parents('.goods-list-item').find('.goods-item-edit').addClass('hidden').siblings('.goods-item-show').removeClass('hidden');});
 
     //当前商品所在分类
@@ -50,7 +53,7 @@ $(document).ready(function(){
            {
                var $item=$(data);
                $item.find('.link').attr({'href':'/admin/shelf?action=fruit&id='+key});
-               $item.find('.img').attr({'src':'/static/design_img/'+fruit_type[key]['code']+'.png'});
+               $item.find('.img').attr({'src':'/static/design_img/'+fruit_type[key]['code']+'.gif'});
                $item.find('.name').text(fruit_type[key]['name']+'('+fruit_type[key]['sum']+')');
                //if(fruit_type[key]['sum']!==0) $item.css({'border-color':'#44b549'});
                $('.preview-shelve-list').append($item);
@@ -124,15 +127,15 @@ $(document).ready(function(){
     //***商品添加***
     $('.add-new-goods').on('click',function(){
         var max_goods_num=$('.goods-list').find('.goods-list-item').length;
-        var code=$('.type-class .active').data('code');
+        default_code=$('.type-class .active').data('code');
         var key='';
         var token='';
         add_goods_box.empty();
         if(max_goods_num<5){
-            $.getItem('/static/items/admin/add-new-goods.html?v=20150112',function(data){
+            $.getItem('/static/items/admin/add-new-goods.html?v=20150205',function(data){
                 var $item=$(data);
-                if(typeof(code)=='undefined') $item.find('.imgPreview').attr({'src':'/static/design_img/TDSG.png'});
-                else $item.find('.imgPreview').attr({'src':'/static/design_img/'+code+'.png'});
+                if(typeof(default_code)=='undefined') $item.find('.imgPreview').attr({'src':'/static/design_img/TDSG.gif'});
+                else $item.find('.imgPreview').attr({'src':'/static/design_img/'+default_code+'.gif'});
                 upload_item=$item.find('#file_upload');
                 add_goods_box.append($item).modal('show');
                 //商品添加-图片上传
@@ -268,7 +271,7 @@ $(document).ready(function(){
 
     //商品添加-恢复默认图
     $('.add-recover-img').on('click',function(){
-        $(this).parents('.upload-img').find('.imgPreview').attr({'data-key':'','src':'/static/design_img/TDSG.png'});
+        $(this).parents('.upload-img').find('.imgPreview').attr({'data-key':'','src':'/static/design_img/'+default_code+'.gif'});
     });
 
     //商品添加-删除计价方式
@@ -361,12 +364,10 @@ $(document).ready(function(){
     //商品编辑-恢复默认图
     $('.edit-recover-img').on('click',function(){
         var $this=$(this);
-        var code=$this.parents('.upload-img').find('.imgPreview').data('code');
-        if(typeof(code)=='undefined')
-        {
-            $this.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/TDSG.png','data-key':''});
-        }
-        else $this.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/'+code+'.png','data-key':''});
+        var parent=$this.parents('.goods-item');
+        var code=parent.find('.imgPreview').data('code');
+        var id=parent.data('id');
+        defaultImg($this,id,code);
     });
 
     //商品编辑-图片上传
@@ -418,6 +419,12 @@ $(document).ready(function(){
                    'key':'',
                    'token':''
                },
+               'onFallback':function(){
+                    return alert('您的浏览器不支持此插件！请更换其他浏览器！');
+               },
+               'onSelect':function(){
+
+               },
                'onUpload' :function(){
                    $.ajaxSetup({
                        async : false
@@ -461,6 +468,7 @@ var regNumber=/^[0-9]*[1-9][0-9]*$/;
 var regFloat=/^[0-9]+([.]{1}[0-9]{1,2})?$/;
 var add_goods_box=$('.add-new-goods-box');
 var upload_item;
+var default_code;
 
 function addGoodsType(target){
     var url=link;
@@ -709,6 +717,32 @@ function deleteCharge(target,id){
         function(res){
             if(res.success){
                 target.parents('.edit-charge-list').remove();
+            }
+            else return alert(res.error_text);
+        },
+        function(){alert('网络错误')});
+}
+
+function defaultImg(target,id,code){
+    var url='';
+    var action;
+    var link=$.getUrlParam('action');
+    if(link=='fruit'){action='default_fruit_img'}
+    else if(link=='menu'){action='default_mgoods_img'}
+    var data={};
+    var args={
+        action:action,
+        data:data,
+        id:id
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                if(typeof(code)=='undefined')
+                {
+                    target.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/TDSG.gif','data-key':''});
+                }
+                else target.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/'+code+'.gif','data-key':''});
             }
             else return alert(res.error_text);
         },

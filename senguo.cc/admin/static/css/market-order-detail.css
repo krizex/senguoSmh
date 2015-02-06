@@ -1,6 +1,6 @@
 hr{margin:10px 0;}
 .phone-box{clear:both;}
-.main-container{background-color:#fcfcfc;box-shadow:0 0 10px #888;padding-top:5px;}
+.main-container{padding-top:5px;}
 #reorder-btn{float:none}
 .data-box .content{padding:0 10px}
 .data-box .total-price{font-size:15px;font-weight:bold;color:#fe6565}
@@ -11,7 +11,7 @@ hr{margin:10px 0;}
 .head-title h3{display:inline-block;margin-top:9px;margin-left:4px}
 .head-title .order-status{margin-top:8px;margin-right:5px;padding:2px 5px;border-radius:5px;}
 .head-title img{width:3.5em;padding:8px;}
-.goods-list{margin:15px auto;box-shadow:0 0 3px #bbb}
+.goods-list{margin:15px auto;}
 
 .orderview-goods-item{position:relative;border-bottom:3px solid #fff;height:64px;background-color:#fff;font-size:15px;font-weight:bold;text-shadow:0 1px 1px #fcfcfc;color:#555;width:100%}
 .orderview-goods-item:last-child{border:none}
@@ -60,4 +60,4 @@ hr{margin:10px 0;}
 .status-bar-box .width0{width:0;}
 .status-bar-box .width50{width:50%;}
 .status-bar-box .width100{width:100%;}
-#box-border{height:15px;background:0 -1px url('../images/cart-paper-border.png') repeat;overflow:hidden;background-size:auto 16px;position:relative;z-index:5;top:15px}
+#box-border{background:url('../svg/cart-paper-border_1.svg') repeat-x;height:8px;overflow:hidden;position:relative;z-index:5;top:8px}

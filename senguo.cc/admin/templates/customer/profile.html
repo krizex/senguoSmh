@@ -7,7 +7,7 @@
 
 {% block content%}
 <div class="user-info-detail">
-    <ul>
+    <ul class="clearfix">
         <li class="item">
             <div class="info-con">
                 <span class="title img-title pull-left">头像</span>
@@ -73,6 +73,7 @@
             </div>
         </li>
     </ul>
+    <a class="btn bg-pink text-white center-block b-radius0" href="{{reverse_url('customerLogout')}}">退出登录</a>
 </div>
 <div class="modal fade tie-popbox" id="tieBox" tabindex="-1" role="dialog"  aria-hidden="true">
     <div class="modal-dialog">

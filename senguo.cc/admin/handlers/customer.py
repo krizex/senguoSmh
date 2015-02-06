@@ -265,8 +265,7 @@ class Market(CustomerBaseHandler):
         notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
         return self.render("customer/home.html",
                            context=dict(fruits=fruits, dry_fruits=dry_fruits, menus=shop.menus, mgoods=mgoods,
-                                        cart_count=cart_count, subpage='home'),
-                           notices=dict(notices=notices))
+                                        cart_count=cart_count, subpage='home',notices=notices))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int")

@@ -18,7 +18,7 @@
                     {% if fruit.img_url%}
                     <img src="{{fruit.img_url}}?imageView/1/w/100/h/100"/>
                     {% else %}
-                    <img src="/static/design_img/{{fruit.fruit_type.code}}.png"/>
+                    <img src="/static/design_img/{{fruit.fruit_type.code}}.gif"/>
                     {% end %}
                 </div>
                 <div class="info-box pull-right">
@@ -69,7 +69,7 @@
                     {% if fruit.img_url%}
                     <img src="{{fruit.img_url}}?imageView/1/w/100/h/100" class="imgPreview" data-key="{{fruit.img_url}}" data-code="{{fruit.fruit_type.code}}"/>
                     {% else %}
-                    <img src="/static/design_img/{{fruit.fruit_type.code}}.png" class="imgPreview" data-key="{{fruit.img_url}}" data-code="{{fruit.fruit_type.code}}"/>
+                    <img src="/static/design_img/{{fruit.fruit_type.code}}.gif" class="imgPreview" data-key="{{fruit.img_url}}" data-code="{{fruit.fruit_type.code}}"/>
                     {% end %}
                     <div class="upload-box btn-style2 green-color">
                         <input id="edit_file_upload" type="file" name="file_upload" class="uploadImg edit_upload" />
