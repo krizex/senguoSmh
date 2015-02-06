@@ -62,79 +62,80 @@
         {% set ftoggle_active=''%}
         {% set fradius_active=''%}
         {% set pr_active=''%}
-        {% set mr_active=''%}
         {%if len(fruit.charge_types) >1 %}
             {% set farrow_active='arrow'%}
             {% set ftoggle_active='toggle'%}
             {% set fradius_active='shape'%}
             {% set pr_active='pr35'%}
-            {% set mr_active='mr40'%}
         {% end %}
         <li class="goods-list-item font10 text-grey {{fruit.fruit_type.code}} {{pr_active}}" data-id="{{fruit.id}}" data-type="fruit" data-num="{{fruit.storage}}">
             <div class="clearfix box bg">
-                <div class="goods-img pull-left">
-                    <a href="javascript:;" class="check-lg-img">
-                        <span class="tag text-white text-center tagItem font8" data-id="{{fruit.tag}}"></span>
-                        {% if fruit.img_url %}
-                        <img src="{{fruit.img_url}}?imageView/1/w/200/h/200" class="img">
-                        {% else %}
-                        <img src="/static/design_img/{{fruit.fruit_type.code}}.gif" class="img">
-                        {% end %}
-                    </a>
-                </div>
-                <input type="hidden" class="fruit_intro" value="{{fruit.intro}}"/>
-                <div class="goods-info pull-left">
-                    <div class="show-box {{ftoggle_active}}">
-                        <p>
-                            <span class="pull-left color fruit-name font16">{{fruit.name}}</span>
-                            <span class="pull-right text-grey sale font12">销量：<span class="color">{{fruit.saled}}</span></span>
-                        </p>
-                        <p class="great-number font12">
-                            {% if fruit.favour%}
-                            <em class="red-heart"></em>
+                <div class="set-width-float">
+                    <div class="goods-img pull-left">
+                        <a href="javascript:;" class="check-lg-img">
+                            <span class="tag text-white text-center tagItem font8" data-id="{{fruit.tag}}"></span>
+                            {% if fruit.img_url %}
+                            <img src="{{fruit.img_url}}?imageView/1/w/200/h/200" class="img">
                             {% else %}
-                            <em class="gray-heart"></em>
+                            <img src="/static/design_img/{{fruit.fruit_type.code}}.gif" class="img">
                             {% end %}
-                            <span class="great">{{fruit.favour}}</span>
-                        </p>
-                        <div class="charge-first charge-style  font16 color">
-                            {% if fruit.charge_types %}
+                        </a>
+                    </div>
+                    <input type="hidden" class="fruit_intro" value="{{fruit.intro}}"/>
+                    <div class="goods-info pull-left">
+                        <div class="show-box {{ftoggle_active}}">
+                            <p>
+                                <span class="pull-left color fruit-name font16">{{fruit.name}}</span>
+                                <span class="pull-right text-grey sale font12">销量：<span class="color">{{fruit.saled}}</span></span>
+                            </p>
+                            <p class="great-number font12">
+                                {% if fruit.favour%}
+                                <em class="red-heart"></em>
+                                {% else %}
+                                <em class="gray-heart"></em>
+                                {% end %}
+                                <span class="great">{{fruit.favour}}</span>
+                            </p>
+                            <div class="charge-first charge-style  font16 color">
+                                {% if fruit.charge_types %}
                         <span class="pull-left text-bgcolor p0 charge-type line34 height34 forbid_click" data-id="{{fruit.charge_types[0].id}}">
                             {{fruit.charge_types[0].price}}元/{{fruit.charge_types[0].num}}
                             <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
                         </span>
                             {% end %}
-                            <span class="to-add pull-right show forbid_click"></span>
-                            <span class="pull-right p0 number-change hidden forbid_click {{mr_active}}">
+                            <span class="to-add pull-right show forbid_click add_cart_num"></span>
+                            <span class="pull-right p0 number-change hidden forbid_click">
                                 <a class="minus-plus pull-right number-plus" href="javascript:;"></a>
                                 <input type="text" value="" class="number-input pull-right text-green text-center line34 height34"/>
                                 <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                             </span>
+                            </div>
                         </div>
                     </div>
-                    <ul class="charge-list charge-style color set-width-float font16 {{ftoggle_active}} color" style="display:none">
-                        {% for charge in fruit.charge_types %}
-                        {% if charge.id !=fruit.charge_types[0].id %}
-                        {% set hidden =''%}
-                        {% set show =''%}
-                        <li class="border-color set-w100-fle">
+                    <span class="{{fradius_active}} back-shape bg"></span>
+                    <span class="{{farrow_active}} icon-bg toggle_icon"></span>
+                </div>
+                <ul class="charge-list charge-style color set-width-float font16 {{ftoggle_active}} color" style="display:none">
+                    {% for charge in fruit.charge_types %}
+                    {% if charge.id !=fruit.charge_types[0].id %}
+                    {% set hidden =''%}
+                    {% set show =''%}
+                    <li class="border-color set-w100-fle">
                             <span class="pull-left text-bgcolor p0 charge-type forbid_click" data-id="{{charge.id}}">
                                 {{charge.price}}元/{{charge.num}}
                                 <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                             </span>
-                            <span class="to-add pull-right show forbid_click"></span>
-                            <span class="pull-right p0 number-change hidden forbid_click {{mr_active}}">
+                        <span class="to-add pull-right show forbid_click add_cart_num"></span>
+                            <span class="pull-right p0 number-change hidden forbid_click">
                                 <a class="minus-plus pull-right number-plus" href="javascript:;"></a>
                                 <input type="text" value="" class="number-input pull-right text-green text-center line34 height34"/>
                                 <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                             </span>
-                        </li>
-                        {% end %}
-                        {% end %}
-                    </ul>
-                </div>
-                <span class="{{fradius_active}} back-shape bg"></span>
-                <span class="{{farrow_active}} icon-bg toggle_icon"></span>
+                    </li>
+                    {% end %}
+                    {% end %}
+                </ul>
+
             </div>
         </li>
         {% end %}
@@ -148,77 +149,78 @@
         {% set dtoggle_active=''%}
         {% set dradius_active=''%}
         {% set dpr_active=''%}
-        {% set dmr_active=''%}
         {%if len(dry_fruit.charge_types) >1 %}
             {% set darrow_active='arrow'%}
             {% set dtoggle_active='toggle'%}
             {% set dradius_active='shape'%}
             {% set dpr_active='pr35'%}
-            {% set dmr_active='mr40'%}
         {% end %}
         <li class="goods-list-item font10 text-grey Ganguo  {{dpr_active}}" data-id="{{dry_fruit.id}}" data-type="fruit" data-num="{{dry_fruit.storage}}">
             <div class="clearfix box bg">
-                <div class="goods-img pull-left">
-                    <a href="javascript:;" class="check-lg-img">
-                        <span class="tag text-white text-center tagItem font8" data-id="{{dry_fruit.tag}}"></span>
-                        {% if fruit.img_url %}
-                        <img src="{{dry_fruit.img_url}}?imageView/1/w/200/h/200" class="img">
-                        {% else %}
-                        <img src="/static/design_img/{{dry_fruit.fruit_type.code}}.gif" class="img">
-                        {% end %}
-                    </a>
-                </div>
-                <input type="hidden" class="fruit_intro" value="{{dry_fruit.intro}}"/>
-                <div class="goods-info pull-left">
-                    <div class="show-box {{dtoggle_active}}">
-                        <p>
-                            <span class="pull-left color fruit-name font16">{{dry_fruit.name}}</span>
-                            <span class="pull-right text-grey sale font12">销量：<span class="color">{{dry_fruit.saled}}</span></span>
-                        </p>
-                        <p class="great-number font12">
-                            {% if dry_fruit.favour%}
-                            <em class="red-heart"></em>
+                <div class="set-width-float">
+                    <div class="goods-img pull-left">
+                        <a href="javascript:;" class="check-lg-img">
+                            <span class="tag text-white text-center tagItem font8" data-id="{{dry_fruit.tag}}"></span>
+                            {% if fruit.img_url %}
+                            <img src="{{dry_fruit.img_url}}?imageView/1/w/200/h/200" class="img">
                             {% else %}
-                            <em class="gray-heart"></em>
+                            <img src="/static/design_img/{{dry_fruit.fruit_type.code}}.gif" class="img">
                             {% end %}
-                            <span  class="great">{{dry_fruit.favour}}</span>
-                        </p>
-                        <div class="charge-first charge-style  font16 color">
-                            {% if dry_fruit.charge_types %}
-                            <span class="pull-left text-bgcolor p0 charge-type line34 height34 forbid_click" data-id="{{dry_fruit.charge_types[0].id}}">
-                                {{dry_fruit.charge_types[0].price}}元/{{dry_fruit.charge_types[0].num}}
-                                <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
-                            </span>
-                            {% end %}
-                            <span class="to-add pull-right show forbid_click"></span>
-                            <span class="pull-right p0 number-change hidden forbid_click {{dmr_active}}">
-                                <a class="minus-plus  pull-right number-plus" href="javascript:;"></a>
-                                <input type="text" value="" class="number-input pull-right text-green text-center line34 height34"/>
-                                <a class="minus-plus pull-right number-minus " href="javascript:;"></a>
-                            </span>
+                        </a>
+                    </div>
+                    <input type="hidden" class="fruit_intro" value="{{dry_fruit.intro}}"/>
+                    <div class="goods-info pull-left">
+                        <div class="show-box {{dtoggle_active}}">
+                            <p>
+                                <span class="pull-left color fruit-name font16">{{dry_fruit.name}}</span>
+                                <span class="pull-right text-grey sale font12">销量：<span class="color">{{dry_fruit.saled}}</span></span>
+                            </p>
+                            <p class="great-number font12">
+                                {% if dry_fruit.favour%}
+                                <em class="red-heart"></em>
+                                {% else %}
+                                <em class="gray-heart"></em>
+                                {% end %}
+                                <span  class="great">{{dry_fruit.favour}}</span>
+                            </p>
+                            <div class="charge-first charge-style  font16 color">
+                                {% if dry_fruit.charge_types %}
+                                <span class="pull-left text-bgcolor p0 charge-type line34 height34 forbid_click" data-id="{{dry_fruit.charge_types[0].id}}">
+                                    {{dry_fruit.charge_types[0].price}}元/{{dry_fruit.charge_types[0].num}}
+                                    <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
+                                </span>
+                                {% end %}
+                                <span class="to-add pull-right show forbid_click add_cart_num"></span>
+                                <span class="pull-right p0 number-change hidden forbid_click">
+                                    <a class="minus-plus  pull-right number-plus" href="javascript:;"></a>
+                                    <input type="text" value="" class="number-input pull-right text-green text-center line34 height34"/>
+                                    <a class="minus-plus pull-right number-minus " href="javascript:;"></a>
+                                </span>
+                            </div>
                         </div>
                     </div>
-                    <ul class="charge-list charge-style color set-width-float font16 {{dtoggle_active}} color" style="display:none">
-                        {% for charge in dry_fruit.charge_types %}
-                        {% if charge.id !=dry_fruit.charge_types[0].id %}
-                        <li class="border-color set-w100-fle">
+                    <span class="{{dradius_active}} back-shape bg"></span>
+                    <span class="{{darrow_active}} icon-bg toggle_icon"></span>
+                </div>
+                <ul class="charge-list charge-style color set-width-float font16 {{dtoggle_active}} color" style="display:none">
+                    {% for charge in dry_fruit.charge_types %}
+                    {% if charge.id !=dry_fruit.charge_types[0].id %}
+                    <li class="border-color set-w100-fle">
                             <span class="pull-left text-bgcolor p0 charge-type forbid_click" data-id="{{charge.id}}">
                                 {{charge.price}}元/{{charge.num}}
                                 <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                             </span>
-                            <span class="to-add pull-right show forbid_click"></span>
-                            <span class="pull-right p0 number-change hidden forbid_click {{dmr_active}}">
+                        <span class="to-add pull-right show forbid_click add_cart_num"></span>
+                            <span class="pull-right p0 number-change hidden forbid_click">
                                 <a class="minus-plus pull-right number-plus" href="javascript:;"></a>
                                 <input type="text" value="" class="number-input pull-right text-green text-center line34 height34"/>
                                 <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                             </span>
-                        </li>
-                        {% end %}
-                        {% end %}
-                    </ul>
-                </div>
-                <span class="{{dradius_active}} back-shape bg"></span>
-                <span class="{{darrow_active}} icon-bg toggle_icon"></span>
+                    </li>
+                    {% end %}
+                    {% end %}
+                </ul>
+
             </div>
         </li>
         {% end %}
@@ -234,77 +236,77 @@
         {% set mtoggle_active=''%}
         {% set mradius_active=''%}
         {% set mpr_active=''%}
-        {% set mmr_active=''%}
         {%if len(mgood.mcharge_types) >1 %}
             {% set marrow_active='arrow'%}
             {% set mtoggle_active='toggle'%}
             {% set mradius_active='shape'%}
             {% set mpr_active='pr35'%}
-            {% set mmr_active='mr40'%}
         {% end %}
         <li class="goods-list-item  font10 text-grey TDSG {{mpr_active}}" data-id="{{mgood.id}}" data-type="menu" data-num="{{mgood.storage}}">
             <div class="clearfix box bg">
-                <div class="goods-img pull-left">
-                    <a href="javascript:;" class="check-lg-img">
-                        <span class="tag text-white text-center tagItem font8" data-id="{{mgood.tag}}"></span>
-                        {% if mgood.img_url %}
-                        <img src="{{mgood.img_url}}?imageView/1/w/200/h/200" class="img">
-                        {% else %}
-                        <img src="/static/design_img/TDSG.gif" class="img">
-                        {% end %}
-                    </a>
-                </div>
-                <input type="hidden" class="fruit_intro" value="{{mgood.intro}}"/>
-                <div class="goods-info pull-left">
-                    <div class="show-box {{mtoggle_active}}">
-                        <p>
-                            <span class="pull-left color fruit-name font16 color">{{mgood.name}}</span>
-                            <span class="pull-right text-grey sale font12">销量：<span class="color">{{mgood.saled}}</span></span>
-                        </p>
-                        <p class="great-number font12">
-                            {% if mgood.favour%}
-                            <em class="red-heart"></em>
+                <div class="set-width-float">
+                    <div class="goods-img pull-left">
+                        <a href="javascript:;" class="check-lg-img">
+                            <span class="tag text-white text-center tagItem font8" data-id="{{mgood.tag}}"></span>
+                            {% if mgood.img_url %}
+                            <img src="{{mgood.img_url}}?imageView/1/w/200/h/200" class="img">
                             {% else %}
-                            <em class="gray-heart"></em>
+                            <img src="/static/design_img/TDSG.gif" class="img">
                             {% end %}
-                            <span class="great">{{mgood.favour}}</span>
-                        </p>
-                        <div class="charge-first charge-style font16 color">
-                            {% if mgood.mcharge_types %}
-                            <span class="pull-left text-bgcolor p0 charge-type line34 height34 forbid_click" data-id="{{mgood.mcharge_types[0].id}}">
-                                {{mgood.mcharge_types[0].price}}元/{{mgood.mcharge_types[0].num}}
-                                <span data-id="{{mgood.mcharge_types[0].unit}}" class="chargeUnit"></span>
-                            </span>
-                            {% end %}
-                            <span class="to-add pull-right show forbid_click"></span>
-                             <span class="pull-right p0 number-change hidden forbid_click {{mmr_active}}">
-                                <a class="minus-plus  pull-right number-plus " href="javascript:;"></a>
-                                <input type="text" value="" class="number-input pull-right text-green text-center line34 height34"/>
-                                <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
-                            </span>
+                        </a>
+                    </div>
+                    <input type="hidden" class="fruit_intro" value="{{mgood.intro}}"/>
+                    <div class="goods-info pull-left">
+                        <div class="show-box {{mtoggle_active}}">
+                            <p>
+                                <span class="pull-left color fruit-name font16 color">{{mgood.name}}</span>
+                                <span class="pull-right text-grey sale font12">销量：<span class="color">{{mgood.saled}}</span></span>
+                            </p>
+                            <p class="great-number font12">
+                                {% if mgood.favour%}
+                                <em class="red-heart"></em>
+                                {% else %}
+                                <em class="gray-heart"></em>
+                                {% end %}
+                                <span class="great">{{mgood.favour}}</span>
+                            </p>
+                            <div class="charge-first charge-style font16 color">
+                                {% if mgood.mcharge_types %}
+                                <span class="pull-left text-bgcolor p0 charge-type line34 height34 forbid_click" data-id="{{mgood.mcharge_types[0].id}}">
+                                    {{mgood.mcharge_types[0].price}}元/{{mgood.mcharge_types[0].num}}
+                                    <span data-id="{{mgood.mcharge_types[0].unit}}" class="chargeUnit"></span>
+                                </span>
+                                {% end %}
+                                <span class="to-add pull-right show forbid_click add_cart_num"></span>
+                                 <span class="pull-right p0 number-change hidden forbid_click">
+                                    <a class="minus-plus  pull-right number-plus " href="javascript:;"></a>
+                                    <input type="text" value="" class="number-input pull-right text-green text-center line34 height34"/>
+                                    <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
+                                </span>
+                            </div>
                         </div>
                     </div>
-                    <ul class="charge-list charge-style color set-width-float font16 {{mtoggle_active}} color" style="display:none">
-                        {% for charge in mgood.mcharge_types %}
-                        {% if charge.id !=mgood.mcharge_types[0].id %}
-                        <li class="border-color set-w100-fle">
+                    <span class="{{mradius_active}} back-shape bg"></span>
+                    <span class="{{marrow_active}} icon-bg toggle_icon"></span>
+                </div>
+                <ul class="charge-list charge-style color set-width-float font16 {{mtoggle_active}} color" style="display:none">
+                    {% for charge in mgood.mcharge_types %}
+                    {% if charge.id !=mgood.mcharge_types[0].id %}
+                    <li class="border-color set-w100-fle">
                             <span class="pull-left text-bgcolor p0 charge-type forbid_click" data-id="{{charge.id}}">
                                 {{charge.price}}元/{{charge.num}}
                                 <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                             </span>
-                            <span class="to-add pull-right show forbid_click"></span>
-                             <span class="pull-right p0 number-change hidden forbid_click {{mmr_active}}">
+                        <span class="to-add pull-right show forbid_click add_cart_num"></span>
+                             <span class="pull-right p0 number-change hidden forbid_click">
                                 <a class="minus-plus pull-right number-plus" href="javascript:;"></a>
                                 <input type="text" value="" class="number-input pull-right text-green text-center line34 height34"/>
                                 <a class="minus-plus pull-right number-minus" href="javascript:;"></a>
                             </span>
-                        </li>
-                        {% end %}
-                        {% end %}
-                    </ul>
-                </div>
-                <span class="{{mradius_active}} back-shape bg"></span>
-                <span class="{{marrow_active}} icon-bg toggle_icon"></span>
+                    </li>
+                    {% end %}
+                    {% end %}
+                </ul>
             </div>
         </li>
         {% end %}

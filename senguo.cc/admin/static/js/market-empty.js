@@ -1,5 +1,6 @@
 $(document).ready(function(){
-   time($('.time'));
+    time($('.time'));
+    $('.notice-bg').height($(window).height());
 });
 var wait=3;
 function time(target) {
@@ -13,6 +14,6 @@ function time(target) {
         setTimeout(function() {
                 time(target)
             },
-            1000)
+            800)
     }
 }

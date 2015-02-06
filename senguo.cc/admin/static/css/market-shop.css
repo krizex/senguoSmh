@@ -14,11 +14,12 @@ p{margin-bottom:0px;}
 .user-comment .comment-item{border-bottom:1px solid #ddd;padding:10px 0;}
 .user-comment .img-box{}
 .user-comment .img{width:40px;}
-.foucus-notice{max-width:800px;margin:0 auto;height:40px;line-height:40px;overflow:hidden;z-index:9999;}
+.foucus-notice{max-width:800px;margin:0 auto;height:50px;line-height:50px;overflow:hidden;z-index:9999;}
 .w8{width:75%;}
-.level-box{height:35px;line-height:35px;}
-.level-box em{width:12px;height:18px;background:url('../svg/icon_list_1.svg') -38px -48px;margin-right:5px;font-style:normal;line-height:18px;background-size:120px 180px;}
-.sign-box{height:35px;line-height:35px;}
-.sign-box em{width:17px;height:20px;background:url('../svg/icon_list_1.svg') -54px -45px;margin-right:5px;background-size:120px 180px;}
+.level-box{height:35px;line-height:35px;position:relative;}
+.level-box em{width:12px;height:16px;background:url('../svg/icon_list_1.svg') -38px -48px;position:absolute;left:18%;top:8px;font-style:normal;line-height:16px;background-size:120px 180px;}
+.sign-box{height:35px;line-height:35px;position:relative;}
+.sign-box em{width:17px;height:20px;background:url('../svg/icon_list_1.svg') -54px -45px;position:absolute;left:18%;top:6px;
+background-size:120px 180px;}
 .area-icon{width:14px;height:22px;background:url('../svg/icon_list_1.svg') 0 -48px;margin-right:5px;background-size:120px 180px;}
 .phone-icon{width:18px;height:26px;background:url('../svg/icon_list_1.svg') -20px -48px;margin-right:5px;background-size:120px 180px;}

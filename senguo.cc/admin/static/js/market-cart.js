@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    //运费默认值
     if(!freigh_ontime) freigh_ontime=0;
     if(!freigh_now) freigh_now=0;
     $('.address_list li').eq(0).addClass('active');
@@ -35,6 +36,13 @@ $(document).ready(function(){
             var parent=$this.parents('.cart-list-item');
             if(parent.hasClass('fruit_item')){itemDelete($this,0);}
             else if(parent.hasClass('menu_item')){itemDelete($this,1);}
+        }
+    });
+    cart_item.hammer().on('hold',function(){
+        if(confirm('确认删除该商品吗？//(ㄒoㄒ)//')){
+            var $this=$(this);
+            if($this.hasClass('fruit_item')){itemDelete($this,0);}
+            else if($this.hasClass('menu_item')){itemDelete($this,1);}
         }
     });
     //类型切换增加active
@@ -122,7 +130,7 @@ $(document).ready(function(){
                         $this.addClass('active');
                     }
                 }
-                else return alert('抱歉，已超过了该送货时间段的下单时间!请选择下一个时间段！');
+                else if(confirm('抱歉，已超过了该送货时间段的下单时间!请选择下一个时间段！')){}
            });
         });}
         $('.send_period li').on('click',function(){
