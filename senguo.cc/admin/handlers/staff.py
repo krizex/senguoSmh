@@ -47,10 +47,7 @@ class Access(StaffBaseHandler):
         userinfo = self.get_wx_userinfo(code, mode)
         if not userinfo:
             return self.redirect(self.reverse_url("staffLogin"))
-        # 尝试登录
-        u = models.ShopStaff.login_by_unionid(self.session, userinfo["unionid"])
-        if not u:# 新建用户
-            u = models.ShopStaff.register_with_wx(self.session, userinfo)
+        u = models.ShopStaff.register_with_wx(self.session, userinfo)
         self.set_current_user(u, domain=ROOT_HOST_NAME)
 
         next_url = self.get_argument("next", self.reverse_url("staffHome"))

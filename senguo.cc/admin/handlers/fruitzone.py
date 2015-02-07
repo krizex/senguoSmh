@@ -161,11 +161,11 @@ class ShopApply(FruitzoneBaseHandler):
     @FruitzoneBaseHandler.check_arguments("shop_id?:int")
     def get(self):
         if self._action == "apply":
-            if not self.current_user.accountinfo.phone or \
-                not self.current_user.accountinfo.email or\
-                not self.current_user.accountinfo.wx_username:
-                return self.render("fruitzone/apply.html", context=dict(reApply=False,
-                    need_complete_accountinfo=True))
+            # if not self.current_user.accountinfo.phone or \
+            #     not self.current_user.accountinfo.email or\
+            #     not self.current_user.accountinfo.wx_username:
+            #     return self.render("fruitzone/apply.html", context=dict(reApply=False,
+            #         need_complete_accountinfo=True))
 
             return self.render("fruitzone/apply.html", context=dict(reApply=False))
         elif self._action == "reApply":
@@ -185,18 +185,14 @@ class ShopApply(FruitzoneBaseHandler):
         "shop_name", "shop_id?:int",
         "shop_province:int", "shop_city:int", "shop_address_detail",
         "have_offline_entity:bool", "shop_service_area:int",
-        "shop_intro", "img_key")
+        "shop_intro", "realname:str", "wx_username:str")
     def post(self):
         #* todo 检查合法性
 
-        img_url = ""
-        if self.args["img_key"]:
-            img_url = SHOP_IMG_HOST+self.args["img_key"]
         if self._action == "apply":
             # 这种检查方式效率比较低
             if len(self.current_user.shops) >= self.MAX_APPLY_COUNT:
                 return self.send_fail(error_text="您申请的店铺数量超过限制！最多能申请{0}家".format(self.MAX_APPLY_COUNT))
-            #try:
             self.session.add(models.ShopTemp(admin_id=self.current_user.id,
               shop_name=self.args["shop_name"],
               shop_province=self.args["shop_province"],
@@ -204,11 +200,11 @@ class ShopApply(FruitzoneBaseHandler):
               shop_address_detail=self.args["shop_address_detail"],
               have_offline_entity=self.args["have_offline_entity"],
               shop_service_area=self.args["shop_service_area"],
-              shop_intro=self.args["shop_intro"],
-              shop_trademark_url=img_url))
+              shop_intro=self.args["shop_intro"]))
+
+            self.current_user.accountinfo.realname = self.args["realname"]
+            self.current_user.accountinfo.wx_username = self.args["wx_username"]
             self.session.commit()
-            #except:
-               #return self.send_fail(error_text = "店铺申请失败，具体原因请联系森果")
             return self.send_success()
 
         elif self._action == "reApply":
@@ -229,10 +225,6 @@ class ShopApply(FruitzoneBaseHandler):
                         shop_service_area=self.args["shop_service_area"],
                         shop_intro=self.args["shop_intro"],
                         shop_status = models.SHOP_STATUS.APPLYING)
-            if (not img_url) and shop_temp.shop_trademark_url:  #先要把旧的的图片删除
-                m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
-                m.delete(bucket=BUCKET_SHOP_IMG, key=shop.shop_trademark_url.split('/')[3])
-                shop_temp.update(session=self.session, shop_trademark_url=img_url)
             return self.send_success()
 
 class ShopApplyImg(FruitzoneBaseHandler):
