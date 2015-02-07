@@ -34,7 +34,7 @@
 .cart-list-item .name{min-width:90px;}
 
 .send_type{border-top-left-radius:2px;border-top-right-radius:2px;overflow:hidden;margin-bottom:0px;}
-.send_type li{padding:1px 15px;}
+.send_type li{padding:6px 15px;}
 .send_type li a{display:block;border-radius:4px;}
 .send_type li a p{margin-bottom:0px;margin-top:3px;letter-spacing:-1px;}
 .send_type li a p:last-child{margin-bottom:3px;}
@@ -42,9 +42,9 @@
 .send_type li.active .top{color:#33CC66;}
 
 .send_day{overflow:hidden;width:80%;}
-.send_day li{width:40%;margin-right:10px;}
+.send_day li{margin-right:10px;}
 .send_day li a{display:block;border-radius:0px;padding:0.2em 0;}
-.send_day li.active a{background:#33CC66 !important;border-radius:2px;color:#fff !important;}
+.send_day li.active a{background:#33CC66 !important;border-radius:2px;color:#fff !important;padding:5px 10px;}
 
 .send_period .active .period_name{color:#33CC66 !important;}
 .send_period p{margin:0px;}

@@ -370,6 +370,7 @@ function goodsNum(target,action){
                         if(val==1){
                             var cart_n=Int($('.cart_num').text());
                             $('.cart_num').text(cart_n-1);
+                            SetCookie('cart_count',cart_n-1);
                             parent.remove();
                         }
                         if(cart_list.find('.cart-list-item').length==0) window.location.reload();
@@ -422,7 +423,10 @@ function itemDelete(target,menu_type) {
                 mincharge(type,t_price);
                 $('#final_price').text(t_price+freight);
                 var cart_n=Int($('.cart_num').text());
-                $('.cart_num').text(cart_n-1);
+                if(cart_n>0){
+                    $('.cart_num').text(cart_n-1);
+                    SetCookie('cart_count',cart_n-1);
+                }
                 if(cart_list.find('.cart-list-item').length==0) window.location.reload();
             }
             else return alert(res.error_text);

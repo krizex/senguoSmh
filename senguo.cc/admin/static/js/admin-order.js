@@ -1,13 +1,16 @@
 $(document).ready(function(){
-    $('body').on('mouseenter','.time-period',function(){
+    $('body').on('mouseenter','.edit_item_box',function(){
         var $this=$(this);
-        $this.find('.edit').show();
-        $this.find('.delete').show();}
-        );
-    $('body').on('mouseleave','.time-period',function(){
+        if($this.hasClass('to-edit-item')){
+            $this.find('.edit').show();
+            $this.find('.delete').show();
+            $this.removeClass('to-edit-item');
+        }});
+    $('body').on('mouseleave','.edit_item_box',function(){
         var $this=$(this);
         $this.find('.edit').hide();
         $this.find('.delete').hide();
+        $this.addClass('to-edit-item');
     });
     $('.send-person-area li').first().addClass('active');
     //订单状态数据显示
@@ -123,33 +126,19 @@ $(document).ready(function(){
     //按时达配送时段编辑
     $('body').on('click','.to-edit',function(){
         var $this=$(this);
-        var parent=$this.parents('.to-edit-item');
-        parent.hover(function(){
-            var $this=$(this);
-            $this.find('.edit').hide();
-            $this.find('.delete').show();
-        },function(){
-            var $this=$(this);
-            $this.find('.edit').hide();
-            $this.find('.delete').show();
-        });
+        var parent=$this.parents('.omg_item');
+        parent.removeClass('edit_item_box');
         parent.find('.show_item').hide();
         parent.find('.edit').hide();
+        parent.find('.delete').hide();
         parent.find('.edit_item').removeClass('hidden');
     });
     $('body').on('click','.edit-time-period',function(){
         var $this=$(this);
-        var parent=$this.parents('.to-edit-item');
+        var parent=$this.parents('.edit_item_box');
         parent.find('.delete').show();
         addEditPeriod($this,'edit_period');
         parent.find('.delete').hide();
-        parent.hover(function(){
-            parent.find('.edit').show();
-            parent.find('.delete').show();
-        },function(){
-            parent.find('.edit').hide();
-            parent.find('.delete').hide();
-        });
     });
     //按时达配送时间段启用/停用
     $('.period-action').each(function(){
@@ -440,6 +429,7 @@ function addEditPeriod(target,action){
                     periodName.text(name);
                     parent.find('.show_item').show();
                     parent.find('.edit_item').addClass('hidden');
+                    parent.addClass('edit_item_box');
 
                 }
             }
@@ -485,7 +475,6 @@ function activePeriod(target,active){
     };
     $.postJson(url,args,function(res){
             if(res.success){
-                console.log(active);
                 if(active==1) target.find('.work-mode').hide().siblings('.stop-mode').show();
                 else target.find('.work-mode').show().siblings('.stop-mode').hide();
             }
@@ -521,11 +510,12 @@ function sendMoney(target,money){
     };
     $.postJson(url,args,function(res){
             if(res.success){
-                var parent=target.parents('.to-edit-item');
+                var parent=target.parents('.omg_item');
                 target.val(money);
                 parent.find('.show_item').show();
                 parent.find('.edit_item').addClass('hidden');
                 parent.find('.show_value').text(money);
+                parent.addClass('edit_item_box');
             }
             else return alert(res.error_text);
         },
@@ -543,11 +533,12 @@ function stopRange(target,range){
     };
     $.postJson(url,args,function(res){
             if(res.success){
-                var parent=target.parents('.to-edit-item');
+                var parent=target.parents('.omg_item');
                 target.text(range);
                 parent.find('.show_item').show();
                 parent.find('.edit_item').addClass('hidden');
                 parent.find('.show_value').text(range);
+                parent.addClass('edit_item_box');
             }
             else return alert(res.error_text);
         },
@@ -565,11 +556,12 @@ function FreightOnTime(target,freight){
     };
     $.postJson(url,args,function(res){
             if(res.success){
-                var parent=target.parents('.to-edit-item');
+                var parent=target.parents('.omg_item');
                 target.text(freight);
                 parent.find('.show_item').show();
                 parent.find('.edit_item').addClass('hidden');
                 parent.find('.show_value').text(freight);
+                parent.addClass('edit_item_box');
             }
             else return alert(res.error_text);
         },

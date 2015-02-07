@@ -108,7 +108,7 @@
                                 <span class="font8">起送价：{{config.min_charge_on_time or 0}}元</span>
                                 <span class="font8">配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元</span>
                             </p>
-                            <p>订单将根据您选择的时间段送达</p>
+                            <p class="text-grey9">订单将根据您选择的时间段送达</p>
                         </a>
                     </li>
                     {% end %}
@@ -120,7 +120,7 @@
                                 <span class="font8">起送价：{{config.min_charge_now or 0}}元</span>
                                 <span class="font8">配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元</span>
                             </p>
-                            <p>订单将在30分钟内送到您的手上，请保持电话畅通</p>
+                            <p class="text-grey9">订单将在30分钟内送到您的手上，请保持电话畅通</p>
                         </a>
                     </li>
                     {% end %}
@@ -129,7 +129,7 @@
                 {% if periods %}
                 <ul id="sendDay" class="send_day nav-pills clearfix text-center type-choose m-b10 font14 mt10 pl10">
                     <li data-id="1" class="active pull-left" id="send_today"><a href="javascript:;" class="bg-white text-green">今天</a></li>
-                    <li data-id="2" id="send_tomorrow" class="pull-right"><a href="javascript:;" class="bg-white text-green">明天</a></li>
+                    <li data-id="2" id="send_tomorrow" class="pull-left"><a href="javascript:;" class="bg-white text-green">明天</a></li>
                 </ul>
                 <ul id="sendPeriod" class="send_period list-group  font12">
                     {% for period in periods%}

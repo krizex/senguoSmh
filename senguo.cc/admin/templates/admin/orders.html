@@ -335,7 +335,7 @@
                 {% else %}
                 <div class="w450 center-block">
                     <span class="tit pull-left t1">起送金额：</span>
-                    <div class="send-money clearfix to-edit-item">
+                    <div class="send-money clearfix to-edit-item edit_item_box omg_item">
                         <span class="show_value show_item pull-left tit">{{current_shop.config.min_charge_on_time or 0}}</span>
                         <input class="pull-left money edit_item hidden" type="number" value="{{current_shop.config.min_charge_on_time or 0}}" id="sendMoney"/>
                         <span class="tit pull-left set-left10">元</span>
@@ -343,7 +343,7 @@
                         <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
                     </div>
                     <span class="tit pull-left t1">配送费：</span>
-                    <div class="send-freight clearfix to-edit-item">
+                    <div class="send-freight clearfix to-edit-item edit_item_box omg_item">
                         <span class="show_value show_item pull-left tit">{{current_shop.config.freight_on_time or 0}}</span>
                         <input class="pull-left freight edit_item hidden" type="number" value="{{current_shop.config.freight_on_time or 0}}" id="freight_intime"/>
                         <span class="tit pull-left set-left10">元</span>
@@ -354,7 +354,7 @@
                     <div class="send-time w450 center-block">
                         <ul class="time-list">
                             {% for period in current_shop.config.periods%}
-                            <li class="time-list-item set-width-float time-period to-edit-item" data-id="{{period.id}}">
+                            <li class="time-list-item set-width-float time-period to-edit-item edit_item_box omg_item" data-id="{{period.id}}">
                                 <div class="staff-work-mode action-mode pull-left period-action" data-id="{{period.active}}">
                                     <a class="work-mode" href="javascript:;" style="display:none">已启用</a>
                                     <a class="stop-mode" href="javascript:;" style="display:none">未启用</a>
@@ -415,7 +415,7 @@
 
                 </div>
                 <div class="w450 center-block clearfix">
-                    <div class="end-time clearfix to-edit-item">
+                    <div class="end-time clearfix to-edit-item edit_item_box omg_item">
                         <span class="pull-left tit">下单截止时间：</span>
                         <span class="show_item pull-left show_value tit">{{current_shop.config.stop_range or 0}}</span>
                         <div class="input-group-btn pull-left edit_item hidden">

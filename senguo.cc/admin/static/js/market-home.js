@@ -153,10 +153,11 @@ $(document).ready(function(){
         goodsNum($this.siblings('.number-change').find('.number-plus'),2);
         $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
         //果篮显示商品种类数
-        if(cart_num==0) {$('.cart_num').show();}
+        if(cart_count==0) {$('.cart_num').show();}
         if($this.hasClass('add_cart_num')){
-            cart_num++;
-            $('.cart_num').text(cart_num);
+            cart_count++;
+            $('.cart_num').text(cart_count);
+            SetCookie('cart_count',cart_count);
             $this.removeClass('add_cart_num');
         }
     });
@@ -167,13 +168,14 @@ $(document).ready(function(){
         var change=$this.parents('.number-change');
         if(num==0){
             change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
-            if(cart_num==1) {
+            if(cart_count==1) {
                 $('.cart_num').remove();
-                cart_num=0;
+                SetCookie('cart_count',0);
             }
             else {
-                cart_num--;
-                $('.cart_num').text(cart_num);
+                cart_count--;
+                $('.cart_num').text(cart_count);
+                SetCookie('cart_count',cart_count);
             }
         }
     });
@@ -189,17 +191,24 @@ $(document).ready(function(){
     });
 });
 var notice_item;
-var cart_num=0;
 
 function goodsNum(target,action){
     var item=target.siblings('.number-input');
     var change=target.parents('.number-change');
     var num=item.val();
+    var parent=target.parents('.goods-list-item');
+    var storage=parseFloat(parent.find('.fruit_storage').val());
+    var s_num=storage-num;
     if(action==1&&num<=0) {num=0;target.addClass('disable');}
     if(action==2)
     {
-        num++;
-        item.val(num);
+        if(s_num==0&&confirm('库存不足啦！┑(￣▽ ￣)┍ ')){
+
+        }
+        else if(s_num>0){
+            num++;
+            item.val(num);
+        }
     }
     else if(action==1)
     {
@@ -210,13 +219,15 @@ function goodsNum(target,action){
             item.val(num);
             if(val==1){
                 change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
-                if(cart_num==1) {
+                if(cart_count==1) {
                     $('.cart_num').remove();
-                    cart_num=0;
+                    SetCookie('cart_count',0);
                 }
                 else {
-                    cart_num--;
-                    $('.cart_num').text(cart_num);
+                    cart_count--;
+
+                    $('.cart_num').text(cart_count);
+                    SetCookie('cart_count',cart_count);
                 }
             }
         }
