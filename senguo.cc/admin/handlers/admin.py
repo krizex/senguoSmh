@@ -644,7 +644,7 @@ class Shelf(AdminBaseHandler):
             args["storage"] = data["storage"]
             args["unit"] = data["unit"]
             args["tag"] = data["tag"]
-            if not data["img_url"]:  # 前端可能上传图片不成功，发来一个空的
+            if data["img_url"]:  # 前端可能上传图片不成功，发来一个空的
                 args["img_url"] = SHOP_IMG_HOST + data["img_url"]
             args["intro"] = data["intro"]
             args["priority"] = data["priority"]
@@ -671,6 +671,9 @@ class Shelf(AdminBaseHandler):
             return self.send_success()
         elif action == "add_menu":
             self.session.add(models.Menu(shop_id=self.current_shop.id,name=data["name"]))
+            self.session.commit()
+        elif action == "edit_menu_name":
+            self.session.query(models.Menu).filter_by(id=self.args["id"]).update({models.Menu.name: self.args["data"]})
             self.session.commit()
         elif action == "edit_fruit_img":
             return self.send_qiniu_token("fruit", self.args["id"])

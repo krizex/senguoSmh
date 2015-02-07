@@ -258,6 +258,8 @@ class Market(CustomerBaseHandler):
             self.session.commit()
         cart_f, cart_m = self.read_cart(shop.id)
         cart_count = len(cart_f) + len(cart_m)
+        cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
+        cart_ms = [(key, cart_m[key]['num']) for key in cart_m]
         fruits = [x for x in shop.fruits if x.fruit_type_id < 1000 and x.active == 1]
         dry_fruits = [x for x in shop.fruits if x.fruit_type_id > 1000 and x.active == 1]
         mgoods={}
@@ -267,7 +269,8 @@ class Market(CustomerBaseHandler):
         self.set_cookie("cart_count", str(cart_count))
         return self.render("customer/home.html",
                            context=dict(fruits=fruits, dry_fruits=dry_fruits, menus=shop.menus, mgoods=mgoods,
-                                        cart_count=cart_count, subpage='home', notices=notices))
+                                        cart_count=cart_count, subpage='home', notices=notices, cart_fs=cart_fs,
+                                        cart_ms=cart_ms))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int")
@@ -496,8 +499,11 @@ class Notice(CustomerBaseHandler):
         return self.render("notice/order-success.html",context=dict(subpage='cart'))
 
 class Wexin(CustomerBaseHandler):
-    @CustomerBaseHandler.check_arguments("url:str")
+    @CustomerBaseHandler.check_arguments("action?:str", "url:str")
     def post(self):
+        if "action" in self.args and not self.args["action"]:
+            from handlers.base import WxOauth2
+            WxOauth2.post_template_msg()
         noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
         timestamp = datetime.datetime.now().timestamp()
         url = self.args["url"]

@@ -394,6 +394,7 @@ class WxOauth2:
     client_access_token_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential" \
                               "&appid={appid}&secret={appsecret}".format(appid=MP_APPID, appsecret=MP_APPSECRET)
     jsapi_ticket_url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={access_token}&type=jsapi"
+    template_msg_url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={access_token}"
 
     @classmethod
     def get_userinfo(cls, code, mode):
@@ -478,3 +479,26 @@ class WxOauth2:
         else:
             print("获取微信接口调用的access_token出错：", data)
             return None
+
+    @classmethod
+    def post_template_msg(cls):
+
+        postdata = urllib.parse.urlencode({
+               "touser":"o5SQ5t3VW_4zFSYhrKghCiOfEojc",
+               "template_id":"YDIcdYNMLKk3sDw_yJgpIvmcN5qz_2Uz83N7T9i5O3s",
+               "url":"http://senguo.cc",
+               #"topcolor":"#FF0000",
+               "data":{
+                       "first": "恭喜你店铺申请成功！",
+                       "keyword1": "廖斯敏",
+                       "keyword2": "18071143",
+                       "keyword3": "2014年9月16日",
+                       "remark": "欢迎再次申请！"
+               }
+            })
+        postdata = postdata.encode('utf-8')
+
+        access_token = cls.get_client_access_token()
+        res = urllib.request.urlopen(cls.template_msg_url.format(access_token=access_token), postdata)
+        data = json.loads(res.read().decode("utf-8"))
+        print(res)
