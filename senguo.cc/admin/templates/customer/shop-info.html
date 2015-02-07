@@ -58,7 +58,7 @@
     <p class="title font14">店铺信息：</p>
     <ul class="shop-info text-grey6 font14">
         <li>位置：{{address}}</li>
-        <li>配送区域：{{shop.deliver_area or '无'}}<em class="area-icon set-inl-blo pull-right"></em></li>
+        <li>配送区域：{{shop.deliver_area or '无'}}<!--<em class="area-icon set-inl-blo pull-right"></em>--></li>
         <li>联系电话：{{shop.admin.accountinfo.phone}}<a href="tel:{{shop.admin.accountinfo.phone}}" class="pull-right"><em class="phone-icon set-inl-blo "></em></a></li>
         <li class="clearfix"><span class="pull-left">店铺简介：</span><span class="pull-left set-inl-blo w8">{{shop.shop_intro or '无'}}</span></li>
     </ul>
