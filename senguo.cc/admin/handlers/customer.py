@@ -324,22 +324,25 @@ class Market(CustomerBaseHandler):
         mgoods = self.args["mgoods"]
 
         cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=self.shop_id).one()
-        cart_fruits = eval(cart.fruits)
-        cart_mgoods = eval(cart.mgoods)
-        for key in fruits:
-            key = int(key)
-            if key in cart_fruits:
-                cart_fruits[key] += fruits[str(key)]
-            else:
-                cart_fruits[key] = fruits[str(key)]
-        for key in mgoods:
-            key = int(key)
-            if key in cart_mgoods:
-                cart_mgoods[key] += mgoods[str(key)]
-            else:
-                cart_mgoods[key] = mgoods[str(key)]
-        cart.fruits = str(cart_fruits)
-        cart.mgoods = str(cart_mgoods)
+        #cart_fruits = eval(cart.fruits)
+        #cart_mgoods = eval(cart.mgoods)
+        #for key in fruits:
+        #    key = int(key)
+        #    if key in cart_fruits:
+        #        cart_fruits[key] += fruits[str(key)]
+        #    else:
+        #        cart_fruits[key] = fruits[str(key)]
+        #for key in mgoods:
+        #    key = int(key)
+        #    if key in cart_mgoods:
+        #        cart_mgoods[key] += mgoods[str(key)]
+        #    else:
+        #        cart_mgoods[key] = mgoods[str(key)]
+        #cart.fruits = str(cart_fruits)
+        #cart.mgoods = str(cart_mgoods)
+        cart.fruits = str(fruits)
+        cart.mgoods = str(mgoods)
+
         self.session.commit()
         return self.send_success()
 

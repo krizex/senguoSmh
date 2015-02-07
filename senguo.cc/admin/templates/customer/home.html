@@ -14,6 +14,8 @@
 {% import json%}
 <script>
     window.dataObj.notices = {% raw json.dumps(context["notices"]) %}
+    window.dataObj.cart_fs = {% raw json.dumps(context["cart_fs"]) %}
+    window.dataObj.cart_ms = {% raw json.dumps(context["cart_ms"]) %}
 </script>
 {% end %}
     <div class="notice-box">
@@ -82,7 +84,6 @@
                         </a>
                     </div>
                     <input type="hidden" class="fruit_intro" value="{{fruit.intro}}"/>
-                    <input type="hidden" class="fruit_storage" value="{{fruit.storage}}"/>
                     <div class="goods-info pull-left">
                         <div class="show-box {{ftoggle_active}}">
                             <p>
@@ -156,7 +157,7 @@
             {% set dradius_active='shape'%}
             {% set dpr_active='pr35'%}
         {% end %}
-        <li class="goods-list-item font10 text-grey Ganguo  {{dpr_active}}" data-id="{{dry_fruit.id}}" data-type="fruit" data-num="{{dry_fruit.storage}}">
+        <li class="goods-list-item font10 text-grey {{dry_fruit.fruit_type.code}}  {{dpr_active}}" data-id="{{dry_fruit.id}}" data-type="fruit" data-num="{{dry_fruit.storage}}">
             <div class="clearfix box bg">
                 <div class="set-width-float">
                     <div class="goods-img pull-left">
@@ -170,7 +171,6 @@
                         </a>
                     </div>
                     <input type="hidden" class="fruit_intro" value="{{dry_fruit.intro}}"/>
-                    <input type="hidden" class="fruit_storage" value="{{dry_fruit.storage}}"/>
                     <div class="goods-info pull-left">
                         <div class="show-box {{dtoggle_active}}">
                             <p>
@@ -258,7 +258,6 @@
                         </a>
                     </div>
                     <input type="hidden" class="fruit_intro" value="{{mgood.intro}}"/>
-                    <input type="hidden" class="fruit_storage" value="{{mgood.storage}}"/>
                     <div class="goods-info pull-left">
                         <div class="show-box {{mtoggle_active}}">
                             <p>

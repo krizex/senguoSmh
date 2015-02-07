@@ -1,4 +1,9 @@
 $(document).ready(function(){
+    //已在购物车里的商品
+    var cart_fs=window.dataObj.cart_fs;
+    var cart_ms=window.dataObj.cart_ms;
+    cartNum(cart_fs,'.fruit-list');
+    cartNum(cart_ms,'.menu-list');
     //添加到购物车
     $('.bottom-nav').find('li').addClass('add_cart');
     $('.add_cart a').on('click',function(){
@@ -192,12 +197,33 @@ $(document).ready(function(){
 });
 var notice_item;
 
+function cartNum(cart_ms,list){
+    var item_list=$(list);
+    for(var key in cart_ms) {
+        for(var i=0;i<item_list.length;i++){
+            var item=item_list.eq(i).find('.charge-type');
+            for(var j=0;j<item.length;j++){
+                var charge = item.eq(j);
+                var id = charge.data('id');
+                var add = charge.siblings('.to-add');
+                var change = charge.siblings('.number-change');
+                var input = change.find('.number-input');
+                if (id == cart_ms[key][0]) {
+                    add.removeClass('show');
+                    change.removeClass('hidden');
+                    input.val(cart_ms[key][1]);
+                }
+            }
+        }
+    }
+}
+
 function goodsNum(target,action){
     var item=target.siblings('.number-input');
     var change=target.parents('.number-change');
     var num=item.val();
     var parent=target.parents('.goods-list-item');
-    var storage=parseFloat(parent.find('.fruit_storage').val());
+    var storage=parseFloat(parent.data('num'));
     var s_num=storage-num;
     if(action==1&&num<=0) {num=0;target.addClass('disable');}
     if(action==2)
