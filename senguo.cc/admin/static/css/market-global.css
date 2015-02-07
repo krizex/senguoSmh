@@ -86,7 +86,7 @@ input{border:none;}
 .font16{font-size:1.6em;}
 .font18{font-size:1.8em;}
 
-.input-sty{border:1px solid #ccc;background:#f2f2f2;border-radius:2px;}
+.input-sty{background:#f2f2f2;border-radius:2px;}
 
 .m-b60{margin-bottom:60px;}
 .m-r5{margin-right:5px;}
@@ -94,6 +94,7 @@ input{border:none;}
 .m-b5{margin-bottom:5px;}
 .m-b10{margin-bottom:10px;}
 .m-b0{margin-bottom:0px !important;}
+.m0{margin:0px !important;}
 .mt42{margin-top:36px !important;}
 .mt10{margin-top:10px;}
 .radius0{border-radius:0px !important;}
@@ -114,6 +115,7 @@ input{border:none;}
 .pl10{padding-left:10px !important;}
 .pr10{padding-right:10px !important;}
 .p010{padding:0px 10px !important;}
+.pr0{padding-right:0px !important;}
 .prl0{padding-left:0px !important;padding-right:0px !important;}
 .pb0{padding-bottom:0px !important;}
 .plr5{padding:0 5px !important;}

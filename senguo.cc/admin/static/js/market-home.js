@@ -293,7 +293,7 @@ function addCart(link){
         $.postJson(url,args,function(res){
                 if(res.success)
                 {
-                    //window.location.href=link;
+                    window.location.href=link;
                 }
                 else alert(res.error_text);
             },

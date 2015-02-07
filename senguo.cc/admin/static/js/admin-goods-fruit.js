@@ -662,7 +662,7 @@ function addEditFruit(target,action){
         function(res){
             if(res.success){
                 add_goods_box.modal('hide');
-                //window.location.reload();
+                window.location.reload();
             }
             else return alert(res.error_text);
         },

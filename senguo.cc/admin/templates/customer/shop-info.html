@@ -56,7 +56,7 @@
  </ul>
 <div class="shop-box bg-white">
     <p class="title font14">店铺信息：</p>
-    <ul class="shop-info text-grey6 font12">
+    <ul class="shop-info text-grey6 font14">
         <li>位置：{{address}}</li>
         <li>配送区域：{{shop.deliver_area or '无'}}<em class="area-icon set-inl-blo pull-right"></em></li>
         <li>联系电话：{{shop.admin.accountinfo.phone}}<a href="tel:{{shop.admin.accountinfo.phone}}" class="pull-right"><em class="phone-icon set-inl-blo "></em></a></li>
@@ -66,7 +66,7 @@
 <div class="shop-box bg-white clearfix">
     <p class="title clearfix">
         <span class="pull-left font14">店铺成员（{{len(headimgurls)}}）：</span>
-        <a href="{{reverse_url('customerMembers')}}" class="pull-right text-grey font12 m-r5">查看更多>></a>
+        <a href="{{reverse_url('customerMembers')}}" class="pull-right text-grey9 font12 m-r5">查看更多>></a>
         <a href="#" class="staff_href pull-right text-green3 pr10 font12">+加入该店</a>
     </p>
     <ul class="staff-img clearfix">
@@ -78,7 +78,7 @@
 <div class="shop-box bg-white clearfix">
     <p class="title clearfix">
         <span class="pull-left font14">店铺评价（{{comment_sum}}）：</span>
-        <a href="{{reverse_url('customerComment')}}?page=0" class="pull-right text-grey font12 m-r5">查看更多>></a>
+        <a href="{{reverse_url('customerComment')}}?page=0" class="pull-right text-grey9 font12 m-r5">查看更多>></a>
     </p>
     <ul class="user-comment">
         {% for comment in comments %}
