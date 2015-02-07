@@ -15,7 +15,7 @@
         <li class="{{fruit_active}} item"><a href="{{reverse_url('adminShelf')}}?action=fruit&&id=1">水果</a></li>
         <li class="item dry_active"><a href="{{reverse_url('adminShelf')}}?action=fruit&&id=1001">干果</a></li>
         {% for menu in menus %}
-        <li class="item menu_active" data-id="{{menu.id}}"><a href="{{reverse_url('adminShelf')}}?action=menu&id={{menu.id}}">{{menu.name}}</a></li>
+        <li class="item menu_active" data-id="{{menu.id}}"><a href="{{reverse_url('adminShelf')}}?action=menu&id={{menu.id}}">{{menu.name}}</a><span class="edit-btn class_name_edit" style="display:none;"></span></li>
         {% end %}
         <li><a href="javascript:;" id="add-new-goodsType">+</a></li>
     </ul>
@@ -58,14 +58,17 @@
             </div>
             <div class="modal-body set-width-float">
                 <input type="text" id="type-name" placeholder="输入商品分类名称（请不要超过5个字）" class="center-block w-auto-60 text-center text-grey2 set-bottom10 set-padding-10"/>
-                <textarea id="type-intro" placeholder="分类说明（请不要超过60个字）" class="center-block w-auto-60  text-center text-grey2 set-padding-10"></textarea>
+                <!--<textarea id="type-intro" placeholder="分类说明（请不要超过60个字）" class="center-block w-auto-60  text-center text-grey2 set-padding-10"></textarea>-->
             </div>
             <div class="modal-footer">
                 <div class="col-lg-6">
                     <button type="button" class="btn btn-default bg-grey text-white" data-dismiss="modal">取消</button>
                 </div>
                 <div class="col-lg-6">
-                     <button type="button" class="btn btn-default bg-green pull-left text-white" id="add-goodsType-sure">确定</button>
+                     <button type="button" class="btn btn-default bg-green pull-left text-white" id="add-goodsType" style="display:none;">确定</button>
+                </div>
+                <div class="col-lg-6">
+                    <button type="button" class="btn btn-default bg-green pull-left text-white" id="edit-goodsType" style="display:none;">确定</button>
                 </div>
             </div>
         </div>

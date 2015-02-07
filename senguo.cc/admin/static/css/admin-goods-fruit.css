@@ -6,6 +6,7 @@
 .goods-classify ul .active{background:#f2f2f2;border-right:1px solid #cfcfcf;border-bottom:1px solid #f2f2f2;}
 .goods-classify ul .active a{font-weight:bold;}
 .goods-classify ul .active .number{color:#fff;background:#ff6565;}
+.goods-classify ul li .class_name_edit{position:absolute;top:2px;right:2px;}
 
 .goods-mode-lock{width:100%;clear:both;background:#f2f2f2;height:80px;}
 
