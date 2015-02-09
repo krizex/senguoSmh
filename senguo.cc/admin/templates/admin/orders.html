@@ -138,7 +138,7 @@
                 <a class="delete-order pull-right" href="javascript:;">&nbsp;</a>
             </div>
             <!--list-title-end-->
-            <div class="order-content set-width-float">
+            <div class="order-content set-width-float down">
                 <div class="order-info set-width-float">
                     <span>配送至：</span>
                     <div class="input-group pull-left">
@@ -164,7 +164,7 @@
                 </div>
                 <div class="staff-replay">员工回复：<span>无</span></div>
                 <!--order-message-end-->
-                <div class="order-status set-width-float" data-id="{{order.status}}">
+                <div class="order-status set-width-float edit_item edit_avilible avilible_item" data-id="{{order.status}}">
                     <div class="status-bar bg-grey9">
                         <div class="status-inner bg-grey9 status_order hidden" style="width:100%;"></div>
                         <div class="status-inner bg-grey9 status_send hidden" style="width:50%;"></div>
@@ -183,12 +183,12 @@
                         </div>
                     </div>
                     <a class="edit-btn position pull-right status_edit" href="javascript:;" style="display:none;">&nbsp;</a>
-                    <a class="check-btn  position pull-right status_check" href="javascript:;" style="display:none;">&nbsp;</a>
+                    <a class="check-btn  position pull-right status_check text-white text-center" href="javascript:;" style="display:none;">✓</a>
                 </div>
                 <!--order-status-end-->
             </div>
             <!--order-content-end-->
-            <div class="custom-order list-item-body set-width-float" style="display:none;">
+            <div class="custom-order list-item-body set-width-float  edit_avilible avilible_item" style="display:none;">
                 <div class="custom-order-title">
                     <span>下单时间：<i class="order-time">{{order.create_date}}</i></span>
                     <!--<span>森果号：<a class="senguo-code" href="#">y123456789</a></span>-->
@@ -231,11 +231,11 @@
                         </p>
                     </div>
                     <a class="edit-btn position price_edit" href="javascript:;" style="display:none;">&nbsp;</a>
-                    <a class="check-btn  position price_check" href="javascript:;" style="display:none">&nbsp;</a>
+                    <a class="check-btn  position price_check text-white text-center" href="javascript:;" style="display:none">✓</a>
                 </div>
                 <div class="order-notice clearfix">
                     <input type="text" placeholder="订单备注" class="notice_input pull-left" value="{{order.remark or ''}}"/>
-                    <a class="check-btn  notice_check pull-left" href="javascript:;" style="display:none">&nbsp;</a>
+                    <a class="check-btn  notice_check pull-left text-white text-center" href="javascript:;" style="display:none">✓</a>
                 </div>
                 <div class="address-adapt">
                     <p>一级配送员</p>
@@ -260,10 +260,6 @@
             <input type="hidden" value="{{current_shop.config.receipt_msg}}" class="receipt-remark"/>
             <input type="hidden" value="{{current_shop.config.receipt_img}}" class="receipt-img"/>
             <!--custom-order-end-->
-            <div class="collapse-btn">
-                <a class="arrow-down" href="javascript:;"><img src="{{static_url('images/arrow-down.gif')}}"/></a>
-                <a class="arrow-up" href="javascript:;" style="display:none;"><img src="{{static_url('images/arrow-up.gif')}}"/></a>
-            </div>
         </li>
         {% end %}
     </ul>
@@ -339,7 +335,7 @@
                         <span class="show_value show_item pull-left tit">{{current_shop.config.min_charge_on_time or 0}}</span>
                         <input class="pull-left money edit_item hidden" type="number" value="{{current_shop.config.min_charge_on_time or 0}}" id="sendMoney"/>
                         <span class="tit pull-left set-left10">元</span>
-                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden sendMoney pl">&nbsp;</a>
+                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden sendMoney pl text-center text-white">✓</a>
                         <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
                     </div>
                     <span class="tit pull-left t1">配送费：</span>
@@ -347,7 +343,7 @@
                         <span class="show_value show_item pull-left tit">{{current_shop.config.freight_on_time or 0}}</span>
                         <input class="pull-left freight edit_item hidden" type="number" value="{{current_shop.config.freight_on_time or 0}}" id="freight_intime"/>
                         <span class="tit pull-left set-left10">元</span>
-                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden sendfreight">&nbsp;</a>
+                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden sendfreight text-center text-white">✓</a>
                         <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
                     </div>
                     <p class="tit clearfix">配送时间：</p>
@@ -404,7 +400,7 @@
                                 <input type="text" class="period-name  pull-left text-center edit_item hidden" value="{{period.name}}"/>
                                 <a href="javascript:;" class="delete pull-right set-inl-blo delete-time-period" style="display:none"></a>
                                 <a href="javascript:;" class="edit pull-right set-inl-blo to-edit" style="display:none"></a>
-                                <a href="javascript:;" class="sure-btn pull-right edit_item hidden edit-time-period">&nbsp;</a>
+                                <a href="javascript:;" class="sure-btn pull-right edit_item hidden edit-time-period text-center text-white">✓</a>
                             </li>
                             {% end %}
                         </ul>
@@ -427,7 +423,7 @@
                             </ul>
                         </div>
                         <span class="pull-left tit set-left10">分钟</span>
-                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden stopRange">&nbsp;</a>
+                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden stopRange text-center text-white">✓</a>
                         <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
                     </div>
                     <p class="notice text-grey9">截止时间是指在某送货时间段前N分钟用户将不能选择该时段配送</p>

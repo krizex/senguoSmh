@@ -121,7 +121,6 @@ $(document).ready(function(){
             var $this=$(this);
             deletePeriod($this);
         }
-
     });
     //按时达配送时段编辑
     $('body').on('click','.to-edit',function(){
@@ -218,27 +217,29 @@ $(document).ready(function(){
     });
     $('.order-content').on('click',function(){
         var $this=$(this);
+        $this.toggleClass('up','down');
         $this.parents('.list-item').find('.list-item-body').slideToggle(100);
-        $this.parents('.list-item').find('.arrow-down').toggle().siblings('.arrow-up').toggle();
         $this.parents('.list-item').siblings('.list-item').find('.list-item-body').slideUp(100).siblings().find('.arrow-up').hide().siblings('.arrow-down').show();
         $('.sales-list-item').css({'border-color':'#29aae1'});
     });
-    $('.order-list-item').hover(
-        function(){$(this).find('.edit-btn').show();},
-        function(){$(this).find('.edit-btn').hide();}
-    );
+    $('.avilible_item').on('mouseenter',function(){$(this).find('.edit-btn').show();});
+    $('.avilible_item').on('mouseleave',function(){$(this).find('.edit-btn').hide();});
     //订单总金额修改
     $('.price_edit').on('click',function(){
         var $this=$(this);
         var parent=$this.parents('.custom-order');
+        var item=$this.parents('edit_avilible');
+        item.removeClass('avilible_item');
         $this.hide().siblings('.price_check').show();
         parent.find('.price-input').show().siblings('.price-show').hide();
     });
     $('.price_check').on('click',function(){
         var $this=$(this);
         var parent=$this.parents('.custom-order');
+        var item=$this.parents('edit_avilible');
         var val=parent.find('.price-input').val();
-        orderEdit($this,'edit_totalPrice',val)
+        orderEdit($this,'edit_totalPrice',val);
+        item.addClass('avilible_item');
     });
 
     //订单备注
@@ -250,12 +251,12 @@ $(document).ready(function(){
         var $this=$(this);
         var parent=$this.parents('.custom-order');
         var val=parent.find('.notice_input').val();
-        orderEdit($this,'edit_remark',val)
+        orderEdit($this,'edit_remark',val);
     });
     //订单状态修改
     $('.status_edit').on('click',function(){
         var $this=$(this);
-        var parent=$this.parents('.order-status');
+        var parent=$this.parents('.order-status').removeClass('avilible_item');
         $this.hide().siblings('.status_check').show();
         parent.addClass('order-status-dealing');
         parent.find('.status-item').removeClass('hidden');
@@ -263,13 +264,22 @@ $(document).ready(function(){
     });
     $('.status_check').on('click',function(){window.location.reload();});
     $('.status-order').on('click',function(){
-        orderEdit($(this),'edit_status',1)
+        var $this=$(this);
+        orderEdit($this,'edit_status',1);
+        var item=$this.parents('edit_avilible');
+        item.addClass('avilible_item');
     });
     $('.status-send').on('click',function(){
-        orderEdit($(this),'edit_status',4)
+        var $this=$(this);
+        orderEdit($this,'edit_status',4);
+        var item=$this.parents('edit_avilible');
+        item.addClass('avilible_item');
     });
     $('.status-finish').on('click',function(){
-        orderEdit($(this),'edit_status',5)
+        var $this=$(this);
+        orderEdit($this,'edit_status',5);
+        var item=$this.parents('edit_avilible');
+        item.addClass('avilible_item');
     });
     //员工修改
     $('.send-person-area').find('li').on('click',function(){
