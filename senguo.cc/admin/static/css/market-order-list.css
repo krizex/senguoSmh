@@ -1,4 +1,4 @@
-.order-list{margin:10px;border:1px solid #ccc;border-top:none;position:relative;padding-bottom:1px;margin-top:50px;}
+.order-list{margin:10px;border:1px solid #ccc;border-top:none;position:relative;padding-bottom:1px;margin-top:90px;}
 .order-list-item{color:#444;width:100%;padding:15px 0;padding-top:45px;position:relative;padding-bottom:20px}
 .order-list-item header{background-color:#ddd;background:url("../images/gray-bg.png") repeat;background-size:auto 100%;position:absolute;top:0;width:102%;left:-1%;padding:10px;border:1px solid #cbc9cd;border-radius:3px;box-shadow:0 1px 2px #ccc }
 .order-list-item header .icon{height:20px;width:auto;float:right;}
@@ -25,7 +25,7 @@
 .order-list-item .status-bar-box .width100{width:100%;}
 .order-list-item .btn-box .btn{width:100px;}
 .comment-input{width:80%;height:100px;}
-.order-nav{box-shadow:0px 1px 2px #aaa;position:fixed;z-index:555;width:100%;}
+.order-nav{box-shadow:0px 1px 2px #aaa;position:fixed;z-index:555;width:100%;max-width:800px;}
 .order-nav li{float:left;width:20%;border-bottom:2px solid #fff;}
 .order-nav li a{display:block;color:#333;padding:10px 0;}
 .order-nav li.active{border-color:#33cc66;}

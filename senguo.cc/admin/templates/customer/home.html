@@ -117,7 +117,7 @@
                     <span class="{{fradius_active}} back-shape bg"></span>
                     <span class="{{farrow_active}} icon-bg toggle_icon"></span>
                 </div>
-                <ul class="charge-list charge-style color set-width-float font16 {{ftoggle_active}} color" style="display:none">
+                <ul class="charge-list charge-style color clearfix font16 {{ftoggle_active}} color" style="display:none">
                     {% for charge in fruit.charge_types %}
                     {% if charge.id !=fruit.charge_types[0].id %}
                     {% set hidden =''%}

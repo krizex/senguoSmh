@@ -23,21 +23,21 @@
 
 
 <div class="row">
-    <div class="admin-shop-left  admin-left col-lg-3 col-md-4">
+    <div class="admin-left text-right pull-left">
         <ul class="nav nav-stacked shop-manage-nav" role="tablist">
-          <li class="{{all_active}}"><a href="#">所有店铺<span class="badge count-badge">{{count['all']}}</span></a></li>
-          <li class="{{applaying_active}}"><a href="{{reverse_url('superShopManageApplying')}}">正在申请接入店铺<span class="badge count-badge">{{count['applying']}}</span></a></li>
-          <li class="{{pass_active}}"><a href="{{reverse_url('superShopManageAccepted')}}">已经通过申请店铺<span class="badge count-badge">{{count['accepted']}}</span></a></li>
-          <li class="{{decline_active}}"><a href="{{reverse_url('superShopManageDeclined')}}">已被拒绝店铺<span class="badge count-badge">{{count['declined']}}</span></a></li>
+          <li class="{{all_active}}"><a href="#">所有店铺({{count['all']}})</a></li>
+          <li class="{{applaying_active}}"><a href="{{reverse_url('superShopManageApplying')}}">正在申请接入店铺({{count['applying']}})</a></li>
+          <li class="{{pass_active}}"><a href="{{reverse_url('superShopManageAccepted')}}">已经通过申请店铺({{count['accepted']}})</a></li>
+          <li class="{{decline_active}}"><a href="{{reverse_url('superShopManageDeclined')}}">已被拒绝店铺({{count['declined']}})</a></li>
         </ul>
     </div>
-    <div class="admin-shop-right  col-lg-9 col-md-8">
-        <ul class="shop-list  item-list">
+    <div class="admin-right pull-right">
+        <ul class="shop-list  item-list list-group">
         {% for shop in context["shops"]%}
-            <li class="row shop-list-item" data-shopid="{{shop.id}}" data-status="{{shop.shop_status}}">
+            <li class="row shop-list-item list-group-item" data-shopid="{{shop.id}}" data-status="{{shop.shop_status}}">
                 <div class="show-info">
-                    <span class="col-lg-2 shop-img">
-                        <img src="{{shop.admin.accountinfo.headimgurl}}"/>
+                    <span class="pull-left shop-img">
+                        <img src="{{shop.admin.accountinfo.headimgurl}}" class="w60"/>
                     </span>
                     <div class="col-lg-3">
                         <p>{{shop.shop_name}}</p>
@@ -54,8 +54,8 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-body">
-                                        <textarea placeholder="输入你的拒绝理由" class="decline-reason"></textarea>
-                                        <button type="text" class="btn-style btn-green send-btn rejectSend">发送</button>
+                                        <textarea placeholder="输入你的拒绝理由" class="decline-reason w100"></textarea>
+                                        <button type="text" class="btn-style btn-green send-btn rejectSend center-block">发送</button>
                                     </div>
                                 </div>
                             </div>

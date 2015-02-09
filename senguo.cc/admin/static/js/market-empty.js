@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    time($('.time'));
+    //time($('.time'));
     $('.notice-bg').height($(window).height());
 });
 var wait=3;

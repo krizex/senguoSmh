@@ -50,13 +50,6 @@ $(document).ready(function(){
     $('#edit-goodsType').on('click',function(){addEditType($(this),'edit_menu_name')});
 
     $('.tag-list a').on('click',function(){$(this).addClass('active').siblings('a').removeClass('active')});
-    //商品编辑框显示/收起
-    $('.edit-goods-info').on('click',function(){
-        $(this).parents('.goods-list-item').find('.goods-item-show').addClass('hidden').siblings('.goods-item-edit').removeClass('hidden');
-
-    });
-    $('.edit-goods-concel').on('click',function(){$(this).parents('.goods-list-item').find('.goods-item-edit').addClass('hidden').siblings('.goods-item-show').removeClass('hidden');});
-
     //当前商品所在分类
     $('.type-class a').each(function(){
         var $this=$(this);
@@ -192,13 +185,16 @@ $(document).ready(function(){
                                     break;
                                 default:
                                     alert("无效的文件格式！");
-                                    $this.uploadifive('cancel', file);
+                                    $(this).uploadifive('cancel', file);
                                     break;
                             }
                         },
                         'formData':{
                             'key':'',
                             'token':''
+                        },
+                        'onFallback':function(){
+                            return alert('您的浏览器不支持此插件！建议使用谷歌浏览器！');
                         },
                         'onUpload' :function(){
                             $.ajaxSetup({
@@ -302,8 +298,96 @@ $(document).ready(function(){
     $('.add-delete-charge').eq(0).hide();
     $('body').on('click','.add-delete-charge',function(){$(this).parents('li').remove()});
 
-
     //***商品编辑***
+    //商品编辑框显示/收起
+    $('.edit-goods-info').on('click',function(){
+        var $this=$(this);
+        var parent=$this.parents('.goods-list-item');
+        parent.find('.goods-item-show').addClass('hidden').siblings('.goods-item-edit').removeClass('hidden');
+        parent.siblings('.goods-list-item').find('.goods-item-show').removeClass('hidden').siblings('.goods-item-edit').addClass('hidden');
+        parent.find('.upload-box').append(' <input type="file" name="file_upload" class="uploadImg" id="edit_upload"/><p>上传/修改图片</p>');
+        parent.siblings('.goods-list-item').find('.upload-box').empty();
+        var edit_item=parent.find('#edit_upload');
+        //商品编辑-图片上传
+        var key='';
+        var token='';
+        var fruit_id=parent.data('id');
+        var link_action= $.getUrlParam('action');
+        edit_item.uploadifive(
+            {
+                buttonText    : '',
+                width: '150px',
+                uploadScript  : 'http://upload.qiniu.com/',
+                multi    :     false,
+                'auto':true,
+                fileSizeLimit   : '10MB',
+                'fileObjName' : 'file',
+                'removeCompleted' : true,
+                'queueSizeLimit':999,
+                'fileType':'*.gif;*.png;*.jpg;*.jpeg;*.svg;*.JPG;*.JPEG;*.PNG;*.GIF;*.bmp;*.BMP;',
+                'onAddQueueItem' : function(file){
+                    var fileName = file.name;
+                    var ext = fileName.substring(fileName.lastIndexOf(".")+1,fileName.length);
+                    switch (ext) {
+                        case 'jpg':
+                        case 'JPG':
+                        case 'jpeg':
+                        case 'JPEG':
+                        case 'png':
+                        case 'PNG':
+                        case 'gif':
+                        case 'GIF':
+                        case 'bmp':
+                        case 'BMP':
+                        case 'svg':
+                            break;
+                        default:
+                            alert("无效的文件格式！");
+                            $(this).uploadifive('cancel', file);
+                            break;
+                    }
+                },
+                'formData':{
+                    'key':'',
+                    'token':''
+                },
+                'onFallback':function(){
+                    return alert('您的浏览器不支持此插件！建议使用谷歌浏览器！');
+                },
+                'onUpload' :function(){
+                    var action;
+                    var url="";
+                    if(link_action=='fruit') action="edit_fruit_img";
+                    else if(link_action=='menu') action="edit_mgoods_img";
+                    var args={action: action,id:fruit_id};
+                    $.ajaxSetup({
+                        async : false
+                    });
+                    $.postJson(url,args,
+                        function (res) {
+                            key=res.key;
+                            token=res.token;
+                        },
+                        function(){
+                            alert('网络错误！');}
+                    );
+                    $(this).data('uploadifive').settings.formData = {
+                        'key':key,
+                        'token':token
+                    };
+                },
+                'onError' : function(file, fileType, data) {
+                    alert('The file ' + file.name + ' could not be uploaded: ' + data);
+                },
+                'onUploadComplete':function(){
+                    $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/100/h/100','data-key':key});
+                }
+
+            });
+
+    });
+    $('.edit-goods-concel').on('click',function(){$(this).parents('.goods-list-item').find('.goods-item-edit').addClass('hidden').siblings('.goods-item-show').removeClass('hidden');});
+    //商品信息编辑
     $('.edit-goods-sure').each(function(){
         var $this=$(this);
         $this.on('click',function(){
@@ -316,7 +400,6 @@ $(document).ready(function(){
         }
         })
     });
-
     //商品编辑-单位换算显示
     $('.charge-unit').each(function(){
         var $this=$(this);
@@ -324,8 +407,6 @@ $(document).ready(function(){
         var n=$this.data('id');
         unitChangeShow($this,n,sto_unit);
     });
-
-
     //商品编辑-新增计价方式
     $('.editNewCharge').on('click',function(){
         var $this=$(this);
@@ -343,7 +424,6 @@ $(document).ready(function(){
 
     });
     $('body').on('click','.editAddNewCharge',function(){addEditCharge($(this),item_fruit_id,'add_charge_type','.add-new-charge-box');});
-
     //商品编辑-编辑计价方式
     $('.edit-charge-show').on('click',function(){
         var $this=$(this);
@@ -393,89 +473,6 @@ $(document).ready(function(){
         var id=parent.data('id');
         defaultImg($this,id,code);
     });
-
-    //商品编辑-图片上传
-   $('.edit_upload').each(function(){
-       var $this=$(this);
-       var key='';
-       var token='';
-       var fruit_id=$this.parents('.goods-item').data('id');
-       var link_action= $.getUrlParam('action');
-       var action;
-       var url="";
-       if(link_action=='fruit') action="edit_fruit_img";
-       else if(link_action=='menu') action="edit_mgoods_img";
-       var args={action: action,id:fruit_id};
-       $this.uploadifive(
-           {
-               buttonText    : '',
-               width: '150px',
-               uploadScript  : 'http://upload.qiniu.com/',
-               multi    :     false,
-               'auto':true,
-               fileSizeLimit   : '10MB',
-               'fileObjName' : 'file',
-               'removeCompleted' : true,
-               'fileType':'*.gif;*.png;*.jpg;*.jpeg;*.svg;*.JPG;*.JPEG;*.PNG;*.GIF;*.bmp;*.BMP;',
-               'onAddQueueItem' : function(file){
-                   var fileName = file.name;
-                   var ext = fileName.substring(fileName.lastIndexOf(".")+1,fileName.length);
-                   switch (ext) {
-                       case 'jpg':
-                       case 'JPG':
-                       case 'jpeg':
-                       case 'JPEG':
-                       case 'png':
-                       case 'PNG':
-                       case 'gif':
-                       case 'GIF':
-                       case 'bmp':
-                       case 'BMP':
-                       case 'svg':
-                           break;
-                       default:
-                           alert("无效的文件格式！");
-                           $this.uploadifive('cancel', file);
-                           break;
-                   }
-               },
-               'formData':{
-                   'key':'',
-                   'token':''
-               },
-               'onFallback':function(){
-                    return alert('您的浏览器不支持此插件！请更换其他浏览器！');
-               },
-               'onSelect':function(){
-
-               },
-               'onUpload' :function(){
-                   $.ajaxSetup({
-                       async : false
-                   });
-                   $.postJson(url,args,
-                       function (res) {
-                           key=res.key;
-                           token=res.token;
-                       },
-                       function(){
-                           alert('网络错误！');}
-                   );
-                   $this.data('uploadifive').settings.formData = {
-                       'key':key,
-                       'token':token
-                   };
-               },
-               'onUploadError' : function(file, errorCode, errorMsg, errorString) {
-                   alert('The file ' + file.name + ' could not be uploaded: ' + errorString);
-               },
-               'onUploadComplete':function(){
-                   $this.parents('.upload-img').find('.imgPreview').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/100/h/100','data-key':key});
-               }
-
-           });
-   });
-
 });
 var item_fruit_id;
 var fruit_type_id= $.getUrlParam('id');

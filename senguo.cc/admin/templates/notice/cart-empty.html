@@ -1,20 +1,16 @@
 {% extends '../customer/base.html'%}
 {% block head %}
 <style>
-.bottom-nav{z-index:2;}
-.notice-bg{width:100%;height:100%;background:rgba(0,0,0,0.5);position:absolute;z-index:6666;max-width:800px;}
-.block-index{width:100%;height:100%;position:absolute;z-index:9999;padding-top:160px;max-width:800px;}
+.block-index{width:100%;height:100%;position:absolute;padding-top:25%;max-width:800px;}
 .time{position:absolute;top:10px;right:20px;font-size:30px;font-weight:bold;}
 </style>
 {% end %}
 {% block content %}
 <div class="rainshed"></div>
-<div class="notice-bg"></div>
 <div class="block-index">
     <a href="{{reverse_url('Market',handler.shop_code)}}" class="link">
         <span class="time text-white font16 pull-right"></span>
-        <img src="{{static_url('images/frame1.gif')}}" class="center-block"/>
-        <img src="{{static_url('images/xiaoguo.gif')}}" class="center-block"/>
+        <img src="{{static_url('images/cart_empty1.png')}}" class="center-block"/>
     </a>
 </div>
 {% end %}

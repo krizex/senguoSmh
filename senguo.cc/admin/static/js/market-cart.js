@@ -546,6 +546,7 @@ function orderSubmit(){
     };
     $.postJson(url,args,function(res) {
         if (res.success) {
+            SetCookie('cart_count',0);
             window.location.href=success_href;
         }
         else return alert(res.error_text);

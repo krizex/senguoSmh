@@ -45,10 +45,7 @@ class Access(CustomerBaseHandler):
         userinfo = self.get_wx_userinfo(code, mode)
         if not userinfo:
             return self.redirect(self.reverse_url("customerLogin"))
-        # 尝试登录
-        u = models.Customer.login_by_unionid(self.session, userinfo["unionid"])
-        if not u:# 新建用户
-            u = models.Customer.register_with_wx(self.session, userinfo)
+        u = models.Customer.register_with_wx(self.session, userinfo)
         self.set_current_user(u, domain=ROOT_HOST_NAME)
 
         next_url = self.get_argument("next", self.reverse_url("customerHome"))
