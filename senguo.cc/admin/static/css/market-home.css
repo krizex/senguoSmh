@@ -48,7 +48,7 @@
 .notice-board .swipe .wrap{min-height:120px;float:left;width:100%;}
 .notice-board .swipe-wrap {overflow:hidden;position:relative;min-height:120px;}
 .notice-board .swipe-wrap > figure {float:left;width:100%;position:relative;}
-.notice-board .swipe-wrap .title{position:absolute;top:46%;left:15%;font-family: 'Comic Sans MS', cursive;}
+.notice-board .swipe-wrap .title{position:absolute;top:35%;left:16%;font-family: 'Comic Sans MS', cursive;}
 .notice-board img{width:100%;}
 .notice-board .circle{position:absolute;bottom:10px;width:100%;}
 .notice-board #position{text-align:center;list-style:none;margin:0;padding:0}

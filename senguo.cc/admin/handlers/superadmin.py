@@ -99,7 +99,7 @@ class ShopAdminProfile(SuperBaseHandler):
             return self.send_error(404)
         time_tuple = time.localtime(admin.accountinfo.birthday)
         birthday = time.strftime("%Y-%m", time_tuple)
-        return self.render("superAdmin/admin-profile.html", context=dict(admin=admin, birthday=birthday))
+        return self.render("superAdmin/admin-profile.html", context=dict(admin=admin, birthday=birthday,))
 class ShopProfile(SuperBaseHandler):
     @tornado.web.authenticated
     #@SuperBaseHandler.check_arguments("id:int")
@@ -110,7 +110,7 @@ class ShopProfile(SuperBaseHandler):
             shop = None
         if not shop:
             return self.send_error(404)
-        return self.render("superAdmin/shop-profile.html", context=dict(shop=shop))
+        return self.render("superAdmin/shop-profile.html", context=dict(shop=shop,subpage='shop'))
 
 
 class ShopManage(SuperBaseHandler):

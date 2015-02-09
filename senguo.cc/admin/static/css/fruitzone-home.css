@@ -10,43 +10,43 @@
 .home-head{text-align:center;}
 .home-head li{display:inline-block;font-size:1.4em;background:#fff;line-height:2em;}
 .home-head li a{color:#333;padding:0 0.5em;}
-.home-head .active a{color:#00D681;}
+.home-head .active a{color:#80e0a0;}
 
 .filter-box{border-bottom:1px solid #ddd;height:4em;padding:1em 0.5em;background:#fff;width:100%;}
 .filter-box a{display:inine-block;float:left;width:25%;text-align:center;font-size:1.5em;color:#333;}
 .filter-box a .arrow{border-style:solid;border-width: 0 0 0.6em 0.6em;border-color: transparent transparent #666;position:absolute;margin-top:0.5em;margin-left:0.2em;}
 .filter-box a:hover{text-decoration:none;}
-.filter-box .active{color:#00D681;}
+.filter-box .active{color:#80e0a0;}
 
 .order-by-city{background:#E7E7E7;width:100%;float:left;border-bottom:1px solid #ddd;}
 .order-by-city ul{margin-bottom:0px;}
 .order-by-city .province-select{width:35%;border-right:1px solid #ddd;margin-left:-1px;}
 .order-by-city .province-select li{border-bottom:1px solid #ddd;text-indent:1.5em;padding:0.5em 0;color:#333;font-size:1.4em;}
-.order-by-city .province-select li:hover{color:#00D681;display:block;cursor:pointer;}
-.order-by-city .province-select .active{color:#00D681;}
+.order-by-city .province-select li:hover{color:#80e0a0;display:block;cursor:pointer;}
+.order-by-city .province-select .active{color:#80e0a0;}
 .order-by-city .city-select{width:65%;padding:1em;max-height:15em;overflow-y:auto;}
 .order-by-city .city-select ul{width:105%;}
 .order-by-city .city-select ul li{float:left;border:1px solid #ddd;font-size:1.4em;margin-left:0.5em;margin-bottom:0.5em;padding:0.1em 0.3em;background:#fff;color:#333;}
-.order-by-city .city-select ul .active{border-color:#00D681;color:#00D681;}
-.order-by-city .city-select ul li:hover{cursor:pointer;border-color:#00D681;color:#00D681;}
+.order-by-city .city-select ul .active{border-color:#80e0a0;color:#80e0a0;}
+.order-by-city .city-select ul li:hover{cursor:pointer;border-color:#80e0a0;color:#80e0a0;}
 
 .order-by-area{background:#E7E7E7;width:100%;float:left;padding:1.5em;border-bottom:1px solid #ddd;}
 .order-by-area ul{width:100%;}
 .order-by-area ul li{border:1px solid #fff;float:left;width:24%;color:#333;font-size:1.4em;padding:0.3em 0;margin-right:1%;border-radius:2px;background:#fff;text-align:center;}
-.order-by-area ul .active{border-color:#00D681;color:#00D681;}
-.order-by-area ul li:hover{cursor:pointer;border-color:#00D681;color:#00D681;}
+.order-by-area ul .active{border-color:#80e0a0;color:#80e0a0;}
+.order-by-area ul li:hover{cursor:pointer;border-color:#80e0a0;color:#80e0a0;}
 
 .order-by-time{background:#E7E7E7;width:100%;float:left;height:auto;overflow:hidden;border-bottom:1px solid #ddd;}
 .order-by-time ul{width:100%;}
 .order-by-time ul li{border-bottom:1px solid #ddd;font-size:1.4em;display:block;color:#333;padding:0.3em 0;float:left;width:100%;text-align:center;}
-.order-by-time ul .active{color:#00D681;}
-.order-by-time ul li:hover{cursor:pointer;color:#00D681;}
+.order-by-time ul .active{color:#80e0a0;}
+.order-by-time ul li:hover{cursor:pointer;color:#80e0a0;}
 
 .order-by-fruit{background:#E7E7E7;padding:1.5em;width:100%;float:left;border-bottom:1px solid #ddd;position:relative;}
 .order-by-fruit ul{width:100%;overflow-y:auto;max-height:15em;}
 .order-by-fruit ul li{border:1px solid #fff;float:left;width:60px;height:24px;overflow:hidden;margin-right:1em;margin-bottom:1em;border-radius:2px;background-color:#fff;text-align:center;font-size:1.4em;display:block;color:#333;}
-.order-by-fruit ul .active{border-color:#00D681;color:#00D681;}
-.order-by-fruit ul li:hover{cursor:pointer;border-color:#00D681;color:#00D681;}
+.order-by-fruit ul .active{border-color:#80e0a0;color:#80e0a0;}
+.order-by-fruit ul li:hover{cursor:pointer;border-color:#80e0a0;color:#80e0a0;}
 .order-by-fruit #orderByFruit{display:inline-block;font-size:1.4em;width:3em;word-wrap: break-word;padding:0.5em 1em;writing-mode:lr-tb;position:absolute;right:0;}
 
 

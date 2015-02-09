@@ -1,16 +1,25 @@
 $(document).ready(function(){
+    $('.count-list li').on('click',function(){
+        var $this=$(this);
+        $this.addClass('active').parents('.count-box').addClass('hidden').siblings('.apply-info').removeClass('hidden');
+    });
+    $('#back').on('click',function(){
+        $('.apply-info').addClass('hidden');
+        $('.count-box').removeClass('hidden');
+    });
 
     $('.area-choose-list li').each(function(){
-        $(this).on('click',function(){
-            if($(this).hasClass('active'))
-                {$(this).removeClass('active');}
-            else $(this).addClass('active');
+        var $this=$(this);
+        $this.on('click',function(){
+            if($this.hasClass('active'))
+                {$this.removeClass('active');}
+            else $this.addClass('active');
         });
     });
 
     $('#submitApply').on('click',function(evt){Apply(evt);});
     $('#submitReapply').on('click',function(evt){reApply(evt);});
-    var key='';
+    /*var key='';
     var token='';
     $('#file_upload').uploadifive(
         {
@@ -56,7 +65,7 @@ $(document).ready(function(){
             }
 
         });
-
+*/
 
     var proc=$('.reProvince').data('code');
     var citc=$('.reCity').data('code');
@@ -82,15 +91,25 @@ function Apply(evt){
     var shop_province=$('#provinceAddress').attr('data-code');
     var shop_city=$('#cityAddress').attr('data-code');
     var shop_address_detail=$('#addressDetail').val().trim();
-    var have_offline_entity=$('#realShop').find('.active').find('a').data('real');
+    var have_offline_entity=$('#realShop').find('.active').find('a').data('id');
     var shop_service_area=i;
     var img_key=$('#logoImg').attr('data-key');
     var shop_intro=$('#shopIntro').val().trim();
+    var realName=$('#realName').val().trim();
+    var wx_Name=$('#wx_Name').val().trim();
     if(shop_name.length>20){return alert('店铺名称请不要超过20个字符！')}
     if(shop_address_detail.length>50){return alert('详细地址请不要超过500个字符！')}
     if(shop_intro.length>300){return alert('店铺简介请不要超过300个字符！')}
-    if (!shop_name || ! shop_service_area ||!shop_city||!shop_province || !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
+    if (!shop_name){return alert("请输入店铺名称！");}
+    if (!shop_service_area){return alert("请选择服务区域！");}
+    if (!shop_city||!shop_province){return alert("请选择省份城市！");}
+    if (!shop_address_detail){return alert("请输入您的详细地址！");}
+    if (!shop_intro){return alert("请输入您的店铺简介");}
     if(typeof(img_key)=='undefined') img_key='';
+    var regChinese=/^[\u4e00-\u9faf]+$/;
+    if(!realName){return alert('请输入您的真实姓名！')}
+    if(!regChinese.test(realName)){return alert('请输入您的真实姓名！')}
+    if(!wx_Name){return alert('请输入您的微信号！')}
     var args={
         shop_name:shop_name,
         shop_province:shop_province,
@@ -106,7 +125,6 @@ function Apply(evt){
         function(res){
             if(res.success)
             {
-                alert("申请成功！");
                 window.location.href="/fruitzone/shop/applySuccess";
 
             }

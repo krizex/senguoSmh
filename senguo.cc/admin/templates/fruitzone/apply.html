@@ -7,145 +7,139 @@
 {% if "reApply" in context and context["reApply"] %}
     {% set shop = context['shop']%}
 {% end %}
-
-{% if "reApply" in context and context["reApply"] %}
-<header class="apply-title title-box" data-id="{{shop.id}}" id="headerId">
-    <a href="javascript:history.back(-1)" class="return-btn"></a>
-    <span class="title">入驻申请</span>
-</header>
+{% if "need_complete_accountinfo" in context and context["need_complete_accountinfo"]%}
+<div class="container apply-box phone-box">
+  <h5 class="proper-padding bg-warning">你的个人信息不完善，为了方便大家交流，请先完善：<a href="{{reverse_url('fruitzoneAdminProfile')}}">个人信息</a></h5>
+</div>
 {% else %}
-<div class="count-box">
+<div class="count-box mt60">
     <div class="text-center">
         <img src="{{static_url('images/logo2.png')}}"/>
     </div>
     <div class="count-list-box center-block">
-        <ul class="count-list">
-            <li>
+        <ul class="count-list" id="realShop">
+            <li data-id="2">
                 <img src="{{static_url('images/pear1.png')}}" class="pear_img"/>
                 <div class="word bg-green">
                     <p class="text-yellow font16">没有卖过水果想尝试</p>
-                    <p class="text-white font14">我们为您提供从采购到配送全流程的帮助指导</p>
+                    <p class="text-white font14">我们为您提供从采购到配送全流程</p>
+                    <p class="text-white font14">的帮助指导</p>
                 </div>
             </li>
-            <li>
+            <li data-id="1">
                 <img src="{{static_url('images/pear2.png')}}" class="pear_img"/>
                 <div class="word bg-green">
                     <p class="text-yellow font16">已有实体店，并在经营中</p>
                     <p class="text-white font14">我们满足您线上水果的一切技术需求</p>
                 </div>
             </li>
-            <li>
+            <li data-id="0">
                 <img src="{{static_url('images/pear3.png')}}" class="pear_img"/>
                 <div class="word bg-green">
                     <p class="text-yellow font16">没有实体店，水果o2o探索中</p>
-                    <p class="text-white font14">这里有来自天南地北的同行一起交流探讨</p>
+                    <p class="text-white font14">这里有来自天南地北的同行</p>
+                    <p class="text-white font14">一起交流探讨</p>
                 </div>
             </li>
         </ul>
     </div>
-
 </div>
-<header class="apply-title title-box" id="headerId">
-    <a href="{{reverse_url('fruitzoneHome')}}" class="return-btn"></a>
-    <span class="title">入驻申请</span>
-</header>
-{% end %}
-
-{% if "need_complete_accountinfo" in context and context["need_complete_accountinfo"]%}
-<div class="container apply-box phone-box">
-  <h5 class="proper-padding bg-warning">你的个人信息不完善，为了方便大家交流，请先完善：<a href="{{reverse_url('fruitzoneAdminProfile')}}">个人信息</a></h5>
+<div class="top bg-green text-white text-center hidden apply-info">
+    <img src="{{handler.current_user.accountinfo.headimgurl}}"/>
+    <p class="font14 mt5">昵称：{{handler.current_user.accountinfo.nickname}}</p>
 </div>
-
-{% else %}
-<div class="apply-box white-color">
-    <div class="container-title">店铺信息</div>
-    <div class="info-box">
-        <p class="title">店铺名称<em>*</em>：</p>
+<div class="apply-box center-block hidden apply-info">
+    <p class="font16 mb0 line40">店铺信息</p>
+    <hr/>
+    <div class="clearfix mt10">
+        <span class="title line40 pull-left font14">店铺名称*</span>
         {% if "reApply" in context and context["reApply"] %}
-            <input type="text" class="input-box" id="shopName" value="{{shop.shop_name or ''}}"/>
+        <input type="text" class="input-box pull-left" id="shopName" value="{{shop.shop_name or ''}}"/>
         {% else %}
-            <input type="text" class="input-box" id="shopName" placeholder="请不要超过20个字"/>
+        <input type="text" class="input-box pull-left" id="shopName" placeholder="请不要超过20个字"/>
         {% end %}
-        <!--<p class="title">店铺logo<small class="text-red">(部分手机浏览器会出现图像无法上传，建议申请成功后进入个人中心的店铺管理页面再进行图片上传！)</small>：</p>
-        {% if "reApply" in context and context["reApply"] %}
-        <img src="{{shop.shop_trademark_url}}" id="logoImg"/>
-        {% else %}
-        <img src="" id="logoImg" style="display:none;"/>
-        {% end %}
-        <div class="upload-img green-color">
-            <input id="file_upload" type="file" name="file_upload" class="uploadImg" />
-            <p>点击上传图片</p>
-        </div>-->
-        <p class="title">详细地址<em>*</em>：</p>
-        <div class="better-address">
-            <div class="dropdown select-provience pull-left" data-toggle="modal" data-target="#provinceList">
-                <button class="btn btn-default dropdown-toggle" type="button">
+    </div>
+    <!--<p class="title">店铺logo<small class="text-red">(部分手机浏览器会出现图像无法上传，建议申请成功后进入个人中心的店铺管理页面再进行图片上传！)</small>：</p>
+    {% if "reApply" in context and context["reApply"] %}
+    <img src="{{shop.shop_trademark_url}}" id="logoImg"/>
+    {% else %}
+    <img src="" id="logoImg" style="display:none;"/>
+    {% end %}
+    <div class="upload-img green-color">
+        <input id="file_upload" type="file" name="file_upload" class="uploadImg" />
+        <p>点击上传图片</p>
+    </div>-->
+    <div class="clearfix mt10">
+        <span class="title line40 font14 pull-left">省份城市*</span>
+        <div class="better-address pull-left">
+            <div class="dropdown select-provience pull-left mr5" data-toggle="modal" data-target="#provinceList">
+                <button class="btn btn-default dropdown-toggle bg-grey5" type="button">
                     {% if "reApply" in context and context["reApply"] %}
-                         <span  id="provinceAddress" data-code="{{shop.shop_province or ''}}" class="reProvince">选择省份</span>
+                    <span  id="provinceAddress" data-code="{{shop.shop_province or ''}}" class="reProvince">选择省份</span>
                     {% else %}
-                         <span  id="provinceAddress" data-code="">选择省份</span>
+                    <span  id="provinceAddress" data-code="">选择省份</span>
                     {% end %}
                     <span class="caret"></span>
                 </button>
             </div>
             <div class="dropdown select-provience pull-left select-city" data-toggle="modal" data-target="#cityList">
-                <button class="btn btn-default dropdown-toggle" type="button">
+                <button class="btn btn-default dropdown-toggle bg-grey5" type="button">
                     {% if "reApply" in context and context["reApply"] %}
-                         <span id="cityAddress" data-code="{{shop.shop_city or ''}}" class="reCity">选择城市</span>
+                    <span id="cityAddress" data-code="{{shop.shop_city or ''}}" class="reCity">选择城市</span>
                     {% else %}
-                        <span id="cityAddress" data-code="">选择城市</span>
+                    <span id="cityAddress" data-code="">选择城市</span>
                     {% end %}
                     <span class="caret"></span>
                 </button>
             </div>
         </div>
+    </div>
+    <p class="title font14 pull-left mb0 mt10">详细地址*</p>
+    {% if "reApply" in context and context["reApply"] %}
+    <input type="text" class="input-box input1 mt5 w100" placeholder="{{shop.shop_address_detail or '请填详细地址'}}" id="addressDetail" value="{{shop.shop_address_detail or ''}}"/>
+    {% else %}
+    <input type="text" class="input-box input1 mt5 w100" placeholder="输入您的详细地址，请不要超过50个字" id="addressDetail"/>
+    {% end %}
+    <p class="title font14 pull-left mb0 mt10">店铺简介*</p>
+    {% if "reApply" in context and context["reApply"] %}
+    <textarea class="shop-intro" id="shopIntro" placeholder="输入您的店铺简介">{{shop.shop_intro or ''}}</textarea>
+    {% else %}
+    <textarea class="shop-intro" id="shopIntro" placeholder="输入您的店铺简介,请不要超过300个字"></textarea>
+    {% end %}
+    <p class="title">服务区域</p>
+    <ul class="area-select  area-choose-list row" id="serverArea">
+        <li class="bg-grey5 active"  data-id="1"><a href="javascript:;" class="text-grey3">高校</a></li>
+        <li class="bg-grey5" data-id="2"><a href="javascript:;" class="text-grey3">社区</a></li>
+        <li class="bg-grey5" data-id="4"><a href="javascript:;" class="text-grey3">商圈</a></li>
+        <li class="bg-grey5" data-id="8"><a href="javascript:;" class="text-grey3">其他</a></li>
+    </ul>
+    <p class="font16 mb0 line40 clearfix">个人信息</p>
+    <hr/>
+    <div class="clearfix mt10">
+        <span class="title line40 pull-left font14">真实姓名*</span>
         {% if "reApply" in context and context["reApply"] %}
-              <input type="text" class="input-box input1" placeholder="{{shop.shop_address_detail or '请填详细地址'}}" id="addressDetail" value="{{shop.shop_address_detail or ''}}"/>
+        <input type="text" class="input-box pull-left" id="realName" value="{{handler.current_user.accountinfo.realname}}"/>
         {% else %}
-             <input type="text" class="input-box input1" placeholder="请填详细地址，请不要超过50个字" id="addressDetail"/>
-        {% end %}
-        <div class="whether-shop">
-            <p class="title pull-left">是否做实体店<em>*</em>：</p>
-            {% if "reApply" in context and context["reApply"] %}
-                <ul class="area-select  select-list pull-right" id="realShop">
-                    {% if shop.have_offline_entity=='true' %}
-                        <li class="active"><a href="javascript:;" data-real="true">是</a></li>
-                        <li><a href="javascript:;" data-real="false">否</a></li>
-                    {% else %}
-                        <li><a href="javascript:;" data-real="true">是</a></li>
-                        <li class="active"><a href="javascript:;" data-real="false">否</a></li>
-                    {% end %}
-                </ul>
-            {% else %}
-                <ul class="area-select  select-list pull-right" id="realShop">
-                    <li class="active"><a href="javascript:;" data-real="true">是</a></li>
-                    <li><a href="javascript:;" data-real="false">否</a></li>
-                </ul>
-            {% end %}
-        </div>
-        <p class="title">服务区域(多选)<em>*</em>：</p>
-        <ul class="area-select  area-choose-list row" id="serverArea">
-            <li class="active"  data-id="1"><a href="javascript:;">高校</a></li>
-            <li data-id="2"><a href="javascript:;">社区</a></li>
-            <li data-id="4"><a href="javascript:;">商圈</a></li>
-            <li data-id="8"><a href="javascript:;">其他</a></li>
-        </ul>
-        <p class="title">店铺简介<em>*</em>：</p>
-        {% if "reApply" in context and context["reApply"] %}
-        <textarea class="shop-intro" id="shopIntro" placeholder="请输入店铺简介">{{shop.shop_intro or ''}}</textarea>
-        {% else %}
-        <textarea class="shop-intro" id="shopIntro" placeholder="请输入店铺简介,请不要超过300个字"></textarea>
+        <input type="text" class="input-box pull-left" id="realName" placeholder="输入您的真实姓名"/>
         {% end %}
     </div>
-    <div class="info-box">
-        <!--<p class="title">是否接入森果后台系统：<a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200343770&idx=1&sn=1230c48bb781da7d7e63d5dc804cbf10#rd" class="to-know">了解一下</a></p>-->
+    <div class="clearfix mt10">
+        <span class="title line40 pull-left font14">微信号*</span>
         {% if "reApply" in context and context["reApply"] %}
-        <input type="submit" value="提交申请" class="green bg-green" id="submitReapply"/>
+        <input type="text" class="input-box pull-left" id="wx_Name" value="{{handler.current_user.accountinfo.wx_username}}"/>
         {% else %}
-        <input type="submit" value="提交申请" class="green bg-green" id="submitApply"/>
+        <input type="text" class="input-box pull-left" id="wx_Name" placeholder="输入您的微信号码"/>
         {% end %}
     </div>
+    <p class="mt10">*您的个人信息仅用作店铺审核使用，我们将严格保密</p>
+    <input type="submit" value="上一步" class="btn text-green border-green white-color center-block w80 mb10" id="back"/>
+    {% if "reApply" in context and context["reApply"] %}
+    <input type="submit" value="提交申请" class="btn text-green border-green white-color center-block w80" id="submitReapply"/>
+    {% else %}
+    <input type="submit" value="提交申请" class="btn text-green border-green white-color center-block w80" id="submitApply"/>
+    {% end %}
 </div>
+    <!--<p class="title">是否接入森果后台系统：<a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200343770&idx=1&sn=1230c48bb781da7d7e63d5dc804cbf10#rd" class="to-know">了解一下</a></p>-->
 
 <div class="modal fade select-popbox" id="provinceList" tabindex="-1" role="dialog" aria-labelledby="provinceAddress" aria-hidden="true">
     <div class="modal-dialog">
@@ -192,7 +186,7 @@
 {% end %}
 {% end %}
 {% block bottom %}
-<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>
+<!--<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>-->
 <script src="{{static_url('js/area.js')}}"></script>
 <script src="{{static_url('js/fruitzone-apply.js')}}"></script>
 {% end %}
