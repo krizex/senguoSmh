@@ -14,6 +14,37 @@
     <span class="title">入驻申请</span>
 </header>
 {% else %}
+<div class="count-box">
+    <div class="text-center">
+        <img src="{{static_url('images/logo2.png')}}"/>
+    </div>
+    <div class="count-list-box center-block">
+        <ul class="count-list">
+            <li>
+                <img src="{{static_url('images/pear1.png')}}" class="pear_img"/>
+                <div class="word bg-green">
+                    <p class="text-yellow font16">没有卖过水果想尝试</p>
+                    <p class="text-white font14">我们为您提供从采购到配送全流程的帮助指导</p>
+                </div>
+            </li>
+            <li>
+                <img src="{{static_url('images/pear2.png')}}" class="pear_img"/>
+                <div class="word bg-green">
+                    <p class="text-yellow font16">已有实体店，并在经营中</p>
+                    <p class="text-white font14">我们满足您线上水果的一切技术需求</p>
+                </div>
+            </li>
+            <li>
+                <img src="{{static_url('images/pear3.png')}}" class="pear_img"/>
+                <div class="word bg-green">
+                    <p class="text-yellow font16">没有实体店，水果o2o探索中</p>
+                    <p class="text-white font14">这里有来自天南地北的同行一起交流探讨</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+</div>
 <header class="apply-title title-box" id="headerId">
     <a href="{{reverse_url('fruitzoneHome')}}" class="return-btn"></a>
     <span class="title">入驻申请</span>
@@ -26,8 +57,6 @@
 </div>
 
 {% else %}
-
-
 <div class="apply-box white-color">
     <div class="container-title">店铺信息</div>
     <div class="info-box">
@@ -37,7 +66,7 @@
         {% else %}
             <input type="text" class="input-box" id="shopName" placeholder="请不要超过20个字"/>
         {% end %}
-        <p class="title">店铺logo<small class="text-red">(部分手机浏览器会出现图像无法上传，建议申请成功后进入个人中心的店铺管理页面再进行图片上传！)</small>：</p>
+        <!--<p class="title">店铺logo<small class="text-red">(部分手机浏览器会出现图像无法上传，建议申请成功后进入个人中心的店铺管理页面再进行图片上传！)</small>：</p>
         {% if "reApply" in context and context["reApply"] %}
         <img src="{{shop.shop_trademark_url}}" id="logoImg"/>
         {% else %}
@@ -46,7 +75,7 @@
         <div class="upload-img green-color">
             <input id="file_upload" type="file" name="file_upload" class="uploadImg" />
             <p>点击上传图片</p>
-        </div>
+        </div>-->
         <p class="title">详细地址<em>*</em>：</p>
         <div class="better-address">
             <div class="dropdown select-provience pull-left" data-toggle="modal" data-target="#provinceList">
@@ -111,9 +140,9 @@
     <div class="info-box">
         <!--<p class="title">是否接入森果后台系统：<a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200343770&idx=1&sn=1230c48bb781da7d7e63d5dc804cbf10#rd" class="to-know">了解一下</a></p>-->
         {% if "reApply" in context and context["reApply"] %}
-        <input type="submit" value="提交申请" class="green" id="submitReapply"/>
+        <input type="submit" value="提交申请" class="green bg-green" id="submitReapply"/>
         {% else %}
-        <input type="submit" value="提交申请" class="green" id="submitApply"/>
+        <input type="submit" value="提交申请" class="green bg-green" id="submitApply"/>
         {% end %}
     </div>
 </div>

@@ -65,11 +65,11 @@ input{border:none;}
 .bottom-nav .cart em{background-position:-50px 0px;}
 .bottom-nav .my em{background-position:-75px 0px;}
 .bottom-nav li:hover .home em{background-position:0 -24px;}
-.bottom-nav li:hover .goods em{background-position:-24px -24px;}
+.bottom-nav li:hover .goods em{background-position:-25px -24px;}
 .bottom-nav li:hover .cart em{background-position:-50px -24px;}
 .bottom-nav li:hover .my em{background-position:-75px -24px;}
 .bottom-nav .active .home em{background-position:0px -24px;}
-.bottom-nav .active .goods em{background-position:-24px -24px;}
+.bottom-nav .active .goods em{background-position:-25px -24px;}
 .bottom-nav .active .cart em{background-position:-50px -24px;}
 .bottom-nav .active .my em{background-position:-75px -24px;}
 
@@ -86,7 +86,7 @@ input{border:none;}
 .font16{font-size:1.6em;}
 .font18{font-size:1.8em;}
 
-.input-sty{border:1px solid #ccc;background:#f2f2f2;border-radius:2px;}
+.input-sty{background:#f2f2f2;border-radius:2px;}
 
 .m-b60{margin-bottom:60px;}
 .m-r5{margin-right:5px;}
@@ -94,6 +94,7 @@ input{border:none;}
 .m-b5{margin-bottom:5px;}
 .m-b10{margin-bottom:10px;}
 .m-b0{margin-bottom:0px !important;}
+.m0{margin:0px !important;}
 .mt42{margin-top:36px !important;}
 .mt10{margin-top:10px;}
 .radius0{border-radius:0px !important;}
@@ -110,9 +111,11 @@ input{border:none;}
 .p5{padding:5px !important;}
 .p0{padding:0px !important;}
 .p05{padding:5px 0px 0px 0px !important;}
+.p10{padding:10px 0!important;}
 .pl10{padding-left:10px !important;}
 .pr10{padding-right:10px !important;}
 .p010{padding:0px 10px !important;}
+.pr0{padding-right:0px !important;}
 .prl0{padding-left:0px !important;padding-right:0px !important;}
 .pb0{padding-bottom:0px !important;}
 .plr5{padding:0 5px !important;}
@@ -145,4 +148,4 @@ input{outline:none;-webkit-appearance:none;}
 input[type=text]:focus{box-shadow:0px;border-color:#f7f7f8 !important;outline:none;}
 .b-radius0{border-radius:0px !important;}
 
-.cart_num{position:absolute;display:inline-block;width:18px;height:18px;border-radius:50%;top:8px;margin-left:10px;}
+.cart_num{position:absolute;display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;top:8px;}

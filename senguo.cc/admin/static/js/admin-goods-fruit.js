@@ -16,16 +16,40 @@ $(document).ready(function(){
         if(name==link_id&&link_action=='menu')
         $this.addClass('active');
     });
-    $('.tag-list a').on('click',function(){$(this).addClass('active').siblings('a').removeClass('active')});
-
     //添加新的商品分类
     $('#add-new-goodsType').on('click',function(){
         var max_type_num=$('.goods-classify').find('.item').length;
-        if(max_type_num<5) $('.add-goodsType-box').modal('show');
+        if(max_type_num<5) {
+            var box=$('.add-goodsType-box');
+            box.modal('show').find('.modal-title').text('新建商品分类');
+            box.find('#add-goodsType').show().siblings('#edit-goodsType').hide();
+        }
         else return alert('最多可添加5个商品分类！');
     });
-    $('#add-goodsType-sure').on('click',function(){addGoodsType($(this))});
+    $('#add-goodsType').on('click',function(){addEditType($(this),'add_menu')});
+    //商品分类名编辑
+    $('.menu_active').hover(
+        function(){
+            var $this=$(this);
+            $this.find('.class_name_edit').show();
+        },
+        function(){
+            var $this=$(this);
+            $this.find('.class_name_edit').hide();
+    });
+    $('.class_name_edit').on('click',function(){
+        var $this=$(this);
+        var name=$this.parents('.menu_active').text();
+        var id=$this.parents('.menu_active').data('id');
+        var index=$this.parents('.menu_active').index;
+        var box=$('.add-goodsType-box');
+        box.modal('show').attr({'data-id':id,'data-index':index}).find('.modal-title').text('编辑商品分类');
+        box.find('#type-name').val(name);
+        box.find('#edit-goodsType').show().siblings('#add-goodsType').hide();
+    });
+    $('#edit-goodsType').on('click',function(){addEditType($(this),'edit_menu_name')});
 
+    $('.tag-list a').on('click',function(){$(this).addClass('active').siblings('a').removeClass('active')});
     //商品编辑框显示/收起
     $('.edit-goods-info').on('click',function(){
         $(this).parents('.goods-list-item').find('.goods-item-show').addClass('hidden').siblings('.goods-item-edit').removeClass('hidden');
@@ -470,30 +494,49 @@ var add_goods_box=$('.add-new-goods-box');
 var upload_item;
 var default_code;
 
-function addGoodsType(target){
+function addEditType(target,action){
     var url=link;
-    var action='add_menu';
-    var add_box=target.parents('.add-goodsType-box');
-    var name=add_box.find('#type-name').val();
-    var intro=add_box.find('#type-intro').val();
+    var action=action;
+    var box=target.parents('.add-goodsType-box');
+    var name=box.find('#type-name').val();
+    //var intro=add_box.find('#type-intro').val();
     if(!name){return alert('请输入分类名称！')}
     if(name.length>5){return alert('请输不要超过5个字！')}
-    if(intro.length>60){return alert('请输不要超过60个字！')}
-    var data={
-        name:name,
-        intro:intro
-    };
-    var args={
-        action:action,
-        data:data
+    //if(intro.length>60){return alert('请输不要超过60个字！')}
+    var args;
+    var data;
+    var id;
+    if(action=='add_menu'){
+        data={
+            name:name
+        };
+        args={
+            action:action,
+            data:data
 
-    };
+        };
+    }
+    else if(action=='edit_menu_name'){
+        id=box.attr('data-id');
+        args={
+            action:action,
+            data:name,
+            id:id
+
+        };
+    }
     $.postJson(url,args,
         function(res){
             if(res.success){
-                alert('新分类添加成功！');
-                $('.add-goodsType-box').modal('hide');
-                window.location.reload();
+                if(action=='add_menu'){
+                    window.location.reload();
+                }
+                else if(action=='edit_menu_name'){
+                    var index=box.attr('data-index');
+                    $('.menu_active').eq(index).text(name);
+                }
+                box.modal('hide');
+
             }
             else return alert(res.error_text);
         },
@@ -619,7 +662,7 @@ function addEditFruit(target,action){
         function(res){
             if(res.success){
                 add_goods_box.modal('hide');
-                //window.location.reload();
+                window.location.reload();
             }
             else return alert(res.error_text);
         },

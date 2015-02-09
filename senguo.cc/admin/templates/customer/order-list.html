@@ -6,7 +6,7 @@
 {% block top %}我的订单{% end %}
 {%block back%}{{reverse_url('customerHome')}}{% end %}
 {% block content %}
-<ul class="order-nav text-center m-b0 clearfix font13 bg-white">
+<ul class="order-nav text-center m-b0 clearfix font13 bg-white mt42">
     <li data-action="all"><a href="{{reverse_url('customerOrder')}}?action=all">全部</a></li>
     <li data-action="unhandled"><a href="{{reverse_url('customerOrder')}}?action=unhandled">未处理</a></li>
     <li data-action="waiting"><a href="{{reverse_url('customerOrder')}}?action=waiting">待收货</a></li>

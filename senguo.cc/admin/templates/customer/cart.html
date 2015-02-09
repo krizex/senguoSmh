@@ -76,15 +76,15 @@
         <div class="bg-width center-block text-grey bg-white">
             <div class="clearfix font14 p010">
                 <span class="pull-right tit2 text-right"><span id="list_total_price"></span>元</span>
-                <span class="pull-right tit">商品金额：</span>
+                <span class="pull-right tit text-right">商品金额：</span>
             </div>
             <div class="clearfix font14 p010">
                 <span class="pull-right tit2 text-right"><span id="freight_money">{{config.freight_on_time}}</span>元</span>
-                <span class="pull-right tit">配送费：</span>
+                <span class="pull-right tit text-right">配送费：</span>
             </div>
-            <div class="clearfix m-b10 font14 p010">
+            <div class="clearfix m-b10 font14 p010 text-grey3">
                 <span class="pull-right tit2 text-right"><span id="final_price"></span>元</span>
-                <span class="pull-right tit">实付金额：</span>
+                <span class="pull-right tit text-right">实付金额：</span>
             </div>
             <p class="text-center text-pink mincharge_intime" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"按时达"起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元</p>
             <p class="text-center text-pink mincharge_now" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"立即送"起送价金额<span class="mincharge">{{config.min_charge_now}}</span>元</p>
@@ -158,7 +158,7 @@
                              <li class="btn text-green text-center bg-white pull-left" data-id="5">5元</li>
                          </ul>
                      </li>-->
-                    <li class="list-group-item font14">
+                    <li class="font14">
                         送货时间：
                         <span class="now_startime">{{config.start_time_now}}</span>~
                         <span class="now_endtime">{{config.end_time_now}}</span>
@@ -172,15 +172,17 @@
                     {% for address in current_user.addresses%}
                     <li data-id="{{address.id}}" class="list-group-item clearfix item">
                         <a href="javascript:;" class="text-grey3 pull-left address">
-                            <span class="name pr10">{{address.receiver}}</span>
-                            <span class="address pr10">{{address.address_text}}</span>
-                            <span class="phone">{{address.phone}}</span>
+                            <p class="m0">
+                                <span class="phone">{{address.phone}}</span>
+                                <span class="name pr10">{{address.receiver}}</span>
+                            </p>
+                            <p class="address pr10 m0">{{address.address_text}}</p>
                         </a>
                         <a class="text-green pull-right to-edit-address text-center">+编辑</a>
                     </li>
                     {% end %}
                 </ul>
-                <p class="clearfix"><a class="text-green pull-right to-add-address font12">+添加</a></p>
+                <p class="clearfix"><a class="text-green pull-right to-add-address font12 m-r10">+添加</a></p>
                 <div class="address-box hidden center-block font12">
                     <p>
                         <span class="tit set-inl-blo pull-left">姓名：</span>
@@ -204,7 +206,7 @@
             <div class="send-address-choose clearfix center-block bg-white box-style">
                 <p class="clearfix">
                     <span class="pull-left text-grey3 font14">支付方式</span>
-                    <a href="#" class="text-green pull-right font12">充值</a>
+                    <a href="#" class="text-green pull-right font12 m-r10">充值</a>
                     <span class="pull-right pr10 font12">账户余额：{{current_user.balance}}元</span>
                 </p>
                 <ul id="payType" class="pay_type list-group type-choose font12">
