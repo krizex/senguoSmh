@@ -62,7 +62,7 @@ def gen_msg_token(wx_id, phone):
         s.close()
         return True
     else:
-        #用户在24小室内申请验证码，这时要检查是否24小时内申请次数没超过10次（24小时内只允许申请10次）
+        #用户在24小时内申请验证码，这时要检查是否24小时内申请次数没超过10次（24小时内只允许申请10次）
         if q.count <= 10:
             if not post():
                 return False
@@ -71,7 +71,7 @@ def gen_msg_token(wx_id, phone):
             q.count += 1
             s.commit()
             s.close()
-            #24小时内多于10次，不响应
+        #24小时内多于10次，不响应
         else:
             return False
 
