@@ -118,9 +118,10 @@ function Apply(evt){
         have_offline_entity:have_offline_entity,
         shop_service_area:shop_service_area,
         shop_intro:shop_intro,
-        img_key:img_key
+        realname:realName,
+        wx_username:wx_Name
     };
-    var url="/fruitzone/shop/apply";
+    var url="";
     $.postJson(url,args,
         function(res){
             if(res.success)
@@ -155,10 +156,21 @@ function reApply(evt){
     var shop_intro=$('#shopIntro').val().trim();
     var shop_id=$('#headerId').data('id');
     var img_key=$('#logoImg').attr('data-key');
+    var realName=$('#realName').val().trim();
+    var wx_Name=$('#wx_Name').val().trim();
     if(shop_name.length>20){return alert('店铺名称请不要超过20个字符！')}
     if(shop_address_detail.length>50){return alert('详细地址请不要超过500个字符！')}
     if(shop_intro.length>300){return alert('店铺简介请不要超过300个字符！')}
-    if (!shop_name || ! shop_service_area ||!shop_city||!shop_province || !shop_address_detail || !shop_intro){return alert("请输入带*的必要信息");}
+    if (!shop_name){return alert("请输入店铺名称！");}
+    if (!shop_service_area){return alert("请选择服务区域！");}
+    if (!shop_city||!shop_province){return alert("请选择省份城市！");}
+    if (!shop_address_detail){return alert("请输入您的详细地址！");}
+    if (!shop_intro){return alert("请输入您的店铺简介");}
+    if(typeof(img_key)=='undefined') img_key='';
+    var regChinese=/^[\u4e00-\u9faf]+$/;
+    if(!realName){return alert('请输入您的真实姓名！')}
+    if(!regChinese.test(realName)){return alert('请输入您的真实姓名！')}
+    if(!wx_Name){return alert('请输入您的微信号！')}
     var args={
         shop_name:shop_name,
         shop_province:shop_province,
@@ -168,16 +180,15 @@ function reApply(evt){
         shop_service_area:shop_service_area,
         shop_intro:shop_intro,
         shop_id:shop_id,
-        img_key:img_key
+        realname:realName,
+        wx_username:wx_Name
     };
-    var url="/fruitzone/shop/reApply";
+    var url="";
     $.postJson(url,args,
         function(res){
             if(res.success)
             {
-                console.log(args);
                 window.location.href="/fruitzone/shop/applySuccess";
-                alert("重新申请成功！");
             }
             else  alert(res.error_text);
         },
