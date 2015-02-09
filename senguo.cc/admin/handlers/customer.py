@@ -248,7 +248,7 @@ class Market(CustomerBaseHandler):
         if not shop:
             return self.send_error(404)
         self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
-        self.set_cookie("shop_name", shop.shop_name)
+        self.set_cookie("shop_name", shop.shop_name.encode('utf-8'))
         self._shop_code = shop.shop_code
         if not self.session.query(models.CustomerShopFollow).filter_by(
                 customer_id=self.current_user.id, shop_id=shop.id).first():
@@ -329,7 +329,7 @@ class Market(CustomerBaseHandler):
         for key in fruits:
             fruits2[int(key)] = fruits[key]
         for key in mgoods:
-            mgoods2[int(key)] = mgoods2[key]
+            mgoods2[int(key)] = mgoods[key]
         cart.fruits = str(fruits2)
         cart.mgoods = str(mgoods2)
 
