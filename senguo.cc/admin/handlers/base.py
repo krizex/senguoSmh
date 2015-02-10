@@ -370,6 +370,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
             return self._shop_id
         shop_id = self.get_cookie("market_shop_id")
         if not shop_id:
+            print('error:shop_id is null ',shop_id)
             shop_id = 0
             #return self.redirect("/shop/1")  #todo 这里应该重定向到商铺列表
         self._shop_id = int(shop_id)
