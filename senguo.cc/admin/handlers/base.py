@@ -442,7 +442,7 @@ class WxOauth2:
             Logger.warn("WxOauth2 Error", "获取access_token失败，注意是否存在攻击")
             traceback.print_exc()
             return None
-        if "access_token" not in date:
+        if "access_token" not in data:
             return None
         return data["access_token"], data["openid"]
 
