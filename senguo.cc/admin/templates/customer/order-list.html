@@ -38,11 +38,11 @@
             </header>
         </a>
         <div class="content" >
-            <p class="p1" >送至：<span>{{order.address_text}}</span></p>
+            <p class="p1 clearfix" >送至：<span>{{order.address_text}}</span></p>
             {% if order.remark%}
             <p>备注信息：{{order.remark}}</p>
             {% end %}
-            <p class="p2">
+            <p class="p2 clearfix">
                 <input type="hidden" value="{{order.create_date}}" class="create_time"/>
                 <input type="hidden" value="{{order.create_date.year}}" class="create_year"/>
                 <input type="hidden" value="{{order.create_date.month}}" class="create_month"/>
@@ -54,9 +54,9 @@
                     <span class="un-arrive">预计</span>：<span class="send_date">今天</span>&nbsp;&nbsp;{{order.start_time}}~{{order.end_time}}&nbsp;&nbsp;送达
                 </span>
                 {% end %}
-                <span class="price-box pull-right text-pink"><span class="price font18">{{order.totalPrice}}</span>元</span>
+                <span class="price-box pull-right text-pink"><span class="price font18 pull-left">{{order.totalPrice}}</span>元</span>
             </p>
-            <p>
+            <p class="clearfix">
                 {% if order.status ==1 %}
                 <a class="cancel order-concel" href="javascript:;">取消订单</a>
                 {% elif order.status ==0 %}

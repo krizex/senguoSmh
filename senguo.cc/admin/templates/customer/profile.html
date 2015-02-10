@@ -7,7 +7,7 @@
 
 {% block content%}
 <div class="user-info-detail pt36">
-    <ul class="clearfix">
+    <ul class="set-w100-fle m-b10">
         <li class="item">
             <div class="info-con">
                 <span class="title img-title pull-left">头像</span>
@@ -73,12 +73,12 @@
             </div>
         </li>
     </ul>
-    <a class="btn bg-pink text-white center-block b-radius0" href="{{reverse_url('customerLogout')}}">退出登录</a>
+    <a class="btn bg-pink text-white center-block clearfix b-radius0 mt10" href="{{reverse_url('customerLogout')}}">退出登录</a>
 </div>
 <div class="modal fade tie-popbox" id="tieBox" tabindex="-1" role="dialog"  aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-body">
+            <div class="modal-body font14 clearfix">
                 <div class="tie-info">
                     <div class="phone-number">
                         <input type="text" placeholder="输入手机号" class="phone input1 pull-left" id="enterPhone"/>
@@ -89,7 +89,7 @@
                     <input type="password" placeholder="密码确认" class="input1" id="passwordConfirm"/>
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer clearfix">
                 <button type="button" class="btn pull-left concel-btn" data-dismiss="modal">取消</button>
                 <button type="button" class="btn pull-right tie-btn bg-green"  id="tiePhone">绑定</button>
             </div>
@@ -100,10 +100,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">
-                <ul class="list-group sex-list font14">
-                    <li class="list-group-item" data-id="1">男</li>
-                    <li class="list-group-item" data-id="2">女</li>
-                    <li class="list-group-item" data-id="0">其他</li>
+                <ul class="list-group sex-list font16">
+                    <li class="list-group-item height40" data-id="1">男</li>
+                    <li class="list-group-item height40" data-id="2">女</li>
+                    <li class="list-group-item height40" data-id="0">其他</li>
                 </ul>
             </div>
         </div>

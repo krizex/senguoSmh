@@ -16,7 +16,7 @@ $(document).ready(function(){
         $('.cart_num').show().text(cart_count);
     }
     //设置title
-    //document.title=unescape(shop_name)+'一家不错的水果O2O店铺，快来关注吧~';
+    //document.title=$.base64Decode(shop_name)+'一家不错的水果O2O店铺，快来关注吧~';
 
 });
 var shop_href='/customer/shopProfile';
