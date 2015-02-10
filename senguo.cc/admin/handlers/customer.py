@@ -6,6 +6,7 @@ import datetime, time
 from sqlalchemy import desc, and_, or_
 import qiniu
 import random
+import base64
 
 class Access(CustomerBaseHandler):
     def initialize(self, action):
@@ -245,7 +246,6 @@ class Market(CustomerBaseHandler):
         if not shop:
             return self.send_error(404)
         self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
-        self.set_cookie("shop_name", shop.shop_name.encode('utf-8'))
         self._shop_code = shop.shop_code
         if not self.session.query(models.CustomerShopFollow).filter_by(
                 customer_id=self.current_user.id, shop_id=shop.id).first():
@@ -267,7 +267,7 @@ class Market(CustomerBaseHandler):
         return self.render("customer/home.html",
                            context=dict(fruits=fruits, dry_fruits=dry_fruits, menus=shop.menus, mgoods=mgoods,
                                         cart_count=cart_count, subpage='home', notices=notices, cart_fs=cart_fs,
-                                        cart_ms=cart_ms))
+                                        cart_ms=cart_ms, shop_name=shop.shop_name))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int")

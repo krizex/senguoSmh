@@ -15,6 +15,7 @@ from sqlalchemy import desc
 import datetime
 import qiniu
 from settings import *
+import requests
 
 class GlobalBaseHandler(BaseHandler):
 
@@ -398,9 +399,10 @@ class WxOauth2:
 
     @classmethod
     def get_userinfo(cls, code, mode):
-        access_token, openid = cls.get_access_token_openid(code, mode)
-        if not access_token:
+        data = cls.get_access_token_openid(code, mode)
+        if not data:
             return None
+        access_token, openid = data
         userinfo_url = cls.userinfo_url.format(access_token=access_token, openid=openid)
         try:            
             data = json.loads(
@@ -444,7 +446,7 @@ class WxOauth2:
             return None
         if "access_token" not in data:
             return None
-        return data["access_token"], data["openid"]
+        return (data["access_token"], data["openid"])
 
     @classmethod
     def get_jsapi_ticket(cls):
@@ -484,21 +486,11 @@ class WxOauth2:
 
     @classmethod
     def post_template_msg(cls):
-
-        postdata = urllib.parse.urlencode({
+        postdata = {
                "touser":"o5SQ5t3VW_4zFSYhrKghCiOfEojc",
                "template_id":"YDIcdYNMLKk3sDw_yJgpIvmcN5qz_2Uz83N7T9i5O3s",
                "url":"http://senguo.cc",
                "topcolor":"#FF0000",
-               # "data":{
-               #         "first": {
-               #         "value":"恭喜你店铺申请成功！",
-               #         "color":"#173177"},
-               #         "keyword1": "廖斯敏",
-               #         "keyword2": "18071143",
-               #         "keyword3": "2014年9月16日",
-               #         "remark": "欢迎再次申请！"
-               # }
                "data": {
                    "first": {
                        "value":"恭喜你购买成功！",
@@ -521,10 +513,7 @@ class WxOauth2:
                        "color":"#173177"
                    }
            }
-            })
-        postdata = postdata.encode('utf-8')
-
+            }
         access_token = cls.get_client_access_token()
-        res = urllib.request.urlopen(cls.template_msg_url.format(access_token=access_token), postdata)
-        data = json.loads(res.read().decode("utf-8"))
+        res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
         print(res)
