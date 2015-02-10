@@ -1,5 +1,7 @@
 p{margin-bottom:0px;}
 .info1{padding:5px;}
+.shop-logo{margin-right:-90px;}
+.info1 .info{padding-left:90px !important;}
 .info2{padding:10px;border-top:1px solid #f7f7f7;}
 .info2 li{padding:0px;border-right:1px solid #f3f3f3;}
 .info2 li:last-child{border-right:0px;}
