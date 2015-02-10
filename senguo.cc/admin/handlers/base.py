@@ -431,7 +431,7 @@ class WxOauth2:
         if mode == "kf": # 从PC来的登录请求
             token_url = cls.token_url.format(
                 code=code, appid=KF_APPID, appsecret=KF_APPSECRET)
-        elif mode == "mp":
+        else :
             token_url = cls.token_url.format(
                 code=code, appid=MP_APPID, appsecret=MP_APPSECRET)
         # 获取access_token
@@ -441,6 +441,8 @@ class WxOauth2:
         except Exception as e:
             Logger.warn("WxOauth2 Error", "获取access_token失败，注意是否存在攻击")
             traceback.print_exc()
+            return None
+        if "access_token" not in data:
             return None
         return data["access_token"], data["openid"]
 
