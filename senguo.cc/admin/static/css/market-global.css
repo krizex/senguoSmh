@@ -150,3 +150,12 @@ input[type=text]:focus{box-shadow:0px;border-color:#f7f7f8 !important;outline:no
 .b-radius0{border-radius:0px !important;}
 
 .cart_num{position:absolute;display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;top:8px;}
+
+* {-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;}
+.navbar-fixed-bottom{bottom:0;margin-bottom:0;border-width: 1px 0 0;position: fixed;right: 0;eft: 0;z-index: 1030;-webkit-transform: translate3d(0,0,0);-o-transform: translate3d(0,0,0);transform: translate3d(0,0,0);}
+.pull-left{float:left !important;}
+.pull-right{float:right !important;}
+.text-center{text-align:center;}
+.text-left{text-align:left;}
+.text-right{text-align:right;}
+.center-block{display:block;margin:0 auto;}
