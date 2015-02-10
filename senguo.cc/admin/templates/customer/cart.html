@@ -89,7 +89,7 @@
             <p class="text-center text-pink mincharge_intime" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"按时达"起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元</p>
             <p class="text-center text-pink mincharge_now" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"立即送"起送价金额<span class="mincharge">{{config.min_charge_now}}</span>元</p>
             <div class="send-time-choose clearfix center-block bg-white box-style">
-                <p class="text-left text-grey3 font14">收货时间</p>
+                <p class="text-left text-grey3 font14 m-b5">收货时间</p>
                 {% set active=''%}
                 {% set unactive=''%}
                 {% if periods %}
@@ -103,10 +103,10 @@
                     {% if config.ontime_on == True%}
                     <li data-id="2" class="{{active}} send-intime  list-group-item" data-config="{{config.ontime_on}}">
                         <a href="javascript:;" class="bg-white text-grey" id="sendInTime">
-                            <p class="top">
-                                <span class="font16 m-r5">按时达</span>
-                                <span class="font8">起送价：{{config.min_charge_on_time or 0}}元</span>
-                                <span class="font8">配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元</span>
+                            <p class="top line25">
+                                <span class="font16 m-r5 pull-left">按时达</span>
+                                <span class="font8 pull-left">起送价：{{config.min_charge_on_time or 0}}元</span>
+                                <span class="font8 pull-left">配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元</span>
                             </p>
                             <p class="text-grey9">订单将根据您选择的时间段送达</p>
                         </a>
@@ -115,10 +115,10 @@
                     {% if config.now_on == True%}
                     <li data-id="1" class="{{unactive}} send-now list-group-item" data-config="{{config.now_on}}">
                         <a href="javascript:;" class="bg-white text-grey" id="sendNow">
-                            <p class="top">
-                                <span class="font16 m-r5">立即送</span>
-                                <span class="font8">起送价：{{config.min_charge_now or 0}}元</span>
-                                <span class="font8">配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元</span>
+                            <p class="top line25">
+                                <span class="font16 m-r5 pull-left">立即送</span>
+                                <span class="font8 pull-left">起送价：{{config.min_charge_now or 0}}元</span>
+                                <span class="font8 pull-left">配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元</span>
                             </p>
                             <p class="text-grey9">订单将在30分钟内送到您的手上，请保持电话畅通</p>
                         </a>
@@ -133,7 +133,7 @@
                 </ul>
                 <ul id="sendPeriod" class="send_period list-group  font12">
                     {% for period in periods%}
-                    <li data-id="{{period.id}}" class="list-group-item clearfix available">
+                    <li data-id="{{period.id}}" class="list-group-item clearfix available line50 height50">
                         <a href="javascript:;" class="text-grey clearfix">
                             <span class="text-grey3 pull-left set-inl-blo period_name">{{period.name}}</span>
                              <span class="pull-left">
@@ -158,7 +158,7 @@
                              <li class="btn text-green text-center bg-white pull-left" data-id="5">5元</li>
                          </ul>
                      </li>-->
-                    <li class="font14">
+                    <li class="font14 clearfix line50 height50">
                         送货时间：
                         <span class="now_startime">{{config.start_time_now}}</span>~
                         <span class="now_endtime">{{config.end_time_now}}</span>
@@ -167,12 +167,12 @@
                 {% end %}
             </div>
             <div class="send-address-choose clearfix center-block bg-white box-style">
-                <p class="text-grey3 font14">收货人地址</p>
-                <ul id="addressType" class="address_list list-group type-choose font12">
+                <p class="text-grey3 font14 m-b5">收货人地址</p>
+                <ul id="addressType" class="address_list list-group type-choose font12 m-b5 clearfix">
                     {% for address in current_user.addresses%}
-                    <li data-id="{{address.id}}" class="list-group-item clearfix item">
+                    <li data-id="{{address.id}}" class="list-group-item clearfix item height50">
                         <a href="javascript:;" class="text-grey3 pull-left address">
-                            <p class="m0">
+                            <p class="mt5">
                                 <span class="phone">{{address.phone}}</span>
                                 <span class="name pr10">{{address.receiver}}</span>
                             </p>
@@ -183,7 +183,7 @@
                     {% end %}
                 </ul>
                 <p class="clearfix"><a class="text-green pull-right to-add-address font12 m-r10">+添加</a></p>
-                <div class="address-box hidden center-block font12">
+                <div class="address-box hidden center-block font12 p">
                     <p>
                         <span class="tit set-inl-blo pull-left">姓名：</span>
                         <input type="text" placeholder="输入收货人姓名" class="input-sty bg-white pull-left" id="receiveName"/>
@@ -205,18 +205,18 @@
             </div>
             <div class="send-address-choose clearfix center-block bg-white box-style">
                 <p class="clearfix">
-                    <span class="pull-left text-grey3 font14">支付方式</span>
+                    <span class="pull-left text-grey3 font14 m-b5">支付方式</span>
                     <a href="#" class="text-green pull-right font12 m-r10">充值</a>
                     <span class="pull-right pr10 font12">账户余额：{{current_user.balance}}元</span>
                 </p>
                 <ul id="payType" class="pay_type list-group type-choose font12">
-                    <li data-id="1" class="active list-group-item clearfix">
+                    <li data-id="1" class="active list-group-item clearfix line50 height50">
                         <a href="javascript:;" class="text-grey">
                             <span class="text-grey3 pull-left title set-inl-blo">货到付款</span>
                             <span class="pull-left">送货员送货时交付现金</span>
                         </a>
                     </li>
-                    <li data-id="2" class="list-group-item clearfix">
+                    <li data-id="2" class="list-group-item clearfix line50 height50">
                         <a href="javascript:;" class="text-grey">
                             <span class="text-grey3 pull-left title set-inl-blo">余额支付</span>
                             <span class="pull-left">提前支付</span>
@@ -229,7 +229,7 @@
         </div>
         <div class="bottom-line"></div>
     </div>
-    <img src="{{static_url('images/half.png')}}" class="little_pear"/>
+    <img src="{{static_url('svg/half.svg')}}" class="little_pear"/>
 {% end %}
 {% block bottom %}
 <script src="{{static_url('js/market-cart.js')}}"></script>

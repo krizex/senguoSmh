@@ -7,7 +7,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta charset="UTF-8"/>
     <title>{% block title%} {% end %}</title>
-    <link rel="stylesheet" href="{{static_url('css/bootstrap.min.css')}}"/>
     <link rel="stylesheet" href="{{static_url('css/market-global.css')}}"/>
     <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
@@ -37,26 +36,26 @@
 {% end %}
     <div class="bottom-nav navbar-fixed-bottom font14">
         <ul class="row select-list">
-            <li class="col-xs-3 col-sm-3 {{shop_active}}">
+            <li class="w25 pull-left {{shop_active}}">
                 <a href="{{reverse_url('customerShopProfile')}}" class="text-grey shop_href home">
                     <em></em>
                     <p>店铺</p>
                 </a>
             </li>
-            <li class="col-xs-3 col-sm-3 {{home_active}}">
+            <li class="w25 pull-left {{home_active}}">
                 <a href="{{reverse_url('Market',handler.shop_code)}}" class="text-grey goods" >
                     <em></em>
                     <p>商品</p>
                 </a>
             </li>
-            <li class="col-xs-3 col-sm-3 {{cart_active}} cart_item">
+            <li class="w25 pull-left {{cart_active}} cart_item">
                 <a href="{{reverse_url('customerCart')}}" class="text-grey cart" >
                     <em></em>
                     <span class="cart_num bg-pink text-white" style="display:none">0</span>
                     <p>果篮</p>
                 </a>
             </li>
-            <li class="col-xs-3 col-sm-3 {{center_active}}">
+            <li class="w25 pull-left {{center_active}}">
                 <a href="{{reverse_url('customerHome')}}" class="text-grey my">
                     <em></em>
                     <p>我的</p>
