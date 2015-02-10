@@ -2,15 +2,15 @@
 {% block head %}<link rel="stylesheet" href="{{static_url('css/market-shop.css')}}"/>{% end %}
 {% block content %}
 <div class="rainshed_green text-center font18 text-white fix-title">店铺详情</div>
- <div class="info1 bg-white clearfix mt42 pt10">
-     <div class="col-xs-3 col-sm-3 col-md-2 col-lg-2 shop-logo p5 m-r10">
+ <div class="info1 bg-white clearfix mt42 pt20">
+     <div class="shop-logo pull-left">
          <img src="{{shop.shop_trademark_url or static_url('design_img/TDSG.png')}}">
      </div>
-     <div class="col-xs-8 col-sm-8 col-md-10 col-lg-10 p5">
+     <div class="info set-w100-fle">
         <p class="font16">{{shop.shop_name}}</p>
-        <p class="font12">店铺号：<span class="">{{shop.shop_code}}</span></p>
+        <p class="font12 mt5 m-b5">店铺号：<span class="">{{shop.shop_code}}</span></p>
      </div>
-     <div class="col-xs-8 col-sm-8 col-md-10 col-lg-10 p5">
+     <div class="info set-w100-fle">
          <div class="level-box btn text-green3 font9 border-ca w49 p0">
              <p><em class="set-inl-blo text-white text-center">1</em>初来乍到</p>
          </div>

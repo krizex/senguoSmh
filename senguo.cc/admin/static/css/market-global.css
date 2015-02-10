@@ -100,7 +100,7 @@ input{border:none;}
 .radius0{border-radius:0px !important;}
 
 .message-box{position:relative;top:30%;overflow:auto;width:95%;max-width:500px;margin:auto;background-color:#fcfcfc;padding:1px;margin-top:-160px;padding-bottom:15px;border-radius:8px;box-shadow:0 0 8px #747474;overflow:hidden}
-.message-box .bg-header{background:url('../svg/rainshed2_1.svg') repeat-x;height:46px;}
+.message-box .bg-header{background:url('../svg/rainshed2_2.svg') repeat-x;height:46px;}
 .message-box h1{font-size:large}
 .message-box h1 span{color:#fe6565;margin-right:4px;margin-left:-20px;font-size:40px}
 .message-box p{color:#777}
@@ -122,6 +122,7 @@ input{border:none;}
 .pl5{padding-left:5px !important;}
 .pt5{padding-top:5px !important;}
 .pt10{padding-top:10px !important;}
+.pt20{padding-top:20px !important;}
 .pt36{padding-top:36px !important;}
 
 .back-to-top{width:30px;height:30px;line-height:30px;position:fixed;right:0;bottom:60px;}
@@ -132,7 +133,7 @@ input{border:none;}
 .detail-header .title{padding-left:2em;}
 
 .border-c{border:1px solid #ccc;}
-.rainshed{background:url('../svg/rainshed2_1.svg') repeat-x;height:42px;line-height:42px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;}
+.rainshed{background:url('../svg/rainshed2_2.svg') repeat-x;height:42px;line-height:42px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;}
 .rainshed2{background:url('../svg/rainshed1_1.svg') repeat-x;height:42px;line-height:42px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;}
 .rainshed_green{background:url('../svg/rainshed_green_1.svg') repeat-x;height:42px;line-height:36px;width:100%;max-width:800px;}
 
