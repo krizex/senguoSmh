@@ -12,7 +12,7 @@
      </div>
      <div class="info set-w100-fle">
          <div class="level-box btn text-green3 font9 border-ca w49 p0">
-             <p><em class="set-inl-blo text-white text-center">1</em>初来乍到</p>
+             <p class="font14"><em class="set-inl-blo text-white text-center">1</em>初来乍到</p>
          </div>
          {% set sign_bg='' %}
          {% set sign_text='' %}
@@ -32,61 +32,61 @@
          {% else %}
             {% set sign_text='店铺签到' %}
          {% end %}
-         <a href="javascript:;" class="btn text-green3 font9 border-ca pull-right w49 sign-box p0 {{sign_bg}} {{sign_show}} {{sign_color}}" id="signin-shop"><em class="set-inl-blo"></em><span class="sign_text">{{sign_text}}</span></a>
+         <a href="javascript:;" class="btn text-green3 font9 border-ca pull-right w49 sign-box p0 {{sign_bg}} {{sign_show}} {{sign_color}} font14" id="signin-shop"><em class="set-inl-blo"></em><span class="sign_text">{{sign_text}}</span></a>
          <a href="javascript:;" class="btn text-white bg-pink font9 border-ca pull-right w49 sign-box p0 {{follow_show}}" id="focus-shop">+店铺关注</a>
      </div>
  </div>
- <ul class="info2 text-center bg-white clearfix font12">
-     <li class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+ <ul class="info2 text-center bg-white set-w100-fle font12 m-b10">
+     <li class="w25 pull-left">
         <p class="text-grey6">运营时间</p>
         <p>{{operate_days or 0}}天</p>
      </li>
-     <li class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+     <li class="w25 pull-left">
          <p class="text-grey6">粉丝</p>
          <p>{{fans_sum or 0}}个</p>
      </li>
-     <li class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+     <li class="w25 pull-left">
          <p class="text-grey6">总订单数</p>
          <p>{{order_sum}}个</p>
      </li>
-     <li class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+     <li class="w25 pull-left">
          <p class="text-grey6">商品种类</p>
          <p>{{goods_sum or 0}}种</p>
      </li>
  </ul>
-<div class="shop-box bg-white">
-    <p class="title font14">店铺信息：</p>
+<div class="shop-box bg-white clearfix">
+    <p class="title font14 clearfix">店铺信息：</p>
     <ul class="shop-info text-grey6 font14">
-        <li>位置：{{address}}</li>
-        <li>配送区域：{{shop.deliver_area or '无'}}<!--<em class="area-icon set-inl-blo pull-right"></em>--></li>
-        <li>联系电话：{{shop.admin.accountinfo.phone}}<a href="tel:{{shop.admin.accountinfo.phone}}" class="pull-right"><em class="phone-icon set-inl-blo "></em></a></li>
-        <li class="clearfix"><span class="pull-left">店铺简介：</span><span class="pull-left set-inl-blo w8">{{shop.shop_intro or '无'}}</span></li>
+        <li class="set-w100-fle">位置：{{address}}</li>
+        <li class="set-w100-fle">配送区域：{{shop.deliver_area or '无'}}<!--<em class="area-icon set-inl-blo pull-right"></em>--></li>
+        <li class="set-w100-fle">联系电话：{{shop.admin.accountinfo.phone}}<a href="tel:{{shop.admin.accountinfo.phone}}" class="pull-right"><em class="phone-icon set-inl-blo "></em></a></li>
+        <li class="set-w100-fle"><span class="pull-left">店铺简介：</span><span class="pull-left set-inl-blo w8">{{shop.shop_intro or '无'}}</span></li>
     </ul>
 </div>
 <div class="shop-box bg-white clearfix">
-    <p class="title clearfix">
+    <p class="title set-w100-fle">
         <span class="pull-left font14">店铺成员（{{len(headimgurls)}}）：</span>
         <a href="{{reverse_url('customerMembers')}}" class="pull-right text-grey9 font12 m-r5">查看更多>></a>
         <a href="#" class="staff_href pull-right text-green3 pr10 font12">+加入该店</a>
     </p>
-    <ul class="staff-img clearfix">
+    <ul class="staff-img set-w100-fle">
         {% for staff_img in headimgurls %}
         <li class="pull-left"><img src="{{staff_img[0]}}"></li>
         {% end %}
     </ul>
 </div>
 <div class="shop-box bg-white clearfix">
-    <p class="title clearfix">
+    <p class="title set-w100-fle">
         <span class="pull-left font14">店铺评价（{{comment_sum}}）：</span>
         <a href="{{reverse_url('customerComment')}}?page=0" class="pull-right text-grey9 font12 m-r5">查看更多>></a>
     </p>
-    <ul class="user-comment">
+    <ul class="user-comment clearfix">
         {% for comment in comments %}
         <li class="comment-item set-w100-fle">
-            <div class="img-box col-sm-2 col-xs-2 col-md-2 col-lg-1 p0">
+            <div class="img-box pull-left">
                 <img src="{{comment[0]}}" class="img">
             </div>
-            <div class="col-sm-10 col-xs-10 col-md-10 col-lg-11 p0">
+            <div class="con set-w100-fle">
                 <p class="clearfix text-grey">
                     <span class="pull-left m-b5 font14">{{comment[1]}}</span>
                     <span class="pull-right">{{handler.timedelta(comment[3])}}</span>

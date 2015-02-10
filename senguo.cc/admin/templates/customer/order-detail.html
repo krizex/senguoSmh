@@ -21,14 +21,14 @@
 {% set fruits=eval(order.fruits)%}
 {% set mgoods=eval(order.mgoods)%}
 <section class="main-container bg-white pt36 mt10">
-    <header class="head-title clearfix">
+    <header class="head-title set-w100-fle pr10">
         <div class="circle-icon pull-left bg-green img-circle" >
             <img src="{{static_url('images/order-icon.png')}}" alt="￥" />
         </div>
-        <h4 class="pull-left">订单详情</h4>
+        <h3 class="pull-left">订单详情</h3>
         <span class="order-status bg-green text-white pull-right font14">{{order.status}}</span>
     </header>
-    <hr />
+    <hr class="clearfix"/>
     <div class="data-box" >
         <div class="content" >
             <p>订单编号：<span>{{order.num}}</span></p>
@@ -43,9 +43,9 @@
             <input type="hidden" value="{{order.create_date.month}}" class="create_month"/>
             <input type="hidden" value="{{order.create_date.day}}" class="create_day"/>
             <input type="hidden" value="{{order.today}}" class="send_day"/>
-            <ul class="goods-list">
+            <ul class="goods-list set-w100-fle">
                 {% for charge_type in  charge_types%}
-                <li class="orderview-goods-item {{charge_type.fruit.fruit_type.code}}">
+                <li class="orderview-goods-item {{charge_type.fruit.fruit_type.code}} set-w100-fle">
                     <div class="icon-container">
                         {% if charge_type.fruit.img_url%}
                         <img src="{{charge_type.fruit.img_url}}?imageView/1/w/100/h/100" class="icon"/>
@@ -55,17 +55,17 @@
                     </div>
                     <div class="content-list-wrapper">
                         <ul class="content-list bg">
-                            <li class="l1" >
+                            <li class="l1 set-w100-fle">
                                 <span class="name color">{{fruits[charge_type.id]['fruit_name']}}</span>
                             </li>
-                            <li class="l2" >
+                            <li class="l2 set-w100-fle" >
                                 <span class="charge">{{fruits[charge_type.id]['charge']}}</span>
                                 <span class="number-box color" >
                                     <span class="number">{{fruits[charge_type.id]['num']}}</span>
                                     <span class="bundle">x1</span>
                                 </span>
                             </li>
-                            <li class="l3 color" >
+                            <li class="l3 color set-w100-fle">
                                 <div class="circle-icon bg-color text-center" >
                                     <img src="{{static_url('images/money-icon.png')}}" alt="￥" />
                                 </div>
@@ -76,7 +76,7 @@
                 </li>
                 {% end %}
                 {% for mcharge_type in mcharge_types%}
-                <li class="orderview-goods-item TDSG" >
+                <li class="orderview-goods-item TDSG set-w100-fle" >
                     <div class="icon-container">
                         {% if mcharge_type.mgoods.img_url%}
                         <img src="{{mcharge_type.mgoods.img_url}}?imageView/1/w/100/h/100" class="icon"/>
@@ -86,17 +86,17 @@
                     </div>
                     <div class="content-list-wrapper">
                         <ul class="content-list bg">
-                            <li class="l1" >
+                            <li class="l1 set-w100-fle" >
                                 <span class="name color">{{mgoods[mcharge_type.id]['mgoods_name']}}</span>
                             </li>
-                            <li class="l2" >
+                            <li class="l2 set-w100-fle" >
                                 <span class="charge">{{mgoods[mcharge_type.id]['charge']}}</span>
                                 <span class="number-box color" >
                                     <span class="number">{{mgoods[mcharge_type.id]['num']}}</span>
                                     <span class="bundle">x1</span>
                                 </span>
                             </li>
-                            <li class="l3 color" >
+                            <li class="l3 color set-w100-fle" >
                                 <div class="circle-icon bg-color text-center" >
                                     <img src="{{static_url('images/money-icon.png')}}" alt="￥" />
                                 </div>
@@ -107,7 +107,7 @@
                 </li>
                 {% end %}
             </ul>
-            <p class="total-price" >
+            <p class="total-price clearfix" >
                 合计：
                 <span data-id="total-price">{{order.totalPrice}}</span>元
                 <!--<span data-id="includeFreight">

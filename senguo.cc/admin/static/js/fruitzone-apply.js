@@ -2,6 +2,8 @@ $(document).ready(function(){
     $('.count-list li').on('click',function(){
         var $this=$(this);
         $this.addClass('active').parents('.count-box').addClass('hidden').siblings('.apply-info').removeClass('hidden');
+        $this.find('.check').removeClass('hidden');
+        $this.siblings('li').removeClass('active').find('.check').addClass('hidden');
     });
     $('#back').on('click',function(){
         $('.apply-info').addClass('hidden');

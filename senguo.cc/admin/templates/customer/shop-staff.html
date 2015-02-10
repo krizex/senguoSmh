@@ -6,13 +6,13 @@
       {% for member in member_list%}
       <li class="staff-item bg-white clearfix">
           <div class="staff-info set-w100-fle">
-              <div class="col-lg-8 col-md-8 col-xs-8 col-sm-8 p0">
+              <div class="set-w100-fle p0">
                   <div class="pull-left img">
                       <img src="{{member['img']}}">
                   </div>
                   <div class="pull-left p010">
                       <p>{{member['name']}}</p>
-                      <p>出生年月：{{member['birthday']}}</p>
+                      <p class="mt5 m-b5">出生年月：{{member['birthday']}}</p>
                       <p>职位：{{member['work']}}</p>
                   </div>
               </div>
@@ -21,8 +21,8 @@
               <!--</div>-->
           </div>
           <ul class="staff-info set-w100-fle">
-              <li>手机号：{{member['phone']}}</li>
-              <li>微信号：{{member['wx_username']  or '无'}}</li>
+              <li class="set-w100-fle">手机号：{{member['phone']}}</li>
+              <li class="set-w100-fle">微信号：{{member['wx_username']  or '无'}}</li>
               <!--<li>QQ：8888888</li>-->
           </ul>
       </li>

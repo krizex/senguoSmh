@@ -1,4 +1,5 @@
 {% extends 'base.html'%}
+{% block title%}水果商城免费接入申请{% end %}
 {% block head%}
 <link rel="stylesheet" href="{{static_url('css/fruitzone-apply.css')}}"/>
 {% end %}
@@ -18,13 +19,14 @@
     </div>
     <div class="count-list-box center-block">
         <ul class="count-list" id="realShop">
-            <li data-id="2">
+            <li data-id="2" class="active">
                 <img src="{{static_url('images/pear1.png')}}" class="pear_img"/>
                 <div class="word bg-green">
                     <p class="text-yellow font16">没有卖过水果想尝试</p>
                     <p class="text-white font14">我们为您提供从采购到配送全流程</p>
                     <p class="text-white font14">的帮助指导</p>
                 </div>
+                <span class="check text-white">✓</span>
             </li>
             <li data-id="1">
                 <img src="{{static_url('images/pear2.png')}}" class="pear_img"/>
@@ -32,6 +34,7 @@
                     <p class="text-yellow font16">已有实体店，并在经营中</p>
                     <p class="text-white font14">我们满足您线上水果的一切技术需求</p>
                 </div>
+                <span class="check text-white hidden">✓</span>
             </li>
             <li data-id="0">
                 <img src="{{static_url('images/pear3.png')}}" class="pear_img"/>
@@ -40,6 +43,7 @@
                     <p class="text-white font14">这里有来自天南地北的同行</p>
                     <p class="text-white font14">一起交流探讨</p>
                 </div>
+                <span class="check text-white hidden">✓</span>
             </li>
         </ul>
     </div>
@@ -52,12 +56,14 @@
     <p class="font16 mb0 line40">店铺信息</p>
     <hr/>
     <div class="clearfix mt10">
-        <span class="title line40 pull-left font14">店铺名称*</span>
-        {% if "reApply" in context and context["reApply"] %}
-        <input type="text" class="input-box pull-left" id="shopName" value="{{shop.shop_name or ''}}"/>
-        {% else %}
-        <input type="text" class="input-box pull-left" id="shopName" placeholder="请不要超过20个字"/>
-        {% end %}
+        <span class="title line40 pull-left font14 shop_name pull-left">店铺名称*</span>
+        <div class="name_con pull-left">
+            {% if "reApply" in context and context["reApply"] %}
+            <input type="text" class="input-box pull-left" id="shopName" value="{{shop.shop_name or ''}}"/>
+            {% else %}
+            <input type="text" class="input-box pull-left" id="shopName" placeholder="请不要超过20个字"/>
+            {% end %}
+        </div>
     </div>
     <!--<p class="title">店铺logo<small class="text-red">(部分手机浏览器会出现图像无法上传，建议申请成功后进入个人中心的店铺管理页面再进行图片上传！)</small>：</p>
     {% if "reApply" in context and context["reApply"] %}
@@ -106,8 +112,8 @@
     {% else %}
     <textarea class="shop-intro" id="shopIntro" placeholder="输入您的店铺简介,请不要超过300个字"></textarea>
     {% end %}
-    <p class="title">服务区域</p>
-    <ul class="area-select  area-choose-list row" id="serverArea">
+    <p class="title font14">服务区域*</p>
+    <ul class="area-select  area-choose-list row font14" id="serverArea">
         <li class="bg-grey5 active"  data-id="1"><a href="javascript:;" class="text-grey3">高校</a></li>
         <li class="bg-grey5" data-id="2"><a href="javascript:;" class="text-grey3">社区</a></li>
         <li class="bg-grey5" data-id="4"><a href="javascript:;" class="text-grey3">商圈</a></li>
@@ -131,13 +137,15 @@
         <input type="text" class="input-box pull-left" id="wx_Name" placeholder="输入您的微信号码"/>
         {% end %}
     </div>
-    <p class="mt10">*您的个人信息仅用作店铺审核使用，我们将严格保密</p>
-    <input type="submit" value="上一步" class="btn text-green border-green white-color center-block w80 mb10" id="back"/>
+    <p class="mt10 text-center">*您的个人信息仅用作店铺审核使用，我们将严格保密</p>
     {% if "reApply" in context and context["reApply"] %}
-    <input type="submit" value="提交申请" class="btn text-green border-green white-color center-block w80" id="submitReapply"/>
+    <input type="submit" value="提交申请" class="btn text-green border-green white-color center-block w80 font16" id="submitReapply"/>
     {% else %}
-    <input type="submit" value="提交申请" class="btn text-green border-green white-color center-block w80" id="submitApply"/>
+    <input type="submit" value="提交申请" class="btn text-green border-green white-color center-block w80 font16" id="submitApply"/>
     {% end %}
+    <p class="text-center">
+        <a class="text-grey9 white-color mb10 mt10 center-block" id="back">←返回上一步</a>
+    </p>
 </div>
     <!--<p class="title">是否接入森果后台系统：<a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200343770&idx=1&sn=1230c48bb781da7d7e63d5dc804cbf10#rd" class="to-know">了解一下</a></p>-->
 
