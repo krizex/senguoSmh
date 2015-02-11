@@ -485,35 +485,24 @@ class WxOauth2:
             return None
 
     @classmethod
-    def post_template_msg(cls):
+    def post_template_msg(cls, touser, shop_name, name, phone):
+        time = datetime.datetime.now().strftime('%Y-%m-%d %R')
         postdata = {
-               "touser":"o5SQ5t3VW_4zFSYhrKghCiOfEojc",
-               "template_id":"YDIcdYNMLKk3sDw_yJgpIvmcN5qz_2Uz83N7T9i5O3s",
-               "url":"http://senguo.cc",
-               "topcolor":"#FF0000",
-               "data": {
-                   "first": {
-                       "value":"恭喜你购买成功！",
-                       "color":"#173177"
-                   },
-                   "keyword1":{
-                       "value":"巧克力",
-                       "color":"#173177"
-                   },
-                   "keyword2": {
-                       "value":"39.8元",
-                       "color":"#173177"
-                   },
-                   "keyword3": {
-                       "value":"2014年9月16日",
-                       "color":"#173177"
-                   },
-                   "remark":{
-                       "value":"欢迎再次购买！",
-                       "color":"#173177"
-                   }
-           }
-            }
+            "touser": touser,
+            "template_id": "YDIcdYNMLKk3sDw_yJgpIvmcN5qz_2Uz83N7T9i5O3s",
+            "url": "http://senguo.cc",
+            "topcolor": "#FF0000",
+            "data": {
+                "first": {"value": "您好，您所申请的店铺“%s”已经通过审核！" % shop_name, "color": "#173177"},
+                "keyword1": {"value": name, "color": "#173177"},
+                "keyword2": {"value": phone, "color": "#173177"},
+                "keyword3": {"value": time, "color": "#173177"},
+                "remark": {"value": "欢迎使用森果平台！", "color": "#66CD00"}}
+        }
         access_token = cls.get_client_access_token()
         res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
-        print(res)
+        data = json.loads(res.read().decode("utf-8"))
+        if data["errcode"] != 0:
+            print("店铺审核模板消息发送失败：", data)
+            return False
+        return True
