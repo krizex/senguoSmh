@@ -610,6 +610,7 @@ function addEditFruit(target,action){
         }
     if(!saled){saled=0;}
     if(!storage){storage=0}
+    if(!tag){tag=1}
     if(!priority){priority=5}
     if(!intro){intro='';}
     if(!name){return alert('请输入商品名称！');}
