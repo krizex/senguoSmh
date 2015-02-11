@@ -1,4 +1,4 @@
-from handlers.base import SuperBaseHandler
+from handlers.base import SuperBaseHandler, WxOauth2
 import dal.models as models
 import tornado.web
 import time, datetime
@@ -200,6 +200,9 @@ class ShopManage(SuperBaseHandler):
             self.session.add(shop)
             shop_temp.shop_status = 3
             self.session.commit()
+            account_info = self.session.query(models.Accountinfo).get(shop_temp.admin_id)
+            WxOauth2.post_template_msg(account_info.wx_openid, shop_temp.shop_name,
+                                       account_info.realname, account_info.phone)
         return self.send_success()
 
 class Feedback(SuperBaseHandler):

@@ -456,7 +456,7 @@ class Cart(CustomerBaseHandler):
             else:return self.send_fail("余额不足")
 
         count = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
-        num = str(shop_id) + str(count)
+        num = str(shop_id) + '%05d' % count
         order = models.Order(customer_id=self.current_user.id,
                              shop_id=shop_id,
                              num=num,
