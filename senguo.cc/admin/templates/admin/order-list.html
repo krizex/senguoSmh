@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}订单管理{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-order.css')}}"/>{% end %}
+{% block content %}
+{% import json %}
+<script>
+    window.dataObj.order={% raw json.dumps(data) %}
+</script>
+<ul class="order-list-content set-width-float">
+</ul>
+{% end %}
+{% block bottom %}<script src="{{static_url('js/admin-user-order.js')}}"></script>{% end %}

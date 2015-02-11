@@ -914,7 +914,7 @@ class UserOrder(AdminBaseHandler):
                 d['mgoods'] = eval(d['mgoods'])
                 d['create_date'] = order.create_date.strftime('%Y-%m-%d %R')
                 data.append(d)
-            return self.send_success(data=data)
+            return self.render("admin/order-list.html", data=data, context=dict(subpage='user'))
 
 class Config(AdminBaseHandler):
     @tornado.web.authenticated
