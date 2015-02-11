@@ -6,7 +6,7 @@
 {% block content %}
     <div class="rainshed2 text-center font18 text-white"></div>
     <div class="user-info box-style bg-white m-b10 clearfix font16 text-center mt42 p0">
-        <img src="{{static_url('images/rooftop.jpg')}}" class="bg"/>
+        <img src="{{static_url('images/rooftop.png')}}" class="bg"/>
         <a href="{{reverse_url('customerProfile')}}" class="user-img text-grey3">
             <img src="{{current_user.accountinfo.headimgurl}}" class="img img-circle"/>
             <div class="info">
@@ -27,25 +27,25 @@
             <a href="{{reverse_url('customerOrder')}}?action=all" class="text-grey9 pull-right font12">查看全部订单>></a>
         </p>
         <ul class="center-nav row text-center m-b0 clearfix font12 center-block box-style">
-            <li class="w25 pull-left prl0">
+            <li class="w25 pull-left prl0 m-b10">
                 <a href="{{reverse_url('customerOrder')}}?action=unhandled">
                     <p class="text-grey3">未处理</p>
                     <p class="text-pink">{{count[3]}}</p>
                 </a>
             </li>
-            <li class="w25 pull-left prl0">
+            <li class="w25 pull-left prl0 m-b10">
                 <a href="{{reverse_url('customerOrder')}}?action=waiting">
                     <p class="text-grey3">待收货</p>
                     <p class="text-pink">{{count[4]}}</p>
                 </a>
             </li>
-            <li class="w25 pull-left prl0">
+            <li class="w25 pull-left prl0 m-b10">
                 <a href="{{reverse_url('customerOrder')}}?action=finish">
                     <p class="text-grey3">已送达</p>
                     <p class="text-grey2">{{count[5]}}</p>
                 </a>
             </li>
-            <li class="w25 pull-left prl0">
+            <li class="w25 pull-left prl0 m-b10">
                 <a href="#">
                     <p class="text-grey3">售后订单</p>
                     <p class="text-pink">{{count[6]}}</p>

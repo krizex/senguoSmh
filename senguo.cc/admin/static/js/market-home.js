@@ -13,19 +13,16 @@ $(document).ready(function(){
     //分类显示
     var top_title=$('.top-title');
     $('.choose-classify').on('click',function(){
+        var $this=$(this);
+        $this.find('.icon').toggle();
         $('.goods-class-choose').slideToggle(100);
     });
     $('.goods-class-choose li').on('click',function(){
         $('.goods-class-choose').slideUp(100);
     });
     //分类导航置顶
-    var fruit_dist=$('#fruitPosition').offset().top;
-    $(window).scroll(function(){
+    /*$(window).scroll(function(){
         var wind_dist=$(window).scrollTop();
-        if(wind_dist>=fruit_dist){
-            top_title.addClass('fix-sty');
-        }
-        else top_title.removeClass('fix-sty');
         //分类滚动监听
         var box=$('.classify-title');
         for(var i=0;i<box.length;i++){
@@ -33,15 +30,14 @@ $(document).ready(function(){
             var classify=box[i].innerHTML;
             if(wind_dist>=dist){top_title.find('.classify').text(classify);}
         }
-    });
+    });*/
     //分类选择
     $('.goods-class-choose li').hammer().on('tap',function(){
         var $this=$(this);
         var g_class=$this.data('class');
-        var text=$this.text();
         var top=$('#'+g_class+'').offset().top;
         $('html, body').animate({scrollTop:top}, 50);
-        top_title.find('.classify').text(text);
+        //top_title.find('.classify').text(text);
     });
     //售完状态
     $('.goods-list-item').each(function(){

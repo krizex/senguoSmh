@@ -5,7 +5,10 @@ $(document).ready(function(){
         var id=$this.data('id');
         unitText($this,id);
     });
-    $('#backTop').on('click',function(){$(document).scrollTop(0)});
+    $('#backTop').on('click',function(){
+        $('body','html').animate({'scrollTop':0},100);
+        $('.little_pear').css({'right':'-40px'});
+    });
     //从cookie中提取数据
     shop_id=getCookie('market_shop_id');
     shop_name=getCookie('shop_name');
@@ -17,7 +20,18 @@ $(document).ready(function(){
     }
     //设置title
     //document.title=$.base64Decode(shop_name)+'一家不错的水果O2O店铺，快来关注吧~';
-
+    //置顶监听
+    $(window).on('scroll',function(){
+        var $this=$(this);
+        var clientHeight=$this.height();
+        var scrollTop=document.body.scrollTop||document.documentElement.scrollTop;
+        if(!$this.is(":animated")){
+            if(scrollTop>=clientHeight){
+                $('.little_pear').animate({'right':'0px'},50);
+            }
+            else $('.little_pear').animate({'right':'-40px'},5);
+        }
+    });
 });
 var shop_href='/customer/shopProfile';
 var market_href='/shop/none';

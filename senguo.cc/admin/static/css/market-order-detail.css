@@ -4,7 +4,7 @@ hr{margin:10px 0;}
 #reorder-btn{float:none}
 .data-box .content{padding:0 10px}
 .data-box .total-price{font-size:15px;font-weight:bold;color:#fe6565}
-.data-box p{margin:10px;font-size:small}
+.data-box p{margin:10px !important;font-size:small}
 .plan-item .i5 p{top:0;left:-1px;right:auto;font-size:22px;margin:0}
 .plan-item .i6 p{top:8px;font-size:15px;margin:0}
 .head-title{margin:5px 10px;}
@@ -17,19 +17,19 @@ hr{margin:10px 0;}
 .orderview-goods-item:last-child{border:none}
 .orderview-goods-item .charge{font-size:small;color:#888}
 .orderview-goods-item .circle-icon{float:left;width:18px;height:18px;border-radius:11px;margin-right:5px}
-.orderview-goods-item .circle-icon img{width:8.8px;position:relative;top:2px}
+.orderview-goods-item .circle-icon img{width:8.8px;position:relative;top:1px}
 .orderview-goods-item .icon-container{display:inline-block;position:absolute;left:0;z-index:10}
 .orderview-goods-item .icon-container img{width:60px;}
-.orderview-goods-item .content-list-wrapper{display:inline-block;width:100%}
+.orderview-goods-item .content-list-wrapper{display:inline-block;width:100%;height:60px;overflow:hidden;}
 .orderview-goods-item .content-list-wrapper .content-list{margin-left:63px;padding:0;padding-left:10px}
-.orderview-goods-item ul{height:70px}
-.orderview-goods-item li{height:21.333333333333332px}
-.orderview-goods-item span{display:inline-block;margin-top:5px}
-.orderview-goods-item .name{margin-top:5px}
+.orderview-goods-item ul{height:60px}
+.orderview-goods-item li{height:20px}
+.orderview-goods-item span{display:inline-block;}
+.orderview-goods-item .name{margin:0px;}
 .orderview-goods-item .l3 span{margin-top:0}
 .orderview-goods-item .price{margin:0}
 .orderview-goods-item .number-box{position:relative;top:-10px;float:right;margin-right:10px}
-.orderview-goods-item .number-box .number{font-size:20px;text-shadow:0 1px 1px #888;float:left}
+.orderview-goods-item .number-box .number{font-size:20px;float:left}
 .orderview-goods-item .number-box .bundle{margin-top:9px;display:inline-block;width:40px}
 .orderview-goods-item .name{font-weight:normal}
 .orderview-goods-item .remove{position:absolute;right:8px;margin-top:8px}

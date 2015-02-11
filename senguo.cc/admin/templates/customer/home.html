@@ -36,28 +36,28 @@
     </div>
     {% if fruits %}
     <div class="no-mar-btom top-title">
-        <div class="inner rainshed_green text-white font16">
-            <a href="javascript:;"  class="text-white tit choose-classify">
-                <span>分类</span>
-                <em class="set-inl-blo pull-right"></em>
+        <div class="inner text-white rainshed_green font16">
+            <a href="javascript:;"  class="text-white tit choose-classify set-w100-fle">
+                <!--<span>分类</span>
+                <em class="set-inl-blo pull-right"></em>-->
+                <span class="classify text-center set-inl-blo">水果单品<em class="icon up" style="display:none;">︿</em><em class="icon down" >﹀</em></span>
             </a>
-            <span class="classify text-center set-inl-blo">水果单品</span>
         </div>
-        <ul class="font16 goods-class-choose type-choose clearfix" style="display:none">
+        <ul class="font16 goods-class-choose type-choose clearfix set-w100-fle" style="display:none">
             {% if fruits %}
-            <li class="text-green bg-pale-green set-w100-fle" data-class="fruitPosition">水果单品</li>
+            <li class="text-grey6 bg-white pull-left text-center" data-class="fruitPosition">水果单品</li>
             {% end %}
             {% if dry_fruits%}
-            <li class="text-green bg-pale-green set-w100-fle" data-class="dryFruitPosition">干果单品</li>
+            <li class="text-grey6 bg-white pull-left text-center" data-class="dryFruitPosition">干果单品</li>
             {% end %}
             {% for menu in menus %}
             {% if mgoods[menu.id] %}
-            <li class="text-green  bg-pale-green set-w100-fle" data-class="menu{{menu.id}}">{{menu.name}}</li>
+            <li class="text-grey6 bg-white pull-left text-center" data-class="menu{{menu.id}}">{{menu.name}}</li>
             {% end %}
             {% end %}
         </ul>
     </div>
-    <p class="text-white no-mar-btom classify-title font18 text-center bg-green" id="fruitPosition">水果单品</p>
+    <!--<p class="text-white no-mar-btom classify-title font18 text-center bg-green" id="fruitPosition">水果单品</p>-->
     <ul class="goods-list  fruit-list">
         {% for fruit in fruits %}
         {% set farrow_active=''%}

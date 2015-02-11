@@ -185,7 +185,7 @@ a:focus{border:none;background:none;outline:0;}
 .border-c{border:1px solid #ccc;}
 .rainshed{background:url('../svg/rainshed2_2.svg') repeat-x;height:45px;line-height:42px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;}
 .rainshed2{background:url('../svg/rainshed1_1.svg') repeat-x;height:45px;line-height:42px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;}
-.rainshed_green{background:url('../svg/rainshed_green_1.svg') repeat-x;height:45px;line-height:36px;width:100%;max-width:800px;}
+.rainshed_green{background:url('../svg/rainshed_green_1.svg') repeat-x;height:45px;line-height:36px;width:100%;max-width:800px;background-size:20px;}
 
 .desaturate{filter:grayscale(100%);-webkit-filter:grayscale(100%);-moz-filter:grayscale(100%);-ms-filter:grayscale(100%);-o-filter:grayscale(100%);filter: url('../svg/saturate.svg#greyscale');filter: grayscale(100%);filter:gray;filter: grayscale(1)}
 
@@ -200,4 +200,4 @@ a:focus{border:none;background:none;outline:0;}
 .b-radius0{border-radius:0px !important;}
 
 .cart_num{position:absolute;display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;top:8px;}
-
+.little_pear{position:fixed;z-index:9999;top:70%;right:-40px;display:inline-block;width:40px;height:49px;}

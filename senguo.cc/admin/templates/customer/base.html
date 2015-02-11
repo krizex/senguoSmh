@@ -67,9 +67,7 @@
     <div class="body-container">
         <div class="container phone-box">
             {% block content %}{% end %}
-            {% block toTop %}
-            <!--<a class="back-to-top set-inl-blo bg-green text-white text-center font14" id="backTop">Top</a>-->
-            {% end %}
+            <a id="backTop" class="little_pear"><img src="{{static_url('svg/half.svg')}}"/></a>
         </div>
     </div>
     {% block other %}{% end %}
