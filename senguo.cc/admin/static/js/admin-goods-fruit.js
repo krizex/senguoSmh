@@ -116,7 +116,7 @@ $(document).ready(function(){
     $('.goods-item-edit').find('.tag-list').each(function(){
         var $this=$(this);
         var n=$this.data('id');
-        for(var i=1;i<=n;i++)
+        for(var i=0;i<=n;i++)
             {
                 var tag=$this.find('a').eq(i);
                 if(tag.data('id')==n) tag.addClass('active');

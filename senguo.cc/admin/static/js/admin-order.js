@@ -89,7 +89,7 @@ $(document).ready(function(){
     $('.add-new-time').on('click',function(){//添加显示
         var max=$('.time-list').find('.time-list-item').length;
         if(max<5) {
-            $.getItem('/static/items/admin/add-period-item.html',function(data){
+            $.getItem('/static/items/admin/add-period-item.html?v=2015-0211',function(data){
                 var $item=$(data);
                 for(var i=0;i<=23;i++)
                 {

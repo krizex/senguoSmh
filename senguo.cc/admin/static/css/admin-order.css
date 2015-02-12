@@ -38,7 +38,7 @@
 .order-list-item .order-content .order-info input{border:1px solid #ccc;height:20px;text-indent:5px;}
 .order-list-item .order-content .order-info span{float:left;}
 .order-list-item .order-content .order-info .address{width:265px;}
-.order-list-item .order-content .order-info .name{width:75px;}
+.order-list-item .order-content .order-info .name{width:100px;}
 .order-list-item .order-content .order-info .phone{width:90px;}
 .order-list-item .order-content .fit-active{color:#42b649;}
 .order-list-item .order-content .fit-unactive{color:#ff6666;}
@@ -125,9 +125,10 @@
 .add-period{padding:8px 0 8px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;}
 .add-period .tit{margin-left:0;}
 .sure-btn{width:28px;height:28px;background:#44b549;border:none;margin-right:10px;line-height:28px;font-size:20px;}
-.concel-btn{display:inline-block;width:28px;height:28px;background:#999;border:none;}
+.concel-btn{display:inline-block;width:28px;height:28px;background:#999;border:none;line-height:28px;font-size:20px;}
 .period-name{border:1px solid #ccc;padding:3px 0;margin:0 10px;width:50px;height:28px;line-height:28px;}
 
+.select-btn .concel-btn{font-size:12px;}
 .add-period .period-name{width:80px;}
 
 .input-group-btn{width:50px;font-size:12px;float:left;}

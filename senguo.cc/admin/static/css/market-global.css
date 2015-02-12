@@ -12,7 +12,8 @@ input[type=text]:focus{box-shadow:0px;border-color:#f7f7f8 !important;outline:no
 * {-webkit-box-sizing: border-box;-moz-box-sizing:border-box;box-sizing:border-box;padding:0;margin:0;}
 .navbar-fixed-bottom{bottom:0;margin-bottom:0;border-width:1px 0 0;position:fixed;right:0;left:0;z-index:1030;-webkit-transform:translate3d(0,0,0);-o-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}
 *:before,:after{-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;}
-*:after{content: " ";box-sizing: border-box;}
+*:after{content:"";box-sizing:border-box;}
+*{-webkit-tap-highlight-color:transparent;-webkit-appearance: none;}
 .container:before{display:table;content: " ";}
 .pull-left{float:left !important;}
 .pull-right{float:right !important;}
@@ -64,6 +65,8 @@ hr{height:0;-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizin
 .modal-header .close{font-size:28px !important;margin-right:14px;margin-top:3px;}
 .modal-body{font-size:1em;padding:20px 10px;}
 .modal-footer{clear:both;}
+a{outline:0;}
+a:focus{border:none;background:none;outline:0;}
 
 .bg-white{background-color:#fff !important;}
 .bg-green{background-color:#33CC66 !important;}
@@ -182,7 +185,7 @@ hr{height:0;-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizin
 .border-c{border:1px solid #ccc;}
 .rainshed{background:url('../svg/rainshed2_2.svg') repeat-x;height:45px;line-height:42px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;}
 .rainshed2{background:url('../svg/rainshed1_1.svg') repeat-x;height:45px;line-height:42px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;}
-.rainshed_green{background:url('../svg/rainshed_green_1.svg') repeat-x;height:45px;line-height:36px;width:100%;max-width:800px;}
+.rainshed_green{background:url('../svg/rainshed_green_1.svg') repeat-x;height:45px;line-height:36px;width:100%;max-width:800px;background-size:20px;}
 
 .desaturate{filter:grayscale(100%);-webkit-filter:grayscale(100%);-moz-filter:grayscale(100%);-ms-filter:grayscale(100%);-o-filter:grayscale(100%);filter: url('../svg/saturate.svg#greyscale');filter: grayscale(100%);filter:gray;filter: grayscale(1)}
 
@@ -197,4 +200,4 @@ hr{height:0;-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizin
 .b-radius0{border-radius:0px !important;}
 
 .cart_num{position:absolute;display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;top:8px;}
-
+.little_pear{position:fixed;z-index:9999;top:70%;right:-40px;display:inline-block;width:40px;height:49px;}

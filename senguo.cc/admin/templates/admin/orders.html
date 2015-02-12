@@ -162,7 +162,7 @@
                     <span class="message-content">{{order.message or '无'}}</span>
                     <a href="javascript:;" class="message-img set-inl-blo">&nbsp;</a>
                 </div>
-                <div class="staff-replay">员工回复：<span>无</span></div>
+                <div class="staff-replay">员工回复：<span>{{order.staff_remark or '无'}}</span></div>
                 <!--order-message-end-->
                 <div class="order-status set-width-float edit_item edit_avilible avilible_item" data-id="{{order.status}}">
                     <div class="status-bar bg-grey9">

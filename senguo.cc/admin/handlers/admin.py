@@ -897,6 +897,24 @@ class Staff(AdminBaseHandler):
         return self.send_success()
 
 
+class UserOrder(AdminBaseHandler):
+    @tornado.web.authenticated
+    @AdminBaseHandler.check_arguments("action", "id:int")
+    def get(self):
+        action = self.args["action"]
+        if action == 'customer_order':
+            orders = self.session.query(models.Order).filter_by(
+                customer_id=self.args['id'], shop_id=self.current_shop.id).all()
+            data = []
+            for order in orders:
+                order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
+                                             'comment_create_date', 'start_time', 'end_time', 'create_date']
+                d = order.safe_props(False)
+                d['fruits'] = eval(d['fruits'])
+                d['mgoods'] = eval(d['mgoods'])
+                d['create_date'] = order.create_date.strftime('%Y-%m-%d %R')
+                data.append(d)
+            return self.render("admin/order-list.html", data=data, context=dict(subpage='user'))
 
 class Config(AdminBaseHandler):
     @tornado.web.authenticated

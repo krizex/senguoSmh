@@ -52,8 +52,11 @@ $(document).ready(function(){
 
 });
 function provinceArea(procode){
-        var pro=area[procode]['name'];
-        return pro;
+        if(procode){
+            var pro=area[procode]['name'];
+            return pro;
+        }
+
 }
 
 function cityArea(procode,citcode){

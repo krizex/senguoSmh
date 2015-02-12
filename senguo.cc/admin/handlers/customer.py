@@ -456,7 +456,7 @@ class Cart(CustomerBaseHandler):
             else:return self.send_fail("余额不足")
 
         count = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
-        num = str(shop_id) + str(count)
+        num = str(shop_id) + '%05d' % count
         order = models.Order(customer_id=self.current_user.id,
                              shop_id=shop_id,
                              num=num,
@@ -493,7 +493,7 @@ class Wexin(CustomerBaseHandler):
     def post(self):
         if "action" in self.args and not self.args["action"]:
             from handlers.base import WxOauth2
-            WxOauth2.post_template_msg()
+            return WxOauth2.post_template_msg('o5SQ5t3VW_4zFSYhrKghCiOfEojc', '良品铺子', '廖斯敏', '18071143592')
         noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
         timestamp = datetime.datetime.now().timestamp()
         url = self.args["url"]

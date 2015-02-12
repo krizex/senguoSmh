@@ -1,0 +1,117 @@
+<li class="order-list-item list-item set-width-float" data-id="" data-type="">
+    <div class="list-title bg-grey2">
+        <input class="select pull-left" type="checkbox"/>
+        <label class="send pull-left">
+            配送时间：<span class="send-time"></span>
+        </label>
+        <label class="code pull-left">
+            订单编号：<span class="order-code"></span>
+        </label>
+        <label class="money pull-left">
+            金额：<span><strong class="order-price"></strong>元</span>
+            <span class="tips">（其中小费<span class="tip"></span>元）</span>
+        </label>
+        <a class="print-order pull-right te" href="javascript:;">&nbsp;</a>
+        <a class="delete-order pull-right" href="javascript:;">&nbsp;</a>
+    </div>
+    <!--list-title-end-->
+    <div class="order-content set-width-float down">
+        <div class="order-info set-width-float">
+            <span>配送至：</span>
+            <div class="input-group pull-left">
+                <label class="address address_show"></label>
+                <input class="address form-control address_edit" type="hidden" value=""/>
+            </div>
+            <div class="input-group pull-left">
+                <label class="name name_show"></label>
+                <input class="name form-control name_edit" type="hidden" value=""/>
+            </div>
+            <div class="input-group pull-left">
+                <label class="phone phone_show"></label>
+                <input class="phone form-control phone_edit" type="hidden" value=""/>
+            </div>
+            <!--<a class="address-edit edit-btn" href="javascript:;" style="display:none">&nbsp;</a>
+            <a class="btn-style fit-btn fit-active pull-right" href="javascript:;">已适配</a>-->
+        </div>
+        <!--order-info-end-->
+        <div class="order-message set-width-float">
+            <span>留言：</span>
+            <span class="message-content"></span>
+            <a href="javascript:;" class="message-img set-inl-blo">&nbsp;</a>
+        </div>
+        <div class="staff-replay">员工回复：<span class="staff-remark">无</span></div>
+        <!--order-message-end-->
+        <div class="order-status set-width-float edit_item edit_avilible avilible_item" data-id="">
+            <div class="status-bar bg-grey9">
+                <div class="status-inner bg-grey9 status_order hidden" style="width:100%;"></div>
+                <div class="status-inner bg-grey9 status_send hidden" style="width:50%;"></div>
+                <div class="status-inner bg-grey9 status_finish hidden" style="width:100%;"></div>
+                <div class="status-circle status_order status-item status-order hidden" style="left:0%;"></div>
+                <div class="status-info status_order status-item hidden" style="left:0%;">
+                    <span class="status">未处理</span>
+                </div>
+                <div class="status-circle status_send status-item status-send hidden" style="left:50%;"></div>
+                <div class="status-info status_send status-item hidden" style="left:50%;">
+                    <span class="status">配送中</span>
+                </div>
+                <div class="status-circle status_finish status-item status-finish hidden" style="left:100%;"></div>
+                <div class="status-info status_finish status-item hidden" style="left:100%;">
+                    <span class="status">已确认收货</span>
+                </div>
+            </div>
+            <a class="edit-btn position pull-right status_edit" href="javascript:;" style="display:none;">&nbsp;</a>
+            <a class="check-btn  position pull-right status_check text-white text-center" href="javascript:;" style="display:none;">✓</a>
+        </div>
+        <!--order-status-end-->
+    </div>
+    <!--order-content-end-->
+    <div class="custom-order list-item-body set-width-float  edit_avilible avilible_item" style="display:none;">
+        <div class="custom-order-title">
+            <span>下单时间：<i class="order-time"></i></span>
+            <!--<span>森果号：<a class="senguo-code" href="#">y123456789</a></span>-->
+            <span>积分：<i class="accumulate-point">{{100}}</i></span>
+            <span class="pay-status btn-style pull-right pay-btn text-pink"></span>
+        </div>
+        <div class="custom-order-list clearfix">
+            <ul class="goods-list">
+
+            </ul>
+            <div class="goods-total">
+                <p>总件数<span class="goods-total-number">8</span>件</p>
+                <p>总金额
+                    <span class="goods-total-charge price-show"></span>
+                    <input type="text" value="" class="total_price_input price-input" style="display:none"/>
+                    元
+                </p>
+            </div>
+            <a class="edit-btn position price_edit" href="javascript:;" style="display:none;">&nbsp;</a>
+            <a class="check-btn  position price_check text-white text-center" href="javascript:;" style="display:none">✓</a>
+        </div>
+        <div class="order-notice clearfix">
+            <input type="text" placeholder="订单备注" class="notice_input pull-left" value=""/>
+            <a class="check-btn  notice_check pull-left text-white text-center" href="javascript:;" style="display:none">✓</a>
+        </div>
+        <div class="address-adapt">
+            <p>一级配送员</p>
+            <div class="send-person-area-select">
+                <ul class="send-person-area right-nav">
+                    {% for SH2 in SH2s%}
+                    <li data-id="{{SH2.id}}">
+                        <span class="sender-code">S2-{{SH2.id}}</span>||
+                        <span>送货员<span class="sender-name">{{SH2.accountinfo.realname or '无名氏'}}</span></span>||
+                        <span class="sender-phone">{{SH2.accountinfo.phone}}</span>
+                    </li>
+                    {% end %}
+                </ul>
+                <div class="select-btn">
+                    <input type="submit" value="确认" class="sure-btn staff-edit"/>
+                    <input type="button" value="取消" class="concel-btn"/>
+                </div>
+            </div>
+        </div>
+        <!--address-adapt-end-->
+    </div>
+    <input type="hidden" value="" class="receipt-remark"/>
+    <input type="hidden" value="" class="receipt-img"/>
+    <!--custom-order-end-->
+</li>
