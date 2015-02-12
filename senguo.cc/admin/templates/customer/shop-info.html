@@ -7,12 +7,18 @@
          <img src="{{shop.shop_trademark_url or static_url('design_img/TDSG.gif')}}">
      </div>
      <div class="info set-w100-fle">
-        <p class="font16">{{shop.shop_name}}</p>
+        <p class="font16 line18">{{shop.shop_name}}</p>
         <p class="font12 mt5 m-b5">店铺号：<span class="">{{shop.shop_code}}</span></p>
      </div>
      <div class="info set-w100-fle">
-         <div class="level-box btn text-green3 font9 border-ca w49 p0">
-             <p class="font14"><em class="set-inl-blo text-white text-center">1</em>初来乍到</p>
+         <div class="level-box btn font9 border-ca w49 p0 bg-grey5">
+             <div class="font13 m-b5 clearfix">
+                 <em class="set-inl-blo text-white text-center pull-left">1</em>
+                 <span class="pull-left">初来乍到</span>
+             </div>
+             <span class="status-box border-ca set-inl-blo clearfix">
+                 <span class="status-percent bg-green set-inl-blo"></span>
+             </span>
          </div>
          {% set sign_bg='' %}
          {% set sign_text='' %}
@@ -32,8 +38,11 @@
          {% else %}
             {% set sign_text='店铺签到' %}
          {% end %}
-         <a href="javascript:;" class="btn text-green3 font9 border-ca pull-right w49 sign-box p0 {{sign_bg}} {{sign_show}} {{sign_color}} font14" id="signin-shop"><em class="set-inl-blo"></em><span class="sign_text">{{sign_text}}</span></a>
-         <a href="javascript:;" class="btn text-white bg-pink font9 border-ca pull-right w49 sign-box p0 {{follow_show}}" id="focus-shop">+店铺关注</a>
+         <a href="javascript:;" class="btn text-green3 font9 border-ca pull-right w49 sign-box p0 {{sign_bg}} {{sign_show}} {{sign_color}} font13 bg-grey5" id="signin-shop">
+             <em class="set-inl-blo"></em>
+             <span class="sign_text">{{sign_text}}</span>
+         </a>
+         <a href="javascript:;" class="btn text-white bg-pink font9 border-ca pull-right w49 sign-box p0 {{follow_show}} font13 bg-grey5" id="focus-shop">+店铺关注</a>
      </div>
  </div>
  <ul class="info2 text-center bg-white set-w100-fle font12 m-b10">
