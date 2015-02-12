@@ -501,7 +501,7 @@ class WxOauth2:
         }
         access_token = cls.get_client_access_token()
         res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
-        data = json.loads(res.read().decode("utf-8"))
+        data = json.loads(res.content.decode("utf-8"))
         if data["errcode"] != 0:
             print("店铺审核模板消息发送失败：", data)
             return False
