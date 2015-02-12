@@ -198,3 +198,27 @@ function reApply(evt){
             alert('网络错误！');}
     );
 }
+
+function Vrify(){
+    event.preventDefault();
+    var phone=$('#enterPhone').val();
+    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return alert("电话貌似有错o(╯□╰)o");}
+    if(!phone){return alert('手机号不能为空');}
+    var action='gencode';
+    var url="";
+    var args={action:action,phone:phone};
+    $.postJson(url,args,
+        function(res){
+            if(res.success)
+            {
+                time($('#getVrify'));
+                alert('验证码已发送到您的手机,请注意查收！');
+
+            }
+            else alert(res.error_text);
+        },
+        function(){
+            alert('网络错误！');}
+    );
+}

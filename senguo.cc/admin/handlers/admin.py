@@ -907,7 +907,7 @@ class UserOrder(AdminBaseHandler):
                 customer_id=self.args['id'], shop_id=self.current_shop.id).all()
             data = []
             for order in orders:
-                order.__protected_props__ = ['id', 'customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
+                order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
                                              'comment_create_date', 'start_time', 'end_time', 'create_date']
                 d = order.safe_props(False)
                 d['fruits'] = eval(d['fruits'])

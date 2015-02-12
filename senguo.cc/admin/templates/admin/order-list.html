@@ -8,5 +8,7 @@
 </script>
 <ul class="order-list-content set-width-float">
 </ul>
+<input type="hidden" value="{{current_shop.config.receipt_msg}}" class="shop-receipt-remark"/>
+<input type="hidden" value="{{current_shop.config.receipt_img}}" class="shop-receipt-img"/>
 {% end %}
 {% block bottom %}<script src="{{static_url('js/admin-user-order.js')}}"></script>{% end %}

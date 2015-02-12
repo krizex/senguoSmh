@@ -90,8 +90,8 @@ function infoEdit(evt){
     });
 }
 
-function Vrify(evt){
-    evt.preventDefault();
+function Vrify(){
+    event.preventDefault();
     var phone=$('#enterPhone').val();
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
     if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return alert("电话貌似有错o(╯□╰)o");}
@@ -114,8 +114,8 @@ function Vrify(evt){
     );
 }
 
-function TiePhone(evt){
-    evt.preventDefault();
+function TiePhone(){
+    event.preventDefault();
     var phone=$('#enterPhone').val();
     var code=$('#enterVrify').val();
     var password=$('#loginPassword').val();
