@@ -5,6 +5,7 @@ import time, datetime
 from settings import ROOT_HOST_NAME
 from sqlalchemy import exists, func, extract, DATE
 from dal.dis_dict import dis_dict
+from libs.msgverify import check_msg_token
 
 class Access(SuperBaseHandler):
     
