@@ -428,7 +428,7 @@ class PhoneVerify(_AccountBaseHandler):
             self.handle_gencode()
         elif self.args["action"] == "checkcode":
             self.handle_checkcode()
-        if self.args["action"] == "gencode_shop_apply":
+        elif self.args["action"] == "gencode_shop_apply":
             self.handle_gencode_shop_apply()
         else:
             return self.send_error(404)

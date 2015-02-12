@@ -9,7 +9,7 @@ $(document).ready(function(){
         $('.apply-info').addClass('hidden');
         $('.count-box').removeClass('hidden');
     });
-
+    //服务区域选择
     $('.area-choose-list li').each(function(){
         var $this=$(this);
         $this.on('click',function(){
@@ -18,7 +18,9 @@ $(document).ready(function(){
             else $this.addClass('active');
         });
     });
-
+    //手机验证
+    $('#getVrify').on('click',function(){Vrify();});
+    //提交
     $('#submitApply').on('click',function(evt){Apply(evt);});
     $('#submitReapply').on('click',function(evt){reApply(evt);});
     /*var key='';
@@ -68,15 +70,28 @@ $(document).ready(function(){
 
         });
 */
-
+    //城市转换
     var proc=$('.reProvince').data('code');
     var citc=$('.reCity').data('code');
     $('.reProvince').text(provinceArea(proc));
-    if(citc!=proc)
-        {$('.reCity').text(cityArea(proc,citc));}
-
-
+    if(citc!=proc){$('.reCity').text(cityArea(proc,citc));}
 });
+
+var wait=60;
+function time(target) {
+    if (wait == 0) {
+        target.text("获取验证码").addClass('bg-green');
+        wait = 60;
+    }
+    else {
+        target.text("重新发送(" + wait + ")").removeClass('bg-green').css({'background':'#ccc'});
+        wait--;
+        setTimeout(function() {
+                time(target)
+            },
+            1000)
+    }
+}
 
 function Apply(evt){
     evt.preventDefault();
@@ -99,6 +114,7 @@ function Apply(evt){
     var shop_intro=$('#shopIntro').val().trim();
     var realName=$('#realName').val().trim();
     var wx_Name=$('#wx_Name').val().trim();
+    var code=$('#verify_code').val().trim();
     if(shop_name.length>20){return alert('店铺名称请不要超过20个字符！')}
     if(shop_address_detail.length>50){return alert('详细地址请不要超过500个字符！')}
     if(shop_intro.length>300){return alert('店铺简介请不要超过300个字符！')}
@@ -112,6 +128,7 @@ function Apply(evt){
     if(!realName){return alert('请输入您的真实姓名！')}
     if(!regChinese.test(realName)){return alert('请输入您的真实姓名！')}
     if(!wx_Name){return alert('请输入您的微信号！')}
+    if(!code){return alert('请输入验证码！')}
     var args={
         shop_name:shop_name,
         shop_province:shop_province,
@@ -121,7 +138,8 @@ function Apply(evt){
         shop_service_area:shop_service_area,
         shop_intro:shop_intro,
         realname:realName,
-        wx_username:wx_Name
+        wx_username:wx_Name,
+        code:code
     };
     var url="";
     $.postJson(url,args,
@@ -160,6 +178,7 @@ function reApply(evt){
     var img_key=$('#logoImg').attr('data-key');
     var realName=$('#realName').val().trim();
     var wx_Name=$('#wx_Name').val().trim();
+    var code=$('#verify_code').val().trim();
     if(shop_name.length>20){return alert('店铺名称请不要超过20个字符！')}
     if(shop_address_detail.length>50){return alert('详细地址请不要超过500个字符！')}
     if(shop_intro.length>300){return alert('店铺简介请不要超过300个字符！')}
@@ -173,6 +192,7 @@ function reApply(evt){
     if(!realName){return alert('请输入您的真实姓名！')}
     if(!regChinese.test(realName)){return alert('请输入您的真实姓名！')}
     if(!wx_Name){return alert('请输入您的微信号！')}
+    if(!code){return alert('请输入验证码！')}
     var args={
         shop_name:shop_name,
         shop_province:shop_province,
@@ -183,7 +203,8 @@ function reApply(evt){
         shop_intro:shop_intro,
         shop_id:shop_id,
         realname:realName,
-        wx_username:wx_Name
+        wx_username:wx_Name,
+        code:code
     };
     var url="";
     $.postJson(url,args,
@@ -201,20 +222,18 @@ function reApply(evt){
 
 function Vrify(){
     event.preventDefault();
-    var phone=$('#enterPhone').val();
+    var phone=$('#phone').val();
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
     if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return alert("电话貌似有错o(╯□╰)o");}
     if(!phone){return alert('手机号不能为空');}
-    var action='gencode';
-    var url="";
+    var action='gencode_shop_apply';
+    var url="/fruitzone/phoneVerify?action=admin";
     var args={action:action,phone:phone};
     $.postJson(url,args,
         function(res){
             if(res.success)
             {
                 time($('#getVrify'));
-                alert('验证码已发送到您的手机,请注意查收！');
-
             }
             else alert(res.error_text);
         },

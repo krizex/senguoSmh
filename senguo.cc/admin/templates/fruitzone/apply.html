@@ -137,6 +137,18 @@
         <input type="text" class="input-box pull-left" id="wx_Name" placeholder="输入您的微信号码"/>
         {% end %}
     </div>
+    <div class="clearfix mt10 phone-box">
+        <span class="title line40 pull-left font14">手机号*</span>
+        <input type="text" class="input-box pull-left" id="phone" value="" placeholder="输入您的手机号码"/>
+    </div>
+    <div class="clearfix">
+        <span class="title line40 pull-left font14">&nbsp;</span>
+        <button class="btn bg-green text-white" id="getVrify">获取手机验证码</button>
+    </div>
+    <div class="clearfix mt10">
+        <span class="title line40 pull-left font14">验证码*</span>
+        <input type="text" class="input-box pull-left" id="verify_code" value="" placeholder="输入验证码"/>
+    </div>
     <p class="mt10 text-center">*您的个人信息仅用作店铺审核使用，我们将严格保密</p>
     {% if "reApply" in context and context["reApply"] %}
     <input type="submit" value="提交申请" class="btn text-green border-green white-color center-block w80 font16" id="submitReapply"/>

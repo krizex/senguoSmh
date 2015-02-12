@@ -56,6 +56,7 @@
 .apply-box #notice{height:20px;}
 
 .select-popbox .address-list .active{background:#80e0a0;color:#fff;}
+.select-popbox .address-list{font-size:14px;}
 .select-popbox .address-list li:hover{background:#80e0a0;color:#fff;cursor:pointer;}
 .select-popbox .btn-style{background:#80e0a0;color:#fff;}
 
