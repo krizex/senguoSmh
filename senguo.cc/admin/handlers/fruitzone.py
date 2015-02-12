@@ -185,7 +185,7 @@ class ShopApply(FruitzoneBaseHandler):
         "shop_name", "shop_id?:int",
         "shop_province:int", "shop_city:int", "shop_address_detail",
         "have_offline_entity:bool", "shop_service_area:int",
-        "shop_intro", "realname:str", "wx_username:str", "code:str")
+        "shop_intro", "realname:str", "wx_username:str", "code:int")
     def post(self):
         #* todo 检查合法性
 
