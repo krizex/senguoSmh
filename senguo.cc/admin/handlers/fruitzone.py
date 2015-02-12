@@ -185,11 +185,13 @@ class ShopApply(FruitzoneBaseHandler):
         "shop_name", "shop_id?:int",
         "shop_province:int", "shop_city:int", "shop_address_detail",
         "have_offline_entity:bool", "shop_service_area:int",
-        "shop_intro", "realname:str", "wx_username:str")
+        "shop_intro", "realname:str", "wx_username:str", "code:str")
     def post(self):
         #* todo 检查合法性
 
         if self._action == "apply":
+            if not check_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, code=self.args["code"]):
+                return self.send_fail(error_text="验证码过期或者不正确")  #
             # 这种检查方式效率比较低
             if len(self.current_user.shops) >= self.MAX_APPLY_COUNT:
                 return self.send_fail(error_text="您申请的店铺数量超过限制！最多能申请{0}家".format(self.MAX_APPLY_COUNT))
@@ -426,6 +428,8 @@ class PhoneVerify(_AccountBaseHandler):
             self.handle_gencode()
         elif self.args["action"] == "checkcode":
             self.handle_checkcode()
+        if self.args["action"] == "gencode_shop_apply":
+            self.handle_gencode_shop_apply()
         else:
             return self.send_error(404)
 
@@ -440,11 +444,17 @@ class PhoneVerify(_AccountBaseHandler):
         gen_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, phone=self.args["phone"])
         return self.send_success()
 
-    @FruitzoneBaseHandler.check_arguments("phone:str", "code:int","password")
+
+    @FruitzoneBaseHandler.check_arguments("phone:str", "code:int", "password")
     def handle_checkcode(self):
         if not check_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, code=self.args["code"]):
            return self.send_fail(error_text="验证码过期或者不正确")
         self.current_user.accountinfo.update(self.session, phone=self.args["phone"],password=self.args["password"])
+        return self.send_success()
+
+    @FruitzoneBaseHandler.check_arguments("phone:str")
+    def handle_gencode_shop_apply(self):
+        gen_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, phone=self.args["phone"])
         return self.send_success()
 
 class SystemPurchase(FruitzoneBaseHandler):
