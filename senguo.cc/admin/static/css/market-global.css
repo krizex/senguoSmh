@@ -73,6 +73,7 @@ a:focus{border:none;background:none;outline:0;}
 .bg-green3{background-color:#33CC66 !important;}
 .bg-grey{background-color:#f9f9f9 !important;}
 .bg-grey2{background-color:#f2f2f2 !important;}
+.bg-grey5{background-color:#f5f5f5 !important;}
 .bg-grey3{background-color:#E7E7E7 !important;}
 .bg-greyc{background-color:#ccc !important;}
 .bg-pink{background-color:#ff6563 !important;}
@@ -131,6 +132,7 @@ a:focus{border:none;background:none;outline:0;}
 .font9{font-size:9px;}
 .font10{font-size:10px;}
 .font12{font-size:12px;}
+.font13{font-size:13px;}
 .font14{font-size:14px;}
 .font16{font-size:16px;}
 .font18{font-size:18px;}
@@ -189,7 +191,7 @@ a:focus{border:none;background:none;outline:0;}
 
 .desaturate{filter:grayscale(100%);-webkit-filter:grayscale(100%);-moz-filter:grayscale(100%);-ms-filter:grayscale(100%);-o-filter:grayscale(100%);filter: url('../svg/saturate.svg#greyscale');filter: grayscale(100%);filter:gray;filter: grayscale(1)}
 
-.border-ca{border:1px solid #ddd !important;}
+.border-ca{border:1px solid #eee !important;}
 .border-bd{border-bottom:1px solid #ddd;}
 .border-td{border-top:1px solid #ddd;}
 .border-rd{border-right:1px solid #ddd;}

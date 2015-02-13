@@ -36,4 +36,5 @@
 .order-nav li.active{border-color:#33cc66;}
 .order-nav li.active a{color:#33cc66;}
 .content{padding:10px 0 0;}
+.next{display:inline-block;width:6px;height:10px;background:url('../svg/arrow_right.svg');margin-top:5px;margin-left:3px;}
 
