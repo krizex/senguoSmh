@@ -178,7 +178,7 @@ class ShopManage(SuperBaseHandler):
             if shop_temp.shop_status == 2:
                 return self.send_error("店铺已经申请成功")
 
-            # 把临时表的内容复制到shop表
+            # 添加系统默认的时间段
             period1 = models.Period(name="中午", start_time="12:00", end_time="12:30")
             period2 = models.Period(name="下午", start_time="17:30", end_time="18:00")
             period3 = models.Period(name="晚上", start_time="21:00", end_time="22:00")
@@ -186,6 +186,7 @@ class ShopManage(SuperBaseHandler):
             config = models.Config()
             config.periods.extend([period1, period2, period3])
 
+            # 把临时表的内容复制到shop表
             shop = models.Shop(admin_id=shop_temp.admin_id,
                                          shop_name=shop_temp.shop_name,
                                          create_date_timestamp=shop_temp.create_date_timestamp,
@@ -200,10 +201,14 @@ class ShopManage(SuperBaseHandler):
 
             self.session.add(shop)
             shop_temp.shop_status = 3
+            self.session.commit()  # 要commit一次才有shop.id
+
+            self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id))  # 把管理者默认为新店铺的二级配送员
             self.session.commit()
+
             account_info = self.session.query(models.Accountinfo).get(shop_temp.admin_id)
             WxOauth2.post_template_msg(account_info.wx_openid, shop_temp.shop_name,
-                                       account_info.realname, account_info.phone)
+                                       account_info.realname, account_info.phone)  # 发送微信模板消息通知用户
         return self.send_success()
 
 class Feedback(SuperBaseHandler):

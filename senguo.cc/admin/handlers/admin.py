@@ -458,7 +458,7 @@ class Order(AdminBaseHandler):
         SH2s = self.session.query(models.ShopStaff).join(models.HireLink).filter(
             models.HireLink.shop_id == self.current_shop.id, models.HireLink.work == 3).all()
         return self.render("admin/orders.html", orders=orders, order_type=order_type, SH2s=SH2s,
-                           count=self._count(), context=dict(subpage='order'))
+                           count=self._count(), delta=datetime.timedelta(1), context=dict(subpage='order'))
 
 
     @tornado.web.authenticated
@@ -854,7 +854,7 @@ class Staff(AdminBaseHandler):
             return self.render("admin/staff.html", hire_forms=hire_forms,
                                context=dict(subpage='staff',staffSub='hire'))
         else: return self.send_error(404)
-        return self.render("admin/staff.html", staffs=staffs, context=dict(subpage=subpage,staffSub=staffSub))
+        return self.render("admin/staff.html", staffs=staffs, context=dict(subpage=subpage, staffSub=staffSub))
 
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "data")
@@ -870,11 +870,14 @@ class Staff(AdminBaseHandler):
                 hire_form.status = 2
                 try:
                     self.session.add(models.HireLink(staff_id=hire_form.staff_id, shop_id=hire_form.shop_id))
+                    self.session.commit()
                 except:
                     return self.send_fail("申请表已经通过")
             elif action == "hire_refuse":
+                if hire_form.status == 2:
+                    return self.send_fail("申请已经通过，不能再拒绝")
                 hire_form.status = 3
-            self.session.commit()
+                self.session.commit()
         elif action == "edit_hire_on":
             self.current_shop.config.hire_on = not self.current_shop.config.hire_on
             self.session.commit()
@@ -897,7 +900,7 @@ class Staff(AdminBaseHandler):
         return self.send_success()
 
 
-class UserOrder(AdminBaseHandler):
+class SearchOrder(AdminBaseHandler):  # 用户历史订单
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action", "id:int")
     def get(self):
@@ -905,16 +908,33 @@ class UserOrder(AdminBaseHandler):
         if action == 'customer_order':
             orders = self.session.query(models.Order).filter_by(
                 customer_id=self.args['id'], shop_id=self.current_shop.id).all()
-            data = []
-            for order in orders:
-                order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
-                                             'comment_create_date', 'start_time', 'end_time', 'create_date']
-                d = order.safe_props(False)
-                d['fruits'] = eval(d['fruits'])
-                d['mgoods'] = eval(d['mgoods'])
-                d['create_date'] = order.create_date.strftime('%Y-%m-%d %R')
-                data.append(d)
-            return self.render("admin/order-list.html", data=data, context=dict(subpage='user'))
+        elif action == 'SH2_order':
+            orders = self.session.query(models.Order).filter_by(
+                SH2_id=self.args['id'], shop_id=self.current_shop.id).all()
+        else:
+            return self.send_error(404)
+
+        data = []
+        delta = datetime.timedelta(1)
+        for order in orders:
+            order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
+                                         'comment_create_date', 'start_time', 'end_time', 'create_date']
+            d = order.safe_props(False)
+            d['fruits'] = eval(d['fruits'])
+            d['mgoods'] = eval(d['mgoods'])
+            d['create_date'] = order.create_date.strftime('%Y-%m-%d %R')
+            d["sent_time"] = "%s %d:%d ~ %d:%d" % ((order.create_date+delta).strftime('%Y-%m-%d'),
+                                                order.start_time.hour, order.start_time.minute,
+                                                  order.end_time.hour, order.end_time.minute)
+            staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
+                models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
+            SH2s = []
+            for staff in staffs:
+                SH2s.append({"id": staff.id, "realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone})
+            d["SH2s"] = SH2s
+            data.append(d)
+
+        return self.render("admin/order-list.html", data=data, context=dict(subpage='user'))
 
 class Config(AdminBaseHandler):
     @tornado.web.authenticated

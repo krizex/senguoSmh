@@ -45,7 +45,7 @@
                     <span class="user-account text-grey2">{{customer.credits}}元</span>
                 </div>
             </div>
-            <a href="{{reverse_url('adminUserOrder')}}?action=customer_order&&id={{customer.id}}" class="history-order pull-right">查看历史订单</a>
+            <a href="{{reverse_url('adminSearchOrder')}}?action=customer_order&&id={{customer.id}}" class="history-order pull-right">查看历史订单</a>
         </div>
         <div class="hide-info set-w100-fle bg-white" style="display:none;">
             <div class="personal-info pull-left">
