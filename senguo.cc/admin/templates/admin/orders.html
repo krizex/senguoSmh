@@ -122,7 +122,8 @@
             <div class="list-title bg-grey2 font14">
                 <!--<input class="select pull-left" type="checkbox"/>-->
                 <label class="send pull-left">
-                    配送时间：<span class="send-time">{{order.start_time.hour}}:{{order.start_time.minute}}
+                    配送时间：<span class="send-time">{{(order.create_date+delta).strftime('%Y-%m-%d')}}
+                    {{order.start_time.hour}}:{{order.start_time.minute}}
                     ~ {{order.end_time.hour}}:{{order.end_time.minute}}</span>
                 </label>
                 <label class="code pull-left">

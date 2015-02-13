@@ -62,12 +62,13 @@ function orderItem(item){
         var type=item[i]['type'];
         var staff_remark=item[i]['staff_remark'];
         var remark=item[i]['remark'];
+        var sent_time=item[i]['sent_time'];
         if(!message) message='无';
         if(!staff_remark) staff_remark='无';
         if(!remark) remark='无';
 
         $item.attr({'data-id':id,'data-type':type});
-        $item.find('.send-time').text();
+        $item.find('.send-time').text(sent_time);
         $item.find('.order-code').text(num);
         $item.find('.order-price').text(totalPrice);
         $item.find('.goods-total-charge').text(totalPrice);

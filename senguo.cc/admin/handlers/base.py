@@ -490,14 +490,15 @@ class WxOauth2:
         postdata = {
             "touser": touser,
             "template_id": "YDIcdYNMLKk3sDw_yJgpIvmcN5qz_2Uz83N7T9i5O3s",
-            "url": "http://senguo.cc",
+            "url": "http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&"
+                   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
             "topcolor": "#FF0000",
             "data": {
                 "first": {"value": "您好，您所申请的店铺“%s”已经通过审核！" % shop_name, "color": "#173177"},
                 "keyword1": {"value": name, "color": "#173177"},
                 "keyword2": {"value": phone, "color": "#173177"},
                 "keyword3": {"value": time, "color": "#173177"},
-                "remark": {"value": "欢迎使用森果平台！", "color": "#66CD00"}}
+                "remark": {"value": "务必点击详情，查看使用教程！", "color": "#FF4040"}}
         }
         access_token = cls.get_client_access_token()
         res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
