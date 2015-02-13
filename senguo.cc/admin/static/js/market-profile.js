@@ -57,7 +57,7 @@ function time(evt) {
 function infoEdit(target){
     target.hammer().on('tap',function(){
         var email, year,month,realname;
-        var regEmail=/^([a-z0-9]*[-_]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/;
+        var regEmail=/^([a-zA-Z0-9]*[-_]?[a-zA-Z0-9]+)*@([a-zA-Z0-9]*[-_]?[a-zA-Z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/;
         var regNumber=/^[0-9]*[1-9][0-9]*$/;
         var regYear=/^(?!0000)[0-9]{4}$/;
         var regMonth=/^(0?[1-9]|[1][012])$/;

@@ -39,7 +39,8 @@ $(document).ready(function(){
     toggle('.staff-info','.staff-info-edit');
     //员工上下班
     $('.staff-work-mode').on('click',function(){
-
+        var $this=$(this);
+        staffActive($this);
     })
 });
 
@@ -69,10 +70,12 @@ function hireConfig(target,action,val){
             if(action=='hire_agree')
             {
                 target.parents('.staff-list-item').find('.hire-status').removeClass('bg-pink').addClass('bg-green').text('通过');
+                target.parents('.staff-list-item').find('.action-btn').hide();
             }
             else if(action=='hire_refuse')
             {
                 target.parents('.staff-list-item').find('.hire-status').removeClass('bg-pink').addClass('bg-grey').text('未通过');
+                target.parents('.staff-list-item').find('.action-btn').hide();
             }
             target.parents('.staff-list-item').find('.staff-info-edit').hide();
         }
@@ -96,13 +99,35 @@ function staffEdit(target){
         action:action,
         data:data
     };
-    console.log(args);
     $.postJson(url,args,function(res){
         if(res.success){
             parent.hide();
         }
         else return alert(res.error_text)
     },function(){return alert('网络错误！')}
+    );
+
+}
+
+function staffActive(target){
+    var url='';
+    var action='edit_active';
+    var parent=target.parents('.staff-list-item');
+    var id=parent.data('id');
+    var data={
+        staff_id:id
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,function(res){
+            if(res.success){
+                target.find('.work-mode').toggleClass('hidden');
+                target.find('.stop-mode').toggleClass('hidden');
+            }
+            else return alert(res.error_text)
+        },function(){return alert('网络错误！')}
     );
 
 }

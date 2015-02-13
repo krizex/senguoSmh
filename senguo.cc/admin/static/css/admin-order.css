@@ -24,11 +24,11 @@
 .order-list-item .list-title .send{width:240px;}
 .order-list-item .list-title .send .send-time{margin-right:5px;}
 .order-list-item .list-title .code{width:180px;}
-.order-list-item .list-title .money{width:180px;}
+.order-list-item .list-title .money{width:200px;}
 .order-list-item .list-title .print-order{background:url("../images/container-icon.gif") no-repeat 0 -88px;padding-left:25px;}
 .order-list-item .list-title .delete-order{margin-right:5px;background:url("../images/container-icon.gif") no-repeat 0 4px;padding-left:20px;}
 
-.order-list-item .order-content{padding:20px;}
+.order-list-item .order-content{padding:5px 10px;}
 .down{background:url("../images/arrow-down.gif") no-repeat 98% 130px;}
 .up{background:url("../images/arrow-up.gif") no-repeat 98% 130px;}
 .order-list-item .order-warning{background:url("../images/warning-img.jpg") no-repeat 8px 20px;}
@@ -46,11 +46,11 @@
 .order-list-item .order-message{margin-bottom:5px;}
 .order-list-item .order-message .message-img{width:17px;height:15px;background:url("../images/container-icon.gif") no-repeat 0 -199px;}
 
-.order-list-item .order-status{margin-top:30px;display:inline-block;height:25px;}
+.order-list-item .order-status{display:inline-block;height:40px;}
 .order-list-item .order-status .status-bar{width:556px;height:4px;position:relative;margin-top:10px;}
 .order-list-item .order-status .status-bar .status-inner{height:4px;position:absolute;top:0;}
 .order-list-item .order-status .status-circle{width:16px;height:16px;background:url("../images/status-circle.png") no-repeat 0 -63px;border-radius:50%;position:absolute;top:-6px;}
-.order-list-item .order-status .status-info{position:absolute;top:-25px;color:#666;width:150px;}
+.order-list-item .order-status .status-info{position:absolute;top:12px;color:#666;width:150px;}
 .order-list-item .order-status-dealing .status-bar .status-inner{background:#45b549;}
 .order-list-item .order-status-dealing .status-bar .status-circle{background-position:0 0;}
 .order-list-item .order-status-dealing .status-bar .status-info{margin-left:-25px;}

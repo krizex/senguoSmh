@@ -110,17 +110,17 @@
 </div>
 <!--orders-mode-lock-end-->
 <div class="order-list set-width-float">
-    <div class="order-list-action set-width-float">
+   <!-- <div class="order-list-action set-width-float">
         <input type="checkbox" class="select-box pull-left"/>
         <span class="select-all pull-left">全选</span>
         <a href="javascript:;" class="print-btn blak-set-btn">批量打印</a>
         <a href="javascript:;" class="blak-set-btn">批量删除</a>
-    </div>
-    <ul class="order-list-content set-width-float">
+    </div>-->
+    <ul class="order-list-content set-width-float mt10">
         {% for order in orders %}
         <li class="order-list-item list-item set-width-float" data-id="{{order.id}}" data-type="{{order.type}}">
-            <div class="list-title bg-grey2">
-                <input class="select pull-left" type="checkbox"/>
+            <div class="list-title bg-grey2 font14">
+                <!--<input class="select pull-left" type="checkbox"/>-->
                 <label class="send pull-left">
                     配送时间：<span class="send-time">{{order.start_time.hour}}:{{order.start_time.minute}}
                     ~ {{order.end_time.hour}}:{{order.end_time.minute}}</span>

@@ -538,7 +538,7 @@ class ShopStaff(MapBase, _AccountApi):
     accountinfo = relationship(Accountinfo)
     shops = relationship("Shop", secondary="hire_link")
 
-class HireLink(MapBase):
+class HireLink(MapBase, _CommonApi):
     __tablename__ = "hire_link"
 
     staff_id = Column(Integer, ForeignKey(ShopStaff.id), primary_key=True)
