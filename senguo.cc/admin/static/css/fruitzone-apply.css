@@ -62,9 +62,9 @@
 
 .count-list-box{width:85%;min-width:300px;}
 .count-list{width:100%;display:block;}
-.count-list li{width:100%;position:relative;height:97px;margin-top:30px;position:relative;}
+.count-list li{width:100%;position:relative;height:97px;margin-top:25px;position:relative;}
 .count-list li.active .word{background:#57E787 !important;}
-.count-list li .check{position:absolute;right:10px;bottom:12px;font-size:30px;}
+.count-list li .check{position:absolute;right:15px;bottom:-6px;font-size:30px;}
 .count-list li .pear_img{position:absolute;left:0;z-index:66;top:0;}
 .count-list li .word{width:99%;height:70px;top:28px;position:absolute;right:0;border-radius:35px;padding-left:80px;padding-top:5px;}
 .count-list li .word p{width:100%;margin-bottom:-1px !important;}

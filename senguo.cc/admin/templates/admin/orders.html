@@ -135,7 +135,7 @@
                     <span class="tips">（其中小费<span class="tip">{{order.tip}}</span>元）</span>
                     {% end %}
                 </label>
-                <a class="print-order pull-right te" href="javascript:;">&nbsp;</a>
+                <a class="print-order pull-right te" href="javascript:;" data-id="{{order.isprint}}">&nbsp;</a>
                 <a class="delete-order pull-right" href="javascript:;">&nbsp;</a>
             </div>
             <!--list-title-end-->
@@ -170,21 +170,21 @@
                         <div class="status-inner bg-grey9 status_order hidden" style="width:100%;"></div>
                         <div class="status-inner bg-grey9 status_send hidden" style="width:50%;"></div>
                         <div class="status-inner bg-grey9 status_finish hidden" style="width:100%;"></div>
-                        <div class="status-circle status_order status-item status-order hidden" style="left:0%;"></div>
+                        <div class="status-circle status_order status-item status-order hidden forbid_click" style="left:0%;"></div>
                         <div class="status-info status_order status-item hidden" style="left:0%;">
                             <span class="status">未处理</span>
                         </div>
-                        <div class="status-circle status_send status-item status-send hidden" style="left:50%;"></div>
+                        <div class="status-circle status_send status-item status-send hidden forbid_click" style="left:50%;"></div>
                         <div class="status-info status_send status-item hidden" style="left:50%;">
                             <span class="status">配送中</span>
                         </div>
-                        <div class="status-circle status_finish status-item status-finish hidden" style="left:100%;"></div>
+                        <div class="status-circle status_finish status-item status-finish hidden forbid_click" style="left:100%;"></div>
                         <div class="status-info status_finish status-item hidden" style="left:100%;">
                             <span class="status">已确认收货</span>
                         </div>
                     </div>
-                    <a class="edit-btn position pull-right status_edit" href="javascript:;" style="display:none;">&nbsp;</a>
-                    <a class="check-btn  position pull-right status_check text-white text-center" href="javascript:;" style="display:none;">✓</a>
+                    <a class="edit-btn position pull-right status_edit forbid_click" href="javascript:;" style="display:none;">&nbsp;</a>
+                    <a class="check-btn  position pull-right status_check text-white text-center forbid_click" href="javascript:;" style="display:none;">✓</a>
                 </div>
                 <!--order-status-end-->
             </div>

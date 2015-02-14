@@ -3,7 +3,7 @@
 {% block goodsLeft %}
 <ul class="goods-list clearfix">
     {% for goods in mgoodses %}
-    <li class="goods-list-item goods-item" data-id="{{goods.id}}">
+    <li class="goods-list-item goods-item" data-id="{{goods.id}}"  data-type="menu">
         <div class="goods-item-show">
             <div class="goods-edit-active shelve-action pull-left" data-active="{{goods.active}}">
                 <span class="unshelve stop-mode">已下架</span>

@@ -76,9 +76,9 @@
         {% for staff in staffs %}
         <li class="staff-list-item" data-id="{{staff.id}}">
             <div class="staff-info">
-                <div class="staff-work-mode action-mode pull-left" data-id="">
-                    <a class="work-mode" href="javascript:;">已上班</a>
-                    <a class="stop-mode" href="javascript:;" style="display:none">未上班</a>
+                <div class="staff-work-mode action-mode pull-left forbid_click" data-id="{{staff.hirelink.active}}">
+                    <a class="work-mode hidden" href="javascript:;">已上班</a>
+                    <a class="stop-mode hidden" href="javascript:;">未上班</a>
                 </div>
                 <div class="staff-personal pull-left">
                     <img src="{{staff.accountinfo.headimgurl}}" class="staff-img pull-left"/>
@@ -93,15 +93,17 @@
                             编号:
                             <span>SH-{{staff.id or 0}}</span>
                         </p>
+                        {% if staff.hirelink.remark %}
                         <p>
-                            备注：
+                            备注:{{staff.hirelink.remark}}
                         </p>
+                        {% end %}
                     </div>
                 </div>
                 <!--<a href="#" class="send-message-btn pull-left">发消息</a>-->
                 <a href="javascript:;" class="staff-edit-btn edit-btn2 pull-right">备注</a>
                 <!--<a href="admin-staff-sale.html" class="check-sale pull-right">查看销售记录</a>-->
-                <a href="{{reverse_url('adminSearchOrder')}}?action=SH2_order&&id={{staff.id}}" target="_blank"  class="check-order pull-right">查看任务订单</a>
+                <a href="{{reverse_url('adminSearchOrder')}}?action=SH2_order&&id={{staff.id}}" target="_blank"  class="check-order pull-right forbid_click">查看任务订单</a>
             </div>
             <div class="staff-info-edit" style="display:none;" >
                 <div class="edit-detail">

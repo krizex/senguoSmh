@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta charset="UTF-8"/>
+    <title>{% block title %}首页{% end %}</title>
+    <link rel="stylesheet" href="{{static_url('css/m-official.css')}}"/>
+    <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    {% block head %}{% end %}
+    <script>
+        window.dataObj = {
+            _xsrf: "{{handler.xsrf_token}}"};
+        window.onload=function()
+        {
+            var box=document.getElementsByClassName('box');
+            var container=document.getElementsByClassName('container');
+            var h=document.documentElement.clientHeight;
+            for(var i=0;i<box.length;i++){
+                box[i].style.height=h+'px';
+            }
+            container[0].style.height=h+'px';
+        };
+        window.onresize=function()
+        {
+            var box=document.getElementsByClassName('box');
+            var container=document.getElementsByClassName('container');
+            var h=document.documentElement.clientHeight;
+            for(var i=0;i<box.length;i++){
+                box[i].style.height=h+'px';
+            }
+            container[0].style.height=h+'px';
+        };
+    </script>
+</head>
+<body>
+<main class="container text-center">
+    <div class="container-box">
+        <div class="bg-green w100 h100 pull-left box">
+            <img src="{{static_url('m-official/1-2.svg')}}" class="mt20"/>
+            <div class="word-bottom">
+                <p class="font14 text-white">线上卖水果，森果更懂你</p>
+            </div>
+            <div class="arrow-box">
+                <p style="display:none;" id="notice">点击继续</p>
+                <a href="javascript:;" class="arrow-dow">
+                    <img src="{{static_url('images/next.png')}}"/>
+                </a>
+            </div>
+        </div>
+        <div class="bg-red w100 h100 pull-left box">
+            <img src="{{static_url('m-official/2.svg')}}"/>
+            <div class="word-bottom">
+                <a href="{{reverse_url('fruitzoneShopApply')}}" class="btn text-white font14 mb">免费接入</a>
+                <p class="text-white">了解更多登陆电脑版 senguo.cc</p>
+             </div>
+            <div class="arrow-box">
+                <p style="display:none;" id="notice">点击继续</p>
+                <a href="javascript:;" class="arrow-dow">
+                    <img src="{{static_url('images/next.png')}}"/>
+                </a>
+            </div>
+        </div>
+        <div class="bg-blue w100 h100 pull-left box">
+            <p class="font16 text-white mt20">精致简约的商城设计</p>
+            <img src="{{static_url('m-official/3.svg')}}" class="mt50"/>
+            <div class="word-bottom">
+                <p class="font14 text-white">比美团更<span class="font16">美</span>，比有赞更<span class="font16">赞</span></p>
+             </div>
+            <div class="arrow-box">
+                <p style="display:none;" id="notice">点击继续</p>
+                <a href="javascript:;" class="arrow-dow">
+                    <img src="{{static_url('images/next.png')}}"/>
+                </a>
+            </div>
+        </div>
+        <div class="bg-purple w100 h100 pull-left box">
+            <p class="text-white text-right mr50 font14 mt20">高效的后台</p>
+            <p class="text-white text-right mr20 font16">系统</p>
+            <img src="{{static_url('m-official/4.png')}}"/>
+            <div class="word-bottom">
+                <p class="font14 text-white">因为<span class="font16">专注</span>，所以<span class="font16">专业</span></p>
+            </div>
+            <div class="arrow-box">
+                <p style="display:none;" id="notice">点击继续</p>
+                <a href="javascript:;" class="arrow-dow">
+                    <img src="{{static_url('images/next.png')}}"/>
+                </a>
+            </div>
+        </div>
+        <div class="bg-pink w100 h100 pull-left box">
+            <p class="text-white mt20">把你的水果店<span class="font18">零成本</span>搬到网上来</p>
+            <img src="{{static_url('m-official/5.svg')}}" class="mt50"/>
+            <div class="word-bottom">
+                <a href="{{reverse_url('fruitzoneShopApply')}}" class="btn text-white font14 mb">免费接入</a>
+                <p class="text-white">了解更多登陆电脑版 senguo.cc</p>
+            </div>
+        </div>
+    </div>
+</main>
+{% block bottom %}
+<script src="{{static_url('js/jquery.min.js')}}"></script>
+<script src="{{static_url('js/m-official.js')}}"></script>
+{% end %}
+</body>
+</html>

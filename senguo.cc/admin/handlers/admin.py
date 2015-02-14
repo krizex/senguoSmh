@@ -540,7 +540,7 @@ class Order(AdminBaseHandler):
             elif action == "del_order":
                 order.update(session=self.session, status=0)
             elif action == "print":
-                order.update(session=self.session, print=1)
+                order.update(session=self.session, isprint=1)
         # elif action == "search":
         #     order = self.session.query(models.Order).filter(and_(
         #         models.Order.id == int(data["order_id"]), models.Order.shop_id == self.current_shop.id)).first()
@@ -910,12 +910,12 @@ class Staff(AdminBaseHandler):
                 staff_id=data["staff_id"],shop_id=self.current_shop.id).one()
             except:return self.send_error(404)
             active = 1 if hire_link.active==2 else 2
-            hire_link.update(session=self.session, action=active)
+            hire_link.update(session=self.session, active=active)
         elif action == "edit_staff":
             try:hire_link = self.session.query(models.HireLink).filter_by(
                 staff_id=data["staff_id"],shop_id=self.current_shop.id).one()
             except:return self.send_error(404)
-            staff.update(session=self.session, remark=data["remark"])
+            hire_link.update(session=self.session, remark=data["remark"])
         else:
             return self.send_fail()
         return self.send_success()

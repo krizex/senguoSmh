@@ -82,6 +82,8 @@ handlers = [
 
 
     # (r"/super/notice/", handlers.superadmin.Notice),
+    #微官网-----待删除
+    (r"/m", handlers.superadmin.Official),
 
     (r"/admin/login", handlers.admin.Access,{"action":"login"}, "adminLogin"),
     (r"/admin/oauth", handlers.admin.Access, {"action":"oauth"}, "adminOauth"),
@@ -173,6 +175,5 @@ handlers = [
     (r"/fruitzone/InfoImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_info_img"}, "fruitzoneInfoImgCallback"),
     (r"/admin/shelf/fruitImgCallback", handlers.fruitzone.QiniuCallback,
      {"action": "edit_fruit_img"}, "adminShelfFruitImgCallback"),
-
 ]
 

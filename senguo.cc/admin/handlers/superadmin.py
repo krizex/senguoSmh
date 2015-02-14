@@ -165,7 +165,7 @@ class ShopManage(SuperBaseHandler):
                     filter_by(shop_id=shop.id).scalar()
                 output_data.append(data)
 
-            return self.render("", output_data=output_data)
+            return self.render("superAdmin/shop-manage.html", output_data=output_data,context=dict(subpage='shop',action=action,count=count))
         else:
             return self.send_error(404)
         # 排序规则id, offset 和 limit
@@ -173,7 +173,7 @@ class ShopManage(SuperBaseHandler):
         
         shops = q.all()
         # shops 是models.Shop实例的列表
-        return self.render("superAdmin/shop-manage.html", context=dict(
+        return self.render("superAdmin/apply-manage.html", context=dict(
                 shops = shops,subpage='shop', action=action,
                 count=count))
 
@@ -547,3 +547,8 @@ class ShopStatic(SuperBaseHandler):
             order_by(models.Order.create_date).first()
         page_sum = (datetime.datetime.now() - first_order.create_date).days//30 + 1
         return self.send_success(page_sum=page_sum, data=data)
+
+class Official(SuperBaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        return self.render("m-official/home.html")
