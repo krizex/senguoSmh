@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta charset="UTF-8"/>
+    <title>{% block title %}首页{% end %}</title>
+    <link rel="stylesheet" href="{{static_url('css/m-official.css')}}"/>
+    <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    {% block head %}{% end %}
+    <script>
+        window.dataObj = {
+            _xsrf: "{{handler.xsrf_token}}"};
+    </script>
+</head>
+<body>
+<main class="container text-center">
+    <div class="bg-green w100 h100 pull-left">
+        <img src="{{static_url('m-official/1.svg')}}"/>
+        <p class="font16 text-white">线上卖水果，森果更懂你</p>
+    </div>
+    <div class="bg-red w100 h100 pull-left">
+        <img src="{{static_url('m-official/2.svg')}}"/>
+        <a href="{{reverse_url('fruitzoneShopApply')}}" class="btn text-white font16">免费接入</a>
+        <p class="font12 text-white">了解更多登陆电脑版 senguo.cc</p>
+    </div>
+    <div class="bg-blue w100 h100 pull-left">
+        <p class="font16 text-white">精致简约的商城设计</p>
+        <img src="{{static_url('m-official/3.svg')}}"/>
+        <p class="font14 text-white">比美团更<span class="font16">美</span>，比有赞更<span class="font16">赞</span></p>
+    </div>
+    <div class="bg-purple w100 h100 pull-left">
+        <p class="text-white text-right mr50 font14">高效的后台</p>
+        <p class="text-white text-right mr20 font20">系统</p>
+        <img src="{{static_url('m-official/4.svg')}}"/>
+    </div>
+    <div class="bg-pink w100 h100 pull-left">
+        <p class="text-white">把你的水果店<span class="font18">"&nbsp;&nbsp;零&nbsp;&nbsp;"</span>成本搬到网上来</p>
+        <img src="{{static_url('m-official/5.svg')}}"/>
+        <a href="{{reverse_url('fruitzoneShopApply')}}" class="btn text-white font16">免费接入</a>
+        <p class="font12 text-white">了解更多登陆电脑版 senguo.cc</p>
+    </div>
+</main>
+<script src="{{static_url('js/jquery.min.js')}}"></script>
+<script src="{{static_url('js/global.js')}}"></script>
+{% block bottom %}{% end %}
+</body>
+</html>

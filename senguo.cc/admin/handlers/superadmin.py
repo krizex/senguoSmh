@@ -525,3 +525,8 @@ class ShopStatic(SuperBaseHandler):
             order_by(models.Order.create_date).first()
         page_sum = (datetime.datetime.now() - first_order.create_date).days//30 + 1
         return self.send_success(page_sum=page_sum, data=data)
+
+class Official(SuperBaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        return self.render("m-official/home.html")

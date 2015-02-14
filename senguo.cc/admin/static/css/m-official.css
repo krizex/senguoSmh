@@ -1,0 +1,39 @@
+/*公用全局样式*/
+* {margin:0;padding:0;}
+*{-webkit-tap-highlight-color:transparent;-webkit-appearance: none;}
+img {border:0px;}
+ul li{list-style:none;}
+a{text-decoration:none;outline-style:none;}
+a:hover{text-decoration:none;}
+a:focus{text-decoration: none}
+a:focus{outline:none;}
+div:after {content: '\20'; display: block; height: 0; clear: both; visibility: hidden;}
+body{font-size:1em;font-family:'Microsoft YaHei',\5b8b\4f53,Arial,sans-serif;}
+
+.bg-green{background:#80E07F;}
+.bg-red{background:#FA6254;}
+.bg-pink{background:#FF99E3;}
+.bg-blue{background:#78D0F6;}
+.bg-purple{background:#AAA2EB;}
+
+
+.text-center{text-align:center;}
+.text-left{text-align:left;}
+.text-right{text-align:right;}
+.text-white{color:#fff;}
+
+.mr20{margin-right:20px;}
+.mr50{margin-right:50px;}
+
+.font12{font-size:1.2em;}
+.font14{font-size:1.4em;}
+.font16{font-size:1.6em;}
+.font18{font-size:1.8em;}
+.font20{font-size:2em;}
+.font22{font-size:2.2em;}
+
+.w100{width:100%;}
+.h100{height:100%;}
+.pull-left{float:left;}
+.btn{border:1px solid #fff;border-radius:80px;width:60%;max-width:300px;height:60px;line-height:60px;display:inline-block;}
+.container img{width:100%;max-width:800px;}
