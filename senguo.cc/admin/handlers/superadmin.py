@@ -116,43 +116,65 @@ class ShopProfile(SuperBaseHandler):
 
 class ShopManage(SuperBaseHandler):
     _page_count = 20
-    
-    def initialize(self, action):
-        self._action = action
 
     @tornado.web.authenticated
-    @SuperBaseHandler.check_arguments("page?:int")
+    @SuperBaseHandler.check_arguments("action", "page?:int")
     def get(self):
+        action = self.args["action"]
         offset = (self.args.get("page", 1) - 1) * self._page_count
         q = self.session.query(models.Shop)
         q_temp = self.session.query(models.ShopTemp)
         q_applying = q_temp.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
         q_declined = q_temp.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
-        #q_accepted = q.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
+        q_accepted = q_temp.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
+
         count = {
-            "all":q.count()+q_temp.count(),
-            "applying":q_applying.count(),
-            "accepted":q.count(),
-            "declined":q_declined.count()
+            "all_temp": q_temp.count(),
+            "applying": q_applying.count(),
+            "accepted": q_accepted.count(),
+            "declined": q_declined.count(),
+            "all": q.count()
             }
-        name = "ShopTemp"
-        if self._action == "all":
-            pass
-        elif self._action == "applying":
+        if action == "all_temp":
+            q = q_temp
+        elif action == "applying":
             q = q_applying
-        elif self._action == "accepted":
-            name = "Shop"
-        elif self._action == "declined":
+        elif action == "accepted":
+            q = q_accepted
+        elif action == "declined":
             q = q_declined
+        elif action == "all":
+            shops = q.order_by(models.Shop.id.desc()).offset(offset).limit(self._page_count).all()
+            output_data = []
+            for shop in shops:
+                data = {}
+                data["shop_trademark_url"] = shop.shop_trademark_url
+                data["shop_name"] = shop.shop_name
+                data["shop_code"] = shop.shop_code
+                data["city"] = self.code_to_text('shop_city', shop.shop_city)
+                data["staff_count"] = len(shop.staffs)
+                data["follower_count"] = self.session.query(models.CustomerShopFollow).\
+                    filter_by(shop_id=shop.id).count()
+                data["goods_count"] = len(shop.fruits) + self.session.query(models.MGoods).\
+                    join(models.Menu).filter(models.Menu.shop_id == shop.id).count()
+                data["admin_name"] = shop.admin.accountinfo.realname
+                data["operate_days"] = (datetime.datetime.now() - datetime.datetime.
+                                        fromtimestamp(shop.create_date_timestamp)).days
+                data["order_count"] = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
+                data["price_sum"] = self.session.query(func.sum(models.Order.totalPrice)).\
+                    filter_by(shop_id=shop.id).scalar()
+                output_data.append(data)
+
+            return self.render("", output_data=output_data)
         else:
             return self.send_error(404)
         # 排序规则id, offset 和 limit
-        q = q.order_by(getattr(models, name).id.desc()).offset(offset).limit(self._page_count)
+        q = q.order_by(models.ShopTemp.id.desc()).offset(offset).limit(self._page_count)
         
         shops = q.all()
         # shops 是models.Shop实例的列表
         return self.render("superAdmin/shop-manage.html", context=dict(
-                shops = shops,subpage='shop', action=self._action,
+                shops = shops,subpage='shop', action=action,
                 count=count))
 
     @tornado.web.authenticated
@@ -200,7 +222,7 @@ class ShopManage(SuperBaseHandler):
             shop.config = config
 
             self.session.add(shop)
-            shop_temp.shop_status = 3
+            shop_temp.shop_status = 2
             self.session.commit()  # 要commit一次才有shop.id
 
             self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id))  # 把管理者默认为新店铺的二级配送员

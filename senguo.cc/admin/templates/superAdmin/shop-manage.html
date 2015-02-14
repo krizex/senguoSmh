@@ -26,9 +26,9 @@
     <div class="admin-left text-right pull-left">
         <ul class="nav nav-stacked shop-manage-nav" role="tablist">
           <li class="{{all_active}}"><a href="#">所有店铺({{count['all']}})</a></li>
-          <li class="{{applaying_active}}"><a href="{{reverse_url('superShopManageApplying')}}">正在申请接入店铺({{count['applying']}})</a></li>
-          <li class="{{pass_active}}"><a href="{{reverse_url('superShopManageAccepted')}}">已经通过申请店铺({{count['accepted']}})</a></li>
-          <li class="{{decline_active}}"><a href="{{reverse_url('superShopManageDeclined')}}">已被拒绝店铺({{count['declined']}})</a></li>
+          <li class="{{applaying_active}}"><a href="{{reverse_url('superShopManage')}}">正在申请接入店铺({{count['applying']}})</a></li>
+          <li class="{{pass_active}}"><a href="{{reverse_url('superShopManage')}}">已经通过申请店铺({{count['accepted']}})</a></li>
+          <li class="{{decline_active}}"><a href="{{reverse_url('superShopManage')}}">已被拒绝店铺({{count['declined']}})</a></li>
         </ul>
     </div>
     <div class="admin-right pull-right">

@@ -828,7 +828,8 @@ class Follower(AdminBaseHandler):
                 filter(models.CustomerShopFollow.customer_id == customers[x].id).all()
             customers[x].shop_names = [y[0] for y in shop_names]
 
-        return self.render("admin/user-manage.html", customers=customers, count=count, context=dict(subpage='user'))
+        return self.render("admin/user-manage.html", customers=customers, count=count, page_sum=count//page_size + 1,
+                           context=dict(subpage='user'))
 
 class Staff(AdminBaseHandler):
     @tornado.web.authenticated
@@ -937,7 +938,10 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
                 models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
             SH2s = []
             for staff in staffs:
-                SH2s.append({"id": staff.id, "realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone})
+                staff_data = {"id": staff.id, "realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone}
+                SH2s.append(staff_data)
+                if staff.id == order.SH2_id:  # todo JH、SH1
+                    d["SH2"] = staff_data
             d["SH2s"] = SH2s
             data.append(d)
 
