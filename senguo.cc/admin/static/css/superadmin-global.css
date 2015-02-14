@@ -33,8 +33,10 @@ ul{padding-left:0;}
 
 .admin-left{width:230px;}
 .admin-left li{border-bottom:1px solid #ddd;}
+.admin-left li a{color:#333;}
+.admin-left li.active{color:#009933 !important;}
 .admin-left li.active a{background:#fff;color:#009933 !important;}
-.admin-left a{color:#333;}
+
 
 .admin-right{width:900px;}
 
@@ -63,3 +65,8 @@ a:focus{text-decoration:none;}
 
 .w60{width:60px;}
 .w100{width:100%;}
+.mr20{margin-right:20px;}
+.ml10{margin-left:10px;}
+.mb10{margin-bottom:10px;}
+
+.text-green{color:#009933;}
