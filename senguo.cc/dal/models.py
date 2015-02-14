@@ -867,7 +867,8 @@ class Order(MapBase, _CommonApi):
     start_time = Column(Time)
     end_time = Column(Time)
     create_date = Column(DateTime, default=func.now())
-    active = Column(TINYINT, default=1)#0删除
+    active = Column(TINYINT, default=1)  # 0删除
+    isprint = Column(Boolean, default=0)  # 是否被打印了 0：否，1：是
 
     fruits = Column(String(1000))
     mgoods = Column(String(1000))
