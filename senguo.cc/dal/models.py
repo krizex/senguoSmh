@@ -361,7 +361,7 @@ class Shop(MapBase, _CommonApi):
     shop_name = Column(String(128), nullable=False)
     shop_code = Column(String(128), nullable=False, default="not set")
     create_date_timestamp = Column(Integer, nullable=False)
-    shop_status = Column(Integer, default=SHOP_STATUS.ACCEPTED)
+    shop_status = Column(Integer, default=SHOP_STATUS.ACCEPTED)  # 1：申请中 2：申请成功 3：拒绝
 
     admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
     admin = relationship("ShopAdmin")

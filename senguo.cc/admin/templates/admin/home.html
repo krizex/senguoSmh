@@ -42,13 +42,13 @@
         <li>
             <a href="#" target="_blank">{{new_sys_notice.title}}</a>
             <i class="new-btn">NEW</i>
-            <span>{{new_sys_notice.create_date}}</span>
+            <span>{{new_sys_notice.create_time}}</span>
         </li>
         {% end %}
         {% for sys_notice in sys_notices %}
         <li>
             <a href="#" target="_blank">{{sys_notice.title}}</a>
-            <span>{{sys_notice.create_date}}</span>
+            <span>{{sys_notice.create_time}}</span>
         </li>
         {% end %}
     </ul>
