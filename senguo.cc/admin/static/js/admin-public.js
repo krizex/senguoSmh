@@ -28,8 +28,12 @@ function shopChnage(shop_id){
     })
 }
 function toggle(trigger,target){
-    $(trigger).on('click',function(){
-        $(this).siblings(target).toggle();
+    $(trigger).on('click',function(e){
+        var $this=$(this);
+        var forbid_click=$this.find('.forbid_click');
+        if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
+            $this.siblings(target).toggle();
+        }
     })
 }
 

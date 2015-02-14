@@ -38,10 +38,22 @@ $(document).ready(function(){
 
     toggle('.staff-info','.staff-info-edit');
     //员工上下班
-    $('.staff-work-mode').on('click',function(){
+    var $mode=$('.staff-work-mode');
+    var staff_active=$mode.data('id');
+    if(staff_active==1){
+        $mode.find('.work-mode').removeClass('hidden');
+    }
+    else $mode.find('.stop-mode').removeClass('hidden');
+    $mode.on('click',function(){
         var $this=$(this);
         staffActive($this);
-    })
+    });
+    //取消编辑
+    $('.concel-btn').on('click',function(){
+        var $this=$(this);
+        var $parent=$this.parents('.staff-list-item');
+        $parent.find('.staff-info-detail').hide();
+    });
 });
 
 function hireConfig(target,action,val){
@@ -87,7 +99,7 @@ function hireConfig(target,action,val){
 function staffEdit(target){
     var url='';
     var action='edit_staff';
-    var parent=target.parents('.staff-info-detail');
+    var parent=target.parents('.staff-info-edit');
     var id=target.data('id');
     var remark=parent.find('.staff-remark').val();
     if(!remark) remark='';
@@ -102,6 +114,7 @@ function staffEdit(target){
     $.postJson(url,args,function(res){
         if(res.success){
             parent.hide();
+            parent.parents('.staff-list-item').find('.info').append('<p>备注:'+remark+'</p>');
         }
         else return alert(res.error_text)
     },function(){return alert('网络错误！')}

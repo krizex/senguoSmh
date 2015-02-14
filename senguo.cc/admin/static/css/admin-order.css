@@ -27,10 +27,11 @@
 .order-list-item .list-title .money{width:200px;}
 .order-list-item .list-title .print-order{background:url("../images/container-icon.gif") no-repeat 0 -88px;padding-left:25px;}
 .order-list-item .list-title .delete-order{margin-right:5px;background:url("../images/container-icon.gif") no-repeat 0 4px;padding-left:20px;}
+.order-list-item .list-title .printed{background-position:-60px -315px;}
 
 .order-list-item .order-content{padding:5px 10px;}
-.down{background:url("../images/arrow-down.gif") no-repeat 98% 130px;}
-.up{background:url("../images/arrow-up.gif") no-repeat 98% 130px;}
+.down{background:url("../images/arrow-down.gif") no-repeat 98% 80px;}
+.up{background:url("../images/arrow-up.gif") no-repeat 98% 80px;}
 .order-list-item .order-warning{background:url("../images/warning-img.jpg") no-repeat 8px 20px;}
 .order-list-item .order-content .order-info{height:25px;overflow:hidden;}
 .order-list-item .order-content .order-info .input-group{margin-right:25px;}

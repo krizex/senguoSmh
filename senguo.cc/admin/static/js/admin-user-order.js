@@ -12,20 +12,23 @@ $(document).ready(function(){
     });
     //商品列表item
     getGoodsItem('/static/items/admin/order-goods-item.html?v=2015-02-02');
+    //员工列表item
+    getStaffItem('/static/items/admin/order-staff-item.html?v=2015-02-02');
     //订单打印
     $('body').on('click','.print-order',function(){
         orderPrint($(this));
     });
 });
 var orders=window.dataObj.order;
-var list_item;
-var goods_item;
+var $list_item;
+var $goods_item;
+var $staff_item;
 var shop_remark=$('.shop-receipt-remark').val();
 var shop_img=$('.shop-receipt-img').val();
 
 function getOrder(url){
     $.getItem(url,function(data){
-            list_item=data;
+            $list_item=data;
             orderItem(orders);
         }
     );
@@ -34,14 +37,22 @@ function getOrder(url){
 function getGoodsItem(url){
     $.ajaxSetup({'async':false});
     $.getItem(url,function(data){
-            goods_item=data;
+            $goods_item=data;
+        }
+    );
+}
+
+function getStaffItem(url){
+    $.ajaxSetup({'async':false});
+    $.getItem(url,function(data){
+            $staff_item=data;
         }
     );
 }
 
 function orderItem(item){
     for(var i=0;i<item.length;i++){
-        var $item=$(list_item);
+        var $item=$($list_item);
         var id=item[i]['id'];
         var num=item[i]['num'];
         var create_date=item[i]['create_date'];
@@ -60,8 +71,7 @@ function orderItem(item){
         var today=item[i]['today'];
         var totalPrice=item[i]['totalPrice'];
         var type=item[i]['type'];
-        var staff_remark=item[i]['staff_remark'];
-        var remark=item[i]['remark'];
+        var SH2s=item[i]['SH2s'];
         var sent_time=item[i]['sent_time'];
         if(!message) message='无';
         if(!staff_remark) staff_remark='无';
@@ -107,7 +117,7 @@ function orderItem(item){
         var m_num=0;
         for(var key in fruits){
             g_num++;
-            var $goods=$(goods_item);
+            var $goods=$($goods_item);
             $goods.find('.code').text(g_num);
             $goods.find('.goods-name').text(fruits[key]['fruit_name']);
             $goods.find('.goods-price').text(fruits[key]['charge']);
@@ -117,13 +127,21 @@ function orderItem(item){
         }
         for(var key in mgoods){
             m_num++;
-            var $mgoods=$(goods_item);
+            var $mgoods=$($goods_item);
             $mgoods.find('.code').text(m_num);
             $mgoods.find('.goods-name').text(mgoods[key]['mgoods_name']);
             $mgoods.find('.goods-price').text(mgoods[key]['charge']);
             $mgoods.find('.goods-number').text(mgoods[key]['num']);
             $item.find('.goods-list').append($goods);
             goods_num=goods_num+mgoods[key]['num'];
+        }
+        for(var key in SH2s){
+            var $staff=$($staff_item);
+            $staff.attr({'data-id':SH2s[key]['id']});
+            $staff.find('.sender-code').text(SH2s[key]['id']);
+            $staff.find('.sender-name').text(SH2s[key]['realname']);
+            $staff.find('.sender-phone').text(SH2s[key]['phone']);
+            $item.find('.send-person').append($staff);
         }
         $item.find('.goods-total-number').text(goods_num);
         $('.order-list-content').append($item);

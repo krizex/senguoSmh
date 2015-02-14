@@ -92,20 +92,13 @@
         </div>
         <div class="address-adapt">
             <p>一级配送员</p>
-            <div class="send-person-area-select">
-                <ul class="send-person-area right-nav">
-                    {% for SH2 in SH2s%}
-                    <li data-id="{{SH2.id}}">
-                        <span class="sender-code">S2-{{SH2.id}}</span>||
-                        <span>送货员<span class="sender-name">{{SH2.accountinfo.realname or '无名氏'}}</span></span>||
-                        <span class="sender-phone">{{SH2.accountinfo.phone}}</span>
-                    </li>
-                    {% end %}
+            <div class="send-person-area-select border-none">
+                <ul class="send-person right-nav">
                 </ul>
-                <div class="select-btn">
+                <!--<div class="select-btn">
                     <input type="submit" value="确认" class="sure-btn staff-edit"/>
                     <input type="button" value="取消" class="concel-btn"/>
-                </div>
+                </div>-->
             </div>
         </div>
         <!--address-adapt-end-->

@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    $('.count-box').css({'height':$(window).height()});
     $('.count-list li').on('click',function(){
         var $this=$(this);
         $this.addClass('active').parents('.count-box').addClass('hidden').siblings('.apply-info').removeClass('hidden');
