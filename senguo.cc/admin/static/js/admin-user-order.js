@@ -12,16 +12,23 @@ $(document).ready(function(){
     });
     //商品列表item
     getGoodsItem('/static/items/admin/order-goods-item.html?v=2015-02-02');
+    //员工列表item
+    getStaffItem('/static/items/admin/order-staff-item.html?v=2015-02-02');
+    //订单打印
+    $('body').on('click','.print-order',function(){
+        orderPrint($(this));
+    });
 });
 var orders=window.dataObj.order;
-var list_item;
-var goods_item;
+var $list_item;
+var $goods_item;
+var $staff_item;
 var shop_remark=$('.shop-receipt-remark').val();
 var shop_img=$('.shop-receipt-img').val();
 
 function getOrder(url){
     $.getItem(url,function(data){
-            list_item=data;
+            $list_item=data;
             orderItem(orders);
         }
     );
@@ -30,14 +37,22 @@ function getOrder(url){
 function getGoodsItem(url){
     $.ajaxSetup({'async':false});
     $.getItem(url,function(data){
-            goods_item=data;
+            $goods_item=data;
+        }
+    );
+}
+
+function getStaffItem(url){
+    $.ajaxSetup({'async':false});
+    $.getItem(url,function(data){
+            $staff_item=data;
         }
     );
 }
 
 function orderItem(item){
     for(var i=0;i<item.length;i++){
-        var $item=$(list_item);
+        var $item=$($list_item);
         var id=item[i]['id'];
         var num=item[i]['num'];
         var create_date=item[i]['create_date'];
@@ -56,14 +71,14 @@ function orderItem(item){
         var today=item[i]['today'];
         var totalPrice=item[i]['totalPrice'];
         var type=item[i]['type'];
-        var staff_remark=item[i]['staff_remark'];
-        var remark=item[i]['remark'];
+        var SH2s=item[i]['SH2s'];
+        var sent_time=item[i]['sent_time'];
         if(!message) message='无';
         if(!staff_remark) staff_remark='无';
         if(!remark) remark='无';
 
         $item.attr({'data-id':id,'data-type':type});
-        $item.find('.send-time').text();
+        $item.find('.send-time').text(sent_time);
         $item.find('.order-code').text(num);
         $item.find('.order-price').text(totalPrice);
         $item.find('.goods-total-charge').text(totalPrice);
@@ -102,7 +117,7 @@ function orderItem(item){
         var m_num=0;
         for(var key in fruits){
             g_num++;
-            var $goods=$(goods_item);
+            var $goods=$($goods_item);
             $goods.find('.code').text(g_num);
             $goods.find('.goods-name').text(fruits[key]['fruit_name']);
             $goods.find('.goods-price').text(fruits[key]['charge']);
@@ -112,7 +127,7 @@ function orderItem(item){
         }
         for(var key in mgoods){
             m_num++;
-            var $mgoods=$(goods_item);
+            var $mgoods=$($goods_item);
             $mgoods.find('.code').text(m_num);
             $mgoods.find('.goods-name').text(mgoods[key]['mgoods_name']);
             $mgoods.find('.goods-price').text(mgoods[key]['charge']);
@@ -120,7 +135,61 @@ function orderItem(item){
             $item.find('.goods-list').append($goods);
             goods_num=goods_num+mgoods[key]['num'];
         }
+        for(var key in SH2s){
+            var $staff=$($staff_item);
+            $staff.attr({'data-id':SH2s[key]['id']});
+            $staff.find('.sender-code').text(SH2s[key]['id']);
+            $staff.find('.sender-name').text(SH2s[key]['realname']);
+            $staff.find('.sender-phone').text(SH2s[key]['phone']);
+            $item.find('.send-person').append($staff);
+        }
         $item.find('.goods-total-number').text(goods_num);
         $('.order-list-content').append($item);
     }
+}
+
+function orderPrint(target){
+    var parent=target.parents('.order-list-item');
+    var order_id=parent.data('id');
+    var shop_name=$('#shop_name').text();
+    var order_time=parent.find('.order-time').text();
+    var delivery_time=parent.find('.send-time').text();
+    var receiver=parent.find('.name').first().text();
+    var address=parent.find('.address').first().text();
+    var phone=parent.find('.phone').first().text();
+    var remark=parent.find('.message-content').first().text();
+    var paid=parent.find('.pay-status').text();
+    var totalPrice=parent.find('.goods-total-charge').text();
+    var goods=parent.find('.goods-list')[0].innerHTML;
+    var print_remark=parent.find('.receipt-remark').val();
+    var print_img=parent.find('.receipt-img').val();
+    $.getItem('/static/items/admin/order-print-page.html?v=2015-01-12',function(data){
+        var $item=$(data);
+        $item.find('.notes-head').text(shop_name);
+        $item.find('.orderId').text(order_id);
+        $item.find('.orderTime').text(order_time);
+        $item.find('.deliveryTime').text(delivery_time);
+        $item.find('.address').text(address);
+        $item.find('.receiver').text(receiver);
+        $item.find('.phone').text(phone);
+        $item.find('.remark').text(remark);
+        $item.find('.totalPrice').text(totalPrice);
+        $item.find('.goods-list')[0].innerHTML=goods;
+        $item.find('.print-remark').text(print_remark);
+        if(!print_img) $item.find('.shop-img').remove();
+        else $item.find('.shop-img img').attr({'src':print_img});
+        if (paid == true) {
+            $item.find('.moneyPaid').text('已支付');
+        } else {
+            $item.find('.moneyPaid').text('未支付');
+        }
+        var OpenWindow = window.open("","","width=500,height=600");
+        OpenWindow.document.body.style.margin = "0";
+        OpenWindow.document.body.style.marginTop = "15px";
+        var box = OpenWindow.document.createElement('div');
+        box.innerHTML=$item[0].innerHTML;
+        OpenWindow.document.body.appendChild(box);
+        OpenWindow.document.close();
+        OpenWindow.print();
+    })
 }

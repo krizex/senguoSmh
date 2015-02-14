@@ -9,7 +9,7 @@ $(document).ready(function(){
 function Pass(evt){
     var action="updateShopStatus";
     var shop_id=evt.parents('li').data('shopid');
-    var url='/super/shopManage/';
+    var url='';
     var new_status=2;
     var args={
         action:action,
@@ -32,7 +32,7 @@ function Reject(evt){
     var action="updateShopStatus";
     var shop_id=evt.parents('li').data('shopid');
     var declined_reason=evt.siblings('.decline-reason').val().trim();
-    var url='/super/shopManage/';
+    var url='';
     var new_status=3;
     if(!declined_reason){return alert('请输入拒绝理由！')}
     var args={

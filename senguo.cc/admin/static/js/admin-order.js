@@ -215,11 +215,10 @@ $(document).ready(function(){
             count.text(num);
         }
     });
+    toggle('.order-content','.list-item-body');
     $('.order-content').on('click',function(){
         var $this=$(this);
         $this.toggleClass('up','down');
-        $this.parents('.list-item').find('.list-item-body').slideToggle(100);
-        $this.parents('.list-item').siblings('.list-item').find('.list-item-body').slideUp(100).siblings().find('.arrow-up').hide().siblings('.arrow-down').show();
         $('.sales-list-item').css({'border-color':'#29aae1'});
     });
     $('.avilible_item').on('mouseenter',function(){$(this).find('.edit-btn').show();});
@@ -293,8 +292,18 @@ $(document).ready(function(){
     //订单搜索
     $('.order-search').on('click',function(){orderSearch()});
     //订单打印
-    $('.print-order').on('click',function(){
-        orderPrint($(this));
+    $('.print-order').each(function(){
+        var $this=$(this);
+        var printed=$this.data('id');
+        if(printed=='True') $this.addClass('printed');
+        //订单是否已被打印
+        $this.on('click',function(){
+            orderPrint($this);
+        });
+    });
+    //订单删除
+    $('.delete-order').on('click',function(){
+        orderDelete($(this));
     });
 });
 var link='/admin/order';
@@ -319,6 +328,8 @@ function orderSearch(){
 }
 
 function orderPrint(target){
+    var url='';
+    var action='print';
     var parent=target.parents('.order-list-item');
     var order_id=parent.data('id');
     var shop_name=$('#shop_name').text();
@@ -361,8 +372,45 @@ function orderPrint(target){
         OpenWindow.document.body.appendChild(box);
         OpenWindow.document.close();
         OpenWindow.print();
+        var data={
+            order_id:order_id
+        };
+        var args={
+            action:action,
+            data:data
+        };
+        $.postJson(url,args,function(res){
+                if(res.success){
+                    target.addClass('printed');
+                }
+                else return alert(res.error_text);
+            },
+            function(){return alert('网络错误！')}
+        )
     })
 }
+function orderDelete(target){
+    var url='';
+    var action='del_order';
+    var parent=target.parents('.order-list-item');
+    var order_id=parent.data('id');
+    var data={
+        order_id:order_id
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,function(res){
+            if(res.success){
+                parent.remove();
+            }
+            else return alert(res.error_text);
+        },
+        function(){return alert('网络错误！')}
+    )
+}
+
 
 function addEditPeriod(target,action){
     var url=link;

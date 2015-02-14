@@ -94,6 +94,7 @@ class _CommonApi:
         s = session
         s.add(self)
         s.commit()
+
     def update(self, session, **kwargs):
         for key in kwargs.keys():
             setattr(self, key, kwargs[key])
@@ -253,6 +254,7 @@ class _AccountApi(_CommonApi):
         return u
     # * TODO 手机号注册
 
+#用户的基本信息，每个角色类型都连接到这个表，即一人可能有多个角色，但只有一种基本信息
 class Accountinfo(MapBase, _CommonApi):
     __tablename__ = "account_info"
     
@@ -292,7 +294,7 @@ class Accountinfo(MapBase, _CommonApi):
     wx_province = Column(String(32))
     wx_city = Column(String(32))
 
-
+# 角色：超级管理员
 class SuperAdmin(MapBase, _AccountApi):
     __tablename__ = "super_admin"
     __relationship_props__ = ["accountinfo"]
@@ -303,6 +305,8 @@ class SuperAdmin(MapBase, _AccountApi):
     def __repr__(self):
         return "<SuperAdmin ({nickname}, {id})>".\
             format(id=self.id, nickname=self.accountinfo.nickname)
+
+# 店铺申请表
 class ShopTemp(MapBase, _CommonApi):
     """申请中和拒绝的店铺放在临时表中"""
     def __init__(self, **kwargs):
@@ -349,6 +353,8 @@ class ShopTemp(MapBase, _CommonApi):
 
     admin = relationship("ShopAdmin")
 
+
+# 店铺
 class Shop(MapBase, _CommonApi):
     # def __init__(self, **kwargs):
     #     self.config=Config()
@@ -361,7 +367,7 @@ class Shop(MapBase, _CommonApi):
     shop_name = Column(String(128), nullable=False)
     shop_code = Column(String(128), nullable=False, default="not set")
     create_date_timestamp = Column(Integer, nullable=False)
-    shop_status = Column(Integer, default=SHOP_STATUS.ACCEPTED)
+    shop_status = Column(Integer, default=SHOP_STATUS.ACCEPTED)  # 1：申请中 2：申请成功 3：拒绝
 
     admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
     admin = relationship("ShopAdmin")
@@ -418,6 +424,7 @@ class Shop(MapBase, _CommonApi):
         return "<Shop: {0} (id={1}, code={2})>".format(
             self.shop_name, self.id, self.shop_code)
 
+# 角色：商家，即店铺的管理员
 class ShopAdmin(MapBase, _AccountApi):
     __tablename__ = "shop_admin"
 
@@ -526,7 +533,7 @@ class ShopAdmin(MapBase, _AccountApi):
         return "<ShopAdmin (nickname, id)>".format(self.accountinfo.nickname, 
                                                    self.id)
 
-#todo:责任区域
+# 角色：店铺员工
 class ShopStaff(MapBase, _AccountApi):
     __tablename__ = "shop_staff"
     __relationship_props__ = ["accountinfo"]
@@ -538,7 +545,8 @@ class ShopStaff(MapBase, _AccountApi):
     accountinfo = relationship(Accountinfo)
     shops = relationship("Shop", secondary="hire_link")
 
-class HireLink(MapBase):
+# 雇佣关系表
+class HireLink(MapBase, _CommonApi):
     __tablename__ = "hire_link"
 
     staff_id = Column(Integer, ForeignKey(ShopStaff.id), primary_key=True)
@@ -550,6 +558,7 @@ class HireLink(MapBase):
     remark = Column(String(500))
     active = Column(TINYINT, default=1)#1:上班 2：下班
 
+# 角色：顾客
 class Customer(MapBase, _AccountApi):
     __tablename__ = "customer"
     __relationship_props__ = ["accountinfo"]
@@ -563,7 +572,8 @@ class Customer(MapBase, _AccountApi):
     carts = relationship("Cart", uselist=True)
     addresses = relationship("Address", backref="customer")
 
-class CustomerShopFollow(MapBase, _CommonApi):  # 用户关注店铺
+# 用户关注店铺
+class CustomerShopFollow(MapBase, _CommonApi):
     __tablename__ = "customer_shop_follow"
     customer_id = Column(Integer, ForeignKey(Customer.id), primary_key=True, nullable=False)
     shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
@@ -683,6 +693,7 @@ class SystemOrder(MapBase, _CommonApi):
 
     notify_id = Column(String(64))    
 
+# 顾客的购买地址
 class Address(MapBase,  _CommonApi):
     __tablename__ = "address"
 
@@ -722,12 +733,14 @@ class InfoCollect(MapBase, _CommonApi):
     admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
     info_id = Column(Integer, ForeignKey(Info.id), nullable=False)
 
+# 信息墙的水果图片
 class FruitImg(MapBase, _CommonApi):
     __tablename__ = "fruit_img"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     info_id = Column(Integer, ForeignKey(Info.id), nullable=False)
     img_url = Column(String(1024))
 
+#信息墙的评论
 class Comment(MapBase, _CommonApi):
     __tablename__ = "comment"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -747,6 +760,7 @@ class InfofruitLink(MapBase):
     fruit_id = Column(Integer, ForeignKey("fruit_type.id"), nullable=False)
 #＝＝＝＝信息墙
 
+# 系统自定义水果类型
 class FruitType(MapBase,  _CommonApi):
     __tablename__ = "fruit_type"
     
@@ -775,6 +789,7 @@ class ShopDemandfruitLink(MapBase):
     shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
     fruit_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
 
+# 店铺收藏
 class ShopsCollect(MapBase, _CommonApi):
     __tablename__ = "shops_collect"
 
@@ -782,6 +797,7 @@ class ShopsCollect(MapBase, _CommonApi):
     admin_id = Column(Integer, ForeignKey(ShopAdmin.id), nullable=False)
     shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
 
+# 反馈
 class Feedback(MapBase, _CommonApi):
     __tablename__ = "feedback"
     
@@ -867,19 +883,12 @@ class Order(MapBase, _CommonApi):
     start_time = Column(Time)
     end_time = Column(Time)
     create_date = Column(DateTime, default=func.now())
-    active = Column(TINYINT, default=1)#0删除
+    active = Column(TINYINT, default=1)  # 0删除
+    isprint = Column(Boolean, default=0)  # 是否被打印了 0：否，1：是
 
     fruits = Column(String(1000))
     mgoods = Column(String(1000))
     shop = relationship("Shop", uselist=False,join_depth=1)
-    # charge_types = relationship("ChargeType", secondary="order_ctype_link", uselist=True)
-    # mcharge_type = relationship("MChargeType", secondary="order_mtype_link", uselist=True)
-# #按时达
-# class OrderOnTime(MapBase):
-#     __tablename__ = "order_on_time"
-#     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-#     order_id = Column(Integer, ForeignKey(Order.id), nullable=False)
-#     period = Column(String(20)) #送货时间段（不能保存成外键，否则商家删除或修改这个时间段时这个值会变化）
 
 
 #水果单品
@@ -904,6 +913,7 @@ class Fruit(MapBase, _CommonApi):
     fruit_type = relationship("FruitType", uselist=False)
     shop = relationship("Shop", uselist=False)
 
+# 用户自定义的商品类型
 class Menu(MapBase, _CommonApi):
     __tablename__ = "menu"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -969,7 +979,7 @@ class Cart(MapBase, _CommonApi):
     fruits = Column(String(100), default='{}')
     mgoods = Column(String(100), default='{}')
 
-#设置
+# 店铺设置
 class Config(MapBase, _CommonApi):
     __tablename__ = "config"
 
@@ -992,7 +1002,7 @@ class Config(MapBase, _CommonApi):
     notices = relationship("Notice") #公告设置
     periods = relationship("Period") #时间段设置
 
-#公告设置
+#商城首页的公告
 class Notice(MapBase):
     __tablename__ = "notice"
 
@@ -1022,6 +1032,7 @@ class Address1(MapBase, _CommonApi):
     name = Column(String(50))
     active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
     address2 = relationship("Address2")
+
 #二级地址
 class Address2(MapBase, _CommonApi):
     __tablename__ = "address2"
@@ -1031,6 +1042,7 @@ class Address2(MapBase, _CommonApi):
     name = Column(String(50))
     active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 
+# 员工申请表
 class HireForm(MapBase):
     __tablename__ = "hire_form"
 
@@ -1043,7 +1055,8 @@ class HireForm(MapBase):
 
     staff = relationship("ShopStaff", uselist=False, join_depth=2)
 
-class SysNotice(MapBase):  #系统公告
+# 系统公告
+class SysNotice(MapBase):
     __tablename__ = "sys_notice"
 
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -1051,7 +1064,8 @@ class SysNotice(MapBase):  #系统公告
     detail = Column(String(1000), nullable=False)
     create_time = Column(DateTime, default=func.now())
 
-class ShopFavorComment(MapBase):  # 店铺收藏评论关系表
+# 店铺收藏评论关系表
+class ShopFavorComment(MapBase):
     __tablename__ = "shop_favor_comment"
 
     shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)

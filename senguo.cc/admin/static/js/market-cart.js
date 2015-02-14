@@ -1,4 +1,7 @@
 $(document).ready(function(){
+    $('#charge').on('click',function(){
+        return alert('该功能年后开放,敬请期待！');
+    });
     //运费默认值
     if(!freigh_ontime) freigh_ontime=0;
     if(!freigh_now) freigh_now=0;

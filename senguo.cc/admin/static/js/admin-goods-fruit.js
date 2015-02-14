@@ -16,6 +16,10 @@ $(document).ready(function(){
         if(name==link_id&&link_action=='menu')
         $this.addClass('active');
     });
+    //查看所有上架-不允许添加新商品
+    if(link_action=='all'){
+        $('.add-new-goods').hide();
+    }
     //添加新的商品分类
     $('#add-new-goodsType').on('click',function(){
         var max_type_num=$('.goods-classify').find('.item').length;
@@ -39,9 +43,10 @@ $(document).ready(function(){
     });
     $('.class_name_edit').on('click',function(){
         var $this=$(this);
-        var name=$this.parents('.menu_active').text();
-        var id=$this.parents('.menu_active').data('id');
-        var index=$this.parents('.menu_active').index;
+        var $parent=$this.parents('.menu_active');
+        var name=$parent.find('a').text();
+        var id=$parent.data('id');
+        var index=$parent.index();
         var box=$('.add-goodsType-box');
         box.modal('show').attr({'data-id':id,'data-index':index}).find('.modal-title').text('编辑商品分类');
         box.find('#type-name').val(name);
@@ -132,14 +137,11 @@ $(document).ready(function(){
         }
     });
     //上下架操作
-    $('.goods-edit-active').each(function(){
-        var $this=$(this);
-        $this.find('span').on('click',function(){
+    $('.goods-edit-active').on('click',function(){
             var $this=$(this);
             var fruit_id=$this.parents('.goods-list-item').data('id');
-            editActive(fruit_id);
-            $this.hide().siblings('span').show();
-        });
+            editActive(fruit_id,$this);
+            $this.find('span').toggle();
     });
     //***商品添加***
     $('.add-new-goods').on('click',function(){
@@ -312,7 +314,7 @@ $(document).ready(function(){
         var key='';
         var token='';
         var fruit_id=parent.data('id');
-        var link_action= $.getUrlParam('action');
+        var link_action=parent.data('type');
         edit_item.uploadifive(
             {
                 buttonText    : '',
@@ -388,17 +390,16 @@ $(document).ready(function(){
     });
     $('.edit-goods-concel').on('click',function(){$(this).parents('.goods-list-item').find('.goods-item-edit').addClass('hidden').siblings('.goods-item-show').removeClass('hidden');});
     //商品信息编辑
-    $('.edit-goods-sure').each(function(){
+    $('.edit-goods-sure').on('click',function(){
         var $this=$(this);
-        $this.on('click',function(){
-        var menu_type= $.getUrlParam('action');
+        var parent=$this.parents('.goods-item');
+        var menu_type=parent.data('type');
         if(menu_type=='fruit'){
             addEditFruit($this,'edit_fruit')
         }
         else if (menu_type == 'menu'){
             addEditFruit($this,'edit_mgoods')
         }
-        })
     });
     //商品编辑-单位换算显示
     $('.charge-unit').each(function(){
@@ -530,7 +531,7 @@ function addEditType(target,action){
                 }
                 else if(action=='edit_menu_name'){
                     var index=box.attr('data-index');
-                    $('.menu_active').eq(index).text(name);
+                    $('.classify-nav').find('li').eq(index).find('a').text(name);
                 }
                 box.modal('hide');
 
@@ -667,10 +668,11 @@ function addEditFruit(target,action){
         function(){alert('网络错误')});
 }
 
-function editActive(id){
+function editActive(id,target){
     var url=link;
     var data={};
-    var menu_type= $.getUrlParam('action');
+    var parent=target.parents('.goods-item');
+    var menu_type=parent.data('type');
     var action;
     if(menu_type=='fruit'){
         action='edit_active'
@@ -767,7 +769,8 @@ function deleteCharge(target,id){
 function defaultImg(target,id,code){
     var url='';
     var action;
-    var link=$.getUrlParam('action');
+    var parent=target.parents('.goods-item');
+    var link=parent.data('type');
     if(link=='fruit'){action='default_fruit_img'}
     else if(link=='menu'){action='default_mgoods_img'}
     var data={};

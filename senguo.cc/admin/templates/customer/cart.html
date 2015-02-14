@@ -105,8 +105,8 @@
                         <a href="javascript:;" class="bg-white text-grey" id="sendInTime">
                             <p class="top line25">
                                 <span class="font16 m-r5 pull-left">按时达</span>
-                                <span class="font8 pull-left">起送价：{{config.min_charge_on_time or 0}}元</span>
-                                <span class="font8 pull-left">配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元</span>
+                                <span class="pull-left">起送价：{{config.min_charge_on_time or 0}}元</span>
+                                <span class= pull-left">配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元</span>
                             </p>
                             <p class="text-grey9">订单将根据您选择的时间段送达</p>
                         </a>
@@ -117,10 +117,10 @@
                         <a href="javascript:;" class="bg-white text-grey" id="sendNow">
                             <p class="top line25">
                                 <span class="font16 m-r5 pull-left">立即送</span>
-                                <span class="font8 pull-left">起送价：{{config.min_charge_now or 0}}元</span>
-                                <span class="font8 pull-left">配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元</span>
+                                <span class="pull-left">起送价：{{config.min_charge_now or 0}}元</span>
+                                <span class="pull-left">配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元</span>
                             </p>
-                            <p class="text-grey9">订单将在30分钟内送到您的手上，请保持电话畅通</p>
+                            <p class="text-grey9">订单将在30分钟内送到您的手上</p>
                         </a>
                     </li>
                     {% end %}
@@ -131,7 +131,7 @@
                     <li data-id="1" class="active pull-left" id="send_today"><a href="javascript:;" class="bg-white text-green">今天</a></li>
                     <li data-id="2" id="send_tomorrow" class="pull-left"><a href="javascript:;" class="bg-white text-green">明天</a></li>
                 </ul>
-                <ul id="sendPeriod" class="send_period list-group  font12">
+                <ul id="sendPeriod" class="send_period list-group  font14">
                     {% for period in periods%}
                     <li data-id="{{period.id}}" class="list-group-item clearfix available line50 height50">
                         <a href="javascript:;" class="text-grey clearfix">
@@ -167,7 +167,10 @@
                 {% end %}
             </div>
             <div class="send-address-choose clearfix center-block bg-white box-style">
-                <p class="text-grey3 font14 m-b5">收货人地址</p>
+                <p class="clearfix">
+                    <span class="pull-left text-grey3 font14 m-b5">收货人地址</span>
+                    <a class="text-green pull-right to-add-address font12 m-r10">+添加</a>
+                </p>
                 <ul id="addressType" class="address_list list-group type-choose font12 m-b5 clearfix">
                     {% for address in current_user.addresses%}
                     <li data-id="{{address.id}}" class="list-group-item clearfix item height50">
@@ -176,50 +179,52 @@
                                 <span class="phone">{{address.phone}}</span>
                                 <span class="name pr10">{{address.receiver}}</span>
                             </p>
-                            <p class="address pr10 m0">{{address.address_text}}</p>
+                            <p class="address pr10 m0 text-grey9">{{address.address_text}}</p>
                         </a>
                         <a class="text-green pull-right to-edit-address text-center">+编辑</a>
                     </li>
                     {% end %}
                 </ul>
-                <p class="clearfix"><a class="text-green pull-right to-add-address font12 m-r10">+添加</a></p>
-                <div class="address-box hidden center-block font12 p">
-                    <p>
-                        <span class="tit set-inl-blo pull-left">姓名：</span>
-                        <input type="text" placeholder="输入收货人姓名" class="input-sty bg-white pull-left" id="receiveName"/>
-                    </p>
-                    <p>
-                        <span class="tit set-inl-blo pull-left">地址：</span>
-                        <input type="text" placeholder="输入收货人详细地址"  class="input-sty bg-white pull-left" id="receiveAddress"/>
-                    </p>
-                    <p>
-                        <span class="tit set-inl-blo pull-left">电话：</span>
-                        <input type="text" placeholder="输入收货人有效联系电话"  class="input-sty bg-white pull-left" id="receivePhone"/>
-                    </p>
-                    <div class="w-per9 center-block">
-                        <button class="btn text-white pull-right bg-green" id="receiveAdd">确定</button>
-                        <button class="btn text-white pull-right bg-green hidden" id="receiveEdit">确定</button>
-                        <button class="btn text-grey3 bg-greyc pull-right m-r5" id="receiveCancel">取消</button>
+                <div class="box-style">
+                    <div class="address-box hidden set-w100-fle font12 p bg-grey2">
+                        <p>
+                            <span class="tit set-inl-blo pull-left">姓名：</span>
+                            <input type="text" placeholder="输入收货人姓名" class="input-sty bg-white pull-left" id="receiveName"/>
+                        </p>
+                        <p>
+                            <span class="tit set-inl-blo pull-left">地址：</span>
+                            <input type="text" placeholder="输入收货人详细地址"  class="input-sty bg-white pull-left" id="receiveAddress"/>
+                        </p>
+                        <p>
+                            <span class="tit set-inl-blo pull-left">电话：</span>
+                            <input type="text" placeholder="输入收货人有效联系电话"  class="input-sty bg-white pull-left" id="receivePhone"/>
+                        </p>
+                        <div class="w200 center-block clearfix mt10">
+                            <button class="btn text-white pull-right bg-green" id="receiveAdd">确定</button>
+                            <button class="btn text-white pull-right bg-green hidden" id="receiveEdit">确定</button>
+                            <button class="btn text-white bg-greyc pull-right m-r10" id="receiveCancel">取消</button>
+                        </div>
                     </div>
                 </div>
+
             </div>
             <div class="send-address-choose clearfix center-block bg-white box-style">
                 <p class="clearfix">
                     <span class="pull-left text-grey3 font14 m-b5">支付方式</span>
-                    <a href="#" class="text-green pull-right font12 m-r10">充值</a>
+                    <a href="javascript:;" class="text-green pull-right font12 m-r10" id="charge">充值</a>
                     <span class="pull-right pr10 font12">账户余额：{{current_user.balance}}元</span>
                 </p>
                 <ul id="payType" class="pay_type list-group type-choose font12">
                     <li data-id="1" class="active list-group-item clearfix line50 height50">
                         <a href="javascript:;" class="text-grey">
-                            <span class="text-grey3 pull-left title set-inl-blo">货到付款</span>
-                            <span class="pull-left">送货员送货时交付现金</span>
+                            <span class="text-grey3 pull-left title set-inl-blo font14">货到付款</span>
+                            <span class="pull-left text-grey9">送货员送货时交付现金</span>
                         </a>
                     </li>
                     <li data-id="2" class="list-group-item clearfix line50 height50">
                         <a href="javascript:;" class="text-grey">
-                            <span class="text-grey3 pull-left title set-inl-blo">余额支付</span>
-                            <span class="pull-left">提前支付</span>
+                            <span class="text-grey3 pull-left title set-inl-blo font14">余额支付</span>
+                            <span class="pull-left text-grey9">提前支付</span>
                         </a>
                     </li>
                 </ul>

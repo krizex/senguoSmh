@@ -3,7 +3,7 @@ import dal.models as models
 import tornado.web
 import time, datetime
 from settings import ROOT_HOST_NAME
-from sqlalchemy import exists, func, extract, DATE
+from sqlalchemy import exists, func, extract, DATE, desc
 from dal.dis_dict import dis_dict
 from libs.msgverify import check_msg_token
 
@@ -116,43 +116,65 @@ class ShopProfile(SuperBaseHandler):
 
 class ShopManage(SuperBaseHandler):
     _page_count = 20
-    
-    def initialize(self, action):
-        self._action = action
 
     @tornado.web.authenticated
-    @SuperBaseHandler.check_arguments("page?:int")
+    @SuperBaseHandler.check_arguments("action", "page?:int")
     def get(self):
+        action = self.args["action"]
         offset = (self.args.get("page", 1) - 1) * self._page_count
         q = self.session.query(models.Shop)
         q_temp = self.session.query(models.ShopTemp)
         q_applying = q_temp.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
         q_declined = q_temp.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
-        #q_accepted = q.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
+        q_accepted = q_temp.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
+
         count = {
-            "all":q.count()+q_temp.count(),
-            "applying":q_applying.count(),
-            "accepted":q.count(),
-            "declined":q_declined.count()
+            "all_temp": q_temp.count(),
+            "applying": q_applying.count(),
+            "accepted": q_accepted.count(),
+            "declined": q_declined.count(),
+            "all": q.count()
             }
-        name = "ShopTemp"
-        if self._action == "all":
-            pass
-        elif self._action == "applying":
+        if action == "all_temp":
+            q = q_temp
+        elif action == "applying":
             q = q_applying
-        elif self._action == "accepted":
-            name = "Shop"
-        elif self._action == "declined":
+        elif action == "accepted":
+            q = q_accepted
+        elif action == "declined":
             q = q_declined
+        elif action == "all":
+            shops = q.order_by(models.Shop.id.desc()).offset(offset).limit(self._page_count).all()
+            output_data = []
+            for shop in shops:
+                data = {}
+                data["shop_trademark_url"] = shop.shop_trademark_url
+                data["shop_name"] = shop.shop_name
+                data["shop_code"] = shop.shop_code
+                data["city"] = self.code_to_text('shop_city', shop.shop_city)
+                data["staff_count"] = len(shop.staffs)
+                data["follower_count"] = self.session.query(models.CustomerShopFollow).\
+                    filter_by(shop_id=shop.id).count()
+                data["goods_count"] = len(shop.fruits) + self.session.query(models.MGoods).\
+                    join(models.Menu).filter(models.Menu.shop_id == shop.id).count()
+                data["admin_name"] = shop.admin.accountinfo.realname
+                data["operate_days"] = (datetime.datetime.now() - datetime.datetime.
+                                        fromtimestamp(shop.create_date_timestamp)).days
+                data["order_count"] = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
+                data["price_sum"] = self.session.query(func.sum(models.Order.totalPrice)).\
+                    filter_by(shop_id=shop.id).scalar()
+                output_data.append(data)
+
+            return self.render("superAdmin/shop-manage.html", output_data=output_data,context=dict(subpage='shop',action=action,count=count))
         else:
             return self.send_error(404)
         # 排序规则id, offset 和 limit
-        q = q.order_by(getattr(models, name).id.desc()).offset(offset).limit(self._page_count)
+        q = q.order_by(models.ShopTemp.id.desc()).offset(offset).limit(self._page_count)
         
         shops = q.all()
         # shops 是models.Shop实例的列表
-        return self.render("superAdmin/shop-manage.html", context=dict(
-                shops = shops,subpage='shop', action=self._action,
+        return self.render("superAdmin/apply-manage.html", context=dict(
+                shops = shops,subpage='shop', action=action,
                 count=count))
 
     @tornado.web.authenticated
@@ -178,7 +200,7 @@ class ShopManage(SuperBaseHandler):
             if shop_temp.shop_status == 2:
                 return self.send_error("店铺已经申请成功")
 
-            # 把临时表的内容复制到shop表
+            # 添加系统默认的时间段
             period1 = models.Period(name="中午", start_time="12:00", end_time="12:30")
             period2 = models.Period(name="下午", start_time="17:30", end_time="18:00")
             period3 = models.Period(name="晚上", start_time="21:00", end_time="22:00")
@@ -186,6 +208,7 @@ class ShopManage(SuperBaseHandler):
             config = models.Config()
             config.periods.extend([period1, period2, period3])
 
+            # 把临时表的内容复制到shop表
             shop = models.Shop(admin_id=shop_temp.admin_id,
                                          shop_name=shop_temp.shop_name,
                                          create_date_timestamp=shop_temp.create_date_timestamp,
@@ -199,11 +222,15 @@ class ShopManage(SuperBaseHandler):
             shop.config = config
 
             self.session.add(shop)
-            shop_temp.shop_status = 3
+            shop_temp.shop_status = 2
+            self.session.commit()  # 要commit一次才有shop.id
+
+            self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id))  # 把管理者默认为新店铺的二级配送员
             self.session.commit()
+
             account_info = self.session.query(models.Accountinfo).get(shop_temp.admin_id)
             WxOauth2.post_template_msg(account_info.wx_openid, shop_temp.shop_name,
-                                       account_info.realname, account_info.phone)
+                                       account_info.realname, account_info.phone)  # 发送微信模板消息通知用户
         return self.send_success()
 
 class Feedback(SuperBaseHandler):
@@ -334,7 +361,7 @@ class User(SuperBaseHandler):
                                        models.Accountinfo.sex,
                                        models.Accountinfo.wx_province,
                                        models.Accountinfo.wx_city,
-                                       models.Accountinfo.phone)
+                                       models.Accountinfo.phone).order_by(desc(models.Accountinfo.id))
 
         if action == "all":
             pass
@@ -520,3 +547,7 @@ class ShopStatic(SuperBaseHandler):
             order_by(models.Order.create_date).first()
         page_sum = (datetime.datetime.now() - first_order.create_date).days//30 + 1
         return self.send_success(page_sum=page_sum, data=data)
+
+class Official(SuperBaseHandler):
+    def get(self):
+        return self.render("m-official/home.html")

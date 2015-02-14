@@ -45,7 +45,7 @@
                     <span class="user-account text-grey2">{{customer.credits}}元</span>
                 </div>
             </div>
-            <a href="{{reverse_url('adminUserOrder')}}?action=customer_order&&id={{customer.id}}" class="history-order pull-right">查看历史订单</a>
+            <a href="{{reverse_url('adminSearchOrder')}}?action=customer_order&&id={{customer.id}}" class="history-order pull-right" target="_blank" >查看历史订单</a>
         </div>
         <div class="hide-info set-w100-fle bg-white" style="display:none;">
             <div class="personal-info pull-left">
@@ -79,7 +79,7 @@
     <ul>
         <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
         <li>
-            <span class="page-now"></span>/<span class="page-total">{{len(customers)/20}}</span>
+            <span class="page-now"></span>/<span class="page-total">{{page_sum}}</span>
         </li>
         <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
         <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>

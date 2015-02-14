@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    $('.count-box').css({'height':$(window).height()});
     $('.count-list li').on('click',function(){
         var $this=$(this);
         $this.addClass('active').parents('.count-box').addClass('hidden').siblings('.apply-info').removeClass('hidden');
@@ -108,7 +109,7 @@ function Apply(evt){
     var shop_province=$('#provinceAddress').attr('data-code');
     var shop_city=$('#cityAddress').attr('data-code');
     var shop_address_detail=$('#addressDetail').val().trim();
-    var have_offline_entity=$('#realShop').find('.active').find('a').data('id');
+    var have_offline_entity=$('#realShop').find('.active').data('id');
     var shop_service_area=i;
     var img_key=$('#logoImg').attr('data-key');
     var shop_intro=$('#shopIntro').val().trim();
@@ -171,7 +172,7 @@ function reApply(evt){
     var shop_province=$('#provinceAddress').attr('data-code');
     var shop_city=$('#cityAddress').attr('data-code');
     var shop_address_detail=$('#addressDetail').val().trim();
-    var have_offline_entity=$('#realShop').find('.active').find('a').data('real');
+    var have_offline_entity=$('#realShop').find('.active').data('id');
     var shop_service_area=i;
     var shop_intro=$('#shopIntro').val().trim();
     var shop_id=$('#headerId').data('id');

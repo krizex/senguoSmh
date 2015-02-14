@@ -17,7 +17,7 @@
             </div>
         </a>
     </div>
-    <div class="bg-white m-b10 clearfix font14 box-style title">
+    <div class="bg-white m-b10 clearfix font14 box-style">
         <div class="w50 pull-left text-center border-rd title2">积分&nbsp;&nbsp;{{current_user.credits}}</div>
         <div class="w50 pull-left text-center title2">余额&nbsp;&nbsp;{{current_user.balance}}</div>
     </div>
@@ -78,36 +78,38 @@
             {% end %}
         </ul>
     </div>
-    <div class="address-box modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header clearfix">
-                     <h4 class="title pull-left modal-title" id="myModalLabel">收货地址</h4>
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+{% end %}
+{% block bottom %}
+<div class="address-box modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header clearfix">
+                <h4 class="title pull-left modal-title font16" id="myModalLabel">收货地址</h4>
+                <span type="button" class="close text-white" data-dismiss="modal">✕</span>
+            </div>
+            <div class="modal-body font14">
+                <div class="w60 center-block mt42 pt10">
+                    <p class="set-inl-blo m-b10">
+                        <span class="pull-left tit set-inl-blo">收货人：</span>
+                        <input type="text" id="address_name" class="pull-left"s/>
+                    </p>
+                    <p class="set-inl-blo m-b10">
+                        <span class="pull-left tit set-inl-blo">电话：</span>
+                        <input type="text" id="address_phone" class="pull-left"s/>
+                    </p>
+                    <p class="set-inl-blo">
+                        <span class="pull-left tit set-inl-blo">收货地址：</span>
+                        <input type="text" id="address_address" class="pull-left"s/>
+                    </p>
                 </div>
-                <div class="modal-body font14">
-                    <div class="w60 center-block">
-                        <p class="clearfix">
-                            <span class="pull-left tit set-inl-blo">收货人：</span>
-                            <input type="text" id="address_name" class="pull-left"s/>
-                        </p>
-                        <p class="clearfix">
-                            <span class="pull-left tit set-inl-blo">电话：</span>
-                            <input type="text" id="address_phone" class="pull-left"s/>
-                        </p>
-                        <p class="clearfix">
-                            <span class="pull-left tit set-inl-blo">收货地址：</span>
-                            <input type="text" id="address_address" class="pull-left"s/>
-                        </p>
-                    </div>
-                </div>
-                <div class="modal-footer text-center">
-                    <button class="btn bg-green3 text-white addressEdit" style="display:none">确定</button>
-                    <button class="btn bg-green3 text-white addressAdd" style="display:none">确定</button>
-                    <button data-dismiss="modal" class="btn bg-greyc text-white">取消</button>
-                </div>
+            </div>
+            <div class="modal-footer text-center">
+                <button class="btn bg-green3 text-white addressEdit" style="display:none">确定</button>
+                <button class="btn bg-green3 text-white addressAdd" style="display:none">确定</button>
+                <button data-dismiss="modal" class="btn bg-greyc text-white">取消</button>
             </div>
         </div>
     </div>
+</div>
+<script src="{{static_url('js/market-center.js')}}"></script>
 {% end %}
-{% block bottom %}<script src="{{static_url('js/market-center.js')}}"></script>{% end %}

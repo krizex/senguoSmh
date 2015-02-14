@@ -1,4 +1,3 @@
-import handlers.front
 import handlers.admin
 import handlers.staff
 import handlers.customer
@@ -24,7 +23,6 @@ handlers = [
     (r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
     (r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
 
-    (r"/", handlers.front.Home,{}, "frontHome"),
     (r"/super/oauth", handlers.superadmin.Access,{
         "action":"oauth"}, "superOauth"),
     (r"/super/logout", handlers.superadmin.Access,{
@@ -57,19 +55,7 @@ handlers = [
 
     ## 店铺申请接入管理
     # 所有店铺
-    (r"/super/shopManage/", handlers.superadmin.ShopManage, {
-        "action":"applying"}, "superShopManage"),
-    (r"/super/shopManage/all", handlers.superadmin.ShopManage, {
-        "action":"all"}, "superShopManageAll"),
-    # 正在申请接入店铺
-    (r"/super/shopManage/applying", handlers.superadmin.ShopManage, {
-        "action":"applying"}, "superShopManageApplying"),
-    # 已经通过申请店铺
-    (r"/super/shopManage/accepted", handlers.superadmin.ShopManage, {
-        "action":"accepted"}, "superShopManageAccepted"),
-    # 已被拒绝店铺
-    (r"/super/shopManage/declined", handlers.superadmin.ShopManage, {
-        "action":"declined"}, "superShopManageDeclined"),
+    (r"/super/shopManage", handlers.superadmin.ShopManage, {}, "superShopManage"),
 
     ## 商城购买订单
     (r"/super/orderManage/", handlers.superadmin.OrderManage, {
@@ -96,6 +82,8 @@ handlers = [
 
 
     # (r"/super/notice/", handlers.superadmin.Notice),
+    #微官网-----待删除
+    (r"/m", handlers.superadmin.Official),
 
     (r"/admin/login", handlers.admin.Access,{"action":"login"}, "adminLogin"),
     (r"/admin/oauth", handlers.admin.Access, {"action":"oauth"}, "adminOauth"),
@@ -111,7 +99,7 @@ handlers = [
     (r"/admin/staff", handlers.admin.Staff, {}, "adminStaffJH"),
     (r"/admin/config", handlers.admin.Config, {}, "adminConfig"),
     (r"/admin/config/shop", handlers.admin.ShopConfig, {}, "adminShopConfig"),
-    (r"/admin/userorder", handlers.admin.UserOrder, {}, "adminUserOrder"),
+    (r"/admin/searchorder", handlers.admin.SearchOrder, {}, "adminSearchOrder"),
 
     # (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
     # (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
@@ -187,6 +175,5 @@ handlers = [
     (r"/fruitzone/InfoImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_info_img"}, "fruitzoneInfoImgCallback"),
     (r"/admin/shelf/fruitImgCallback", handlers.fruitzone.QiniuCallback,
      {"action": "edit_fruit_img"}, "adminShelfFruitImgCallback"),
-
 ]
 

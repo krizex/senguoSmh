@@ -23,6 +23,7 @@ function signin(){
     $.postJson(url,args,function(res){
         if(res.success){
             $('#signin-shop').addClass('bg-grey3 text-white').find('.sign_text').text('已签到');
+            $('#signin-shop').find('em').remove();
         }
         else return alert(res.error_text);
     })
