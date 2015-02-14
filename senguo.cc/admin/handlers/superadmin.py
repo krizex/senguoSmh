@@ -549,6 +549,5 @@ class ShopStatic(SuperBaseHandler):
         return self.send_success(page_sum=page_sum, data=data)
 
 class Official(SuperBaseHandler):
-    @tornado.web.authenticated
     def get(self):
         return self.render("m-official/home.html")
