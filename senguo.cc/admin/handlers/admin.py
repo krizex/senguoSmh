@@ -517,7 +517,7 @@ class Order(AdminBaseHandler):
             self.current_shop.config.update(session=self.session,min_charge_now=data["min_charge_now"],
                                             start_time_now=start_time, end_time_now=end_time,
                                             freight_now=data["freight_now"] or 0)
-        elif action in ["edit_remark", "edit_SH2", "edit_status", "edit_totalPrice"]:
+        elif action in ("edit_remark", "edit_SH2", "edit_status", "edit_totalPrice", 'del_order', 'print'):
             order = next((x for x in self.current_shop.orders if x.id==int(data["order_id"])), None)
             if not order:
                 return self.send_fail("没找到该订单")
@@ -532,6 +532,10 @@ class Order(AdminBaseHandler):
                 order.update(session=self.session, status=data["status"])
             elif action == "edit_totalPrice":
                 order.update(session=self.session, totalPrice=data["totalPrice"])
+            elif action == "del_order":
+                order.update(session=self.session, status=0)
+            elif action == "print":
+                order.update(session=self.session, print=1)
         # elif action == "search":
         #     order = self.session.query(models.Order).filter(and_(
         #         models.Order.id == int(data["order_id"]), models.Order.shop_id == self.current_shop.id)).first()
@@ -832,28 +836,31 @@ class Staff(AdminBaseHandler):
     def get(self):
         action = self.args["action"]
         staffs = self.current_shop.staffs
-        subpage=''
-        staffSub=''
-        if action == "JH":
-            hire_links = self.session.query(models.HireLink).filter_by(shop_id=self.current_shop.id, work=1).all()
-            staffs = [x for x in staffs if x.id in [hire_link.staff_id for hire_link in hire_links]]
-            subpage='staff'
-            staffSub='jh'
-        elif action == "SH1":
-            hire_links = self.session.query(models.HireLink).filter_by(shop_id=self.current_shop.id, work=2).all()
-            staffs = [x for x in staffs if x.id in [hire_link.staff_id for hire_link in hire_links]]
-            subpage='staff'
-            staffSub='sh1'
-        elif action == "SH2":
-            hire_links = self.session.query(models.HireLink).filter_by(shop_id=self.current_shop.id, work=3).all()
-            staffs = [x for x in staffs if x.id in [hire_link.staff_id for hire_link in hire_links]]
-            subpage='staff'
-            staffSub='sh2'
-        elif action == "hire":
+        if action == "hire":
             hire_forms = self.session.query(models.HireForm).filter_by(shop_id=self.current_shop.id).all()
             return self.render("admin/staff.html", hire_forms=hire_forms,
                                context=dict(subpage='staff',staffSub='hire'))
-        else: return self.send_error(404)
+        query = self.session.query(models.ShopStaff, models.HireLink).join(models.HireLink).filter(
+                models.HireLink.shop_id == self.current_shop.id)
+        subpage = 'staff'
+        staffSub = ''
+        if action == "JH":
+            staff_tuple = query.filter(models.HireLink.work == 1).all()
+            staffSub = 'jh'
+        elif action == "SH1":
+            staff_tuple = query.filter(models.HireLink.work == 2).all()
+            staffSub = 'sh1'
+        elif action == "SH2":
+            staff_tuple = query.filter(models.HireLink.work == 3).all()
+            staffSub = 'sh2'
+        else:
+            return self.send_error(404)
+
+        staffs = []
+        for item in staff_tuple:
+            item[0].hirelink = item[1]
+            staffs.append(item[0])
+
         return self.render("admin/staff.html", staffs=staffs, context=dict(subpage=subpage, staffSub=staffSub))
 
     @tornado.web.authenticated
