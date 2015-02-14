@@ -3,7 +3,7 @@ import dal.models as models
 import tornado.web
 import time, datetime
 from settings import ROOT_HOST_NAME
-from sqlalchemy import exists, func, extract, DATE
+from sqlalchemy import exists, func, extract, DATE, desc
 from dal.dis_dict import dis_dict
 from libs.msgverify import check_msg_token
 
@@ -361,7 +361,7 @@ class User(SuperBaseHandler):
                                        models.Accountinfo.sex,
                                        models.Accountinfo.wx_province,
                                        models.Accountinfo.wx_city,
-                                       models.Accountinfo.phone)
+                                       models.Accountinfo.phone).order_by(desc(models.Accountinfo.id))
 
         if action == "all":
             pass

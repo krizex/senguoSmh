@@ -8,6 +8,7 @@ from sqlalchemy import func, desc, and_, or_, exists
 import qiniu
 from dal.dis_dict import dis_dict
 
+# 登陆处理
 class Access(AdminBaseHandler):
     def initialize(self, action):
         self._action = action
@@ -56,6 +57,7 @@ class Access(AdminBaseHandler):
         next_url = self.get_argument("next", self.reverse_url("fruitzoneHome"))
         return self.redirect(next_url)
 
+# 商家后台首页
 class Home(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self):
@@ -82,7 +84,7 @@ class Home(AdminBaseHandler):
                            new_sys_notices=new_sys_notices, sys_notices=sys_notices, context=dict())
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("shop_id:int")
-    def post(self):
+    def post(self):  # 商家多个店铺之间的切换
         shop_id = self.args["shop_id"]
         try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
         except:return self.send_error(404)
@@ -91,6 +93,7 @@ class Home(AdminBaseHandler):
         self.set_secure_cookie("shop_id", str(shop_id), domain=ROOT_HOST_NAME)
         return self.send_success()
 
+# 订单统计
 class OrderStatic(AdminBaseHandler):
 
     def get(self):
@@ -112,7 +115,7 @@ class OrderStatic(AdminBaseHandler):
     @AdminBaseHandler.check_arguments("page:int", "type:int")
     def sum(self):
         page = self.args["page"]
-        type= self.args["type"]
+        type = self.args["type"]
         if page == 0:
             now = datetime.datetime.now()
             start_date = datetime.datetime(now.year, now.month, 1)
@@ -276,12 +279,13 @@ class OrderStatic(AdminBaseHandler):
         first_order = self.session.query(models.Order).\
             filter_by(shop_id=self.current_shop.id).\
             order_by(models.Order.create_date).first()
-        if first_order:  # 新开的店铺一个order都没有
+        if first_order:  # 新开的店铺一个order都没有，所以要判断一下
             page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
         else:
             page_sum = 0
         return self.send_success(page_sum=page_sum, data=data)
 
+    # 老用户的id
     def old_follower_ids(self, shop_id):
         q = self.session.query(models.Order.customer_id).\
             filter_by(shop_id=shop_id).\
@@ -291,7 +295,7 @@ class OrderStatic(AdminBaseHandler):
         return ids
 
 
-
+# 用户统计
 class FollowerStatic(AdminBaseHandler):
     @tornado.web.authenticated
     def get(self):
@@ -429,6 +433,7 @@ class Comment(AdminBaseHandler):
 
         return self.send_success()
 
+# 订单管理
 class Order(AdminBaseHandler):
     # todo: 当订单越来越多时，current_shop.orders 会不会越来越占内存？
 
@@ -499,10 +504,10 @@ class Order(AdminBaseHandler):
         elif action == "edit_ontime_on":
             self.current_shop.config.ontime_on = not self.current_shop.config.ontime_on
             self.session.commit()
-        elif action == "edit_min_charge_on_time":#按时达起送金额
+        elif action == "edit_min_charge_on_time":  # 按时达起送金额
             self.current_shop.config.min_charge_on_time = data["min_charge_on_time"]
             self.session.commit()
-        elif action == "edit_stop_range":#下单截止时间（分钟）
+        elif action == "edit_stop_range":  # 下单截止时间（分钟）
             self.current_shop.config.stop_range = data["stop_range"] or 0
             self.session.commit()
         elif action == "edit_freight_on_time":
@@ -574,8 +579,8 @@ class Order(AdminBaseHandler):
         return self.send_success()
 
     def _count(self):
-        count = {10:0, 11:0, 12:0, 13:0, 14:0, 15:0,
-                 20:0, 21:0, 22:0, 23:0, 24:0, 25:0}
+        count = {10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0,
+                 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0}
         for order in self.current_shop.orders:
             count[order.type*10+5] += 1
             if order.status == 0:
@@ -590,7 +595,7 @@ class Order(AdminBaseHandler):
                 count[order.type*10+4] += 1
         return count
 
-
+# 商品管理
 class Shelf(AdminBaseHandler):
 
     @tornado.web.authenticated
@@ -640,15 +645,17 @@ class Shelf(AdminBaseHandler):
         action = self.args["action"]
         data = self.args["data"]
         if action in ["add_fruit", "add_mgoods"]:
-            if not (data["charge_types"] and data["charge_types"]):#如果没有计价方式、打开market时会有异常
+            if not (data["charge_types"] and data["charge_types"]):  # 如果没有计价方式、打开market时会有异常
                 return self.send_fail("请至少添加一种计价方式")
+            if len(data["intro"]) > 100:
+                return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
             args={}
             args["name"] = data["name"]
             args["saled"] = data["saled"]
             args["storage"] = data["storage"]
             args["unit"] = data["unit"]
             args["tag"] = data["tag"]
-            if data["img_url"]:  # 前端可能上传图片不成功，发来一个空的
+            if data["img_url"]:  # 前端可能上传图片不成功，发来一个空的，所以要判断
                 args["img_url"] = SHOP_IMG_HOST + data["img_url"]
             args["intro"] = data["intro"]
             args["priority"] = data["priority"]
@@ -705,6 +712,8 @@ class Shelf(AdminBaseHandler):
                 elif fruit.active == 2:
                     fruit.update(session=self.session, active = 1)
             elif action == "edit_fruit":
+                if len(data["intro"]) > 100:
+                    return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
                 fruit.update(session=self.session,
                                                 name = data["name"],
                                                 saled = data["saled"],
@@ -712,14 +721,14 @@ class Shelf(AdminBaseHandler):
                                                 unit=data["unit"],
                                                 tag = data["tag"],
                                                 #img_url = data["img_url"],
-                                                intro = data["intro"],
+                                                intro=data["intro"],
                                                 priority=data["priority"])
 
             elif action == "default_fruit_img":  # 恢复默认图
                 fruit.img_url = ''
                 self.session.commit()
 
-        elif action in ["del_charge_type", "edit_charge_type"]: #charge_type_id
+        elif action in ["del_charge_type", "edit_charge_type"]:  # charge_type_id
             charge_type_id = self.args["charge_type_id"]
             try: q = self.session.query(models.ChargeType).filter_by(id=charge_type_id)
             except:return self.send_error(404)
@@ -731,7 +740,7 @@ class Shelf(AdminBaseHandler):
                          num=data["num"],
                          unit_num=data["unit_num"])
             self.session.commit()
-        elif action in ["add_mcharge_type", "edit_m_active", "edit_mgoods", "default_mgoods_img"]: #mgoods_id
+        elif action in ["add_mcharge_type", "edit_m_active", "edit_mgoods", "default_mgoods_img"]:  # mgoods_id
             try:mgoods = self.session.query(models.MGoods).filter_by(id=self.args["id"]).one()
             except:return self.send_error(404)
             if mgoods.menu.shop != self.current_shop:
@@ -752,6 +761,8 @@ class Shelf(AdminBaseHandler):
                 elif mgoods.active == 2:
                     mgoods.update(session=self.session, active = 1)
             elif action == "edit_mgoods":
+                if len(data["intro"]) > 100:
+                    return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
                 mgoods.update(session=self.session,
                                                 name = data["name"],
                                                 saled = data["saled"],
@@ -765,7 +776,7 @@ class Shelf(AdminBaseHandler):
                 mgoods.img_url = ''
                 self.session.commit()
 
-        elif action in ["del_mcharge_type", "edit_mcharge_type"]: #mcharge_type_id
+        elif action in ["del_mcharge_type", "edit_mcharge_type"]:  # mcharge_type_id
             mcharge_type_id = self.args["charge_type_id"]
             try: q = self.session.query(models.MChargeType).filter_by(id=mcharge_type_id)
             except:return self.send_error(404)
@@ -780,10 +791,12 @@ class Shelf(AdminBaseHandler):
         elif action == "add_img":
             return self.send_qiniu_token("add", 0)
 
-        else: return self.send_error(404)
+        else:
+            return self.send_error(404)
 
         return self.send_success()
 
+# 用户管理
 class Follower(AdminBaseHandler):
     @tornado.web.authenticated
     @AdminBaseHandler.check_arguments("action:str", "order_by:str", "page:int", "wd?:str")
@@ -796,12 +809,12 @@ class Follower(AdminBaseHandler):
         count = 1
 
         if action in ("all", "old"):
-            if action == "all":
+            if action == "all":  # 所有用户
                 q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
                     filter(models.CustomerShopFollow.shop_id == self.current_shop.id)
                 if order_by == "time":
                     q = q.order_by(desc(models.CustomerShopFollow.create_time))
-            else:
+            else:  # 老用户
                 q = self.session.query(models.Customer).\
                     join(models.Order).filter(models.Order.shop_id == self.current_shop.id).distinct()
             if order_by == "credits":
@@ -810,20 +823,20 @@ class Follower(AdminBaseHandler):
                 q = q.order_by(desc(models.Customer.balance))
             count = q.count()
             customers = q.offset(page*page_size).limit(page_size).all()
-        elif action == "search":
+        elif action == "search":  # 用户搜索，支持根据手机号/真名/昵称搜索
             wd = self.args["wd"]
-            if wd.isdigit():
+            if wd.isdigit():  # 判断是否为纯数字，纯数字就按照手机号搜索
                 customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
                     filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
                     join(models.Accountinfo).filter(models.Accountinfo.phone == int(wd)).all()
-            else:
+            else:  # 按照名字搜索
                 customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
                     filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
                     join(models.Accountinfo).filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),
                                                         models.Accountinfo.realname.like("%%%s%%" % wd))).all()
         else:
             return self.send_error(404)
-        for x in range(0, len(customers)):
+        for x in range(0, len(customers)):  #
             shop_names = self.session.query(models.Shop.shop_name).join(models.CustomerShopFollow).\
                 filter(models.CustomerShopFollow.customer_id == customers[x].id).all()
             customers[x].shop_names = [y[0] for y in shop_names]

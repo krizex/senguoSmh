@@ -44,3 +44,7 @@
 
     4. sqlalchemy ProgrammingError 1071: Specified key was too long; max key length is 767 bytes
         这是一个mysql最大能存储字节数（具体不清楚，想深入研究再去看）的问题，看这里：http://bugs.mysql.com/bug.php?id=6604
+
+
+启动进程：
+    执行senguo.cc/senguo.cc/admin 的 app.py ; 如果想挂在后台执行，执行该目录下的run_app.py

@@ -1,3 +1,4 @@
+#数据库存的市城市的编码，若要转成对应的城市名，则要查此文件
 dis_dict = {120000: {'name': '天津市', 'py': 'tianjinshi'},
             420000: {'name': '湖北省', 'py': 'hubeisheng',
                      'city': {420800: {'name': '荆门市', 'py': 'jingmenshi'},
