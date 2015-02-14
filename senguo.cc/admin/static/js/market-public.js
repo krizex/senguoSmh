@@ -26,7 +26,7 @@ $(document).ready(function(){
         var clientHeight=$this.height();
         var scrollTop=document.body.scrollTop||document.documentElement.scrollTop;
         if(!$this.is(":animated")){
-            if(scrollTop>=clientHeight){
+            if(scrollTop>=clientHeight/2){
                 $('.little_pear').animate({'right':'0px'},50);
             }
             else $('.little_pear').animate({'right':'-40px'},5);

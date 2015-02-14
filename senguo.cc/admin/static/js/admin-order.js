@@ -333,6 +333,7 @@ function orderPrint(target){
     var goods=parent.find('.goods-list')[0].innerHTML;
     var print_remark=parent.find('.receipt-remark').val();
     var print_img=parent.find('.receipt-img').val();
+    console.log(print_img);
     $.getItem('/static/items/admin/order-print-page.html?v=2015-01-12',function(data){
         var $item=$(data);
         $item.find('.notes-head').text(shop_name);

@@ -45,7 +45,7 @@ function infoEdit(evt){
         var month=$('#monthEdit').val().trim();
         var sex=$('#sexEdit option:selected').data('sex');
         var realname=$('#realnameEdit').val();
-        var regEmail=/^([a-z0-9]*[-_]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/;
+        var regEmail=/^([a-zA-Z0-9]*[-_]?[a-zA-Z0-9]+)*@([a-zA-Z0-9]*[-_]?[a-zA-Z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/;
         var regNumber=/^[0-9]*[1-9][0-9]*$/;
         var regYear=/^(?!0000)[0-9]{4}$/;
         var regMonth=/^(0?[1-9]|[1][012])$/;
