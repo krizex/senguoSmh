@@ -11,7 +11,7 @@
     <li data-action="unhandled"><a href="{{reverse_url('customerOrder')}}?action=unhandled">未处理</a></li>
     <li data-action="waiting"><a href="{{reverse_url('customerOrder')}}?action=waiting">待收货</a></li>
     <li data-action="finish"><a href="{{reverse_url('customerOrder')}}?action=finish">已送达</a></li>
-    <li data-action=""><a href="#">退款/售后</a></li>
+    <!--<li data-action=""><a href="#">退款/售后</a></li>-->
 </ul>
 {% if len(orders) == 0%}
 <h3 class="text-center pt36 set-w100-fle">暂无订单！</h3>
@@ -37,10 +37,10 @@
     {% end %}
      <li class="order-list-item" data-id="{{order.id}}">
         <a href="{{reverse_url('customerOrderDetail',order.id)}}" class="detail-link">
-            <header class="font14 set-w100-fle">
-                <span class="pull-left pr10">编号：{{order.num}}</span>
-                <span class="pull-left pl10 text-pink">{{order.shop.shop_name}}</span>
-                <span class="pull-right">详情<span class="next pull-right"></span></span>
+            <header class="set-w100-fle">
+                <span class="pull-left pr10 font14">编号：{{order.num}}</span>
+                <span class="pull-left pl10 text-pink font14">{{order.shop.shop_name}}</span>
+                <span class="pull-right text-grey9">详情>></span>
             </header>
         </a>
         <div class="content" >
@@ -88,7 +88,7 @@
             {% if status ==5 %}
             <div class="clearfix btn-box">
                 <button class="btn bg-pink text-white pull-right comment-btn m-r10">评价</button>
-                <button class="btn bg-grey2 pull-right after-sale m-r10">退款/售后</button>
+                <!--<button class="btn bg-grey2 pull-right after-sale m-r10">退款/售后</button>-->
             </div>
             {% end %}
         </div>

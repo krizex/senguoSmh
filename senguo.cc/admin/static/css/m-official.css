@@ -63,4 +63,4 @@ body{font-size:1em;font-family:'Microsoft YaHei',\5b8b\4f53,Arial,sans-serif;}
 .mb{margin-bottom:10px;}
 .center-block{margin:0 auto;}
 .arrow_bottom{background:url('../m-official/arrow.svg') repeat-x;background-size:20px;height:20px;margin-top:-1px;}
-.notice{position:fixed;left:48%;bottom:110px;width:20px;z-index:10;filter:Alpha(opacity=60);-moz-opacity:.6;opacity:0.6;}
+.notice{position:absolute;left:48%;bottom:100px;width:20px !important;z-index:10;filter:Alpha(opacity=60);-moz-opacity:.6;opacity:0.6;}

@@ -12,7 +12,7 @@
 .order-list-item .cancel.disabled{color:#888}
 .order-list-item p{margin-bottom:10px !important;font-size:small}
 .order-list-item .p2{color:#888}
-.order-list-item .price-box{display:inline-block;position:relative;bottom:18px;text-shadow:0 1px 1px #ddd;}
+.order-list-item .price-box{display:inline-block;position:relative;bottom:0;text-shadow:0 1px 1px #ddd;}
 .order-list-item .price-box .price{margin-right:3px}
 .order-list-item a{color:#444}
 .order-list-item .status-bar-box{font-size:15px;margin:10px 0 30px 15px;}
@@ -31,7 +31,7 @@
 .order-list-item .btn-box .btn{width:100px;}
 .comment-input{width:80%;height:120px;border:none;background:#f2f2f2;}
 .order-nav{position:fixed;z-index:555;width:100%;max-width:800px;}
-.order-nav li{float:left;width:20%;border-bottom:2px solid #fff;}
+.order-nav li{float:left;width:25%;border-bottom:2px solid #fff;}
 .order-nav li a{display:block;color:#333;padding:15px 0;}
 .order-nav li.active{border-color:#33cc66;}
 .order-nav li.active a{color:#33cc66;}
