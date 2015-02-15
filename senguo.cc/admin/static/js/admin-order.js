@@ -303,7 +303,9 @@ $(document).ready(function(){
     });
     //订单删除
     $('.delete-order').on('click',function(){
-        orderDelete($(this));
+        if(confirm('确认删除该订单吗？')){
+            orderDelete($(this));
+        }
     });
 });
 var link='/admin/order';
