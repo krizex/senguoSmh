@@ -26,7 +26,7 @@
 .order-list-item .list-title .code{width:180px;}
 .order-list-item .list-title .money{width:200px;}
 .order-list-item .list-title .print-order{background:url("../images/container-icon.gif") no-repeat 0 -88px;padding-left:25px;}
-.order-list-item .list-title .delete-order{margin-right:5px;background:url("../images/container-icon.gif") no-repeat 0 4px;padding-left:20px;}
+.order-list-item .list-title .delete-order{margin-right:5px;background:url("../images/container-icon.gif") no-repeat 0 5px;padding-left:20px;}
 .order-list-item .list-title .printed{background-position:-60px -312px;}
 
 .order-list-item .order-content{padding:5px 10px;}
