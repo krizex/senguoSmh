@@ -27,7 +27,7 @@
 .order-list-item .list-title .money{width:200px;}
 .order-list-item .list-title .print-order{background:url("../images/container-icon.gif") no-repeat 0 -88px;padding-left:25px;}
 .order-list-item .list-title .delete-order{margin-right:5px;background:url("../images/container-icon.gif") no-repeat 0 4px;padding-left:20px;}
-.order-list-item .list-title .printed{background-position:-60px -315px;}
+.order-list-item .list-title .printed{background-position:-60px -312px;}
 
 .order-list-item .order-content{padding:5px 10px;}
 .down{background:url("../images/arrow-down.gif") no-repeat 98% 80px;}
@@ -73,7 +73,7 @@
 .custom-order .custom-order-list .goods-total .goods-total-charge{font-size:16px;}
 .custom-order .custom-order-list .position{display:inline-block;position:absolute;bottom:10px;right:320px;}
 .custom-order .order-notice{border-bottom:1px solid #b2b2b2;padding-bottom:10px;}
-.custom-order .order-notice input{width:530px;height:24px;border:1px solid #ccc;line-height:24px;text-indent:25px;color:#666;background:url("../images/container-icon.gif") no-repeat 4px -332px;}
+.custom-order .order-notice input{width:530px;height:24px;border:1px solid #ccc;line-height:24px;text-indent:25px;color:#666;background:url("../images/container-icon.gif") no-repeat 4px -340px;}
 .custom-order .address-adapt .adapt-status{width:100%;float:left;padding:10px 0;}
 .custom-order .address-adapt .adapt-status li{float:left;width:74px;height:24px;text-align:center;line-height:24px;border-radius:1px;margin-right:10px;}
 .custom-order .address-adapt .adapt-status  .active{background:#41b546;color:#fff;}

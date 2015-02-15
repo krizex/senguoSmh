@@ -235,7 +235,7 @@
                     <a class="check-btn  position price_check text-white text-center" href="javascript:;" style="display:none">✓</a>
                 </div>
                 <div class="order-notice clearfix">
-                    <input type="text" placeholder="订单备注" class="notice_input pull-left" value="{{order.remark or ''}}"/>
+                    <input type="text" placeholder="订单备注" class="notice_input pull-left" value="{{order.remark or ''}}" {%if order.status==5%}readonly{% end %}/>
                     <a class="check-btn  notice_check pull-left text-white text-center" href="javascript:;" style="display:none">✓</a>
                 </div>
                 <div class="address-adapt">
