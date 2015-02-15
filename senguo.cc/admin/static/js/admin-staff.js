@@ -52,7 +52,7 @@ $(document).ready(function(){
     $('.concel-btn').on('click',function(){
         var $this=$(this);
         var $parent=$this.parents('.staff-list-item');
-        $parent.find('.staff-info-detail').hide();
+        $parent.find('.staff-info-edit').hide();
     });
 });
 

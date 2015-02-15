@@ -16,16 +16,20 @@
     {% if len(comments) != 0 %}
         <ul>
             {% for comment in comments %}
+            {% set hidden='' %}
+            {% if comment[5] %}
+                {% set hidden='show'%}
+            {% else %}
+                {% set hidden='hidden'%}
+            {% end %}
             <li class="comment-list-item clearfix bg-grey2 p10 set-top10">
                 <div class="col-lg-1 col-md-1 col-xs-2 col-sm-2 p0">
                     <img src="{{comment[0]}}" class="user-img"/>
                 </div>
-                <div class="col-lg-5 col-md-5 col-xs-5 col-sm-5 p0">
+                <div class="col-lg-5 col-md-5 col-xs-5 col-sm-5 p0 user_info">
                     <p class="user-name line-30">{{comment[1]}}</p>
                     <p class="text-grey9">{{comment[2]}}</p>
-                    {% if comment[5] %}
-                    <p class="saler_reply">商家回复：{{comment[5]}}<span class="reply_word"></span></p>
-                    {% end %}
+                    <p class="saler_reply {{hidden}}">商家回复：<span class="reply_word">{{comment[5]}}</span></p>
                 </div>
                 <div class="pull-left">
                     <p class="line-30">{{comment[3]}}</p>
