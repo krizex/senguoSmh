@@ -10,14 +10,12 @@
 {% set mgoods=context['mgoods']%}
 {% set menus=context['menus']%}
 {% set notices=context['notices']%}
-{% if notices %}
 {% import json%}
 <script>
     window.dataObj.notices = {% raw json.dumps(context["notices"]) %}
     window.dataObj.cart_fs = {% raw json.dumps(context["cart_fs"]) %}
     window.dataObj.cart_ms = {% raw json.dumps(context["cart_ms"]) %}
 </script>
-{% end %}
     <div class="notice-box">
         <div class="notice-board">
             {% if notices %}
