@@ -19,16 +19,15 @@ p{margin-bottom:0px;}
 .user-comment .img{width:40px;}
 .foucus-notice{max-width:800px;margin:0 auto;height:50px;line-height:50px;overflow:hidden;z-index:9999;}
 .w8{width:75%;}
-.level-box{height:40px;line-height:32px;position:relative;padding:0 30px !important;}
-.level-box em{width:12px;height:16px;background:url('../svg/icon_list_1.svg') -38px -48px;position:absolute;left:15px;top:10px;font-style:normal;line-height:14px;background-size:120px 180px;}
-.sign-box{height:40px;line-height:38px;position:relative;}
-.sign-box em{width:17px;height:20px;background:url('../svg/icon_list_1.svg') -54px -45px;position:absolute;top:8px;
+.level-box{height:30px;line-height:28px;position:relative;padding:0 30px !important;}
+.level-box em{width:12px;height:16px;background:url('../svg/icon_list_1.svg') -38px -48px;position:absolute;left:15px;top:7px;font-style:normal;line-height:14px;background-size:120px 180px;}
+.sign-box{height:30px;line-height:30px;position:relative;}
+.sign-box em{width:17px;height:20px;background:url('../svg/icon_list_1.svg') -54px -45px;position:absolute;top:3px;
 background-size:120px 180px;}
-.sign-box .sign_text{margin-left:20px;}
 .area-icon{width:14px;height:22px;background:url('../svg/icon_list_1.svg') 0 -48px;margin-right:5px;background-size:120px 180px;}
 .phone-icon{width:18px;height:20px;background:url('../svg/icon_list_1.svg') -20px -48px;margin-right:5px;background-size:120px 180px;}
 .fix-title{position:fixed;z-index:666;top:0;}
-.status-box{border-radius:5px;width:100%;height:4px;position:relative;top:-30px;}
+.status-box{border-radius:5px;width:100%;height:4px;position:relative;top:-28px;}
 .status-percent{width:100%;height:4px;position:absolute;top:0;left:0;border-radius:5px;}
 .line18{line-height:18px;}
 .height40{height:40px;}
