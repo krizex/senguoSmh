@@ -2,6 +2,17 @@ $(document).ready(function(){
     $('.rejectApply').on('click',function(){$(this).siblings('.reject-box').modal('show');})
     $('.rejectSend').on('click',function(){Reject($(this));});
     $('.passApply').on('click',function(){Pass($(this));});
+    //翻页
+    $(document).on('click','#PrePage',function(){
+        var action= $.getUrlParam('action');
+        var page=Int($.getUrlParam('page'));
+        if(page>1) window.location.href='http://zone.senguo.cc/super/shopManage?action='+action+'&&page='+(page-1);
+    });
+    $(document).on('click','#NextPage',function(){
+        var action= $.getUrlParam('action');
+        var page=Int($.getUrlParam('page'));
+        window.location.href='http://zone.senguo.cc/super/shopManage?action='+action+'&&page='+(page+1);
+    });
 
 });
 

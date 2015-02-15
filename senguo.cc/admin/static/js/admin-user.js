@@ -1,8 +1,5 @@
 $(document).ready(function(){
-    $('.show-info').on('click',function(){
-        var $this=$(this);
-        $this.parents('li').find('.hide-info').slideToggle(100);
-    });
+    toggle('.show-info','.hide-info');
     //用户性别
     $('.user-sex').each(function(){
         var $this=$(this);
