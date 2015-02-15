@@ -29,7 +29,7 @@
 .order-list-item .status-bar-box .width50{width:50%;}
 .order-list-item .status-bar-box .width100{width:100%;}
 .order-list-item .btn-box .btn{width:100px;}
-.comment-input{width:80%;height:100px;}
+.comment-input{width:80%;height:120px;border:none;background:#f2f2f2;}
 .order-nav{position:fixed;z-index:555;width:100%;max-width:800px;}
 .order-nav li{float:left;width:20%;border-bottom:2px solid #fff;}
 .order-nav li a{display:block;color:#333;padding:15px 0;}

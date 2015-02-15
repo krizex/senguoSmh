@@ -38,9 +38,9 @@
      <li class="order-list-item" data-id="{{order.id}}">
         <a href="{{reverse_url('customerOrderDetail',order.id)}}" class="detail-link">
             <header class="font14 set-w100-fle">
-                <span class="pull-left pr10">订单编号：{{order.num}}</span>
+                <span class="pull-left pr10">编号：{{order.num}}</span>
                 <span class="pull-left pl10 text-pink">{{order.shop.shop_name}}</span>
-                <span class="pull-right">物流详情<span class="next pull-right"></span></span>
+                <span class="pull-right">详情<span class="next pull-right"></span></span>
             </header>
         </a>
         <div class="content" >
@@ -99,11 +99,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="myModalLabel">评价</h4>
+                <span type="button" class="close text-white" data-dismiss="modal">✕</span>
+                <h3 class="modal-title" id="myModalLabel">评价</h3>
             </div>
             <div class="modal-body set-width-float text-center">
-                <textarea class="comment-input center-block mt10 m-b10"></textarea>
+                <textarea class="comment-input center-block mt10 mt42"></textarea>
             </div>
             <div class="modal-footer text-center">
                 <button class="btn bg-green text-white comment_submit">提交</button>

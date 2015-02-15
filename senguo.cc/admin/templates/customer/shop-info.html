@@ -24,6 +24,7 @@
          {% set sign_text='' %}
          {% set follow_show='' %}
          {% set sign_color='' %}
+         {% set ml20='' %}
          {% if follow%}
              {% set follow_show='hidden' %}
              {% set sign_show='show' %}
@@ -37,12 +38,13 @@
             {% set sign_text='已签到' %}
          {% else %}
             {% set sign_text='店铺签到' %}
+            {% set ml20='ml20' %}
          {% end %}
          <a href="javascript:;" class="btn text-green3 font12 border-ca pull-right w49 sign-box p0 {{sign_bg}} {{sign_show}} {{sign_color}} font13 bg-grey5" id="signin-shop">
              {% if not signin %}
              <em class="set-inl-blo"></em>
              {% end %}
-             <span class="sign_text">{{sign_text}}</span>
+             <span class="sign_text {{ml20}}">{{sign_text}}</span>
          </a>
          <a href="javascript:;" class="btn text-white bg-pink font12 border-ca pull-right w49 sign-box p0 {{follow_show}} font13 bg-grey5" id="focus-shop">+店铺关注</a>
      </div>
