@@ -255,7 +255,9 @@ $(document).ready(function(){
     //订单状态修改
     $('.status_edit').on('click',function(){
         var $this=$(this);
-        var parent=$this.parents('.order-status').removeClass('avilible_item');
+        var parent=$this.parents('.order-status');
+        parent.removeClass('avilible_item');
+        parent.find('.edit-btn').addClass('hidden');
         $this.hide().siblings('.status_check').show();
         parent.addClass('order-status-dealing');
         parent.find('.status-item').removeClass('hidden');
@@ -303,9 +305,8 @@ $(document).ready(function(){
     });
     //订单删除
     $('.delete-order').on('click',function(){
-        if(confirm('确认删除该订单吗？')){
-            orderDelete($(this));
-        }
+        if(confirm('确认删除该订单吗？')){}
+        orderDelete($(this));
     });
 });
 var link='/admin/order';
