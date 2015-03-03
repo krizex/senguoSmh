@@ -121,14 +121,14 @@
         <li class="order-list-item list-item set-width-float" data-id="{{order.id}}" data-type="{{order.type}}">
             <div class="list-title bg-grey2 font14">
                 <!--<input class="select pull-left" type="checkbox"/>-->
+ 		<label class="code pull-left">
+                    订单编号：<span class="order-code">{{order.num}}</span>
+                </label>
                 <label class="send pull-left">
                     配送时间：<span class="send-time">{{(order.create_date+delta).strftime('%Y-%m-%d')}}
                     {{order.start_time.hour}}:{{order.start_time.minute}}
                     ~ {{order.end_time.hour}}:{{order.end_time.minute}}</span>
-                </label>
-                <label class="code pull-left">
-                    订单编号：<span class="order-code">{{order.num}}</span>
-                </label>
+                </label>       
                 <label class="money pull-left">
                     金额：<span><strong class="order-price">{{order.totalPrice}}</strong>元</span>
                     {% if order_type ==1 %}
@@ -158,12 +158,16 @@
                     <a class="btn-style fit-btn fit-active pull-right" href="javascript:;">已适配</a>-->
                 </div>
                 <!--order-info-end-->
-                <div class="order-message set-width-float">
+		{% if order.message %}
+                <div class="order-message set-width-float text-pink">
                     <span>留言：</span>
                     <span class="message-content">{{order.message or '无'}}</span>
                     <a href="javascript:;" class="message-img set-inl-blo">&nbsp;</a>
                 </div>
-                <div class="staff-replay">员工回复：<span>{{order.staff_remark or '无'}}</span></div>
+		{% end %}
+		{% if order.staff_remark %}
+                <div class="staff-replay text-pink">员工回复：<span>{{order.staff_remark or '无'}}</span></div>
+		{% end %}
                 <!--order-message-end-->
                 <div class="order-status set-width-float edit_item edit_avilible avilible_item" data-id="{{order.status}}">
                     <div class="status-bar bg-grey9">
