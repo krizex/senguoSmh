@@ -8,7 +8,7 @@ $(document).ready(function(){
     });
     //回复
     $(document).on('click','.reply-sure',function(){
-        var index=$('.reply-box').data('id');
+        var index=$('.reply-box').attr('data-id');
         replay(order_id,index);
     });
     //收藏

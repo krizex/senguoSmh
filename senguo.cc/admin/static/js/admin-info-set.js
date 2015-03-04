@@ -1,6 +1,6 @@
 $(document).ready(function(){
-    var code=$('.shop_code').val();
-    if(code=='not set'||code=='请设置') {
+    var code=$('#shop_code').val();
+    if(code=='not set'||code=='') {
         $('.notice_word').show();
         $('.code_set').show();
     }
@@ -10,7 +10,18 @@ $(document).ready(function(){
         var shop_link=$('.shop_link').text();
         var shop_code=$('.shop_link').find('.code').text();
         $('#shop_link_img').qrcode({render: "canvas",width: 100,height:100,text: shop_link ,typeNumber  : -1});
+	//从canvas导出图片
+	var type = 'png';
+	var canvas=$('#shop_link_img canvas')[0];
+	imgData=canvas.toDataURL(type);
+	imgData = imgData.replace(_fixType(type),'image/octet-stream');
     }
+    //二维码下载 
+    $(document).on('click','.download_img',function(){
+	var filename = 'baidufe_' + (new Date()).getTime() + '.' + type;
+    	saveFile(imgData,filename);
+    });
+   //信息转换显示
     $('.area-choose-list li').each(function(){
         $(this).on('click',function(){
             if($(this).hasClass('active'))
@@ -32,6 +43,7 @@ $(document).ready(function(){
         $('#offline_entity').text(text).attr({'data-id':val});
 
     });
+    //店铺logo上传
     var key='';
     var token='';
     $('#file_upload').uploadifive(
@@ -102,6 +114,23 @@ $(document).ready(function(){
         });
     });
 });
+var imgData;
+//获取mimeType
+var _fixType = function(type) {
+    type = type.toLowerCase().replace(/jpg/i, 'jpeg');
+    var r = type.match(/png|jpeg|bmp|gif/)[0];
+    return 'image/' + r;
+};
+//在本地进行文件保存
+var saveFile = function(data, filename){
+    var save_link = document.createElementNS('http://www.w3.org/1999/xhtml', 'a');
+    save_link.href = data;
+    save_link.download = filename;
+   
+    var event = document.createEvent('MouseEvents');
+    event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+    save_link.dispatchEvent(event);
+};
 
 function infoEdit(target){
     var url="";
@@ -181,6 +210,11 @@ function infoEdit(target){
                     $('.link_notice').show();
                     $('.notice_word').hide();
                     $('.code_set').hide();
+		    //从canvas导出图片
+		    var type = 'png';
+		    var canvas=$('#shop_link_img canvas')[0];
+		    imgData=canvas.toDataURL(type);
+		    imgData = imgData.replace(_fixType(type),'image/octet-stream');
                 }
                 else if(action_name=='intro')
                 {

@@ -21,16 +21,16 @@ img{border:none;}
 
 
 /*头部样式*/
-.backstage-header .line50{line-height:50px;}
-.backstage-header .height50{height:50px;}
+.backstage-header .line50{line-height:45px;}
+.backstage-header .height50{height:45px;}
 .backstage-header .height25{height:25px;}
 .backstage-header .line25{line-height:25px;}
 .backstage-header{padding-top:10px;padding-bottom:10px;background:#fff;box-shadow:1px 1px 5px #818181;width:100%;margin-bottom:10px;position:fixed;top:0;z-index:999;}
 .backstage-header .logo-con{overflow:hidden;}
 .backstage-header .logo-con .logo{margin-right:20px;margin-left:10px;}
 .backstage-header .logo-con span{display:inline-block;float:left;}
-.backstage-header .logo-con .title{border-left:1px solid #9a9a9a;height:46px;line-height:46px;font-size:28px;padding:0 8px;margin-top:2px;}
-.backstage-header .logo-con .beta{width:54px;height:24px;background:#999;color:#fff;line-height:24px;text-align:center;border:1px solid #ccc;}
+.backstage-header .logo-con .title{border-left:1px solid #9a9a9a;height:46px;line-height:46px;font-size:22px;padding:0 8px;margin-top:2px;}
+.backstage-header .logo-con .beta{width:54px;height:24px;color:#999;line-height:24px;text-align:center;}
 .backstage-header .header-nav{}
 .backstage-header .header-nav li{float:left;padding:0 15px;}
 .backstage-header .header-nav li a{color:#666;display:block;}
@@ -42,7 +42,7 @@ img{border:none;}
 .backstage-header .header-nav li .send-img{width:24px;background-position:-52px 15px;}
 .backstage-header .header-nav li .message-img{width:26px;background-position:-98px 15px;}
 .backstage-header .header-nav .active .notice-img{background-position:0px -22px;}
-.backstage-header .header-nav .active .send-img{background-position:-52px -22px;}
+.backstage-header .header-nav .active .send-img{background-position:-52px -25px;}
 .backstage-header .header-nav .active .message-img{background-position:-98px -22px;}
 .backstage-header .header-nav .active span{color:#ff6666;}
 .backstage-header .header-nav .send-now{border-left:2px solid #ccc;border-right:2px solid #ccc;}
