@@ -10,7 +10,6 @@ $(document).ready(function(){
     $(document).on('click','.reply-sure',function(){
         var index=$('.reply-box').attr('data-id');
         replay(order_id,index);
-	console.log(index);
     });
     //收藏
     $(document).on('click','.collect',function(){

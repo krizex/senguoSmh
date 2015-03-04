@@ -1,7 +1,6 @@
 $(document).ready(function(){
-    var code=$('.shop_code').val();
-    var imgData;
-    if(code=='not set'||code=='请设置') {
+    var code=$('#shop_code').val();
+    if(code=='not set'||code=='') {
         $('.notice_word').show();
         $('.code_set').show();
     }
@@ -18,7 +17,7 @@ $(document).ready(function(){
 	imgData = imgData.replace(_fixType(type),'image/octet-stream');
     }
     //二维码下载 
-    $('.download_img').on('click',function(){
+    $(document).on('click','.download_img',function(){
 	var filename = 'baidufe_' + (new Date()).getTime() + '.' + type;
     	saveFile(imgData,filename);
     });
@@ -115,6 +114,7 @@ $(document).ready(function(){
         });
     });
 });
+var imgData;
 //获取mimeType
 var _fixType = function(type) {
     type = type.toLowerCase().replace(/jpg/i, 'jpeg');
@@ -210,6 +210,11 @@ function infoEdit(target){
                     $('.link_notice').show();
                     $('.notice_word').hide();
                     $('.code_set').hide();
+		    //从canvas导出图片
+		    var type = 'png';
+		    var canvas=$('#shop_link_img canvas')[0];
+		    imgData=canvas.toDataURL(type);
+		    imgData = imgData.replace(_fixType(type),'image/octet-stream');
                 }
                 else if(action_name=='intro')
                 {
