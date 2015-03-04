@@ -31,7 +31,8 @@ $(document).ready(function(){
             }
             else $('.little_pear').animate({'right':'-40px'},5);
         }
-    });
+	$(".bottom-nav").css({top: window.innerHeight-$(".bottom-nav").outerHeight() }); 
+	});
 });
 var shop_href='/customer/shopProfile';
 var market_href='/shop/none';

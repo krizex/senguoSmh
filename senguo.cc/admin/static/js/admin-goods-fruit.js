@@ -24,13 +24,14 @@ $(document).ready(function(){
     $('#add-new-goodsType').on('click',function(){
         var max_type_num=$('.goods-classify').find('.item').length;
         if(max_type_num<5) {
-            var box=$('.add-goodsType-box');
-            box.modal('show').find('.modal-title').text('新建商品分类');
-            box.find('#add-goodsType').show().siblings('#edit-goodsType').hide();
+            var $box=$('.add-goodsType-box');
+            $box.modal('show').find('.modal-title').text('新建商品分类');
+            $box.find('.type_add').removeClass('hidden').siblings('.type_eidt').addClass('hidden');
+            $box.find('#type-name').val('');
         }
         else return alert('最多可添加5个商品分类！');
     });
-    $('#add-goodsType').on('click',function(){addEditType($(this),'add_menu')});
+    $('body').on('click','#add-goodsType',function(){addEditType($(this),'add_menu')});
     //商品分类名编辑
     $('.menu_active').hover(
         function(){
@@ -41,18 +42,18 @@ $(document).ready(function(){
             var $this=$(this);
             $this.find('.class_name_edit').hide();
     });
-    $('.class_name_edit').on('click',function(){
+    $('body').on('click','.class_name_edit',function(){
         var $this=$(this);
         var $parent=$this.parents('.menu_active');
         var name=$parent.find('a').text();
         var id=$parent.data('id');
         var index=$parent.index();
-        var box=$('.add-goodsType-box');
-        box.modal('show').attr({'data-id':id,'data-index':index}).find('.modal-title').text('编辑商品分类');
-        box.find('#type-name').val(name);
-        box.find('#edit-goodsType').show().siblings('#add-goodsType').hide();
+        var $box=$('.add-goodsType-box');
+        $box.modal('show').attr({'data-id':id,'data-index':index}).find('.modal-title').text('编辑商品分类');
+	$box.find('.type_eidt').removeClass('hidden').siblings('.type_add').addClass('hidden');
+        $box.find('#type-name').val(name);
     });
-    $('#edit-goodsType').on('click',function(){addEditType($(this),'edit_menu_name')});
+    $('body').on('click','#edit-goodsType',function(){addEditType($(this),'edit_menu_name')});
 
     $('.tag-list a').on('click',function(){$(this).addClass('active').siblings('a').removeClass('active')});
     //当前商品所在分类
@@ -151,7 +152,7 @@ $(document).ready(function(){
         var token='';
         add_goods_box.empty();
         if(max_goods_num<5){
-            $.getItem('/static/items/admin/add-new-goods.html?v=20150205',function(data){
+            $.getItem('/static/items/admin/add-new-goods.html?v=20150304',function(data){
                 var $item=$(data);
                 if(typeof(default_code)=='undefined') $item.find('.imgPreview').attr({'src':'/static/design_img/TDSG.gif'});
                 else $item.find('.imgPreview').attr({'src':'/static/design_img/'+default_code+'.gif'});
