@@ -69,6 +69,7 @@ $(document).ready(function(){
     $('.fruit-shelve-num').text($('.type-class .active').find('.num').text());
     //图片速选框
     $('#preview_choose').on('click',function(){
+	$('.preview-shelve-list').empty();
         $.getItem('/static/items/admin/preview-item.html?v=20-15-01-21',function(data){
            var fruit_type=$('#fruit_type').val();
            fruit_type=eval("("+fruit_type+")");
