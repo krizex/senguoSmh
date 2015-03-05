@@ -28,23 +28,33 @@ $(document).ready(function(){
        var select=$this.find('.select-btn');
        var pay=$this.find('.pay-status');
        var paid=pay.data('pay');
-       var status=status_item.data('id');
+       var $status=status_item.data('id');
+       var $word=$this.find('.status_word');
+       var $s_order=$this.find('.status-order');
+       var $s_send=$this.find('.status-send');
+       var $s_finish=$this.find('.status-finish');
         //订单状态
-        if(status==1){
+        if($status==1){
             ordered.removeClass('hidden');
+            $word.text('未处理');
+            $s_order.addClass('bg-blue');
         }
-       else if(status==4)
+       else if($status==4)
         {
             status_item.addClass('order-status-dealing');
             sended.removeClass('hidden');
+	    $word.text('配送中');
+            $s_send.addClass('bg-blue');
         }
-        else if(status==5)
+        else if($status==5)
         {
             edit.remove();
             check.remove();
             select.remove();
             finished.removeClass('hidden');
             status_item.addClass('order-status-dealing');
+	    $word.text('已完成');
+            $s_finish.addClass('bg-blue');
         }
         //立即送消费显示
         if(type==1) tip.removeClass('hidden');
@@ -216,11 +226,7 @@ $(document).ready(function(){
         }
     });
     toggle('.order-content','.list-item-body');
-    $('.order-content').on('click',function(){
-        var $this=$(this);
-        $this.toggleClass('up','down');
-        $('.sales-list-item').css({'border-color':'#29aae1'});
-    });
+    toggle('.list-title','.list-item-body');
     $('.avilible_item').on('mouseenter',function(){$(this).find('.edit-btn').show();});
     $('.avilible_item').on('mouseleave',function(){$(this).find('.edit-btn').hide();});
     //订单总金额修改
@@ -253,17 +259,6 @@ $(document).ready(function(){
         orderEdit($this,'edit_remark',val);
     });
     //订单状态修改
-    $('.status_edit').on('click',function(){
-        var $this=$(this);
-        var parent=$this.parents('.order-status');
-        parent.removeClass('avilible_item');
-        parent.find('.edit-btn').addClass('hidden');
-        $this.hide().siblings('.status_check').show();
-        parent.addClass('order-status-dealing');
-        parent.find('.status-item').removeClass('hidden');
-        parent.find('.status-info').css({'left':'+=20px'});
-    });
-    $('.status_check').on('click',function(){window.location.reload();});
     $('.status-order').on('click',function(){
         var $this=$(this);
         orderEdit($this,'edit_status',1);
@@ -283,12 +278,9 @@ $(document).ready(function(){
         item.addClass('avilible_item');
     });
     //员工修改
-    $('.send-person-area').find('li').on('click',function(){
-        $(this).addClass('active').siblings().removeClass('active');
-    });
-    $('.staff-edit').on('click',function(){
+    $('.send_person_list li').on('click',function(){
         var $this=$(this);
-        var val=$this.parents('.send-person-area-select').find('.send-person-area').find('.active').data('id');
+        var val=$this.data('id');
         orderEdit($this,'edit_SH2',val)
     });
     //订单搜索
