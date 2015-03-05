@@ -225,6 +225,8 @@ class ShopManage(SuperBaseHandler):
             shop_temp.shop_status = 2
             self.session.commit()  # 要commit一次才有shop.id
 
+            self.session.add(models.ShopStaff(id=shop.admin_id, shop_id=shop.id))  # 添加默认员工时先添加一个员工，否则报错
+            self.session.commit()
             self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id))  # 把管理者默认为新店铺的二级配送员
             self.session.commit()
 
