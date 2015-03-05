@@ -42,6 +42,7 @@ function noticeAdd(){
         function(res){
             if(res.success){
                 $('#noticeBox').modal('hide');
+		window.location.reload();
             }
             else return alert(res.error_text);
         },

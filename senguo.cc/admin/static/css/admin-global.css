@@ -166,7 +166,12 @@ img{border:none;}
 .bg-grey2{background:#f2f2f2;}
 .bg-grey3{background:#f3f3f3;}
 .bg-grey9{background:#999;}
+.bg-greya{background:#fafafa;}
+.bg-greyd{background:#ddd;}
+.bg-blue{background:#6ba4ef;}
 .bg-white{background-color:#fff;}
+
+.border-greya{border-color:#fafafa !important;}
 
 .set-inl-blo{display:inline-block;}
 

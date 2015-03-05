@@ -12,9 +12,9 @@
             <li class="cart-list-item set-w100-fle fruit_item text-grey m-b5 {{cart_f[key]['code']}}">
                 <div class="box bg set-w100-fle">
                     {% if cart_f[key]['charge_type'].fruit.img_url %}
-                    <img src="{{cart_f[key]['charge_type'].fruit.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15"/>
+                    <img src="" class="goods-img pull-left w15 lazy_img" data-src="{{cart_f[key]['charge_type'].fruit.img_url}}?imageView/1/w/100/h/100"/>
                     {% else %}
-                    <img src="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.gif" class="goods-img pull-left w15"/>
+                    <img src="" class="goods-img pull-left w15 lazy_img" data-src="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.gif"/>
                     {% end %}
                     <div class="goods-info pull-left font14 p010">
                         <div class="clearfix">
@@ -44,9 +44,9 @@
             <li class="cart-list-item set-w100-fle menu_item TDSG text-grey m-b5">
                 <div class="box bg set-w100-fle">
                     {% if cart_m[key]['mcharge_type'].mgoods.img_url %}
-                    <img src="{{cart_m[key]['mcharge_type'].mgoods.img_url}}?imageView/1/w/100/h/100" class="goods-img pull-left w15"/>
+                    <img src="" class="goods-img pull-left w15 lazy_img" data-src="{{cart_m[key]['mcharge_type'].mgoods.img_url}}?imageView/1/w/100/h/100"/>
                     {% else %}
-                    <img src="/static/design_img/TDSG.gif" class="goods-img pull-left w15"/>
+                    <img src="" class="goods-img pull-left w15 lazy_img" data-src="/static/design_img/TDSG.gif"/>
                     {% end %}
                     <div class="goods-info pull-left font14 p010">
                         <div class="clearfix">

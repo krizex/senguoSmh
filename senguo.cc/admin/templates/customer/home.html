@@ -28,7 +28,7 @@
                 </ul>
             </nav>
             {% else %}
-            <img src="{{static_url('images/banner.png')}}" class="default-img img"/>
+            <img src="" class="default-img img lazy_img" data-src="{{static_url('images/banner.png')}}"/>
             {% end %}
         </div>
     </div>
@@ -75,9 +75,9 @@
                         <a href="javascript:;" class="check-lg-img">
                             <span class="tag text-white text-center tagItem font8" data-id="{{fruit.tag}}"></span>
                             {% if fruit.img_url %}
-                            <img src="{{fruit.img_url}}?imageView/1/w/200/h/200" class="img">
+                            <img src="" class="img lazy_img" data-src="{{fruit.img_url}}?imageView/1/w/200/h/200">
                             {% else %}
-                            <img src="/static/design_img/{{fruit.fruit_type.code}}.gif" class="img">
+                            <img src="" class="img lazy_img" data-src="/static/design_img/{{fruit.fruit_type.code}}.gif">
                             {% end %}
                         </a>
                     </div>
@@ -162,9 +162,9 @@
                         <a href="javascript:;" class="check-lg-img">
                             <span class="tag text-white text-center tagItem font8" data-id="{{dry_fruit.tag}}"></span>
                             {% if fruit.img_url %}
-                            <img src="{{dry_fruit.img_url}}?imageView/1/w/200/h/200" class="img">
+                            <img src="" class="img lazy_img" data-src="{{dry_fruit.img_url}}?imageView/1/w/200/h/200">
                             {% else %}
-                            <img src="/static/design_img/{{dry_fruit.fruit_type.code}}.gif" class="img">
+                            <img src="" class="img lazy_img" data-src="/static/design_img/{{dry_fruit.fruit_type.code}}.gif">
                             {% end %}
                         </a>
                     </div>
@@ -249,9 +249,9 @@
                         <a href="javascript:;" class="check-lg-img">
                             <span class="tag text-white text-center tagItem font8" data-id="{{mgood.tag}}"></span>
                             {% if mgood.img_url %}
-                            <img src="{{mgood.img_url}}?imageView/1/w/200/h/200" class="img">
+                            <img src="" class="img lazy_img" data-src="{{mgood.img_url}}?imageView/1/w/200/h/200">
                             {% else %}
-                            <img src="/static/design_img/TDSG.gif" class="img">
+                            <img src="" class="img lazy_img" data-src="/static/design_img/TDSG.gif">
                             {% end %}
                         </a>
                     </div>

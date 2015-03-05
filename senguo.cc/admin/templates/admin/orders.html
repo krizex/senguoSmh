@@ -36,11 +36,11 @@
 <span class="right-title">订单管理</span>
 <div class="orders-mode clearfix">
     <ul class="right-nav pull-left order-type">
-        <li class="text-center col-lg-3 col-md-3">
+        <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3">
             <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1" class="text-grey3">立即送</a>
             <span class="number text-pink">{{count[11]}}</span>
         </li>
-        <li class="text-center col-lg-3 col-md-3">
+        <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3">
             <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=1" class="text-grey3">按时达</a>
             <span class="number text-pink">{{count[21]}}</span>
         </li>
@@ -118,42 +118,33 @@
     </div>-->
     <ul class="order-list-content set-width-float mt10">
         {% for order in orders %}
-        <li class="order-list-item list-item set-width-float" data-id="{{order.id}}" data-type="{{order.type}}">
-            <div class="list-title bg-grey2 font14">
+        <li class="order-list-item list-item set-width-float bg-greya font14" data-id="{{order.id}}" data-type="{{order.type}}">
+            <div class="list-title">
                 <!--<input class="select pull-left" type="checkbox"/>-->
- 		<label class="code pull-left">
-                    订单编号：<span class="order-code">{{order.num}}</span>
-                </label>
-                <label class="send pull-left">
-                    配送时间：<span class="send-time">{{(order.create_date+delta).strftime('%Y-%m-%d')}}
+ 		<span class="code pull-left">
+                    <span class="text-grey9">订单编号：</span><span class="order-code">{{order.num}}</span>
+                </span>
+                <span class="send pull-left">
+                    <span class="text-grey9">配送时间：</span><span class="send-time">{{(order.create_date+delta).strftime('%Y-%m-%d')}}
                     {{order.start_time.hour}}:{{order.start_time.minute}}
                     ~ {{order.end_time.hour}}:{{order.end_time.minute}}</span>
-                </label>       
-                <label class="money pull-left">
-                    金额：<span><strong class="order-price">{{order.totalPrice}}</strong>元</span>
-                    {% if order_type ==1 %}
+                </span>       
+                <span class="money pull-left">
+                    <span class="text-grey9">金额：</span><span><span class="order-price">{{order.totalPrice}}</span>元</span>
+                    <!--{% if order_type ==1 %}
                     <span class="tips">（其中小费<span class="tip">{{order.tip}}</span>元）</span>
-                    {% end %}
-                </label>
+                    {% end %}-->
+                </span>
                 <a class="print-order pull-right te" href="javascript:;" data-id="{{order.isprint}}">&nbsp;</a>
                 <a class="delete-order pull-right" href="javascript:;">&nbsp;</a>
             </div>
             <!--list-title-end-->
             <div class="order-content set-width-float down">
                 <div class="order-info set-width-float">
-                    <span>配送至：</span>
-                    <div class="input-group pull-left">
-                        <label class="address">{{order.address_text}}</label>
-                        <input class="address form-control" type="hidden" value="{{order.address_text}}"/>
-                    </div>
-                    <div class="input-group pull-left">
-                        <label class="name">{{order.receiver}}</label>
-                        <input class="name form-control" type="hidden" value="{{order.receiver}}"/>
-                    </div>
-                    <div class="input-group pull-left">
-                        <label class="phone">{{order.phone}}</label>
-                        <input class="phone form-control" type="hidden" value="{{order.phone}}"/>
-                    </div>
+                    <span class="text-grey9">地址：</span>
+                    <span class="address">{{order.address_text}}</span>
+ 		    <span class="text-grey9">用户：</span>
+                    <a href="#" class="name text-blue">{{order.receiver}}</a>
                     <!--<a class="address-edit edit-btn" href="javascript:;" style="display:none">&nbsp;</a>
                     <a class="btn-style fit-btn fit-active pull-right" href="javascript:;">已适配</a>-->
                 </div>
@@ -170,20 +161,20 @@
 		{% end %}
                 <!--order-message-end-->
                 <div class="order-status set-width-float edit_item edit_avilible avilible_item" data-id="{{order.status}}">
-                    <div class="status-bar bg-grey9">
-                        <div class="status-inner bg-grey9 status_order hidden" style="width:100%;"></div>
-                        <div class="status-inner bg-grey9 status_send hidden" style="width:50%;"></div>
-                        <div class="status-inner bg-grey9 status_finish hidden" style="width:100%;"></div>
-                        <div class="status-circle status_order status-item status-order hidden forbid_click" style="left:0%;"></div>
-                        <div class="status-info status_order status-item hidden" style="left:0%;">
+                    <div class="status-bar bg-greyd">
+                        <div class="status-inner bg-greyd status_order hidden" style="width:100%;"></div>
+                        <div class="status-inner bg-greyd status_send hidden" style="width:50%;"></div>
+                        <div class="status-inner bg-greyd status_finish hidden" style="width:100%;"></div>
+                        <div class="status-circle status_order status-item status-order hidden forbid_click bg-green" style="left:0%;"></div>
+                        <div class="status-info status_order status-item hidden text-green" style="left:0%;">
                             <span class="status">未处理</span>
                         </div>
-                        <div class="status-circle status_send status-item status-send hidden forbid_click" style="left:50%;"></div>
-                        <div class="status-info status_send status-item hidden" style="left:50%;">
+                        <div class="status-circle status_send status-item status-send hidden forbid_click bg-green" style="left:50%;"></div>
+                        <div class="status-info status_send status-item hidden text-green" style="left:50%;">
                             <span class="status">配送中</span>
                         </div>
-                        <div class="status-circle status_finish status-item status-finish hidden forbid_click" style="left:100%;"></div>
-                        <div class="status-info status_finish status-item hidden" style="left:100%;">
+                        <div class="status-circle status_finish status-item status-finish hidden forbid_click bg-green" style="left:100%;"></div>
+                        <div class="status-info status_finish status-item hidden text-green" style="left:100%;">
                             <span class="status">已确认收货</span>
                         </div>
                     </div>

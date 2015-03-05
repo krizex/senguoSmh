@@ -15,21 +15,21 @@
 .order-list-action{margin:10px 0;}
 .order-list-action .select-box{border:1px solid #ccc;}
 .order-list-action .select-all{margin-top:2px;margin-left:5px;}
-.order-list-item{margin-bottom:5px;border:1px solid #c6c6c6;position:relative;}
+.order-list-item{margin-bottom:5px;position:relative;padding:20px 24px;}
 .order-list-item:hover{background:#f2f2f2;cursor:pointer;}
 
-.order-list-item .list-title{padding:0 5px;height:28px;line-height:28px;border-bottom:1px solid #c6c6c6;}
+.order-list-item .list-title{height:28px;line-height:28px;}
 .order-list-item .list-title .select{margin-top:7px;margin-right:5px;}
 .order-list-item .list-title label{font-weight:normal;}
-.order-list-item .list-title .send{width:240px;}
+.order-list-item .list-title .send{width:300px;}
 .order-list-item .list-title .send .send-time{margin-right:5px;}
-.order-list-item .list-title .code{width:180px;}
+.order-list-item .list-title .code{width:200px;}
 .order-list-item .list-title .money{width:200px;}
 .order-list-item .list-title .print-order{background:url("../images/container-icon.gif") no-repeat 0 -88px;padding-left:25px;}
 .order-list-item .list-title .delete-order{margin-right:5px;background:url("../images/container-icon.gif") no-repeat 0 5px;padding-left:20px;}
 .order-list-item .list-title .printed{background-position:-60px -312px;}
 
-.order-list-item .order-content{padding:5px 10px;}
+.order-list-item .order-content{}
 .down{background:url("../images/arrow-down.gif") no-repeat 98% 80px;}
 .up{background:url("../images/arrow-up.gif") no-repeat 98% 80px;}
 .order-list-item .order-warning{background:url("../images/warning-img.jpg") no-repeat 8px 20px;}
@@ -38,7 +38,7 @@
 .order-list-item .order-content .order-info label{font-weight:bold;}
 .order-list-item .order-content .order-info input{border:1px solid #ccc;height:20px;text-indent:5px;}
 .order-list-item .order-content .order-info span{float:left;}
-.order-list-item .order-content .order-info .address{width:265px;}
+.order-list-item .order-content .order-info .address{width:458px;}
 .order-list-item .order-content .order-info .name{width:100px;}
 .order-list-item .order-content .order-info .phone{width:90px;}
 .order-list-item .order-content .fit-active{color:#42b649;}
@@ -48,10 +48,10 @@
 .order-list-item .order-message .message-img{width:17px;height:15px;background:url("../images/container-icon.gif") no-repeat 0 -199px;}
 
 .order-list-item .order-status{display:inline-block;height:40px;}
-.order-list-item .order-status .status-bar{width:556px;height:4px;position:relative;margin-top:10px;}
-.order-list-item .order-status .status-bar .status-inner{height:4px;position:absolute;top:0;}
-.order-list-item .order-status .status-circle{width:16px;height:16px;background:url("../images/status-circle.png") no-repeat 0 -63px;border-radius:50%;position:absolute;top:-6px;}
-.order-list-item .order-status .status-info{position:absolute;top:12px;color:#666;width:150px;}
+.order-list-item .order-status .status-bar{width:650px;height:8px;position:relative;margin-top:10px;border-radius:5px;}
+.order-list-item .order-status .status-bar .status-inner{height:8px;position:absolute;top:0;border-radius:5px;}
+.order-list-item .order-status .status-circle{width:12px;height:12px;border-radius:50%;position:absolute;top:-2px;}
+.order-list-item .order-status .status-info{position:absolute;top:12px;width:150px;}
 .order-list-item .order-status-dealing .status-bar .status-inner{background:#45b549;}
 .order-list-item .order-status-dealing .status-bar .status-circle{background-position:0 0;}
 .order-list-item .order-status-dealing .status-bar .status-info{margin-left:-25px;}
