@@ -18,7 +18,7 @@
 .goods-list-item hr{border-color:#ccc;margin-top:10px;margin-bottom:10px;}
 .admin-goods-list .goods-list-con .goods-list-item{width:100%;float:left;padding:10px 10px 0;position:relative;}
 .goods-list-item .goods-item-show .goods-info .goods-img{width:90px;height:90px;overflow:hidden;position:relative;text-align:center;}
-.goods-list-item .goods-item-show .goods-info .goods-img img{height:80px;}
+.goods-list-item .goods-item-show .goods-info .goods-img img{height:90px;}
 .goods-list-item .goods-item-show .goods-info .info-box .charge-list{width:100%;}
 .goods-list-item .goods-item-show .goods-info .info-box .charge-list li{}
 .goods-list-item .goods-left{width:100px;padding:5px;background:#fff;margin-bottom:10px;overflow:hidden;}

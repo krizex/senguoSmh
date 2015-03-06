@@ -2,13 +2,17 @@ $(document).ready(function(){
     $('.count-box').css({'height':$(window).height()});
     $('.count-list li').on('click',function(){
         var $this=$(this);
-        $this.addClass('active').parents('.count-box').addClass('hidden').siblings('.apply-info').removeClass('hidden');
+        $this.addClass('active')
         $this.find('.check').removeClass('hidden');
         $this.siblings('li').removeClass('active').find('.check').addClass('hidden');
     });
     $('#back').on('click',function(){
         $('.apply-info').addClass('hidden');
         $('.count-box').removeClass('hidden');
+    });
+    //下一步
+    $(document).on('click','.to_next',function(){
+	$('.count-box').addClass('hidden').siblings('.apply-info').removeClass('hidden');
     });
     //服务区域选择
     $('.area-choose-list li').each(function(){
