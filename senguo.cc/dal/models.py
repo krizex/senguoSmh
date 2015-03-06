@@ -388,6 +388,10 @@ class Shop(MapBase, _CommonApi):
     # 是否做实体店
     have_offline_entity = Column(Boolean, default=False)
 
+###################################################
+    #the phone of shop ,   added by woody
+    shop_phone=Column(String(16))
+
     # 店铺介绍
     shop_intro = Column(String(568))
     # 总用户数
@@ -767,7 +771,7 @@ class FruitType(MapBase,  _CommonApi):
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     code = Column(String(128), default="", unique=True)
     
-    name = Column(String(64), unique=True)
+    name = Column(String(64))
 
 class ShopOnsalefruitLink(MapBase):
     """
