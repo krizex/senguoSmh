@@ -126,8 +126,7 @@
                 </span>
                 <span class="send pull-left">
                     <span class="text-grey9">配送时间：</span><span class="send-time">{{(order.create_date+delta).strftime('%Y-%m-%d')}}
-                    {{order.start_time.hour}}:{{order.start_time.minute}}
-                    ~ {{order.end_time.hour}}:{{order.end_time.minute}}</span>
+                    {{order.start_time.hour}}:{{order.start_time.minute}}-{{order.end_time.hour}}:{{order.end_time.minute}}</span>
                 </span>       
                 <span class="money pull-left">
                     <span class="text-grey9">金额：</span><span><span class="order-price goods-total-charge">{{order.totalPrice}}</span>元</span>
@@ -136,7 +135,7 @@
                     {% end %}-->
                 </span>
  		<span class="pay-status pull-left pay-btn text-grey9" data-pay="{{order.money_paid}}">现金支付</span>
-                <a class="print-order pull-right" href="javascript:;" data-id="{{order.isprint}}">打印</a>
+                <a class="print-order pull-right forbid_click" href="javascript:;" data-id="{{order.isprint}}">打印</a>
             </div>
             <!--list-title-end-->
             <div class="order-content set-width-float">
@@ -163,9 +162,9 @@
                 <!--order-message-end-->
                 <div class="order-status set-width-float edit_item edit_avilible avilible_item" data-id="{{order.status}}">
                     <div class="status-bar bg-greyd pull-left forbid_click">
-                        <div class="status-inner bg-greyd status_order hidden" style="width:100%;"></div>
-                        <div class="status-inner bg-greyd status_send hidden" style="width:50%;"></div>
-                        <div class="status-inner bg-greyd status_finish hidden" style="width:100%;"></div>
+                        <div class="status-inner bg-greyd status_order hidden" style="width:0%;"></div>
+                        <div class="status-inner bg-green status_send hidden" style="width:50%;"></div>
+                        <div class="status-inner bg-green status_finish hidden" style="width:100%;"></div>
                         <div class="status-circle status_order status-item  hidden forbid_click bg-green" style="left:0%;"></div>
                         <div class="status-info status_order status-item hidden text-green" style="left:0%;">
                             <span class="status">未处理</span>
@@ -198,18 +197,18 @@
  	       <div class="address-adapt mb-15">
                     <p class="text-grey9">配送员选择</p>               
 	            <div class="btn-group font14 forbid_click send_change able_edit"  style="display:none">
-			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			<button type="button" class="btn btn-default dropdown-toggle order_sender" data-toggle="dropdown" aria-expanded="false">
 			    <span>
 				{% if order.SH2_id %}
 			       		{% for SH2 in SH2s%}
 			       		{% if SH2.id==order.SH2_id %}
-					<span class="sender-code w50 set-inl-blo">#{{SH2.id}}</span>||
+					#<span class="sender-code w50 set-inl-blo">{{SH2.id}}</span>||
 				        <span class="sender-name w120 set-inl-blo set-left10">{{SH2.accountinfo.realname or '无名氏'}}</span>||
 				        <span class="sender-phone w120 set-inl-blo set-left10">{{SH2.accountinfo.phone}}</span>
 				       {% end %}
 			       {% end %}
 			       {% else %}
-				<span class="sender-code w50 set-inl-blo">#{{SH2s[0].id}}</span>||
+				#<span class="sender-code w50 set-inl-blo">{{SH2s[0].id}}</span>||
                                 <span class="sender-name w120 set-inl-blo set-left10">{{SH2s[0].accountinfo.realname or '无名氏'}}</span>||
                                 <span class="sender-phone w120 set-inl-blo set-left10">{{SH2s[0].accountinfo.phone}}</span>
 			       {% end %}

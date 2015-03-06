@@ -322,6 +322,7 @@ $(document).ready(function(){
     //订单删除
     $('.delete-order').on('click',function(){
         if(confirm('确认删除该订单吗？')){orderDelete($(this));}
+
     });
 });
 var link='/admin/order';
@@ -724,11 +725,34 @@ function orderEdit(target,action,content){
                 }
                 else if(action=='edit_SH2')
                 {
-                    window.location.reload();
+                   var code=target.find('.sender-code').text();
+		   var name=target.find('.sender-name').text();
+		   var phone=target.find('.sender-phone').text();
+                   var $sender=parent.find('.order_sender');
+                   $sender.find('.sender-code').text(code);
+		   $sender.find('.sender-name').text(name);
+                   $sender.find('.sender-phone').text(phone);
                 }
                 else if(action=='edit_status')
                 {
-                    window.location.reload();
+		   target.addClass('bg-blue').siblings().removeClass('bg-blue');
+		    var status=target.text();
+		    parent.find('.status_word').text(status);
+                    if(content==1) {
+			parent.find('.status_order').removeClass('hidden');
+  	                parent.find('.status_send').addClass('hidden');
+			parent.find('.status_finish').addClass('hidden');
+		      }
+		    else if(content==4) {
+			parent.find('.status_send').removeClass('hidden');
+  	                parent.find('.status_order').addClass('hidden');
+			parent.find('.status_finish').addClass('hidden');
+		      }
+	            else if(content==5) {
+			parent.find('.status_finish').removeClass('hidden');
+  	                parent.find('.status_order').addClass('hidden');
+			parent.find('.status_send').addClass('hidden');
+		      }
                 }
                 else if(action=='edit_totalPrice')
                 {
