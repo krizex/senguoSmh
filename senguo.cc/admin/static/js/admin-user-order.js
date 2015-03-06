@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var item_url='/static/items/admin/order-item.html?v=2015-02-03';
+    var item_url='/static/items/admin/order-item.html?v=2015-03-06';
     //订单数据
     getOrder(item_url);
     //隐藏信息显示
@@ -18,9 +18,9 @@ $(document).ready(function(){
         $('.sales-list-item').css({'border-color':'#29aae1'});
     });
     //商品列表item
-    getGoodsItem('/static/items/admin/order-goods-item.html?v=2015-03-02');
+    getGoodsItem('/static/items/admin/order-goods-item.html?v=2015-03-06');
     //员工列表item
-    getStaffItem('/static/items/admin/order-staff-item.html?v=2015-03-02');
+    getStaffItem('/static/items/admin/order-staff-item.html?v=2015-03-06');
     //订单打印
     $('body').on('click','.print-order',function(){
         orderPrint($(this));
