@@ -1057,6 +1057,9 @@ class ShopConfig(AdminBaseHandler):
             shop.shop_code = data["shop_code"]
         elif action == "edit_shop_intro":
             shop.shop_intro = data["shop_intro"]
+# woody 2015.3.5
+        elif action == "edit_phone":
+            shop.shop_phone = data["shop_phone"]
         elif action == "edit_address":
             shop_city = int(data["shop_city"])
             shop_address_detail = data["shop_address_detail"]
