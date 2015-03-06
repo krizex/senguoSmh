@@ -131,7 +131,7 @@
 .Hz .bg-color{background-color:#F07D06}
 .Hz .icon-bg{border-color:transparent #BD2408 transparent transparent;}
 .Bl .color{color:#878F2F}
-.Bl .bg{FFFFEE:#ffe}
+.Bl .bg{background-color:#FFFFEE}
 .Bl .bg-color{background-color:#878F2F}
 .Bl .icon-bg{border-color:transparent #878F2F transparent transparent;}
 .Shiz .color{color:#f78f1e}
@@ -239,6 +239,22 @@
 .jialiguo .bg{background-color:#FFF7F7}
 .jialiguo .bg-color{background-color:#FBDF12}
 .jialiguo .icon-bg{border-color:transparent #9C4547 transparent transparent;}
+.longyan .color{color:#916231}
+.longyan .bg{background-color:#fffaef}
+.longyan .bg-color{background-color:#ffebbc}
+.longyan .icon-bg{border-color:transparent #ffebbc transparent transparent;}
+.chelizhi .color{color:#E23457}
+.chelizhi .bg{background-color:#FFF7F8}
+.chelizhi .bg-color{background-color:#E23457}
+.chelizhi .icon-bg{border-color:transparent #E23457 transparent transparent;}
+.ximei .color{color:#E75716}
+.ximei .bg{background-color:#FFF7F8}
+.ximei .bg-color{background-color:#E75716}
+.ximei .icon-bg{border-color:transparent #E75716 transparent transparent;}
+.lanmei .color{color:#632B8C}
+.lanmei .bg{background-color:#FFF7F8}
+.lanmei .bg-color{background-color:#632B8C}
+.lanmei .icon-bg{border-color:transparent #632B8C transparent transparent;}
 
 .GANGUO{}
 .yaoguo .color{color:#B87D31}
@@ -287,20 +303,20 @@
 .putaogan .bg{background-color:#FFF7F7}
 .putaogan .bg-color{background-color:#BD2408}
 .putaogan .icon-bg{border-color:transparent #9C4547 transparent transparent;}
-.badanmu .color{color:#9C4547}
-.badanmu .bg{background-color:#FFF7F7}
-.badanmu .bg-color{background-color:#BD2408}
-.badanmu .icon-bg{border-color:transparent #9C4547 transparent transparent;}
-.candou .color{color:#9C4547}
-.candou .bg{background-color:#FFF7F7}
-.candou .bg-color{background-color:#BD2408}
-.candou .icon-bg{border-color:transparent #9C4547 transparent transparent;}
-.wandou .color{color:#9C4547}
-.wandou .bg{background-color:#FFF7F7}
-.wandou .bg-color{background-color:#BD2408}
-.wandou .icon-bg{border-color:transparent #9C4547 transparent transparent;}
-.shibing .color{color:#9C4547}
-.shibing .bg{background-color:#FFF7F7}
-.shibing .bg-color{background-color:#BD2408}
-.shibing .icon-bg{border-color:transparent #9C4547 transparent transparent;}
+.badanmu .color{color:#D07610}
+.badanmu .bg{background-color:#FFF6EB}
+.badanmu .bg-color{background-color:#D07610}
+.badanmu .icon-bg{border-color:transparent #D07610 transparent transparent;}
+.candou .color{color:#96B937}
+.candou .bg{background-color:#F8FFE3}
+.candou .bg-color{background-color:#96B937}
+.candou .icon-bg{border-color:transparent #96B937 transparent transparent;}
+.wandou .color{color:#5B8000}
+.wandou .bg{background-color:#F8FFE3}
+.wandou .bg-color{background-color:#5B8000}
+.wandou .icon-bg{border-color:transparent #5B8000 transparent transparent;}
+.shibing .color{color:#C74E18}
+.shibing .bg{background-color:#FFF4F0}
+.shibing .bg-color{background-color:#C74E18}
+.shibing .icon-bg{border-color:transparent #C74E18 transparent transparent;}
 
