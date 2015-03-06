@@ -143,7 +143,7 @@
                     <span class="text-grey9">地址：</span>
                     <span class="address">{{order.address_text}}</span>
  		    <span class="text-grey9">用户：</span>
-                    <a href="#" class="name text-blue">{{order.receiver}}</a>
+                    <a href="#" class="name text-grey9">{{order.receiver}}</a>
                     <!--<a class="address-edit edit-btn" href="javascript:;" style="display:none">&nbsp;</a>
                     <a class="btn-style fit-btn fit-active pull-right" href="javascript:;">已适配</a>-->
                 </div>
@@ -152,7 +152,6 @@
                 <div class="order-message set-width-float text-pink">
                     <span>留言：</span>
                     <span class="message-content">{{order.message or '无'}}</span>
-                    <a href="javascript:;" class="message-img set-inl-blo">&nbsp;</a>
                 </div>
 		{% end %}
 		{% if order.staff_remark %}
@@ -253,8 +252,7 @@
                         {% set mgoods = eval(order.mgoods) %}
                         {% for key in fruits %}
                         <li class="item pull-left">
-                            <span class="code text-grey9">1</span>
-                            ：
+                            <span class="code text-grey9">1</span>:
                             <span class="goods-name">{{fruits[key]['fruit_name']}}</span>
                             <span class="goods-price">{{fruits[key]['charge']}}</span>
                             *
@@ -263,8 +261,7 @@
                         {% end %}
                         {% for key in mgoods %}
                         <li class="item pull-left">
-                            <span class="code text-grey9">1</span>
-                            ：
+                            <span class="code text-grey9">1</span>:
                             <span class="goods-name">{{mgoods[key]['mgoods_name']}}</span>
                             ：
                             <span class="goods-price">{{mgoods[key]['charge']}}</span>

@@ -10,10 +10,17 @@ $(document).ready(function(){
         $this.parents('.list-item').siblings('.list-item').find('.list-item-body').slideUp(100).siblings().find('.arrow-up').hide().siblings('.arrow-down').show();
         $('.sales-list-item').css({'border-color':'#29aae1'});
     });
+   $('body').on('click','.list-title',function(){
+        var $this=$(this);
+        $this.toggleClass('up','down');
+        $this.parents('.list-item').find('.list-item-body').slideToggle(100);
+        $this.parents('.list-item').siblings('.list-item').find('.list-item-body').slideUp(100).siblings().find('.arrow-up').hide().siblings('.arrow-down').show();
+        $('.sales-list-item').css({'border-color':'#29aae1'});
+    });
     //商品列表item
-    getGoodsItem('/static/items/admin/order-goods-item.html?v=2015-02-02');
+    getGoodsItem('/static/items/admin/order-goods-item.html?v=2015-03-02');
     //员工列表item
-    getStaffItem('/static/items/admin/order-staff-item.html?v=2015-02-02');
+    getStaffItem('/static/items/admin/order-staff-item.html?v=2015-03-02');
     //订单打印
     $('body').on('click','.print-order',function(){
         orderPrint($(this));
@@ -72,10 +79,11 @@ function orderItem(item){
         var totalPrice=item[i]['totalPrice'];
         var type=item[i]['type'];
         var SH2s=item[i]['SH2s'];
+	var SH2=item[i]['SH2'];
         var sent_time=item[i]['sent_time'];
-        if(!message) message='无';
-        if(!staff_remark) staff_remark='无';
-        if(!remark) remark='无';
+        if(!message) $item.find('.order-message').hide();
+        if(!staff_remark) $item.find('.staff-replay').hide();
+        if(!remark) $item.find('.saler-remark').hide();
 
         $item.attr({'data-id':id,'data-type':type});
         $item.find('.send-time').text(sent_time);
@@ -85,9 +93,9 @@ function orderItem(item){
         $item.find('.total_price_input').text(totalPrice);
         $item.find('.address_show').text(address_text);
         $item.find('.address_edit').val(address_text);
-        $item.find('.name_show').text(receiver);
+        $item.find('.name').text(receiver);
         $item.find('.name_edit').val(receiver);
-        $item.find('.phone_show').text(phone);
+        $item.find('.phone').text(phone);
         $item.find('.phone_edit').val(phone);
         $item.find('.message-content').text(message);
         $item.find('.staff-remark').text(staff_remark);
@@ -96,6 +104,7 @@ function orderItem(item){
         $item.find('.order-time').text(create_date);
         $item.find('.receipt-remark').val(shop_remark);
         $item.find('.receipt-img').val(shop_img);
+	var $sender=$item.find('.order_sender');
         //立即送消费显示
         if(type==1){
             $item.find('.tip').text(tip);
@@ -103,9 +112,9 @@ function orderItem(item){
         else $item.find('.tips').hide();
         //支付状态
         if(money_paid==true){
-            $item.find('.pay-status').text('已支付').removeClass('text-pink').addClass('text-green');
+            $item.find('.pay-status').text('余额支付');
         }
-        else $item.find('.pay-status').text('未支付');
+        else $item.find('.pay-status').text('现金支付');
         //订单状态
         if(status==0) {$item.find('.order-status').empty().text('该订单已取消');}
         else if(status==1) {$item.find('.status_order').removeClass('hidden');}
@@ -135,14 +144,26 @@ function orderItem(item){
             $item.find('.goods-list').append($goods);
             goods_num=goods_num+mgoods[key]['num'];
         }
-        for(var key in SH2s){
+	if(!SH2){
+	    $sender.attr({'data-id':SH2s[0]['id']});
+            $sender.find('.sender-code').text(SH2s[0]['id']);
+            $sender.find('.sender-name').text(SH2s[0]['realname']);
+            $sender.find('.sender-phone').text(SH2s[0]['phone']);
+        }
+        else {
+	    $sender.attr({'data-id':SH2['id']});
+            $sender.find('.sender-code').text(SH2['id']);
+            $sender.find('.sender-name').text(SH2['realname']);
+            $sender.find('.sender-phone').text(SH2['phone']);
+        }
+        /*for(var key in SH2s){
             var $staff=$($staff_item);
-            $staff.attr({'data-id':SH2s[key]['id']});
+	    $staff.attr({'data-id':SH2s[key]['id']});
             $staff.find('.sender-code').text(SH2s[key]['id']);
             $staff.find('.sender-name').text(SH2s[key]['realname']);
             $staff.find('.sender-phone').text(SH2s[key]['phone']);
             $item.find('.send-person').append($staff);
-        }
+        }*/
         $item.find('.goods-total-number').text(goods_num);
         $('.order-list-content').append($item);
     }
@@ -179,9 +200,9 @@ function orderPrint(target){
         if(!print_img) $item.find('.shop-img').remove();
         else $item.find('.shop-img img').attr({'src':print_img});
         if (paid == true) {
-            $item.find('.moneyPaid').text('已支付');
+            $item.find('.moneyPaid').text('余额支付');
         } else {
-            $item.find('.moneyPaid').text('未支付');
+            $item.find('.moneyPaid').text('现金支付');
         }
         var OpenWindow = window.open("","","width=500,height=600");
         OpenWindow.document.body.style.margin = "0";
