@@ -388,6 +388,7 @@ class Shop(MapBase, _CommonApi):
     # 是否做实体店
     have_offline_entity = Column(Boolean, default=False)
 
+###################################################
     #the phone of shop ,   added by woody
     shop_phone=Column(String(16))
 
