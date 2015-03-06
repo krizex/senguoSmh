@@ -69,6 +69,7 @@ $(document).ready(function(){
     $('.fruit-shelve-num').text($('.type-class .active').find('.num').text());
     //图片速选框
     $('#preview_choose').on('click',function(){
+	$('.preview-shelve-list').empty();
         $.getItem('/static/items/admin/preview-item.html?v=20-15-01-21',function(data){
            var fruit_type=$('#fruit_type').val();
            fruit_type=eval("("+fruit_type+")");
@@ -620,6 +621,8 @@ function addEditFruit(target,action){
     if(storage!=0&&!regNumber.test(storage)){return alert('库存只能为整数！');}
     if(!regNumber.test(priority)){return alert('优先级只能为整数！');}
     if(priority<1||priority>5){return alert('优先级只能为1-5！');}
+    if(intro.length>100) {return alert('商品简介请不要超过100个字！');}
+    if(name.length>20) {return alert('商品简介请不要超过20个字！');}
     var data={
         //fruit_type_id:parseInt(fruit_type_id),
         name:name,

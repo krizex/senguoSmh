@@ -36,11 +36,11 @@
 <span class="right-title">订单管理</span>
 <div class="orders-mode clearfix">
     <ul class="right-nav pull-left order-type">
-        <li class="text-center col-lg-3 col-md-3">
+        <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3">
             <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1" class="text-grey3">立即送</a>
             <span class="number text-pink">{{count[11]}}</span>
         </li>
-        <li class="text-center col-lg-3 col-md-3">
+        <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3">
             <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=1" class="text-grey3">按时达</a>
             <span class="number text-pink">{{count[21]}}</span>
         </li>
@@ -59,7 +59,7 @@
     </div>
 </div>
 <!--orders-mode-end-->
-<div class="orders-mode-lock bg-grey2 clearfix">
+<div class="orders-mode-lock bg-grey5 clearfix">
     <div class="mode-content {{lock_mode}} pull-left">
         {% if order_type ==1 %}
         <p class="lock-unlock">已{{notice}}立即送模式(点击右方{{notice2}}按钮可{{notice2}}立即送订单模式。)</p>
@@ -118,42 +118,33 @@
     </div>-->
     <ul class="order-list-content set-width-float mt10">
         {% for order in orders %}
-        <li class="order-list-item list-item set-width-float" data-id="{{order.id}}" data-type="{{order.type}}">
-            <div class="list-title bg-grey2 font14">
+        <li class="order-list-item list-item set-width-float bg-greya font14" data-id="{{order.id}}" data-type="{{order.type}}">
+            <div class="list-title">
                 <!--<input class="select pull-left" type="checkbox"/>-->
- 		<label class="code pull-left">
-                    订单编号：<span class="order-code">{{order.num}}</span>
-                </label>
-                <label class="send pull-left">
-                    配送时间：<span class="send-time">{{(order.create_date+delta).strftime('%Y-%m-%d')}}
+ 		<span class="code pull-left">
+                    <span class="text-grey9">订单编号：</span><span class="order-code">{{order.num}}</span>
+                </span>
+                <span class="send pull-left">
+                    <span class="text-grey9">配送时间：</span><span class="send-time">{{(order.create_date+delta).strftime('%Y-%m-%d')}}
                     {{order.start_time.hour}}:{{order.start_time.minute}}
                     ~ {{order.end_time.hour}}:{{order.end_time.minute}}</span>
-                </label>       
-                <label class="money pull-left">
-                    金额：<span><strong class="order-price">{{order.totalPrice}}</strong>元</span>
-                    {% if order_type ==1 %}
+                </span>       
+                <span class="money pull-left">
+                    <span class="text-grey9">金额：</span><span><span class="order-price goods-total-charge">{{order.totalPrice}}</span>元</span>
+                    <!--{% if order_type ==1 %}
                     <span class="tips">（其中小费<span class="tip">{{order.tip}}</span>元）</span>
-                    {% end %}
-                </label>
-                <a class="print-order pull-right te" href="javascript:;" data-id="{{order.isprint}}">&nbsp;</a>
-                <a class="delete-order pull-right" href="javascript:;">&nbsp;</a>
+                    {% end %}-->
+                </span>
+ 		<span class="pay-status pull-left pay-btn text-grey9" data-pay="{{order.money_paid}}">现金支付</span>
+                <a class="print-order pull-right" href="javascript:;" data-id="{{order.isprint}}">打印</a>
             </div>
             <!--list-title-end-->
-            <div class="order-content set-width-float down">
+            <div class="order-content set-width-float">
                 <div class="order-info set-width-float">
-                    <span>配送至：</span>
-                    <div class="input-group pull-left">
-                        <label class="address">{{order.address_text}}</label>
-                        <input class="address form-control" type="hidden" value="{{order.address_text}}"/>
-                    </div>
-                    <div class="input-group pull-left">
-                        <label class="name">{{order.receiver}}</label>
-                        <input class="name form-control" type="hidden" value="{{order.receiver}}"/>
-                    </div>
-                    <div class="input-group pull-left">
-                        <label class="phone">{{order.phone}}</label>
-                        <input class="phone form-control" type="hidden" value="{{order.phone}}"/>
-                    </div>
+                    <span class="text-grey9">地址：</span>
+                    <span class="address">{{order.address_text}}</span>
+ 		    <span class="text-grey9">用户：</span>
+                    <a href="#" class="name text-blue">{{order.receiver}}</a>
                     <!--<a class="address-edit edit-btn" href="javascript:;" style="display:none">&nbsp;</a>
                     <a class="btn-style fit-btn fit-active pull-right" href="javascript:;">已适配</a>-->
                 </div>
@@ -166,59 +157,115 @@
                 </div>
 		{% end %}
 		{% if order.staff_remark %}
-                <div class="staff-replay text-pink">员工回复：<span>{{order.staff_remark or '无'}}</span></div>
+                <div class="staff-replay text-pink">员工回复：<span>{{order.staff_remark}}</span></div>
 		{% end %}
+                <div class="saler-remark text-pink" style="display:none">商家备注：<span class="order_remark">{{order.remark}}</span></div>
                 <!--order-message-end-->
                 <div class="order-status set-width-float edit_item edit_avilible avilible_item" data-id="{{order.status}}">
-                    <div class="status-bar bg-grey9">
-                        <div class="status-inner bg-grey9 status_order hidden" style="width:100%;"></div>
-                        <div class="status-inner bg-grey9 status_send hidden" style="width:50%;"></div>
-                        <div class="status-inner bg-grey9 status_finish hidden" style="width:100%;"></div>
-                        <div class="status-circle status_order status-item status-order hidden forbid_click" style="left:0%;"></div>
-                        <div class="status-info status_order status-item hidden" style="left:0%;">
+                    <div class="status-bar bg-greyd pull-left forbid_click">
+                        <div class="status-inner bg-greyd status_order hidden" style="width:100%;"></div>
+                        <div class="status-inner bg-greyd status_send hidden" style="width:50%;"></div>
+                        <div class="status-inner bg-greyd status_finish hidden" style="width:100%;"></div>
+                        <div class="status-circle status_order status-item  hidden forbid_click bg-green" style="left:0%;"></div>
+                        <div class="status-info status_order status-item hidden text-green" style="left:0%;">
                             <span class="status">未处理</span>
                         </div>
-                        <div class="status-circle status_send status-item status-send hidden forbid_click" style="left:50%;"></div>
-                        <div class="status-info status_send status-item hidden" style="left:50%;">
+                        <div class="status-circle status_send status-item  hidden forbid_click bg-green" style="left:50%;"></div>
+                        <div class="status-info status_send status-item hidden text-green" style="left:50%;">
                             <span class="status">配送中</span>
                         </div>
-                        <div class="status-circle status_finish status-item status-finish hidden forbid_click" style="left:100%;"></div>
-                        <div class="status-info status_finish status-item hidden" style="left:100%;">
+                        <div class="status-circle status_finish status-item hidden forbid_click bg-green" style="left:100%;"></div>
+                        <div class="status-info status_finish status-item hidden text-green" style="left:100%;">
                             <span class="status">已确认收货</span>
                         </div>
                     </div>
-                    <a class="edit-btn position pull-right status_edit forbid_click" href="javascript:;" style="display:none;">&nbsp;</a>
-                    <a class="check-btn  position pull-right status_check text-white text-center forbid_click" href="javascript:;" style="display:none;">✓</a>
-                </div>
+		  <div class="btn-group pull-right font14 forbid_click status-change able_edit" style="display:none;">
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			    <span class="status_word">未处理</span><span class="caret pull-right"></span>
+			</button>
+			<ul class="dropdown-menu" role="menu">
+			    <li class="status-order">未处理</li>
+			    <li class="status-send">配送中</li>
+			    <li class="status-finish">已完成</li>
+			</ul>
+		   </div>
+		<span class="font12 pull-right set-inl-blo w100 text-center bg-white height30 unable_edit" style="display:none;">已完成</span>
+                </div>	
                 <!--order-status-end-->
             </div>
             <!--order-content-end-->
-            <div class="custom-order list-item-body set-width-float  edit_avilible avilible_item" style="display:none;">
-                <div class="custom-order-title">
-                    <span>下单时间：<i class="order-time">{{order.create_date}}</i></span>
-                    <!--<span>森果号：<a class="senguo-code" href="#">y123456789</a></span>-->
-                    <span>积分：<i class="accumulate-point">{{100}}</i></span>
-                    <span class="pay-status btn-style pull-right pay-btn text-pink" data-pay="{{order.money_paid}}">未支付</span>
+            <div class="custom-order list-item-body set-width-float  edit_avilible avilible_item bg-white" style="display:none;">
+ 	       <div class="address-adapt mb-15">
+                    <p class="text-grey9">配送员选择</p>               
+	            <div class="btn-group font14 forbid_click send_change able_edit"  style="display:none">
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+			    <span>
+				{% if order.SH2_id %}
+			       		{% for SH2 in SH2s%}
+			       		{% if SH2.id==order.SH2_id %}
+					<span class="sender-code w50 set-inl-blo">#{{SH2.id}}</span>||
+				        <span class="sender-name w120 set-inl-blo set-left10">{{SH2.accountinfo.realname or '无名氏'}}</span>||
+				        <span class="sender-phone w120 set-inl-blo set-left10">{{SH2.accountinfo.phone}}</span>
+				       {% end %}
+			       {% end %}
+			       {% else %}
+				<span class="sender-code w50 set-inl-blo">#{{SH2s[0].id}}</span>||
+                                <span class="sender-name w120 set-inl-blo set-left10">{{SH2s[0].accountinfo.realname or '无名氏'}}</span>||
+                                <span class="sender-phone w120 set-inl-blo set-left10">{{SH2s[0].accountinfo.phone}}</span>
+			       {% end %}
+			    </span>
+			    <span class="caret pull-right"></span>
+			</button>
+			<input type="hidden"/ value="{{order.SH2_id }}" id="sh2_id">
+			<ul class="dropdown-menu send_person_list" role="menu">
+			    {% for SH2 in SH2s%}
+                                <li data-id="{{SH2.id}}" class="send_item">
+                                    #<span class="sender-code w50 set-inl-blo">{{SH2.id}}</span>||
+                                    <span class="sender-name w120 set-inl-blo set-left10">{{SH2.accountinfo.realname or '无名氏'}}</span>||
+                                    <span class="sender-phone w120 set-inl-blo set-left10">{{SH2.accountinfo.phone}}</span>
+                                </li>
+                            {% end %}
+			</ul>
+		   </div>
+		   <div class="unable_edit" style="display:none">
+		       {% if order.SH2_id %}
+		       {% for SH2 in SH2s%}
+		       {% if SH2.id==order.SH2_id %}
+			<span class="sender-code w50 set-inl-blo">#{{SH2.id}}</span>||
+                        <span class="sender-name w120 set-inl-blo set-left10">{{SH2.accountinfo.realname or '无名氏'}}</span>||
+                        <span class="sender-phone w120 set-inl-blo set-left10">{{SH2.accountinfo.phone}}</span>
+		       {% end %}
+		       {% end %}
+		       {% end %}
+		   </div>
                 </div>
+		<p class="con-title mb-0">订单详情:</p>
+                <div class="custom-order-title clearfix mb-15">
+		    <span class="text-grey9">收货人：</span><span class="w200">{{order.receiver}}</span>
+		    <span class="text-grey9">电话：</span><span class="w200 phone">{{order.phone}}</span>
+                    <span class="text-grey9">下单时间：</span><span class="w200 order-time">{{order.create_date}}</span>
+                    <!--<span>森果号：<a class="senguo-code" href="#">y123456789</a></span>
+                    <span>积分：<i class="accumulate-point">{{100}}</i></span>-->
+                </div>
+	        <p class="clearfix mb-0 con-title"><span class="goods-total-number"></span>件商品:</p>
                 <div class="custom-order-list clearfix">
                     <ul class="goods-list">
                         {% set fruits = eval(order.fruits) %}
                         {% set mgoods = eval(order.mgoods) %}
                         {% for key in fruits %}
-                        <li class="item">
-                            <span class="code">1</span>
-                            .
-                            <span class="goods-name">{{fruits[key]['fruit_name']}}</span>
+                        <li class="item pull-left">
+                            <span class="code text-grey9">1</span>
                             ：
+                            <span class="goods-name">{{fruits[key]['fruit_name']}}</span>
                             <span class="goods-price">{{fruits[key]['charge']}}</span>
                             *
                             <span class="goods-number">{{fruits[key]['num']}}</span>
                         </li>
                         {% end %}
                         {% for key in mgoods %}
-                        <li class="item">
-                            <span class="code">1</span>
-                            .
+                        <li class="item pull-left">
+                            <span class="code text-grey9">1</span>
+                            ：
                             <span class="goods-name">{{mgoods[key]['mgoods_name']}}</span>
                             ：
                             <span class="goods-price">{{mgoods[key]['charge']}}</span>
@@ -227,47 +274,42 @@
                         </li>
                         {% end %}
                     </ul>
-                    <div class="goods-total">
-                        <p>总件数<span class="goods-total-number">8</span>件</p>
-                        <p>总金额
-                            <span class="goods-total-charge price-show">{{order.totalPrice}}</span>
-                            <input type="text" value="{{order.totalPrice}}" class="total_price_input price-input" style="display:none"/>
-                            元
-                        </p>
-                    </div>
-                    <a class="edit-btn position price_edit" href="javascript:;" style="display:none;">&nbsp;</a>
-                    <a class="check-btn  position price_check text-white text-center" href="javascript:;" style="display:none">✓</a>
                 </div>
-                <div class="order-notice clearfix">
-                    <input type="text" placeholder="订单备注" class="notice_input pull-left" value="{{order.remark or ''}}" {%if order.status==5%}readonly{% end %}/>
-                    <a class="check-btn  notice_check pull-left text-white text-center" href="javascript:;" style="display:none">✓</a>
-                </div>
-                <div class="address-adapt">
-                    <p>一级配送员</p>
-                    <div class="send-person-area-select">
-                        <ul class="send-person-area right-nav">
-                            {% for SH2 in SH2s%}
-                                <li data-id="{{SH2.id}}">
-                                    <span class="sender-code">S2-{{SH2.id}}</span>||
-                                    <span>送货员<span class="sender-name">{{SH2.accountinfo.realname or '无名氏'}}</span></span>||
-                                    <span class="sender-phone">{{SH2.accountinfo.phone}}</span>
-                                </li>
-                            {% end %}
-                        </ul>
-                        <div class="select-btn">
-                            <input type="submit" value="确认" class="sure-btn staff-edit"/>
-                            <input type="button" value="取消" class="concel-btn"/>
-                        </div>
-                    </div>
-                </div>
-                <!--address-adapt-end-->
+		<div class="">
+		    <a class="order_mark pull-right" href="javascript:;">备注</a>
+		    <a class="price_edit pull-right set-right20" href="javascript:;">修改价格</a>
+		    <a class="delete-order pull-right set-right20" href="javascript:;">删除订单</a>
+		</div>
             </div>
+	    <input type="hidden" value="{{order.remark}}" class="saler-remark"/>
+            <input type="hidden" value="{{current_shop.config.receipt_img}}" class="receipt-img"/>
             <input type="hidden" value="{{current_shop.config.receipt_msg}}" class="receipt-remark"/>
             <input type="hidden" value="{{current_shop.config.receipt_img}}" class="receipt-img"/>
             <!--custom-order-end-->
         </li>
         {% end %}
     </ul>
+</div>
+<div class="order_set_box modal fade" id="" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header set-width-float">
+                <span class="title pull-left" id="myModalLabel">
+                   
+                </span>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body set-width-float">
+		<input type="text" id="order_ser_val"/>
+	    </div>
+             <div class="modal-footer">
+                <div class="btn-box">
+                    <button type="button" class="pull-right modal-concel-btn" href="javascript:;" data-dismiss="modal">取消</button>
+                    <button type="button" class="pull-left modal-sure-btn" href="javascript:;">确认</button>
+                </div>
+            </div>
+       </div>
+    </div>
 </div>
 <div class="{% if order_type ==1 %}sendNowBox{% else %}sendIntimeBox{% end %} modal fade" id="SetBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -412,7 +454,7 @@
                     </div>
                 </div>
                 <p class="w450 center-block"><a href="javascript:;" class="add-new-time text-green font14">+ 添加新时段</a></p>
-                <div class="add-period  bg-grey2 set-width-float" style="display:none">
+                <div class="add-period  bg-grey5 set-width-float" style="display:none">
 
                 </div>
                 <div class="w450 center-block clearfix">

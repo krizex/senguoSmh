@@ -1,4 +1,10 @@
 $(document).ready(function(){
+    //图片延迟加载
+     $('.lazy_img').each(function(){
+	var $this=$(this);
+	var src=$this.data('src');
+	$this.attr({'src':src});
+    });
     //商品单位转换
     $('.chargeUnit').each(function(){
         var $this=$(this);
@@ -31,7 +37,6 @@ $(document).ready(function(){
             }
             else $('.little_pear').animate({'right':'-40px'},5);
         }
-	$(".bottom-nav").css({top: window.innerHeight-$(".bottom-nav").outerHeight() }); 
 	});
 });
 var shop_href='/customer/shopProfile';
