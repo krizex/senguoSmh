@@ -887,6 +887,23 @@ class Staff(AdminBaseHandler):
             try:hire_form = self.session.query(models.HireForm).filter_by(
                 staff_id=data["id"], shop_id=self.current_shop.id).one()
             except: return self.send_error(404)
+            ###############################################################################
+            # if the staff exited,send_fail
+            staff_id = data["id"]
+            try:staff  = self.session.query(models.ShopStaff).filter_by(id=staff_id).one()
+            except: return self.send_error(404)
+            phone = staff.accountinfo.phone
+            try:
+                hire_forms  =self.session.query(models.HireForm).filter_by(shop_id=self.current_shop.id).all()
+                temp_phone =[]
+                for temp in hire_forms:
+                    temp_phone.append(temp.staff.accountinfo.phone)
+                if phone in temp_phone:
+                    return self.send_fail("该电话号码已存在，请换一个")
+
+            except:return self.send_error(404)
+
+
             if action == "hire_agree":
                 hire_form.status = 2
                 try:
@@ -944,9 +961,23 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
             d['fruits'] = eval(d['fruits'])
             d['mgoods'] = eval(d['mgoods'])
             d['create_date'] = order.create_date.strftime('%Y-%m-%d %R')
-            d["sent_time"] = "%s %d:%d ~ %d:%d" % ((order.create_date+delta).strftime('%Y-%m-%d'),
-                                                order.start_time.hour, order.start_time.minute,
-                                                  order.end_time.hour, order.end_time.minute)
+            ################################################################################################
+            # modified : woody 
+            #date:2015.3.7
+            #TODO:  standardize the format of time
+            ################################################################################################
+            if order.start_time.minute <10:
+                w_start_time_minute ='0' + str(order.start_time.minute)
+            else:
+                w_start_time_minute = str(order.start_time.minute)
+            if order.end_time.minute < 10:
+                w_end_time_minute = '0' + str(order.end_time.minute)
+            else:
+                w_end_time_minute = str(order.end_time.minute)
+            d["sent_time"] = "%s %d:%s ~ %d:%s" % ((order.create_date+delta).strftime('%Y-%m-%d'),
+                                                order.start_time.hour, w_start_time_minute,
+                                                  order.end_time.hour, w_end_time_minute)
+
             staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
                 models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
             SH2s = []
