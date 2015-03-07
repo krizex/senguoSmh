@@ -451,7 +451,7 @@ class Order(AdminBaseHandler):
         elif order_status == 1:
             orders = [x for x in self.current_shop.orders if x.type == order_type and x.status == 1]
         elif order_status == 5:#all
-            orders = [x for x in self.current_shop.orders if x.type == order_type and x.status != 0]
+            orders = [x for x in self.current_shop.orders if x.type == order_type ]
         elif order_status == 2:#unfinish
             orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in [2, 3, 4]]
         elif order_status == 3:
@@ -460,10 +460,30 @@ class Order(AdminBaseHandler):
             pass
         else:
             return self.send.send_error(404)
-        SH2s = self.session.query(models.ShopStaff).join(models.HireLink).filter(
-            models.HireLink.shop_id == self.current_shop.id, models.HireLink.work == 3).all()
-        return self.render("admin/orders.html", orders=orders, order_type=order_type, SH2s=SH2s,
-                           count=self._count(), delta=datetime.timedelta(1), context=dict(subpage='order'))
+        data = []
+        delta = datetime.timedelta(1)
+        for order in orders:
+            order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
+                                         'comment_create_date', 'start_time', 'end_time', 'create_date']
+            d = order.safe_props(False)
+            d['fruits'] = eval(d['fruits'])
+            d['mgoods'] = eval(d['mgoods'])
+            d['create_date'] = order.create_date.strftime('%Y-%m-%d %R')
+            d["sent_time"] = "%s %d:%d ~ %d:%d" % ((order.create_date+delta).strftime('%Y-%m-%d'),
+                                                order.start_time.hour, order.start_time.minute,
+                                                  order.end_time.hour, order.end_time.minute)
+            staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
+                models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
+            SH2s = []
+            for staff in staffs:
+                staff_data = {"id": staff.id, "realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone}
+                SH2s.append(staff_data)
+                if staff.id == order.SH2_id:  # todo JH、SH1
+                    d["SH2"] = staff_data
+            d["SH2s"] = SH2s
+            data.append(d)
+        return self.render("admin/orders.html", data = data, order_type=order_type,
+                           count=self._count(), context=dict(subpage='order'))
 
 
     @tornado.web.authenticated
@@ -926,12 +946,19 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
     @AdminBaseHandler.check_arguments("action", "id:int")
     def get(self):
         action = self.args["action"]
+        subpage=''
         if action == 'customer_order':
             orders = self.session.query(models.Order).filter_by(
                 customer_id=self.args['id'], shop_id=self.current_shop.id).all()
+            subpage='user'
         elif action == 'SH2_order':
             orders = self.session.query(models.Order).filter_by(
                 SH2_id=self.args['id'], shop_id=self.current_shop.id).all()
+            subpage='staff'
+        elif action == 'order':
+            orders = self.session.query(models.Order).filter_by(
+                num=self.args['id'], shop_id=self.current_shop.id).all()
+            subpage='order'
         else:
             return self.send_error(404)
 
@@ -958,7 +985,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
             d["SH2s"] = SH2s
             data.append(d)
 
-        return self.render("admin/order-list.html", data=data, context=dict(subpage='user'))
+        return self.render("admin/order-list.html", data=data, context=dict(subpage=subpage))
 
 class Config(AdminBaseHandler):
     @tornado.web.authenticated
