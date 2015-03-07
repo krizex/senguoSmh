@@ -263,7 +263,7 @@ function orderPrint(target){
     var receiver=parent.find('.name').first().text();
     var address=parent.find('.address').first().text();
     var phone=parent.find('.phone').first().text();
-    var remark=parent.find('.message-content').first().text();
+    //var remark=parent.find('.message-content').first().text();
     var paid=parent.find('.pay-status').text();
     var totalPrice=parent.find('.goods-total-charge').text();
     var goods=parent.find('.goods-list')[0].innerHTML;
@@ -300,10 +300,6 @@ function orderPrint(target){
         //var box = OpenWindow.document.createElement('div');
         //OpenWindow.document.body.appendChild(box);
         //OpenWindow.document.close();
-        var inner=window.document.body.innerHTML;
-        window.document.body.innerHTML=$item[0].innerHTML;  
-        window.print();
-        //window.document.body.innerHTML=inner;
         var data={
             order_id:order_id
         };
@@ -314,6 +310,10 @@ function orderPrint(target){
         $.postJson(url,args,function(res){
                 if(res.success){
                     target.addClass('text-grey9');
+                    var inner=window.document.body.innerHTML;
+                    window.document.body.innerHTML=$item[0].innerHTML;
+                    window.print();
+                    window.document.body.innerHTML=inner;
                 }
                 else return alert(res.error_text);
             },
@@ -385,8 +385,9 @@ function orderEdit(target,action,content){
                 if(action=='edit_remark')
                 {
                     parent.modal('hide');
-		    var $remark_box=$('.order-list-item').eq(index).find('.saler-remark');
+		            var $remark_box=$('.order-list-item').eq(index).find('.saler-remark');
              	    $remark_box.show().find('.order_remark').text(content);
+                    $('.order-list-item').eq(index).find('.saler-remark').val(content);
                 }
                 else if(action=='edit_SH2')
                 {
