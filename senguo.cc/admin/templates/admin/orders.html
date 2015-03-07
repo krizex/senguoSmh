@@ -207,10 +207,12 @@
 				       {% end %}
 			       {% end %}
 			       {% else %}
+                               {%if SH2s%}
 				#<span class="sender-code w50 set-inl-blo">{{SH2s[0].id}}</span>||
                                 <span class="sender-name w120 set-inl-blo set-left10">{{SH2s[0].accountinfo.realname or '无名氏'}}</span>||
                                 <span class="sender-phone w120 set-inl-blo set-left10">{{SH2s[0].accountinfo.phone}}</span>
 			       {% end %}
+                               {% end %}
 			    </span>
 			    <span class="caret pull-right"></span>
 			</button>
