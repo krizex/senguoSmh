@@ -270,7 +270,7 @@ function orderPrint(target){
     var print_remark=$('.shop-receipt-remark').val();
     var print_img=$('.shop-receipt-img').val();
     var remark=parent.find('.saler-remark').val();
-    $.getItem('/static/items/admin/order-print-page.html?v=2015-03-000000007',function(data){
+    $.getItem('/static/items/admin/order-print-page.html?v=2015-03-07',function(data){
         var $item=$(data);
         $item.find('.notes-head').text(shop_name);
         $item.find('.orderId').text(order_num);
@@ -303,7 +303,7 @@ function orderPrint(target){
         var inner=window.document.body.innerHTML;
         window.document.body.innerHTML=$item[0].innerHTML;  
         window.print();
-        window.document.body.innerHTML=inner;
+        //window.document.body.innerHTML=inner;
         var data={
             order_id:order_id
         };
