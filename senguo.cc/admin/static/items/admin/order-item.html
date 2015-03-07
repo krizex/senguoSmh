@@ -14,7 +14,7 @@
         <a class="print-order pull-right forbid_click" href="javascript:;" data-id="">打印</a>
     </div>
     <!--list-title-end-->
-    <div class="order-content set-width-float down">
+    <div class="order-content set-width-float">
         <div class="order-info set-width-float">
             <span class="text-grey9">地址：</span><span class="address address_show"></span>
             <span class="text-grey9">用户：</span><a href="#" class="name text-grey9 name"></a>
@@ -28,7 +28,7 @@
 	<div class="saler-remark text-pink">商家备注：<span class="order_remark"></span></div>
         <!--order-message-end-->
         <div class="order-status set-width-float edit_item edit_avilible avilible_item" data-id="">
-            <div class="status-bar bg-greyd">
+            <div class="status-bar bg-greyd pull-left forbid_click">
                 <div class="status-inner bg-greyd status_order hidden" style="width:0%;"></div>
                 <div class="status-inner bg-green status_send hidden" style="width:50%;"></div>
                 <div class="status-inner bg-green status_finish hidden" style="width:100%;"></div>
@@ -55,20 +55,34 @@
 		    <li class="status-finish">已完成</li>
 		</ul>
 	   </div>
+	   <span class="font12 pull-right set-inl-blo w100 text-center bg-white height30 unable_edit" style="display:none;">已评价</span>
         </div>
         <!--order-status-end-->
     </div>
     <!--order-content-end-->
-    <div class="custom-order list-item-body set-width-float  edit_avilible avilible_item" style="display:none;">
+    <div class="custom-order list-item-body set-width-float" style="display:none">
 	<div class="address-adapt mb-15">
            <p class="text-grey9">配送员选择</p>
-	   <div class="order_sender">
+	   <div class="current_sender unable_edit clearfix" style="display:none">
 		#<span class="sender-code w50 set-inl-blo"></span>||
                 <span class="sender-name w120 set-inl-blo set-left10"></span>||
                 <span class="sender-phone w120 set-inl-blo set-left10"></span>
 	   </div>
+	   <div class="btn-group font14 forbid_click send_change able_edit clearfix"  style="display:none">
+		<button type="button" class="btn btn-default dropdown-toggle send_person order-sender" data-toggle="dropdown" aria-expanded="false">
+		    <span>
+			#<span class="sender-code w50 set-inl-blo"></span>||
+		        <span class="sender-name w120 set-inl-blo set-left10"></span>||
+		        <span class="sender-phone w120 set-inl-blo set-left10"></span>
+		    </span>
+		    <span class="caret pull-right"></span>
+		</button>
+		<ul class="dropdown-menu send_person_list" role="menu">
+                       
+		</ul>
+	   </div>
 	</div>
-        <p class="con-title mb-0">订单详情:</p>
+        <p class="con-title mb-0 clearfix">订单详情:</p>
         <div class="custom-order-title clearfix mb-15">
            <span class="text-grey9">收货人：</span><span class="w200 name"></span>
 	   <span class="text-grey9">电话：</span><span class="w200 phone"></span>
@@ -80,9 +94,12 @@
 
             </ul>
         </div>
-        <!--address-adapt-end-->
+        <div class="edit_box able_edit" style="display:none">
+	    <a class="order_mark pull-right" href="javascript:;">备注</a>
+	    <a class="price_edit pull-right set-right20" href="javascript:;">修改价格</a>
+	    <a class="delete-order pull-right set-right20" href="javascript:;">删除订单</a>
+	</div>
     </div>
-    <input type="hidden" value="" class="receipt-remark"/>
-    <input type="hidden" value="" class="receipt-img"/>
+    <input type="hidden" value="" class="saler-remark"/>
     <!--custom-order-end-->
 </li>

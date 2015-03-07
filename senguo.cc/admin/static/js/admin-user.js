@@ -16,6 +16,14 @@ $(document).ready(function(){
         var search=$('.search-con').val().trim();
         window.location.href='follower?action=search&&order_by=time&&page=0&&wd='+search;
     });
+     $('.search-con').on('keydown',function(){
+        var $this=$(this);
+    	if(window.event.keyCode == 13)
+	{
+	     var con=Int($this.val());
+	     window.location.href='follower?action=search&&order_by=time&&page=0&&wd='+con;
+	}
+    });
     //导航active样式
     if(user_type=='all') $('.all_user').addClass('active');
     else if(user_type=='old') $('.old_user').addClass('active');
