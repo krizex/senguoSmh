@@ -8,7 +8,35 @@ from dal.db_configs import DBSession
 from settings import content, account, password
 from xml.etree import ElementTree
 from dal.models import _VerifyCode
+import requests
+import json
 
+#############################################
+#get access_token
+#############################################
+def get_access_token():
+    AppSecret = '6ecd60383b7e26a09d51a12e75649b3e'
+    AppID = 'wx0ed17cdc9020a96e'
+    grant_type = 'client_credential'
+    url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type={0}&appid={1}&secret={2}'.format(grant_type,AppID,AppSecret)
+    r = requests.get(url)
+    s = r.content
+    s = str(s,'utf-8')
+    t = json.loads(s)
+    access_token = t.get('access_token')
+    return access_token
+
+###########################################
+# subscribe
+###########################################
+def user_subscribe(openid):
+    access_token = get_access_token()
+    url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token={0}&openid={1}'.format(access_token,openid)
+    r = requests.get(url)
+    s = str(r.content,'utf-8')
+    t = json.loads(s)
+    subscribe = t.get('subscribe',None)
+    return subscribe
 
 def gen_msg_token(wx_id, phone):
     s = DBSession()
