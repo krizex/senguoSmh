@@ -526,6 +526,12 @@ class Order(CustomerBaseHandler):
         elif action == "all":
             orders = self.current_user.orders
         else:return self.send_error(404)
+
+        ###################################################################
+        # time's format
+        ###################################################################
+
+        
         return self.render("customer/order-list.html", orders=orders, context=dict(subpage='center'))
 
     @tornado.web.authenticated
