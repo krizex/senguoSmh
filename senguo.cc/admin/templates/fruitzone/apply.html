@@ -5,8 +5,6 @@
 {% end %}
 
 {% block content %}
-{% set subscribe=context.get('subscribe')%}
-{% if subscribe ==1 %}
 	{% if "reApply" in context and context["reApply"] %}
 	    {% set shop = context['shop']%}
 	{% end %}
@@ -207,10 +205,6 @@
 	</div>
 
 	{% end %}
-
-{% else %}
-<p>您还没有关注森果树官方服务号，请您先关注森果官方服务号{{subscribe}}</p>
-{% end %}
 {% end %}
 {% block bottom %}
 <!--<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>-->
