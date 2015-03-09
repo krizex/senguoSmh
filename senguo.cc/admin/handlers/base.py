@@ -397,6 +397,7 @@ class WxOauth2:
                               "&appid={appid}&secret={appsecret}".format(appid=MP_APPID, appsecret=MP_APPSECRET)
     jsapi_ticket_url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={access_token}&type=jsapi"
     template_msg_url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={access_token}"
+    
 
     @classmethod
     def get_userinfo(cls, code, mode):
@@ -511,3 +512,16 @@ class WxOauth2:
             print("店铺审核模板消息发送失败：", data)
             return False
         return True
+
+    @classmethod
+    def get_user_subcribe(cls,openid):
+        openid = openid
+        access_token = cls.get_client_access_token()
+        user_subcribe_url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token={0}&openid={1}'.format(access_token,openid)
+        res = requests.get(user_subcribe_url)
+        data = json.loads(res.content.decode("utf-8"))
+        subscribe = data.get("subscribe",None)
+        return subscribe
+
+
+
