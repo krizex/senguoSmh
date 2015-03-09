@@ -460,6 +460,13 @@ class Order(AdminBaseHandler):
             pass
         else:
             return self.send.send_error(404)
+            ###################################################################################
+            # time format
+            ###################################################################################
+        for order in orders:
+            order.start_time = time.strftime('%Y-%m-%d %H:%M',order.start_time)
+            order.end_time = time.strftime('%Y-%m-%d %H:%M',order.end_time)
+
         SH2s = self.session.query(models.ShopStaff).join(models.HireLink).filter(
             models.HireLink.shop_id == self.current_shop.id, models.HireLink.work == 3).all()
         return self.render("admin/orders.html", orders=orders, order_type=order_type, SH2s=SH2s,
@@ -974,6 +981,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
                 w_end_time_minute = '0' + str(order.end_time.minute)
             else:
                 w_end_time_minute = str(order.end_time.minute)
+
             d["sent_time"] = "%s %d:%s ~ %d:%s" % ((order.create_date+delta).strftime('%Y-%m-%d'),
                                                 order.start_time.hour, w_start_time_minute,
                                                   order.end_time.hour, w_end_time_minute)

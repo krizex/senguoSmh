@@ -7,13 +7,14 @@ from sqlalchemy import desc
 from dal.dis_dict import dis_dict
 
 import datetime, time, random
-from libs.msgverify import gen_msg_token,check_msg_token
+from libs.msgverify import gen_msg_token,check_msg_token,user_subscribe
 from libs.alipay import WapAlipay
 from settings import *
 from libs.utils import Logger
 import libs.xmltodict as xmltodict
 import qiniu
 from qiniu.services.storage.bucket import BucketManager
+
 
 class Home(FruitzoneBaseHandler):
     _page_count =20
@@ -160,20 +161,36 @@ class ShopApply(FruitzoneBaseHandler):
     @tornado.web.authenticated
     @FruitzoneBaseHandler.check_arguments("shop_id?:int")
     def get(self):
-        if self._action == "apply":
+        if self._action == "apply":  
+            ##############################################################################
+            # user's subscribe
+            ##############################################################################
+            print('apply')
+            
+            # shop = self.session.query(models.ShopTemp).filter_by(id=shop_id).one()
+            # account_info = self.session.query(models.Accountinfo).get(shop.admin_id)
+            wx_openid = self.current_user.accountinfo.wx_unionid
+            # wx_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'
+            print(wx_openid)
+            subscribe = user_subscribe(wx_openid)
+            print(subscribe)
             # if not self.current_user.accountinfo.phone or \
             #     not self.current_user.accountinfo.email or\
             #     not self.current_user.accountinfo.wx_username:
             #     return self.render("fruitzone/apply.html", context=dict(reApply=False,
             #         need_complete_accountinfo=True))
-
-            return self.render("fruitzone/apply.html", context=dict(reApply=False))
+            
+            return self.render("fruitzone/apply.html", context=dict(reApply=False,subscribe=subscribe))
         elif self._action == "reApply":
             if "shop_id" not in self.args:
                 return self.send_error(404)
             shop_id = self.args["shop_id"]
+            print('reApply')
             try:
                 shop = self.session.query(models.ShopTemp).filter_by(id=shop_id).one()
+                wx_openid = self.current_user.accountinfo.wx_openid
+                subscribe = user_subscribe(wx_openid)
+                print(subscribe)
             except:
                 shop = None
             if not shop:

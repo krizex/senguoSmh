@@ -5,7 +5,12 @@ import time, datetime
 from settings import ROOT_HOST_NAME
 from sqlalchemy import exists, func, extract, DATE, desc
 from dal.dis_dict import dis_dict
-from libs.msgverify import check_msg_token
+from libs.msgverify import check_msg_token,get_access_token,user_subscribe
+
+
+############################
+# added by woody  2015.3.6
+import requests
 
 class Access(SuperBaseHandler):
     
@@ -128,6 +133,8 @@ class ShopManage(SuperBaseHandler):
         q_declined = q_temp.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
         q_accepted = q_temp.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
 
+        
+
         count = {
             "all_temp": q_temp.count(),
             "applying": q_applying.count(),
@@ -148,6 +155,13 @@ class ShopManage(SuperBaseHandler):
             output_data = []
             for shop in shops:
                 data = {}
+                ##############################################################################
+                # user's subscribe
+                ##############################################################################
+                account_info = self.session.query(models.Accountinfo).get(shop.admin_id)
+                wx_openid = account_info.wx_openid
+                subscribe = user_subscribe(wx_openid)
+                data["subscribe"] = subscribe
                 data["shop_trademark_url"] = shop.shop_trademark_url
                 data["shop_name"] = shop.shop_name
                 data["shop_code"] = shop.shop_code
@@ -187,6 +201,7 @@ class ShopManage(SuperBaseHandler):
             return self.send(400)
     @SuperBaseHandler.check_arguments("shop_id:int", "new_status:int", "declined_reason?")
     def handle_updateStatus(self):
+
         shop_temp = models.ShopTemp.get_by_id(self.session, self.args["shop_id"])
         if not shop_temp:
             return self.send_error(403)
@@ -196,6 +211,26 @@ class ShopManage(SuperBaseHandler):
         if self.args["new_status"] == models.SHOP_STATUS.DECLINED:
             shop_temp.update(self.session, shop_status=3,
                         declined_reason=self.args["declined_reason"])
+
+            ########################################
+            # the message of decline
+            account_info = self.session.query(models.Accountinfo).get(shop_temp.admin_id)
+            url = 'http://106.ihuyi.cn/webservice/sms.php?method=Submit'
+            message_reason =self.args["declined_reason"]
+            message_name = account_info.realname
+            message_shop_name = shop_temp.shop_name
+            # mobile = '18162664593'
+            mobile = '13163263783'
+            message_fail_content = '用户：{0}，您好，您在森果平台申请的店铺{1}由于{2}未通过审核，\
+            您点击右边链接，关注森果微信平台http://dwz.cn/CSZiH，了解更多平台动态，再行\
+            申请。'.format(message_name,message_shop_name,message_reason)
+            postdata = dict(account='cf_senguocc',
+                password='sg201404',
+                mobile=mobile,
+                content = message_content)
+            headers = dict(Host = '106.ihuyi.cn',)
+            r = requests.post(url,data = postdata , headers = headers)
+            print(r.text)
         else:
             if shop_temp.shop_status == 2:
                 return self.send_error("店铺已经申请成功")
@@ -229,6 +264,26 @@ class ShopManage(SuperBaseHandler):
             self.session.commit()
 
             account_info = self.session.query(models.Accountinfo).get(shop_temp.admin_id)
+
+            ###################################################################################
+            #added by woody
+            # send messages
+            ###################################################################################
+            url = 'http://106.ihuyi.cn/webservice/sms.php?method=Submit'     # message'url
+            message_name = account_info.realname
+            message_shop_name = shop_temp.shop_name
+            mobile = '18162664593'
+            message_content = '用户：{0}，您好，您在森果平台申请的店铺{1}已经通过审核，点击链接查看>使\
+            用教程 http://dwz.cn/CSY6L'.format(message_name,message_shop_name)
+
+            postdata = dict(account='cf_senguocc',
+                password='sg201404',
+                mobile=mobile,
+                content = message_content)
+            headers = dict(Host = '106.ihuyi.cn',)
+            r = requests.post(url,data = postdata , headers = headers)
+            print(r.content)
+
             WxOauth2.post_template_msg(account_info.wx_openid, shop_temp.shop_name,
                                        account_info.realname, account_info.phone)  # 发送微信模板消息通知用户
         return self.send_success()
