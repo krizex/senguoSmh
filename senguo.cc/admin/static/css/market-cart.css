@@ -58,7 +58,7 @@
 .send-address-choose .address{width:85%;}
 .send-address-choose .to-edit-address{width:15%;margin-top:15px;}
 
-.message-input{padding:10px 15px;width:90% !important;border-color:#fff;}
+.message-input{padding:10px 15px;width:90% !important;border-color:#fff;border-radius:3px;}
 .message-input:focus{border-color:#ddd;}
 .border-grey{border-color:#ddd;}
 .tip-list li{width:32%;margin-right:1%;}

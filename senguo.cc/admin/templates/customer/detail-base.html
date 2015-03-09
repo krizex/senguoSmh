@@ -20,13 +20,13 @@
 <body class="bg-pale-green">
     <main class="container phone-box">
         {% block header %}
-        <header class="detail-header text-white center-block">
+        <header class="detail-header text-white center-block bg_change">
             <a href="{%block back%}javascript:history.back(-1){% end %}" class="return-btn pull-left"></a>
             <span class="title pull-left font16">{% block top %}{% end %}</span>
         </header>
         {% end %}
         {% block content %}{% end %}
-        <a id="backTop" class="little_pear"><img src="{{static_url('svg/half.svg')}}"/></a>
+        <a id="backTop" class="little_pear"><img src="{{static_url('svg/half.svg')}}" class="src_change"/></a>
     </main>
 <script src="{{static_url('js/jquery.min.js')}}"></script>
 <script src="{{static_url('js/hammer.min.js')}}"></script>

@@ -17,11 +17,11 @@
 <h3 class="text-center pt36 set-w100-fle">暂无订单！</h3>
 {% end %}
 <div class="list-header clearfix">
-    <img src="{{static_url('svg/left_corner.svg')}}" class="left-corner"/>
+    <img src="{{static_url('svg/left_corner.svg')}}" class="left-corner src_change"/>
     <div class="set-w100-fle corner-box">
-        <span class="corner"></span>
+        <span class="corner bg_change"></span>
     </div>
-    <img src="{{static_url('svg/right_corner.svg')}}" class="right-corner"/>
+    <img src="{{static_url('svg/right_corner.svg')}}" class="right-corner src_change"/>
 </div>
 <ul class="order-list bg-white clearfix">
     {% for order in orders %}
@@ -57,7 +57,7 @@
                 <input type="hidden" value="{{order.status}}" class="order_status"/>
                 {% if order.status !=0 %}
                 <span class="send-time">
-                    <span class="un-arrive">预计</span>：<span class="send_date">今天</span>&nbsp;&nbsp;{{order.start_time}}~{{order.end_time}}&nbsp;&nbsp;送达
+                    <span class="un-arrive">预计</span>：<span class="send_date">今天</span>&nbsp;&nbsp;<span class="start_time">{{order.start_time}}</span>~<span class="end_time">{{order.end_time}}</span>&nbsp;&nbsp;送达
                 </span>
                 {% end %}
                 <span class="price-box pull-right text-pink"><span class="price font18 pull-left">{{order.totalPrice}}</span>元</span>

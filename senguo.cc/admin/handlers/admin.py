@@ -465,14 +465,27 @@ class Order(AdminBaseHandler):
         delta = datetime.timedelta(1)
         for order in orders:
             order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
-                                         'comment_create_date', 'start_time', 'end_time', 'create_date']
+                                         'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
             d = order.safe_props(False)
             d['fruits'] = eval(d['fruits'])
             d['mgoods'] = eval(d['mgoods'])
             d['create_date'] = order.create_date.strftime('%Y-%m-%d %R')
-            d["sent_time"] = "%s %d:%d ~ %d:%d" % ((order.create_date+delta).strftime('%Y-%m-%d'),
-                                                order.start_time.hour, order.start_time.minute,
-                                                  order.end_time.hour, order.end_time.minute)
+            if order.start_time.minute <10:
+                w_start_time_minute ='0' + str(order.start_time.minute)
+            else:
+                w_start_time_minute = str(order.start_time.minute)
+            if order.end_time.minute < 10:
+                w_end_time_minute = '0' + str(order.end_time.minute)
+            else:
+                w_end_time_minute = str(order.end_time.minute)
+
+            if order.type == 2 and order.today==2:
+                w_date = order.create_date + delta
+            else:
+                w_date = order.create_date
+            d["sent_time"] = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
+                                                order.start_time.hour, w_start_time_minute,
+                                                  order.end_time.hour, w_end_time_minute)
             staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
                 models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
             SH2s = []
@@ -1010,7 +1023,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
             else:
                 w_end_time_minute = str(order.end_time.minute)
 
-            if order.type == 2 and order.today:
+            if order.type == 2 and order.today==2:
                 w_date = order.create_date + delta
             else:
                 w_date = order.create_date

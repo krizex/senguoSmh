@@ -208,11 +208,12 @@ function orderItem(item){
         for(var key in mgoods){
             m_num++;
             var $mgoods=$($goods_item);
-            $mgoods.find('.code').text(m_num);
+            var num=$item.find('.goods-list li').length;
+            $mgoods.find('.code').text(num+1);
             $mgoods.find('.goods-name').text(mgoods[key]['mgoods_name']);
             $mgoods.find('.goods-price').text(mgoods[key]['charge']);
             $mgoods.find('.goods-number').text(mgoods[key]['num']);
-            $item.find('.goods-list').append($goods);
+            $item.find('.goods-list').append($mgoods);
             goods_num=goods_num+mgoods[key]['num'];
         }
         //送货员选择
@@ -225,24 +226,26 @@ function orderItem(item){
 	      target.find('.sender-name').text(val['realname']);
 	      target.find('.sender-phone').text(val['phone']);
 	};
-	if(!SH2){
-	    CurrentStaff($sender,SH2s[0]);
-	    CurrentStaff($current_sender,SH2s[0]);
-             for(var key in SH2s){
-	    	var $staff=$($staff_item);
-	    	CurrentStaff($staff,SH2s[key]);
-	    	$item.find('.send_person_list').append($staff);
-	    }	    
-        }
-        else{
-	    CurrentStaff($sender,SH2);
-	    CurrentStaff($current_sender,SH2);
-            for(var key in SH2s){
-	    	var $staff=$($staff_item);
-	    	if(SH2s[key]['id']==SH2['id']) $staff.addClass('bg-blue');
-	    	CurrentStaff($staff,SH2s[key]);
-	    	$item.find('.send_person_list').append($staff);
-	    }
+	if(SH2s.length>0){
+		if(!SH2){
+		    CurrentStaff($sender,SH2s[0]);
+		    CurrentStaff($current_sender,SH2s[0]);
+		     for(var key in SH2s){
+		    	var $staff=$($staff_item);
+		    	CurrentStaff($staff,SH2s[key]);
+		    	$item.find('.send_person_list').append($staff);
+		    }	    
+		}
+		else{
+		    CurrentStaff($sender,SH2);
+		    CurrentStaff($current_sender,SH2);
+		    for(var key in SH2s){
+		    	var $staff=$($staff_item);
+		    	if(SH2s[key]['id']==SH2['id']) $staff.addClass('bg-blue');
+		    	CurrentStaff($staff,SH2s[key]);
+		    	$item.find('.send_person_list').append($staff);
+		    }
+		}
         }
         //商品总件数
         $item.find('.goods-total-number').text(goods_num);

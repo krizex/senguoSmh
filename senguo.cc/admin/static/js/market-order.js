@@ -7,7 +7,9 @@ $(document).ready(function(){
     });
     //送货时间
     var date=new Date();
-    var day=date.getDay();
+    var year=date.getFullYear();
+    var month=date.getMonth()+1;
+    var day=date.getDate();
     $('.order-list-item').each(function(){
         var $this=$(this);
         var create_time=$this.find('.create_time').val();
@@ -16,8 +18,9 @@ $(document).ready(function(){
         var create_day=Int($this.find('.create_day').val());
         var send_day=$this.find('.send_day').val();
         var status=$this.find('.order_status').val();
-        if(send_day==1){
-            $this.find('.send_date').text('今天');
+        if(send_day==1){ 
+            if(create_year==year&&create_month==month&&create_day==day) $this.find('.send_date').text('今天');
+            else $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
             if(status==5){
                 $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
                 $this.find('.un-arrive').text('已送达');
@@ -30,12 +33,9 @@ $(document).ready(function(){
             }
         }
         else if(send_day==2){
-            if(day==create_day){
-                $this.find('.send_date').text('今天');
-            }//下单模式选择了“明天”，但是日期到了“明天”的情况
-            else{
-                $this.find('.send_date').text('明天');
-            }
+            if(create_year==year&&create_month==month&&create_day+1==day) $this.find('.send_date').text('今天');
+            else if(create_year==year&&create_month==month&&create_day+1<day) $this.find('.send_date').text(create_year+'-'+create_month+'-'+(create_day+1));
+            else $this.find('.send_date').text('明天');//下单模式选择了“明天”，但是日期到了“明天”的情况
             if(status==5){
                 $this.find('.send_date').text(create_year+'-'+create_month+'-'+(create_day+1));
                 $this.find('.un-arrive').text('已送达');

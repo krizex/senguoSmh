@@ -38,6 +38,9 @@ $(document).ready(function(){
             else $('.little_pear').animate({'right':'-40px'},5);
         }
 	});
+	//客户端为Android系统替换图片路径
+        AndroidImg('bg_change');
+        AndroidImg('src_change');   
 });
 var shop_href='/customer/shopProfile';
 var market_href='/shop/none';
@@ -52,6 +55,29 @@ var timestamp_val;
 var signature_val;
 var current_link=window.location.href;
 
+
+function AndroidImg(target){
+    //判断客户端是否是iOS或者Android
+    var u = navigator.userAgent, app = navigator.appVersion;
+    //var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
+    var isAndroid = u.indexOf('Android') > -1;
+    var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+     if(isAndroid){
+     	$(document).find('.'+target).each(function(){
+     	var $this=$(this);
+	if(target=='bg_change')
+	{
+	   var src=$this.css('background');
+     	   var src_android=src.replace('.svg','.png');
+     	   $this.css({'background':src_android});}
+     	else {
+     	   var src=$this.attr('src');
+     	   var src_android=src.replace('.svg','.png');
+     	   $this.attr({'src':src_android});
+     	}   	
+      });
+     }
+}
 
 function getCookie(key){
     var aCookie = document.cookie.split(";");

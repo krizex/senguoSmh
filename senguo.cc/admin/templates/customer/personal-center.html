@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{static_url('css/market-center.css')}}"/>
 {% end %}
 {% block content %}
-    <div class="rainshed2 text-center font18 text-white"></div>
+    <div class="rainshed2 text-center font18 text-white bg_change"></div>
     <div class="user-info box-style m-b5 clearfix font16 text-center mt42 p0">
         <a href="{{reverse_url('customerProfile')}}" class="user-img text-grey3">
             <img src="{{current_user.accountinfo.headimgurl}}" class="img img-circle"/>
@@ -83,7 +83,7 @@
 <div class="address-box modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header clearfix">
+            <div class="modal-header clearfix bg_change">
                 <h4 class="title pull-left modal-title font16" id="myModalLabel">收货地址</h4>
                 <span type="button" class="close text-white" data-dismiss="modal">✕</span>
             </div>

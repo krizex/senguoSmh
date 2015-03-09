@@ -20,6 +20,9 @@ $(document).ready(function(){
                 'key':'',
                 'token':''
             },
+            'onFallback':function(){
+                            return alert('您的浏览器不支持此插件！建议使用谷歌浏览器！');
+                        },
             'onUpload' :function(){
                 $.ajaxSetup({
                     async : false
