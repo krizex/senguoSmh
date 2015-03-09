@@ -479,7 +479,7 @@ class Order(AdminBaseHandler):
             else:
                 w_end_time_minute = str(order.end_time.minute)
 
-            if order.type == 2 and order.today:
+            if order.type == 2 and order.today==2:
                 w_date = order.create_date + delta
             else:
                 w_date = order.create_date
@@ -1023,7 +1023,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
             else:
                 w_end_time_minute = str(order.end_time.minute)
 
-            if order.type == 2 and order.today:
+            if order.type == 2 and order.today==2:
                 w_date = order.create_date + delta
             else:
                 w_date = order.create_date
