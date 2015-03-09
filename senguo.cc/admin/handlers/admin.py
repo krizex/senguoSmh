@@ -909,25 +909,31 @@ class Staff(AdminBaseHandler):
             try:hire_form = self.session.query(models.HireForm).filter_by(
                 staff_id=data["id"], shop_id=self.current_shop.id).one()
             except: return self.send_error(404)
-            ###############################################################################
-            # if the staff exited,send_fail
-            staff_id = data["id"]
-            try:staff  = self.session.query(models.ShopStaff).filter_by(id=staff_id).one()
-            except: return self.send_error(404)
-            phone = staff.accountinfo.phone
-            try:
-                hire_forms  =self.session.query(models.HireForm).filter_by(shop_id=self.current_shop.id).all()
-                temp_phone =[]
-                for temp in hire_forms:
-                    temp_phone.append(temp.staff.accountinfo.phone)
-                if phone in temp_phone:
-                    return self.send_fail("该电话号码已存在，请换一个")
-
-            except:return self.send_error(404)
-
 
             if action == "hire_agree":
+                
+                ###############################################################################
+                # if the staff exited,send_fail
+                ###############################################################################
+                staff_id = data["id"]
+                try:staff  = self.session.query(models.ShopStaff).filter_by(id=staff_id).one()
+                except: return self.send_error(404)
+                phone = staff.accountinfo.phone
+                print(phone)
+                try:
+                    print(self.current_shop.id)
+                    hire_forms =self.session.query(models.HireForm).filter_by(status = 2,shop_id=self.current_shop.id).all()
+                    print(len(hire_forms))
+                    temp_phone =[]
+                    for temp in hire_forms:
+                        temp_phone.append(temp.staff.accountinfo.phone)
+                    print(temp_phone)
+                    if phone in temp_phone:
+                        return self.send_fail("该电话号码已存在，请换一个")
+                except:return self.send_error(404)
+
                 hire_form.status = 2
+
                 try:
                     self.session.add(models.HireLink(staff_id=hire_form.staff_id, shop_id=hire_form.shop_id))
                     self.session.commit()
