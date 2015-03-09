@@ -188,6 +188,7 @@ class ShopApply(FruitzoneBaseHandler):
             print('reApply')
             try:
                 shop = self.session.query(models.ShopTemp).filter_by(id=shop_id).one()
+                # useless  lookup the value of user's subscribe
                 wx_openid = self.current_user.accountinfo.wx_openid
                 subscribe = user_subscribe(wx_openid)
                 print(subscribe)

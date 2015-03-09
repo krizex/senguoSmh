@@ -982,7 +982,11 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
             else:
                 w_end_time_minute = str(order.end_time.minute)
 
-            d["sent_time"] = "%s %d:%s ~ %d:%s" % ((order.create_date+delta).strftime('%Y-%m-%d'),
+            if order.type == 2 and order.today:
+                w_date = order.create_date + delta
+            else:
+                w_date = order.create_date
+            d["sent_time"] = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
                                                 order.start_time.hour, w_start_time_minute,
                                                   order.end_time.hour, w_end_time_minute)
 

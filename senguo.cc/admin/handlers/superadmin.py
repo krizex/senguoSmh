@@ -243,6 +243,8 @@ class ShopManage(SuperBaseHandler):
             config = models.Config()
             config.periods.extend([period1, period2, period3])
 
+
+
             # 把临时表的内容复制到shop表
             shop = models.Shop(admin_id=shop_temp.admin_id,
                                          shop_name=shop_temp.shop_name,
@@ -260,6 +262,18 @@ class ShopManage(SuperBaseHandler):
             shop_temp.shop_status = 2
             self.session.commit()  # 要commit一次才有shop.id
 
+            ######################################################################################
+            # inspect whether staff exited
+            ######################################################################################
+            temp_staff = self.session.query(models.ShopStaff).get(shop.admin_id)
+            print('temp_staff')
+            print(shop.admin_id)
+            print(temp_staff)
+            if temp_staff is None:
+                print('passssssssssssssssssssssssssssssssssssssssss')
+                self.session.add(models.ShopStaff(id=shop.admin_id, shop_id=shop.id))  # 添加默认员工时先添加一个员工，否则报错
+                self.session.commit()
+
             self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id))  # 把管理者默认为新店铺的二级配送员
             self.session.commit()
 
@@ -272,17 +286,21 @@ class ShopManage(SuperBaseHandler):
             url = 'http://106.ihuyi.cn/webservice/sms.php?method=Submit'     # message'url
             message_name = account_info.realname
             message_shop_name = shop_temp.shop_name
-            mobile = '18162664593'
-            message_content = '用户：{0}，您好，您在森果平台申请的店铺{1}已经通过审核，点击链接查看>使\
-            用教程 http://dwz.cn/CSY6L'.format(message_name,message_shop_name)
+            mobile = account_info.phone
+            print(mobile)
+            if mobile is not None:
 
-            postdata = dict(account='cf_senguocc',
-                password='sg201404',
-                mobile=mobile,
-                content = message_content)
-            headers = dict(Host = '106.ihuyi.cn',)
-            r = requests.post(url,data = postdata , headers = headers)
-            print(r.content)
+                message_content = '用户：{0}，您好，您在森果平台申请的店铺{1}已经通过审核，点击链接查看使\
+                用教程 http://dwz.cn/CSY6L'.format(message_name,message_shop_name)
+
+                postdata = dict(account='cf_senguocc',
+                    password='sg201404',
+                    mobile=mobile,
+                    content = message_content)
+                headers = dict(Host = '106.ihuyi.cn',)
+                r = requests.post(url,data = postdata , headers = headers)
+                print(r.text)
+            # test_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'
 
             WxOauth2.post_template_msg(account_info.wx_openid, shop_temp.shop_name,
                                        account_info.realname, account_info.phone)  # 发送微信模板消息通知用户
