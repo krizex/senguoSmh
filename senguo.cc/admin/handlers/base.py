@@ -487,6 +487,9 @@ class WxOauth2:
 
     @classmethod
     def post_template_msg(cls, touser, shop_name, name, phone):
+        print('####################')
+        print(cls)
+        print(touser)
         time = datetime.datetime.now().strftime('%Y-%m-%d %R')
         postdata = {
             "touser": touser,
