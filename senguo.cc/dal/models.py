@@ -194,6 +194,11 @@ class _AccountApi(_CommonApi):
             u.accountinfo.wx_city=wx_userinfo["city"]
             u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
             u.accountinfo.nickname = wx_userinfo["nickname"]
+            #####################################################################################
+            # update wx_openid
+            #####################################################################################
+            u.accountinfo.wx_openid = wx_userinfo["openid"]
+            print(wx_userinfo["openid"])
             session.commit()
             return u
         # 判断是否在基本信息表里存在该用户
