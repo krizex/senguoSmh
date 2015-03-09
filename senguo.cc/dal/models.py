@@ -198,7 +198,7 @@ class _AccountApi(_CommonApi):
             # update wx_openid
             #####################################################################################
             u.accountinfo.wx_openid = wx_userinfo["openid"]
-            print(wx_userinfo["openid"])
+            print( "openid" + wx_userinfo["openid"])
             session.commit()
             return u
         # 判断是否在基本信息表里存在该用户
