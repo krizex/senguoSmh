@@ -136,7 +136,9 @@ function infoEdit(target){
     var url="";
     var action_name=target.data('id');
     var data={};
-    var action,shop_name,shop_intro,shop_city,shop_address_detail,have_offline_entity,address,entity_text,shop_code;
+    var action,shop_name,shop_intro,shop_city,shop_address_detail,have_offline_entity,address,entity_text,shop_code,shop_phone;
+    var regPhone=/\d{3}-\d{8}|\d{4}-\d{7}/;
+    var regPhone2=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
     if(action_name=='name')
         {
             action='edit_shop_name';
@@ -171,6 +173,13 @@ function infoEdit(target){
             shop_city:shop_city,
             shop_address_detail:shop_address_detail
         };
+    }
+   else if(action_name=='phone')
+    {
+        action='edit_phone';
+        shop_phone=$('.shop_phone').val().trim();
+        if(!(regPhone).test(shop_phone)&&!(regPhone2).test(shop_phone)){return alert('"电话貌似有错o(╯□╰)o"')}
+        data={shop_phone:shop_phone};
     }
     else if(action_name=='area')
     {
@@ -223,6 +232,10 @@ function infoEdit(target){
                 else if(action_name=='address')
                 {
                     $('.address').text(address);
+                }
+                else if(action_name=='phone')
+                {
+                    $('.phone').text(shop_phone);
                 }
                 else if(action_name=='area')
                 {

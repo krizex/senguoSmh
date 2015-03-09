@@ -72,7 +72,7 @@
     <ul class="shop-info text-grey6 font14">
         <li class="set-w100-fle height40">位置：{{address}}</li>
         <li class="set-w100-fle height40">配送区域：{{shop.deliver_area or '无'}}<!--<em class="area-icon set-inl-blo pull-right"></em>--></li>
-        <li class="set-w100-fle height40">联系电话：{{shop.admin.accountinfo.phone}}<a href="tel:{{shop.admin.accountinfo.phone}}" class="pull-right"><em class="phone-icon set-inl-blo "></em></a></li>
+        <li class="set-w100-fle height40">联系电话：{{shop.shop_phone or '无'}}<a href="tel:{{shop.admin.accountinfo.phone}}" class="pull-right"><em class="phone-icon set-inl-blo "></em></a></li>
         <li class="set-w100-fle"><span class="pull-left">店铺简介：</span><span class="pull-left set-inl-blo w8">{{shop.shop_intro or '无'}}</span></li>
     </ul>
 </div>
@@ -113,7 +113,7 @@
 {% end %}
 {% block other %}
 {% if not follow %}
-<div class="text-white navbar-fixed-bottom bg-green foucus-notice text-center font16">点击上方“店铺关注”按钮后点此进入商城^_^</div>
+<div class="text-white navbar-fixed-bottom bg-pink foucus-notice text-center font16">点击上方 “店铺关注” 按钮后点此进入商城ヾ(●´▽`●)ノ</div>
 {% end %}
 {% end %}
 {% block bottom %}<script src="{{static_url('js/market-shop.js')}}"></script>{% end %}

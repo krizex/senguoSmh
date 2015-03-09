@@ -15,7 +15,7 @@ ul{padding-left:0px;}
 .recruit-apply-list .info-detail li .dropdown-toggle{font-size:12px;}
 .recruit-apply-list .info-detail li .info-title{display:inline-block;letter-spacing:2px;line-height:24px;}
 .recruit-apply-list .info-detail li .dropdown-menu{margin-top:-2px;}
-.recruit-apply-list .info-detail li input{float:left;width:110px;height:26px;border:1px solid #e3e3e3;color:#666;line-height:22px;text-indent:5px;}
+.recruit-apply-list .info-detail li input{float:left;width:110px;height:26px;border:1px solid #e3e3e3;color:#666;-ms-line-height:22px;text-indent:5px;}
 .recruit-apply-list .info-detail li .notice{float:left;color:#ccc;margin-left:10px;line-height:24px;}
 .recruit-apply-list .info-detail li .job-select{margin-right:100px;}
 .recruit-apply-list .info-detail li .job-select .dropdown-toggle{width:110px;}

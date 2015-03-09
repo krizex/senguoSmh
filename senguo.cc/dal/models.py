@@ -347,7 +347,7 @@ class ShopTemp(MapBase, _CommonApi):
     shop_city = Column(Integer)
     shop_address_detail = Column(String(1024), nullable=False)
     # 是否做实体店
-    have_offline_entity = Column(Boolean, default=False)
+    have_offline_entity = Column(Integer, default=False)
     # 店铺介绍
     shop_intro = Column(String(568))
 
@@ -386,7 +386,7 @@ class Shop(MapBase, _CommonApi):
     shop_sales_range = Column(String(128))
 
     # 是否做实体店
-    have_offline_entity = Column(Boolean, default=False)
+    have_offline_entity = Column(Integer, default=False)
 
 ###################################################
     #the phone of shop ,   added by woody

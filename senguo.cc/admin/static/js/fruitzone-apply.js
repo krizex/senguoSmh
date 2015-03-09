@@ -2,13 +2,17 @@ $(document).ready(function(){
     $('.count-box').css({'height':$(window).height()});
     $('.count-list li').on('click',function(){
         var $this=$(this);
-        $this.addClass('active').parents('.count-box').addClass('hidden').siblings('.apply-info').removeClass('hidden');
+        $this.addClass('active')
         $this.find('.check').removeClass('hidden');
         $this.siblings('li').removeClass('active').find('.check').addClass('hidden');
     });
     $('#back').on('click',function(){
         $('.apply-info').addClass('hidden');
         $('.count-box').removeClass('hidden');
+    });
+    //下一步
+    $(document).on('click','.to_next',function(){
+	$('.count-box').addClass('hidden').siblings('.apply-info').removeClass('hidden');
     });
     //服务区域选择
     $('.area-choose-list li').each(function(){
@@ -20,10 +24,10 @@ $(document).ready(function(){
         });
     });
     //手机验证
-    $('#getVrify').on('click',function(){Vrify();});
+    $(document).on('click','#getVrify',function(){Vrify();});
     //提交
-    $('#submitApply').on('click',function(evt){Apply(evt);});
-    $('#submitReapply').on('click',function(evt){reApply(evt);});
+    $(document).on('click','#submitApply',function(evt){Apply(evt);});
+    $(docuemnt).on('click','#submitReapply',function(evt){reApply(evt);});
     /*var key='';
     var token='';
     $('#file_upload').uploadifive(
@@ -95,7 +99,6 @@ function time(target) {
 }
 
 function Apply(evt){
-    evt.preventDefault();
     var i=0;
     if($('#serverArea li').eq(0).hasClass('active'))
         i+=1;
@@ -158,7 +161,6 @@ function Apply(evt){
 }
 
 function reApply(evt){
-    evt.preventDefault();
     var i=0;
     if($('#serverArea li').eq(0).hasClass('active'))
         i+=1;
@@ -222,7 +224,6 @@ function reApply(evt){
 }
 
 function Vrify(){
-    event.preventDefault();
     var phone=$('#phone').val();
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
     if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return alert("电话貌似有错o(╯□╰)o");}

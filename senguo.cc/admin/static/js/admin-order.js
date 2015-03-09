@@ -12,47 +12,6 @@ $(document).ready(function(){
         $this.find('.delete').hide();
         $this.addClass('to-edit-item');
     });
-    $('.send-person-area li').first().addClass('active');
-    //订单状态数据显示
-    var order_item=$('.order-list-item');
-    order_item.each(function(){
-       var $this=$(this);
-       var type=$this.data('type');
-       var status_item=$this.find('.order-status');
-       var ordered=$this.find('.status_order');
-       var sended=$this.find('.status_send');
-       var finished=$this.find('.status_finish');
-       var tip=$this.find('.tips');
-       var edit=$this.find('.edit-btn');
-       var check=$this.find('.check-btn');
-       var select=$this.find('.select-btn');
-       var pay=$this.find('.pay-status');
-       var paid=pay.data('pay');
-       var status=status_item.data('id');
-        //订单状态
-        if(status==1){
-            ordered.removeClass('hidden');
-        }
-       else if(status==4)
-        {
-            status_item.addClass('order-status-dealing');
-            sended.removeClass('hidden');
-        }
-        else if(status==5)
-        {
-            edit.remove();
-            check.remove();
-            select.remove();
-            finished.removeClass('hidden');
-            status_item.addClass('order-status-dealing');
-        }
-        //立即送消费显示
-        if(type==1) tip.removeClass('hidden');
-        //支付状态
-        if(paid=='True'){
-            pay.text('已支付').removeClass('text-pink').addClass('text-green');
-        }
-    });
     //导航栏active样式
     var order_type_item=$('.order-type').find('li');
     var order_status_item=$('.order-status').find('li');
@@ -86,7 +45,7 @@ $(document).ready(function(){
         $this.parents('.input-group-btn').find('.time').text(time);
     });
     //按时达配送时段添加
-    $('.add-new-time').on('click',function(){//添加显示
+    $(document).on('click','.add-new-time',function(){//添加显示
         var max=$('.time-list').find('.time-list-item').length;
         if(max<5) {
             $.getItem('/static/items/admin/add-period-item.html?v=2015-0211',function(data){
@@ -108,22 +67,22 @@ $(document).ready(function(){
         }
         else return alert('至多能添加五个时段！');
     });
-    $('body').on('click','.add-time-period',function(){//添加确认
+    $(document).on('click','.add-time-period',function(){//添加确认
         var $this=$(this);
         addEditPeriod($this,'add_period');
     });
-    $('body').on('click','.concel-time-period',function(){//添加取消
+    $(document).on('click','.concel-time-period',function(){//添加取消
         $('.add-period').hide().empty();
     });
     //按时达配送时段删除
-    $('body').on('click','.delete-time-period',function(){
+    $(document).on('click','.delete-time-period',function(){
         if(confirm('确认删除该时段吗？')){
             var $this=$(this);
             deletePeriod($this);
         }
     });
     //按时达配送时段编辑
-    $('body').on('click','.to-edit',function(){
+    $(document).on('click','.to-edit',function(){
         var $this=$(this);
         var parent=$this.parents('.omg_item');
         parent.removeClass('edit_item_box');
@@ -132,7 +91,7 @@ $(document).ready(function(){
         parent.find('.delete').hide();
         parent.find('.edit_item').removeClass('hidden');
     });
-    $('body').on('click','.edit-time-period',function(){
+    $(document).on('click','.edit-time-period',function(){
         var $this=$(this);
         var parent=$this.parents('.edit_item_box');
         parent.find('.delete').show();
@@ -146,7 +105,7 @@ $(document).ready(function(){
         if(active==1) $this.find('.work-mode').show().siblings('.stop-mode').hide();
         else $this.find('.work-mode').hide().siblings('.stop-mode').show();
     });
-    $('body').on('click','.period-action',function(){
+    $(document).on('click','.period-action',function(){
         var $this=$(this);
         var active=$this.data('id');
         activePeriod($this,active);
@@ -158,29 +117,29 @@ $(document).ready(function(){
         sendMoney($this,money);
     });
     //按时达下单截止时间
-    $('.stopRange').on('click',function(){
+    $(document).on('click','.stopRange',function(){
         var range=$('#stopRange').text();
         stopRange($('#stopRange'),range);
     });
     //按时达配送费
-    $('.sendfreight').on('click',function(){
+    $(document).on('click','.sendfreight',function(){
         var freight=$('#freight_intime').val().trim();
         FreightOnTime($('#freight_intime'),freight);
     });
     //立即送模式开启/关闭
-    $('#stopNowOn').on('click',function(){
+    $(document).on('click','#stopNowOn',function(){
         var $this=$(this);
         if(confirm('立即送模式被关闭后用户下单时将不可选择该模式，确认要关闭立即送模式吗？'))
         {
             orderTypeActive($this,'edit_now_on');
         }
     });
-    $('#startNowOn').on('click',function(){
+    $(document).on('click','#startNowOn',function(){
         var $this=$(this);
         orderTypeActive($this,'edit_now_on');
     });
     //按时达模式开启/关闭
-    $('#stopOnTime').on('click',function(){
+    $(document).on('click','#stopOnTime',function(){
         var $this=$(this);
         if(confirm('按时达模式被关闭后用户下单时将不可选择该模式，确认要关闭按时达模式吗？'))
         {
@@ -188,125 +147,27 @@ $(document).ready(function(){
         }
 
     });
-    $('#startOnTime').on('click',function(){
+    $(document).on('click','#startOnTime',function(){
         var $this=$(this);
         orderTypeActive($this,'edit_ontime_on');
 
     });
     //立即送设置
-    $('#sendNowConfig').on('click',function(){SendNowConfig()});
+    $(document).on('click','#sendNowConfig',function(){SendNowConfig()});
     //商品列表下标
     $('.goods-list li').each(function(){
         var $this=$(this);
         var index=$this.index();
         $this.find('.code').text(index+1);
     });
-    //商品件数统计
-    $('.custom-order').each(function(){
-        var item=$(this).find('.item').find('.goods-number');
-        var count=$(this).find('.goods-total-number');
-        var num=0;
-        var number;
-        for(var j=0;j<item.length;j++)
-        {
-
-            number=Int(item.eq(j).text());
-            num+=number;
-            count.text(num);
-        }
-    });
-    toggle('.order-content','.list-item-body');
-    $('.order-content').on('click',function(){
-        var $this=$(this);
-        $this.toggleClass('up','down');
-        $('.sales-list-item').css({'border-color':'#29aae1'});
-    });
-    $('.avilible_item').on('mouseenter',function(){$(this).find('.edit-btn').show();});
-    $('.avilible_item').on('mouseleave',function(){$(this).find('.edit-btn').hide();});
-    //订单总金额修改
-    $('.price_edit').on('click',function(){
-        var $this=$(this);
-        var parent=$this.parents('.custom-order');
-        var item=$this.parents('edit_avilible');
-        item.removeClass('avilible_item');
-        $this.hide().siblings('.price_check').show();
-        parent.find('.price-input').show().siblings('.price-show').hide();
-    });
-    $('.price_check').on('click',function(){
-        var $this=$(this);
-        var parent=$this.parents('.custom-order');
-        var item=$this.parents('edit_avilible');
-        var val=parent.find('.price-input').val();
-        orderEdit($this,'edit_totalPrice',val);
-        item.addClass('avilible_item');
-    });
-
-    //订单备注
-    $('.notice_input').on('focus',function(){
-        var $this=$(this);
-        $this.siblings('.notice_check').show();
-    });
-    $('.notice_check').on('click',function(){
-        var $this=$(this);
-        var parent=$this.parents('.custom-order');
-        var val=parent.find('.notice_input').val();
-        orderEdit($this,'edit_remark',val);
-    });
-    //订单状态修改
-    $('.status_edit').on('click',function(){
-        var $this=$(this);
-        var parent=$this.parents('.order-status');
-        parent.removeClass('avilible_item');
-        parent.find('.edit-btn').addClass('hidden');
-        $this.hide().siblings('.status_check').show();
-        parent.addClass('order-status-dealing');
-        parent.find('.status-item').removeClass('hidden');
-        parent.find('.status-info').css({'left':'+=20px'});
-    });
-    $('.status_check').on('click',function(){window.location.reload();});
-    $('.status-order').on('click',function(){
-        var $this=$(this);
-        orderEdit($this,'edit_status',1);
-        var item=$this.parents('edit_avilible');
-        item.addClass('avilible_item');
-    });
-    $('.status-send').on('click',function(){
-        var $this=$(this);
-        orderEdit($this,'edit_status',4);
-        var item=$this.parents('edit_avilible');
-        item.addClass('avilible_item');
-    });
-    $('.status-finish').on('click',function(){
-        var $this=$(this);
-        orderEdit($this,'edit_status',5);
-        var item=$this.parents('edit_avilible');
-        item.addClass('avilible_item');
-    });
-    //员工修改
-    $('.send-person-area').find('li').on('click',function(){
-        $(this).addClass('active').siblings().removeClass('active');
-    });
-    $('.staff-edit').on('click',function(){
-        var $this=$(this);
-        var val=$this.parents('.send-person-area-select').find('.send-person-area').find('.active').data('id');
-        orderEdit($this,'edit_SH2',val)
-    });
     //订单搜索
-    $('.order-search').on('click',function(){orderSearch()});
-    //订单打印
-    $('.print-order').each(function(){
-        var $this=$(this);
-        var printed=$this.data('id');
-        if(printed=='True') $this.addClass('printed');
-        //订单是否已被打印
-        $this.on('click',function(){
-            orderPrint($this);
-        });
-    });
-    //订单删除
-    $('.delete-order').on('click',function(){
-        if(confirm('确认删除该订单吗？')){}
-        orderDelete($(this));
+    $(document).on('click','.order-search',function(){orderSearch()});
+    $(document).on('keydown','.search-con',function(){
+    	var $this=$(this);
+    	if(window.event.keyCode == 13)
+	{
+	     orderSearch();
+	}
     });
 });
 var link='/admin/order';
@@ -322,98 +183,10 @@ function addActive(target,id){
 }
 
 function orderSearch(){
-    var order_id=Int($('.search-con').val());
-    var url='order?order_type=10&order_status='+order_id;
-    $.getItem(url,function(){
-        window.location.href=url;
-    })
-
+    var order_num=Int($('.search-con').val());
+    var url='/admin/searchorder?action=order&&id='+order_num;
+    window.open(url);
 }
-
-function orderPrint(target){
-    var url='';
-    var action='print';
-    var parent=target.parents('.order-list-item');
-    var order_id=parent.data('id');
-    var shop_name=$('#shop_name').text();
-    var order_time=parent.find('.order-time').text();
-    var delivery_time=parent.find('.send-time').text();
-    var receiver=parent.find('.name').first().text();
-    var address=parent.find('.address').first().text();
-    var phone=parent.find('.phone').first().text();
-    var remark=parent.find('.message-content').first().text();
-    var paid=parent.find('.pay-status').text();
-    var totalPrice=parent.find('.goods-total-charge').text();
-    var goods=parent.find('.goods-list')[0].innerHTML;
-    var print_remark=parent.find('.receipt-remark').val();
-    var print_img=parent.find('.receipt-img').val();
-    $.getItem('/static/items/admin/order-print-page.html?v=2015-01-12',function(data){
-        var $item=$(data);
-        $item.find('.notes-head').text(shop_name);
-        $item.find('.orderId').text(order_id);
-        $item.find('.orderTime').text(order_time);
-        $item.find('.deliveryTime').text(delivery_time);
-        $item.find('.address').text(address);
-        $item.find('.receiver').text(receiver);
-        $item.find('.phone').text(phone);
-        $item.find('.remark').text(remark);
-        $item.find('.totalPrice').text(totalPrice);
-        $item.find('.goods-list')[0].innerHTML=goods;
-        $item.find('.print-remark').text(print_remark);
-        if(!print_img) $item.find('.shop-img').remove();
-        else $item.find('.shop-img img').attr({'src':print_img});
-        if (paid == true) {
-            $item.find('.moneyPaid').text('已支付');
-        } else {
-            $item.find('.moneyPaid').text('未支付');
-        }
-        var OpenWindow = window.open("","","width=500,height=600");
-        OpenWindow.document.body.style.margin = "0";
-        OpenWindow.document.body.style.marginTop = "15px";
-        var box = OpenWindow.document.createElement('div');
-        box.innerHTML=$item[0].innerHTML;
-        OpenWindow.document.body.appendChild(box);
-        OpenWindow.document.close();
-        OpenWindow.print();
-        var data={
-            order_id:order_id
-        };
-        var args={
-            action:action,
-            data:data
-        };
-        $.postJson(url,args,function(res){
-                if(res.success){
-                    target.addClass('printed');
-                }
-                else return alert(res.error_text);
-            },
-            function(){return alert('网络错误！')}
-        )
-    })
-}
-function orderDelete(target){
-    var url='';
-    var action='del_order';
-    var parent=target.parents('.order-list-item');
-    var order_id=parent.data('id');
-    var data={
-        order_id:order_id
-    };
-    var args={
-        action:action,
-        data:data
-    };
-    $.postJson(url,args,function(res){
-            if(res.success){
-                parent.remove();
-            }
-            else return alert(res.error_text);
-        },
-        function(){return alert('网络错误！')}
-    )
-}
-
 
 function addEditPeriod(target,action){
     var url=link;
@@ -656,60 +429,6 @@ function SendNowConfig(){
     $.postJson(url,args,function(res){
             if(res.success){
                 $('.sendNowBox').modal('hide');
-            }
-            else return alert(res.error_text);
-        },
-        function(){return alert('网络错误！')}
-    )
-}
-
-function orderEdit(target,action,content){
-    var url='';
-    var action=action;
-    var parent=target.parents('.order-list-item');
-    var order_id=parent.data('id');
-    var data={order_id:order_id};
-    var args;
-    if(action=='edit_remark')
-    {
-        data.remark=content;
-    }
-    else if(action=='edit_SH2')
-    {
-        data.staff_id=Int(content);
-    }
-    else if(action=='edit_status')
-    {
-        data.status=Int(content);
-    }
-    else if(action=='edit_totalPrice')
-    {
-        data.totalPrice=Int(content);
-    }
-    args={
-        action:action,
-        data:data
-    };
-    $.postJson(url,args,function(res){
-            if(res.success){
-                if(action=='edit_remark')
-                {
-                    target.hide();
-                }
-                else if(action=='edit_SH2')
-                {
-                    window.location.reload();
-                }
-                else if(action=='edit_status')
-                {
-                    window.location.reload();
-                }
-                else if(action=='edit_totalPrice')
-                {
-                    target.hide().siblings('.price_edit').show();
-                    parent.find('.price-show').show().text(content).siblings('.price-input').hide();
-                    parent.find('.order-price').text(content);
-                }
             }
             else return alert(res.error_text);
         },

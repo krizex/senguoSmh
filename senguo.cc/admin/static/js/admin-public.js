@@ -22,13 +22,11 @@ function shopChnage(shop_id){
         if(res.success){
             window.location.reload();
         }
-    },
-    function(){
-
-    })
+    });
 }
+
 function toggle(trigger,target){
-    $(trigger).on('click',function(e){
+    $(document).on('click',trigger,function(e){
         var $this=$(this);
         var forbid_click=$this.find('.forbid_click');
         if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){

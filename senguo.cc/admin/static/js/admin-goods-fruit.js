@@ -613,6 +613,7 @@ function addEditFruit(target,action){
         }
     if(!saled){saled=0;}
     if(!storage){storage=0}
+    if(!tag){tag=1}
     if(!priority){priority=5}
     if(!intro){intro='';}
     if(!name){return alert('请输入商品名称！');}
@@ -620,6 +621,8 @@ function addEditFruit(target,action){
     if(storage!=0&&!regNumber.test(storage)){return alert('库存只能为整数！');}
     if(!regNumber.test(priority)){return alert('优先级只能为整数！');}
     if(priority<1||priority>5){return alert('优先级只能为1-5！');}
+    if(intro.length>100) {return alert('商品简介请不要超过100个字！');}
+    if(name.length>20) {return alert('商品简介请不要超过20个字！');}
     var data={
         //fruit_type_id:parseInt(fruit_type_id),
         name:name,
