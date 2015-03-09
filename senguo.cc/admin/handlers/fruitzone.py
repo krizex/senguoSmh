@@ -1,4 +1,4 @@
-from handlers.base import FruitzoneBaseHandler, _AccountBaseHandler
+from handlers.base import FruitzoneBaseHandler, _AccountBaseHandler,WxOauth2
 import dal.models as models
 import tornado.web
 from  dal.db_configs import DBSession
@@ -169,10 +169,11 @@ class ShopApply(FruitzoneBaseHandler):
             
             # shop = self.session.query(models.ShopTemp).filter_by(id=shop_id).one()
             # account_info = self.session.query(models.Accountinfo).get(shop.admin_id)
-            wx_openid = self.current_user.accountinfo.wx_unionid
-            # wx_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'
+            wx_openid = self.current_user.accountinfo.wx_openid
+            print('wx_openid')
             print(wx_openid)
-            subscribe = user_subscribe(wx_openid)
+            # wx_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'
+            subscribe = WxOauth2.get_user_subcribe(wx_openid)
             print(subscribe)
             # if not self.current_user.accountinfo.phone or \
             #     not self.current_user.accountinfo.email or\
