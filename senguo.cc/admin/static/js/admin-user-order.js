@@ -208,11 +208,12 @@ function orderItem(item){
         for(var key in mgoods){
             m_num++;
             var $mgoods=$($goods_item);
-            $mgoods.find('.code').text(m_num);
+            var num=$item.find('.goods-list li').length;
+            $mgoods.find('.code').text(num+1);
             $mgoods.find('.goods-name').text(mgoods[key]['mgoods_name']);
             $mgoods.find('.goods-price').text(mgoods[key]['charge']);
             $mgoods.find('.goods-number').text(mgoods[key]['num']);
-            $item.find('.goods-list').append($goods);
+            $item.find('.goods-list').append($mgoods);
             goods_num=goods_num+mgoods[key]['num'];
         }
         //送货员选择
