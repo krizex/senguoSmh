@@ -40,7 +40,7 @@
             <p class="lock-unlock">已开启仓库配送环节</p>
             <p class="mode-introduce">适用于有独立仓库配送环节的商铺。此种模式下仓库拣货员选择框将在地址适配时出现。</p>
             <!--<p class="set-introduce">点击右方停用，仓库配送员将全部下班！</p>-->
-            <p class="mode-introduce">员工后台管理系统：<a href="http://zone.senguo.cc/staff">http://zone.senguo.cc/staff</a></p>
+            <p class="mode-introduce">员工后台管理系统：<a href="http://zone.senguo.cc/staff" target="_blank">http://zone.senguo.cc/staff</a></p>
         </div>
         <!--<div class="mode-set pull-right">
             <a href="javascript:;" class="stop-btn btn-style lock-mode">停用</a>
@@ -50,7 +50,7 @@
         <div class="mode-content {% if current_shop.config.hire_on==False %} lock-mode {% else %} unlock-mode {% end %} pull-left">
             <p class="lock-unlock">已{% if hire_on==False %}<span class="lock">关闭</span>{%else%}<span class="lock">开启</span>{% end %}员工招募环节</p>
             <p class="set-introduce">点击右方设置，生成员工招募令！</p>
-            <p class="mode-introduce">招募令：<a href="http://zone.senguo.cc/staff/hire/{{handler.current_shop.id}}">http://zone.senguo.cc/staff/hire/{{handler.current_shop.id}}</a></p>
+            <p class="mode-introduce">招募令：<a href="http://zone.senguo.cc/staff/hire/{{handler.current_shop.id}}" target="_blank">http://zone.senguo.cc/staff/hire/{{handler.current_shop.id}}</a></p>
         </div>
         <div class="mode-set pull-right">
 

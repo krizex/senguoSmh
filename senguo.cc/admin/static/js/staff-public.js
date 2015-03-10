@@ -3,6 +3,12 @@ $(document).ready(function(){
         var id=$(this).data('id');
         shopChange(id);
     });
+    $(document).on('click','.shop_change',function(){
+     var $box_status=$('#shopList').css('display');
+     if($box_status=='none'){
+         $('#shopList').modal('show');
+     }
+   });
 });
 
 function shopChange(id){
@@ -20,7 +26,6 @@ function shopChange(id){
 }
 
 function job(target,n){
-    console.log(2222);
     switch(n) {
         case 1 :target.text('捡货员');break;
         case 2 :target.text('送货员');break;
