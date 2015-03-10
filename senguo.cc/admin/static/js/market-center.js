@@ -13,16 +13,12 @@ $(document).ready(function(){
         phone=parent.find('.item_phone').text();
         address=parent.find('.item_address').text();
         address_id=$this.parents('.address-item').attr('data-id');
-        var $box_status=$('.address-box').css('display');
-        console.log($box_status);
-        if($box_status=='none'){
-           $('.address-box').modal('show');
-           $('.addressAdd').hide();
-           $('.addressEdit').show();
-           $('#address_name').val(name);
-           $('#address_phone').val(phone);
-           $('#address_address').val(address);
-        }     
+       $('.address-box').modal('show');
+       $('.addressAdd').hide();
+       $('.addressEdit').show();
+       $('#address_name').val(name);
+       $('#address_phone').val(phone);
+       $('#address_address').val(address);
     });
     $('.addressEdit').hammer().on('tap',function(){
         var $this=$(this);
@@ -31,8 +27,7 @@ $(document).ready(function(){
     //添加收货地址
     $('.add-address').on('click',function(){
         var max= $('.address-list').find('.address-item').length;
-        var $box_status=$('.address-box').css('display');
-        if(max<5&&$box_status=='none'){
+        if(max<5){
             $('.address-box').modal('show');
             $('.addressAdd').show();
             $('.addressEdit').hide();
