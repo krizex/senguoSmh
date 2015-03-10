@@ -57,7 +57,7 @@
                 <input type="hidden" value="{{order.status}}" class="order_status"/>
                 {% if order.status !=0 %}
                 <span class="send-time">
-                    <span class="un-arrive">预计</span>：<span class="send_date">今天</span>&nbsp;&nbsp;<span class="start_time">{{order.start_time}}</span>~<span class="end_time">{{order.end_time}}</span>&nbsp;&nbsp;送达
+                    <span class="un-arrive">预计</span>：<span class="send_date m-r10">今天</span><span class="send_time m-r10">{{order.send_time}}</span>送达
                 </span>
                 {% end %}
                 <span class="price-box pull-right text-pink"><span class="price font18 pull-left">{{order.totalPrice}}</span>元</span>

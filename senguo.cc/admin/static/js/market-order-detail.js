@@ -21,15 +21,15 @@ $(document).ready(function(){
     var send_day=$('.send_day').val();
     if(send_day==1){
         if(create_year==year&&create_month==month&&create_day==day) $('.send_date').text('今天');
-        else $('.send_date').text(create_year+'-'+create_month+'-'+create_day);
+        else $('.send_date').hide();
         if(status==5||status==6){
             $('.send_date').text(create_year+'-'+create_month+'-'+create_day);
         }
     }
     else if(send_day==2){
         if(create_year==year&&create_month==month&&create_day+1==day) $('.send_date').text('今天');
-        else if(create_year==year&&create_month==month&&create_day+1<day) $('.send_date').text(create_year+'-'+create_month+'-'+(create_day+1));
-        else $('.send_date').text('明天');//下单模式选择了“明天”，但是日期到了“明天”的情况
+        else if(create_year==year&&create_month==month&&create_day==day) $this.find('.send_date').text('明天');//下单模式选择了“明天”，但是日期到了“明天”的情况
+        else $('.send_date').hide();
         if(status==5||status==6){
             $('.send_date').text(create_year+'-'+create_month+'-'+(create_day+1));
         }
