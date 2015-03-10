@@ -522,9 +522,32 @@ class WxOauth2:
         openid = openid
         access_token = cls.get_client_access_token()
         res = requests.get(cls.user_subcribe_url.format(access_token=access_token,openid=openid))
-        data = json.loads(res.content)
+        data = json.loads(res.content.deocde('utf-8'))
         subcribe = data.get('subcribe')
         return subcribe
+
+    @classmethod
+    def get_redriect(cls):
+        appid = 'wx0ed17cdc9020a96e'
+        redirect_url = 'http://auth.senguo.cc/fruitzone'
+        response_type='code'
+        scope = 'snsapi_userinfo'
+        state = 123
+        url = 'https://open.weixin.qq.com/connect/oauth2/\
+        authorize?appid={0}&redirect_uri={1}&response_type=code&scope={2}&state={3}#\
+        wechat_redirect'.format(appid,redirect_url,scope,state)
+        return url
+
+
+
+
+
+
+
+
+
+
+
 
 
 
