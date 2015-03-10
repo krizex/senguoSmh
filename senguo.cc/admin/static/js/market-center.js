@@ -5,7 +5,7 @@ $(document).ready(function(){
         $('.address_item').toggle();
     });
     //收货地址编辑
-    $('body').find('.edit-address').hammer().on('tap',function(){
+    $('body').find('.edit-address').on('click',function(){
         var $this=$(this);
         var parent=$this.parents('.address-item');
         item_id=parent.index();
@@ -14,6 +14,7 @@ $(document).ready(function(){
         address=parent.find('.item_address').text();
         address_id=$this.parents('.address-item').attr('data-id');
         var $box_status=$('.address-box').css('display');
+        console.log($box_status);
         if($box_status=='none'){
            $('.address-box').modal('show');
            $('.addressAdd').hide();
@@ -28,7 +29,7 @@ $(document).ready(function(){
         addressEdit($this,'edit_address');
     });
     //添加收货地址
-    $('.add-address').hammer().on('tap',function(){
+    $('.add-address').on('click',function(){
         var max= $('.address-list').find('.address-item').length;
         var $box_status=$('.address-box').css('display');
         if(max<5&&$box_status=='none'){
