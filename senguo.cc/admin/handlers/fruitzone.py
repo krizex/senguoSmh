@@ -153,7 +153,7 @@ class ApplySuccess(FruitzoneBaseHandler):
         return self.render("fruitzone/apply-success.html")
 	
 class ShopApply(FruitzoneBaseHandler):
-    MAX_APPLY_COUNT = 15
+    MAX_APPLY_COUNT = 150
 
     def initialize(self, action):
         self._action = action
@@ -202,7 +202,7 @@ class ShopApply(FruitzoneBaseHandler):
     @FruitzoneBaseHandler.check_arguments(
         "shop_name", "shop_id?:int",
         "shop_province:int", "shop_city:int", "shop_address_detail",
-        "have_offline_entity:bool", "shop_service_area:int",
+        "have_offline_entity:bool", "shop_service_area:int","shop_phone",
         "shop_intro", "realname:str", "wx_username:str", "code:int")
     def post(self):
         #* todo 检查合法性
@@ -218,6 +218,7 @@ class ShopApply(FruitzoneBaseHandler):
               shop_province=self.args["shop_province"],
               shop_city = self.args["shop_city"],
               shop_address_detail=self.args["shop_address_detail"],
+              shop_phone =self.args["shop_phone"],
               have_offline_entity=self.args["have_offline_entity"],
               shop_service_area=self.args["shop_service_area"],
               shop_intro=self.args["shop_intro"]))
@@ -244,6 +245,7 @@ class ShopApply(FruitzoneBaseHandler):
                         have_offline_entity=self.args["have_offline_entity"],
                         shop_service_area=self.args["shop_service_area"],
                         shop_intro=self.args["shop_intro"],
+                        shop_phone = self.args["shop_phone"],
                         shop_status = models.SHOP_STATUS.APPLYING)
             return self.send_success()
 
