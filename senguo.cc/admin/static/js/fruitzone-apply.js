@@ -26,8 +26,8 @@ $(document).ready(function(){
     //手机验证
     $(document).on('click','#getVrify',function(){Vrify();});
     //提交
-    $(document).on('click','#submitApply',function(evt){Apply(evt);});
-    $(docuemnt).on('click','#submitReapply',function(evt){reApply(evt);});
+    $(document).on('click','#submitApply',function(){Apply();});
+    $(document).on('click','#submitReapply',function(){reApply();});
     /*var key='';
     var token='';
     $('#file_upload').uploadifive(
@@ -119,8 +119,11 @@ function Apply(evt){
     var realName=$('#realName').val().trim();
     var wx_Name=$('#wx_Name').val().trim();
     var code=$('#verify_code').val().trim();
-    if(shop_name.length>20){return alert('店铺名称请不要超过20个字符！')}
-    if(shop_address_detail.length>50){return alert('详细地址请不要超过50个字符！')}
+    var phone=$('#phone').val().trim();
+    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return alert("电话貌似有错o(╯□╰)o");}
+    if(shop_name.length>10){return alert('店铺名称请不要超过10个字符！')}
+    if(shop_address_detail.length>30){return alert('详细地址请不要超过30个字符！')}
     if(shop_intro.length>300){return alert('店铺简介请不要超过300个字符！')}
     if (!shop_name){return alert("请输入店铺名称！");}
     if (!shop_service_area){return alert("请选择服务区域！");}
@@ -143,7 +146,8 @@ function Apply(evt){
         shop_intro:shop_intro,
         realname:realName,
         wx_username:wx_Name,
-        code:code
+        code:code,
+        shop_phone:phone
     };
     var url="";
     $.postJson(url,args,
@@ -182,8 +186,11 @@ function reApply(evt){
     var realName=$('#realName').val().trim();
     var wx_Name=$('#wx_Name').val().trim();
     var code=$('#verify_code').val().trim();
-    if(shop_name.length>20){return alert('店铺名称请不要超过20个字符！')}
-    if(shop_address_detail.length>50){return alert('详细地址请不要超过50个字符！')}
+    var phone=$('#phone').val().trim();
+    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return alert("电话貌似有错o(╯□╰)o");}
+    if(shop_name.length>10){return alert('店铺名称请不要超过10个字符！')}
+    if(shop_address_detail.length>30){return alert('详细地址请不要超过30个字符！')}
     if(shop_intro.length>300){return alert('店铺简介请不要超过300个字符！')}
     if (!shop_name){return alert("请输入店铺名称！");}
     if (!shop_service_area){return alert("请选择服务区域！");}
@@ -207,7 +214,8 @@ function reApply(evt){
         shop_id:shop_id,
         realname:realName,
         wx_username:wx_Name,
-        code:code
+        code:code,
+        shop_phone:phone
     };
     var url="";
     $.postJson(url,args,

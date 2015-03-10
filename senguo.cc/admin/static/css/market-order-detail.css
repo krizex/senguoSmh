@@ -13,7 +13,7 @@ hr{margin:10px 0;}
 .head-title img{width:40px;height:40px;padding:8px;}
 .goods-list{margin:15px auto;}
 
-.orderview-goods-item{position:relative;border-bottom:3px solid #fff;height:64px;background-color:#fff;font-size:15px;font-weight:bold;text-shadow:0 1px 1px #fcfcfc;color:#555;width:100%}
+.orderview-goods-item{position:relative;border-bottom:3px solid #fff;height:64px;background-color:#fff;font-size:15px;font-weight:bold;text-shadow:0 1px 1px #fcfcfc;color:#555;width:100%;overflow:hidden;}
 .orderview-goods-item:last-child{border:none}
 .orderview-goods-item .charge{font-size:small;color:#888}
 .orderview-goods-item .circle-icon{float:left;width:18px;height:18px;border-radius:11px;margin-right:5px}

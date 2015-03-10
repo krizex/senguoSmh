@@ -293,11 +293,13 @@ class Accountinfo(MapBase, _CommonApi):
     # 生日
     birthday = Column(Integer)# timestamp
     # 微信数据
-    wx_openid = Column(String(64)) 
+    wx_openid = Column(String(64))          #pc
     wx_username = Column(String(64))
     wx_country = Column(String(32))
     wx_province = Column(String(32))
     wx_city = Column(String(32))
+
+    # mp_openid = Column(Integer(64))     #mobile
 
 # 角色：超级管理员
 class SuperAdmin(MapBase, _AccountApi):
@@ -308,8 +310,7 @@ class SuperAdmin(MapBase, _AccountApi):
     accountinfo = relationship(Accountinfo)
 
     def __repr__(self):
-        return "<SuperAdmin ({nickname}, {id})>".\
-            format(id=self.id, nickname=self.accountinfo.nickname)
+        return "<SuperAdmin ({nickname}, {id})>".format(id=self.id, nickname=self.accountinfo.nickname)
 
 # 店铺申请表
 class ShopTemp(MapBase, _CommonApi):
@@ -355,6 +356,7 @@ class ShopTemp(MapBase, _CommonApi):
     have_offline_entity = Column(Integer, default=False)
     # 店铺介绍
     shop_intro = Column(String(568))
+    shop_phone=Column(String(16))
 
     admin = relationship("ShopAdmin")
 

@@ -384,8 +384,9 @@ class Cart(CustomerBaseHandler):
                 charge_type.fruit.current_saled += num  # 更新售出
                 if charge_type.fruit.storage < 0:
                     return self.send_fail('"%s"库存不足' % charge_type.fruit.name)
+                # print(charge_type.price)
                 f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
-                                     "charge":"%d元/%d%s" % (charge_type.price, charge_type.num, unit[charge_type.unit])}
+                                     "charge":"%.2f元/%.1f %s" % (float(charge_type.price), charge_type.num, unit[charge_type.unit])}
         if mgoods:
             mcharge_types = self.session.query(models.MChargeType).\
                 filter(models.MChargeType.id.in_(mgoods.keys())).all()
@@ -399,8 +400,9 @@ class Cart(CustomerBaseHandler):
                 mcharge_type.mgoods.current_saled -= num  # 更新售出
                 if mcharge_type.mgoods.storage < 0:
                     return self.send_fail('"%s"库存不足' % mcharge_type.mgoods.name)
+                # print(mcharge_type.price)
                 m_d[mcharge_type.id]={"mgoods_name":mcharge_type.mgoods.name, "num":mgoods[str(mcharge_type.id)],
-                                      "charge":"%d元/%d%s" % (mcharge_type.price, mcharge_type.num, unit[mcharge_type.unit])}
+                                      "charge":"%.2f元/%.1f%s" % (float(mcharge_type.price), mcharge_type.num, unit[mcharge_type.unit])}
 
         #按时达/立即送 的时间段处理
         start_time = 0
@@ -526,6 +528,31 @@ class Order(CustomerBaseHandler):
         elif action == "all":
             orders = self.current_user.orders
         else:return self.send_error(404)
+
+        ###################################################################
+        # time's format
+        # woody
+        # 3.9
+        ###################################################################
+        delta = datetime.timedelta(1)
+        for order in orders:
+            if order.start_time.minute <10:
+                w_start_time_minute ='0' + str(order.start_time.minute)
+            else:
+                w_start_time_minute = str(order.start_time.minute)
+            if order.end_time.minute < 10:
+                w_end_time_minute = '0' + str(order.end_time.minute)
+            else:
+                w_end_time_minute = str(order.end_time.minute)
+
+            if order.type == 2 and order.today==2:
+                w_date = order.create_date + delta
+            else:
+                w_date = order.create_date
+            order.send_time = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
+                                                order.start_time.hour, w_start_time_minute,
+                                                  order.end_time.hour, w_end_time_minute)
+            
         return self.render("customer/order-list.html", orders=orders, context=dict(subpage='center'))
 
     @tornado.web.authenticated
@@ -553,5 +580,28 @@ class OrderDetail(CustomerBaseHandler):
             models.ChargeType.id.in_(eval(order.fruits).keys())).all()
         mcharge_types = self.session.query(models.MChargeType).filter(
             models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
+
+        ###################################################################
+        # time's format
+        # woody
+        # 3.9
+        ###################################################################
+        delta = datetime.timedelta(1)
+        if order.start_time.minute <10:
+           w_start_time_minute ='0' + str(order.start_time.minute)
+        else:
+           w_start_time_minute = str(order.start_time.minute)
+        if order.end_time.minute < 10:
+           w_end_time_minute = '0' + str(order.end_time.minute)
+        else:
+           w_end_time_minute = str(order.end_time.minute)
+
+        if order.type == 2 and order.today==2:
+           w_date = order.create_date + delta
+        else:
+           w_date = order.create_date
+        order.send_time = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
+                                        order.start_time.hour, w_start_time_minute,
+                                          order.end_time.hour, w_end_time_minute)
         return self.render("customer/order-detail.html", order=order,
                            charge_types=charge_types, mcharge_types=mcharge_types)
