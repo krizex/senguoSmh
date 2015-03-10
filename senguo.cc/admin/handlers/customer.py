@@ -532,6 +532,7 @@ class Order(CustomerBaseHandler):
         # woody
         # 3.9
         ###################################################################
+        delta = datetime.timedelta(1)
         for order in orders:
             if order.start_time.minute <10:
                 w_start_time_minute ='0' + str(order.start_time.minute)
@@ -583,22 +584,22 @@ class OrderDetail(CustomerBaseHandler):
         # woody
         # 3.9
         ###################################################################
-        for order in orders:
-            if order.start_time.minute <10:
-                w_start_time_minute ='0' + str(order.start_time.minute)
-            else:
-                w_start_time_minute = str(order.start_time.minute)
-            if order.end_time.minute < 10:
-                w_end_time_minute = '0' + str(order.end_time.minute)
-            else:
-                w_end_time_minute = str(order.end_time.minute)
+        delta = datetime.timedelta(1)
+        if order.start_time.minute <10:
+           w_start_time_minute ='0' + str(order.start_time.minute)
+        else:
+           w_start_time_minute = str(order.start_time.minute)
+        if order.end_time.minute < 10:
+           w_end_time_minute = '0' + str(order.end_time.minute)
+        else:
+           w_end_time_minute = str(order.end_time.minute)
 
-            if order.type == 2 and order.today==2:
-                w_date = order.create_date + delta
-            else:
-                w_date = order.create_date
-            order.send_time = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
-                                                order.start_time.hour, w_start_time_minute,
-                                                  order.end_time.hour, w_end_time_minute)
+        if order.type == 2 and order.today==2:
+           w_date = order.create_date + delta
+        else:
+           w_date = order.create_date
+        order.send_time = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
+                                        order.start_time.hour, w_start_time_minute,
+                                          order.end_time.hour, w_end_time_minute)
         return self.render("customer/order-detail.html", order=order,
                            charge_types=charge_types, mcharge_types=mcharge_types)
