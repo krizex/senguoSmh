@@ -119,6 +119,9 @@ function Apply(evt){
     var realName=$('#realName').val().trim();
     var wx_Name=$('#wx_Name').val().trim();
     var code=$('#verify_code').val().trim();
+    var phone=$('#phone').val().trim();
+    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return alert("电话貌似有错o(╯□╰)o");}
     if(shop_name.length>20){return alert('店铺名称请不要超过20个字符！')}
     if(shop_address_detail.length>50){return alert('详细地址请不要超过50个字符！')}
     if(shop_intro.length>300){return alert('店铺简介请不要超过300个字符！')}
@@ -143,7 +146,8 @@ function Apply(evt){
         shop_intro:shop_intro,
         realname:realName,
         wx_username:wx_Name,
-        code:code
+        code:code,
+        shop_phone:phone
     };
     var url="";
     $.postJson(url,args,
@@ -182,6 +186,9 @@ function reApply(evt){
     var realName=$('#realName').val().trim();
     var wx_Name=$('#wx_Name').val().trim();
     var code=$('#verify_code').val().trim();
+    var phone=$('#phone').val().trim();
+    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return alert("电话貌似有错o(╯□╰)o");}
     if(shop_name.length>20){return alert('店铺名称请不要超过20个字符！')}
     if(shop_address_detail.length>50){return alert('详细地址请不要超过50个字符！')}
     if(shop_intro.length>300){return alert('店铺简介请不要超过300个字符！')}
@@ -207,7 +214,8 @@ function reApply(evt){
         shop_id:shop_id,
         realname:realName,
         wx_username:wx_Name,
-        code:code
+        code:code,
+        shop_phone:phone
     };
     var url="";
     $.postJson(url,args,
