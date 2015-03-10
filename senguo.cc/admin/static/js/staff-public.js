@@ -4,10 +4,9 @@ $(document).ready(function(){
         shopChange(id);
     });
     $(document).on('click','.shop_change',function(){
-     var $box_status=$('#shopList').css('display');
-     if($box_status=='none'){
-         $('#shopList').modal('show');
-     }
+        var $box_status=$('#shopList').css('display');
+        console.log("切换店铺!!!");
+        $('#shopList').modal('show');
    });
 });
 
