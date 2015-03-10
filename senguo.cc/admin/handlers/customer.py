@@ -384,8 +384,9 @@ class Cart(CustomerBaseHandler):
                 charge_type.fruit.current_saled += num  # 更新售出
                 if charge_type.fruit.storage < 0:
                     return self.send_fail('"%s"库存不足' % charge_type.fruit.name)
+                # print(charge_type.price)
                 f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
-                                     "charge":"%d元/%d%s" % (charge_type.price, charge_type.num, unit[charge_type.unit])}
+                                     "charge":"%.2f元/%.1f %s" % (float(charge_type.price), charge_type.num, unit[charge_type.unit])}
         if mgoods:
             mcharge_types = self.session.query(models.MChargeType).\
                 filter(models.MChargeType.id.in_(mgoods.keys())).all()
@@ -399,8 +400,9 @@ class Cart(CustomerBaseHandler):
                 mcharge_type.mgoods.current_saled -= num  # 更新售出
                 if mcharge_type.mgoods.storage < 0:
                     return self.send_fail('"%s"库存不足' % mcharge_type.mgoods.name)
+                # print(mcharge_type.price)
                 m_d[mcharge_type.id]={"mgoods_name":mcharge_type.mgoods.name, "num":mgoods[str(mcharge_type.id)],
-                                      "charge":"%d元/%d%s" % (mcharge_type.price, mcharge_type.num, unit[mcharge_type.unit])}
+                                      "charge":"%.2f元/%.1f%s" % (float(mcharge_type.price), mcharge_type.num, unit[mcharge_type.unit])}
 
         #按时达/立即送 的时间段处理
         start_time = 0

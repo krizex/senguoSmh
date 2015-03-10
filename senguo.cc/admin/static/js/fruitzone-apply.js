@@ -26,8 +26,8 @@ $(document).ready(function(){
     //手机验证
     $(document).on('click','#getVrify',function(){Vrify();});
     //提交
-    $(document).on('click','#submitApply',function(evt){Apply(evt);});
-    $(docuemnt).on('click','#submitReapply',function(evt){reApply(evt);});
+    $(document).on('click','#submitApply',function(){Apply();});
+    $(document).on('click','#submitReapply',function(){reApply();});
     /*var key='';
     var token='';
     $('#file_upload').uploadifive(

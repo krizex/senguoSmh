@@ -230,7 +230,7 @@ class ShopManage(SuperBaseHandler):
                 postdata = dict(account='cf_senguocc',
                     password='sg201404',
                     mobile=mobile,
-                    content = message_content)
+                    content = message_fail_content)
                 headers = dict(Host = '106.ihuyi.cn',)
                 r = requests.post(url,data = postdata , headers = headers)
                 print(r.text)
