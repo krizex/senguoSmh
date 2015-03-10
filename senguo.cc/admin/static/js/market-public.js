@@ -59,8 +59,8 @@ var current_link=window.location.href;
 function AndroidImg(target){
     //判断客户端是否是iOS或者Android
     var u = navigator.userAgent, app = navigator.appVersion;
-    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
-    //var isAndroid = u.indexOf('Android') > -1;
+    //var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
+    var isAndroid = u.indexOf('Android') > -1;
     var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
      if(isAndroid){
      	$(document).find('.'+target).each(function(){
