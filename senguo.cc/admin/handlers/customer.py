@@ -462,6 +462,15 @@ class Cart(CustomerBaseHandler):
 
         count = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
         num = str(shop_id) + '%06d' % count
+        ########################################################################
+        # add default sender
+        # 3.11
+        # woody
+        ########################################################################
+        w_admin = self.session.query(models.Shop).filter_by(id = shop_id).first()
+        if w_admin is not None:
+            w_SH2_id = w_admin.admin.id
+            print(w_SH2_id)
         order = models.Order(customer_id=self.current_user.id,
                              shop_id=shop_id,
                              num=num,
@@ -471,6 +480,7 @@ class Cart(CustomerBaseHandler):
                              message=self.args["message"],
                              type=self.args["type"],
                              freight=freight,
+                             SH2_id = w_SH2_id,
                              tip=tip,
                              totalPrice=totalPrice,
                              money_paid=money_paid,
@@ -540,9 +550,10 @@ class Order(CustomerBaseHandler):
         delta = datetime.timedelta(1)
         for order in orders:
             staff_id = order.SH2_id
-            staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id)
-            order.sender_phone = staff_info.phone
-            order.sender_img = staff_info.headimgurl
+            if staff_id is not None:
+                staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id)
+                order.sender_phone = staff_info.phone
+                order.sender_img = staff_info.headimgurl
             if order.start_time.minute <10:
                 w_start_time_minute ='0' + str(order.start_time.minute)
             else:
