@@ -86,3 +86,7 @@
 
 .classify-title{height:42px;line-height:42px;}
 .modal-body{padding:0 !important;}
+
+.focus-box .modal-body{min-height:150px;}
+.focus-box .modal-body p{padding-top:50px;}
+.focus-box  .focus-btn{width:60%;}

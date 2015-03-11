@@ -550,10 +550,14 @@ class Order(CustomerBaseHandler):
         delta = datetime.timedelta(1)
         for order in orders:
             staff_id = order.SH2_id
-            if staff_id is not None:
-                staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id)
+            staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id).first()
+            if staff_info is not None:
                 order.sender_phone = staff_info.phone
                 order.sender_img = staff_info.headimgurl
+            else:
+                order.sender_phone =None
+                order.sender_img = None
+
             if order.start_time.minute <10:
                 w_start_time_minute ='0' + str(order.start_time.minute)
             else:
@@ -605,12 +609,13 @@ class OrderDetail(CustomerBaseHandler):
         # 3.9
         ###################################################################
         staff_id = order.SH2_id
-        staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id)
+        staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id).first()
         if staff_info is not None:
-            order.sender_phone = staff_info.phone
-            order.sender_img = staff_info.headimgurl
+                order.sender_phone = staff_info.phone
+                order.sender_img = staff_info.headimgurl
         else:
-            self.send_fail("没有配送员")
+                order.sender_phone =None
+                order.sender_img = None
         delta = datetime.timedelta(1)
         if order.start_time.minute <10:
            w_start_time_minute ='0' + str(order.start_time.minute)

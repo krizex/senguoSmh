@@ -3,8 +3,8 @@ $(document).ready(function(){
     var status=Int($('.order-status').text());
     statusText($('.order-status'),status);
     $('.status').each(function(){
-        var $this=$(this);
-        statusText($this,status);
+        var $word=$(this).find('.word');
+        statusText($word,status);
     });
     //根据订单状态的一些提示
     if(status==1) $('.hint').show();

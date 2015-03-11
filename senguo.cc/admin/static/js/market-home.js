@@ -73,7 +73,6 @@ $(document).ready(function(){
                         auto: 3000,
                         continuous: true,
                         callback: function(pos) {
-
                             var i = bullets.length;
                             while (i--) {
                                 bullets[i].className = ' ';
@@ -152,8 +151,13 @@ $(document).ready(function(){
     //首次添加商品
     $('.to-add').hammer().on('tap',function(){
         var $this=$(this);
-        goodsNum($this.siblings('.number-change').find('.number-plus'),2);
-        $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
+        //是否关注店铺
+        var if_focus=$('#if_focus').val();
+        if(if_focus=='False')  $('.focus-box').modal('show');
+        else{
+              goodsNum($this.siblings('.number-change').find('.number-plus'),2);
+             $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
+        }     
         //果篮显示商品种类数
         if(cart_count==0) {$('.cart_num').show();}
         if($this.hasClass('add_cart_num')){
@@ -162,6 +166,10 @@ $(document).ready(function(){
             SetCookie('cart_count',cart_count);
             $this.removeClass('add_cart_num');
         }
+    });
+    //关注店铺
+    $('.focus-btn').hammer().on('tap',function(){
+            focus();
     });
     //商品输入框为0时
     $('.number-input').on('blur',function(){
@@ -326,4 +334,19 @@ function great(type,id){
             else alert(res.error_text);
         },
         function(){alert('网络错误')})
+}
+
+function focus(){
+    var url='/customer/shopProfile';
+    var action = "favour";
+    var args={action: action};
+    $.postJson(url,args,function(res){
+        if(res.success){
+            $('.focus-box').modal('hide');
+            $('#if_focus').val('true');
+        }
+        else return alert(res.error_text);
+    },
+    function(){ return alert('服务器错误 ＼（～Ｏ～）／!')}
+    );
 }

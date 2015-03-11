@@ -6,6 +6,7 @@
 {% block top %}我的订单{% end %}
 {%block back%}{{reverse_url('customerHome')}}{% end %}
 {% block content %}
+
 <ul class="order-nav text-center m-b0 clearfix font14 bg-white mt42">
     <li data-action="all"><a href="{{reverse_url('customerOrder')}}?action=all">全部</a></li>
     <li data-action="unhandled"><a href="{{reverse_url('customerOrder')}}?action=unhandled">未处理</a></li>
@@ -80,7 +81,16 @@
                     <div class="inner {{width}}"></div>
                     <div class="circle-icon {{left}}"></div>
                     <div class="status-box {{left}}">
-                        <span class="status order-status">{{order.status}}</span>
+                        <span class="status order-status pull-left">
+                              {% if order.sender_img %}
+                            <img src="{{order.sender_img}}" class="sender_img pull-left m-r5"/>
+                            {% end %}
+                            <span class="word pull-left m-r5">{{order.status}}</span>
+                             {% if order.sender_phone %}
+                            <a href="tel:{{order.sender_phone}}" class="pull-left text-green">拨打</a>
+                            {% end %}
+                        </span>
+                       
                     </div>
                 </div>
             </div>
