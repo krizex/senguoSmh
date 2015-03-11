@@ -299,7 +299,7 @@ class Accountinfo(MapBase, _CommonApi):
     wx_province = Column(String(32))
     wx_city = Column(String(32))
 
-    mp_openid = Column(String(64))  #mobile
+    # mp_openid = Column(String(64)) 
 
     # mp_openid = Column(Integer(64))     #mobile
 
