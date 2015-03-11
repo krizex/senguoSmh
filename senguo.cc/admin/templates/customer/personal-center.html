@@ -79,8 +79,8 @@
         </ul>
     </div>
 {% end %}
-{% block bottom %}
-<div class="address-box modal fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+{% block other %}
+<div class="address-box modal fade"  tabindex="-1"  role="dialog"  aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header clearfix bg_change">
@@ -111,5 +111,7 @@
         </div>
     </div>
 </div>
+{% end %}
+{% block bottom %}
 <script src="{{static_url('js/market-center.js')}}"></script>
 {% end %}

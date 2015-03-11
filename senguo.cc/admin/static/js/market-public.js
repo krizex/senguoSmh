@@ -68,11 +68,11 @@ function AndroidImg(target){
 	if(target=='bg_change')
 	{
 	   var src=$this.css('background');
-     	   var src_android=src.replace('.svg','.png');
+     	   var src_android=src.replace('.svg','.png?v=20150310');
      	   $this.css({'background':src_android});}
      	else {
      	   var src=$this.attr('src');
-     	   var src_android=src.replace('.svg','.png');
+     	   var src_android=src.replace('.svg','.png?v=20150310');
      	   $this.attr({'src':src_android});
      	}   	
       });

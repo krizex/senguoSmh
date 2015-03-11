@@ -53,10 +53,10 @@
         </ul>
     </div>
     <div class="main-container container" >
-        <div class="header text-center bg-green text-white font16 shop_change" data-toggle="modal" data-target="#shopList">
+        <button class="header text-center bg-green text-white font16 shop_change btn">
             {{handler.shop_name}}
             <span class="caret"></span>
-        </div>
+        </button>
         {% block content %}{% end %}
     </div>
     <div class="modal fade shop-list-box" id="shopList" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
