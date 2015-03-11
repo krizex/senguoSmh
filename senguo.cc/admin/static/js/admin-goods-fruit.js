@@ -152,7 +152,7 @@ $(document).ready(function(){
         var key='';
         var token='';
         add_goods_box.empty();
-        if(max_goods_num<5){
+        if(max_goods_num<=30){
             $.getItem('/static/items/admin/add-new-goods.html?v=20150304',function(data){
                 var $item=$(data);
                 if(typeof(default_code)=='undefined') $item.find('.imgPreview').attr({'src':'/static/design_img/TDSG.gif'});
@@ -227,18 +227,19 @@ $(document).ready(function(){
                     });
             });
         }
-        else alert('该分类下最多可添加5种水果！如仍需添加请选择其他分类！');
+        else alert('该分类下最多可添加30种商品！如仍需添加请选择其他分类！');
         defalutChangeUnit(storage_unit_id);
-
      });
     $('body').on('click','.add-goods-sure',function(){
         var $this=$(this);
         var menu_type= $.getUrlParam('action');
-        if(menu_type=='fruit'){
-            addEditFruit($this,'add_fruit')
-        }
-        else if (menu_type == 'menu'){
-            addEditFruit($this,'add_mgoods')
+        if(confirm('商品完成添加后商品库存将不可更改,确认添加该商品吗?╮(￣▽￣)╭（tips:商品完成添加后如需修改商品库存，建议新建商品以便使用新的库存单位!）')){
+            if(menu_type=='fruit'){
+                addEditFruit($this,'add_fruit')
+            }
+            else if (menu_type == 'menu'){
+                addEditFruit($this,'add_mgoods')
+            }
         }
     });
     //商品添加-标签预览

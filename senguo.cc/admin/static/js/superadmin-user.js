@@ -70,8 +70,8 @@ function getContent(action,page){
 
 function pushItem(data,item,list){
     for(var key in data){
-        var $ite=$('<li><a herf=""></a></li>');
-        $ite.find('a').text(data[key][1]);
+        var $ite=$('<li><a href="http://zone.senguo.cc/shop/'+data[key][1]+'"></a></li>');
+        $ite.find('a').text(data[key][2]);
         item.find(list).append($ite);
     }
 }
