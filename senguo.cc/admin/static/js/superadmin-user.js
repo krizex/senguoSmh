@@ -1,6 +1,6 @@
 $(document).ready(function(){
     $.ajaxSetup({'async':false});
-    $.getItem(item_link+'/user-item.html',function(data){item=data;});
+    $.getItem(item_link+'/user-item.html?v=2015-3-11',function(data){item=data;});
     getContent('all',0);
     classify($('.all'),'all');
     classify($('.admin'),'admin');
@@ -50,6 +50,10 @@ function getContent(action,page){
                     if(!phone) phone='未绑定';
                     $item.find('.img').attr({'src':img});
                     $item.find('.name').text(name).attr({'data-sex':sex});
+                    if(sex==2) sex='女';
+                    else if(sex==1) sex='男';
+                    else if(sex==0) sex='其他';
+                    $item.find('.sex').text(sex);
                     $item.find('.city').text(province+city);
                     $item.find('.phone').text(phone);
                     pushItem(fshop,$item,'.focus-shop');

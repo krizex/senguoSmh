@@ -136,6 +136,7 @@ function Apply(evt){
     if(!regChinese.test(realName)){return alert('请输入您的真实姓名！')}
     if(!wx_Name){return alert('请输入您的微信号！')}
     if(!code){return alert('请输入验证码！')}
+    if(!phone){return alert('请输入您的手机号！')}
     var args={
         shop_name:shop_name,
         shop_province:shop_province,
@@ -203,6 +204,7 @@ function reApply(evt){
     if(!regChinese.test(realName)){return alert('请输入您的真实姓名！')}
     if(!wx_Name){return alert('请输入您的微信号！')}
     if(!code){return alert('请输入验证码！')}
+    if(!phone){return alert('请输入您的手机号！')}
     var args={
         shop_name:shop_name,
         shop_province:shop_province,
