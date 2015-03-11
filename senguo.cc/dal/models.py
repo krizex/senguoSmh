@@ -197,8 +197,8 @@ class _AccountApi(_CommonApi):
             #####################################################################################
             # update wx_openid
             #####################################################################################
-            u.accountinfo.wx_openid = wx_userinfo["openid"]
-            print( "openid" + wx_userinfo["openid"])
+            # u.accountinfo.wx_openid = wx_userinfo["openid"]
+            # print( "openid" + wx_userinfo["openid"])
             session.commit()
             return u
         # 判断是否在基本信息表里存在该用户
@@ -298,6 +298,8 @@ class Accountinfo(MapBase, _CommonApi):
     wx_country = Column(String(32))
     wx_province = Column(String(32))
     wx_city = Column(String(32))
+
+    # mp_openid = Column(String(64)) 
 
     # mp_openid = Column(Integer(64))     #mobile
 
