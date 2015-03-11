@@ -451,10 +451,10 @@ class User(SuperBaseHandler):
             return self.send_error(404)
         users = q.offset(page*page_size).limit(page_size).all()
         for i in range(len(users)):
-            f_names = self.session.query(models.Shop.id, models.Shop.shop_name).\
+            f_names = self.session.query(models.Shop.id, models.Shop.shop_code,models.Shop.shop_name).\
                 join(models.CustomerShopFollow).\
                 filter(models.CustomerShopFollow.customer_id == users[i][0]).all()
-            h_names = self.session.query(models.Shop.id, models.Shop.shop_name).filter_by(admin_id=users[i][0]).all()
+            h_names = self.session.query(models.Shop.id,models.Shop.shop_code,models.Shop.shop_name).filter_by(admin_id=users[i][0]).all()
             users[i] = list(users[i])
             users[i].append(f_names)
             users[i].append(h_names)
@@ -610,12 +610,12 @@ class ShopStatic(SuperBaseHandler):
         # data的封装格式为：[日期，日，日订单数，累计订单数，日订单总金额，累计订单总金额]
         while 1:
             if i < len(s) and s[i][0].date() == date.date():
-                data.append((date.strftime('%Y-%m-%d'), date.day, s[i][1], total[1], s[i][2], total[0]))
+                data.append((date.strftime('%Y-%m-%d'), date.day, s[i][1], total[1], format(s[i][2],'.2f'), format(total[0],'.2f')))
                 total[1] -= s[i][1]
                 total[0] -= s[i][2]
                 i += 1
             else:
-                data.append((date.strftime('%Y-%m-%d'), date.day, 0, total[1], 0, total[0]))
+                data.append((date.strftime('%Y-%m-%d'), date.day, 0, total[1], format(0,'.2f'), format(total[0],'.2f')))
             date -= datetime.timedelta(1)
             if date <= start_date:
                 break
