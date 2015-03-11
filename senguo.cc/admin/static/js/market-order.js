@@ -1,9 +1,9 @@
 $(document).ready(function(){
     //订单状态
     $('.order-status').each(function(){
-        var $this=$(this);
-        var text=Int($this.text());
-        statusText($this,text);
+        var $word=$(this).find('.word');
+        var text=Int($word.text());
+        statusText($word,text);
     });
     //送货时间
     var date=new Date();

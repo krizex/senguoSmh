@@ -169,11 +169,11 @@ class ShopApply(FruitzoneBaseHandler):
             
             # shop = self.session.query(models.ShopTemp).filter_by(id=shop_id).one()
             # account_info = self.session.query(models.Accountinfo).get(shop.admin_id)
-            # wx_openid = self.current_user.accountinfo.wx_openid
+            wx_openid = self.current_user.accountinfo.wx_openid
             # wx_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'
-            # subscribe = WxOauth2.get_user_subcribe(wx_openid)
-            # print(subscribe)
-            subscribe = 0
+            subscribe = WxOauth2.get_user_subcribe(wx_openid)
+            print(subscribe,wx_openid)
+            # subscribe = 0
             # if not self.current_user.accountinfo.phone or \
             #     not self.current_user.accountinfo.email or\
             #     not self.current_user.accountinfo.wx_username:

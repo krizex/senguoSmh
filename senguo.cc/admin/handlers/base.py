@@ -397,7 +397,7 @@ class WxOauth2:
                               "&appid={appid}&secret={appsecret}".format(appid=MP_APPID, appsecret=MP_APPSECRET)
     jsapi_ticket_url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={access_token}&type=jsapi"
     template_msg_url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={access_token}"
-    user_subcribe_url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token={access_token}&openid={wx_openid}'
+    
 
     @classmethod
     def get_userinfo(cls, code, mode):
@@ -519,12 +519,19 @@ class WxOauth2:
 
     @classmethod
     def get_user_subcribe(cls,openid):
-        openid = openid
+        # print(type(openid))
         access_token = cls.get_client_access_token()
-        res = requests.get(cls.user_subcribe_url.format(access_token=access_token,openid=openid))
-        data = json.loads(res.content.deocde('utf-8'))
-        subcribe = data.get('subcribe')
-        return subcribe
+        user_subcribe_url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token={0}&openid={1}'.format(access_token,openid)
+        res = requests.get(user_subcribe_url)
+        if type(res.content)== bytes:
+            s = str(res.content,'utf-8')
+        else:
+            s = res.content.decode('utf-8')
+        data = json.loads(s)
+        json_data = json.dumps(data)
+        print(data)
+        subscribe = data.get('subscribe')
+        return subscribe
 
     @classmethod
     def get_redriect(cls):

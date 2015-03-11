@@ -17,8 +17,8 @@
 .order-list-item a{color:#444}
 .order-list-item .status-bar-box{font-size:15px;margin:10px 0 30px 15px;}
 .order-list-item .status-bar-box .circle-icon{width:14px;height:14px;border-radius:8px;padding:0;background-color:#33cc66;position:absolute;margin-top:-5px;box-shadow:inset 0 -1px 5px #888}
-.order-list-item .status-bar-box .status-box{position:absolute;display:inline-block;color:#33cc66;text-shadow:0 1px 1px #ececec;padding:15px 0;overflow:visible}
-.order-list-item .status-bar-box .status-box .status{position:relative;left:-42px;display:block;width:100px;text-align:center}
+.order-list-item .status-bar-box .status-box{position:absolute;display:inline-block;color:#33cc66;text-shadow:0 1px 1px #ececec;padding:15px 0;overflow:visible;margin-left:-15px;}
+.order-list-item .status-bar-box .status-box .status{position:relative;left:0;display:block;width:120px;text-align:center;line-height:20px;}
 .order-list-item .status-bar-box .status-bar{position:relative;width:95%;height:4px;background-color:#d9d9d9;border-radius:2px;box-shadow:inset 0 1px 2px #c3c3c3}
 .order-list-item .status-bar-box .status-bar .inner{height:4px;position:absolute;display:inline-block;background-color:#33cc66;box-shadow:inset 0 -1px 2px #999}
 .order-list-item .completed{background-color:#eee;padding-bottom:5px}
@@ -37,4 +37,4 @@
 .order-nav li.active a{color:#33cc66;}
 .content{padding:10px 0 0;}
 .next{display:inline-block;width:6px;height:10px;background:url('../svg/arrow_right.svg');margin-top:5px;margin-left:3px;}
-
+.sender_img{width:20px;height:20px;border-radius:50%;margin-left:-25px;}

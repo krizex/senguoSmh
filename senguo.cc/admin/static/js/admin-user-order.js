@@ -69,8 +69,6 @@ var orders=window.dataObj.order;
 var $list_item;
 var $goods_item;
 var $staff_item;
-var shop_remark=$('.shop-receipt-remark').val();
-var shop_img=$('.shop-receipt-img').val();
 var order_link='/admin/order';
 
 function getOrder(url){
@@ -128,8 +126,7 @@ function orderItem(item){
         var today=item[i]['today'];
         var totalPrice=item[i]['totalPrice'];
         var type=item[i]['type'];
-        
-       
+              
         if(!message) $item.find('.order-message').hide();
         if(!staff_remark) $item.find('.staff-replay').hide();
         if(!remark) $item.find('.saler-remark').hide();
@@ -150,9 +147,7 @@ function orderItem(item){
         $item.find('.order-status').attr({'data-id':status});
         $item.find('.order-time').text(create_date);
         $item.find('.saler-remark').val(remark);
-        $item.find('.receipt-remark').val(shop_remark);
-        $item.find('.receipt-img').val(shop_img);
-        
+    
         //立即送消费显示
         if(type==1){
             $item.find('.tip').text(tip);
@@ -272,7 +267,7 @@ function orderPrint(target){
     var goods=parent.find('.goods-list')[0].innerHTML;
     var print_remark=$('.shop-receipt-remark').val();
     var print_img=$('.shop-receipt-img').val();
-    var remark=parent.find('.saler-remark').val();
+    var remark=parent.find('.saler-remark').val(); 
     $.getItem('/static/items/admin/order-print-page.html?v=2015-03-07',function(data){
         var $item=$(data);
         $item.find('.notes-head').text(shop_name);
@@ -292,6 +287,7 @@ function orderPrint(target){
         $item.find('.print-remark').text(print_remark);
         if(!print_img) $item.find('.shop-img').remove();
         else $item.find('.shop-img img').attr({'src':print_img});
+        console.log('小票图片'+$item.find('.shop-img img').attr('src'));
         if (paid == true) {
             $item.find('.moneyPaid').text('余额支付');
         } else {

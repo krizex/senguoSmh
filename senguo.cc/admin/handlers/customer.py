@@ -242,6 +242,7 @@ class Comment(CustomerBaseHandler):
 class Market(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self, shop_code):
+        w_follow = ''
         shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
         if not shop:
             return self.send_error(404)
@@ -249,7 +250,9 @@ class Market(CustomerBaseHandler):
         self._shop_code = shop.shop_code
         if not self.session.query(models.CustomerShopFollow).filter_by(
                 customer_id=self.current_user.id, shop_id=shop.id).first():
-            return self.redirect("/customer/shopProfile")  # 还没关注的话就重定向到店铺信息页
+            # return self.redirect("/customer/shopProfile")  # 还没关注的话就重定向到店铺信息页
+            w_follow = False
+
         if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
             self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
             self.session.commit()
@@ -267,7 +270,7 @@ class Market(CustomerBaseHandler):
         return self.render("customer/home.html",
                            context=dict(fruits=fruits, dry_fruits=dry_fruits, menus=shop.menus, mgoods=mgoods,
                                         cart_count=cart_count, subpage='home', notices=notices, cart_fs=cart_fs,
-                                        cart_ms=cart_ms, shop_name=shop.shop_name))
+                                        cart_ms=cart_ms, shop_name=shop.shop_name,w_follow = w_follow))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int")
@@ -536,6 +539,14 @@ class Order(CustomerBaseHandler):
         ###################################################################
         delta = datetime.timedelta(1)
         for order in orders:
+            staff_id = order.SH2_id
+            staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id).first()
+            if staff_info is not None:
+                order.sender_phone = staff_info.phone
+                order.sender_img = staff_info.headimgurl
+            else:
+                order.sender_phone =None
+                order.sender_img = None
             if order.start_time.minute <10:
                 w_start_time_minute ='0' + str(order.start_time.minute)
             else:
@@ -586,6 +597,14 @@ class OrderDetail(CustomerBaseHandler):
         # woody
         # 3.9
         ###################################################################
+        staff_id = order.SH2_id
+        staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id).first()
+        if staff_info is not None:
+                order.sender_phone = staff_info.phone
+                order.sender_img = staff_info.headimgurl
+        else:
+                order.sender_phone =None
+                order.sender_img = None
         delta = datetime.timedelta(1)
         if order.start_time.minute <10:
            w_start_time_minute ='0' + str(order.start_time.minute)
