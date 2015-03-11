@@ -108,6 +108,9 @@ a:focus{border:none;background:none;outline:0;}
 .bottom-nav ul{margin-bottom:0;}
 .bottom-nav li{text-align:center;position:relative;height:46px;}
 .bottom-nav li a{display:block;background-size:2em !important;padding-top:7px;}
+@media only screen and (-moz-min-device-pixel-ratio:1.5),only screen and (-o-min-device-pixel-ratio:3/2),only screen and (-webkit-min-device-pixel-ratio:1.5),only screen and(min-device-pixel-ration:1.5),only screen adn(min-resolution:1.5dppx){
+.bottom-nav li a em{display:inline-block;background:url('../svg/icon_list_1@2x.png') no-repeat !important;width:20px;height:21px;margin:0 auto;background-size:120px;overflow:hidden;}	
+}
 .bottom-nav li a em{display:inline-block;background:url('../svg/icon_list_1.svg') no-repeat;width:20px;height:21px;margin:0 auto;background-size:120px;overflow:hidden;}
 .bottom-nav li a p{line-height:14px;}
 .bottom-nav li:hover a{color:#80c26b !important;}

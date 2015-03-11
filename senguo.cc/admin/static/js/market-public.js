@@ -69,15 +69,17 @@ function AndroidImg(target){
 	{
 	     var src=$this.css('background');
                     var src_android
-                    if(dpi>1.5)  src_android=src.replace('.svg','@2x.png?v=201503-10');
-                    else    src_android=src.replace('.svg','.png?v=201503-10');
+                    //if(dpi>1.5)  src_android=src.replace('.svg','@2x.png?v=201503-10');
+                    //else    src_android=src.replace('.svg','.png?v=201503-10');
+                    src_android=src.replace('.svg','.png?v=2015-03-10');
      	     $this.css({'background':src_android});
                }
      	else {
      	   var src=$this.attr('src');
      	   var src_android
-                   if(dpi>1.5)  src_android=src.replace('.svg','@2x.png?v=201503-10');
-                  else    src_android=src.replace('.svg','.png?v=201503-10');
+                   //if(dpi>1.5)  src_android=src.replace('.svg','@2x.png?v=201503-10');
+                  //else    src_android=src.replace('.svg','.png?v=201503-10');
+                  src_android=src.replace('.svg','.png?v=2015-03-10');
      	   $this.attr({'src':src_android});
      	}   	
       });
