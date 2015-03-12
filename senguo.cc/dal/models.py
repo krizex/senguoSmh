@@ -846,7 +846,7 @@ class _VerifyCode(MapBase):
     wx_id = Column(String(100), unique=True)
     code = Column(Integer)
     create_time = Column(DateTime, default=func.now())
-    count = Column(Integer)
+    count = Column(Integer)              # modify to define whether  code is usefull , if count = 1, code is usefull ,if count =0 or others ,code is useless
 
 class FruitFavour(MapBase):
     __tablename__ = "__fruit_favour__"
