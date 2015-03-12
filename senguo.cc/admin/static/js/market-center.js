@@ -6,10 +6,20 @@ $(document).ready(function(){
         console.log('222');
         var forbid_click=$this.find('.forbid_click');
         if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
-            $('.address_item').toggle();
-            $('.add-address').toggle();
+            console.log('333');
+            $this.addClass('avilible_box');
+            $('.address-list').show();
+            //$('.add-address').toggle();
         }
     });
+     $('body').on('click','.avilible_box',function(e){
+        var $this=$(this);
+        var forbid_click=$this.find('.forbid_click');
+        if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
+            $this.removeClass('avilible_box');
+            $('.address-list').hide();
+        }
+     });
     //收货地址编辑
     $('body').on('click','.edit-address',function(){
         var $this=$(this);
