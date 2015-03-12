@@ -1,4 +1,7 @@
 $(document).ready(function(){
+    //客户端为Android系统替换图片路径
+        AndroidImg('bg_change');
+        AndroidImg('src_change');   
     //图片延迟加载
      $('.lazy_img').each(function(){
 	var $this=$(this);
@@ -38,9 +41,6 @@ $(document).ready(function(){
             else $('.little_pear').animate({'right':'-40px'},5);
         }
 	});
-	//客户端为Android系统替换图片路径
-        AndroidImg('bg_change');
-        AndroidImg('src_change');   
 });
 var shop_href='/customer/shopProfile';
 var market_href='/shop/none';
@@ -69,15 +69,15 @@ function AndroidImg(target){
 	{
 	     var src=$this.css('background');
                    var src_android
-                    if(dpi>1)  src_android=src.replace('.svg','@2x.png?v=201503-10');
-                    else    src_android=src.replace('.svg','.png?v=201503-10');
+                    if(dpi>1)  src_android=src.replace('.svg','@2x.png?v=2015-03-11');
+                    else    src_android=src.replace('.svg','.png?v=2015-03-11');
      	     $this.css({'background':src_android});
                }
      	else {
      	   var src=$this.attr('src');
      	   var src_android
-                if(dpi>1)  src_android=src.replace('.svg','@2x.png?v=201503-10');
-                else    src_android=src.replace('.svg','.png?v=201503-10');
+                if(dpi>1)  src_android=src.replace('.svg','@2x.png?v=2015-03-11');
+                else    src_android=src.replace('.svg','.png?v=2015-03-11');
      	   $this.attr({'src':src_android});
      	}   	
       });

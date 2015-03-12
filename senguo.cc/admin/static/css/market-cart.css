@@ -9,7 +9,7 @@
 .list-group .active{background:#fff;border-color:#ddd;border-left:2px solid #33CC66;}
 .list-group-item:first-child{border-radius:0px;}
 .list-group-item:last-child{border-radius:0px;}
-.list-group-item{border-left:2px solid #ddd;}
+.list-group-item{border-left:2px solid #ddd;overflow:hidden;}
 .list-group-item:hover{background:#fff;border-color:#ddd;border-left:2px solid #ddd;}
 .list-group-item.active:hover{background:#fff;border-color:#ddd;border-left-color:#33CC66;}
 
@@ -55,7 +55,7 @@
 .pay_type .active .title{color:#33CC66 !important;}
 
 .address-box .tit{width:15%;min-width:50px;line-height:30px;}
-.send-address-choose input{width:84%;height:30px;line-height:30px;text-indent:14px;margin-bottom:5px;}
+.send-address-choose input{width:84%;height:30px;-ms-line-height:30px;text-indent:14px;margin-bottom:5px;}
 .send-address-choose .address{width:85%;}
 .send-address-choose .to-edit-address{width:15%;margin-top:15px;}
 
