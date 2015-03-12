@@ -169,7 +169,7 @@
             <div class="send-address-choose clearfix center-block bg-white box-style">
                 <p class="clearfix">
                     <span class="pull-left text-grey3 font14 m-b5">收货人地址</span>
-                    <a class="text-green pull-right to-add-address font12 m-r10">+添加</a>
+                    <a class="text-green pull-right to-add-address font12 m-r10" href="javascript:;">+添加</a>
                 </p>
                 <ul id="addressType" class="address_list list-group type-choose font12 m-b5 clearfix">
                     {% for address in current_user.addresses%}
@@ -181,7 +181,7 @@
                             </p>
                             <p class="address_con pr10 m0 text-grey9">{{address.address_text}}</p>
                         </a>
-                        <a class="text-green pull-right to-edit-address text-center">+编辑</a>
+                        <a class="text-green pull-right to-edit-address text-center" href="javascript:;">+编辑</a>
                     </li>
                     {% end %}
                 </ul>
