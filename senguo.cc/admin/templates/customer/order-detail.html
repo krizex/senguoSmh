@@ -127,11 +127,11 @@
                 <div class="circle-icon bg-green {{left}}"></div>
                 <div class="status-box {{left}}">
                     <span class="status" data-id="{{order.status}}">
-                          {% if order.sender_img %}
+                          {% if order.status ==4 and order.sender_img %}
                         <img src="{{order.sender_img}}" class="sender_img pull-left m-r5"/>
                         {% end %}
                         <span class="word pull-left m-r5"></span>
-                        {% if order.sender_phone %}
+                        {% if order.status ==4 and order.sender_phone %}
                         <a href="tel:{{order.sender_phone}}" class="pull-left text-green">拨打</a>
                         {% end %}
                     </span>
