@@ -54,9 +54,9 @@ var address_id;
 var item_id;
 function sex(target,id){
     switch(id) {
-        case 1:target.addClass('male');break;
-        case 2:target.addClass('female');break;
-        case 3:target.addClass('male');break;
+        case 1:target.addClass('male').text('♂');break;
+        case 2:target.addClass('female').text('♀');break;
+        case 0:target.addClass('other').text('!');break;
         default :break;
     }
 }

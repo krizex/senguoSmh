@@ -11,7 +11,7 @@
             <div class="info">
                 <p>
                     <span>{{current_user.accountinfo.nickname}}</span>
-                    <span data-id="{{current_user.accountinfo.sex}}" class="user-sex"></span>
+                    <span data-id="{{current_user.accountinfo.sex}}" class="user-sex  font18"></span>
                 </p>
             </div>
         </a>
@@ -23,7 +23,7 @@
     </div>
     <div class="bg-white m-b10 clearfix pb0">
         <p class="title clearfix box-style">
-            <span class="pull-left font14"><em class="order-icon set-inl-blo pull-left"></em>我的订单</span>
+            <span class="pull-left font14"><em class="order-icon set-inl-blo pull-left bg_change"></em>我的订单</span>
             <a href="{{reverse_url('customerOrder')}}?action=all" class="text-grey9 pull-right font12">查看全部订单>></a>
         </p>
         <ul class="center-nav row text-center m-b0 clearfix font12 center-block box-style">
@@ -55,11 +55,11 @@
     </div>
     <div class="box-style bg-white pb0 m-b10 clearfix pr0">
         <p class="title clearfix">
-            <span class="pull-left font14"><em class="collect-icon set-inl-blo pull-left"></em>我的收藏</span>
+            <span class="pull-left font14"><em class="collect-icon set-inl-blo pull-left bg_change"></em>我的收藏</span>
         </p>
         <hr/>
         <p class="title clearfix address-manage">
-            <span class="pull-left font14"><em class="address-icon set-inl-blo pull-left"></em>我的地址管理</span>
+            <span class="pull-left font14"><em class="address-icon set-inl-blo pull-left bg_change"></em>我的地址管理</span>
             <a href="javascript:;" class="text-green3 pull-right add-address  m-r10 address_item font14" style="display:none;">+添加收货地址</a>
         </p>
         <ul class="list-group m-b0 address-list address_item  clearfix" style="display:none;">
