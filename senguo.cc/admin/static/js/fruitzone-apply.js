@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    $('.count-box').css({'height':$(window).height()});
+    //$('.count-box').css({'height':$(window).height()});
     $('.count-list li').on('click',function(){
         var $this=$(this);
         $this.addClass('active')

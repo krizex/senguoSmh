@@ -58,8 +58,8 @@ var current_link=window.location.href;
 function AndroidImg(target){
     //判断客户端是否是iOS或者Android
     var u = navigator.userAgent, app = navigator.appVersion;
-    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
-    //var isAndroid = u.indexOf('Android') > -1;
+    //var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
+    var isAndroid = u.indexOf('Android') > -1;
     var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
      if(isAndroid){
      	$(document).find('.'+target).each(function(){
@@ -68,18 +68,16 @@ function AndroidImg(target){
 	if(target=='bg_change')
 	{
 	     var src=$this.css('background');
-                    var src_android
-                    //if(dpi>1.5)  src_android=src.replace('.svg','@2x.png?v=201503-10');
-                    //else    src_android=src.replace('.svg','.png?v=201503-10');
-                    src_android=src.replace('.svg','.png?v=2015-03-10');
+                   var src_android
+                    if(dpi>1)  src_android=src.replace('.svg','@2x.png?v=201503-10');
+                    else    src_android=src.replace('.svg','.png?v=201503-10');
      	     $this.css({'background':src_android});
                }
      	else {
      	   var src=$this.attr('src');
      	   var src_android
-                   //if(dpi>1.5)  src_android=src.replace('.svg','@2x.png?v=201503-10');
-                  //else    src_android=src.replace('.svg','.png?v=201503-10');
-                  src_android=src.replace('.svg','.png?v=2015-03-10');
+                if(dpi>1)  src_android=src.replace('.svg','@2x.png?v=201503-10');
+                else    src_android=src.replace('.svg','.png?v=201503-10');
      	   $this.attr({'src':src_android});
      	}   	
       });
