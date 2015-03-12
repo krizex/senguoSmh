@@ -62,7 +62,7 @@ $(document).ready(function(){
     $('#receiveCancel').hammer().on('tap',function(){
         addressBox.addClass('hidden');
     });
-    $('.to-add-address').hammer().on('tap',function(){
+    $('body').on('click','.to-add-address',function(){
         if(max<5) {
             addressBox.toggleClass('hidden');
             receiveAdd.show();
@@ -82,7 +82,7 @@ $(document).ready(function(){
     });
 
     //收货地址编辑
-    $(document).on('click','.to-edit-address',function(){
+    $('body').on('click','.to-edit-address',function(){
         addressBox.removeClass('hidden');
         receiveAdd.hide();
         receiveEdit.removeClass('hidden');
@@ -103,7 +103,7 @@ $(document).ready(function(){
         addressAddEdit('edit_address',name,address,phone);
     });
     //订单提交
-    $(document).on('click','#submitOrder',function(){orderSubmit();});
+    $('#submitOrder').on('click',function(){orderSubmit();});
     //
     var time=new Date();
     var time_now=checkTime(time.getHours())+':'+checkTime(time.getMinutes())+':'+checkTime(time.getSeconds());

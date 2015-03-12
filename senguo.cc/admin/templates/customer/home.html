@@ -86,7 +86,7 @@
                     <div class="goods-info pull-left">
                         <div class="show-box {{ftoggle_active}}">
                             <p class="clearfix">
-                                <span class="pull-left color fruit-name font16">{{fruit.name}}</span>
+                                <span class="pull-left color fruit-name font14">{{fruit.name}}</span>
                                 <span class="pull-right text-grey sale font12">销量：<span class="color">{{fruit.saled}}</span></span>
                             </p>
                             <p class="great-number font12">
@@ -97,7 +97,7 @@
                                 {% end %}
                                 <span class="great">{{fruit.favour}}</span>
                             </p>
-                            <div class="charge-first charge-style  font16 color">
+                            <div class="charge-first charge-style  font14 color">
                                 {% if fruit.charge_types %}
                         <span class="pull-left text-bgcolor p0 charge-type line34 height34 forbid_click" data-id="{{fruit.charge_types[0].id}}">
                             {{fruit.charge_types[0].price}}元/{{fruit.charge_types[0].num}}
@@ -116,7 +116,7 @@
                     <span class="{{fradius_active}} back-shape bg"></span>
                     <span class="{{farrow_active}} icon-bg toggle_icon"></span>
                 </div>
-                <ul class="charge-list charge-style color clearfix font16 {{ftoggle_active}} color" style="display:none">
+                <ul class="charge-list charge-style color clearfix font14 {{ftoggle_active}} color" style="display:none">
                     {% for charge in fruit.charge_types %}
                     {% if charge.id !=fruit.charge_types[0].id %}
                     {% set hidden =''%}
@@ -173,7 +173,7 @@
                     <div class="goods-info pull-left">
                         <div class="show-box {{dtoggle_active}}">
                             <p class="clearfix">
-                                <span class="pull-left color fruit-name font16">{{dry_fruit.name}}</span>
+                                <span class="pull-left color fruit-name font14">{{dry_fruit.name}}</span>
                                 <span class="pull-right text-grey sale font12">销量：<span class="color">{{dry_fruit.saled}}</span></span>
                             </p>
                             <p class="great-number font12">
@@ -184,7 +184,7 @@
                                 {% end %}
                                 <span  class="great">{{dry_fruit.favour}}</span>
                             </p>
-                            <div class="charge-first charge-style  font16 color">
+                            <div class="charge-first charge-style  font14 color">
                                 {% if dry_fruit.charge_types %}
                                 <span class="pull-left text-bgcolor p0 charge-type line34 height34 forbid_click" data-id="{{dry_fruit.charge_types[0].id}}">
                                     {{dry_fruit.charge_types[0].price}}元/{{dry_fruit.charge_types[0].num}}
@@ -203,7 +203,7 @@
                     <span class="{{dradius_active}} back-shape bg"></span>
                     <span class="{{darrow_active}} icon-bg toggle_icon"></span>
                 </div>
-                <ul class="charge-list charge-style color set-width-float font16 {{dtoggle_active}} color" style="display:none">
+                <ul class="charge-list charge-style color set-width-float font14 {{dtoggle_active}} color" style="display:none">
                     {% for charge in dry_fruit.charge_types %}
                     {% if charge.id !=dry_fruit.charge_types[0].id %}
                     <li class="border-color set-w100-fle">
@@ -260,7 +260,7 @@
                     <div class="goods-info pull-left">
                         <div class="show-box {{mtoggle_active}}">
                             <p class="clearfix">
-                                <span class="pull-left color fruit-name font16 color">{{mgood.name}}</span>
+                                <span class="pull-left color fruit-name font14 color">{{mgood.name}}</span>
                                 <span class="pull-right text-grey sale font12">销量：<span class="color">{{mgood.saled}}</span></span>
                             </p>
                             <p class="great-number font12">
@@ -271,7 +271,7 @@
                                 {% end %}
                                 <span class="great">{{mgood.favour}}</span>
                             </p>
-                            <div class="charge-first charge-style font16 color">
+                            <div class="charge-first charge-style font14 color">
                                 {% if mgood.mcharge_types %}
                                 <span class="pull-left text-bgcolor p0 charge-type line34 height34 forbid_click" data-id="{{mgood.mcharge_types[0].id}}">
                                     {{mgood.mcharge_types[0].price}}元/{{mgood.mcharge_types[0].num}}
@@ -290,7 +290,7 @@
                     <span class="{{mradius_active}} back-shape bg"></span>
                     <span class="{{marrow_active}} icon-bg toggle_icon"></span>
                 </div>
-                <ul class="charge-list charge-style color set-width-float font16 {{mtoggle_active}} color" style="display:none">
+                <ul class="charge-list charge-style color set-width-float font14 {{mtoggle_active}} color" style="display:none">
                     {% for charge in mgood.mcharge_types %}
                     {% if charge.id !=mgood.mcharge_types[0].id %}
                     <li class="border-color set-w100-fle">
