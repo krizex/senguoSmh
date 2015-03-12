@@ -105,8 +105,8 @@
                         <a href="javascript:;" class="bg-white text-grey" id="sendInTime">
                             <p class="top line25">
                                 <span class="font16 m-r5 pull-left">按时达</span>
-                                <span class="pull-left">起送价：{{config.min_charge_on_time or 0}}元</span>
-                                <span class= pull-left">配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元</span>
+                                <span class="pull-left pr10">起送价：{{config.min_charge_on_time or 0}}元</span>
+                                <span class= "pull-left">配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元</span>
                             </p>
                             <p class="text-grey9">订单将根据您选择的时间段送达</p>
                         </a>
@@ -117,7 +117,7 @@
                         <a href="javascript:;" class="bg-white text-grey" id="sendNow">
                             <p class="top line25">
                                 <span class="font16 m-r5 pull-left">立即送</span>
-                                <span class="pull-left">起送价：{{config.min_charge_now or 0}}元</span>
+                                <span class="pull-left pr10">起送价：{{config.min_charge_now or 0}}元</span>
                                 <span class="pull-left">配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元</span>
                             </p>
                             <p class="text-grey9">订单将在30分钟内送到您的手上</p>
@@ -176,10 +176,10 @@
                     <li data-id="{{address.id}}" class="list-group-item clearfix item height50">
                         <a href="javascript:;" class="text-grey3 pull-left address">
                             <p class="mt5">
-                                <span class="phone">{{address.phone}}</span>
-                                <span class="name pr10">{{address.receiver}}</span>
+                                <span class="phone pr10">{{address.phone}}</span>
+                                <span class="name">{{address.receiver}}</span>
                             </p>
-                            <p class="address pr10 m0 text-grey9">{{address.address_text}}</p>
+                            <p class="address_con pr10 m0 text-grey9">{{address.address_text}}</p>
                         </a>
                         <a class="text-green pull-right to-edit-address text-center">+编辑</a>
                     </li>
