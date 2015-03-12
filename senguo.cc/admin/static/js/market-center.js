@@ -1,11 +1,13 @@
 $(document).ready(function(){
     var sex_id=$('.user-sex').data('id');
     sex($('.user-sex'),sex_id);
+    //收货地址add
     $('.address-manage').hammer().on('tap',function(){
-        $('.address_item').toggle();
-    });
+        var $this=$(this);
+        $('.address-list ').toggle();
+});
     //收货地址编辑
-    $('body').find('.edit-address').on('click',function(){
+    $('body').on('click','.edit-address',function(){
         var $this=$(this);
         var parent=$this.parents('.address-item');
         item_id=parent.index();
@@ -20,12 +22,12 @@ $(document).ready(function(){
        $('#address_phone').val(phone);
        $('#address_address').val(address);
     });
-    $('.addressEdit').hammer().on('tap',function(){
+    $('body').on('click','.addressEdit',function(){
         var $this=$(this);
         addressEdit($this,'edit_address');
     });
     //添加收货地址
-    $('.add-address').on('click',function(){
+    $('body').on('click','.add-address',function(){
         var max= $('.address-list').find('.address-item').length;
         if(max<5){
             $('.address-box').modal('show');
@@ -34,12 +36,12 @@ $(document).ready(function(){
         }
        else return alert('最多可添加五个收货地址！');
     });
-    $('.addressAdd').hammer().on('tap',function(){
+    $('body').on('click','.addressAdd',function(){
         var $this=$(this);
         addressEdit($this,'add_address');
     });
     //收货地址删除
-    $('body').find('.delete-address').hammer().on('tap',function(){
+    $('body').on('click','.delete-address',function(){
         if(confirm('确认删除该收货地址吗？')){
             var $this=$(this);
             var id=$this.parents('.address-item').attr('data-id');
@@ -54,9 +56,9 @@ var address_id;
 var item_id;
 function sex(target,id){
     switch(id) {
-        case 1:target.addClass('male');break;
-        case 2:target.addClass('female');break;
-        case 3:target.addClass('male');break;
+        case 1:target.addClass('male').text('♂');break;
+        case 2:target.addClass('female').text('♀');break;
+        case 0:target.addClass('other').text('!');break;
         default :break;
     }
 }
@@ -73,7 +75,7 @@ function addressEdit(target,action){
     if(!regPhone.test(phone)){return alert('请填写正确的手机号！');}
     if(!address) {return alert('请填写收货人地址！');}
     if(name.length>10) {return alert('姓名请不要超过10个字！');}
-    if(address.length>30) {return alert('地址请不要超过30个字！');}
+    if(address.length>50) {return alert('地址请不要超过50个字！');}
     var data={
         receiver:name,
         phone:phone,
@@ -93,7 +95,7 @@ function addressEdit(target,action){
                 tar.find('.item_address').text(address);
             }
             else if(action=='add_address'){
-                var $item=$(' <li class="address-item list-group-item radius0 clearfix" data-id=""><span class="pull-left col-sm-3 p0 item_name"></span><span class="pull-left col-sm-3 p0 item_phone">{{address.phone}}</span><span class="pull-left col-sm-3 p0 item_address">{{address.address_text}}</span><a href="javascript:;" class="delete-btn pull-right delete-address"></a><a href="javascript:;" class="edit-btn m-r10 pull-right edit-address"></a></li>');
+                var $item=$('  <li class="address-item list-group-item radius0 clearfix" data-id=""><p class="clearfix m-b0 height20"><span class="pull-left item_name"></span><span class="pull-right item_phone"></span></p><p class="clearfix item_address m-b0 height20"></p><p class="clearfix height20"><a href="javascript:;" class="delete-btn pull-right delete-address"></a><a href="javascript:;" class="edit-btn m-r10 pull-right edit-address"></a></p></li>');
                 $item.attr({'data-id':res.address_id});
                 $item.find('.item_name').text(name);
                 $item.find('.item_phone').text(phone);

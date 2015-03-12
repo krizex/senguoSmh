@@ -82,11 +82,11 @@
                     <div class="circle-icon {{left}}"></div>
                     <div class="status-box {{left}}">
                         <span class="status order-status pull-left">
-                              {% if order.sender_img %}
+                              {% if status ==4 and order.sender_img %}
                             <img src="{{order.sender_img}}" class="sender_img pull-left m-r5"/>
                             {% end %}
                             <span class="word pull-left m-r5">{{order.status}}</span>
-                             {% if order.sender_phone %}
+                             {% if status ==4 and order.sender_phone %}
                             <a href="tel:{{order.sender_phone}}" class="pull-left text-green">拨打</a>
                             {% end %}
                         </span>

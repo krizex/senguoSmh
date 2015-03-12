@@ -29,9 +29,9 @@
                     </div>
                     <div class="action-box font14">
                     <span class="pull-left number-change set-inl-blo">
-                        <a class="minus-plus text-green bg-white number-plus text-center font18 bg_change" href="javascript:;"></a>
+                        <a class="minus-plus text-green  number-plus text-center font18 bg_change" href="javascript:;"></a>
                         <input type="text" value="{{cart_f[key]['num']}}" class="number-input item_number text-center bg_change" readonly/>
-                        <a class="minus-plus text-green bg-white number-minus text-center font18 bg_change" href="javascript:;"></a>
+                        <a class="minus-plus text-green  number-minus text-center font18 bg_change" href="javascript:;"></a>
                     </span>
                         <div class="pull-right delete-btn">
                             <a href="javascript:;" class="pull-right delete-item text-center font18 text-grey">x</a>
@@ -61,9 +61,9 @@
                     </div>
                     <div class="action-box font14">
                         <span class="pull-left number-change set-inl-blo">
-                            <a class="minus-plus text-green bg-white number-plus text-center font18 bg_change" href="javascript:;"></a>
+                            <a class="minus-plus text-green  number-plus text-center font18 bg_change" href="javascript:;"></a>
                             <input type="text" value="{{cart_m[key]['num']}}" class="number-input item_number text-center bg_change" readonly/>
-                            <a class="minus-plus text-green bg-white number-minus text-center font18 bg_change" href="javascript:;"></a>
+                            <a class="minus-plus text-green  number-minus text-center font18 bg_change" href="javascript:;"></a>
                         </span>
                         <div class="pull-right delete-btn">
                             <a href="javascript:;" class="pull-right delete-item text-center font18 text-grey">x</a>
@@ -105,8 +105,8 @@
                         <a href="javascript:;" class="bg-white text-grey" id="sendInTime">
                             <p class="top line25">
                                 <span class="font16 m-r5 pull-left">按时达</span>
-                                <span class="pull-left">起送价：{{config.min_charge_on_time or 0}}元</span>
-                                <span class= pull-left">配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元</span>
+                                <span class="pull-left pr10">起送价：{{config.min_charge_on_time or 0}}元</span>
+                                <span class= "pull-left">配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元</span>
                             </p>
                             <p class="text-grey9">订单将根据您选择的时间段送达</p>
                         </a>
@@ -117,7 +117,7 @@
                         <a href="javascript:;" class="bg-white text-grey" id="sendNow">
                             <p class="top line25">
                                 <span class="font16 m-r5 pull-left">立即送</span>
-                                <span class="pull-left">起送价：{{config.min_charge_now or 0}}元</span>
+                                <span class="pull-left pr10">起送价：{{config.min_charge_now or 0}}元</span>
                                 <span class="pull-left">配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元</span>
                             </p>
                             <p class="text-grey9">订单将在30分钟内送到您的手上</p>
@@ -169,23 +169,22 @@
             <div class="send-address-choose clearfix center-block bg-white box-style">
                 <p class="clearfix">
                     <span class="pull-left text-grey3 font14 m-b5">收货人地址</span>
-                    <a class="text-green pull-right to-add-address font12 m-r10">+添加</a>
+                    <a class="text-green pull-right to-add-address font12 m-r10" href="javascript:;">+添加</a>
                 </p>
                 <ul id="addressType" class="address_list list-group type-choose font12 m-b5 clearfix">
                     {% for address in current_user.addresses%}
                     <li data-id="{{address.id}}" class="list-group-item clearfix item height50">
                         <a href="javascript:;" class="text-grey3 pull-left address">
                             <p class="mt5">
-                                <span class="phone">{{address.phone}}</span>
-                                <span class="name pr10">{{address.receiver}}</span>
+                                <span class="phone pr10">{{address.phone}}</span>
+                                <span class="name">{{address.receiver}}</span>
                             </p>
-                            <p class="address pr10 m0 text-grey9">{{address.address_text}}</p>
+                            <p class="address_con pr10 m0 text-grey9">{{address.address_text}}</p>
                         </a>
-                        <a class="text-green pull-right to-edit-address text-center">+编辑</a>
+                        <a class="text-green pull-right to-edit-address text-center" href="javascript:;">+编辑</a>
                     </li>
                     {% end %}
                 </ul>
-                <div class="box-style">
                     <div class="address-box hidden set-w100-fle font12 p bg-grey2">
                         <p>
                             <span class="tit set-inl-blo pull-left">姓名：</span>
@@ -205,8 +204,6 @@
                             <button class="btn text-white bg-greyc pull-right m-r10" id="receiveCancel">取消</button>
                         </div>
                     </div>
-                </div>
-
             </div>
             <div class="send-address-choose clearfix center-block bg-white box-style">
                 <p class="clearfix">

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block head %}<link rel="stylesheet" href="{{static_url('css/market-shop.css')}}"/>{% end %}
 {% block content %}
-<div class="rainshed_green text-center font18 text-white fix-title bg_change">店铺详情</div>
+<div class="rainshed text-center font18 text-black fix-title bg_change">店铺详情</div>
  <div class="info1 bg-white clearfix mt42 pt20">
      <div class="shop-logo pull-left">
          <img src="{{shop.shop_trademark_url or static_url('design_img/TDSG.gif')}}">
@@ -12,8 +12,8 @@
      </div>
      <div class="info set-w100-fle">
          <div class="level-box btn font9 border-ca w49 p0 bg-grey5">
-             <div class="font12 m-b5 clearfix">
-                 <em class="set-inl-blo text-white text-center pull-left">1</em>
+             <div class="font10 m-b5 clearfix">
+                 <em class="set-inl-blo text-white text-center pull-left bg_change">1</em>
                  <span class="pull-left">初来乍到</span>
              </div>
              <span class="status-box border-ca set-inl-blo clearfix">
@@ -42,7 +42,7 @@
          {% end %}
          <a href="javascript:;" class="btn text-green3 font12 border-ca pull-right w49 sign-box p0 {{sign_bg}} {{sign_show}} {{sign_color}} font13 bg-grey5" id="signin-shop">
              {% if not signin %}
-             <em class="set-inl-blo"></em>
+             <em class="set-inl-blo bg_change"></em>
              {% end %}
              <span class="sign_text {{ml20}}">{{sign_text}}</span>
          </a>
@@ -51,28 +51,28 @@
  </div>
  <ul class="info2 text-center bg-white set-w100-fle font12 m-b10">
      <li class="w25 pull-left">
-        <p class="text-grey6">运营时间</p>
+        <p class="text-grey9">运营时间</p>
         <p>{{operate_days or 0}}天</p>
      </li>
      <li class="w25 pull-left">
-         <p class="text-grey6">粉丝</p>
+         <p class="text-grey9">粉丝</p>
          <p>{{fans_sum or 0}}个</p>
      </li>
      <li class="w25 pull-left">
-         <p class="text-grey6">总订单数</p>
+         <p class="text-grey9">总订单数</p>
          <p>{{order_sum}}个</p>
      </li>
      <li class="w25 pull-left">
-         <p class="text-grey6">商品种类</p>
+         <p class="text-grey9">商品种类</p>
          <p>{{goods_sum or 0}}种</p>
      </li>
  </ul>
 <div class="shop-box bg-white clearfix">
     <p class="title font14 clearfix">店铺信息：</p>
-    <ul class="shop-info text-grey6 font14">
-        <li class="set-w100-fle height40">位置：{{address}}</li>
-        <li class="set-w100-fle height40">配送区域：{{shop.deliver_area or '无'}}<!--<em class="area-icon set-inl-blo pull-right"></em>--></li>
-        <li class="set-w100-fle height40">联系电话：{{shop.shop_phone or '无'}}<a href="tel:{{shop.admin.accountinfo.phone}}" class="pull-right"><em class="phone-icon set-inl-blo "></em></a></li>
+    <ul class="shop-info text-grey9 font14">
+        <li class="set-w100-fle">位置：{{address}}</li>
+        <li class="set-w100-fle">配送区域：{{shop.deliver_area or '无'}}<!--<em class="area-icon set-inl-blo pull-right"></em>--></li>
+        <li class="set-w100-fle">联系电话：{{shop.shop_phone or '无'}}<a href="tel:{{shop.shop_phone }}" class="phone_icon"><em class="phone-icon set-inl-blo bg_change"></em></a></li>
         <li class="set-w100-fle"><span class="pull-left">店铺简介：</span><span class="pull-left set-inl-blo w8">{{shop.shop_intro or '无'}}</span></li>
     </ul>
 </div>
@@ -104,7 +104,7 @@
                     <span class="pull-left m-b5 font14">{{comment[1]}}</span>
                     <span class="pull-right">{{handler.timedelta(comment[3])}}</span>
                 </p>
-                <p>{{comment[2] or '无'}}</p>
+                <p class="text-grey9">{{comment[2] or '无'}}</p>
             </div>
         </li>
         {% end %}

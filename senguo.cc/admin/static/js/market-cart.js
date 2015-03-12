@@ -49,9 +49,9 @@ $(document).ready(function(){
         }
     });
     //类型切换增加active
-    $('.type-choose li').each(function(){
+    $(document).on('click','.type-choose li',function(){
         var $this=$(this);
-        $this.hammer().on('tap',function(){$this.addClass('active').siblings().removeClass('active');})
+        $this.addClass('active').siblings().removeClass('active');
     });
     //收货地址添加
     var max=$('.address_list li').length;
@@ -62,7 +62,7 @@ $(document).ready(function(){
     $('#receiveCancel').hammer().on('tap',function(){
         addressBox.addClass('hidden');
     });
-    $('.to-add-address').hammer().on('tap',function(){
+    $('body').on('click','.to-add-address',function(){
         if(max<5) {
             addressBox.toggleClass('hidden');
             receiveAdd.show();
@@ -82,13 +82,13 @@ $(document).ready(function(){
     });
 
     //收货地址编辑
-    $('.to-edit-address').hammer().on('tap',function(){
+    $('body').on('click','.to-edit-address',function(){
         addressBox.removeClass('hidden');
         receiveAdd.hide();
         receiveEdit.removeClass('hidden');
         var parent=$(this).parents('li');
         var name=parent.find('.name').text();
-        var address=parent.find('.address').text();
+        var address=parent.find('.address_con').text();
         var phone=parent.find('.phone').text();
         var id=parent.data('id');
         addressBox.attr({'data-id':id});
@@ -103,7 +103,7 @@ $(document).ready(function(){
         addressAddEdit('edit_address',name,address,phone);
     });
     //订单提交
-    $('#submitOrder').hammer().on('tap',function(){orderSubmit();});
+    $('#submitOrder').on('click',function(){orderSubmit();});
     //
     var time=new Date();
     var time_now=checkTime(time.getHours())+':'+checkTime(time.getMinutes())+':'+checkTime(time.getSeconds());
@@ -447,7 +447,7 @@ function addressAddEdit(action,name,address,phone){
     if(name == null){return alert('请输入收货人姓名！')}
     if(name.length > 10){return alert('姓名请不要超过10个字！')}
     if(address == null){return alert('请输入收货人地址！')}
-    if(address.length > 20){return alert('地址请不要超过20个字！')}
+    if(address.length > 50){return alert('地址请不要超过50个字！')}
     if(!phone){return alert('请输入收货人电话！')}
     if(!regPhone.test(phone)){return alert('请输入有效的手机号码！')}
     var data={
@@ -464,9 +464,9 @@ function addressAddEdit(action,name,address,phone){
         if(res.success){
             if(action=='add_address'){
                 $('.address_list li').removeClass('active');
-                var $item=$('<li data-id="'+res.address_id+'" class="active list-group-item item"><a href="javascript:;" class="text-grey3"><span class="name pr10"></span><span class="address pr10"></span><span class="phone"></span></a><a class="text-green pull-right to-edit-address">+编辑收货地址</a></li>');
+                var $item=$('<li data-id="'+res.address_id+'" class="list-group-item clearfix item height50 active"><a href="javascript:;" class="text-grey3 pull-left address"><p class="mt5"><span class="phone pr10">{{address.phone}}</span> <span class="name">{{address.receiver}}</span></p><p class="address_con pr10 m0 text-grey9">{{address.address_text}}</p></a><a class="text-green pull-right to-edit-address text-center">+编辑</a></li>');
                 $item.find('.name').text(name);
-                $item.find('.address').text(address);
+                $item.find('.address_con').text(address);
                 $item.find('.phone').text(phone);
                 $('.address_list').append($item);
                 $('.to-add-address').removeClass('hidden');
@@ -482,7 +482,7 @@ function addressAddEdit(action,name,address,phone){
                     if(item_id == address_id)
                         {
                             item.eq(j).find('.name').text(name);
-                            item.eq(j).find('.address').text(address);
+                            item.eq(j).find('.address_con').text(address);
                             item.eq(j).find('.phone').text(phone);
                         }
 
