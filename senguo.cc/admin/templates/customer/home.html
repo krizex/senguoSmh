@@ -87,7 +87,7 @@
                         <div class="show-box {{ftoggle_active}}">
                             <p class="clearfix">
                                 <span class="pull-left color fruit-name font14">{{fruit.name}}</span>
-                                <span class="pull-right text-grey sale font12">销量：<span class="color">{{fruit.saled}}</span></span>
+                                <span class="pull-right text-grey sale font12">销量:<span class="color number" data-id="{{fruit.saled}}"></span></span>
                             </p>
                             <p class="great-number font12">
                                 {% if fruit.favour%}
@@ -174,7 +174,7 @@
                         <div class="show-box {{dtoggle_active}}">
                             <p class="clearfix">
                                 <span class="pull-left color fruit-name font14">{{dry_fruit.name}}</span>
-                                <span class="pull-right text-grey sale font12">销量：<span class="color">{{dry_fruit.saled}}</span></span>
+                                <span class="pull-right text-grey sale font12">销量:<span class="color number" data-id="{{dry_fruit.saled}}"></span></span>
                             </p>
                             <p class="great-number font12">
                                 {% if dry_fruit.favour%}
@@ -261,7 +261,7 @@
                         <div class="show-box {{mtoggle_active}}">
                             <p class="clearfix">
                                 <span class="pull-left color fruit-name font14 color">{{mgood.name}}</span>
-                                <span class="pull-right text-grey sale font12">销量：<span class="color">{{mgood.saled}}</span></span>
+                                <span class="pull-right text-grey sale font12">销量:<span class="color number" data-id="{{mgood.saled}}"></span></span>
                             </p>
                             <p class="great-number font12">
                                 {% if mgood.favour%}

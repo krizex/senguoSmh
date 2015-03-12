@@ -26,18 +26,18 @@
 .cart-list-item .action-box{position:absolute;right:5px;top:35%;}
 .cart-list-item .charge-item{height:30px;line-height:30px;position:absolute;bottom:0;}
 .cart-list-item .number-change{position:relative;width:90px;}
-.cart-list-item .minus-plus{display:inline-block;float:left;width:32px;height:32px;background:url('../svg/icon_list_1.svg') no-repeat;position:absolute;z-index:10;border-radius:50%;background-size:120px 180px;}
-.cart-list-item .number-input{width:28%;width:60px;position:absolute;left:14px;height:30px;line-height:30px;top:0;border:1px solid #f7f7f8;}
+.cart-list-item .minus-plus{display:inline-block;float:left;width:32px;height:32px;background:url('../svg/icon_list_1.svg') no-repeat;position:absolute;z-index:10;background-size:120px 180px;}
+.cart-list-item .number-input{width:28%;width:60px;position:absolute;left:14px;height:30px;line-height:30px;top:0;border:0.5px solid #f7f7f8;}
 .cart-list-item .number-plus{right:0;background-position:-34px -72px;}
 .cart-list-item .number-minus{left:0;background-position:0 -72px;}
 .cart-list-item .disable{border-color:#ccc;color:#ccc;}
-.cart-list-item .delete-btn a{display:inline-block;width:18px;height:30px;line-height:26px;margin-left:10px;}
+.cart-list-item .delete-btn a{display:inline-block;width:25px;height:30px;line-height:26px;margin-left:5px;}
 .cart-list-item .name{min-width:90px;}
 
 .send_type{border-top-left-radius:2px;border-top-right-radius:2px;overflow:hidden;margin-bottom:0px;}
 .send_type li{padding:6px 15px;}
 .send_type li a{display:block;border-radius:4px;}
-.send_type li a p{margin-bottom:0px;margin-top:3px;letter-spacing:-1px;}
+.send_type li a p{margin-bottom:0px;margin-top:3px;}
 .send_type li a p:last-child{margin-bottom:3px;}
 .send_type li.active a{border-color:#33CC66;}
 .send_type li.active .top{color:#33CC66;}

@@ -1,4 +1,11 @@
 $(document).ready(function(){
+    //sale>9999
+    $('.sale').each(function(){
+        var $this=$(this);
+        var num=Int($this.find('.number').data('id'));
+        if(num>9999) $this.find('.number').text('9999+');
+        else $this.find('.number').text(num);
+    });
     //已在购物车里的商品
     var cart_fs=window.dataObj.cart_fs;
     var cart_ms=window.dataObj.cart_ms;

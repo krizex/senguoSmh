@@ -4,7 +4,6 @@ $(document).ready(function(){
     //收货地址add
     $('.address-manage').hammer().on('tap',function(){
         var $this=$(this);
-        console.log('66666');
         $('.address-list ').toggle();
 });
     //收货地址编辑
