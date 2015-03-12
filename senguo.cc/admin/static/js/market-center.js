@@ -1,8 +1,9 @@
 $(document).ready(function(){
     var sex_id=$('.user-sex').data('id');
     sex($('.user-sex'),sex_id);
-    $(document).on('click','.address-manage',function(e){
+    $('body').on('click','.address-manage',function(e){
         var $this=$(this);
+        console.log('222');
         var forbid_click=$this.find('.forbid_click');
         if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
             $('.address_item').toggle();
@@ -10,7 +11,7 @@ $(document).ready(function(){
         }
     });
     //收货地址编辑
-    $(document).on('click','.edit-address',function(){
+    $('body').on('click','.edit-address',function(){
         var $this=$(this);
         var parent=$this.parents('.address-item');
         item_id=parent.index();
@@ -25,12 +26,12 @@ $(document).ready(function(){
        $('#address_phone').val(phone);
        $('#address_address').val(address);
     });
-    $(document).on('click','.addressEdit',function(){
+    $('body').on('click','.addressEdit',function(){
         var $this=$(this);
         addressEdit($this,'edit_address');
     });
     //添加收货地址
-    $(document).on('click','.add-address',function(){
+    $('body').on('click','.add-address',function(){
         var max= $('.address-list').find('.address-item').length;
         if(max<5){
             $('.address-box').modal('show');
@@ -39,12 +40,12 @@ $(document).ready(function(){
         }
        else return alert('最多可添加五个收货地址！');
     });
-    $(document).on('click','.addressAdd',function(){
+    $('body').on('click','.addressAdd',function(){
         var $this=$(this);
         addressEdit($this,'add_address');
     });
     //收货地址删除
-    $(document).on('click','.delete-address',function(){
+    $('body').on('click','.delete-address',function(){
         if(confirm('确认删除该收货地址吗？')){
             var $this=$(this);
             var id=$this.parents('.address-item').attr('data-id');
@@ -78,7 +79,7 @@ function addressEdit(target,action){
     if(!regPhone.test(phone)){return alert('请填写正确的手机号！');}
     if(!address) {return alert('请填写收货人地址！');}
     if(name.length>10) {return alert('姓名请不要超过10个字！');}
-    if(address.length>30) {return alert('地址请不要超过30个字！');}
+    if(address.length>50) {return alert('地址请不要超过50个字！');}
     var data={
         receiver:name,
         phone:phone,

@@ -54,14 +54,14 @@
         </ul>
     </div>
     <div class="box-style bg-white pb0 m-b10 clearfix pr0">
-        <p class="title clearfix">
+        <div class="title clearfix">
             <span class="pull-left font14"><em class="collect-icon set-inl-blo pull-left bg_change"></em>我的收藏</span>
-        </p>
+        </div>
         <hr/>
-        <p class="title clearfix address-manage">
+        <div class="title clearfix address-manage">
             <span class="pull-left font14"><em class="address-icon set-inl-blo pull-left bg_change"></em>我的地址管理</span>
             <a href="javascript:;" class="text-green3 pull-right add-address  m-r10  font14 forbid_click" style="display:none;">+添加收货地址</a>
-        </p>
+        </div>
         <ul class="list-group m-b0 address-list address_item  clearfix" style="display:none;">
             {% for address in current_user.addresses%}
             <li class="address-item list-group-item radius0 clearfix" data-id="{{address.id}}">
