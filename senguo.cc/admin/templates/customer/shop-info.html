@@ -13,7 +13,7 @@
      <div class="info set-w100-fle">
          <div class="level-box btn font9 border-ca w49 p0 bg-grey5">
              <div class="font10 m-b5 clearfix">
-                 <em class="set-inl-blo text-white text-center pull-left">1</em>
+                 <em class="set-inl-blo text-white text-center pull-left bg_change">1</em>
                  <span class="pull-left">初来乍到</span>
              </div>
              <span class="status-box border-ca set-inl-blo clearfix">
@@ -42,7 +42,7 @@
          {% end %}
          <a href="javascript:;" class="btn text-green3 font12 border-ca pull-right w49 sign-box p0 {{sign_bg}} {{sign_show}} {{sign_color}} font13 bg-grey5" id="signin-shop">
              {% if not signin %}
-             <em class="set-inl-blo"></em>
+             <em class="set-inl-blo bg_change"></em>
              {% end %}
              <span class="sign_text {{ml20}}">{{sign_text}}</span>
          </a>
@@ -72,7 +72,7 @@
     <ul class="shop-info text-grey6 font14">
         <li class="set-w100-fle height40">位置：{{address}}</li>
         <li class="set-w100-fle height40">配送区域：{{shop.deliver_area or '无'}}<!--<em class="area-icon set-inl-blo pull-right"></em>--></li>
-        <li class="set-w100-fle height40">联系电话：{{shop.shop_phone or '无'}}<a href="tel:{{shop.admin.accountinfo.phone}}" class="pull-right"><em class="phone-icon set-inl-blo "></em></a></li>
+        <li class="set-w100-fle height40">联系电话：{{shop.shop_phone or '无'}}<a href="tel:{{shop.admin.accountinfo.phone}}" class="pull-right"><em class="phone-icon set-inl-blo bg_change"></em></a></li>
         <li class="set-w100-fle"><span class="pull-left">店铺简介：</span><span class="pull-left set-inl-blo w8">{{shop.shop_intro or '无'}}</span></li>
     </ul>
 </div>

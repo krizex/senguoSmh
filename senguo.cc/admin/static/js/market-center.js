@@ -1,11 +1,16 @@
 $(document).ready(function(){
     var sex_id=$('.user-sex').data('id');
     sex($('.user-sex'),sex_id);
-    $('.address-manage').hammer().on('tap',function(){
-        $('.address_item').toggle();
+    $(document).on('click','.address-manage',function(e){
+        var $this=$(this);
+        var forbid_click=$this.find('.forbid_click');
+        if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
+            $('.address_item').toggle();
+            $('.add-address').toggle();
+        }
     });
     //收货地址编辑
-    $('body').find('.edit-address').on('click',function(){
+    $(document).on('click','.edit-address',function(){
         var $this=$(this);
         var parent=$this.parents('.address-item');
         item_id=parent.index();
@@ -20,12 +25,12 @@ $(document).ready(function(){
        $('#address_phone').val(phone);
        $('#address_address').val(address);
     });
-    $('.addressEdit').hammer().on('tap',function(){
+    $(document).on('click','.addressEdit',function(){
         var $this=$(this);
         addressEdit($this,'edit_address');
     });
     //添加收货地址
-    $('.add-address').on('click',function(){
+    $(document).on('click','.add-address',function(){
         var max= $('.address-list').find('.address-item').length;
         if(max<5){
             $('.address-box').modal('show');
@@ -34,12 +39,12 @@ $(document).ready(function(){
         }
        else return alert('最多可添加五个收货地址！');
     });
-    $('.addressAdd').hammer().on('tap',function(){
+    $(document).on('click','.addressAdd',function(){
         var $this=$(this);
         addressEdit($this,'add_address');
     });
     //收货地址删除
-    $('body').find('.delete-address').hammer().on('tap',function(){
+    $(document).on('click','.delete-address',function(){
         if(confirm('确认删除该收货地址吗？')){
             var $this=$(this);
             var id=$this.parents('.address-item').attr('data-id');
@@ -93,7 +98,7 @@ function addressEdit(target,action){
                 tar.find('.item_address').text(address);
             }
             else if(action=='add_address'){
-                var $item=$(' <li class="address-item list-group-item radius0 clearfix" data-id=""><span class="pull-left col-sm-3 p0 item_name"></span><span class="pull-left col-sm-3 p0 item_phone">{{address.phone}}</span><span class="pull-left col-sm-3 p0 item_address">{{address.address_text}}</span><a href="javascript:;" class="delete-btn pull-right delete-address"></a><a href="javascript:;" class="edit-btn m-r10 pull-right edit-address"></a></li>');
+                var $item=$('  <li class="address-item list-group-item radius0 clearfix" data-id=""><p class="clearfix m-b0 height20"><span class="pull-left item_name"></span><span class="pull-right item_phone"></span></p><p class="clearfix item_address m-b0 height20"></p><p class="clearfix height20"><a href="javascript:;" class="delete-btn pull-right delete-address"></a><a href="javascript:;" class="edit-btn m-r10 pull-right edit-address"></a></p></li>');
                 $item.attr({'data-id':res.address_id});
                 $item.find('.item_name').text(name);
                 $item.find('.item_phone').text(phone);

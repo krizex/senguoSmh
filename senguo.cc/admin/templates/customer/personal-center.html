@@ -11,7 +11,7 @@
             <div class="info">
                 <p>
                     <span>{{current_user.accountinfo.nickname}}</span>
-                    <span data-id="{{current_user.accountinfo.sex}}" class="user-sex  font18"></span>
+                    <span data-id="{{current_user.accountinfo.sex}}" class="user-sex  font14"></span>
                 </p>
             </div>
         </a>
@@ -60,17 +60,17 @@
         <hr/>
         <p class="title clearfix address-manage">
             <span class="pull-left font14"><em class="address-icon set-inl-blo pull-left bg_change"></em>我的地址管理</span>
-            <a href="javascript:;" class="text-green3 pull-right add-address  m-r10 address_item font14" style="display:none;">+添加收货地址</a>
+            <a href="javascript:;" class="text-green3 pull-right add-address  m-r10  font14 forbid_click" style="display:none;">+添加收货地址</a>
         </p>
         <ul class="list-group m-b0 address-list address_item  clearfix" style="display:none;">
             {% for address in current_user.addresses%}
             <li class="address-item list-group-item radius0 clearfix" data-id="{{address.id}}">
-                <p class="clearfix m-b0">
+                <p class="clearfix m-b0 height20">
                     <span class="pull-left item_name">{{address.receiver}}</span>
                     <span class="pull-right item_phone">{{address.phone}}</span>
                 </p>
-                <p class="clearfix item_address m-b0">{{address.address_text}}</p>
-                <p class="clearfix">
+                <p class="clearfix item_address m-b0 height20">{{address.address_text}}</p>
+                <p class="clearfix height20">
                     <a href="javascript:;" class="delete-btn pull-right delete-address"></a>
                     <a href="javascript:;" class="edit-btn m-r10 pull-right edit-address"></a>
                 </p>
