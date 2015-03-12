@@ -261,7 +261,7 @@ class OrderStatic(AdminBaseHandler):
             date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
             if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
                 if j < len(s_old) and (datetime.datetime.now()-s_old[j][0]).days == x+(page*page_size):
-                    data.append((date.strftime('%Y-%m-%d'), s[i][1], total[1], s[i][2], total[0], s_old[j][1], old_total))
+                    data.append((date.strftime('%Y-%m-%d'), s[i][1], total[1], format(s[i][2],'.2f'), format(total[0],'.2f'), s_old[j][1], old_total))
                     total[1] -= s[i][1]
                     total[0] -= s[i][2]
                     old_total -= s_old[j][1]
