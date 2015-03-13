@@ -35,11 +35,11 @@
     </div>
     {% if fruits %}
     <div class="no-mar-btom top-title">
-        <div class="inner text-white rainshed_green font16 bg_change">
+        <div class="inner text-white rainshed_green  bg_change">
             <a href="javascript:;"  class="text-white tit choose-classify set-w100-fle text-center">
                 <!--<span>分类</span>
                 <em class="set-inl-blo pull-right"></em>-->
-                <span class="classify text-center set-inl-blo">水果单品<em class="icon up" style="display:none;">︿</em><em class="icon down" >﹀</em></span>
+                <span class="classify text-center set-inl-blo font18">水果单品<em class="icon up font16" style="display:none;">︿</em><em class="icon down font16" >﹀</em></span>
             </a>
         </div>
         <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle" style="display:none">
@@ -76,9 +76,9 @@
                         <a href="javascript:;" class="check-lg-img">
                             <span class="tag text-white text-center tagItem font8" data-id="{{fruit.tag}}"></span>
                             {% if fruit.img_url %}
-                            <img src="" class="img lazy_img" data-src="{{fruit.img_url}}?imageView/1/w/200/h/200">
+                            <img src="" class="img lazy_img" data-src="{{fruit.img_url}}?imageView/1/w/160/h/160" data-img="{{fruit.img_url}}">
                             {% else %}
-                            <img src="" class="img lazy_img" data-src="/static/design_img/{{fruit.fruit_type.code}}.gif">
+                            <img src="" class="img lazy_img" data-src="/static/design_img/{{fruit.fruit_type.code}}.gif" data-img="">
                             {% end %}
                         </a>
                     </div>
@@ -91,25 +91,27 @@
                             </p>
                             <p class="great-number font12">
                                 {% if fruit.favour%}
-                                <em class="red-heart bg_change"></em>
+                                <em class="red-heart bg_change" data-id="{{fruit.favour}}"></em>
                                 {% else %}
-                                <em class="gray-heart bg_change"></em>
+                                <em class="gray-heart bg_change" data-id=""></em>
                                 {% end %}
                                 <span class="great">{{fruit.favour}}</span>
                             </p>
                             <div class="charge-first charge-style  font14 color">
                                 {% if fruit.charge_types %}
-                        <span class="pull-left text-bgcolor p0 charge-type line34 height34 forbid_click" data-id="{{fruit.charge_types[0].id}}">
-                            {{fruit.charge_types[0].price}}元/{{fruit.charge_types[0].num}}
-                            <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
-                        </span>
-                            {% end %}
-                            <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
-                            <span class="pull-right p0 number-change hidden forbid_click">
-                                <a class="minus-plus pull-right number-plus bg_change" href="javascript:;"></a>
-                                <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
-                                <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
-                            </span>
+                                <span class="pull-left text-bgcolor p0 charge-type line34 height34 forbid_click" data-id="{{fruit.charge_types[0].id}}">
+                                    {{fruit.charge_types[0].price}}元/{{fruit.charge_types[0].num}}
+                                    <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
+                                </span>
+                                {% end %}
+                                <span class="forbid_click pull-right num_box">
+                                    <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
+                                    <span class="pull-right p0 number-change hidden forbid_click">
+                                        <a class="minus-plus pull-right number-plus bg_change" href="javascript:;"></a>
+                                        <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
+                                        <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
+                                    </span>
+                                </span>        
                             </div>
                         </div>
                     </div>
@@ -122,15 +124,17 @@
                     {% set hidden =''%}
                     {% set show =''%}
                     <li class="border-color set-w100-fle">
-                        <span class="pull-left text-bgcolor p0 charge-type forbid_click" data-id="{{charge.id}}">
+                        <span class="pull-left text-bgcolor p0 charge-type forbid_click more_charge" data-id="{{charge.id}}">
                             {{charge.price}}元/{{charge.num}}
                             <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                         </span>
-                    <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
-                        <span class="pull-right p0 number-change hidden forbid_click">
-                            <a class="minus-plus pull-right number-plus bg_change" href="javascript:;"></a>
-                            <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
-                            <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
+                         <span class="forbid_click pull-right num_box">
+                            <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
+                            <span class="pull-right p0 number-change hidden forbid_click">
+                                <a class="minus-plus pull-right number-plus bg_change" href="javascript:;"></a>
+                                <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
+                                <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
+                            </span>
                         </span>
                     </li>
                     {% end %}
@@ -163,9 +167,9 @@
                         <a href="javascript:;" class="check-lg-img">
                             <span class="tag text-white text-center tagItem font8" data-id="{{dry_fruit.tag}}"></span>
                             {% if dry_fruit.img_url %}
-                            <img src="" class="img lazy_img" data-src="{{dry_fruit.img_url}}?imageView/1/w/200/h/200">
+                            <img src="" class="img lazy_img" data-src="{{dry_fruit.img_url}}?imageView/1/w/160/h/160" data-img="{{dry_fruit.img_url}}">
                             {% else %}
-                            <img src="" class="img lazy_img" data-src="/static/design_img/{{dry_fruit.fruit_type.code}}.gif">
+                            <img src="" class="img lazy_img" data-src="/static/design_img/{{dry_fruit.fruit_type.code}}.gif" data-img="">
                             {% end %}
                         </a>
                     </div>
@@ -178,9 +182,9 @@
                             </p>
                             <p class="great-number font12">
                                 {% if dry_fruit.favour%}
-                                <em class="red-heart bg_change"></em>
+                                <em class="red-heart bg_change" data-id="{{dry_fruit.favour}}"></em>
                                 {% else %}
-                                <em class="gray-heart bg_change"></em>
+                                <em class="gray-heart bg_change" data-id=""></em>
                                 {% end %}
                                 <span  class="great">{{dry_fruit.favour}}</span>
                             </p>
@@ -191,11 +195,13 @@
                                     <span data-id="{{dry_fruit.charge_types[0].unit}}" class="chargeUnit"></span>
                                 </span>
                                 {% end %}
-                                <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
-                                <span class="pull-right p0 number-change hidden forbid_click">
-                                    <a class="minus-plus  pull-right number-plus bg_change" href="javascript:;"></a>
-                                    <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
-                                    <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
+                                 <span class="forbid_click pull-right num_box">
+                                    <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
+                                    <span class="pull-right p0 number-change hidden forbid_click">
+                                        <a class="minus-plus  pull-right number-plus bg_change" href="javascript:;"></a>
+                                        <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
+                                        <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
+                                    </span>
                                 </span>
                             </div>
                         </div>
@@ -207,15 +213,17 @@
                     {% for charge in dry_fruit.charge_types %}
                     {% if charge.id !=dry_fruit.charge_types[0].id %}
                     <li class="border-color set-w100-fle">
-                        <span class="pull-left text-bgcolor p0 charge-type forbid_click" data-id="{{charge.id}}">
+                        <span class="pull-left text-bgcolor p0 charge-type forbid_click more_charge" data-id="{{charge.id}}">
                             {{charge.price}}元/{{charge.num}}
                             <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                         </span>
-                    <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
-                        <span class="pull-right p0 number-change hidden forbid_click">
-                            <a class="minus-plus pull-right number-plus bg_change" href="javascript:;"></a>
-                            <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
-                            <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
+                         <span class="forbid_click pull-right num_box">
+                            <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
+                            <span class="pull-right p0 number-change hidden forbid_click">
+                                <a class="minus-plus pull-right number-plus bg_change" href="javascript:;"></a>
+                                <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
+                                <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
+                            </span>
                         </span>
                     </li>
                     {% end %}
@@ -250,9 +258,9 @@
                         <a href="javascript:;" class="check-lg-img">
                             <span class="tag text-white text-center tagItem font8" data-id="{{mgood.tag}}"></span>
                             {% if mgood.img_url %}
-                            <img src="" class="img lazy_img" data-src="{{mgood.img_url}}?imageView/1/w/200/h/200">
+                            <img src="" class="img lazy_img" data-src="{{mgood.img_url}}?imageView/1/w/160/h/160" data-img="{{mgood.img_url}}">
                             {% else %}
-                            <img src="" class="img lazy_img" data-src="/static/design_img/TDSG.gif">
+                            <img src="" class="img lazy_img" data-src="/static/design_img/TDSG.gif" data-img="">
                             {% end %}
                         </a>
                     </div>
@@ -265,9 +273,9 @@
                             </p>
                             <p class="great-number font12">
                                 {% if mgood.favour%}
-                                <em class="red-heart bg_change"></em>
+                                <em class="red-heart bg_change" data-id="{{mgood.favour}}"></em>
                                 {% else %}
-                                <em class="gray-heart bg_change"></em>
+                                <em class="gray-heart bg_change" data-id=""></em>
                                 {% end %}
                                 <span class="great">{{mgood.favour}}</span>
                             </p>
@@ -278,11 +286,13 @@
                                     <span data-id="{{mgood.mcharge_types[0].unit}}" class="chargeUnit"></span>
                                 </span>
                                 {% end %}
-                                <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
-                                 <span class="pull-right p0 number-change hidden forbid_click">
-                                    <a class="minus-plus  pull-right number-plus bg_change" href="javascript:;"></a>
-                                    <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
-                                    <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
+                                 <span class="forbid_click pull-right num_box">
+                                      <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
+                                     <span class="pull-right p0 number-change hidden forbid_click">
+                                        <a class="minus-plus  pull-right number-plus bg_change" href="javascript:;"></a>
+                                        <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
+                                        <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
+                                    </span>
                                 </span>
                             </div>
                         </div>
@@ -294,16 +304,18 @@
                     {% for charge in mgood.mcharge_types %}
                     {% if charge.id !=mgood.mcharge_types[0].id %}
                     <li class="border-color set-w100-fle">
-                            <span class="pull-left text-bgcolor p0 charge-type forbid_click" data-id="{{charge.id}}">
+                            <span class="pull-left text-bgcolor p0 charge-type forbid_click more_charge" data-id="{{charge.id}}">
                                 {{charge.price}}元/{{charge.num}}
                                 <span data-id="{{charge.unit}}" class="chargeUnit"></span>
                             </span>
-                        <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
-                             <span class="pull-right p0 number-change hidden forbid_click">
-                                <a class="minus-plus pull-right number-plus bg_change" href="javascript:;"></a>
-                                <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
-                                <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
-                            </span>
+                            <span class="forbid_click pull-right num_box">
+                                <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
+                                 <span class="pull-right p0 number-change hidden forbid_click">
+                                    <a class="minus-plus pull-right number-plus bg_change" href="javascript:;"></a>
+                                    <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
+                                    <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
+                                </span>
+                          </span>
                     </li>
                     {% end %}
                     {% end %}
@@ -327,7 +339,7 @@
                 <p class="intro font14 m-b5">哈哈哈哈哈哈</p>
             </div>
             <div class="modal-footer">
-                <a href="javascript:;" class="click-great text-center font18 text-grey3">赞一个</a>
+                <a href="javascript:;" class="click-great text-center font16 text-grey3"><em></em>赞一个</a>
             </div>
         </div>
     </div>
