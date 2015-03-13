@@ -188,7 +188,7 @@
                                 {% if dry_fruit.charge_types %}
                                 <span class="pull-left text-bgcolor p0 charge-type line34 height34 forbid_click" data-id="{{dry_fruit.charge_types[0].id}}">
                                     {{dry_fruit.charge_types[0].price}}元/{{dry_fruit.charge_types[0].num}}
-                                    <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
+                                    <span data-id="{{dry_fruit.charge_types[0].unit}}" class="chargeUnit"></span>
                                 </span>
                                 {% end %}
                                 <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
