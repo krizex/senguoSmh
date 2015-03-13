@@ -2,12 +2,17 @@ $(document).ready(function(){
     var sex_id=$('.user-sex').data('id');
     sex($('.user-sex'),sex_id);
     //收货地址add
-    $('.address-manage').hammer().on('tap',function(){
+    $(document).on('mouseup','.address-manage',function(e){
         var $this=$(this);
-        $('.address-list ').toggle();
+        var forbid_click=$this.find('.forbid_click');
+        if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
+            $('.address-list ').toggle();
+            $this.find('.add-address ').toggle();
+        }
+
 });
     //收货地址编辑
-    $('body').on('click','.edit-address',function(){
+    $(document).on('click','.edit-address',function(){
         var $this=$(this);
         var parent=$this.parents('.address-item');
         item_id=parent.index();
