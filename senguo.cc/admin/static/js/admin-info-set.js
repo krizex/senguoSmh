@@ -1,5 +1,6 @@
 $(document).ready(function(){
     var code=$('#shop_code').val();
+    var shop_name=$('#shop_name').text();
     if(code=='not set'||code=='') {
         $('.notice_word').show();
         $('.code_set').show();
@@ -18,7 +19,9 @@ $(document).ready(function(){
     }
     //二维码下载 
     $(document).on('click','.download_img',function(){
-	var filename = 'baidufe_' + (new Date()).getTime() + '.' + type;
+	//var filename = shop_name+'_' +code+ (new Date()).getTime() + '.' + type;
+             var filename = shop_name+'_' +code+ '.' + type;
+             console.log(filename);
     	saveFile(imgData,filename);
     });
    //信息转换显示

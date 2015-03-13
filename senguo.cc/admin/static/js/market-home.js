@@ -62,7 +62,7 @@ $(document).ready(function(){
     var notice_con=window.dataObj.notices;
     if(typeof(notice_con)!='undefined'){
         $.ajaxSetup({'async':false});
-        $.getItem('/static/items/customer/notice-item.html?v=2015-0209',function(data){
+        $.getItem('/static/items/customer/notice-item.html?v=2015-0309',function(data){
             notice_item=data;
             for(var i=0;i<notice_con.length;i++){
                 var summary=notice_con[i][0];

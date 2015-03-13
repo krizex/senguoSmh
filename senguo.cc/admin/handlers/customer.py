@@ -243,6 +243,8 @@ class Market(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self, shop_code):
         w_follow = ''
+        fruits=''
+        dry_fruits=''
         shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
         if not shop:
             return self.send_error(404)
