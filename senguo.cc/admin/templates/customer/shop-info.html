@@ -70,7 +70,7 @@
 <div class="shop-box bg-white clearfix">
     <p class="title font14 clearfix">店铺信息：</p>
     <ul class="shop-info text-grey9 font14">
-        <li class="set-w100-fle">位置：{{address}}</li>
+        <li class="set-w100-fle"><span class="pull-left">店铺地址：</span><span class="pull-left set-inl-blo w8">{{address}}</span></li>
         <li class="set-w100-fle">配送区域：{{shop.deliver_area or '无'}}<!--<em class="area-icon set-inl-blo pull-right"></em>--></li>
         <li class="set-w100-fle">联系电话：{{shop.shop_phone or '无'}}<a href="tel:{{shop.shop_phone }}" class="phone_icon"><em class="phone-icon set-inl-blo bg_change"></em></a></li>
         <li class="set-w100-fle"><span class="pull-left">店铺简介：</span><span class="pull-left set-inl-blo w8">{{shop.shop_intro or '无'}}</span></li>

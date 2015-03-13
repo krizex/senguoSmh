@@ -181,14 +181,12 @@ $(document).ready(function(){
                                 case 'JPEG':
                                 case 'png':
                                 case 'PNG':
-                                case 'gif':
-                                case 'GIF':
                                 case 'bmp':
                                 case 'BMP':
                                 case 'svg':
                                     break;
                                 default:
-                                    alert("无效的文件格式！");
+                                     alert("无效的文件格式！图片支持格式:png,jpg,jpeg,bmp,svg");
                                     $(this).uploadifive('cancel', file);
                                     break;
                             }
@@ -340,14 +338,12 @@ $(document).ready(function(){
                         case 'JPEG':
                         case 'png':
                         case 'PNG':
-                        case 'gif':
-                        case 'GIF':
                         case 'bmp':
                         case 'BMP':
                         case 'svg':
                             break;
                         default:
-                            alert("无效的文件格式！");
+                            alert("无效的文件格式！图片支持格式:png,jpg,jpeg,bmp,svg");
                             $(this).uploadifive('cancel', file);
                             break;
                     }
@@ -623,7 +619,7 @@ function addEditFruit(target,action){
     if(!regNumber.test(priority)){return alert('优先级只能为整数！');}
     if(priority<1||priority>5){return alert('优先级只能为1-5！');}
     if(intro.length>100) {return alert('商品简介请不要超过100个字！');}
-    if(name.length>20) {return alert('商品简介请不要超过20个字！');}
+    if(name.length>12) {return alert('商品简介请不要超过12个字！');}
     var data={
         //fruit_type_id:parseInt(fruit_type_id),
         name:name,

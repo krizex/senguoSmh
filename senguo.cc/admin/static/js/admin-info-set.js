@@ -14,9 +14,12 @@ $(document).ready(function(){
 	//从canvas导出图片
 	var type = 'png';
 	var canvas=$('#shop_link_img canvas')[0];
+            //$('#shop_link_img').append(convertCanvasToImage(canvas));
+            //$('#shop_link_img canvas').hide();
 	imgData=canvas.toDataURL(type);
 	imgData = imgData.replace(_fixType(type),'image/octet-stream');
     }
+   
     //二维码下载 
     $(document).on('click','.download_img',function(){
 	//var filename = shop_name+'_' +code+ (new Date()).getTime() + '.' + type;
@@ -127,6 +130,11 @@ var _fixType = function(type) {
     var r = type.match(/png|jpeg|bmp|gif/)[0];
     return 'image/' + r;
 };
+ function convertCanvasToImage(canvas) {
+        var image = new Image();
+        image.src = canvas.toDataURL("image/png");
+        return image;
+    }
 //在本地进行文件保存
 var saveFile = function(data, filename){
     var save_link = document.createElementNS('http://www.w3.org/1999/xhtml', 'a');
