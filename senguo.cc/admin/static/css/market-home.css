@@ -27,9 +27,9 @@
 .arrow{display:inline-block;position:absolute;bottom:3px;right:6px;width:0;height:0;border-style:solid;border-width:30px 14px 15px;transform:rotate(36deg);-ms-transform:rotate(38deg);-moz-transform:rotate(38deg);-webkit-transform:rotate(38deg);-o-transform:rotate(38deg); }
 .show-box{padding-right:35px;height:90px;}
 .sale{height:26px;line-height:26px;width:65px;overflow:hidden;}
-.click-great{background-size:20px;}
-.click-great em{display:inline-block;width:12px;height:12px;background:url('../svg/heart@2x.png') no-repeat 0 0;background-size:24px;}
-.clicked em{background:url('../svg/heart@2x.png') no-repeat -12px 0;background-size:24px;}
+.click-great{background-size:20px;position:relative;}
+.click-great em{display:inline-block;position:absolute;top:12px;width:16px;height:16px;background:url('../svg/heart.svg') no-repeat 0 0;background-size:32px;}
+.clicked em{background-position:-16px 0 !important;}
 .shape{position:absolute;display:inline-block;width:140px;height:220px;right:11px;top:-50px;transform:rotate(36deg);-ms-transform:rotate(36deg);-moz-transform:rotate(38deg);-webkit-transform:rotate(38deg);-o-transform:rotate(38deg);}
 .pr35{padding-right:35px;}
 .mr40{margin-right:-35px !important;}
@@ -77,7 +77,7 @@
 
 .top-title{max-width:800px;width:100%;z-index:100;}
 .top-title .inner{position:relative;height:42px;line-height:42px;}
-.top-title .tit{left:0;font-weight:bold;}
+.top-title .tit{left:0;}
 .top-title .tit .classify{width:100%;}
 .top-title .tit .icon{width:24px;height:24px;font-style:normal;position:relative;margin-left:5px;}
 .top-title .tit .up{margin-top:-10px;top:0px;}
