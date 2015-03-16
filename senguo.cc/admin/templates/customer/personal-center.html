@@ -58,10 +58,10 @@
             <span class="pull-left font14"><em class="collect-icon set-inl-blo pull-left bg_change"></em>我的收藏</span>
         </div>
         <hr/>-->
-        <div class="title clearfix address-manage">
+        <button class="title clearfix address-manage">
             <span class="pull-left font14"><em class="address-icon set-inl-blo pull-left bg_change"></em>我的地址管理</span>
-            <button  class="text-green3 pull-right add-address  m-r10  font14 forbid_click" style="display:none">+添加收货地址</button>
-        </div>
+            <a href="javascript:;" class="text-green3 pull-right add-address  m-r10  font14 forbid_click" style="display:none">+添加收货地址</a>
+        </button>
         <div class="address-list clearfix" style="display:none;">
              <ul class="list-group m-b0   clearfix">
             {% for address in current_user.addresses%}
