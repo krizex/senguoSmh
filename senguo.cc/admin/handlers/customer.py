@@ -385,6 +385,8 @@ class Cart(CustomerBaseHandler):
         cart_f, cart_m = self.read_cart(shop_id)
 
         periods = [x for x in shop.config.periods if x.active == 1]
+        # for period in periods:
+        #     period.start_time = (str(period.start_time))[0:-]
         return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
                            periods=periods, context=dict(subpage='cart'))
 

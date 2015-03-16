@@ -224,7 +224,7 @@ class ShopManage(SuperBaseHandler):
             # mobile = '13163263783'
             # mobile = account_info.phone
             if mobile is not None:
-                message_fail_content = '用户：{0}，您好，您在森果平台申请的店铺{1}由于{2}未通过审核，您点击右边链接，关注森果微信平台http://dwz.cn/CSZiH，了解更多平台动态，再行申请。'.format(message_name,message_shop_name,message_reason)
+                message_fail_content = '尊敬的{0}，您好，您在森果平台申请的店铺{1}由于{2}未通过审核，您点击右边链接，关注森果微信平台http://dwz.cn/CSZiH，了解更多平台动态，再行申请。'.format(message_name,message_shop_name,message_reason)
                 postdata = dict(account='cf_senguocc',
                     password='sg201404',
                     mobile=mobile,
