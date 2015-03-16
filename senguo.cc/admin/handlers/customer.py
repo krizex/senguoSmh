@@ -7,6 +7,7 @@ from sqlalchemy import desc, and_, or_
 import qiniu
 import random
 import base64
+import json
 
 class Access(CustomerBaseHandler):
     def initialize(self, action):
@@ -260,19 +261,17 @@ class Market(CustomerBaseHandler):
             self.session.commit()
         cart_f, cart_m = self.read_cart(shop.id)
         cart_count = len(cart_f) + len(cart_m)
-        cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
-        cart_ms = [(key, cart_m[key]['num']) for key in cart_m]
-        fruits = [x for x in shop.fruits if x.fruit_type_id < 1000 and x.active == 1]
-        dry_fruits = [x for x in shop.fruits if x.fruit_type_id > 1000 and x.active == 1]
-        mgoods={}
-        for menu in shop.menus:
-            mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
+        # cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
+        # cart_ms = [(key, cart_m[key]['num']) for key in cart_m]
+        # fruits = [x for x in shop.fruits if x.fruit_type_id < 1000 and x.active == 1]
+        # dry_fruits = [x for x in shop.fruits if x.fruit_type_id > 1000 and x.active == 1]
+        # mgoods={}
+        # for menu in shop.menus:
+        #     mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
         notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
         self.set_cookie("cart_count", str(cart_count))
         return self.render("customer/home.html",
-                           context=dict(fruits=fruits, dry_fruits=dry_fruits, menus=shop.menus, mgoods=mgoods,
-                                        cart_count=cart_count, subpage='home', notices=notices, cart_fs=cart_fs,
-                                        cart_ms=cart_ms, shop_name=shop.shop_name,w_follow = w_follow))
+                           context=dict(cart_count=cart_count, subpage='home', notices=notices,shop_name=shop.shop_name,w_follow = w_follow))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int")
@@ -283,8 +282,42 @@ class Market(CustomerBaseHandler):
             return self.favour()
         elif action == 4:
             return self.cart_list()
+        elif action == 5:
+            return self.commodity_list()
         elif action in (2, 1, 0):  # 更新购物车
             return self.cart(action)
+
+    def commodity_list(self):
+        shop_id = int(self.get_cookie('market_shop_id'))
+        shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+        cart_f,cart_m = self.read_cart(shop.id)
+        cart_fs = {}
+        cart_ms = {}
+        cart_fs = [(key,cart_f[key]['num']) for key in cart_f]
+        cart_ms = [(key,cart_m[key]['num']) for key in cart_m]
+        if not shop:
+            return self,send_error(404)
+        fruits = []
+        dry_fruits = []
+        fruits = [x for x in shop.fruits if x.fruit_type_id < 1000 and x.active ==1]
+        dry_fruits = [x for x in shop.fruits if x.fruit_type_id >= 1000 and x.active == 1]
+
+        mgoods = {}
+        for menu in shop.menus:
+            mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
+        context = dict(menus = shop.menus, 
+                cart_fs = cart_fs,cart_ms = cart_ms ,fruits = fruits ,mgoods = mgoods,dry_fruits = dry_fruits)
+        #cart_fs = json.dumps(cart_fs)
+        data = []
+        for  fruit in fruits:
+             data.append(fruit)
+        data.append(dry_fruits)
+        return self.send_success()
+
+
+
+
+
 
 
     @CustomerBaseHandler.check_arguments("charge_type_id:int", "menu_type:int")  # menu_type(0：fruit，1：menu)

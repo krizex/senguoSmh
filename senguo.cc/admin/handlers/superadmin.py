@@ -224,9 +224,7 @@ class ShopManage(SuperBaseHandler):
             # mobile = '13163263783'
             # mobile = account_info.phone
             if mobile is not None:
-                message_fail_content = '用户：{0}，您好，您在森果平台申请的店铺{1}由于{2}未通过审核，\
-                您点击右边链接，关注森果微信平台http://dwz.cn/CSZiH，了解更多平台动态，再行\
-                申请。'.format(message_name,message_shop_name,message_reason)
+                message_fail_content = '用户：{0}，您好，您在森果平台申请的店铺{1}由于{2}未通过审核，您点击右边链接，关注森果微信平台http://dwz.cn/CSZiH，了解更多平台动态，再行申请。'.format(message_name,message_shop_name,message_reason)
                 postdata = dict(account='cf_senguocc',
                     password='sg201404',
                     mobile=mobile,
@@ -293,8 +291,7 @@ class ShopManage(SuperBaseHandler):
             print(mobile)
             if mobile is not None:
 
-                message_content = '用户：{0}，您好，您在森果平台申请的店铺{1}已经通过审核，点击链接查看使\
-                用教程 http://dwz.cn/CSY6L'.format(message_name,message_shop_name)
+                message_content ='尊敬的{0}，您好，您在森果平台申请的店铺{1}已经通过审核，点击链接查看使用教程 http://dwz.cn/CSY6L'.format(message_name,message_shop_name)
 
                 postdata = dict(account='cf_senguocc',
                     password='sg201404',
@@ -593,7 +590,7 @@ class ShopStatic(SuperBaseHandler):
         # 日订单数，日总订单金额
         s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
             filter(models.Order.create_date >= start_date,
-                   models.Order.create_date <= end_date).\
+                   models.Order.create_date <= end_date,models.Order.status !=0).\
             group_by(func.year(models.Order.create_date),
                      func.month(models.Order.create_date),
                      func.day(models.Order.create_date)).\
@@ -601,7 +598,7 @@ class ShopStatic(SuperBaseHandler):
 
         # 总订单数
         total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
-            filter(models.Order.create_date <= end_date).all()
+            filter(models.Order.create_date <= end_date,models.Order.status != 0).all()
         total = list(total[0])
 
         data = []

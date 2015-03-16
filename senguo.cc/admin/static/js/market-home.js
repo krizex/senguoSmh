@@ -1,4 +1,6 @@
 $(document).ready(function(){
+    //get infomations of goods and push into html
+     goodsList();
     //sale>9999
     $('.sale').each(function(){
         var $this=$(this);
@@ -93,7 +95,7 @@ $(document).ready(function(){
         });
     }
     //公告详情
-    $('body').on('click','.notice-item',function(){
+    $(document).on('click','.notice-item',function(){
         var $this=$(this);
         var detail=$this.find('.notice-detail').val();
         $('.detail-box').modal('show');
@@ -107,12 +109,12 @@ $(document).ready(function(){
         tagText($this,id);
     });
     //计价方式折叠/显示
-    $('.toggle').each(function(){
+    $('.toggle').each(function(){      
         var $this=$(this);
-        var parent=$this.parents('.goods-list-item');
-        var charge_list=$this.parents('.goods-list-item').find('.charge-list');
-        var forbid_click=$this.parents('.goods-list-item').find('.forbid_click');
         $this.mouseup(function(e){
+            var parent=$this.parents('.goods-list-item');
+            var charge_list=$this.parents('.goods-list-item').find('.charge-list');
+            var forbid_click=$this.parents('.goods-list-item').find('.forbid_click');
             if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
                 parent.find('.toggle_icon').toggleClass('arrow');
                 parent.toggleClass('pr35');
@@ -122,7 +124,7 @@ $(document).ready(function(){
         })
 
     });
-    $('.back-shape').on('click',function(){
+    $(document).on('click','.back-shape',function(){
         var $this=$(this);
         var parent=$this.parents('.goods-list-item');
         var charge_list=$this.parents('.goods-list-item').find('.charge-list');
@@ -132,27 +134,33 @@ $(document).ready(function(){
         charge_list.slideToggle(50);
     });
     //查看大图
-    $('.check-lg-img').each(function(){
-        var $this=$(this);
-        var parent=$this.parents('.goods-list-item');
-        var type=$this.parents('.goods-list-item').data('type');
-        var id=$this.parents('.goods-list-item').data('id');
-        var img_url=$this.find('.img').attr('src');
-        var fruit_name=parent.find('.fruit-name').text();
-        var fruit_intro=parent.find('.fruit_intro').val();
-        $this.on('click',function(){
+    $(document).on('click','.check-lg-img',function(){
+            var $this=$(this);
+            var parent=$this.parents('.goods-list-item');
+            var type=$this.parents('.goods-list-item').data('type');
+            var id=$this.parents('.goods-list-item').data('id');
+            var img_url=$this.find('.img').attr('src');
+            var img_type=$this.find('.img').attr('data-img');
+            var fruit_name=parent.find('.fruit-name').text();
+            var fruit_intro=parent.find('.fruit_intro').val();
             var large_box=$('.large-img-box');
+            var if_clicked=$this.parents('.goods-list-item').find('.great-number em').attr('data-id');
+            if(if_clicked=='2') {$('.click-great').addClass('clicked')}
+            else $('.click-great').removeClass('clicked');
+            if(img_type!='') {
+                img_url=img_url.replace('w/160/h/160','w/560/h/560');
+            }
             large_box.modal('show').attr({'data-id':id,'data-type':type});
             large_box.find('#largeImg').attr({'src':img_url});
             large_box.find('.modal-title').text(fruit_name);
             large_box.find('.intro').text(fruit_intro);
-        })
     });
     //点赞
     $('.click-great').hammer().on('tap',function(){
+        var $this=$(this);
         var large_box=$('.large-img-box');
         var type=large_box.attr('data-type');
-        var id=large_box.attr('data-id');
+        var id=large_box.attr('data-id'); 
         great(type,id);
     });
     //首次添加商品
@@ -208,6 +216,23 @@ $(document).ready(function(){
     });
 });
 var notice_item;
+var goodsList=function(){
+    var url='';
+    var action = 5;
+    var args={
+        action:action,
+    };
+    $.postJson(url,args,function(res){
+        if(res.success)
+        {
+            var frtuis=res.fruits;
+            var frtuis=res.dry_fruits;
+            var frtuis=res.mgoods;
+        }
+        else alert(res.error_text);
+        },
+        function(){alert('网络错误')})
+};
 
 function cartNum(cart_ms,list){
     var item_list=$(list);
@@ -217,13 +242,20 @@ function cartNum(cart_ms,list){
             for(var j=0;j<item.length;j++){
                 var charge = item.eq(j);
                 var id = charge.data('id');
-                var add = charge.siblings('.to-add');
-                var change = charge.siblings('.number-change');
-                var input = change.find('.number-input');
+                var add = charge.siblings('.num_box').find('.to-add');
+                var change = charge.siblings('.num_box').find('.number-change');
+                var input = change.find('.number-input'); 
                 if (id == cart_ms[key][0]) {
                     add.removeClass('show');
                     change.removeClass('hidden');
                     input.val(cart_ms[key][1]);
+                    if(charge.hasClass('more_charge')) {
+                        var parent=charge.parents('.goods-list-item');
+                        parent.find('.charge-list').show();
+                        parent.removeClass('pr35');
+                        parent.find('.back-shape').hide();
+                        parent.find('.toggle_icon').removeClass('arrow');
+                    }
                 }
             }
         }
@@ -283,7 +315,7 @@ function addCart(link){
         var fruit=fruits_list.eq(i).find('.number-input');
         for(var j=0;j<fruit.length;j++){
             var num=fruit.eq(j).val().trim();
-            var id=fruit.eq(j).parents('.number-change').siblings('.charge-type').data('id');
+            var id=fruit.eq(j).parents('.number-change').parents('.num_box').siblings('.charge-type').data('id');
             if(num!=''&&num!=0){fruits[id]=Int(num)}
         }
     }
@@ -291,7 +323,7 @@ function addCart(link){
         var mgood=mgoods_list.eq(i).find('.number-input');
         for(var j=0;j<mgood.length;j++){
             var num=mgood.eq(j).val().trim();
-            var id=mgood.eq(j).parents('.number-change').siblings('.charge-type').data('id');
+            var id=mgood.eq(j).parents('.number-change').parents('.num_box').siblings('.charge-type').data('id');
             if(num!=''&&num!=0){mgoods[id]=Int(num)}
         }
     }
@@ -333,8 +365,9 @@ function great(type,id){
                     var goods_id=$this.data('id');
                     if(type==type&&goods_id==id){
                         var num=$this.find('.great').text();
-                        $this.find('.great').text(Int(num)+1).siblings('em').addClass('red-heart');
+                        $this.find('.great').text(Int(num)+1).siblings('em').addClass('red-heart').attr({'data-id':'2'});
                     }
+                    $('.click-great').addClass('clicked');
                 });
                 $('.large-img-box').modal('hide');
             }

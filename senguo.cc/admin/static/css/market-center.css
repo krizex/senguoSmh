@@ -30,3 +30,5 @@
 
 hr{margin-top:0px !important;;margin-bottom:0px !important;margin-left:24px;}
 .height20{height:20px;line-height:20px;}
+.add-address{background:#fff;border:1px solid #fff;}
+.add-address:focus{outline:none;}

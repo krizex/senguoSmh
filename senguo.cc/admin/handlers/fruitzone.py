@@ -209,6 +209,7 @@ class ShopApply(FruitzoneBaseHandler):
 
         if self._action == "apply":
             if not check_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, code=self.args["code"]):
+                print('check_msg_token' + self.current_user.accountinfo.wx_unionid)
                 return self.send_fail(error_text="验证码过期或者不正确")  #
             # 这种检查方式效率比较低
             if len(self.current_user.shops) >= self.MAX_APPLY_COUNT:
@@ -479,6 +480,7 @@ class PhoneVerify(_AccountBaseHandler):
     @FruitzoneBaseHandler.check_arguments("phone:str")
     def handle_gencode_shop_apply(self):
         gen_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, phone=self.args["phone"])
+        print("handle_gencode_shop_apply" + self.current_user.accountinfo.wx_unionid)
         return self.send_success()
 
 class SystemPurchase(FruitzoneBaseHandler):

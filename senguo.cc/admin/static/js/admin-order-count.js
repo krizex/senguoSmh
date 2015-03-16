@@ -438,7 +438,8 @@ function getCount(action,page,type,options,myChart){
     for(var date in data){
         var day=date;
         var num=data[date];
-        options.xAxis[0].data.push(day+'号');
+        if(action=='order_time'||action=='recive_time') options.xAxis[0].data.push(day+'点');
+        else options.xAxis[0].data.push(day+'号');
         options.series[0].data.push(num);
 
     }
