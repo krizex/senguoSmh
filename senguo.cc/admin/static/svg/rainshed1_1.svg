@@ -1,24 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 40 42" enable-background="new 0 0 40 42" xml:space="preserve">
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="40px" height="42px" viewBox="0 0 40 42" enable-background="new 0 0 40 42" xml:space="preserve">
 <g>
-	<path fill="#33CC66" d="M10,41.8c-5.4,0-9.8-5.3-9.8-11.8S4.6,18.2,10,18.2s9.8,5.3,9.8,11.8S15.4,41.8,10,41.8z"/>
-	<path fill="#42B364" d="M10,18.5c5.2,0,9.5,5.2,9.5,11.5S15.2,41.5,10,41.5S0.5,36.3,0.5,30S4.8,18.5,10,18.5 M10,18
-		C4.5,18,0,23.4,0,30s4.5,12,10,12s10-5.4,10-12S15.5,18,10,18L10,18z"/>
+	<path fill-rule="evenodd" clip-rule="evenodd" fill="#33CC66" stroke="#42B364" stroke-width="0.2286" stroke-miterlimit="10" d="
+		M20.113,29.841C20.028,36.558,15.571,42,10.07,42c-5.5,0-9.958-5.441-10.042-12.158L0,0.028L20.056,0L20.113,29.841z"/>
+	<path fill-rule="evenodd" clip-rule="evenodd" fill="#FEFEFE" stroke="#42B364" stroke-width="0.2286" stroke-miterlimit="10" d="
+		M40,29.841C39.915,36.558,35.458,42,29.957,42c-5.5,0-9.957-5.441-10.042-12.158L19.887,0.028L39.971,0L40,29.841z"/>
 </g>
-<g>
-	<rect x="0.2" y="0.2" fill="#33CC66" width="19.5" height="29.5"/>
-	<path fill="#42B364" d="M19.5,0.5v29h-19v-29H19.5 M20,0H0v30h20V0L20,0z"/>
-</g>
-<rect x="0.5" fill="#33CC66" width="19" height="30.2"/>
-<g>
-	<path fill="#FFFFFF" d="M30,41.8c-5.4,0-9.8-5.3-9.8-11.8s4.4-11.8,9.8-11.8s9.8,5.3,9.8,11.8S35.4,41.8,30,41.8z"/>
-	<path fill="#42B364" d="M30,18.5c5.2,0,9.5,5.2,9.5,11.5S35.2,41.5,30,41.5s-9.5-5.2-9.5-11.5S24.8,18.5,30,18.5 M30,18
-		c-5.5,0-10,5.4-10,12s4.5,12,10,12s10-5.4,10-12S35.5,18,30,18L30,18z"/>
-</g>
-<g>
-	<rect x="20.2" y="0.2" fill="#BEFF97" width="19.5" height="29.5"/>
-	<path fill="#42B364" d="M39.5,0.5v29h-19v-29H39.5 M40,0H20v30h20V0L40,0z"/>
-</g>
-<rect x="20.5" fill="#FFFFFF" width="19" height="30.2"/>
+<text transform="matrix(1 0 0 1 7.1079 13.5215)" opacity="0" font-family="'MyriadPro-Regular'" font-size="12"></text>
 </svg>

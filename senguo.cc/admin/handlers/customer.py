@@ -7,6 +7,7 @@ from sqlalchemy import desc, and_, or_
 import qiniu
 import random
 import base64
+import json
 
 class Access(CustomerBaseHandler):
     def initialize(self, action):
@@ -296,8 +297,8 @@ class Market(CustomerBaseHandler):
         cart_ms = [(key,cart_m[key]['num']) for key in cart_m]
         if not shop:
             return self,send_error(404)
-        fruits = {}
-        dry_fruits = {}
+        fruits = []
+        dry_fruits = []
         fruits = [x for x in shop.fruits if x.fruit_type_id < 1000 and x.active ==1]
         dry_fruits = [x for x in shop.fruits if x.fruit_type_id >= 1000 and x.active == 1]
 
@@ -305,9 +306,13 @@ class Market(CustomerBaseHandler):
         for menu in shop.menus:
             mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
         context = dict(menus = shop.menus, 
-                cart_fs = cart_fs,cart_ms = cart_ms ,shop_name = shop.shop_name)
-
-        self.send_success(context = context,fruits = fruits , mgoods = mgoods ,dry_fruits = dry_fruits)
+                cart_fs = cart_fs,cart_ms = cart_ms ,fruits = fruits ,mgoods = mgoods,dry_fruits = dry_fruits)
+        #cart_fs = json.dumps(cart_fs)
+        data = []
+        for  fruit in fruits:
+             data.append(fruit)
+        data.append(dry_fruits)
+        return self.send_success()
 
 
 

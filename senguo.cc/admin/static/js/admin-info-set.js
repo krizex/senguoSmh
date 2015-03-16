@@ -1,6 +1,5 @@
 $(document).ready(function(){
     var code=$('#shop_code').val();
-    var shop_name=$('#shop_name').text();
     if(code=='not set'||code=='') {
         $('.notice_word').show();
         $('.code_set').show();
@@ -14,18 +13,21 @@ $(document).ready(function(){
 	//从canvas导出图片
 	var type = 'png';
 	var canvas=$('#shop_link_img canvas')[0];
-            //$('#shop_link_img').append(convertCanvasToImage(canvas));
-            //$('#shop_link_img canvas').hide();
-	imgData=canvas.toDataURL(type);
-	imgData = imgData.replace(_fixType(type),'image/octet-stream');
+              $('#shop_link_img').append(convertCanvasToImage(canvas));
+              $('#shop_link_img canvas').remove();
+              imgData= $('#shop_link_img img').attr('src');
+               //imgData=canvas.toDataURL(type);
+	//imgData = imgData.replace(_fixType(type),'image/octet-stream');
     }
    
     //二维码下载 
     $(document).on('click','.download_img',function(){
-	//var filename = shop_name+'_' +code+ (new Date()).getTime() + '.' + type;
+             var type = 'png';
+             var code=$('#shop_code').val();
+             var shop_name=$('#shop_name').text();
              var filename = shop_name+'_' +code+ '.' + type;
              console.log(filename);
-    	saveFile(imgData,filename);
+             saveFile(imgData,filename);
     });
    //信息转换显示
     $('.area-choose-list li').each(function(){

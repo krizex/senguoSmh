@@ -1,4 +1,6 @@
 $(document).ready(function(){
+    //get infomations of goods and push into html
+     goodsList();
     //sale>9999
     $('.sale').each(function(){
         var $this=$(this);
@@ -214,6 +216,23 @@ $(document).ready(function(){
     });
 });
 var notice_item;
+var goodsList=function(){
+    var url='';
+    var action = 5;
+    var args={
+        action:action,
+    };
+    $.postJson(url,args,function(res){
+        if(res.success)
+        {
+            var frtuis=res.fruits;
+            var frtuis=res.dry_fruits;
+            var frtuis=res.mgoods;
+        }
+        else alert(res.error_text);
+        },
+        function(){alert('网络错误')})
+};
 
 function cartNum(cart_ms,list){
     var item_list=$(list);
