@@ -137,7 +137,7 @@
                         <a href="javascript:;" class="text-grey clearfix">
                             <span class="text-grey3 pull-left set-inl-blo period_name">{{period.name}}</span>
                              <span class="pull-left">
-                                 {{period.start_time}} - <span class="intime_endtime">{{period.end_time}}</span>
+                                 <span class="check-time">{{period.start_time.hour}}</span>:  <span class="check-time">{{period.start_time.minute}}</span>-<span class="intime_endtime"> <span class="check-time">{{period.end_time.hour}}</span>: <span class="check-time">{{period.end_time.minute}}</span></span>
                              </span>
                             <input type="hidden" class="intime_startHour" value="{{period.start_time.hour}}"/>
                             <input type="hidden" class="intime_startMin" value="{{period.start_time.minute}}"/>

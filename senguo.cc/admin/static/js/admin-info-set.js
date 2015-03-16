@@ -26,7 +26,6 @@ $(document).ready(function(){
              var code=$('#shop_code').val();
              var shop_name=$('#shop_name').text();
              var filename = shop_name+'_' +code+ '.' + type;
-             console.log(filename);
              saveFile(imgData,filename);
     });
    //信息转换显示
