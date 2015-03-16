@@ -40,7 +40,7 @@
 .limit_tag{background:url('../svg/icon_list_1.svg') no-repeat -68px -128px;width:52px;height:52px;right:2px;bottom:3px;background-size:120px 180px;}
 
 .large-img-box .close{font-size:12px;opacity:1;padding:6px 8px;margin-right:0px;margin-top:0px;}
-.large-img-box img{width:280px;height:280px;margin-bottom:10px;}
+.large-img-box img{width:280px;height:280px;}
 .large-img-box .click-great{display:inline-block;width:100%;padding:10px;}
 .large-img-box .modal-footer{padding:0px;}
 
@@ -96,5 +96,5 @@
 .focus-box .modal-body p{padding-top:50px;}
 .focus-box  .focus-btn{width:60%;}
 .fruit-name{display:inline-block;width:120px;overflow:hidden;height:26px;line-height:26px;}
-.add-address{background:#fff;border:1px solid #fff;}
+
 

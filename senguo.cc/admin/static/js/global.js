@@ -48,7 +48,7 @@ function percentNum(num,num2){
 }
 
 function mathFloat(target){
-    return Math.round(target*1000)/1000;
+    return Math.round(target*100)/100;
 }
 
 function isEmptyObj(obj){
