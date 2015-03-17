@@ -7,11 +7,15 @@ import handlers.infowall
 from dal import models
 #todo:handlers太大会不会影响性能？
 
-sub_handlers = []
+# sub_handlers = ["^e.senguo.cc",
 
-e_handlers = [r"^e.senguo.cc",
+#     [(r"/m", handlers.superadmin.Official),
+#     ]
 
-    [
+# ]
+
+
+handlers = [
     (r"/customer/login", handlers.customer.Access, {"action":"login"}, "customerLogin"),
     (r"/customer/oauth", handlers.customer.Access, {"action":"oauth"}, "customerOauth"),
     (r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
@@ -26,63 +30,6 @@ e_handlers = [r"^e.senguo.cc",
     (r"/customer/shopProfile", handlers.customer.ShopProfile, {}, "customerShopProfile"),
     (r"/customer/comment", handlers.customer.Comment, {}, "customerComment"),
     (r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
-    ]
-
-]
-
-m_handlers = [r"^m.senguo.cc",
-    [
-    (r"/m", handlers.superadmin.Official),
-    (r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
-    (r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
-    (r"/staff/logout", handlers.staff.Access, {"action":"logout"}, "staffLogout"),
-    (r"/staff/register", handlers.staff.Access, {"action":"register"}, "staffRegister"),
-    (r"/staff", handlers.staff.Home, {}, "staffHome"),
-    (r"/staff/order", handlers.staff.Order, {}, "staffOrder"),
-    (r"/staff/hire/(\d+)", handlers.staff.Hire, {}, "staffHire"),
-    # (r"/staff/...")
-    (r"/fruitzone/shop/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),
-    
-    ]
-]
-
-b_handlers = [r"^b.senguo.cc",
-    [
-    (r"/admin",handlers.admin.Home, {},  "adminHome"),
-    (r"/admin/login", handlers.admin.Access,{"action":"login"}, "adminLogin"),
-    (r"/admin/oauth", handlers.admin.Access, {"action":"oauth"}, "adminOauth"),
-    (r"/admin/logout", handlers.admin.Access, {"action":"logout"}, "adminLogout"),
-    (r"/admin/register", handlers.admin.Access, {"action":"register"}, "adminRegister"),
-    # (r"/admin", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
-    (r"/admin/ostatic", handlers.admin.OrderStatic, {}, "adminOrderStatic"),
-    (r"/admin/fstatic", handlers.admin.FollowerStatic, {}, "adminFollowerStatic"),
-    (r"/admin/order", handlers.admin.Order, {}, "adminOrder"),
-    (r"/admin/comment", handlers.admin.Comment, {}, "adminComment"),
-    (r"/admin/shelf", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
-    (r"/admin/follower", handlers.admin.Follower, {}, "adminStaffFollower"),
-    (r"/admin/staff", handlers.admin.Staff, {}, "adminStaffJH"),
-    (r"/admin/config", handlers.admin.Config, {}, "adminConfig"),
-    (r"/admin/config/shop", handlers.admin.ShopConfig, {}, "adminShopConfig"),
-    (r"/admin/searchorder", handlers.admin.SearchOrder, {}, "adminSearchOrder"),
-    # (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
-    # (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
-    # (r"/admin/finance", handlers.admin.Finance, {}, "adminFinance"),
-    # (r"/admin/settings/profile", handlers.admin.Settings,
-    #  {"action":"profile"}, "adminSettingsProfile")
-    
-    ]
-]
-
-sub_handlers.append(e_handlers)
-sub_handlers.append(m_handlers)
-sub_handlers.append(b_handlers)
-
-
-
-
-
-handlers = [
-   
     (r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
 
     (r"/super/oauth", handlers.superadmin.Access,{
@@ -147,17 +94,44 @@ handlers = [
     #微官网-----待删除
     # (r"/m", handlers.superadmin.Official),
 
-   
+    (r"/admin/login", handlers.admin.Access,{"action":"login"}, "adminLogin"),
+    (r"/admin/oauth", handlers.admin.Access, {"action":"oauth"}, "adminOauth"),
+    (r"/admin/logout", handlers.admin.Access, {"action":"logout"}, "adminLogout"),
+    (r"/admin/register", handlers.admin.Access, {"action":"register"}, "adminRegister"),
+    (r"/admin", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
+    (r"/admin/ostatic", handlers.admin.OrderStatic, {}, "adminOrderStatic"),
+    (r"/admin/fstatic", handlers.admin.FollowerStatic, {}, "adminFollowerStatic"),
+    (r"/admin/order", handlers.admin.Order, {}, "adminOrder"),
+    (r"/admin/comment", handlers.admin.Comment, {}, "adminComment"),
+    (r"/admin/shelf", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
+    (r"/admin/follower", handlers.admin.Follower, {}, "adminStaffFollower"),
+    (r"/admin/staff", handlers.admin.Staff, {}, "adminStaffJH"),
+    (r"/admin/config", handlers.admin.Config, {}, "adminConfig"),
+    (r"/admin/config/shop", handlers.admin.ShopConfig, {}, "adminShopConfig"),
+    (r"/admin/searchorder", handlers.admin.SearchOrder, {}, "adminSearchOrder"),
+
+    # (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
+    # (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
+    # (r"/admin/finance", handlers.admin.Finance, {}, "adminFinance"),
+    # (r"/admin/settings/profile", handlers.admin.Settings,
+    #  {"action":"profile"}, "adminSettingsProfile")
+    (r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
+    (r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
+    (r"/staff/logout", handlers.staff.Access, {"action":"logout"}, "staffLogout"),
+    (r"/staff/register", handlers.staff.Access, {"action":"register"}, "staffRegister"),
+    (r"/staff", handlers.staff.Home, {}, "staffHome"),
+    (r"/staff/order", handlers.staff.Order, {}, "staffOrder"),
+    (r"/staff/hire/(\d+)", handlers.staff.Hire, {}, "staffHire"),
+    # (r"/staff/...")
 
     # 水果圈子
 
     # 主页
-    (r"/fruitzone", handlers.fruitzone.Home, {}, "fruitzoneHome"),
     (r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次
     (r"/fruitzone", handlers.fruitzone.Home, {}, "fruitzoneHome"),  # 匹配'\' 0~1次
     (r"/fruitzone/admin/home", handlers.fruitzone.AdminHome, {}, "fruitzoneAdminHome"),
     (r"/fruitzone/admin/profile", handlers.fruitzone.AdminProfile, {}, "fruitzoneAdminProfile"),
-    
+    (r"/fruitzone/shop/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),
     (r"/fruitzone/shop/apply/addImg", handlers.fruitzone.ShopApplyImg, {}, "fruitzoneShopApplyAddImg"),#增加的功能：申请店铺时支持图片上传
     (r"/fruitzone/shop/reApply", handlers.fruitzone.ShopApply, {"action": "reApply"}, "fruitzoneShopReApply"),
     (r"/fruitzone/shop/applySuccess", handlers.fruitzone.ApplySuccess, {}, "fruitzoneShopApplySuccess"),
@@ -172,7 +146,6 @@ handlers = [
 
     (r"/fruitzone/admin/shop/(\d+)", handlers.fruitzone.AdminShop, {}, "fruitzoneAdminShop"),
 
-
     (r"/fruitzone/phoneVerify", handlers.fruitzone.PhoneVerify, {
         "action":"admin"}, "fruitzonePhoneVerify"),
     (r"/customer/phoneVerify", handlers.fruitzone.PhoneVerify, {
@@ -186,8 +159,6 @@ handlers = [
     (r"/infowall/infoDetail/comment", handlers.infowall.InfoDetail, {}, "infowallInfoDetailComment"),
     (r"/infowall/infoCollect", handlers.infowall.InfoCollect, {}, "infowallInfoCollect"),
     (r"/infowall/infoIssue", handlers.infowall.InfoIssue, {}, "infowallInfoIssue"),
-
-
 
 
     (r"/fruitzone/systemPurchase/", handlers.fruitzone.SystemPurchase, {
