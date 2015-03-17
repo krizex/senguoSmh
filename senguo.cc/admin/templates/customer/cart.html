@@ -14,7 +14,7 @@
                     {% if cart_f[key]['charge_type'].fruit.img_url %}
                     <img src="" class="goods-img pull-left w15 lazy_img" data-src="{{cart_f[key]['charge_type'].fruit.img_url}}?imageView/1/w/100/h/100"/>
                     {% else %}
-                    <img src="" class="goods-img pull-left w15 lazy_img" data-src="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.gif"/>
+                    <img src="" class="goods-img pull-left w15 lazy_img" data-src="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.png?v=20150316"/>
                     {% end %}
                     <div class="goods-info pull-left font14 p010">
                         <div class="clearfix">
@@ -46,7 +46,7 @@
                     {% if cart_m[key]['mcharge_type'].mgoods.img_url %}
                     <img src="" class="goods-img pull-left w15 lazy_img" data-src="{{cart_m[key]['mcharge_type'].mgoods.img_url}}?imageView/1/w/100/h/100"/>
                     {% else %}
-                    <img src="" class="goods-img pull-left w15 lazy_img" data-src="/static/design_img/TDSG.gif"/>
+                    <img src="" class="goods-img pull-left w15 lazy_img" data-src="/static/design_img/TDSG.png?v=20150316"/>
                     {% end %}
                     <div class="goods-info pull-left font14 p010">
                         <div class="clearfix">
@@ -185,23 +185,25 @@
                     </li>
                     {% end %}
                 </ul>
-                    <div class="address-box hidden set-w100-fle font12 p bg-grey2">
-                        <p>
-                            <span class="tit set-inl-blo pull-left">姓名：</span>
-                            <input type="text" placeholder="输入收货人姓名" class="input-sty bg-white pull-left" id="receiveName"/>
-                        </p>
-                        <p>
-                            <span class="tit set-inl-blo pull-left">地址：</span>
-                            <input type="text" placeholder="输入收货人详细地址"  class="input-sty bg-white pull-left" id="receiveAddress"/>
-                        </p>
-                        <p>
-                            <span class="tit set-inl-blo pull-left">电话：</span>
-                            <input type="text" placeholder="输入收货人有效联系电话"  class="input-sty bg-white pull-left" id="receivePhone"/>
-                        </p>
-                        <div class="w200 center-block clearfix mt10">
-                            <button class="btn text-white pull-right bg-green" id="receiveAdd">确定</button>
-                            <button class="btn text-white pull-right bg-green hidden" id="receiveEdit">确定</button>
-                            <button class="btn text-white bg-greyc pull-right m-r10" id="receiveCancel">取消</button>
+                    <div class="address-box hidden set-w100-fle font12 p">
+                        <div class="bg-grey2 p_10">
+                            <p>
+                                <span class="tit set-inl-blo pull-left">姓名：</span>
+                                <input type="text" placeholder="输入收货人姓名" class="input-sty bg-white pull-left" id="receiveName"/>
+                            </p>
+                            <p>
+                                <span class="tit set-inl-blo pull-left">地址：</span>
+                                <input type="text" placeholder="输入收货人详细地址"  class="input-sty bg-white pull-left" id="receiveAddress"/>
+                            </p>
+                            <p>
+                                <span class="tit set-inl-blo pull-left">电话：</span>
+                                <input type="text" placeholder="输入收货人有效联系电话"  class="input-sty bg-white pull-left" id="receivePhone"/>
+                            </p>
+                            <div class="w200 center-block clearfix mt10">
+                                <button class="btn text-white pull-right bg-green" id="receiveAdd">确定</button>
+                                <button class="btn text-white pull-right bg-green hidden" id="receiveEdit">确定</button>
+                                <button class="btn text-white bg-greyc pull-right m-r10" id="receiveCancel">取消</button>
+                            </div>
                         </div>
                     </div>
             </div>

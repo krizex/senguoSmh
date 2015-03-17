@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
-{% block title %}【{{context['shop_name']}}】 一家不错的水果O2O店铺，快来关注吧~{% end %}
+{% block title %}【{{context['shop_name']}}】 一家不错的O2O店铺，快来关注吧~{% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/market-home.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 {% end %}
 {% block content %}
 {% set notices=context['notices']%}
+{% set menus=context['menus']%}
 {% import json%}
 <script>
     window.dataObj.notices = {% raw json.dumps(context["notices"]) %}
@@ -36,20 +37,23 @@
         </a>
     </div>
     <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle" style="display:none">
-        <li class="text-grey6 bg-white pull-left text-center" data-class="fruitPosition">水果单品</li>
-        <li class="text-grey6 bg-white pull-left text-center" data-class="dryFruitPosition">干果单品</li>
-        <li class="text-grey6 bg-white pull-left text-center" data-class=""></li>
+        <li class="text-grey6 bg-white pull-left text-center fruit_cassify" data-class="fruitPosition" style="display:none;">水果单品</li>
+        <li class="text-grey6 bg-white pull-left text-center dryfruit_classify" data-class="dryFruitPosition" style="display:none;">干果单品</li>
+        {% if menus %}
+        {% for menu in menus  %}
+        <li class="text-grey6 bg-white pull-left text-center menu_{{menu.id}}" data-class="menu{{menu.id}}">{{menu.name}}</li>
+        {% end %}
+        {% end %}
     </ul>
 </div>
-<!--<p class="text-white no-mar-btom classify-title font18 text-center bg-green" id="fruitPosition">水果单品</p>-->
-<ul class="goods-list  fruit-list fruit_goods_list">    
-</ul>
-<p class="text-white no-mar-btom classify-title font18 text-center bg-green" id="dryFruitPosition">干果单品</p>
-<ul class="goods-list fruit-list dryfruit_goods_list" >
-</ul>
-<p class="text-white no-mar-btom classify-title font18 text-center bg-green" id=""></p>
-<ul class="goods-list menu-list">
-</ul>
+<div class="goods-box">
+    <!--<p class="text-white no-mar-btom classify-title font18 text-center bg-green" id="fruitPosition">水果单品</p>-->
+    <ul class="goods-list  fruit-list fruit_goods_list">    
+    </ul>
+    <p class="text-white no-mar-btom classify-title font18 text-center bg-green dryfruit_classify" id="dryFruitPosition" style="display:none;">干果单品</p>
+    <ul class="goods-list fruit-list dryfruit_goods_list" >
+    </ul>
+</div>
 {% end %}
 {% block bottom %}
 <div class="modal fade large-img-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

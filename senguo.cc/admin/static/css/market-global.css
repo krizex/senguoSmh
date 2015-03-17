@@ -39,7 +39,7 @@ input[type=text]:focus{box-shadow:0px;border-color:#f7f7f8 !important;outline:no
 .modal-backdrop.in{filter:alpha(opacity=50);opacity:.5}
 .modal-header{min-height:16.43px;padding:15px;border-bottom:1px solid #e5e5e5;position:relative;overflow:hidden;}
 .modal-header .close{margin-top:-2px;position:absolute;top:-6px;right:0;color:inherit}
-.modal-title{margin:0;line-height:1.42857143}
+.modal-title{margin:0;line-height:1.42857143;margin-left:-10px;}
 .modal-body{position:relative;padding:15px;min-height:200px;}
 .modal-footer{padding:10px;text-align:right;}
 .modal-footer .btn+.btn{margin-bottom:0;margin-left:5px}
@@ -169,6 +169,7 @@ a:focus{border:none;background:none;outline:0;}
 .p5{padding:5px !important;}
 .p0{padding:0px !important;}
 .p05{padding:5px 0px 0px 0px !important;}
+.p_10{padding:10px!important;}
 .p10{padding:10px 0!important;}
 .pl10{padding-left:10px !important;}
 .pr10{padding-right:10px !important;}
