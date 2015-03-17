@@ -271,7 +271,7 @@ class Market(CustomerBaseHandler):
         notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
         self.set_cookie("cart_count", str(cart_count))
         return self.render("customer/home.html",
-                           context=dict(cart_count=cart_count, subpage='home', notices=notices,shop_name=shop.shop_name,w_follow = w_follow))
+                           context=dict(cart_count=cart_count, subpage='home', menus=shop.menus,notices=notices,shop_name=shop.shop_name,w_follow = w_follow))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int")
@@ -303,22 +303,36 @@ class Market(CustomerBaseHandler):
         dry_fruits = [x for x in shop.fruits if x.fruit_type_id >= 1000 and x.active == 1]
 
         mgoods = {}
+        w_mgoods = {}
         for menu in shop.menus:
             mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
-        context = dict(menus = shop.menus, 
-                cart_fs = cart_fs,cart_ms = cart_ms ,fruits = fruits ,mgoods = mgoods,dry_fruits = dry_fruits)
-        #cart_fs = json.dumps(cart_fs)
-        data = []
-        for  fruit in fruits:
-             data.append(fruit)
-        data.append(dry_fruits)
-        return self.send_success()
+            temp_goods = []
+            for mgood in menu.mgoods:
+                print(mgood.id,mgood.unit)
+                charge_types = []
+                for charge_type in mgood.mcharge_types:
+                    charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
+                temp_goods.append({'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,\
+                'current_saled':mgood.current_saled,'saled':mgood.saled,'storage':mgood.storage,'favour':mgood.favour,\
+                'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types})
+            w_mgoods[menu.id] = (temp_goods)
 
+        w_fruits = []
+        w_dry_fruits = []
+        def w_getdata(m):
+            data = []
+            for fruit in m:
+                charge_types= []           
+                for charge_type in fruit.charge_types:
+                    charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
+                data.append({'id':fruit.id,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
+                'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour})
+            return data
 
-
-
-
-
+        w_fruits = w_getdata(fruits)
+        w_dry_fruits = w_getdata(dry_fruits)
+        # w_mgoods = w_getdata(mgoods)
+        return self.send_success(fruits = w_fruits,dry_fruits = w_dry_fruits,cart_fs = cart_fs,cart_ms = cart_ms,mgoods = w_mgoods )
 
     @CustomerBaseHandler.check_arguments("charge_type_id:int", "menu_type:int")  # menu_type(0：fruit，1：menu)
     def favour(self):

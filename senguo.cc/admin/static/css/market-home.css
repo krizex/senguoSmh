@@ -12,7 +12,7 @@
 .goods-list-item .num_box{width:90px;overflow:hidden;height:32px;}
 .goods-list-item .charge-style{clear:both;}
 .goods-list-item .charge-style span,a{display:inline-block;}
-.goods-list-item .charge-first{width:100%;float:left;}
+.goods-list-item .charge-first{width:100%;float:left;line-height:36px;}
 .goods-list-item .charge-list{padding-right:25px;padding-left:95px !important;overflow:hidden;padding-top:5px;}
 .goods-list-item .charge-list li{height:36px;line-height:36px;margin:2px 0;padding-top:2px;}
 .goods-list-item .number-change{position:relative;width:90px;z-index:10;}
@@ -28,7 +28,7 @@
 .show-box{padding-right:35px;height:90px;}
 .sale{height:26px;line-height:26px;width:65px;overflow:hidden;}
 .click-great{background-size:20px;position:relative;}
-.click-great em{display:inline-block;position:absolute;top:12px;width:16px;height:16px;background:url('../svg/heart.svg') no-repeat 0 0;background-size:32px;}
+.click-great em{display:inline-block;position:absolute;top:12px;width:16px;height:16px;background:url('../svg/heart.svg') no-repeat 0 0;background-size:32px;margin-left:-20px;margin-right:5px;}
 .clicked em{background-position:-16px 0 !important;}
 .shape{position:absolute;display:inline-block;width:140px;height:220px;right:11px;top:-50px;transform:rotate(36deg);-ms-transform:rotate(36deg);-moz-transform:rotate(38deg);-webkit-transform:rotate(38deg);-o-transform:rotate(38deg);}
 .pr35{padding-right:35px;}
@@ -41,7 +41,7 @@
 
 .large-img-box .close{font-size:12px;opacity:1;padding:6px 8px;margin-right:0px;margin-top:0px;}
 .large-img-box img{width:280px;height:280px;}
-.large-img-box .click-great{display:inline-block;width:100%;padding:10px;}
+.large-img-box .click-great{display:inline-block;width:100%;padding:10px;padding-left:30px;}
 .large-img-box .modal-footer{padding:0px;}
 
 .large-img-box .modal-dialog{width:100%;max-width:280px;}
