@@ -623,4 +623,5 @@ class ShopStatic(SuperBaseHandler):
 
 class Official(SuperBaseHandler):
     def get(self):
+        
         return self.render("m-official/home.html")
