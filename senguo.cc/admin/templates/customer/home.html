@@ -1,330 +1,59 @@
 {% extends 'base.html' %}
-{% block title %}【{{context['shop_name']}}】 一家不错的水果O2O店铺，快来关注吧~{% end %}
+{% block title %}【{{context['shop_name']}}】 一家不错的O2O店铺，快来关注吧~{% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/market-home.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 {% end %}
 {% block content %}
-{% set fruits=context['fruits']%}
-{% set dry_fruits=context['dry_fruits']%}
-{% set mgoods=context['mgoods']%}
-{% set menus=context['menus']%}
 {% set notices=context['notices']%}
+{% set menus=context['menus']%}
 {% import json%}
 <script>
     window.dataObj.notices = {% raw json.dumps(context["notices"]) %}
-    window.dataObj.cart_fs = {% raw json.dumps(context["cart_fs"]) %}
-    window.dataObj.cart_ms = {% raw json.dumps(context["cart_ms"]) %}
 </script>
-    <input type="hidden" id="if_focus" value="{{context['w_follow']}}"/>
-    <div class="notice-box">
-        <div class="notice-board">
-            {% if notices %}
-            <div id="slider" class="swipe" style="visibility: visible;">
-                <div class="swipe-wrap">
-                </div>
+<input type="hidden" id="if_focus" value="{{context['w_follow']}}"/>
+<div class="notice-box">
+    <div class="notice-board">
+        {% if notices %}
+        <div id="slider" class="swipe" style="visibility: visible;">
+            <div class="swipe-wrap">
             </div>
-            <nav class="circle">
-                <ul id="position">
-                </ul>
-            </nav>
-            {% else %}
-            <img src="" class="default-img img lazy_img" data-src="{{static_url('images/banner.png')}}"/>
-            {% end %}
         </div>
+        <nav class="circle">
+            <ul id="position">
+            </ul>
+        </nav>
+        {% else %}
+        <img src="" class="default-img img lazy_img" data-src="{{static_url('images/banner.png')}}"/>
+        {% end %}
     </div>
-    {% if fruits %}
-    <div class="no-mar-btom top-title">
-        <div class="inner text-white rainshed_green  bg_change">
-            <a href="javascript:;"  class="text-white tit choose-classify set-w100-fle text-center">
-                <!--<span>分类</span>
-                <em class="set-inl-blo pull-right"></em>-->
-                <span class="classify text-center set-inl-blo font18">水果单品<em class="icon up font16" style="display:none;">︿</em><em class="icon down font16" >﹀</em></span>
-            </a>
-        </div>
-        <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle" style="display:none">
-            {% if fruits %}
-            <li class="text-grey6 bg-white pull-left text-center" data-class="fruitPosition">水果单品</li>
-            {% end %}
-            {% if dry_fruits%}
-            <li class="text-grey6 bg-white pull-left text-center" data-class="dryFruitPosition">干果单品</li>
-            {% end %}
-            {% for menu in menus %}
-            {% if mgoods[menu.id] %}
-            <li class="text-grey6 bg-white pull-left text-center" data-class="menu{{menu.id}}">{{menu.name}}</li>
-            {% end %}
-            {% end %}
-        </ul>
+</div>
+<div class="no-mar-btom top-title">
+    <div class="inner text-white rainshed_green  bg_change">
+        <a href="javascript:;"  class="text-white tit choose-classify set-w100-fle text-center">
+            <!--<span>分类</span>
+            <em class="set-inl-blo pull-right"></em>-->
+            <span class="classify text-center set-inl-blo font18">水果单品<em class="icon up font16" style="display:none;">︿</em><em class="icon down font16" >﹀</em></span>
+        </a>
     </div>
+    <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle" style="display:none">
+        <li class="text-grey6 bg-white pull-left text-center fruit_cassify" data-class="fruitPosition" style="display:none;">水果单品</li>
+        <li class="text-grey6 bg-white pull-left text-center dryfruit_classify" data-class="dryFruitPosition" style="display:none;">干果单品</li>
+        {% if menus %}
+        {% for menu in menus  %}
+        <li class="text-grey6 bg-white pull-left text-center menu_{{menu.id}}" data-class="menu{{menu.id}}">{{menu.name}}</li>
+        {% end %}
+        {% end %}
+    </ul>
+</div>
+<div class="goods-box">
     <!--<p class="text-white no-mar-btom classify-title font18 text-center bg-green" id="fruitPosition">水果单品</p>-->
-    <ul class="goods-list  fruit-list">
-        {% for fruit in fruits %}
-        {% set farrow_active=''%}
-        {% set ftoggle_active=''%}
-        {% set fradius_active=''%}
-        {% set pr_active=''%}
-        {%if len(fruit.charge_types) >1 %}
-            {% set farrow_active='arrow'%}
-            {% set ftoggle_active='toggle'%}
-            {% set fradius_active='shape'%}
-            {% set pr_active='pr35'%}
-        {% end %}
-        <li class="goods-list-item font10 text-grey {{fruit.fruit_type.code}} {{pr_active}}" data-id="{{fruit.id}}" data-type="fruit" data-num="{{fruit.storage}}">
-            <div class="clearfix box bg">
-                <div class="set-width-float">
-                    <div class="goods-img pull-left">
-                        <a href="javascript:;" class="check-lg-img">
-                            <span class="tag text-white text-center tagItem font8" data-id="{{fruit.tag}}"></span>
-                            {% if fruit.img_url %}
-                            <img src="" class="img lazy_img" data-src="{{fruit.img_url}}?imageView/1/w/160/h/160" data-img="{{fruit.img_url}}">
-                            {% else %}
-                            <img src="" class="img lazy_img" data-src="/static/design_img/{{fruit.fruit_type.code}}.gif" data-img="">
-                            {% end %}
-                        </a>
-                    </div>
-                    <input type="hidden" class="fruit_intro" value="{{fruit.intro}}"/>
-                    <div class="goods-info pull-left">
-                        <div class="show-box {{ftoggle_active}}">
-                            <p class="clearfix">
-                                <span class="pull-left color fruit-name font14">{{fruit.name}}</span>
-                                <span class="pull-right text-grey sale font12">销量:<span class="color number" data-id="{{fruit.saled}}"></span></span>
-                            </p>
-                            <p class="great-number font12">
-                                {% if fruit.favour%}
-                                <em class="red-heart bg_change" data-id="{{fruit.favour}}"></em>
-                                {% else %}
-                                <em class="gray-heart bg_change" data-id=""></em>
-                                {% end %}
-                                <span class="great">{{fruit.favour}}</span>
-                            </p>
-                            <div class="charge-first charge-style  font14 color">
-                                {% if fruit.charge_types %}
-                                <span class="pull-left text-bgcolor p0 charge-type line34 height34 forbid_click" data-id="{{fruit.charge_types[0].id}}">
-                                    {{fruit.charge_types[0].price}}元/{{fruit.charge_types[0].num}}
-                                    <span data-id="{{fruit.charge_types[0].unit}}" class="chargeUnit"></span>
-                                </span>
-                                {% end %}
-                                <span class="forbid_click pull-right num_box">
-                                    <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
-                                    <span class="pull-right p0 number-change hidden forbid_click">
-                                        <a class="minus-plus pull-right number-plus bg_change" href="javascript:;"></a>
-                                        <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
-                                        <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
-                                    </span>
-                                </span>        
-                            </div>
-                        </div>
-                    </div>
-                    <span class="{{fradius_active}} back-shape bg"></span>
-                    <span class="{{farrow_active}} icon-bg toggle_icon"></span>
-                </div>
-                <ul class="charge-list charge-style color clearfix font14 {{ftoggle_active}} color" style="display:none">
-                    {% for charge in fruit.charge_types %}
-                    {% if charge.id !=fruit.charge_types[0].id %}
-                    {% set hidden =''%}
-                    {% set show =''%}
-                    <li class="border-color set-w100-fle">
-                        <span class="pull-left text-bgcolor p0 charge-type forbid_click more_charge" data-id="{{charge.id}}">
-                            {{charge.price}}元/{{charge.num}}
-                            <span data-id="{{charge.unit}}" class="chargeUnit"></span>
-                        </span>
-                         <span class="forbid_click pull-right num_box">
-                            <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
-                            <span class="pull-right p0 number-change hidden forbid_click">
-                                <a class="minus-plus pull-right number-plus bg_change" href="javascript:;"></a>
-                                <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
-                                <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
-                            </span>
-                        </span>
-                    </li>
-                    {% end %}
-                    {% end %}
-                </ul>
-
-            </div>
-        </li>
-        {% end %}
+    <ul class="goods-list  fruit-list fruit_goods_list">    
     </ul>
-    {% end %}
-    {% if dry_fruits%}
-    <p class="text-white no-mar-btom classify-title font18 text-center bg-green" id="dryFruitPosition">干果单品</p>
-    <ul class="goods-list fruit-list">
-        {% for dry_fruit in dry_fruits %}
-        {% set darrow_active=''%}
-        {% set dtoggle_active=''%}
-        {% set dradius_active=''%}
-        {% set dpr_active=''%}
-        {%if len(dry_fruit.charge_types) >1 %}
-            {% set darrow_active='arrow'%}
-            {% set dtoggle_active='toggle'%}
-            {% set dradius_active='shape'%}
-            {% set dpr_active='pr35'%}
-        {% end %}
-        <li class="goods-list-item font10 text-grey {{dry_fruit.fruit_type.code}}  {{dpr_active}}" data-id="{{dry_fruit.id}}" data-type="fruit" data-num="{{dry_fruit.storage}}">
-            <div class="clearfix box bg">
-                <div class="set-width-float">
-                    <div class="goods-img pull-left">
-                        <a href="javascript:;" class="check-lg-img">
-                            <span class="tag text-white text-center tagItem font8" data-id="{{dry_fruit.tag}}"></span>
-                            {% if dry_fruit.img_url %}
-                            <img src="" class="img lazy_img" data-src="{{dry_fruit.img_url}}?imageView/1/w/160/h/160" data-img="{{dry_fruit.img_url}}">
-                            {% else %}
-                            <img src="" class="img lazy_img" data-src="/static/design_img/{{dry_fruit.fruit_type.code}}.gif" data-img="">
-                            {% end %}
-                        </a>
-                    </div>
-                    <input type="hidden" class="fruit_intro" value="{{dry_fruit.intro}}"/>
-                    <div class="goods-info pull-left">
-                        <div class="show-box {{dtoggle_active}}">
-                            <p class="clearfix">
-                                <span class="pull-left color fruit-name font14">{{dry_fruit.name}}</span>
-                                <span class="pull-right text-grey sale font12">销量:<span class="color number" data-id="{{dry_fruit.saled}}"></span></span>
-                            </p>
-                            <p class="great-number font12">
-                                {% if dry_fruit.favour%}
-                                <em class="red-heart bg_change" data-id="{{dry_fruit.favour}}"></em>
-                                {% else %}
-                                <em class="gray-heart bg_change" data-id=""></em>
-                                {% end %}
-                                <span  class="great">{{dry_fruit.favour}}</span>
-                            </p>
-                            <div class="charge-first charge-style  font14 color">
-                                {% if dry_fruit.charge_types %}
-                                <span class="pull-left text-bgcolor p0 charge-type line34 height34 forbid_click" data-id="{{dry_fruit.charge_types[0].id}}">
-                                    {{dry_fruit.charge_types[0].price}}元/{{dry_fruit.charge_types[0].num}}
-                                    <span data-id="{{dry_fruit.charge_types[0].unit}}" class="chargeUnit"></span>
-                                </span>
-                                {% end %}
-                                 <span class="forbid_click pull-right num_box">
-                                    <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
-                                    <span class="pull-right p0 number-change hidden forbid_click">
-                                        <a class="minus-plus  pull-right number-plus bg_change" href="javascript:;"></a>
-                                        <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
-                                        <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
-                                    </span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <span class="{{dradius_active}} back-shape bg"></span>
-                    <span class="{{darrow_active}} icon-bg toggle_icon"></span>
-                </div>
-                <ul class="charge-list charge-style color set-width-float font14 {{dtoggle_active}} color" style="display:none">
-                    {% for charge in dry_fruit.charge_types %}
-                    {% if charge.id !=dry_fruit.charge_types[0].id %}
-                    <li class="border-color set-w100-fle">
-                        <span class="pull-left text-bgcolor p0 charge-type forbid_click more_charge" data-id="{{charge.id}}">
-                            {{charge.price}}元/{{charge.num}}
-                            <span data-id="{{charge.unit}}" class="chargeUnit"></span>
-                        </span>
-                         <span class="forbid_click pull-right num_box">
-                            <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
-                            <span class="pull-right p0 number-change hidden forbid_click">
-                                <a class="minus-plus pull-right number-plus bg_change" href="javascript:;"></a>
-                                <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
-                                <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
-                            </span>
-                        </span>
-                    </li>
-                    {% end %}
-                    {% end %}
-                </ul>
-
-            </div>
-        </li>
-        {% end %}
+    <p class="text-white no-mar-btom classify-title font18 text-center bg-green dryfruit_classify" id="dryFruitPosition" style="display:none;">干果单品</p>
+    <ul class="goods-list fruit-list dryfruit_goods_list" >
     </ul>
-    {% end %}
-    {% for menu in menus %}
-    {% if mgoods[menu.id] %}
-    <p class="text-white no-mar-btom classify-title font18 text-center bg-green" id="menu{{menu.id}}">{{menu.name}}</p>
-    <ul class="goods-list menu-list">
-    {% end %}
-    {% for mgood in mgoods[menu.id]%}
-        {% set marrow_active=''%}
-        {% set mtoggle_active=''%}
-        {% set mradius_active=''%}
-        {% set mpr_active=''%}
-        {%if len(mgood.mcharge_types) >1 %}
-            {% set marrow_active='arrow'%}
-            {% set mtoggle_active='toggle'%}
-            {% set mradius_active='shape'%}
-            {% set mpr_active='pr35'%}
-        {% end %}
-        <li class="goods-list-item  font10 text-grey TDSG {{mpr_active}}" data-id="{{mgood.id}}" data-type="menu" data-num="{{mgood.storage}}">
-            <div class="clearfix box bg">
-                <div class="set-width-float">
-                    <div class="goods-img pull-left">
-                        <a href="javascript:;" class="check-lg-img">
-                            <span class="tag text-white text-center tagItem font8" data-id="{{mgood.tag}}"></span>
-                            {% if mgood.img_url %}
-                            <img src="" class="img lazy_img" data-src="{{mgood.img_url}}?imageView/1/w/160/h/160" data-img="{{mgood.img_url}}">
-                            {% else %}
-                            <img src="" class="img lazy_img" data-src="/static/design_img/TDSG.gif" data-img="">
-                            {% end %}
-                        </a>
-                    </div>
-                    <input type="hidden" class="fruit_intro" value="{{mgood.intro}}"/>
-                    <div class="goods-info pull-left">
-                        <div class="show-box {{mtoggle_active}}">
-                            <p class="clearfix">
-                                <span class="pull-left color fruit-name font14 color">{{mgood.name}}</span>
-                                <span class="pull-right text-grey sale font12">销量:<span class="color number" data-id="{{mgood.saled}}"></span></span>
-                            </p>
-                            <p class="great-number font12">
-                                {% if mgood.favour%}
-                                <em class="red-heart bg_change" data-id="{{mgood.favour}}"></em>
-                                {% else %}
-                                <em class="gray-heart bg_change" data-id=""></em>
-                                {% end %}
-                                <span class="great">{{mgood.favour}}</span>
-                            </p>
-                            <div class="charge-first charge-style font14 color">
-                                {% if mgood.mcharge_types %}
-                                <span class="pull-left text-bgcolor p0 charge-type line34 height34 forbid_click" data-id="{{mgood.mcharge_types[0].id}}">
-                                    {{mgood.mcharge_types[0].price}}元/{{mgood.mcharge_types[0].num}}
-                                    <span data-id="{{mgood.mcharge_types[0].unit}}" class="chargeUnit"></span>
-                                </span>
-                                {% end %}
-                                 <span class="forbid_click pull-right num_box">
-                                      <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
-                                     <span class="pull-right p0 number-change hidden forbid_click">
-                                        <a class="minus-plus  pull-right number-plus bg_change" href="javascript:;"></a>
-                                        <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
-                                        <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
-                                    </span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <span class="{{mradius_active}} back-shape bg"></span>
-                    <span class="{{marrow_active}} icon-bg toggle_icon"></span>
-                </div>
-                <ul class="charge-list charge-style color set-width-float font14 {{mtoggle_active}} color" style="display:none">
-                    {% for charge in mgood.mcharge_types %}
-                    {% if charge.id !=mgood.mcharge_types[0].id %}
-                    <li class="border-color set-w100-fle">
-                            <span class="pull-left text-bgcolor p0 charge-type forbid_click more_charge" data-id="{{charge.id}}">
-                                {{charge.price}}元/{{charge.num}}
-                                <span data-id="{{charge.unit}}" class="chargeUnit"></span>
-                            </span>
-                            <span class="forbid_click pull-right num_box">
-                                <span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>
-                                 <span class="pull-right p0 number-change hidden forbid_click">
-                                    <a class="minus-plus pull-right number-plus bg_change" href="javascript:;"></a>
-                                    <input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"/>
-                                    <a class="minus-plus pull-right number-minus bg_change" href="javascript:;"></a>
-                                </span>
-                          </span>
-                    </li>
-                    {% end %}
-                    {% end %}
-                </ul>
-            </div>
-        </li>
-        {% end %}
-    </ul>
-    {% end %}
+</div>
 {% end %}
 {% block bottom %}
 <div class="modal fade large-img-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -339,7 +68,7 @@
                 <p class="intro font14 m-b5">哈哈哈哈哈哈</p>
             </div>
             <div class="modal-footer">
-                <a href="javascript:;" class="click-great text-center font16 text-grey3"><em></em>赞一个</a>
+                <a href="javascript:;" class="click-great text-center font16 text-grey3"><em class="bg_change"></em>赞一个</a>
             </div>
         </div>
     </div>
@@ -352,7 +81,7 @@
                 <h2 class="modal-title text-green2 text-center" id="myModalLabel">公告详情</h2>
             </div>
             <div class="modal-body set-width-float text-center">
-                <p class="detail font14 mt42"> </p>
+                <p class="detail font14 mt42"></p>
             </div>
             <div class="modal-footer set-width-float">
                 <button data-dismiss="modal" class="btn btn-default center-block">取消</button>

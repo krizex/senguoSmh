@@ -11,7 +11,7 @@
         <p class="font12 mt10 m-b10">店铺号：<span class="">{{shop.shop_code}}</span></p>
      </div>
      <div class="info set-w100-fle">
-         <div class="level-box btn font9 border-ca w49 p0 bg-grey5">
+         <!--<div class="level-box btn font9 border-ca w49 p0 bg-grey5">
              <div class="font10 m-b5 clearfix">
                  <em class="set-inl-blo text-white text-center pull-left bg_change">1</em>
                  <span class="pull-left">初来乍到</span>
@@ -19,7 +19,7 @@
              <span class="status-box border-ca set-inl-blo clearfix">
                  <span class="status-percent bg-green set-inl-blo"></span>
              </span>
-         </div>
+         </div>-->
          {% set sign_bg='' %}
          {% set sign_text='' %}
          {% set follow_show='' %}
@@ -40,7 +40,7 @@
             {% set sign_text='店铺签到' %}
             {% set ml20='ml20' %}
          {% end %}
-         <a href="javascript:;" class="btn text-green3 font12 border-ca pull-right w49 sign-box p0 {{sign_bg}} {{sign_show}} {{sign_color}} font13 bg-grey5" id="signin-shop">
+         <a href="javascript:;" class="btn text-green3 font12 border-ca pull-left w49 sign-box p0 {{sign_bg}} {{sign_show}} {{sign_color}} font13 bg-grey5" id="signin-shop">
              {% if not signin %}
              <em class="set-inl-blo bg_change"></em>
              {% end %}
@@ -71,7 +71,7 @@
     <p class="title font14 clearfix">店铺信息：</p>
     <ul class="shop-info text-grey9 font14">
         <li class="set-w100-fle"><span class="pull-left">店铺地址：</span><span class="pull-left set-inl-blo w8">{{address}}</span></li>
-        <li class="set-w100-fle">配送区域：{{shop.deliver_area or '无'}}<!--<em class="area-icon set-inl-blo pull-right"></em>--></li>
+        <li class="set-w100-fle"><span class="pull-left">配送区域：</span><span class="pull-left set-inl-blo w8">{{shop.deliver_area or '无'}}<!--<em class="area-icon set-inl-blo pull-right"></em>--></span></li>
         <li class="set-w100-fle">联系电话：{{shop.shop_phone or '无'}}<a href="tel:{{shop.shop_phone }}" class="phone_icon"><em class="phone-icon set-inl-blo bg_change"></em></a></li>
         <li class="set-w100-fle"><span class="pull-left">店铺简介：</span><span class="pull-left set-inl-blo w8">{{shop.shop_intro or '无'}}</span></li>
     </ul>

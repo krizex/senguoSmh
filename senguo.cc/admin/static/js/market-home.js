@@ -1,30 +1,20 @@
 $(document).ready(function(){
-    //sale>9999
-    $('.sale').each(function(){
-        var $this=$(this);
-        var num=Int($this.find('.number').data('id'));
-        if(num>9999) $this.find('.number').text('9999+');
-        else $this.find('.number').text(num);
-    });
-    //已在购物车里的商品
-    var cart_fs=window.dataObj.cart_fs;
-    var cart_ms=window.dataObj.cart_ms;
-    cartNum(cart_fs,'.fruit-list');
-    cartNum(cart_ms,'.menu-list');
+    //get infomations of goods and push into html
+     goodsList();
     //添加到购物车
     $('.bottom-nav').find('li').addClass('add_cart');
-    $('.add_cart a').on('click',function(){
+    $(document).find('.add_cart a').on('click',function(){
         var link=$(this).attr('href');
         addCart(link);
     });
     //分类显示
     var top_title=$('.top-title');
-    $('.choose-classify').on('click',function(){
+    $(document).find('.choose-classify').on('click',function(){
         var $this=$(this);
         $this.find('.icon').toggle();
         $('.goods-class-choose').slideToggle(100);
     });
-    $('.goods-class-choose li').on('click',function(){
+    $(document).find('.goods-class-choose li').on('click',function(){
         $('.goods-class-choose').slideUp(100);
     });
     //分类导航置顶
@@ -39,35 +29,23 @@ $(document).ready(function(){
         }
     });*/
     //分类选择
-    $('.goods-class-choose li').hammer().on('tap',function(){
+    $(document).find('.goods-class-choose li').hammer().on('tap',function(){
         var $this=$(this);
         var g_class=$this.data('class');
         var top=$('#'+g_class+'').offset().top;
         $('html, body').animate({scrollTop:top}, 50);
         //top_title.find('.classify').text(text);
     });
-    //售完状态
-    $('.goods-list-item').each(function(){
-        var $this=$(this);
-        var num=Int($this.data('num'));
-        if(num<=0){
-            $this.append('<div class="sold-out bg_change"><div class="out"></div></div>').find('.box').addClass('desaturate').find('.arrow').css({'border-color':'transparent #B6B6B6 transparent transparent'});
-            $this.find('.sold-out').css({'background-color':'rgba(0,0,0,0.1)'});
-            $this.find('.bg').css({'background':'#FCFCFC'});
-            $this.find('.color').css({'color':'#757575'});
-            AndroidImg('bg_change');
-        }
-    });
     //公告滚动
     var notice_con=window.dataObj.notices;
     if(typeof(notice_con)!='undefined'){
         $.ajaxSetup({'async':false});
         $.getItem('/static/items/customer/notice-item.html?v=2015-0309',function(data){
-            notice_item=data;
+            window.dataObj.notice_item=data;
             for(var i=0;i<notice_con.length;i++){
                 var summary=notice_con[i][0];
                 var detail=notice_con[i][1];
-                var item=$(notice_item);
+                var item=$(window.dataObj.notice_item);
                 item.find('.title').text(summary);
                 item.find('.notice-detail').val(detail);
                 $('.swipe-wrap').append(item);
@@ -100,37 +78,6 @@ $(document).ready(function(){
         $('.detail-box').find('.detail').text(detail);
     });
     $('goods-list').last().addClass('m-b60');
-    //商品标签转换
-    $('.tagItem').each(function(){
-        var $this=$(this);
-        var id=$this.data('id');
-        tagText($this,id);
-    });
-    //计价方式折叠/显示
-    $('.toggle').each(function(){      
-        var $this=$(this);
-        $this.mouseup(function(e){
-            var parent=$this.parents('.goods-list-item');
-            var charge_list=$this.parents('.goods-list-item').find('.charge-list');
-            var forbid_click=$this.parents('.goods-list-item').find('.forbid_click');
-            if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
-                parent.find('.toggle_icon').toggleClass('arrow');
-                parent.toggleClass('pr35');
-                parent.find('.back-shape').toggle();
-                charge_list.slideToggle(50);
-            }
-        })
-
-    });
-    $(document).on('click','.back-shape',function(){
-        var $this=$(this);
-        var parent=$this.parents('.goods-list-item');
-        var charge_list=$this.parents('.goods-list-item').find('.charge-list');
-        parent.toggleClass('pr35');
-        parent.find('.toggle_icon').toggleClass('arrow');
-        $this.toggle();
-        charge_list.slideToggle(50);
-    });
     //查看大图
     $(document).on('click','.check-lg-img',function(){
             var $this=$(this);
@@ -138,14 +85,15 @@ $(document).ready(function(){
             var type=$this.parents('.goods-list-item').data('type');
             var id=$this.parents('.goods-list-item').data('id');
             var img_url=$this.find('.img').attr('src');
-            var img_type=$this.find('.img').attr('data-img');
+            //var img_type=$this.find('.img').attr('data-img');
             var fruit_name=parent.find('.fruit-name').text();
             var fruit_intro=parent.find('.fruit_intro').val();
             var large_box=$('.large-img-box');
             var if_clicked=$this.parents('.goods-list-item').find('.great-number em').attr('data-id');
             if(if_clicked=='2') {$('.click-great').addClass('clicked')}
             else $('.click-great').removeClass('clicked');
-            if(img_type!='') {
+            if(img_url!='') {
+                if(img_url.indexOf('/design_img')) img_url=img_url.replace('.png','_l.png');
                 img_url=img_url.replace('w/160/h/160','w/560/h/560');
             }
             large_box.modal('show').attr({'data-id':id,'data-type':type});
@@ -153,67 +101,217 @@ $(document).ready(function(){
             large_box.find('.modal-title').text(fruit_name);
             large_box.find('.intro').text(fruit_intro);
     });
-    //点赞
-    $('.click-great').hammer().on('tap',function(){
-        var $this=$(this);
-        var large_box=$('.large-img-box');
-        var type=large_box.attr('data-type');
-        var id=large_box.attr('data-id'); 
-        great(type,id);
-    });
-    //首次添加商品
-    $('.to-add').hammer().on('tap',function(){
-        var $this=$(this);
-        //是否关注店铺
-        var if_focus=$('#if_focus').val();
-        if(if_focus=='False')  $('.focus-box').modal('show');
-        else{
-              goodsNum($this.siblings('.number-change').find('.number-plus'),2);
-             $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
-        }     
-        //果篮显示商品种类数
-        if(cart_count==0) {$('.cart_num').show();}
-        if($this.hasClass('add_cart_num')){
-            cart_count++;
-            $('.cart_num').text(cart_count);
-            SetCookie('cart_count',cart_count);
-            $this.removeClass('add_cart_num');
-        }
-    });
     //关注店铺
-    $('.focus-btn').hammer().on('tap',function(){
+    $(document).find('.focus-btn').hammer().on('tap',function(){
             focus();
     });
-    //商品输入框为0时
-    $('.number-input').on('blur',function(){
-        var $this=$(this);
-        var num=$this.val();
-        var change=$this.parents('.number-change');
-        if(num==0){
-            change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
-            if(cart_count==1) {
-                $('.cart_num').remove();
-                SetCookie('cart_count',0);
-            }
-            else {
-                cart_count--;
-                $('.cart_num').text(cart_count);
-                SetCookie('cart_count',cart_count);
-            }
-        }
-    });
-    //商品数量操作
-    $('.goods-list').find('.number-minus').hammer().on('tap',function(){
-        var $this=$(this);
-        goodsNum($this,1);
-
-    });
-    $('.goods-list').find('.number-plus').hammer().on('tap',function(){
-        var $this=$(this);
-        goodsNum($this,2);
-    });
 });
-var notice_item;
+var goodsList=function(){
+    var url='';
+    var action = 5;
+    var args={
+        action:action,
+    };
+    $.postJson(url,args,function(res){
+        if(res.success)
+        {
+           window.dataObj.cart_fs=res.cart_fs;
+           window.dataObj.cart_ms=res.cart_ms;
+            var frtuis=res.fruits;
+            var dry_fruits=res.dry_fruits;
+            var mgoods=res.mgoods;
+            $.getItem('/static/items/customer/market-goods-item.html?v=2015-0309',function(data){
+                window.dataObj.goods_item=data;
+            });    
+             $.getItem('/static/items/customer/charge-item.html?v=2015-0309',function(data){
+                window.dataObj.charge_item=data;
+            }); 
+            $.getItem('/static/items/customer/mgoods_item.html?v=2015-0309',function(data){
+                window.dataObj.mgoods_item=data;
+            });
+            $.getItem('/static/items/customer/classify_item.html?v=2015-0309',function(data){
+                window.dataObj.classify_item=data;
+            });         
+            if(!frtuis) $('.fruit_cassify').hide();
+            else {
+                fruitItem($('.fruit_goods_list'),frtuis);//fruits information
+                $('.fruit_cassify').show();
+            }
+            if(!frtuis) $('.dryfruit_classify').hide();
+            else{
+                fruitItem($('.dryfruit_goods_list'),dry_fruits);//dry_fruits information
+                $('.dryfruit_classify').show();
+            } 
+            if(mgoods){
+                for(var key in mgoods){
+                var $mgoods=$(window.dataObj.mgoods_item);
+                var $classify=$(window.dataObj.classify_item);
+                var title=$('.menu_'+key).text();
+                $classify.text(title).attr({'id':'menu'+key});
+                fruitItem($mgoods,mgoods[key]);
+                $('.goods-box').append($classify);
+                $('.goods-box').append($mgoods);
+                }//mgoods information
+            }
+            //已在购物车里的商品
+            var cart_fs=window.dataObj.cart_fs;
+            var cart_ms=window.dataObj.cart_ms;
+            cartNum(cart_fs,'.fruit-list');
+            cartNum(cart_ms,'.menu-list');
+            //点赞
+            $('.click-great').hammer().on('tap',function(){
+                var $this=$(this);
+                var large_box=$('.large-img-box');
+                var type=large_box.attr('data-type');
+                var id=large_box.attr('data-id'); 
+                great(type,id);
+            });
+            //首次添加商品
+            $('.to-add').hammer().on('tap',function(){
+                var $this=$(this);
+                //是否关注店铺
+                var if_focus=$('#if_focus').val();
+                if(if_focus=='False')  $('.focus-box').modal('show');
+                else{
+                      goodsNum($this.siblings('.number-change').find('.number-plus'),2);
+                     $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
+                }     
+                //果篮显示商品种类数
+                if(cart_count==0) {$('.cart_num').show();}
+                if($this.hasClass('add_cart_num')){
+                    cart_count++;
+                    $('.cart_num').text(cart_count);
+                    SetCookie('cart_count',cart_count);
+                    $this.removeClass('add_cart_num');
+                }
+            });
+            //商品数量操作
+            $(document).find('.goods-list').find('.number-minus').hammer().on('tap',function(){
+                var $this=$(this);
+                goodsNum($this,1);
+            });
+            $(document).find('.goods-list').find('.number-plus').hammer().on('tap',function(){
+                var $this=$(this);
+                goodsNum($this,2);
+            });
+             //商品输入框为0时
+            $(document).find('.number-input').on('blur',function(){
+                var $this=$(this);
+                var num=$this.val();
+                var change=$this.parents('.number-change');
+                if(num==0){
+                    change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
+                    if(cart_count==1) {
+                        $('.cart_num').remove();
+                        SetCookie('cart_count',0);
+                    }
+                    else {
+                        cart_count--;
+                        $('.cart_num').text(cart_count);
+                        SetCookie('cart_count',cart_count);
+                    }
+                }
+            });
+            //计价方式折叠/显示
+            $('.toggle').mouseup(function(e){
+                    var $this=$(this);
+                    var $parent=$this.parents('.goods-list-item');
+                    var $charge_list=$this.parents('.goods-list-item').find('.charge-list');
+                    var forbid_click=$this.parents('.goods-list-item').find('.forbid_click');
+                    if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
+                        $charge_list.slideToggle(5);
+                        $parent.find('.toggle_icon').toggleClass('arrow');
+                        $parent.toggleClass('pr35');
+                        $parent.find('.back-shape').toggle();
+                        
+                    }
+            });
+        }
+        else alert(res.error_text);
+        },
+        function(){alert('网络错误')})
+};
+
+var fruitItem=function(box,fruits){
+    for(var key in fruits){
+            var $item=$(window.dataObj.goods_item);
+            var id=fruits[key]['id'];
+            var storage=fruits[key]['storage'];
+            var code=fruits[key]['code'];
+            var tag=fruits[key]['tag'];
+            var img_url=fruits[key]['img_url'];
+            var intro=fruits[key]['intro'];
+            var name=fruits[key]['name'];
+            var saled=fruits[key]['saled'];
+            var favour=fruits[key]['favour'];
+            var charge_types=fruits[key]['charge_types'];
+            if(!code) code='TDSG';
+            $item.attr({'data-id':id,'data-type':'fruit','data-num':storage}).addClass(code);
+            $item.find('.fruit_intro').val(intro);
+            $item.find('.fruit-name').text(name);
+            if(saled>9999) $item.find('.number').text('9999+');
+            else $item.find('.number').text(saled);
+            $item.find('.great').text(favour);       
+            if(!favour) $item.find('.heart').addClass('gray-heart');
+            else $item.find('.heart').addClass('red-heart');
+            //商品标签转换
+            tagText($item.find('.tagItem'),tag);
+            //售完状态
+            if(storage<=0){
+                $item.append('<div class="sold-out bg_change"><div class="out"></div></div>').find('.box').addClass('desaturate').find('.arrow').css({'border-color':'transparent #B6B6B6 transparent transparent'});
+                $item.find('.sold-out').css({'background-color':'rgba(0,0,0,0.1)'});
+                $item.find('.bg').css({'background':'#FCFCFC'});
+                $item.find('.color').css({'color':'#757575'});
+                AndroidImg('bg_change');
+            }
+            //if there isn't only one type of charge_type
+            if(charge_types.length>1){
+                $item.find('.show-box').addClass('toggle');
+                $item.find('.charge-list').addClass('toggle');
+                $item.find('.toggle_icon').addClass('arrow');
+                $item.addClass('pr35');
+                $item.find('.back-shape').addClass('shape');
+            }
+            //charge_type info
+            for(var key in charge_types ){
+                var $charge_item=$(window.dataObj.charge_item);
+                if(key==0){
+                    var id=charge_types[0]['id'];
+                    var price=charge_types[0]['price'];
+                    var num=charge_types[0]['num'];
+                    var unit=charge_types[0]['unit'];
+                    if(unit==1) unit='个 ';
+                    else  if(unit==2) unit='斤';
+                    else  if(unit==3) unit='份';
+                    $charge_item.attr({'data-id':id});
+                    $charge_item.find('.price').text(price);
+                    $charge_item.find('.num').text(num);
+                    $charge_item.find('.chargeUnit').text(unit);
+                    $item.find('.charge-first').append($charge_item);
+                }
+                else{
+                    var id=charge_types[key]['id'];
+                    var price=charge_types[key]['price'];
+                    var num=charge_types[key]['num'];
+                    var unit=charge_types[key]['unit'];
+                    if(unit==1) unit='个 ';
+                    else  if(unit==2) unit='斤';
+                    else  if(unit==3) unit='份';
+                    $charge_item.attr({'data-id':id}).addClass('more_charge');
+                    $charge_item.find('.price').text(price);
+                    $charge_item.find('.num').text(num);
+                    $charge_item.find('.chargeUnit').text(unit);
+                    var $li=$('<li class="border-color set-w100-fle"></li');
+                    $li.append($charge_item);
+                    $item.find('.charge-list').append($li);
+                }
+                //goods img
+                if(!img_url) $item.find('.img').attr({'src':'/static/design_img/'+code+'.png?v=20150316'});
+                else $item.find('.img').attr({'src':img_url+'?imageView/1/w/160/h/160'});
+            } 
+            box.append($item);
+        }   
+}
 
 function cartNum(cart_ms,list){
     var item_list=$(list);
@@ -276,7 +374,6 @@ function goodsNum(target,action){
                 }
                 else {
                     cart_count--;
-
                     $('.cart_num').text(cart_count);
                     SetCookie('cart_count',cart_count);
                 }

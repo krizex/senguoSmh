@@ -107,6 +107,12 @@ $(document).ready(function(){
     //
     var time=new Date();
     var time_now=checkTime(time.getHours())+':'+checkTime(time.getMinutes())+':'+checkTime(time.getSeconds());
+    //period-time
+    $('.check-time').each(function(){
+        var $this=$(this);
+        var time=$this.text();
+        $this.text(checkTime(time));
+    });
     //按时达根据当前时间选择时间段
     var stop_range=Int($('.stop-range').val());
     var today=$('#sendDay').find('.active').data('id');

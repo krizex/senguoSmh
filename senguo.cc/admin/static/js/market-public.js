@@ -47,9 +47,9 @@ var market_href='/shop/none';
 var home_href='/customer';
 var success_href='/notice/success';
 var staff_href='/staff/hire/';
-var shop_id;
-var shop_name;
-var cart_count;
+var shop_id=window.dataObj.shop_id;
+var shop_name=window.dataObj.shop_name;
+var cart_count=window.dataObj.cart_count;
 var noncestr_val;
 var timestamp_val;
 var signature_val;
@@ -59,7 +59,7 @@ function AndroidImg(target){
     //判断客户端是否是iOS或者Android
     var u = navigator.userAgent, app = navigator.appVersion;
     var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
-   // var isAndroid = u.indexOf('Android') > -1;
+    //var isAndroid = u.indexOf('Android') > -1;
     var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
      if(isAndroid){
      	$(document).find('.'+target).each(function(){
@@ -69,15 +69,15 @@ function AndroidImg(target){
 	{
 	     var src=$this.css('background');
                    var src_android
-                    if(dpi>1)  src_android=src.replace('.svg','@2x.png?v=2015-03-11');
-                    else    src_android=src.replace('.svg','.png?v=2015-03-11');
+                    if(dpi>1)  src_android=src.replace('.svg','@2x.png?v=2015-03-13');
+                    else    src_android=src.replace('.svg','.png?v=2015-03-13');
      	     $this.css({'background':src_android});
                }
      	else {
      	   var src=$this.attr('src');
      	   var src_android
-                if(dpi>1)  src_android=src.replace('.svg','@2x.png?v=2015-03-11');
-                else    src_android=src.replace('.svg','.png?v=2015-03-11');
+                if(dpi>1)  src_android=src.replace('.svg','@2x.png?v=2015-03-13');
+                else    src_android=src.replace('.svg','.png?v=2015-03-13');
      	   $this.attr({'src':src_android});
      	}   	
       });

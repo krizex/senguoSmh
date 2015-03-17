@@ -7,6 +7,7 @@ from sqlalchemy import desc, and_, or_
 import qiniu
 import random
 import base64
+import json
 
 class Access(CustomerBaseHandler):
     def initialize(self, action):
@@ -270,7 +271,7 @@ class Market(CustomerBaseHandler):
         notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
         self.set_cookie("cart_count", str(cart_count))
         return self.render("customer/home.html",
-                           context=dict(cart_count=cart_count, subpage='home', notices=notices,shop_name=shop.shop_name,w_follow = w_follow))
+                           context=dict(cart_count=cart_count, subpage='home', menus=shop.menus,notices=notices,shop_name=shop.shop_name,w_follow = w_follow))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int")
@@ -296,24 +297,42 @@ class Market(CustomerBaseHandler):
         cart_ms = [(key,cart_m[key]['num']) for key in cart_m]
         if not shop:
             return self,send_error(404)
-        fruits = {}
-        dry_fruits = {}
+        fruits = []
+        dry_fruits = []
         fruits = [x for x in shop.fruits if x.fruit_type_id < 1000 and x.active ==1]
         dry_fruits = [x for x in shop.fruits if x.fruit_type_id >= 1000 and x.active == 1]
 
         mgoods = {}
+        w_mgoods = {}
         for menu in shop.menus:
             mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
-        context = dict(menus = shop.menus, 
-                cart_fs = cart_fs,cart_ms = cart_ms ,shop_name = shop.shop_name)
+            temp_goods = []
+            for mgood in menu.mgoods:
+                print(mgood.id,mgood.unit)
+                charge_types = []
+                for charge_type in mgood.mcharge_types:
+                    charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
+                temp_goods.append({'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,\
+                'current_saled':mgood.current_saled,'saled':mgood.saled,'storage':mgood.storage,'favour':mgood.favour,\
+                'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types})
+            w_mgoods[menu.id] = (temp_goods)
 
-        self.send_success(context = context,fruits = fruits , mgoods = mgoods ,dry_fruits = dry_fruits)
+        w_fruits = []
+        w_dry_fruits = []
+        def w_getdata(m):
+            data = []
+            for fruit in m:
+                charge_types= []           
+                for charge_type in fruit.charge_types:
+                    charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
+                data.append({'id':fruit.id,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
+                'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour})
+            return data
 
-
-
-
-
-
+        w_fruits = w_getdata(fruits)
+        w_dry_fruits = w_getdata(dry_fruits)
+        # w_mgoods = w_getdata(mgoods)
+        return self.send_success(fruits = w_fruits,dry_fruits = w_dry_fruits,cart_fs = cart_fs,cart_ms = cart_ms,mgoods = w_mgoods )
 
     @CustomerBaseHandler.check_arguments("charge_type_id:int", "menu_type:int")  # menu_type(0：fruit，1：menu)
     def favour(self):
@@ -385,8 +404,10 @@ class Cart(CustomerBaseHandler):
         cart_f, cart_m = self.read_cart(shop_id)
 
         periods = [x for x in shop.config.periods if x.active == 1]
-        # for period in periods:
-        #     period.start_time = (str(period.start_time))[0:-]
+
+        for period in periods:
+            print(period.start_time)
+
         return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
                            periods=periods, context=dict(subpage='cart'))
 

@@ -70,14 +70,14 @@ $(document).ready(function(){
     //图片速选框
     $('#preview_choose').on('click',function(){
 	$('.preview-shelve-list').empty();
-        $.getItem('/static/items/admin/preview-item.html?v=20-15-01-21',function(data){
+        $.getItem('/static/items/admin/preview-item.html?v=2015-01-21',function(data){
            var fruit_type=$('#fruit_type').val();
            fruit_type=eval("("+fruit_type+")");
            for(var key in fruit_type )
            {
                var $item=$(data);
                $item.find('.link').attr({'href':'/admin/shelf?action=fruit&id='+key});
-               $item.find('.img').attr({'src':'/static/design_img/'+fruit_type[key]['code']+'.gif'});
+               $item.find('.img').attr({'src':'/static/design_img/'+fruit_type[key]['code']+'.png?v=20150316'});
                $item.find('.name').text(fruit_type[key]['name']+'('+fruit_type[key]['sum']+')');
                //if(fruit_type[key]['sum']!==0) $item.css({'border-color':'#44b549'});
                $('.preview-shelve-list').append($item);
@@ -619,7 +619,7 @@ function addEditFruit(target,action){
     if(!regNumber.test(priority)){return alert('优先级只能为整数！');}
     if(priority<1||priority>5){return alert('优先级只能为1-5！');}
     if(intro.length>100) {return alert('商品简介请不要超过100个字！');}
-    if(name.length>12) {return alert('商品简介请不要超过12个字！');}
+    if(name.length>12) {return alert('商品名称请不要超过12个字！');}
     var data={
         //fruit_type_id:parseInt(fruit_type_id),
         name:name,
