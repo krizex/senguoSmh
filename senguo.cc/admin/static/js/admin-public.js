@@ -1,4 +1,9 @@
 $(document).ready(function(){
+if (window.screen.width=='600')
+    document.write ('<body style="zoom: 55%">');
+else if (window.screen.width=='800') 
+    document.write ('<body style="zoom: 75%">');
+
     $('#currentShopChange li').on('click',function(){
         var shop_id=$(this).data('id');
         shopChnage(shop_id);

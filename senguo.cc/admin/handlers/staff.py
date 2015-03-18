@@ -93,8 +93,8 @@ class Order(StaffBaseHandler):
             history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
                                   models.Order.SH1_id==self.current_user.id,models.Order.status.in_([4,5,6]))
         elif work ==3: #SH2
-            orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
-                SH2_id=self.current_user.id, status=models.ORDER_STATUS.SH2)
+            orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
+                models.Order.SH2_id==self.current_user.id, models.Order.status.in_([4,5]))
             history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
                                   models.Order.SH2_id==self.current_user.id, models.Order.status.in_([5,6]))
         else:

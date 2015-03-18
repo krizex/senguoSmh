@@ -8,8 +8,8 @@
     <meta charset="UTF-8"/>
     <title>{% block title%} {% end %}</title>
     <link rel="stylesheet" href="{{static_url('css/market-global.css')}}"/>
-    <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
-    <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
     {% block head %}{% end %}
     <script>
         window.dataObj = {
@@ -76,15 +76,14 @@
     <div class="body-container">
         <div class="container phone-box">
             {% block content %}{% end %}
-            <a id="backTop" class="little_pear"><img src="{{static_url('svg/half.svg')}}" class="src_change"/></a>
+            <a id="backTop" class="little_pear"><img src="/static/svg/half@2x.png" class="src_change"/></a>
         </div>
     </div>
     {% block other %}{% end %}
-    <script src="{{static_url('js/jquery.min.js')}}"></script>
-    <script src="{{static_url('js/hammer.min.js')}}"></script>
-    <script src="{{static_url('js/bootstrap.min.js')}}"></script>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/hammer.min.js"></script>
     <script src="{{static_url('js/global.js')}}"></script>
-    <!--<script src="{{static_url('js/jweixin-1.0.js')}}"></script>-->
     <script src="{{static_url('js/market-public.js')}}"></script>
     {% block bottom %}{% end %}
 </body>

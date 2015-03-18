@@ -13,7 +13,8 @@
 </script>
 <input type="hidden" id="if_focus" value="{{context['w_follow']}}"/>
 <div class="notice-box">
-    <div class="notice-board">
+    <img src="{{static_url('images/banner.png')}}" class="default-banner img"/>
+    <div class="notice-board" style="display:none;">
         {% if notices %}
         <div id="slider" class="swipe" style="visibility: visible;">
             <div class="swipe-wrap">
@@ -24,7 +25,7 @@
             </ul>
         </nav>
         {% else %}
-        <img src="" class="default-img img lazy_img" data-src="{{static_url('images/banner.png')}}"/>
+        <img src="/static/images/banner.png" class="default-img img"/>
         {% end %}
     </div>
 </div>
@@ -105,6 +106,5 @@
         </div>
     </div>
 </div>
-<script src="{{static_url('js/swipe.js')}}"></script>
 <script src="{{static_url('js/market-home.js')}}"></script>
 {% end %}
