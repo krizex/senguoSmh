@@ -563,7 +563,7 @@ class Cart(CustomerBaseHandler):
         touser        = w_admin.admin.accountinfo.wx_openid
         shop          = self.session.query(models.Shop).filter_by(id = shop_id).first()
         shop_name     = shop.shop_name
-        order_id      = order.id
+        order_id      = order.num
         order_type    = order.type
         if order_type == 1:
             order_type = '立即送'
