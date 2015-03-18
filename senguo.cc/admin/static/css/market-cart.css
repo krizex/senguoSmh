@@ -4,7 +4,7 @@
 .bg-box{padding:10px;}
 .w-per6{width:60%;}
 .w-per9{width:90%;}
-.bottom-line{background:url('../svg/cart-paper-border_1.svg') repeat-x;height:8px;}
+.bottom-line{background:url('../svg/cart-paper-border@2x.png') repeat-x;height:8px;}
 
 .list-group .active{background:#fff;border-color:#ddd;border-left:2px solid #33CC66;}
 .list-group-item:first-child{border-radius:0px;}
@@ -26,7 +26,7 @@
 .cart-list-item .action-box{position:absolute;right:5px;top:35%;}
 .cart-list-item .charge-item{height:30px;line-height:30px;position:absolute;bottom:0;}
 .cart-list-item .number-change{position:relative;width:90px;}
-.cart-list-item .minus-plus{display:inline-block;float:left;width:32px;height:32px;background:url('../svg/icon_list_1.svg') no-repeat;position:absolute;z-index:10;background-size:120px 180px;}
+.cart-list-item .minus-plus{display:inline-block;float:left;width:32px;height:32px;background:url('../svg/icon_list@2x.png') no-repeat;position:absolute;z-index:10;background-size:120px 180px;}
 .cart-list-item .number-input{width:28%;width:60px;position:absolute;left:14px;height:30px;line-height:30px;top:0;border:0.5px solid #f7f7f8;}
 .cart-list-item .number-plus{right:0;background-position:-34px -72px;}
 .cart-list-item .number-minus{left:0;background-position:0 -72px;}

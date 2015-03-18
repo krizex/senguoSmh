@@ -1,5 +1,8 @@
 $(document).ready(function(){
     //$('.count-box').css({'height':$(window).height()});
+    //if the user is using weixin brower
+    isWeiXin();
+    //type choose
     $('.count-list li').on('click',function(){
         var $this=$(this);
         $this.addClass('active')
@@ -82,15 +85,29 @@ $(document).ready(function(){
     if(citc!=proc){$('.reCity').text(cityArea(proc,citc));}
 });
 
+function isWeiXin(){ 
+    var ua = window.navigator.userAgent.toLowerCase(); 
+        if(ua.match(/MicroMessenger/i) == 'micromessenger'){ 
+        return true; 
+        }
+        else{ 
+            var height=$(document).height();
+            var $notice=$('<div class="notice_bg" style="height:'+height+'px;"></div><div class="notice_box"><div class="notice_con text-center text-white"><h4 class="word">请使用手机微信扫描下方二维码进行店铺申请</h4><img src="/static/images/test_qrcode.png"><h4>*( ^ v ^ )*</h4></div></div>');
+            $('body').append($notice);
+    } 
+} 
+
 var wait=60;
 function time(target) {
     if (wait == 0) {
         target.text("获取验证码").addClass('bg-green');
         wait = 60;
+        $('.able_get').attr({'id':'getVrify'});
     }
     else {
         target.text("重新发送(" + wait + ")").removeClass('bg-green').css({'background':'#ccc'});
         wait--;
+        $('.able_get').attr({'id':''});
         setTimeout(function() {
                 time(target)
             },

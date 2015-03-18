@@ -490,7 +490,7 @@ class Order(AdminBaseHandler):
                 models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
             SH2s = []
             for staff in staffs:
-                staff_data = {"id": staff.id, "realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone}
+                staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone}
                 SH2s.append(staff_data)
                 if staff.id == order.SH2_id:  # todo JH、SH1
                     d["SH2"] = staff_data
@@ -1035,7 +1035,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
                 models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
             SH2s = []
             for staff in staffs:
-                staff_data = {"id": staff.id, "realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone}
+                staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone}
                 SH2s.append(staff_data)
                 if staff.id == order.SH2_id:  # todo JH、SH1
                     d["SH2"] = staff_data
