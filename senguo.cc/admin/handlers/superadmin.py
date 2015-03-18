@@ -232,6 +232,13 @@ class ShopManage(SuperBaseHandler):
             headers = dict(Host = '106.ihuyi.cn',)
             r = requests.post(url,data = postdata , headers = headers)
             print(r.text)
+
+            reason = "原因 : " + message_reason
+
+            # weixin message
+            WxOauth2.fail_template_msg(account_info.wx_openid, shop_temp.shop_name,
+                                       account_info.realname, account_info.phone,reason)  # 发送微信模板消息通知用户
+
         else:
             if shop_temp.shop_status == 2:
                 return self.send_error("店铺已经申请成功")
