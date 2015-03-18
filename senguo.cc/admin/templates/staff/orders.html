@@ -5,77 +5,74 @@
 {% block content %}
 <section data-id="content-wrapper" >
 	<div id="update-hint"  class="hint update-hint" style="display:none;">
-		<a>有新的订单，点这里或者按刷新按钮刷新</a>
+	         <a>有新的订单，点这里或者按刷新按钮刷新</a>
 	</div>
 </section>
-<ul class="order-list">
+<ul class="order-list bg-white">
     {% for order in orders %}
     {% set fruits=eval(order.fruits)%}
     {% set mgoods=eval(order.mgoods)%}
     {% set left=''%}
     {% set width=''%}
-    {% set money_paid = '未支付' %}
-    {% if order.status ==4 %}
-        {% set left='left50' %}
-        {% set width='width50'%}
-    {% elif order.status == 5%}
-        {% set left='left100' %}
-        {% set width='width100' %}
-    {% end %}
-    {% if order.money_paid %}
-        {% set money_paid = '已支付' %}
-    {% end %}
-    <li class="order-list-item bg-white mb-10">
-        <div class="title bg-grey">
-            <h4 class="pl-10">订单编号：{{order.num}}</h4>
-            {% if order.status != 5%}
-            <div class="button-box" >
-                <button class="btn clear-btn text-white bg-green mr-5 staff_remark" data-id="{{order.id}}">订单备注</button>
-                <button class="btn clear-btn text-white bg-green order_finish" data-id="{{order.id}}">完成</button>
+    <li class="order-list-item  mb-10 bg-pale-green" data-status="{{order.status }}">
+        <div class="title">
+            <div class="pl-10">
+                <span>编号：{{order.num}}</span>
+                <span class="money_paid" data-pay="{{order.money_paid}}">
+                    <span class="paid" style="display:none;">已付款 </span>
+                    <span class="unpay text-grey" style="display:none;">应收款：<span class="text-red">{{order.totalPrice}}元</span></span>
+                </span>
             </div>
-            {% end %}
+            <div class="button-box">
+                <button class="btn clear-btn text-white bg-green2 order_finish finish_btn" data-id="{{order.id}}">完成</button>
+            </div>
         </div>
-        <div class="content">
-            <p>总金额：<strong class="font14 text-pink">{{order.totalPrice}}元</strong><span class="pl-10">{{money_paid}}</span></p>
+        <div class="content text-grey">
+            <p data-id="deliveryTime">配送时间：<span class="send_date"></span><span class="send_time"></span></p>
+            <p>配送地址：{{order.address_text}}</p>
+            <p>
+                收货人：
+                <span>{{order.receiver}}</span>
+                <span>{{order.phone}}</span>
+                <a href="tel:{{order.phone}}">点击拨号</a>
+            </p>
             {% if order.message %}
-            <p>用户留言：{{order.message}}</p>
+            <p class="text-red">用户留言：{{order.message}}</p>
             {% end %}
             {% if order.remark %}
-            <p>订单备注：<span data-id="remark">{{order.remark}}</span></p>
+            <p class="text-red">订单备注：<span data-id="remark">{{order.remark}}</span></p>
             {% end %}
-            <p data-id="deliveryTime">配送时间：今天<span class="send_date"></span>{{order.start_time}}~{{order.end_time}}</p>
-            <p>
-                收货人信息：
-                <span>{{order.receiver}}</span>
-                <span>{{order.address_text}}</span>
-                <span>{{order.phone}}</span>
-            </p>
+            <p class="text-red s_remark_box" style="display:none;">员工备注：<span class="remark">{{order.staff_remark}}</span></p>
             <input type="hidden" value="{{order.create_date}}" class="create_time"/>
             <input type="hidden" value="{{order.create_date.year}}" class="create_year"/>
             <input type="hidden" value="{{order.create_date.month}}" class="create_month"/>
             <input type="hidden" value="{{order.create_date.day}}" class="create_day"/>
+            <input type="hidden" value="{{order.type}}" class="send_type"/>
             <input type="hidden" value="{{order.today}}" class="send_day"/>
+            <input type="hidden" value="{{order.start_time.hour}}" class="start_hour"/>
+            <input type="hidden" value="{{order.start_time.minute}}" class="start_minute"/>
+            <input type="hidden" value="{{order.end_time.hour}}" class="end_hour"/>
+            <input type="hidden" value="{{order.end_time.minute}}" class="end_minute"/>
         </div>
-        <div class="toggle p-10" style="display:none">
-            <hr/>
-            <h5>商品详情：</h5>
-            <ul class="goods-list list-group">
+        <div class="toggle p0_10 text-grey bg-white" style="display:none">
+            <p>商品：</p>
+            <ul class="goods-list clearfix">
                 {% for key in  fruits%}
-                <li class="clearfix list-group-item">
-                    <span class="col-sm-3 col-xs-5">{{fruits[key]['fruit_name']}}</span>
-                    <span class="col-sm-3 col-xs-5">{{fruits[key]['charge']}}</span>
+                <li class="clearfix pull-left">
+                    <span class="pull-left">{{fruits[key]['fruit_name']}}</span>
+                    <span class="pull-left">{{fruits[key]['charge']}}</span>
                     <span class="pull-left text-pink">x{{fruits[key]['num']}}</span>
                 </li>
                 {% end %}
                 {% for key in  mgoods%}
-                <li class="clearfix list-group-item" >
-                    <span class="col-sm-3 col-xs-5">{{mgoods[key]['mgoods_name']}}</span>
-                    <span class="col-sm-3 col-xs-5">{{mgoods[key]['charge']}}</span>
+                <li class="clearfix pull-left" >
+                    <span class="pull-left">{{mgoods[key]['mgoods_name']}}</span>
+                    <span class="pull-left">{{mgoods[key]['charge']}}</span>
                     <span class="pull-left text-pink">x{{mgoods[key]['num']}}</span>
                 </li>
                 {% end %}
             </ul>
-            <div class="status-bar-box" data-id="status-bar-box" >
+            <!--<div class="status-bar-box" data-id="status-bar-box" >
                 <div class="status-bar" data-id="status-bar" >
                     <div class="inner {{width}}"></div>
                     <div class="circle-icon {{left}}"></div>
@@ -83,6 +80,10 @@
                         <span class="status" data-id="{{order.status}}"></span>
                     </div>
                 </div>
+            </div>-->
+            <div class="clearfix mt10">
+                <button class="pull-left btn clear-btn text-white bg-green2 mb10 staff_remark mr-5" data-id="{{order.id}}">订单备注</button>
+                <span class="pull-left remark_notice">(如订单未按时送达，请点击“订单备注“按钮进行备注)</span>
             </div>
         </div>
     </li>

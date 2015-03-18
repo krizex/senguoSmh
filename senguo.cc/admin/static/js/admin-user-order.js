@@ -218,7 +218,7 @@ function orderItem(item){
         var CurrentStaff=function(target,val){
 	      target.attr({'data-id':val['id']});
 	      target.find('.sender-code').text(val['id']);
-	      target.find('.sender-name').text(val['realname']);
+	      target.find('.sender-name').text(val['nickname']);
 	      target.find('.sender-phone').text(val['phone']);
 	};
 	if(SH2s.length>0){

@@ -2,12 +2,12 @@
 <html lang="zh-cn">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5,maximum-scale=1.0, user-scalable=yes" />
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta charset="UTF-8"/>
     <title>{% block title %}首页{% end %}</title>
-    <link rel="stylesheet" href="{{static_url('css/bootstrap.min.css')}}"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="{{static_url('css/admin-global.css')}}"/>
     <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
@@ -151,12 +151,12 @@
             </li>
         </ul>
     </div>
-    <div class="container-right pull-right">
+    <div class="container-right pull-left">
     {% block content %}{% end %}
     </div>
 </main>
-<script src="{{static_url('js/jquery.min.js')}}"></script>
-<script src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
 <script src="{{static_url('js/global.js')}}"></script>
 <script src="{{static_url('js/admin-public.js')}}"></script>
 {% block bottom %}{% end %}

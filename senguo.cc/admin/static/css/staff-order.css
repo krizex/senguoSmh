@@ -4,16 +4,16 @@ h4{margin-top:0px;margin-bottom:0px;}
 hr{margin:5px 0;}
 p{margin-bottom:5px;}
 
-.order-list-item{width:100%;text-align:left;position:relative;border:1px solid #ccc;}
+.order-list-item{width:100%;text-align:left;position:relative;font-size:13px;}
 .order-list-item .button-box {position: absolute;right:10px;top:5px;}
-.order-list-item .clear-btn {padding:3px 15px;}
+.order-list-item .clear-btn {width:90px;}
 .order-list-item span {margin-right: 8px;}
 .order-list-item .active {background-color: rgba(20, 200, 20, 0.1);}
 .order-list-item .not-started {color: #888;background-color: #f6f6f6;}
 .order-list-item #staff-msg {width: 90%;border:1px solid #ccc;padding:3px;margin-bottom:5px;}
 .order-list-item #staff-msg-accept {padding:3px 15px;}
-.order-list-item .title{padding:10px 0;border-bottom:1px solid #eee;}
-.order-list-item .content{padding:5px 10px;background:url('../images/arrow-down.gif') no-repeat 98% center;background-size:18px;}
+.order-list-item .title{padding-top:5px;}
+.order-list-item .content{padding:5px 10px;background:url('../images/arrow-down.gif') no-repeat 98% 90%;background-size:12px;}
 
 .update-hint {padding: 10px;}
 
@@ -32,3 +32,5 @@ p{margin-bottom:5px;}
 .status-bar-box .width100{width:100%;}
 
 .remark-input{width:80%;padding:5px;}
+.arrive{background:#ccc !important;color:#fff !important;}
+.remark_notice{line-height:34px;font-size:12px;}

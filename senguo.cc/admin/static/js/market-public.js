@@ -1,7 +1,7 @@
 $(document).ready(function(){
     //客户端为Android系统替换图片路径
-        AndroidImg('bg_change');
-        AndroidImg('src_change');   
+    //AndroidImg('bg_change');
+    //AndroidImg('src_change');   
     //图片延迟加载
      $('.lazy_img').each(function(){
 	var $this=$(this);
@@ -55,7 +55,7 @@ var timestamp_val;
 var signature_val;
 var current_link=window.location.href;
 
-function AndroidImg(target){
+/*function AndroidImg(target){
     //判断客户端是否是iOS或者Android
     var u = navigator.userAgent, app = navigator.appVersion;
     var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
@@ -82,7 +82,7 @@ function AndroidImg(target){
      	}   	
       });
      }
-}
+}*/
 
 function getCookie(key){
     var aCookie = document.cookie.split(";");
@@ -117,7 +117,7 @@ function tagText(target,n){
         case 4:target.addClass('sale_tag').addClass('bg_change');break;
         case 5:target.addClass('new_tag').addClass('bg_change');break;
     }
-    AndroidImg('bg_change');
+    //AndroidImg('bg_change');
 }
 (function(factory) {
     if (typeof define === 'function' && define.amd) {

@@ -60,7 +60,7 @@ hr{margin:10px 0;}
 .status-bar-box .width0{width:0;}
 .status-bar-box .width50{width:50%;}
 .status-bar-box .width100{width:100%;}
-#box-border{background:url('../svg/cart-paper-border_1.svg') repeat-x;background-size:8px;height:8px;overflow:hidden;position:relative;z-index:5;top:8px}
+#box-border{background:url('../svg/cart-paper-border@2x.png') repeat-x;background-size:8px;height:8px;overflow:hidden;position:relative;z-index:5;top:8px}
 .sender_img{width:20px;height:20px;border-radius:50%;}
 .img-circle{width:30px;height: 30px;}
 .hint{padding:0 10px;}

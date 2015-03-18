@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="{{static_url('css/staff-home.css')}}" type="text/css" />
 {% end %}
 {% block content %}
-<section class="content-wrapper" >
+<section class="content-wrapper bg-white" >
 	<p class="notice-msg" style="display:none;" ></p>
     <div class="user-img center-block">
         <img src="{{current_user.accountinfo.headimgurl}}" class="img-circle"/>
@@ -20,7 +20,7 @@
         {% end %}
  	</span></h5>
     <h5>员工编号：{{current_user.id}}</h5>
-    <a href="{{reverse_url('staffOrder')}}?order_type=now" class="btn btn-large text-white bg-green">当前订单</a>
+    <a href="{{reverse_url('staffOrder')}}?order_type=now" class="btn btn-large text-white bg-green2">当前订单</a>
 	<hr />
 	<div class="charge-money-box" data-id="charge-money-box">
 		<h4><strong >已收货款：<span data-id="current-charge-money" >{{handler.hirelink.money}}</span>元</strong></h4>
