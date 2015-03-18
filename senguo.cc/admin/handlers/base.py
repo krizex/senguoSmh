@@ -552,7 +552,7 @@ class WxOauth2:
             'touser' : touser,
             'template_id':'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0',
             'url'    : '',
-            'topcolor: '#FF0000',
+            'topcolor': "#FF0000",
             "data":{
                 "first"    : {"value":"您的订单已提交成功","color":"#173177"},
                 "keyword1" : {"value":shop_name,"color":"#173177"},

@@ -243,7 +243,7 @@ class Comment(CustomerBaseHandler):
 class Market(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self, shop_code):
-        w_follow = ''
+        w_follow = True
         fruits=''
         dry_fruits=''
         shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
@@ -255,6 +255,9 @@ class Market(CustomerBaseHandler):
                 customer_id=self.current_user.id, shop_id=shop.id).first():
             # return self.redirect("/customer/shopProfile")  # 还没关注的话就重定向到店铺信息页
             w_follow = False
+            self.session.add(models.CustomerShopFollow(customer_id=self.current_user.id, shop_id=shop.id))  # 添加关注
+            self.session.commit()
+
 
         if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
             self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
@@ -525,7 +528,7 @@ class Cart(CustomerBaseHandler):
             w_SH2_id = w_admin.admin.id
             print(w_SH2_id)
         print("*****************************************************************")
-        print(fruits)
+        print(f_d)
         print(mgoods)
         order = models.Order(customer_id=self.current_user.id,
                              shop_id=shop_id,
@@ -570,14 +573,24 @@ class Cart(CustomerBaseHandler):
         customer_info = self.session.query(models.Accountinfo).filter_by(id = self.current_user.id).first()
         customer_name = customer_info.nickname 
         c_tourse      = customer_info.wx_openid
-        goods         = str(f_d)  + '\n' + str(m_d)
+        print(c_tourse)
+
+        ##################################################
+        #goods
+        goods = []
+        print(f_d,m_d)
+        for f in f_d:
+            goods.append([f_d[f].get('fruit_name'),f_d[f].get('num')])
+        for m in m_d:
+            goods.append([m_d[m].get('fruit_name'),m_d[m].get('num')])
+        goods = str(goods)[1:-1]
         order_totalPrice = totalPrice
         session = self.session
         send_time     = order.get_sendtime(session,order.id)
         WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
             customer_name,order_totalPrice,send_time)
         # send message to customer
-        # WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
+        WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
 
         cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
         cart.update(session=self.session, fruits='{}', mgoods='{}')#清空购物车
