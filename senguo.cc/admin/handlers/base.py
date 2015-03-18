@@ -17,6 +17,9 @@ import qiniu
 from settings import *
 import requests
 
+#woody
+order_url = 'http://m.senguo.cc:8887/admin'
+
 class GlobalBaseHandler(BaseHandler):
 
     @property
@@ -514,6 +517,56 @@ class WxOauth2:
         data = json.loads(res.content.decode("utf-8"))
         if data["errcode"] != 0:
             print("店铺审核模板消息发送失败：", data)
+            return False
+        return True
+
+    @classmethod
+    def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time):
+        remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n\n' + '请及时登录森果后台处理订单。'
+        postdata = {
+            'touser' : touser,
+            'template_id':"5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg",
+            "url":order_url,
+            "topcolor":"#FF0000",
+            "data":{
+                "first":{"value":"管理员{0}您好，店铺{1}收到了新的订单！".format(admin_name,shop_name),"color": "#173177"},
+                "tradeDateTime":{"value":str(create_date),"color":"#173177"},
+                "orderType":{"value":order_type,"color":"#173177"},
+                "customerInfo":{"value":customer_name,"color":"#173177"},
+                "orderItemName":{"value":"订单编号","color":"#173177"},
+                "orderItemData":{"value":order_id,"color":"#173177"},
+                "remark":{"value":remark,"color":"#173177"},
+            }
+        }
+        access_token = cls.get_client_access_token()
+        res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
+        data = json.loads(res.content.decode("utf-8"))
+        if data["errcode"] != 0:
+            print("订单提醒发送失败:",data)
+            return False
+        return True
+
+    @classmethod
+    def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice):
+        postdata = {
+            'touser' : touser,
+            'template_id':'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0',
+            'url'    : '',
+            'topcolor: '#FF0000',
+            "data":{
+                "first"    : {"value":"您的订单已提交成功","color":"#173177"},
+                "keyword1" : {"value":shop_name,"color":"#173177"},
+                "keyword2" : {"value":str(order_create),"color":"#173177"},
+                "keyword3" : {"value":goods,"color":"#173177"},
+                "keyword4" : {"value":order_totalPrice,"color":"#173177"},
+                "remark"   : {"value":"您的订单我们已经收到，配货后将尽快配送~","color":"#173177"},
+            }
+        }
+        access_token = cls.get_client_access_token()
+        res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata))
+        data = json.loads(res.content.decode("utf-8"))
+        if data["errcode"] != 0:
+            print("订单提交成功通知发送失败",data)
             return False
         return True
 

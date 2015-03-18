@@ -1,4 +1,4 @@
-from handlers.base import CustomerBaseHandler
+from handlers.base import CustomerBaseHandler,WxOauth2
 import dal.models as models
 import tornado.web
 from settings import *
@@ -404,8 +404,10 @@ class Cart(CustomerBaseHandler):
         cart_f, cart_m = self.read_cart(shop_id)
 
         periods = [x for x in shop.config.periods if x.active == 1]
+
         for period in periods:
             print(period.start_time)
+
         return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
                            periods=periods, context=dict(subpage='cart'))
 
@@ -522,6 +524,9 @@ class Cart(CustomerBaseHandler):
         if w_admin is not None:
             w_SH2_id = w_admin.admin.id
             print(w_SH2_id)
+        print("*****************************************************************")
+        print(fruits)
+        print(mgoods)
         order = models.Order(customer_id=self.current_user.id,
                              shop_id=shop_id,
                              num=num,
@@ -546,6 +551,34 @@ class Cart(CustomerBaseHandler):
             self.session.commit()
         except:
             return self.send_fail("订单提交失败")
+
+        #####################################################################################
+        # where the order sueessed , send a message to the admin of shop
+        # woody
+        #####################################################################################
+        admin_name    = w_admin.admin.accountinfo.nickname
+        touser        = w_admin.admin.accountinfo.wx_openid
+        shop          = self.session.query(models.Shop).filter_by(id = shop_id).first()
+        shop_name     = shop.shop_name
+        order_id      = order.id
+        order_type    = order.type
+        if order_type == 1:
+            order_type = '立即送'
+        else:
+            order_type = '按时达'
+        create_date   = order.create_date
+        customer_info = self.session.query(models.Accountinfo).filter_by(id = self.current_user.id).first()
+        customer_name = customer_info.nickname 
+        c_tourse      = customer_info.wx_openid
+        goods         = str(f_d)  + '\n' + str(m_d)
+        order_totalPrice = totalPrice
+        session = self.session
+        send_time     = order.get_sendtime(session,order.id)
+        WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
+            customer_name,order_totalPrice,send_time)
+        # send message to customer
+        # WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
+
         cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
         cart.update(session=self.session, fruits='{}', mgoods='{}')#清空购物车
         return self.send_success()
@@ -558,7 +591,7 @@ class Wexin(CustomerBaseHandler):
     @CustomerBaseHandler.check_arguments("action?:str", "url:str")
     def post(self):
         if "action" in self.args and not self.args["action"]:
-            from handlers.base import WxOauth2
+            # from handlers.base import WxOauth2
             return WxOauth2.post_template_msg('o5SQ5t3VW_4zFSYhrKghCiOfEojc', '良品铺子', '廖斯敏', '18071143592')
         noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
         timestamp = datetime.datetime.now().timestamp()

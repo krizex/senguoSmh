@@ -6,6 +6,15 @@ import handlers.fruitzone
 import handlers.infowall
 from dal import models
 #todo:handlers太大会不会影响性能？
+
+# sub_handlers = ["^e.senguo.cc",
+
+#     [(r"/m", handlers.superadmin.Official),
+#     ]
+
+# ]
+
+
 handlers = [
     (r"/customer/login", handlers.customer.Access, {"action":"login"}, "customerLogin"),
     (r"/customer/oauth", handlers.customer.Access, {"action":"oauth"}, "customerOauth"),
@@ -83,7 +92,7 @@ handlers = [
 
     # (r"/super/notice/", handlers.superadmin.Notice),
     #微官网-----待删除
-    (r"/m", handlers.superadmin.Official),
+    # (r"/m", handlers.superadmin.Official),
 
     (r"/admin/login", handlers.admin.Access,{"action":"login"}, "adminLogin"),
     (r"/admin/oauth", handlers.admin.Access, {"action":"oauth"}, "adminOauth"),
