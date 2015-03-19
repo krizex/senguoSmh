@@ -31,7 +31,7 @@ def main():
     application = Application()
 
     #woody
-    application.add_handlers(r"^m.senguo.cc$",[(r"/m", superadmin.Official),])
+    # application.add_handlers(r"^m.senguo.cc$",[(r"/m", superadmin.Official),])
     # for sub_handler in sub_handlers:
     #     application.add_handlers(sub_handler[0],sub_handler[1])
     # application.add_handlers(r"^b.senguo.cc$",[(r"/admin", admin.Home, {},  "adminHome"),]),

@@ -172,12 +172,14 @@ var goodsList=function(){
             $('.to-add').hammer().on('tap',function(){
                 var $this=$(this);
                 //是否关注店铺
-                var if_focus=$('#if_focus').val();
+                /*var if_focus=$('#if_focus').val();
                 if(if_focus=='False')  $('.focus-box').modal('show');
                 else{
                       goodsNum($this.siblings('.number-change').find('.number-plus'),2);
                      $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
-                }     
+                }*/
+                goodsNum($this.siblings('.number-change').find('.number-plus'),2);
+                $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
                 //果篮显示商品种类数
                 if(cart_count==0) {$('.cart_num').show();}
                 if($this.hasClass('add_cart_num')){

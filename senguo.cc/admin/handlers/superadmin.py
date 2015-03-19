@@ -223,15 +223,22 @@ class ShopManage(SuperBaseHandler):
             # mobile = '18162664593'
             # mobile = '13163263783'
             # mobile = account_info.phone
-            if mobile is not None:
-                message_fail_content = '尊敬的{0}，您好，您在森果平台申请的店铺{1}由于{2}未通过审核，您点击右边链接，关注森果微信平台http://dwz.cn/CSZiH，了解更多平台动态，再行申请。'.format(message_name,message_shop_name,message_reason)
-                postdata = dict(account='cf_senguocc',
-                    password='sg201404',
-                    mobile=mobile,
-                    content = message_fail_content)
-                headers = dict(Host = '106.ihuyi.cn',)
-                r = requests.post(url,data = postdata , headers = headers)
-                print(r.text)
+            # if mobile is not None:
+            message_fail_content = '尊敬的{0}，您好，您在森果平台申请的店铺{1}由于{2}未通过审核，您点击右边链接，关注森果微信平台http://dwz.cn/CSZiH，了解更多平台动态，再行申请。'.format(message_name,message_shop_name,message_reason)
+            postdata = dict(account='cf_senguocc',
+                password='sg201404',
+                mobile=mobile,
+                content = message_fail_content)
+            headers = dict(Host = '106.ihuyi.cn',)
+            r = requests.post(url,data = postdata , headers = headers)
+            print(r.text)
+
+            reason = "原因 : " + message_reason
+
+            # weixin message
+            WxOauth2.fail_template_msg(account_info.wx_openid, shop_temp.shop_name,
+                                       account_info.realname, account_info.phone,reason)  # 发送微信模板消息通知用户
+
         else:
             if shop_temp.shop_status == 2:
                 return self.send_error("店铺已经申请成功")
@@ -289,17 +296,16 @@ class ShopManage(SuperBaseHandler):
             message_shop_name = shop_temp.shop_name
             # mobile = account_info.phone
             print(mobile)
-            if mobile is not None:
+           
+            message_content ='尊敬的{0}，您好，您在森果平台申请的店铺{1}已经通过审核，点击链接查看使用教程 http://dwz.cn/CSY6L'.format(message_name,message_shop_name)
 
-                message_content ='尊敬的{0}，您好，您在森果平台申请的店铺{1}已经通过审核，点击链接查看使用教程 http://dwz.cn/CSY6L'.format(message_name,message_shop_name)
-
-                postdata = dict(account='cf_senguocc',
-                    password='sg201404',
-                    mobile=mobile,
-                    content = message_content)
-                headers = dict(Host = '106.ihuyi.cn',)
-                r = requests.post(url,data = postdata , headers = headers)
-                print(r.text)
+            postdata = dict(account='cf_senguocc',
+                password='sg201404',
+                mobile=mobile,
+                content = message_content)
+            headers = dict(Host = '106.ihuyi.cn',)
+            r = requests.post(url,data = postdata , headers = headers)
+            print(r.text)
             # test_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'
 
             WxOauth2.post_template_msg(account_info.wx_openid, shop_temp.shop_name,
