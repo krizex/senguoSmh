@@ -197,7 +197,7 @@ class _AccountApi(_CommonApi):
             #####################################################################################
             # update wx_openid
             #####################################################################################
-            # u.accountinfo.wx_openid = wx_userinfo["openid"]
+            u.accountinfo.wx_openid = wx_userinfo["openid"]
             # print( "openid" + wx_userinfo["openid"])
             session.commit()
             return u

@@ -10,13 +10,13 @@ import hashlib
 
 super_users = [
 dict(
-     unionid = "oxkR_jtCKSJLFO4dFYhhHXGNw4ns",
-     openid = "o78-ms4b-xnS7mXqqBu5mWFXo_dU",
+     unionid = "oxkR_jsW-FuDG4T6kEjbZqoOeBnQ",
+     openid = "o5SQ5t_xLVtTysosFBbEgaFjlRSI",
      country = "CN",
      province = "Hubei",
      city = "Wuhan",
-     headimgurl="http://wx.qlogn.cn/mmopen/FMajU52WvbEafZYABcyncw2XmosqWdtGSaBVjrpMmopHHEtO4j6hPFLKYVntAbKd4r01X8Rshy59afLMqg2oicwpmVTfib3G3c/0",
-     nickname="刘超",
+     headimgurl=" http://wx.qlogo.cn/mmopen/ajNVdqHZLLBjOHyOeloTE0xiaBoDYqEgGFstIpn78cbKkJEQCRNmJbwrPecdpto6ialBLNTxy7LmvcCUwco2BqcA/0",
+      ="Woody",
      sex=1),
 dict(
      unionid = "oxkR_jm8co_E3_TlR5THez96UuN8",

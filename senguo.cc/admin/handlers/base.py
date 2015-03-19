@@ -521,6 +521,31 @@ class WxOauth2:
         return True
 
     @classmethod
+    def fail_template_msg(cls, touser, shop_name, name, phone,reason):
+        time = datetime.datetime.now().strftime('%Y-%m-%d %R')
+        postdata = {
+            "touser": touser,
+            "template_id": "YDIcdYNMLKk3sDw_yJgpIvmcN5qz_2Uz83N7T9i5O3s",
+            "url": "http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&"
+                   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
+            "topcolor": "#FF0000",
+            "data": {
+                "first": {"value": "您好，您所申请的店铺“%s”未通过审核！" % shop_name, "color": "#173177"},
+                "keyword1": {"value": name, "color": "#173177"},
+                "keyword2": {"value": phone, "color": "#173177"},
+                "keyword3": {"value": time, "color": "#173177"},
+                "remark": {"value": reason, "color": "#FF4040"}}
+        }
+        access_token = cls.get_client_access_token()
+        res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
+        data = json.loads(res.content.decode("utf-8"))
+        if data["errcode"] != 0:
+            print("店铺审核模板消息发送失败：", data)
+            return False
+        return True
+
+
+    @classmethod
     def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time):
         remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n\n' + '请及时登录森果后台处理订单。'
         postdata = {
@@ -552,7 +577,7 @@ class WxOauth2:
             'touser' : touser,
             'template_id':'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0',
             'url'    : '',
-            'topcolor: '#FF0000',
+            'topcolor': "#FF0000",
             "data":{
                 "first"    : {"value":"您的订单已提交成功","color":"#173177"},
                 "keyword1" : {"value":shop_name,"color":"#173177"},
