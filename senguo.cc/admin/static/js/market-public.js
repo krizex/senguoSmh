@@ -1,4 +1,10 @@
 $(document).ready(function(){
+    window.dataObj.shop_href='/customer/shopProfile';
+    window.dataObj.market_href='/shop/none';
+    window.dataObj.home_href='/customer';
+    window.dataObj.success_href='/notice/success';
+    window.dataObj.staff_href='/staff/hire/';
+    window.dataObj.current_link=window.location.href;
     //fastclick initialise
      $(function() {
         FastClick.attach(document.body);
@@ -23,13 +29,13 @@ $(document).ready(function(){
         $('.little_pear').css({'right':'-40px'});
     });
     //从cookie中提取数据
-    shop_id=getCookie('market_shop_id');
-    shop_name=getCookie('shop_name');
-    cart_count=getCookie('cart_count');
-    $('.staff_href').attr({'href':staff_href+Int(shop_id)});
+    window.dataObj.shop_id=getCookie('market_shop_id');
+    window.dataObj.shop_name=getCookie('shop_name');
+    window.dataObj.cart_count=getCookie('cart_count');
+    $('.staff_href').attr({'href':window.dataObj.staff_href+Int(window.dataObj.shop_id)});
     //显示商品数量
-    if(cart_count!=0){
-        $('.cart_num').show().text(cart_count);
+    if(window.dataObj.cart_count!=0){
+        $('.cart_num').show().text(window.dataObj.cart_count);
     }
     //设置title
     //document.title=$.base64Decode(shop_name)+'一家不错的水果O2O店铺，快来关注吧~';
@@ -46,18 +52,6 @@ $(document).ready(function(){
         }
 });
 });
-var shop_href='/customer/shopProfile';
-var market_href='/shop/none';
-var home_href='/customer';
-var success_href='/notice/success';
-var staff_href='/staff/hire/';
-var shop_id=window.dataObj.shop_id;
-var shop_name=window.dataObj.shop_name;
-var cart_count=window.dataObj.cart_count;
-var noncestr_val;
-var timestamp_val;
-var signature_val;
-var current_link=window.location.href;
 
 /*function AndroidImg(target){
     //判断客户端是否是iOS或者Android
@@ -187,8 +181,11 @@ Modal.prototype.modal=function(type){
     var $target=$('#'+this.target+'');
     if(type=='show')
     {
+        var window_height=$(window).height();
         var height=$('.container').height();
-        var $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
+        var $mask;
+        if(height<window_height) $mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
+        else $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
         $('body').append($mask).addClass('modal_sty').attr({'onmousewheel':'return false'});
         $target.removeClass('fade').addClass('in').css({'display':'block'});
         $target.on('click',function(e){

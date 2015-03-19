@@ -36,7 +36,8 @@ $(document).ready(function(){
         order_id=$this.data('id');
         var index=$this.parents('.order-list-item').index();
         $('.remark-input').empty();
-        $('.remark-box').modal('show').attr({'data-id':index});
+        var remark_box=new Modal('remark_box');
+        remark_box.modal('show').attr({'data-id':index});
     });
     $(document).on('click','.remark_submit',function(){
         var index=$('.remark-box').attr('data-id');
@@ -109,7 +110,8 @@ function remarkSub(id,index){
     $.postJson(url,args,function(res){
         if(res.success){
             $('.order-list-item').eq(index).find('.s_remark_box').show().find('.remark').text(remark);
-            $('.remark-box').modal('hide');
+            var remark_box=new Modal('remark_box');
+            remark_box.modal('hide');
         }
         else return alert(res.error_text)
     },function(){
