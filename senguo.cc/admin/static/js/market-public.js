@@ -1,4 +1,8 @@
 $(document).ready(function(){
+    //fastclick initialise
+     $(function() {
+        FastClick.attach(document.body);
+    });   
     //客户端为Android系统替换图片路径
     //AndroidImg('bg_change');
     //AndroidImg('src_change');   
@@ -14,8 +18,8 @@ $(document).ready(function(){
         var id=$this.data('id');
         unitText($this,id);
     });
-    $('#backTop').on('click',function(){
-        $('body','html').animate({'scrollTop':0},100);
+    $(document).on('click','#backTop',function(){
+        document.body.scrollTop =0;
         $('.little_pear').css({'right':'-40px'});
     });
     //从cookie中提取数据
@@ -40,7 +44,7 @@ $(document).ready(function(){
             }
             else $('.little_pear').animate({'right':'-40px'},5);
         }
-	});
+});
 });
 var shop_href='/customer/shopProfile';
 var market_href='/shop/none';
@@ -119,80 +123,84 @@ function tagText(target,n){
     }
     //AndroidImg('bg_change');
 }
-(function(factory) {
-    if (typeof define === 'function' && define.amd) {
-        define(['jquery', 'hammerjs'], factory);
-    } else if (typeof exports === 'object') {
-        factory(require('jquery'), require('hammerjs'));
+//public
+$.postJson = function(url, args,successCall, failCall, alwaysCall){
+    args._xsrf = window.dataObj._xsrf;
+    var req = $.ajax({
+        type:"post",
+        url:url,
+        data:JSON.stringify(args),
+        contentType:"application/json; charset=UTF-8",
+        success:successCall,
+        fail:failCall,
+        error:failCall
+    });
+    //req.always(alwaysCall);
+};
+
+$.getItem=function(url,success){
+    $.get(url,success);
+};
+
+
+function Int(target){
+    target=parseInt(target);
+    return target;
+}
+
+function checkTime(i)
+{
+    if (i<10)
+    {i="0" + i}
+    return i
+}
+
+function mathFloat(target){
+    return Math.round(target*100)/100;
+}
+
+function isEmptyObj(obj){
+    for(var n in obj){return false}
+    return true;
+}
+
+function is_weixin(){
+    var ua = navigator.userAgent.toLowerCase();
+    if(ua.match(/MicroMessenger/i)=="micromessenger") {
+        return true;
     } else {
-        factory(jQuery, Hammer);
+        return false;
     }
-}(function($, Hammer) {
-    function hammerify(el, options) {
-        var $el = $(el);
-        if(!$el.data("hammer")) {
-            $el.data("hammer", new Hammer($el[0], options));
-        }
+}
+(function ($) {
+    $.getUrlParam = function (name, default_value) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return default_value || null;
     }
+})(Zepto);
 
-    $.fn.hammer = function(options) {
-        return this.each(function() {
-            hammerify(this, options);
+function Modal(target){
+    this.target=target;
+}
+Modal.prototype.modal=function(type){
+    var $target=$('#'+this.target+'');
+    if(type=='show')
+    {
+        var height=$('.container').height();
+        var $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
+        $('body').append($mask).addClass('modal_sty').attr({'onmousewheel':'return false'});
+        $target.removeClass('fade').addClass('in').css({'display':'block'});
+        $target.on('click',function(e){
+            if($(e.target).closest('.dismiss').length != 0){
+                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).find($mask).remove();
+                $target.addClass('fade').removeClass('in').css({'display':'none'});
+            }
         });
-    };
-
-    // extend the emit method to also trigger jQuery events
-    Hammer.Manager.prototype.emit = (function(originalEmit) {
-        return function(type, data) {
-            originalEmit.call(this, type, data);
-            $(this.element).trigger({
-                type: type,
-                gesture: data
-            });
-        };
-    })(Hammer.Manager.prototype.emit);
-}));
-
-function wexin(){
-    /*微信Api
-     wx.config({
-     debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-     appId: 'wx0ed17cdc9020a96e', // 必填，公众号的唯一标识
-     timestamp:timestamp_val, // 必填，生成签名的时间戳
-     nonceStr:noncestr_val, // 必填，生成签名的随机串
-     signature:signature_val,// 必填，签名，见附录1
-     jsApiList: ['onMenuShareTimeline','onMenuShareAppMessage'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-     });
-     wx.ready(function(){
-     wx.onMenuShareTimeline({
-     title: '哈哈哈哈哈'+'一家不错的水果O2O店铺，快来关注吧~ ', // 分享标题
-     link:current_link, // 分享链接
-     imgUrl: '', // 分享图标
-     success: function () {
-     // 用户确认分享后执行的回调函数
-     },
-     cancel: function () {
-     // 用户取消分享后执行的回调函数
-     }
-     });
-     wx.onMenuShareAppMessage({
-     title: '哈哈哈哈哈', // 分享标题
-     desc: "一家不错的水果O2O店铺，快来关注吧~ ", // 分享描述
-     link:current_link,
-     imgUrl: "", // 分享图标
-     type: '' // 分享类型,music、video或link，不填默认为link
-     });
-     });*/
-    var url='/wexin';
-    var link= current_link;
-    var args={url: link};
-    $.ajaxSetup({'async':false});
-    $.postJson(url,args,function(res){
-        if(res.success){
-            noncestr_val=res.noncestr;
-            timestamp_val=res.timestamp;
-            signature_val=res.signature;
-        }
-        else return alert(res.error_text);
-    })
+    }
+    else if(type=='hide')
+    {
+        $('body').removeClass('modal_sty').attr({'onmousewheel':''}).find('.modal_bg').remove();
+        $target.addClass('fade').removeClass('in').css({'display':'none'});
+    }
 }

@@ -2,10 +2,9 @@ $(document).ready(function(){
     var sex_id=$('.user-sex').data('id');
     sex($('.user-sex'),sex_id);
     //收货地址add
-    $(document).on('mouseup','.address-manage',function(e){
+    $(document).on('click','.address-manage',function(e){
         var $this=$(this);
-        var forbid_click=$this.find('.forbid_click');
-        if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
+        if($(e.target).closest('.forbid_click').length == 0){
             $('.address-list ').toggle();
             $this.find('.add-address ').toggle();
         }
@@ -20,7 +19,8 @@ $(document).ready(function(){
         phone=parent.find('.item_phone').text();
         address=parent.find('.item_address').text();
         address_id=$this.parents('.address-item').attr('data-id');
-       $('.address-box').modal('show');
+        var address_box=new Modal('address_box');
+       address_box.modal('show');
        $('.addressAdd').hide();
        $('.addressEdit').show();
        $('#address_name').val(name);
@@ -35,7 +35,8 @@ $(document).ready(function(){
     $('body').on('click','.add-address',function(){
         var max= $('.address-list').find('.address-item').length;
         if(max<5){
-            $('.address-box').modal('show');
+            var address_box=new Modal('address_box');
+            address_box.modal('show');
             $('.addressAdd').show();
             $('.addressEdit').hide();
         }
@@ -107,7 +108,8 @@ function addressEdit(target,action){
                 $item.find('.item_address').text(address);
                 $('.address-list').append($item);
             }
-            $('.address-box').modal('hide');
+            var address_box=new Modal('address_box');
+            address_box.modal('hide');
         }
         else return alert(res.error_text)
     },function(){return alert('网络错误！')})

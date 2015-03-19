@@ -1,19 +1,18 @@
 $(document).ready(function(){
     var item_url='/static/items/customer/comment-list-item.html?v=2015-02-02';
     getComment(item_url);
-    $('#getMore').hammer().on('tap',function(){
+    $(document).on('click','#getMore',function(){
         var url='/customer/comment?page='+page;
         getMore(url);
         page++;
     });
 });
 var comments=window.dataObj.comments;
-var list_item;
 var page=1;
 
 function getComment(url){
     $.getItem(url,function(data){
-            list_item=data;
+            window.dataObj.list_item=data;
             var comment=comments;
             commentItem(comment);
        }
@@ -36,7 +35,7 @@ function getMore(url){
 
 function commentItem(comment_list){
     for(var i=0;i<comment_list.length;i++){
-        var $item=$(list_item);
+        var $item=$(window.dataObj.list_item);
         var img=comment_list[i]['img'];
         var name=comment_list[i]['name'];
         var time=comment_list[i]['time'];

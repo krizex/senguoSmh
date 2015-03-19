@@ -29,6 +29,7 @@ input[type=text]:focus{box-shadow:0px;border-color:#f7f7f8 !important;outline:no
 .show{display: block!important;}
 .clearfix:before{display: table;content: " ";}
 .clearfix:after{clear:both;}
+.modal_bg{background:#000; filter: Alpha(opacity=50); -moz-opacity:.5; opacity:0.5; width:100%;height:100%;position:absolute;z-index:1040;top:0;}
 .modal-open{overflow:hidden}
 .modal{position:fixed;top:0;right:0;bottom:0;left:0;z-index:1050;display:none;overflow:hidden;-webkit-overflow-scrolling:touch;outline:0}
 .modal.fade .modal-dialog{-webkit-transition:-webkit-transform .3s ease-out;-o-transition:-o-transform .3s ease-out;transition:transform .3s ease-out;-webkit-transform:translate3d(0,-25%,0);-o-transform:translate3d(0,-25%,0);transform:translate3d(0,-25%,0)}
@@ -47,6 +48,7 @@ input[type=text]:focus{box-shadow:0px;border-color:#f7f7f8 !important;outline:no
 .modal-footer .btn-block+.btn-block{margin-left:0}
 .modal-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}
 .modal-content{-webkit-box-shadow:0 5px 15px rgba(0,0,0,.5);box-shadow:0 5px 15px rgba(0,0,0,.5)}
+.modal_sty{height:100%;oveflow:hidden;}
 .container{padding:0;z-index:2;}
 .body-container{position:absolute;width:100%;height:100%;z-index:2;}
 .body_bg{width:100%;height:100%;z-index:1;position:fixed;background:#F0F4F0;background-size: 10px;top:0;}
@@ -69,6 +71,7 @@ hr{height:0;-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizin
 .modal-footer{clear:both;}
 a{outline:0;}
 a:focus{border:none;background:none;outline:0;}
+.hidden{display:none;}
 
 
 .bg-white{background-color:#fff !important;}
