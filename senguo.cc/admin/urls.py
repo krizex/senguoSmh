@@ -22,8 +22,10 @@ handlers = [
     (r"/customer/register", handlers.customer.Access, {"action":"register"}, "customerRegister"),
     (r"/customer", handlers.customer.Home, {}, "customerHome"),
     (r"/customer/profile", handlers.customer.CustomerProfile, {}, "customerProfile"),
-    #remove shop
-    (r"/(\w+)", handlers.customer.Market, {}, "Market"),
+    #微官网-----待删除
+    (r"/", handlers.superadmin.Official),
+
+    
     (r"/customer/cart", handlers.customer.Cart, {}, "customerCart"),
     (r"/customer/orders", handlers.customer.Order, {}, "customerOrder"),
     (r"/customer/orders/detail/(\d+)", handlers.customer.OrderDetail, {}, "customerOrderDetail"),
@@ -92,9 +94,7 @@ handlers = [
 
 
     # (r"/super/notice/", handlers.superadmin.Notice),
-    #微官网-----待删除
-    (r"/m", handlers.superadmin.Official),
-
+    
     (r"/admin/login", handlers.admin.Access,{"action":"login"}, "adminLogin"),
     (r"/admin/oauth", handlers.admin.Access, {"action":"oauth"}, "adminOauth"),
     (r"/admin/logout", handlers.admin.Access, {"action":"logout"}, "adminLogout"),
@@ -126,6 +126,9 @@ handlers = [
     # (r"/staff/...")
 
     # 水果圈子
+
+    #remove shop
+    (r"/(\w+)", handlers.customer.Market, {}, "Market"),
 
     # 主页
     (r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次
