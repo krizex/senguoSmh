@@ -127,8 +127,7 @@ handlers = [
 
     # 水果圈子
 
-    #remove shop
-    (r"/(\w+)", handlers.customer.Market, {}, "Market"),
+    
 
     # 主页
     (r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次
@@ -171,6 +170,9 @@ handlers = [
     (r"/infowall/infoDetail/comment", handlers.infowall.InfoDetail, {}, "infowallInfoDetailComment"),
     (r"/infowall/infoCollect", handlers.infowall.InfoCollect, {}, "infowallInfoCollect"),
     (r"/infowall/infoIssue", handlers.infowall.InfoIssue, {}, "infowallInfoIssue"),
+
+    #remove shop
+    (r"/(\w+)", handlers.customer.Market, {}, "Market"),
 
 
     (r"/fruitzone/systemPurchase/", handlers.fruitzone.SystemPurchase, {
