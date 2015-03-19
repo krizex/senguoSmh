@@ -35,13 +35,13 @@ input[type=text]:focus{box-shadow:0px;border-color:#f7f7f8 !important;outline:no
 .modal.fade .modal-dialog{-webkit-transition:-webkit-transform .3s ease-out;-o-transition:-o-transform .3s ease-out;transition:transform .3s ease-out;-webkit-transform:translate3d(0,-25%,0);-o-transform:translate3d(0,-25%,0);transform:translate3d(0,-25%,0)}
 .modal.in .modal-dialog{-webkit-transform:translate3d(0,0,0);-o-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}
 .modal-open .modal{overflow-x:hidden;overflow-y:auto}
-.modal-dialog{position:relative;width:auto;margin:10px}
+.modal-dialog{position:relative;width:auto;margin:10px;padding:0 10px;}
 .modal-content{position:relative;background-color:#fff;-webkit-background-clip:padding-box;background-clip:padding-box;border:1px solid #999;border:1px solid rgba(0,0,0,.2);border-radius:6px;outline:0;-webkit-box-shadow:0 3px 9px rgba(0,0,0,.5);box-shadow:0 3px 9px rgba(0,0,0,.5);margin:0 auto;}.modal-backdrop{position:fixed;top:0;right:0;bottom:0;left:0;z-index:1040;background-color:#000}.modal-backdrop.fade{filter:alpha(opacity=0);opacity:0}
 .modal-backdrop.in{filter:alpha(opacity=50);opacity:.5}
 .modal-header{min-height:16.43px;padding:15px;border-bottom:1px solid #e5e5e5;position:relative;overflow:hidden;}
-.modal-header .close{margin-top:-2px;position:absolute;top:-6px;right:0;color:inherit}
+.modal-header .close{margin-top:-2px;position:absolute;top:-3px;right:0;color:inherit}
 .modal-title{margin:0;line-height:1.42857143;margin-left:-10px;}
-.modal-body{position:relative;padding:15px;min-height:200px;}
+.modal-body{position:relative;padding:15px;min-height:180px;}
 .modal-footer{padding:10px;text-align:right;}
 .modal-footer .btn+.btn{margin-bottom:0;margin-left:5px}
 .modal-footer .btn-group .btn+.btn{margin-left:-1px}
@@ -65,7 +65,7 @@ hr{height:0;-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizin
 .modal-dialog{margin:0px auto;margin-top:10%!important;max-width:640px;}
 .modal-content{position:relative;}
 .modal-header{background:url('../svg/rainshed_green@2x.png') repeat-x;padding:0px;height:42px;background-size:20px;line-height:36px;position:absolute;z-index:10;width:100%;border-bottom:0px;border-top-left-radius:6px;border-top-right-radius:6px;color:#fff;}
-.modal-title{line-height:40px !important;text-indent:14px;}
+.modal-title{line-height:36px !important;text-indent:20px;font-weight:normal;}
 .modal-header .close{font-size:28px !important;margin-right:14px;margin-top:3px;}
 .modal-body{font-size:1em;padding:20px 10px;}
 .modal-footer{clear:both;}

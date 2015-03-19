@@ -16,6 +16,14 @@ from dal import models
 
 
 handlers = [
+    (r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
+    (r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
+    (r"/staff/logout", handlers.staff.Access, {"action":"logout"}, "staffLogout"),
+    (r"/staff/register", handlers.staff.Access, {"action":"register"}, "staffRegister"),
+    (r"/staff", handlers.staff.Home, {}, "staffHome"),
+    (r"/staff/order", handlers.staff.Order, {}, "staffOrder"),
+    (r"/staff/hire/(\d+)", handlers.staff.Hire, {}, "staffHire"),
+
     (r"/customer/login", handlers.customer.Access, {"action":"login"}, "customerLogin"),
     (r"/customer/oauth", handlers.customer.Access, {"action":"oauth"}, "customerOauth"),
     (r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
@@ -116,13 +124,7 @@ handlers = [
     # (r"/admin/finance", handlers.admin.Finance, {}, "adminFinance"),
     # (r"/admin/settings/profile", handlers.admin.Settings,
     #  {"action":"profile"}, "adminSettingsProfile")
-    (r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
-    (r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
-    (r"/staff/logout", handlers.staff.Access, {"action":"logout"}, "staffLogout"),
-    (r"/staff/register", handlers.staff.Access, {"action":"register"}, "staffRegister"),
-    (r"/staff", handlers.staff.Home, {}, "staffHome"),
-    (r"/staff/order", handlers.staff.Order, {}, "staffOrder"),
-    (r"/staff/hire/(\d+)", handlers.staff.Hire, {}, "staffHire"),
+    
     # (r"/staff/...")
 
     # 水果圈子

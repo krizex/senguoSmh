@@ -310,7 +310,7 @@ function totalPrice(target){
 }
 
 function goodsNum(target,action){
-    var url=market_href;
+    var url='/cart';
     var action=action;
     var menu_type;
     var parent=target.parents('.cart-list-item');
@@ -400,7 +400,7 @@ function mincharge(n,price){
 
 function itemDelete(target,menu_type) {
     var $list_total_price=$('#list_total_price');
-    var url = market_href;
+    var url = '/cart';
     var action = 0;
     var parent=target.parents('.cart-list-item');
     var charge_type_id =parent .find('.charge-type').data('id');
@@ -435,7 +435,7 @@ function itemDelete(target,menu_type) {
 }
 
 function addressAddEdit(action,name,address,phone){
-    var url=home_href;
+    var url=window.dataObj.home_href;
     var action=action;
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
     var address_id=$('.address-box').attr('data-id');
@@ -546,7 +546,7 @@ function orderSubmit(){
     $.postJson(url,args,function(res) {
         if (res.success) {
             SetCookie('cart_count',0);
-            window.location.href=success_href;
+            window.location.href=window.dataObj.success_href;
         }
         else return alert(res.error_text);
     },

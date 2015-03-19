@@ -55,10 +55,10 @@ $(document).ready(function(){
     $(document).on('click','.choose-classify',function(){
         var $this=$(this);
         $this.find('.icon').toggle();
-        $('.goods-class-choose').slideToggle(100);
+        $('.goods-class-choose').toggle(100);
     });
     $(document).on('click','.goods-class-choose li',function(){
-        $('.goods-class-choose').slideUp(100);
+        $('.goods-class-choose').hide(100);
     });
     //分类导航置顶
     // $(window).scroll(function(){
@@ -76,7 +76,8 @@ $(document).ready(function(){
         var $this=$(this);
         var g_class=$this.data('class');
         var top=$('#'+g_class+'').offset().top;
-        $('html, body').animate({scrollTop:top}, 50);
+        $('.choose-classify .icon').toggle();
+        document.body.scrollTop =0;
         //top_title.find('.classify').text(text);
     });
     //查看大图
@@ -188,11 +189,11 @@ $(document).ready(function(){
                 goodsNum($this.siblings('.number-change').find('.number-plus'),2);
                 $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
                 //果篮显示商品种类数
-                if(cart_count==0) {$('.cart_num').show();}
+                if(window.dataObj.cart_count==0) {$('.cart_num').show();}
                 if($this.hasClass('add_cart_num')){
-                    cart_count++;
-                    $('.cart_num').text(cart_count);
-                    SetCookie('cart_count',cart_count);
+                    window.dataObj.cart_count++;
+                    $('.cart_num').text(window.dataObj.cart_count);
+                    SetCookie('cart_count',window.dataObj.cart_count);
                     $this.removeClass('add_cart_num');
                 }
             });
@@ -212,14 +213,14 @@ $(document).ready(function(){
                 var change=$this.parents('.number-change');
                 if(num==0){
                     change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
-                    if(cart_count==1) {
+                    if(window.dataObj.cart_count==1) {
                         $('.cart_num').remove();
                         SetCookie('cart_count',0);
                     }
                     else {
-                        cart_count--;
-                        $('.cart_num').text(cart_count);
-                        SetCookie('cart_count',cart_count);
+                        window.dataObj.cart_count--;
+                        $('.cart_num').text(window.dataObj.cart_count);
+                        SetCookie('cart_count',window.dataObj.cart_count);
                     }
                 }
             });
@@ -381,14 +382,14 @@ function goodsNum(target,action){
             item.val(num);
             if(val==1){
                 change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
-                if(cart_count==1) {
+                if(window.dataObj.cart_count==1) {
                     $('.cart_num').remove();
                     SetCookie('cart_count',0);
                 }
                 else {
-                    cart_count--;
-                    $('.cart_num').text(cart_count);
-                    SetCookie('cart_count',cart_count);
+                    window.dataObj.cart_count--;
+                    $('.cart_num').text(window.dataObj.cart_count);
+                    SetCookie('cart_count',window.dataObj.cart_count);
                 }
             }
         }
