@@ -155,8 +155,8 @@ $(document).ready(function(){
         if(max_goods_num<=30){
             $.getItem('/static/items/admin/add-new-goods.html?v=20150304',function(data){
                 var $item=$(data);
-                if(typeof(default_code)=='undefined') $item.find('.imgPreview').attr({'src':'/static/design_img/TDSG.gif'});
-                else $item.find('.imgPreview').attr({'src':'/static/design_img/'+default_code+'.gif'});
+                if(typeof(default_code)=='undefined') $item.find('.imgPreview').attr({'src':'/static/design_img/TDSG.png'});
+                else $item.find('.imgPreview').attr({'src':'/static/design_img/'+default_code+'.png'});
                 upload_item=$item.find('#file_upload');
                 add_goods_box.append($item).modal('show');
                 //商品添加-图片上传
@@ -294,7 +294,7 @@ $(document).ready(function(){
 
     //商品添加-恢复默认图
     $('.add-recover-img').on('click',function(){
-        $(this).parents('.upload-img').find('.imgPreview').attr({'data-key':'','src':'/static/design_img/'+default_code+'.gif'});
+        $(this).parents('.upload-img').find('.imgPreview').attr({'data-key':'','src':'/static/design_img/'+default_code+'.png'});
     });
 
     //商品添加-删除计价方式
@@ -785,9 +785,9 @@ function defaultImg(target,id,code){
             if(res.success){
                 if(typeof(code)=='undefined')
                 {
-                    target.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/TDSG.gif','data-key':''});
+                    target.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/TDSG.png','data-key':''});
                 }
-                else target.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/'+code+'.gif','data-key':''});
+                else target.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/'+code+'.png','data-key':''});
             }
             else return alert(res.error_text);
         },
