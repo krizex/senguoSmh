@@ -1,15 +1,22 @@
 $(document).ready(function(){
+    var $list_total_price=$('#list_total_price');
+    var $receiveAdd=$('#receiveAdd');
+    var $receiveEdit=$('#receiveEdit');
+    var $addressBox=$('.address-box');
+    var $receiveName=$('#receiveName');
+    var $receiveAddress=$('#receiveAddress');
+    var $receivePhone=$('#receivePhone');
     $('#charge').on('click',function(){
         return alert('该功能年后开放,敬请期待！');
     });
     //运费默认值
-    if(!freigh_ontime) freigh_ontime=0;
-    if(!freigh_now) freigh_now=0;
+    if(!window.dataObj.freigh_ontime) window.dataObj.freigh_ontime=0;
+    if(!window.dataObj.freigh_now) window.dataObj.freigh_now=0;
     $('.address_list li').eq(0).addClass('active');
-    mincharge_now=Int($('.mincharge_now').find('.mincharge').text());
-    mincharge_intime=Int($('.mincharge_intime').find('.mincharge').text());
+    window.dataObj.mincharge_now=Int($('.mincharge_now').find('.mincharge').text());
+    window.dataObj.mincharge_intime=Int($('.mincharge_intime').find('.mincharge').text());
     //商品价格小计
-    item_total_price.each(function(){
+    $('.item_total_price').each(function(){
         var $this=$(this);
         var parent=$this.parents('.cart-list-item');
         var num=parent.find('.item_number').val();
@@ -20,32 +27,25 @@ $(document).ready(function(){
     });
     //商品价格总计
     total_price=totalPrice(price_list);
-    list_total_price.text(mathFloat(total_price));
+    $list_total_price.text(mathFloat(total_price));
     //按时达最低起送金额提示
-    if(total_price<mincharge_intime) $('.mincharge_intime').show();
+    if(total_price<window.dataObj.mincharge_intime) $('.mincharge_intime').show();
     //商品数量操作
-    cart_item.find('.number-minus').hammer().on('tap',function(){
+    $(document).on('click','.cart-list-item .number-minus',function(){
         var $this=$(this);
         goodsNum($this,1);
     });
-    cart_item.find('.number-plus').hammer().on('tap',function(){
+    $(document).on('click','.cart-list-item .number-plus',function(){
         var $this=$(this);
         goodsNum($this,2);
     });
     //商品删除
-    cart_item.find('.delete-item').hammer().on('tap',function(){
+    $(document).on('click','.cart-list-item .delete-item',function(){
         if(confirm('确认删除该商品吗？//(ㄒoㄒ)//')){
             var $this=$(this);
             var parent=$this.parents('.cart-list-item');
             if(parent.hasClass('fruit_item')){itemDelete($this,0);}
             else if(parent.hasClass('menu_item')){itemDelete($this,1);}
-        }
-    });
-    cart_item.hammer().on('hold',function(){
-        if(confirm('确认删除该商品吗？//(ㄒoㄒ)//')){
-            var $this=$(this);
-            if($this.hasClass('fruit_item')){itemDelete($this,0);}
-            else if($this.hasClass('menu_item')){itemDelete($this,1);}
         }
     });
     //类型切换增加active
@@ -56,54 +56,54 @@ $(document).ready(function(){
     //收货地址添加
     var max=$('.address_list li').length;
     if(max==0){
-        addressBox.removeClass('hidden');
+        $addressBox.removeClass('hidden');
         $('.to-add-address').addClass('hidden');
     }
-    $('#receiveCancel').hammer().on('tap',function(){
-        addressBox.addClass('hidden');
+    $('#receiveCancel').on('click',function(){
+        $addressBox.addClass('hidden');
     });
     $('body').on('click','.to-add-address',function(){
         if(max<5) {
-            addressBox.toggleClass('hidden');
-            receiveAdd.show();
-            receiveEdit.addClass('hidden');
-            receiveName.val('');
-            receiveAddress.val('');
-            receivePhone.val('');
+            $addressBox.toggleClass('hidden');
+            $receiveAdd.show();
+            $receiveEdit.addClass('hidden');
+            $receiveName.val('');
+            $receiveAddress.val('');
+            $receivePhone.val('');
         }
         else return alert('至多能添加五个收获地址！');
     });
-    receiveAdd.hammer().on('tap',function(){
-        var name=receiveName.val();
-        var address=receiveAddress.val();
-        var phone=receivePhone.val();
+    $(document).on('click','#receiveAdd',function(){
+        var name=$receiveName.val();
+        var address=$receiveAddress.val();
+        var phone=$receivePhone.val();
         if(max<5) addressAddEdit('add_address',name,address,phone);
         else return alert('至多能添加五个收获地址！');
     });
 
     //收货地址编辑
     $('body').on('click','.to-edit-address',function(){
-        addressBox.removeClass('hidden');
-        receiveAdd.hide();
-        receiveEdit.removeClass('hidden');
+        $addressBox.removeClass('hidden');
+        $receiveAdd.hide();
+        $receiveEdit.removeClass('hidden');
         var parent=$(this).parents('li');
         var name=parent.find('.name').text();
         var address=parent.find('.address_con').text();
         var phone=parent.find('.phone').text();
         var id=parent.data('id');
-        addressBox.attr({'data-id':id});
-        receiveName.val(name);
-        receiveAddress.val(address);
-        receivePhone.val(phone);
+        $addressBox.attr({'data-id':id});
+        $receiveName.val(name);
+        $receiveAddress.val(address);
+        $receivePhone.val(phone);
     });
-    receiveEdit.hammer().on('tap',function(){
-        var name=receiveName.val();
-        var address=receiveAddress.val();
-        var phone=receivePhone.val();
+    $(document).on('click','#receiveEdit',function(){
+        var name=$receiveName.val();
+        var address=$receiveAddress.val();
+        var phone=$receivePhone.val();
         addressAddEdit('edit_address',name,address,phone);
     });
     //订单提交
-    $('#submitOrder').on('click',function(){orderSubmit();});
+    $(document).on('click','#submitOrder',function(){orderSubmit();});
     //
     var time=new Date();
     var time_now=checkTime(time.getHours())+':'+checkTime(time.getMinutes())+':'+checkTime(time.getSeconds());
@@ -182,8 +182,8 @@ $(document).ready(function(){
         $('.send_now').show();
         $('.intime-intro').hide();
         $('.now-intro').show();
-        $('#freight_money').text(freigh_now);
-        $('#final_price').text(mathFloat(total_price+freigh_now));
+        $('#freight_money').text(window.dataObj.freigh_now);
+        $('#final_price').text(mathFloat(total_price+window.dataObj.freigh_now));
         $('.send-intime').on('click',function(){
             $(this).removeClass('active');
             if(now_on=='True'){
@@ -198,8 +198,8 @@ $(document).ready(function(){
     else{
         $('.intime-intro').show();
         $('.now-intro').hide();
-        $('#freight_money').text(freigh_ontime);
-        $('#final_price').text(mathFloat(total_price+freigh_ontime));
+        $('#freight_money').text(window.dataObj.freigh_ontime);
+        $('#final_price').text(mathFloat(total_price+window.dataObj.freigh_ontime));
         //按时达模式选择
         $('#sendInTime').on('click',function(){
             var $this=$(this);
@@ -210,10 +210,10 @@ $(document).ready(function(){
             $('.mincharge_now').hide();
             $('.intime-intro').show();
             $('.now-intro').hide();
-            total_price=mathFloat(list_total_price.text());
-            $('#freight_money').text(freigh_ontime);
-            $('#final_price').text(mathFloat(total_price+freigh_ontime));
-            if(total_price<mincharge_intime){
+            total_price=mathFloat($list_total_price.text());
+            $('#freight_money').text(window.dataObj.freigh_ontime);
+            $('#final_price').text(mathFloat(total_price+window.dataObj.freigh_ontime));
+            if(total_price<window.dataObj.mincharge_intime){
                 $('.mincharge_intime').show();
             }
         });
@@ -226,8 +226,8 @@ $(document).ready(function(){
         $('.send_now').remove();
         $('.intime-intro').show();
         $('.now-intro').hide();
-        $('#freight_money').text(freigh_ontime);
-        $('#final_price').text(mathFloat(total_price+freigh_ontime));
+        $('#freight_money').text(window.dataObj.freigh_ontime);
+        $('#final_price').text(mathFloat(total_price+window.dataObj.freigh_ontime));
         $('.send-now').on('click',function(){
             $(this).removeClass('active');
             if(intime_on=='True'){
@@ -245,8 +245,8 @@ $(document).ready(function(){
         $('.send_now').show();
         $('.intime-intro').hide();
         $('.now-intro').show();
-        $('#freight_money').text(freigh_now);
-        $('#final_price').text(mathFloat(total_price+freigh_now));
+        $('#freight_money').text(window.dataObj.freigh_now);
+        $('#final_price').text(mathFloat(total_price+window.dataObj.freigh_now));
         //立即送模式选择/立即送最低起送金额提示
         $('#sendNow').on('click',function(){
             var $this=$(this);
@@ -259,10 +259,10 @@ $(document).ready(function(){
                 $('.send_now').show();
                 $('.intime-intro').hide();
                 $('.now-intro').show();
-                total_price=mathFloat(list_total_price.text());
-                $('#freight_money').text(freigh_now);
-                $('#final_price').text(mathFloat(total_price+freigh_now));
-                if(total_price<mincharge_now){
+                total_price=mathFloat($list_total_price.text());
+                $('#freight_money').text(window.dataObj.freigh_now);
+                $('#final_price').text(mathFloat(total_price+window.dataObj.freigh_now));
+                if(total_price<window.dataObj.mincharge_now){
                     $('.mincharge_now').show();
                     $('.mincharge_intime').hide();
                 }
@@ -286,8 +286,8 @@ $(document).ready(function(){
         $('.send_now').hide();
         $('.intime-intro').show();
         $('.now-intro').hide();
-        $('#freight_money').text(freigh_ontime);
-        $('#final_price').text(mathFloat(total_price+freigh_ontime));
+        $('#freight_money').text(window.dataObj.freigh_ontime);
+        $('#final_price').text(mathFloat(total_price+window.dataObj.freigh_ontime));
     }
     //打赏小费
     $('.tip-list li').on('click',function(){
@@ -298,21 +298,8 @@ $(document).ready(function(){
 });
 var price_list=[];
 var total_price=0;
-var item_total_price=$('.item_total_price');
-var list_total_price=$('#list_total_price');
-var receiveAdd=$('#receiveAdd');
-var receiveEdit=$('#receiveEdit');
-var addressBox=$('.address-box');
-var receiveName=$('#receiveName');
-var receiveAddress=$('#receiveAddress');
-var receivePhone=$('#receivePhone');
-var addressList=$('.address_list');
-var cart_item=$('.cart-list-item');
-var cart_list=$('.cart-list');
-var mincharge_now;
-var mincharge_intime;
-var freigh_ontime=Int($('.freigh_ontime').text());
-var freigh_now=Int($('.freigh_now').text());
+window.dataObj.freigh_ontime=Int($('.freigh_ontime').text());
+window.dataObj.freigh_now=Int($('.freigh_now').text());
 
 function totalPrice(target){
     for(var i=0;i<target.length;i++)
@@ -333,6 +320,7 @@ function goodsNum(target,action){
     var item=target.siblings('.number-input');
     var num=item.val();
     var total;
+    var $list_total_price=$('#list_total_price');
     if(parent.hasClass('fruit_item')){menu_type=0}
     else if(parent.hasClass('menu_item')){menu_type=1}
     if(action==1&&num<=0) {num=0;target.addClass('disable');}
@@ -351,10 +339,10 @@ function goodsNum(target,action){
                     item.val(num);
                     total=mathFloat(num*price);
                     parent.find('.item_total_price').text(total);
-                    var t_price=mathFloat(list_total_price.text());
+                    var t_price=mathFloat($list_total_price.text());
                     var freight=mathFloat($('#freight_money').text());
                     t_price+=mathFloat(price);
-                    list_total_price.text(mathFloat(t_price));
+                    $list_total_price.text(mathFloat(t_price));
                     $('#final_price').text(mathFloat(t_price+freight));
                     var type=$('#sendType').find('.active').data('id');
                     mincharge(type,t_price);
@@ -369,10 +357,10 @@ function goodsNum(target,action){
                         item.val(num);
                         total=mathFloat(num*price);
                         parent.find('.item_total_price').text(total);
-                        var t_price=mathFloat(list_total_price.text());
+                        var t_price=mathFloat($list_total_price.text());
                         var freight=mathFloat($('#freight_money').text());
                         t_price-=mathFloat(price);
-                        list_total_price.text(mathFloat(t_price));
+                        $list_total_price.text(mathFloat(t_price));
                         $('#final_price').text(mathFloat(t_price+freight));
                         var type=$('#sendType').find('.active').data('id');
                         mincharge(type,t_price);
@@ -382,7 +370,7 @@ function goodsNum(target,action){
                             SetCookie('cart_count',cart_n-1);
                             parent.remove();
                         }
-                        if(cart_list.find('.cart-list-item').length==0) window.location.reload();
+                        if($('.cart-list').find('.cart-list-item').length==0) window.location.reload();
                     }
 
                 }
@@ -395,14 +383,14 @@ function goodsNum(target,action){
 }
 function mincharge(n,price){
     if(n==2){
-        if(price<mincharge_intime){
+        if(price<window.dataObj.mincharge_intime){
             $('.mincharge_intime').show();
             $('.mincharge_now').hide();
         }
         else $('.mincharge_intime').hide();
     }
     if(n==1){
-        if(price<mincharge_now){
+        if(price<window.dataObj.mincharge_now){
             $('.mincharge_now').show();
             $('.mincharge_intime').hide();
         }
@@ -411,12 +399,13 @@ function mincharge(n,price){
 }
 
 function itemDelete(target,menu_type) {
+    var $list_total_price=$('#list_total_price');
     var url = market_href;
     var action = 0;
     var parent=target.parents('.cart-list-item');
     var charge_type_id =parent .find('.charge-type').data('id');
     var price=parent.find('.item_total_price').text();
-    var t_price=parseInt(list_total_price.text());
+    var t_price=parseInt($list_total_price.text());
     var args = {
         action: action,
         charge_type_id: charge_type_id,
@@ -426,7 +415,7 @@ function itemDelete(target,menu_type) {
             if (res.success) {
                 parent.remove();
                 t_price-=parseInt(price);
-                list_total_price.text(t_price);
+                $list_total_price.text(t_price);
                 var type=$('#sendType').find('.active').data('id');
                 var freight=Int($('#freight_money').text());
                 mincharge(type,t_price);
@@ -436,7 +425,7 @@ function itemDelete(target,menu_type) {
                     $('.cart_num').text(cart_n-1);
                     SetCookie('cart_count',cart_n-1);
                 }
-                if(cart_list.find('.cart-list-item').length==0) window.location.reload();
+                if($('.cart-list').find('.cart-list-item').length==0) window.location.reload();
             }
             else return alert(res.error_text);
         },
@@ -449,7 +438,7 @@ function addressAddEdit(action,name,address,phone){
     var url=home_href;
     var action=action;
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    var address_id=addressBox.attr('data-id');
+    var address_id=$('.address-box').attr('data-id');
     if(name == null){return alert('请输入收货人姓名！')}
     if(name.length > 10){return alert('姓名请不要超过10个字！')}
     if(address == null){return alert('请输入收货人地址！')}
@@ -476,10 +465,10 @@ function addressAddEdit(action,name,address,phone){
                 $item.find('.phone').text(phone);
                 $('.address_list').append($item);
                 $('.to-add-address').removeClass('hidden');
-                addressBox.addClass('hidden');
+                $('.address-box').addClass('hidden');
             }
             if(action=='edit_address'){
-                var item=addressList.children('.item');
+                var item=$('.address_list').children('.item');
                 var item_id;
                 var j=0;
                 for(j;j<item.length;j++)
@@ -493,7 +482,7 @@ function addressAddEdit(action,name,address,phone){
                         }
 
                 }
-                addressBox.addClass('hidden');
+                $('.address-box').addClass('hidden');
             }
 
         }

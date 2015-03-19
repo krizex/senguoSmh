@@ -1,7 +1,7 @@
 $(document).ready(function(){
-    $('#focus-shop').hammer().on('tap',function(){focus();});
-    $('#signin-shop').hammer().on('tap',function(){signin();});
-    $('.foucus-notice').hammer().on('tap',function(){alert('请先关注店铺哦!');});
+    $(document).on('click','#focus-shop',function(){focus();});
+    $(document).on('click','#signin-shop',function(){signin();});
+    $(document).on('click','.foucus-notice',function(){alert('请先关注店铺哦!');});
 });
 function focus(){
     var url='';

@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    $('.info-con').hammer().on('tap',function(){$(this).siblings('.info-edit').slideToggle();});
+    $(document).on('click','.info-con',function(){$(this).siblings('.info-edit').toggle();});
 
     $('a.editInfo').each(function(){
         if($(this).text() =='None'||$(this).text() =='')
@@ -11,15 +11,21 @@ $(document).ready(function(){
         {$(this).text('点击绑定手机号').css({'color':'#FF3C3C'});}
     });
     //信息编辑
-    $('.info-edit').find('.concel-btn').each(function(){
-        $(this).hammer().on('tap',function(){$(this).parents('.info-edit').hide();})
-    });
+    $(document).on('click','.info-edit .concel-btn',function(){$(this).parents('.info-edit').hide();});
     $('.info-edit').find('.sure-btn').each(function(){infoEdit($(this))});
     //手机验证
-    $('#getVrify').hammer().on('tap',function(evt){Vrify(evt);});
-    $('#tiePhone').hammer().on('tap',function(evt){TiePhone(evt);});
+    $(document).on('click','#phoneNumber',function(){
+        var tie_box=new Modal('tieBox');
+         tie_box.modal('show');
+    });
+    $(document).on('click','#getVrify',function(evt){Vrify(evt);});
+    $(document).on('click','#tiePhone',function(evt){TiePhone(evt);});
     //性别编辑
-    $('body').find('.sex-list li').hammer().on('tap',function(){
+    $(document).on('click','#userSex',function(){
+            var sex_box=new Modal('sexBox');
+            sex_box.modal('show');
+    });
+    $(document).on('click','.sex-list li',function(){
        var $this=$(this);
        var sex=$this.data('id');
        var text=$this.text();
@@ -42,10 +48,12 @@ function time(evt) {
     if (wait == 0) {
         evt.val("获取验证码").css({'background':'#00d681'});
         wait = 60;
+        $('.get-code').attr({'id':'getVrify'});
     }
     else {
         evt.val("重新发送(" + wait + ")").css({'background':'#ccc'});
         wait--;
+        $('.get-code').attr({'id':''});
         setTimeout(function() {
                 time(evt)
             },
@@ -55,7 +63,7 @@ function time(evt) {
 
 
 function infoEdit(target){
-    target.hammer().on('tap',function(){
+    target.on('click',function(){
         var email, year,month,realname;
         var regEmail=/^([a-zA-Z0-9]*[-_]?[a-zA-Z0-9]+)*@([a-zA-Z0-9]*[-_]?[a-zA-Z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/;
         var regNumber=/^[0-9]*[1-9][0-9]*$/;
@@ -92,7 +100,7 @@ function infoEdit(target){
         $.postJson(url,args,
             function (res) {
                 if (res.success) {
-                    target.parents('.info-edit').slideToggle();
+                    target.parents('.info-edit').toggle();
                     if(action_text=='realname')
                     {
                         $('#userRealname').text(realname);
@@ -122,7 +130,8 @@ function sexEdit(sex,text){
     $.postJson(url,args,
         function (res) {
             if (res.success) {
-                $('.sex-popbox').modal('hide');
+                var sex_box=new Modal('sexBox');
+                sex_box.modal('hide');
                 $('#userSex').text(text);
             }
             else alert(res.error_text);
@@ -184,7 +193,8 @@ function TiePhone(evt){
             if(res.success)
             {
                 $('#phoneNumber').text(phone).css({'color':'#a8a8a8'});
-                $('#tieBox').modal("hide");
+                var tie_box=new Modal('tieBox');
+                tie_box.modal('show');
             }
             else alert(res.error_text);
         },

@@ -312,9 +312,10 @@ class Market(CustomerBaseHandler):
                 charge_types = []
                 for charge_type in mgood.mcharge_types:
                     charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
-                temp_goods.append({'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,\
-                'current_saled':mgood.current_saled,'saled':mgood.saled,'storage':mgood.storage,'favour':mgood.favour,\
-                'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types})
+                if mgood.active == 1:
+                    temp_goods.append({'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,\
+                    'current_saled':mgood.current_saled,'saled':mgood.saled,'storage':mgood.storage,'favour':mgood.favour,\
+                    'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types})
             w_mgoods[menu.id] = (temp_goods)
 
         w_fruits = []

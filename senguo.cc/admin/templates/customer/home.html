@@ -57,12 +57,12 @@
 </div>
 {% end %}
 {% block bottom %}
-<div class="modal fade large-img-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade large-img-box" id="large_imgbox">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg_change">
-                <span type="button" class="close text-green2" data-dismiss="modal">✕</span>
-                <h2 class="modal-title text-green2 text-center" id="myModalLabel">是水果啊啊啊</h2>
+                <span type="button" class="close text-green2 dismiss">✕</span>
+                <h2 class="modal-title text-green2 text-center">是水果啊啊啊</h2>
             </div>
             <div class="modal-body set-width-float text-center">
                 <img src="" id="largeImg" class="mt42"/>
@@ -74,28 +74,28 @@
         </div>
     </div>
 </div>
-<div class="modal fade detail-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade detail-box" id="detail_box">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header set-width-float">
-                <span type="button" class="close text-green2" data-dismiss="modal">✕</span>
-                <h2 class="modal-title text-green2 text-center" id="myModalLabel">公告详情</h2>
+                <span type="button" class="close text-green2 dismiss">✕</span>
+                <h2 class="modal-title text-green2 text-center">公告详情</h2>
             </div>
             <div class="modal-body set-width-float text-center">
                 <p class="detail font14 mt42"></p>
             </div>
             <div class="modal-footer set-width-float">
-                <button data-dismiss="modal" class="btn btn-default center-block">取消</button>
+                <button  class="btn btn-default center-block dismiss">取消</button>
             </div>
         </div>
     </div>
 </div>
-<div class="modal fade focus-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade focus-box" id="focus_box">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header set-width-float">
-                <span type="button" class="close text-green2" data-dismiss="modal">✕</span>
-                <h2 class="modal-title text-green2 text-center" id="myModalLabel"></h2>
+                <span type="button" class="close text-green2 dismiss">✕</span>
+                <h2 class="modal-title text-green2 text-center"></h2>
             </div>
             <div class="modal-body set-width-float text-center pt-10">
                 <p class="font14 mt42">点击下方 “关注” 按钮后才可以添加商品呦!ヾ(●´▽`●)ノ</p>
