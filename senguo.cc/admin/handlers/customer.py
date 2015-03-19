@@ -159,6 +159,18 @@ class ShopProfile(CustomerBaseHandler):
         headimgurls = self.session.query(models.Accountinfo.headimgurl).\
             filter(models.Accountinfo.id.in_(shop_members_id)).all()
         comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
+        session = self.session
+        w_id = self.current_user.id
+        session.add(models.Points(id = w_id))
+        session.commit()
+        try:
+            point = session.query(models.Points).filter_by(id = w_id).first()
+        except:
+            point = None
+        if point:
+            point.get_count(session,w_id)
+        else:
+            print("have ran?")
         return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
                            fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
                            service_area=service_area, headimgurls=headimgurls, signin=signin,
@@ -170,7 +182,7 @@ class ShopProfile(CustomerBaseHandler):
     def post(self):
         shop_id = self.shop_id
         action = self.args["action"]
-        if action == "favour":
+        if action == "favour": 
             if not shop_id:
                 return self.send_fail()
             try:
@@ -179,15 +191,31 @@ class ShopProfile(CustomerBaseHandler):
             except:
                 return self.send_fail("已关注成功")
         elif action == "signin":
+            
             signin = self.session.query(models.ShopSignIn).filter_by(
                 customer_id=self.current_user.id, shop_id=shop_id).first()
             if signin:
                 if signin.last_date == datetime.date.today():
                     return self.send_fail("亲，你今天已经签到了，一天只能签到一次哦")
                 else:  # 今天没签到
+
+                    # signIN_count add by one
+                    # woody
+                    try:
+                        point = self.session.query(models.points).filter_by(id = self.current_user.id).first()
+                    except:
+                        point =None
+                    if point is not None:
+                        point.signIN_count += 1
+                        point.count += 1
                     if datetime.date.today() - signin.last_date == datetime.timedelta(1):  # 判断是否连续签到
                         self.current_user.credits += signin.keep_days
                         signin.keep_days += 1
+                        if signin.keep_days >= 7:    # when keep_days is 7 ,point add by 5,set keep_day as 0
+                            if point is not None:
+                                point.signIN_count += 5
+                                point.count += 5
+                            signin.keep_days = 0
                     else:
                         self.current_user.credits += 1
                         signin.keep_days = 1
@@ -345,10 +373,21 @@ class Market(CustomerBaseHandler):
         favour = self.session.query(models.FruitFavour).\
             filter_by(customer_id=self.current_user.id,
                       f_m_id=charge_type_id, type=menu_type).first()
+        try:
+            point = self.session.query(models.Points).filter_by(id = self.current_user.id).first()
+        except:
+            point = None
         if favour:
             if favour.create_date == datetime.date.today():
                 return self.send_fail("亲，你今天已经为该商品点过赞了，一天只能对一个商品赞一次哦")
             else:  # 今天没点过赞，更新时间
+                #favour_count add by one
+                #woody
+                if point is not None:
+                    point.favour_count += 1
+                    point.count +=1
+                else:
+                    print("point is None...")
                 favour.create_date = datetime.date.today()
         else:  # 没找到点赞记录，插入一条
             self.session.add(models.FruitFavour(customer_id=self.current_user.id,
