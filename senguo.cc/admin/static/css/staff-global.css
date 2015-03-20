@@ -50,7 +50,7 @@ input{border:none;}
 
 animate {-webkit-transition: 0.2s linear;-o-transition: 0.2s linear;-ms-transition: 0.2s linear;transition: 0.2s linear;}
 
-.main-container {text-align: center;width: 99%;max-width: 800px;margin: auto;}
+.main-container {text-align: center;width: 99%;max-width: 800px;margin: auto;padding-bottom:60px;}
 .main-container .main-header {position: fixed;z-index: 9999;top: 0;left: 0;width: 100%;}
 .main-container .main-header .user-icon {position: absolute;right: 5px;margin-left: -1000px;}
 .main-container .navbar-inner {padding: 0 5px;border-radius: 0;}

@@ -23,7 +23,7 @@
                     <span class="unpay text-grey" style="display:none;">应收款：<span class="text-red">{{order.totalPrice}}元</span></span>
                 </span>
             </div>
-            <div class="button-box">
+            <div class="button-box forbid_click">
                 <button class="btn clear-btn text-white bg-green2 order_finish finish_btn" data-id="{{order.id}}">完成</button>
             </div>
         </div>
@@ -34,7 +34,7 @@
                 收货人：
                 <span>{{order.receiver}}</span>
                 <span>{{order.phone}}</span>
-                <a href="tel:{{order.phone}}">点击拨号</a>
+                <a href="tel:{{order.phone}}" class="forbid_click">点击拨号</a>
             </p>
             {% if order.message %}
             <p class="text-red">用户留言：{{order.message}}</p>

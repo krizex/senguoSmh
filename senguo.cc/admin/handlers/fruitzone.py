@@ -148,6 +148,10 @@ class AdminProfile(FruitzoneBaseHandler):
             return self.send_error(404)
         return self.send_success()
 
+class ToWeixin(FruitzoneBaseHandler):
+    def get(self):
+        return self.render("fruitzone/toweixin.html")
+
 class ApplySuccess(FruitzoneBaseHandler):
     def get(self):
         return self.render("fruitzone/apply-success.html")

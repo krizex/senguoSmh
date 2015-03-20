@@ -1,7 +1,6 @@
 $(document).ready(function(){
     //$('.count-box').css({'height':$(window).height()});
     //if the user is using weixin brower
-    isWeiXin();
     //type choose
     $('.count-list li').on('click',function(){
         var $this=$(this);
