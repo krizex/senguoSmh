@@ -48,7 +48,7 @@
 .large-img-box  .mt42{margin-top:34px !important;}
 .large-img-box  .intro{padding:10px;border-bottom:1px solid #ccc;}
 
-.notice-box{}
+.notice-box{min-height:120px;}
 .notice-board{min-height:120px;width:100%;position:relative;}
 .notice-board .swipe{overflow:hidden;visibility: hidden;position:relative;}
 .notice-board .swipe .wrap{min-height:120px;float:left;width:100%;}

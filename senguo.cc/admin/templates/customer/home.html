@@ -13,8 +13,8 @@
 </script>
 <input type="hidden" id="if_focus" value="{{context['w_follow']}}"/>
 <div class="notice-box">
-    <img src="{{static_url('images/banner.png')}}" class="default-banner img"/>
-    <div class="notice-board" style="display:none;">
+    <!--<img src="{{static_url('images/banner.png')}}" class="default-banner img"/>-->
+    <div class="notice-board">
         {% if notices %}
         <div id="slider" class="swipe" style="visibility: visible;">
             <div class="swipe-wrap">
@@ -56,7 +56,7 @@
     </ul>
 </div>
 {% end %}
-{% block bottom %}
+{% block other %}
 <div class="modal fade large-img-box" id="large_imgbox">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -106,5 +106,7 @@
         </div>
     </div>
 </div>
+{% end %}
+{% block bottom %}
 <script src="{{static_url('js/market-home.js')}}"></script>
 {% end %}
