@@ -740,6 +740,9 @@ class Order(CustomerBaseHandler):
             order.send_time = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
                                                 order.start_time.hour, w_start_time_minute,
                                                   order.end_time.hour, w_end_time_minute)
+        print("before len:" ,len(orders))
+        orders = orders[::-1]
+        print("after len:" ,len(orders))
             
         return self.render("customer/order-list.html", orders=orders, context=dict(subpage='center'))
 
