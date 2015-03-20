@@ -19,10 +19,15 @@ $(document).ready(function(){
         else if(paid=='False') $this.find('.unpay').show();
     });
     //订单详情
-    $(document).on('click','.content',function(e){
+    $('.toggle').each(function(){
+        var evt = document.createEvent('Event');
+        evt.initEvent('click',true,true);
+        this.dispatchEvent(evt);
+    });
+    $(document).on('click','.toggle',function(e){
         var $this=$(this);
         if($(e.target).closest('.forbid_click').length == 0){
-            $this.siblings('.toggle').toggle();
+            $this.parents('.order-list-item').find('.goods_info').toggle();
         }
     });
     //if staff remark exist
@@ -60,7 +65,7 @@ $(document).ready(function(){
         var end_minute=checkTime($this.find('.end_minute').val());
         var status=$this.data('status');
         $this.find('.send_time').text(start_hour+':'+start_minute+'-'+end_hour+':'+end_minute);
-        if(status==5) $this.addClass('text-grey bg-grey').find('.finish_btn').removeClass('order_finish').addClass('arrive').text('已完成');
+        if(status==5) $this.addClass('text-grey bg-grey').find('.toggle').addClass('text-grey').find('.finish_btn').removeClass('order_finish').addClass('arrive').text('已完成');
         if(type==1){
             $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
         }
