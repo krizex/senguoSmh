@@ -95,7 +95,7 @@ function finishOrder(target,id){
     $.postJson(url,args,function(res){
         if(res.success){
             target.addClass('arrive').removeClass('order_finish').removeClass('bg-green').text('已完成');
-            target.parents('.order-list-item').addClass('text-grey');
+            target.parents('.order-list-item').addClass('text-grey bg-grey');
             //target.parents('.order-list-item').remove();
         }
         else return alert(res.error_text)
