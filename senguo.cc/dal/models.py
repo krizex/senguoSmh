@@ -600,7 +600,7 @@ class Points(MapBase,_CommonApi):
     totalPrice = Column(Float,default = 0)
     follow_count = Column(Float,default = 0)
     favour_count = Column(Float,default = 0)
-    comment_count = 5
+    comment_count = Column(Float,default = 0)
     # count        = Column(Float,default = 0)
     totalCount = Column(Float,default = 0)
     balance_count = Column(Float,default =0)
@@ -623,6 +623,7 @@ class Points(MapBase,_CommonApi):
             orders_count = 0
         try:
             comment_count = session.query(Order).filter(customer_id == id,comment != None).count()
+            print("comment_count",comment_count)
         except:
             comment_count = 0
         try:
