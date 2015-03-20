@@ -161,12 +161,13 @@ class ShopProfile(CustomerBaseHandler):
         comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
         session = self.session
         w_id = self.current_user.id
-        session.add(models.Points(id = w_id))
+        
         session.commit()
         try:
             point = session.query(models.Points).filter_by(id = w_id).first()
         except:
-            point = None
+            point = models.Points(id =w_id)
+            session.add(point)
         if point:
             point.get_count(session,w_id)
         else:
@@ -191,30 +192,33 @@ class ShopProfile(CustomerBaseHandler):
             except:
                 return self.send_fail("已关注成功")
         elif action == "signin":
-            
+            try:
+                point = self.session.query(models.Points).filter_by(id = self.current_user.id).first()
+            except:
+                point =models.Points(id = self.current_user.id )
+                self.session.add(point)
+        
             signin = self.session.query(models.ShopSignIn).filter_by(
                 customer_id=self.current_user.id, shop_id=shop_id).first()
             if signin:
+                
                 if signin.last_date == datetime.date.today():
                     return self.send_fail("亲，你今天已经签到了，一天只能签到一次哦")
                 else:  # 今天没签到
-
                     # signIN_count add by one
                     # woody
-                    try:
-                        point = self.session.query(models.points).filter_by(id = self.current_user.id).first()
-                    except:
-                        point =None
                     if point is not None:
+                        print("before sign:",point.signIn_count)
                         point.signIN_count += 1
-                        point.count += 1
+                        print("after sign:",point.signIn_count)
+                        # point.count += 1
                     if datetime.date.today() - signin.last_date == datetime.timedelta(1):  # 判断是否连续签到
                         self.current_user.credits += signin.keep_days
                         signin.keep_days += 1
                         if signin.keep_days >= 7:    # when keep_days is 7 ,point add by 5,set keep_day as 0
                             if point is not None:
-                                point.signIN_count += 5
-                                point.count += 5
+                                point.signIn_count += 5
+                                # point.count += 5
                             signin.keep_days = 0
                     else:
                         self.current_user.credits += 1
@@ -223,6 +227,8 @@ class ShopProfile(CustomerBaseHandler):
 
             else:  # 没找到签到记录，插入一条
                 self.session.add(models.ShopSignIn(customer_id=self.current_user.id, shop_id=shop_id))
+                point.signIn_count += 1
+                print("new signin:",point.signIn_count)
             self.session.commit()
         return self.send_success()
 
@@ -377,7 +383,9 @@ class Market(CustomerBaseHandler):
             point = self.session.query(models.Points).filter_by(id = self.current_user.id).first()
         except:
             point = None
+        print(" before favour:" , point.favour_count)
         if favour:
+            print("login favour")
             if favour.create_date == datetime.date.today():
                 return self.send_fail("亲，你今天已经为该商品点过赞了，一天只能对一个商品赞一次哦")
             else:  # 今天没点过赞，更新时间
@@ -385,13 +393,17 @@ class Market(CustomerBaseHandler):
                 #woody
                 if point is not None:
                     point.favour_count += 1
-                    point.count +=1
+                    # point.totalCount +=1
+                    print("after favour:" , point.favour_count)
                 else:
                     print("point is None...")
+                
                 favour.create_date = datetime.date.today()
         else:  # 没找到点赞记录，插入一条
             self.session.add(models.FruitFavour(customer_id=self.current_user.id,
                       f_m_id=charge_type_id, type=menu_type))
+            point.favour_count += 1
+            print("new favour",point.favour_count)
         # 商品赞+1
         if menu_type == 0:
             try:

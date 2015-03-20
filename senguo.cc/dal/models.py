@@ -648,7 +648,8 @@ class Points(MapBase,_CommonApi):
         point.totalCount = totalCount
         session.commit()
         print("follow_count","yu'e","dian zan ","qian dao " )
-        print(follows,orders_count,point.favour_count,point.signIn_count,point.comment_count,point.phone_count,point.address_count,point.totalPrice)
+        print(follows,orders_count,point.favour_count,point.signIn_count,point.comment_count,point.phone_count\
+            ,point.address_count,point.totalPrice,point.totalCount)
         return totalCount
 
 
