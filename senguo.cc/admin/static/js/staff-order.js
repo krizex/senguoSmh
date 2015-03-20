@@ -19,12 +19,26 @@ $(document).ready(function(){
         else if(paid=='False') $this.find('.unpay').show();
     });
     //订单详情
-    $(document).on('click','.content',function(e){
-        var $this=$(this);
-        if($(e.target).closest('.forbid_click').length == 0){
-            $this.siblings('.toggle').toggle();
+    //hidden info toggle
+        var u = navigator.userAgent, app = navigator.appVersion;
+        var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+         if(isiOS){
+            $(document).on('tap','.toggle',function(e){
+                    var $this=$(this);
+                    if($(e.target).closest('.forbid_click').length == 0){
+                        $this.parents('.order-list-item').find('.goods_info').toggle();
+                    }
+                });
         }
-    });
+        else{
+                 $(document).on('click','.toggle',function(e){
+                    var $this=$(this);
+                    if($(e.target).closest('.forbid_click').length == 0){
+                        $this.parents('.order-list-item').find('.goods_info').toggle();
+                    }
+                });
+        }
+
     //if staff remark exist
     $('.remark').each(function(){
         var $this=$(this);
@@ -60,7 +74,7 @@ $(document).ready(function(){
         var end_minute=checkTime($this.find('.end_minute').val());
         var status=$this.data('status');
         $this.find('.send_time').text(start_hour+':'+start_minute+'-'+end_hour+':'+end_minute);
-        if(status==5) $this.addClass('text-grey bg-grey').find('.finish_btn').removeClass('order_finish').addClass('arrive').text('已完成');
+        if(status==5) $this.addClass('text-grey bg-grey').find('.toggle').addClass('text-grey').find('.finish_btn').removeClass('order_finish').addClass('arrive').text('已完成');
         if(type==1){
             $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
         }
@@ -90,7 +104,7 @@ function finishOrder(target,id){
     $.postJson(url,args,function(res){
         if(res.success){
             target.addClass('arrive').removeClass('order_finish').removeClass('bg-green').text('已完成');
-            target.parents('.order-list-item').addClass('text-grey');
+            target.parents('.order-list-item').addClass('text-grey bg-grey');
             //target.parents('.order-list-item').remove();
         }
         else return alert(res.error_text)
