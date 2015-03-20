@@ -19,9 +19,11 @@ $(document).ready(function(){
         else if(paid=='False') $this.find('.unpay').show();
     });
     //订单详情
-    $(document).on('click','.order-list-item .content',function(){
+    $(document).on('click','.content',function(e){
         var $this=$(this);
-        $this.siblings('.toggle').toggle();
+        if($(e.target).closest('.forbid_click').length == 0){
+            $this.siblings('.toggle').toggle();
+        }
     });
     //if staff remark exist
     $('.remark').each(function(){
