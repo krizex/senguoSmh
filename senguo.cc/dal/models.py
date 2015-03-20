@@ -198,9 +198,13 @@ class _AccountApi(_CommonApi):
             # update wx_openid
             #####################################################################################
             print(u.accountinfo.wx_openid)
-            u.accountinfo.wx_openid = wx_userinfo["openid"]
+            start = wx_userinfo['openid'][0:2]
+            print("start:",start)
+            if start == "o5":
+                u.accountinfo.wx_openid = wx_userinfo["openid"]
             print("update openid")
             print(wx_userinfo["openid"])
+
             # print( "openid" + wx_userinfo["openid"])
             session.commit()
             return u
