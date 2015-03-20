@@ -273,7 +273,10 @@ class OrderStatic(AdminBaseHandler):
                     total[0] -= s[i][2]
                     i += 1
             else:
-                data.append((date.strftime('%Y-%m-%d'), 0, total[1], 0, format(float(total[0]),'.2f'), 0, old_total))
+                if total[0]:
+                    data.append((date.strftime('%Y-%m-%d'), 0, total[1], 0, format(float(total[0]),'.2f'), 0, old_total))
+                else:
+                    data.append((date.strftime('%Y-%m-%d'), 0, total[1], 0, total[0], 0, old_total))
             if total[1] <= 0:
                 break
         first_order = self.session.query(models.Order).\
