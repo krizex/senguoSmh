@@ -19,17 +19,26 @@ $(document).ready(function(){
         else if(paid=='False') $this.find('.unpay').show();
     });
     //订单详情
-    $('.toggle').each(function(){
-        var evt = document.createEvent('Event');
-        evt.initEvent('click',true,true);
-        this.dispatchEvent(evt);
-    });
-    $(document).on('click','.toggle',function(e){
-        var $this=$(this);
-        if($(e.target).closest('.forbid_click').length == 0){
-            $this.parents('.order-list-item').find('.goods_info').toggle();
+    //hidden info toggle
+        var u = navigator.userAgent, app = navigator.appVersion;
+        var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+         if(isiOS){
+            $(document).on('tap','.toggle',function(e){
+                    var $this=$(this);
+                    if($(e.target).closest('.forbid_click').length == 0){
+                        $this.parents('.order-list-item').find('.goods_info').toggle();
+                    }
+                });
         }
-    });
+        else{
+                 $(document).on('click','.toggle',function(e){
+                    var $this=$(this);
+                    if($(e.target).closest('.forbid_click').length == 0){
+                        $this.parents('.order-list-item').find('.goods_info').toggle();
+                    }
+                });
+        }
+
     //if staff remark exist
     $('.remark').each(function(){
         var $this=$(this);
