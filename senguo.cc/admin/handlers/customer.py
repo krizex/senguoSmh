@@ -197,6 +197,7 @@ class ShopProfile(CustomerBaseHandler):
             except:
                 point =models.Points(id = self.current_user.id )
                 self.session.add(point)
+                self.session.commit()
         
             signin = self.session.query(models.ShopSignIn).filter_by(
                 customer_id=self.current_user.id, shop_id=shop_id).first()
@@ -227,8 +228,10 @@ class ShopProfile(CustomerBaseHandler):
 
             else:  # 没找到签到记录，插入一条
                 self.session.add(models.ShopSignIn(customer_id=self.current_user.id, shop_id=shop_id))
-                point.signIn_count += 1
-                print("new signin:",point.signIn_count)
+                self.session.commit()
+                if point:
+                    point.signIn_count += 1
+                    print("new signin:",point.signIn_count)
             self.session.commit()
         return self.send_success()
 
@@ -379,11 +382,23 @@ class Market(CustomerBaseHandler):
         favour = self.session.query(models.FruitFavour).\
             filter_by(customer_id=self.current_user.id,
                       f_m_id=charge_type_id, type=menu_type).first()
+
+        #woody 
+        #???
         try:
             point = self.session.query(models.Points).filter_by(id = self.current_user.id).first()
         except:
-            point = None
-        print(" before favour:" , point.favour_count)
+            point = models.Points(id = self.current_user.id)
+            self.session.add(point)
+            self.session.commit()
+
+        try:
+            point = self.session.query(models.Points).filter_by(id = self.current_user.id).first()
+        except:
+            print("point is still nonetype?")
+
+        if point:
+            print(" before favour:" , point.favour_count)
         if favour:
             print("login favour")
             if favour.create_date == datetime.date.today():
@@ -402,8 +417,10 @@ class Market(CustomerBaseHandler):
         else:  # 没找到点赞记录，插入一条
             self.session.add(models.FruitFavour(customer_id=self.current_user.id,
                       f_m_id=charge_type_id, type=menu_type))
-            point.favour_count += 1
-            print("new favour",point.favour_count)
+            self.session.commit()
+            if point:
+                point.favour_count += 1
+                print("new favour",point.favour_count)
         # 商品赞+1
         if menu_type == 0:
             try:
