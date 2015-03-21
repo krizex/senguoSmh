@@ -118,7 +118,7 @@ function tagText(target,n){
     //AndroidImg('bg_change');
 }
 //public
-$.postJson = function(url, args,successCall, failCall, alwaysCall){
+$.postJson = function(url, args,successCall, failCall, errorCall,alwaysCall){
     args._xsrf = window.dataObj._xsrf;
     var req = $.ajax({
         type:"post",
@@ -127,7 +127,7 @@ $.postJson = function(url, args,successCall, failCall, alwaysCall){
         contentType:"application/json; charset=UTF-8",
         success:successCall,
         fail:failCall,
-        error:failCall
+        error:errorCall
     });
     //req.always(alwaysCall);
 };
@@ -170,6 +170,17 @@ function is_weixin(){
         if (r != null) return unescape(r[2]); return default_value || null;
     }
 })(Zepto);
+
+//prevent 冒泡
+function stopPropagation(e) {  
+    console.log(2222);
+    e = e || window.event;  
+    if(e.stopPropagation) { //W3C阻止冒泡方法  
+        e.stopPropagation();  
+    } else {  
+        e.cancelBubble = true; //IE阻止冒泡方法  
+    }  
+}  
 //confirmbox
 $.getItem('/static/items/confirmBox.html?v=20150321',function(data){window.dataObj.confirmBox=data});
 $.confirmBox=function(text,index,type){

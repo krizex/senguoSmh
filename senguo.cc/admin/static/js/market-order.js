@@ -112,7 +112,8 @@ function orderConcel(target,id){
             target.parents('.order-list-item').find('.cancel').text('订单已取消').addClass('text-grey').removeClass('order-concel');
         }
         else return $.noticeBox(res.error_text)
-    },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')})
+    }, function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+)
 }
 
 function orderComment(id,order_id,comment){
@@ -137,7 +138,9 @@ function orderComment(id,order_id,comment){
            commentBox.modal('hide');
         }
         else return $.noticeBox(res.error_text)
-    },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')})
+    }, function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        );
 }
 
 function removeDom(){

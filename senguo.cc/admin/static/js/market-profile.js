@@ -117,8 +117,8 @@ function infoEdit(target){
                 }
                 else $.noticeBox('请填写正确的信息！');
             },
-            function(){
-                $.noticeBox('网络好像不给力呢~ ( >O< ) ~');}
+             function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+             function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
         );
     });
 }
@@ -136,8 +136,8 @@ function sexEdit(sex,text){
             }
             else $.noticeBox(res.error_text);
         },
-        function(){
-            $.noticeBox('网络好像不给力呢~ ( >O< ) ~');}
+         function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
     );
 }
 
@@ -163,8 +163,8 @@ function Vrify(evt){
             }
             else return $.noticeBox(res.error_text);
         },
-        function(){
-            $.noticeBox('网络好像不给力呢~ ( >O< ) ~');}
+         function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
     );
 }
 
@@ -198,7 +198,7 @@ function TiePhone(evt){
             }
             else $.noticeBox(res.error_text);
         },
-        function(){
-            $.noticeBox('网络好像不给力呢~ ( >O< ) ~');}
+        function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
     );
 }

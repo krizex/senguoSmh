@@ -20,9 +20,8 @@ function shopChange(id){
             window.location.reload();
         }
         else return alert(res.error_text)
-    },function(){
-        return alert('网络好像不给力呢~ ( >O< ) ~！')
-    })
+    },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+)
 }
 
 function job(target,n){
