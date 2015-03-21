@@ -327,7 +327,10 @@ class Market(CustomerBaseHandler):
         elif action in (2, 1, 0):  # 更新购物车
             return self.cart(action)
 
-    def commodity_list(self):
+    def commodity_list(self,page):
+        #
+        # page = 2
+        offset = (page -1) * 10
         shop_id = int(self.get_cookie('market_shop_id'))
         shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
         cart_f,cart_m = self.read_cart(shop.id)
@@ -335,6 +338,13 @@ class Market(CustomerBaseHandler):
         cart_ms = {}
         cart_fs = [(key,cart_f[key]['num']) for key in cart_f]
         cart_ms = [(key,cart_m[key]['num']) for key in cart_m]
+        #
+        count = 0
+        count_mgoods = 0
+        count_fruit =0
+        count_dry = 0
+        w_orders = []
+
         if not shop:
             return self,send_error(404)
         fruits = []
@@ -343,7 +353,7 @@ class Market(CustomerBaseHandler):
         dry_fruits = [x for x in shop.fruits if x.fruit_type_id >= 1000 and x.active == 1]
 
         mgoods = {}
-        w_mgoods = {}
+        w_mgoods = []
         for menu in shop.menus:
             mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
             temp_goods = []
@@ -353,10 +363,10 @@ class Market(CustomerBaseHandler):
                 for charge_type in mgood.mcharge_types:
                     charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
                 if mgood.active == 1:
-                    temp_goods.append({'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,\
+                    w_mgoods.append([menu.id,{'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,\
                     'current_saled':mgood.current_saled,'saled':mgood.saled,'storage':mgood.storage,'favour':mgood.favour,\
-                    'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types})
-            w_mgoods[menu.id] = (temp_goods)
+                    'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types}])
+                    count_mgoods += 1
 
         w_fruits = []
         w_dry_fruits = []
@@ -369,11 +379,58 @@ class Market(CustomerBaseHandler):
                 data.append({'id':fruit.id,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
                 'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour})
             return data
-
+        # pages 
+        # woody
         w_fruits = w_getdata(fruits)
+        count_fruit = len(w_fruits)
+
         w_dry_fruits = w_getdata(dry_fruits)
-        # w_mgoods = w_getdata(mgoods)
-        return self.send_success(fruits = w_fruits,dry_fruits = w_dry_fruits,cart_fs = cart_fs,cart_ms = cart_ms,mgoods = w_mgoods )
+        count_dry   = len(w_dry_fruits)
+
+        if offset +10 <= count_fruit:
+            w_orders = w_fruits[offset:offset+10]
+
+        elif offset > count_fruit and offset + 10 <= count_fruit + count_dry:
+            w_orders = w_dry_fruits[offset - count_fruit:offset+10 - count_fruit ]
+
+        elif offset > count_dry +count_fruit and offset +10 <= count_fruit + count_dry + count_mgoods:
+            w_orders = w_mgoods[offset-(count_dry+count_fruit):offset + 10-(count_dry+count_fruit)]
+
+        elif offset >count_dry + count_fruit:
+            w_orders = w_mgoods[offset-(count_fruit+count_dry):]
+
+        elif offset < count_fruit and offset + 10 < count_fruit +count_dry:
+            w_orders =w_fruits[offset:] + w_dry_fruits[0:offset + 10 - count_fruit]
+
+        elif offset > count_fruit and offset < count_fruit + count_dry and offset + 10 <= count_dry + count_fruit + count_mgoods:
+            w_orders = w_dry_fruits[offset - count_dry:] + w_mgoods[0:offset + 10 - (count_dry + count_fruit)]
+
+        elif offset >  count_fruit and offset < count_fruit + count_dry and offset +10 > count_fruit + count_dry + count_mgoods:
+            w_orders = w_dry_fruits[offset - count_fruit:] + w_mgoods
+
+        elif offset <= count_fruit and offset + 10 > count_fruit + count_dry and offset + 10 <= count_fruit +count_dry + count_mgoods:
+            w_orders = w_fruits[offset:] + w_dry_fruits + w_mgoods[0:offset + 10 - (count_fruit+ count_dry)]
+
+        elif offset <= count_fruit and offset + 10 > count_fruit + count_dry + count_mgoods:
+            w_orders = w_fruits[offset:] + w_dry_fruits + w_mgoods
+
+        else:
+            self.send_error("pages error")
+
+        total_count = count_dry + count_fruit + count_mgoods
+
+        if total_count % 10 is 0 :
+            page_count = total_count /10
+        else:
+            page_count = int( total_count / 10) + 1
+        print('w_orders ',w_orders)
+        print('w_mgoods',w_mgoods)
+        for m in w_mgoods:
+            print(m)
+        print("total_count",total_count ,"page_count",page_count,"count_fruit",count_fruit,"count_dry",count_dry,'count_mgoods',count_mgoods)
+
+        return self.send_success(fruits = w_fruits,dry_fruits = w_dry_fruits,cart_fs = cart_fs,cart_ms = cart_ms,\
+            mgoods = w_mgoods,w_orders = w_orders,page_count = page_count)
 
     @CustomerBaseHandler.check_arguments("charge_type_id:int", "menu_type:int")  # menu_type(0：fruit，1：menu)
     def favour(self):
