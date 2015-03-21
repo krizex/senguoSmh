@@ -46,7 +46,7 @@ function noticeAdd(){
             }
             else return alert(res.error_text);
         },
-        function(){alert('网络错误')});
+        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
 }
 function noticeEdit(target){
     var url=link;
@@ -80,7 +80,7 @@ function noticeEdit(target){
             }
             else return alert(res.error_text);
         },
-        function(){alert('网络错误')});
+        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
 }
 
 function noticeActive(target){
@@ -109,5 +109,5 @@ function noticeActive(target){
             }
             else return alert(res.error_text);
         },
-        function(){alert('网络错误')});
+        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
 }

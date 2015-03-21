@@ -1,7 +1,7 @@
 $(document).ready(function(){
     $(document).on('click','#focus-shop',function(){focus();});
     $(document).on('click','#signin-shop',function(){signin();});
-    $(document).on('click','.foucus-notice',function(){alert('请先关注店铺哦!');});
+    $(document).on('click','.foucus-notice',function(){$.noticeBox('请先关注店铺哦!');});
 });
 function focus(){
     var url='';
@@ -13,8 +13,8 @@ function focus(){
             $('#focus-shop').addClass('hidden');
             $('#signin-shop').removeClass('hidden');
         }
-        else return alert(res.error_text);
-    })
+        else return $.noticeBox(res.error_text);
+    },function(){return $.noticeBox('');})
 }
 function signin(){
     var url='';
@@ -25,6 +25,6 @@ function signin(){
             $('#signin-shop').addClass('bg-grey3 text-white').find('.sign_text').text('已签到');
             $('#signin-shop').find('em').remove();
         }
-        else return alert(res.error_text);
-    })
+        else return $.noticeBox(res.error_text);
+    },function(){return $.noticeBox('');})
 }

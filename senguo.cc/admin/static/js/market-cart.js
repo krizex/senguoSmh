@@ -7,7 +7,7 @@ $(document).ready(function(){
     var $receiveAddress=$('#receiveAddress');
     var $receivePhone=$('#receivePhone');
     $('#charge').on('click',function(){
-        return alert('该功能年后开放,敬请期待！');
+        return $.noticeBox('该功能年后开放,敬请期待！');
     });
     //运费默认值
     if(!window.dataObj.freigh_ontime) window.dataObj.freigh_ontime=0;
@@ -41,12 +41,25 @@ $(document).ready(function(){
     });
     //商品删除
     $(document).on('click','.cart-list-item .delete-item',function(){
-        if(confirm('确认删除该商品吗？//(ㄒoㄒ)//')){
-            var $this=$(this);
-            var parent=$this.parents('.cart-list-item');
-            if(parent.hasClass('fruit_item')){itemDelete($this,0);}
-            else if(parent.hasClass('menu_item')){itemDelete($this,1);}
-        }
+        var $this=$(this);
+        var parent=$this.parents('.cart-list-item');
+        var index=parent.index();
+        var type;
+        if(parent.hasClass('fruit_item')){type=0}
+        else if(parent.hasClass('menu_item')){type=1}
+        $.confirmBox('确认删除该商品吗？//(ㄒoㄒ)//',index,type);
+    });
+    $(document).on('click','.confriming',function(){
+        var $this=$(this);
+        var $item=$this.parents('#confirmBox').find('.message');
+        var result=$this.attr('data-status');
+        var index=$item.attr('data-index');
+        var type=$item.attr('data-type');
+        if(result=='true'){
+            if(type==0) {itemDelete($('.cart-list-item').eq(index),0);}
+            else if(type==1) {itemDelete($('.cart-list-item').eq(index),1);}
+            }
+        $.confirmRemove();
     });
     //类型切换增加active
     $(document).on('click','.type-choose li',function(){
@@ -71,14 +84,14 @@ $(document).ready(function(){
             $receiveAddress.val('');
             $receivePhone.val('');
         }
-        else return alert('至多能添加五个收获地址！');
+        else return $.noticeBox('至多能添加五个收获地址！');
     });
     $(document).on('click','#receiveAdd',function(){
         var name=$receiveName.val();
         var address=$receiveAddress.val();
         var phone=$receivePhone.val();
         if(max<5) addressAddEdit('add_address',name,address,phone);
-        else return alert('至多能添加五个收获地址！');
+        else return $.noticeBox('至多能添加五个收获地址！');
     });
 
     //收货地址编辑
@@ -192,7 +205,7 @@ $(document).ready(function(){
                 $('.intime-intro').hide();
                 $('.now-intro').show();
             }
-            else alert('按时达模式已关闭，请选择立即送模式！');
+            else $.noticeBox('按时达模式已关闭，请选择立即送模式！');
         })
     }
     else{
@@ -238,7 +251,7 @@ $(document).ready(function(){
                 $('.now-intro').hide();
             }
             else $('.send-intime').removeClass('active');
-            alert('立即送模式已关闭，请选择按时达模式！');
+            $.noticeBox('立即送模式已关闭，请选择按时达模式！');
         })
     }
     else{
@@ -269,7 +282,7 @@ $(document).ready(function(){
             }
             else {
                 $this.parents('li').removeClass('active').siblings('li').addClass('active');
-                return alert('不小心超过了"立即送"的送货时间呢，请选择"按时达"时间段！')
+                return $.noticeBox('不小心超过了"立即送"的送货时间呢，请选择"按时达"时间段！')
             }
         });
     }
@@ -377,9 +390,9 @@ function goodsNum(target,action){
 
 
             }
-            else alert(res.error_text);
+            else return $.noticeBox(res.error_text);
         },
-        function(){alert('网络错误')})
+        function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')})
 }
 function mincharge(n,price){
     if(n==2){
@@ -402,10 +415,9 @@ function itemDelete(target,menu_type) {
     var $list_total_price=$('#list_total_price');
     var url = '/cart';
     var action = 0;
-    var parent=target.parents('.cart-list-item');
-    var charge_type_id =parent .find('.charge-type').data('id');
-    var price=parent.find('.item_total_price').text();
-    var t_price=parseInt($list_total_price.text());
+    var charge_type_id =target .find('.charge-type').data('id');
+    var price=target.find('.item_total_price').text();
+    var t_price=parseFloat($list_total_price.text());
     var args = {
         action: action,
         charge_type_id: charge_type_id,
@@ -413,8 +425,8 @@ function itemDelete(target,menu_type) {
     };
     $.postJson(url, args, function (res) {
             if (res.success) {
-                parent.remove();
-                t_price-=parseInt(price);
+                target.remove();
+                t_price-=parseFloat(price);
                 $list_total_price.text(t_price);
                 var type=$('#sendType').find('.active').data('id');
                 var freight=Int($('#freight_money').text());
@@ -427,10 +439,10 @@ function itemDelete(target,menu_type) {
                 }
                 if($('.cart-list').find('.cart-list-item').length==0) window.location.reload();
             }
-            else return alert(res.error_text);
+            else return $.noticeBox(res.error_text);
         },
         function () {
-            alert('网络错误')
+            return $.noticeBox('网络好像不给力呢~ ( >O< ) ~');
         });
 }
 
@@ -439,12 +451,12 @@ function addressAddEdit(action,name,address,phone){
     var action=action;
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
     var address_id=$('.address-box').attr('data-id');
-    if(name == null){return alert('请输入收货人姓名！')}
-    if(name.length > 10){return alert('姓名请不要超过10个字！')}
-    if(address == null){return alert('请输入收货人地址！')}
-    if(address.length > 50){return alert('地址请不要超过50个字！')}
-    if(!phone){return alert('请输入收货人电话！')}
-    if(!regPhone.test(phone)){return alert('请输入有效的手机号码！')}
+    if(name == null){return $.noticeBox('请输入收货人姓名！')}
+    if(name.length > 10){return $.noticeBox('姓名请不要超过10个字！')}
+    if(address == null){return $.noticeBox('请输入收货人地址！')}
+    if(address.length > 50){return $.noticeBox('地址请不要超过50个字！')}
+    if(!phone){return $.noticeBox('请输入收货人电话！')}
+    if(!regPhone.test(phone)){return $.noticeBox('请输入有效的手机号码！')}
     var data={
         phone:phone,
         receiver:name,
@@ -486,9 +498,9 @@ function addressAddEdit(action,name,address,phone){
             }
 
         }
-        else return alert(res.error_text);
+        else return $.noticeBox(res.error_text);
     },
-    function(){alert('网络错误')});
+    function(){$.noticeBox('网络好像不给力呢~ ( >O< ) ~')});
 }
 
 function orderSubmit(){
@@ -507,7 +519,7 @@ function orderSubmit(){
     var tip=$('.tip-list').find('.active').data('id');
     total_price=Number($('#list_total_price').text());
     if(!today) today=1;
-    if(!address_id){return alert('请填写您的收货地址！');}
+    if(!address_id){return $.noticeBox('请填写您的收货地址！');}
     if(!tip) tip=0;
     for(var i=0;i<fruit_item.length;i++)
     {
@@ -524,14 +536,14 @@ function orderSubmit(){
     }
     if(!message) message='';
     if(type==2) {
-        if(total_price<mincharge_intime) return alert('您的订单未达到按时达最低起送金额！');
-        if(!period_id) return alert('请选择送货时段！');
+        if(total_price<mincharge_intime) return $.noticeBox('您的订单未达到按时达最低起送金额！');
+        if(!period_id) return $.noticeBox('请选择送货时段！');
     }
     if(type==1){
         period_id=0;
-        if(total_price<mincharge_now) return alert('您的订单未达到立即送最低起送金额！');
+        if(total_price<mincharge_now) return $.noticeBox('您的订单未达到立即送最低起送金额！');
     }
-    if(!type){return alert('请选择送货时段！')}
+    if(!type){return $.noticeBox('请选择送货时段！')}
     var args={
         fruits:fruits,
         mgoods:mgoods,
@@ -548,8 +560,8 @@ function orderSubmit(){
             SetCookie('cart_count',0);
             window.location.href=window.dataObj.success_href;
         }
-        else return alert(res.error_text);
+        else return $.noticeBox(res.error_text);
     },
-    function(){alert('网络错误')});
+    function(){$.noticeBox('网络好像不给力呢~ ( >O< ) ~')});
 }
 

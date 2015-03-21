@@ -132,10 +132,7 @@ $.postJson = function(url, args,successCall, failCall, alwaysCall){
     //req.always(alwaysCall);
 };
 
-$.getItem=function(url,success){
-    $.get(url,success);
-};
-
+$.getItem=function(url,success){$.get(url,success);};
 
 function Int(target){
     target=parseInt(target);
@@ -173,7 +170,60 @@ function is_weixin(){
         if (r != null) return unescape(r[2]); return default_value || null;
     }
 })(Zepto);
-
+//confirmbox
+$.getItem('/static/items/confirmBox.html?v=20150321',function(data){window.dataObj.confirmBox=data});
+$.confirmBox=function(text,index,type){
+        var $box=$(window.dataObj.confirmBox);
+        $box.find('.message').text(text);
+        if(typeof(index)!='undefined') $box.find('.message').attr({'data-index':index});
+        if(typeof(type)!='undefined') $box.find('.message').attr({'data-type':type});
+        var window_height=$(window).height();
+        var height=$('.container').height();
+        var $mask;
+        if(height<window_height) $mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
+        else $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
+        $('body').append($box,$mask);
+        $(document).on('click','.dismiss',function(){
+            $('#confirmBox').remove();
+            $('.modal_bg').remove();
+        });
+}
+$.confirmRemove=function(){
+    $('#confirmBox').remove();
+    $('.modal_bg').remove();
+}
+//word notice
+$.getItem('/static/items/noticeBox.html?v=2015-03-21',function(data){window.dataObj.noticeBox=data});
+$.noticeBox=function(text){
+        var $box=$(window.dataObj.noticeBox);
+        $box.find('.notice').text(text);
+        $('body').append($box);
+        $.noticeRemove('noticeBox');
+}
+//modal notice word
+$.warnNotice=function(text){
+    $('.modal-body').find('.warn').remove();
+    var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
+    $word.text(text);
+    $('.modal-body').append($word);
+    $.noticeRemove('warn');
+}
+//time count 2 secends
+var n_time=2;
+$.noticeRemove=function (target) {
+    if (n_time == 0) {
+        n_time = 2;
+        $('#'+target).remove();
+    }
+    else {
+        n_time--;
+        setTimeout(function() {
+                $.noticeRemove(target)
+            },
+            1000)
+    }
+}
+//modal box
 function Modal(target){
     this.target=target;
 }
@@ -188,6 +238,7 @@ Modal.prototype.modal=function(type){
         else $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
         $('body').append($mask).addClass('modal_sty').attr({'onmousewheel':'return false'});
         $target.removeClass('fade').addClass('in').css({'display':'block'});
+        $target.find('.warn').remove();
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
                 $('body').removeClass('modal_sty').attr({'onmousewheel':''}).find($mask).remove();

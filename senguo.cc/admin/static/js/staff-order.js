@@ -107,9 +107,9 @@ function finishOrder(target,id){
             target.parents('.order-list-item').addClass('text-grey bg-grey');
             //target.parents('.order-list-item').remove();
         }
-        else return alert(res.error_text)
+        else return $.noticeBox(res.error_text)
     },function(){
-        return alert('网络错误！')
+        return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')
     })
 }
 
@@ -129,8 +129,8 @@ function remarkSub(id,index){
             var remark_box=new Modal('remark_box');
             remark_box.modal('hide');
         }
-        else return alert(res.error_text)
+        else return $.noticeBox(res.error_text)
     },function(){
-        return alert('网络错误！')
+        return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')
     })
 }

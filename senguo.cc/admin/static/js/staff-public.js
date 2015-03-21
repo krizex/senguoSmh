@@ -21,7 +21,7 @@ function shopChange(id){
         }
         else return alert(res.error_text)
     },function(){
-        return alert('网络错误！')
+        return alert('网络好像不给力呢~ ( >O< ) ~！')
     })
 }
 
@@ -90,6 +90,38 @@ function is_weixin(){
         if (r != null) return unescape(r[2]); return default_value || null;
     }
 })(Zepto);
+
+//word notice
+$.getItem('/static/items/noticeBox.html?v=2015-03-21',function(data){window.dataObj.noticeBox=data});
+$.noticeBox=function(text){
+        var $box=$(window.dataObj.noticeBox);
+        $box.find('.notice').text(text);
+        $('body').append($box);
+        $.noticeRemove('noticeBox');
+}
+//modal notice word
+$.warnNotice=function(text){
+    $('.modal-body').find('.warn').remove();
+    var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
+    $word.text(text);
+    $('.modal-body').append($word);
+    $.noticeRemove('warn');
+}
+//time count 2 secends
+var n_time=2;
+$.noticeRemove=function (target) {
+    if (n_time == 0) {
+        n_time = 2;
+        $('#'+target).remove();
+    }
+    else {
+        n_time--;
+        setTimeout(function() {
+                $.noticeRemove(target)
+            },
+            1000)
+    }
+}
 
 function Modal(target){
     this.target=target;

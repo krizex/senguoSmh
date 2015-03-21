@@ -211,7 +211,7 @@ $(document).ready(function(){
                                     token=res.token;
                                 },
                                 function(){
-                                    alert('网络错误！');}
+                                    alert('网络好像不给力呢~ ( >O< ) ~！');}
                             );
                             $('#file_upload').data('uploadifive').settings.formData = {
                                 'key':key,
@@ -370,7 +370,7 @@ $(document).ready(function(){
                             token=res.token;
                         },
                         function(){
-                            alert('网络错误！');}
+                            alert('网络好像不给力呢~ ( >O< ) ~！');}
                     );
                     $(this).data('uploadifive').settings.formData = {
                         'key':key,
@@ -537,7 +537,7 @@ function addEditType(target,action){
             }
             else return alert(res.error_text);
         },
-        function(){alert('网络错误')});
+        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
 }
 
 function defalutChangeUnit(id){
@@ -666,7 +666,7 @@ function addEditFruit(target,action){
             }
             else return alert(res.error_text);
         },
-        function(){alert('网络错误')});
+        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
 }
 
 function editActive(id,target){
@@ -694,7 +694,7 @@ function editActive(id,target){
             }
             else return alert(res.error_text);
         },
-        function(){alert('网络错误')});
+        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
 }
 
 function addEditCharge(target,id,action,item){
@@ -743,7 +743,7 @@ function addEditCharge(target,id,action,item){
             }
             else return alert(res.error_text);
         },
-        function(){alert('网络错误')});
+        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
 }
 
 function deleteCharge(target,id){
@@ -764,7 +764,7 @@ function deleteCharge(target,id){
             }
             else return alert(res.error_text);
         },
-        function(){alert('网络错误')});
+        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
 }
 
 function defaultImg(target,id,code){
@@ -791,5 +791,5 @@ function defaultImg(target,id,code){
             }
             else return alert(res.error_text);
         },
-        function(){alert('网络错误')});
+        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
 }

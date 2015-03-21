@@ -36,10 +36,11 @@ input[type=text]:focus{box-shadow:0px;border-color:#f7f7f8 !important;outline:no
 .modal-dialog{position:relative;width:auto;margin:10px auto;margin-top:10%!important;padding:0 20px;max-width:640px;}
 .modal-content{position:relative;background-color:#fff;-webkit-background-clip:padding-box;background-clip:padding-box;border:1px solid #999;border:1px solid rgba(0,0,0,.2);border-radius:6px;outline:0;-webkit-box-shadow:0 3px 9px rgba(0,0,0,.5);box-shadow:0 3px 9px rgba(0,0,0,.5);margin:0 auto;}.modal-backdrop{position:fixed;top:0;right:0;bottom:0;left:0;z-index:1040;background-color:#000}.modal-backdrop.fade{filter:alpha(opacity=0);opacity:0}
 .modal-backdrop.in{filter:alpha(opacity=50);opacity:.5}
-.modal-header{min-height:16.43px;padding:15px;position:relative;overflow:hidden;background:url('../svg/rainshed_green@2x.png') repeat-x;padding:0px;height:42px;background-size:20px;line-height:36px;position:absolute;z-index:10;width:100%;border-bottom:0px;border-top-left-radius:6px;border-top-right-radius:6px;color:#fff;}
-.modal-header .close{position:absolute;top:-6px;right:0;color:inherit;font-size:28px !important;margin-right:14px;margin-top:3px;}
+.modal-header{min-height:16.43px;padding:15px;position:relative;overflow:hidden;text-align:center;font-size:16px;background:url('../svg/rainshed_green@2x.png') repeat-x;padding:0px;height:42px;background-size:20px;line-height:36px;position:absolute;z-index:10;width:100%;border-bottom:0px;border-top-left-radius:6px;border-top-right-radius:6px;color:#fff;}
+.modal-header .close{position:absolute;top:-6px;right:0;color:inherit;font-size:28px !important;margin-right:14px;margin-top:3px;background:none;border:none;}
+.modal-header .close:active{boder:none;}
 .modal-title{margin:0;line-height:36px !important;font-weight:normal;}
-.modal-body{position:relative;font-size:1em;padding:20px 10px;min-height:180px;}
+.modal-body{position:relative;font-size:1em;padding:20px 10px;min-height:190px;}
 .modal-footer{padding:10px;text-align:right;clear:both;}
 .modal-footer .btn+.btn{margin-bottom:0;margin-left:5px}
 .modal-footer .btn-group .btn+.btn{margin-left:-1px}
@@ -62,7 +63,10 @@ hr{height:0;-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizin
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
 a{outline:0;}
 a:focus{border:none;background:none;outline:0;}
-.hidden{display:none;}
+.notice_bg{width:100%;height:100%;position:fixed;top:100px;z-index:9999;;}
+.notice_box{width:280px;height:100px;background:rgba(0,0,0,0.5);padding:10px;border-radius:4px;margin:0 auto;}
+button:focus{outline:0;}
+#warn{position:absolute;padding-top:5px;}
 
 
 .bg-white{background-color:#fff !important;}
@@ -149,7 +153,7 @@ a:focus{border:none;background:none;outline:0;}
 .m0{margin:0px !important;}
 .mt42{margin-top:36px !important;}
 .mt10{margin-top:10px !important;}
-.mt100{margin-top:100px;}
+.mt100{margin-top:100px !important;}
 .radius0{border-radius:0px !important;}
 
 .message-box{position:relative;top:30%;overflow:auto;width:95%;max-width:500px;margin:auto;background-color:#fcfcfc;padding:1px;margin-top:-160px;padding-bottom:15px;border-radius:8px;box-shadow:0 0 8px #747474;overflow:hidden}

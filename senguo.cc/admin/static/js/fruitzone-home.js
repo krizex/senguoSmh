@@ -108,7 +108,7 @@ function Search(evt){
             }
         },
         function(){
-            alert('网络错误！');
+            alert('网络好像不给力呢~ ( >O< ) ~！');
         }
     );
 }
@@ -191,7 +191,7 @@ function Filter(evt){
             else return alert(res.error_text);
         },
         function(){
-            alert('网络错误！');
+            alert('网络好像不给力呢~ ( >O< ) ~！');
         }
     );
 

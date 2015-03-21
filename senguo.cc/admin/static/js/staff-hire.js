@@ -59,13 +59,13 @@ function hireApply(){
     if(!headimgurl) headimgurl='';
     if(!intro) intro='';
     if(!advantage) advantage='';
-    if(!regPhone.test(phone)){return alert('该手机号不存在！');}
-    if(!regEmail.test(email)){return alert('该邮箱不存在！');}
-    if(name.length>10) {return alert('姓名请不要超过10个字！');}
-    if(address.length>20) {return alert('地址请不要超过20个字！');}
-    if(intro.length>100) {return alert('自我介绍请不要超过100个字！');}
-    if(advantage.length>100) {return alert('竞争呢个优势请不要超过100个字！');}
-    if(!address) return alert('请填写您的住址！');
+    if(!regPhone.test(phone)){return $.noticeBox('该手机号不存在！');}
+    if(!regEmail.test(email)){return $.noticeBox('该邮箱不存在！');}
+    if(name.length>10) {return $.noticeBox('姓名请不要超过10个字！');}
+    if(address.length>20) {return $.noticeBox('地址请不要超过20个字！');}
+    if(intro.length>100) {return $.noticeBox('自我介绍请不要超过100个字！');}
+    if(advantage.length>100) {return $.noticeBox('竞争呢个优势请不要超过100个字！');}
+    if(!address) return $.noticeBox('请填写您的住址！');
     var data={
         name:name,
         phone:phone,
@@ -83,10 +83,10 @@ function hireApply(){
         if(res.success){
            if(confirm('申请成功')) window.history.go(-1);
         }
-        else return alert(res.error_text);
+        else return $.noticeBox(res.error_text);
     },
     function(){
-        return alert('网络错误！');
+        return $.noticeBox('网络好像不给力呢~ ( >O< ) ~');
     })
 
 }
