@@ -177,7 +177,7 @@ function Apply(evt){
             else  alert(res.error_text);
         },
         function(){
-            alert('网络错误！');}
+            alert('网络好像不给力呢~ ( >O< ) ~！');}
     );
 }
 
@@ -245,7 +245,7 @@ function reApply(evt){
             else  alert(res.error_text);
         },
         function(){
-            alert('网络错误！');}
+            alert('网络好像不给力呢~ ( >O< ) ~！');}
     );
 }
 
@@ -266,6 +266,6 @@ function Vrify(){
             else alert(res.error_text);
         },
         function(){
-            alert('网络错误！');}
+            alert('网络好像不给力呢~ ( >O< ) ~！');}
     );
 }

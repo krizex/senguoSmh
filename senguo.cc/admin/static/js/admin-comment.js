@@ -48,7 +48,7 @@ function replay(id,index){
             }
             else alert(res.error_text);
         },
-        function(){alert('网络错误')})
+        function(){alert('网络好像不给力呢~ ( >O< ) ~')})
 }
 
 function collect(target,id){
@@ -65,5 +65,5 @@ function collect(target,id){
             }
             else alert(res.error_text);
         },
-        function(){alert('网络错误')})
+        function(){alert('网络好像不给力呢~ ( >O< ) ~')})
 }

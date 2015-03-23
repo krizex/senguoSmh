@@ -40,11 +40,11 @@
 .limit_tag{background:url('../svg/icon_list@2x.png') no-repeat -68px -128px;width:52px;height:52px;right:2px;bottom:3px;background-size:120px 180px;}
 
 .large-img-box .close{font-size:12px;opacity:1;padding:6px 8px;margin-right:0px;margin-top:0px;}
-.large-img-box img{height:300px;}
+.large-img-box img{height:280px;}
 .large-img-box .click-great{display:inline-block;width:100%;padding:10px;padding-left:30px;}
 .large-img-box .modal-footer{padding:0px;}
 
-.large-img-box .modal-dialog{width:100%;max-width:302px;}
+.large-img-box .modal-dialog{width:100%;max-width:302px;padding:0 10px !important;}
 .large-img-box  .mt42{margin-top:30px !important;}
 .large-img-box  .intro{padding:10px;border-bottom:1px solid #ccc;}
 

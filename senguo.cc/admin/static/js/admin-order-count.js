@@ -356,7 +356,7 @@ function count(action,page,type){
             else return alert(res.error_text);
         },
         function(){
-            return alert('网络错误！');
+            return alert('网络好像不给力呢~ ( >O< ) ~！');
         });
 }
 

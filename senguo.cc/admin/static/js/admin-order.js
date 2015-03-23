@@ -269,7 +269,7 @@ function addEditPeriod(target,action){
             }
             else return alert(res.error_text);
         },
-    function(){return alert('网络错误！')}
+    function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }
 
@@ -291,7 +291,7 @@ function deletePeriod(target){
             }
             else return alert(res.error_text);
         },
-        function(){return alert('网络错误！')}
+        function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }
 
@@ -314,7 +314,7 @@ function activePeriod(target,active){
             }
             else return alert(res.error_text);
         },
-        function(){return alert('网络错误！')}
+        function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }
 
@@ -331,7 +331,7 @@ function orderTypeActive(target,action){
             }
             else return alert(res.error_text);
         },
-        function(){return alert('网络错误！')}
+        function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }
 
@@ -353,7 +353,7 @@ function sendMoney(target,money){
             }
             else return alert(res.error_text);
         },
-        function(){return alert('网络错误！')}
+        function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }
 
@@ -376,7 +376,7 @@ function stopRange(target,range){
             }
             else return alert(res.error_text);
         },
-        function(){return alert('网络错误！')}
+        function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }
 
@@ -399,7 +399,7 @@ function FreightOnTime(target,freight){
             }
             else return alert(res.error_text);
         },
-        function(){return alert('网络错误！')}
+        function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }
 
@@ -432,6 +432,6 @@ function SendNowConfig(){
             }
             else return alert(res.error_text);
         },
-        function(){return alert('网络错误！')}
+        function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }
