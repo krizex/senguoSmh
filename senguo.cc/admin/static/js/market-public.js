@@ -62,7 +62,7 @@ $(document).ready(function(){
         //     }
         // });     
     });
-    $(".lazy_img").lazyload();
+    $(".lazy_img").lazyload({threshold:100});
 });
 
 /*function AndroidImg(target){

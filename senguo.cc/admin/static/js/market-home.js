@@ -343,9 +343,9 @@ var fruitItem=function(box,fruits,type){
             }
             //goods img 
             if(!img_url) $item.find('.img').attr({'data-original':'/static/design_img/'+code+'.png'});
-            else $item.find('.img').attr({'data-original':img_url+'?imageView/1/w/160/h/160'});
-            $('.lazy_img').lazyload();
-            $item.find('.img').lazyload();
+            else $item.find('.img').attr({'data-original':img_url+'?imageView/1/w/170/h/170'});
+            $('.lazy_img').lazyload({threshold:100});
+            $item.find('.img').lazyload({threshold:100});
         } 
         box.append($item);
 }
