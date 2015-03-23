@@ -581,7 +581,7 @@ class Order(AdminBaseHandler):
                 except:
                     self.send_fail("staff'infomation error")
                 openid = staff_info.wx_openid
-                staff_name = staff_info.name
+                staff_name = staff_info.nickname
                 shop_name = self.current_shop.shop_name
                 order_id = order.num
                 order_type = order.type
