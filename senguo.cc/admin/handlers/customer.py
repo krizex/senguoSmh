@@ -327,9 +327,9 @@ class Market(CustomerBaseHandler):
         elif action in (2, 1, 0):  # 更新购物车
             return self.cart(action)
 
-    def commodity_list(self,page):
+    def commodity_list(self):
         #
-        # page = 2
+        page = 2
         offset = (page -1) * 10
         shop_id = int(self.get_cookie('market_shop_id'))
         shop = self.session.query(models.Shop).filter_by(id = shop_id).first()

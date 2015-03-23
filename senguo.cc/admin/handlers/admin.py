@@ -571,6 +571,29 @@ class Order(AdminBaseHandler):
                 if not SH2:
                     return self.send_fail("没找到该送货员")
                 order.update(session=self.session, status=4, SH2_id=int(data["staff_id"]))
+                #########################################################################################################
+                # send message to staff
+                # woody
+                # 3.21
+                id = SH2.id
+                try:
+                    staff_info = self.session.query(models.Accountinfo).filter_by(id = id).first()
+                except:
+                    self.send_fail("staff'infomation error")
+                openid = staff_info.wx_openid
+                staff_name = staff_info.name
+                shop_name = self.current_shop.shop_name
+                order_id = order.num
+                order_type = order.type
+                create_date = order.create_date
+                customer_name = order.receiver
+                order_totalPrice = order.totalPrice
+                send_time = order.get_sendtime(self.session,order.id)
+                print("ready to send message")
+
+                WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time)
+                print("success?")
+
             elif action == "edit_status":
                 order.update(session=self.session, status=data["status"])
             elif action == "edit_totalPrice":
