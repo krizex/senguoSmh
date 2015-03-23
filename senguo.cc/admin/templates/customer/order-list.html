@@ -106,19 +106,19 @@
         {% end %}
     </ul>
 {% end %}
-<div class="modal fade comment-box" id="commentBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade comment-box" id="commentBox">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <span type="button" class="close text-white" data-dismiss="modal">✕</span>
-                <h3 class="modal-title" id="myModalLabel">评价</h3>
+                <span type="button" class="close text-white dismiss">✕</span>
+                <h3 class="modal-title">评价</h3>
             </div>
             <div class="modal-body set-width-float text-center">
                 <textarea class="comment-input center-block mt42"></textarea>
             </div>
             <div class="modal-footer text-center">
+                <button class="btn bg-grey3 text-white dismiss">关闭</button>
                 <button class="btn bg-green text-white comment_submit">提交</button>
-                <button class="btn bg-grey3 text-white" data-dismiss="modal">关闭</button>
             </div>
         </div>
     </div>

@@ -36,7 +36,7 @@ $(document).ready(function(){
                         token=res.token;
                     },
                     function(){
-                        alert('网络错误！');}
+                        alert('网络好像不给力呢~ ( >O< ) ~！');}
                 );
                 $('#file_upload').data('uploadifive').settings.formData = {
                     'key':key,

@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{static_url('css/market-center.css')}}"/>
 {% end %}
 {% block content %}
-    <div class="rainshed2 text-center font18 text-white bg_change"></div>
+    <div class="rainshed2 text-center font18 text-white bg_change fix-title"></div>
     <div class="user-info box-style m-b5 clearfix font16 text-center mt42 p0">
         <a href="{{reverse_url('customerProfile')}}" class="user-img text-grey3">
             <img src="{{current_user.accountinfo.headimgurl}}" class="img img-circle"/>
@@ -17,10 +17,10 @@
         </a>
         <img src="{{static_url('images/rooftop.png')}}?v=20150316" class="bg"/>
     </div>
-    <div class="bg-white m-b10 clearfix font14 box-style">
+    <!--<div class="bg-white m-b10 clearfix font14 box-style">
         <div class="w50 pull-left text-center border-rd title2">积分&nbsp;&nbsp;{{current_user.credits}}</div>
         <div class="w50 pull-left text-center title2">余额&nbsp;&nbsp;{{current_user.balance}}</div>
-    </div>
+    </div>-->
     <div class="bg-white m-b10 clearfix pb0">
         <p class="title clearfix box-style">
             <span class="pull-left font14"><em class="order-icon set-inl-blo pull-left bg_change"></em>我的订单</span>
@@ -106,9 +106,9 @@
                 </div>
             </div>
             <div class="modal-footer text-center">
+                <button class="btn bg-greyc text-white dismiss text-grey3">取消</button>
                 <button class="btn bg-green3 text-white addressEdit" style="display:none">确定</button>
                 <button class="btn bg-green3 text-white addressAdd" style="display:none">确定</button>
-                <button class="btn bg-greyc text-white dismiss">取消</button>
             </div>
         </div>
     </div>

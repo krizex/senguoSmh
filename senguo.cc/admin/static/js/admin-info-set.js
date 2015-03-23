@@ -84,7 +84,7 @@ $(document).ready(function(){
                         token=res.token;
                     },
                     function(){
-                        alert('网络错误！');}
+                        alert('网络好像不给力呢~ ( >O< ) ~！');}
                 );
                 $('#file_upload').data('uploadifive').settings.formData = {
                     'key':key,
@@ -166,7 +166,7 @@ function infoEdit(target){
         action='edit_shop_code';
         shop_code=$('.shop_code').val().trim();
         if(!reg.test(shop_code)){return alert('店铺号只能为字母、数字以及下划线组成！')}
-        if(shop_code.length<4){return alert('店铺号至少为4位数！')}
+        if(shop_code.length<6){return alert('店铺号至少为6位数！')}
         data={shop_code:shop_code};
     }
     else if(action_name=='intro')
@@ -264,6 +264,6 @@ function infoEdit(target){
             else  alert(res.error_text);
         },
         function(){
-            alert('网络错误！');}
+            alert('网络好像不给力呢~ ( >O< ) ~！');}
     );
 }

@@ -92,7 +92,7 @@ function hireConfig(target,action,val){
             target.parents('.staff-list-item').find('.staff-info-edit').hide();
         }
         else return alert(res.error_text)
-    },function(){return alert('网络错误！')}
+    },function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }
 
@@ -117,7 +117,7 @@ function staffEdit(target){
             parent.parents('.staff-list-item').find('.info').append('<p>备注:'+remark+'</p>');
         }
         else return alert(res.error_text)
-    },function(){return alert('网络错误！')}
+    },function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
     );
 
 }
@@ -140,7 +140,7 @@ function staffActive(target){
                 target.find('.stop-mode').toggleClass('hidden');
             }
             else return alert(res.error_text)
-        },function(){return alert('网络错误！')}
+        },function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
     );
 
 }

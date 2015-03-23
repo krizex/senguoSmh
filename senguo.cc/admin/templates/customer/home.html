@@ -12,6 +12,7 @@
     window.dataObj.notices = {% raw json.dumps(context["notices"]) %}
 </script>
 <input type="hidden" id="if_focus" value="{{context['w_follow']}}"/>
+<input type="hidden" id="page_count" value="{{context['page_count']}}"/>
 <div class="notice-box">
     <!--<img src="{{static_url('images/banner.png')}}" class="default-banner img"/>-->
     <div class="notice-board">
@@ -54,6 +55,13 @@
     <p class="text-white no-mar-btom classify-title font18 text-center bg-green dryfruit_classify" id="dryFruitPosition" style="display:none;">干果单品</p>
     <ul class="goods-list fruit-list dryfruit_goods_list" >
     </ul>
+    {% if menus %}
+    {% for menu in menus  %}
+        <p class="text-white no-mar-btom classify-title font18 text-center bg-green menu_classify{{menu.id}}" id="menu{{menu.id}}" style="display:none;">{{menu.name}}</p>
+        <ul class="goods-list fruit-list menu_goods_list{{menu.id}}" >
+        </ul>
+    {% end %}
+    {% end %}
 </div>
 {% end %}
 {% block other %}
@@ -69,7 +77,7 @@
                 <p class="intro font14">哈哈哈哈哈哈</p>
             </div>
             <div class="modal-footer">
-                <a href="javascript:;" class="click-great text-center font16 text-grey3"><em class="bg_change"></em>赞一个</a>
+                <a href="javascript:;" class="click-great text-center font16 text-grey3 able_click"><em class="bg_change"></em>赞一个</a>
             </div>
         </div>
     </div>

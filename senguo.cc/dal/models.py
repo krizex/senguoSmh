@@ -187,8 +187,10 @@ class _AccountApi(_CommonApi):
     def register_with_wx(cls, session, wx_userinfo):
         # 判断是否在本账户里存在该用户
         u = cls.login_by_unionid(session, wx_userinfo["unionid"])
+        print("login register_with_wx")
         if u:
             # 已存在用户，则更新微信信息
+            print("user exists")
             u.accountinfo.wx_country=wx_userinfo["country"]
             u.accountinfo.wx_province=wx_userinfo["province"]
             u.accountinfo.wx_city=wx_userinfo["city"]
@@ -202,7 +204,7 @@ class _AccountApi(_CommonApi):
             print("start:",start)
             if start == "o5":
                 u.accountinfo.wx_openid = wx_userinfo["openid"]
-            print("update openid")
+                print("update openid")
             print(wx_userinfo["openid"])
 
             # print( "openid" + wx_userinfo["openid"])

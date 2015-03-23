@@ -13,11 +13,11 @@ $(document).ready(function(){
     //AndroidImg('bg_change');
     //AndroidImg('src_change');   
     //图片延迟加载
-     $('.lazy_img').each(function(){
-	var $this=$(this);
-	var src=$this.data('src');
-	$this.attr({'src':src});
-    });
+ //     $('.lazy_img').each(function(){
+	// var $this=$(this);
+	// var src=$this.data('src');
+	// $this.attr({'src':src});
+ //    });
     //商品单位转换
     $('.chargeUnit').each(function(){
         var $this=$(this);
@@ -50,7 +50,18 @@ $(document).ready(function(){
             }
             else $('.little_pear').animate({'right':'-40px'},5);
         }
-});
+         var scrollTop = $this.scrollTop();
+        $('.lazy_img').each(function(){
+            var $this = $(this);
+            if ($this.offset().top <= scrollTop + clientHeight) {                 
+                var dataSrc = $this.attr('data-src');
+                var src=$this.attr('src');
+                if (dataSrc) {
+                    $this.attr('src', dataSrc);
+                }
+            }
+        });     
+    });
 });
 
 /*function AndroidImg(target){
@@ -118,7 +129,7 @@ function tagText(target,n){
     //AndroidImg('bg_change');
 }
 //public
-$.postJson = function(url, args,successCall, failCall, alwaysCall){
+$.postJson = function(url, args,successCall, failCall, errorCall,alwaysCall){
     args._xsrf = window.dataObj._xsrf;
     var req = $.ajax({
         type:"post",
@@ -127,15 +138,12 @@ $.postJson = function(url, args,successCall, failCall, alwaysCall){
         contentType:"application/json; charset=UTF-8",
         success:successCall,
         fail:failCall,
-        error:failCall
+        error:errorCall
     });
     //req.always(alwaysCall);
 };
 
-$.getItem=function(url,success){
-    $.get(url,success);
-};
-
+$.getItem=function(url,success){$.get(url,success);};
 
 function Int(target){
     target=parseInt(target);
@@ -174,6 +182,69 @@ function is_weixin(){
     }
 })(Zepto);
 
+//prevent 冒泡
+function stopPropagation(e) {  
+    e = e || window.event;  
+    if(e.stopPropagation) { //W3C阻止冒泡方法  
+        e.stopPropagation();  
+    } else {  
+        e.cancelBubble = true; //IE阻止冒泡方法  
+    }  
+}  
+//confirmbox
+$.getItem('/static/items/confirmBox.html?v=20150321',function(data){window.dataObj.confirmBox=data});
+$.confirmBox=function(text,index,type){
+        var $box=$(window.dataObj.confirmBox);
+        $box.find('.message').text(text);
+        if(typeof(index)!='undefined') $box.find('.message').attr({'data-index':index});
+        if(typeof(type)!='undefined') $box.find('.message').attr({'data-type':type});
+        var window_height=$(window).height();
+        var height=$('.container').height();
+        var $mask;
+        if(height<window_height) $mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
+        else $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
+        $('body').append($box,$mask);
+        $(document).on('click','.dismiss',function(){
+            $('#confirmBox').remove();
+            $('.modal_bg').remove();
+        });
+}
+$.confirmRemove=function(){
+    $('#confirmBox').remove();
+    $('.modal_bg').remove();
+}
+//word notice
+$.getItem('/static/items/noticeBox.html?v=2015-03-21',function(data){window.dataObj.noticeBox=data});
+$.noticeBox=function(text){
+        var $box=$(window.dataObj.noticeBox);
+        $box.find('.notice').text(text);
+        $('body').append($box);
+        $.noticeRemove('noticeBox');
+}
+//modal notice word
+$.warnNotice=function(text){
+    $('.modal-body').find('.warn').remove();
+    var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
+    $word.text(text);
+    $('.modal-body').append($word);
+    $.noticeRemove('warn');
+}
+//time count 2 secends
+var n_time=2;
+$.noticeRemove=function (target) {
+    if (n_time == 0) {
+        n_time = 2;
+        $('#'+target).remove();
+    }
+    else {
+        n_time--;
+        setTimeout(function() {
+                $.noticeRemove(target)
+            },
+            1000)
+    }
+}
+//modal box
 function Modal(target){
     this.target=target;
 }
@@ -188,6 +259,7 @@ Modal.prototype.modal=function(type){
         else $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
         $('body').append($mask).addClass('modal_sty').attr({'onmousewheel':'return false'});
         $target.removeClass('fade').addClass('in').css({'display':'block'});
+        $target.find('.warn').remove();
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
                 $('body').removeClass('modal_sty').attr({'onmousewheel':''}).find($mask).remove();
