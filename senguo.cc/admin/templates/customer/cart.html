@@ -5,16 +5,16 @@
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 {% end %}
 {% block content %}
-    <div class="rainshed bg_change"></div>
+    <div class="rainshed bg_change fix-title"></div>
     <div class="bg-box">
         <ul class="cart-list set-w100-fle mt42 m-b0">
             {% for key in cart_f %}
             <li class="cart-list-item set-w100-fle fruit_item text-grey m-b5 {{cart_f[key]['code']}}">
                 <div class="box bg set-w100-fle">
                     {% if cart_f[key]['charge_type'].fruit.img_url %}
-                    <img src="" class="goods-img pull-left w15 lazy_img" data-src="{{cart_f[key]['charge_type'].fruit.img_url}}?imageView/1/w/100/h/100"/>
+                    <img src="/static/images/holder.png" class="goods-img pull-left w15 lazy_img" data-src="{{cart_f[key]['charge_type'].fruit.img_url}}?imageView/1/w/100/h/100"/>
                     {% else %}
-                    <img src="" class="goods-img pull-left w15 lazy_img" data-src="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.png?v=20150316"/>
+                    <img src="/static/images/holder.png" class="goods-img pull-left w15 lazy_img" data-src="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.png?v=20150316"/>
                     {% end %}
                     <div class="goods-info pull-left font14 p010">
                         <div class="clearfix">

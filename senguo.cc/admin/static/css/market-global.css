@@ -208,3 +208,4 @@ button:focus{outline:0;}
 
 .cart_num{position:absolute;display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;top:4px;}
 .little_pear{position:fixed;z-index:9999;top:70%;right:-40px;display:inline-block;width:40px;height:49px;}
+.fix-title{position:fixed;z-index:666;top:0;}

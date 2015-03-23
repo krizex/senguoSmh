@@ -13,11 +13,11 @@ $(document).ready(function(){
     //AndroidImg('bg_change');
     //AndroidImg('src_change');   
     //图片延迟加载
-     $('.lazy_img').each(function(){
-	var $this=$(this);
-	var src=$this.data('src');
-	$this.attr({'src':src});
-    });
+ //     $('.lazy_img').each(function(){
+	// var $this=$(this);
+	// var src=$this.data('src');
+	// $this.attr({'src':src});
+ //    });
     //商品单位转换
     $('.chargeUnit').each(function(){
         var $this=$(this);
@@ -50,7 +50,18 @@ $(document).ready(function(){
             }
             else $('.little_pear').animate({'right':'-40px'},5);
         }
-});
+         var scrollTop = $this.scrollTop();
+        $('.lazy_img').each(function(){
+            var $this = $(this);
+            if ($this.offset().top <= scrollTop + clientHeight) {                 
+                var dataSrc = $this.attr('data-src');
+                var src=$this.attr('src');
+                if (dataSrc) {
+                    $this.attr('src', dataSrc);
+                }
+            }
+        });     
+    });
 });
 
 /*function AndroidImg(target){
