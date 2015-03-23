@@ -195,6 +195,8 @@ class ShopProfile(CustomerBaseHandler):
             try:
                 point = self.session.query(models.Points).filter_by(id = self.current_user.id).first()
             except:
+                self.send_fail("signin point error")
+            if point is None:
                 point =models.Points(id = self.current_user.id )
                 self.session.add(point)
                 self.session.commit()
@@ -210,7 +212,7 @@ class ShopProfile(CustomerBaseHandler):
                     # woody
                     if point is not None:
                         print("before sign:",point.signIn_count)
-                        point.signIN_count += 1
+                        point.signIn_count += 1
                         print("after sign:",point.signIn_count)
                         # point.count += 1
                     if datetime.date.today() - signin.last_date == datetime.timedelta(1):  # 判断是否连续签到
@@ -413,13 +415,13 @@ class Market(CustomerBaseHandler):
         elif offset >count_dry + count_fruit:
             w_orders = w_mgoods[offset-(count_fruit+count_dry):]
 
-        elif offset < count_fruit and offset + 10 < count_fruit +count_dry:
+        elif offset < count_fruit and offset + 10 <= count_fruit +count_dry:
             w_orders =w_fruits[offset:] + w_dry_fruits[0:offset + 10 - count_fruit]
 
-        elif offset > count_fruit and offset < count_fruit + count_dry and offset + 10 <= count_dry + count_fruit + count_mgoods:
+        elif offset > count_fruit and offset <= count_fruit + count_dry and offset + 10 <= count_dry + count_fruit + count_mgoods:
             w_orders = w_dry_fruits[offset - count_dry:] + w_mgoods[0:offset + 10 - (count_dry + count_fruit)]
 
-        elif offset >  count_fruit and offset < count_fruit + count_dry and offset +10 > count_fruit + count_dry + count_mgoods:
+        elif offset >  count_fruit and offset <= count_fruit + count_dry and offset +10 > count_fruit + count_dry + count_mgoods:
             w_orders = w_dry_fruits[offset - count_fruit:] + w_mgoods
 
         elif offset <= count_fruit and offset + 10 > count_fruit + count_dry and offset + 10 <= count_fruit +count_dry + count_mgoods:
@@ -454,15 +456,23 @@ class Market(CustomerBaseHandler):
         #???
         try:
             point = self.session.query(models.Points).filter_by(id = self.current_user.id).first()
+            if point is None:
+                print("start ,point is None ")
         except:
+            self.send_fail("point find error")
+        if point is None:
             point = models.Points(id = self.current_user.id)
             self.session.add(point)
             self.session.commit()
+        if point is None:
+            print("point make fail")
+        # print("success?",point)
+        
 
-        try:
-            point = self.session.query(models.Points).filter_by(id = self.current_user.id).first()
-        except:
-            print("point is still nonetype?")
+        # try:
+        #     point = self.session.query(models.Points).filter_by(id = self.current_user.id).first()
+        # except:
+        #     print("point is still nonetype?")
 
         if point:
             print(" before favour:" , point.favour_count)
@@ -473,10 +483,11 @@ class Market(CustomerBaseHandler):
             else:  # 今天没点过赞，更新时间
                 #favour_count add by one
                 #woody
-                if point is not None:
+                print("1")
+                if point:
                     point.favour_count += 1
                     # point.totalCount +=1
-                    print("after favour:" , point.favour_count)
+                    print("after favour:")
                 else:
                     print("point is None...")
                 
@@ -567,6 +578,7 @@ class Cart(CustomerBaseHandler):
             return self.send_fail('请至少选择一种商品')
 
         if fruits:
+            print("login fruits")
             charge_types = self.session.query(models.ChargeType).\
                 filter(models.ChargeType.id.in_(fruits.keys())).all()
             for charge_type in charge_types:
@@ -583,6 +595,7 @@ class Cart(CustomerBaseHandler):
                 f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
                                      "charge":"%.2f元/%.1f %s" % (float(charge_type.price), charge_type.num, unit[charge_type.unit])}
         if mgoods:
+            print("login mgoods")
             mcharge_types = self.session.query(models.MChargeType).\
                 filter(models.MChargeType.id.in_(mgoods.keys())).all()
             for mcharge_type in mcharge_types:
@@ -591,8 +604,8 @@ class Cart(CustomerBaseHandler):
                 totalPrice += mcharge_type.price*mgoods[str(mcharge_type.id)]
                 num = mgoods[str(mcharge_type.id)]*mcharge_type.unit_num*mcharge_type.num
                 mcharge_type.mgoods.storage -= num  # 更新库存
-                mcharge_type.mgoods.saled -= num  # 更新销量
-                mcharge_type.mgoods.current_saled -= num  # 更新售出
+                mcharge_type.mgoods.saled += num  # 更新销量
+                mcharge_type.mgoods.current_saled += num  # 更新售出
                 if mcharge_type.mgoods.storage < 0:
                     return self.send_fail('"%s"库存不足' % mcharge_type.mgoods.name)
                 # print(mcharge_type.price)
