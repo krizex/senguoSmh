@@ -621,16 +621,23 @@ class Points(MapBase,_CommonApi):
         address_count =5
         try:
             follows = session.query(CustomerShopFollow).filter_by(customer_id =id).count()
+            print(follows)
         except:
             follows = 0
         try:
-            orders_count  = session.query(Order).filter(customer_id == id ,pay_type == 2).count()
+            orders_count  = session.query(Order).filter_by(customer_id = id ,pay_type = 2).count()
         except:
+            print("orders_count error")
             orders_count = 0
         try:
-            comment_count = session.query(Order).filter(customer_id == id,comment != None).count()
+            #woody
+            # I don't know how to query filter "!="
+            no_comment_count = session.query(Order).filter_by(customer_id =id ,comment = None).count()
+            total_comment_count = session.query(Order).filter_by(customer_id = id).count()
+            comment_count = total_comment_count - no_comment_count
             print("comment_count",comment_count)
         except:
+            print("comment_count error?")
             comment_count = 0
         try:
             totalPrice = session.query(func.sum(Order.totalPrice)).filter(models.Order.status >=5 ).all()
@@ -641,7 +648,7 @@ class Points(MapBase,_CommonApi):
             accountinfo = session.query(Accountinfo).filter_by(id = id).first()
         except:
             return None
-        point.follow_count = follows
+        point.follow_count = follows * 10
         point.balance_count = orders_count
         point.comment_count = comment_count * 5
         point.address_count = address_count
@@ -650,7 +657,7 @@ class Points(MapBase,_CommonApi):
             point.phone_count = 0
         else:
             point.phone_count = 5
-        totalCount = follows + orders_count + point.favour_count + point.signIn_count +point.comment_count+\
+        totalCount = point.follow_count + orders_count + point.favour_count + point.signIn_count +point.comment_count+\
         point.phone_count + point.address_count + totalPrice
         point.totalCount = totalCount
         session.commit()
