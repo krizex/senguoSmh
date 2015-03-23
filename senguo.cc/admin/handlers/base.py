@@ -586,7 +586,7 @@ class WxOauth2:
             'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
             'url':"",
             "data":{
-                "first":{"value":"管理员{0}您好，店铺{1}收到了新的订单！".format(admin_name,shop_name),"color": "#173177"},
+                "first":{"value":"{0}您好，店铺{1}收到了新的订单！".format(staff_name,shop_name),"color": "#173177"},
                 "tradeDateTime":{"value":str(create_date),"color":"#173177"},
                 "orderType":{"value":order_type,"color":"#173177"},
                 "customerInfo":{"value":customer_name,"color":"#173177"},
