@@ -419,7 +419,7 @@ class Market(CustomerBaseHandler):
             w_orders =w_fruits[offset:] + w_dry_fruits[0:offset + 10 - count_fruit]
 
         elif offset > count_fruit and offset <= count_fruit + count_dry and offset + 10 <= count_dry + count_fruit + count_mgoods:
-            w_orders = w_dry_fruits[offset - count_dry:] + w_mgoods[0:offset + 10 - (count_dry + count_fruit)]
+            w_orders = w_dry_fruits[offset - count_fruit:] + w_mgoods[0:offset + 10 - (count_dry + count_fruit)]
 
         elif offset >  count_fruit and offset <= count_fruit + count_dry and offset +10 > count_fruit + count_dry + count_mgoods:
             w_orders = w_dry_fruits[offset - count_fruit:] + w_mgoods
