@@ -27,8 +27,8 @@
         </button>
         <ul class="dropdown-menu font12" role="menu">
             <li class="text-center"><a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0">关注时间</a></li>
-            <li class="text-center"><a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=credits&&page=0">商城积分</a></li>
-            <li class="text-center"><a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=balance&&page=0">账户余额</a></li>
+            <!--<li class="text-center"><a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=credits&&page=0">商城积分</a></li>
+            <li class="text-center"><a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=balance&&page=0">账户余额</a></li>-->
         </ul>
     </div>
 </div>
@@ -42,7 +42,7 @@
                 <div class="user-info-con">
                     <!--<span class="user-level text-white text-center">Lv3</span>
                     <span class="level-price text-grey2">566</span>-->
-                    <span class="user-account text-grey2">{{customer.credits}}元</span>
+                    <!--<span class="user-account text-grey2">{{customer.credits}}元</span>-->
                 </div>
             </div>
             <a href="{{reverse_url('adminSearchOrder')}}?action=customer_order&&id={{customer.id}}" class="history-order pull-right forbid_click" target="_blank" >查看历史订单</a>

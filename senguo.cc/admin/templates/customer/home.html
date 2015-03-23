@@ -19,10 +19,22 @@
         {% if notices %}
         <div id="slider" class="swipe" style="visibility: visible;">
             <div class="swipe-wrap">
+            {% for notice in notices%}
+                <figure>
+                <div class="wrap text-center text-white font16 notice-item">
+                    <label class="title">{{notice[0]}}</label>
+                    <img src="/static/images/banner.png" class="img"/>
+                    <input type="hidden" value="{{notice[1]}}" class="notice-detail"/>
+                </div>
+            </figure>
+            {% end%}
             </div>
         </div>
         <nav class="circle">
             <ul id="position">
+            {% for notice in notices%}
+               <li></li>
+            {% end%}
             </ul>
         </nav>
         {% else %}
