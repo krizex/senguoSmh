@@ -18,11 +18,11 @@
 <h3 class="text-center set-w100-fle mt100">暂无订单ヾ(●´▽`●)ノ</h3>
 {% else %}
     <div class="list-header clearfix">
-        <img src="{{static_url('svg/left_corner.svg')}}" class="left-corner src_change"/>
+        <img src="{{static_url('svg/left_corner@2x.png')}}" class="left-corner src_change"/>
         <div class="set-w100-fle corner-box">
             <span class="corner bg_change"></span>
         </div>
-        <img src="{{static_url('svg/right_corner.svg')}}" class="right-corner src_change"/>
+        <img src="{{static_url('svg/right_corner@2x.png')}}" class="right-corner src_change"/>
     </div>
     <ul class="order-list bg-white clearfix">
         {% for order in orders %}
@@ -111,7 +111,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <span type="button" class="close text-white dismiss">✕</span>
-                <h3 class="modal-title">评价</h3>
+                <h2 class="modal-title">评价</h2>
             </div>
             <div class="modal-body set-width-float text-center">
                 <textarea class="comment-input center-block mt42"></textarea>

@@ -216,6 +216,7 @@ $.scrollLoading=function(){
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)  
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
         if((main.height()-range) <= totalheight  && window.dataObj.page != maxnum) {  
+            $('.container').append('<div class="loading text-center text-grey6 font16">~努力加载中( > < )~</div>');
             window.dataObj.page++; 
             $.goodsList(window.dataObj.page);
         }  
@@ -258,9 +259,10 @@ $.scrollLoading=function(){
                     $('.menu_classify'+menu_id).show();
                 }
             }
-                //已在购物车里的商品         
-                cartNum(cart_fs,'.fruit-list');
-                cartNum(cart_ms,'.menu-list');
+            //已在购物车里的商品         
+            cartNum(cart_fs,'.fruit-list');
+            cartNum(cart_ms,'.menu-list');
+            $('.loading').remove();
         }
         else return $.noticeBox(res.error_text);
         },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
@@ -343,9 +345,9 @@ var fruitItem=function(box,fruits,type){
             }
             //goods img 
             if(!img_url) $item.find('.img').attr({'data-original':'/static/design_img/'+code+'.png'});
-            else $item.find('.img').attr({'data-original':img_url+'?imageView/1/w/160/h/160'});
-            $('.lazy_img').lazyload();
-            $item.find('.img').lazyload();
+            else $item.find('.img').attr({'data-original':img_url+'?imageView/1/w/170/h/170'});
+            $('.lazy_img').lazyload({threshold:100});
+            $item.find('.img').lazyload({threshold:100});
         } 
         box.append($item);
 }

@@ -52,9 +52,21 @@ $(document).ready(function(){
     $('.order-concel').each(function() {
         var $this = $(this);
         var id=$this.parents('.order-list-item').data('id');
+        var index=$this.parents('.order-list-item').index();
         $this.on('click', function () {
-            orderConcel($this,id);
+            $.confirmBox('确认取消该订单吗？//(ㄒoㄒ)//',index,id);
         });
+    });
+     $(document).on('click','.confriming',function(){
+        var $this=$(this);
+        var $item=$this.parents('#confirmBox').find('.message');
+        var result=$this.attr('data-status');
+        var index=$item.attr('data-index');
+        var type=$item.attr('data-type');
+        if(result=='true'){
+            orderConcel($('.order-list-item').eq(index),type);
+            }
+        $.confirmRemove();
     });
     //评价
     var index;
@@ -107,9 +119,9 @@ function orderConcel(target,id){
     };
     $.postJson(url,args,function(res){
         if(res.success){
-            target.parents('.order-list-item').find('.status-bar-box').hide();
-            target.parents('.order-list-item').find('.send-time').hide();
-            target.parents('.order-list-item').find('.cancel').text('订单已取消').addClass('text-grey').removeClass('order-concel');
+            target.find('.status-bar-box').hide();
+            target.find('.send-time').hide();
+            target.find('.cancel').text('订单已取消').addClass('text-grey').removeClass('order-concel');
         }
         else return $.noticeBox(res.error_text)
     }, function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
