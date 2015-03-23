@@ -369,8 +369,8 @@ function goodsNum(target,action){
     if(action==1&&num<=0) {num=0;target.addClass('disable');}
     if(action==2)
     {
-        if(s_num==0&&confirm('库存不足啦！┑(￣▽ ￣)┍ ')){
-
+        if(s_num==0)){
+            $.noticeBox('库存不足啦！┑(￣▽ ￣)┍ ')
         }
         else if(s_num>0){
             num++;
