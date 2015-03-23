@@ -50,18 +50,19 @@ $(document).ready(function(){
             }
             else $('.little_pear').animate({'right':'-40px'},5);
         }
-         var scrollTop = $this.scrollTop();
-        $('.lazy_img').each(function(){
-            var $this = $(this);
-            if ($this.offset().top <= scrollTop + clientHeight) {                 
-                var dataSrc = $this.attr('data-src');
-                var src=$this.attr('src');
-                if (dataSrc) {
-                    $this.attr('src', dataSrc);
-                }
-            }
-        });     
+        //  var scrollTop = $this.scrollTop();
+        // $('.lazy_img').each(function(){
+        //     var $this = $(this);
+        //     if ($this.offset().top <= scrollTop + clientHeight) {                 
+        //         var dataSrc = $this.attr('data-src');
+        //         var src=$this.attr('src');
+        //         if (dataSrc) {
+        //             $this.attr('src', dataSrc);
+        //         }
+        //     }
+        // });     
     });
+    $(".lazy_img").lazyload({ skip_invisible : false});
 });
 
 /*function AndroidImg(target){
