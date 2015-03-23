@@ -406,28 +406,28 @@ class Market(CustomerBaseHandler):
         if offset +10 <= count_fruit:
             w_orders = w_fruits[offset:offset+10]
 
-        elif offset > count_fruit and offset + 10 <= count_fruit + count_dry:
+        elif offset >= count_fruit and offset + 10 <= count_fruit + count_dry:
             w_orders = w_dry_fruits[offset - count_fruit:offset+10 - count_fruit ]
 
-        elif offset > count_dry +count_fruit and offset +10 <= count_fruit + count_dry + count_mgoods:
+        elif offset >= count_dry +count_fruit and offset +10 <= count_fruit + count_dry + count_mgoods:
             w_orders = w_mgoods[offset-(count_dry+count_fruit):offset + 10-(count_dry+count_fruit)]
 
-        elif offset >count_dry + count_fruit:
+        elif offset >= count_dry + count_fruit:
             w_orders = w_mgoods[offset-(count_fruit+count_dry):]
 
         elif offset < count_fruit and offset + 10 <= count_fruit +count_dry:
-            w_orders =w_fruits[offset:] + w_dry_fruits[0:offset + 10 - count_fruit]
+            w_orders =w_fruits[offset:] + w_dry_fruits[0:offset + 10 - count_fruit ]
 
-        elif offset > count_fruit and offset <= count_fruit + count_dry and offset + 10 <= count_dry + count_fruit + count_mgoods:
+        elif offset >= count_fruit and offset < count_fruit + count_dry and offset + 10 <= count_dry + count_fruit + count_mgoods:
             w_orders = w_dry_fruits[offset - count_fruit:] + w_mgoods[0:offset + 10 - (count_dry + count_fruit)]
 
-        elif offset >  count_fruit and offset <= count_fruit + count_dry and offset +10 > count_fruit + count_dry + count_mgoods:
+        elif offset >=  count_fruit and offset < count_fruit + count_dry and offset +10 >= count_fruit + count_dry + count_mgoods:
             w_orders = w_dry_fruits[offset - count_fruit:] + w_mgoods
 
-        elif offset <= count_fruit and offset + 10 > count_fruit + count_dry and offset + 10 <= count_fruit +count_dry + count_mgoods:
+        elif offset < count_fruit and offset + 10 >= count_fruit + count_dry and offset + 10 <= count_fruit +count_dry + count_mgoods:
             w_orders = w_fruits[offset:] + w_dry_fruits + w_mgoods[0:offset + 10 - (count_fruit+ count_dry)]
 
-        elif offset <= count_fruit and offset + 10 > count_fruit + count_dry + count_mgoods:
+        elif offset < count_fruit and offset + 10 >= count_fruit + count_dry + count_mgoods:
             w_orders = w_fruits[offset:] + w_dry_fruits + w_mgoods
 
         else:
