@@ -54,7 +54,7 @@ $(document).ready(function(){
         var id=$this.parents('.order-list-item').data('id');
         var index=$this.parents('.order-list-item').index();
         $this.on('click', function () {
-            $.confirmBox('确认删除该订单吗？//(ㄒoㄒ)//',index,id);
+            $.confirmBox('确认取消该订单吗？//(ㄒoㄒ)//',index,id);
         });
     });
      $(document).on('click','.confriming',function(){
