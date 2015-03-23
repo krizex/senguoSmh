@@ -16,13 +16,26 @@ from dal import models
 
 
 handlers = [
+    (r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
+    (r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
+    (r"/staff/logout", handlers.staff.Access, {"action":"logout"}, "staffLogout"),
+    (r"/staff/register", handlers.staff.Access, {"action":"register"}, "staffRegister"),
+    (r"/staff", handlers.staff.Home, {}, "staffHome"),
+    (r"/staff/order", handlers.staff.Order, {}, "staffOrder"),
+    (r"/staff/hire/(\d+)", handlers.staff.Hire, {}, "staffHire"),
+
     (r"/customer/login", handlers.customer.Access, {"action":"login"}, "customerLogin"),
     (r"/customer/oauth", handlers.customer.Access, {"action":"oauth"}, "customerOauth"),
     (r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
     (r"/customer/register", handlers.customer.Access, {"action":"register"}, "customerRegister"),
     (r"/customer", handlers.customer.Home, {}, "customerHome"),
     (r"/customer/profile", handlers.customer.CustomerProfile, {}, "customerProfile"),
-    (r"/shop/(\w+)", handlers.customer.Market, {}, "Market"),
+    #微官网-----待删除
+    (r"/", handlers.superadmin.Official),
+
+    #to remove
+    (r"/m", handlers.superadmin.Official),
+
     (r"/customer/cart", handlers.customer.Cart, {}, "customerCart"),
     (r"/customer/orders", handlers.customer.Order, {}, "customerOrder"),
     (r"/customer/orders/detail/(\d+)", handlers.customer.OrderDetail, {}, "customerOrderDetail"),
@@ -91,9 +104,7 @@ handlers = [
 
 
     # (r"/super/notice/", handlers.superadmin.Notice),
-    #微官网-----待删除
-    (r"/m", handlers.superadmin.Official),
-
+    
     (r"/admin/login", handlers.admin.Access,{"action":"login"}, "adminLogin"),
     (r"/admin/oauth", handlers.admin.Access, {"action":"oauth"}, "adminOauth"),
     (r"/admin/logout", handlers.admin.Access, {"action":"logout"}, "adminLogout"),
@@ -115,30 +126,39 @@ handlers = [
     # (r"/admin/finance", handlers.admin.Finance, {}, "adminFinance"),
     # (r"/admin/settings/profile", handlers.admin.Settings,
     #  {"action":"profile"}, "adminSettingsProfile")
-    (r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
-    (r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
-    (r"/staff/logout", handlers.staff.Access, {"action":"logout"}, "staffLogout"),
-    (r"/staff/register", handlers.staff.Access, {"action":"register"}, "staffRegister"),
-    (r"/staff", handlers.staff.Home, {}, "staffHome"),
-    (r"/staff/order", handlers.staff.Order, {}, "staffOrder"),
-    (r"/staff/hire/(\d+)", handlers.staff.Hire, {}, "staffHire"),
+    
     # (r"/staff/...")
 
     # 水果圈子
+
+    
 
     # 主页
     (r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次
     (r"/fruitzone", handlers.fruitzone.Home, {}, "fruitzoneHome"),  # 匹配'\' 0~1次
     (r"/fruitzone/admin/home", handlers.fruitzone.AdminHome, {}, "fruitzoneAdminHome"),
     (r"/fruitzone/admin/profile", handlers.fruitzone.AdminProfile, {}, "fruitzoneAdminProfile"),
+    #to remove  
+    #woody
     (r"/fruitzone/shop/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),
     (r"/fruitzone/shop/apply/addImg", handlers.fruitzone.ShopApplyImg, {}, "fruitzoneShopApplyAddImg"),#增加的功能：申请店铺时支持图片上传
     (r"/fruitzone/shop/reApply", handlers.fruitzone.ShopApply, {"action": "reApply"}, "fruitzoneShopReApply"),
     (r"/fruitzone/shop/applySuccess", handlers.fruitzone.ApplySuccess, {}, "fruitzoneShopApplySuccess"),
 
+    (r"/fruitzone/toweixin", handlers.fruitzone.ToWeixin, {}, "fruitzoneToWexin"),
+    (r"/fruitzone/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),
+    (r"/fruitzone/apply/addImg", handlers.fruitzone.ShopApplyImg, {}, "fruitzoneShopApplyAddImg"),#增加的功能：申请店铺时支持图片上传
+    (r"/fruitzone/reApply", handlers.fruitzone.ShopApply, {"action": "reApply"}, "fruitzoneShopReApply"),
+    (r"/fruitzone/applySuccess", handlers.fruitzone.ApplySuccess, {}, "fruitzoneShopApplySuccess"),
+
+
+
     (r"/fruitzone/community", handlers.fruitzone.Community, {}, "fruitzoneCommunity"),
 
+    #to remove
+    #woody
     (r"/fruitzone/shop/(\d+)", handlers.fruitzone.Shop, {}, "fruitzoneShop"),
+    (r"/fruitzone/(\d+)", handlers.fruitzone.Shop, {}, "fruitzoneShop"),
 
     (r"/fruitzone/admin/shops", handlers.fruitzone.AdminShops, {}, "fuirzoneAdminShops"),
     (r"/fruitzone/admin/shopsCollect", handlers.fruitzone.AdminShopsCollect, {}, "fuirzoneAdminShopsCollect"),
@@ -159,6 +179,13 @@ handlers = [
     (r"/infowall/infoDetail/comment", handlers.infowall.InfoDetail, {}, "infowallInfoDetailComment"),
     (r"/infowall/infoCollect", handlers.infowall.InfoCollect, {}, "infowallInfoCollect"),
     (r"/infowall/infoIssue", handlers.infowall.InfoIssue, {}, "infowallInfoIssue"),
+
+    #remove shop
+    (r"/(\w+)", handlers.customer.Market, {}, "Market"),
+
+    #ti remove
+    (r"/shop/(\w+)", handlers.customer.Market, {}, "Market"),
+
 
 
     (r"/fruitzone/systemPurchase/", handlers.fruitzone.SystemPurchase, {

@@ -15,109 +15,110 @@
     <!--<li data-action=""><a href="#">退款/售后</a></li>-->
 </ul>
 {% if len(orders) == 0%}
-<h3 class="text-center pt36 set-w100-fle">暂无订单！</h3>
-{% end %}
-<div class="list-header clearfix">
-    <img src="{{static_url('svg/left_corner.svg')}}" class="left-corner src_change"/>
-    <div class="set-w100-fle corner-box">
-        <span class="corner bg_change"></span>
+<h3 class="text-center set-w100-fle mt100">暂无订单ヾ(●´▽`●)ノ</h3>
+{% else %}
+    <div class="list-header clearfix">
+        <img src="{{static_url('svg/left_corner.svg')}}" class="left-corner src_change"/>
+        <div class="set-w100-fle corner-box">
+            <span class="corner bg_change"></span>
+        </div>
+        <img src="{{static_url('svg/right_corner.svg')}}" class="right-corner src_change"/>
     </div>
-    <img src="{{static_url('svg/right_corner.svg')}}" class="right-corner src_change"/>
-</div>
-<ul class="order-list bg-white clearfix">
-    {% for order in orders %}
-    {% set left=''%}
-    {% set width=''%}
-    {% set status=order.status %}
-    {% if status ==4 %}
-        {% set left='left50' %}
-        {% set width='width50'%}
-    {% elif status == 5%}
-        {% set left='left100' %}
-        {% set width='width100' %}
-    {% end %}
-     <li class="order-list-item" data-id="{{order.id}}">
-        <a href="{{reverse_url('customerOrderDetail',order.id)}}" class="detail-link">
-            <header class="set-w100-fle">
-                <span class="pull-left pr10 font14">编号：{{order.num}}</span>
-                <span class="pull-left pl10 text-pink font14">{{order.shop.shop_name}}</span>
-                <span class="pull-right text-grey9">详情>></span>
-            </header>
-        </a>
-        <div class="content" >
-            <p class="p1 clearfix" >送至：<span>{{order.address_text}}</span></p>
-            {% if order.remark%}
-            <p>备注信息：{{order.remark}}</p>
-            {% end %}
-            <p class="p2 clearfix">
-                <input type="hidden" value="{{order.create_date}}" class="create_time"/>
-                <input type="hidden" value="{{order.create_date.year}}" class="create_year"/>
-                <input type="hidden" value="{{order.create_date.month}}" class="create_month"/>
-                <input type="hidden" value="{{order.create_date.day}}" class="create_day"/>
-                <input type="hidden" value="{{order.today}}" class="send_day"/>
-                <input type="hidden" value="{{order.status}}" class="order_status"/>
-                {% if order.status !=0 %}
-                <span class="send-time">
-                    <span class="un-arrive">预计</span>：<span class="send_date m-r10">今天</span><span class="send_time m-r10">{{order.send_time}}</span>送达
-                </span>
+    <ul class="order-list bg-white clearfix">
+        {% for order in orders %}
+        {% set left=''%}
+        {% set width=''%}
+        {% set status=order.status %}
+        {% if status ==4 %}
+            {% set left='left50' %}
+            {% set width='width50'%}
+        {% elif status == 5%}
+            {% set left='left100' %}
+            {% set width='width100' %}
+        {% end %}
+         <li class="order-list-item" data-id="{{order.id}}">
+            <a href="{{reverse_url('customerOrderDetail',order.id)}}" class="detail-link">
+                <header class="set-w100-fle">
+                    <span class="pull-left pr10 font14">编号：{{order.num}}</span>
+                    <span class="pull-left pl10 text-pink font14">{{order.shop.shop_name}}</span>
+                    <span class="pull-right text-grey9">详情>></span>
+                </header>
+            </a>
+            <div class="content" >
+                <p class="p1 clearfix" >送至：<span>{{order.address_text}}</span></p>
+                {% if order.remark%}
+                <p>备注信息：{{order.remark}}</p>
                 {% end %}
-                <span class="price-box pull-right text-pink"><span class="price font18 pull-left">{{order.totalPrice}}</span>元</span>
-            </p>
-            <p class="clearfix">
-                {% if order.status ==1 %}
-                <a class="cancel order-concel" href="javascript:;">取消订单</a>
-                {% elif order.status ==0 %}
-                <span class="status_notice text-grey">订单已取消</span>
-                {% else %}
-                <span class="status_notice">订单已开始处理</span>
+                <p class="p2 clearfix">
+                    <input type="hidden" value="{{order.create_date}}" class="create_time"/>
+                    <input type="hidden" value="{{order.create_date.year}}" class="create_year"/>
+                    <input type="hidden" value="{{order.create_date.month}}" class="create_month"/>
+                    <input type="hidden" value="{{order.create_date.day}}" class="create_day"/>
+                    <input type="hidden" value="{{order.today}}" class="send_day"/>
+                    <input type="hidden" value="{{order.status}}" class="order_status"/>
+                    {% if order.status !=0 %}
+                    <span class="send-time">
+                        <span class="un-arrive">预计</span>：<span class="send_date m-r10">今天</span><span class="send_time m-r10">{{order.send_time}}</span>送达
+                    </span>
+                    {% end %}
+                    <span class="price-box pull-right text-pink"><span class="price font18 pull-left">{{order.totalPrice}}</span>元</span>
+                </p>
+                <p class="clearfix">
+                    {% if order.status ==1 %}
+                    <a class="cancel order-concel" href="javascript:;">取消订单</a>
+                    {% elif order.status ==0 %}
+                    <span class="status_notice text-grey">订单已取消</span>
+                    {% else %}
+                    <span class="status_notice">订单已开始处理</span>
+                    {% end %}
+                </p>
+                {% if order.comment%}
+                <p>评价：{{order.comment}}</p>
                 {% end %}
-            </p>
-            {% if order.comment%}
-            <p>评价：{{order.comment}}</p>
-            {% end %}
-            {% if status ==1 or status ==4 %}
-            <div class="status-bar-box">
-                <div class="status-bar">
-                    <div class="inner {{width}}"></div>
-                    <div class="circle-icon {{left}}"></div>
-                    <div class="status-box {{left}}">
-                        <span class="status order-status pull-left">
-                              {% if status ==4 and order.sender_img %}
-                            <img src="{{order.sender_img}}" class="sender_img pull-left m-r5"/>
-                            {% end %}
-                            <span class="word pull-left m-r5">{{order.status}}</span>
-                             {% if status ==4 and order.sender_phone %}
-                            <a href="tel:{{order.sender_phone}}" class="pull-left text-green">拨打</a>
-                            {% end %}
-                        </span>
-                       
+                {% if status ==1 or status ==4 %}
+                <div class="status-bar-box">
+                    <div class="status-bar">
+                        <div class="inner {{width}}"></div>
+                        <div class="circle-icon {{left}}"></div>
+                        <div class="status-box {{left}}">
+                            <span class="status order-status pull-left">
+                                  {% if status ==4 and order.sender_img %}
+                                <img src="{{order.sender_img}}" class="sender_img pull-left m-r5"/>
+                                {% end %}
+                                <span class="word pull-left m-r5">{{order.status}}</span>
+                                 {% if status ==4 and order.sender_phone %}
+                                <a href="tel:{{order.sender_phone}}" class="pull-left text-green">拨打</a>
+                                {% end %}
+                            </span>
+                           
+                        </div>
                     </div>
                 </div>
+                {% end %}
+                {% if status ==5 %}
+                <div class="clearfix btn-box">
+                    <button class="btn bg-pink text-white pull-right comment-btn m-r10">评价</button>
+                    <!--<button class="btn bg-grey2 pull-right after-sale m-r10">退款/售后</button>-->
+                </div>
+                {% end %}
             </div>
-            {% end %}
-            {% if status ==5 %}
-            <div class="clearfix btn-box">
-                <button class="btn bg-pink text-white pull-right comment-btn m-r10">评价</button>
-                <!--<button class="btn bg-grey2 pull-right after-sale m-r10">退款/售后</button>-->
-            </div>
-            {% end %}
-        </div>
-    </li>
-    {% end %}
-</ul>
-<div class="modal fade comment-box" id="commentBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        </li>
+        {% end %}
+    </ul>
+{% end %}
+<div class="modal fade comment-box" id="commentBox">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <span type="button" class="close text-white" data-dismiss="modal">✕</span>
-                <h3 class="modal-title" id="myModalLabel">评价</h3>
+                <span type="button" class="close text-white dismiss">✕</span>
+                <h3 class="modal-title">评价</h3>
             </div>
             <div class="modal-body set-width-float text-center">
                 <textarea class="comment-input center-block mt42"></textarea>
             </div>
             <div class="modal-footer text-center">
+                <button class="btn bg-grey3 text-white dismiss">关闭</button>
                 <button class="btn bg-green text-white comment_submit">提交</button>
-                <button class="btn bg-grey3 text-white" data-dismiss="modal">关闭</button>
             </div>
         </div>
     </div>

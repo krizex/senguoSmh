@@ -15,7 +15,7 @@ $(document).ready(function(){
 	var canvas=$('#shop_link_img canvas')[0];
               $('#shop_link_img').append(convertCanvasToImage(canvas));
               $('#shop_link_img canvas').remove();
-              imgData= $('#shop_link_img img').attr('src');
+              window.dataObj.imgData= $('#shop_link_img img').attr('src');
                //imgData=canvas.toDataURL(type);
 	//imgData = imgData.replace(_fixType(type),'image/octet-stream');
     }
@@ -26,7 +26,7 @@ $(document).ready(function(){
              var code=$('#shop_code').val();
              var shop_name=$('#shop_name').text();
              var filename = shop_name+'_' +code+ '.' + type;
-             saveFile(imgData,filename);
+             saveFile(window.dataObj.imgData,filename);
     });
    //信息转换显示
     $('.area-choose-list li').each(function(){
@@ -84,7 +84,7 @@ $(document).ready(function(){
                         token=res.token;
                     },
                     function(){
-                        alert('网络错误！');}
+                        alert('网络好像不给力呢~ ( >O< ) ~！');}
                 );
                 $('#file_upload').data('uploadifive').settings.formData = {
                     'key':key,
@@ -124,7 +124,6 @@ $(document).ready(function(){
         });
     });
 });
-var imgData;
 //获取mimeType
 var _fixType = function(type) {
     type = type.toLowerCase().replace(/jpg/i, 'jpeg');
@@ -167,7 +166,7 @@ function infoEdit(target){
         action='edit_shop_code';
         shop_code=$('.shop_code').val().trim();
         if(!reg.test(shop_code)){return alert('店铺号只能为字母、数字以及下划线组成！')}
-        if(shop_code.length<4){return alert('店铺号至少为4位数！')}
+        if(shop_code.length<6){return alert('店铺号至少为6位数！')}
         data={shop_code:shop_code};
     }
     else if(action_name=='intro')
@@ -229,16 +228,16 @@ function infoEdit(target){
                 else if(action_name=='code')
                 {
                     $('.code').text(shop_code);
-                    $('.shop_link').attr({'href':'http://zone.senguo.cc/shop/'+shop_code});
-                    $('#shop_link_img').qrcode({render: "canvas",width: 100,height:100,text: 'http://zone.senguo.cc/shop/'+shop_code ,typeNumber  : -1});
+                    $('.shop_link').attr({'href':'http://zone.senguo.cc/'+shop_code});
+                    $('#shop_link_img').qrcode({render: "canvas",width: 100,height:100,text: 'http://zone.senguo.cc/'+shop_code ,typeNumber  : -1});
                     $('.link_notice').show();
                     $('.notice_word').hide();
                     $('.code_set').hide();
 		    //从canvas导出图片
 		    var type = 'png';
 		    var canvas=$('#shop_link_img canvas')[0];
-		    imgData=canvas.toDataURL(type);
-		    imgData = imgData.replace(_fixType(type),'image/octet-stream');
+		    window.dataObj.imgData=canvas.toDataURL(type);
+		    window.dataObj.imgData = window.dataObj.imgData.replace(_fixType(type),'image/octet-stream');
                 }
                 else if(action_name=='intro')
                 {
@@ -265,6 +264,6 @@ function infoEdit(target){
             else  alert(res.error_text);
         },
         function(){
-            alert('网络错误！');}
+            alert('网络好像不给力呢~ ( >O< ) ~！');}
     );
 }

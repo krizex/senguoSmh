@@ -19,10 +19,26 @@ $(document).ready(function(){
         else if(paid=='False') $this.find('.unpay').show();
     });
     //订单详情
-    $(document).on('click','.order-list-item .content',function(){
-        var $this=$(this);
-        $this.siblings('.toggle').toggle();
-    });
+    //hidden info toggle
+        var u = navigator.userAgent, app = navigator.appVersion;
+        var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+         if(isiOS){
+            $(document).on('tap','.toggle',function(e){
+                    var $this=$(this);
+                    if($(e.target).closest('.forbid_click').length == 0){
+                        $this.parents('.order-list-item').find('.goods_info').toggle();
+                    }
+                });
+        }
+        else{
+                 $(document).on('click','.toggle',function(e){
+                    var $this=$(this);
+                    if($(e.target).closest('.forbid_click').length == 0){
+                        $this.parents('.order-list-item').find('.goods_info').toggle();
+                    }
+                });
+        }
+
     //if staff remark exist
     $('.remark').each(function(){
         var $this=$(this);
@@ -36,7 +52,8 @@ $(document).ready(function(){
         order_id=$this.data('id');
         var index=$this.parents('.order-list-item').index();
         $('.remark-input').empty();
-        $('.remark-box').modal('show').attr({'data-id':index});
+        var remark_box=new Modal('remark_box');
+        remark_box.modal('show').attr({'data-id':index});
     });
     $(document).on('click','.remark_submit',function(){
         var index=$('.remark-box').attr('data-id');
@@ -57,7 +74,7 @@ $(document).ready(function(){
         var end_minute=checkTime($this.find('.end_minute').val());
         var status=$this.data('status');
         $this.find('.send_time').text(start_hour+':'+start_minute+'-'+end_hour+':'+end_minute);
-        if(status==5) $this.addClass('text-grey bg-grey').find('.finish_btn').removeClass('order_finish').addClass('arrive').text('已完成');
+        if(status==5) $this.addClass('text-grey bg-grey').find('.toggle').addClass('text-grey').find('.finish_btn').removeClass('order_finish').addClass('arrive').text('已完成');
         if(type==1){
             $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
         }
@@ -87,13 +104,12 @@ function finishOrder(target,id){
     $.postJson(url,args,function(res){
         if(res.success){
             target.addClass('arrive').removeClass('order_finish').removeClass('bg-green').text('已完成');
-            target.parents('.order-list-item').addClass('text-grey');
+            target.parents('.order-list-item').addClass('text-grey bg-grey');
             //target.parents('.order-list-item').remove();
         }
-        else return alert(res.error_text)
-    },function(){
-        return alert('网络错误！')
-    })
+        else return $.noticeBox(res.error_text);
+    }, function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+);
 }
 
 function remarkSub(id,index){
@@ -101,6 +117,7 @@ function remarkSub(id,index){
     var action='remark';
     var remark=$('.remark-input').val();
     var data=remark;
+    if(remark=='') return $.warnNotice('请输入备注内容');
     var args={
         action:action,
         order_id:id,
@@ -109,10 +126,10 @@ function remarkSub(id,index){
     $.postJson(url,args,function(res){
         if(res.success){
             $('.order-list-item').eq(index).find('.s_remark_box').show().find('.remark').text(remark);
-            $('.remark-box').modal('hide');
+            var remark_box=new Modal('remark_box');
+            remark_box.modal('hide');
         }
-        else return alert(res.error_text)
-    },function(){
-        return alert('网络错误！')
-    })
+        else return $.noticeBox(res.error_text);
+    }, function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+    );
 }

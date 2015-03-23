@@ -2,10 +2,9 @@ $(document).ready(function(){
     var sex_id=$('.user-sex').data('id');
     sex($('.user-sex'),sex_id);
     //收货地址add
-    $(document).on('mouseup','.address-manage',function(e){
+    $(document).on('click','.address-manage',function(e){
         var $this=$(this);
-        var forbid_click=$this.find('.forbid_click');
-        if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
+        if($(e.target).closest('.forbid_click').length == 0){
             $('.address-list ').toggle();
             $this.find('.add-address ').toggle();
         }
@@ -20,7 +19,8 @@ $(document).ready(function(){
         phone=parent.find('.item_phone').text();
         address=parent.find('.item_address').text();
         address_id=$this.parents('.address-item').attr('data-id');
-       $('.address-box').modal('show');
+        var address_box=new Modal('address_box');
+       address_box.modal('show');
        $('.addressAdd').hide();
        $('.addressEdit').show();
        $('#address_name').val(name);
@@ -35,23 +35,35 @@ $(document).ready(function(){
     $('body').on('click','.add-address',function(){
         var max= $('.address-list').find('.address-item').length;
         if(max<5){
-            $('.address-box').modal('show');
+            var address_box=new Modal('address_box');
+            address_box.modal('show');
             $('.addressAdd').show();
             $('.addressEdit').hide();
         }
-       else return alert('最多可添加五个收货地址！');
+       else return $.noticeBox('最多可添加五个收货地址！');
     });
     $('body').on('click','.addressAdd',function(){
         var $this=$(this);
         addressEdit($this,'add_address');
     });
     //收货地址删除
-    $('body').on('click','.delete-address',function(){
-        if(confirm('确认删除该收货地址吗？')){
-            var $this=$(this);
-            var id=$this.parents('.address-item').attr('data-id');
-            addressDel($this,id);
+    $(document).on('click','.delete-address',function(){
+        var $this=$(this);
+        var parent=$this.parents('.address-item');
+        var index=parent.index();
+        $.confirmBox('确认删除该收货地址吗？//(ㄒoㄒ)//',index);
+    });
+    $(document).on('click','.confriming',function(){
+        var $this=$(this);
+        var $item=$this.parents('#confirmBox').find('.message');
+        var result=$this.attr('data-status');
+        var index=$item.attr('data-index');
+        if(result=='true'){
+            var target=$('.address-item').eq(index);
+            var id=target.attr('data-id');
+            addressDel(target,id);
         }
+        $.confirmRemove();
     });
 });
 var name;
@@ -75,12 +87,12 @@ function addressEdit(target,action){
     var phone=$('#address_phone').val();
     var address=$('#address_address').val();
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(!name) {return alert('请填写收货人姓名！');}
-    if(!phone) {return alert('请填写收货人电话！');}
-    if(!regPhone.test(phone)){return alert('请填写正确的手机号！');}
-    if(!address) {return alert('请填写收货人地址！');}
-    if(name.length>10) {return alert('姓名请不要超过10个字！');}
-    if(address.length>50) {return alert('地址请不要超过50个字！');}
+    if(!name) {return $.warnNotice('请填写收货人姓名！');}
+    if(!phone) {return $.warnNotice('请填写收货人电话！');}
+    if(!regPhone.test(phone)){return $.warnNotice('请填写正确的手机号！');}
+    if(!address) {return $.warnNotice('请填写收货人地址！');}
+    if(name.length>10) {return $.warnNotice('姓名请不要超过10个字！');}
+    if(address.length>50) {return $.warnNotice('地址请不要超过50个字！');}
     var data={
         receiver:name,
         phone:phone,
@@ -107,10 +119,11 @@ function addressEdit(target,action){
                 $item.find('.item_address').text(address);
                 $('.address-list').append($item);
             }
-            $('.address-box').modal('hide');
+            var address_box=new Modal('address_box');
+            address_box.modal('hide');
         }
-        else return alert(res.error_text)
-    },function(){return alert('网络错误！')})
+        else return $.noticeBox(res.error_text)
+    },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')})
 
 }
 
@@ -126,8 +139,8 @@ function addressDel(target,id){
     };
     $.postJson(url,args,function(res){
         if(res.success){
-            target.parents('.address-item').remove();
+            target.remove();
         }
-        else return alert(res.error_text)
-    },function(){return alert('网络错误！')})
+        else return $.noticeBox(res.error_text)
+    },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')})
 }

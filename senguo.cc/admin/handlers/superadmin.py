@@ -288,7 +288,7 @@ class ShopManage(SuperBaseHandler):
             account_info = self.session.query(models.Accountinfo).get(shop_temp.admin_id)
 
             ###################################################################################
-            #added by woody
+            # added by woody
             # send messages
             ###################################################################################
             url = 'http://106.ihuyi.cn/webservice/sms.php?method=Submit'     # message'url
@@ -629,5 +629,4 @@ class ShopStatic(SuperBaseHandler):
 
 class Official(SuperBaseHandler):
     def get(self):
-        
         return self.render("m-official/home.html")

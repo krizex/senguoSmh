@@ -572,6 +572,32 @@ class WxOauth2:
         return True
 
     @classmethod
+    def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time):
+        remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n\n' + '请及时处理订单。'
+        postdata = {
+            'touser':touser,
+            'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
+            'url':"",
+            "data":{
+                "first":{"value":"管理员{0}您好，店铺{1}收到了新的订单！".format(admin_name,shop_name),"color": "#173177"},
+                "tradeDateTime":{"value":str(create_date),"color":"#173177"},
+                "orderType":{"value":order_type,"color":"#173177"},
+                "customerInfo":{"value":customer_name,"color":"#173177"},
+                "orderItemName":{"value":"订单编号","color":"#173177"},
+                "orderItemData":{"value":order_id,"color":"#173177"},
+                "remark":{"value":remark,"color":"#173177"},
+            }
+        }
+        access_token = cls.get_client_access_token()
+        res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
+        data = json.loads(res.content.decode("utf-8"))
+        if data["errcode"] != 0:
+            print("订单提醒发送失败:",data)
+            return False
+        return True
+
+
+    @classmethod
     def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice):
         postdata = {
             'touser' : touser,

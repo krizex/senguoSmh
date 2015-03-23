@@ -52,7 +52,7 @@ $(document).ready(function(){
     $('.order-concel').each(function() {
         var $this = $(this);
         var id=$this.parents('.order-list-item').data('id');
-        $this.hammer().on('tap', function () {
+        $this.on('click', function () {
             orderConcel($this,id);
         });
     });
@@ -62,13 +62,14 @@ $(document).ready(function(){
     $('.comment-btn').each(function(){
         var $this = $(this);
         $this.on('click', function () {
-            $('#commentBox').modal('show');
+            var commentBox=new Modal('commentBox');
+           commentBox.modal('show');
             index=$this.parents('.order-list-item').index();
             comment_order_id=$this.parents('.order-list-item').data('id');
         });
 
     });
-    $('.comment_submit').hammer().on('tap', function () {
+    $(document).on('click','.comment_submit', function () {
         var comment=$('.comment-input').val();
         orderComment(index,comment_order_id,comment);
     });
@@ -110,14 +111,15 @@ function orderConcel(target,id){
             target.parents('.order-list-item').find('.send-time').hide();
             target.parents('.order-list-item').find('.cancel').text('订单已取消').addClass('text-grey').removeClass('order-concel');
         }
-        else return alert(res.error_text)
-    },function(){return alert('网络错误！')})
+        else return $.noticeBox(res.error_text)
+    }, function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+)
 }
 
 function orderComment(id,order_id,comment){
     var url=order_href;
     var action='comment';
-    if(!comment){return alert('请输入您的评论！')}
+    if(!comment){return $.warnNotice('请输入您的评论！')}
     var data={
         order_id:order_id,
         comment:comment
@@ -132,10 +134,13 @@ function orderComment(id,order_id,comment){
            parent.find('.btn-box').remove();
            parent.find('.notice').text('已送达');
            parent.find('.content').append('<p>评价：'+comment+'</p>');
-           $('#commentBox').modal('hide');
+           var commentBox=new Modal('commentBox');
+           commentBox.modal('hide');
         }
-        else return alert(res.error_text)
-    },function(){return alert('网络错误！')})
+        else return $.noticeBox(res.error_text)
+    }, function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        );
 }
 
 function removeDom(){

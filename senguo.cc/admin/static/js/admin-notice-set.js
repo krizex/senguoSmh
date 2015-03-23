@@ -46,7 +46,7 @@ function noticeAdd(){
             }
             else return alert(res.error_text);
         },
-        function(){alert('网络错误')});
+        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
 }
 function noticeEdit(target){
     var url=link;
@@ -80,14 +80,14 @@ function noticeEdit(target){
             }
             else return alert(res.error_text);
         },
-        function(){alert('网络错误')});
+        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
 }
 
 function noticeActive(target){
     var url=link;
     var action="edit_notice_active";
     var notice_id=target.parents('.set-list-item').data('id');
-    var status=target.data('status');
+    var status=target.attr('data-status');
     var data={
         notice_id:notice_id
     };
@@ -100,10 +100,14 @@ function noticeActive(target){
             if(res.success){
                 if(status==1){
                     target.find('.work-mode').hide().siblings('.stop-mode').show();
+                    target.attr({'data-status':2});
                 }
-                else target.find('.work-mode').show().siblings('.stop-mode').hide();
+                else {
+                    target.find('.work-mode').show().siblings('.stop-mode').hide();
+                    target.attr({'data-status':1});
+                }
             }
             else return alert(res.error_text);
         },
-        function(){alert('网络错误')});
+        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
 }

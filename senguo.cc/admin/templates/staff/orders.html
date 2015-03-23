@@ -15,46 +15,48 @@
     {% set left=''%}
     {% set width=''%}
     <li class="order-list-item  mb-10 bg-pale-green" data-status="{{order.status }}">
-        <div class="title">
-            <div class="pl-10">
-                <span>编号：{{order.num}}</span>
-                <span class="money_paid" data-pay="{{order.money_paid}}">
-                    <span class="paid" style="display:none;">已付款 </span>
-                    <span class="unpay text-grey" style="display:none;">应收款：<span class="text-red">{{order.totalPrice}}元</span></span>
-                </span>
+        <div  class="toggle">
+            <div class="title">
+                <div class="pl-10">
+                    <span>编号：{{order.num}}</span>
+                    <span class="money_paid" data-pay="{{order.money_paid}}">
+                        <span class="paid" style="display:none;">已付款 </span>
+                        <span class="unpay text-grey" style="display:none;">应收款：<span class="text-red">{{order.totalPrice}}元</span></span>
+                    </span>
+                </div>
+                <div class="button-box forbid_click">
+                    <button class="btn clear-btn text-white bg-green2 order_finish finish_btn" data-id="{{order.id}}">完成</button>
+                </div>
             </div>
-            <div class="button-box">
-                <button class="btn clear-btn text-white bg-green2 order_finish finish_btn" data-id="{{order.id}}">完成</button>
+            <div class="content text-grey">
+                <p data-id="deliveryTime">配送时间：<span class="send_date"></span><span class="send_time"></span></p>
+                <p>配送地址：{{order.address_text}}</p>
+                <p>
+                    收货人：
+                    <span>{{order.receiver}}</span>
+                    <span>{{order.phone}}</span>
+                    <a href="tel:{{order.phone}}" class="forbid_click">点击拨号</a>
+                </p>
+                {% if order.message %}
+                <p class="text-red">用户留言：{{order.message}}</p>
+                {% end %}
+                {% if order.remark %}
+                <p class="text-red">订单备注：<span data-id="remark">{{order.remark}}</span></p>
+                {% end %}
+                <p class="text-red s_remark_box" style="display:none;">员工备注：<span class="remark">{{order.staff_remark}}</span></p>
+                <input type="hidden" value="{{order.create_date}}" class="create_time"/>
+                <input type="hidden" value="{{order.create_date.year}}" class="create_year"/>
+                <input type="hidden" value="{{order.create_date.month}}" class="create_month"/>
+                <input type="hidden" value="{{order.create_date.day}}" class="create_day"/>
+                <input type="hidden" value="{{order.type}}" class="send_type"/>
+                <input type="hidden" value="{{order.today}}" class="send_day"/>
+                <input type="hidden" value="{{order.start_time.hour}}" class="start_hour"/>
+                <input type="hidden" value="{{order.start_time.minute}}" class="start_minute"/>
+                <input type="hidden" value="{{order.end_time.hour}}" class="end_hour"/>
+                <input type="hidden" value="{{order.end_time.minute}}" class="end_minute"/>
             </div>
         </div>
-        <div class="content text-grey">
-            <p data-id="deliveryTime">配送时间：<span class="send_date"></span><span class="send_time"></span></p>
-            <p>配送地址：{{order.address_text}}</p>
-            <p>
-                收货人：
-                <span>{{order.receiver}}</span>
-                <span>{{order.phone}}</span>
-                <a href="tel:{{order.phone}}">点击拨号</a>
-            </p>
-            {% if order.message %}
-            <p class="text-red">用户留言：{{order.message}}</p>
-            {% end %}
-            {% if order.remark %}
-            <p class="text-red">订单备注：<span data-id="remark">{{order.remark}}</span></p>
-            {% end %}
-            <p class="text-red s_remark_box" style="display:none;">员工备注：<span class="remark">{{order.staff_remark}}</span></p>
-            <input type="hidden" value="{{order.create_date}}" class="create_time"/>
-            <input type="hidden" value="{{order.create_date.year}}" class="create_year"/>
-            <input type="hidden" value="{{order.create_date.month}}" class="create_month"/>
-            <input type="hidden" value="{{order.create_date.day}}" class="create_day"/>
-            <input type="hidden" value="{{order.type}}" class="send_type"/>
-            <input type="hidden" value="{{order.today}}" class="send_day"/>
-            <input type="hidden" value="{{order.start_time.hour}}" class="start_hour"/>
-            <input type="hidden" value="{{order.start_time.minute}}" class="start_minute"/>
-            <input type="hidden" value="{{order.end_time.hour}}" class="end_hour"/>
-            <input type="hidden" value="{{order.end_time.minute}}" class="end_minute"/>
-        </div>
-        <div class="toggle p0_10 text-grey bg-white" style="display:none">
+        <div class="goods_info p0_10 text-grey bg-white" style="display:none">
             <p>商品：</p>
             <ul class="goods-list clearfix">
                 {% for key in  fruits%}
@@ -89,19 +91,19 @@
     </li>
     {% end %}
 </ul>
-<div class="modal fade remark-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade remark-box" id="remark_box">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="myModalLabel">订单备注</h4>
+                <button type="button" class="close dismiss"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">订单备注</h4>
             </div>
             <div class="modal-body set-width-float text-center">
                 <textarea class="remark-input"></textarea>
             </div>
             <div class="modal-footer text-center">
+                <button class="btn bg-grey3 text-grey3 dismiss">关闭</button>
                 <button class="btn bg-green text-white remark_submit">提交</button>
-                <button class="btn bg-grey3 text-white" data-dismiss="modal">关闭</button>
             </div>
         </div>
     </div>

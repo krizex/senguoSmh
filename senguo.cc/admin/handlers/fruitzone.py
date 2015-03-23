@@ -148,15 +148,22 @@ class AdminProfile(FruitzoneBaseHandler):
             return self.send_error(404)
         return self.send_success()
 
+class ToWeixin(FruitzoneBaseHandler):
+    def get(self):
+        return self.render("fruitzone/toweixin.html")
+
 class ApplySuccess(FruitzoneBaseHandler):
     def get(self):
         return self.render("fruitzone/apply-success.html")
-	
 class ShopApply(FruitzoneBaseHandler):
     MAX_APPLY_COUNT = 150
 
     def initialize(self, action):
         self._action = action
+
+    def prepare(self):
+        if not self.is_wexin_browser():
+            return self.render("fruitzone/toweixin.html")
 
     @tornado.web.authenticated
     @FruitzoneBaseHandler.check_arguments("shop_id?:int")

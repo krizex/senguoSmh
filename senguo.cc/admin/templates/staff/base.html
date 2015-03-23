@@ -59,7 +59,7 @@
         </button>
         {% block content %}{% end %}
     </div>
-    <div class="modal fade shop-list-box" id="shopList" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade shop-list-box" id="shopList">
         <div class="modal-dialog">
             <div class="modal-content">
                 <ul class="list-group well mb-0 shop-list">
@@ -77,9 +77,7 @@
         window.dataObj = {
                 _xsrf: "{{handler.xsrf_token}}"};
 </script>
-<script src="/static/js/jquery.min.js"></script>
-<script src="/static/js/bootstrap.min.js"></script>
-<script src="{{static_url('js/global.js')}}"></script>
+<script src="/static/js/zepto&&fastclick&&lazyload.min.js"></script>
 <script src="{{static_url('js/staff-public.js')}}"></script>
 {% block bottom %}{% end %}
 </html>

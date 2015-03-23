@@ -187,8 +187,10 @@ class _AccountApi(_CommonApi):
     def register_with_wx(cls, session, wx_userinfo):
         # 判断是否在本账户里存在该用户
         u = cls.login_by_unionid(session, wx_userinfo["unionid"])
+        print("login register_with_wx")
         if u:
             # 已存在用户，则更新微信信息
+            print("user exists")
             u.accountinfo.wx_country=wx_userinfo["country"]
             u.accountinfo.wx_province=wx_userinfo["province"]
             u.accountinfo.wx_city=wx_userinfo["city"]
@@ -197,7 +199,14 @@ class _AccountApi(_CommonApi):
             #####################################################################################
             # update wx_openid
             #####################################################################################
-            # u.accountinfo.wx_openid = wx_userinfo["openid"]
+            print(u.accountinfo.wx_openid)
+            start = wx_userinfo['openid'][0:2]
+            print("start:",start)
+            if start == "o5":
+                u.accountinfo.wx_openid = wx_userinfo["openid"]
+                print("update openid")
+            print(wx_userinfo["openid"])
+
             # print( "openid" + wx_userinfo["openid"])
 
             #####################################################################################
@@ -596,6 +605,79 @@ class Customer(MapBase, _AccountApi):
     orders = relationship("Order")
     carts = relationship("Cart", uselist=True)
     addresses = relationship("Address", backref="customer")
+
+    #added by woody
+    points = relationship("Points")
+
+
+#
+class Points(MapBase,_CommonApi):
+    __tablename__ = "points"
+    id = Column(Integer,ForeignKey(Customer.id) ,primary_key = True ,nullable = False)
+    signIn_count = Column(Float,default=0)
+    totalPrice = Column(Float,default = 0)
+    follow_count = Column(Float,default = 0)
+    favour_count = Column(Float,default = 0)
+    comment_count = Column(Float,default = 0)
+    # count        = Column(Float,default = 0)
+    totalCount = Column(Float,default = 0)
+    balance_count = Column(Float,default =0)
+    phone_count   = Column(Float,default = 0)
+    address_count = Column(Float,default = 0)
+
+    def get_count(self,session,id):
+        try:
+            address = session.query().filter_by(customer_id = id).first()
+        except:
+            address_count = 0
+        address_count =5
+        try:
+            follows = session.query(CustomerShopFollow).filter_by(customer_id =id).count()
+            print(follows)
+        except:
+            follows = 0
+        try:
+            orders_count  = session.query(Order).filter_by(customer_id = id ,pay_type = 2).count()
+        except:
+            print("orders_count error")
+            orders_count = 0
+        try:
+            #woody
+            # I don't know how to query filter "!="
+            no_comment_count = session.query(Order).filter_by(customer_id =id ,comment = None).count()
+            total_comment_count = session.query(Order).filter_by(customer_id = id).count()
+            comment_count = total_comment_count - no_comment_count
+            print("comment_count",comment_count)
+        except:
+            print("comment_count error?")
+            comment_count = 0
+        try:
+            totalPrice = session.query(func.sum(Order.totalPrice)).filter(models.Order.status >=5 ).all()
+        except:
+            totalPrice = 0
+        try:
+            point   = session.query(Points).filter_by(id = id).first()
+            accountinfo = session.query(Accountinfo).filter_by(id = id).first()
+        except:
+            return None
+        point.follow_count = follows * 10
+        point.balance_count = orders_count
+        point.comment_count = comment_count * 5
+        point.address_count = address_count
+        point.totalPrice = totalPrice
+        if not accountinfo.phone:
+            point.phone_count = 0
+        else:
+            point.phone_count = 5
+        totalCount = point.follow_count + orders_count + point.favour_count + point.signIn_count +point.comment_count+\
+        point.phone_count + point.address_count + totalPrice
+        point.totalCount = totalCount
+        session.commit()
+        print("follow_count","yu'e","dian zan ","qian dao " )
+        print(follows,orders_count,point.favour_count,point.signIn_count,point.comment_count,point.phone_count\
+            ,point.address_count,point.totalPrice,point.totalCount)
+        return totalCount
+
 
 # 用户关注店铺
 class CustomerShopFollow(MapBase, _CommonApi):

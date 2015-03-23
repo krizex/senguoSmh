@@ -5,6 +5,7 @@ hr{margin:5px 0;}
 p{margin-bottom:5px;}
 
 .order-list-item{width:100%;text-align:left;position:relative;font-size:13px;}
+.order-list-item .toggle{display:block;}
 .order-list-item .button-box {position: absolute;right:10px;top:5px;}
 .order-list-item .clear-btn {width:90px;}
 .order-list-item span {margin-right: 8px;}

@@ -1,7 +1,6 @@
 $(document).ready(function(){
     //$('.count-box').css({'height':$(window).height()});
     //if the user is using weixin brower
-    isWeiXin();
     //type choose
     $('.count-list li').on('click',function(){
         var $this=$(this);
@@ -178,7 +177,7 @@ function Apply(evt){
             else  alert(res.error_text);
         },
         function(){
-            alert('网络错误！');}
+            alert('网络好像不给力呢~ ( >O< ) ~！');}
     );
 }
 
@@ -246,7 +245,7 @@ function reApply(evt){
             else  alert(res.error_text);
         },
         function(){
-            alert('网络错误！');}
+            alert('网络好像不给力呢~ ( >O< ) ~！');}
     );
 }
 
@@ -267,6 +266,6 @@ function Vrify(){
             else alert(res.error_text);
         },
         function(){
-            alert('网络错误！');}
+            alert('网络好像不给力呢~ ( >O< ) ~！');}
     );
 }

@@ -36,7 +36,7 @@
         <li class="item">
             <div class="info-con">
                 <span class="title pull-left">手机号</span>
-                <a href="javascript:;" class="pull-right  tiephone" data-toggle="modal" data-target="#tieBox" id="phoneNumber">{{current_user.accountinfo.phone}}</a>
+                <a href="javascript:;" class="pull-right  tiephone"  id="phoneNumber">{{current_user.accountinfo.phone}}</a>
             </div>
         </li>
         <li class="item">
@@ -53,7 +53,7 @@
             </div>
         </li>
         <li class="w1 item">
-            <div class="info-con" data-toggle="modal" data-target="#sexBox">
+            <div class="info-con">
                 <span class="title pull-left">性别</span>
                 <a href="javascript:;" class="pull-right s1" id="userSex" data-id="{{current_user.accountinfo.sex}}"></a>
             </div>
@@ -75,7 +75,7 @@
     </ul>
     <a class="btn bg-pink text-white center-block clearfix b-radius0 mt10" href="{{reverse_url('customerLogout')}}">退出登录</a>
 </div>
-<div class="modal fade tie-popbox" id="tieBox" tabindex="-1" role="dialog"  aria-hidden="true">
+<div class="modal fade tie-popbox" id="tieBox">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body font14 clearfix">
@@ -90,13 +90,13 @@
                 </div>
             </div>
             <div class="modal-footer clearfix">
-                <button type="button" class="btn pull-left concel-btn" data-dismiss="modal">取消</button>
+                <button type="button" class="btn pull-left concel-btn dismiss">取消</button>
                 <button type="button" class="btn pull-right tie-btn bg-green"  id="tiePhone">绑定</button>
             </div>
         </div>
     </div>
 </div>
-<div class="modal fade sex-popbox" id="sexBox" tabindex="-1" role="dialog"  aria-hidden="true">
+<div class="modal fade sex-popbox" id="sexBox">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">
