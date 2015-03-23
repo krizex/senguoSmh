@@ -173,7 +173,6 @@ function is_weixin(){
 
 //prevent 冒泡
 function stopPropagation(e) {  
-    console.log(2222);
     e = e || window.event;  
     if(e.stopPropagation) { //W3C阻止冒泡方法  
         e.stopPropagation();  
