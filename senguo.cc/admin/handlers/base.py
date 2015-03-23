@@ -19,6 +19,7 @@ import requests
 
 #woody
 order_url = 'http://m.senguo.cc:8887/admin'
+staff_order_url = 'http://m.senguo.cc/staff'
 
 class GlobalBaseHandler(BaseHandler):
 
@@ -584,7 +585,7 @@ class WxOauth2:
         postdata = {
             'touser':touser,
             'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
-            'url':"",
+            'url':staff_order_url,
             "data":{
                 "first":{"value":"{0}您好，店铺{1}收到了新的订单！".format(staff_name,shop_name),"color": "#173177"},
                 "tradeDateTime":{"value":str(create_date),"color":"#173177"},
