@@ -386,7 +386,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
     def shop_code(self):
         if hasattr(self, "_shop_code"):
             return self._shop_code
-        self._shop_code = self.session.query(models.Shop).filter_by(id=self.shop_id).one().shop_code
+        self._shop_code = self.session.query(models.Shop).filter_by(id=self.shop_id).first().shop_code
         return self._shop_code
 
 jsapi_ticket = {"jsapi_ticket": '', "create_timestamp": 0}  # 用全局变量存好，避免每次都要申请
