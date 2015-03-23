@@ -25,6 +25,7 @@
          {% set follow_show='' %}
          {% set sign_color='' %}
          {% set ml20='' %}
+         {% set sign_status=''%}
          {% if follow%}
              {% set follow_show='hidden' %}
              {% set sign_show='show' %}
@@ -36,11 +37,13 @@
             {% set sign_bg='bg-grey3' %}
             {% set sign_color='text-white' %}
             {% set sign_text='已签到' %}
+            {% set sign_status='signed'%}
          {% else %}
             {% set sign_text='店铺签到' %}
             {% set ml20='ml20' %}
+            {% set sign_status='un_sign'%}
          {% end %}
-         <a href="javascript:;" class="btn text-green3 font12 border-ca pull-left w49 sign-box p0 {{sign_bg}} {{sign_show}} {{sign_color}} font13 bg-grey5" id="signin-shop">
+         <a href="javascript:;" class="btn text-green3 font12 border-ca pull-left w49 sign-box p0 {{sign_bg}} {{sign_show}} {{sign_color}} {{sign_status}} font13 bg-grey5" id="signin-shop">
              {% if not signin %}
              <em class="set-inl-blo bg_change"></em>
              {% end %}

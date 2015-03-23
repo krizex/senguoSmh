@@ -62,7 +62,7 @@ $(document).ready(function(){
         //     }
         // });     
     });
-    $(".lazy_img").lazyload({ skip_invisible : false});
+    $(".lazy_img").lazyload({threshold:100});
 });
 
 /*function AndroidImg(target){
@@ -193,7 +193,7 @@ function stopPropagation(e) {
     }  
 }  
 //confirmbox
-$.getItem('/static/items/confirmBox.html?v=20150321',function(data){window.dataObj.confirmBox=data});
+$.getItem('/static/items/confirmBox.html?v=201503-22',function(data){window.dataObj.confirmBox=data});
 $.confirmBox=function(text,index,type){
         var $box=$(window.dataObj.confirmBox);
         $box.find('.message').text(text);
