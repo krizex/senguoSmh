@@ -334,7 +334,7 @@ class Market(CustomerBaseHandler):
             return self.commodity_list()
         elif action in (2, 1, 0):  # 更新购物车
             return self.cart(action)
-
+    @CustomerBaseHandler.check_arguments("page?:int")
     def commodity_list(self):
         #
         # page = 2
