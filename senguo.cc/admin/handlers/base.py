@@ -19,6 +19,7 @@ import requests
 
 #woody
 order_url = 'http://m.senguo.cc:8887/admin'
+staff_order_url = 'http://m.senguo.cc/staff'
 
 class GlobalBaseHandler(BaseHandler):
 
@@ -386,7 +387,14 @@ class CustomerBaseHandler(_AccountBaseHandler):
     def shop_code(self):
         if hasattr(self, "_shop_code"):
             return self._shop_code
-        self._shop_code = self.session.query(models.Shop).filter_by(id=self.shop_id).one().shop_code
+
+        #woody
+        #3.23
+        shop = self.session.query(models.Shop).filter_by(id = self.shop_id).one()
+        if shop:
+
+            self._shop_code = shop.shop_code
+
         return self._shop_code
 
 jsapi_ticket = {"jsapi_ticket": '', "create_timestamp": 0}  # 用全局变量存好，避免每次都要申请
@@ -577,9 +585,9 @@ class WxOauth2:
         postdata = {
             'touser':touser,
             'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
-            'url':"",
+            'url':staff_order_url,
             "data":{
-                "first":{"value":"管理员{0}您好，店铺{1}收到了新的订单！".format(admin_name,shop_name),"color": "#173177"},
+                "first":{"value":"{0}您好，店铺{1}收到了新的订单！".format(staff_name,shop_name),"color": "#173177"},
                 "tradeDateTime":{"value":str(create_date),"color":"#173177"},
                 "orderType":{"value":order_type,"color":"#173177"},
                 "customerInfo":{"value":customer_name,"color":"#173177"},

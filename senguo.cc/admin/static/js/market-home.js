@@ -219,7 +219,6 @@ $.scrollLoading=function(){
             $('.container').append('<div class="loading text-center text-grey6 font16">~努力加载中( > < )~</div>');
             window.dataObj.page++; 
             $.goodsList(window.dataObj.page);
-            
         }  
     });  
 }   

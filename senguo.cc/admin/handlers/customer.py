@@ -290,6 +290,8 @@ class Market(CustomerBaseHandler):
             return self.send_error(404)
         self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
         self._shop_code = shop.shop_code
+        #woody
+        self.set_cookie("market_shop_code",str(self._shop_code))
         if not self.session.query(models.CustomerShopFollow).filter_by(
                 customer_id=self.current_user.id, shop_id=shop.id).first():
             # return self.redirect("/customer/shopProfile")  # 还没关注的话就重定向到店铺信息页
@@ -373,11 +375,9 @@ class Market(CustomerBaseHandler):
                 charge_types = []
                 for charge_type in mgood.mcharge_types:
                     charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
-                if mgood.active == 1:
-                    w_mgoods.append(['mgoods',{'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,\
-                    'current_saled':mgood.current_saled,'saled':mgood.saled,'storage':mgood.storage,'favour':mgood.favour,\
-                    'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types},menu.id])
-                    count_mgoods += 1
+                if mgood.active == 1:				
+                    w_mgoods.append(["mgoods",{'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,'current_saled':mgood.current_saled,'saled':mgood.saled,'storage':mgood.storage,'favour':mgood.favour,'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types},menu.id])
+                count_mgoods += 1
 
         w_fruits = []
         w_dry_fruits = []
