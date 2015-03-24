@@ -464,6 +464,19 @@ class Order(AdminBaseHandler):
         else:
             return self.send.send_error(404)
 
+
+        # orders order by start_time
+        # woody
+        session = self.session
+        for order in orders:
+            order.w_send_time = order.get_sendtime(session,order.id) 
+            # print(order.w_send_time)
+        # print("before sort",orders)
+        orders = sorted(orders , key = lambda x:x.w_send_time)
+        # print("after sort",orders)
+        # for order in orders:
+        #     print(order.w_send_time)
+
         data = []
         delta = datetime.timedelta(1)
         for order in orders:
@@ -596,6 +609,65 @@ class Order(AdminBaseHandler):
 
             elif action == "edit_status":
                 order.update(session=self.session, status=data["status"])
+                # when the order complete ,
+                # woody
+
+                #shop_point add by order.totalPrice
+                if data["status"] == 5:
+                    customer_id = order.customer_id
+                    shop_id = order.shop_id
+                    totalprice = order.totalPrice
+
+                    try:
+                        shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
+                            customer_id,shop_id = shop_id).first()
+                    except:
+                        self.send_fail("shop_point error")
+                    try:
+                        order_count = self.session.query(models.Order).filter_by(customer_id = customer_id,\
+                            shop_id = shop_id).count()
+                    except:
+                        self.send_fail("find order by customer_id and shop_id error")
+                    # the first order , shop_point add by 5
+                    if order_count==1:
+                        if shop_follow:
+                            shop_follow.shop_point += 5
+                            try:
+                                point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
+                            except:
+                                self.send_fail("point_history error:First_order")
+                            if point_history:
+                                point_history.point_type = models.POINT_TYPE.FIRST_ORDER
+                                point_history.each_point = 5
+                                self.session.add(point_history)
+                                self.session.commit()
+
+                    if order.pay_type == 2:
+                        if shop_follow:
+                            shop_follow.shop_point += 2
+                            try:
+                                point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
+                            except:
+                                self.send_fail("point_history error:PREPARE_PAY")
+                            if point_history:
+                                point_history.point_type = models.POINT_TYPE.PREPARE_PAY
+                                point_history.each_point = 2
+                                self.session.add(point_history)
+                                self.session.commit()
+
+                    if shop_follow:
+                        shop_follow.shop_point += totalprice
+                        self.session.commit()
+                        try:
+                            point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
+                        except:
+                            self.send_fail("point_history error:totalprice")
+                        if point_history:
+                            point_history.point_type = models.POINT_TYPE.TOTALPRICE
+                            point_history.each_point = totalprice
+                            self.session.add(point_history)
+                            self.session.commit()
+
             elif action == "edit_totalPrice":
                 order.update(session=self.session, totalPrice=data["totalPrice"])
             elif action == "del_order":
@@ -1156,12 +1228,12 @@ class ShopConfig(AdminBaseHandler):
         elif action == "edit_shop_img":
             return self.send_qiniu_token("shop", shop.id)
         elif action == "edit_shop_code":
-            if len(data["shop_code"]) < 4:
-                return self.send_fail("店铺号至少要4位")
+            if len(data["shop_code"]) < 6:
+                return self.send_fail("店铺号至少要6位")
             if self.session.query(models.Shop).filter_by(shop_code=data["shop_code"]).first():
                 return self.send_fail("店铺号已被注册")
-            reserve_code = ('senguo', 'senguocc', 'shuiguobang', 'shuiguo', '0000', '1111', '2222', '3333',
-                            '4444', '5555', '6666', '7777', '8888', '9999')
+            reserve_code = ('senguo', 'senguocc', 'shuiguobang', 'shuiguo', '000000', '111111', '222222', '333333',
+                            '444444', '555555', '666666', '777777', '888888', '999999')
             if data["shop_code"] in reserve_code:
                 return self.send_fail("该店铺号为系统保留号，不允许注册")
             shop.shop_code = data["shop_code"]

@@ -200,10 +200,18 @@ class ShopProfile(CustomerBaseHandler):
                 point =models.Points(id = self.current_user.id )
                 self.session.add(point)
                 self.session.commit()
+            
         
             signin = self.session.query(models.ShopSignIn).filter_by(
                 customer_id=self.current_user.id, shop_id=shop_id).first()
             if signin:
+
+                try:
+                    shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id \
+                        ,shop_id = shop_id).first()
+                except:
+                    print("shop_follow error")
+                    self.send_fail("shop_follow error")
                 
                 if signin.last_date == datetime.date.today():
                     return self.send_fail("亲，你今天已经签到了，一天只能签到一次哦")
@@ -215,6 +223,19 @@ class ShopProfile(CustomerBaseHandler):
                         point.signIn_count += 1
                         print("after sign:",point.signIn_count)
                         # point.count += 1
+                        point_history = models.PointHistory(customer_id = self.current_user.id,shop_id = shop_id)
+                        if point_history:
+                            point_history.each_point = 1
+                            point_history.point_type = models.POINT_TYPE.SIGNIN
+                            print("point_history",point_history,point_history.each_point)
+                            self.session.add(point_history)
+                            self.session.commit()
+
+                    #shop_point add by one
+                    #woody
+                    if shop_follow is not None:
+                        shop_follow.shop_point += 1
+                        self.session.commit()
                     if datetime.date.today() - signin.last_date == datetime.timedelta(1):  # 判断是否连续签到
                         self.current_user.credits += signin.keep_days
                         signin.keep_days += 1
@@ -222,6 +243,18 @@ class ShopProfile(CustomerBaseHandler):
                             if point is not None:
                                 point.signIn_count += 5
                                 # point.count += 5
+                            if shop_follow:
+                                shop_follow.shop_point += 5
+                                try:
+                                    point_history = models.PointHistory(customer_id = self.current_user.id,shop_id = shop_id)
+                                except:
+                                    self.send_fail("point_history error:SERIES_SIGNIN")
+                                if point_history:
+                                    point_history.point_type = models.POINT_TYPE.SERIES_SIGNIN
+                                    point_history.each_point = 5
+                                    self.session.add(point_history)
+                                    self.session.commit()
+
                             signin.keep_days = 0
                     else:
                         self.current_user.credits += 1
@@ -296,7 +329,20 @@ class Market(CustomerBaseHandler):
                 customer_id=self.current_user.id, shop_id=shop.id).first():
             # return self.redirect("/customer/shopProfile")  # 还没关注的话就重定向到店铺信息页
             w_follow = False
-            self.session.add(models.CustomerShopFollow(customer_id=self.current_user.id, shop_id=shop.id))  # 添加关注
+            shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id)
+            if shop_follow:
+                shop_follow.shop_point += 10
+            if self.current_user.accountinfo.phone != None:
+                shop_follow.shop_point += 10
+
+            point_history = models.PointHistory(customer_id = self.current_user.id,shop_id = shop.id)
+            if point_history:
+                point_history.each_point = 10
+                point_history.point_type = models.POINT_TYPE.FOLLOW
+                print("point_history",point_history,point_history.each_point)
+            self.session.add(point_history)
+
+            self.session.add(shop_follow)  # 添加关注
             self.session.commit()
 
 
@@ -448,6 +494,7 @@ class Market(CustomerBaseHandler):
     def favour(self):
         charge_type_id = self.args["charge_type_id"]
         menu_type = self.args["menu_type"]
+        shop_id = int(self.get_cookie("market_shop_id"))
         favour = self.session.query(models.FruitFavour).\
             filter_by(customer_id=self.current_user.id,
                       f_m_id=charge_type_id, type=menu_type).first()
@@ -460,6 +507,16 @@ class Market(CustomerBaseHandler):
                 print("start ,point is None ")
         except:
             self.send_fail("point find error")
+
+        # shop_point add by one
+        # woody
+
+        try:
+            shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id \
+                ,shop_id = shop_id).first()
+        except:
+            self.send_fail("shop_point error")
+
         if point is None:
             point = models.Points(id = self.current_user.id)
             self.session.add(point)
@@ -467,12 +524,6 @@ class Market(CustomerBaseHandler):
         if point is None:
             print("point make fail")
         # print("success?",point)
-        
-
-        # try:
-        #     point = self.session.query(models.Points).filter_by(id = self.current_user.id).first()
-        # except:
-        #     print("point is still nonetype?")
 
         if point:
             print(" before favour:" , point.favour_count)
@@ -488,8 +539,22 @@ class Market(CustomerBaseHandler):
                     point.favour_count += 1
                     # point.totalCount +=1
                     print("after favour:")
+                    try:
+                        point_history = models.PointHistory(customer_id = self.current_user.id ,shop_id =shop_id)
+                    except:
+                        self.send_fail("point_history error:FAVOUR")
+                    if point_history is not None:
+                        point_history.point_type = models.POINT_TYPE.FAVOUR
+                        point_history.each_point = 1
+                        self.session.add(point_history)
+                        self.session.commit() 
+                    else:
+                        print("point_history None")
                 else:
                     print("point is None...")
+
+                if shop_follow:
+                    shop_follow.shop_point += 1
                 
                 favour.create_date = datetime.date.today()
         else:  # 没找到点赞记录，插入一条
@@ -839,6 +904,25 @@ class Order(CustomerBaseHandler):
             order.status = 6
             order.comment_create_date = datetime.datetime.now()
             order.comment = data["comment"]
+
+            # shop_point add by 5
+            # woody
+            try:
+                shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
+                    order.customer_id,shop_id = order.shop_id).first()
+            except:
+                self.send_fail("shop_point error")
+            if shop_follow:
+                shop_follow.shop_point += 5
+                try:
+                    point_history = models.PointHistory(customer_id = self.current_user.id , shop_id = order.shop_id)
+                except:
+                    self.send_fail("point_history error:COMMENT")
+                if point_history:
+                    point_history.point_type = models.POINT_TYPE.COMMENT
+                    point_history.each_point = 5
+                    self.session.add(point_history)
+                    self.session.commit()
         self.session.commit()
         return self.send_success()
 

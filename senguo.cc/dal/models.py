@@ -18,6 +18,18 @@ class FruitTypeError(Exception):
 
 # 常量
 
+#woody
+class POINT_TYPE:
+    TOTALPRICE = 1  # +totalprice
+    FOLLOW     = 2  # +10
+    SIGNIN     = 3  # +1
+    SERIES_SIGNIN = 4 # +5
+    PREPARE_PAY= 5  # +2
+    FAVOUR     = 6 # +1
+    COMMENT    = 7 # +5
+    FIRST_ORDER= 8 # +5
+    BING_PHONE = 9
+
 class SHOP_SERVICE_AREA:
     """服务区域, 使用方法：HIGH_SCHOOL | COMMUNITY，实现多选"""
     HIGH_SCHOOL = 1
@@ -609,8 +621,7 @@ class Customer(MapBase, _AccountApi):
     #added by woody
     points = relationship("Points")
 
-
-#
+#woody
 class Points(MapBase,_CommonApi):
     __tablename__ = "points"
     id = Column(Integer,ForeignKey(Customer.id) ,primary_key = True ,nullable = False)
@@ -680,11 +691,27 @@ class Points(MapBase,_CommonApi):
 
 
 # 用户关注店铺
+
 class CustomerShopFollow(MapBase, _CommonApi):
     __tablename__ = "customer_shop_follow"
     customer_id = Column(Integer, ForeignKey(Customer.id), primary_key=True, nullable=False)
     shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
     create_time = Column(DateTime, default=func.now())
+
+    # the point of each shop
+    # woody
+    shop_point = Column(Float,default = 0)
+    # pointhistory = relationship("PointHistory")
+
+class PointHistory(MapBase,_CommonApi):
+    __tablename__ = 'pointhistory'
+    id = Column(Integer, primary_key=True, nullable=False)
+    customer_id = Column(Integer, ForeignKey(CustomerShopFollow.customer_id), primary_key=True, \
+        nullable=False)
+    shop_id = Column(Integer, ForeignKey(CustomerShopFollow.shop_id), primary_key=True, nullable=False)
+    point_type =Column(Integer)
+    each_point = Column(Float,default = 0)
+    create_time = Column(DateTime,default=func.now())
 
 class COUNTER_TYPE:
     SYSTEM_ORDER_COUNTER = 1
