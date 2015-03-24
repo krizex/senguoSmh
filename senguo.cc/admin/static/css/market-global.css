@@ -81,6 +81,7 @@ button:focus{outline:0;}
 .bg-red{background-color:#E01445 !important;}
 .bg-orange{background-color:#E07D14 !important;}
 .bg-pale-green{background-color:#EAF7E7 !important;}
+.bg-blue{background-color:#4dbfd9 !important;}
 
 .text-center{text-align:center;}
 .text-shadow{text-shadow:1px 1px #aaa;}
@@ -149,8 +150,10 @@ button:focus{outline:0;}
 .m-b10{margin-bottom:10px !important;}
 .m-b0{margin-bottom:0px !important;}
 .ml20{margin-left:20px;}
+.ml10{margin-left:10px;}
 .m0{margin:0px !important;}
 .mt42{margin-top:36px !important;}
+.mt40{margin-top:40px !important;}
 .mt10{margin-top:10px !important;}
 .mt100{margin-top:100px !important;}
 .radius0{border-radius:0px !important;}

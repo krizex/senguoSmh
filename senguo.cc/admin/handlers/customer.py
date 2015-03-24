@@ -884,3 +884,9 @@ class OrderDetail(CustomerBaseHandler):
                                           order.end_time.hour, w_end_time_minute)
         return self.render("customer/order-detail.html", order=order,
                            charge_types=charge_types, mcharge_types=mcharge_types)
+
+
+class Points(CustomerBaseHandler):
+    def get(self):
+        return self.render("customer/points.html")
+

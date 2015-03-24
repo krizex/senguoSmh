@@ -152,7 +152,7 @@ $(document).ready(function(){
                         $this.addClass('active');
                     }
                 }
-                else if(confirm('抱歉，已超过了该送货时间段的下单时间!请选择下一个时间段！')){}
+                else if($.noticeBox('抱歉，已超过了该送货时间段的下单时间!请选择下一个时间段！')){}
            });
         });}
         $('.send_period li').on('click',function(){
