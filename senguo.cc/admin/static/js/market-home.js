@@ -165,13 +165,45 @@ $(document).ready(function(){
         });
         $(document).on('click','.number-plus',function(){
             var $this=$(this);
-            goodsNum($this,2);
+            var num=Int($this.siblings('.number-input').val().trim());
+            var regNum=/^[0-9]*$/;
+            if(!regNum.test(num)) {
+                $this.siblings('.number-input').val(999);
+                return $.noticeBox('商品数量只能为整数!');
+            }
+            if(num<999) {goodsNum($this,2);}
+            else {
+                return $.noticeBox('最多只能添加999哦!');
+            }
         });
          //商品输入框为0时
-        $(document).find('.number-input').on('blur',function(){
+        $(document).on('blur','.number-input',function(){
             var $this=$(this);
             var num=$this.val();
             var change=$this.parents('.number-change');
+            var regNum=/^[0-9]*$/;
+            var parent=$this.parents('.goods-list-item');
+            var storage=parseFloat(parent.data('num'));
+            var s_num=storage-num;
+            if(!regNum.test(num)) {
+                $this.val(0);
+                change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
+                window.dataObj.cart_count--;
+                $('.cart_num').text(window.dataObj.cart_count);
+                SetCookie('cart_count',window.dataObj.cart_count);
+                return $.noticeBox('商品数量只能为整数!┑(￣▽ ￣)┍');
+            }
+            if(num>999) {
+                storage=Int(storage);
+                if(storage<999) {
+                    $this.val(storage);
+                    return $.noticeBox('只有这么多了哦!┑(￣▽ ￣)┍');
+                }
+                else {
+                    $this.val(999);
+                     return $.noticeBox('最多只能添加999哦!┑(￣▽ ￣)┍');
+                }          
+            }
             if(num==0){
                 change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
                 if(window.dataObj.cart_count==1) {
@@ -180,6 +212,19 @@ $(document).ready(function(){
                 }
                 else {
                     window.dataObj.cart_count--;
+                    $('.cart_num').text(window.dataObj.cart_count);
+                    SetCookie('cart_count',window.dataObj.cart_count);
+                }
+            }
+            else{   
+                 if(s_num<=0){
+                    storage=Int(storage);
+                    if(storage<999) $this.val(storage);
+                    else $this.val(999);
+                    $.noticeBox('库存不足啦！┑(￣▽ ￣)┍ ')
+                }
+                else if(s_num>0){
+                    window.dataObj.cart_count++;
                     $('.cart_num').text(window.dataObj.cart_count);
                     SetCookie('cart_count',window.dataObj.cart_count);
                 }
@@ -207,6 +252,7 @@ $.getItem('/static/items/customer/classify_item.html?v=2015-0309',function(data)
 
 window.dataObj.page_count=Int($('#page_count').val());
 window.dataObj.page=1;
+window.dataObj.count=1;
 $.scrollLoading=function(){
     var range = 10;             //距下边界长度/单位px          //插入元素高度/单位px  
     var maxnum = window.dataObj.page_count;            //设置加载最多次数  
@@ -218,9 +264,10 @@ $.scrollLoading=function(){
         if((main.height()-range) <= totalheight  && window.dataObj.page != maxnum) {  
             $('.container').append('<div class="loading text-center text-grey6 font16">~努力加载中( > < )~</div>');
             window.dataObj.page++; 
+            console.log(window.dataObj.count);
             $.goodsList(window.dataObj.page);
         }  
-    });  
+    });     
 }   
 
  $.goodsList=function(page){
@@ -263,6 +310,7 @@ $.scrollLoading=function(){
             cartNum(cart_fs,'.fruit-list');
             cartNum(cart_ms,'.menu-list');
             $('.loading').remove();
+            window.dataObj.count++;
         }
         else return $.noticeBox(res.error_text);
         },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
@@ -390,8 +438,9 @@ function goodsNum(target,action){
     if(action==1&&num<=0) {num=0;target.addClass('disable');}
     if(action==2)
     {
-        if(s_num==0){
-            $.noticeBox('库存不足啦！┑(￣▽ ￣)┍ ')
+        if(s_num<=0){
+            $.noticeBox('库存不足啦！┑(￣▽ ￣)┍ ');
+            item.val(Int(storage));
         }
         else if(s_num>0){
             num++;
