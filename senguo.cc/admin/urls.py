@@ -42,6 +42,7 @@ handlers = [
     (r"/customer/members", handlers.customer.Members, {}, "customerMembers"),
     (r"/customer/shopProfile", handlers.customer.ShopProfile, {}, "customerShopProfile"),
     (r"/customer/comment", handlers.customer.Comment, {}, "customerComment"),
+    (r"/customer/points", handlers.customer.Points, {}, "customerPoints"),
     (r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
     (r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
 

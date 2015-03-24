@@ -1,0 +1,41 @@
+{% extends 'detail-base.html' %}
+{% block title %}我的积分{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/market-points.css')}}"/>
+{% end %}
+{% block top %}返回{% end %}
+{%block back%}{{reverse_url('customerHome')}}{% end %}
+{% block content %}
+<div class="points_box bg-blue mt40 text-white">
+        <img src="{{static_url('images/points.png')}}" class="points_img pull-left"/>
+        <span class="pull-left font14 ml10">当前积分:</span>
+        <button class="rules pull-right btn bg-blue">积分规则</button>
+</div>
+
+<div class="modal fade comment-box" id="pointsBox">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span type="button" class="close text-white dismiss">✕</span>
+                <h2 class="modal-title">积分规则</h2>
+            </div>
+            <div class="modal-body set-width-float text-grey6 mt40">
+                <ul class="rule_list font14">
+                    <li><span>每关注一个店铺，</span> <span>+10</span></li>
+                    <li>签到一次，+1</li>
+                    <li>连续签到7天，+5</li>
+                    <li>一个月连续签到，+20</li>
+                    <li>使用余额支付，+2 </li>
+                    <li>商品点赞，+1</li>
+                    <li>订单评价，+5</li>
+                    <li>第一次添加地址，+5</li>
+                    <li>绑定手机号，+10</li>
+                    <li>客户端下单，额外+2</li>
+                </ul>
+                <p class="text-center mt10">(注:您在每个店铺的积分独立)</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}<script src="{{static_url('js/market-points.js')}}"></script>{% end %}

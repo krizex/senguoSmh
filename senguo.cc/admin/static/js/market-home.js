@@ -113,7 +113,7 @@ $(document).ready(function(){
             else $('.click-great').removeClass('clicked');
             if(img_url!='') {
                 if(img_url.indexOf('/design_img')) img_url=img_url.replace('.png','_l.png');
-                img_url=img_url.replace('w/160/h/160','w/560/h/560');
+                img_url=img_url.replace('w/170/h/170','w/560/h/560');
             }
             var check_large=new Modal('large_imgbox');
             check_large.modal('show');
