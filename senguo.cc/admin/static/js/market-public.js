@@ -53,9 +53,8 @@ $(document).ready(function(){
     });
     $(".lazy_img").lazyload({threshold:100});
     //wexin api
-    if(isWeiXin()){wexin();}
-    else console.log(23333);
-    
+    wexin();
+ 
 });
 
 function wexin(){
