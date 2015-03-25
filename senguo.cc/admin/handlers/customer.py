@@ -363,23 +363,32 @@ class Market(CustomerBaseHandler):
         fruits = [x for x in shop.fruits if x.fruit_type_id < 1000 and x.active == 1]
         dry_fruits = [x for x in shop.fruits if x.fruit_type_id > 1000 and x.active == 1]
         mgoods={}
-        count_mgoods = 0
+        count_mgoods = []
+        mgoods_page = []
+        mgoods_len = 0
+
         for menu in shop.menus:
             mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
-            count_mgoods += len(mgoods[menu.id])
+            count_mgoods .append([menu.id,len(mgoods[menu.id])])
+            mgoods_len += len(mgoods[menu.id])
+
+        mgoods_page = [[int(x[1]/10) if x[1] % 10 == 0 else int(x[1]/10)+1,x[0]] for x in count_mgoods]
         notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
-        total_count = len(fruits) + len(dry_fruits)  + count_mgoods
+        total_count = len(fruits) + len(dry_fruits)  + mgoods_len
         if total_count % 10 is 0 :
             page_count = total_count /10
         else:
             page_count = int( total_count / 10) + 1
         print('page_count' , page_count)
+        fruit_page = int(len(fruits)/10) if len(fruits)% 10 == 0 else int(len(fruits)/10) +1
+        dry_page   = int(len(dry_fruits)/10) if len(dry_fruits)% 10 == 0 else int(len(dry_fruits)/10) +1
+        # mgoods_page = int(count_mgoods/10) if count_mgoods % 10 == 0 else int(count_mgoods/10) + 1
         self.set_cookie("cart_count", str(cart_count))
         return self.render("customer/home.html",
-                           context=dict(cart_count=cart_count, subpage='home', menus=shop.menus,notices=notices,shop_name=shop.shop_name,w_follow = w_follow,page_count = page_count))
+                           context=dict(cart_count=cart_count, subpage='home', menus=shop.menus,notices=notices,shop_name=shop.shop_name,w_follow = w_follow,page_count = page_count,fruit_page = fruit_page,dry_page = dry_page ,mgoods_page = mgoods_page))
 
     @tornado.web.authenticated
-    @CustomerBaseHandler.check_arguments("action:int","page?:int")
+    @CustomerBaseHandler.check_arguments("action:int","page?:int","menu_id?:int")
     #action(2: +1，1: -1, 0: delete, 3: 赞+1, 4:商城首页打包发送的购物车)；
     def post(self, shop_code):
         action = self.args["action"]
@@ -412,19 +421,26 @@ class Market(CustomerBaseHandler):
                 data.append([w_tag,{'id':fruit.id,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
                 'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour}])
             return data
-    @CustomerBaseHandler.check_arguments("page?:int")
+
     def mgood_list(self):
         page = self.args["page"]
+        menu_id = self.args["menu_id"]
         offset = (page - 1) * 10
         shop_id = int(self.get_cookie("market_shop_id"))
         shop  = self.session.query(models.Shop).filter_by(id = shop_id).first()
         if not shop:
             return self.send_error(404)
+        try:
+            menu = self.session.query(models.Menu).filter_by(id = menu_id).first()
+        except:
+            return self.send_fail("menu error")
+
         mgoods = {}
         w_mgoods = []
-        for menu in shop.menus:
-            mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
-            temp_goods = []
+        # for menu in shop.menus:
+        mgoods[menu_id] = [x for x in menu.mgoods if x.active == 1]
+        temp_goods = []
+        if menu:
             for mgood in menu.mgoods:
                 # print(mgood.id,mgood.unit)
                 charge_types = []
@@ -454,14 +470,14 @@ class Market(CustomerBaseHandler):
         dry_fruits =[]
         dry_fruits = [x for x in shop.fruits if x.fruit_type_id >=1000 and x.active ==1]
         w_dry_fruits = []
-        w_dry_fruits = self.w_getdata(dry_fruit_list)
+        w_dry_fruits = self.w_getdata(dry_fruits)
         count_dry = len(w_dry_fruits)
         page = int(count_dry/10) if count_dry % 10 ==0 else int(count_dry/10) +1
         print(page)
         if offset + 10 <= count_dry:
-            dry_fruit_list = dry_fruits[offset:offset+10]
+            dry_fruit_list = w_dry_fruits[offset:offset+10]
         elif offset < count_dry and offset + 10 > count_dry:
-            dry_fruit_list = dry_fruits[offset:]
+            dry_fruit_list = w_dry_fruits[offset:]
         else:
             self.send_fail("dry_fruit_list page error")
         return self.send_success(dry_fruit_list = dry_fruit_list ,page =page)
@@ -484,9 +500,9 @@ class Market(CustomerBaseHandler):
         # page = (count_fruit % 10 == 0)?int(count_fruit/10):int(count_fruit/10)+1
         print(page)
         if offset + 10 <= count_fruit:
-            fruit_list = fruits[offset:offset+10]
+            fruit_list = w_fruits[offset:offset+10]
         elif offset < count_fruit and offset +10 > count_fruit:
-            fruit_list = fruits[offset:]
+            fruit_list = w_fruits[offset:]
         else:
             self.send_fail("fruit_list page error")
         return self.send_success(fruit_list = fruit_list ,page = page)
