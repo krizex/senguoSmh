@@ -398,7 +398,7 @@ class Market(CustomerBaseHandler):
         elif action == 8:
             return self.mgood_list()
     @classmethod
-    def w_getdata(m):
+    def w_getdata(self,m):
             data = []
             w_tag = ''
             for fruit in m:
@@ -412,6 +412,60 @@ class Market(CustomerBaseHandler):
                 data.append([w_tag,{'id':fruit.id,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
                 'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour}])
             return data
+    @CustomerBaseHandler.check_arguments("page?:int")
+    def mgood_list(self):
+        page = self.args["page"]
+        offset = (page - 1) * 10
+        shop_id = int(self.get_cookie("market_shop_id"))
+        shop  = self.session.query(models.Shop).filter_by(id = shop_id).first()
+        if not shop:
+            return self.send_error(404)
+        mgoods = {}
+        w_mgoods = []
+        for menu in shop.menus:
+            mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
+            temp_goods = []
+            for mgood in menu.mgoods:
+                # print(mgood.id,mgood.unit)
+                charge_types = []
+                for charge_type in mgood.mcharge_types:
+                    charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
+                if mgood.active == 1:               
+                    w_mgoods.append(["mgoods",{'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,'current_saled':mgood.current_saled,'saled':mgood.saled,'storage':mgood.storage,'favour':mgood.favour,'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types},menu.id])
+        count_mgoods = len(w_mgoods)
+        if offset + 10 <=count_mgoods:
+            mgood_list = w_mgoods[offset:offset+10]
+        elif offset < count_mgoods and offset + 10 > count_mgoods:
+            mgood_list = w_mgoods[offset:]
+        else:
+            self.send_fail("mgood_list page error")
+        return self.send_success(mgood_list = mgood_list , page = page)
+
+
+
+    @CustomerBaseHandler.check_arguments("page?:int")
+    def dry_list(self):
+        page = self.args["page"]
+        offset = (page - 1) * 10
+        shop_id = int(self.get_cookie("market_shop_id"))
+        shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+        if not shop:
+            return self.send_error(404)
+        dry_fruits =[]
+        dry_fruits = [x for x in shop.fruits if x.fruit_type_id >=1000 and x.active ==1]
+        w_dry_fruits = []
+        w_dry_fruits = self.w_getdata(dry_fruit_list)
+        count_dry = len(w_dry_fruits)
+        page = int(count_dry/10) if count_dry % 10 ==0 else int(count_dry/10) +1
+        print(page)
+        if offset + 10 <= count_dry:
+            dry_fruit_list = dry_fruits[offset:offset+10]
+        elif offset < count_dry and offset + 10 > count_dry:
+            dry_fruit_list = dry_fruits[offset:]
+        else:
+            self.send_fail("dry_fruit_list page error")
+        return self.send_success(dry_fruit_list = dry_fruit_list ,page =page)
+
 
     @CustomerBaseHandler.check_arguments("page?:int")
     def fruit_list(self):
@@ -426,9 +480,16 @@ class Market(CustomerBaseHandler):
         w_fruits = []
         w_fruits = self.w_getdata(fruits)
         count_fruit = len(w_fruits)
+        page = int(count_fruit/10) if count_fruit % 10 == 0 else int(count_fruit/10)+1
+        # page = (count_fruit % 10 == 0)?int(count_fruit/10):int(count_fruit/10)+1
+        print(page)
         if offset + 10 <= count_fruit:
-            pass
-
+            fruit_list = fruits[offset:offset+10]
+        elif offset < count_fruit and offset +10 > count_fruit:
+            fruit_list = fruits[offset:]
+        else:
+            self.send_fail("fruit_list page error")
+        return self.send_success(fruit_list = fruit_list ,page = page)
 
     @CustomerBaseHandler.check_arguments("page?:int")
     def commodity_list(self):
@@ -473,26 +534,26 @@ class Market(CustomerBaseHandler):
 
         w_fruits = []
         w_dry_fruits = []
-        def w_getdata(m):
-            data = []
-            w_tag = ''
-            for fruit in m:
-                charge_types= []           
-                for charge_type in fruit.charge_types:
-                    charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
-                if fruit.fruit_type_id >= 1000:
-                    w_tag = "dry_fruit"
-                else:
-                    w_tag = "fruit"
-                data.append([w_tag,{'id':fruit.id,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
-                'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour}])
-            return data
+        # def w_getdata(m):
+        #     data = []
+        #     w_tag = ''
+        #     for fruit in m:
+        #         charge_types= []           
+        #         for charge_type in fruit.charge_types:
+        #             charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
+        #         if fruit.fruit_type_id >= 1000:
+        #             w_tag = "dry_fruit"
+        #         else:
+        #             w_tag = "fruit"
+        #         data.append([w_tag,{'id':fruit.id,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
+        #         'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour}])
+        #     return data
         # pages 
         # woody
-        w_fruits = w_getdata(fruits)
+        w_fruits = self.w_getdata(fruits)
         count_fruit = len(w_fruits)
 
-        w_dry_fruits = w_getdata(dry_fruits)
+        w_dry_fruits = self.w_getdata(dry_fruits)
         count_dry   = len(w_dry_fruits)
 
         if offset +10 <= count_fruit:
