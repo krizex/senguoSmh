@@ -54,7 +54,6 @@ $(document).ready(function(){
     $(".lazy_img").lazyload({threshold:100});
     //wexin api
     wexin();
- 
 });
 
 function wexin(){
@@ -63,9 +62,8 @@ function wexin(){
     var args={url: window.location.href};
     var shop_code=getCookie('market_shop_code');
     var link='http://test123.senguo.cc/'+shop_code;
-    //$.ajaxSettings.async=false;
+    var shop_name=getCookie('market_shop_name');
     $.postJson(url,args,function(res){
-        console.log(link);
         if(res.success){
             var noncestr_val=res.noncestr;
             var timestamp_val=res.timestamp;
@@ -80,7 +78,7 @@ function wexin(){
          });
          wx.ready(function(){
              wx.onMenuShareTimeline({
-             title: '', // 分享标题
+             title: shop_name+'-大家快来关注吧~', // 分享标题
              link:link, // 分享链接
              imgUrl: '', // 分享图标
              success: function () {
@@ -91,8 +89,8 @@ function wexin(){
              }
          });
          wx.onMenuShareAppMessage({
-             title: '', // 分享标题
-             desc: "一家不错的水果O2O店铺，快来关注吧~ ", // 分享描述
+             title: shop_name+'-大家快来关注吧~', // 分享标题
+             desc: "一家不错的店铺，快来关注吧~ ", // 分享描述
              link:link,
              imgUrl: "", // 分享图标
              type: '' // 分享类型,music、video或link，不填默认为link
@@ -110,7 +108,6 @@ function isWeiXin(){
         else{ 
     } 
 } 
-
 
 /*function AndroidImg(target){
     //判断客户端是否是iOS或者Android
@@ -314,6 +311,7 @@ Modal.prototype.modal=function(type){
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
+
     }
     else if(type=='hide')
     {
