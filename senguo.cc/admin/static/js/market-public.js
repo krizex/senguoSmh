@@ -60,11 +60,12 @@ $(document).ready(function(){
 function wexin(){
     //微信Api
     var url='/wexin';
+    var args={url: window.location.href};
     var shop_code=getCookie('market_shop_code');
     var link='http://test123.senguo.cc/'+shop_code;
-    var args={url: link};
     //$.ajaxSettings.async=false;
     $.postJson(url,args,function(res){
+        console.log(link);
         if(res.success){
             var noncestr_val=res.noncestr;
             var timestamp_val=res.timestamp;
