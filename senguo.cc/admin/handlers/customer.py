@@ -329,9 +329,12 @@ class Market(CustomerBaseHandler):
                 customer_id=self.current_user.id, shop_id=shop.id).first():
             # return self.redirect("/customer/shopProfile")  # 还没关注的话就重定向到店铺信息页
             w_follow = False
-            shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id)
+            shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0)
             if shop_follow:
-                shop_follow.shop_point += 10
+                if shop_follow.shop_point is not None:
+                    shop_follow.shop_point += 10
+                else:
+                    shop_follow.shop_point = 10
             if self.current_user.accountinfo.phone != None:
                 shop_follow.shop_point += 10
 
@@ -384,6 +387,45 @@ class Market(CustomerBaseHandler):
             return self.commodity_list()
         elif action in (2, 1, 0):  # 更新购物车
             return self.cart(action)
+        elif action == 6:
+            return self.fruit_list()
+        elif action == 7:
+            return self.dry_list()
+        elif action == 8:
+            return self.mgood_list()
+    @classmethod
+    def w_getdata(m):
+            data = []
+            w_tag = ''
+            for fruit in m:
+                charge_types= []           
+                for charge_type in fruit.charge_types:
+                    charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
+                if fruit.fruit_type_id >= 1000:
+                    w_tag = "dry_fruit"
+                else:
+                    w_tag = "fruit"
+                data.append([w_tag,{'id':fruit.id,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
+                'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour}])
+            return data
+
+    @CustomerBaseHandler.check_arguments("page?:int")
+    def fruit_list(self):
+        page = self.args["page"]
+        offset = (page-1) * 10
+        shop_id = int(self.get_cookie("market_shop_id"))
+        shop   = self.session.query(models.Shop).filter_by(id = shop_id).first()
+        if not shop:
+            return self.send_error(404)
+        fruits = []
+        fruits = [x for x in shop.fruits if x.fruit_type_id < 1000 and x.active ==1]
+        w_fruits = []
+        w_fruits = self.w_getdata(fruits)
+        count_fruit = len(w_fruits)
+        if offset + 10 <= count_fruit:
+            pass
+
+
     @CustomerBaseHandler.check_arguments("page?:int")
     def commodity_list(self):
         #
@@ -913,7 +955,8 @@ class Order(CustomerBaseHandler):
             except:
                 self.send_fail("shop_point error")
             if shop_follow:
-                shop_follow.shop_point += 5
+                if shop_follow.shop_point:
+                    shop_follow.shop_point += 5
                 try:
                     point_history = models.PointHistory(customer_id = self.current_user.id , shop_id = order.shop_id)
                 except:
