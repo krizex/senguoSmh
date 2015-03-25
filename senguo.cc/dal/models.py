@@ -706,9 +706,9 @@ class CustomerShopFollow(MapBase, _CommonApi):
 class PointHistory(MapBase,_CommonApi):
     __tablename__ = 'pointhistory'
     id = Column(Integer, primary_key=True, nullable=False)
-    customer_id = Column(Integer, ForeignKey(CustomerShopFollow.customer_id), primary_key=True, \
+    customer_id = Column(Integer, ForeignKey(CustomerShopFollow.customer_id), \
         nullable=False)
-    shop_id = Column(Integer, ForeignKey(CustomerShopFollow.shop_id), primary_key=True, nullable=False)
+    shop_id = Column(Integer, ForeignKey(CustomerShopFollow.shop_id), nullable=False)
     point_type =Column(Integer)
     each_point = Column(Float,default = 0)
     create_time = Column(DateTime,default=func.now())

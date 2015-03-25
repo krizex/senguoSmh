@@ -338,14 +338,18 @@ class Market(CustomerBaseHandler):
             if self.current_user.accountinfo.phone != None:
                 shop_follow.shop_point += 10
 
+            self.session.add(shop_follow)
+            self.session.commit()
+
             point_history = models.PointHistory(customer_id = self.current_user.id,shop_id = shop.id)
             if point_history:
                 point_history.each_point = 10
                 point_history.point_type = models.POINT_TYPE.FOLLOW
                 print("point_history",point_history,point_history.each_point)
+
             self.session.add(point_history)
 
-            self.session.add(shop_follow)  # 添加关注
+              # 添加关注
             self.session.commit()
 
 
