@@ -80,7 +80,7 @@ function wexin(){
          wx.ready(function(){
              wx.onMenuShareTimeline({
              title: '', // 分享标题
-             link:'/'+shop_code, // 分享链接
+             link:link, // 分享链接
              imgUrl: '', // 分享图标
              success: function () {
              // 用户确认分享后执行的回调函数
@@ -92,7 +92,7 @@ function wexin(){
          wx.onMenuShareAppMessage({
              title: '', // 分享标题
              desc: "一家不错的水果O2O店铺，快来关注吧~ ", // 分享描述
-             link:'/'+shop_code,
+             link:link,
              imgUrl: "", // 分享图标
              type: '' // 分享类型,music、video或link，不填默认为link
              });
