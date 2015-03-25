@@ -390,7 +390,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 
         #woody
         #3.23
-        shop = self.session.query(models.Shop).filter_by(id = self.shop_id).one()
+        shop = self.session.query(models.Shop).filter_by(id = self.shop_id).first()
         if shop:
 
             self._shop_code = shop.shop_code
