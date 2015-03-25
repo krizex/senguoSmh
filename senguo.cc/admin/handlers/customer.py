@@ -200,10 +200,18 @@ class ShopProfile(CustomerBaseHandler):
                 point =models.Points(id = self.current_user.id )
                 self.session.add(point)
                 self.session.commit()
+            
         
             signin = self.session.query(models.ShopSignIn).filter_by(
                 customer_id=self.current_user.id, shop_id=shop_id).first()
             if signin:
+
+                try:
+                    shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id \
+                        ,shop_id = shop_id).first()
+                except:
+                    print("shop_follow error")
+                    self.send_fail("shop_follow error")
                 
                 if signin.last_date == datetime.date.today():
                     return self.send_fail("亲，你今天已经签到了，一天只能签到一次哦")
@@ -215,6 +223,19 @@ class ShopProfile(CustomerBaseHandler):
                         point.signIn_count += 1
                         print("after sign:",point.signIn_count)
                         # point.count += 1
+                        point_history = models.PointHistory(customer_id = self.current_user.id,shop_id = shop_id)
+                        if point_history:
+                            point_history.each_point = 1
+                            point_history.point_type = models.POINT_TYPE.SIGNIN
+                            print("point_history",point_history,point_history.each_point)
+                            self.session.add(point_history)
+                            self.session.commit()
+
+                    #shop_point add by one
+                    #woody
+                    if shop_follow is not None:
+                        shop_follow.shop_point += 1
+                        self.session.commit()
                     if datetime.date.today() - signin.last_date == datetime.timedelta(1):  # 判断是否连续签到
                         self.current_user.credits += signin.keep_days
                         signin.keep_days += 1
@@ -222,6 +243,18 @@ class ShopProfile(CustomerBaseHandler):
                             if point is not None:
                                 point.signIn_count += 5
                                 # point.count += 5
+                            if shop_follow:
+                                shop_follow.shop_point += 5
+                                try:
+                                    point_history = models.PointHistory(customer_id = self.current_user.id,shop_id = shop_id)
+                                except:
+                                    self.send_fail("point_history error:SERIES_SIGNIN")
+                                if point_history:
+                                    point_history.point_type = models.POINT_TYPE.SERIES_SIGNIN
+                                    point_history.each_point = 5
+                                    self.session.add(point_history)
+                                    self.session.commit()
+
                             signin.keep_days = 0
                     else:
                         self.current_user.credits += 1
@@ -296,7 +329,27 @@ class Market(CustomerBaseHandler):
                 customer_id=self.current_user.id, shop_id=shop.id).first():
             # return self.redirect("/customer/shopProfile")  # 还没关注的话就重定向到店铺信息页
             w_follow = False
-            self.session.add(models.CustomerShopFollow(customer_id=self.current_user.id, shop_id=shop.id))  # 添加关注
+            shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0)
+            if shop_follow:
+                if shop_follow.shop_point is not None:
+                    shop_follow.shop_point += 10
+                else:
+                    shop_follow.shop_point = 10
+            if self.current_user.accountinfo.phone != None:
+                shop_follow.shop_point += 10
+
+            self.session.add(shop_follow)
+            self.session.commit()
+
+            point_history = models.PointHistory(customer_id = self.current_user.id,shop_id = shop.id)
+            if point_history:
+                point_history.each_point = 10
+                point_history.point_type = models.POINT_TYPE.FOLLOW
+                print("point_history",point_history,point_history.each_point)
+
+            self.session.add(point_history)
+
+              # 添加关注
             self.session.commit()
 
 
@@ -338,6 +391,106 @@ class Market(CustomerBaseHandler):
             return self.commodity_list()
         elif action in (2, 1, 0):  # 更新购物车
             return self.cart(action)
+        elif action == 6:
+            return self.fruit_list()
+        elif action == 7:
+            return self.dry_list()
+        elif action == 8:
+            return self.mgood_list()
+    @classmethod
+    def w_getdata(self,m):
+            data = []
+            w_tag = ''
+            for fruit in m:
+                charge_types= []           
+                for charge_type in fruit.charge_types:
+                    charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
+                if fruit.fruit_type_id >= 1000:
+                    w_tag = "dry_fruit"
+                else:
+                    w_tag = "fruit"
+                data.append([w_tag,{'id':fruit.id,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
+                'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour}])
+            return data
+    @CustomerBaseHandler.check_arguments("page?:int")
+    def mgood_list(self):
+        page = self.args["page"]
+        offset = (page - 1) * 10
+        shop_id = int(self.get_cookie("market_shop_id"))
+        shop  = self.session.query(models.Shop).filter_by(id = shop_id).first()
+        if not shop:
+            return self.send_error(404)
+        mgoods = {}
+        w_mgoods = []
+        for menu in shop.menus:
+            mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
+            temp_goods = []
+            for mgood in menu.mgoods:
+                # print(mgood.id,mgood.unit)
+                charge_types = []
+                for charge_type in mgood.mcharge_types:
+                    charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
+                if mgood.active == 1:               
+                    w_mgoods.append(["mgoods",{'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,'current_saled':mgood.current_saled,'saled':mgood.saled,'storage':mgood.storage,'favour':mgood.favour,'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types},menu.id])
+        count_mgoods = len(w_mgoods)
+        if offset + 10 <=count_mgoods:
+            mgood_list = w_mgoods[offset:offset+10]
+        elif offset < count_mgoods and offset + 10 > count_mgoods:
+            mgood_list = w_mgoods[offset:]
+        else:
+            self.send_fail("mgood_list page error")
+        return self.send_success(mgood_list = mgood_list , page = page)
+
+
+
+    @CustomerBaseHandler.check_arguments("page?:int")
+    def dry_list(self):
+        page = self.args["page"]
+        offset = (page - 1) * 10
+        shop_id = int(self.get_cookie("market_shop_id"))
+        shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+        if not shop:
+            return self.send_error(404)
+        dry_fruits =[]
+        dry_fruits = [x for x in shop.fruits if x.fruit_type_id >=1000 and x.active ==1]
+        w_dry_fruits = []
+        w_dry_fruits = self.w_getdata(dry_fruit_list)
+        count_dry = len(w_dry_fruits)
+        page = int(count_dry/10) if count_dry % 10 ==0 else int(count_dry/10) +1
+        print(page)
+        if offset + 10 <= count_dry:
+            dry_fruit_list = dry_fruits[offset:offset+10]
+        elif offset < count_dry and offset + 10 > count_dry:
+            dry_fruit_list = dry_fruits[offset:]
+        else:
+            self.send_fail("dry_fruit_list page error")
+        return self.send_success(dry_fruit_list = dry_fruit_list ,page =page)
+
+
+    @CustomerBaseHandler.check_arguments("page?:int")
+    def fruit_list(self):
+        page = self.args["page"]
+        offset = (page-1) * 10
+        shop_id = int(self.get_cookie("market_shop_id"))
+        shop   = self.session.query(models.Shop).filter_by(id = shop_id).first()
+        if not shop:
+            return self.send_error(404)
+        fruits = []
+        fruits = [x for x in shop.fruits if x.fruit_type_id < 1000 and x.active ==1]
+        w_fruits = []
+        w_fruits = self.w_getdata(fruits)
+        count_fruit = len(w_fruits)
+        page = int(count_fruit/10) if count_fruit % 10 == 0 else int(count_fruit/10)+1
+        # page = (count_fruit % 10 == 0)?int(count_fruit/10):int(count_fruit/10)+1
+        print(page)
+        if offset + 10 <= count_fruit:
+            fruit_list = fruits[offset:offset+10]
+        elif offset < count_fruit and offset +10 > count_fruit:
+            fruit_list = fruits[offset:]
+        else:
+            self.send_fail("fruit_list page error")
+        return self.send_success(fruit_list = fruit_list ,page = page)
+
     @CustomerBaseHandler.check_arguments("page?:int")
     def commodity_list(self):
         #
@@ -371,7 +524,7 @@ class Market(CustomerBaseHandler):
             mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
             temp_goods = []
             for mgood in menu.mgoods:
-                print(mgood.id,mgood.unit)
+                # print(mgood.id,mgood.unit)
                 charge_types = []
                 for charge_type in mgood.mcharge_types:
                     charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
@@ -381,26 +534,26 @@ class Market(CustomerBaseHandler):
 
         w_fruits = []
         w_dry_fruits = []
-        def w_getdata(m):
-            data = []
-            w_tag = ''
-            for fruit in m:
-                charge_types= []           
-                for charge_type in fruit.charge_types:
-                    charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
-                if fruit.fruit_type_id >= 1000:
-                    w_tag = "dry_fruit"
-                else:
-                    w_tag = "fruit"
-                data.append([w_tag,{'id':fruit.id,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
-                'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour}])
-            return data
+        # def w_getdata(m):
+        #     data = []
+        #     w_tag = ''
+        #     for fruit in m:
+        #         charge_types= []           
+        #         for charge_type in fruit.charge_types:
+        #             charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
+        #         if fruit.fruit_type_id >= 1000:
+        #             w_tag = "dry_fruit"
+        #         else:
+        #             w_tag = "fruit"
+        #         data.append([w_tag,{'id':fruit.id,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
+        #         'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour}])
+        #     return data
         # pages 
         # woody
-        w_fruits = w_getdata(fruits)
+        w_fruits = self.w_getdata(fruits)
         count_fruit = len(w_fruits)
 
-        w_dry_fruits = w_getdata(dry_fruits)
+        w_dry_fruits = self.w_getdata(dry_fruits)
         count_dry   = len(w_dry_fruits)
 
         if offset +10 <= count_fruit:
@@ -435,10 +588,10 @@ class Market(CustomerBaseHandler):
 
         total_count = count_dry + count_fruit + count_mgoods
 
-        print('w_orders ',w_orders)
-        print('w_mgoods',w_mgoods)
-        for m in w_mgoods:
-            print(m)
+        # print('w_orders ',w_orders)
+        # print('w_mgoods',w_mgoods)
+        # for m in w_mgoods:
+        #     print(m)
         print("total_count",total_count ,"count_fruit",count_fruit,"count_dry",count_dry,'count_mgoods',count_mgoods)
 
         return self.send_success(cart_fs = cart_fs,cart_ms = cart_ms,\
@@ -448,6 +601,7 @@ class Market(CustomerBaseHandler):
     def favour(self):
         charge_type_id = self.args["charge_type_id"]
         menu_type = self.args["menu_type"]
+        shop_id = int(self.get_cookie("market_shop_id"))
         favour = self.session.query(models.FruitFavour).\
             filter_by(customer_id=self.current_user.id,
                       f_m_id=charge_type_id, type=menu_type).first()
@@ -460,6 +614,16 @@ class Market(CustomerBaseHandler):
                 print("start ,point is None ")
         except:
             self.send_fail("point find error")
+
+        # shop_point add by one
+        # woody
+
+        try:
+            shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id \
+                ,shop_id = shop_id).first()
+        except:
+            self.send_fail("shop_point error")
+
         if point is None:
             point = models.Points(id = self.current_user.id)
             self.session.add(point)
@@ -467,12 +631,6 @@ class Market(CustomerBaseHandler):
         if point is None:
             print("point make fail")
         # print("success?",point)
-        
-
-        # try:
-        #     point = self.session.query(models.Points).filter_by(id = self.current_user.id).first()
-        # except:
-        #     print("point is still nonetype?")
 
         if point:
             print(" before favour:" , point.favour_count)
@@ -488,8 +646,22 @@ class Market(CustomerBaseHandler):
                     point.favour_count += 1
                     # point.totalCount +=1
                     print("after favour:")
+                    try:
+                        point_history = models.PointHistory(customer_id = self.current_user.id ,shop_id =shop_id)
+                    except:
+                        self.send_fail("point_history error:FAVOUR")
+                    if point_history is not None:
+                        point_history.point_type = models.POINT_TYPE.FAVOUR
+                        point_history.each_point = 1
+                        self.session.add(point_history)
+                        self.session.commit() 
+                    else:
+                        print("point_history None")
                 else:
                     print("point is None...")
+
+                if shop_follow:
+                    shop_follow.shop_point += 1
                 
                 favour.create_date = datetime.date.today()
         else:  # 没找到点赞记录，插入一条
@@ -676,9 +848,9 @@ class Cart(CustomerBaseHandler):
         if w_admin is not None:
             w_SH2_id = w_admin.admin.id
             print(w_SH2_id)
-        print("*****************************************************************")
-        print(f_d)
-        print(mgoods)
+        # print("*****************************************************************")
+        # print(f_d)
+        # print(mgoods)
         order = models.Order(customer_id=self.current_user.id,
                              shop_id=shop_id,
                              num=num,
@@ -727,7 +899,7 @@ class Cart(CustomerBaseHandler):
         ##################################################
         #goods
         goods = []
-        print(f_d,m_d)
+        # print(f_d,m_d)
         for f in f_d:
             goods.append([f_d[f].get('fruit_name'),f_d[f].get('num')])
         for m in m_d:
@@ -839,6 +1011,26 @@ class Order(CustomerBaseHandler):
             order.status = 6
             order.comment_create_date = datetime.datetime.now()
             order.comment = data["comment"]
+
+            # shop_point add by 5
+            # woody
+            try:
+                shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
+                    order.customer_id,shop_id = order.shop_id).first()
+            except:
+                self.send_fail("shop_point error")
+            if shop_follow:
+                if shop_follow.shop_point:
+                    shop_follow.shop_point += 5
+                try:
+                    point_history = models.PointHistory(customer_id = self.current_user.id , shop_id = order.shop_id)
+                except:
+                    self.send_fail("point_history error:COMMENT")
+                if point_history:
+                    point_history.point_type = models.POINT_TYPE.COMMENT
+                    point_history.each_point = 5
+                    self.session.add(point_history)
+                    self.session.commit()
         self.session.commit()
         return self.send_success()
 
