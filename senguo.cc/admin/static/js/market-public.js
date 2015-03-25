@@ -53,14 +53,14 @@ $(document).ready(function(){
     });
     $(".lazy_img").lazyload({threshold:100});
     //wexin api
-    //wexin();
+    wexin();
  
 });
 
 function wexin(){
     //微信Api
     var url='/wexin';
-    var link='' ;
+    var link=window.location.href;
     var args={url: link};
     //$.ajaxSettings.async=false;
     $.postJson(url,args,function(res){
