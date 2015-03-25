@@ -463,7 +463,7 @@ class Market(CustomerBaseHandler):
             mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
             temp_goods = []
             for mgood in menu.mgoods:
-                print(mgood.id,mgood.unit)
+                # print(mgood.id,mgood.unit)
                 charge_types = []
                 for charge_type in mgood.mcharge_types:
                     charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
@@ -527,10 +527,10 @@ class Market(CustomerBaseHandler):
 
         total_count = count_dry + count_fruit + count_mgoods
 
-        print('w_orders ',w_orders)
-        print('w_mgoods',w_mgoods)
-        for m in w_mgoods:
-            print(m)
+        # print('w_orders ',w_orders)
+        # print('w_mgoods',w_mgoods)
+        # for m in w_mgoods:
+        #     print(m)
         print("total_count",total_count ,"count_fruit",count_fruit,"count_dry",count_dry,'count_mgoods',count_mgoods)
 
         return self.send_success(cart_fs = cart_fs,cart_ms = cart_ms,\
@@ -787,9 +787,9 @@ class Cart(CustomerBaseHandler):
         if w_admin is not None:
             w_SH2_id = w_admin.admin.id
             print(w_SH2_id)
-        print("*****************************************************************")
-        print(f_d)
-        print(mgoods)
+        # print("*****************************************************************")
+        # print(f_d)
+        # print(mgoods)
         order = models.Order(customer_id=self.current_user.id,
                              shop_id=shop_id,
                              num=num,
@@ -838,7 +838,7 @@ class Cart(CustomerBaseHandler):
         ##################################################
         #goods
         goods = []
-        print(f_d,m_d)
+        # print(f_d,m_d)
         for f in f_d:
             goods.append([f_d[f].get('fruit_name'),f_d[f].get('num')])
         for m in m_d:
