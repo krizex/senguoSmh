@@ -62,7 +62,7 @@ function wexin(){
     var args={url: window.location.href};
     var shop_code=getCookie('market_shop_code');
     var link='http://test123.senguo.cc/'+shop_code;
-    var shop_name=$('#shop_name').val();
+    var shop_name=getCookie('market_shop_name');
     $.postJson(url,args,function(res){
         if(res.success){
             var noncestr_val=res.noncestr;
