@@ -480,6 +480,7 @@ class WxOauth2:
         if data["errcode"] == 0:
             jsapi_ticket["jsapi_ticket"] = data["ticket"]
             jsapi_ticket["create_timestamp"] = datetime.datetime.now().timestamp()
+            print('ticket',data["ticket"])
             return data["ticket"]
         else:
             print("获取jsapi_ticket出错：", data)

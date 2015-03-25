@@ -10,12 +10,13 @@
 {% import json%}
 <script>
     window.dataObj.notices = {% raw json.dumps(context["notices"]) %}
+    window.dataObj.mgoods_page = {% raw json.dumps(context["mgoods_page"]) %}
 </script>
 <input type="hidden" id="if_focus" value="{{context['w_follow']}}"/>
 <input type="hidden" id="page_count" value="{{context['page_count']}}"/>
 <input type="hidden" id="fruit_page" value="{{context['fruit_page']}}"/>
 <input type="hidden" id="dry_page" value="{{context['dry_page']}}"/>
-<input type="hidden" id="mgoods_page" value="{{context['mgoods_page']}}"/>
+<input type="hidden" id="shop_name" value="{{context['shop_name']}}"/>
 <div class="notice-box">
     <!--<img src="{{static_url('images/banner.png')}}" class="default-banner img"/>-->
     <div class="notice-board">
@@ -54,8 +55,12 @@
         </a>
     </div>
     <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle" style="display:none">
+        {% if context['fruit_page'] %}
         <li class="text-grey6 bg-white pull-left text-center fruit_cassify" id="fruit_goods">水果单品</li>
+        {% end %}
+        {% if context['dry_page'] %}
         <li class="text-grey6 bg-white pull-left text-center dryfruit_classify" id="dryfruit_goods">干果单品</li>
+        {% end %}
         {% if menus %}
         {% for menu in menus  %}
         <li class="text-grey6 bg-white pull-left text-center menu_goods menu_classify{{menu.id}}" data-id="{{menu.id}}">{{menu.name}}</li>
@@ -68,12 +73,12 @@
     <!--<p class="text-white no-mar-btom classify-title font18 text-center bg-green" id="fruitPosition">水果单品</p>-->
     <ul class="goods-list  fruit-list fruit_goods_list">    
     </ul>
-    <p class="text-white no-mar-btom classify-title font18 text-center bg-green dryfruit_classify" id="dryFruitPosition" style="display:none;">干果单品</p>
+    <p class="text-white no-mar-btom classify-title font18 text-center bg-green dryfruit_classify hidden" id="dryFruitPosition">干果单品</p>
     <ul class="goods-list fruit-list dryfruit_goods_list" >
     </ul>
     {% if menus %}
     {% for menu in menus  %}
-        <p class="text-white no-mar-btom classify-title font18 text-center bg-green menu_classify{{menu.id}}" id="menu{{menu.id}}" style="display:none;">{{menu.name}}</p>
+        <p class="text-white no-mar-btom classify-title font18 text-center bg-green menu_classify{{menu.id}} hidden menu_title" id="menu{{menu.id}}">{{menu.name}}</p>
         <ul class="goods-list menu-list menu_goods_list{{menu.id}}" >
         </ul>
     {% end %}

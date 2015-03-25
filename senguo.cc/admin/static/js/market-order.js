@@ -22,12 +22,14 @@ $(document).ready(function(){
             if(create_year==year&&create_month==month&&create_day==day) $this.find('.send_date').text('今天');
             else $this.find('.send_date').hide();
             if(status==5){
-                $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
+                //$this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
+                $this.find('.send_date').hide();
                 $this.find('.un-arrive').text('已送达');
                 $this.find('.status_notice').text('已送达').addClass('text-green');
             }
             else if(status==6){
-                $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
+                //$this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
+                $this.find('.send_date').hide();
                 $this.find('.un-arrive').text('已送达');
                 $this.find('.status_notice').text('已评价').addClass('text-green');
             }
@@ -37,12 +39,14 @@ $(document).ready(function(){
             else if(create_year==year&&create_month==month&&create_day==day) $this.find('.send_date').text('明天');//下单模式选择了“明天”，但是日期到了“明天”的情况
             else $this.find('.send_date').hide();
             if(status==5){
-                $this.find('.send_date').text(create_year+'-'+create_month+'-'+(create_day+1));
+                //$this.find('.send_date').text(create_year+'-'+create_month+'-'+(create_day+1));
+                $this.find('.send_date').hide();
                 $this.find('.un-arrive').text('已送达');
                 $this.find('.status_notice').text('已送达').addClass('text-green');
             }
             else if(status==6){
-                $this.find('.send_date').text(create_year+'-'+create_month+'-'+(create_day+1));
+                //$this.find('.send_date').text(create_year+'-'+create_month+'-'+(create_day+1));
+                $this.find('.send_date').hide();
                 $this.find('.un-arrive').text('已送达');
                 $this.find('.status_notice').text('已评价').addClass('text-green');
             }

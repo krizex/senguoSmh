@@ -363,12 +363,18 @@ class Market(CustomerBaseHandler):
         fruits = [x for x in shop.fruits if x.fruit_type_id < 1000 and x.active == 1]
         dry_fruits = [x for x in shop.fruits if x.fruit_type_id > 1000 and x.active == 1]
         mgoods={}
-        count_mgoods = 0
+        count_mgoods = []
+        mgoods_page = []
+        mgoods_len = 0
+
         for menu in shop.menus:
             mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
-            count_mgoods += len(mgoods[menu.id])
+            count_mgoods .append([menu.id,len(mgoods[menu.id])])
+            mgoods_len += len(mgoods[menu.id])
+
+        mgoods_page = [[int(x[1]/10) if x[1] % 10 == 0 else int(x[1]/10)+1,x[0]] for x in count_mgoods]
         notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
-        total_count = len(fruits) + len(dry_fruits)  + count_mgoods
+        total_count = len(fruits) + len(dry_fruits)  + mgoods_len
         if total_count % 10 is 0 :
             page_count = total_count /10
         else:
@@ -376,7 +382,7 @@ class Market(CustomerBaseHandler):
         print('page_count' , page_count)
         fruit_page = int(len(fruits)/10) if len(fruits)% 10 == 0 else int(len(fruits)/10) +1
         dry_page   = int(len(dry_fruits)/10) if len(dry_fruits)% 10 == 0 else int(len(dry_fruits)/10) +1
-        mgoods_page = int(count_mgoods/10) if count_mgoods % 10 == 0 else int(count_mgoods/10) + 1
+        # mgoods_page = int(count_mgoods/10) if count_mgoods % 10 == 0 else int(count_mgoods/10) + 1
         self.set_cookie("cart_count", str(cart_count))
         return self.render("customer/home.html",
                            context=dict(cart_count=cart_count, subpage='home', menus=shop.menus,notices=notices,shop_name=shop.shop_name,w_follow = w_follow,page_count = page_count,fruit_page = fruit_page,dry_page = dry_page ,mgoods_page = mgoods_page))
@@ -936,16 +942,14 @@ class Wexin(CustomerBaseHandler):
     def post(self):
         if "action" in self.args and not self.args["action"]:
             # from handlers.base import WxOauth2
-            return WxOauth2.post_template_msg('o5SQ5t3VW_4zFSYhrKghCiOfEojc', '良品铺子', '廖斯敏', '18071143592')
+            return WxOauth2.post_template_msg('o5SQ5t_xLVtTysosFBbEgaFjlRSI', '良品铺子', '廖斯敏', '13163263783')
         noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
         timestamp = datetime.datetime.now().timestamp()
         url = self.args["url"]
+        print('url',url)
 
         return self.send_success(noncestr=noncestr, timestamp=timestamp,
                                  signature=self.signature(noncestr, timestamp, url))
-
-
-
 
 class Order(CustomerBaseHandler):
     @tornado.web.authenticated
