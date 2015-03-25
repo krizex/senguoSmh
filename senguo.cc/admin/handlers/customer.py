@@ -926,16 +926,14 @@ class Wexin(CustomerBaseHandler):
     def post(self):
         if "action" in self.args and not self.args["action"]:
             # from handlers.base import WxOauth2
-            return WxOauth2.post_template_msg('o5SQ5t3VW_4zFSYhrKghCiOfEojc', '良品铺子', '廖斯敏', '18071143592')
+            return WxOauth2.post_template_msg('o5SQ5t_xLVtTysosFBbEgaFjlRSI', '良品铺子', '廖斯敏', '13163263783')
         noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
         timestamp = datetime.datetime.now().timestamp()
         url = self.args["url"]
+        print('url',url)
 
         return self.send_success(noncestr=noncestr, timestamp=timestamp,
                                  signature=self.signature(noncestr, timestamp, url))
-
-
-
 
 class Order(CustomerBaseHandler):
     @tornado.web.authenticated
