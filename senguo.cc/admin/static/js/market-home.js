@@ -87,16 +87,6 @@ $(document).ready(function(){
     //         if(wind_dist>=dist){top_title.find('.classify').text(classify);}
     //     }
     // });
-    //分类选择
-    $(document).on('click','.goods-class-choose li',function(){
-        var $this=$(this);
-        var g_class=$this.data('class');
-        var top=$('#'+g_class+'').offset().top;
-        $('.choose-classify .icon').toggle();
-        var w_height=$('#'+g_class+'').height();
-        document.body.scrollTop =top-3*w_height;
-        //top_title.find('.classify').text(text);
-    });
     //查看大图
     $(document).on('click','.check-lg-img',function(){
             var $this=$(this);
@@ -124,9 +114,52 @@ $(document).ready(function(){
     });
     //关注店铺
     $(document).find('.focus-btn').on('click',function(){focus();});
+    //分类选择
+    $(document).on('click','.goods-class-choose li',function(){
+        var $this=$(this);
+        var text=$this.text();
+        $('#classify').text(text);
+        $('.classify-title').addClass('hidden');
+        $('.goods-list').empty();
+        // var top=$('#'+g_class+'').offset().top;
+        // $('.choose-classify .icon').toggle();
+        // var w_height=$('#'+g_class+'').height();
+        // document.body.scrollTop =top-3*w_height;
+        //top_title.find('.classify').text(text);
+    });
     //get infomations of goods and push into html
-     $.goodsList(1);
-     $.scrollLoading();
+     $.goodsList(1,5);
+     $.scrollLoading(5);
+     //get all goods
+     $(document).on('click','#all_goods',function(){
+        $('.goods-list').empty();
+        window.dataObj.page_count=Int($('#page_count').val());
+        console.log(window.dataObj.page_count);
+        $.goodsList(1,5);
+        $.scrollLoading(5);
+     });
+     //get all fruit
+     $(document).on('click','#fruit_goods',function(){
+        window.dataObj.page_count=Int($('#fruit_page').val());
+        $.goodsList(1,6);
+        $.scrollLoading(6);
+     });
+     //get all dry_fruit
+     $(document).on('click','#dryfruit_goods',function(){
+        window.dataObj.page_count=Int($('#dry_page').val());
+        $.goodsList(1,7);
+        $.scrollLoading(7);
+     });
+     //get all mgoods
+     $(document).on('click','.menu_goods',function(){
+        var $this=$(this);
+        var id=$this.data('id');
+        $('.classify-title').addClass('hidden');
+        $('.goods-list').empty();
+        window.dataObj.page_count=Int($('#mgoods_page').val());
+        $.goodsList(1,8,id);
+        $.scrollLoading(8,id);
+     });
       //点赞
         $(document).on('click','.click-great',function(e){
             var $this=$(this);
@@ -253,18 +286,18 @@ $.getItem('/static/items/customer/classify_item.html?v=2015-0309',function(data)
 window.dataObj.page_count=Int($('#page_count').val());
 window.dataObj.page=1;
 window.dataObj.count=1;
-$.scrollLoading=function(){
+$.scrollLoading=function(action,menu_id){
     var range = 10;             //距下边界长度/单位px          //插入元素高度/单位px  
     var maxnum = window.dataObj.page_count;            //设置加载最多次数  
     var totalheight = 0;   
-    var main = $(".container");                    //主体元素  
+    var main = $(".container");                  //主体元素  
     $(window).scroll(function(){  
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)  
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
-        if((main.height()-range) <= totalheight  && window.dataObj.page != maxnum) { 
+        if((main.height()-range) <= totalheight  && window.dataObj.page < maxnum) { 
             $('.loading').show();
             window.dataObj.page++; 
-            $.goodsList(window.dataObj.page);
+            $.goodsList(window.dataObj.page,action,menu_id);
         }       
         else if(main.height()== totalheight){
               $('.no_more').show();
@@ -272,12 +305,13 @@ $.scrollLoading=function(){
     }); 
 }   
 
- $.goodsList=function(page){
+ $.goodsList=function(page,action,menu_id){
     var url='';
-    var action = 5;
+    var action = action;
     var args={
         action:action,
-        page:page
+        page:page,
+        menu_id:menu_id
     };
     $.postJson(url,args,function(res){
         if(res.success)
@@ -285,27 +319,35 @@ $.scrollLoading=function(){
             window.dataObj.cart_fs=res.cart_fs;
             window.dataObj.cart_ms=res.cart_ms;
             var w_orders=res.w_orders;
+            var fruit_list=res.fruit_list;
+            var dry_fruit_list=res.dry_fruit_list;
+            var mgood_list=res.mgood_list;
             var mgoods_item=window.dataObj.mgoods_item;
             var classify_item=window.dataObj.classify_item
             var cart_fs=window.dataObj.cart_fs;
             var cart_ms=window.dataObj.cart_ms;
-            for(var goods in w_orders){
-                var goods_list=w_orders[goods];
+            var goods_info;
+            if(w_orders){ goods_info=w_orders;}
+            else if(fruit_list){ goods_info=fruit_list;}
+            else if(dry_fruit_list){ goods_info=dry_fruit_list;}
+            else if(mgood_list){ goods_info=mgood_list;}
+            for(var goods in goods_info){
+                var goods_list=goods_info[goods];
                 var type=goods_list[0];
                 var good=goods_list[1];
                 var menu_id;
                 if(goods_list[2]) {menu_id=goods_list[2];}
                 if(type=='fruit'){
                      fruitItem($('.fruit_goods_list'),good,'fruit');//fruits information
-                    $('.fruit_cassify').show();
+                    $('.fruit_cassify').removeClass('hidden');
                 }
                 else if(type=='dry_fruit'){
                      fruitItem($('.dryfruit_goods_list'),good,'fruit');//fruits information
-                    $('.dryfruit_classify').show();
+                    $('.dryfruit_classify').removeClass('hidden')
                 }
                 else if(type=='mgoods'){
                     fruitItem($('.menu_goods_list'+menu_id),good,'menu');
-                    $('.menu_classify'+menu_id).show();
+                    $('.menu_classify'+menu_id).removeClass('hidden')
                 }
             }
             //已在购物车里的商品         

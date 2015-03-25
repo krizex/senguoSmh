@@ -53,7 +53,7 @@ $(document).ready(function(){
     });
     $(".lazy_img").lazyload({threshold:100});
     //wexin api
-    //wexin();
+    wexin();
  
 });
 
@@ -79,7 +79,7 @@ function wexin(){
          });
          wx.ready(function(){
              wx.onMenuShareTimeline({
-             title: '', // 分享标题
+             title: '一家不错的水果O2O店铺，快来关注吧~', // 分享标题
              link:'/'+shop_code, // 分享链接
              imgUrl: '', // 分享图标
              success: function () {
@@ -90,7 +90,7 @@ function wexin(){
              }
          });
          wx.onMenuShareAppMessage({
-             title: '', // 分享标题
+             title: '一家不错的水果O2O店铺，快来关注吧~', // 分享标题
              desc: "一家不错的水果O2O店铺，快来关注吧~ ", // 分享描述
              link:'/'+shop_code,
              imgUrl: "", // 分享图标
@@ -312,7 +312,7 @@ Modal.prototype.modal=function(type){
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
-        
+
     }
     else if(type=='hide')
     {
