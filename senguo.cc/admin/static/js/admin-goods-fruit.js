@@ -1,4 +1,7 @@
 $(document).ready(function(){
+    //remove type of menu's button to check all
+    var now_type=$.getUrlParam('action');
+    if(now_type=='menu') $('.check-shelf').hide();
     //查看已上架
     $('.check-shelf').on('click',function(){
         var $this=$(this);
@@ -149,12 +152,14 @@ $(document).ready(function(){
     $('.add-new-goods').on('click',function(){
         var max_goods_num=$('.goods-list').find('.goods-list-item').length;
         default_code=$('.type-class .active').data('code');
+        var current_clssify=$('.type-class .active .name').text();
         var key='';
         var token='';
         add_goods_box.empty();
         if(max_goods_num<=30){
             $.getItem('/static/items/admin/add-new-goods.html?v=20150304',function(data){
                 var $item=$(data);
+                $item.find('.modal-title').text('新增一种'+'"'+current_clssify+'"');
                 if(typeof(default_code)=='undefined') $item.find('.imgPreview').attr({'src':'/static/design_img/TDSG.png'});
                 else $item.find('.imgPreview').attr({'src':'/static/design_img/'+default_code+'.png'});
                 upload_item=$item.find('#file_upload');
@@ -203,7 +208,7 @@ $(document).ready(function(){
                                 async : false
                             });
                             var action="add_img";
-                            var url="/admin/shelf";
+                            var url="";
                             var args={action: action};
                             $.postJson(url,args,
                                 function (res) {
@@ -484,7 +489,6 @@ var change_num;
 var storage_unit_id;
 var storage_unit;
 var charge_type_id;
-var link='/admin/shelf';
 var regNumber=/^[0-9]*[1-9][0-9]*$/;
 var regFloat=/^[0-9]+([.]{1}[0-9]{1,2})?$/;
 var add_goods_box=$('.add-new-goods-box');
@@ -492,7 +496,7 @@ var upload_item;
 var default_code;
 
 function addEditType(target,action){
-    var url=link;
+    var url='';
     var action=action;
     var box=target.parents('.add-goodsType-box');
     var name=box.find('#type-name').val();
@@ -576,7 +580,7 @@ function popUnitChangeShow(target,id,unit_id){
 }
 
 function addEditFruit(target,action){
-    var url=link;
+    var url='';
     var action=action;
     var name=target.parents('.add-edit-item').find('.goodsName').val();
     var saled=Int(target.parents('.add-edit-item').find('.goodsSale').val());
@@ -670,7 +674,7 @@ function addEditFruit(target,action){
 }
 
 function editActive(id,target){
-    var url=link;
+    var url='';
     var data={};
     var parent=target.parents('.goods-item');
     var menu_type=parent.data('type');
@@ -698,7 +702,7 @@ function editActive(id,target){
 }
 
 function addEditCharge(target,id,action,item){
-    var url=link;
+    var url='';
     var action=action;
     var charge_item=target.parents(item).find('.add-goods-charge-list');
     var price=parseFloat(charge_item.find('.charge-price').val());
@@ -747,7 +751,7 @@ function addEditCharge(target,id,action,item){
 }
 
 function deleteCharge(target,id){
-    var url=link;
+    var url='';
     var action='del_charge_type';
     if($.getUrlParam('action')=='menu'){action='del_mcharge_type'}
     var data={};

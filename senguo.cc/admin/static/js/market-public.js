@@ -110,7 +110,6 @@ function isWeiXin(){
     } 
 } 
 
-
 /*function AndroidImg(target){
     //判断客户端是否是iOS或者Android
     var u = navigator.userAgent, app = navigator.appVersion;
@@ -313,6 +312,7 @@ Modal.prototype.modal=function(type){
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
+        
     }
     else if(type=='hide')
     {
