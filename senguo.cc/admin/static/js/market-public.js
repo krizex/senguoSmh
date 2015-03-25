@@ -60,7 +60,8 @@ $(document).ready(function(){
 function wexin(){
     //微信Api
     var url='/wexin';
-    var link=window.location.href;
+    var shop_code=getCookie('market_shop_code');
+    var link='http://test123.senguo.cc/'+shop_code;
     var args={url: link};
     //$.ajaxSettings.async=false;
     $.postJson(url,args,function(res){
@@ -68,7 +69,6 @@ function wexin(){
             var noncestr_val=res.noncestr;
             var timestamp_val=res.timestamp;
             var signature_val=res.signature;
-            var shop_code=getCookie('market_shop_code');
             wx.config({
              debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
              appId: 'wx0ed17cdc9020a96e', // 必填，公众号的唯一标识
