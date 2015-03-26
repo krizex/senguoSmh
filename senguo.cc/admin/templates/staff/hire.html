@@ -8,6 +8,7 @@
     <meta charset="UTF-8"/>
     <title>员工招募令</title>
     <link rel="stylesheet" href="{{static_url('css/bootstrap.min.css')}}"/>
+    <link rel="stylesheet" href="{{static_url('css/staff-global.css')}}"/>
     <link rel="stylesheet" href="{{static_url('css/staff-hire.css')}}"/>
     <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
@@ -104,13 +105,13 @@
             </div>
         </div>
         <div class="clearfix action-btn">
-            <input type="submit" class="sure-btn btn pull-left hire-apply-submit" value="提交">
-            <a href="javascript:history.go(-1);" class="concel-btn btn pull-right">返回</a>
+            <input type="submit" class="sure-btn btn pull-left hire-apply-submit" value="提交" id="submit">
+            <a href="javascript:history.back(-1);" class="concel-btn btn pull-right">返回</a>
         </div>
     </main>
-<script src="{{static_url('js/jquery.min.js')}}"></script>
-<script src="{{static_url('js/global.js')}}"></script>
-<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>
+<script src="{{static_url('js/zepto.min.js')}}"></script>
+<!--<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>-->
+<script src="{{static_url('js/staff-public.js')}}"></script>
 <script src="{{static_url('js/staff-hire.js')}}"></script>
 </body>
 </html>

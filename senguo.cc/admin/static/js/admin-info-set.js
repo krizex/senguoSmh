@@ -92,12 +92,11 @@ $(document).ready(function(){
                 };
             },
             'onUploadComplete':function(){
-                $('#logoImg').show().attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/200/h/200','data-key':key});
+                $('#logoImg').show().attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/80/h/80','data-key':key});
                 $('.logo-box').find('.filename').hide();
                 $('.logo-box').find('.fileinfo').hide();
                 $('.logo-box').find('.close').hide();
             }
-
         });
 
     //城市编码转换
@@ -157,7 +156,7 @@ function infoEdit(target){
         {
             action='edit_shop_name';
             shop_name=$('.shop_name').val().trim();
-            if(shop_name.length>20){return alert('店铺名称请不要超过20个字符！')}
+            if(shop_name.length>15){return alert('店铺名称请不要超过15个字符！')}
             data={shop_name:shop_name};
         }
     else if(action_name=='code')
@@ -182,7 +181,7 @@ function infoEdit(target){
         shop_city=$('#cityAddress').attr('data-code');
         address=$('#provinceAddress').text()+$('#cityAddress').text()+$('#addressDetail').val();
         shop_address_detail=$('#addressDetail').val().trim();
-        if(shop_address_detail.length>50){return alert('详细地址请不要超过500个字符！')}
+        if(shop_address_detail.length>50){return alert('详细地址请不要超过50个字符！')}
         data={
             shop_city:shop_city,
             shop_address_detail:shop_address_detail

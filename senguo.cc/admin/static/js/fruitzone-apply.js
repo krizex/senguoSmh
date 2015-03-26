@@ -153,6 +153,7 @@ function Apply(evt){
     if(!wx_Name){return $.noticeBox('请输入您的微信号！')}
     if(!code){return $.noticeBox('请输入验证码！')}
     if(!phone){return $.noticeBox('请输入您的手机号！')}
+    $('#submitApply').addClass('text-grey6').val('提交成功').attr({'disabled':'true'});
     var args={
         shop_name:shop_name,
         shop_province:shop_province,
@@ -172,9 +173,11 @@ function Apply(evt){
             if(res.success)
             {
                 window.location.href="/fruitzone/shop/applySuccess";
-
             }
-            else  return $.noticeBox(res.error_text);
+            else {
+                $.noticeBox(res.error_text);
+                $('#submitApply').removeClass('text-grey6').val('提交申请').removeAttr('disabled');
+            }
         },
         function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')}
     );
@@ -220,6 +223,7 @@ function reApply(evt){
     if(!wx_Name){return $.noticeBox('请输入您的微信号！')}
     if(!code){return $.noticeBox('请输入验证码！')}
     if(!phone){return $.noticeBox('请输入您的手机号！')}
+    $('#submitReapply').addClass('text-grey6').val('提交成功').attr({'disabled':'true'});
     var args={
         shop_name:shop_name,
         shop_province:shop_province,
@@ -241,7 +245,10 @@ function reApply(evt){
             {
                 window.location.href="/fruitzone/shop/applySuccess";
             }
-            else  $.noticeBox(res.error_text);
+            else  {
+                $.noticeBox(res.error_text);
+                $('#submitApply').removeClass('text-grey6').val('提交申请').removeAttr('disabled');
+            }
         },
        function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')}
     );
@@ -263,7 +270,6 @@ function Vrify(){
             }
             else $.noticeBox(res.error_text);
         },
-       function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-             function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+       function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')}
     );
 }

@@ -24,8 +24,8 @@ function signin(){
     var args={action: action};
     $.postJson(url,args,function(res){
         if(res.success){
-            $('#signin-shop').addClass('bg-grey3 text-white signed').removeClass('un_sign').find('.sign_text').text('已签到');
             $('#signin-shop').find('em').remove();
+            $('#signin-shop').addClass('bg-grey3 text-white signed').removeClass('un_sign').find('.sign_text').text('已签到').removeClass('ml20');    
         }
         else return $.noticeBox(res.error_text);
     }, function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},

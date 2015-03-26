@@ -392,7 +392,8 @@ function goodsNum(target,action){
             }
             else return $.noticeBox(res.error_text);
         },
-        function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')})
+        function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+             function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')})
 }
 function mincharge(n,price){
     if(n==2){
@@ -443,7 +444,8 @@ function itemDelete(target,menu_type) {
         },
         function () {
             return $.noticeBox('网络好像不给力呢~ ( >O< ) ~');
-        });
+        },
+        function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
 
 function addressAddEdit(action,name,address,phone){
@@ -500,7 +502,8 @@ function addressAddEdit(action,name,address,phone){
         }
         else return $.noticeBox(res.error_text);
     },
-    function(){$.noticeBox('网络好像不给力呢~ ( >O< ) ~')});
+    function(){$.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+    function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
 
 function orderSubmit(){
@@ -544,6 +547,7 @@ function orderSubmit(){
         if(total_price<mincharge_now) return $.noticeBox('您的订单未达到立即送最低起送金额！');
     }
     if(!type){return $.noticeBox('请选择送货时段！')}
+    $('#submitOrder').addClass('bg-grey text-grey3').text('提交成功').attr({'disabled':'true'});
     var args={
         fruits:fruits,
         mgoods:mgoods,
@@ -560,8 +564,12 @@ function orderSubmit(){
             SetCookie('cart_count',0);
             window.location.href=window.dataObj.success_href;
         }
-        else return $.noticeBox(res.error_text);
+        else {
+            $.noticeBox(res.error_text);
+            $('#submitOrder').removeClass('bg-grey text-grey3').text('提交订单').removeAttr('disabled');  
+        }
     },
-    function(){$.noticeBox('网络好像不给力呢~ ( >O< ) ~')});
+    function(){$.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+    function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
 

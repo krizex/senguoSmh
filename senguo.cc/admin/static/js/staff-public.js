@@ -98,27 +98,25 @@ $.noticeBox=function(text){
         $('body').append($box);
         $.noticeRemove('noticeBox');
 }
-//modal notice word
 $.warnNotice=function(text){
     $('.modal-body').find('.warn').remove();
     var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
     $word.text(text);
     $('.modal-body').append($word);
+    $('.sure_btn').attr({'disabled':'true'});
     $.noticeRemove('warn');
 }
 //time count 2 secends
-var n_time=2;
+window.dataObj.n_time=2;
 $.noticeRemove=function (target) {
-    if (n_time == 0) {
-        n_time = 2;
+    if (window.dataObj.n_time == 0) {
+        window.dataObj.n_time = 2;
         $('#'+target).remove();
+        $('.sure_btn').removeAttr('disabled');
     }
     else {
-        n_time--;
-        setTimeout(function() {
-                $.noticeRemove(target)
-            },
-            1000)
+        window.dataObj.n_time--;
+        setTimeout(function() {$.noticeRemove(target)},1000);
     }
 }
 
@@ -126,7 +124,7 @@ function Modal(target){
     this.target=target;
 }
 Modal.prototype.modal=function(type){
-    var $target=$('#'+this.target+'');
+    var $target=$('#'+this.target);
     if(type=='show')
     {
         var window_height=$(window).height();
@@ -134,18 +132,25 @@ Modal.prototype.modal=function(type){
         var $mask;
         if(height<window_height) $mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
         else $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
-        $('body').append($mask).addClass('modal_sty').attr({'onmousewheel':'return false'});
+        $('body').append($mask).addClass('modal_sty').attr({'onmousewheel':'return false'}).css({'overflow':'hidden'});
         $target.removeClass('fade').addClass('in').css({'display':'block'});
+        $target.find('.warn').remove();
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
-                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).find($mask).remove();
+                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
+                $target.addClass('fade').removeClass('in').css({'display':'none'});
+            }
+        });
+        $(document).on('click','.modal',function(e){
+             if($(e.target).closest('.modal-content').length == 0){
+                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
     }
     else if(type=='hide')
     {
-        $('body').removeClass('modal_sty').attr({'onmousewheel':''}).find('.modal_bg').remove();
+        $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
         $target.addClass('fade').removeClass('in').css({'display':'none'});
     }
 }

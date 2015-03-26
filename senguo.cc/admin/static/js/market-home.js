@@ -129,7 +129,6 @@ $(document).ready(function(){
         if(!page) $('.menu_classify'+menu_id).hide();
     }
     //if fruit or dry_fruit doesn't exit
-    console.log(typeof(fruit_pages));
     if(!fruit_pages) {
         $('#dryFruitPosition').hide();
         if(!dry_pages) {
@@ -187,7 +186,8 @@ $(document).ready(function(){
         $('.goods-list').empty();
         window.dataObj.page=1;
         window.dataObj.action=8;
-        $.goodsList(1,8,id);
+        window.dataObj.menu_id=id;
+        $.goodsList(1,8);
      });
       //点赞
         $(document).on('click','.click-great',function(e){
@@ -324,25 +324,26 @@ $.scrollLoading=function(){
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)  
         if(!maxnum) maxnum=Int($('#page_count').val());
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
+        $('.no_more').hide();
         if((main.height()-range) <= totalheight  && window.dataObj.page < maxnum) { 
             $('.no_more').hide();
             $('.loading').show();
             window.dataObj.page++; 
             $.goodsList(window.dataObj.page,window.dataObj.action);
         }       
-        else if(window.dataObj.page == maxnum){
+        else if(window.dataObj.page ==maxnum){
               $('.no_more').show();
         } 
     }); 
 }   
 
- $.goodsList=function(page,action,menu_id){
+ $.goodsList=function(page,action){
     var url='';
     var action = action;
     var args={
         action:action,
         page:page,
-        menu_id:menu_id
+        menu_id:window.dataObj.menu_id
     };
     $.postJson(url,args,function(res){
         if(res.success)
@@ -384,6 +385,24 @@ $.scrollLoading=function(){
             //已在购物车里的商品         
             cartNum(cart_fs,'.fruit-list');
             cartNum(cart_ms,'.menu-list');
+            var fruits=window.dataObj.fruits;
+            var mgoods=window.dataObj.mgoods;
+            for(var key in fruits){
+                if(fruits[key]==0){delete fruits[key];}
+            }
+            for(var key in mgoods){
+                if(mgoods[key]==0){delete mgoods[key];}
+            }
+            var c_fs=[];
+            var c_ms=[];
+            for(var key in fruits){
+                c_fs.push([key,fruits[key]]);
+            };
+            for(var key in mgoods){
+                c_ms.push([key,mgoods[key]]);
+            };
+            cartNum(c_fs,'.fruit-list');
+            cartNum(c_ms,'.menu-list');
             $('.loading').hide();
             window.dataObj.count++;
         }
@@ -474,7 +493,8 @@ var fruitItem=function(box,fruits,type){
         } 
         box.append($item);
 }
-
+window.dataObj.fruits={};
+window.dataObj.mgoods={};
 function cartNum(cart_ms,list){
     var item_list=$(list);
     for(var key in cart_ms) {
@@ -500,6 +520,12 @@ function cartNum(cart_ms,list){
                 }
             }
         }
+        if(list=='.fruit-list'){
+            window.dataObj.fruits[cart_ms[key][0]]=cart_ms[key][1];
+        }
+        if(list=='.menu-list'){
+            window.dataObj.mgoods[cart_ms[key][0]]=cart_ms[key][1];
+        }
     }
 }
 
@@ -509,7 +535,9 @@ function goodsNum(target,action){
     var num=item.val();
     var parent=target.parents('.goods-list-item');
     var storage=parseFloat(parent.data('num'));
+    var type_list=target.parents('.goods-list');
     var s_num=storage-num;
+    var id=target.parents('.num_box').attr('data-id');
     if(action==1&&num<=0) {num=0;target.addClass('disable');}
     if(action==2)
     {
@@ -543,49 +571,40 @@ function goodsNum(target,action){
             }
         }
     }
+     if(type_list.hasClass('fruit-list')) {window.dataObj.fruits[id]=num;}
+    if(type_list.hasClass('menu-list')) {window.dataObj.mgoods[id]=num;}
 }
 
 function addCart(link){
     var url='';
     var action = 4;
-    var fruits={};
-    var mgoods={};
-    var fruits_list=$('.fruit-list');
-    var mgoods_list=$('.menu-list');
-    for(var i=0;i<fruits_list.length;i++){
-        var fruit=fruits_list.eq(i).find('.number-input');
-        for(var j=0;j<fruit.length;j++){
-            var num=fruit.eq(j).val().trim();
-            var id=fruit.eq(j).parents('.number-change').parents('.num_box').siblings('.charge-type').data('id');
-            if(num!=''&&num!=0){fruits[id]=Int(num)}
-        }
+    var fruits=window.dataObj.fruits;
+    var mgoods=window.dataObj.mgoods;
+    for(var key in fruits){
+        if(fruits[key]==0){delete fruits[key];}
     }
-    for(var i=0;i<mgoods_list.length;i++){
-        var mgood=mgoods_list.eq(i).find('.number-input');
-        for(var j=0;j<mgood.length;j++){
-            var num=mgood.eq(j).val().trim();
-            var id=mgood.eq(j).parents('.number-change').parents('.num_box').siblings('.charge-type').data('id');
-            if(num!=''&&num!=0){mgoods[id]=Int(num)}
-        }
+    for(var key in mgoods){
+        if(mgoods[key]==0){delete mgoods[key];}
     }
     var args={
         action:action,
         fruits:fruits,
         mgoods:mgoods
     };
-    if(!isEmptyObj(fruits)||!isEmptyObj(mgoods)){
-        event.preventDefault();
-        $.postJson(url,args,function(res){
-                if(res.success)
-                {
-                    window.location.href=link;
-                }
-                else return $.noticeBox(res.error_text);
-            },
-             function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-             function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
-        );
-    }
+    event.preventDefault();
+    if(!isEmptyObj(fruits)){fruits={}}
+    if(!isEmptyObj(mgoods)){mgoods={}}
+    event.preventDefault();
+    $.postJson(url,args,function(res){
+            if(res.success)
+            {
+                window.location.href=link;
+            }
+            else return $.noticeBox(res.error_text);
+        },
+         function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+         function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+    );
 }
 
 function great(type,id){
