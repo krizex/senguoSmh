@@ -392,7 +392,8 @@ function goodsNum(target,action){
             }
             else return $.noticeBox(res.error_text);
         },
-        function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')})
+        function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+             function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')})
 }
 function mincharge(n,price){
     if(n==2){
@@ -443,7 +444,8 @@ function itemDelete(target,menu_type) {
         },
         function () {
             return $.noticeBox('网络好像不给力呢~ ( >O< ) ~');
-        });
+        },
+        function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
 
 function addressAddEdit(action,name,address,phone){
@@ -500,7 +502,8 @@ function addressAddEdit(action,name,address,phone){
         }
         else return $.noticeBox(res.error_text);
     },
-    function(){$.noticeBox('网络好像不给力呢~ ( >O< ) ~')});
+    function(){$.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+    function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
 
 function orderSubmit(){
@@ -558,10 +561,12 @@ function orderSubmit(){
     $.postJson(url,args,function(res) {
         if (res.success) {
             SetCookie('cart_count',0);
+            $('#submitOrder').addClass('bg-grey text-grey3').text('提交成功').attr({'id':''})
             window.location.href=window.dataObj.success_href;
         }
         else return $.noticeBox(res.error_text);
     },
-    function(){$.noticeBox('网络好像不给力呢~ ( >O< ) ~')});
+    function(){$.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+    function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
 

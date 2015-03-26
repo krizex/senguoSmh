@@ -41,7 +41,7 @@ $(document).ready(function(){
             }
 
         });*/
-        $('.hire-apply-submit').on('click',function(){hireApply()});
+        $(document).on('click','#submit',function(){hireApply()});
 });
 
 function hireApply(){
@@ -81,7 +81,9 @@ function hireApply(){
     };
     $.postJson(url,args,function(res){
         if(res.success){
-           if(confirm('申请成功')) window.history.go(-1);
+           $.noticeBox('申请成功');
+           $('#submit').addClass('bg-grey3').css({'border-color':'#ccc'}).text('提交成功').attr({'id':''});
+            window.history.back(-1);
         }
         else return $.noticeBox(res.error_text);
     },

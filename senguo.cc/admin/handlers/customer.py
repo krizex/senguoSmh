@@ -234,8 +234,10 @@ class ShopProfile(CustomerBaseHandler):
                     #shop_point add by one
                     #woody
                     if shop_follow is not None:
-                        shop_follow.shop_point += 1
-                        self.session.commit()
+                        if shop_follow.shop_point :
+                            shop_follow.shop_point += 1
+                            print("sigin success")
+                            self.session.commit()
                     if datetime.date.today() - signin.last_date == datetime.timedelta(1):  # 判断是否连续签到
                         self.current_user.credits += signin.keep_days
                         signin.keep_days += 1

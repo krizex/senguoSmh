@@ -30,7 +30,7 @@ $(document).ready(function(){
     });
     //从cookie中提取数据
     window.dataObj.shop_id=getCookie('market_shop_id');
-    window.dataObj.shop_name=getCookie('shop_name');
+    //window.dataObj.shop_name=getCookie('shop_name');
     window.dataObj.cart_count=getCookie('cart_count');
     $('.staff_href').attr({'href':window.dataObj.staff_href+Int(window.dataObj.shop_id)});
     //显示商品数量
@@ -52,8 +52,8 @@ $(document).ready(function(){
         } 
     });
     $(".lazy_img").lazyload({threshold:100});
-    //wexin api
-    wexin();
+    //if is weixin brower then load wexin api 
+    if(isWeiXin()){wexin()}
 });
 
 function wexin(){
@@ -78,7 +78,7 @@ function wexin(){
          });
          wx.ready(function(){
              wx.onMenuShareTimeline({
-             title: shop_name+'-大家快来关注吧~', // 分享标题
+             title: '大家快来关注吧~', // 分享标题
              link:link, // 分享链接
              imgUrl: '', // 分享图标
              success: function () {
@@ -89,7 +89,7 @@ function wexin(){
              }
          });
          wx.onMenuShareAppMessage({
-             title: shop_name+'-大家快来关注吧~', // 分享标题
+             title: '大家快来关注吧~', // 分享标题
              desc: "一家不错的店铺，快来关注吧~ ", // 分享描述
              link:link,
              imgUrl: "", // 分享图标
@@ -272,23 +272,23 @@ $.warnNotice=function(text){
     var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
     $word.text(text);
     $('.modal-body').append($word);
+    $('.sure_btn').attr({'disabled':'true'});
     $.noticeRemove('warn');
 }
 //time count 2 secends
-var n_time=2;
+window.dataObj.n_time=2;
 $.noticeRemove=function (target) {
-    if (n_time == 0) {
-        n_time = 2;
+    if (window.dataObj.n_time == 0) {
+        window.dataObj.n_time = 2;
         $('#'+target).remove();
+        $('.sure_btn').removeAttr('disabled');
     }
     else {
-        n_time--;
-        setTimeout(function() {
-                $.noticeRemove(target)
-            },
-            1000)
+        window.dataObj.n_time--;
+        setTimeout(function() {$.noticeRemove(target)},1000);
     }
 }
+
 //modal box
 function Modal(target){
     this.target=target;
@@ -302,20 +302,25 @@ Modal.prototype.modal=function(type){
         var $mask;
         if(height<window_height) $mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
         else $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
-        $('body').append($mask).addClass('modal_sty').attr({'onmousewheel':'return false'});
+        $('body').append($mask).addClass('modal_sty').attr({'onmousewheel':'return false'}).css({'overflow':'hidden'});
         $target.removeClass('fade').addClass('in').css({'display':'block'});
         $target.find('.warn').remove();
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
-                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).find($mask).remove();
+                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
-
+        $(document).on('click','.modal',function(e){
+             if($(e.target).closest('.modal-content').length == 0){
+                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
+                $target.addClass('fade').removeClass('in').css({'display':'none'});
+            }
+        });
     }
     else if(type=='hide')
     {
-        $('body').removeClass('modal_sty').attr({'onmousewheel':''}).find('.modal_bg').remove();
+        $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
         $target.addClass('fade').removeClass('in').css({'display':'none'});
     }
 }

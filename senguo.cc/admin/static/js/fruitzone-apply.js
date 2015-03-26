@@ -171,8 +171,8 @@ function Apply(evt){
         function(res){
             if(res.success)
             {
+                $('#submitApply').addClass('text-grey6').val('提交成功').attr({'id':''});
                 window.location.href="/fruitzone/shop/applySuccess";
-
             }
             else  return $.noticeBox(res.error_text);
         },
@@ -239,6 +239,7 @@ function reApply(evt){
         function(res){
             if(res.success)
             {
+                $('#submitReapply').addClass('text-grey6').val('提交成功').attr({'id':''});
                 window.location.href="/fruitzone/shop/applySuccess";
             }
             else  $.noticeBox(res.error_text);
@@ -263,7 +264,6 @@ function Vrify(){
             }
             else $.noticeBox(res.error_text);
         },
-       function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-             function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+       function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')}
     );
 }
