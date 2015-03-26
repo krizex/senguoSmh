@@ -387,6 +387,12 @@ $.scrollLoading=function(){
             cartNum(cart_ms,'.menu-list');
             var fruits=window.dataObj.fruits;
             var mgoods=window.dataObj.mgoods;
+            for(var key in fruits){
+                if(fruits[key]==0){delete fruits[key];}
+            }
+            for(var key in mgoods){
+                if(mgoods[key]==0){delete mgoods[key];}
+            }
             var c_fs=[];
             var c_ms=[];
             for(var key in fruits){
@@ -580,25 +586,25 @@ function addCart(link){
     for(var key in mgoods){
         if(mgoods[key]==0){delete mgoods[key];}
     }
-    console.log(fruits);
     var args={
         action:action,
         fruits:fruits,
         mgoods:mgoods
     };
-    if(!isEmptyObj(fruits)||!isEmptyObj(mgoods)){
-        event.preventDefault();
-        $.postJson(url,args,function(res){
-                if(res.success)
-                {
-                    window.location.href=link;
-                }
-                else return $.noticeBox(res.error_text);
-            },
-             function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-             function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
-        );
-    }
+    event.preventDefault();
+    if(!isEmptyObj(fruits)){fruits={}}
+    if(!isEmptyObj(mgoods)){mgoods={}}
+    event.preventDefault();
+    $.postJson(url,args,function(res){
+            if(res.success)
+            {
+                window.location.href=link;
+            }
+            else return $.noticeBox(res.error_text);
+        },
+         function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+         function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+    );
 }
 
 function great(type,id){
