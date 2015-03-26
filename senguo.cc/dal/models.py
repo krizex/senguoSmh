@@ -1153,7 +1153,7 @@ class Config(MapBase, _CommonApi):
     end_time_now = Column(Time,default="23:00") #立即送结束时间
     ontime_on = Column(Boolean, default=True)
     now_on = Column(Boolean, default=True)
-    hire_on = Column(Boolean, default=False)
+    hire_on = Column(Boolean, default=True)
     hire_text = Column(String(1000))
 
     addresses = relationship("Address1") #配送地址设置
