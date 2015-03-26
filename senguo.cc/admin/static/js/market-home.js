@@ -574,6 +574,13 @@ function addCart(link){
     var action = 4;
     var fruits=window.dataObj.fruits;
     var mgoods=window.dataObj.mgoods;
+    for(var key in fruits){
+        if(fruits[key]==0){delete fruits[key];}
+    }
+    for(var key in mgoods){
+        if(mgoods[key]==0){delete mgoods[key];}
+    }
+    console.log(fruits);
     var args={
         action:action,
         fruits:fruits,
