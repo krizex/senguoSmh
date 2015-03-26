@@ -96,6 +96,7 @@
 .focus-box .modal-body p{padding-top:50px;}
 .focus-box  .focus-btn{width:60%;}
 .fruit-name{display:inline-block;width:120px;overflow:hidden;height:26px;line-height:26px;}
-.loading{}
+.loading{height:20px;}
+.no_more{height:20px;}
 
 
