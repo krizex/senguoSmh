@@ -129,7 +129,6 @@ $(document).ready(function(){
         if(!page) $('.menu_classify'+menu_id).hide();
     }
     //if fruit or dry_fruit doesn't exit
-    console.log(typeof(fruit_pages));
     if(!fruit_pages) {
         $('#dryFruitPosition').hide();
         if(!dry_pages) {
@@ -324,13 +323,14 @@ $.scrollLoading=function(){
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)  
         if(!maxnum) maxnum=Int($('#page_count').val());
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
+        $('.no_more').hide();
         if((main.height()-range) <= totalheight  && window.dataObj.page < maxnum) { 
             $('.no_more').hide();
             $('.loading').show();
             window.dataObj.page++; 
             $.goodsList(window.dataObj.page,window.dataObj.action);
         }       
-        else if(window.dataObj.page == maxnum){
+        else if(window.dataObj.page ==maxnum){
               $('.no_more').show();
         } 
     }); 

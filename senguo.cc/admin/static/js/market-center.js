@@ -14,11 +14,11 @@ $(document).ready(function(){
     $(document).on('click','.edit-address',function(){
         var $this=$(this);
         var parent=$this.parents('.address-item');
-        item_id=parent.index();
-        name=parent.find('.item_name').text();
-        phone=parent.find('.item_phone').text();
-        address=parent.find('.item_address').text();
-        address_id=$this.parents('.address-item').attr('data-id');
+        window.dataObj.item_id=parent.index();
+        var name=parent.find('.item_name').text();
+        var phone=parent.find('.item_phone').text();
+        var address=parent.find('.item_address').text();
+        window.dataObj.address_id=$this.parents('.address-item').attr('data-id');
         var address_box=new Modal('address_box');
        address_box.modal('show');
        $('.addressAdd').hide();
@@ -66,11 +66,7 @@ $(document).ready(function(){
         $.confirmRemove();
     });
 });
-var name;
-var phone;
-var address;
-var address_id;
-var item_id;
+
 function sex(target,id){
     switch(id) {
         case 1:target.addClass('male').text('♂');break;
@@ -98,7 +94,7 @@ function addressEdit(target,action){
         phone:phone,
         address_text:address
     };
-    if(action=='edit_address'){data.address_id=address_id}
+    if(action=='edit_address'){data.address_id=window.dataObj.address_id}
     var args={
         action:action,
         data:data
@@ -106,7 +102,7 @@ function addressEdit(target,action){
     $.postJson(url,args,function(res){
         if(res.success){
             if(action=='edit_address'){
-                var tar=$('.address-item').eq(item_id);
+                var tar=$('.address-item').eq(window.dataObj.item_id);
                 tar.find('.item_name').text(name);
                 tar.find('.item_phone').text(phone);
                 tar.find('.item_address').text(address);
