@@ -186,7 +186,8 @@ $(document).ready(function(){
         $('.goods-list').empty();
         window.dataObj.page=1;
         window.dataObj.action=8;
-        $.goodsList(1,8,id);
+        window.dataObj.menu_id=id;
+        $.goodsList(1,8);
      });
       //点赞
         $(document).on('click','.click-great',function(e){
@@ -336,13 +337,13 @@ $.scrollLoading=function(){
     }); 
 }   
 
- $.goodsList=function(page,action,menu_id){
+ $.goodsList=function(page,action){
     var url='';
     var action = action;
     var args={
         action:action,
         page:page,
-        menu_id:menu_id
+        menu_id:window.dataObj.menu_id
     };
     $.postJson(url,args,function(res){
         if(res.success)
