@@ -4,17 +4,32 @@ if (window.screen.width=='600')
 else if (window.screen.width=='800') 
     document.write ('<body style="zoom: 75%">');
 
-    $('#currentShopChange li').on('click',function(){
-        var shop_id=$(this).data('id');
-        shopChnage(shop_id);
-    });
-    $('.developing').on('click',function(){
-        alert('此功能暂未开放！');
-    });
+$('#currentShopChange li').on('click',function(){
+    var shop_id=$(this).data('id');
+    shopChnage(shop_id);
+});
+$('.developing').on('click',function(){
+    alert('此功能暂未开放！');
+});
+//if weixin
+if(isWeiXin()){
+    $('.header-box').removeClass('w1200').addClass('w1200_m');
+    $('.container').removeClass('mt80');
+    $('.backstage-header').removeClass('header-fix');
+}
 });
 
 var shop_id=$('#currentShop').data('id');
 var shop_name=$('#currentShop').text();
+
+function isWeiXin(){ 
+    var ua = window.navigator.userAgent.toLowerCase(); 
+        if(ua.match(/MicroMessenger/i) == 'micromessenger'){ 
+        return true; 
+        }
+        else{ 
+    } 
+} 
 
 function worMode(target){
     target.hide().siblings().show();
