@@ -181,12 +181,10 @@ handlers = [
     (r"/infowall/infoCollect", handlers.infowall.InfoCollect, {}, "infowallInfoCollect"),
     (r"/infowall/infoIssue", handlers.infowall.InfoIssue, {}, "infowallInfoIssue"),
 
-    #remove shop
-    (r"/(\w+)", handlers.customer.Market, {}, "Market"),
-
     #ti remove
     (r"/shop/(\w+)", handlers.customer.Market, {}, "Market"),
-
+    #remove shop
+    (r"/(\w+)", handlers.customer.Market, {}, "Market"),
 
 
     (r"/fruitzone/systemPurchase/", handlers.fruitzone.SystemPurchase, {
