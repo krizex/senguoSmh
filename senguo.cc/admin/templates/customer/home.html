@@ -11,6 +11,8 @@
 <script>
     window.dataObj.notices = {% raw json.dumps(context["notices"]) %}
     window.dataObj.mgoods_page = {% raw json.dumps(context["mgoods_page"]) %}
+    window.dataObj.cart_fs = {% raw json.dumps(context["cart_fs"]) %}
+    window.dataObj.cart_ms = {% raw json.dumps(context["cart_ms"]) %}
 </script>
 <input type="hidden" id="if_focus" value="{{context['w_follow']}}"/>
 <input type="hidden" id="page_count" value="{{context['page_count']}}"/>
