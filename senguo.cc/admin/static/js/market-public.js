@@ -35,7 +35,7 @@ $(document).ready(function(){
     $('.staff_href').attr({'href':window.dataObj.staff_href+Int(window.dataObj.shop_id)});
     //显示商品数量
     if(window.dataObj.cart_count!=0){
-        $('.cart_num').show().text(window.dataObj.cart_count);
+        $('.cart_num').removeClass('hidden').text(window.dataObj.cart_count);
     }
     //设置title
     //document.title=$.base64Decode(shop_name)+'一家不错的水果O2O店铺，快来关注吧~';
