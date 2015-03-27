@@ -1106,5 +1106,31 @@ class OrderDetail(CustomerBaseHandler):
 
 class Points(CustomerBaseHandler):
     def get(self):
+        customer_id = self.current_user.id
+        shop_id     = self.shop_id
+        shop_point  = 0
+        history     = []
+        print(customer_id,shop_id)
+        try:
+            shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
+                customer_id,shop_id =shop_id).first()
+        except:
+            self.send_fail("point show error")
+        if shop_follow:
+            if shop_follow.shop_point:
+                shop_point = shop_follow.shop_point
+            else:
+                shop_point = 0
+
+        try:
+            shop_history = self.session.query(models.PointHistory).filter_by(customer_id =\
+                customer_id,shop_id = shop_id).all()
+        except:
+            self.send_fail("point history error")
+        if shop_history:
+            for temp in shop_history:
+                temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
+                history.append([temp.point_type,temp.each_point,temp.create_time])
+            print(history)
         return self.render("customer/points.html")
 
