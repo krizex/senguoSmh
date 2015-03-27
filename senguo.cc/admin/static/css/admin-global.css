@@ -1,6 +1,6 @@
 /*全局样式*/
 body{font-family:"Microsoft YaHei","arial black",sans-serif;color:#333;font-size:12px;background:#e7e8ec;}
-.w1200{width:1200px;height:auto;margin:0 auto;}
+.w1200{width:100%;max-width:1200px;height:auto;margin:0 auto;}
 .w1165{width:1165px;height:auto;overflow:hidden;margin:0 auto;}
 ol,ul,li{list-style:none;}
 .container{width:100%;max-width:1200px;background:#fff;border:1px solid #d1d1d1;padding:0px !important;margin-bottom:80px;}
