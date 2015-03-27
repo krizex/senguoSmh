@@ -631,6 +631,8 @@ class Order(AdminBaseHandler):
                     # the first order , shop_point add by 5
                     if order_count==1:
                         if shop_follow:
+                            if shop_follow.shop_point == None:
+                                shop_follow.shop_point =0
                             shop_follow.shop_point += 5
                             try:
                                 point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
@@ -644,6 +646,8 @@ class Order(AdminBaseHandler):
 
                     if order.pay_type == 2:
                         if shop_follow:
+                            if shop_follow.shop_point == None:
+                                shop_follow.shop_point =0
                             shop_follow.shop_point += 2
                             try:
                                 point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
@@ -656,6 +660,8 @@ class Order(AdminBaseHandler):
                                 self.session.commit()
 
                     if shop_follow:
+                        if shop_follow.shop_point == None:
+                            shop_follow.shop_point =0
                         shop_follow.shop_point += totalprice
                         self.session.commit()
                         try:
