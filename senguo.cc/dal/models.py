@@ -1032,35 +1032,36 @@ class Order(MapBase, _CommonApi):
         if order:
             fruits = eval(order.fruits)
             mgoods = eval(order.mgoods)
-            print(fruits)
-            print(type(fruits))
-        # if fruits:
-        #     charge_types = session.query(ChargeType).filter(ChargeType.id.in_\
-        #         (fruits.keys())).all()
+            # print(fruits)
+            # print(type(fruits))
+        if fruits:
+            charge_types = session.query(ChargeType).filter(ChargeType.id.in_\
+                (fruits.keys())).all()
 
-        #     for charge_type in charge_types:
-        #         print(charge_type.id)
-        #         print(charge_type.unit_num)
-        #         print(charge_type.num)
-        #         if fruits[int(charge_type.id)]==0:
-        #             continue
-        #         print(fruits[int(charge_type.id)])
-        #         num = fruits[int(charge_type.id)] * charge_type.unit_num * charge_type.num
-        #         charge_type.fruit.storage+= num
-        #         charge_type.fruit.current_saled -=num
-        #         charge_type.fruit.saled -= num
-        # if mgoods:
-        #     charge_types = session.query(models.ChargeType).filter(ChargeType.id.in_(mgoods.keys())).all()
-        #     for charge_type in charge_types:
-        #         print("before",charge_type.mgoods.storage,charge_type.mgoods.current_saled)
-        #         if mgoods[str(charge_type.id)]==0:
-        #             continue
-        #         num =mgoods[str(charge_type.id)] *charge_type.unit_num * charge_type.num
-        #         charge_type.mgoods.storage += num
-        #         charge_type.mgoods.current_saled -= num
-        #         charge_type.mgoods.saled -= num
-        # session.commit()
-        # return True
+            for charge_type in charge_types:
+                # print(charge_type.id)
+                # print(charge_type.unit_num)
+                # print(charge_type.num)
+                if fruits[int(charge_type.id)]==0:
+                    continue
+                print(fruits[int(charge_type.id)]['num'])
+                num = fruits[int(charge_type.id)]['num'] * charge_type.unit_num * charge_type.num
+                charge_type.fruit.storage+= num
+                charge_type.fruit.current_saled -=num
+                charge_type.fruit.saled -= num
+                print(num)
+        if mgoods:
+            charge_types = session.query(models.ChargeType).filter(ChargeType.id.in_(mgoods.keys())).all()
+            for charge_type in charge_types:
+                print("before",charge_type.mgoods.storage,charge_type.mgoods.current_saled)
+                if mgoods[str(charge_type.id)]==0:
+                    continue
+                num =mgoods[str(charge_type.id)]['num'] *charge_type.unit_num * charge_type.num
+                charge_type.mgoods.storage += num
+                charge_type.mgoods.current_saled -= num
+                charge_type.mgoods.saled -= num
+        session.commit()
+        return True
     
 
     def get_sendtime(self,session,order_id):

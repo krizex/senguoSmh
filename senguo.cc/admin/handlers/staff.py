@@ -82,6 +82,10 @@ class Order(StaffBaseHandler):
         self.current_user.work = work #增加work属性
         orders = []
         page = ''
+        orders_ontime = self.session.query(models.Order).filter(models.Order.SH2_id ==self.current_user.id,\
+            models.Order.status.in_([4,5]),models.Order.type == 2).count()
+        orders_intime = self.session.query(models.Order).filter(models.Order.SH2_id == self.current_user.id,\
+            models.Order.status.in_([4,5]),models.Order.type == 1).count()
         if work == 1: #JH
             orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
                 JH_id=self.current_user.id, status=models.ORDER_STATUS.JH)
@@ -113,7 +117,8 @@ class Order(StaffBaseHandler):
             page = 'history'
         else:
             return self.send_error(404)
-        return self.render("staff/orders.html", orders=orders, page=page)
+        return self.render("staff/orders.html", orders=orders, page=page,orders_intime = orders_intime,\
+            orders_ontime=orders_ontime)
 
     @tornado.web.authenticated
     @StaffBaseHandler.check_arguments("action", "order_id:int", "data")

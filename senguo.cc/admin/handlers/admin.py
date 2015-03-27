@@ -671,7 +671,9 @@ class Order(AdminBaseHandler):
             elif action == "edit_totalPrice":
                 order.update(session=self.session, totalPrice=data["totalPrice"])
             elif action == "del_order":
-                order.update(session=self.session, status=0)
+                session = self.session
+                order.update(session=session, status=0)
+                order.get_num(session,order.id)
             elif action == "print":
                 order.update(session=self.session, isprint=1)
         # elif action == "search":
