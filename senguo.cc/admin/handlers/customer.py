@@ -388,7 +388,9 @@ class Market(CustomerBaseHandler):
         # mgoods_page = int(count_mgoods/10) if count_mgoods % 10 == 0 else int(count_mgoods/10) + 1
         self.set_cookie("cart_count", str(cart_count))
         return self.render("customer/home.html",
-                           context=dict(cart_count=cart_count, subpage='home', menus=shop.menus,notices=notices,shop_name=shop.shop_name,w_follow = w_follow,page_count = page_count,fruit_page = fruit_page,dry_page = dry_page ,mgoods_page = mgoods_page))
+                           context=dict(cart_count=cart_count, subpage='home', menus=shop.menus,notices=notices,\
+                            shop_name=shop.shop_name,w_follow = w_follow,page_count = page_count,fruit_page = fruit_page,\
+                            dry_page = dry_page ,mgoods_page = mgoods_page,cart_fs=cart_fs,cart_ms=cart_ms))
 
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action:int","page?:int","menu_id?:int")
@@ -613,8 +615,7 @@ class Market(CustomerBaseHandler):
         #     print(m)
         print("total_count",total_count ,"count_fruit",count_fruit,"count_dry",count_dry,'count_mgoods',count_mgoods)
 
-        return self.send_success(cart_fs = cart_fs,cart_ms = cart_ms,\
-            w_orders = w_orders)
+        return self.send_success(w_orders = w_orders)
 
     @CustomerBaseHandler.check_arguments("charge_type_id:int", "menu_type:int")  # menu_type(0：fruit，1：menu)
     def favour(self):

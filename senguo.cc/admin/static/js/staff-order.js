@@ -107,6 +107,17 @@ function finishOrder(target,id){
         if(res.success){
             target.addClass('arrive').removeClass('order_finish').removeClass('bg-green').text('已完成');
             target.parents('.order-list-item').addClass('text-grey bg-grey');
+            var order_type=$.getUrlParam('order_type');
+            if(order_type=='now'){
+                window.dataObj.now_count--;
+                $('.now_num').removeClass('hidden').text(window.dataObj.now_count);
+                SetCookie('orders_intime',window.dataObj.now_count);
+            }
+            else if(order_type=='on_time'){
+                window.dataObj.on_count--;
+                $('.on_num').removeClass('hidden').text(window.dataObj.on_count);
+                SetCookie('orders_ontime',window.dataObj.on_count);
+            }
             //target.parents('.order-list-item').remove();
         }
         else return $.noticeBox(res.error_text);

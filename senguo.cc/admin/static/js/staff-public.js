@@ -8,6 +8,11 @@ $(document).ready(function(){
         var shop_box=new Modal('shopList');
         shop_box.modal('show');
    });
+    //get order num
+    window.dataObj.now_count=getCookie('orders_intime');
+    window.dataObj.on_count=getCookie('orders_ontime');
+    if(window.dataObj.now_count!=0) {$('.now_num').removeClass('hidden').text(window.dataObj.now_count);}
+    if(window.dataObj.on_count!=0) {$('.on_num').removeClass('hidden').text(window.dataObj.on_count);}
 });
 
 function shopChange(id){
@@ -34,6 +39,23 @@ function job(target,n){
 }
 
 //public
+function getCookie(key){
+    var aCookie = document.cookie.split(";");
+    for (var i=0; i < aCookie.length; i++){
+        var aCrumb = aCookie[i].split("=");
+        if (key === aCrumb[0].replace(/^\s*|\s*$/,"")){
+            return unescape(aCrumb[1]);
+        }
+    }
+}
+
+function SetCookie(name,value,days){
+    var days=arguments[2]?arguments[2]:30; //此 cookie 将被保存 30 天
+    var exp=new Date();    //new Date("December 31, 9998");
+    exp.setTime(exp.getTime() + days*86400000);
+    document.cookie=name+"="+escape(value)+";path=/;expires="+exp.toGMTString();
+}
+
 $.postJson = function(url, args,successCall, failCall, alwaysCall){
     args._xsrf = window.dataObj._xsrf;
     var req = $.ajax({
