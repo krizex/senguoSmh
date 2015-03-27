@@ -35,8 +35,8 @@
     {% set num=num+1%}
     {% end %}
 {% end %}
-<header class="backstage-header">
-    <div class="w1200">
+<header class="backstage-header header-fix">
+    <div class="w1200 header-box">
         <div class="logo-con height50 pull-left">
             <a href="{{reverse_url('adminHome')}}" class="navbar-brand logo height50 padding-none">
                 <img src="{{static_url('images/logo.gif')}}" class="height50"/>
@@ -121,7 +121,7 @@
 {% elif subpage == 'orderstatic' %}
     {% set order_static_active = 'active' %}
 {% end %}
-<main class="container">
+<main class="container mt80">
     <div class="container-left pull-left">
         <ul class="nav common-left-nav">
             <li>
