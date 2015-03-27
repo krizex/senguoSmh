@@ -326,19 +326,21 @@ $.getItem('/static/items/customer/classify_item.html?v=2015-0309',function(data)
 window.dataObj.page=1;
 window.dataObj.count=1;
 window.dataObj.action=5;
+var finised=true;
 $.scrollLoading=function(){
     var range = 10;             //距下边界长度/单位px          //插入元素高度/单位px  
     var totalheight = 0;   
-    var main = $(".container");                  //主体元素  
-    $(window).scroll(function(){ 
+    var main = $(".container");                  //主体元素   
+    $(window).scroll(function(){
         var maxnum = window.dataObj.page_count;            //设置加载最多次数  
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)  
         if(!maxnum) maxnum=Int($('#page_count').val());
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
         $('.no_more').hide();
-        if((main.height()-range) <= totalheight  && window.dataObj.page < maxnum) { 
+        if(finised&&(main.height()-range) <= totalheight  && window.dataObj.page < maxnum) { 
             $('.no_more').hide();
             $('.loading').show();
+            finised=false;
             window.dataObj.page++; 
             $.goodsList(window.dataObj.page,window.dataObj.action);
         }       
@@ -359,7 +361,6 @@ $.scrollLoading=function(){
     $.postJson(url,args,function(res){
         if(res.success)
         {
-          
             var w_orders=res.w_orders;
             var fruit_list=res.fruit_list;
             var dry_fruit_list=res.dry_fruit_list;
@@ -404,6 +405,7 @@ $.scrollLoading=function(){
             cartNum(c_ms,'.menu-list');
             $('.loading').hide();
             window.dataObj.count++;
+            finised=true;
         }
         else return $.noticeBox(res.error_text);
         },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
