@@ -42,10 +42,10 @@
                 <a href="{{reverse_url('staffHome')}}" class="text-grey3">首页</a>
             </li>
             <li id="header-orders-btn" class="col-xs-3 col-sm-3 {{now_active}}">
-                <a href="{{reverse_url('staffOrder')}}?order_type=now" class="text-grey3">立即送</a>
+                <a href="{{reverse_url('staffOrder')}}?order_type=now" class="text-grey3">立即送<span class="now_num num_box bg-pink text-white text-center hidden"></span></a>
             </li>
             <li id="header-orders-btn" class="col-xs-3 col-sm-3 {{time_active}}">
-                <a href="{{reverse_url('staffOrder')}}?order_type=on_time" class="text-grey3">按时达</a>
+                <a href="{{reverse_url('staffOrder')}}?order_type=on_time" class="text-grey3">按时达<span class="on_num num_box bg-pink text-white text-center hidden"></span></a>
             </li>
             <li id="header-history-btn" class="col-xs-3 col-sm-3 {{history_active}}">
                 <a href="{{reverse_url('staffOrder')}}?order_type=history" class="text-grey3">记录</a>

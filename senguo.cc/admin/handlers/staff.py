@@ -56,8 +56,52 @@ class Access(StaffBaseHandler):
 class Home(StaffBaseHandler):
     #def prepare(self):
     #    pass
+
+
     @tornado.web.authenticated
     def get(self):
+        print(self.shop_id)
+
+        try:
+            hirelink = self.session.query(models.HireLink).\
+                filter_by(staff_id=self.current_user.id, shop_id=self.shop_id).one()
+        except:
+            return self.send_error(404)
+        work = hirelink.work
+        self.current_user.work = work #增加work属性
+        orders = []
+        page = ''
+       
+        if work == 1: #JH
+            orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
+                JH_id=self.current_user.id, status=models.ORDER_STATUS.JH)
+            history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
+                                             models.Order.JH_id==self.current_user.id, models.Order.status.in_([3,4,5,6]))
+        elif work ==2: #SH1
+            orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
+                SH1_id=self.current_user.id, status=models.ORDER_STATUS.SH1)
+            history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
+                                  models.Order.SH1_id==self.current_user.id,models.Order.status.in_([4,5,6]))
+        elif work ==3: #SH2
+            orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
+                models.Order.SH2_id==self.current_user.id, models.Order.status.in_([4]))
+            history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
+                                  models.Order.SH2_id==self.current_user.id, models.Order.status.in_([5,6]))
+        else:
+            return self.send_error(404)
+        orders_intime = orders.filter_by(type=1).order_by(models.Order.create_date).all()
+        orders_ontime = orders.filter_by(type=2).order_by(models.Order.start_time).all()
+        day = datetime.datetime.now().day
+        orders_ontime = [x for x in orders_ontime if (x.today == 1 and x.create_date.day == day) or
+                  (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
+
+        orders_intime   = len(orders_intime)
+        orders_ontime  = len(orders_ontime)
+      
+        print(orders_intime)
+        print(orders_ontime)
+        self.set_cookie("orders_intime",str(orders_intime))
+        self.set_cookie("orders_ontime",str(orders_ontime))
         return self.render("staff/home.html", page="home")
     @tornado.web.authenticated
     @StaffBaseHandler.check_arguments("shop_id:int")
@@ -82,12 +126,7 @@ class Order(StaffBaseHandler):
         self.current_user.work = work #增加work属性
         orders = []
         page = ''
-        orders_ontime = self.session.query(models.Order).filter(models.Order.SH2_id ==self.current_user.id,\
-            models.Order.status.in_([4,5]),models.Order.type == 2).count()
-        orders_intime = self.session.query(models.Order).filter(models.Order.SH2_id == self.current_user.id,\
-            models.Order.status.in_([4,5]),models.Order.type == 1).count()
-        self.set_cookie("orders_intime",str(orders_intime))
-        self.set_cookie("orders_ontime",str(orders_ontime))
+       
         if work == 1: #JH
             orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
                 JH_id=self.current_user.id, status=models.ORDER_STATUS.JH)
@@ -101,26 +140,41 @@ class Order(StaffBaseHandler):
         elif work ==3: #SH2
             orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
                 models.Order.SH2_id==self.current_user.id, models.Order.status.in_([4,5]))
+            orders_len = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
+                models.Order.SH2_id==self.current_user.id, models.Order.status.in_([4]))
             history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
                                   models.Order.SH2_id==self.current_user.id, models.Order.status.in_([5,6]))
         else:
             return self.send_error(404)
+
+        orders_intime = 0
+        orders_ontime = 0
+
+        orders_len1 = orders_len.filter_by(type=1).order_by(models.Order.create_date).all()
+        orders_intime = len(orders_len1)
+        self.set_cookie("orders_intime",str(orders_intime))
+
+        orders_len2 = orders_len.filter_by(type=2).order_by(models.Order.start_time).all()
+        day = datetime.datetime.now().day
+        orders_len2 = [x for x in orders_len2 if (x.today == 1 and x.create_date.day == day) or
+                      (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
+        orders_ontime = len(orders_len2)
+        self.set_cookie("orders_ontime",str(orders_ontime))
         if order_type == "now":
-            orders = orders.filter_by(type=1).order_by(models.Order.create_date).all()
+            orders = orders.filter_by(type=1).order_by(models.Order.create_date).all()       
             page = 'now'
         elif order_type == "on_time":
-            orders = orders.filter_by(type=2).order_by(models.Order.start_time).all()
+            orders = orders.filter_by(type=2).order_by(models.Order.start_time).all()     
             day = datetime.datetime.now().day
             orders = [x for x in orders if (x.today == 1 and x.create_date.day == day) or
-                      (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
+                      (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单  
             page = 'on_time'
         elif order_type == "history":
             orders = history_orders
             page = 'history'
         else:
             return self.send_error(404)
-        return self.render("staff/orders.html", orders=orders, page=page,orders_intime = orders_intime,\
-            orders_ontime=orders_ontime)
+        return self.render("staff/orders.html", orders=orders, page=page)
 
     @tornado.web.authenticated
     @StaffBaseHandler.check_arguments("action", "order_id:int", "data")

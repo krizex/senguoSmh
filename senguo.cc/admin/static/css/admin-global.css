@@ -3,7 +3,7 @@ body{font-family:"Microsoft YaHei","arial black",sans-serif;color:#333;font-size
 .w1200{width:1200px;height:auto;margin:0 auto;}
 .w1165{width:1165px;height:auto;overflow:hidden;margin:0 auto;}
 ol,ul,li{list-style:none;}
-.container{width:100%;max-width:1200px;background:#fff;border:1px solid #d1d1d1;padding:0px !important;margin-bottom:80px;margin-top:85px;}
+.container{width:100%;max-width:1200px;background:#fff;border:1px solid #d1d1d1;padding:0px !important;margin-bottom:80px;}
 ul{padding-left:0px;margin-bottom:0px;}
 a:hover{text-decoration:none;cursor:pointer;}
 a:focus{text-decoration:none;outline:none;}
@@ -25,7 +25,7 @@ img{border:none;}
 .backstage-header .height50{height:45px;}
 .backstage-header .height25{height:25px;}
 .backstage-header .line25{line-height:25px;}
-.backstage-header{padding-top:10px;padding-bottom:10px;background:#fff;box-shadow:1px 1px 5px #818181;width:100%;margin-bottom:10px;position:fixed;top:0;z-index:999;}
+.backstage-header{padding-top:10px;padding-bottom:10px;background:#fff;box-shadow:1px 1px 5px #818181;width:100%;margin-bottom:10px;height:65px;top:0;z-index:999;}
 .backstage-header .logo-con{overflow:hidden;}
 .backstage-header .logo-con .logo{margin-right:20px;margin-left:10px;}
 .backstage-header .logo-con span{display:inline-block;float:left;}

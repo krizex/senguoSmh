@@ -42,7 +42,7 @@ input{border:none;}
 
 .bottom-nav{border-top:1px solid #ccc;max-width:800px;margin:0 auto;height:40px;line-height:40px;overflow:hidden;}
 .bottom-nav ul{margin-bottom:0;}
-.bottom-nav li{text-align:center;padding:0 5px;}
+.bottom-nav li{text-align:center;padding:0 5px;position:relative;}
 .bottom-nav li a{display:block;padding:0px !important;}
 .bottom-nav li:hover{color:#33CC66;}
 .bottom-nav li:hover a{color:#33CC66;}
@@ -71,3 +71,4 @@ animate {-webkit-transition: 0.2s linear;-o-transition: 0.2s linear;-ms-transiti
 .notice_box{width:280px;background:rgba(0,0,0,0.5);padding:20px 10px;border-radius:4px;margin:0 auto;}
 button:focus{outline:0;}
 #warn{position:absolute;}
+.num_box{display:inline-block;width:18px;height:18px;border-radius:50%;line-height:18px;position:absolute;right:5px;top:5px;}
