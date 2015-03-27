@@ -174,7 +174,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
     def send_qiniu_token(self, action, id):
         q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
         token = q.upload_token(BUCKET_SHOP_IMG, expires=120,
-                               policy={"callbackUrl": "http://test123.senguo.cc/fruitzone/imgcallback",
+                               policy={"callbackUrl": "http://m.senguo.cc/fruitzone/imgcallback",
                                        "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
         return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 
@@ -491,7 +491,7 @@ class WxOauth2:
     def get_client_access_token(cls):  # 微信接口调用所需要的access_token,不需要用户授权
         global access_token
         if datetime.datetime.now().timestamp() - access_token["create_timestamp"]\
-                < 3600 and access_token["access_token"]:  # jsapi_ticket过期时间为7200s，但为了保险起见7100s刷新一次
+                < 7100 and access_token["access_token"]:  # jsapi_ticket过期时间为7200s，但为了保险起见7100s刷新一次
             return access_token["access_token"]
 
         data = json.loads(urllib.request.urlopen(cls.client_access_token_url).read().decode("utf-8"))
