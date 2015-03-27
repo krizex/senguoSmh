@@ -774,10 +774,12 @@ class Cart(CustomerBaseHandler):
             charge_types = self.session.query(models.ChargeType).\
                 filter(models.ChargeType.id.in_(fruits.keys())).all()
             for charge_type in charge_types:
+                
                 if fruits[str(charge_type.id)] == 0:  # 有可能num为0，直接忽略掉
                     continue
                 totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
                 num = fruits[str(charge_type.id)]*charge_type.unit_num*charge_type.num
+
                 charge_type.fruit.storage -= num  # 更新库存
                 charge_type.fruit.saled += num  # 更新销量
                 charge_type.fruit.current_saled += num  # 更新售出
