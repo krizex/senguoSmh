@@ -86,8 +86,8 @@ class Order(StaffBaseHandler):
             models.Order.status.in_([4,5]),models.Order.type == 2).count()
         orders_intime = self.session.query(models.Order).filter(models.Order.SH2_id == self.current_user.id,\
             models.Order.status.in_([4,5]),models.Order.type == 1).count()
-        self.set_cookie("orders_intime",orders_intime)
-        self.set_cookie("orders_ontime",orders_ontime)
+        self.set_cookie("orders_intime",str(orders_intime))
+        self.set_cookie("orders_ontime",str(orders_ontime))
         if work == 1: #JH
             orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
                 JH_id=self.current_user.id, status=models.ORDER_STATUS.JH)
