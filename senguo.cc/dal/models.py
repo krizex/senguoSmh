@@ -1023,6 +1023,44 @@ class Order(MapBase, _CommonApi):
     fruits = Column(String(1000))
     mgoods = Column(String(1000))
     shop = relationship("Shop", uselist=False,join_depth=1)
+
+    def get_num(self,session,order_id):
+        try:
+            order = session.query(Order).filter_by(id = order_id).first()
+        except NoResultFound:
+            return None
+        if order:
+            fruits = eval(order.fruits)
+            mgoods = eval(order.mgoods)
+            print(fruits)
+            print(type(fruits))
+        # if fruits:
+        #     charge_types = session.query(ChargeType).filter(ChargeType.id.in_\
+        #         (fruits.keys())).all()
+
+        #     for charge_type in charge_types:
+        #         print(charge_type.id)
+        #         print(charge_type.unit_num)
+        #         print(charge_type.num)
+        #         if fruits[int(charge_type.id)]==0:
+        #             continue
+        #         print(fruits[int(charge_type.id)])
+        #         num = fruits[int(charge_type.id)] * charge_type.unit_num * charge_type.num
+        #         charge_type.fruit.storage+= num
+        #         charge_type.fruit.current_saled -=num
+        #         charge_type.fruit.saled -= num
+        # if mgoods:
+        #     charge_types = session.query(models.ChargeType).filter(ChargeType.id.in_(mgoods.keys())).all()
+        #     for charge_type in charge_types:
+        #         print("before",charge_type.mgoods.storage,charge_type.mgoods.current_saled)
+        #         if mgoods[str(charge_type.id)]==0:
+        #             continue
+        #         num =mgoods[str(charge_type.id)] *charge_type.unit_num * charge_type.num
+        #         charge_type.mgoods.storage += num
+        #         charge_type.mgoods.current_saled -= num
+        #         charge_type.mgoods.saled -= num
+        # session.commit()
+        # return True
     
 
     def get_sendtime(self,session,order_id):
