@@ -316,8 +316,7 @@ $(document).ready(function(){
         for(var key in cart_ms) {      
             window.dataObj.mgoods[cart_ms[key][0]]=cart_ms[key][1];
             mgoods_num();
-        } 
-        if(window.dataObj.cart_count!=0) {$('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');}         
+        }     
 });
 //get item dom
 $.getItem('/static/items/customer/market-goods-item.html?v=2015-0320',function(data){window.dataObj.goods_item=data;});    
