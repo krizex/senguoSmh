@@ -212,10 +212,10 @@ $(document).ready(function(){
             goodsNum($this.siblings('.number-change').find('.number-plus'),2);
             $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
             //果篮显示商品种类数
-            if(window.dataObj.cart_count==0) {$('.cart_num').show();}
+            if(window.dataObj.cart_count==0) {$('.cart_num').removeClass('hidden');}
             if($this.hasClass('add_cart_num')){
                 window.dataObj.cart_count++;
-                $('.cart_num').text(window.dataObj.cart_count);
+                $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
                 SetCookie('cart_count',window.dataObj.cart_count);
                 $this.removeClass('add_cart_num');
             }
@@ -269,12 +269,12 @@ $(document).ready(function(){
             if(num==0){
                 change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
                 if(window.dataObj.cart_count==1) {
-                    $('.cart_num').remove();
+                    $('.cart_num').text(window.dataObj.cart_count);
                     SetCookie('cart_count',0);
                 }
                 else {
                     window.dataObj.cart_count--;
-                    $('.cart_num').text(window.dataObj.cart_count);
+                    $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
                     SetCookie('cart_count',window.dataObj.cart_count);
                 }
             }
@@ -287,7 +287,7 @@ $(document).ready(function(){
                 }
                 else if(s_num>0){
                     window.dataObj.cart_count++;
-                    $('.cart_num').text(window.dataObj.cart_count);
+                    $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
                     SetCookie('cart_count',window.dataObj.cart_count);
                 }
             }
@@ -305,7 +305,19 @@ $(document).ready(function(){
                 $parent.find('.toggle_icon').toggleClass('arrow');
                 $parent.toggleClass('pr35'); 
             };          
-        });    
+        }); 
+         //已在购物车里的商品
+        var cart_fs=window.dataObj.cart_fs;
+        var cart_ms=window.dataObj.cart_ms;
+        for(var key in cart_fs) {      
+            window.dataObj.fruits[cart_fs[key][0]]=cart_fs[key][1];
+            fruits_num();
+        }
+        for(var key in cart_ms) {      
+            window.dataObj.mgoods[cart_ms[key][0]]=cart_ms[key][1];
+            mgoods_num();
+        } 
+        if(window.dataObj.cart_count!=0) {$('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');}         
 });
 //get item dom
 $.getItem('/static/items/customer/market-goods-item.html?v=2015-0320',function(data){window.dataObj.goods_item=data;});    
@@ -348,16 +360,13 @@ $.scrollLoading=function(){
     $.postJson(url,args,function(res){
         if(res.success)
         {
-            window.dataObj.cart_fs=res.cart_fs;
-            window.dataObj.cart_ms=res.cart_ms;
+          
             var w_orders=res.w_orders;
             var fruit_list=res.fruit_list;
             var dry_fruit_list=res.dry_fruit_list;
             var mgood_list=res.mgood_list;
             var mgoods_item=window.dataObj.mgoods_item;
             var classify_item=window.dataObj.classify_item
-            var cart_fs=window.dataObj.cart_fs;
-            var cart_ms=window.dataObj.cart_ms;
             var goods_info;
             if(w_orders){ goods_info=w_orders;}
             else if(fruit_list){ goods_info=fruit_list;}
@@ -382,17 +391,8 @@ $.scrollLoading=function(){
                     if(action==5) {$('.menu_classify'+menu_id).removeClass('hidden')}
                 }
             }
-            //已在购物车里的商品         
-            cartNum(cart_fs,'.fruit-list');
-            cartNum(cart_ms,'.menu-list');
             var fruits=window.dataObj.fruits;
             var mgoods=window.dataObj.mgoods;
-            for(var key in fruits){
-                if(fruits[key]==0){delete fruits[key];}
-            }
-            for(var key in mgoods){
-                if(mgoods[key]==0){delete mgoods[key];}
-            }
             var c_fs=[];
             var c_ms=[];
             for(var key in fruits){
@@ -520,12 +520,6 @@ function cartNum(cart_ms,list){
                 }
             }
         }
-        if(list=='.fruit-list'){
-            window.dataObj.fruits[cart_ms[key][0]]=cart_ms[key][1];
-        }
-        if(list=='.menu-list'){
-            window.dataObj.mgoods[cart_ms[key][0]]=cart_ms[key][1];
-        }
     }
 }
 
@@ -560,32 +554,41 @@ function goodsNum(target,action){
             if(val==1){
                 change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
                 if(window.dataObj.cart_count==1) {
-                    $('.cart_num').remove();
+                    window.dataObj.cart_count=0;
+                    $('.cart_num').text(window.dataObj.cart_count).addClass('hidden');
                     SetCookie('cart_count',0);
                 }
                 else {
                     window.dataObj.cart_count--;
-                    $('.cart_num').text(window.dataObj.cart_count);
+                    $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
                     SetCookie('cart_count',window.dataObj.cart_count);
                 }
             }
         }
     }
-     if(type_list.hasClass('fruit-list')) {window.dataObj.fruits[id]=num;}
-    if(type_list.hasClass('menu-list')) {window.dataObj.mgoods[id]=num;}
+    if(type_list.hasClass('fruit-list')) {window.dataObj.fruits[id]=num; fruits_num();}
+    if(type_list.hasClass('menu-list')) { window.dataObj.mgoods[id]=num;mgoods_num();}
+}
+
+function fruits_num(){
+    for(var key in window.dataObj.fruits){
+    if(window.dataObj.fruits[key]==0){delete window.dataObj.fruits[key];}
+    }
+}
+
+function mgoods_num(){
+    for(var key in window.dataObj.mgoods){
+        if(window.dataObj.mgoods[key]==0){delete window.dataObj.mgoods[key];}
+    }
 }
 
 function addCart(link){
     var url='';
     var action = 4;
+    fruits_num();
+    mgoods_num();
     var fruits=window.dataObj.fruits;
     var mgoods=window.dataObj.mgoods;
-    for(var key in fruits){
-        if(fruits[key]==0){delete fruits[key];}
-    }
-    for(var key in mgoods){
-        if(mgoods[key]==0){delete mgoods[key];}
-    }
     var args={
         action:action,
         fruits:fruits,
