@@ -1025,6 +1025,13 @@ class Order(CustomerBaseHandler):
         if not order:return self.send_error(404)
         if action == "cancel_order":
             order.status = 0
+            # revover the sale and storage
+            # woody
+            # 3.27
+            session = self.session
+            order.get_num(session,order.id)
+
+            
         elif action == "comment":
             order.status = 6
             order.comment_create_date = datetime.datetime.now()

@@ -491,7 +491,7 @@ class WxOauth2:
     def get_client_access_token(cls):  # 微信接口调用所需要的access_token,不需要用户授权
         global access_token
         if datetime.datetime.now().timestamp() - access_token["create_timestamp"]\
-                < 7100 and access_token["access_token"]:  # jsapi_ticket过期时间为7200s，但为了保险起见7100s刷新一次
+                < 3600 and access_token["access_token"]:  # jsapi_ticket过期时间为7200s，但为了保险起见7100s刷新一次
             return access_token["access_token"]
 
         data = json.loads(urllib.request.urlopen(cls.client_access_token_url).read().decode("utf-8"))
