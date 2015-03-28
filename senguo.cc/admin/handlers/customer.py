@@ -317,6 +317,7 @@ class Comment(CustomerBaseHandler):
 class Market(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self, shop_code):
+        print('self',self)
         w_follow = True
         fruits=''
         dry_fruits=''
@@ -324,10 +325,10 @@ class Market(CustomerBaseHandler):
         if not shop:
             return self.send_error(404)
         self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
-        self._shop_code = shop.shop_code
+        # self._shop_code = shop.shop_code
         # self.set_cookie("market_shop_name",str(shop.shop_name))
         #woody
-        self.set_cookie("market_shop_code",str(self._shop_code))
+        self.set_cookie("market_shop_code",str(shop.shop_code))
         if not self.session.query(models.CustomerShopFollow).filter_by(
                 customer_id=self.current_user.id, shop_id=shop.id).first():
             # return self.redirect("/customer/shopProfile")  # 还没关注的话就重定向到店铺信息页

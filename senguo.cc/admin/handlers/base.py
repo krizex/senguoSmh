@@ -393,6 +393,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
         shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
         if shop:
             self._shop_code = shop.shop_code
+        else:
+            self._shop_code = None
 
         return self._shop_code
 
