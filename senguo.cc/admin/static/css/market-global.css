@@ -39,12 +39,12 @@ input[type=text]:focus{box-shadow:0px;border-color:#f7f7f8 !important;outline:no
 .modal-backdrop.fade{filter:alpha(opacity=0);opacity:0}
 .modal-backdrop.in{filter:alpha(opacity=50);opacity:.5}
 .modal-header{min-height:16.43px;padding:15px;position:relative;overflow:hidden;text-align:center;padding:0px;height:42px;background-size:20px;position:absolute;z-index:10;width:100%;border-bottom:0px;border-top-left-radius:6px;border-top-right-radius:6px;color:#F97575;top:0;}
-.modal-header .close{position:absolute;top:-6px;right:0;color:inherit;font-size:28px !important;margin-right:10px;margin-top:10px;background:none;border:none;color:#F97575;}
+.modal-header .close{position:absolute;top:-6px;right:0;color:inherit;font-size:28px !important;margin-right:10px;margin-top:10px;background:none;border:none;color:#F97575;z-index: 20;}
 .modal-header .close:active{boder:none;}
 .modal-head{position:absolute;}
 .modal-title{margin:0;font-weight:normal;}
 .modal-body{position:relative;font-size:1em;padding:0 10px;color:#999;}
-.modal-footer{margin-top:15px;margin-bottom:-25px;clear:both;}
+.modal-footer{margin-top:15px;clear:both;}
 .modal-footer .btn+.btn{margin-bottom:0;margin-left:5px}
 .modal-footer .btn-group .btn+.btn{margin-left:-1px}
 .modal-footer .btn-block+.btn-block{margin-left:0}
