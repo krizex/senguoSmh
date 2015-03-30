@@ -641,6 +641,7 @@ class Order(AdminBaseHandler):
                             if point_history:
                                 point_history.point_type = models.POINT_TYPE.FIRST_ORDER
                                 point_history.each_point = 5
+                                print(point_history.each_point)
                                 self.session.add(point_history)
                                 self.session.commit()
 
