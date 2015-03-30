@@ -326,7 +326,7 @@ $.getItem('/static/items/customer/classify_item.html?v=2015-0309',function(data)
 window.dataObj.page=1;
 window.dataObj.count=1;
 window.dataObj.action=5;
-var finised=true;
+window.dataObj.finished=true;
 $.scrollLoading=function(){
     var range = 10;             //距下边界长度/单位px          //插入元素高度/单位px  
     var totalheight = 0;   
@@ -337,10 +337,10 @@ $.scrollLoading=function(){
         if(!maxnum) maxnum=Int($('#page_count').val());
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
         $('.no_more').hide();
-        if(finised&&(main.height()-range) <= totalheight  && window.dataObj.page < maxnum) { 
+        if(window.dataObj.finished&&(main.height()-range) <= totalheight  && window.dataObj.page < maxnum) { 
             $('.no_more').hide();
             $('.loading').show();
-            finised=false;
+            window.dataObj.finished=false;
             window.dataObj.page++; 
             $.goodsList(window.dataObj.page,window.dataObj.action);
         }       
@@ -405,7 +405,7 @@ $.scrollLoading=function(){
             cartNum(c_ms,'.menu-list');
             $('.loading').hide();
             window.dataObj.count++;
-            finised=true;
+            window.dataObj.finished=true;
         }
         else return $.noticeBox(res.error_text);
         },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
