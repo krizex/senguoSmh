@@ -92,10 +92,10 @@
 {% block other %}
 <div class="modal fade large-img-box" id="large_imgbox">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg_change">
+        <div class="modal-content bg-white">
+            <div class="modal-header bg_change rainshed_green">
                 <span type="button" class="close text-green2 dismiss">✕</span>
-                <h2 class="modal-title text-green2 text-center">是水果啊啊啊</h2>
+                <h2 class="modal-title text-green2 text-center line36">是水果啊啊啊</h2>
             </div>
             <div class="modal-body set-width-float text-center">
                 <img src="" id="largeImg" class="mt42"/>
@@ -110,16 +110,17 @@
 <div class="modal fade detail-box" id="detail_box">
     <div class="modal-dialog">
         <div class="modal-content">
+            <div class="modal-top">
+                <img src="/static/images/info_top.png"/>
+            </div>
             <div class="modal-header set-width-float">
-                <span type="button" class="close text-green2 dismiss">✕</span>
-                <h2 class="modal-title text-green2 text-center">公告详情</h2>
+                <span type="button" class="close dismiss">✕</span>
+                <h2 class="modal-title  text-center line48">公告详情</h2>
             </div>
             <div class="modal-body set-width-float text-center">
-                <p class="detail font14 mt42"></p>
+                <p class="detail font14"></p>
             </div>
-            <div class="modal-footer set-width-float">
-                <button  class="btn btn-default center-block dismiss bg-greyc">取消</button>
-            </div>
+            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
         </div>
     </div>
 </div>

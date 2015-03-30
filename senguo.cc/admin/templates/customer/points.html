@@ -8,18 +8,24 @@
 {% block content %}
 <div class="points_box bg-blue mt40 text-white">
         <img src="{{static_url('images/points.png')}}" class="points_img pull-left"/>
-        <span class="pull-left font14 ml10">当前积分:</span>
+        <span class="pull-left font14 ml10">当前店铺积分:<span class="current_point" data-point="{{shop_point}}"></span></span>
         <button class="rules pull-right btn bg-blue">积分规则</button>
 </div>
-
+<p class="font16 p_10">积分历史</p>
+<ul class="points-list text-grey6">
+</ul>
+<div class="loading text-center text-grey9 font12" style="display:none">~努力加载中( > < )~</div>
+<div class="no_more text-center text-grey9 font12" style="display:none">~没有更多呢~( > < )~</div>
+<input type="hidden" value="{{pages}}" id="page_count"/>
 <div class="modal fade comment-box" id="pointsBox">
     <div class="modal-dialog">
         <div class="modal-content">
+            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
             <div class="modal-header">
-                <span type="button" class="close text-white dismiss">✕</span>
-                <h2 class="modal-title">积分规则</h2>
+                <span type="button" class="close dismiss">✕</span>
+                <h2 class="modal-title line48">积分规则</h2>
             </div>
-            <div class="modal-body set-width-float text-grey6 mt40">
+            <div class="modal-body set-width-float text-grey6">
                 <ul class="rule_list font14">
                     <li><span>每关注一个店铺，</span> <span>+10</span></li>
                     <li>签到一次，+1</li>
@@ -34,6 +40,7 @@
                 </ul>
                 <p class="text-center mt10">(注:您在每个店铺的积分独立)</p>
             </div>
+           <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
         </div>
     </div>
 </div>
