@@ -79,4 +79,6 @@
 .notice_con{width:250px;margin:0 auto;margin-top:50px;}
 .notice_con .word{margin-bottom:15px;}*/
 .address-list li{padding:5px;border:1px solid #eee;border-radius:4px;margin-bottom:10px;}
+.foucus_bg{background:rgba(0,0,0,0.5);height:100%;width:100%;position:absolute;top:0;z-index: 9999;padding:50px 30px;}
+.focus_senguo{margin:0 auto;font-size:20px;margin-top:10px;}
 

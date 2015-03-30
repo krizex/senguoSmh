@@ -3,8 +3,14 @@
 {% block head%}
 <link rel="stylesheet" href="{{static_url('css/fruitzone-apply.css')}}"/>
 {% end %}
-
 {% block content %}
+	{% if context["subscribe"] == 0 %}
+	<div class="foucus_bg">
+		<h4 class="text-center text-white">请先关注森果公众平台,以便您能及时收到审核结果</h4>
+		<a href="weixin://profile/sen-guo" class="text-white green-color space focus_senguo center-block btn"
+         data-src="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200521182&idx=1&sn=a3d7731e0233aef218eb91346d581b02#rd">+关注森果公众平台</a>
+	</div>
+	{% end %}
 	{% if "reApply" in context and context["reApply"] %}
 	    {% set shop = context['shop']%}
 	{% end %}
@@ -13,7 +19,7 @@
 	  <h5 class="proper-padding bg-warning">你的个人信息不完善，为了方便大家交流，请先完善：<a href="{{reverse_url('fruitzoneAdminProfile')}}">个人信息</a></h5>
 	</div>
 	{% else %}
-	<div class="count-box">
+	<div class="count-box {{context['subscribe']}}">
 	    <div class="text-center mtp5">
 		<img src="{{static_url('images/logo2.png')}}"/>
 	    </div>
@@ -202,7 +208,6 @@
 		</div>
 	    </div>
 	</div>
-
 	{% end %}
 {% end %}
 {% block bottom %}
