@@ -12,9 +12,9 @@
             <li class="cart-list-item set-w100-fle fruit_item text-grey m-b5 {{cart_f[key]['code']}}">
                 <div class="box bg set-w100-fle">
                     {% if cart_f[key]['charge_type'].fruit.img_url %}
-                    <img src="/static/images/holder.png" class="goods-img pull-left w15 lazy_img" data-original="{{cart_f[key]['charge_type'].fruit.img_url}}?imageView/1/w/100/h/100"/>
+                    <img src="/static/images/holder.png?v=20150330" class="goods-img pull-left w15 lazy_img" data-original="{{cart_f[key]['charge_type'].fruit.img_url}}?imageView/1/w/100/h/100"/>
                     {% else %}
-                    <img src="/static/images/holder.png" class="goods-img pull-left w15 lazy_img" data-original="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.png?v=20150316"/>
+                    <img src="/static/images/holder.png?v=20150330" class="goods-img pull-left w15 lazy_img" data-original="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.png?v=20150316"/>
                     {% end %}
                     <div class="goods-info pull-left font14 p010">
                         <div class="clearfix">

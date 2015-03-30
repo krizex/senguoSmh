@@ -15,21 +15,10 @@ $(document).ready(function(){
     $('.address_list li').eq(0).addClass('active');
     window.dataObj.mincharge_now=Int($('.mincharge_now').find('.mincharge').text());
     window.dataObj.mincharge_intime=Int($('.mincharge_intime').find('.mincharge').text());
-    //商品价格小计
-    $('.item_total_price').each(function(){
-        var $this=$(this);
-        var parent=$this.parents('.cart-list-item');
-        var num=parent.find('.item_number').val();
-        var price=parent.find('.item_price').text();
-        var total=mathFloat(num*price);
-        $this.text(total);
-        price_list.push(total);
-    });
-    //商品价格总计
-    total_price=totalPrice(price_list);
-    $list_total_price.text(mathFloat(total_price));
+    //price
+    $.getPrice();
     //按时达最低起送金额提示
-    if(total_price<window.dataObj.mincharge_intime) $('.mincharge_intime').show();
+    if(window.dataObj.total_price<window.dataObj.mincharge_intime) $('.mincharge_intime').show();
     //商品数量操作
     $(document).on('click','.cart-list-item .number-minus',function(){
         var $this=$(this);
@@ -196,7 +185,7 @@ $(document).ready(function(){
         $('.intime-intro').hide();
         $('.now-intro').show();
         $('#freight_money').text(window.dataObj.freigh_now);
-        $('#final_price').text(mathFloat(total_price+window.dataObj.freigh_now));
+        $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
         $('.send-intime').on('click',function(){
             $(this).removeClass('active');
             if(now_on=='True'){
@@ -212,7 +201,7 @@ $(document).ready(function(){
         $('.intime-intro').show();
         $('.now-intro').hide();
         $('#freight_money').text(window.dataObj.freigh_ontime);
-        $('#final_price').text(mathFloat(total_price+window.dataObj.freigh_ontime));
+        $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
         //按时达模式选择
         $('#sendInTime').on('click',function(){
             var $this=$(this);
@@ -223,10 +212,10 @@ $(document).ready(function(){
             $('.mincharge_now').hide();
             $('.intime-intro').show();
             $('.now-intro').hide();
-            total_price=mathFloat($list_total_price.text());
+            window.dataObj.total_price=mathFloat($list_total_price.text());
             $('#freight_money').text(window.dataObj.freigh_ontime);
-            $('#final_price').text(mathFloat(total_price+window.dataObj.freigh_ontime));
-            if(total_price<window.dataObj.mincharge_intime){
+            $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
+            if(window.dataObj.total_price<window.dataObj.mincharge_intime){
                 $('.mincharge_intime').show();
             }
         });
@@ -240,7 +229,7 @@ $(document).ready(function(){
         $('.intime-intro').show();
         $('.now-intro').hide();
         $('#freight_money').text(window.dataObj.freigh_ontime);
-        $('#final_price').text(mathFloat(total_price+window.dataObj.freigh_ontime));
+        $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
         $('.send-now').on('click',function(){
             $(this).removeClass('active');
             if(intime_on=='True'){
@@ -259,7 +248,7 @@ $(document).ready(function(){
         $('.intime-intro').hide();
         $('.now-intro').show();
         $('#freight_money').text(window.dataObj.freigh_now);
-        $('#final_price').text(mathFloat(total_price+window.dataObj.freigh_now));
+        $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
         //立即送模式选择/立即送最低起送金额提示
         $('#sendNow').on('click',function(){
             var $this=$(this);
@@ -272,10 +261,10 @@ $(document).ready(function(){
                 $('.send_now').show();
                 $('.intime-intro').hide();
                 $('.now-intro').show();
-                total_price=mathFloat($list_total_price.text());
+                window.dataObj.total_price=mathFloat($list_total_price.text());
                 $('#freight_money').text(window.dataObj.freigh_now);
-                $('#final_price').text(mathFloat(total_price+window.dataObj.freigh_now));
-                if(total_price<window.dataObj.mincharge_now){
+                $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
+                if(window.dataObj.total_price<window.dataObj.mincharge_now){
                     $('.mincharge_now').show();
                     $('.mincharge_intime').hide();
                 }
@@ -300,7 +289,7 @@ $(document).ready(function(){
         $('.intime-intro').show();
         $('.now-intro').hide();
         $('#freight_money').text(window.dataObj.freigh_ontime);
-        $('#final_price').text(mathFloat(total_price+window.dataObj.freigh_ontime));
+        $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
     }
     //打赏小费
     $('.tip-list li').on('click',function(){
@@ -309,17 +298,39 @@ $(document).ready(function(){
         else $this.addClass('active').siblings('li').removeClass('active');
     })
 });
-var price_list=[];
-var total_price=0;
+window.dataObj.price_list=[];
+window.dataObj.total_price=0;
 window.dataObj.freigh_ontime=Int($('.freigh_ontime').text());
 window.dataObj.freigh_now=Int($('.freigh_now').text());
 
+$.getPrice=function(){
+    window.dataObj.price_list=[];
+    var freight=mathFloat($('#freight_money').text());
+    var $list_total_price=$('#list_total_price');
+    var $final_price=$('#final_price');
+    //商品价格小计
+    $('.item_total_price').each(function(){
+        var $this=$(this);
+        var parent=$this.parents('.cart-list-item');
+        var num=parent.find('.item_number').val();
+        var price=parent.find('.item_price').text();
+        var total=mathFloat(num*price);
+        $this.text(total);
+        window.dataObj.price_list.push(total);
+    });
+    //商品价格总计
+    window.dataObj.total_price=totalPrice(window.dataObj.price_list);
+    $list_total_price.text(mathFloat(window.dataObj.total_price));
+    $final_price.text(mathFloat(window.dataObj.total_price)+mathFloat(freight));
+}
+
 function totalPrice(target){
+    window.dataObj.total_price=0;
     for(var i=0;i<target.length;i++)
     {
-        total_price+=parseFloat(target[i]);
+        window.dataObj.total_price+=parseFloat(target[i]);
     }
-    return total_price;
+    return window.dataObj.total_price;
 }
 
 function goodsNum(target,action){
@@ -347,54 +358,52 @@ function goodsNum(target,action){
             {
                 if(action==2)
                 {
-
                     num++;
                     item.val(num);
                     total=mathFloat(num*price);
                     parent.find('.item_total_price').text(total);
                     var t_price=mathFloat($list_total_price.text());
-                    var freight=mathFloat($('#freight_money').text());
-                    t_price+=mathFloat(price);
-                    $list_total_price.text(mathFloat(t_price));
-                    $('#final_price').text(mathFloat(t_price+freight));
+                    $.getPrice();
                     var type=$('#sendType').find('.active').data('id');
                     mincharge(type,t_price);
-
                 }
                 else if(action==1)
                 {
                     var val=parseInt(item.val());
-                    if(val>0)
+                     console.log(val);
+                    if(val>=0)
                     {
+                        if(val==1){
+                            var cart_n=Int($('.cart_num').text());
+                            if(cart_n>1){
+                                $('.cart_num').text(cart_n-1);
+                                SetCookie('cart_count',cart_n-1);
+                                parent.remove();
+                            }
+                           else{
+                                $('.cart_num').text(0).addClass('hidden');
+                                SetCookie('cart_count',0);
+                                parent.remove();
+                           }
+                        }
                         num--;
                         item.val(num);
                         total=mathFloat(num*price);
                         parent.find('.item_total_price').text(total);
                         var t_price=mathFloat($list_total_price.text());
-                        var freight=mathFloat($('#freight_money').text());
-                        t_price-=mathFloat(price);
-                        $list_total_price.text(mathFloat(t_price));
-                        $('#final_price').text(mathFloat(t_price+freight));
+                        $.getPrice();
                         var type=$('#sendType').find('.active').data('id');
                         mincharge(type,t_price);
-                        if(val==1){
-                            var cart_n=Int($('.cart_num').text());
-                            $('.cart_num').text(cart_n-1);
-                            SetCookie('cart_count',cart_n-1);
-                            parent.remove();
-                        }
-                        if($('.cart-list').find('.cart-list-item').length==0) window.location.reload();
                     }
-
                 }
-
-
+                if($('.cart-list-item').length==0) window.location.reload();
             }
             else return $.noticeBox(res.error_text);
         },
         function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
              function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')})
 }
+
 function mincharge(n,price){
     if(n==2){
         if(price<window.dataObj.mincharge_intime){
@@ -416,7 +425,7 @@ function itemDelete(target,menu_type) {
     var $list_total_price=$('#list_total_price');
     var url = '/cart';
     var action = 0;
-    var charge_type_id =target .find('.charge-type').data('id');
+    var charge_type_id =target.find('.charge-type').data('id');
     var price=target.find('.item_total_price').text();
     var t_price=parseFloat($list_total_price.text());
     var args = {
@@ -430,9 +439,8 @@ function itemDelete(target,menu_type) {
                 t_price-=parseFloat(price);
                 $list_total_price.text(t_price);
                 var type=$('#sendType').find('.active').data('id');
-                var freight=Int($('#freight_money').text());
-                mincharge(type,t_price);
-                $('#final_price').text(t_price+freight);
+                $.getPrice();
+                mincharge(type,t_price);  
                 var cart_n=Int($('.cart_num').text());
                 if(cart_n>0){
                     $('.cart_num').text(cart_n-1);
@@ -520,7 +528,7 @@ function orderSubmit(){
     var mincharge_intime=Number($('.mincharge_intime .mincharge').text());
     var mincharge_now=Number($('.mincharge_now .mincharge').text());
     var tip=$('.tip-list').find('.active').data('id');
-    total_price=Number($('#list_total_price').text());
+    window.dataObj.total_price=Number($('#list_total_price').text());
     if(!today) today=1;
     if(!address_id){return $.noticeBox('请填写您的收货地址！');}
     if(!tip) tip=0;
@@ -539,12 +547,12 @@ function orderSubmit(){
     }
     if(!message) message='';
     if(type==2) {
-        if(total_price<mincharge_intime) return $.noticeBox('您的订单未达到按时达最低起送金额！');
+        if(window.dataObj.total_price<mincharge_intime) return $.noticeBox('您的订单未达到按时达最低起送金额！');
         if(!period_id) return $.noticeBox('请选择送货时段！');
     }
     if(type==1){
         period_id=0;
-        if(total_price<mincharge_now) return $.noticeBox('您的订单未达到立即送最低起送金额！');
+        if(window.dataObj.total_price<mincharge_now) return $.noticeBox('您的订单未达到立即送最低起送金额！');
     }
     if(!type){return $.noticeBox('请选择送货时段！')}
     $('#submitOrder').addClass('bg-grey text-grey3').text('提交成功').attr({'disabled':'true'});
