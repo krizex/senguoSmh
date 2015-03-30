@@ -253,6 +253,12 @@ $.confirmBox=function(text,index,type){
             $('#confirmBox').remove();
             $('.modal_bg').remove();
         });
+         $(document).on('click','.modal',function(e){
+             if($(e.target).closest('.modal-content').length == 0){
+                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
+                $('#confirmBox').remove();
+            }
+        });
 }
 $.confirmRemove=function(){
     $('#confirmBox').remove();
