@@ -32,7 +32,7 @@ $(document).ready(function(){
        sexEdit(sex,text);
     });
     //性别显示
-    $('#userSex').each(function(){
+    $('.user_sex').each(function(){
         var $this=$(this);
         var n=$this.data('id');
         switch(n){

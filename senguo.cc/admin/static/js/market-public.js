@@ -237,7 +237,7 @@ function stopPropagation(e) {
     }  
 }  
 //confirmbox
-$.getItem('/static/items/confirmBox.html?v=201503-22',function(data){window.dataObj.confirmBox=data});
+$.getItem('/static/items/confirmBox.html?v=201503-29',function(data){window.dataObj.confirmBox=data});
 $.confirmBox=function(text,index,type){
         var $box=$(window.dataObj.confirmBox);
         $box.find('.message').text(text);
@@ -265,12 +265,26 @@ $.confirmRemove=function(){
     $('.modal_bg').remove();
 }
 //word notice
-$.getItem('/static/items/noticeBox.html?v=2015-03-21',function(data){window.dataObj.noticeBox=data});
-$.noticeBox=function(text){
-        var $box=$(window.dataObj.noticeBox);
-        $box.find('.notice').text(text);
-        $('body').append($box);
-        $.noticeRemove('noticeBox');
+$.getItem('/static/items/noticeBox.html?v=2015-03-25',function(data){
+    window.dataObj.noticeBox=data;
+     var $box=$(window.dataObj.noticeBox);   
+    $('body').append($box);
+});
+$.noticeBox=function(text,item){
+        $('#noticeBox').removeClass('hidden').find('.notice').text(text);
+        if(item) {item.attr({'disabled':'true'});}
+        $.noticeRemove('noticeBox',item);
+        $.noticeRemove=function () {
+        if (window.dataObj.n_time == 0) {
+            window.dataObj.n_time = 2;
+            $('#noticeBox').addClass('hidden');
+            if(item) {item.removeAttr('disabled');}
+        }
+        else {
+            window.dataObj.n_time--;
+            setTimeout(function() {$.noticeRemove()},1000);
+        }
+    }
 }
 //modal notice word
 $.warnNotice=function(text){
@@ -286,7 +300,7 @@ window.dataObj.n_time=2;
 $.noticeRemove=function (target) {
     if (window.dataObj.n_time == 0) {
         window.dataObj.n_time = 2;
-        $('#'+target).remove();
+        $('#'+target).addClass('hidden');
         $('.sure_btn').removeAttr('disabled');
     }
     else {
