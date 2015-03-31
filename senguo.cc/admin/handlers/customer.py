@@ -56,6 +56,20 @@ class Access(CustomerBaseHandler):
 class Home(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self):
+        shop_id = self.shop_id
+        customer_id = self.current_user.id
+
+        shop_point = 0
+        try:
+            shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
+                customer_id,shop_id =shop_id).first()
+        except:
+            self.send_fail("point show error")
+        if shop_follow:
+            if shop_follow.shop_point:
+                shop_point = shop_follow.shop_point
+            else:
+                shop_point = 0
         count = {3: 0, 4: 0, 5: 0, 6: 0}  # 3:未处理 4:待收货，5：已送达，6：售后订单
         for order in self.current_user.orders:
             if order.status == 1:
@@ -66,7 +80,8 @@ class Home(CustomerBaseHandler):
                 count[5] += 1
             elif order.status == 10:
                 count[6] += 1
-        return self.render("customer/personal-center.html", count=count, context=dict(subpage='center'))
+        return self.render("customer/personal-center.html", count=count,shop_point =shop_point, \
+            context=dict(subpage='center'))
     @tornado.web.authenticated
     @CustomerBaseHandler.check_arguments("action", "data")
     def post(self):
@@ -1107,6 +1122,7 @@ class OrderDetail(CustomerBaseHandler):
 
 
 class Points(CustomerBaseHandler):
+    @tornado.web.authenticated
     def get(self):
         customer_id = self.current_user.id
         shop_id     = self.shop_id
@@ -1134,5 +1150,49 @@ class Points(CustomerBaseHandler):
                 temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
                 history.append([temp.point_type,temp.each_point,temp.create_time])
             print(history)
-        return self.render("customer/points.html")
+        count = len(history)
+        pages = (count /10) if count % 10 ==0 else (count/10) + 1
+
+        return self.render("customer/points.html",shop_point = shop_point,pages = pages)
+
+        
+
+    @tornado.web.authenticated
+    @CustomerBaseHandler.check_arguments("page")
+    def post(self):
+        page = self.args["page"]
+        offset = (page-1) * 10
+        customer_id = self.current_user.id
+        shop_id     = self.shop_id
+        history     = []
+        data = []
+
+        try:
+            shop_history = self.session.query(models.PointHistory).filter_by(customer_id =\
+                customer_id,shop_id = shop_id).all()
+        except:
+            self.send_fail("point history error")
+        if shop_history:
+            for temp in shop_history:
+                temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
+                history.append([temp.point_type,temp.each_point,temp.create_time])
+            print(history)
+
+        count = len(history)
+        history = history[::-1]
+        print('history',history)
+        if offset + 10 <= count:
+            data = history[offset:offset+10]
+        elif offset <= 10 and offset + 10 > count:
+            data = history[offset:]
+        else:
+            self.send_fail("history page error")
+        print("data\n",data)
+
+        return self.send_success(data = data)
+
+        
+
+
+
 

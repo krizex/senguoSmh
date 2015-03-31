@@ -1,6 +1,10 @@
 $(document).ready(function(){
+    //user sex
     var sex_id=$('.user-sex').data('id');
     sex($('.user-sex'),sex_id);
+    //current_point
+   var point=Int($('.current_point').data('point'));
+   $('.current_point').text(point);
     //收货地址add
     $(document).on('click','.address-manage',function(e){
         var $this=$(this);

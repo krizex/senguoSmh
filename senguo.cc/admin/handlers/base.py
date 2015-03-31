@@ -310,14 +310,17 @@ class CustomerBaseHandler(_AccountBaseHandler):
 
     def _f(self, cart, menu, charge_type_id, inc):
         d = eval(getattr(cart, menu))
+        # print(type(d[charge_type_id]))
         if d:
             if inc == 2:#加1
-                if charge_type_id in d.keys(): d[charge_type_id] += 1
+                if charge_type_id in d.keys(): d[charge_type_id] =   int(d[charge_type_id]) + 1
                 else: d[charge_type_id] = 1
             elif inc == 1:#减1
                 if charge_type_id in d.keys():
-                    if d[charge_type_id] == 1:del d[charge_type_id]
-                    else:d[charge_type_id] -= 1
+                    if d[charge_type_id] == 1:
+                        del d[charge_type_id]
+                    else:
+                        d[charge_type_id] =  d[charge_type_id]  -1
                 else:return
             elif inc == 0:#删除
                 if charge_type_id in d.keys(): del d[charge_type_id]

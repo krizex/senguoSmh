@@ -1,4 +1,16 @@
 $(document).ready(function(){
+    //if is ios
+    var u = navigator.userAgent, app = navigator.appVersion;
+    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
+    var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+    if(isiOS){
+        $('.focus_senguo').each(function(){
+            var $this=$(this);
+             var link=$this.attr('data-src');
+            $this.attr({'href':link});
+        });
+    }
+    $('.foucus_bg').height($(window).height());
     //$('.count-box').css({'height':$(window).height()});
     //if the user is using weixin brower
     //type choose
