@@ -47,7 +47,7 @@
 .large-img-box .modal-dialog{width:100%;max-width:302px;padding:0 10px !important;}
 .large-img-box  .mt42{margin-top:30px !important;}
 .large-img-box  .intro{padding:10px;border-bottom:1px solid #ccc;}
-.large-img-box .modal-footer{margin-top:0px;}
+.large-img-box .modal-footer{margin-top:0px;border-bottom-left-radius:8px;border-bottom-right-radius:8px;}
 
 .notice-box{min-height:120px;}
 .notice-board{min-height:120px;width:100%;position:relative;}
