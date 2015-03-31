@@ -231,11 +231,11 @@ $(document).ready(function(){
             var regNum=/^[0-9]*$/;
             if(!regNum.test(num)) {
                 $this.siblings('.number-input').val(999);
-                return $.noticeBox('商品数量只能为整数!');
+                return $.noticeBox('商品数量只能为整数!',$this);
             }
             if(num<999) {goodsNum($this,2);}
             else {
-                return $.noticeBox('最多只能添加999哦!');
+                return $.noticeBox('最多只能添加999哦!',$this);
             }
         });
          //商品输入框为0时
@@ -253,17 +253,17 @@ $(document).ready(function(){
                 window.dataObj.cart_count--;
                 $('.cart_num').text(window.dataObj.cart_count);
                 SetCookie('cart_count',window.dataObj.cart_count);
-                return $.noticeBox('商品数量只能为整数!┑(￣▽ ￣)┍');
+                return $.noticeBox('商品数量只能为整数!┑(￣▽ ￣)┍',$this);
             }
             if(num>999) {
                 storage=Int(storage);
                 if(storage<999) {
                     $this.val(storage);
-                    return $.noticeBox('只有这么多了哦!┑(￣▽ ￣)┍');
+                    return $.noticeBox('只有这么多了哦!┑(￣▽ ￣)┍',$this);
                 }
                 else {
                     $this.val(999);
-                     return $.noticeBox('最多只能添加999哦!┑(￣▽ ￣)┍');
+                     return $.noticeBox('最多只能添加999哦!┑(￣▽ ￣)┍',$this);
                 }          
             }
             if(num==0){
@@ -283,7 +283,7 @@ $(document).ready(function(){
                     storage=Int(storage);
                     if(storage<999) $this.val(storage);
                     else $this.val(999);
-                    $.noticeBox('库存不足啦！┑(￣▽ ￣)┍ ')
+                    $.noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)
                 }
                 else if(s_num>0){
                     window.dataObj.cart_count++;
@@ -320,8 +320,8 @@ $(document).ready(function(){
 });
 //get item dom
 $.getItem('/static/items/customer/market-goods-item.html?v=2015-0320',function(data){window.dataObj.goods_item=data;});    
-$.getItem('/static/items/customer/charge-item.html?v=2015-0309',function(data){window.dataObj.charge_item=data;}); 
-$.getItem('/static/items/customer/classify_item.html?v=2015-0309',function(data){window.dataObj.classify_item=data;}); 
+$.getItem('/static/items/customer/charge-item.html?v=2015-0310',function(data){window.dataObj.charge_item=data;}); 
+$.getItem('/static/items/customer/classify_item.html?v=2015-0310',function(data){window.dataObj.classify_item=data;}); 
 
 window.dataObj.page=1;
 window.dataObj.count=1;
@@ -537,7 +537,7 @@ function goodsNum(target,action){
     if(action==2)
     {
         if(s_num<=0){
-            $.noticeBox('库存不足啦！┑(￣▽ ￣)┍ ');
+            $.noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',target);
             item.val(Int(storage));
         }
         else if(s_num>0){

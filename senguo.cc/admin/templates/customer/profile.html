@@ -35,8 +35,10 @@
         </li>
         <li class="item">
             <div class="info-con">
-                <span class="title pull-left">手机号</span>
-                <a href="javascript:;" class="pull-right  tiephone"  id="phoneNumber">{{current_user.accountinfo.phone}}</a>
+                <a href="javascript:;" id="phoneNumber" class="box">
+                    <span class="title pull-left text-grey3">手机号</span>
+                    <span class="pull-right  tiephone">{{current_user.accountinfo.phone}}</span>
+                </a>
             </div>
         </li>
         <li class="item">
@@ -54,8 +56,10 @@
         </li>
         <li class="w1 item">
             <div class="info-con">
-                <span class="title pull-left">性别</span>
-                <a href="javascript:;" class="pull-right s1" id="userSex" data-id="{{current_user.accountinfo.sex}}"></a>
+                <a href="javascript:;" id="userSex" class="box">
+                    <span class="title pull-left text-grey3">性别</span>
+                    <span class="pull-right s1 user_sex" data-id="{{current_user.accountinfo.sex}}"></span>
+                </a>
             </div>
         </li>
         <li class="item">
@@ -78,11 +82,16 @@
 <div class="modal fade tie-popbox" id="tieBox">
     <div class="modal-dialog">
         <div class="modal-content">
+            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
+            <div class="modal-header set-width-float">
+                <button type="button" class="close dismiss">✕</button>
+                <h2 class="modal-title  text-center line48"></h2>
+            </div>
             <div class="modal-body font14 clearfix">
                 <div class="tie-info">
                     <div class="phone-number">
                         <input type="text" placeholder="输入手机号" class="phone input1 pull-left" id="enterPhone"/>
-                        <input type="submit" value="获取验证码" class="get-code pull-right bg-green sure_btn" id="getVrify"/>
+                        <input type="submit" value="获取验证码" class="get-code pull-right bg-green3 sure_btn" id="getVrify"/>
                     </div>
                     <input type="text" placeholder="输入收到的短信验证码" class="input1" id="enterVrify"/>
                     <input type="password" placeholder="设置一个手机号登陆密码" class="input1" id="loginPassword"/>
@@ -90,15 +99,20 @@
                 </div>
             </div>
             <div class="modal-footer clearfix">
-                <button type="button" class="btn pull-left concel-btn dismiss">取消</button>
-                <button type="button" class="btn pull-right tie-btn bg-green sure_btn"  id="tiePhone">绑定</button>
+                <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn"  id="tiePhone">绑定</button>
             </div>
+             <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
         </div>
     </div>
 </div>
 <div class="modal fade sex-popbox" id="sexBox">
     <div class="modal-dialog">
         <div class="modal-content">
+            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
+            <div class="modal-header set-width-float">
+                <button type="button" class="close dismiss">✕</button>
+                <h2 class="modal-title  text-center line48"></h2>
+            </div>
             <div class="modal-body">
                 <ul class="list-group sex-list font16">
                     <li class="list-group-item height40" data-id="1">男</li>
@@ -106,6 +120,7 @@
                     <li class="list-group-item height40" data-id="0">其他</li>
                 </ul>
             </div>
+            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
         </div>
     </div>
 </div>

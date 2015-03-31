@@ -1,9 +1,9 @@
 .container{background:#fff;}
-.points_box{height:90px;padding:10px 15px;line-height:70px;}
+.points_box{height:100px;padding:15px;line-height:70px;}
 .points_img{width:70px;}
 .rules{margin-top:18px;border:1px solid #2bace1;}
 .rule_list{width:150px;margin:0 auto;}
 .rule_list li{width:100%;}
 .points-list{padding:0 10px;}
-.points-list li{padding:10px 15px;width:100%;float:left;border:1px solid #eee;border-radius:20px;margin-bottom:10px;}
+.points-list li{padding:15px 15px;width:100%;float:left;border:1px solid #eee;border-radius:30px;margin-bottom:5px;}
 .points-list li .type{display:inline-block;width:110px;}
