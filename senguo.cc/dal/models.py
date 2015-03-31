@@ -207,6 +207,7 @@ class _AccountApi(_CommonApi):
             u.accountinfo.wx_province=wx_userinfo["province"]
             u.accountinfo.wx_city=wx_userinfo["city"]
             u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
+            u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
             u.accountinfo.nickname = wx_userinfo["nickname"]
             #####################################################################################
             # update wx_openid
@@ -323,6 +324,7 @@ class Accountinfo(MapBase, _CommonApi):
     realname = Column(String(128))
     # 头像url
     headimgurl = Column(String(1024))
+    headimgurl_small = Column(String(1024))
     # 生日
     birthday = Column(Integer)# timestamp
     # 微信数据

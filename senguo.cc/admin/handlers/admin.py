@@ -634,6 +634,7 @@ class Order(AdminBaseHandler):
                             if shop_follow.shop_point == None:
                                 shop_follow.shop_point =0
                             shop_follow.shop_point += 5
+                            self.session.commit()
                             try:
                                 point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
                             except:
@@ -650,6 +651,8 @@ class Order(AdminBaseHandler):
                             if shop_follow.shop_point == None:
                                 shop_follow.shop_point =0
                             shop_follow.shop_point += 2
+                            self.session.commit()
+
                             try:
                                 point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
                             except:

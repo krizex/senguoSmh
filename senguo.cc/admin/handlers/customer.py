@@ -1191,8 +1191,19 @@ class Points(CustomerBaseHandler):
 
         return self.send_success(data = data)
 
-        
 
-
+class InsertData(CustomerBaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        try:
+            accountinfo_list = self.session.query(models.Accountinfo).all()
+        except:
+            self.send_fail(" get accountinfo error")
+        if accountinfo_list:
+            for accountinfo in accountinfo_list:
+                accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
+                print(accountinfo.headimgurl_small)
+            self.session.commit()
+        return self.send_success()
 
 
