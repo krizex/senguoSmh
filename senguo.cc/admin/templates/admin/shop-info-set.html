@@ -16,7 +16,7 @@
     <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">店铺logo</span>
         <div class="w2 pull-left logo-box">
-           <img src="{{current_shop.shop_trademark_url}}" id="logoImg">
+           <img src="{{current_shop.shop_trademark_url or static_url('design_img/TDSG.png')}}?imageView/1/w/80/h/80" id="logoImg">
             <div class="upload-img green-color">
                 <input id="file_upload" type="file" name="file_upload" class="uploadImg" />
                 <span class="title set-inl-blo text-white text-center">点击修改</span>

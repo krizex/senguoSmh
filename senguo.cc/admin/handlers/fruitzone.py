@@ -380,11 +380,13 @@ class QiniuCallback(FruitzoneBaseHandler):
         id = int(self.get_argument("id"))
         print('ID',id,key,action)
         action = self.get_argument("action")
+        print(key,id,action)
 
         if action == "shop":
             try:
                 shop = self.session.query(models.Shop).filter_by(id=id).one()
             except:
+                print("not found shop")
                 return self.send_error(404)
             shop_trademark_url = shop.shop_trademark_url  # 要先跟新图片url，防止删除旧图片时出错
             shop.update(session=self.session, shop_trademark_url=SHOP_IMG_HOST+key)

@@ -174,12 +174,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
     def send_qiniu_token(self, action, id):
         q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
         token = q.upload_token(BUCKET_SHOP_IMG, expires=120,
-                               policy={"callbackUrl": "http://m.senguo.cc/fruitzone/imgcallback",
-                                       "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
+                              policy={"callbackUrl": "http://test123.senguo.cc/fruitzone/imgcallback",
+                                      "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
+#        token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
         return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 
     def get_comments(self, shop_id, page=0, page_size=5):
-        return self.session.query(models.Accountinfo.headimgurl, models.Accountinfo.nickname,
+        return self.session.query(models.Accountinfo.headimgurl_small, models.Accountinfo.nickname,
                                   models.Order.comment, models.Order.comment_create_date, models.Order.id,
                                   models.Order.comment_reply).\
             filter(models.Order.shop_id == shop_id, models.Order.status == 6,
