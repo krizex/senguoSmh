@@ -179,7 +179,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
         return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 
     def get_comments(self, shop_id, page=0, page_size=5):
-        return self.session.query(models.Accountinfo.headimgurl, models.Accountinfo.nickname,
+        return self.session.query(models.Accountinfo.headimgurl_small, models.Accountinfo.nickname,
                                   models.Order.comment, models.Order.comment_create_date, models.Order.id,
                                   models.Order.comment_reply).\
             filter(models.Order.shop_id == shop_id, models.Order.status == 6,
