@@ -17,7 +17,7 @@
         {% for menu in menus %}
         <li class="item menu_active" data-id="{{menu.id}}"><a href="{{reverse_url('adminShelf')}}?action=menu&id={{menu.id}}">{{menu.name}}</a><span class="edit-btn class_name_edit" style="display:none;"></span></li>
         {% end %}
-        <li><a href="javascript:;" id="add-new-goodsType">+</a></li>
+        <li><a href="javascript:;" id="add-new-goodsType">+添加分类</a></li>
     </ul>
     <!--<div class="search-input input-group pull-right">
         <form method="post" action="" id="post">

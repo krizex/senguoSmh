@@ -37,6 +37,7 @@ $(document).ready(function(){
     });
     //添加收货地址
     $('body').on('click','.add-address',function(){
+        var $this=$(this);
         var max= $('.address-list').find('.address-item').length;
         if(max<5){
             var address_box=new Modal('address_box');
@@ -44,7 +45,7 @@ $(document).ready(function(){
             $('.addressAdd').show();
             $('.addressEdit').hide();
         }
-       else return $.noticeBox('最多可添加五个收货地址！');
+       else return $.noticeBox('最多可添加五个收货地址！',$this);
     });
     $('body').on('click','.addressAdd',function(){
         var $this=$(this);

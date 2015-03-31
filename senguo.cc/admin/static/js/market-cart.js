@@ -12,7 +12,7 @@ $(document).ready(function(){
     //运费默认值
     if(!window.dataObj.freigh_ontime) window.dataObj.freigh_ontime=0;
     if(!window.dataObj.freigh_now) window.dataObj.freigh_now=0;
-    $('.address_list li').eq(0).addClass('active');
+    $('.address_list .item').eq(0).addClass('active');
     window.dataObj.mincharge_now=Int($('.mincharge_now').find('.mincharge').text());
     window.dataObj.mincharge_intime=Int($('.mincharge_intime').find('.mincharge').text());
     //price
@@ -51,12 +51,12 @@ $(document).ready(function(){
         $.confirmRemove();
     });
     //类型切换增加active
-    $(document).on('click','.type-choose li',function(){
+    $(document).on('click','.type-choose .item',function(){
         var $this=$(this);
         $this.addClass('active').siblings().removeClass('active');
     });
     //收货地址添加
-    var max=$('.address_list li').length;
+    var max=$('.address_list .item').length;
     if(max==0){
         $addressBox.removeClass('hidden');
         $('.to-add-address').addClass('hidden');
@@ -65,6 +65,7 @@ $(document).ready(function(){
         $addressBox.addClass('hidden');
     });
     $('body').on('click','.to-add-address',function(){
+        var $this=$(this);
         if(max<5) {
             $addressBox.toggleClass('hidden');
             $receiveAdd.show();
@@ -73,14 +74,15 @@ $(document).ready(function(){
             $receiveAddress.val('');
             $receivePhone.val('');
         }
-        else return $.noticeBox('至多能添加五个收获地址！');
+        else return $.noticeBox('至多能添加五个收获地址！',$this);
     });
     $(document).on('click','#receiveAdd',function(){
+        var $this=$(this);
         var name=$receiveName.val();
         var address=$receiveAddress.val();
         var phone=$receivePhone.val();
-        if(max<5) addressAddEdit('add_address',name,address,phone);
-        else return $.noticeBox('至多能添加五个收获地址！');
+        if(max<5) addressAddEdit('add_address',name,address,phone,$this);
+        else return $.noticeBox('至多能添加五个收获地址！',$this);
     });
 
     //收货地址编辑
@@ -88,7 +90,7 @@ $(document).ready(function(){
         $addressBox.removeClass('hidden');
         $receiveAdd.hide();
         $receiveEdit.removeClass('hidden');
-        var parent=$(this).parents('li');
+        var parent=$(this).parents('.item');
         var name=parent.find('.name').text();
         var address=parent.find('.address_con').text();
         var phone=parent.find('.phone').text();
@@ -99,13 +101,17 @@ $(document).ready(function(){
         $receivePhone.val(phone);
     });
     $(document).on('click','#receiveEdit',function(){
+        var $this=$(this);
         var name=$receiveName.val();
         var address=$receiveAddress.val();
         var phone=$receivePhone.val();
-        addressAddEdit('edit_address',name,address,phone);
+        addressAddEdit('edit_address',name,address,phone,$this);
     });
     //订单提交
-    $(document).on('click','#submitOrder',function(){orderSubmit();});
+    $(document).on('click','#submitOrder',function(){
+        var $this=$(this);
+        orderSubmit($this);
+    });
     //
     var time=new Date();
     var time_now=checkTime(time.getHours())+':'+checkTime(time.getMinutes())+':'+checkTime(time.getSeconds());
@@ -119,7 +125,7 @@ $(document).ready(function(){
     var stop_range=Int($('.stop-range').val());
     var today=$('#sendDay').find('.active').data('id');
     if(today==1) {
-        $('.send_period li').each(function(){
+        $('.send_period .item').each(function(){
             var $this=$(this);
             var intime_startHour=Int($this.find('.intime_startHour').val());
             var intime_startMin=Int($this.find('.intime_startMin').val());
@@ -141,16 +147,16 @@ $(document).ready(function(){
                         $this.addClass('active');
                     }
                 }
-                else if($.noticeBox('抱歉，已超过了该送货时间段的下单时间!请选择下一个时间段！')){}
+                else if($.noticeBox('抱歉，已超过了该送货时间段的下单时间!请选择下一个时间段！',$this)){}
            });
         });}
-        $('.send_period li').on('click',function(){
+        $('.send_period .item').on('click',function(){
             var $this=$(this);
             if($this.hasClass('available')) {$this.addClass('active').siblings().removeClass('active')}
         });
     //按时达选择今天
     $('#send_today').on('click',function(){
-        $('.send_period li').each(function(){
+        $('.send_period .item').each(function(){
             var $this=$(this);
             var intime_startHour=Int($this.find('.intime_startHour').val());
             var intime_startMin=Int($this.find('.intime_startMin').val());
@@ -167,11 +173,11 @@ $(document).ready(function(){
     });
     //按时达选择明天
     $('#send_tomorrow').on('click',function(){
-        $('.send_period li').each(function(){
+        $('.send_period .item').each(function(){
             var $this=$(this);
             $this.addClass('available').removeClass('not_available');
         });
-        $('.send_period li').first().addClass('active').siblings().removeClass('active');
+        $('.send_period .item').first().addClass('active').siblings().removeClass('active');
     });
     //按时达/立即送模式选择
     var intime_on=$('.send-intime').data('config');
@@ -194,7 +200,7 @@ $(document).ready(function(){
                 $('.intime-intro').hide();
                 $('.now-intro').show();
             }
-            else $.noticeBox('按时达模式已关闭，请选择立即送模式！');
+            else $.noticeBox('按时达模式已关闭，请选择立即送模式！',$this);
         })
     }
     else{
@@ -205,7 +211,7 @@ $(document).ready(function(){
         //按时达模式选择
         $('#sendInTime').on('click',function(){
             var $this=$(this);
-            $this.parents('li').addClass('active').siblings('li').removeClass('active');
+            $this.parents('.item').addClass('active').siblings('.item').removeClass('active');
             $('.send_period').show();
             $('.send_day').show();
             $('.send_now').hide();
@@ -240,7 +246,7 @@ $(document).ready(function(){
                 $('.now-intro').hide();
             }
             else $('.send-intime').removeClass('active');
-            $.noticeBox('立即送模式已关闭，请选择按时达模式！');
+            $.noticeBox('立即送模式已关闭，请选择按时达模式！',$this);
         })
     }
     else{
@@ -255,7 +261,7 @@ $(document).ready(function(){
             var end_time=$('.now_endtime').text();
             if(time_now<=end_time)
             {
-                $this.parents('li').addClass('active').siblings('li').removeClass('active');
+                $this.parents('.item').addClass('active').siblings('.item').removeClass('active');
                 $('.send_period').hide();
                 $('.send_day').hide();
                 $('.send_now').show();
@@ -270,8 +276,8 @@ $(document).ready(function(){
                 }
             }
             else {
-                $this.parents('li').removeClass('active').siblings('li').addClass('active');
-                return $.noticeBox('不小心超过了"立即送"的送货时间呢，请选择"按时达"时间段！')
+                $this.parents('.item').removeClass('active').siblings('.item').addClass('active');
+                return $.noticeBox('不小心超过了"立即送"的送货时间呢，请选择"按时达"时间段！',$this)
             }
         });
     }
@@ -292,10 +298,10 @@ $(document).ready(function(){
         $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
     }
     //打赏小费
-    $('.tip-list li').on('click',function(){
+    $('.tip-list .item').on('click',function(){
         var $this=$(this);
         if($this.hasClass('active')) $this.removeClass('active');
-        else $this.addClass('active').siblings('li').removeClass('active');
+        else $this.addClass('active').siblings('.item').removeClass('active');
     })
 });
 window.dataObj.price_list=[];
@@ -456,17 +462,17 @@ function itemDelete(target,menu_type) {
         function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
 
-function addressAddEdit(action,name,address,phone){
+function addressAddEdit(action,name,address,phone,target){
     var url=window.dataObj.home_href;
     var action=action;
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
     var address_id=$('.address-box').attr('data-id');
-    if(name == null){return $.noticeBox('请输入收货人姓名！')}
-    if(name.length > 10){return $.noticeBox('姓名请不要超过10个字！')}
-    if(address == null){return $.noticeBox('请输入收货人地址！')}
-    if(address.length > 50){return $.noticeBox('地址请不要超过50个字！')}
-    if(!phone){return $.noticeBox('请输入收货人电话！')}
-    if(!regPhone.test(phone)){return $.noticeBox('请输入有效的手机号码！')}
+    if(name == null){return $.noticeBox('请输入收货人姓名！',target)}
+    if(name.length > 10){return $.noticeBox('姓名请不要超过10个字！',target)}
+    if(address == null){return $.noticeBox('请输入收货人地址！',target)}
+    if(address.length > 50){return $.noticeBox('地址请不要超过50个字！',target)}
+    if(!phone){return $.noticeBox('请输入收货人电话！',target)}
+    if(!regPhone.test(phone)){return $.noticeBox('请输入有效的手机号码！',target)}
     var data={
         phone:phone,
         receiver:name,
@@ -480,7 +486,7 @@ function addressAddEdit(action,name,address,phone){
     $.postJson(url,args,function(res){
         if(res.success){
             if(action=='add_address'){
-                $('.address_list li').removeClass('active');
+                $('.address_list .item').removeClass('active');
                 var $item=$('<li data-id="'+res.address_id+'" class="list-group-item clearfix item height50 active"><a href="javascript:;" class="text-grey3 pull-left address"><p class="mt5"><span class="phone pr10">{{address.phone}}</span> <span class="name">{{address.receiver}}</span></p><p class="address_con pr10 m0 text-grey9">{{address.address_text}}</p></a><a class="text-green pull-right to-edit-address text-center">+编辑</a></li>');
                 $item.find('.name').text(name);
                 $item.find('.address_con').text(address);
@@ -514,7 +520,7 @@ function addressAddEdit(action,name,address,phone){
     function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
 
-function orderSubmit(){
+function orderSubmit(target){
     var url='';
     var fruits={};
     var mgoods={};
@@ -530,7 +536,7 @@ function orderSubmit(){
     var tip=$('.tip-list').find('.active').data('id');
     window.dataObj.total_price=Number($('#list_total_price').text());
     if(!today) today=1;
-    if(!address_id){return $.noticeBox('请填写您的收货地址！');}
+    if(!address_id){return $.noticeBox('请填写您的收货地址！',target);}
     if(!tip) tip=0;
     for(var i=0;i<fruit_item.length;i++)
     {
@@ -547,14 +553,14 @@ function orderSubmit(){
     }
     if(!message) message='';
     if(type==2) {
-        if(window.dataObj.total_price<mincharge_intime) return $.noticeBox('您的订单未达到按时达最低起送金额！');
-        if(!period_id) return $.noticeBox('请选择送货时段！');
+        if(window.dataObj.total_price<mincharge_intime) return $.noticeBox('您的订单未达到按时达最低起送金额！',target);
+        if(!period_id) return $.noticeBox('请选择送货时段！',target);
     }
     if(type==1){
         period_id=0;
-        if(window.dataObj.total_price<mincharge_now) return $.noticeBox('您的订单未达到立即送最低起送金额！');
+        if(window.dataObj.total_price<mincharge_now) return $.noticeBox('您的订单未达到立即送最低起送金额！',target);
     }
-    if(!type){return $.noticeBox('请选择送货时段！')}
+    if(!type){return $.noticeBox('请选择送货时段！',target)}
     $('#submitOrder').addClass('bg-grey text-grey3').text('提交成功').attr({'disabled':'true'});
     var args={
         fruits:fruits,
@@ -573,7 +579,7 @@ function orderSubmit(){
             window.location.href=window.dataObj.success_href;
         }
         else {
-            $.noticeBox(res.error_text);
+            $.noticeBox(res.error_text,target);
             $('#submitOrder').removeClass('bg-grey text-grey3').text('提交订单').removeAttr('disabled');  
         }
     },

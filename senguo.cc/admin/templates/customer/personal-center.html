@@ -9,7 +9,7 @@
         <a href="{{reverse_url('customerProfile')}}" class="user-img text-grey3">
             <img src="{{current_user.accountinfo.headimgurl}}" class="img img-circle"/>
             <div class="info">
-                <p>
+                <p class="text-center">
                     <span>{{current_user.accountinfo.nickname}}</span>
                     <span data-id="{{current_user.accountinfo.sex}}" class="user-sex  font14"></span>
                 </p>
@@ -34,26 +34,26 @@
         <ul class="center-nav row text-center m-b0 clearfix font12 center-block box-style">
             <li class="w25 pull-left prl0 m-b10">
                 <a href="{{reverse_url('customerOrder')}}?action=unhandled">
-                    <p class="text-grey3">未处理</p>
-                    <p class="text-pink">{{count[3]}}</p>
+                    <p class="text-grey3 text-center">未处理</p>
+                    <p class="text-pink text-center">{{count[3]}}</p>
                 </a>
             </li>
             <li class="w25 pull-left prl0 m-b10">
                 <a href="{{reverse_url('customerOrder')}}?action=waiting">
-                    <p class="text-grey3">待收货</p>
-                    <p class="text-pink">{{count[4]}}</p>
+                    <p class="text-grey3 text-center">待收货</p>
+                    <p class="text-pink text-center">{{count[4]}}</p>
                 </a>
             </li>
             <li class="w25 pull-left prl0 m-b10">
                 <a href="{{reverse_url('customerOrder')}}?action=finish">
-                    <p class="text-grey3">已送达</p>
-                    <p class="text-grey2">{{count[5]}}</p>
+                    <p class="text-grey3 text-center">已送达</p>
+                    <p class="text-grey2 text-center">{{count[5]}}</p>
                 </a>
             </li>
             <li class="w25 pull-left prl0 m-b10">
                 <a href="#">
-                    <p class="text-grey3">售后订单</p>
-                    <p class="text-pink">{{count[6]}}</p>
+                    <p class="text-grey3 text-center">售后订单</p>
+                    <p class="text-pink text-center">{{count[6]}}</p>
                 </a>
             </li>
         </ul>
@@ -93,7 +93,7 @@
             <div class="modal-top"><img src="/static/images/info_top.png"/></div>
             <div class="modal-header clearfix bg_change">
                 <h4 class="modal-title font16 text-center line48">收货地址</h4>
-                <span type="button" class="close dismiss">✕</span>
+                <button type="button" class="close dismiss">✕</button>
             </div>
             <div class="modal-body font14">
                 <div class="w60 center-block pt10">

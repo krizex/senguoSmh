@@ -43,31 +43,31 @@
             {% set ml20='ml20' %}
             {% set sign_status='un_sign'%}
          {% end %}
-         <a href="javascript:;" class="btn text-green3 font12 border-ca pull-left w49 sign-box p0 {{sign_bg}} {{sign_show}} {{sign_color}} {{sign_status}} font13 bg-grey5" id="signin-shop">
+         <button class="btn text-green3 font12 border-ca pull-left w49 sign-box p0 {{sign_bg}} {{sign_show}} {{sign_color}} {{sign_status}} font13 bg-grey5" id="signin-shop">
              {% if not signin %}
              <em class="set-inl-blo bg_change"></em>
              {% end %}
              <span class="sign_text {{ml20}}">{{sign_text}}</span>
-         </a>
-         <a href="javascript:;" class="btn text-white bg-pink font12 border-ca pull-right w49 sign-box p0 {{follow_show}} font13 bg-grey5" id="focus-shop">+店铺关注</a>
+         </button>
+         <button  class="btn text-white bg-pink font12 border-ca pull-right w49 sign-box p0 {{follow_show}} font13 bg-grey5" id="focus-shop">+店铺关注</button>
      </div>
  </div>
  <ul class="info2 text-center bg-white set-w100-fle font12 m-b10">
      <li class="w25 pull-left">
-        <p class="text-grey9">运营时间</p>
-        <p>{{operate_days or 0}}天</p>
+        <p class="text-grey9 text-center">运营时间</p>
+        <p class="text-center">{{operate_days or 0}}天</p>
      </li>
      <li class="w25 pull-left">
-         <p class="text-grey9">粉丝</p>
-         <p>{{fans_sum or 0}}个</p>
+         <p class="text-grey9 text-center">粉丝</p>
+         <p class="text-center">{{fans_sum or 0}}个</p>
      </li>
      <li class="w25 pull-left">
-         <p class="text-grey9">总订单数</p>
-         <p>{{order_sum}}个</p>
+         <p class="text-grey9 text-center">总订单数</p>
+         <p class="text-center">{{order_sum}}个</p>
      </li>
      <li class="w25 pull-left">
-         <p class="text-grey9">商品种类</p>
-         <p>{{goods_sum or 0}}种</p>
+         <p class="text-grey9 text-center">商品种类</p>
+         <p class="text-center">{{goods_sum or 0}}种</p>
      </li>
  </ul>
 <div class="shop-box bg-white clearfix">
