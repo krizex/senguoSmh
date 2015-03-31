@@ -171,7 +171,7 @@ class ShopProfile(CustomerBaseHandler):
         service_area = self.code_to_text("service_area", shop.shop_service_area)
         staffs = self.session.query(models.HireLink).filter_by(shop_id=shop_id).all()
         shop_members_id = [shop.admin_id]+[x.staff_id for x in staffs]
-        headimgurls = self.session.query(models.Accountinfo.headimgurl).\
+        headimgurls = self.session.query(models.Accountinfo.headimgurl_small).\
             filter(models.Accountinfo.id.in_(shop_members_id)).all()
         comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
         session = self.session
@@ -1014,7 +1014,7 @@ class Order(CustomerBaseHandler):
             staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id).first()
             if staff_info is not None:
                 order.sender_phone = staff_info.phone
-                order.sender_img = staff_info.headimgurl
+                order.sender_img = staff_info.headimgurl_small
             else:
                 order.sender_phone =None
                 order.sender_img = None
@@ -1103,7 +1103,7 @@ class OrderDetail(CustomerBaseHandler):
         staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id).first()
         if staff_info is not None:
                 order.sender_phone = staff_info.phone
-                order.sender_img = staff_info.headimgurl
+                order.sender_img = staff_info.headimgurl_small
         else:
                 order.sender_phone =None
                 order.sender_img = None
