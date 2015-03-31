@@ -30,6 +30,7 @@ handlers = [
     (r"/customer/register", handlers.customer.Access, {"action":"register"}, "customerRegister"),
     (r"/customer", handlers.customer.Home, {}, "customerHome"),
     (r"/customer/profile", handlers.customer.CustomerProfile, {}, "customerProfile"),
+    (r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
     #微官网-----待删除
     (r"/", handlers.superadmin.Official),
 

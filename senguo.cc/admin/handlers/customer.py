@@ -249,10 +249,17 @@ class ShopProfile(CustomerBaseHandler):
                     #shop_point add by one
                     #woody
                     if shop_follow is not None:
-                        if shop_follow.shop_point :
+                        if shop_follow.shop_point is not None:
                             shop_follow.shop_point += 1
                             print("sigin success")
                             self.session.commit()
+
+                    else:
+                        shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id,shop_id = shop_id)
+                        shop_follow.shop_point = 1
+                        self.session.add(shop_follow)
+                        self.session.commit()
+                        print("new shop_follow",shop_follow.shop_point)
                     if datetime.date.today() - signin.last_date == datetime.timedelta(1):  # 判断是否连续签到
                         self.current_user.credits += signin.keep_days
                         signin.keep_days += 1
@@ -340,7 +347,7 @@ class Market(CustomerBaseHandler):
         if not shop:
             return self.send_error(404)
         self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
-        # self._shop_code = shop.shop_code
+        self._shop_code = shop.shop_code
         # self.set_cookie("market_shop_name",str(shop.shop_name))
         #woody
         self.set_cookie("market_shop_code",str(shop.shop_code))
@@ -1191,8 +1198,19 @@ class Points(CustomerBaseHandler):
 
         return self.send_success(data = data)
 
-        
 
-
+class InsertData(CustomerBaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        try:
+            accountinfo_list = self.session.query(models.Accountinfo).all()
+        except:
+            self.send_fail(" get accountinfo error")
+        if accountinfo_list:
+            for accountinfo in accountinfo_list:
+                accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
+                print(accountinfo.headimgurl_small)
+            self.session.commit()
+        return self.send_success()
 
 
