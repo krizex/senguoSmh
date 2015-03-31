@@ -132,7 +132,7 @@ function sexEdit(sex,text){
             if (res.success) {
                 var sex_box=new Modal('sexBox');
                 sex_box.modal('hide');
-                $('#userSex').text(text);
+                $('.user_sex').text(text);
             }
             else $.noticeBox(res.error_text);
         },
@@ -192,9 +192,9 @@ function TiePhone(evt){
         function(res){
             if(res.success)
             {
-                $('#phoneNumber').text(phone).css({'color':'#a8a8a8'});
+                $('.tiephone').text(phone).css({'color':'#a8a8a8'});
                 var tie_box=new Modal('tieBox');
-                tie_box.modal('show');
+                tie_box.modal('hide');
             }
             else $.noticeBox(res.error_text);
         },
