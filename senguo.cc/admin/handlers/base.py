@@ -737,7 +737,7 @@ class WxOauth2:
     def arrayToXml(self,arr):
         xml = ["<xml>"]
         for k,v in arr.iteritems():
-            if v,isdigit()
+            if v.isdigit()
                 xml.append("<{0}>{1}</{0}>".format(k,v))
             else:
                 xml.append("<{0}><![CDATA{1}]></{0}>").format(k,v)
