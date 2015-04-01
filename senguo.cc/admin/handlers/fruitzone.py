@@ -330,6 +330,7 @@ class AdminShop(FruitzoneBaseHandler):
         if shop not in self.current_user.shops:         #如果该店铺不属于该用户，禁止修改
             return self.send_error(403)
         if action== "edit_shop_img":
+            print('**********shop_id*************\n',shop_id)
             return self.send_qiniu_token("shop", shop_id)
         elif action == "edit_shop_url":
             shop.update(session=self.session, shop_url=data)
