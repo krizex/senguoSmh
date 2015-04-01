@@ -704,6 +704,7 @@ class CustomerShopFollow(MapBase, _CommonApi):
     # woody
     shop_point = Column(Float,default = 0)
     # pointhistory = relationship("PointHistory")
+    bing_add_point = Column(Integer)  # 1 :
 
 class PointHistory(MapBase,_CommonApi):
     __tablename__ = 'pointhistory'
@@ -1053,7 +1054,7 @@ class Order(MapBase, _CommonApi):
                 charge_type.fruit.saled -= num
                 print(num)
         if mgoods:
-            charge_types = session.query(models.ChargeType).filter(ChargeType.id.in_(mgoods.keys())).all()
+            charge_types = session.query(ChargeType).filter(ChargeType.id.in_(mgoods.keys())).all()
             for charge_type in charge_types:
                 print("before",charge_type.mgoods.storage,charge_type.mgoods.current_saled)
                 if mgoods[str(charge_type.id)]==0:

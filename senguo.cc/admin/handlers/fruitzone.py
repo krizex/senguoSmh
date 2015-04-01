@@ -330,6 +330,7 @@ class AdminShop(FruitzoneBaseHandler):
         if shop not in self.current_user.shops:         #如果该店铺不属于该用户，禁止修改
             return self.send_error(403)
         if action== "edit_shop_img":
+            print('**********shop_id*************\n',shop_id)
             return self.send_qiniu_token("shop", shop_id)
         elif action == "edit_shop_url":
             shop.update(session=self.session, shop_url=data)
@@ -377,12 +378,15 @@ class QiniuCallback(FruitzoneBaseHandler):
     def post(self):
         key = self.get_argument("key")
         id = int(self.get_argument("id"))
+        print('ID',id,key,action)
         action = self.get_argument("action")
+        print(key,id,action)
 
         if action == "shop":
             try:
                 shop = self.session.query(models.Shop).filter_by(id=id).one()
             except:
+                print("not found shop")
                 return self.send_error(404)
             shop_trademark_url = shop.shop_trademark_url  # 要先跟新图片url，防止删除旧图片时出错
             shop.update(session=self.session, shop_trademark_url=SHOP_IMG_HOST+key)
