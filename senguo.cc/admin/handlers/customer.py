@@ -361,10 +361,10 @@ class Market(CustomerBaseHandler):
                     shop_follow.shop_point += 10
                 else:
                     shop_follow.shop_point = 10
-            if shop_follow.bing_addpoint == 0:
+            if shop_follow.bing_add_point == 0:
                 if self.current_user.accountinfo.phone != None:
                     shop_follow.shop_point += 10
-                    shop_follow.bing_addpoint = 1
+                    shop_follow.bing_add_point = 1
 
             self.session.add(shop_follow)
             self.session.commit()
@@ -1221,9 +1221,9 @@ class InsertData(CustomerBaseHandler):
         return self.send_success()
 
 # class PingTest(CustomerBaseHandler):
-    @tornado.web.authenticated
-    def get(self):
-        import pingpp
+#    @tornado.web.authenticated
+#    def get(self):
+#        import pingpp
 
 
 
