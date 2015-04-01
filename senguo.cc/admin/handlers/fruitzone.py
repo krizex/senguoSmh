@@ -203,7 +203,7 @@ class ShopApply(FruitzoneBaseHandler):
                 shop = None
             if not shop:
                 return self.send_error(404)
-            return self.render("fruitzone/apply.html", context=dict(shop=shop,reApply=True))
+            return self.render("fruitzone/apply.html", context=dict(shop=shop,reApply=True,subscribe=subscribe))
 
     @tornado.web.authenticated
     @FruitzoneBaseHandler.check_arguments(
@@ -378,7 +378,7 @@ class QiniuCallback(FruitzoneBaseHandler):
     def post(self):
         key = self.get_argument("key")
         id = int(self.get_argument("id"))
-        print('ID',id,key,action)
+        print('ID',id,key)
         action = self.get_argument("action")
         print(key,id,action)
 
