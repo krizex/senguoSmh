@@ -17,19 +17,19 @@ import qiniu
 from settings import *
 import requests
 
-import time
-import random
-import urllib2
-import threading
-from urllib import quote
-import xml.etree.ElementTree as ET
+# import time
+# import random
+# # import urllib2
+# import threading
+# from urllib import quote
+# import xml.etree.ElementTree as ET
 
 
-try:
-    import pycurl
-    from cStringIO import StringIO
-except ImportError:
-    pycurl = None
+# try:
+#     import pycurl
+#     from cStringIO import StringIO
+# except ImportError:
+#     pycurl = None
 
 #woody
 order_url = 'http://m.senguo.cc:8887/admin'
