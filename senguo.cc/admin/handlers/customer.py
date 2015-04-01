@@ -361,8 +361,10 @@ class Market(CustomerBaseHandler):
                     shop_follow.shop_point += 10
                 else:
                     shop_follow.shop_point = 10
-            if self.current_user.accountinfo.phone != None:
-                shop_follow.shop_point += 10
+            if shop_follow.bing_addpoint == 0:
+                if self.current_user.accountinfo.phone != None:
+                    shop_follow.shop_point += 10
+                    shop_follow.bing_addpoint = 1
 
             self.session.add(shop_follow)
             self.session.commit()
@@ -374,7 +376,6 @@ class Market(CustomerBaseHandler):
                 print("point_history",point_history,point_history.each_point)
 
             self.session.add(point_history)
-
               # 添加关注
             self.session.commit()
 
@@ -1202,6 +1203,7 @@ class Points(CustomerBaseHandler):
 class InsertData(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self):
+        # import pingpp
         try:
             accountinfo_list = self.session.query(models.Accountinfo).all()
         except:
@@ -1211,6 +1213,17 @@ class InsertData(CustomerBaseHandler):
                 accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
                 print(accountinfo.headimgurl_small)
             self.session.commit()
+
+        # ch = pingpp(order_no = '1234353',amount = 1,app=dict(id=''))
+
+
+
         return self.send_success()
+
+# class PingTest(CustomerBaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        import pingpp
+
 
 

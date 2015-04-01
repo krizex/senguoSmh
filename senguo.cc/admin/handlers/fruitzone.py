@@ -378,6 +378,7 @@ class QiniuCallback(FruitzoneBaseHandler):
     def post(self):
         key = self.get_argument("key")
         id = int(self.get_argument("id"))
+        print('ID',id,key,action)
         action = self.get_argument("action")
         print(key,id,action)
 
