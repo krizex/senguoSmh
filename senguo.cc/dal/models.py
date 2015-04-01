@@ -704,6 +704,7 @@ class CustomerShopFollow(MapBase, _CommonApi):
     # woody
     shop_point = Column(Float,default = 0)
     # pointhistory = relationship("PointHistory")
+    bing_add_point = Column(Integer)  # 1 :
 
 class PointHistory(MapBase,_CommonApi):
     __tablename__ = 'pointhistory'
