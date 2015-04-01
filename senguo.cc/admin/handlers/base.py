@@ -681,68 +681,68 @@ class WxOauth2:
         wechat_redirect'.format(appid,redirect_url,scope,state)
         return url
 
-    @classmethod
-    def formatBizQueryParaMap(cls,paraMap,urlencode):
-        slist = sorted(paraMap)
-        buff = []
-        for k in slist:
-            v =  quote(paraMap[k]) if urlencode else paraMap[k]
-            buff.append("{0}={1}".format(k,v))
-        return "&".join(buff)
+    # @classmethod
+    # def formatBizQueryParaMap(cls,paraMap,urlencode):
+    #     slist = sorted(paraMap)
+    #     buff = []
+    #     for k in slist:
+    #         v =  quote(paraMap[k]) if urlencode else paraMap[k]
+    #         buff.append("{0}={1}".format(k,v))
+    #     return "&".join(buff)
 
-    @classmethod
-    def getSign(self,obj):
-        #商户支付密钥Key。审核通过后，在微信发送的邮件中查看
-        KEY = ''
-        String = self.formatBizQueryParaMap(obj,False)
-        String = "{0}&key={1}".format(String,KEY)
-        String = hashlib.md5(String).hexdigest()
-        result = String.upper()
-        return result
+    # @classmethod
+    # def getSign(self,obj):
+    #     #商户支付密钥Key。审核通过后，在微信发送的邮件中查看
+    #     KEY = ''
+    #     String = self.formatBizQueryParaMap(obj,False)
+    #     String = "{0}&key={1}".format(String,KEY)
+    #     String = hashlib.md5(String).hexdigest()
+    #     result = String.upper()
+    #     return result
 
-    @classmethod
-    def postXML(self,xml,url,second=30 ,post=True):
-        curl = pycurl.Curl()
-        curl.setopt(pycurl.URL,url)
-        curl.setopt(pycurl.TIMEOUT,second)
+    # @classmethod
+    # def postXML(self,xml,url,second=30 ,post=True):
+    #     curl = pycurl.Curl()
+    #     curl.setopt(pycurl.URL,url)
+    #     curl.setopt(pycurl.TIMEOUT,second)
 
-        if post:
-            curl.setopt(pycurl.POST,True)
-            curl.setopt(pycurl.POSTFIELDS,xml)
-        buff = StringIO()
-        curl.setopt(pycurl.WRITEFUNCTION,buff.write)
+    #     if post:
+    #         curl.setopt(pycurl.POST,True)
+    #         curl.setopt(pycurl.POSTFIELDS,xml)
+    #     buff = StringIO()
+    #     curl.setopt(pycurl.WRITEFUNCTION,buff.write)
 
-        curl.perform()
-        return buff.getvalue()
+    #     curl.perform()
+    #     return buff.getvalue()
 
-    @classmethod
-    def createXml(self):
-        parameters = {}
-        parameters["appid"] = MP_APPID
-        parameters["mch_id"]= ""
-        parameters["spbill_create_ip"] = "127.0.0.1"
-        parameters["noncestr_str"] = self.createNoncestr()
-        parameters["sign"]  = self.getSign(parameters)
-        return arrayToXml(parameters)
+    # @classmethod
+    # def createXml(self):
+    #     parameters = {}
+    #     parameters["appid"] = MP_APPID
+    #     parameters["mch_id"]= ""
+    #     parameters["spbill_create_ip"] = "127.0.0.1"
+    #     parameters["noncestr_str"] = self.createNoncestr()
+    #     parameters["sign"]  = self.getSign(parameters)
+    #     return arrayToXml(parameters)
 
-    @classmethod
-    def createNoncestr(self):
-        chars = "abcdefghijklmnopqrstuvwxyz0123456789"
-        strs = []
-        for x in range(length):
-            strs.append(chars[random.randrange(0,len(chars))])
-        return "".join(strs)
+    # @classmethod
+    # def createNoncestr(self):
+    #     chars = "abcdefghijklmnopqrstuvwxyz0123456789"
+    #     strs = []
+    #     for x in range(length):
+    #         strs.append(chars[random.randrange(0,len(chars))])
+    #     return "".join(strs)
 
-    @classmethod
-    def arrayToXml(self,arr):
-        xml = ["<xml>"]
-        for k,v in arr.iteritems():
-            if v.isdigit()
-                xml.append("<{0}>{1}</{0}>".format(k,v))
-            else:
-                xml.append("<{0}><![CDATA{1}]></{0}>").format(k,v)
-        xml.append("</xml>")
-        return "".join(xml)
+    # @classmethod
+    # def arrayToXml(self,arr):
+    #     xml = ["<xml>"]
+    #     for k,v in arr.iteritems():
+    #         if v.isdigit()
+    #             xml.append("<{0}>{1}</{0}>".format(k,v))
+    #         else:
+    #             xml.append("<{0}><![CDATA{1}]></{0}>").format(k,v)
+    #     xml.append("</xml>")
+    #     return "".join(xml)
 
 
 
