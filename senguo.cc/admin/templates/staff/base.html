@@ -28,7 +28,7 @@
         {% set now_active='' %}
         {% set time_active='' %}
         {% set history_active='' %}
-        {% if page == 'home' %}
+        {% if page and page== 'home' %}
         {% set home_active='active' %}
         {% elif page == 'now' %}
         {% set now_active='active' %}
