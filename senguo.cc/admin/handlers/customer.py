@@ -1,4 +1,6 @@
 from handlers.base import CustomerBaseHandler,WxOauth2
+from handlers.weixinSign import *
+from handlers.wxpay import *
 import dal.models as models
 import tornado.web
 from settings import *
@@ -858,8 +860,9 @@ class Cart(CustomerBaseHandler):
                 tip = self.args["tip"]  # 立即送的小费
                 totalPrice += tip
             now = datetime.datetime.now()
+            later = now + datetime.timedelta(hours = 0.5)
             start_time = datetime.time(now.hour, now.minute, now.second)
-            end_time = datetime.time(config.end_time_now.hour, config.end_time_now.minute)
+            end_time = datetime.time(later.hour,later.minute,later.second)
 
         #按时达/立即送 开启/关闭
         if config.ontime_on == False and self.args["type"] == 2:
@@ -1202,28 +1205,44 @@ class Points(CustomerBaseHandler):
 
 class InsertData(CustomerBaseHandler):
     @tornado.web.authenticated
+    @CustomerBaseHandler.check_arguments("code?:str")
     def get(self):
+
+        
         # import pingpp
         try:
-            accountinfo_list = self.session.query(models.Accountinfo).all()
+            shop_list = self.session.query(models.Shop).all()
         except:
-            self.send_fail(" get accountinfo error")
-        if accountinfo_list:
-            for accountinfo in accountinfo_list:
-                accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
-                print(accountinfo.headimgurl_small)
+            self.send_fail(" get shop error")
+        if shop_list:
+            for shop in shop_list:
+                if shop.shop_start_timestamp == None:
+                    shop.shop_start_timestamp = shop.create_date_timestamp
             self.session.commit()
-
-        # ch = pingpp(order_no = '1234353',amount = 1,app=dict(id=''))
-
-
 
         return self.send_success()
 
-# class PingTest(CustomerBaseHandler):
-#    @tornado.web.authenticated
-#    def get(self):
-#        import pingpp
+        # ch = pingpp(order_no = '1234353',amount = 1,app=dict(id=''))
+        # return self.send_success()
+        # path = "http://m.senguo.cc/customer/test"
+
+        # sign = sign(path)
+        # ret = sign.getSign(path)
+        # jsApi = JsApi_pub()
+        # if not self.args["code"]:
+        #     url = jsApi.createOauthUrlForCode(path)
+        #     return self.redirect(url)
+        # else:
+        #     code = self.args['code']
+        #     orderID = "12345678"
+        #     jsApi.setCode(code)
+        #     openid = jsApi.getOpenid()
+        #     if not openid:
+        #         return self.send_fail("no openid")
+        #     unifiedOrder = UnifiedOrder_pub()
+        #     unifiedOrder.setParameter("body",'senguocc')
+        #     unifiedOrder.setParameter("notify_url",)
+
 
 
 
