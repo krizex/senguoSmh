@@ -618,8 +618,8 @@ function addEditFruit(target,action){
     if(!priority){priority=5}
     if(!intro){intro='';}
     if(!name){return alert('请输入商品名称！');}
-    if(saled!=0&&!regNumber.test(saled)){return alert('销量只能为整数！');}
-    if(storage!=0&&!regNumber.test(storage)){return alert('库存只能为整数！');}
+    if(saled!=0&&!regFloat.test(saled)){return alert('销量只能为数字，至多为小数点后两位！');}
+    if(storage!=0&&!regFloat.test(storage)){return alert('库存只能为数字，至多为小数点后两位！');}
     if(!regNumber.test(priority)){return alert('优先级只能为整数！');}
     if(priority<1||priority>5){return alert('优先级只能为1-5！');}
     if(intro.length>100) {return alert('商品简介请不要超过100个字！');}
@@ -712,7 +712,7 @@ function addEditCharge(target,id,action,item){
     if(!price||!num) {return alert('请输入计价方式！')}
     if(!regFloat.test(price)){return alert('价格只能为数字，至多为小数点后两位！');}
     if(!unit_num){unit_num=1}
-    if(!regNumber.test(num)){return alert('数量只能为数字！');}
+    if(!regFloat.test(num)){return alert('数量只能为数字！');}
     if(!regFloat.test(unit_num)){return alert('单位换算数量只能为数字！');}
     var data={
             price:price,
