@@ -583,8 +583,8 @@ function addEditFruit(target,action){
     var url='';
     var action=action;
     var name=target.parents('.add-edit-item').find('.goodsName').val();
-    var saled=Int(target.parents('.add-edit-item').find('.goodsSale').val());
-    var storage=Int(target.parents('.add-edit-item').find('.goodsStorage').val());
+    var saled=parseFloat(target.parents('.add-edit-item').find('.goodsSale').val());
+    var storage=parseFloat(target.parents('.add-edit-item').find('.goodsStorage').val());
     var unit=Int(target.parents('.add-edit-item').find('.goodsUnit').attr('data-id'));
     var tag=target.parents('.add-edit-item').find('.tag-list').find('.active').data('id');
     var img_url=target.parents('.add-edit-item').find('.imgPreview').attr('data-key');
@@ -706,7 +706,7 @@ function addEditCharge(target,id,action,item){
     var action=action;
     var charge_item=target.parents(item).find('.add-goods-charge-list');
     var price=parseFloat(charge_item.find('.charge-price').val());
-    var num=Int(charge_item.find('.charge-num').val());
+    var num=parseFloat(charge_item.find('.charge-num').val());
     var units=Int(charge_item.find('.charge-unit').attr('data-id'));
     var unit_num=parseFloat(charge_item.find('.charge-unit-num').val());
     if(!price||!num) {return alert('请输入计价方式！')}
@@ -759,7 +759,6 @@ function deleteCharge(target,id){
         action:action,
         data:data,
         charge_type_id:id
-
     };
     $.postJson(url,args,
         function(res){
