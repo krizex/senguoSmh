@@ -1,6 +1,6 @@
 from handlers.base import CustomerBaseHandler,WxOauth2
-from handlers.weixinSign import *
-from handlers.wxpay import *
+# from handlers.weixinSign import *
+# from handlers.wxpay import *
 import dal.models as models
 import tornado.web
 from settings import *
