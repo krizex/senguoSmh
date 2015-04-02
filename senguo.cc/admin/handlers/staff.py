@@ -156,8 +156,8 @@ class Order(StaffBaseHandler):
 
         orders_len2 = orders_len.filter_by(type=2).order_by(models.Order.start_time).all()
         day = datetime.datetime.now().day
-        orders_len2 = [x for x in orders_len2 if (x.today == 1 and x.create_date.day == day) or
-                      (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
+        # orders_len2 = [x for x in orders_len2 if (x.today == 1 and x.create_date.day == day) or
+        #               (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
         orders_ontime = len(orders_len2)
         self.set_cookie("orders_ontime",str(orders_ontime))
         if order_type == "now":
@@ -166,8 +166,8 @@ class Order(StaffBaseHandler):
         elif order_type == "on_time":
             orders = orders.filter_by(type=2).order_by(models.Order.start_time).all()     
             day = datetime.datetime.now().day
-            orders = [x for x in orders if (x.today == 1 and x.create_date.day == day) or
-                      (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单  
+            # orders = [x for x in orders if (x.today == 1 and x.create_date.day == day) or
+            #           (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单  
             page = 'on_time'
         elif order_type == "history":
             orders = history_orders
