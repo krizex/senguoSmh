@@ -15,8 +15,11 @@ import libs.xmltodict as xmltodict
 import qiniu
 from qiniu.services.storage.bucket import BucketManager
 
-
 class Home(FruitzoneBaseHandler):
+    def get(self):
+       return self.render("fruitzone/index.html",context=dict(subpage=""))
+
+class ShopList(FruitzoneBaseHandler):
     _page_count =20
     def get(self):
         q = self.session.query(models.Shop).order_by(desc(models.Shop.id))\
