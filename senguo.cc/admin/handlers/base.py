@@ -17,6 +17,20 @@ import qiniu
 from settings import *
 import requests
 
+# import time
+# import random
+# # import urllib2
+# import threading
+# from urllib import quote
+# import xml.etree.ElementTree as ET
+
+
+# try:
+#     import pycurl
+#     from cStringIO import StringIO
+# except ImportError:
+#     pycurl = None
+
 #woody
 order_url = 'http://m.senguo.cc:8887/admin'
 staff_order_url = 'http://m.senguo.cc/staff'
@@ -174,7 +188,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
     def send_qiniu_token(self, action, id):
         q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
         token = q.upload_token(BUCKET_SHOP_IMG, expires=120,
-                              policy={"callbackUrl": "http://test123.senguo.cc/fruitzone/imgcallback",
+                              policy={"callbackUrl": "http://m.senguo.cc/fruitzone/imgcallback",
                                       "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 #        token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
         return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
@@ -590,6 +604,8 @@ class WxOauth2:
     @classmethod
     def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time):
         remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n\n' + '请及时处理订单。'
+        order_type_temp = int(order_type)
+        order_type = "即时送" if order_type_temp == 1 else "按时达"
         postdata = {
             'touser':touser,
             'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
@@ -664,6 +680,69 @@ class WxOauth2:
         authorize?appid={0}&redirect_uri={1}&response_type=code&scope={2}&state={3}#\
         wechat_redirect'.format(appid,redirect_url,scope,state)
         return url
+
+    # @classmethod
+    # def formatBizQueryParaMap(cls,paraMap,urlencode):
+    #     slist = sorted(paraMap)
+    #     buff = []
+    #     for k in slist:
+    #         v =  quote(paraMap[k]) if urlencode else paraMap[k]
+    #         buff.append("{0}={1}".format(k,v))
+    #     return "&".join(buff)
+
+    # @classmethod
+    # def getSign(self,obj):
+    #     #商户支付密钥Key。审核通过后，在微信发送的邮件中查看
+    #     KEY = ''
+    #     String = self.formatBizQueryParaMap(obj,False)
+    #     String = "{0}&key={1}".format(String,KEY)
+    #     String = hashlib.md5(String).hexdigest()
+    #     result = String.upper()
+    #     return result
+
+    # @classmethod
+    # def postXML(self,xml,url,second=30 ,post=True):
+    #     curl = pycurl.Curl()
+    #     curl.setopt(pycurl.URL,url)
+    #     curl.setopt(pycurl.TIMEOUT,second)
+
+    #     if post:
+    #         curl.setopt(pycurl.POST,True)
+    #         curl.setopt(pycurl.POSTFIELDS,xml)
+    #     buff = StringIO()
+    #     curl.setopt(pycurl.WRITEFUNCTION,buff.write)
+
+    #     curl.perform()
+    #     return buff.getvalue()
+
+    # @classmethod
+    # def createXml(self):
+    #     parameters = {}
+    #     parameters["appid"] = MP_APPID
+    #     parameters["mch_id"]= ""
+    #     parameters["spbill_create_ip"] = "127.0.0.1"
+    #     parameters["noncestr_str"] = self.createNoncestr()
+    #     parameters["sign"]  = self.getSign(parameters)
+    #     return arrayToXml(parameters)
+
+    # @classmethod
+    # def createNoncestr(self):
+    #     chars = "abcdefghijklmnopqrstuvwxyz0123456789"
+    #     strs = []
+    #     for x in range(length):
+    #         strs.append(chars[random.randrange(0,len(chars))])
+    #     return "".join(strs)
+
+    # @classmethod
+    # def arrayToXml(self,arr):
+    #     xml = ["<xml>"]
+    #     for k,v in arr.iteritems():
+    #         if v.isdigit()
+    #             xml.append("<{0}>{1}</{0}>".format(k,v))
+    #         else:
+    #             xml.append("<{0}><![CDATA{1}]></{0}>").format(k,v)
+    #     xml.append("</xml>")
+    #     return "".join(xml)
 
 
 
