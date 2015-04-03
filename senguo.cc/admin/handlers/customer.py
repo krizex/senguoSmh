@@ -992,8 +992,16 @@ class Order(CustomerBaseHandler):
         orders = []
         if action == "unhandled":  # 未处理
             orders = [x for x in self.current_user.orders if x.status == 1]
+            # woody
+            session = self.session
+            for order in orders:
+                order.send_time = order.get_sendtime(session,order.id)
+            orders.sort(key = lambda order:order.send_time,reverse = True)
         elif action == "waiting":#待收货
             orders = [x for x in self.current_user.orders if x.status in (2, 3, 4)]
+            for order in orders:
+                order.send_time = order.get_sendtime(session,order.id)
+            orders.sort(key = lambda order:order.send_time,reverse = True)
         elif action == "finish":#已送达/完成
             order5 = []
             order6 = []
@@ -1039,9 +1047,9 @@ class Order(CustomerBaseHandler):
             order.send_time = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
                                                 order.start_time.hour, w_start_time_minute,
                                                   order.end_time.hour, w_end_time_minute)
-        print("before len:" ,len(orders))
-        orders = orders[::-1]
-        print("after len:" ,len(orders))
+        # print("before len:" ,len(orders))
+        # orders = orders[::-1]
+        # print("after len:" ,len(orders))
             
         return self.render("customer/order-list.html", orders=orders, context=dict(subpage='center'))
 

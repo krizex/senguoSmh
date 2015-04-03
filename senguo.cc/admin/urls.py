@@ -206,7 +206,7 @@ handlers = [
     (r"/fruitzone/systemPurchase/dealNotify", handlers.fruitzone.SystemPurchase, {
         "action":"dealNotify"}, "fruitzoneSystemPurchaseDealNotify"),
 
-    (r"/fruitzone/imgcallback", handlers.fruitzone.QiniuCallback, {"action":"" }, "imgCallback"),
+    (r"/fruitzone/imgcallback", handlers.fruitzone.QiniuCallback, {"action":"shop" }, "imgCallback"),
     (r"/fruitzone/shopImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_shop_img"}, "fruitzoneshopImgCallback"),
     (r"/fruitzone/InfoImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_info_img"}, "fruitzoneInfoImgCallback"),
     (r"/admin/shelf/fruitImgCallback", handlers.fruitzone.QiniuCallback,
