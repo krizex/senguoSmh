@@ -1,3 +1,4 @@
+body{background:#fff;}
 .done-box{}
 .done-box .good-body{width:250px;margin:0 auto;text-align:center;color:#4A4A4A;padding-top:5%;}
 .done-box .good-body p{margin-bottom:5px;}
@@ -9,3 +10,4 @@
 .done-box .good-body .close-page{color:#00D681;display:inline-block;width:60%;font-size:1.6em;}
 .done-box .good-text2{text-align:left;font-size:1.6em;text-indent:28px;}
 .done-box .w1{margin-top:2em !important;}
+.check_list{display:inline-block;width:100%;}
