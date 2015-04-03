@@ -1,198 +1,190 @@
+
 $(document).ready(function(){
-    $('.filter-box a').on('click',function(){$(this).addClass('active').siblings().removeClass('active');});
-    $('#searchSubmit').on('click',function(evt){Search(evt);});
-    $('#province-select li').on('click',function(){
+    //search
+    $(document).on('click','#searchSubmit',function(evt){Search(evt);});
+    $('.willOpen').on('click',function(){$.noticeBox('即将开放，敬请期待！')});
+    //shop info
+    $.shopsList(1);
+    $.scrollLoading();
+    //province and city
+    var area=window.dataObj.area;
+    for(var key in area){
+        var $item=$('<li><span class="name"></span><span class="num"></span></li>');
+        var city=area[key]['city'];
+        if(city) city='true';
+        else city='false';
+        $item.attr({'data-code':key,'data-city':city}).find('.name').text(area[key]['name']);
+        $('.provincelist').append($item);
+    }
+    $(document).on('click','.provincelist li',function(){
         var $this=$(this);
-        var pro=$this.text();
-        if(pro=='北京市'||pro=='天津市'||pro=='上海市'||pro=='香港'||pro=='澳门')
-        {
-            Filter($(this));
+        var province_code=$this.attr('data-code');
+        var if_city=$this.attr('data-city');
+        if(if_city=='true'){
+             $('.citylist').empty();
+            for(var key in area){
+                var city=area[key]['city'];
+                if(key==province_code&&city){
+                    for(var code in city){
+                        var $item=$('<li><span class="name"></span><span class="num"></span></li>');
+                        $item.attr({'data-code':code}).find('.name').text(city[code]['name']);
+                         $('.citylist').append($item);
+                    }
+                }
+            }
+        }
+        else{filter(province_code);}
+    });
+    //close choose list
+    $(document).on('click',function(e){
+        if($(e.target).closest('.dismiss').length == 0){
+            $('.area_list').addClass('hidden');
         }
     });
-    $('#city-select li').on('click',function(){
-            Filter($(this));
+    //city filter
+    $(document).on('click','.city_choose',function(){
+        $('.area_list').removeClass('hidden');
     });
-
-    /* 这种实现点击事件处理的方法效率低，建议采用事件代理，可以参考这篇文章：http://chajn.org/project/javascript-events-responding-user/
-     */
-
-    $('.order-by-fruit').find('li').each(function(){$(this).on('click',function(){$(this).toggleClass('active');});});
-    $('.order-by-area').find('li').each(function(){$(this).on('click',function(){Filter($(this));});});
-    $('.order-by-time').find('li').each(function(){$(this).on('click',function(){Filter($(this));});});
-    $('#orderByFruit').on('click',function(){Filter($(this));});
-
-    var skip_num=0;
-    if(skip_num==0){$('#PrePage').parents('li').hide();}
-    $('#PrePage').on('click',function(){
-        $('#NextPage').parents('li').show();
-        skip_num-=list_item_num;
-        if(skip_num<=0)
-        {
-            skip_num=0;
-            $('#PrePage').parents('li').hide();
-        }
-        $(this).attr({"data-code":skip_num});
-        Filter($(this));
-
+    $(document).on('click','.city_list li',function(){
+        var $this=$(this);
+        var city_code=$this.attr('data-code');
+        filter(city_code);
     });
-    $('#NextPage').on('click',function(){
-            skip_num+=list_item_num;
-            $(this).attr({"data-code":skip_num});
-            Filter($(this));
-            $('#PrePage').parents('li').show();
-            if(list_num.length<list_item_num){$('#NextPage').parents('li').hide();}
-            else $('#NextPage').parents('li').show();
-    });
-    $('.willOpen').on('click',function(){alert('即将开放，敬请期待！')});
-
 });
+$.shopItem=function (shops){
+   $.getItem('/static/items/fruitzone/shop_item.html?v=2015-0320',function(data){
+    window.dataObj.shop_item=data;
+    for(var key in shops){
+                var $item=$(window.dataObj.shop_item);
+                var logo_url=shops[key]['shop_trademark_url'];
+                var name=shops[key]['shop_name'];
+                var code=shops[key]['shop_code'];
+                var province=shops[key]['shop_province'];
+                var city=shops[key]['shop_city'];
+                var address=shops[key]['shop_address_detail'];
+                var intro=shops[key]['shop_intro'];
+                var area=window.dataObj.area;
+                if(province==city) city='';
+                for(var key in area){
+                    if(key==province){
+                        province=area[key]['name']
+                        if(city){
+                            var cities=area[key]['city'];
+                            for(var code in cities){
+                                if(code==city){city==cities[code]['name']}
+                            }
+                        }
+                    }
+                 }
+                if(!logo_url) logo_url='/static/design_img/Li_l.png';
+                $item.find('.shop_link').attr({'href':'/'+code});
+                $item.find('.shop_logo').attr({'src':logo_url});
+                $item.find('.shop_name').text(name);
+                $item.find('.shop_code').text(code);
+                $item.find('.address').text(province+city+address);
+                $item.find('.intro').text(intro);
+                $('.shoplist').append($item);
+            }
+});      
+}
+
+$.shopsList=function(page,action){
+    var url='';
+    var action ='shop';
+    var args={
+        action:action,
+        page:page
+    };
+    $.postJson(url,args,function(res){
+        if(res.success)
+        {
+            var shops=res.shops;
+            $.shopItem(shops);
+            $('.loading').hide();
+            window.dataObj.finished=true;
+        }
+        else return $.noticeBox(res.error_text);
+        },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        );
+};
+
+window.dataObj.page=1;
+window.dataObj.finished=true;
+$.scrollLoading=function(){
+    var range = 10;             //距下边界长度/单位px          //插入元素高度/单位px  
+    var totalheight = 0;   
+    var main = $(".container");                  //主体元素   
+    $(window).scroll(function(){
+        var maxnum = Int($('#page_count').val());            //设置加载最多次数  
+        var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)  
+        totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
+        if(window.dataObj.finished&&(main.height()-range) <= totalheight  && window.dataObj.page < maxnum) { 
+            $('.no_more').hide();
+            $('.loading').show();
+            window.dataObj.finished=false;
+            window.dataObj.page++; 
+            $.shopsList(window.dataObj.page);
+        }       
+        else if(window.dataObj.page ==maxnum){
+              $('.no_more').show();
+        } 
+    }); 
+}   
 
 function Search(evt){
     evt.preventDefault();
     var q=$('#searchKey').val().trim();
     var action="search";
-    var url="/fruitzone/";
+    var url="";
     var args={
         q:q,
         action:action
-
     };
-    if(!q){return alert('请输入店铺名！')}
-
+    if(!q){return $.noticeBox('请输入店铺名！')}
     $.postJson(url,args,
         function(res){
             if(res.success)
             {
-                $('#homeShopList').empty();
-                var shops=res.shops;
-                list_num=res.shops;
-                if(list_num.length<list_item_num)
-                {
-                    $('#NextPage').parents('li').hide();
-                    $('#PrePage').parents('li').hide();
-                }
-                for(var shop in shops)
-                {
-                    var timenow=new Date().getTime()/1000;
-                    var shopid=shops[shop]["id"];
-                    var shoplogo=shops[shop]['shop_trademark_url'];
-                    var shopname =shops[shop]["shop_name"];
-                    var livetime=shops[shop]['shop_start_timestamp'];
-                    var province=shops[shop]['shop_province'];
-                    var city=shops[shop]['shop_city'];
-                    var livemonth=parseInt((timenow-livetime)/(30*24*60*60));
-                    var nickname=shops[shop]["admin"]["accountinfo"]["nickname"];
-                    var wxusername=shops[shop]["admin"]["accountinfo"]["wx_username"];
-                    var protext=provinceArea(province);
-                    var cittext;
-                    if(city!=province){cittext=cityArea(province,city);}
-                    else{cittext=''}
-                    if(!wxusername){wxusername='无'}
-                    var $list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src=""/></div><div class="shop-info pull-left"><p class="list-info1"><span class="shop-name w1 pull-left"></span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"></em><em data="'+city+'" id="filterCity"></em></span></p><p class="list-info2">运营时间：<span class="live-time"></span>月</p><p class="list-info3"><span class="shop-owner w1 pull-left">负责人：<span class="owner-name"></span></span><span class="w2 wechat-code pull-left"></span></p></div></a></li>');
-                    if(!shoplogo){$list.find(".shop-logo").find('img').attr({'src':'/static/images/anoa-7-md.gif'});}
-                    else $list.find(".shop-logo").find('img').attr({'src':shoplogo+'?imageView2/1/w/130/h/130'});
-                    $list.find(".shop-name").text(shopname);
-                    $list.find("#filterProvince").text(protext);
-                    $list.find("#filterCity").text(cittext);
-                    $list.find(".live-time").text(livemonth);
-                    $list.find(".owner-name").text(nickname);
-                    $list.find(".wechat-code").text(wxusername);
-                    $('#homeShopList').append($list);
-
-                }
+                $('.shoplist').empty();
+                 var shops=res.shops;
+                if(res.shops==''){
+                    $('.shoplist').empty();
+                    $('.shoplist').append('<h5 class="text-center mt10 text-grey">无搜索结果！</h5>');
+                 }
+                else $.shopItem(shops);
             }
-            if(res.success&&res.shops=='')
-            {
-                $('#homeShopList').empty();
-                $('#homeShopList').append('<h5 class="text-center">无搜索结果！</h5>');
-            }
-        },
-        function(){
-            alert('网络好像不给力呢~ ( >O< ) ~！');
-        }
+            else return $.noticeBox(res.error_text);
+        },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}    
     );
 }
 
-var list_num=[];
-var list_item_num=$('#homeShopList').find('li').length;
-function Filter(evt){
-    var action='filter';
-    var city=evt.data('code');
-    var service_area=evt.data('code');
-    var live_month=evt.data('code');
-    var skip=evt.attr('data-code');
-    var onsalefruit_ids=[];
-    var fruit=$('.order-by-fruit').find('.active');
-    for(var i=0;i<fruit.length;i++)
-    {
-        var code=fruit.eq(i).data('code');
-        onsalefruit_ids.push(code);
-    }
+function filter(data){
+   var action="filter";
     var url="";
-    var order=evt.parents('.order-by-list').find('.order-by-item').data('action');
-    if(order=='cityFilter')
-        {var args = {city: city,action: action}}
-    else if(order=='areaFilter')
-        {var args = {service_area: service_area,action: action}}
-    else if(order=='liveFilter')
-        {var args = {live_month: live_month,action: action}}
-    else if(order=='fruitFilter')
-        {var args = {onsalefruit_ids: onsalefruit_ids,action: action};}
-    else if(order=='skipFilter')
-        {var args = {skip:skip,action: action};$.ajaxSetup({async: false})}
+    var args={
+        city:Int(data),
+        action:action
+    };
+    if(!data){return $.noticeBox('选择城市！')}
     $.postJson(url,args,
         function(res){
-            if(res.success) {
-                list_num=res.shops;
-                if(list_num.length<list_item_num)
-                    {
-                        $('#NextPage').parents('li').hide();
-                        $('#PrePage').parents('li').hide();
-                    }
-                else  $('#NextPage').parents('li').show();
-                evt.parents('.order-by-list').hide();
-                $('.home-pagination').show();
-                $('#homeShopList').empty();
-                var shops = res.shops;
-                for (var shop in shops)
-                {
-                    var timenow=new Date().getTime()/1000;
-                    var shopid=shops[shop]["id"];
-                    var shoplogo=shops[shop]['shop_trademark_url'];
-                    var shopname =shops[shop]["shop_name"];
-                    var livetime=shops[shop]['shop_start_timestamp'];
-                    var province=shops[shop]['shop_province'];
-                    var city=shops[shop]['shop_city'];
-                    var livemonth=parseInt((timenow-livetime)/(30*24*60*60));
-                    var nickname=shops[shop]["admin"]["accountinfo"]["nickname"];
-                    var wxusername=shops[shop]["admin"]["accountinfo"]["wx_username"];
-                    var protext=provinceArea(province);
-                    var cittext;
-                    if(city!=province){cittext=cityArea(province,city);}
-                    else{cittext=''}
-                    if(!wxusername){wxusername='无'}
-                    var $list=$('<li><a href="/fruitzone/shop/'+shopid+'"><div class="shop-logo pull-left"><img src=""/></div><div class="shop-info pull-left"><p class="list-info1"><span class="shop-name w1 pull-left"></span><span class="w2 area pull-left"><em data="'+province+'" id="filterProvince"></em><em data="'+city+'" id="filterCity"></em></span></p><p class="list-info2">运营时间：<span class="live-time"></span>月</p><p class="list-info3"><span class="shop-owner w1 pull-left">负责人：<span class="owner-name"></span></span><span class="w2 wechat-code pull-left"></span></p></div></a></li>');
-                    if(!shoplogo){$list.find(".shop-logo").find('img').attr({'src':'/static/images/anoa-7-md.gif'});}
-                    else $list.find(".shop-logo").find('img').attr({'src':shoplogo+'?imageView2/1/w/130/h/130'});
-                    $list.find(".shop-name").text(shopname);
-                    $list.find("#filterProvince").text(protext);
-                    $list.find("#filterCity").text(cittext);
-                    $list.find(".live-time").text(livemonth);
-                    $list.find(".owner-name").text(nickname);
-                    $list.find(".wechat-code").text(wxusername);
-                    $('#homeShopList').append($list);
-                }
-                if(res.success&&res.shops=='')
-                {
-                    $('#homeShopList').empty();
-                    $('#homeShopList').append('<h5 class="text-center">无结果！</h5>');
+            if(res.success)
+            {
+                $('.shoplist').empty();
+                 var shops=res.shops;
+                 $('.area_list').addClass('hidden');
+                 if(res.shops==''){
+                    $('.shoplist').empty();
+                    $('.shoplist').append('<h5 class="text-center mt10 text-grey">无搜索结果！</h5>');
+                 }
+                else {
+                    $.shopItem(shops);
                 }
             }
-            else return alert(res.error_text);
-        },
-        function(){
-            alert('网络好像不给力呢~ ( >O< ) ~！');
-        }
+        else return $.noticeBox(res.error_text);
+        },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
     );
-
 }
+

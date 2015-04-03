@@ -38,8 +38,8 @@ $(document).ready(function(){
     });
     $('.offline_entity').each(function(){
         var $this=$(this);
-        var text=$this.text();
-        if(text=='True') $this.text('有');
+        var text=Int($this.attr('data-id'));
+        if(text==1) $this.text('有');
         else $this.text('没有');
     });
 
@@ -105,6 +105,53 @@ $(document).ready(function(){
     $('.reProvince').text(provinceArea(proc));
     if(citc!=proc)
     {$('.reCity').text(cityArea(proc,citc));}
+    var area=window.dataObj.area;
+    $(document).on('click','.province_select',function(){
+        $('.provinceList').empty();
+        $('#cityAddress').attr({'data-code':''}).text('选择城市');
+        for(var key in area){
+            var $item=$('<li><span class="name"></span><span class="num"></span></li>');
+            var city=area[key]['city'];
+            var if_city;
+            if(city) {
+                if_city='true';
+            }
+            else if_city='false';
+            $item.attr({'data-code':key,'data-city':if_city}).find('.name').text(area[key]['name']);
+            $('.provinceList').append($item);
+            
+        }
+    });
+    $(document).on('click','.provinceList li',function(){
+        var $this=$(this);
+        var code=$this.attr('data-code');
+        var text=$this.text();
+        var if_city=$this.attr('data-city');
+        $('#provinceAddress').attr({'data-code':code}).text(text);
+        if(if_city=='false') {$('.city_select').hide();}
+        else {
+             $('.cityList').empty();
+              for(var key in area){    
+                var city=area[key]['city'];
+                if(code==key){
+                    for(var k in city){
+                        var $item=$('<li><span class="name"></span><span class="num"></span></li>');
+                        $item.attr({'data-code':k}).find('.name').text(city[k]['name']);
+                        $('.cityList').append($item);
+                    }
+                }           
+            }
+            $('.city_select').show();
+        }
+        $('.modal').modal('hide');
+    });
+    $(document).on('click','.cityList li',function(){
+        var $this=$(this);
+        var code=$this.attr('data-code');
+        var text=$this.text();
+        $('#cityAddress').attr({'data-code':code}).text(text);
+        $('.modal').modal('hide');
+    });
     //店铺信息编辑
     $('.info_edit').each(function(){
         var $this=$(this);
@@ -179,7 +226,13 @@ function infoEdit(target){
     {
         action='edit_address';
         shop_city=$('#cityAddress').attr('data-code');
-        address=$('#provinceAddress').text()+$('#cityAddress').text()+$('#addressDetail').val();
+        var province=$('#provinceAddress').text();
+        var city=$('#cityAddress').text();
+        if(!shop_city) {
+            shop_city=$('#provinceAddress').attr('data-code');
+            city='';
+        }
+        address=province+city+$('#addressDetail').val();
         shop_address_detail=$('#addressDetail').val().trim();
         if(shop_address_detail.length>50){return alert('详细地址请不要超过50个字符！')}
         data={
