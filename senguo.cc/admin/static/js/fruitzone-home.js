@@ -71,7 +71,7 @@ $.shopItem=function (shops){
                         if(city){
                             var cities=area[key]['city'];
                             for(var code in cities){
-                                if(code==city){city==cities[code]['name']}
+                                if(code==city){city=cities[code]['name']}
                             }
                         }
                     }
