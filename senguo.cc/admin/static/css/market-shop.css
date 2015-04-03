@@ -5,7 +5,8 @@ p{margin-bottom:0px;}
 .info2{padding:10px;border-top:1px solid #f7f7f7;}
 .info2 li{padding:0px;border-right:1px solid #f3f3f3;}
 .info2 li:last-child{border-right:0px;}
-.shop-logo img{width:85px;height:85px;}
+.shop-logo{width:85px;height:85px;overflow:hidden;}
+.shop-logo img{width:100%;}
 .shop-box{padding:10px;margin:10px 0;}
 .shop-box .title{border-bottom:1px solid #ddd;padding-bottom:5px;}
 .shop-info{}

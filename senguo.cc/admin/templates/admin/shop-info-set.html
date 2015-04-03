@@ -65,13 +65,13 @@
         <div class="w2 pull-left">
             <span class="info_show address">{{address}}</span>
             <div class="info_hide" style="display:none">
-                <div class="dropdown select-provience pull-left set-right10" data-toggle="modal" data-target="#provinceList">
+                <div class="dropdown select-provience pull-left set-right10 province_select" data-toggle="modal" data-target="#provinceList">
                     <button class="btn btn-default dropdown-toggle" type="button">
                         <span  id="provinceAddress" data-code="{{current_shop.shop_province or ''}}" class="reProvince">选择省份</span>
                         <span class="caret"></span>
                     </button>
                 </div>
-                <div class="dropdown pull-left select-city set-right10" data-toggle="modal" data-target="#cityList">
+                <div class="dropdown pull-left select-city set-right10 city_select" data-toggle="modal" data-target="#cityList">
                     <button class="btn btn-default dropdown-toggle" type="button">
                         <span id="cityAddress" data-code="{{current_shop.shop_city or ''}}" class="reCity">选择城市</span>
                         <span class="caret"></span>
@@ -101,7 +101,7 @@
         <span class="w1 pull-left set-inl-blo">配送区域</span>
         <div class="w2 pull-left">
             <span class="info_show deliver_area">{{current_shop.deliver_area or '未设置'}}</span>
-            <input class="info_hide deliver-area" type="text" placeholder="{{current_shop.shop_phone or '未设置' }}" value="{{current_shop.deliver_area or ''}}" style="display:none"/>
+            <input class="info_hide deliver-area" type="text" placeholder="{{current_shop.deliver_area or '未设置' }}" value="{{current_shop.deliver_area or ''}}" style="display:none"/>
         </div>
         <div class="pull-right">
             <a class="info_edit text-green font14" href="javascript:;">修改</a>
@@ -111,10 +111,10 @@
     <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">实体店情况</span>
         <div class="w2 pull-left ">
-            <span class="offline_entity info_show">{{current_shop.have_offline_entity}}</span>
+            <span class="offline_entity info_show" data-id="{{current_shop.have_offline_entity}}"></span>
             <div class="dropdown info_hide" style="display:none">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-                    <span class="offline_entity" id="offline_entity">{{current_shop.have_offline_entity}}</span>
+                    <span class="offline_entity" id="offline_entity" data-id="{{current_shop.have_offline_entity}}"></span>
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu offline_entity-list" role="menu" aria-labelledby="dropdownMenu1">
