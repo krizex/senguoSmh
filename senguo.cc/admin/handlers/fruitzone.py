@@ -383,6 +383,8 @@ class QiniuCallback(FruitzoneBaseHandler):
         action = self.get_argument("action")
         print(key,id,action)
 
+        print('shop'==action)
+
         if action == "shop":
             try:
                 shop = self.session.query(models.Shop).filter_by(id=id).one()
@@ -391,6 +393,7 @@ class QiniuCallback(FruitzoneBaseHandler):
                 return self.send_error(404)
             shop_trademark_url = shop.shop_trademark_url  # 要先跟新图片url，防止删除旧图片时出错
             shop.update(session=self.session, shop_trademark_url=SHOP_IMG_HOST+key)
+            print('shop_url',shop_trademark_url)
             if shop_trademark_url:  # 先要把旧的的图片删除
                 m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
                 m.delete(bucket=BUCKET_SHOP_IMG, key=shop_trademark_url.split('/')[3])
