@@ -397,6 +397,7 @@ class QiniuCallback(FruitzoneBaseHandler):
             if shop_trademark_url:  # 先要把旧的的图片删除
                 m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
                 m.delete(bucket=BUCKET_SHOP_IMG, key=shop_trademark_url.split('/')[3])
+            return self.send_success()
         elif action == "receipt":
             try:
                 config = self.session.query(models.Config).filter_by(id=id).one()
