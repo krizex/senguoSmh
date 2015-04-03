@@ -58,7 +58,7 @@ $.shopItem=function (shops){
                 var $item=$(window.dataObj.shop_item);
                 var logo_url=shops[key]['shop_trademark_url'];
                 var name=shops[key]['shop_name'];
-                var code=shops[key]['shop_code'];
+                var shop_code=shops[key]['shop_code'];
                 var province=shops[key]['shop_province'];
                 var city=shops[key]['shop_city'];
                 var address=shops[key]['shop_address_detail'];
@@ -77,10 +77,10 @@ $.shopItem=function (shops){
                     }
                  }
                 if(!logo_url) logo_url='/static/design_img/Li_l.png';
-                $item.find('.shop_link').attr({'href':'/'+code});
+                $item.find('.shop_link').attr({'href':'/'+shop_code});
                 $item.find('.shop_logo').attr({'src':logo_url});
                 $item.find('.shop_name').text(name);
-                $item.find('.shop_code').text(code);
+                $item.find('.shop_code').text(shop_code);
                 $item.find('.address').text(province+city+address);
                 $item.find('.intro').text(intro);
                 $('.shoplist').append($item);
