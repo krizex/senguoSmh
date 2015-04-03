@@ -453,10 +453,21 @@ class Order(AdminBaseHandler):
             order_type = 1
         elif order_status == 1:
             orders = [x for x in self.current_shop.orders if x.type == order_type and x.status == 1]
+            # woody 4.3
+            for order in orders:
+                order.send_time = order.get_sendtime(session,order.id)
+            orders.sort(key = lambda order:order.send_time,reverse = True)
+
         elif order_status == 5:#all
             orders = [x for x in self.current_shop.orders if x.type == order_type ]
         elif order_status == 2:#unfinish
             orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in [2, 3, 4]]
+
+            # woody 4.3
+            for order in orders:
+                order.send_time = order.get_sendtime(session,order.id)
+            orders.sort(key = lambda order:order.send_time,reverse = True)
+            
         elif order_status == 3:
             orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in (5, 6)]
         elif order_status == 4:
