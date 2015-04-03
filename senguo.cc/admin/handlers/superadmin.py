@@ -265,7 +265,9 @@ class ShopManage(SuperBaseHandler):
                                          have_offline_entity=shop_temp.have_offline_entity,
                                          shop_intro=shop_temp.shop_intro)
             shop.config = config
-
+            # shop.create_date_timestamp = time.time()
+            # woody
+            shop.shop_start_timestamp = time.time()
             self.session.add(shop)
             shop_temp.shop_status = 2
             self.session.commit()  # 要commit一次才有shop.id
