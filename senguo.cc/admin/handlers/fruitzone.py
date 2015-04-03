@@ -199,8 +199,8 @@ class ShopApply(FruitzoneBaseHandler):
         self._action = action
 
     def prepare(self):
-        # if not self.is_wexin_browser():
-        #     return self.render("fruitzone/toweixin.html")
+        if not self.is_wexin_browser():
+            return self.render("fruitzone/toweixin.html")
         pass
 
     @tornado.web.authenticated
