@@ -843,6 +843,7 @@ class Shelf(AdminBaseHandler):
                 return self.send_error(403)
 
             if action == "add_charge_type":
+                print('num',data["num"],data["unit"],data["price"])
                 charge_type = models.ChargeType(fruit_id=fruit.id,
                                                 price=data["price"],
                                                 unit=data["unit"],

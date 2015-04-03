@@ -26,7 +26,7 @@ class ShopList(FruitzoneBaseHandler):
         _page_count =10
         q = self.session.query(models.Shop).order_by(desc(models.Shop.id))\
             .filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-                models.Shop.shop_code !='not set' or '')
+                models.Shop.shop_code !='not set')
         shops = []
         for shop in q.all():
             shops.append(shop.safe_props())
@@ -199,8 +199,9 @@ class ShopApply(FruitzoneBaseHandler):
         self._action = action
 
     def prepare(self):
-        if not self.is_wexin_browser():
-            return self.render("fruitzone/toweixin.html")
+        # if not self.is_wexin_browser():
+        #     return self.render("fruitzone/toweixin.html")
+        pass
 
     @tornado.web.authenticated
     @FruitzoneBaseHandler.check_arguments("shop_id?:int")
