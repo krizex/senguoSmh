@@ -38,7 +38,7 @@ class ShopList(FruitzoneBaseHandler):
         fruit_types = []
         for f_t in self.session.query(models.FruitType).all():
             fruit_types.append(f_t.safe_props())
-        return self.render("fruitzone/home.html", context=dict(pages=pages, fruit_types=fruit_types,subpage="home"))
+        return self.render("fruitzone/list.html", context=dict(pages=pages, fruit_types=fruit_types,subpage="home"))
     
     @FruitzoneBaseHandler.check_arguments("action")
     def post(self):
