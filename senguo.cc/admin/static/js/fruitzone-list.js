@@ -117,6 +117,7 @@ $.shopsList=function(page,data,action){
         if(res.success)
         {
             var shops=res.shops;
+            window.dataObj.maxnum=res.page_total;
             $.shopItem(shops);
             $('.loading').hide();
             window.dataObj.finished=true;
@@ -131,7 +132,7 @@ $.scrollLoading=function(){
     var totalheight = 0;   
     var main = $(".container");                  //主体元素   
     $(window).scroll(function(){
-        var maxnum = Int($('#page_count').val());            //设置加载最多次数  
+        var maxnum =window.dataObj.maxnum;            //设置加载最多次数  
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)  
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
         if(window.dataObj.finished&&(main.height()-range) <= totalheight  && window.dataObj.page < maxnum) { 

@@ -21,24 +21,10 @@ class Home(FruitzoneBaseHandler):
 
 class ShopList(FruitzoneBaseHandler):
     def get(self):
-        pages=''
-        total_count=''
-        _page_count =10
-        q = self.session.query(models.Shop).order_by(desc(models.Shop.id))\
-            .filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-                models.Shop.shop_code !='not set')
-        shops = []
-        for shop in q.all():
-            shops.append(shop.safe_props())
-        total_count=int(len(shops))
-        if total_count % _page_count is 0 :
-            pages = int(total_count /_page_count)
-        else:
-            pages = int( total_count / _page_count) + 1
-        fruit_types = []
-        for f_t in self.session.query(models.FruitType).all():
-            fruit_types.append(f_t.safe_props())
-        return self.render("fruitzone/list.html", context=dict(pages=pages, fruit_types=fruit_types,subpage="home"))
+        # fruit_types = []
+        # for f_t in self.session.query(models.FruitType).all():
+        #     fruit_types.append(f_t.safe_props())
+        return self.render("fruitzone/list.html", context=dict(subpage="home"))
     
     @FruitzoneBaseHandler.check_arguments("action")
     def post(self):
@@ -54,18 +40,21 @@ class ShopList(FruitzoneBaseHandler):
 
     @FruitzoneBaseHandler.check_arguments("page:int")
     def handle_shop(self):
+
         _page_count =10
         page=self.args["page"]-1
         q = self.session.query(models.Shop).order_by(desc(models.Shop.id))\
         .filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
             models.Shop.shop_code !='not set' )
+        shop_count = q.count()
+        page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
         q=q.offset(page*_page_count).limit(_page_count).all()
         shops = []
         for shop in q:
             shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
                                          'wx_nickname', 'wx_qr_code','wxapi_token']
             shops.append(shop.safe_props())
-        return self.send_success(shops=shops)
+        return self.send_success(shops=shops,page_total = page_total)
 
     @FruitzoneBaseHandler.check_arguments("skip?:int","limit?:int","province?:int",
                                       "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids?:list","page:int")
@@ -78,10 +67,16 @@ class ShopList(FruitzoneBaseHandler):
                 models.Shop.shop_code !='not set' )
         if "city" in self.args:
             q = q.filter_by(shop_city=self.args["city"])
+            shop_count = q.count()
+            page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
+            print('page_total',page_total)
             q = q.offset(page * _page_count).limit(_page_count).all()
+            
         elif "province" in self.args:
             print('province')
             q = q.filter_by(shop_province=self.args["province"])
+            shop_count = q.count()
+            page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
             q = q.offset(page * _page_count).limit(_page_count).all()
         else:
             print("city not in args")
@@ -105,13 +100,14 @@ class ShopList(FruitzoneBaseHandler):
         #     q = q.limit(self.args["limit"])
         # else:
         #     q = q.limit(self._page_count)
+        
 
         shops = []
         for shop in q:
             shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
                                          'wx_nickname', 'wx_qr_code','wxapi_token']
             shops.append(shop.safe_props())
-        return self.send_success(shops=shops)
+        return self.send_success(shops=shops,page_total = page_total)
 
     @FruitzoneBaseHandler.check_arguments("q","page:int")
     def handle_search(self):
@@ -122,12 +118,15 @@ class ShopList(FruitzoneBaseHandler):
                    models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
                    models.Shop.shop_code !='not set' )
         shops = []
+        shop_count = q.count()
+        page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
         q = q.offset(page * _page_count).limit(_page_count).all()
+        
         for shop in q:
             shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
                                          'wx_nickname', 'wx_qr_code','wxapi_token']
             shops.append(shop.safe_props())
-        return self.send_success(shops=shops)
+        return self.send_success(shops=shops ,page_total = page_total)
 
 class Community(FruitzoneBaseHandler):
     def get(self):
