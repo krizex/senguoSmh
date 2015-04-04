@@ -58,8 +58,8 @@
 .apply-box #notice{height:20px;}
 
 .select-popbox .address-list .active{background:#80e0a0;color:#fff;}
-.select-popbox .address-list{width:100%;font-size:14px;overflow-y:scroll;overflow-x:hidden;max-height:350px;}
-.select-popbox .address-list li{width:100%;padding:8px;border:1px solid #eee;border-radius:4px;margin-bottom:10px;}
+.select-popbox .address-list{width:100%;font-size:14px;}
+.select-popbox .address-list li{width:100%;padding:8px;border:1px solid #eee;border-radius:4px;margin-bottom:10px;float:left;}
 .select-popbox .address-list li:hover{background:#80e0a0;color:#fff;cursor:pointer;}
 .select-popbox .btn-style{background:#80e0a0;color:#fff;}
 
@@ -81,3 +81,4 @@
 .notice_con .word{margin-bottom:15px;}*/
 .foucus_bg{background:rgba(0,0,0,0.5);height:100%;width:100%;position:absolute;top:0;z-index: 9999;padding:50px 30px;max-width:800px;}
 .focus_senguo{margin:0 auto;font-size:18px;margin-top:40px;border-radius:30px;}
+.modal{overflow-y:scroll;}
