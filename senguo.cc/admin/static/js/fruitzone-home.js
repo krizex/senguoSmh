@@ -1,4 +1,3 @@
-
 $(document).ready(function(){
     //search
     $(document).on('click','#searchSubmit',function(evt){Search(evt);});
@@ -88,9 +87,9 @@ $.shopItem=function (shops){
 });      
 }
 
-$.shopsList=function(page,action){
+$.shopsList=function(page){
     var url='';
-    var action ='shop';
+    var action =window.dataObj.action;
     var args={
         action:action,
         page:page
@@ -110,6 +109,7 @@ $.shopsList=function(page,action){
 
 window.dataObj.page=1;
 window.dataObj.finished=true;
+window.dataObj.action='shop';
 $.scrollLoading=function(){
     var range = 10;             //距下边界长度/单位px          //插入元素高度/单位px  
     var totalheight = 0;   
@@ -125,21 +125,23 @@ $.scrollLoading=function(){
             window.dataObj.page++; 
             $.shopsList(window.dataObj.page);
         }       
-        else if(window.dataObj.page ==maxnum){
+        else if(window.dataObj.page >=maxnum){
               $('.no_more').show();
         } 
     }); 
 }   
 
-function Search(evt){
+function Search(evt,page){
     evt.preventDefault();
     var q=$('#searchKey').val().trim();
     var action="search";
     var url="";
+    if(!page){page=1}
     var args={
         q:q,
-        action:action
-    };
+        action:action,
+        page:page
+    }
     if(!q){return $.noticeBox('请输入店铺名！')}
     $.postJson(url,args,
         function(res){
@@ -151,7 +153,10 @@ function Search(evt){
                     $('.shoplist').empty();
                     $('.shoplist').append('<h5 class="text-center mt10 text-grey">无搜索结果！</h5>');
                  }
-                else $.shopItem(shops);
+                else {
+                    window.dataObj.action='search';
+                    $.shopItem(shops);  
+                }
             }
             else return $.noticeBox(res.error_text);
         },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
@@ -159,12 +164,14 @@ function Search(evt){
     );
 }
 
-function filter(data){
+function filter(data,page){
    var action="filter";
     var url="";
+     if(!page){page=1}
     var args={
         city:Int(data),
-        action:action
+        action:action,
+        page:page
     };
     if(!data){return $.noticeBox('选择城市！')}
     $.postJson(url,args,
@@ -179,7 +186,8 @@ function filter(data){
                     $('.shoplist').append('<h5 class="text-center mt10 text-grey">无搜索结果！</h5>');
                  }
                 else {
-                    $.shopItem(shops);
+                      window.dataObj.action='filter';
+                     $.shopItem(shops); 
                 }
             }
         else return $.noticeBox(res.error_text);

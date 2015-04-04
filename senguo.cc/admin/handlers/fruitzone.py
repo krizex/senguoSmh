@@ -58,7 +58,7 @@ class ShopList(FruitzoneBaseHandler):
         page=self.args["page"]-1
         q = self.session.query(models.Shop).order_by(desc(models.Shop.id))\
         .filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-            models.Shop.shop_code !='not set' or '')
+            models.Shop.shop_code !='not set' )
         q=q.offset(page*_page_count).limit(_page_count).all()
         shops = []
         for shop in q:
@@ -68,14 +68,17 @@ class ShopList(FruitzoneBaseHandler):
         return self.send_success(shops=shops)
 
     @FruitzoneBaseHandler.check_arguments("skip?:int","limit?:int",
-                                      "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids?:list")
+                                      "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids?:list","page:int")
     def handle_filter(self):
         # 按什么排序？暂时采用id排序
+        _page_count = 10
+        page = self.args["page"] - 1
         q = self.session.query(models.Shop).order_by(desc(models.Shop.id)).\
             filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
                 models.Shop.shop_code !='not set' )
         if "city" in self.args:
             q = q.filter_by(shop_city=self.args["city"])
+            q = q.offset(page * _page_count).limit(_page_count).all()
         else:
             print("city not in args")
 
@@ -100,18 +103,23 @@ class ShopList(FruitzoneBaseHandler):
         #     q = q.limit(self._page_count)
 
         shops = []
-        for shop in q.all():
+        for shop in q:
+            shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
+                                         'wx_nickname', 'wx_qr_code','wxapi_token']
             shops.append(shop.safe_props())
         return self.send_success(shops=shops)
 
-    @FruitzoneBaseHandler.check_arguments("q")
+    @FruitzoneBaseHandler.check_arguments("q","page:int")
     def handle_search(self):
+        _page_count = 10
+        page = self.args["page"] - 1
         q = self.session.query(models.Shop).order_by(desc(models.Shop.id)).\
             filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"])),
                    models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-                   models.Shop.shop_code !='not set' or '')
+                   models.Shop.shop_code !='not set' )
         shops = []
-        for shop in q.all():
+        q = q.offset(page * _page_count).limit(_page_count).all()
+        for shop in q:
             shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
                                          'wx_nickname', 'wx_qr_code','wxapi_token']
             shops.append(shop.safe_props())
@@ -198,10 +206,10 @@ class ShopApply(FruitzoneBaseHandler):
     def initialize(self, action):
         self._action = action
 
-    def prepare(self):
-        if not self.is_wexin_browser():
-            return self.render("fruitzone/toweixin.html")
-        pass
+    # def prepare(self):
+    #     if not self.is_wexin_browser():
+    #         return self.render("fruitzone/toweixin.html")
+    #     pass
 
     @tornado.web.authenticated
     @FruitzoneBaseHandler.check_arguments("shop_id?:int")
