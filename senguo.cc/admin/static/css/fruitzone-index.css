@@ -1,7 +1,8 @@
 body{background:#fff;}
 .box{position:relative;top:100px;}
+.box .shop{width:190px;}
 .box .province{position:absolute;width:100%;top:0px;}
-.box .province .province_img{animation: animation1 2s;-moz-animation: animation1 2s;-webkit-animation: animation1 2s;-o-animation: animation1 2s;position:relative;width:0px;}
+.box .province .province_img{width:260px;animation: animation1 2s;-moz-animation: animation1 2s;-webkit-animation: animation1 2s;-o-animation: animation1 2s;position:relative;width:0px;}
 .box .btn{display:inline-block;width:60%;height:40px;border-radius:20px;opacity:0;line-height:30px;}
 .box .count{height:50px;line-height:50px;font-size:20px;}
 .box .count .num{font-size:30px;}

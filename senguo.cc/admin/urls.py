@@ -138,15 +138,16 @@ handlers = [
     # 主页
     (r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次
     (r"/fruitzone", handlers.fruitzone.Home, {}, "fruitzoneHome"),  # 匹配'\' 0~1次
-    (r"/fruitzone/shop", handlers.fruitzone.ShopList, {}, "fruitzoneShopList"),
+    (r"/list/index", handlers.fruitzone.Home, {}, "fruitzoneHome"),
+    (r"/list", handlers.fruitzone.ShopList, {}, "fruitzoneShopList"),
     (r"/fruitzone/admin/home", handlers.fruitzone.AdminHome, {}, "fruitzoneAdminHome"),
     (r"/fruitzone/admin/profile", handlers.fruitzone.AdminProfile, {}, "fruitzoneAdminProfile"),
     #to remove  
     #woody
-    (r"/fruitzone/shop/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),
+    (r"/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),
     (r"/fruitzone/shop/apply/addImg", handlers.fruitzone.ShopApplyImg, {}, "fruitzoneShopApplyAddImg"),#增加的功能：申请店铺时支持图片上传
-    (r"/fruitzone/shop/reApply", handlers.fruitzone.ShopApply, {"action": "reApply"}, "fruitzoneShopReApply"),
-    (r"/fruitzone/shop/applySuccess", handlers.fruitzone.ApplySuccess, {}, "fruitzoneShopApplySuccess"),
+    (r"/reApply", handlers.fruitzone.ShopApply, {"action": "reApply"}, "fruitzoneShopReApply"),
+    (r"/applySuccess", handlers.fruitzone.ApplySuccess, {}, "fruitzoneShopApplySuccess"),
 
     (r"/fruitzone/toweixin", handlers.fruitzone.ToWeixin, {}, "fruitzoneToWexin"),
     (r"/fruitzone/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),

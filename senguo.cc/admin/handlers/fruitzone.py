@@ -67,7 +67,7 @@ class ShopList(FruitzoneBaseHandler):
             shops.append(shop.safe_props())
         return self.send_success(shops=shops)
 
-    @FruitzoneBaseHandler.check_arguments("skip?:int","limit?:int",
+    @FruitzoneBaseHandler.check_arguments("skip?:int","limit?:int","province?:int",
                                       "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids?:list","page:int")
     def handle_filter(self):
         # 按什么排序？暂时采用id排序
@@ -78,6 +78,10 @@ class ShopList(FruitzoneBaseHandler):
                 models.Shop.shop_code !='not set' )
         if "city" in self.args:
             q = q.filter_by(shop_city=self.args["city"])
+            q = q.offset(page * _page_count).limit(_page_count).all()
+        elif "province" in self.args:
+            print('province')
+            q = q.filter_by(shop_province=self.args["province"])
             q = q.offset(page * _page_count).limit(_page_count).all()
         else:
             print("city not in args")

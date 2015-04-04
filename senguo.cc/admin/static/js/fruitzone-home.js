@@ -3,10 +3,11 @@ $(document).ready(function(){
     $(document).on('click','#searchSubmit',function(evt){Search(evt);});
     $('.willOpen').on('click',function(){$.noticeBox('即将开放，敬请期待！')});
     //shop info
-    $.shopsList(1);
+    $.shopsList(1,'',window.dataObj.action);
     $.scrollLoading();
     //province and city
     var area=window.dataObj.area;
+    //province data
     for(var key in area){
         var $item=$('<li><span class="name"></span><span class="num"></span></li>');
         var city=area[key]['city'];
@@ -15,10 +16,12 @@ $(document).ready(function(){
         $item.attr({'data-code':key,'data-city':city}).find('.name').text(area[key]['name']);
         $('.provincelist').append($item);
     }
+    //choose procince
     $(document).on('click','.provincelist li',function(){
         var $this=$(this);
         var province_code=$this.attr('data-code');
         var if_city=$this.attr('data-city');
+        $('.all_city').attr({'data-code':province_code});
         if(if_city=='true'){
              $('.citylist').empty();
             for(var key in area){
@@ -32,7 +35,7 @@ $(document).ready(function(){
                 }
             }
         }
-        else{filter(province_code);}
+        else{filter(province_code,'province');}
     });
     //close choose list
     $(document).on('click',function(e){
@@ -47,7 +50,13 @@ $(document).ready(function(){
     $(document).on('click','.city_list li',function(){
         var $this=$(this);
         var city_code=$this.attr('data-code');
-        filter(city_code);
+        filter(city_code,'city');
+    });
+    //province filter
+     $(document).on('click','.all_city',function(){
+        var $this=$(this);
+        var province_code=$this.attr('data-code');
+        filter(province_code,'province');
     });
 });
 $.shopItem=function (shops){
@@ -86,14 +95,24 @@ $.shopItem=function (shops){
             }
 });      
 }
-
-$.shopsList=function(page){
+window.dataObj.page=1;
+window.dataObj.finished=true;
+window.dataObj.action='shop';
+window.dataObj.type='city';
+$.shopsList=function(page,data,action){
     var url='';
-    var action =window.dataObj.action;
+    var action =action;
     var args={
         action:action,
         page:page
     };
+    if(action=='filter') {
+        if(window.dataObj.type=='city') {args.city=data}
+        else if(window.dataObj.type=='province') {args.province=data}
+    }
+    else if(action=='search') {
+        args.q=data
+    }
     $.postJson(url,args,function(res){
         if(res.success)
         {
@@ -107,9 +126,6 @@ $.shopsList=function(page){
         );
 };
 
-window.dataObj.page=1;
-window.dataObj.finished=true;
-window.dataObj.action='shop';
 $.scrollLoading=function(){
     var range = 10;             //距下边界长度/单位px          //插入元素高度/单位px  
     var totalheight = 0;   
@@ -123,9 +139,9 @@ $.scrollLoading=function(){
             $('.loading').show();
             window.dataObj.finished=false;
             window.dataObj.page++; 
-            $.shopsList(window.dataObj.page);
+            $.shopsList(window.dataObj.page,window.dataObj.data,window.dataObj.action);
         }       
-        else if(window.dataObj.page >=maxnum){
+        else if(window.dataObj.page ==maxnum){
               $('.no_more').show();
         } 
     }); 
@@ -133,6 +149,7 @@ $.scrollLoading=function(){
 
 function Search(evt,page){
     evt.preventDefault();
+    window.dataObj.page=1;
     var q=$('#searchKey').val().trim();
     var action="search";
     var url="";
@@ -155,7 +172,8 @@ function Search(evt,page){
                  }
                 else {
                     window.dataObj.action='search';
-                    $.shopItem(shops);  
+                    window.dataObj.data=q;
+                    $.shopItem(shops,q);  
                 }
             }
             else return $.noticeBox(res.error_text);
@@ -164,15 +182,23 @@ function Search(evt,page){
     );
 }
 
-function filter(data,page){
+function filter(data,type,page){
    var action="filter";
+   window.dataObj.page=1;
     var url="";
      if(!page){page=1}
     var args={
-        city:Int(data),
         action:action,
         page:page
     };
+    if(type=='city') {
+        args.city=Int(data);
+        window.dataObj.type=='city'
+    }
+    else if(type=='province') {
+        args.province=Int(data);
+        window.dataObj.type=='province'
+    }
     if(!data){return $.noticeBox('选择城市！')}
     $.postJson(url,args,
         function(res){
@@ -187,7 +213,8 @@ function filter(data,page){
                  }
                 else {
                       window.dataObj.action='filter';
-                     $.shopItem(shops); 
+                      window.dataObj.data=Int(data);
+                     $.shopItem(shops,data); 
                 }
             }
         else return $.noticeBox(res.error_text);
