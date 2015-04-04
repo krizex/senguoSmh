@@ -1228,7 +1228,17 @@ class InsertData(CustomerBaseHandler):
                     shop.shop_start_timestamp = shop.create_date_timestamp
             self.session.commit()
 
-        return self.send_success()
+        try:
+            accountinfo_list = self.session.query(models.Accountinfo).all()
+        except:
+            self.send_fail("get accountinfo error")
+        if accountinfo_list:
+            for accountinfo in accountinfo_list:
+                if accountinfo_list.headimgurl_small is None:
+                    accountinfo_list.headimgurl_small = accountinfo_list.headimgurl[0:-1]+'132'
+            self.session.commit()
+
+        # return self.send_success()
 
         # ch = pingpp(order_no = '1234353',amount = 1,app=dict(id=''))
         # return self.send_success()
