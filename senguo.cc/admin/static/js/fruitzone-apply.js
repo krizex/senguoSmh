@@ -50,7 +50,7 @@ $(document).ready(function(){
         var text=$this.text();
         var if_city=$this.attr('data-city');
         $('#provinceAddress').attr({'data-code':code}).text(text);
-        if(if_city=='false') {$('.city_select').hide();}
+        if(if_city=='false') {$('.city_select').hide();$('#cityAddress').attr({'data-code':code})}
         else {
              $('.cityList').empty();
               for(var key in area){    
@@ -222,7 +222,7 @@ function Apply(evt){
         function(res){
             if(res.success)
             {
-                window.location.href="/fruitzone/shop/applySuccess";
+                window.location.href="/fruitzone/applySuccess";
             }
             else {
                 $.noticeBox(res.error_text);
@@ -293,7 +293,7 @@ function reApply(evt){
         function(res){
             if(res.success)
             {
-                window.location.href="/fruitzone/shop/applySuccess";
+                window.location.href="/fruitzone/applySuccess";
             }
             else  {
                 $.noticeBox(res.error_text);
