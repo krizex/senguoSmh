@@ -1234,8 +1234,8 @@ class InsertData(CustomerBaseHandler):
             self.send_fail("get accountinfo error")
         if accountinfo_list:
             for accountinfo in accountinfo_list:
-                if accountinfo_list.headimgurl_small is None:
-                    accountinfo_list.headimgurl_small = accountinfo_list.headimgurl[0:-1]+'132'
+                if accountinfo.headimgurl_small is None:
+                    accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
             self.session.commit()
 
         # return self.send_success()
