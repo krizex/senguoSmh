@@ -1,8 +1,10 @@
 .container{background:none;}
 .filter_search{height:50px;line-height:30px;padding:10px 15px;}
-.filter_search  .city_choose{width:15%;min-width:40px;}
+.filter_search  .city_choose{width:20%;min-width:40px;height:30px;overflow:hidden;padding-right:5px;}
+.filter_search  .city_choose .city_name{display:inline-block;width:80%;overflow:hidden;}
+.filter_search  .city_choose .arrow{margin-top:15px;}
 .filter_search .arrow{display:inlne-block;width: 0;height: 0;border-bottom:10px solid #ddd;border-left:10px solid transparent;}
-.filter_search  .search-box{width:85%;}
+.filter_search  .search-box{width:80%;}
 .filter_search .search-input{width:88%;height:30px;border:none;background:#f4f4f4;border-radius:20px;text-indent:10px;}
 .filter_search  .btn{padding:0px;background:#fff;width:12%;display:inline-block;line-height:30px;}
 
@@ -15,13 +17,17 @@
 .shoplist_box .item .sty1{line-height:20px;}
 .area_list{position:relative;width:100%;}
 .area_list li{width:100%;float:left;}
-.province_list{width:50%;position:absolute;left:0;z-index:10;overflow:hidden;height:330px;overflow-y:scroll;}
-.province_list li{height:30px;line-height:20px;padding:5px 10px;background:url('/static/images/arrow_right.png') no-repeat 90% center;background-size:10px;}
+.whole_country{display:inline-block;width:100%;height:35px;line-height:30px;padding:10px;}
+.whole_country .arrow{margin-top:8px !important;}
+.province_list{width:50%;position:absolute;left:0;z-index:10;overflow:hidden;height:350px;overflow-y:scroll;}
+.province_list .arrow{display:inline-block;width:7px;height:14px;margin-top:5px;background:url('/static/images/arrow_right.png') no-repeat;background-size:7px;}
+.province_list li{height:35px;line-height:20px;padding:5px 10px;}
 .province_list li:hover{cursor:pointer;color:#00D289;background:#efefef;}
+.province_list li 
 .province_list .active{color:#00D289;background:#efefef;}
-.city_list{width:50%;position:absolute;right:0;z-index:10;background:#f0f0f0;height:330px;overflow-y:scroll;}
-.city_list li{width:100%;height:30px;line-height:20px;padding:5px 10px 5px 25px;}
+.city_list{width:50%;position:absolute;right:0;z-index:10;background:#f0f0f0;height:350px;overflow-y:scroll;}
+.city_list li{width:100%;height:35px;line-height:20px;padding:5px 10px 5px 30px;}
 .city_list li:hover{cursor:pointer;color:#00D289;}
 .city_list .active{color:#00D289;}
-.all_city{background:url('/static/images/arrow_down.png') no-repeat 5px center;background-size:14px;height:30px;line-height:30px;display:inline-block;width:100%;padding-left:25px;}
+.all_city{background:url('/static/images/arrow_down.png') no-repeat 8px 20px;background-size:14px;height:35px;line-height:40px;display:inline-block;width:100%;padding:5px 10px 5px 30px;}
 .shopList{overflow:hidden;}

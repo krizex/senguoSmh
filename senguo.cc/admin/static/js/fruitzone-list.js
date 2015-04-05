@@ -9,19 +9,36 @@ $(document).ready(function(){
     var area=window.dataObj.area;
     //province data
     for(var key in area){
-        var $item=$('<li><span class="name"></span><span class="num"></span></li>');
+        var $item=$('<li><span class="name pull-left ml10"></span><em class="arrow pull-right mr10"></em><span class="num pull-right mr10"></span></li>');
         var city=area[key]['city'];
         if(city) city='true';
         else city='false';
         $item.attr({'data-code':key,'data-city':city}).find('.name').text(area[key]['name']);
         $('.provincelist').append($item);
     }
-    //choose procince
+    //province shop number
+    $('.provincelist li').each(function(){
+        var $this=$(this);
+        var code=$this.attr('data-code');
+        var shop_num=window.dataObj.province_count;
+        for(var key in shop_num){
+            var p_code=shop_num[key][0];
+            if(p_code==code){
+                $this.find('.num').text(shop_num[key][1]);
+            }
+        }
+        var p_num=$this.find('.num').text();
+        if(!p_num) $this.find('.num').text(0);
+    });
+    //choose province
     $(document).on('click','.provincelist li',function(){
         var $this=$(this);
         var province_code=$this.attr('data-code');
+        var province_name=$this.find('.name').text();
         var if_city=$this.attr('data-city');
-        $('.all_city').attr({'data-code':province_code});
+        var pro_num=$this.find('.num').text();
+        $('.all_city').attr({'data-code':province_code,'data-name':province_name}).find('.num').text(pro_num);
+        $('.city_list').removeClass('hidden');
         if(if_city=='true'){
              $('.citylist').empty();
             for(var key in area){
@@ -35,29 +52,57 @@ $(document).ready(function(){
                 }
             }
         }
-        else{filter(province_code,'province');}
+        else{
+            $('.city_name').text(province_name);
+            filter(province_code,'province');
+        }
     });
     //close choose list
     $(document).on('click',function(e){
         if($(e.target).closest('.dismiss').length == 0){
-            $('.area_list').addClass('hidden');
+            $('.list_item').addClass('hidden');
+            $('.city_choose').removeClass('city_choosed');
         }
     });
     //city filter
     $(document).on('click','.city_choose',function(){
-        $('.area_list').removeClass('hidden');
+        var $this=$(this);
+         if($this.hasClass('city_choosed')){
+            $('.list_item').addClass('hidden');
+            $this.removeClass('city_choosed');
+         }
+         else{
+            $('.province_list').removeClass('hidden');
+            $this.addClass('city_choosed');     
+         } 
     });
     $(document).on('click','.city_list li',function(){
         var $this=$(this);
         var city_code=$this.attr('data-code');
+        var city_name=$this.find('.name').text();
+        window.dataObj.type='city';
+        $('.city_name').text(city_name);
         filter(city_code,'city');
     });
-    //province filter
+    //all city
      $(document).on('click','.all_city',function(){
         var $this=$(this);
         var province_code=$this.attr('data-code');
+        var province_name=$this.attr('data-name');
+        window.dataObj.type='province';
+        $('.city_name').text(province_name);
         filter(province_code,'province');
     });
+    //whole country
+     $(document).on('click','.whole_country',function(){
+        window.dataObj.action='shop';
+        $('.shoplist').empty();
+        $.shopsList(1,'',window.dataObj.action);
+        $('.list_item').addClass('hidden');
+        $('.city_choose').removeClass('city_choosed');
+        $('.city_name').text('城市');
+    });
+     
 });
 $.shopItem=function (shops){
    $.getItem('/static/items/fruitzone/shop_item.html?v=2015-0320',function(data){
@@ -169,6 +214,7 @@ function Search(evt,page){
                  var shops=res.shops;
                 if(res.shops==''){
                     $('.shoplist').empty();
+                    window.dataObj.maxnum=1;
                     $('.shoplist').append('<h5 class="text-center mt10 text-grey">无搜索结果！</h5>');
                  }
                 else {
@@ -207,9 +253,11 @@ function filter(data,type,page){
             {
                 $('.shoplist').empty();
                  var shops=res.shops;
-                 $('.area_list').addClass('hidden');
+                 $('.list_item').addClass('hidden');
+                 $('.city_choose').removeClass('city_choosed');
                  if(res.shops==''){
                     $('.shoplist').empty();
+                    window.dataObj.maxnum=1;
                     $('.shoplist').append('<h5 class="text-center mt10 text-grey">无搜索结果！</h5>');
                  }
                 else {

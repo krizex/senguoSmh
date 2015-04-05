@@ -92,13 +92,13 @@ class Home(StaffBaseHandler):
         orders_intime = orders.filter_by(type=1).order_by(models.Order.create_date).all()
         orders_ontime = orders.filter_by(type=2).order_by(models.Order.start_time).all()
         day = datetime.datetime.now().day
-        orders_ontime = [x for x in orders_ontime if (x.today == 1 and x.create_date.day == day) or
-                  (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
+        # orders_ontime = [x for x in orders_ontime if (x.today == 1 and x.create_date.day == day) or
+        #           (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
 
         orders_intime   = len(orders_intime)
         orders_ontime  = len(orders_ontime)
       
-        print(orders_intime)
+        print('orders_intime',orders_intime)
         print(orders_ontime)
         self.set_cookie("orders_intime",str(orders_intime))
         self.set_cookie("orders_ontime",str(orders_ontime))

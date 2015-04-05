@@ -454,6 +454,7 @@ class Order(AdminBaseHandler):
         elif order_status == 1:
             orders = [x for x in self.current_shop.orders if x.type == order_type and x.status == 1]
             # woody 4.3
+            session = self.session
             for order in orders:
                 order.send_time = order.get_sendtime(session,order.id)
             orders.sort(key = lambda order:order.send_time,reverse = True)
@@ -464,6 +465,7 @@ class Order(AdminBaseHandler):
             orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in [2, 3, 4]]
 
             # woody 4.3
+            session = self.session
             for order in orders:
                 order.send_time = order.get_sendtime(session,order.id)
             orders.sort(key = lambda order:order.send_time,reverse = True)
