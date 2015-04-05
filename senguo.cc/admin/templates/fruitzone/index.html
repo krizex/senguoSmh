@@ -1,11 +1,11 @@
 {% extends 'base.html'%}
 {% block title%}水果商城免费接入申请{% end %}
 {% block head%}
-<link rel="stylesheet" href="{{static_url('css/fruitzone-shoplist.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/fruitzone-index.css')}}"/>
 {% end %}
 {% block content %}
 <div class="box text-center">
-	<img src="{{static_url('images/apply_index.png')}}"/>
+	<img src="{{static_url('images/apply_index.png')}}" class="shop"/>
 	<div class="province text-center"><img src="{{static_url('images/word.png')}}" class="province_img"/></div>
 	<div class="count ">
 		 已入驻
@@ -17,8 +17,8 @@
 		 </span>
 		 家
 	</div>
-	<a href="{{reverse_url('fruitzoneShopApply')}}" class="font14  btn bg-green text-white center-block mb10 mt10">免费入驻</a>
-	<a href="{{reverse_url('fruitzoneShopList')}}" class="font14 btn bg-green text-white center-block">商家列表</a>
+	<a href="{{reverse_url('fruitzoneShopApply')}}" class="font16  btn bg-green text-white center-block mb10 mt10">免费入驻</a>
+	<a href="{{reverse_url('fruitzoneShopList')}}" class="font16 btn bg-green text-white center-block">商家列表</a>
 </div>
 {% end %}
-{% block bottom %}<script src="{{static_url('js/fruitzone-shoplist.js')}}"></script>{% end %}
+{% block bottom %}<script src="{{static_url('js/fruitzone-index.js')}}"></script>{% end %}

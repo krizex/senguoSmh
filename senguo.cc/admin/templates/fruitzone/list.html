@@ -1,0 +1,79 @@
+{% extends 'base.html'%}
+{% block title %}店铺列表{% end %}
+
+{% block head%}
+<link rel="stylesheet" href="{{static_url('css/fruitzone-list.css')}}"/>
+{% end %}
+{% block header%}
+<header class="herder bg-green text-white text-center">
+        <a href="{{reverse_url('fruitzoneHome')}}" class="back"></a>
+        <span class="title font16">店铺列表</span>
+        <!--<ul class="home-head">
+            <li class="active"><a href="{{reverse_url('fruitzoneHome')}}">零售商</a></li>
+            <li class="willOpen"><a href="javascript:;">供应商</a></li>
+        </ul>-->
+   <!--<p style="color:red;text-align:center;margin-top:1em"><small>平台公测中，店铺数据暂未通过审核</small></p>-->
+</header>
+{% end%}
+
+{% block content%}
+<div class="filter_search bg-white text-grey9 font14">
+    <a href="javascript:;" class="city_choose pull-left">城市<em class="arrow"></em></a>
+    <div class="search-box pull-right" id="search-box">
+        <input type="text" placeholder="请输入店铺名" class="search-input pull-left" id="searchKey"/>
+        <input type="submit" value="搜索" class="btn pull-right text-center" id="searchSubmit"/>
+    </div>
+</div>
+
+<!-- <div class="filter-box">
+    <a href="javascript:;" onclick="orderBy(1);" class="active">城市<span class="arrow"></span></a>
+    <a href="javascript:;" onclick="orderBy(2);">服务区域<span class="arrow"></span></a>
+    <a href="javascript:;" onclick="orderBy(3);">运营时间<span class="arrow"></span></a>
+    <a href="javascript:;" onclick="orderBy(4);">在售水果<span class="arrow"></span></a>
+</div> -->
+<div class="area_list hidden">
+    <div class="province_list bg-white text-grey6 dismiss">
+        <ul class="provincelist">
+
+        </ul>
+    </div>
+    <div class="city_list text-grey6  dismiss">
+        <a class="all_city text-grey6" href="javascript:;"><span class="name">全部</span><span class="num"></span></a>
+        <ul  class="citylist">
+            
+        </ul>
+    </div>
+</div>
+<!-- <div class="order-by-area select-list order-by-list" id="orderBy2" style="display:none;">
+    <ul class="order-by-item" data-action="areaFilter">
+        <li data-code="1">{{handler.code_to_text("service_area",1)}}</li>
+        <li data-code="2">{{handler.code_to_text("service_area",2)}}</li>
+        <li data-code="4">{{handler.code_to_text("service_area",4)}}</li>
+        <li data-code="8">{{handler.code_to_text("service_area",8)}}</li>
+    </ul>
+ </div>
+<div class="order-by-time select-list order-by-list" id="orderBy3" style="display:none;">
+    <ul class="order-by-item" data-action="liveFilter">
+        <li data-code="1">一个月以上</li>
+        <li data-code="3">三个月以上</li>
+        <li data-code="6">半年以上</li>
+        <li data-code="12">一年以上</li>
+    </ul>
+</div>
+<div class="order-by-fruit select-list order-by-list" id="orderBy4" style="display:none;">
+    <a class="pull-right text-green border-green white-color" href="javascript:;" id="orderByFruit">点击筛选</a>
+    <ul class="order-by-item fruit-list" data-action="fruitFilter">
+    </ul>
+</div> -->
+<div class="shoplist_box">
+    <ul class="shoplist">
+       
+    </ul>
+</div>
+<div class="loading text-center text-grey9 font12  text-green mt10 mb10" style="display:none">~努力加载中( > < )~</div>
+<div class="no_more text-center text-grey9 font12  text-green mt10 mb10" style="display:none">~没有更多了呢~( > < )~</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/area.js')}}"></script>
+<script src="{{static_url('js/fruitzone-list.js')}}"></script>
+{% end %}

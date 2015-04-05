@@ -764,8 +764,8 @@ class Cart(CustomerBaseHandler):
     @tornado.web.authenticated
     def get(self):
         shop_id = self.shop_id
-        shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
-        if not shop:return self.send_error(404)
+        shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
+        if not shop:return self.send_error('shop not found')
         cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
         if not cart or (not (eval(cart.fruits) or eval(cart.mgoods))): #购物车为空
             return self.render("notice/cart-empty.html",context=dict(subpage='cart'))
