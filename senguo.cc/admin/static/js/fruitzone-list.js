@@ -9,19 +9,35 @@ $(document).ready(function(){
     var area=window.dataObj.area;
     //province data
     for(var key in area){
-        var $item=$('<li><span class="name"></span><span class="num"></span></li>');
+        var $item=$('<li><span class="name pull-left ml10"></span><em class="arrow pull-right mr10"></em><span class="num pull-right mr10"></span></li>');
         var city=area[key]['city'];
         if(city) city='true';
         else city='false';
         $item.attr({'data-code':key,'data-city':city}).find('.name').text(area[key]['name']);
         $('.provincelist').append($item);
     }
-    //choose procince
+    //province shop number
+    $('.provincelist li').each(function(){
+        var $this=$(this);
+        var code=$this.attr('data-code');
+        var shop_num=window.dataObj.province_count;
+        for(var key in shop_num){
+            var p_code=shop_num[key][0];
+            if(p_code==code){
+                $this.find('.num').text(shop_num[key][1]);
+            }
+        }
+        var p_num=$this.find('.num').text();
+        if(!p_num) $this.find('.num').text(0);
+    });
+    //choose province
     $(document).on('click','.provincelist li',function(){
         var $this=$(this);
         var province_code=$this.attr('data-code');
         var if_city=$this.attr('data-city');
-        $('.all_city').attr({'data-code':province_code});
+        var pro_num=$this.find('.num').text();
+        $('.all_city').attr({'data-code':province_code}).find('.num').text(pro_num);
+        $('.city_list').removeClass('hidden');
         if(if_city=='true'){
              $('.citylist').empty();
             for(var key in area){
@@ -40,12 +56,21 @@ $(document).ready(function(){
     //close choose list
     $(document).on('click',function(e){
         if($(e.target).closest('.dismiss').length == 0){
-            $('.area_list').addClass('hidden');
+            $('.list_item').addClass('hidden');
+            $('.city_choose').removeClass('city_choosed');
         }
     });
     //city filter
     $(document).on('click','.city_choose',function(){
-        $('.area_list').toggleClass('hidden');
+        var $this=$(this);
+         if($this.hasClass('city_choosed')){
+            $('.list_item').addClass('hidden');
+            $this.removeClass('city_choosed');
+         }
+         else{
+            $('.province_list').removeClass('hidden');
+            $this.addClass('city_choosed');     
+         } 
     });
     $(document).on('click','.city_list li',function(){
         var $this=$(this);
@@ -171,6 +196,7 @@ function Search(evt,page){
                  var shops=res.shops;
                 if(res.shops==''){
                     $('.shoplist').empty();
+                    window.dataObj.maxnum=1;
                     $('.shoplist').append('<h5 class="text-center mt10 text-grey">无搜索结果！</h5>');
                  }
                 else {
@@ -209,9 +235,11 @@ function filter(data,type,page){
             {
                 $('.shoplist').empty();
                  var shops=res.shops;
-                 $('.area_list').addClass('hidden');
+                 $('.list_item').addClass('hidden');
+                 $('.city_choose').removeClass('city_choosed');
                  if(res.shops==''){
                     $('.shoplist').empty();
+                    window.dataObj.maxnum=1;
                     $('.shoplist').append('<h5 class="text-center mt10 text-grey">无搜索结果！</h5>');
                  }
                 else {

@@ -17,9 +17,13 @@
 {% end%}
 
 {% block content%}
+{% import json %}
+<script type="text/javascript">
+    window.dataObj.province_count={% raw json.dumps(context['province_count'])%}
+</script>
 <div class="filter_search bg-white text-grey9 font14">
-    <a href="javascript:;" class="city_choose pull-left">城市<em class="arrow"></em></a>
-    <div class="search-box pull-right" id="search-box">
+    <a href="javascript:;" class="city_choose pull-left dismiss">城市<em class="arrow"></em></a>
+    <div class="search-box pull-right dismiss" id="search-box">
         <input type="text" placeholder="请输入店铺名" class="search-input pull-left" id="searchKey"/>
         <input type="submit" value="搜索" class="btn pull-right text-center" id="searchSubmit"/>
     </div>
@@ -31,14 +35,14 @@
     <a href="javascript:;" onclick="orderBy(3);">运营时间<span class="arrow"></span></a>
     <a href="javascript:;" onclick="orderBy(4);">在售水果<span class="arrow"></span></a>
 </div> -->
-<div class="area_list hidden">
-    <div class="province_list bg-white text-grey6 dismiss">
+<div class="area_list">
+    <div class="province_list bg-white text-grey6 dismiss hidden list_item">
         <ul class="provincelist">
 
         </ul>
     </div>
-    <div class="city_list text-grey6  dismiss">
-        <a class="all_city text-grey6" href="javascript:;"><span class="name">全部</span><span class="num"></span></a>
+    <div class="city_list text-grey6  dismiss hidden list_item">
+        <a class="all_city text-grey6" href="javascript:;"><span class="name pull-left">全部</span><span class="num pull-right mr25"></span></a>
         <ul  class="citylist">
             
         </ul>

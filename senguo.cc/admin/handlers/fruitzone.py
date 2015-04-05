@@ -22,11 +22,11 @@ class Home(FruitzoneBaseHandler):
 
 class ShopList(FruitzoneBaseHandler):
     def get(self):
-
+        province_count=self.get_shop_group()
         # fruit_types = []
         # for f_t in self.session.query(models.FruitType).all():
         #     fruit_types.append(f_t.safe_props())
-        return self.render("fruitzone/list.html", context=dict(subpage="home"))
+        return self.render("fruitzone/list.html", context=dict(province_count=province_count,subpage="home"))
 
     
     @FruitzoneBaseHandler.check_arguments("action")
@@ -71,9 +71,9 @@ class ShopList(FruitzoneBaseHandler):
         if "city" in self.args:
             q = q.filter_by(shop_city=self.args["city"])
             shop_count = q.count()
-            print('shop_count',shop_count)
+            #print('shop_count',shop_count)
             page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
-            print('page_total',page_total)
+            #print('page_total',page_total)
             q = q.offset(page * _page_count).limit(_page_count).all()
             
         elif "province" in self.args:

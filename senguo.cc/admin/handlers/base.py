@@ -257,19 +257,20 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
     # woody 4.4
     def get_shop_count(self):
         try:
-            shop_count = self.session.query(models.Shop).count()
+            shop_count = self.session.query(models.Shop).filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
+                models.Shop.shop_code !='not set' ).count()
         except:
             return self.send_fail("shop count error")
         return shop_count
     def get_province_shop_count(self,shop_province):
         try:
-            shop_count = self.session.query(models.Shop).filter_by(shop_province = shop_province).count()
+            shop_count = self.session.query(models.Shop).filter(shop_province == shop_province,shop_code !='not set' ).count()
         except:
             return self.send_fail('shop_province error')
         return shop_count
     def get_city_shop_count(self,shop_city):
         try:
-            shop_count = self.session.query(models.Shop).filter_by(shop_city = shop_city).count()
+            shop_count = self.session.query(models.Shop).filter(shop_city == shop_city,shop_code !='not set' ).count()
         except:
             return self.send_fail('shop_city error')
         return shop_count
@@ -278,11 +279,17 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
         from sqlalchemy import func
         try:
             shop_count = self.session.query(models.Shop.shop_province,func.count(models.Shop.shop_province)).\
-            group_by(models.Shop.shop_province).all()
+            filter(models.Shop.shop_code != 'not set').group_by(models.Shop.shop_province).all()
         except:
             return self.send_fail('group error')
-        print(shop_count)
-        return shop_count
+        #print(type(shop_count))
+        shoplist = []
+        # shop_count = shop_count.filter(shop_code != 'not set')
+        for shop in shop_count:
+            print(shop[0],shop[1])
+            shoplist.append([shop[0],shop[1]])
+
+        return shoplist
 
 
 class AdminBaseHandler(_AccountBaseHandler):
@@ -477,7 +484,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
             group_by(models.Shop.shop_province).all()
         except:
             return self.send_fail('group error')
-        print(shop_count)
+        #print(shop_count)
         return shop_count
 
 

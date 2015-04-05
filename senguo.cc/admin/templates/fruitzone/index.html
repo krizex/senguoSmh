@@ -5,6 +5,7 @@
 {% end %}
 {% block content %}
 <div class="box text-center">
+	<input type="hidden" id="total_count" value="{{context['shop_count']}}" />
 	<img src="{{static_url('images/apply_index.png')}}" class="shop"/>
 	<div class="province text-center"><img src="{{static_url('images/word.png')}}" class="province_img"/></div>
 	<div class="count ">
