@@ -22,7 +22,7 @@
     window.dataObj.province_count={% raw json.dumps(context['province_count'])%}
 </script>
 <div class="filter_search bg-white text-grey9 font14">
-    <a href="javascript:;" class="city_choose pull-left dismiss">城市<em class="arrow"></em></a>
+    <a href="javascript:;" class="city_choose pull-left dismiss"><span class="city_name pull-left text-center">城市</span><em class="arrow pull-left"></em></a>
     <div class="search-box pull-right dismiss" id="search-box">
         <input type="text" placeholder="请输入店铺名" class="search-input pull-left" id="searchKey"/>
         <input type="submit" value="搜索" class="btn pull-right text-center" id="searchSubmit"/>
@@ -37,13 +37,14 @@
 </div> -->
 <div class="area_list">
     <div class="province_list bg-white text-grey6 dismiss hidden list_item">
-        <ul class="provincelist">
+        <a class="whole_country text-grey6 font14" href="javascript:;"><span class="name pull-left ml10">全国</span><em class="arrow pull-right mr10"></em><span class="num pull-right mr10">{{context['shop_count']}}</span></a>
+        <ul class="provincelist pull-left font14">
 
         </ul>
     </div>
     <div class="city_list text-grey6  dismiss hidden list_item">
-        <a class="all_city text-grey6" href="javascript:;"><span class="name pull-left">全部</span><span class="num pull-right mr25"></span></a>
-        <ul  class="citylist">
+        <a class="all_city text-grey6 font14" href="javascript:;"><span class="name pull-left">全部</span><span class="num pull-right mr25"></span></a>
+        <ul  class="citylist font14">
             
         </ul>
     </div>

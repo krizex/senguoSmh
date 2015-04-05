@@ -34,9 +34,10 @@ $(document).ready(function(){
     $(document).on('click','.provincelist li',function(){
         var $this=$(this);
         var province_code=$this.attr('data-code');
+        var province_name=$this.find('.name').text();
         var if_city=$this.attr('data-city');
         var pro_num=$this.find('.num').text();
-        $('.all_city').attr({'data-code':province_code}).find('.num').text(pro_num);
+        $('.all_city').attr({'data-code':province_code,'data-name':province_name}).find('.num').text(pro_num);
         $('.city_list').removeClass('hidden');
         if(if_city=='true'){
              $('.citylist').empty();
@@ -51,7 +52,10 @@ $(document).ready(function(){
                 }
             }
         }
-        else{filter(province_code,'province');}
+        else{
+            $('.city_name').text(province_name);
+            filter(province_code,'province');
+        }
     });
     //close choose list
     $(document).on('click',function(e){
@@ -75,16 +79,30 @@ $(document).ready(function(){
     $(document).on('click','.city_list li',function(){
         var $this=$(this);
         var city_code=$this.attr('data-code');
+        var city_name=$this.find('.name').text();
         window.dataObj.type='city';
+        $('.city_name').text(city_name);
         filter(city_code,'city');
     });
-    //province filter
+    //all city
      $(document).on('click','.all_city',function(){
         var $this=$(this);
         var province_code=$this.attr('data-code');
+        var province_name=$this.attr('data-name');
         window.dataObj.type='province';
+        $('.city_name').text(province_name);
         filter(province_code,'province');
     });
+    //whole country
+     $(document).on('click','.whole_country',function(){
+        window.dataObj.action='shop';
+        $('.shoplist').empty();
+        $.shopsList(1,'',window.dataObj.action);
+        $('.list_item').addClass('hidden');
+        $('.city_choose').removeClass('city_choosed');
+        $('.city_name').text('城市');
+    });
+     
 });
 $.shopItem=function (shops){
    $.getItem('/static/items/fruitzone/shop_item.html?v=2015-0320',function(data){

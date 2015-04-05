@@ -23,10 +23,11 @@ class Home(FruitzoneBaseHandler):
 class ShopList(FruitzoneBaseHandler):
     def get(self):
         province_count=self.get_shop_group()
+        shop_count = self.get_shop_count()
         # fruit_types = []
         # for f_t in self.session.query(models.FruitType).all():
         #     fruit_types.append(f_t.safe_props())
-        return self.render("fruitzone/list.html", context=dict(province_count=province_count,subpage="home"))
+        return self.render("fruitzone/list.html", context=dict(province_count=province_count,shop_count=shop_count,subpage="home"))
 
     
     @FruitzoneBaseHandler.check_arguments("action")
