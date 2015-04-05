@@ -623,8 +623,13 @@ class Order(AdminBaseHandler):
                 # when the order complete ,
                 # woody
 
+
                 #shop_point add by order.totalPrice
                 if data["status"] == 5:
+                    now = datetime.datetime.now()
+                    order.arrival_day = now.strftime("%Y-%m-%d")
+                    order.arrival_time= now.strftime("%H:%M")
+                    self.session.commit()
                     customer_id = order.customer_id
                     shop_id = order.shop_id
                     totalprice = order.totalPrice

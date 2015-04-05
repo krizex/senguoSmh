@@ -22,10 +22,7 @@ class Home(FruitzoneBaseHandler):
 
 class ShopList(FruitzoneBaseHandler):
     def get(self):
-
-        # fruit_types = []
-        # for f_t in self.session.query(models.FruitType).all():
-        #     fruit_types.append(f_t.safe_props())
+        
         return self.render("fruitzone/list.html", context=dict(subpage="home"))
 
     
