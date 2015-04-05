@@ -45,17 +45,19 @@ $(document).ready(function(){
     });
     //city filter
     $(document).on('click','.city_choose',function(){
-        $('.area_list').removeClass('hidden');
+        $('.area_list').toggleClass('hidden');
     });
     $(document).on('click','.city_list li',function(){
         var $this=$(this);
         var city_code=$this.attr('data-code');
+        window.dataObj.type='city';
         filter(city_code,'city');
     });
     //province filter
      $(document).on('click','.all_city',function(){
         var $this=$(this);
         var province_code=$this.attr('data-code');
+        window.dataObj.type='province';
         filter(province_code,'province');
     });
 });
