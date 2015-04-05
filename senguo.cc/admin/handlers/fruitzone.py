@@ -17,7 +17,8 @@ from qiniu.services.storage.bucket import BucketManager
 
 class Home(FruitzoneBaseHandler):
     def get(self):
-       return self.render("fruitzone/index.html",context=dict(subpage=""))
+       shop_count = self.get_shop_count()
+       return self.render("fruitzone/index.html",context=dict(shop_count = shop_count,subpage=""))
 
 class ShopList(FruitzoneBaseHandler):
     def get(self):
@@ -38,7 +39,11 @@ class ShopList(FruitzoneBaseHandler):
         fruit_types = []
         for f_t in self.session.query(models.FruitType).all():
             fruit_types.append(f_t.safe_props())
-        return self.render("fruitzone/home.html", context=dict(pages=pages, fruit_types=fruit_types,subpage="home"))
+
+        shop_count = self.get_shop_group()
+
+        return self.render("fruitzone/home.html", context=dict(pages=pages,\
+            shop_count = shop_count,fruit_types=fruit_types,subpage="home"))
     
     @FruitzoneBaseHandler.check_arguments("action")
     def post(self):

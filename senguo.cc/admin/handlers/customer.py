@@ -1213,30 +1213,40 @@ class Points(CustomerBaseHandler):
 
 class InsertData(CustomerBaseHandler):
     @tornado.web.authenticated
-    @CustomerBaseHandler.check_arguments("code?:str")
+    # @CustomerBaseHandler.check_arguments("code?:str")
     def get(self):
+        from sqlalchemy import create_engine, func, ForeignKey, Column
+        print(func)
 
         
         # import pingpp
-        try:
-            shop_list = self.session.query(models.Shop).all()
-        except:
-            self.send_fail(" get shop error")
-        if shop_list:
-            for shop in shop_list:
-                if shop.shop_start_timestamp == None:
-                    shop.shop_start_timestamp = shop.create_date_timestamp
-            self.session.commit()
+        # try:
+        #     shop_list = self.session.query(models.Shop).all()
+        # except:
+        #     self.send_fail(" get shop error")
+        # if shop_list:
+        #     for shop in shop_list:
+        #         if shop.shop_start_timestamp == None:
+        #             shop.shop_start_timestamp = shop.create_date_timestamp
+        #     self.session.commit()
 
-        try:
-            accountinfo_list = self.session.query(models.Accountinfo).all()
-        except:
-            self.send_fail("get accountinfo error")
-        if accountinfo_list:
-            for accountinfo in accountinfo_list:
-                if accountinfo.headimgurl_small is None:
-                    accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
-            self.session.commit()
+        # try:
+        #     accountinfo_list = self.session.query(models.Accountinfo).all()
+        # except:
+        #     self.send_fail("get accountinfo error")
+        # if accountinfo_list:
+        #     for accountinfo in accountinfo_list:
+        #         if accountinfo.headimgurl_small is None:
+        #             accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
+        #     self.session.commit()
+
+        shop_count = self.get_shop_count()
+        province_shop_count = self.get_province_shop_count(110000)
+        city_shop_count     = self.get_city_shop_count(110000)
+        shop_group          = self.get_shop_group()   
+        return self.send_success(shop_count=shop_count,province_shop_count = province_shop_count,\
+            city_shop_count = city_shop_count,shop_group = shop_group
+            )
 
         # return self.send_success()
 
