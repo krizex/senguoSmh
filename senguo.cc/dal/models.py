@@ -472,6 +472,7 @@ class Shop(MapBase, _CommonApi):
         return "<Shop: {0} (id={1}, code={2})>".format(
             self.shop_name, self.id, self.shop_code)
 
+
 # 角色：商家，即店铺的管理员
 class ShopAdmin(MapBase, _AccountApi):
     __tablename__ = "shop_admin"

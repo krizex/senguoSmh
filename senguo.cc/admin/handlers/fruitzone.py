@@ -17,14 +17,17 @@ from qiniu.services.storage.bucket import BucketManager
 
 class Home(FruitzoneBaseHandler):
     def get(self):
-       return self.render("fruitzone/index.html",context=dict(subpage=""))
+       shop_count = self.get_shop_count()
+       return self.render("fruitzone/index.html",context=dict(shop_count = shop_count,subpage=""))
 
 class ShopList(FruitzoneBaseHandler):
     def get(self):
+
         # fruit_types = []
         # for f_t in self.session.query(models.FruitType).all():
         #     fruit_types.append(f_t.safe_props())
         return self.render("fruitzone/list.html", context=dict(subpage="home"))
+
     
     @FruitzoneBaseHandler.check_arguments("action")
     def post(self):

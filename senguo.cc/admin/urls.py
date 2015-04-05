@@ -4,6 +4,7 @@ import handlers.customer
 import handlers.superadmin
 import handlers.fruitzone
 import handlers.infowall
+import handlers.official
 from dal import models
 #todo:handlers太大会不会影响性能？
 
@@ -33,6 +34,10 @@ handlers = [
     (r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
     #微官网-----待删除
     (r"/", handlers.superadmin.Official),
+
+    #official
+    (r"/official",handlers.official.Home,{},"OfficialHome"),
+    (r"/official/shoplist",handlers.official.ShopList,{},"ShopList"),
 
     #to remove
     (r"/m", handlers.superadmin.Official),
