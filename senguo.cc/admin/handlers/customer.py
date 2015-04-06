@@ -1005,10 +1005,18 @@ class Order(CustomerBaseHandler):
 			for order in orders:
 				order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time,reverse = True)
+
 		elif action == "finish":#已送达/完成
+			# woody 4.5
+			try:
+				orderlist = self.session.query(models.Order).order_by(desc(models.Order.arrival_day),models.Order.arrival_time).\
+				filter_by(customer_id = self.current_user.id).all()
+			except:
+				return self.send_fail("orderlist error")
+
 			order5 = []
 			order6 = []
-			for x in self.current_user.orders:
+			for x in orderlist:
 				if x.status == 5:		
 					order5.append(x)
 				if x.status == 6:
