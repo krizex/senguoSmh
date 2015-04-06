@@ -1,3 +1,6 @@
+$.getItem('/static/items/fruitzone/shop_item.html?v=2015-0320',function(data){
+    window.dataObj.shop_item=data;
+});      
 $(document).ready(function(){
     //search
     $(document).on('click','#searchSubmit',function(evt){Search(evt);});
@@ -62,16 +65,19 @@ $(document).ready(function(){
         if($(e.target).closest('.dismiss').length == 0){
             $('.list_item').addClass('hidden');
             $('.city_choose').removeClass('city_choosed');
+            remove_bg();
         }
     });
     //city filter
     $(document).on('click','.city_choose',function(){
         var $this=$(this);
          if($this.hasClass('city_choosed')){
+            remove_bg();
             $('.list_item').addClass('hidden');
             $this.removeClass('city_choosed');
          }
          else{
+             add_bg();
             $('.province_list').removeClass('hidden');
             $this.addClass('city_choosed');     
          } 
@@ -96,17 +102,25 @@ $(document).ready(function(){
     //whole country
      $(document).on('click','.whole_country',function(){
         window.dataObj.action='shop';
+        remove_bg();
         $('.shoplist').empty();
         $.shopsList(1,'',window.dataObj.action);
         $('.list_item').addClass('hidden');
         $('.city_choose').removeClass('city_choosed');
         $('.city_name').text('城市');
-    });
-     
+    });   
 });
+
+function add_bg(){
+    $('.area_box').addClass('area_sty');
+    $('body').css({'overflow':'hidden'}).attr({'onmousewheel':'return false'});
+}
+function remove_bg(){
+    $('.area_box').removeClass('area_sty');
+    $('body').css({'overflow':'auto'}).attr({'onmousewheel':''});
+}
+
 $.shopItem=function (shops){
-   $.getItem('/static/items/fruitzone/shop_item.html?v=2015-0320',function(data){
-    window.dataObj.shop_item=data;
     for(var key in shops){
                 var $item=$(window.dataObj.shop_item);
                 var logo_url=shops[key]['shop_trademark_url'];
@@ -138,7 +152,6 @@ $.shopItem=function (shops){
                 $item.find('.intro').text(intro);
                 $('.shoplist').append($item);
             }
-});      
 }
 window.dataObj.page=1;
 window.dataObj.finished=true;
@@ -215,7 +228,7 @@ function Search(evt,page){
                 if(res.shops==''){
                     $('.shoplist').empty();
                     window.dataObj.maxnum=1;
-                    $('.shoplist').append('<h5 class="text-center mt10 text-grey">无搜索结果！</h5>');
+                    $('.shoplist').append('<h4 class="text-center mt10 text-grey">无搜索结果！</h4>');
                  }
                 else {
                     window.dataObj.action='search';
@@ -251,6 +264,7 @@ function filter(data,type,page){
         function(res){
             if(res.success)
             {
+                remove_bg();
                 $('.shoplist').empty();
                  var shops=res.shops;
                  $('.list_item').addClass('hidden');
@@ -258,7 +272,7 @@ function filter(data,type,page){
                  if(res.shops==''){
                     $('.shoplist').empty();
                     window.dataObj.maxnum=1;
-                    $('.shoplist').append('<h5 class="text-center mt10 text-grey">无搜索结果！</h5>');
+                    $('.shoplist').append('<h4 class="text-center mt10 text-grey">无搜索结果！</h4>');
                  }
                 else {
                       window.dataObj.action='filter';
