@@ -1,0 +1,17 @@
+.intro{height:180px;}
+.list{width:100%;margin-top:80px;}
+.list li{width:100%;}
+.list li .img{width:230px;}
+.list li .word{margin-top:80px;}
+.video{width:615px;height:360px;background:url('/static/official_img/video.png') no-repeat;}
+.video embed{width:478px;height:295px;margin-top:19px;margin-left:70px;}
+.new_list {}
+.new_list .item{width:25%;}
+.new_list .item a{display:inline-block;width:210px;word-break:break-all;}
+.new_list2 .box{width:40%;}
+.new_list2 .box a{display:inline-block;width:100%;}
+.footer{background:#7B7C7C;height:210px;}
+.bottom li{margin-left:50px;line-height:14px;margin-top:30px !important;}
+.bottom li h5{margin-top:5px;margin-bottom:15px;}
+.bottom li .img{width:134px;margin-left:15px;}
+.join_us{position:absolute;z-index:10;right:-5px;width:170px;}
