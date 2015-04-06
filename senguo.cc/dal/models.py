@@ -471,7 +471,16 @@ class Shop(MapBase, _CommonApi):
     def __repr__(self):
         return "<Shop: {0} (id={1}, code={2})>".format(
             self.shop_name, self.id, self.shop_code)
-
+    
+    #get order_count of this shop
+    def get_orderCount(self,shop_id):
+        try:
+            order_count = self.session.query(Order).filter_by(shop_id = shop_id).count()
+        except:
+            print('error')
+            return None
+        print('success')
+        return order_count
 
 # 角色：商家，即店铺的管理员
 class ShopAdmin(MapBase, _AccountApi):
@@ -1020,6 +1029,8 @@ class Order(MapBase, _CommonApi):
     comment_reply = Column(String(300))  # 商家回复评论
     start_time = Column(Time)
     end_time = Column(Time)
+    arrival_day  = Column(String(32))
+    arrival_time = Column(String(16))
     create_date = Column(DateTime, default=func.now())
     active = Column(TINYINT, default=1)  # 0删除
     isprint = Column(Boolean, default=0)  # 是否被打印了 0：否，1：是
@@ -1090,6 +1101,9 @@ class Order(MapBase, _CommonApi):
         send_time = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),\
             order.start_time.hour, w_start_time_minute,order.end_time.hour, w_end_time_minute)
         return send_time
+
+    # def get_arrival_time(self,order_id):
+
 
 
 #水果单品
