@@ -1,3 +1,6 @@
+$.getItem('/static/items/fruitzone/shop_item.html?v=2015-0320',function(data){
+    window.dataObj.shop_item=data;
+});      
 $(document).ready(function(){
     //search
     $(document).on('click','#searchSubmit',function(evt){Search(evt);});
@@ -110,16 +113,14 @@ $(document).ready(function(){
 
 function add_bg(){
     $('.area_box').addClass('area_sty');
-    $('body').css({'overflow':'hidden'});
+    $('body').css({'overflow':'hidden'}).attr({'onmousewheel':'return false'});
 }
 function remove_bg(){
     $('.area_box').removeClass('area_sty');
-    $('body').css({'overflow':'auto'});
+    $('body').css({'overflow':'auto'}).attr({'onmousewheel':''});
 }
 
 $.shopItem=function (shops){
-   $.getItem('/static/items/fruitzone/shop_item.html?v=2015-0320',function(data){
-    window.dataObj.shop_item=data;
     for(var key in shops){
                 var $item=$(window.dataObj.shop_item);
                 var logo_url=shops[key]['shop_trademark_url'];
@@ -151,7 +152,6 @@ $.shopItem=function (shops){
                 $item.find('.intro').text(intro);
                 $('.shoplist').append($item);
             }
-});      
 }
 window.dataObj.page=1;
 window.dataObj.finished=true;
