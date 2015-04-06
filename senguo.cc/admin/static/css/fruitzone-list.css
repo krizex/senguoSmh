@@ -15,7 +15,7 @@
 .shoplist_box .item .info{margin-left:15px;}
 .shoplist_box .item .shop_name{line-height:30px;}
 .shoplist_box .item .sty1{line-height:20px;}
-.area_sty{width:100%;height:100%;background:rgba(0,0,0,0.5);position:absolute;left:0;z-index:999;}
+.area_sty{width:100%;height:100%;background:rgba(0,0,0,0.5);position:absolute;left:0;z-index:999;overflow:hidden;}
 .area_list{position:relative;width:100%;}
 .area_list li{width:100%;float:left;overflow:hidden;}
 .area_list li .name{display:inline-block;width:80px;height:20px;overflow:hidden;}

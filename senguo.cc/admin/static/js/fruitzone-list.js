@@ -112,19 +112,12 @@ $(document).ready(function(){
 });
 
 function add_bg(){
-     var window_height=$(window).height();
-    var height=$('.container').height();
-    if(height<window_height){
-        $('.area_box').addClass('area_sty');
-    } 
-    else {
-        $('.area_box').addClass('area_sty').css({'height':height+'px'});
-    }
-    $('body').css({'overflow':'hidden','height':'100%'}).attr({'onmousewheel':'return false'});
+    $('.area_box').addClass('area_sty');
+    $('body').css({'overflow':'hidden'}).attr({'onmousewheel':'return false'});
 }
 function remove_bg(){
-    $('.area_box').removeClass('area_sty').css({'height':'auto'});
-    $('body').css({'overflow':'auto','height':'auto'}).attr({'onmousewheel':''});
+    $('.area_box').removeClass('area_sty');
+    $('body').css({'overflow':'auto'}).attr({'onmousewheel':'return false'});
 }
 
 $.shopItem=function (shops){
