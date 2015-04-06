@@ -221,14 +221,16 @@ class ShopProfile(CustomerBaseHandler):
 		
 			signin = self.session.query(models.ShopSignIn).filter_by(
 				customer_id=self.current_user.id, shop_id=shop_id).first()
+
+			try:
+				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id\
+					,shop_id = shop_id).first()
+			except:
+				print("shop_follow error")
+				self.send_fail("shop_follow error")
 			if signin:
 
-				try:
-					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id \
-						,shop_id = shop_id).first()
-				except:
-					print("shop_follow error")
-					self.send_fail("shop_follow error")
+				
 				
 				if signin.last_date == datetime.date.today():
 					return self.send_fail("亲，你今天已经签到了，一天只能签到一次哦")
@@ -244,7 +246,7 @@ class ShopProfile(CustomerBaseHandler):
 					if point_history:
 						point_history.each_point = 1
 						point_history.point_type = models.POINT_TYPE.SIGNIN
-						print("point_history",point_history,point_history.each_point)
+						print("point_history",point_history.each_point)
 						self.session.add(point_history)
 						self.session.commit()
 
@@ -290,6 +292,23 @@ class ShopProfile(CustomerBaseHandler):
 			else:  # 没找到签到记录，插入一条
 				self.session.add(models.ShopSignIn(customer_id=self.current_user.id, shop_id=shop_id))
 				self.session.commit()
+
+				point_history = models.PointHistory(customer_id = self.current_user.id,shop_id = shop_id)
+				if point_history:
+					point_history.each_point = 1
+					point_history.point_type = models.POINT_TYPE.SIGNIN
+					print("point_history",point_history.each_point)
+					self.session.add(point_history)
+					self.session.commit()
+				#shop_point add by one
+				#woody
+				if shop_follow is not None:
+					if shop_follow.shop_point is not None:
+						shop_follow.shop_point += 1
+						print("sigin success")
+						self.session.commit()
+
+
 				# if point:
 				#     point.signIn_count += 1
 				#     print("new signin:",point.signIn_count)
@@ -361,12 +380,16 @@ class Market(CustomerBaseHandler):
 			if shop_follow:
 				if shop_follow.shop_point is not None:
 					shop_follow.shop_point += 10
+					now = datetime.datetime.now()
+					print(now,shop_follow.shop_point,'follow')
 				else:
 					shop_follow.shop_point = 10
 			if shop_follow.bing_add_point == 0:
 				if self.current_user.accountinfo.phone != None:
 					shop_follow.shop_point += 10
 					shop_follow.bing_add_point = 1
+					now = datetime.datetime.now()
+					print(now,shop_follow.shop_point,'phone')
 
 			self.session.add(shop_follow)
 			self.session.commit()
@@ -646,11 +669,12 @@ class Market(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("charge_type_id:int", "menu_type:int")  # menu_type(0：fruit，1：menu)
 	def favour(self):
 		charge_type_id = self.args["charge_type_id"]
+		print('charge_type_id',charge_type_id)
+		print(self.args)
 		menu_type = self.args["menu_type"]
 		shop_id = int(self.get_cookie("market_shop_id"))
 		favour = self.session.query(models.FruitFavour).\
-			filter_by(customer_id=self.current_user.id,
-					  f_m_id=charge_type_id, type=menu_type).first()
+			filter_by(customer_id=self.current_user.id,f_m_id=charge_type_id, type=menu_type).first()
 
 		#woody 
 		# #???
@@ -681,13 +705,13 @@ class Market(CustomerBaseHandler):
 		# if point:
 		#     print(" before favour:" , point.favour_count)
 		if favour:
-			print("login favour")
+			# print("login favour")
 			if favour.create_date == datetime.date.today():
 				return self.send_fail("亲，你今天已经为该商品点过赞了，一天只能对一个商品赞一次哦")
 			else:  # 今天没点过赞，更新时间
 				#favour_count add by one
 				#woody
-				print("1")
+				print("true favour")
 				# if point:
 				#     point.favour_count += 1
 				#     # point.totalCount +=1
@@ -708,12 +732,37 @@ class Market(CustomerBaseHandler):
 
 				if shop_follow:
 					shop_follow.shop_point += 1
+					now = datetime.datetime.now()
+					print(now,shop_follow.shop_point,'favour')
 				
 				favour.create_date = datetime.date.today()
 		else:  # 没找到点赞记录，插入一条
 			self.session.add(models.FruitFavour(customer_id=self.current_user.id,
 					  f_m_id=charge_type_id, type=menu_type))
 			self.session.commit()
+
+			#add favour point history
+			print('add favour')
+
+			try:
+				point_history = models.PointHistory(customer_id = self.current_user.id ,shop_id =shop_id)
+			except:
+				self.send_fail("point_history error:FAVOUR")
+			if point_history is not None:
+				point_history.point_type = models.POINT_TYPE.FAVOUR
+				point_history.each_point = 1
+				self.session.add(point_history)
+				self.session.commit() 
+			else:
+				print("point_history None")
+
+			if shop_follow:
+					shop_follow.shop_point += 1
+					now = datetime.datetime.now()
+					print(now,shop_follow.shop_point,'favour')
+			else:
+				print('customer_shop_follow not fount')
+
 			# if point:
 			#     point.favour_count += 1
 				# print("new favour",point.favour_count)
