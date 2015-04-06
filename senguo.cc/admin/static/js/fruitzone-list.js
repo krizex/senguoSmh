@@ -113,11 +113,11 @@ $(document).ready(function(){
 
 function add_bg(){
     $('.area_box').addClass('area_sty');
-    $('body').css({'overflow':'hidden'}).attr({'onmousewheel':'return false'});
+    $('body').css({'overflow':'hidden','height':'100%'}).attr({'onmousewheel':'return false'});
 }
 function remove_bg(){
     $('.area_box').removeClass('area_sty');
-    $('body').css({'overflow':'auto'}).attr({'onmousewheel':''});
+    $('body').css({'overflow':'auto','height':'auto'}).attr({'onmousewheel':''});
 }
 
 $.shopItem=function (shops){
