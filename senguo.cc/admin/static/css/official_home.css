@@ -1,4 +1,4 @@
-.slide_box{width:100%;overflow: hidden;position:relative;max-height:600px;overflow:hidden;}
+.slide_box{width:100%;overflow: hidden;position:relative;height:600px;overflow:hidden;}
 .slide_box ul{width:9999px;position:absolute;}
 .slide_box ul .item{width:100%;position:relative;}
 .slide_box .bg{width:100%;position:absolute;}

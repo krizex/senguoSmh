@@ -2,7 +2,7 @@ $(document).ready(function(){
 	var w_width=$(window).width();	
 	var height = $('.bg').height();
 	$('#slide li').width(w_width);
-	$("#slideBox").height(height);
+	//$("#slideBox").height(height);
 	var len = $(".num > li").length;
 	var index = 0;
 	var adTimer;
@@ -10,7 +10,7 @@ $(document).ready(function(){
 		w_width=$(window).width();
 		height = $('.bg').height();
 		$('#slide li').width(w_width);
-		$("#slideBox").height(height);
+		//$("#slideBox").height(height);
 		$("#slide").stop(true, false).animate({"left":"0px"}, 50);
 	});
 	$(".num li").mouseover(function() {
@@ -41,12 +41,12 @@ window.onload=function(){
 	var w_width=$(window).width();	
 	var height = $('.bg').height();
 	$('#slide li').width(w_width);
-	$("#slideBox").height(height);
+	//$("#slideBox").height(height);
 	$(window).resize(function(){
 		w_width=$(window).width();
 		height = $('.bg').height();
 		$('#slide li').width(w_width);
-		$("#slideBox").height(height);		
+		//$("#slideBox").height(height);		
 	});
 	
 }
