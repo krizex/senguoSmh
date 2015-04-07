@@ -41,7 +41,7 @@ class Home(FruitzoneBaseHandler):
 				shop_province = shop.shop_province ,shop_city = shop.shop_city ,\
 				shop_address_detail = shop.shop_address_detail,\
 				shop_intro = shop.shop_intro ,shop_trademark_url=shop.shop_trademark_url,\
-				order_count = shop.order_count))
+				order_count = shop.order_count,shop_admin_name = shop.admin.accountinfo.nickname))
 		shops = sorted(shops,key = lambda x:x['order_count'],reverse = True)
 		# shops = shops.sort(key = lambda x:x['order_count'])
 		shoplist = shops[0:8]
@@ -91,7 +91,7 @@ class Home(FruitzoneBaseHandler):
 				shop_province = shop.shop_province ,shop_city = shop.shop_city ,\
 				shop_address_detail = shop.shop_address_detail,\
 				shop_intro = shop.shop_intro ,shop_trademark_url=shop.shop_trademark_url,\
-				order_count = shop.order_count))
+				order_count = shop.order_count,shop_admin_name = shop.admin.accountinfo.nickname))
 		return self.send_success(shops=shops,page_total = page_total)
 
 	def hander_search(self):
@@ -111,7 +111,7 @@ class Home(FruitzoneBaseHandler):
 				shop_province = shop.shop_province ,shop_city = shop.shop_city ,\
 				shop_address_detail = shop.shop_address_detail,\
 				shop_intro = shop.shop_intro ,shop_trademark_url=shop.shop_trademark_url,\
-				order_count = shop.order_count))
+				order_count = shop.order_count,shop_admin_name = shop.admin.accountinfo.nickname))
 		return self.send_success(shops=shops ,page_total = page_total)
 
 

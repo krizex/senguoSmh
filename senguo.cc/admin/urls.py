@@ -4,7 +4,7 @@ import handlers.customer
 import handlers.superadmin
 import handlers.fruitzone
 import handlers.infowall
-# import handlers.official
+import handlers.official
 from dal import models
 #todo:handlers太大会不会影响性能？
 
@@ -35,8 +35,8 @@ handlers = [
     #微官网-----待删除
     (r"/", handlers.superadmin.Official),
 
-    # #official
-    # (r"/official",handlers.official.Home,{},"OfficialHome"),
+    #official
+    (r"/official",handlers.official.Home,{},"OfficialHome"),
     # (r"/official/shoplist",handlers.official.ShopList,{},"ShopList"),
 
     #to remove
@@ -143,22 +143,22 @@ handlers = [
     # 主页
     (r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次
     (r"/fruitzone", handlers.fruitzone.Home, {}, "fruitzoneHome"),  # 匹配'\' 0~1次
-    (r"/list/index", handlers.fruitzone.Home, {}, "fruitzoneHome"),
-    (r"/list", handlers.fruitzone.ShopList, {}, "fruitzoneShopList"),
+    (r"/fruitzone/shop", handlers.fruitzone.ShopList, {}, "fruitzoneShopList"),
     (r"/fruitzone/admin/home", handlers.fruitzone.AdminHome, {}, "fruitzoneAdminHome"),
     (r"/fruitzone/admin/profile", handlers.fruitzone.AdminProfile, {}, "fruitzoneAdminProfile"),
     #to remove  
     #woody
+    (r"/fruitzone/shop/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),
+    (r"/fruitzone/shop/apply/addImg", handlers.fruitzone.ShopApplyImg, {}, "fruitzoneShopApplyAddImg"),#增加的功能：申请店铺时支持图片上传
+    (r"/fruitzone/shop/reApply", handlers.fruitzone.ShopApply, {"action": "reApply"}, "fruitzoneShopReApply"),
+    (r"/fruitzone/shop/applySuccess", handlers.fruitzone.ApplySuccess, {}, "fruitzoneShopApplySuccess"),
 
     (r"/fruitzone/toweixin", handlers.fruitzone.ToWeixin, {}, "fruitzoneToWexin"),
-    # (r"/fruitzone/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),
-    # (r"/fruitzone/apply/addImg", handlers.fruitzone.ShopApplyImg, {}, "fruitzoneShopApplyAddImg"),#增加的功能：申请店铺时支持图片上传
-    # (r"/fruitzone/reApply", handlers.fruitzone.ShopApply, {"action": "reApply"}, "fruitzoneShopReApply"),
-    # (r"/fruitzone/applySuccess", handlers.fruitzone.ApplySuccess, {}, "fruitzoneShopApplySuccess"),
-    (r"/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),
-    (r"/fruitzone/shop/apply/addImg", handlers.fruitzone.ShopApplyImg, {}, "fruitzoneShopApplyAddImg"),#增加的功能：申请店铺时支持图片上传
-    (r"/reApply", handlers.fruitzone.ShopApply, {"action": "reApply"}, "fruitzoneShopReApply"),
-    (r"/applySuccess", handlers.fruitzone.ApplySuccess, {}, "fruitzoneShopApplySuccess"),
+    (r"/fruitzone/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),
+    (r"/fruitzone/apply/addImg", handlers.fruitzone.ShopApplyImg, {}, "fruitzoneShopApplyAddImg"),#增加的功能：申请店铺时支持图片上传
+    (r"/fruitzone/reApply", handlers.fruitzone.ShopApply, {"action": "reApply"}, "fruitzoneShopReApply"),
+    (r"/fruitzone/applySuccess", handlers.fruitzone.ApplySuccess, {}, "fruitzoneShopApplySuccess"),
+
 
 
     (r"/fruitzone/community", handlers.fruitzone.Community, {}, "fruitzoneCommunity"),
