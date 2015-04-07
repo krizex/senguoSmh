@@ -1,11 +1,10 @@
-$.getItem('/static/items/fruitzone/shop_item.html?v=2015-0320',function(data){
-    window.dataObj.shop_item=data;
-});      
+
 $(document).ready(function(){
     //search
     $(document).on('click','#searchSubmit',function(evt){Search(evt);});
     $('.willOpen').on('click',function(){$.noticeBox('即将开放，敬请期待！')});
     //shop info
+     getShopItem();
     $.shopsList(1,'',window.dataObj.action);
     $.scrollLoading();
     //province and city
@@ -110,6 +109,10 @@ $(document).ready(function(){
         $('.city_name').text('城市');
     });   
 });
+var getShopItem=function(){
+    $.ajaxSettings.async=false;
+    $.getItem('/static/items/fruitzone/shop_item.html?v=2015-0320',function(data){window.dataObj.shop_item=data;});
+}
 
 function add_bg(){
     $('.area_box').addClass('area_sty');
@@ -121,8 +124,9 @@ function remove_bg(){
 }
 
 $.shopItem=function (shops){
+    var shop_item=window.dataObj.shop_item;
     for(var key in shops){
-                var $item=$(window.dataObj.shop_item);
+                var $item=$(shop_item);
                 var logo_url=shops[key]['shop_trademark_url'];
                 var name=shops[key]['shop_name'];
                 var shop_code=shops[key]['shop_code'];

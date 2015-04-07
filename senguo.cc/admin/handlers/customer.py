@@ -1078,13 +1078,14 @@ class Order(CustomerBaseHandler):
 	def get(self):
 		action = self.args["action"]
 		orders = []
+		session = self.session
 		print(self.current_user.orders)
 		print(type(self.current_user.orders))
 		if action == "unhandled":  # 未处理
 		
 			orders = [x for x in self.current_user.orders if x.status == 1]
 			# woody
-			session = self.session
+			
 			for order in orders:
 				order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time,reverse = True)

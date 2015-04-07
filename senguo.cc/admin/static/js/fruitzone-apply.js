@@ -222,7 +222,7 @@ function Apply(evt){
         function(res){
             if(res.success)
             {
-                window.location.href="/fruitzone/applySuccess";
+                window.location.href="/apply/success";
             }
             else {
                 $.noticeBox(res.error_text);
@@ -293,7 +293,7 @@ function reApply(evt){
         function(res){
             if(res.success)
             {
-                window.location.href="/fruitzone/applySuccess";
+                window.location.href="/apply/success";
             }
             else  {
                 $.noticeBox(res.error_text);
