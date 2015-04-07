@@ -401,11 +401,12 @@ class Comment(AdminBaseHandler):
 				filter(models.ShopFavorComment.shop_id == self.current_shop.id).all()
 			order_ids = [x[0] for x in s]
 			comments = self.session.query(models.Accountinfo.headimgurl, models.Accountinfo.nickname,
-										  models.Order.comment, models.Order.comment_create_date, models.Order.id,
+										  models.Order.comment, models.Order.comment_create_date, models.Order.num,
 										  models.Order.comment_reply).\
 				filter(models.Order.id.in_(order_ids), models.Order.status == 6,
 					   models.Order.customer_id == models.Accountinfo.id).\
 				order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+			print(comments)
 		else:
 			return self.send_error(404)
 		return self.render("admin/comment.html", action = action, comments=comments, context=dict(subpage='comment'))
