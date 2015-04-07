@@ -6,8 +6,8 @@
 {% block content %}
 	{% if context["subscribe"] == 0 %}
 	<div class="foucus_bg">
-		<h4 class="text-center text-white">请先关注森果公众平台,以便您能及时收到审核结果</h4>
-		<a href="weixin://profile/sen-guo" class="text-white green-color space focus_senguo center-block btn"
+		<h4 class="text-center text-white font16 mt10">请先关注森果公众平台 ，以便您能及时收到审核结果</h4>
+		<a href="weixin://profile/sen-guo" class="text-white bg-green space focus_senguo center-block btn"
          data-src="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200521182&idx=1&sn=a3d7731e0233aef218eb91346d581b02#rd">+关注森果公众平台</a>
 	</div>
 	{% end %}
@@ -21,7 +21,7 @@
 	{% else %}
 	<div class="count-box {{context['subscribe']}}">
 	    <div class="text-center mtp5">
-		<img src="{{static_url('images/logo2.png')}}"/>
+		<img src="{{static_url('images/logo2.png')}}" class="logo"/>
 	    </div>
 	    <div class="count-list-box center-block">
 		<ul class="count-list" id="realShop">
@@ -57,7 +57,7 @@
 	</div>
 	<div class="top bg-green text-white text-center hidden apply-info">
 	    <img src="{{handler.current_user.accountinfo.headimgurl}}"/>
-	    <p class="font14 mt5">昵称：{{handler.current_user.accountinfo.nickname}}</p>
+	    <p class="font14 mt5 text-center">昵称：{{handler.current_user.accountinfo.nickname}}</p>
 	</div>
 	<div class="apply-box center-block hidden apply-info">
 	    <p class="font16 mb0 line40">店铺信息</p>
@@ -85,8 +85,8 @@
 	    <div class="clearfix mt10">
 		<span class="title line40 font14 pull-left">省份城市*</span>
 		<div class="better-address pull-left">
-		    <div class="dropdown select-provience pull-left mr5" data-toggle="modal" data-target="#provinceList">
-		        <button class="btn btn-default dropdown-toggle bg-grey5" type="button">
+		    <div class="dropdown select-provience pull-left mr5">
+		        <button class="btn btn-default dropdown-toggle bg-grey5 province_select" type="button">
 		            {% if "reApply" in context and context["reApply"] %}
 		            <span  id="provinceAddress" data-code="{{shop.shop_province or ''}}" class="reProvince">选择省份</span>
 		            {% else %}
@@ -95,8 +95,8 @@
 		            <span class="caret"></span>
 		        </button>
 		    </div>
-		    <div class="dropdown select-provience pull-left select-city" data-toggle="modal" data-target="#cityList">
-		        <button class="btn btn-default dropdown-toggle bg-grey5" type="button">
+		    <div class="dropdown select-provience pull-left city_select">
+		        <button class="btn btn-default dropdown-toggle bg-grey5 " type="button">
 		            {% if "reApply" in context and context["reApply"] %}
 		            <span id="cityAddress" data-code="{{shop.shop_city or ''}}" class="reCity">选择城市</span>
 		            {% else %}
@@ -158,40 +158,36 @@
 	    </div>
 	    <p class="mt10 text-center">*您的个人信息仅用作店铺审核使用，我们将严格保密</p>
 	    {% if "reApply" in context and context["reApply"] %}
-	    <input type="submit" value="提交申请" class="btn text-green border-green white-color center-block w80 font16" id="submitReapply"/>
+	    <input type="submit" value="提交申请" class="btn text-white bg-green  center-block w80 font16 mt10" id="submitReapply"/>
 	    {% else %}
-	    <input type="submit" value="提交申请" class="btn text-green border-green white-color center-block w80 font16" id="submitApply"/>
+	    <input type="submit" value="提交申请" class="btn text-white bg-green  center-block w80 font16 mt10" id="submitApply"/>
 	    {% end %}
 	    <p class="text-center">
 		<a class="text-grey9 white-color mb10 mt10 center-block" id="back" href="javascript:;">←返回上一步</a>
 	    </p>
 	</div>
 	    <!--<p class="title">是否接入森果后台系统：<a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200343770&idx=1&sn=1230c48bb781da7d7e63d5dc804cbf10#rd" class="to-know">了解一下</a></p>-->
-	<div class="modal fade select-popbox" id="provinceList" tabindex="-1" role="dialog" aria-labelledby="provinceAddress" aria-hidden="true">
+	<div class="modal fade select-popbox" id="provinceList">
 	    <div class="modal-dialog">
 		<div class="modal-content">
 		    <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		        <button type="button" class="close dismiss">x</button>
 		        <h4 class="modal-title">省份选择</h4>
 		    </div>
 		    <div class="modal-body">
-		        <div class="address-list province-list select-list">
+		        <div class="address-list province-list select-list mt10">
 		            <ul class="provinceList">
 		            </ul>
 		        </div>
 		    </div>
-		    <div class="modal-footer">
-		        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-		        <button type="button" class="btn btn-style" data-dismiss="modal" id="provinceSelect">确定</button>
-		    </div>
 		</div>
 	    </div>
 	</div>
-	<div class="modal fade select-popbox" id="cityList" tabindex="-1" role="dialog" aria-labelledby="provinceAddress" aria-hidden="true">
+	<div class="modal fade select-popbox" id="cityList">
 	    <div class="modal-dialog">
 		<div class="modal-content">
 		    <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		        <button type="button" class="close dismiss">x</button>
 		        <h4 class="modal-title">城市选择</h4>
 		    </div>
 		    <div class="modal-body">
@@ -200,10 +196,6 @@
 		                <li>请先选择省份</li>
 		            </ul>
 		        </div>
-		    </div>
-		    <div class="modal-footer">
-		        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-		        <button type="button" class="btn btn-style" data-dismiss="modal" id="citySelect">确定</button>
 		    </div>
 		</div>
 	    </div>

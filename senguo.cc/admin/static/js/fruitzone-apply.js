@@ -24,6 +24,62 @@ $(document).ready(function(){
         $('.apply-info').addClass('hidden');
         $('.count-box').removeClass('hidden');
     });
+    //province and city
+    var area=window.dataObj.area;
+    $(document).on('click','.province_select',function(){
+        $('.provinceList').empty();
+        $('#cityAddress').attr({'data-code':''}).text('选择城市');
+        var pro_box=new Modal('provinceList');
+        pro_box.modal('show');
+        for(var key in area){
+            var $item=$('<li><span class="name"></span><span class="num"></span></li>');
+            var city=area[key]['city'];
+            var if_city;
+            if(city) {
+                if_city='true';
+            }
+            else if_city='false';
+            $item.attr({'data-code':key,'data-city':if_city}).find('.name').text(area[key]['name']);
+            $('.provinceList').append($item);
+            
+        }
+    });
+    $(document).on('click','.provinceList li',function(){
+        var $this=$(this);
+        var code=$this.attr('data-code');
+        var text=$this.text();
+        var if_city=$this.attr('data-city');
+        $('#provinceAddress').attr({'data-code':code}).text(text);
+        if(if_city=='false') {$('.city_select').hide();$('#cityAddress').attr({'data-code':code})}
+        else {
+             $('.cityList').empty();
+              for(var key in area){    
+                var city=area[key]['city'];
+                if(code==key){
+                    for(var k in city){
+                        var $item=$('<li><span class="name"></span><span class="num"></span></li>');
+                        $item.attr({'data-code':k}).find('.name').text(city[k]['name']);
+                        $('.cityList').append($item);
+                    }
+                }           
+            }
+            $('.city_select').show();
+        }
+        var pro_box=new Modal('provinceList');
+        pro_box.modal('hide');
+    });
+    $(document).on('click','.city_select',function(){
+        var pro_box=new Modal('cityList');
+        pro_box.modal('show');
+    });
+    $(document).on('click','.cityList li',function(){
+        var $this=$(this);
+        var code=$this.attr('data-code');
+        var text=$this.text();
+        $('#cityAddress').attr({'data-code':code}).text(text);
+        var pro_box=new Modal('cityList');
+        pro_box.modal('hide');
+    });
     //下一步
     $(document).on('click','.to_next',function(){
 	$('.count-box').addClass('hidden').siblings('.apply-info').removeClass('hidden');
@@ -89,25 +145,7 @@ $(document).ready(function(){
 
         });
 */
-    //城市转换
-    var proc=$('.reProvince').data('code');
-    var citc=$('.reCity').data('code');
-    $('.reProvince').text(provinceArea(proc));
-    if(citc!=proc){$('.reCity').text(cityArea(proc,citc));}
 });
-
-function isWeiXin(){ 
-    var ua = window.navigator.userAgent.toLowerCase(); 
-        if(ua.match(/MicroMessenger/i) == 'micromessenger'){ 
-        return true; 
-        }
-        else{ 
-            var height=$(document).height();
-            var $notice=$('<div class="notice_bg" style="height:'+height+'px;"></div><div class="notice_box"><div class="notice_con text-center text-white"><h4 class="word">请使用手机微信扫描下方二维码进行店铺申请</h4><img src="/static/images/test_qrcode.png"><h4>*( ^ v ^ )*</h4></div></div>');
-            $('body').append($notice);
-    } 
-} 
-
 var wait=60;
 function time(target) {
     if (wait == 0) {
@@ -184,7 +222,7 @@ function Apply(evt){
         function(res){
             if(res.success)
             {
-                window.location.href="/fruitzone/shop/applySuccess";
+                window.location.href="/fruitzone/applySuccess";
             }
             else {
                 $.noticeBox(res.error_text);
@@ -255,7 +293,7 @@ function reApply(evt){
         function(res){
             if(res.success)
             {
-                window.location.href="/fruitzone/shop/applySuccess";
+                window.location.href="/fruitzone/applySuccess";
             }
             else  {
                 $.noticeBox(res.error_text);

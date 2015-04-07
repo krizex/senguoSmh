@@ -188,7 +188,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
     def send_qiniu_token(self, action, id):
         q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
         token = q.upload_token(BUCKET_SHOP_IMG, expires=120,
-                              policy={"callbackUrl": "http://m.senguo.cc/fruitzone/imgcallback",
+                              policy={"callbackUrl": "http://test123.senguo.cc/fruitzone/imgcallback",
                                       "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 #        token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
         return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
@@ -252,6 +252,45 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
     __account_model__ = models.ShopAdmin
     __account_cookie_name__ = "admin_id"
     __wexin_oauth_url_name__ = "adminOauth"
+
+    # get the total,privince,city count of shop
+    # woody 4.4
+    def get_shop_count(self):
+        try:
+            shop_count = self.session.query(models.Shop).filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
+                models.Shop.shop_code !='not set' ).count()
+        except:
+            return self.send_fail("shop count error")
+        return shop_count
+    def get_province_shop_count(self,shop_province):
+        try:
+            shop_count = self.session.query(models.Shop).filter(shop_province == shop_province,shop_code !='not set' ).count()
+        except:
+            return self.send_fail('shop_province error')
+        return shop_count
+    def get_city_shop_count(self,shop_city):
+        try:
+            shop_count = self.session.query(models.Shop).filter(shop_city == shop_city,shop_code !='not set' ).count()
+        except:
+            return self.send_fail('shop_city error')
+        return shop_count
+
+    def get_shop_group(self):
+        from sqlalchemy import func
+        try:
+            shop_count = self.session.query(models.Shop.shop_province,func.count(models.Shop.shop_province)).\
+            filter(models.Shop.shop_code != 'not set').group_by(models.Shop.shop_province).all()
+        except:
+            return self.send_fail('group error')
+        #print(type(shop_count))
+        shoplist = []
+        # shop_count = shop_count.filter(shop_code != 'not set')
+        for shop in shop_count:
+            print(shop[0],shop[1])
+            shoplist.append([shop[0],shop[1]])
+
+        return shoplist
+
 
 class AdminBaseHandler(_AccountBaseHandler):
     __account_model__ = models.ShopAdmin
@@ -415,6 +454,41 @@ class CustomerBaseHandler(_AccountBaseHandler):
             self._shop_code = None
 
         return self._shop_code
+
+
+    # get the total,privince,city count of shop
+    # woody 4.4
+    def get_shop_count(self):
+        try:
+            shop_count = self.session.query(models.Shop).count()
+        except:
+            return self.send_fail("shop count error")
+        return shop_count
+    def get_province_shop_count(self,shop_province):
+        try:
+            shop_count = self.session.query(models.Shop).filter_by(shop_province = shop_province).count()
+        except:
+            return self.send_fail('shop_province error')
+        return shop_count
+    def get_city_shop_count(self,shop_city):
+        try:
+            shop_count = self.session.query(models.Shop).filter_by(shop_city = shop_city).count()
+        except:
+            return self.send_fail('shop_city error')
+        return shop_count
+
+    def get_shop_group(self):
+        from sqlalchemy import func
+        try:
+            shop_count = self.session.query(models.Shop.shop_province,func.count(models.Shop.shop_province)).\
+            group_by(models.Shop.shop_province).all()
+        except:
+            return self.send_fail('group error')
+        #print(shop_count)
+        return shop_count
+
+
+
 
 jsapi_ticket = {"jsapi_ticket": '', "create_timestamp": 0}  # 用全局变量存好，避免每次都要申请
 access_token = {"access_token": '', "create_timestamp": 0}

@@ -15,17 +15,22 @@ import libs.xmltodict as xmltodict
 import qiniu
 from qiniu.services.storage.bucket import BucketManager
 
-
 class Home(FruitzoneBaseHandler):
-    _page_count =20
     def get(self):
-        q = self.session.query(models.Shop).order_by(desc(models.Shop.id))\
-            .filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,models.Shop.shop_code!='not set')
-        shops = q.limit(self._page_count).all()
-        fruit_types = []
-        for f_t in self.session.query(models.FruitType).all():
-            fruit_types.append(f_t.safe_props())
-        return self.render("fruitzone/home.html", context=dict(shops=shops, fruit_types=fruit_types, now=time.time(),subpage="home"))
+       shop_count = self.get_shop_count()
+       return self.render("fruitzone/index.html",context=dict(shop_count = shop_count,subpage=""))
+
+class ShopList(FruitzoneBaseHandler):
+    def get(self):
+
+        province_count=self.get_shop_group()
+        shop_count = self.get_shop_count()
+        # fruit_types = []
+        # for f_t in self.session.query(models.FruitType).all():
+        #     fruit_types.append(f_t.safe_props())
+        return self.render("fruitzone/list.html", context=dict(province_count=province_count,shop_count=shop_count,subpage="home"))
+
+
     
     @FruitzoneBaseHandler.check_arguments("action")
     def post(self):
@@ -34,51 +39,101 @@ class Home(FruitzoneBaseHandler):
             return self.handle_filter()
         elif action == "search":
             return self.handle_search()
+        elif action =="shop":
+            return self.handle_shop()
         else:
             return self.send_error(403)
-    @FruitzoneBaseHandler.check_arguments("skip?:int","limit?:int",
-                                      "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids?:list")
+
+    @FruitzoneBaseHandler.check_arguments("page:int")
+    def handle_shop(self):
+
+        _page_count =10
+        page=self.args["page"]-1
+        q = self.session.query(models.Shop).order_by(desc(models.Shop.id))\
+        .filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
+            models.Shop.shop_code !='not set' )
+        shop_count = q.count()
+        page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
+        q=q.offset(page*_page_count).limit(_page_count).all()
+        shops = []
+        for shop in q:
+            shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
+                                         'wx_nickname', 'wx_qr_code','wxapi_token']
+            shops.append(shop.safe_props())
+        return self.send_success(shops=shops,page_total = page_total)
+
+    @FruitzoneBaseHandler.check_arguments("skip?:int","limit?:int","province?:int",
+                                      "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids?:list","page:int")
     def handle_filter(self):
         # 按什么排序？暂时采用id排序
+        _page_count = 10
+        page = self.args["page"] - 1
         q = self.session.query(models.Shop).order_by(desc(models.Shop.id)).\
-            filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED)
+            filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
+                models.Shop.shop_code !='not set' )
         if "city" in self.args:
             q = q.filter_by(shop_city=self.args["city"])
-        if "service_area" in self.args:
-            q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
-        if "live_month" in self.args:
-            q = q.filter(models.Shop.shop_start_timestamp < time.time()-self.args["live_month"]*(30*24*60*60))
-
-        if "onsalefruit_ids" in self.args and self.args["onsalefruit_ids"]:
-            q = q.filter(models.Shop.id.in_(
-                select([models.ShopOnsalefruitLink.shop_id]).\
-                where(models.ShopOnsalefruitLink.fruit_id.in_(
-                    self.args["onsalefruit_ids"]))
-            ))
-        
-        if "skip" in self.args:
-            q = q.offset(self.args["skip"])
-        
-        if "limit" in self.args:
-            q = q.limit(self.args["limit"])
+            shop_count = q.count()
+            #print('shop_count',shop_count)
+            page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
+            #print('page_total',page_total)
+            q = q.offset(page * _page_count).limit(_page_count).all()
+            
+        elif "province" in self.args:
+            print('province')
+            q = q.filter_by(shop_province=self.args["province"])
+            shop_count = q.count()
+            page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
+            q = q.offset(page * _page_count).limit(_page_count).all()
         else:
-            q = q.limit(self._page_count)
+            print("city not in args")
+
+        # if "service_area" in self.args:
+        #     q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
+        # if "live_month" in self.args:
+        #     q = q.filter(models.Shop.shop_start_timestamp < time.time()-self.args["live_month"]*(30*24*60*60))
+
+        # if "onsalefruit_ids" in self.args and self.args["onsalefruit_ids"]:
+        #     q = q.filter(models.Shop.id.in_(
+        #         select([models.ShopOnsalefruitLink.shop_id]).\
+        #         where(models.ShopOnsalefruitLink.fruit_id.in_(
+        #             self.args["onsalefruit_ids"]))
+        #     ))
+        
+        # if "skip" in self.args:
+        #     q = q.offset(self.args["skip"])
+        
+        # if "limit" in self.args:
+        #     q = q.limit(self.args["limit"])
+        # else:
+        #     q = q.limit(self._page_count)
+        
 
         shops = []
-        for shop in q.all():
+        for shop in q:
+            shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
+                                         'wx_nickname', 'wx_qr_code','wxapi_token']
             shops.append(shop.safe_props())
-        return self.send_success(shops=shops)
+        return self.send_success(shops=shops,page_total = page_total)
 
-    @FruitzoneBaseHandler.check_arguments("q")
+    @FruitzoneBaseHandler.check_arguments("q","page:int")
     def handle_search(self):
+        _page_count = 10
+        page = self.args["page"] - 1
         q = self.session.query(models.Shop).order_by(desc(models.Shop.id)).\
             filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"])),
-                   models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED
-                   )
+                   models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
+                   models.Shop.shop_code !='not set' )
         shops = []
-        for shop in q.all():
+        shop_count = q.count()
+        page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
+        q = q.offset(page * _page_count).limit(_page_count).all()
+        
+        for shop in q:
+            shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
+                                         'wx_nickname', 'wx_qr_code','wxapi_token']
             shops.append(shop.safe_props())
-        return self.send_success(shops=shops)
+        return self.send_success(shops=shops ,page_total = page_total)
 
 class Community(FruitzoneBaseHandler):
     def get(self):
@@ -162,8 +217,8 @@ class ShopApply(FruitzoneBaseHandler):
         self._action = action
 
     def prepare(self):
-        # if not self.is_wexin_browser():
-        #     return self.render("fruitzone/toweixin.html")
+        if not self.is_wexin_browser():
+            return self.render("fruitzone/toweixin.html")
         pass
 
     @tornado.web.authenticated
@@ -383,6 +438,8 @@ class QiniuCallback(FruitzoneBaseHandler):
         action = self.get_argument("action")
         print(key,id,action)
 
+        print('shop'==action)
+
         if action == "shop":
             try:
                 shop = self.session.query(models.Shop).filter_by(id=id).one()
@@ -391,9 +448,11 @@ class QiniuCallback(FruitzoneBaseHandler):
                 return self.send_error(404)
             shop_trademark_url = shop.shop_trademark_url  # 要先跟新图片url，防止删除旧图片时出错
             shop.update(session=self.session, shop_trademark_url=SHOP_IMG_HOST+key)
+            print('shop_url',shop_trademark_url)
             if shop_trademark_url:  # 先要把旧的的图片删除
                 m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
                 m.delete(bucket=BUCKET_SHOP_IMG, key=shop_trademark_url.split('/')[3])
+            return self.send_success()
         elif action == "receipt":
             try:
                 config = self.session.query(models.Config).filter_by(id=id).one()
