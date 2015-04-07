@@ -461,10 +461,25 @@ class Market(CustomerBaseHandler):
 		elif action == 8:
 			return self.mgood_list()
 	@classmethod
-	def w_getdata(self,m):
+	def w_getdata(self,session,m,customer_id):
 			data = []
 			w_tag = ''
+			print(customer_id)
 			for fruit in m:
+				try:
+					print('fruit id',fruit.id)
+					favour = session.query(models.FruitFavour).filter_by(customer_id = customer_id,\
+						f_m_id = fruit.id , type = 0).first()
+					
+				except:
+					print('favour_today error')
+					favour = None
+				if favour is None:
+					favour_today = False
+				else:
+					favour_today = favour.create_date == datetime.date.today()
+				print('favour_today',favour_today)
+
 				charge_types= []           
 				for charge_type in fruit.charge_types:
 					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
@@ -473,7 +488,7 @@ class Market(CustomerBaseHandler):
 				else:
 					w_tag = "fruit"
 				data.append([w_tag,{'id':fruit.id,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
-				'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour}])
+				'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour,'favour_today':favour_today}])
 			return data
 
 	def mgood_list(self):
@@ -500,8 +515,24 @@ class Market(CustomerBaseHandler):
 				charge_types = []
 				for charge_type in mgood.mcharge_types:
 					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
-				if mgood.active == 1:               
-					w_mgoods.append(["mgoods",{'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,'current_saled':mgood.current_saled,'saled':mgood.saled,'storage':mgood.storage,'favour':mgood.favour,'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types},menu.id])
+				if mgood.active == 1:
+					try:
+						print('mgood id',mgood.id)
+						favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,\
+							f_m_id = mgood.id , type = 1).first()
+						
+					except:
+						print(' favour_today error mgood')
+						favour = None
+					if favour is None:
+						favour_today = False
+					else:
+						favour_today = favour.create_date == datetime.date.today()
+					print('favour_today',favour_today,'mgood')
+					w_mgoods.append(["mgoods",{'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,\
+						'favour_today':favour_today ,'current_saled':mgood.current_saled,'saled':mgood.saled,\
+						'storage':mgood.storage,'favour':mgood.favour,'tag':mgood.tag,'img_url':mgood.img_url,\
+						'intro':mgood.intro,'charge_types':charge_types},menu.id])
 		count_mgoods = len(w_mgoods)
 		if offset + 10 <=count_mgoods:
 			mgood_list = w_mgoods[offset:offset+10]
@@ -518,13 +549,15 @@ class Market(CustomerBaseHandler):
 		page = self.args["page"]
 		offset = (page - 1) * 10
 		shop_id = int(self.get_cookie("market_shop_id"))
+		customer_id = self.current_user.id
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
 			return self.send_error(404)
 		dry_fruits =[]
 		dry_fruits = [x for x in shop.fruits if x.fruit_type_id >=1000 and x.active ==1]
 		w_dry_fruits = []
-		w_dry_fruits = self.w_getdata(dry_fruits)
+		session = self.session
+		w_dry_fruits = self.w_getdata(session,dry_fruits,customer_id)
 		count_dry = len(w_dry_fruits)
 		page = int(count_dry/10) if count_dry % 10 ==0 else int(count_dry/10) +1
 		print(page)
@@ -542,13 +575,15 @@ class Market(CustomerBaseHandler):
 		page = self.args["page"]
 		offset = (page-1) * 10
 		shop_id = int(self.get_cookie("market_shop_id"))
+		customer_id = self.current_user.id
 		shop   = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
 			return self.send_error(404)
 		fruits = []
 		fruits = [x for x in shop.fruits if x.fruit_type_id < 1000 and x.active ==1]
 		w_fruits = []
-		w_fruits = self.w_getdata(fruits)
+		session = self.session
+		w_fruits = self.w_getdata(session,fruits,customer_id)
 		count_fruit = len(w_fruits)
 		page = int(count_fruit/10) if count_fruit % 10 == 0 else int(count_fruit/10)+1
 		# page = (count_fruit % 10 == 0)?int(count_fruit/10):int(count_fruit/10)+1
@@ -567,6 +602,7 @@ class Market(CustomerBaseHandler):
 		# page = 2
 		page = self.args["page"]
 		offset = (page -1) * 10
+		customer_id = self.current_user.id
 		shop_id = int(self.get_cookie('market_shop_id'))
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		cart_f,cart_m = self.read_cart(shop.id)
@@ -620,10 +656,11 @@ class Market(CustomerBaseHandler):
 		#     return data
 		# pages 
 		# woody
-		w_fruits = self.w_getdata(fruits)
+		session = self.session
+		w_fruits = self.w_getdata(session,fruits,customer_id)
 		count_fruit = len(w_fruits)
 
-		w_dry_fruits = self.w_getdata(dry_fruits)
+		w_dry_fruits = self.w_getdata(session, dry_fruits,customer_id)
 		count_dry   = len(w_dry_fruits)
 
 		if offset +10 <= count_fruit:
@@ -671,6 +708,7 @@ class Market(CustomerBaseHandler):
 		charge_type_id = self.args["charge_type_id"]
 		print('charge_type_id',charge_type_id)
 		print(self.args)
+		print('use id',self.current_user.id)
 		menu_type = self.args["menu_type"]
 		shop_id = int(self.get_cookie("market_shop_id"))
 		favour = self.session.query(models.FruitFavour).\
