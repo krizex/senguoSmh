@@ -3,7 +3,7 @@
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-user.css')}}"/>{% end %}
 {% block content %}
 <span class="right-title">用户管理</span>
-<div class="orders-list-title right-title2">
+<div class="orders-list-title right-title2 clearfix">
     <ul class="right-nav pull-left">
         <li class="all_user">
             <a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0">所有用户</a>
@@ -18,7 +18,7 @@
     </div>
 </div>
 {% if len(customers) != 0%}
-<div class="users-list-action clearfix bg-grey2">
+<div class="users-list-action clearfix bg-grey2 mt10">
     <span class="pull-left move font14">用户数({{count}})</span>
     <div class="input-group-btn group-select move-to pull-right set-right10">
         <button type="button" class="btn dropdown-toggle font12" data-toggle="dropdown">
