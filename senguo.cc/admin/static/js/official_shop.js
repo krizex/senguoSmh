@@ -85,30 +85,31 @@ $(document).ready(function(){
 	    var str;
 	    var pro_code;
 	    var area=window.dataObj.area;
+	    console.log( window.dataObj.province_code);
 	    for (var p in selected) {
-	        if (selected[p]!=undefined) {
+	        if (selected[p]) {
 	            str = p;
 	             for(var key in area){
 	              	var province=area[key]['name'].substring(0,2);
 	              	var province_long=area[key]['name'].substring(0,3);
-		    	if(province==str){
+		    	if(province==str||province_long==str){
 		    		pro_code=Int(key);
 		    	}
 		    }
-	        }
+		 window.dataObj.province_code=pro_code;
+		   $('.province_name').text(str);
+		   getData('filter',1,'province',pro_code);
+		   $('body','html').animate({scrollTop:'1000px'});
+		}
 	    } 
-	   window.dataObj.province_code=pro_code;
-	   var province_code=window.dataObj.province_code;
-	   $('.province_name').text(str);
-	   getData('filter',1,'province',province_code);
-	   $('body','html').animate({scrollTop:'1000px'});
+	  
 	});
               options.series[0].data=[];
               var area=window.dataObj.area;
 	 for(var key in area){
 		var province=area[key]['name'];
 		var pro_count=window.dataObj.province_count;
-		var num;
+		var num=0;
 		province=province.substring(0,2);
 		if(province=='黑龙') {province='黑龙江'}
 		if(province=='内蒙') {province='内蒙古'}
@@ -231,6 +232,7 @@ var getData=function(action,page,type,data){
 			var shop_province=shops[i]['shop_province'];
 			var shop_city=shops[i]['shop_city'];
 			var shop_intro=shops[i]['shop_intro'];
+			var owner=shops[i]['shop_admin_name'];
 			//province and city
 			var area=window.dataObj.area;
 			if(shop_city==shop_province) {shop_city=''}			
@@ -245,7 +247,7 @@ var getData=function(action,page,type,data){
 			$item.find('.shop_link').attr({'href':'/'+shop_code});
 			$item.find('.shop_log').attr({'src':shop_trademark_url+'?imageView/1/w/470/h/470'});
 			$item.find('.shop_name').text(shop_name);
-			$item.find('.owner').text(shop_name);
+			$item.find('.owner').text(owner);
 			$item.find('.area').text(shop_province+shop_city);
 			$item.find('.shop_intro').text(shop_intro);
 			$('.shoplist').append($item);
@@ -263,7 +265,13 @@ var getData=function(action,page,type,data){
 	        	}
 	        	$('.next_page').show();
 	        }
-	        if(page<=1){$('.pre_page').hide();}
+	        if(page_total==1) {
+	        	$('.page_box').addClass('hidden');
+	        }
+	        if(page<=1){
+	        	$('.pre_page').hide().attr({'data-id':1});
+	        	$('.next_page').attr({'data-id':2});
+	        }
    	        if(page>=page_total){$('.next_page').hide();}	
 	}
 	else return $.noticeBox(res.error_text);
