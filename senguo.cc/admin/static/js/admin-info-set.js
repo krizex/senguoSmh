@@ -197,6 +197,7 @@ function infoEdit(target){
     var action_name=target.data('id');
     var data={};
     var action,shop_name,shop_intro,shop_city,shop_address_detail,have_offline_entity,address,entity_text,shop_code,shop_phone;
+    var regNum=/^[1-9]*[1-9][0-9]*$/;
     var regPhone=/\d{3}-\d{8}|\d{4}-\d{7}/;
     var regPhone2=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
     if(action_name=='name')
@@ -244,7 +245,8 @@ function infoEdit(target){
     {
         action='edit_phone';
         shop_phone=$('.shop_phone').val().trim();
-        if(!(regPhone).test(shop_phone)&&!(regPhone2).test(shop_phone)){return alert('"电话貌似有错o(╯□╰)o"')}
+        console.log(shop_phone.length);
+        if(!(regNum).test(shop_phone)||11<shop_phone.length||shop_phone.length<5){return alert('"电话貌似有错o(╯□╰)o"')}
         data={shop_phone:shop_phone};
     }
     else if(action_name=='area')
