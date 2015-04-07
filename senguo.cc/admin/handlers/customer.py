@@ -1113,6 +1113,10 @@ class Order(CustomerBaseHandler):
 			orders = order5 + order6
 		elif action == "all":
 			orders = self.current_user.orders
+			session = self.session
+			for order in orders:
+				order.send_time = order.get_sendtime(session,order.id)
+			orders.sort(key = lambda order:order.send_time,reverse = True)
 			# orders = orders.order_by(end_time)
 		else:return self.send_error(404)
 
