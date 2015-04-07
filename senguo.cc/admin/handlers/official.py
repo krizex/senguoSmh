@@ -85,14 +85,14 @@ class Home(FruitzoneBaseHandler):
 		else:
 			print("province not in args")
 
-		shops = []
+		shoplist = []
 		for shop in q:
-			shops.append(dict(shop_name=shop.shop_name,shop_code = shop.shop_code,\
+			shoplist.append(dict(shop_name=shop.shop_name,shop_code = shop.shop_code,\
 				shop_province = shop.shop_province ,shop_city = shop.shop_city ,\
 				shop_address_detail = shop.shop_address_detail,\
 				shop_intro = shop.shop_intro ,shop_trademark_url=shop.shop_trademark_url,\
 				order_count = shop.order_count,shop_admin_name = shop.admin.accountinfo.nickname))
-		return self.send_success(shops=shops,page_total = page_total)
+		return self.send_success(shoplist=shoplist,page_total = page_total)
 
 	def hander_search(self):
 		_page_count = 8
@@ -101,18 +101,18 @@ class Home(FruitzoneBaseHandler):
 			filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"])),
 					models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 					models.Shop.shop_code !='not set' )
-		shops = []
+		shoplist = []
 		shop_count = q.count()
 		page_total = int(shop_count /8) if shop_count % 8 == 0 else int(shop_count/8) +1
 		q = q.offset(page * _page_count).limit(_page_count).all()
 		
 		for shop in q:
-			shops.append(dict(shop_name=shop.shop_name,shop_code = shop.shop_code,\
+			shoplist.append(dict(shop_name=shop.shop_name,shop_code = shop.shop_code,\
 				shop_province = shop.shop_province ,shop_city = shop.shop_city ,\
 				shop_address_detail = shop.shop_address_detail,\
 				shop_intro = shop.shop_intro ,shop_trademark_url=shop.shop_trademark_url,\
 				order_count = shop.order_count,shop_admin_name = shop.admin.accountinfo.nickname))
-		return self.send_success(shops=shops ,page_total = page_total)
+		return self.send_success(shoplist=shoplist ,page_total = page_total)
 
 
 
