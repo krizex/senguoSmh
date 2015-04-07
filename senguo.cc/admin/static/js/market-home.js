@@ -92,9 +92,7 @@ $(document).ready(function(){
             var fruit_name=parent.find('.fruit-name').text();
             var fruit_intro=parent.find('.fruit_intro').val();
             var large_box=$('#large_imgbox');
-            var if_clicked=$this.parents('.goods-list-item').find('.great-number em').attr('data-id');
-            if(if_clicked=='2') {$('.click-great').addClass('clicked')}
-            else $('.click-great').removeClass('clicked');
+            var if_favour=$this.parents('.goods-list-item').attr('data-favour');
             if(img_url!='') {
                 if(img_url.indexOf('/design_img')) img_url=img_url.replace('.png','_l.png');
                 img_url=img_url.replace('w/170/h/170','w/560/h/560');
@@ -105,6 +103,13 @@ $(document).ready(function(){
             large_box.find('#largeImg').attr({'src':img_url});
             large_box.find('.modal-title').text(fruit_name);
             large_box.find('.intro').text(fruit_intro);
+            if(if_favour=='true') {large_box.find('.click-great').addClass('clicked').removeClass('able_click')}
+            else {large_box.find('.click-great').removeClass('clicked').addClass('able_click');}
+    });
+    $(document).on('click','.clicked',function(){
+        $.noticeBox('亲，你今天已经为该商品点过赞了，一天只能对一个商品赞一次哦');
+        //  var check_large=new Modal('large_imgbox');
+        // check_large.modal('show');
     });
     //关注店铺
     $(document).find('.focus-btn').on('click',function(){focus();});
@@ -194,14 +199,13 @@ $(document).ready(function(){
         $.goodsList(1,8);
      });
       //点赞
-        $(document).on('click','.click-great',function(e){
+        $(document).on('click','.able_click',function(e){
             var $this=$(this);
             $this.unbind('click');
             var large_box=$('.large-img-box');
             var type=large_box.attr('data-type');
             var id=large_box.attr('data-id'); 
-            great(type,id);
-            
+            great(type,id);      
         });
         //首次添加商品
         $(document).on('click','.to-add',function(){
@@ -425,15 +429,16 @@ var fruitItem=function(box,fruits,type){
         var saled=fruits['saled'];
         var favour=fruits['favour'];
         var charge_types=fruits['charge_types'];
+        var favour_today=fruits['favour_today'];
         if(!code) code='TDSG';
-        $item.attr({'data-id':id,'data-type':type,'data-num':storage}).addClass(code);
+        $item.attr({'data-id':id,'data-type':type,'data-num':storage,'data-favour':favour_today}).addClass(code);
         $item.find('.fruit_intro').val(intro);
         $item.find('.fruit-name').text(name);
         if(saled>9999) $item.find('.number').text('9999+');
         else $item.find('.number').text(saled);
         $item.find('.great').text(favour).siblings('em').attr({'data-id':favour}); //if favour is not correct,should been replaced      
-        if(!favour) $item.find('.heart').addClass('gray-heart');
-        else $item.find('.heart').addClass('red-heart');
+        if(favour_today) $item.find('.heart').addClass('red-heart');
+        else $item.find('.heart').addClass('gray-heart');
         //商品标签转换
         tagText($item.find('.tagItem'),tag);
         //售完状态
@@ -630,9 +635,9 @@ function great(type,id){
                     var goods_id=$this.data('id');
                     if(type==type&&goods_id==id){
                         var num=$this.find('.great').text();
-                        $this.find('.great').text(Int(num)+1).siblings('em').addClass('red-heart').attr({'data-id':'2'});
+                        $this.attr({'data-favour':'true'});
+                        $this.find('.great').text(Int(num)+1).siblings('em').addClass('red-heart');
                     }
-                    $('.click-great').addClass('clicked');
                 });
                 var check_large=new Modal('large_imgbox');
                 check_large.modal('hide');
