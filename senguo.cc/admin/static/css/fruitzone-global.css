@@ -164,4 +164,4 @@ hr{margin:5px 0!important;}
 button:focus{outline:0;}
 .herder{width:100%;min-width:320px;max-width:800px;overflow:hidden;margin:0 auto;height:100%;background:#fff;height:40px;line-height:40px;position:relative;}
 .herder .back{position:absolute;left:10px;top:12px;display:inline-block;width:10px;height:16px;background:url('/static/svg/back-white@2x.png');background-size:10px 16px;}
-.container{width:100%;min-width:320px;max-width:800px;margin:0 auto;height:100%;padding-bottom:50px;background:#fff;}
+.container{width:100%;min-width:320px;max-width:800px;margin:0 auto;height:100%;padding-bottom:50px;background:#fff;position:relative;}

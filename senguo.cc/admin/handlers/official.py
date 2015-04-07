@@ -21,10 +21,11 @@ class ShopList(FruitzoneBaseHandler):
 	def get(self):
 		#print(self)
 		shop_count = self.get_shop_count()
-		
+		shop_province = self.get_shop_group()
 		#print(shoplist)
 		#return self.send_success( shoplist = shoplist,shop_count = shop_count ,)
-		return self.render("official/shoplist.html",context=dict(shop_count = shop_count,subpage="shop"))
+		return self.render("official/shoplist.html",context=dict(shop_count = shop_count,\
+			shop_province = shop_province, subpage="shop"))
 	   # return self.send_success(shop_count = shop_count)
 
 	@FruitzoneBaseHandler.check_arguments("action")

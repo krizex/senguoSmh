@@ -5,7 +5,6 @@ $(document).ready(function(){
     //get top8
     getData('top');
     //map data
-    var province_code;
     require.config({
         paths: {
             echarts:'/static/js'
@@ -35,8 +34,7 @@ $(document).ready(function(){
 	        textStyle:{color: '#fff'}
 	    },
 	     tooltip : {
-	        trigger: 'item',
-	        formatter: '{b}'
+	        trigger: 'item'
 	    },
 	    series : [
 	        {
@@ -75,50 +73,70 @@ $(document).ready(function(){
 		        }
 		    },
 	            data:[
-	                
+	               
 	            ]
 	        }
 	    ]
             };
-             var ecConfig = require('echarts/config');
-            var zrEvent = require('zrender/tool/event');
+           var ecConfig = require('echarts/config');
+           var zrEvent = require('zrender/tool/event');
            myChart.on(ecConfig.EVENT.MAP_SELECTED, function (param){
 	    var selected = param.selected;
 	    var str;
 	    var pro_code;
 	    var area=window.dataObj.area;
 	    for (var p in selected) {
-	        if (selected[p]) {
+	        if (selected[p]!=undefined) {
 	            str = p;
+	             for(var key in area){
+	              	var province=area[key]['name'].substring(0,2);
+	              	var province_long=area[key]['name'].substring(0,3);
+		    	if(province==str){
+		    		pro_code=Int(key);
+		    	}
+		    }
 	        }
-	    }
-	    for(var key in area){
-              	var province=area[key]['name'].substring(0,2);
-	    	if(province==str){
-	    		pro_code=Int(key);
-	    	}
-	    }
-	    province_code=pro_code;
+	    } 
+	   window.dataObj.province_code=pro_code;
+	   var province_code=window.dataObj.province_code;
 	   $('.province_name').text(str);
-	   getData('filter',1,'province',pro_code);
-	   $('.pagenation li').first().addClass('active');
-	})
+	   getData('filter',1,'province',province_code);
+	   $('body','html').animate({scrollTop:'1000px'});
+	});
+              options.series[0].data=[];
+              var area=window.dataObj.area;
+	 for(var key in area){
+		var province=area[key]['name'];
+		var pro_count=window.dataObj.province_count;
+		var num;
+		province=province.substring(0,2);
+		if(province=='黑龙') {province='黑龙江'}
+		if(province=='内蒙') {province='内蒙古'}
+		for(var i in pro_count){
+			if(key==pro_count[i][0]){num=pro_count[i][1]}
+		}
+		options.series[0].data.push({name:province,value:num});
+
+	}
+             myChart.refresh();
             myChart.setOption(options);
         }); 
     //page
     $(document).on('click','.pagenation li',function(){
    	var $this=$(this);
    	var id=Int($this.attr('data-id'));
-   	$this.addClass('active');
+   	var page_total=window.dataObj.page_total;
+   	var province_code=window.dataObj.province_code;
+   	$('.pagenation li').removeClass('active').eq(id-1).addClass('active');
    	if(id==1){
    		$('.pre_page').hide();
-   		$('.next_page').show();
+   		$('.next_page').show().attr({'data-id':id+1});;
    	}
-   	else if(id==window.dataObj.page_total){
+   	else if(id==page_total){
    		$('.next_page').hide();
-   		$('.pre_page').show();
+   		$('.pre_page').show().attr({'data-id':id-1});;
    	}
-   	else if(1<id<window.dataObj.page_total){
+   	else if(1<id<page_total){
    		$('.pre_page').show().attr({'data-id':id-1});
    		$('.next_page').show().attr({'data-id':id+1});
    	}
@@ -127,15 +145,23 @@ $(document).ready(function(){
      $(document).on('click','.pre_page',function(){
      	var $this=$(this);
    	var id=Int($this.attr('data-id'));
+   	var province_code=window.dataObj.province_code;
    	$('.next_page').show();
    	getData('filter',id,'province',province_code);
+   	$this.attr({'data-id':id-1});
+   	$('.next_page').show().attr({'data-id':id+1});
+   	$('.pagenation li').removeClass('active').eq(id-1).addClass('active');
    	
      });
      $(document).on('click','.next_page',function(){
      	var $this=$(this);
    	var id=Int($this.attr('data-id'));
+   	var province_code=window.dataObj.province_code;
    	$('.pre_page').show();
    	getData('filter',id,'province',province_code);
+   	$this.attr({'data-id':id+1});
+   	$('.pre_page').show().attr({'data-id':id-1});
+   	$('.pagenation li').removeClass('active').eq(id-1).addClass('active');
 
      });
 });
@@ -194,6 +220,7 @@ var getData=function(action,page,type,data){
 	{
 		var shops=res.shoplist;
 		window.dataObj.page_total=res.page_total;
+		var page_total=window.dataObj.page_total;
 		$('.shoplist').empty();
 		if(shops.length>0) {
 			for(var i in shops){
@@ -206,11 +233,11 @@ var getData=function(action,page,type,data){
 			var shop_intro=shops[i]['shop_intro'];
 			//province and city
 			var area=window.dataObj.area;
+			if(shop_city==shop_province) {shop_city=''}			
 			for(var pro in area){
 				if(pro==shop_province){shop_province=area[pro]['name']}
 				for(var cit in area[pro]['city']){
 					if(shop_city&&cit==shop_city){shop_city=area[pro]['city'][cit]['name']}
-					else if(cit==pro) {shop_city=''}
 					
 				}
 			}
@@ -225,19 +252,19 @@ var getData=function(action,page,type,data){
 		}
 	        }
 	        else{$('.shoplist').empty().append('<h4 class="font16 text-center"> 无结果</h4>')}
-	        if(window.dataObj.page_total>1&&page!=window.dataObj.page_total) {
+	        if(page_total>1&&page!=page_total) {
 	        	$('.pagenation').empty();
 	        	$('.page_box').removeClass('hidden');
-	        	for(var i=1;i<=window.dataObj.page_total;i++){
+	        	for(var i=1;i<=page_total;i++){
 	        		$item=$('<li class="item"><a href="javascript:;"></a></li>');
 	        		$item.attr({'data-id':i});
 	        		$item.find('a').text(i);
 	        		$('.pagenation').append($item);
 	        	}
-	        	$('.next_page').show().attr({'data-id':2});
+	        	$('.next_page').show();
 	        }
 	        if(page<=1){$('.pre_page').hide();}
-   	        if(page>=window.dataObj.page_total){$('.next_page').hide();}	
+   	        if(page>=page_total){$('.next_page').hide();}	
 	}
 	else return $.noticeBox(res.error_text);
 	},function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')}

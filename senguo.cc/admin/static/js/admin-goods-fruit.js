@@ -157,7 +157,7 @@ $(document).ready(function(){
         var token='';
         add_goods_box.empty();
         if(max_goods_num<=30){
-            $.getItem('/static/items/admin/add-new-goods.html?v=20150304',function(data){
+            $.getItem('/static/items/admin/add-new-goods.html?v=20150405',function(data){
                 var $item=$(data);
                 $item.find('.modal-title').text('新增一种'+'"'+current_clssify+'"');
                 if(typeof(default_code)=='undefined') $item.find('.imgPreview').attr({'src':'/static/design_img/TDSG.png'});
@@ -287,14 +287,14 @@ $(document).ready(function(){
             defalutChangeUnit(storage_unit_id);
             var parent=add_goods_box;
             var max_charge_num=parent.find('.add-charge-list').find('.item').length;
-            if(max_charge_num<5){
+            if(max_charge_num<20){
                 $.getItem('/static/items/admin/chargetype-item.html',function(data){
                     var $item=$(data);
                     $item.find('.charge-unit').attr('data-id',storage_unit_id).text(storage_unit);
                     parent.find('.add-charge-list').append($item);
                 });
             }
-            else alert('最多只能添加5个计价方式！');
+            else alert('最多只能添加20个计价方式！');
         });
 
     //商品添加-恢复默认图
@@ -421,8 +421,8 @@ $(document).ready(function(){
         storage_unit_id=Int(parent.find('.storage-unit').data('id'));
         storage_unit=parent.find('.storage-unit').text();
         var max_charge_num=parent.find('.add-charge-list').find('.edit-charge-list').length;
-        if(max_charge_num<5)  add_charge_box.modal('show').load('/static/items/admin/add-new-chargetype.html');
-        else alert('最多只能添加5个计价方式！');
+        if(max_charge_num<20)  add_charge_box.modal('show').load('/static/items/admin/add-new-chargetype.html');
+        else alert('最多只能添加20个计价方式！');
         add_charge_box.find('.charge-unit').attr({'data-id':storage_unit_id}).text(storage_unit);
         add_charge_box.find('.unit-change-show').text(storage_unit);
         item_fruit_id=$this.parents('.goods-list-item').data('id');
@@ -437,8 +437,8 @@ $(document).ready(function(){
         var edit_charge_box=$('.edit-charge-box');
         charge_type_id=parent.data('id');
         edit_price=parseFloat(parent.find('.edit_price').text());
-        edit_num=Int(parent.find('.edit_num').text());
-        edit_unit_id=Int(parent.find('.edit_unit').attr('data-id'));
+        edit_num=parseFloat(parent.find('.edit_num').text());
+        edit_unit_id=parseFloat(parent.find('.edit_unit').attr('data-id'));
         edit_unit_num=parseFloat(parent.find('.edit_unit_num').text());
         storage_unit=parent2.find('.storage-unit').text();
         storage_unit_id=Int(parent2.find('.storage-unit').data('id'));
@@ -644,10 +644,10 @@ function addEditFruit(target,action){
     var args;
     if(action=='add_fruit'||action=='add_mgoods'){
         if(!price||!num){return alert('请至少完整填写一种计价方式！');}
-        if(!regFloat.test(price)){return alert('价格只能为小数，至多为小数点后两位！');}
-        if(!regNumber.test(num)){return alert('数量只能为数字！');}
+        if(!regFloat.test(price)){return alert('价格只能为数字，至多为小数点后两位！');}
+        if(!regFloat.test(num)){return alert('数量只能为数字，至多为小数点后两位！');}
         if(!unit_num) unit_num=1;
-        if(!regFloat.test(unit_num)){return alert('计价方式换算单位只能为数字！');}
+        if(!regFloat.test(unit_num)){return alert('计价方式换算单位只能为数字，至多为小数点后两位！');}
         if(!img_url){data.img_url=''}
         data.charge_types=charge_types;
         args={
@@ -712,8 +712,8 @@ function addEditCharge(target,id,action,item){
     if(!price||!num) {return alert('请输入计价方式！')}
     if(!regFloat.test(price)){return alert('价格只能为数字，至多为小数点后两位！');}
     if(!unit_num){unit_num=1}
-    if(!regFloat.test(num)){return alert('数量只能为数字！');}
-    if(!regFloat.test(unit_num)){return alert('单位换算数量只能为数字！');}
+    if(!regFloat.test(num)){return alert('数量只能为数字，至多为小数点后两位！');}
+    if(!regFloat.test(unit_num)){return alert('单位换算数量只能为数字，至多为小数点后两位！');}
     var data={
             price:price,
             unit:units,

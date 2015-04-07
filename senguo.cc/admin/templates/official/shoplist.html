@@ -3,6 +3,10 @@
 <link href="{{static_url('css/official_shop.css')}}" rel="stylesheet">
 {% end %}
 {% block content %}
+{% import json %}
+<script type="text/javascript">
+    window.dataObj.province_count={% raw json.dumps(context['shop_province'])%}
+</script>
 <div class="map_box">
 	<div class="text-white number_box font36">
 		<span class="pull-left mr20">全国已有</span>
@@ -13,17 +17,16 @@
 		<span class="pull-left ml20">家同行</span>
 		<input type="hidden" value="{{context['shop_count']}}" id="total_count">
 	</div>
-	<div class="box"><div class="map" id="map"></div></div>
+	<div class="box"><div class="map text-center" id="map"><img src="/static/images/loading.gif" class="loading"/></div></div>
 </div>
 <div class="shop_list w1000 clearfix">
 	<p class="font16 province_name clearfix"></p>
 	<div class="list_box clearfix mt20">
 		<ul class="shoplist">
-			
 		</ul>
 	</div>
 	<div class="page_box hidden text-grey6">
-		<a href="javascript:;" class="next_page  pull-right next_pre text-center" style="display:none">下一页</a>
+		<a href="javascript:;" class="next_page  pull-right next_pre text-center" style="display:none" data-id="2">下一页</a>
 		<ul class="pagenation pull-right"></ul>
 		<a href="javascript:;" class="pre_page  pull-right next_pre text-center" style="display:none">上一页</a>
 	</div>
