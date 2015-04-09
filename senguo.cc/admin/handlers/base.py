@@ -286,7 +286,7 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
         shoplist = []
         # shop_count = shop_count.filter(shop_code != 'not set')
         for shop in shop_count:
-            print(shop[0],shop[1])
+            #print(shop[0],shop[1])
             shoplist.append([shop[0],shop[1]])
 
         return shoplist
@@ -510,15 +510,15 @@ class WxOauth2:
             return None
         access_token, openid = data
         userinfo_url = cls.userinfo_url.format(access_token=access_token, openid=openid)
-        print('code',code)
-        print('mode',mode)
+        #print('code',code)
+        #print('mode',mode)
         try:            
             data = json.loads(
                 urllib.request.urlopen(userinfo_url).read().decode("utf-8"))
 
-            print("return data")
-            for key in data:
-                print(key,data[key])
+            #print("return data")
+            #for key in data:
+            #    print(key,data[key])
             userinfo_data = dict(
                 openid=data["openid"],
                 nickname=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["nickname"]),#过滤掉Emoji，否则数据库报错
@@ -529,10 +529,10 @@ class WxOauth2:
                 headimgurl=data["headimgurl"],
                 unionid=data["unionid"]
             )
-            print(userinfo_data)
+            #print(userinfo_data)
         except Exception as e:
-            Logger.warn("Oauth2 Error", "获取用户信息失败")
-            traceback.print_exc()
+            #Logger.warn("Oauth2 Error", "获取用户信息失败")
+            #traceback.print_exc()
             return None
         
         return userinfo_data
@@ -551,10 +551,10 @@ class WxOauth2:
         # 获取access_token
         try:
             data = json.loads(urllib.request.urlopen(token_url).read().decode("utf-8"))
-            print(data)
+            #print(data)
         except Exception as e:
-            Logger.warn("WxOauth2 Error", "获取access_token失败，注意是否存在攻击")
-            traceback.print_exc()
+            #Logger.warn("WxOauth2 Error", "获取access_token失败，注意是否存在攻击")
+            #traceback.print_exc()
             return None
         if "access_token" not in data:
             return None
@@ -575,10 +575,10 @@ class WxOauth2:
         if data["errcode"] == 0:
             jsapi_ticket["jsapi_ticket"] = data["ticket"]
             jsapi_ticket["create_timestamp"] = datetime.datetime.now().timestamp()
-            print('ticket',data["ticket"])
+            #print('ticket',data["ticket"])
             return data["ticket"]
         else:
-            print("获取jsapi_ticket出错：", data)
+            #print("获取jsapi_ticket出错：", data)
             return None
 
     @classmethod
@@ -594,14 +594,14 @@ class WxOauth2:
             access_token["create_timestamp"] = datetime.datetime.now().timestamp()
             return data["access_token"]
         else:
-            print("获取微信接口调用的access_token出错：", data)
+            #print("获取微信接口调用的access_token出错：", data)
             return None
 
     @classmethod
     def post_template_msg(cls, touser, shop_name, name, phone):
-        print('####################')
-        print(cls)
-        print(touser)
+        #print('####################')
+        #print(cls)
+        #print(touser)
         time = datetime.datetime.now().strftime('%Y-%m-%d %R')
         postdata = {
             "touser": touser,
@@ -620,7 +620,7 @@ class WxOauth2:
         res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
         data = json.loads(res.content.decode("utf-8"))
         if data["errcode"] != 0:
-            print("店铺审核模板消息发送失败：", data)
+            #print("店铺审核模板消息发送失败：", data)
             return False
         return True
 
@@ -644,7 +644,7 @@ class WxOauth2:
         res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
         data = json.loads(res.content.decode("utf-8"))
         if data["errcode"] != 0:
-            print("店铺审核模板消息发送失败：", data)
+            #print("店铺审核模板消息发送失败：", data)
             return False
         return True
 
@@ -671,7 +671,7 @@ class WxOauth2:
         res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
         data = json.loads(res.content.decode("utf-8"))
         if data["errcode"] != 0:
-            print("订单提醒发送失败:",data)
+            #print("订单提醒发送失败:",data)
             return False
         return True
 
@@ -698,7 +698,7 @@ class WxOauth2:
         res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
         data = json.loads(res.content.decode("utf-8"))
         if data["errcode"] != 0:
-            print("订单提醒发送失败:",data)
+        #    print("订单提醒发送失败:",data)
             return False
         return True
 
@@ -723,7 +723,7 @@ class WxOauth2:
         res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata))
         data = json.loads(res.content.decode("utf-8"))
         if data["errcode"] != 0:
-            print("订单提交成功通知发送失败",data)
+            #print("订单提交成功通知发送失败",data)
             return False
         return True
 
@@ -739,7 +739,7 @@ class WxOauth2:
             s = res.content.decode('utf-8')
         data = json.loads(s)
         json_data = json.dumps(data)
-        print(data)
+        #print(data)
         subscribe = data.get('subscribe')
         return subscribe
 
