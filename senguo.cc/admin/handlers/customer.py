@@ -1113,6 +1113,10 @@ class Order(CustomerBaseHandler):
 			orders = order5 + order6
 		elif action == "all":
 			orders = self.current_user.orders
+			session = self.session
+			for order in orders:
+				order.send_time = order.get_sendtime(session,order.id)
+			orders.sort(key = lambda order:order.send_time,reverse = True)
 			# orders = orders.order_by(end_time)
 		else:return self.send_error(404)
 
@@ -1322,34 +1326,34 @@ class InsertData(CustomerBaseHandler):
 		
 		# import pingpp
 		# try:
-		#     shop_list = self.session.query(models.Shop).all()
+		# 	shop_list = self.session.query(models.Shop).all()
 		# except:
-		#     self.send_fail(" get shop error")
+		# 	self.send_fail(" get shop error")
 		# if shop_list:
-		#     for shop in shop_list:
-		#         if shop.shop_start_timestamp == None:
-		#             shop.shop_start_timestamp = shop.create_date_timestamp
-		#     self.session.commit()
+		# 	for shop in shop_list:
+		# 		if shop.shop_start_timestamp == None:
+		# 			shop.shop_start_timestamp = shop.create_date_timestamp
+		# 	self.session.commit()
 
-		# try:
-		#     accountinfo_list = self.session.query(models.Accountinfo).all()
-		# except:
-		#     self.send_fail("get accountinfo error")
-		# if accountinfo_list:
-		#     for accountinfo in accountinfo_list:
-		#         if accountinfo.headimgurl_small is None:
-		#             accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
-		#     self.session.commit()
+		try:
+		    accountinfo_list = self.session.query(models.Accountinfo).all()
+		except:
+		    self.send_fail("get accountinfo error")
+		if accountinfo_list:
+		    for accountinfo in accountinfo_list:
+		        if accountinfo.headimgurl_small is None:
+		            accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
+		    self.session.commit()
 
-		shop_count = self.get_shop_count()
-		province_shop_count = self.get_province_shop_count(110000)
-		city_shop_count     = self.get_city_shop_count(110000)
-		shop_group          = self.get_shop_group()   
-		return self.send_success(shop_count=shop_count,province_shop_count = province_shop_count,\
-			city_shop_count = city_shop_count,shop_group = shop_group
-			)
+		# shop_count = self.get_shop_count()
+		# province_shop_count = self.get_province_shop_count(110000)
+		# city_shop_count     = self.get_city_shop_count(110000)
+		# shop_group          = self.get_shop_group()   
+		# return self.send_success(shop_count=shop_count,province_shop_count = province_shop_count,\
+		# 	city_shop_count = city_shop_count,shop_group = shop_group
+		# 	)
 
-		# return self.send_success()
+		return self.send_success()
 
 		# ch = pingpp(order_no = '1234353',amount = 1,app=dict(id=''))
 		# return self.send_success()
