@@ -418,6 +418,7 @@ class Comment(AdminBaseHandler):
 		reply = self.args["reply"]
 		order_id = self.args["order_id"]
 		if action == "reply":
+			print('login replay')
 			try:
 				order = self.session.query(models.Order).filter_by(id=order_id).one()
 			except:
@@ -792,12 +793,13 @@ class Shelf(AdminBaseHandler):
 					if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000) or\
 						(self.args["id"] > 1000 and fruit.fruit_type_id < 1000) or fruit.fruit_type_id == 1000:
 						continue
-					fruits.append(fruit)
+					
 					if fruit.active == 1:
 						fruit_type_d[fruit.fruit_type_id]["sum"] += 1
+						fruits.append(fruit)
 			elif action == "fruit":
 				for fruit in self.current_shop.fruits:
-					if fruit.fruit_type_id == self.args["id"]:
+					if fruit.fruit_type_id == self.args["id"] and fruit.active == 1:
 						fruits.append(fruit)
 					if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000) or\
 						(self.args["id"] > 1000 and fruit.fruit_type_id < 1000) or fruit.fruit_type_id == 1000:
