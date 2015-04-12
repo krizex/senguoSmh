@@ -120,7 +120,7 @@ function add_bg(){
 }
 function remove_bg(){
     $('.area_box').removeClass('area_sty');
-    $('body').css({'overflow':'auto'}).attr({'onmousewheel':'return false'});
+    $('body').css({'overflow':'auto'}).attr({'onmousewheel':''});
 }
 
 $.shopItem=function (shops){

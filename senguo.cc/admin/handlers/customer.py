@@ -638,18 +638,22 @@ class Market(CustomerBaseHandler):
 			for mgood in menu.mgoods:
 				# print(mgood.id,mgood.unit)
 				try:
-					# print('mgood id',mgood.id)
+
+					print('mgood id',mgood.id)
 					favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,\
 						f_m_id = mgood.id , type = 1).first()
-					
+						
 				except:
-					# print(' favour_today error mgood')
+					print(' favour_today error mgood')
+
 					favour = None
 				if favour is None:
 					favour_today = False
 				else:
 					favour_today = favour.create_date == datetime.date.today()
+
 				# print('favour_today',favour_today,'mgood')
+
 				charge_types = []
 				for charge_type in mgood.mcharge_types:
 					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
