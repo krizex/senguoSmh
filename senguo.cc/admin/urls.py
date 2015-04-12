@@ -49,7 +49,8 @@ handlers = [
     (r"/customer/orders", handlers.customer.Order, {}, "customerOrder"),
     (r"/customer/orders/detail/(\d+)", handlers.customer.OrderDetail, {}, "customerOrderDetail"),
     (r"/customer/members", handlers.customer.Members, {}, "customerMembers"),
-    (r"/customer/shopProfile", handlers.customer.ShopProfile, {}, "customerShopProfile"),
+    # (r"/customer/shopProfile", handlers.customer.ShopProfile, {}, "customerShopProfile"),
+    (r"/shopProfile/(\w+)", handlers.customer.ShopProfile, {}, "customerShopProfile"),
     (r"/customer/comment", handlers.customer.Comment, {}, "customerComment"),
     (r"/customer/points", handlers.customer.Points, {}, "customerPoints"),
     (r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
@@ -195,6 +196,7 @@ handlers = [
     (r"/shop/(\w+)", handlers.customer.Market, {}, "Market"),
     #remove shop
     (r"/(\w+)", handlers.customer.Market, {}, "Market"),
+
 
 
     (r"/fruitzone/systemPurchase/", handlers.fruitzone.SystemPurchase, {
