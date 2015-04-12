@@ -532,7 +532,7 @@ class Market(CustomerBaseHandler):
 					w_mgoods.append(["mgoods",{'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,\
 						'favour_today':favour_today ,'current_saled':mgood.current_saled,'saled':mgood.saled,\
 						'storage':mgood.storage,'favour':mgood.favour,'tag':mgood.tag,'img_url':mgood.img_url,\
-						'intro':mgood.intro,'charge_types':charge_types},menu.id])
+						'intro':mgood.intro,'charge_types':charge_types,'favour_today' : favour_today},menu.id])
 		count_mgoods = len(w_mgoods)
 		if offset + 10 <=count_mgoods:
 			mgood_list = w_mgoods[offset:offset+10]
@@ -1088,12 +1088,12 @@ class Order(CustomerBaseHandler):
 			
 			for order in orders:
 				order.send_time = order.get_sendtime(session,order.id)
-			orders.sort(key = lambda order:order.send_time,reverse = True)
+			orders.sort(key = lambda order:order.send_time)
 		elif action == "waiting":#待收货
 			orders = [x for x in self.current_user.orders if x.status in (2, 3, 4)]
 			for order in orders:
 				order.send_time = order.get_sendtime(session,order.id)
-			orders.sort(key = lambda order:order.send_time,reverse = True)
+			orders.sort(key = lambda order:order.send_time)
 
 		elif action == "finish":#已送达/完成
 			# woody 4.5
@@ -1116,7 +1116,7 @@ class Order(CustomerBaseHandler):
 			session = self.session
 			for order in orders:
 				order.send_time = order.get_sendtime(session,order.id)
-			orders.sort(key = lambda order:order.send_time,reverse = True)
+			orders.sort(key = lambda order:order.send_time)
 			# orders = orders.order_by(end_time)
 		else:return self.send_error(404)
 
@@ -1336,14 +1336,14 @@ class InsertData(CustomerBaseHandler):
 		# 	self.session.commit()
 
 		try:
-		    accountinfo_list = self.session.query(models.Accountinfo).all()
+			accountinfo_list = self.session.query(models.Accountinfo).all()
 		except:
-		    self.send_fail("get accountinfo error")
+			self.send_fail("get accountinfo error")
 		if accountinfo_list:
-		    for accountinfo in accountinfo_list:
-		        if accountinfo.headimgurl_small is None:
-		            accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
-		    self.session.commit()
+			for accountinfo in accountinfo_list:
+				if accountinfo.headimgurl_small is None:
+					accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
+			self.session.commit()
 
 		# shop_count = self.get_shop_count()
 		# province_shop_count = self.get_province_shop_count(110000)
