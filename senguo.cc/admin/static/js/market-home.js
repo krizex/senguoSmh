@@ -430,6 +430,7 @@ var fruitItem=function(box,fruits,type){
         var favour=fruits['favour'];
         var charge_types=fruits['charge_types'];
         var favour_today=fruits['favour_today'];
+        console.log(favour_today,type);
         if(!code) code='TDSG';
         $item.attr({'data-id':id,'data-type':type,'data-num':storage,'data-favour':favour_today}).addClass(code);
         $item.find('.fruit_intro').val(intro);
