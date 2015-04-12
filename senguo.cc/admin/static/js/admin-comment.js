@@ -2,7 +2,7 @@ $(document).ready(function(){
     $(document).on('click','.reply',function(){
         var $this=$(this);
         var parent=$this.parents('li');
-        order_id=Int(parent.find('.order_id').text());
+        order_id=Int(parent.attr('data-id'));
         item_index=parent.index();
         $('.reply-box').modal('show').attr({'data-id':item_index});
     });
@@ -15,7 +15,7 @@ $(document).ready(function(){
     $(document).on('click','.collect',function(){
         var $this=$(this);
         var parent=$this.parents('li');
-        order_id=Int(parent.find('.order_id').text());
+        order_id=Int(parent.attr('data-id'));
         collect($this,order_id);
     });
     //翻页
