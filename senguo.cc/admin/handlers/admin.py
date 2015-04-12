@@ -799,7 +799,7 @@ class Shelf(AdminBaseHandler):
 						fruits.append(fruit)
 			elif action == "fruit":
 				for fruit in self.current_shop.fruits:
-					if fruit.fruit_type_id == self.args["id"] and fruit.active == 1:
+					if fruit.fruit_type_id == self.args["id"]:
 						fruits.append(fruit)
 					if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000) or\
 						(self.args["id"] > 1000 and fruit.fruit_type_id < 1000) or fruit.fruit_type_id == 1000:
