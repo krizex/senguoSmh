@@ -631,11 +631,27 @@ class Market(CustomerBaseHandler):
 			temp_goods = []
 			for mgood in menu.mgoods:
 				# print(mgood.id,mgood.unit)
+				try:
+						print('mgood id',mgood.id)
+						favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,\
+							f_m_id = mgood.id , type = 1).first()
+						
+					except:
+						print(' favour_today error mgood')
+						favour = None
+					if favour is None:
+						favour_today = False
+					else:
+						favour_today = favour.create_date == datetime.date.today()
+					print('favour_today',favour_today,'mgood')
 				charge_types = []
 				for charge_type in mgood.mcharge_types:
 					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
 				if mgood.active == 1:				
-					w_mgoods.append(["mgoods",{'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,'current_saled':mgood.current_saled,'saled':mgood.saled,'storage':mgood.storage,'favour':mgood.favour,'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types},menu.id])
+					w_mgoods.append(["mgoods",{'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,\
+						'current_saled':mgood.current_saled,'saled':mgood.saled,'storage':mgood.storage,'favour':mgood.favour,\
+						'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types,\
+						'favour_today':favour_today},menu.id])
 				count_mgoods += 1
 
 		w_fruits = []
