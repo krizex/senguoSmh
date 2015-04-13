@@ -413,6 +413,9 @@ class Shop(MapBase, _CommonApi):
     create_date_timestamp = Column(Integer, nullable=False)
     shop_status = Column(Integer, default=SHOP_STATUS.ACCEPTED)  # 1：申请中 2：申请成功 3：拒绝
 
+    # on or off
+    status   = Column(Integer,default = 1) # 1:on ,0:off
+
     admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
     admin = relationship("ShopAdmin")
 
@@ -1004,7 +1007,6 @@ class Order(MapBase, _CommonApi):
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
     shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
-
     num = Column(String(15), nullable=False)  # 订单编号
     phone = Column(String(30), nullable=False)
     receiver = Column(String(64), nullable=False)
@@ -1013,6 +1015,7 @@ class Order(MapBase, _CommonApi):
     status = Column(TINYINT, default=ORDER_STATUS.ORDERED)  # 订单状态:DELETED = 0,ORDERED = 1, JH = 2,SH1 = 3
                                                            # #SH2 = 4,Received=5，FINISH = 6, AFTER_SALE = 10
     type = Column(TINYINT) #订单类型 1:立即送 2：按时达
+    intime_period = Column(Integer,default = 0) #when type is 1,it's usefull
     freight = Column(SMALLINT, default=0)  # 订单运费
     tip = Column(SMALLINT, default=0)  # 小费（暂时只有立即送可提供运费）
     remark = Column(String(100)) #商家备注

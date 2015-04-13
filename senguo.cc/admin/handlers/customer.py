@@ -872,32 +872,52 @@ class Market(CustomerBaseHandler):
 		menu_type = self.args["menu_type"]
 		self.save_cart(charge_type_id, self.shop_id, action, menu_type)
 		return self.send_success()
-#>>>>>>> leaf/senguo2.0
+
 
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		shop_id = self.shop_id
+		customer_id = self.current_user.id
+		phone = self.get_phone(customer_id)
+		if not (fruits or mgoods):
+			return self.send_fail('请至少选择一种商品')
+		storages = {}
 		shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
 		if not shop:return self.send_error(404)
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits) or eval(cart.mgoods))): #购物车为空
 			return self.render("notice/cart-empty.html",context=dict(subpage='cart'))
 		cart_f, cart_m = self.read_cart(shop_id)
-
+		# print(cart_f)
+		# print(cart_m)
+		for item in cart_f:
+			fruit = cart_f[item].get('charge_type').fruit
+			fruit_id = fruit.id
+			fruit_storage = fruit.storage
+			if fruit_id not in storages:
+				storages[fruit_id] = fruit_storage
+		for item in cart_m:
+			mgood = cart_m[item].get('mcharge_type').mgoods
+			mgood_id = mgood.id
+			mgood_storage = mgood.storage
+			if mgood_id not in storages:
+				storages[mgood_id] = mgood_storage
 		periods = [x for x in shop.config.periods if x.active == 1]
+		# print('storages',storages)
 
 		# for period in periods:
 		# 	print(period.start_time)
 
 		return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
-						   periods=periods, context=dict(subpage='cart'))
+						   periods=periods,phone=phone, storages = storages,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
 										 "address_id:int", "message:str", "type:int", "tip?:int",
 										 "today:int")
 	def post(self):#提交订单
+		# print(self)
 		shop_id = self.shop_id
 		fruits = self.args["fruits"]
 		mgoods = self.args["mgoods"]
@@ -905,9 +925,6 @@ class Cart(CustomerBaseHandler):
 		f_d={}
 		m_d={}
 		totalPrice=0
-
-		if not (fruits or mgoods):
-			return self.send_fail('请至少选择一种商品')
 
 		if fruits:
 			# print("login fruits")
