@@ -418,6 +418,7 @@ class Comment(AdminBaseHandler):
 		reply = self.args["reply"]
 		order_id = self.args["order_id"]
 		if action == "reply":
+			print('login replay')
 			try:
 				order = self.session.query(models.Order).filter_by(id=order_id).one()
 			except:
@@ -792,9 +793,10 @@ class Shelf(AdminBaseHandler):
 					if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000) or\
 						(self.args["id"] > 1000 and fruit.fruit_type_id < 1000) or fruit.fruit_type_id == 1000:
 						continue
-					fruits.append(fruit)
+					
 					if fruit.active == 1:
 						fruit_type_d[fruit.fruit_type_id]["sum"] += 1
+						fruits.append(fruit)
 			elif action == "fruit":
 				for fruit in self.current_shop.fruits:
 					if fruit.fruit_type_id == self.args["id"]:
@@ -991,7 +993,8 @@ class Follower(AdminBaseHandler):
 					q = q.order_by(desc(models.CustomerShopFollow.create_time))
 			else:  # 老用户
 				q = self.session.query(models.Customer).\
-					join(models.Order).filter(models.Order.shop_id == self.current_shop.id).distinct()
+					join(models.Order).filter( and_(models.Order.shop_id == self.current_shop.id,\
+						or_(models.Order.status==5,models.Order.status==6,models.Order.status==10))).distinct()
 			if order_by == "credits":
 				q = q.order_by(desc(models.Customer.credits))
 			elif order_by == "balance":

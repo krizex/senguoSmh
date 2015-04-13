@@ -267,8 +267,9 @@ function orderPrint(target){
     var goods=parent.find('.goods-list')[0].innerHTML;
     var print_remark=$('.shop-receipt-remark').val();
     var print_img=$('.shop-receipt-img').val();
-    var remark=parent.find('.saler-remark').val(); 
-    $.getItem('/static/items/admin/order-print-page.html?v=2015-03-07',function(data){
+    var saler_remark=parent.find('.order_remark').text(); 
+    var user_remark=parent.find('.message-content').text(); 
+    $.getItem('/static/items/admin/order-print-page.html?v=2015-04-14',function(data){
         var $item=$(data);
         $item.find('.notes-head').text(shop_name);
         $item.find('.orderId').text(order_num);
@@ -277,17 +278,19 @@ function orderPrint(target){
         $item.find('.address').text(address);
         $item.find('.receiver').text(receiver);
         $item.find('.phone').text(phone);
-        $item.find('.remark').text(remark);
         $item.find('.totalPrice').text(totalPrice);
         $item.find('.goods-list')[0].innerHTML=goods;
-        if(remark!='') {
-            $item.find('.remark-box').show();
-            $item.find('.remark').text(remark);
+        if(saler_remark!='') {
+            $item.find('.saler-remark').show().find('.remark').text(saler_remark);
         }
-        $item.find('.print-remark').text(print_remark);
+        if(user_remark!='') {
+            $item.find('.user-remark').show().find('.remark').text(user_remark);
+        }
+        if(print_remark) {
+          $item.find('.extra-info-box').show().find('.print-remark').text(print_remark);  
+        }
         if(!print_img) $item.find('.shop-img').remove();
         else $item.find('.shop-img img').attr({'src':print_img});
-        console.log('小票图片'+$item.find('.shop-img img').attr('src'));
         if (paid == true) {
             $item.find('.moneyPaid').text('余额支付');
         } else {

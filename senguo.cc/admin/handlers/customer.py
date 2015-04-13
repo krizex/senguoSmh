@@ -146,21 +146,27 @@ class CustomerProfile(CustomerBaseHandler):
 
 class ShopProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
-	def get(self):
+	def get(self, shop_code):
+		print(shop_code)
 		#self.set_cookie("market_shop_id", shop_id)
-		shop_id = self.shop_id
-		shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
+		# shop_code = self.shop_code
+		try:
+			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
+		except:
+			return self.send_fail('shop not found')
 		if not shop:
+			print("error shop")
 			return self.send_error(404)
+		shop_id = shop.id
 		#是否关注判断
 		follow = True
 		if not self.session.query(models.CustomerShopFollow).filter_by(
-				customer_id=self.current_user.id, shop_id=shop_id).first():
+				customer_id=self.current_user.id, shop_id=shop.id).first():
 			follow = False
-		# 今天是否关注
+		# 今天是否 signin
 		signin = False
 		q=self.session.query(models.ShopSignIn).filter_by(
-						  customer_id=self.current_user.id, shop_id=shop_id).first()
+						  customer_id=self.current_user.id, shop_id=shop.id).first()
 		if q and q.last_date == datetime.date.today():
 			signin = True
 		operate_days = (datetime.datetime.now() - datetime.datetime.fromtimestamp(shop.create_date_timestamp)).days
@@ -197,7 +203,7 @@ class ShopProfile(CustomerBaseHandler):
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str")
-	def post(self):
+	def post(self,shop_code):
 		shop_id = self.shop_id
 		action = self.args["action"]
 		if action == "favour": 
@@ -246,7 +252,7 @@ class ShopProfile(CustomerBaseHandler):
 					if point_history:
 						point_history.each_point = 1
 						point_history.point_type = models.POINT_TYPE.SIGNIN
-						print("point_history",point_history.each_point)
+						# print("point_history",point_history.each_point)
 						self.session.add(point_history)
 						self.session.commit()
 
@@ -255,7 +261,7 @@ class ShopProfile(CustomerBaseHandler):
 					if shop_follow is not None:
 						if shop_follow.shop_point is not None:
 							shop_follow.shop_point += 1
-							print("sigin success")
+							# print("sigin success")
 							self.session.commit()
 
 					else:
@@ -263,7 +269,7 @@ class ShopProfile(CustomerBaseHandler):
 						shop_follow.shop_point = 1
 						self.session.add(shop_follow)
 						self.session.commit()
-						print("new shop_follow",shop_follow.shop_point)
+						# print("new shop_follow",shop_follow.shop_point)
 					if datetime.date.today() - signin.last_date == datetime.timedelta(1):  # 判断是否连续签到
 						self.current_user.credits += signin.keep_days
 						signin.keep_days += 1
@@ -297,7 +303,7 @@ class ShopProfile(CustomerBaseHandler):
 				if point_history:
 					point_history.each_point = 1
 					point_history.point_type = models.POINT_TYPE.SIGNIN
-					print("point_history",point_history.each_point)
+					# print("point_history",point_history.each_point)
 					self.session.add(point_history)
 					self.session.commit()
 				#shop_point add by one
@@ -305,7 +311,7 @@ class ShopProfile(CustomerBaseHandler):
 				if shop_follow is not None:
 					if shop_follow.shop_point is not None:
 						shop_follow.shop_point += 1
-						print("sigin success")
+						# print("sigin success")
 						self.session.commit()
 
 
@@ -360,7 +366,7 @@ class Comment(CustomerBaseHandler):
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self, shop_code):
-		print('self',self)
+		# print('self',self)
 		w_follow = True
 		fruits=''
 		dry_fruits=''
@@ -381,7 +387,7 @@ class Market(CustomerBaseHandler):
 				if shop_follow.shop_point is not None:
 					shop_follow.shop_point += 10
 					now = datetime.datetime.now()
-					print(now,shop_follow.shop_point,'follow')
+					# print(now,shop_follow.shop_point,'follow')
 				else:
 					shop_follow.shop_point = 10
 			if shop_follow.bing_add_point == 0:
@@ -389,7 +395,7 @@ class Market(CustomerBaseHandler):
 					shop_follow.shop_point += 10
 					shop_follow.bing_add_point = 1
 					now = datetime.datetime.now()
-					print(now,shop_follow.shop_point,'phone')
+					# print(now,shop_follow.shop_point,'phone')
 
 			self.session.add(shop_follow)
 			self.session.commit()
@@ -398,7 +404,7 @@ class Market(CustomerBaseHandler):
 			if point_history:
 				point_history.each_point = 10
 				point_history.point_type = models.POINT_TYPE.FOLLOW
-				print("point_history",point_history,point_history.each_point)
+				# print("point_history",point_history,point_history.each_point)
 
 			self.session.add(point_history)
 			  # 添加关注
@@ -431,7 +437,7 @@ class Market(CustomerBaseHandler):
 			page_count = total_count /10
 		else:
 			page_count = int( total_count / 10) + 1
-		print('page_count' , page_count)
+		# print('page_count' , page_count)
 		fruit_page = int(len(fruits)/10) if len(fruits)% 10 == 0 else int(len(fruits)/10) +1
 		dry_page   = int(len(dry_fruits)/10) if len(dry_fruits)% 10 == 0 else int(len(dry_fruits)/10) +1
 		# mgoods_page = int(count_mgoods/10) if count_mgoods % 10 == 0 else int(count_mgoods/10) + 1
@@ -464,21 +470,21 @@ class Market(CustomerBaseHandler):
 	def w_getdata(self,session,m,customer_id):
 			data = []
 			w_tag = ''
-			print(customer_id)
+			# print(customer_id)
 			for fruit in m:
 				try:
-					print('fruit id',fruit.id)
+					# print('fruit id',fruit.id)
 					favour = session.query(models.FruitFavour).filter_by(customer_id = customer_id,\
 						f_m_id = fruit.id , type = 0).first()
 					
 				except:
-					print('favour_today error')
+					# print('favour_today error')
 					favour = None
 				if favour is None:
 					favour_today = False
 				else:
 					favour_today = favour.create_date == datetime.date.today()
-				print('favour_today',favour_today)
+				# print('favour_today',favour_today)
 
 				charge_types= []           
 				for charge_type in fruit.charge_types:
@@ -517,22 +523,22 @@ class Market(CustomerBaseHandler):
 					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
 				if mgood.active == 1:
 					try:
-						print('mgood id',mgood.id)
+						# print('mgood id',mgood.id)
 						favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,\
 							f_m_id = mgood.id , type = 1).first()
 						
 					except:
-						print(' favour_today error mgood')
+						# print(' favour_today error mgood')
 						favour = None
 					if favour is None:
 						favour_today = False
 					else:
 						favour_today = favour.create_date == datetime.date.today()
-					print('favour_today',favour_today,'mgood')
+					# print('favour_today',favour_today,'mgood')
 					w_mgoods.append(["mgoods",{'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,\
 						'favour_today':favour_today ,'current_saled':mgood.current_saled,'saled':mgood.saled,\
 						'storage':mgood.storage,'favour':mgood.favour,'tag':mgood.tag,'img_url':mgood.img_url,\
-						'intro':mgood.intro,'charge_types':charge_types},menu.id])
+						'intro':mgood.intro,'charge_types':charge_types,'favour_today' : favour_today},menu.id])
 		count_mgoods = len(w_mgoods)
 		if offset + 10 <=count_mgoods:
 			mgood_list = w_mgoods[offset:offset+10]
@@ -560,7 +566,7 @@ class Market(CustomerBaseHandler):
 		w_dry_fruits = self.w_getdata(session,dry_fruits,customer_id)
 		count_dry = len(w_dry_fruits)
 		page = int(count_dry/10) if count_dry % 10 ==0 else int(count_dry/10) +1
-		print(page)
+		# print(page)
 		if offset + 10 <= count_dry:
 			dry_fruit_list = w_dry_fruits[offset:offset+10]
 		elif offset < count_dry and offset + 10 > count_dry:
@@ -587,7 +593,7 @@ class Market(CustomerBaseHandler):
 		count_fruit = len(w_fruits)
 		page = int(count_fruit/10) if count_fruit % 10 == 0 else int(count_fruit/10)+1
 		# page = (count_fruit % 10 == 0)?int(count_fruit/10):int(count_fruit/10)+1
-		print(page)
+		# print(page)
 		if offset + 10 <= count_fruit:
 			fruit_list = w_fruits[offset:offset+10]
 		elif offset < count_fruit and offset +10 > count_fruit:
@@ -631,11 +637,31 @@ class Market(CustomerBaseHandler):
 			temp_goods = []
 			for mgood in menu.mgoods:
 				# print(mgood.id,mgood.unit)
+				try:
+
+					print('mgood id',mgood.id)
+					favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,\
+						f_m_id = mgood.id , type = 1).first()
+						
+				except:
+					print(' favour_today error mgood')
+
+					favour = None
+				if favour is None:
+					favour_today = False
+				else:
+					favour_today = favour.create_date == datetime.date.today()
+
+				# print('favour_today',favour_today,'mgood')
+
 				charge_types = []
 				for charge_type in mgood.mcharge_types:
 					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
 				if mgood.active == 1:				
-					w_mgoods.append(["mgoods",{'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,'current_saled':mgood.current_saled,'saled':mgood.saled,'storage':mgood.storage,'favour':mgood.favour,'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types},menu.id])
+					w_mgoods.append(["mgoods",{'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,\
+						'current_saled':mgood.current_saled,'saled':mgood.saled,'storage':mgood.storage,'favour':mgood.favour,\
+						'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types,\
+						'favour_today':favour_today},menu.id])
 				count_mgoods += 1
 
 		w_fruits = []
@@ -699,16 +725,16 @@ class Market(CustomerBaseHandler):
 		# print('w_mgoods',w_mgoods)
 		# for m in w_mgoods:
 		#     print(m)
-		print("total_count",total_count ,"count_fruit",count_fruit,"count_dry",count_dry,'count_mgoods',count_mgoods)
+		# print("total_count",total_count ,"count_fruit",count_fruit,"count_dry",count_dry,'count_mgoods',count_mgoods)
 
 		return self.send_success(w_orders = w_orders)
 
 	@CustomerBaseHandler.check_arguments("charge_type_id:int", "menu_type:int")  # menu_type(0：fruit，1：menu)
 	def favour(self):
 		charge_type_id = self.args["charge_type_id"]
-		print('charge_type_id',charge_type_id)
-		print(self.args)
-		print('use id',self.current_user.id)
+		# print('charge_type_id',charge_type_id)
+		# print(self.args)
+		# print('use id',self.current_user.id)
 		menu_type = self.args["menu_type"]
 		shop_id = int(self.get_cookie("market_shop_id"))
 		favour = self.session.query(models.FruitFavour).\
@@ -749,7 +775,7 @@ class Market(CustomerBaseHandler):
 			else:  # 今天没点过赞，更新时间
 				#favour_count add by one
 				#woody
-				print("true favour")
+				# print("true favour")
 				# if point:
 				#     point.favour_count += 1
 				#     # point.totalCount +=1
@@ -771,7 +797,7 @@ class Market(CustomerBaseHandler):
 				if shop_follow:
 					shop_follow.shop_point += 1
 					now = datetime.datetime.now()
-					print(now,shop_follow.shop_point,'favour')
+					# print(now,shop_follow.shop_point,'favour')
 				
 				favour.create_date = datetime.date.today()
 		else:  # 没找到点赞记录，插入一条
@@ -780,7 +806,7 @@ class Market(CustomerBaseHandler):
 			self.session.commit()
 
 			#add favour point history
-			print('add favour')
+			# print('add favour')
 
 			try:
 				point_history = models.PointHistory(customer_id = self.current_user.id ,shop_id =shop_id)
@@ -797,7 +823,7 @@ class Market(CustomerBaseHandler):
 			if shop_follow:
 					shop_follow.shop_point += 1
 					now = datetime.datetime.now()
-					print(now,shop_follow.shop_point,'favour')
+					# print(now,shop_follow.shop_point,'favour')
 			else:
 				print('customer_shop_follow not fount')
 
@@ -846,45 +872,64 @@ class Market(CustomerBaseHandler):
 		menu_type = self.args["menu_type"]
 		self.save_cart(charge_type_id, self.shop_id, action, menu_type)
 		return self.send_success()
-#>>>>>>> leaf/senguo2.0
+
 
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		shop_id = self.shop_id
+		customer_id = self.current_user.id
+		phone = self.get_phone(customer_id)
+		
+		storages = {}
 		shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
 		if not shop:return self.send_error(404)
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits) or eval(cart.mgoods))): #购物车为空
 			return self.render("notice/cart-empty.html",context=dict(subpage='cart'))
 		cart_f, cart_m = self.read_cart(shop_id)
-
+		# print(cart_f)
+		# print(cart_m)
+		for item in cart_f:
+			fruit = cart_f[item].get('charge_type').fruit
+			fruit_id = fruit.id
+			fruit_storage = fruit.storage
+			if fruit_id not in storages:
+				storages[fruit_id] = fruit_storage
+		for item in cart_m:
+			mgood = cart_m[item].get('mcharge_type').mgoods
+			mgood_id = mgood.id
+			mgood_storage = mgood.storage
+			if mgood_id not in storages:
+				storages[mgood_id] = mgood_storage
 		periods = [x for x in shop.config.periods if x.active == 1]
+		# print('storages',storages)
 
-		for period in periods:
-			print(period.start_time)
+		# for period in periods:
+		# 	print(period.start_time)
 
 		return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
-						   periods=periods, context=dict(subpage='cart'))
+						   periods=periods,phone=phone, storages = storages,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
 										 "address_id:int", "message:str", "type:int", "tip?:int",
 										 "today:int")
 	def post(self):#提交订单
+		# print(self)
 		shop_id = self.shop_id
 		fruits = self.args["fruits"]
 		mgoods = self.args["mgoods"]
+
+		if not (fruits or mgoods):
+			return self.send_fail('请至少选择一种商品')
 		unit = {1:"个", 2:"斤", 3:"份"}
 		f_d={}
 		m_d={}
 		totalPrice=0
 
-		if not (fruits or mgoods):
-			return self.send_fail('请至少选择一种商品')
-
 		if fruits:
-			print("login fruits")
+			# print("login fruits")
 			charge_types = self.session.query(models.ChargeType).\
 				filter(models.ChargeType.id.in_(fruits.keys())).all()
 			for charge_type in charge_types:
@@ -903,7 +948,7 @@ class Cart(CustomerBaseHandler):
 				f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
 									 "charge":"%.2f元/%.1f %s" % (float(charge_type.price), charge_type.num, unit[charge_type.unit])}
 		if mgoods:
-			print("login mgoods")
+			# print("login mgoods")
 			mcharge_types = self.session.query(models.MChargeType).\
 				filter(models.MChargeType.id.in_(mgoods.keys())).all()
 			for mcharge_type in mcharge_types:
@@ -1031,7 +1076,7 @@ class Cart(CustomerBaseHandler):
 		customer_info = self.session.query(models.Accountinfo).filter_by(id = self.current_user.id).first()
 		customer_name = customer_info.nickname 
 		c_tourse      = customer_info.wx_openid
-		print(c_tourse)
+		# print(c_tourse)
 
 		##################################################
 		#goods
@@ -1067,7 +1112,7 @@ class Wexin(CustomerBaseHandler):
 		noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
 		timestamp = datetime.datetime.now().timestamp()
 		url = self.args["url"]
-		print('url',url)
+		# print('url',url)
 
 		return self.send_success(noncestr=noncestr, timestamp=timestamp,
 								 signature=self.signature(noncestr, timestamp, url))
@@ -1079,24 +1124,123 @@ class Order(CustomerBaseHandler):
 		action = self.args["action"]
 		orders = []
 		session = self.session
-		print(self.current_user.orders)
-		print(type(self.current_user.orders))
-		if action == "unhandled":  # 未处理
-		
-			orders = [x for x in self.current_user.orders if x.status == 1]
-			# woody
+		# print(self.current_user.orders)
+		# print(type(self.current_user.orders))
+		###################################################################
+		# time's format
+		# woody
+		# 3.9
+		###################################################################
+		# delta = datetime.timedelta(1)
+		# for order in orders:
+		# 	staff_id = order.SH2_id
+		# 	staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id).first()
+		# 	if staff_info is not None:
+		# 		order.sender_phone = staff_info.phone
+		# 		order.sender_img = staff_info.headimgurl_small
+		# 	else:
+		# 		order.sender_phone =None
+		# 		order.sender_img = None
+
+		# 	if order.start_time.minute <10:
+		# 		w_start_time_minute ='0' + str(order.start_time.minute)
+		# 	else:
+		# 		w_start_time_minute = str(order.start_time.minute)
+		# 	if order.end_time.minute < 10:
+		# 		w_end_time_minute = '0' + str(order.end_time.minute)
+		# 	else:
+		# 		w_end_time_minute = str(order.end_time.minute)
+
+		# 	if order.type == 2 and order.today==2:
+		# 		w_date = order.create_date + delta
+		# 	else:
+		# 		w_date = order.create_date
+		# 	order.send_time = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
+		# 										order.start_time.hour, w_start_time_minute,
+		# 										  order.end_time.hour, w_end_time_minute)
+		# print("before len:" ,len(orders))
+		# orders = orders[::-1]
+		# print("after len:" ,len(orders))
 			
+		return self.render("customer/order-list.html", context=dict(subpage='center'))
+
+	
+
+	@classmethod
+	def get_orderData(self,session,orders):
+		# print('orders',orders)
+		data = []
+		for order in orders:
+			staff_id = order.SH2_id
+			staff_info = session.query(models.Accountinfo).filter_by(id = staff_id).first()
+			if staff_info is not None:
+				order.sender_phone = staff_info.phone
+				order.sender_img = staff_info.headimgurl_small
+			else:
+				order.sender_phone =None
+				order.sender_img = None
+			send_time = order.get_sendtime(session,order.id)
+			order_status = order.status
+			order_totalPrice = order.totalPrice
+			order_num = order.num
+			shop_name = order.shop.shop_name
+			address_text = order.address_text
+			create_date  = order.create_date.strftime(" %Y:%m:%d")
+			print(create_date)
+			# print(order)
+			data.append({'order_num':order_num,'shop_name':shop_name,'address_text':address_text,\
+				'send_time':send_time,'order_totalPrice':order_totalPrice,'order_status':order_status,\
+				'sender_phone':order.sender_phone,'sender_img':order.sender_img,'order_id':order.id,\
+				'message':order.message,'comment':order.comment,'create_date':create_date,\
+				'today':order.today,'type':order.type,'create_year':order.create_date.year,\
+				'create_month':order.create_date.month,'create_day':order.create_date.day})
+		return data
+
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("action", "data?","page?:int")
+	def post(self):
+		action = self.args["action"]
+		session = self.session
+		if action == "unhandled":
+			page = self.args['page']
+			offset = (page - 1) * 10
+			orders = [x for x in self.current_user.orders if x.status == 1]
+			# woody	
 			for order in orders:
 				order.send_time = order.get_sendtime(session,order.id)
-			orders.sort(key = lambda order:order.send_time,reverse = True)
-		elif action == "waiting":#待收货
+			orders.sort(key = lambda order:order.send_time)
+			total_count = len(orders)
+			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
+			if offset + 10 <= total_count:
+				orders = orders[offset:offset + 10]
+			elif offset < total_count and offset + 10 >= total_count:
+				orders = orders[offset:]
+			else:
+				return self.send_fail("order pages errors")
+			# print('orders',orders)
+			orders = self.get_orderData(session,orders)
+			# print('after ',orders)
+			return self.send_success(orders = orders ,total_page= total_page)
+		elif action == "waiting":
+			page = self.args["page"]
+			offset = (page - 1) * 10
 			orders = [x for x in self.current_user.orders if x.status in (2, 3, 4)]
 			for order in orders:
 				order.send_time = order.get_sendtime(session,order.id)
-			orders.sort(key = lambda order:order.send_time,reverse = True)
-
-		elif action == "finish":#已送达/完成
-			# woody 4.5
+			orders.sort(key = lambda order:order.send_time)
+			total_count = len(orders)
+			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
+			if offset + 10 <= total_count:
+				orders = orders[offset:offset + 10]
+			elif offset < total_count and offset + 10 >= total_count:
+				orders = orders[offset:]
+			else:
+				return self.send_fail("order pages errors")
+			orders = self.get_orderData(session,orders)
+			return self.send_success(orders = orders ,total_page= total_page)
+		elif action == "finish":
+			page = self.args['page']
+			offset = (page - 1) * 10
 			try:
 				orderlist = self.session.query(models.Order).order_by(desc(models.Order.arrival_day),models.Order.arrival_time).\
 				filter_by(customer_id = self.current_user.id).all()
@@ -1111,70 +1255,52 @@ class Order(CustomerBaseHandler):
 				if x.status == 6:
 					order6.append(x)
 			orders = order5 + order6
+			for order in orders:
+				order.send_time = order.get_sendtime(session,order.id)
+			total_count = len(orders)
+			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
+			if offset + 10 <= total_count:
+				orders = orders[offset:offset + 10]
+			elif offset < total_count and offset + 10 >= total_count:
+				orders = orders[offset:]
+			else:
+				return self.send_fail("order pages errors")
+			orders = self.get_orderData(session,orders)
+			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "all":
+			page = self.args["page"]
+			offset = (page - 1) * 10
 			orders = self.current_user.orders
 			session = self.session
 			for order in orders:
 				order.send_time = order.get_sendtime(session,order.id)
-			orders.sort(key = lambda order:order.send_time,reverse = True)
-			# orders = orders.order_by(end_time)
-		else:return self.send_error(404)
-
-		###################################################################
-		# time's format
-		# woody
-		# 3.9
-		###################################################################
-		delta = datetime.timedelta(1)
-		for order in orders:
-			staff_id = order.SH2_id
-			staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id).first()
-			if staff_info is not None:
-				order.sender_phone = staff_info.phone
-				order.sender_img = staff_info.headimgurl_small
+			orders.sort(key = lambda order:order.send_time)
+			total_count = len(orders)
+			# print(total_count)
+			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
+			if offset + 10 <= total_count:
+				orders = orders[offset:offset + 10]
+			elif offset < total_count and offset + 10 >= total_count:
+				orders = orders[offset:]
 			else:
-				order.sender_phone =None
-				order.sender_img = None
-
-			if order.start_time.minute <10:
-				w_start_time_minute ='0' + str(order.start_time.minute)
-			else:
-				w_start_time_minute = str(order.start_time.minute)
-			if order.end_time.minute < 10:
-				w_end_time_minute = '0' + str(order.end_time.minute)
-			else:
-				w_end_time_minute = str(order.end_time.minute)
-
-			if order.type == 2 and order.today==2:
-				w_date = order.create_date + delta
-			else:
-				w_date = order.create_date
-			order.send_time = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
-												order.start_time.hour, w_start_time_minute,
-												  order.end_time.hour, w_end_time_minute)
-		# print("before len:" ,len(orders))
-		# orders = orders[::-1]
-		# print("after len:" ,len(orders))
-			
-		return self.render("customer/order-list.html", orders=orders, context=dict(subpage='center'))
-
-	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("action", "data")
-	def post(self):
-		action = self.args["action"]
-		data = self.args["data"]
-		order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
-		if not order:return self.send_error(404)
-		if action == "cancel_order":
+				return self.send_fail("order pages errors")
+			orders = self.get_orderData(session,orders)
+			# print(orders)
+			return self.send_success(orders = orders ,total_page= total_page)
+		elif action == "cancel_order":
+			data = self.args["data"]
+			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
+			if not order:return self.send_error(404)
 			order.status = 0
-			# revover the sale and storage
+			# recover the sale and storage
 			# woody
 			# 3.27
 			session = self.session
 			order.get_num(session,order.id)
-
-			
 		elif action == "comment":
+			data = self.args["data"]
+			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
+			if not order:return self.send_error(404)
 			order.status = 6
 			order.comment_create_date = datetime.datetime.now()
 			order.comment = data["comment"]
@@ -1198,6 +1324,8 @@ class Order(CustomerBaseHandler):
 					point_history.each_point = 5
 					self.session.add(point_history)
 					self.session.commit()
+		else:
+			return self.send_error(404)
 		self.session.commit()
 		return self.send_success()
 
@@ -1252,7 +1380,7 @@ class Points(CustomerBaseHandler):
 		shop_id     = self.shop_id
 		shop_point  = 0
 		history     = []
-		print(customer_id,shop_id)
+		# print(customer_id,shop_id)
 		try:
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
 				customer_id,shop_id =shop_id).first()
@@ -1273,7 +1401,7 @@ class Points(CustomerBaseHandler):
 			for temp in shop_history:
 				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
 				history.append([temp.point_type,temp.each_point,temp.create_time])
-			print(history)
+			# print(history)
 		count = len(history)
 		pages = (count /10) if count % 10 ==0 else (count/10) + 1
 
@@ -1300,18 +1428,18 @@ class Points(CustomerBaseHandler):
 			for temp in shop_history:
 				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
 				history.append([temp.point_type,temp.each_point,temp.create_time])
-			print(history)
+			# print(history)
 
 		count = len(history)
 		history = history[::-1]
-		print('history',history)
+		# print('history',history)
 		if offset + 10 <= count:
 			data = history[offset:offset+10]
 		elif offset <= 10 and offset + 10 > count:
 			data = history[offset:]
 		else:
 			self.send_fail("history page error")
-		print("data\n",data)
+		# print("data\n",data)
 
 		return self.send_success(data = data)
 
@@ -1336,14 +1464,14 @@ class InsertData(CustomerBaseHandler):
 		# 	self.session.commit()
 
 		try:
-		    accountinfo_list = self.session.query(models.Accountinfo).all()
+			accountinfo_list = self.session.query(models.Accountinfo).all()
 		except:
-		    self.send_fail("get accountinfo error")
+			self.send_fail("get accountinfo error")
 		if accountinfo_list:
-		    for accountinfo in accountinfo_list:
-		        if accountinfo.headimgurl_small is None:
-		            accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
-		    self.session.commit()
+			for accountinfo in accountinfo_list:
+				if accountinfo.headimgurl_small is None:
+					accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
+			self.session.commit()
 
 		# shop_count = self.get_shop_count()
 		# province_shop_count = self.get_province_shop_count(110000)

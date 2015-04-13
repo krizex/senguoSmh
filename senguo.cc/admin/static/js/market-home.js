@@ -210,6 +210,7 @@ $(document).ready(function(){
         //首次添加商品
         $(document).on('click','.to-add',function(){
             var $this=$(this);
+            var parent=$this.parents('.goods-list-item');
             //是否关注店铺
             /*var if_focus=$('#if_focus').val();
             if(if_focus=='False')  $('.focus-box').modal('show');
@@ -217,16 +218,22 @@ $(document).ready(function(){
                   goodsNum($this.siblings('.number-change').find('.number-plus'),2);
                  $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
             }*/
-            goodsNum($this.siblings('.number-change').find('.number-plus'),2);
-            $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
-            //果篮显示商品种类数
-            if(window.dataObj.cart_count==0) {$('.cart_num').removeClass('hidden');}
-            if($this.hasClass('add_cart_num')){
-                window.dataObj.cart_count++;
-                $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
-                SetCookie('cart_count',window.dataObj.cart_count);
-                $this.removeClass('add_cart_num');
+            var storage=parseFloat(parent.attr('data-storage'));
+            $this.siblings('.number-change').find('.number-input').val(0);
+            if(storage>0) {
+                goodsNum($this.siblings('.number-change').find('.number-plus'),2);
+                $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
+                //果篮显示商品种类数
+                if(window.dataObj.cart_count==0) {$('.cart_num').removeClass('hidden');}
+                if($this.hasClass('add_cart_num')){
+                    window.dataObj.cart_count++;
+                    $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
+                    SetCookie('cart_count',window.dataObj.cart_count);
+                    $this.removeClass('add_cart_num');
+                }
             }
+            else {$.noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)}
+            
         });
         //商品数量操作
         $(document).on('click','.number-minus',function(){
@@ -235,10 +242,12 @@ $(document).ready(function(){
         });
         $(document).on('click','.number-plus',function(){
             var $this=$(this);
+            var parent=$this.parents('.goods-list-item');
             var num=Int($this.siblings('.number-input').val().trim());
+            var storage=parseFloat(parent.attr('data-storage'));
             var regNum=/^[0-9]*$/;
             if(!regNum.test(num)) {
-                $this.siblings('.number-input').val(999);
+                $this.siblings('.number-input').val(storage);
                 return $.noticeBox('商品数量只能为整数!',$this);
             }
             if(num<999) {goodsNum($this,2);}
@@ -254,7 +263,20 @@ $(document).ready(function(){
             var regNum=/^[0-9]*$/;
             var parent=$this.parents('.goods-list-item');
             var storage=parseFloat(parent.data('num'));
-            var s_num=storage-num;
+            var storage_now;
+            var num_item=parent.find('.number-input');
+            var index=$this.index();
+            var result=storage-num;
+            if(num_item.length>0){
+                for(var i=0;i<num_item.length;i++){
+                    if(i!=index){
+                        storage_now=Int(storage-num_item.eq(i).val());
+                    }
+                }
+            }
+            else {storage_now=Int(storage)};
+            console.log(storage_now);
+            $this.val(storage_now);
             if(!regNum.test(num)) {
                 $this.val(0);
                 change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
@@ -262,19 +284,10 @@ $(document).ready(function(){
                 $('.cart_num').text(window.dataObj.cart_count);
                 SetCookie('cart_count',window.dataObj.cart_count);
                 return $.noticeBox('商品数量只能为整数!┑(￣▽ ￣)┍',$this);
-            }
-            if(num>999) {
-                storage=Int(storage);
-                if(storage<999) {
-                    $this.val(storage);
-                    return $.noticeBox('只有这么多了哦!┑(￣▽ ￣)┍',$this);
-                }
-                else {
-                    $this.val(999);
-                     return $.noticeBox('最多只能添加999哦!┑(￣▽ ￣)┍',$this);
-                }          
+                parent.attr({'data-storage':storage_now});
             }
             if(num==0){
+                 parent.attr({'data-storage':storage_now});
                 change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
                 if(window.dataObj.cart_count==1) {
                     $('.cart_num').text(window.dataObj.cart_count);
@@ -287,17 +300,33 @@ $(document).ready(function(){
                 }
             }
             else{   
-                 if(s_num<=0){
-                    storage=Int(storage);
-                    if(storage<999) $this.val(storage);
-                    else $this.val(999);
-                    $.noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)
+                if(result>0) {parent.attr({'data-storage':result});}
+                else parent.attr({'data-storage':0});
+                if(num>999) {
+                    if(storage<999) {
+                        if(storage_now<=0) {$this.val(storage);}
+                        return $.noticeBox('111只有这么多了哦!┑(￣▽ ￣)┍',$this);
+                    }
+                    else {
+                        $this.val(999);
+                         return $.noticeBox('最多只能添加999哦!┑(￣▽ ￣)┍',$this);
+                    }          
                 }
-                else if(s_num>0){
-                    window.dataObj.cart_count++;
-                    $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
-                    SetCookie('cart_count',window.dataObj.cart_count);
-                }
+                else{
+                    if(num>=storage) {
+                         if(storage_now<=0){
+                            if(storage<999) $this.val(storage);
+                            else $this.val(999);
+                            $.noticeBox('2333库存不足啦！┑(￣▽ ￣)┍ ',$this)
+                        }
+                        else if(storage_now>0){
+                            window.dataObj.cart_count++;
+                            $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
+                            SetCookie('cart_count',window.dataObj.cart_count);
+                            if(storage_now<num) {return $.noticeBox('只有这么多了哦!┑(￣▽ ￣)┍',$this);}
+                        }
+                    }
+                } 
             }
         });
         //计价方式折叠/显示
@@ -348,6 +377,7 @@ $.scrollLoading=function(){
             $.goodsList(window.dataObj.page,window.dataObj.action);
         }       
         else if(window.dataObj.page ==maxnum){
+              $('.loading').hide();
               $('.no_more').show();
         } 
     }); 
@@ -430,8 +460,9 @@ var fruitItem=function(box,fruits,type){
         var favour=fruits['favour'];
         var charge_types=fruits['charge_types'];
         var favour_today=fruits['favour_today'];
+        console.log(favour_today,type);
         if(!code) code='TDSG';
-        $item.attr({'data-id':id,'data-type':type,'data-num':storage,'data-favour':favour_today}).addClass(code);
+        $item.attr({'data-id':id,'data-type':type,'data-storage':storage,'data-num':storage,'data-favour':favour_today}).addClass(code);
         $item.find('.fruit_intro').val(intro);
         $item.find('.fruit-name').text(name);
         if(saled>9999) $item.find('.number').text('9999+');
@@ -512,11 +543,13 @@ function cartNum(cart_ms,list){
                 var change = charge.siblings('.num_box').find('.number-change');
                 var input = change.find('.number-input'); 
                 if (id == cart_ms[key][0]) {
+                    var $parent=charge.parents('.goods-list-item');
+                    var storage=$parent.attr('data-storage');
                     add.removeClass('show');
                     change.removeClass('hidden');
                     input.val(cart_ms[key][1]);
+                    $parent.attr({'data-storage':storage-cart_ms[key][1]});
                     if(charge.hasClass('more_charge')) {
-                        var $parent=charge.parents('.goods-list-item');
                         $parent.find('.charge-list').show();
                         $parent.find('.back-shape').toggleClass('hidden');
                         $parent.find('.toggle_icon').removeClass('arrow');
@@ -533,20 +566,20 @@ function goodsNum(target,action){
     var change=target.parents('.number-change');
     var num=item.val();
     var parent=target.parents('.goods-list-item');
-    var storage=parseFloat(parent.data('num'));
+    var storage=parseFloat(parent.data('storage'));
     var type_list=target.parents('.goods-list');
-    var s_num=storage-num;
     var id=target.parents('.num_box').attr('data-id');
     if(action==1&&num<=0) {num=0;target.addClass('disable');}
     if(action==2)
     {
-        if(s_num<=0){
+        if(storage<=0){
             $.noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',target);
-            item.val(Int(storage));
         }
-        else if(s_num>0){
+        else if(storage>0){
             num++;
             item.val(num);
+            storage--;
+            parent.attr({'data-storage':storage});
         }
     }
     else if(action==1)
@@ -556,6 +589,8 @@ function goodsNum(target,action){
         {
             num--;
             item.val(num);
+            storage++;
+            parent.attr({'data-storage':storage});
             if(val==1){
                 change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
                 if(window.dataObj.cart_count==1) {

@@ -4,10 +4,11 @@ $(document).ready(function(){
     if(now_type=='menu') $('.check-shelf').hide();
     //查看已上架
     $('.check-shelf').on('click',function(){
+         event.preventDefault();
         var $this=$(this);
         var link_id= $.getUrlParam('id');
-        if(link_id<1000) $this.attr({'href':'/admin/shelf?action=all&id=1'});
-        else $this.attr({'href':'/admin/shelf?action=all&id=1001'});
+        if(link_id<1000) window.location.href='/admin/shelf?action=all&id=1';
+        else window.location.href='/admin/shelf?action=all&id=1001';
     });
     //导航acitve样式
     var link_id= $.getUrlParam('id');
