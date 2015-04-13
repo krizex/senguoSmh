@@ -229,11 +229,40 @@
                 </ul>
             </div>
             <input id="messageCon" class="message-input input-sty box-style center-block font14 bg-white bg-grey" type="text" value="" placeholder="留个言调戏下客服吧？(⊙_⊙)">
+            {% if phone%}
             <button id="submitOrder" class="sub-btn w-per6 bg-green text-white text-center center-block btn mt10 clearfix">提交订单</button>
+            {% else %}
+            <button  class="sub-btn w-per6 bg-grey text-grey9 text-center center-block btn mt10 clearfix un_tie">提交订单</button>
+            <button  class="sub-btn w-per6 bg-green text-white text-center center-block btn mt10 clearfix" id="phoneNumber">手机绑定</button>
+            {% end %}
         </div>
         <div class="bottom-line"></div>
     </div>
 {% end %}
 {% block bottom %}
+<div class="modal fade tie-popbox" id="tieBox">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
+            <div class="modal-header set-width-float">
+                <button type="button" class="close dismiss">✕</button>
+                <h2 class="modal-title  text-center line48"></h2>
+            </div>
+            <div class="modal-body font14 clearfix">
+                <div class="tie-info">
+                    <div class="phone-number">
+                        <input type="text" placeholder="输入手机号" class="phone input1 pull-left" id="enterPhone"/>
+                        <input type="submit" value="获取验证码" class="get-code pull-right bg-green3 sure_btn" id="getVrify"/>
+                    </div>
+                    <input type="text" placeholder="输入收到的短信验证码" class="input1" id="enterVrify"/>
+                </div>
+            </div>
+            <div class="modal-footer clearfix">
+                <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn"  id="tiePhone">绑定</button>
+            </div>
+             <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
+        </div>
+    </div>
+</div>
 <script src="{{static_url('js/market-cart.js')}}"></script>
 {% end %}

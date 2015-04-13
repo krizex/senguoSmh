@@ -880,8 +880,7 @@ class Cart(CustomerBaseHandler):
 		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		phone = self.get_phone(customer_id)
-		if not (fruits or mgoods):
-			return self.send_fail('请至少选择一种商品')
+		
 		storages = {}
 		shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
 		if not shop:return self.send_error(404)
@@ -921,6 +920,9 @@ class Cart(CustomerBaseHandler):
 		shop_id = self.shop_id
 		fruits = self.args["fruits"]
 		mgoods = self.args["mgoods"]
+
+		if not (fruits or mgoods):
+			return self.send_fail('请至少选择一种商品')
 		unit = {1:"个", 2:"斤", 3:"份"}
 		f_d={}
 		m_d={}
