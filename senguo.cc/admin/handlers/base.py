@@ -455,6 +455,17 @@ class CustomerBaseHandler(_AccountBaseHandler):
 
         return self._shop_code
 
+    def get_phone(self,customer_id):
+        try:
+            account_info  = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
+        except:
+            return self.send_fail('customer error')
+        if account_info:
+            phone = account_info.phone
+        else:
+            phone = None
+        return phone
+
 
     # get the total,privince,city count of shop
     # woody 4.4

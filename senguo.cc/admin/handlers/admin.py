@@ -993,7 +993,8 @@ class Follower(AdminBaseHandler):
 					q = q.order_by(desc(models.CustomerShopFollow.create_time))
 			else:  # 老用户
 				q = self.session.query(models.Customer).\
-					join(models.Order).filter(models.Order.shop_id == self.current_shop.id).distinct()
+					join(models.Order).filter( and_(models.Order.shop_id == self.current_shop.id,\
+						or_(models.Order.status==5,models.Order.status==6,models.Order.status==10))).distinct()
 			if order_by == "credits":
 				q = q.order_by(desc(models.Customer.credits))
 			elif order_by == "balance":
