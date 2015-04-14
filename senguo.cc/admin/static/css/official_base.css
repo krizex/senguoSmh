@@ -133,4 +133,4 @@ a,input,button{ outline:none; }
 .nav-box ul li a:hover{text-decoration:none;background-color:#6CCA86 !important;color:#fff !important;}
 .nav-box ul li.active a{display:block;background-color:#6CCA86 !important;color:#fff !important;border-radius: 4px;}
 .container{min-width:1000px;}
-.footer{position:relative;bottom:0;left:0;width:100%;min-width:1000px;overflow:hidden;margin-top:80px;border-top:1px solid #ddd;height:50px;line-height:50px;}
+.footer{position:relative;bottom:0;left:0;width:100%;min-width:1000px;overflow:hidden;margin-top:80px;border-top:1px solid #ddd;line-height:50px;}
