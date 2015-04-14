@@ -542,11 +542,15 @@ class PhoneVerify(_AccountBaseHandler):
 		return self.send_success()
 
 
-	@FruitzoneBaseHandler.check_arguments("phone:str", "code:int", "password")
+	@FruitzoneBaseHandler.check_arguments("phone:str", "code:int", "password?")
 	def handle_checkcode(self):
 		if not check_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, code=self.args["code"]):
 		   return self.send_fail(error_text="验证码过期或者不正确")
-		self.current_user.accountinfo.update(self.session, phone=self.args["phone"],password=self.args["password"])
+		password = self.args['password']
+		if password:
+			self.current_user.accountinfo.update(self.session, phone=self.args["phone"],password=self.args["password"])
+		else:
+			self.current_user.accountinfo.update(self.session, phone=self.args["phone"])
 		return self.send_success()
 
 	@FruitzoneBaseHandler.check_arguments("phone:str")

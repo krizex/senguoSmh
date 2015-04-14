@@ -880,8 +880,7 @@ class Cart(CustomerBaseHandler):
 		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		phone = self.get_phone(customer_id)
-		if not (fruits or mgoods):
-			return self.send_fail('请至少选择一种商品')
+		
 		storages = {}
 		shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
 		if not shop:return self.send_error(404)
@@ -921,6 +920,9 @@ class Cart(CustomerBaseHandler):
 		shop_id = self.shop_id
 		fruits = self.args["fruits"]
 		mgoods = self.args["mgoods"]
+
+		if not (fruits or mgoods):
+			return self.send_fail('请至少选择一种商品')
 		unit = {1:"个", 2:"斤", 3:"份"}
 		f_d={}
 		m_d={}
@@ -1162,14 +1164,43 @@ class Order(CustomerBaseHandler):
 			
 		return self.render("customer/order-list.html", context=dict(subpage='center'))
 
+	
+
+	@classmethod
+	def get_orderData(self,session,orders):
+		# print('orders',orders)
+		data = []
+		for order in orders:
+			staff_id = order.SH2_id
+			staff_info = session.query(models.Accountinfo).filter_by(id = staff_id).first()
+			if staff_info is not None:
+				order.sender_phone = staff_info.phone
+				order.sender_img = staff_info.headimgurl_small
+			else:
+				order.sender_phone =None
+				order.sender_img = None
+			send_time = order.get_sendtime(session,order.id)
+			order_status = order.status
+			order_totalPrice = order.totalPrice
+			order_num = order.num
+			shop_name = order.shop.shop_name
+			address_text = order.address_text
+			create_date  = order.create_date.strftime(" %Y:%m:%d")
+			print(create_date)
+			# print(order)
+			data.append({'order_num':order_num,'shop_name':shop_name,'address_text':address_text,\
+				'send_time':send_time,'order_totalPrice':order_totalPrice,'order_status':order_status,\
+				'sender_phone':order.sender_phone,'sender_img':order.sender_img,'order_id':order.id,\
+				'message':order.message,'comment':order.comment,'create_date':create_date,\
+				'today':order.today,'type':order.type,'create_year':order.create_date.year,\
+				'create_month':order.create_date.month,'create_day':order.create_date.day})
+		return data
+
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("action", "data","page?:int")
+	@CustomerBaseHandler.check_arguments("action", "data?","page?:int")
 	def post(self):
 		action = self.args["action"]
-		data = self.args["data"]
-		order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
-		if not order:return self.send_error(404)
-
+		session = self.session
 		if action == "unhandled":
 			page = self.args['page']
 			offset = (page - 1) * 10
@@ -1186,9 +1217,12 @@ class Order(CustomerBaseHandler):
 				orders = orders[offset:]
 			else:
 				return self.send_fail("order pages errors")
+			# print('orders',orders)
+			orders = self.get_orderData(session,orders)
+			# print('after ',orders)
 			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "waiting":
-			page = self.args["action"]
+			page = self.args["page"]
 			offset = (page - 1) * 10
 			orders = [x for x in self.current_user.orders if x.status in (2, 3, 4)]
 			for order in orders:
@@ -1202,6 +1236,7 @@ class Order(CustomerBaseHandler):
 				orders = orders[offset:]
 			else:
 				return self.send_fail("order pages errors")
+			orders = self.get_orderData(session,orders)
 			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "finish":
 			page = self.args['page']
@@ -1230,6 +1265,7 @@ class Order(CustomerBaseHandler):
 				orders = orders[offset:]
 			else:
 				return self.send_fail("order pages errors")
+			orders = self.get_orderData(session,orders)
 			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "all":
 			page = self.args["page"]
@@ -1240,6 +1276,7 @@ class Order(CustomerBaseHandler):
 				order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
+			# print(total_count)
 			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
 			if offset + 10 <= total_count:
 				orders = orders[offset:offset + 10]
@@ -1247,8 +1284,13 @@ class Order(CustomerBaseHandler):
 				orders = orders[offset:]
 			else:
 				return self.send_fail("order pages errors")
+			orders = self.get_orderData(session,orders)
+			# print(orders)
 			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "cancel_order":
+			data = self.args["data"]
+			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
+			if not order:return self.send_error(404)
 			order.status = 0
 			# recover the sale and storage
 			# woody
@@ -1256,6 +1298,9 @@ class Order(CustomerBaseHandler):
 			session = self.session
 			order.get_num(session,order.id)
 		elif action == "comment":
+			data = self.args["data"]
+			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
+			if not order:return self.send_error(404)
 			order.status = 6
 			order.comment_create_date = datetime.datetime.now()
 			order.comment = data["comment"]

@@ -79,3 +79,11 @@
 .list-group{padding:0 10px;}
 .address-box{padding:10px;margin:10px 0;}
 .w200{width:200px;}
+.tie-popbox .tie-info{width:100%;}
+.tie-popbox .tie-info .input1{width:100%;border:1px solid #ddd;border-radius:2px;background:#F9F9F9;padding:0.5em 0;text-indent:0.5em;margin-bottom:0.5em;}
+.tie-popbox .tie-info .input1:focus{border-color:#00D681;}
+.tie-popbox .tie-info .phone-number{width:100%;float:left;}
+.tie-popbox .tie-info .phone-number .phone{width:65% !important;}
+.tie-popbox .tie-info .phone-number .get-code{width:30%;color:#fff;padding:0.5em 0;text-align:center;}
+.tie-popbox  .concel-btn{background:#A0A0A0;color:#fff;width:45%;border-radius:1px;}
+.tie-popbox  .tie-btn{;color:#fff;}

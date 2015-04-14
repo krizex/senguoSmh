@@ -205,6 +205,7 @@ $.scrollLoading=function(){
             $.shopsList(window.dataObj.page,window.dataObj.data,window.dataObj.action);
         }       
         else if(window.dataObj.page ==maxnum){
+              $('.loading').hide();
               $('.no_more').show();
         } 
     }); 

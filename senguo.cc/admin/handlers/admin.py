@@ -597,7 +597,7 @@ class Order(AdminBaseHandler):
 			end_time = datetime.time(data["end_hour"], data["end_minute"])
 			self.current_shop.config.update(session=self.session,min_charge_now=data["min_charge_now"],
 											start_time_now=start_time, end_time_now=end_time,
-											freight_now=data["freight_now"] or 0)
+											freight_now=data["freight_now"] or 0,intime_period=data["intime_period"] or 30)
 		elif action in ("edit_remark", "edit_SH2", "edit_status", "edit_totalPrice", 'del_order', 'print'):
 			order = next((x for x in self.current_shop.orders if x.id==int(data["order_id"])), None)
 			if not order:

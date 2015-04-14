@@ -171,6 +171,11 @@
                         <input class="pull-left freight" type="number" value="{{current_shop.config.freight_now or 0}}" id="freight_now"/>
                     </li>
                     <li class="send-time set-width-float set-bottom10">
+                        <span class="pull-left tit t1">送达时间：</span>
+                        <input class="pull-left" type="number" value="{{current_shop.config.intime_period}}"  id="sendNowPeriod"/>
+                        <span class="pull-left">（在下单后N分钟送达,如未进行设置，默认为30分钟）</span>
+                    </li>
+                    <li class="send-time set-width-float set-bottom10">
                         <span class="pull-left tit t1">配送时间：</span>
                         <div class="input-group-btn">
                             <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
