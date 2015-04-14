@@ -129,7 +129,7 @@ function orderItem(item){
               
         if(!message) $item.find('.order-message').hide();
         if(!staff_remark) $item.find('.staff-replay').hide();
-        if(!remark) $item.find('.saler-remark').hide();
+        if(!remark||remark==null) $item.find('.saler-remark').hide();
         if(isprint==1) $item.find('.print-order').addClass('text-grey9');
 
         $item.attr({'data-id':id,'data-type':type});
@@ -280,17 +280,13 @@ function orderPrint(target){
         $item.find('.phone').text(phone);
         $item.find('.totalPrice').text(totalPrice);
         $item.find('.goods-list')[0].innerHTML=goods;
-        if(saler_remark!='') {
-            $item.find('.saler-remark').show().find('.remark').text(saler_remark);
-        }
-        if(user_remark!='') {
-            $item.find('.user-remark').show().find('.remark').text(user_remark);
-        }
-        if(print_remark) {
-          $item.find('.extra-info-box').show().find('.print-remark').text(print_remark);  
-        }
-        if(!print_img) $item.find('.shop-img').remove();
-        else $item.find('.shop-img img').attr({'src':print_img});
+        if(saler_remark) {$item.find('.saler-remark').show().find('.remark').text(saler_remark);}
+        if(saler_remark=='null'){$item.find('.saler-remark').hide()}
+        if(user_remark!='') {$item.find('.user-remark').show().find('.remark').text(user_remark);}
+        if(user_remark=='null'){$item.find('.user-remark').hide()}
+        if(print_remark) {$item.find('.extra-info-box').show().find('.print-remark').text(print_remark); }
+        if(!print_img) {$item.find('.shop-img').remove();}
+        else {$item.find('.shop-img img').attr({'src':print_img});}
         if (paid == true) {
             $item.find('.moneyPaid').text('余额支付');
         } else {

@@ -120,7 +120,7 @@
                                 <span class="pull-left pr10">起送价：{{config.min_charge_now or 0}}元</span>
                                 <span class="pull-left">配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元</span>
                             </p>
-                            <p class="text-grey9">订单将在30分钟内送到您的手上</p>
+                            <p class="text-grey9">订单将在{{config.intime_period or 0}}分钟内送到您的手上</p>
                         </a>
                     </button>
                     {% end %}
