@@ -85,6 +85,7 @@ handlers = [
     (r"/super/shopAdminProfile/(\d+)", handlers.superadmin.ShopAdminProfile, {}, "superShopAdminProfile"),
     # 店铺信息详情
     (r"/super/shopProfile/(\d+)", handlers.superadmin.ShopProfile, {}, "superShopProfile"),
+    (r"/super/shopclose",handlers.superadmin.ShopClose,{},"shopclose"),
 
     ## 店铺申请接入管理
     # 所有店铺

@@ -61,6 +61,8 @@ fruit_types = [{'id': 1, 'name': '梨子', 'code': 'Li'},
                {'id': 59, 'name': '西梅', 'code': 'ximei'},
                {'id': 60, 'name': '龙眼', 'code': 'longyan'},
                {'id': 61, 'name': '黄西瓜','code': 'huangxigua'},
+               {'id': 61, 'name': '黄瓜',  'code':'huanggua'},
+               {'id': 62, 'name': '人参果', 'code':'renshenguo'},
 
                # 干果类型
                {'id': 1001, 'name': '腰果', 'code': 'yaoguo'},
@@ -78,7 +80,11 @@ fruit_types = [{'id': 1, 'name': '梨子', 'code': 'Li'},
                {'id': 1013, 'name': '豌豆', 'code': 'wandou'},
                {'id': 1014, 'name': '夏威夷果', 'code': 'xiaweiyiguo'},
                {'id': 1015, 'name': '柿饼', 'code': 'shibing'},
-               {'id': 1016, 'name': '碧根果','code':'bigenguo'}
+               {'id': 1016, 'name': '碧根果','code':'bigenguo'},
+               {'id': 1017, 'name': '香蕉片','code':'xiangjiaopian'},
+               {'id': 1018, 'name': '甜角','code':'tianjiao'},
+               {'id': 1019, 'name': '干桂圆','code':'ganguiyuan'},
+               {'id': 1020, 'name': '榛子','code':'zhenzi'},
 ]
 
 charge_types = [
