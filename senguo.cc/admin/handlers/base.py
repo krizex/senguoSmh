@@ -17,6 +17,9 @@ import qiniu
 from settings import *
 import requests
 
+import threading
+
+
 # import time
 # import random
 # # import urllib2
@@ -30,6 +33,25 @@ import requests
 #     from cStringIO import StringIO
 # except ImportError:
 #     pycurl = None
+
+# 4.14 woody
+class Pysettimer(threading.Thread):
+    def __init__(self,function,args = None ,timeout = 1 ,is_loop = False):
+        threading.Thread.__init__(self)
+        self.event = threading.Event()
+        self.function = function
+        self.args  = args
+        self.timeout = timeout
+        self.is_loop = is_loop
+
+    def run(self):
+        while not self.event.is_set():
+            self.event.wait(self.timeout)
+            self.function(self.args)
+            if not self.is_loop:
+                self.event.set()
+    def stop(self):
+        self.event.set()
 
 #woody
 order_url = 'http://m.senguo.cc:8887/admin'
@@ -247,6 +269,45 @@ class SuperBaseHandler(_AccountBaseHandler):
     __account_model__ = models.SuperAdmin
     __account_cookie_name__ = "super_id"
     __wexin_oauth_url_name__ = "superOauth"
+
+    def shop_close(self):
+        # print(self)
+        print('close shop')
+        session = models.DBSession()
+        close_shop_list = []
+        try:
+            shops = session.query(models.Shop).filter_by(status = 1).all()
+        except:
+            print('shops error')
+        if shops:
+            for shop in shops:
+                shop_code = shop.shop_code
+                shop_id = shop.id
+                fruits = shop.fruits
+                menus = shop.menus
+                # print(menus)
+                create_date = shop.create_date_timestamp
+                x = datetime.datetime.fromtimestamp(create_date)
+                # print(x)
+                now = datetime.datetime.now()
+                days = (now -x).days
+                if days >14:
+                    if shop_code =='not set':
+                        shop.status = 0
+                        close_shop_list.append(shop_code)
+                    if len(fruits) == 0 and len(menus) == 0:
+                        shop.status = 0 
+                        close_shop_list.append(shop_code)
+                    try:
+                        follower_count = session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
+                    except:
+                        return self.send_fail('follower_count error')
+                    if follower_count <2:
+                        shop.status =0
+                        close_shop_list.append(shop_code)
+                session.commit()
+            print(close_shop_list)
+            # return self.send_success(close_shop_list = close_shop_list)
 
 class FruitzoneBaseHandler(_AccountBaseHandler):
     __account_model__ = models.ShopAdmin

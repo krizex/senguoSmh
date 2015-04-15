@@ -639,7 +639,7 @@ class ShopClose(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		try:
-			shops = self.session.query(models.Shop).all()
+			shops = self.session.query(models.Shop).filter_by(status =1).all()
 		except:
 			return self.send_fail('shopclose error')
 		if shops:

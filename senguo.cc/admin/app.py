@@ -5,6 +5,8 @@ import dal.models as models
 import tornado.web
 import tornado.ioloop
 from  handlers  import superadmin,admin
+from handlers.base import Pysettimer,SuperBaseHandler
+import time
 from tornado.options import options, define
 define("debug", default=0, help="debug mode: 1 to open, 0 to close")
 define("port", default=8887, help="port, defualt: 8888")
@@ -39,9 +41,20 @@ def main():
     else:debug_str = "in production mode"
     print("running senguo.cc {0} @ {1}...".format(debug_str, 
                                                  options.port))
+    timer_main()
 #    print("garbage collector: collected %d objecs"%gc.collect())
     tornado.ioloop.IOLoop.instance().start()
+
+def functest(args):
+    print('hello world,this is',args[0])
+
+def timer_main():
+    mytime = Pysettimer(SuperBaseHandler.shop_close,(),60*60*24,True)
+    mytime.start()
+    # time.sleep(10)
+    # print('time over')
 
     
 if __name__ == "__main__":
     main()
+

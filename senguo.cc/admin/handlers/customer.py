@@ -59,6 +59,14 @@ class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		shop_id = self.shop_id
+		try:
+			shop = self.session.query(models.Shop).filter_by(id =shop_id).first()
+		except:
+			return self.send_fail('shop error')
+		if shop:
+			shop_name = shop.shop_name
+		else:
+			return self.send_fail('shop not found')
 		customer_id = self.current_user.id
 
 		shop_point = 0
@@ -83,7 +91,7 @@ class Home(CustomerBaseHandler):
 			elif order.status == 10:
 				count[6] += 1
 		return self.render("customer/personal-center.html", count=count,shop_point =shop_point, \
-			context=dict(subpage='center'))
+			shop_name = shop_name, context=dict(subpage='center'))
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data")
 	def post(self):
@@ -373,6 +381,7 @@ class Market(CustomerBaseHandler):
 		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		if not shop:
 			return self.send_error(404)
+		shop_name = shop.shop_name
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		# self.set_cookie("market_shop_name",str(shop.shop_name))
@@ -1124,44 +1133,6 @@ class Order(CustomerBaseHandler):
 		action = self.args["action"]
 		orders = []
 		session = self.session
-		# print(self.current_user.orders)
-		# print(type(self.current_user.orders))
-		###################################################################
-		# time's format
-		# woody
-		# 3.9
-		###################################################################
-		# delta = datetime.timedelta(1)
-		# for order in orders:
-		# 	staff_id = order.SH2_id
-		# 	staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id).first()
-		# 	if staff_info is not None:
-		# 		order.sender_phone = staff_info.phone
-		# 		order.sender_img = staff_info.headimgurl_small
-		# 	else:
-		# 		order.sender_phone =None
-		# 		order.sender_img = None
-
-		# 	if order.start_time.minute <10:
-		# 		w_start_time_minute ='0' + str(order.start_time.minute)
-		# 	else:
-		# 		w_start_time_minute = str(order.start_time.minute)
-		# 	if order.end_time.minute < 10:
-		# 		w_end_time_minute = '0' + str(order.end_time.minute)
-		# 	else:
-		# 		w_end_time_minute = str(order.end_time.minute)
-
-		# 	if order.type == 2 and order.today==2:
-		# 		w_date = order.create_date + delta
-		# 	else:
-		# 		w_date = order.create_date
-		# 	order.send_time = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
-		# 										order.start_time.hour, w_start_time_minute,
-		# 										  order.end_time.hour, w_end_time_minute)
-		# print("before len:" ,len(orders))
-		# orders = orders[::-1]
-		# print("after len:" ,len(orders))
-			
 		return self.render("customer/order-list.html", context=dict(subpage='center'))
 
 	
