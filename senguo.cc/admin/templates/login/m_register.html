@@ -1,0 +1,48 @@
+{% extends 'm_base.html' %}
+{% block title%}注册森果账号{%end %}
+{% block header %}注册森果账号{% end %}
+{% block content %}
+<ul class="progress_box center-block text_grayb1">
+	<li class="active">输入手机号></li>
+	<li>验证码验证></li>
+	<li>设置密码></li>
+</ul>
+<div class="step1">
+	<input class="input_sty border0 text_grayca" type="text" placeholder="请输入手机号，将作为登录账号"/>
+	<div class="text_grayb1 mt10 pl10 clearfix rule_box">
+		<a href="javascript:;" class="check_btn pull-left"></a>
+		<span class="pull-left">我已阅读并同意</span>
+		<a href="javascript:;" class="check_rule text_green  pull-left">《森果网用户协议》</a>
+	</div>
+	<div class="login_check center-block text-center">
+		<button class="btn bg_green text_white login font14">获取验证码</button>
+		<a href="javascript:;" class="text_grayb1">←返回上一步</a>
+	</div>
+</div>
+<div class="step2">
+	<input class="input_sty border0 text_grayca" type="text" placeholder="请输入收到的短信验证码"/>
+	<div class="login_check center-block text-center">
+		<button class="btn bg_green text_white login font14">下一步</button>
+		<a href="javascript:;" class="text_grayb1">←返回上一步</a>
+	</div>
+</div>
+<div class="step3">
+	<input class="input_sty border0 text_grayca border_bf8" type="text" placeholder="请输入6位以上的字母和数字组合"/>
+	<input class="input_sty border0 text_grayca" type="text" placeholder="提交注册"/>
+	<div class="login_check center-block text-center">
+		<button class="btn bg_green text_white login font14">提交注册</button>
+		<a href="javascript:;" class="text_grayb1">←返回上一步</a>
+	</div>
+</div>
+<div class="regist_bottom">
+	<hr/>
+	<p class="text_grayb1 text-center tit">其它登录方式</p>
+	<ul class="regist_login center-block clearfix mt10">
+		<li><a href="#" class="weixin_login login_btn"></a></li>
+		<li><a href="#" class="qq_login login_btn"></a></li>
+		<li><a href="#" class="alipay_login login_btn"></a></li>
+		<li><a href="#" class="weibo_login login_btn"></a></li>
+	</ul>
+</div>
+{% end %}
+{% block bottom %}<script src="{{static_url('js/m_regist.js')}}"></script>{% end %}
