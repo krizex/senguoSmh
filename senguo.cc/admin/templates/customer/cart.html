@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}购物车{% end %}
+{% block title %}【{{shop_name}}】 一家不错的O2O店铺，快来关注吧~{% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/market-cart.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
@@ -264,5 +264,6 @@
         </div>
     </div>
 </div>
+<script src="/static/js/jweixin-1.0.js"></script>
 <script src="{{static_url('js/market-cart.js')}}"></script>
 {% end %}

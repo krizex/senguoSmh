@@ -18,13 +18,15 @@ class Access(CustomerBaseHandler):
 		next_url = self.get_argument('next', '')
 		if self._action == "login":
 			next_url = self.get_argument("next", "")
-			return self.render("admin/login.html",
+			return self.render("login/m_login.html",
 								 context=dict(next_url=next_url))
 		elif self._action == "logout":
 			self.clear_current_user()
 			return self.redirect(self.reverse_url("customerHome"))
 		elif self._action == "oauth":
 			self.handle_oauth()
+		elif self._action =="register":
+			return self.render("login/m_register.html")
 		else:
 			return self.send_error(404)
 
@@ -166,6 +168,7 @@ class ShopProfile(CustomerBaseHandler):
 			print("error shop")
 			return self.send_error(404)
 		shop_id = shop.id
+		shop_name = shop.shop_name
 		#是否关注判断
 		follow = True
 		if not self.session.query(models.CustomerShopFollow).filter_by(
@@ -207,7 +210,7 @@ class ShopProfile(CustomerBaseHandler):
 						   fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
 						   service_area=service_area, headimgurls=headimgurls, signin=signin,
 						   comments=self.get_comments(shop_id, page_size=2), comment_sum=comment_sum,
-						   context=dict(subpage='shop'))
+						   context=dict(subpage='shop'),shop_name = shop_name)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str")
@@ -348,7 +351,7 @@ class Members(CustomerBaseHandler):
 			else:
 				return "送货"
 		for member in members:
-			member_list.append({"img":member[0].headimgurl,
+			member_list.append({"img":member[0].headimgurl_small,
 								"name":member[0].nickname,
 								"birthday":time.strftime("%Y-%m", time.localtime(member[0].birthday)),
 								"work":work(member[0].id,member[1]),
@@ -892,6 +895,7 @@ class Cart(CustomerBaseHandler):
 		
 		storages = {}
 		shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
+		shop_name = shop.shop_name
 		if not shop:return self.send_error(404)
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits) or eval(cart.mgoods))): #购物车为空
@@ -918,7 +922,8 @@ class Cart(CustomerBaseHandler):
 		# 	print(period.start_time)
 
 		return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
-						   periods=periods,phone=phone, storages = storages,context=dict(subpage='cart'))
+						   periods=periods,phone=phone, storages = storages,\
+						   shop_name  = shop_name ,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
