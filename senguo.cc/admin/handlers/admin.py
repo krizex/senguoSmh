@@ -44,7 +44,7 @@ class Access(AdminBaseHandler):
 		# todo: handle state
 		code =self.args["code"]
 		mode = self.args["mode"]
-		print("mode: ", mode , ", code get:", code)
+		# print("mode: ", mode , ", code get:", code)
 		if mode not in ["mp", "kf"]:
 			return self.send_error(400)
 
@@ -406,7 +406,7 @@ class Comment(AdminBaseHandler):
 				filter(models.Order.id.in_(order_ids), models.Order.status == 6,
 					   models.Order.customer_id == models.Accountinfo.id).\
 				order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
-			print(comments)
+			# print(comments)
 		else:
 			return self.send_error(404)
 		return self.render("admin/comment.html", action = action, comments=comments, context=dict(subpage='comment'))
@@ -418,7 +418,7 @@ class Comment(AdminBaseHandler):
 		reply = self.args["reply"]
 		order_id = self.args["order_id"]
 		if action == "reply":
-			print('login replay')
+			# print('login replay')
 			try:
 				order = self.session.query(models.Order).filter_by(id=order_id).one()
 			except:
@@ -627,10 +627,10 @@ class Order(AdminBaseHandler):
 				customer_name = order.receiver
 				order_totalPrice = order.totalPrice
 				send_time = order.get_sendtime(self.session,order.id)
-				print("ready to send message")
+				# print("ready to send message")
 
 				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time)
-				print("success?")
+				# print("success?")
 
 			elif action == "edit_status":
 				order.update(session=self.session, status=data["status"])
@@ -672,7 +672,7 @@ class Order(AdminBaseHandler):
 							if point_history:
 								point_history.point_type = models.POINT_TYPE.FIRST_ORDER
 								point_history.each_point = 5
-								print(point_history.each_point)
+								# print(point_history.each_point)
 								self.session.add(point_history)
 								self.session.commit()
 
@@ -874,7 +874,7 @@ class Shelf(AdminBaseHandler):
 				return self.send_error(403)
 
 			if action == "add_charge_type":
-				print('num',data["num"],data["unit"],data["price"])
+				# print('num',data["num"],data["unit"],data["price"])
 				charge_type = models.ChargeType(fruit_id=fruit.id,
 												price=data["price"],
 												unit=data["unit"],
@@ -1075,15 +1075,15 @@ class Staff(AdminBaseHandler):
 				try:staff  = self.session.query(models.ShopStaff).filter_by(id=staff_id).one()
 				except: return self.send_error(404)
 				phone = staff.accountinfo.phone
-				print(phone)
+				# print(phone)
 				try:
-					print(self.current_shop.id)
+					# print(self.current_shop.id)
 					hire_forms =self.session.query(models.HireForm).filter_by(status = 2,shop_id=self.current_shop.id).all()
-					print(len(hire_forms))
+					# print(len(hire_forms))
 					temp_phone =[]
 					for temp in hire_forms:
 						temp_phone.append(temp.staff.accountinfo.phone)
-					print(temp_phone)
+					# print(temp_phone)
 					if phone in temp_phone:
 						return self.send_fail("该电话号码已存在，请换一个")
 				except:return self.send_error(404)

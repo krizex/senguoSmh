@@ -212,13 +212,13 @@ class _AccountApi(_CommonApi):
 			#####################################################################################
 			# update wx_openid
 			#####################################################################################
-			print(u.accountinfo.wx_openid)
-			start = wx_userinfo['openid'][0:2]
-			print("start:",start)
-			if start == "o5":
-				u.accountinfo.wx_openid = wx_userinfo["openid"]
-				print("update openid")
-			print(wx_userinfo["openid"])
+			# print(u.accountinfo.wx_openid)
+			# start = wx_userinfo['openid'][0:2]
+			# print("start:",start)
+			# if start == "o5":
+			# 	u.accountinfo.wx_openid = wx_userinfo["openid"]
+			# 	print("update openid")
+			# print(wx_userinfo["openid"])
 
 			# print( "openid" + wx_userinfo["openid"])
 
@@ -226,11 +226,14 @@ class _AccountApi(_CommonApi):
 			# update wx_openid
 			#####################################################################################
 			print(u.accountinfo.wx_openid)
-			start = wx_userinfo['openid'][0:2]
-			print("start:",start)
-			if start == "o5":
-				u.accountinfo.wx_openid = wx_userinfo["openid"]
-				print("update openid")
+			old = u.accountinfo.wx_openid
+			old_start = old[0:2]
+			if old_start == "o7":
+				start = wx_userinfo['openid'][0:2]
+				print("start:",start)
+				if start == "o5":
+					u.accountinfo.wx_openid = wx_userinfo["openid"]
+					print("update openid")
 			print(wx_userinfo["openid"])
 			session.commit()
 		
@@ -250,6 +253,7 @@ class _AccountApi(_CommonApi):
 			return u
 		
 		# 基本账户中不存在，先创建基本信息，再添加到该用户账户中去
+		headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
 		account_info = Accountinfo(
 			wx_unionid=wx_userinfo["unionid"],
 			wx_openid=wx_userinfo["openid"],
@@ -257,6 +261,7 @@ class _AccountApi(_CommonApi):
 			wx_province=wx_userinfo["province"],
 			wx_city=wx_userinfo["city"],
 			headimgurl=wx_userinfo["headimgurl"],
+			headimgurl_small = headimgurl_small,
 			nickname=wx_userinfo["nickname"],
 			sex = wx_userinfo["sex"])
 		u = cls()
@@ -1062,7 +1067,7 @@ class Order(MapBase, _CommonApi):
 				# print(charge_type.num)
 				if fruits[int(charge_type.id)]==0:
 					continue
-				print(fruits[int(charge_type.id)]['num'])
+				# print(fruits[int(charge_type.id)]['num'])
 				num = fruits[int(charge_type.id)]['num'] * charge_type.unit_num * charge_type.num
 				charge_type.fruit.storage+= num
 				charge_type.fruit.current_saled -=num
@@ -1071,10 +1076,10 @@ class Order(MapBase, _CommonApi):
 		if mgoods:
 			charge_types = session.query(MChargeType).filter(MChargeType.id.in_(mgoods.keys())).all()
 			for charge_type in charge_types:
-				print("before",charge_type.mgoods.storage,charge_type.mgoods.current_saled)
-				if mgoods[str(charge_type.id)]==0:
+				# print("before",charge_type.mgoods.storage,charge_type.mgoods.current_saled)
+				if mgoods[int(charge_type.id)]==0:
 					continue
-				num =mgoods[str(charge_type.id)]['num'] *charge_type.unit_num * charge_type.num
+				num =mgoods[int(charge_type.id)]['num'] *charge_type.unit_num * charge_type.num
 				charge_type.mgoods.storage += num
 				charge_type.mgoods.current_saled -= num
 				charge_type.mgoods.saled -= num

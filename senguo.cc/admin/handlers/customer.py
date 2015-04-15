@@ -14,6 +14,7 @@ import json
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
 		self._action = action
+
 	def get(self):
 		next_url = self.get_argument('next', '')
 		if self._action == "login":
@@ -28,11 +29,15 @@ class Access(CustomerBaseHandler):
 		else:
 			return self.send_error(404)
 
+	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("phone", "password", "next?")
 	def post(self):
+		phone = self.args['phone']
+		password = self.args['password']
 		u = models.ShopAdmin.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
+		# print(phone,password)
 		if not u:
-			return self.send_fail(error_text = "用户名或密码错误")
+			return self.send_fail(error_text = password)
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 		self.redirect(self.args.get("next", self.reverse_url("customerHome")))
 		return self.send_success()
@@ -42,7 +47,7 @@ class Access(CustomerBaseHandler):
 		# todo: handle state
 		code =self.args["code"]
 		mode = self.args["mode"]
-		print("mode: ", mode , ", code get:", code)
+		# print("mode: ", mode , ", code get:", code)
 		if mode not in ["mp", "kf"]:
 			return self.send_error(400)
 
@@ -54,6 +59,27 @@ class Access(CustomerBaseHandler):
 
 		next_url = self.get_argument("next", self.reverse_url("customerHome"))
 		return self.redirect(next_url)
+
+class RegistByPhone(CustomerBaseHandler):
+	def get(self):
+		return self.send_success()
+
+	@CustomerBaseHandler.check_arguments("phone","password")
+	def post(self):
+		phone = self.args['phone']
+		password = self.args['password']
+
+		u = self.session.query(models.Accountinfo).filter_by(phone = phone).first()
+		if u:
+			return self.send_fail("该手机号 已被注册，请直接登入")
+		else:
+			u = models.Accountinfo(phone = phone ,password = password)
+			self.session.add(u)
+			self.session.commit()
+			return self.send_success()
+
+
+
 
 class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -155,7 +181,7 @@ class CustomerProfile(CustomerBaseHandler):
 class ShopProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self, shop_code):
-		print(shop_code)
+		# print(shop_code)
 		#self.set_cookie("market_shop_id", shop_id)
 		# shop_code = self.shop_code
 		try:
@@ -648,7 +674,7 @@ class Market(CustomerBaseHandler):
 				# print(mgood.id,mgood.unit)
 				try:
 
-					print('mgood id',mgood.id)
+					# print('mgood id',mgood.id)
 					favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,\
 						f_m_id = mgood.id , type = 1).first()
 						
@@ -1015,6 +1041,7 @@ class Cart(CustomerBaseHandler):
 		address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		if not address:
 			return self.send_fail("没找到地址", 404)
+		print(address.receiver,'******************************************')
 
 		# 已支付、付款类型、余额、积分处理
 		money_paid = False
@@ -1038,7 +1065,7 @@ class Cart(CustomerBaseHandler):
 		w_admin = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if w_admin is not None:
 			w_SH2_id = w_admin.admin.id
-			print(w_SH2_id)
+			# print(w_SH2_id)
 		# print("*****************************************************************")
 		# print(f_d)
 		# print(mgoods)
@@ -1083,24 +1110,44 @@ class Cart(CustomerBaseHandler):
 			order_type = '按时达'
 		create_date   = order.create_date
 		customer_info = self.session.query(models.Accountinfo).filter_by(id = self.current_user.id).first()
-		customer_name = customer_info.nickname 
+		customer_name = address.receiver
 		c_tourse      = customer_info.wx_openid
-		# print(c_tourse)
+		print(c_tourse,'******************************************')
 
 		##################################################
 		#goods
 		goods = []
-		# print(f_d,m_d)
+		print(f_d,m_d)
+		session = self.session
 		for f in f_d:
-			goods.append([f_d[f].get('fruit_name'),f_d[f].get('num')])
+			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+			# num = f_d[f].get('num')
+			# fruit_id = f_d[f].get('fruit_name')
+			# fruit = session.query(models.Fruit).filter_by(id = fruit_id).first()
+			# if not fruit:
+			# 	return self.send_fail('fruit not found')
+			# fruit_name = fruit.name
+			# charge = f_d[f].get('charge')
+			# goods.append([fruit_name,charge,num])
 		for m in m_d:
-			goods.append([m_d[m].get('fruit_name'),m_d[m].get('num')])
+			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+			# num = m_d[m].get('num')
+			# mgood_id = m_d[m].get('mgoods_name')
+			# mgood = session.query(models.MGoods).filter_by(id = mgood_id).first()
+			# if not mgood:
+			# 	return self.send_fail('mgood not found')
+			# mgood_name = mgood.name
+			# charge =m_d[m].get('charge')
+			# goods.append([mgood_name,charge,num]) 
+			# print('m',m)
 		goods = str(goods)[1:-1]
-		order_totalPrice = totalPrice
+		order_totalPrice = float('%.1f'% totalPrice)
+		print(order_totalPrice,"*******************8")
 		session = self.session
 		send_time     = order.get_sendtime(session,order.id)
+		print(goods,'************************************************')
 		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
-			customer_name,order_totalPrice,send_time)
+			customer_name,order_totalPrice,send_time,goods)
 		# send message to customer
 		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
 
@@ -1157,7 +1204,7 @@ class Order(CustomerBaseHandler):
 			shop_name = order.shop.shop_name
 			address_text = order.address_text
 			create_date  = order.create_date.strftime(" %Y:%m:%d")
-			print(create_date)
+			# print(create_date)
 			# print(order)
 			data.append({'order_num':order_num,'shop_name':shop_name,'address_text':address_text,\
 				'send_time':send_time,'order_totalPrice':order_totalPrice,'order_status':order_status,\

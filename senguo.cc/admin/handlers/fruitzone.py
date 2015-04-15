@@ -80,7 +80,7 @@ class ShopList(FruitzoneBaseHandler):
 			q = q.offset(page * _page_count).limit(_page_count).all()
 			
 		elif "province" in self.args:
-			print('province')
+			# print('province')
 			q = q.filter_by(shop_province=self.args["province"])
 			shop_count = q.count()
 			page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
@@ -228,14 +228,14 @@ class ShopApply(FruitzoneBaseHandler):
 			##############################################################################
 			# user's subscribe
 			##############################################################################
-			print('apply')
+			# print('apply')
 			
 			# shop = self.session.query(models.ShopTemp).filter_by(id=shop_id).one()
 			# account_info = self.session.query(models.Accountinfo).get(shop.admin_id)
 			wx_openid = self.current_user.accountinfo.wx_openid
 			# wx_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'
 			subscribe = WxOauth2.get_user_subcribe(wx_openid)
-			print("subscribe",subscribe,wx_openid)
+			# print("subscribe",subscribe,wx_openid)
 			# subscribe = 0
 			# if not self.current_user.accountinfo.phone or \
 			#     not self.current_user.accountinfo.email or\
@@ -248,13 +248,13 @@ class ShopApply(FruitzoneBaseHandler):
 			if "shop_id" not in self.args:
 				return self.send_error(404)
 			shop_id = self.args["shop_id"]
-			print('reApply')
+			# print('reApply')
 			try:
 				shop = self.session.query(models.ShopTemp).filter_by(id=shop_id).one()
 				# useless  lookup the value of user's subscribe
 				wx_openid = self.current_user.accountinfo.wx_openid
 				subscribe = user_subscribe(wx_openid)
-				print(subscribe)
+				# print(subscribe)
 			except:
 				shop = None
 			if not shop:
@@ -272,7 +272,7 @@ class ShopApply(FruitzoneBaseHandler):
 
 		if self._action == "apply":
 			if not check_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, code=self.args["code"]):
-				print('check_msg_token' + self.current_user.accountinfo.wx_unionid)
+				# print('check_msg_token' + self.current_user.accountinfo.wx_unionid)
 				return self.send_fail(error_text="验证码过期或者不正确")  #
 			# 这种检查方式效率比较低
 			if len(self.current_user.shops) >= self.MAX_APPLY_COUNT:
@@ -386,7 +386,7 @@ class AdminShop(FruitzoneBaseHandler):
 		if shop not in self.current_user.shops:         #如果该店铺不属于该用户，禁止修改
 			return self.send_error(403)
 		if action== "edit_shop_img":
-			print('**********shop_id*************\n',shop_id)
+			# print('**********shop_id*************\n',shop_id)
 			return self.send_qiniu_token("shop", shop_id)
 		elif action == "edit_shop_url":
 			shop.update(session=self.session, shop_url=data)
@@ -434,11 +434,11 @@ class QiniuCallback(FruitzoneBaseHandler):
 	def post(self):
 		key = self.get_argument("key")
 		id = int(self.get_argument("id"))
-		print('ID',id,key)
+		# print('ID',id,key)
 		action = self.get_argument("action")
-		print(key,id,action)
+		# print(key,id,action)
 
-		print('shop'==action)
+		# print('shop'==action)
 
 		if action == "shop":
 			try:
@@ -448,7 +448,7 @@ class QiniuCallback(FruitzoneBaseHandler):
 				return self.send_error(404)
 			shop_trademark_url = shop.shop_trademark_url  # 要先跟新图片url，防止删除旧图片时出错
 			shop.update(session=self.session, shop_trademark_url=SHOP_IMG_HOST+key)
-			print('shop_url',shop_trademark_url)
+			# print('shop_url',shop_trademark_url)
 			# self.session.commit()
 			if shop_trademark_url:  # 先要把旧的的图片删除
 				m = BucketManager(auth=qiniu.Auth(ACCESS_KEY,SECRET_KEY))
@@ -547,6 +547,7 @@ class PhoneVerify(_AccountBaseHandler):
 		if not check_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, code=self.args["code"]):
 		   return self.send_fail(error_text="验证码过期或者不正确")
 		password = self.args['password']
+		# print(password)
 		if password:
 			self.current_user.accountinfo.update(self.session, phone=self.args["phone"],password=self.args["password"])
 		else:
@@ -556,7 +557,7 @@ class PhoneVerify(_AccountBaseHandler):
 	@FruitzoneBaseHandler.check_arguments("phone:str")
 	def handle_gencode_shop_apply(self):
 		gen_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, phone=self.args["phone"])
-		print("handle_gencode_shop_apply" + self.current_user.accountinfo.wx_unionid)
+		# print("handle_gencode_shop_apply" + self.current_user.accountinfo.wx_unionid)
 		return self.send_success()
 
 class SystemPurchase(FruitzoneBaseHandler):
@@ -617,7 +618,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 			order_id=int(self.args["out_trade_no"]),
 			ali_trade_no=self.args["trade_no"])
 		if not o:
-			print("tmp order not found!")
+			# print("tmp order not found!")
 			return self.write("交易已完成或不存在!")
 		# 重定向到支付成功页面
 		return self.redirect(
