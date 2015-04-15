@@ -52,7 +52,7 @@
                         实时消息
                         <span>0</span>
                     </a>
-                </li>-->
+                </li>
                 <li class="active send-now line50">
                     <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1">
                         <i class="send-img height50 pull-left"></i>
@@ -60,7 +60,7 @@
                         <span>{{num}}</span>
                     </a>
                 </li>
-               <!--<li class="line50">
+               <li class="line50">
                     <a href="javascript:;" class="developing">
                         <i class="message-img height50 pull-left"></i>
                         留言
@@ -68,8 +68,10 @@
                     </a>
                 </li>-->
                 <li class="area-info">
-                    <img src="{{current_user.accountinfo.headimgurl}}" class="admin-img height50 pull-left"/>
+                    <img src="{{current_shop.shop_trademark_url or '/static/design_img/TDSG.png'}}" class="admin-img height50 pull-left"/>
                     <div class="admin-info area pull-right">
+                        <p class="job pull-left text-left">{{current_user.accountinfo.nickname}}</p>
+                        <!--<p class="job pull-left text-left">未认证</p>-->
                         <div class="dropdown  area pull-left">
                             <button class="btn btn-default dropdown-toggle area height25 border-none" type="button" id="dropdownMenu1" data-toggle="dropdown">
                                 <em title="{{current_shop.shop_name}}" class="pull-left" id="shop_name">{{current_shop.shop_name}}</em>
@@ -81,13 +83,12 @@
                                     <a role="menuitem" tabindex="-1" href="javascript:;">{{shop.shop_name}}</a>
                                 </li>
                                 {% end %}
-                                <li role="presentation">
-                                    <a role="menuitem" tabindex="-1" href="{{reverse_url('adminLogout')}}">退出登录</a>
-                                </li>
                             </ul>
                         </div>
-                        <p class="job pull-left">{{current_user.accountinfo.nickname}}</p>
                     </div>
+                </li>
+                <li class="line50">
+                <a role="menuitem" tabindex="-1" href="{{reverse_url('adminLogout')}}">退出</a>
                 </li>
             </ul>
         </div>

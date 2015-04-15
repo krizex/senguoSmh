@@ -1374,7 +1374,7 @@ class Points(CustomerBaseHandler):
 				history.append([temp.point_type,temp.each_point,temp.create_time])
 			# print(history)
 		count = len(history)
-		pages = (count /10) if count % 10 ==0 else (count/10) + 1
+		pages = int(count /10) if count % 10 ==0 else int(count/10) + 1
 
 		return self.render("customer/points.html",shop_point = shop_point,pages = pages)
 
@@ -1406,7 +1406,7 @@ class Points(CustomerBaseHandler):
 		# print('history',history)
 		if offset + 10 <= count:
 			data = history[offset:offset+10]
-		elif offset <= 10 and offset + 10 > count:
+		elif offset <= count and offset + 10 >=count:
 			data = history[offset:]
 		else:
 			self.send_fail("history page error")

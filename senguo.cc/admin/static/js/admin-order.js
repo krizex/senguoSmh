@@ -47,7 +47,7 @@ $(document).ready(function(){
     //按时达配送时段添加
     $(document).on('click','.add-new-time',function(){//添加显示
         var max=$('.time-list').find('.time-list-item').length;
-        if(max<5) {
+        if(max<20) {
             $.getItem('/static/items/admin/add-period-item.html?v=2015-0211',function(data){
                 var $item=$(data);
                 for(var i=0;i<=23;i++)
@@ -65,7 +65,7 @@ $(document).ready(function(){
 
 
         }
-        else return alert('至多能添加五个时段！');
+        else return alert('至多能添加20个时段！');
     });
     $(document).on('click','.add-time-period',function(){//添加确认
         var $this=$(this);
