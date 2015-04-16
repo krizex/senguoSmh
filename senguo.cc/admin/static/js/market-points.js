@@ -60,7 +60,7 @@ var getList=function(page,action){
         else return noticeBox(res.error_text);
         },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
         );
-   var initData(res){
+   var initData=function(res){
           var data=res.data;
            for(var key in data){
            	var $item=$(window.dataObj.points_item);
