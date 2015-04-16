@@ -75,8 +75,8 @@ getItem('/static/items/customer/points_item.html?v=2015-0329',function(data){
 	            window.dataObj.count++;
 	            window.dataObj.finished=true;
 	        }
-	        else return $.noticeBox(res.error_text);
-	        },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+	        else return noticeBox(res.error_text);
+	        },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
 	        );
 	}); 
     

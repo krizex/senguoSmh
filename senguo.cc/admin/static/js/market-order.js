@@ -18,7 +18,7 @@ $(document).ready(function(){
         var $this = $(this);
         var id=$this.parents('.order-list-item').data('id');
         var index=$this.parents('.order-list-item').index();
-        $.confirmBox('确认取消该订单吗？//(ㄒoㄒ)//',index,id);
+        confirmBox('确认取消该订单吗？//(ㄒoㄒ)//',index,id);
     });
      $(document).on('click','.confriming',function(){
         var $this=$(this);
@@ -29,7 +29,7 @@ $(document).ready(function(){
         if(result=='true'){
             orderConcel($('.order-list-item').eq(index),type);
             }
-        $.confirmRemove();
+        confirmRemove();
     });
     //评价
     var index;
@@ -194,8 +194,8 @@ var goodsList=function(page,action){
             window.dataObj.count++;
             window.dataObj.finished=true;
         }
-        else return $.noticeBox(res.error_text);
-        },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        else return noticeBox(res.error_text);
+        },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
         );
 };
 
@@ -214,8 +214,8 @@ function orderConcel(target,id){
             target.find('.status-bar-box').hide();
             target.find('.cancel').text('订单已取消').addClass('text-grey').removeClass('order-concel');
         }
-        else return $.noticeBox(res.error_text)
-    }, function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        else return noticeBox(res.error_text)
+    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
 )
 }
 
@@ -241,8 +241,8 @@ function orderComment(id,order_id,comment){
            var commentBox=new Modal('commentBox');
            commentBox.modal('hide');
         }
-        else return $.noticeBox(res.error_text)
-    }, function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        else return noticeBox(res.error_text)
+    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
         );
 }

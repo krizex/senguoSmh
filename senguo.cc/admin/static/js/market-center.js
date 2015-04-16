@@ -45,7 +45,7 @@ $(document).ready(function(){
             $('.addressAdd').show();
             $('.addressEdit').hide();
         }
-       else return $.noticeBox('最多可添加五个收货地址！',$this);
+       else return noticeBox('最多可添加五个收货地址！',$this);
     });
     $('body').on('click','.addressAdd',function(){
         var $this=$(this);
@@ -56,7 +56,7 @@ $(document).ready(function(){
         var $this=$(this);
         var parent=$this.parents('.address-item');
         var index=parent.index();
-        $.confirmBox('确认删除该收货地址吗？//(ㄒoㄒ)//',index);
+        confirmBox('确认删除该收货地址吗？//(ㄒoㄒ)//',index);
     });
     $(document).on('click','.confriming',function(){
         var $this=$(this);
@@ -68,7 +68,7 @@ $(document).ready(function(){
             var id=target.attr('data-id');
             addressDel(target,id);
         }
-        $.confirmRemove();
+        confirmRemove();
     });
 });
 
@@ -123,8 +123,8 @@ function addressEdit(target,action){
             var address_box=new Modal('address_box');
             address_box.modal('hide');
         }
-        else return $.noticeBox(res.error_text)
-    },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')})
+        else return noticeBox(res.error_text)
+    },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')})
 
 }
 
@@ -142,6 +142,6 @@ function addressDel(target,id){
         if(res.success){
             target.remove();
         }
-        else return $.noticeBox(res.error_text)
-    },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')})
+        else return noticeBox(res.error_text)
+    },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')})
 }

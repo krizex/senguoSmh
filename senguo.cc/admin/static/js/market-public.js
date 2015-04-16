@@ -238,7 +238,7 @@ function stopPropagation(e) {
 }  
 //confirmbox
 getItem('/static/items/confirmBox.html?v=201503-29',function(data){window.dataObj.confirmBox=data});
-$.confirmBox=function(text,index,type){
+var confirmBox=function(text,index,type){
         var $box=$(window.dataObj.confirmBox);
         $box.find('.message').text(text);
         if(typeof(index)!='undefined') $box.find('.message').attr({'data-index':index});
@@ -273,16 +273,17 @@ getItem('/static/items/noticeBox.html?v=2015-03-25',function(data){
 var noticeBox=function(text,item){
         $('#noticeBox').removeClass('hidden').find('.notice').text(text);
         if(item) {item.attr({'disabled':'true'});}
-        $.noticeRemove('noticeBox',item);
-        $.noticeRemove=function () {
+        noticeRemove('noticeBox',item);
+        var $noticeRemove=function () {
         if (window.dataObj.n_time == 0) {
             window.dataObj.n_time = 2;
+            console.log(333333);
             $('#noticeBox').addClass('hidden');
-            if(item) {item.removeAttr('disabled');}
+            if(item) {console.log(23333);item.removeAttr('disabled');}
         }
         else {
             window.dataObj.n_time--;
-            setTimeout(function() {$.noticeRemove()},1000);
+            setTimeout(function() {$noticeRemove()},1000);
         }
     }
 }
@@ -293,7 +294,7 @@ var warnNotice=function(text){
     $word.text(text);
     $('.modal-body').append($word);
     $('.sure_btn').attr({'disabled':'true'});
-    $.noticeRemove('warn');
+    noticeRemove('warn');
 }
 //time count 2 secends
 window.dataObj.n_time=2;
@@ -305,7 +306,7 @@ var noticeRemove=function (target) {
     }
     else {
         window.dataObj.n_time--;
-        setTimeout(function() {$.noticeRemove(target)},1000);
+        setTimeout(function() {noticeRemove(target)},1000);
     }
 }
 
