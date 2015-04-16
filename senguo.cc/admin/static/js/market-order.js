@@ -1,5 +1,5 @@
 //get item dom
-$.getItem('/static/items/customer/orderlist_item.html?v=2015-0325',function(data){window.dataObj.list_item=data;});    
+getItem('/static/items/customer/orderlist_item.html?v=2015-0325',function(data){window.dataObj.list_item=data;});    
 $(document).ready(function(){
         //导航active
     window.dataObj.action=$.getUrlParam('action');
@@ -11,8 +11,8 @@ $(document).ready(function(){
         }
     });
     //订单data
-     $.goodsList(1,window.dataObj.action);
-     $.scrollLoading();
+     goodsList(1,window.dataObj.action);
+     scrollLoading();
     //取消订单   
     $(document).on('click','.order-concel',function () {
         var $this = $(this);
@@ -50,8 +50,8 @@ window.dataObj.page=1;
 window.dataObj.count=1;
 window.dataObj.action=5;
 window.dataObj.finished=true;
-$.scrollLoading=function(){
-    var range = 10;             //距下边界长度/单位px          //插入元素高度/单位px  
+var scrollLoading=function(){
+    var range = 60;             //距下边界长度/单位px          //插入元素高度/单位px  
     var totalheight = 0;   
     var main = $(".container");                  //主体元素   
     $(window).scroll(function(){
@@ -65,7 +65,7 @@ $.scrollLoading=function(){
             $('.loading').show();
             window.dataObj.finished=false;
             window.dataObj.page++; 
-            $.goodsList(window.dataObj.page,window.dataObj.action);
+            goodsList(window.dataObj.page,window.dataObj.action);
         }       
         else if(window.dataObj.page ==maxnum){
             $('.loading').hide();
@@ -74,7 +74,7 @@ $.scrollLoading=function(){
     }); 
 }   
 
- $.goodsList=function(page,action){
+var goodsList=function(page,action){
     var url='';
     var action=action;
     var args={

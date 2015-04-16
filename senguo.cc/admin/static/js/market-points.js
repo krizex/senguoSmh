@@ -40,7 +40,7 @@ $.scrollLoading=function(){
 }   
 
  $.getList=function(page,action){
-$.getItem('/static/items/customer/points_item.html?v=2015-0329',function(data){
+getItem('/static/items/customer/points_item.html?v=2015-0329',function(data){
 	window.dataObj.points_item=data;
 	var url='';
 	    var action = action;

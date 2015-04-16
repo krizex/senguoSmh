@@ -78,7 +78,7 @@ function wexin(){
          });
          wx.ready(function(){
              wx.onMenuShareTimeline({
-             title: '大家快来关注吧~', // 分享标题
+             title: '', // 分享标题
              link:link, // 分享链接
              imgUrl: '', // 分享图标
              success: function () {
@@ -89,7 +89,7 @@ function wexin(){
              }
          });
          wx.onMenuShareAppMessage({
-             title: '大家快来关注吧~', // 分享标题
+             title: '', // 分享标题
              desc: "一家不错的店铺，快来关注吧~ ", // 分享描述
              link:link,
              imgUrl: "", // 分享图标
@@ -188,7 +188,7 @@ $.postJson = function(url, args,successCall, failCall, errorCall,alwaysCall){
     //req.always(alwaysCall);
 };
 
-$.getItem=function(url,success){$.get(url,success);};
+function getItem(url,success){$.get(url,success);};
 
 function Int(target){
     target=parseInt(target);
@@ -237,7 +237,7 @@ function stopPropagation(e) {
     }  
 }  
 //confirmbox
-$.getItem('/static/items/confirmBox.html?v=201503-29',function(data){window.dataObj.confirmBox=data});
+getItem('/static/items/confirmBox.html?v=201503-29',function(data){window.dataObj.confirmBox=data});
 $.confirmBox=function(text,index,type){
         var $box=$(window.dataObj.confirmBox);
         $box.find('.message').text(text);
@@ -260,17 +260,17 @@ $.confirmBox=function(text,index,type){
             }
         });
 }
-$.confirmRemove=function(){
+var confirmRemove=function(){
     $('#confirmBox').remove();
     $('.modal_bg').remove();
 }
 //word notice
-$.getItem('/static/items/noticeBox.html?v=2015-03-25',function(data){
+getItem('/static/items/noticeBox.html?v=2015-03-25',function(data){
     window.dataObj.noticeBox=data;
      var $box=$(window.dataObj.noticeBox);   
     $('body').append($box);
 });
-$.noticeBox=function(text,item){
+var noticeBox=function(text,item){
         $('#noticeBox').removeClass('hidden').find('.notice').text(text);
         if(item) {item.attr({'disabled':'true'});}
         $.noticeRemove('noticeBox',item);
@@ -287,7 +287,7 @@ $.noticeBox=function(text,item){
     }
 }
 //modal notice word
-$.warnNotice=function(text){
+var warnNotice=function(text){
     $('.modal-body').find('.warn').remove();
     var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
     $word.text(text);
@@ -297,7 +297,7 @@ $.warnNotice=function(text){
 }
 //time count 2 secends
 window.dataObj.n_time=2;
-$.noticeRemove=function (target) {
+var noticeRemove=function (target) {
     if (window.dataObj.n_time == 0) {
         window.dataObj.n_time = 2;
         $('#'+target).addClass('hidden');
