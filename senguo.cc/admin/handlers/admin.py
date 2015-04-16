@@ -1020,7 +1020,7 @@ class Follower(AdminBaseHandler):
 				filter(models.CustomerShopFollow.customer_id == customers[x].id).all()
 			shop_point = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customers[x].id,\
 				shop_id = shop_id).first()
-			customers[x].shop_point = shop_point
+			customers[x].shop_point = shop_point.shop_point
 			customers[x].shop_names = [y[0] for y in shop_names]
 
 

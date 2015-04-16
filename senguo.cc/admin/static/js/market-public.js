@@ -59,8 +59,6 @@ $(document).ready(function(){
         } 
     });
     $(".lazy_img").lazyload({threshold:100});
-    console.log($('#shop_imgurl').length);
-    console.log(typeof($('#shop_imgurl')));
     wexin();
 });
 
@@ -88,11 +86,7 @@ function wexin(link,imgurl){
              signature:signature_val,// 必填，签名，见附录1
              jsApiList: ['onMenuShareTimeline','onMenuShareAppMessage','hideMenuItems','hideOptionMenu','showOptionMenu']// 必填，需要使用的JS接口列表，所有JS接口列表见附录2
          });
-        wx.success(function(){
-             wx.hideOptionMenu();
-        });
          wx.ready(function(){
-            wx.showOptionMenu();
              if(logo_Item.length==0){
                 wx.hideMenuItems({
                     menuList: ['menuItem:share:appMessage','menuItem:share:timeline'] 

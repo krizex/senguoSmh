@@ -39,7 +39,7 @@ class Access(CustomerBaseHandler):
 		u = models.ShopAdmin.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
 		# print(phone,password)
 		if not u:
-			return self.send_fail(error_text = password)
+			return self.send_fail(error_text = '用户不存在或密码不正确 ')
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 		self.redirect(self.args.get("next", self.reverse_url("customerHome")))
 		return self.send_success()

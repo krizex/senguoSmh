@@ -9,8 +9,12 @@ $(document).ready(function(){
         return noticeBox('该功能年后开放,敬请期待！');
     });
     //运费默认值
-    if(!window.dataObj.freigh_ontime) window.dataObj.freigh_ontime=0;
-    if(!window.dataObj.freigh_now) window.dataObj.freigh_now=0;
+    if(!window.dataObj.freigh_ontime) {
+        window.dataObj.freigh_ontime=0;
+    }
+    if(!window.dataObj.freigh_now){
+        window.dataObj.freigh_now=0;
+    }
     $('.address_list .item').eq(0).addClass('active');
     window.dataObj.mincharge_now=Int($('.mincharge_now').find('.mincharge').text());
     window.dataObj.mincharge_intime=Int($('.mincharge_intime').find('.mincharge').text());
@@ -323,15 +327,18 @@ var getPrice=function(){
     window.dataObj.total_price=totalPrice(window.dataObj.price_list);
     $list_total_price.text(mathFloat(window.dataObj.total_price));
     $final_price.text(mathFloat(window.dataObj.total_price)+mathFloat(freight));
+    alert($list_total_price.text());
 }
 
 function totalPrice(target){
     window.dataObj.total_price=0;
+    var price = 0;
     for(var i=0;i<target.length;i++)
     {
-        window.dataObj.total_price+=parseFloat(target[i]);
+        price+=parseFloat(target[i]);
     }
-    return window.dataObj.total_price;
+    window.dataObj.total_price = price;
+    return price;
 }
 
 function goodsNum(target,action){
@@ -371,7 +378,6 @@ function goodsNum(target,action){
                 else if(action==1)
                 {
                     var val=parseInt(item.val());
-                     console.log(val);
                     if(val>=0)
                     {
                         if(val==1){

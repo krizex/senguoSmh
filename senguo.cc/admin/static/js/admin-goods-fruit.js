@@ -95,7 +95,7 @@ $(document).ready(function(){
         $('.preview-nextpage').show();
     });
     $('.preview-nextpage').on('click',function(){
-       $('.preview-list').animate({top:'-420px'});
+       $('.preview-list').animate({top:'-580px'});
         $('.preview-prepage').show();
         $('.preview-nextpage').hide();
     });
