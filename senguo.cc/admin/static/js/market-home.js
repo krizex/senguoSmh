@@ -1,5 +1,5 @@
 $(document).ready(function(){
-     var shop_logo=$('#shop_info').attr('data-img');
+     var shop_logo=$('#shop_imgurl').attr('data-img');
     if(isWeiXin()){
         wexin('',shop_logo);
     }

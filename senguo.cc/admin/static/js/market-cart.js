@@ -1,7 +1,7 @@
 $(document).ready(function(){
     //if is weixin brower then load wexin api 
      var shop_code=getCookie('market_shop_code');
-     var shop_logo=$('#shop_info').attr('data-img');
+     var shop_imgurl=$('#shop_info').attr('data-img');
     if(isWeiXin()){
         wexin('/'+shop_code,shop_logo);
     }

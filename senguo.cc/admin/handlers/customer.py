@@ -126,7 +126,7 @@ class Home(CustomerBaseHandler):
 			shop_name = shop_name,shop_logo = shop_logo, context=dict(subpage='center'))
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data")
-	def post(self):
+	def post(self,shop_code):
 		action = self.args["action"]
 		data = self.args["data"]
 		if action == "add_address":

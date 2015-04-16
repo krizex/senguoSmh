@@ -2,7 +2,7 @@
 {% block title %}【{{shop_name}}】 一家不错的O2O店铺，快来关注吧~{% end %}
 {% block head %}<link rel="stylesheet" href="{{static_url('css/market-shop.css')}}"/>{% end %}
 {% block content %}
-<span id="shop_info" data-img="{{shop_logo}}"></span>
+<span id="shop_imgurl" data-img="{{shop_logo}}"></span>
 <div class="rainshed text-center font18 text-black fix-title bg_change">店铺详情</div>
  <div class="info1 bg-white clearfix mt42 pt20">
      <div class="shop-logo pull-left">
@@ -122,6 +122,5 @@
 {% end %}-->
 {% end %}
 {% block bottom %}
-<script src="/static/js/jweixin-1.0.js"></script>
 <script src="{{static_url('js/market-shop.js')}}"></script>
 {% end %}
