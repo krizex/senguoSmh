@@ -94,6 +94,7 @@ class Home(CustomerBaseHandler):
 		if shop:
 			shop_name = shop.shop_name
 			shop_id   = shop.id
+			shop_logo  = shop.shop_trademark_url
 		else:
 			return self.send_fail('shop not found')
 		customer_id = self.current_user.id
@@ -122,7 +123,7 @@ class Home(CustomerBaseHandler):
 			elif order.status == 10:
 				count[6] += 1
 		return self.render("customer/personal-center.html", count=count,shop_point =shop_point, \
-			shop_name = shop_name, context=dict(subpage='center'))
+			shop_name = shop_name,shop_logo = shop_logo, context=dict(subpage='center'))
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data")
 	def post(self):
@@ -198,6 +199,7 @@ class ShopProfile(CustomerBaseHandler):
 			return self.send_error(404)
 		shop_id = shop.id
 		shop_name = shop.shop_name
+		shop_logo   = shop.shop_trademark_url
 
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
@@ -245,7 +247,7 @@ class ShopProfile(CustomerBaseHandler):
 						   fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
 						   service_area=service_area, headimgurls=headimgurls, signin=signin,
 						   comments=self.get_comments(shop_id, page_size=2), comment_sum=comment_sum,
-						   context=dict(subpage='shop'),shop_name = shop_name)
+						   context=dict(subpage='shop'),shop_name = shop_name,shop_logo = shop_logo)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str")
@@ -422,6 +424,7 @@ class Market(CustomerBaseHandler):
 		if not shop:
 			return self.send_error(404)
 		shop_name = shop.shop_name
+		shop_logo = shop.shop_trademark_url
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		# self.set_cookie("market_shop_name",str(shop.shop_name))
@@ -494,7 +497,8 @@ class Market(CustomerBaseHandler):
 		return self.render("customer/home.html",
 						   context=dict(cart_count=cart_count, subpage='home', menus=shop.menus,notices=notices,\
 							shop_name=shop.shop_name,w_follow = w_follow,page_count = page_count,fruit_page = fruit_page,\
-							dry_page = dry_page ,mgoods_page = mgoods_page,cart_fs=cart_fs,cart_ms=cart_ms))
+							dry_page = dry_page ,mgoods_page = mgoods_page,cart_fs=cart_fs,cart_ms=cart_ms,\
+							shop_logo = shop_logo))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:int","page?:int","menu_id?:int")
@@ -935,6 +939,7 @@ class Cart(CustomerBaseHandler):
 		if not shop:return self.send_error(404)
 		shop_name = shop.shop_name
 		shop_id = shop.id
+		shop_logo = shop.shop_trademark_url
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
@@ -964,7 +969,7 @@ class Cart(CustomerBaseHandler):
 
 		return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
 						   periods=periods,phone=phone, storages = storages,\
-						   shop_name  = shop_name ,context=dict(subpage='cart'))
+						   shop_name  = shop_name ,shop_logo = shop_logo,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",

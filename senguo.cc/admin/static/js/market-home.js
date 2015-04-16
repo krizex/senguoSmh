@@ -1,4 +1,8 @@
 $(document).ready(function(){
+     var shop_logo=$('#shop_info').attr('data-img');
+    if(isWeiXin()){
+        wexin('',shop_logo);
+    }
      //公告滚动
      $('#position li').first().addClass('on');
     if($('#position li').length>0){

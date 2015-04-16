@@ -1,5 +1,3 @@
-//get item dom
-getItem('/static/items/customer/orderlist_item.html?v=2015-0325',function(data){window.dataObj.list_item=data;});    
 $(document).ready(function(){
         //导航active
     window.dataObj.action=$.getUrlParam('action');
@@ -85,7 +83,21 @@ var goodsList=function(page,action){
     $.postJson(url,args,function(res){
         if(res.success)
         {
-            var orders=res.orders;
+            if(window.dataObj.list_item==undefined){
+                getItem('/static/items/customer/orderlist_item.html?v=2015-0325',function(data){
+                    window.dataObj.list_item=data;
+                    initData(res);
+                });    
+            }
+            else {
+                initData(res);
+            }    
+        }
+        else return noticeBox(res.error_text);
+        },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+    );
+    var initData=function (res){
+        var orders=res.orders;
             window.dataObj.total_page=res.total_page;
             if(res.total_page>0){
                 $('.list-header').show();
@@ -194,10 +206,7 @@ var goodsList=function(page,action){
             $('.loading').hide();
             window.dataObj.count++;
             window.dataObj.finished=true;
-        }
-        else return noticeBox(res.error_text);
-        },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
-        );
+    }
 };
 
 function orderConcel(target,id){

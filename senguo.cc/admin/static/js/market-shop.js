@@ -1,8 +1,17 @@
 $(document).ready(function(){
-    $(document).on('click','#focus-shop',function(){focus();});
-    $(document).on('click','.foucus-notice',function(){noticeBox('请先关注店铺哦!');});
-    $(document).on('click','.un_sign',function(){var $this=$(this);signin($this);});
-    $(document).on('click','.signed',function(){noticeBox('亲，你今天已经签到了，一天只能签到一次哦')});
+    var shop_logo=$('#shop_info').attr('data-img');
+    if(isWeiXin()){
+        wexin('',shop_logo);
+    }
+}).on('click','#focus-shop',function(){
+    focus();
+}).on('click','.foucus-notice',function(){
+    noticeBox('请先关注店铺哦!');
+}).on('click','.un_sign',function(){
+    var $this=$(this);
+    signin($this);
+}).on('click','.signed',function(){
+    noticeBox('亲，你今天已经签到了，一天只能签到一次哦')
 });
 function focus(){
     var url='';

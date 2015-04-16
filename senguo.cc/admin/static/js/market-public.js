@@ -5,6 +5,13 @@ $(document).ready(function(){
     window.dataObj.success_href='/notice/success';
     window.dataObj.staff_href='/staff/hire/';
     window.dataObj.current_link=window.location.href;
+    var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
+          var s = document.getElementsByTagName("script")[0]; 
+          s.parentNode.insertBefore(hm, s);
+        })();
     //fastclick initialise
      $(function() {
         FastClick.attach(document.body);
@@ -52,17 +59,18 @@ $(document).ready(function(){
         } 
     });
     $(".lazy_img").lazyload({threshold:100});
-    //if is weixin brower then load wexin api 
-    if(isWeiXin()){wexin()}
 });
 
-function wexin(){
+function wexin(link,imgurl){
     //微信Api
     var url='/wexin';
     var args={url: window.location.href};
-    var shop_code=getCookie('market_shop_code');
-    var link='http://m.senguo.cc/'+shop_code;
-    var shop_name=getCookie('market_shop_name');
+    if(!link){
+        link='';
+    }
+     if(!imgurl){
+        imgurl='/static/design_img/TDSG.png';
+    }
     $.postJson(url,args,function(res){
         if(res.success){
             var noncestr_val=res.noncestr;
@@ -80,7 +88,7 @@ function wexin(){
              wx.onMenuShareTimeline({
              title: '', // 分享标题
              link:link, // 分享链接
-             imgUrl: '', // 分享图标
+             imgUrl:imgurl, // 分享图标
              success: function () {
              // 用户确认分享后执行的回调函数
              },
@@ -92,7 +100,7 @@ function wexin(){
              title: '', // 分享标题
              desc: "一家不错的店铺，快来关注吧~ ", // 分享描述
              link:link,
-             imgUrl: "", // 分享图标
+             imgUrl:imgurl, // 分享图标
              type: '' // 分享类型,music、video或link，不填默认为link
              });
          });

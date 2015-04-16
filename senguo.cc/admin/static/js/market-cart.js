@@ -1,4 +1,10 @@
 $(document).ready(function(){
+    //if is weixin brower then load wexin api 
+     var shop_code=getCookie('market_shop_code');
+     var shop_logo=$('#shop_info').attr('data-img');
+    if(isWeiXin()){
+        wexin('/'+shop_code,shop_logo);
+    }
     $('#charge').on('click',function(){
         return noticeBox('该功能年后开放,敬请期待！');
     });
