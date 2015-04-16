@@ -86,13 +86,10 @@ function wexin(link,imgurl){
              timestamp:timestamp_val, // 必填，生成签名的时间戳
              nonceStr:noncestr_val, // 必填，生成签名的随机串
              signature:signature_val,// 必填，签名，见附录1
-             jsApiList: ['onMenuShareTimeline','onMenuShareAppMessage','hideMenuItems','hideOptionMenu','showOptionMenu'],// 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-            success:function(){
-                            wx.hideOptionMenu();
-            }
+             jsApiList: ['onMenuShareTimeline','onMenuShareAppMessage','hideMenuItems','hideOptionMenu','showOptionMenu']// 必填，需要使用的JS接口列表，所有JS接口列表见附录2
          });
          wx.ready(function(){
-
+            wx.hideOptionMenu();
              if(logo_Item.length==0){
                 wx.hideMenuItems({
                     menuList: ['menuItem:share:appMessage','menuItem:share:timeline'] 
