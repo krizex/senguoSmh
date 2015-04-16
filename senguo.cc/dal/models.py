@@ -1074,17 +1074,19 @@ class Order(MapBase, _CommonApi):
 				charge_type.fruit.saled -= num
 				print(num)
 		if mgoods:
+			print(mgoods,'**********************************')
 			charge_types = session.query(MChargeType).filter(MChargeType.id.in_(mgoods.keys())).all()
 			for charge_type in charge_types:
 				# print("before",charge_type.mgoods.storage,charge_type.mgoods.current_saled)
-				if mgoods[int(charge_type.id)]==0:
+				if mgoods[str(charge_type.id)]==0:
 					continue
-				num =mgoods[int(charge_type.id)]['num'] *charge_type.unit_num * charge_type.num
+				num =mgoods[str(charge_type.id)]['num'] *charge_type.unit_num * charge_type.num
 				charge_type.mgoods.storage += num
 				charge_type.mgoods.current_saled -= num
 				charge_type.mgoods.saled -= num
 		session.commit()
 		return True
+
 	
 
 	def get_sendtime(self,session,order_id):
@@ -1110,9 +1112,18 @@ class Order(MapBase, _CommonApi):
 			order.start_time.hour, w_start_time_minute,order.end_time.hour, w_end_time_minute)
 		return send_time
 
-	# def get_arrival_time(self,order_id):
 
-
+class CommentApply(MapBase, _CommonApi):
+	__tablename__ = 'commentapply'
+	id = Column(Integer , primary_key = True , nullable = False ,autoincrement = True)
+	delete_reason = Column(String(200))
+	order_id = Column(Integer , ForeignKey(Order.id) , nullable = False)
+	shop_id  = Column(Integer , ForeignKey(Shop.id) ,nullable = False)
+	create_date = Column(Date, default=func.curdate())
+	has_done  = Column(Integer , default = 0) # 0 :not ever apply , 1: applied ,success  2:applied but decline
+	order   = relationship("Order")
+	shop    = relationship("Shop")
+	decline_reason = Column(String(200)) # when
 
 #水果单品
 class Fruit(MapBase, _CommonApi):
