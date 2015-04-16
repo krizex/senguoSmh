@@ -88,13 +88,15 @@ function wexin(link,imgurl){
              signature:signature_val,// 必填，签名，见附录1
              jsApiList: ['onMenuShareTimeline','onMenuShareAppMessage','hideMenuItems','hideOptionMenu','showOptionMenu']// 必填，需要使用的JS接口列表，所有JS接口列表见附录2
          });
+        wx.success(function(){
+             wx.hideOptionMenu();
+        });
          wx.ready(function(){
-            wx.hideOptionMenu();
+            wx.showOptionMenu();
              if(logo_Item.length==0){
                 wx.hideMenuItems({
                     menuList: ['menuItem:share:appMessage','menuItem:share:timeline'] 
                 });
-                wx.showOptionMenu();
              }
             wx.onMenuShareTimeline({
              title: '', // 分享标题
