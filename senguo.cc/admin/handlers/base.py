@@ -722,8 +722,9 @@ class WxOauth2:
 
 
     @classmethod
-    def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time):
-        remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n\n' + '请及时登录森果后台处理订单。'
+    def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods):
+        remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n' + "商品详情："  + goods + '\n\n'  + \
+        '请及时登录森果后台处理订单。'
         postdata = {
             'touser' : touser,
             'template_id':"5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg",
@@ -742,6 +743,7 @@ class WxOauth2:
         access_token = cls.get_client_access_token()
         res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
         data = json.loads(res.content.decode("utf-8"))
+        print('data',data)
         if data["errcode"] != 0:
             #print("订单提醒发送失败:",data)
             return False
@@ -749,7 +751,7 @@ class WxOauth2:
 
     @classmethod
     def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time):
-        remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n\n' + '请及时处理订单。'
+        remark = "订单总价：" + str('%.1' % order_totalPrice) + '\n' + "送达时间：" + send_time + '\n\n' + '请及时处理订单。'
         order_type_temp = int(order_type)
         order_type = "即时送" if order_type_temp == 1 else "按时达"
         postdata = {
@@ -787,7 +789,7 @@ class WxOauth2:
                 "keyword1" : {"value":shop_name,"color":"#173177"},
                 "keyword2" : {"value":str(order_create),"color":"#173177"},
                 "keyword3" : {"value":goods,"color":"#173177"},
-                "keyword4" : {"value":order_totalPrice,"color":"#173177"},
+                "keyword4" : {"value":float('%.1f' % order_totalPrice),"color":"#173177"},
                 "remark"   : {"value":"您的订单我们已经收到，配货后将尽快配送~","color":"#173177"},
             }
         }

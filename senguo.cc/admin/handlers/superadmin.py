@@ -197,8 +197,21 @@ class ShopManage(SuperBaseHandler):
 		action = self.args["action"]
 		if action == "updateShopStatus":
 			self.handle_updateStatus()
+		elif action == "shopclose":
+			self.handle_shopclose()
 		else:
 			return self.send(400)
+
+	@SuperBaseHandler.check_arguments("shop_id:int")
+	def handle_shopclose(self):
+		shop = models.Shop.get_by_id(self.session,self.args["shop_id"])
+		if not shop:
+			return self.send_error(404)
+		shop.status = 0
+		self.session.commit()
+		return self.send_success()
+
+
 	@SuperBaseHandler.check_arguments("shop_id:int", "new_status:int", "declined_reason?")
 	def handle_updateStatus(self):
 
@@ -276,11 +289,11 @@ class ShopManage(SuperBaseHandler):
 			# inspect whether staff exited
 			######################################################################################
 			temp_staff = self.session.query(models.ShopStaff).get(shop.admin_id)
-			print('temp_staff')
-			print(shop.admin_id)
-			print(temp_staff)
+			# print('temp_staff')
+			# print(shop.admin_id)
+			# print(temp_staff)
 			if temp_staff is None:
-				print('passssssssssssssssssssssssssssssssssssssssss')
+				# print('passssssssssssssssssssssssssssssssssssssssss')
 				self.session.add(models.ShopStaff(id=shop.admin_id, shop_id=shop.id))  # 添加默认员工时先添加一个员工，否则报错
 				self.session.commit()
 
@@ -297,7 +310,7 @@ class ShopManage(SuperBaseHandler):
 			message_name = account_info.realname
 			message_shop_name = shop_temp.shop_name
 			# mobile = account_info.phone
-			print(mobile)
+			# print(mobile)
 		   
 			message_content ='尊敬的{0}，您好，您在森果平台申请的店铺{1}已经通过审核，点击链接查看使用教程 http://dwz.cn/CSY6L'.format(message_name,message_shop_name)
 
@@ -307,7 +320,7 @@ class ShopManage(SuperBaseHandler):
 				content = message_content)
 			headers = dict(Host = '106.ihuyi.cn',)
 			r = requests.post(url,data = postdata , headers = headers)
-			print(r.text)
+			# print(r.text)
 			# test_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'
 
 			WxOauth2.post_template_msg(account_info.wx_openid, shop_temp.shop_name,
