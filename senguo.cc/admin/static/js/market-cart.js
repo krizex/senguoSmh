@@ -597,8 +597,8 @@ function Vrify(evt){
     evt.preventDefault();
     var phone=$('#enterPhone').val();
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return $.warnNotice("电话貌似有错o(╯□╰)o");}
-    if(!phone){return $.warnNotice('手机号不能为空');}
+    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
+    if(!phone){return warnNotice('手机号不能为空');}
     var action='gencode';
     var url="/customer/phoneVerify?action=customer";
     var args={
@@ -626,11 +626,11 @@ function TiePhone(evt){
     var code=$('#enterVrify').val();
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return $.warnNotice("电话貌似有错o(╯□╰)o");}
-    if(!phone){return $.warnNotice('请输入手机号');}
-    if(!code){return $.warnNotice('请输入验证码');}
-    if(!regNumber.test(code)){return $.warnNotice('验证码只能为数字！');}
-    if(code>0&&phone.length<6){return $.warnNotice('验证码为六位数字!');}
+    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
+    if(!phone){return warnNotice('请输入手机号');}
+    if(!code){return warnNotice('请输入验证码');}
+    if(!regNumber.test(code)){return warnNotice('验证码只能为数字！');}
+    if(code>0&&phone.length<6){return warnNotice('验证码为六位数字!');}
     var url="/customer/phoneVerify?action=customer";
     var action='checkcode';
     var args={action:action,phone:phone,code:code};

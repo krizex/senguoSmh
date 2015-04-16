@@ -13,8 +13,9 @@ $(document).ready(function(){
     //订单data
      goodsList(1,window.dataObj.action);
      scrollLoading();
-    //取消订单   
+   
     $(document).on('click','.order-concel',function () {
+         //取消订单   
         var $this = $(this);
         var id=$this.parents('.order-list-item').data('id');
         var index=$this.parents('.order-list-item').index();
@@ -222,7 +223,7 @@ function orderConcel(target,id){
 function orderComment(id,order_id,comment){
     var url='';
     var action='comment';
-    if(!comment){return $.warnNotice('请输入您的评论！')}
+    if(!comment){return warnNotice('请输入您的评论！')}
     var data={
         order_id:order_id,
         comment:comment

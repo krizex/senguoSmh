@@ -1,8 +1,4 @@
-//get item dom
-getItem('/static/items/customer/market-goods-item.html?v=2015-0320',function(data){window.dataObj.goods_item=data;});    
-getItem('/static/items/customer/charge-item.html?v=2015-0310',function(data){window.dataObj.charge_item=data;}); 
-getItem('/static/items/customer/classify_item.html?v=2015-0310',function(data){window.dataObj.classify_item=data;}); 
-$(document).ready(function(){  
+$(document).ready(function(){
      //公告滚动
      $('#position li').first().addClass('on');
     if($('#position li').length>0){
@@ -143,7 +139,8 @@ $(document).ready(function(){
         addCart(link);
     }).on('click','.focus-btn',function(){ 
       //关注店铺
-        focus();}).on('click','.goods-class-choose li',function(){
+        focus();
+    }).on('click','.goods-class-choose li',function(){
         //分类选择
         var $this=$(this);
         var text=$this.text();
@@ -178,7 +175,8 @@ $(document).ready(function(){
         goodsList(1,6);
      }).on('click','#dryfruit_goods',function(){
         //get all dry_fruit
-        var dry_pages=Int($('#dry_page').val());
+        //var dry_pages=Int($('#dry_page').val());
+        var dry_pages=parseInt($('#dry_page').val());
         window.dataObj.page_count=dry_pages;
         window.dataObj.page=1;
         window.dataObj.action=7;
@@ -272,7 +270,6 @@ $(document).ready(function(){
                 }
             }
             else {storage_now=Int(storage)};
-            console.log(storage_now);
             $this.val(storage_now);
             if(!regNum.test(num)) {
                 $this.val(0);
@@ -302,7 +299,7 @@ $(document).ready(function(){
                 if(num>999) {
                     if(storage<999) {
                         if(storage_now<=0) {$this.val(storage);}
-                        return noticeBox('111只有这么多了哦!┑(￣▽ ￣)┍',$this);
+                        return noticeBox('只有这么多了哦!┑(￣▽ ￣)┍',$this);
                     }
                     else {
                         $this.val(999);
@@ -314,7 +311,7 @@ $(document).ready(function(){
                          if(storage_now<=0){
                             if(storage<999) $this.val(storage);
                             else $this.val(999);
-                            noticeBox('2333库存不足啦！┑(￣▽ ￣)┍ ',$this)
+                            noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)
                         }
                         else if(storage_now>0){
                             window.dataObj.cart_count++;
@@ -354,9 +351,9 @@ var scrollLoading=function(){
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
         $('.no_more').hide();
         if(window.dataObj.finished&&(main.height()-range) <= totalheight  && window.dataObj.page < maxnum) { 
+            window.dataObj.finished=false;
             $('.no_more').hide();
             $('.loading').show();
-            window.dataObj.finished=false;
             window.dataObj.page++; 
             goodsList(window.dataObj.page,window.dataObj.action);
         }       
@@ -378,55 +375,71 @@ var goodsList=function(page,action){
     $.postJson(url,args,function(res){
         if(res.success)
         {
-            var w_orders=res.w_orders;
-            var fruit_list=res.fruit_list;
-            var dry_fruit_list=res.dry_fruit_list;
-            var mgood_list=res.mgood_list;
-            var mgoods_item=window.dataObj.mgoods_item;
-            var classify_item=window.dataObj.classify_item
-            var goods_info;
-            if(w_orders){ goods_info=w_orders;}
-            else if(fruit_list){ goods_info=fruit_list;}
-            else if(dry_fruit_list){ goods_info=dry_fruit_list;}
-            else if(mgood_list){ goods_info=mgood_list;}
-            for(var goods in goods_info){
-                var goods_list=goods_info[goods];
-                var type=goods_list[0];
-                var good=goods_list[1];
-                var menu_id;
-                if(goods_list[2]) {menu_id=goods_list[2];}
-                if(type=='fruit'){
-                     fruitItem($('.fruit_goods_list'),good,'fruit');//fruits information
-                     if(action==5) {$('.fruit_cassify').removeClass('hidden');}
-                }
-                else if(type=='dry_fruit'){
-                     fruitItem($('.dryfruit_goods_list'),good,'fruit');//fruits information
-                    if(action==5) {$('.dryfruit_classify').removeClass('hidden')}
-                }
-                else if(type=='mgoods'){
-                    fruitItem($('.menu_goods_list'+menu_id),good,'menu');
-                    if(action==5) {$('.menu_classify'+menu_id).removeClass('hidden')}
-                }
+            //get item dom
+            if(window.dataObj.goods_item==undefined){
+                getItem('/static/items/customer/market-goods-item.html?v=2015-0320',function(data){
+                    window.dataObj.goods_item=data;
+                    getItem('/static/items/customer/charge-item.html?v=2015-0310',function(data){
+                        window.dataObj.charge_item=data;
+                        getItem('/static/items/customer/classify_item.html?v=2015-0310',function(data){
+                            window.dataObj.classify_item=data;
+                            initData(res);
+                        });
+                    });
+                });
             }
-            var fruits=window.dataObj.fruits;
-            var mgoods=window.dataObj.mgoods;
-            var c_fs=[];
-            var c_ms=[];
-            for(var key in fruits){
-                c_fs.push([key,fruits[key]]);
-            };
-            for(var key in mgoods){
-                c_ms.push([key,mgoods[key]]);
-            };
-            cartNum(c_fs,'.fruit-list');
-            cartNum(c_ms,'.menu-list');
-            $('.loading').hide();
-            window.dataObj.count++;
-            window.dataObj.finished=true;
+            else initData(res);       
         }
         else return noticeBox(res.error_text);
         },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
         );
+        var initData=function(res){
+            var w_orders=res.w_orders;
+                    var fruit_list=res.fruit_list;
+                    var dry_fruit_list=res.dry_fruit_list;
+                    var mgood_list=res.mgood_list;
+                    var mgoods_item=window.dataObj.mgoods_item;
+                    var classify_item=window.dataObj.classify_item;
+                    var goods_info;
+                    if(w_orders){ goods_info=w_orders;}
+                    else if(fruit_list){ goods_info=fruit_list;}
+                    else if(dry_fruit_list){ goods_info=dry_fruit_list;}
+                    else if(mgood_list){ goods_info=mgood_list;}
+                    for(var goods in goods_info){
+                        var goods_list=goods_info[goods];
+                        var type=goods_list[0];
+                        var good=goods_list[1];
+                        var menu_id;
+                        if(goods_list[2]) {menu_id=goods_list[2];}
+                        if(type=='fruit'){
+                            fruitItem($('.fruit_goods_list'),good,'fruit');//fruits information
+                            if(action==5) {$('.fruit_cassify').removeClass('hidden');}
+                        }
+                        else if(type=='dry_fruit'){
+                            fruitItem($('.dryfruit_goods_list'),good,'fruit');//fruits information
+                            if(action==5) {$('.dryfruit_classify').removeClass('hidden')}
+                        }
+                        else if(type=='mgoods'){
+                            fruitItem($('.menu_goods_list'+menu_id),good,'menu');
+                            if(action==5) {$('.menu_classify'+menu_id).removeClass('hidden')}
+                        }
+                    }
+                    var fruits=window.dataObj.fruits;
+                    var mgoods=window.dataObj.mgoods;
+                    var c_fs=[];
+                    var c_ms=[];
+                    for(var key in fruits){
+                        c_fs.push([key,fruits[key]]);
+                    };
+                    for(var key in mgoods){
+                        c_ms.push([key,mgoods[key]]);
+                    };
+                    cartNum(c_fs,'.fruit-list');
+                    cartNum(c_ms,'.menu-list');
+                    $('.loading').hide();
+                    window.dataObj.count++;
+                    window.dataObj.finished=true;
+        }
 };
 
 var fruitItem=function(box,fruits,type){
@@ -444,7 +457,6 @@ var fruitItem=function(box,fruits,type){
         var favour=fruits['favour'];
         var charge_types=fruits['charge_types'];
         var favour_today=fruits['favour_today'];
-        console.log(favour_today,type);
         if(!code) code='TDSG';
         $item.attr({'data-id':id,'data-type':type,'data-storage':storage,'data-num':storage,'data-favour':favour_today}).addClass(code);
         $item.find('.fruit_intro').val(intro);
@@ -480,7 +492,7 @@ var fruitItem=function(box,fruits,type){
                 var price=charge_types[0]['price'];
                 var num=charge_types[0]['num'];
                 var unit=charge_types[0]['unit'];
-                if(unit==1) unit='个 ';
+                if(unit==1) unit='个';
                 else  if(unit==2) unit='斤';
                 else  if(unit==3) unit='份';
                 $charge_item.attr({'data-id':id});
@@ -506,12 +518,14 @@ var fruitItem=function(box,fruits,type){
                 $item.find('.charge-list').append($li);
             }
             //goods img 
-            if(!img_url) $item.find('.img').attr({'data-original':'/static/design_img/'+code+'.png'});
-            else $item.find('.img').attr({'data-original':img_url+'?imageView/1/w/170/h/170'});
-            $('.lazy_img').lazyload({threshold:500});
-            $item.find('.lazy_img').lazyload({threshold:500});
+            if(!img_url){
+                $item.find('.img').attr({'data-original':'/static/design_img/'+code+'.png'});
+            }else{
+                $item.find('.img').attr({'data-original':img_url+'?imageView/1/w/170/h/170'});
+            }
         } 
         box.append($item);
+       $('.lazy_img').lazyload({threshold:200});
 }
 window.dataObj.fruits={};
 window.dataObj.mgoods={};

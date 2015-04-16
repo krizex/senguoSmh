@@ -187,22 +187,22 @@ function Apply(evt){
     var code=$('#verify_code').val().trim();
     var phone=$('#phone').val().trim();
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return $.noticeBox("电话貌似有错o(╯□╰)o");}
-    if(shop_name.length>15){return $.noticeBox('店铺名称请不要超过15个字符！')}
-    if(shop_address_detail.length>50){return $.noticeBox('详细地址请不要超过50个字符！')}
-    if(shop_intro.length>300){return $.noticeBox('店铺简介请不要超过300个字符！')}
-    if (!shop_name){return $.noticeBox("请输入店铺名称！");}
-    if (!shop_service_area){return $.noticeBox("请选择服务区域！");}
-    if (!shop_city||!shop_province){return $.noticeBox("请选择省份城市！");}
-    if (!shop_address_detail){return $.noticeBox("请输入您的详细地址！");}
-    if (!shop_intro){return $.noticeBox("请输入您的店铺简介");}
+    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return noticeBox("电话貌似有错o(╯□╰)o");}
+    if(shop_name.length>15){return noticeBox('店铺名称请不要超过15个字符！')}
+    if(shop_address_detail.length>50){return noticeBox('详细地址请不要超过50个字符！')}
+    if(shop_intro.length>300){return noticeBox('店铺简介请不要超过300个字符！')}
+    if (!shop_name){return noticeBox("请输入店铺名称！");}
+    if (!shop_service_area){return noticeBox("请选择服务区域！");}
+    if (!shop_city||!shop_province){return noticeBox("请选择省份城市！");}
+    if (!shop_address_detail){return noticeBox("请输入您的详细地址！");}
+    if (!shop_intro){return noticeBox("请输入您的店铺简介");}
     if(typeof(img_key)=='undefined') img_key='';
     var regChinese=/^[\u4e00-\u9faf]+$/;
-    if(!realName){return $.noticeBox('请输入您的真实姓名！')}
-    if(!regChinese.test(realName)){return $.noticeBox('请输入您的真实姓名！')}
-    if(!wx_Name){return $.noticeBox('请输入您的微信号！')}
-    if(!code){return $.noticeBox('请输入验证码！')}
-    if(!phone){return $.noticeBox('请输入您的手机号！')}
+    if(!realName){return noticeBox('请输入您的真实姓名！')}
+    if(!regChinese.test(realName)){return noticeBox('请输入您的真实姓名！')}
+    if(!wx_Name){return noticeBox('请输入您的微信号！')}
+    if(!code){return noticeBox('请输入验证码！')}
+    if(!phone){return noticeBox('请输入您的手机号！')}
     $('#submitApply').addClass('text-grey6').val('提交成功').attr({'disabled':'true'});
     var args={
         shop_name:shop_name,
@@ -225,11 +225,11 @@ function Apply(evt){
                 window.location.href="/apply/success";
             }
             else {
-                $.noticeBox(res.error_text);
+                noticeBox(res.error_text);
                 $('#submitApply').removeClass('text-grey6').val('提交申请').removeAttr('disabled');
             }
         },
-        function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')}
+        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')}
     );
 }
 
@@ -257,22 +257,22 @@ function reApply(evt){
     var code=$('#verify_code').val().trim();
     var phone=$('#phone').val().trim();
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return $.noticeBox("电话貌似有错o(╯□╰)o");}
-    if(shop_name.length>15){return $.noticeBox('店铺名称请不要超过15个字符！')}
-    if(shop_address_detail.length>50){return $.noticeBox('详细地址请不要超过50个字符！')}
-    if(shop_intro.length>300){return $.noticeBox('店铺简介请不要超过300个字符！')}
-    if (!shop_name){return $.noticeBox("请输入店铺名称！");}
-    if (!shop_service_area){return $.noticeBox("请选择服务区域！");}
-    if (!shop_city||!shop_province){return $.noticeBox("请选择省份城市！");}
-    if (!shop_address_detail){return $.noticeBox("请输入您的详细地址！");}
-    if (!shop_intro){return $.noticeBox("请输入您的店铺简介");}
+    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return noticeBox("电话貌似有错o(╯□╰)o");}
+    if(shop_name.length>15){return noticeBox('店铺名称请不要超过15个字符！')}
+    if(shop_address_detail.length>50){return noticeBox('详细地址请不要超过50个字符！')}
+    if(shop_intro.length>300){return noticeBox('店铺简介请不要超过300个字符！')}
+    if (!shop_name){return noticeBox("请输入店铺名称！");}
+    if (!shop_service_area){return noticeBox("请选择服务区域！");}
+    if (!shop_city||!shop_province){return noticeBox("请选择省份城市！");}
+    if (!shop_address_detail){return noticeBox("请输入您的详细地址！");}
+    if (!shop_intro){return noticeBox("请输入您的店铺简介");}
     if(typeof(img_key)=='undefined') img_key='';
     var regChinese=/^[\u4e00-\u9faf]+$/;
-    if(!realName){return $.noticeBox('请输入您的真实姓名！')}
-    if(!regChinese.test(realName)){return $.noticeBox('请输入您的真实姓名！')}
-    if(!wx_Name){return $.noticeBox('请输入您的微信号！')}
-    if(!code){return $.noticeBox('请输入验证码！')}
-    if(!phone){return $.noticeBox('请输入您的手机号！')}
+    if(!realName){return noticeBox('请输入您的真实姓名！')}
+    if(!regChinese.test(realName)){return noticeBox('请输入您的真实姓名！')}
+    if(!wx_Name){return noticeBox('请输入您的微信号！')}
+    if(!code){return noticeBox('请输入验证码！')}
+    if(!phone){return noticeBox('请输入您的手机号！')}
     $('#submitReapply').addClass('text-grey6').val('提交成功').attr({'disabled':'true'});
     var args={
         shop_name:shop_name,
@@ -296,19 +296,19 @@ function reApply(evt){
                 window.location.href="/apply/success";
             }
             else  {
-                $.noticeBox(res.error_text);
+                noticeBox(res.error_text);
                 $('#submitApply').removeClass('text-grey6').val('提交申请').removeAttr('disabled');
             }
         },
-       function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')}
+       function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')}
     );
 }
 
 function Vrify(){
     var phone=$('#phone').val();
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return $.noticeBox("电话貌似有错o(╯□╰)o");}
-    if(!phone){return $.noticeBox('手机号不能为空');}
+    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return noticeBox("电话貌似有错o(╯□╰)o");}
+    if(!phone){return noticeBox('手机号不能为空');}
     var action='gencode_shop_apply';
     var url="/fruitzone/phoneVerify?action=admin";
     var args={action:action,phone:phone};
@@ -318,8 +318,8 @@ function Vrify(){
             {
                 time($('#getVrify'));
             }
-            else $.noticeBox(res.error_text);
+            else noticeBox(res.error_text);
         },
-       function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')}
+       function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')}
     );
 }

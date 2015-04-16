@@ -34,21 +34,23 @@ function orderBy(i){
 }
 
 //public
-$.postJson = function(url, args,successCall, failCall, errorCall,alwaysCall){
-    args._xsrf = window.dataObj._xsrf;
-    var req = $.ajax({
-        type:"post",
-        url:url,
-        data:JSON.stringify(args),
-        contentType:"application/json; charset=UTF-8",
-        success:successCall,
-        fail:failCall,
-        error:errorCall
-    });
-    //req.always(alwaysCall);
+(function ($) {
+    $.postJson = function(url, args,successCall, failCall, errorCall,alwaysCall){
+        args._xsrf = window.dataObj._xsrf;
+        var req = $.ajax({
+            type:"post",
+            url:url,
+            data:JSON.stringify(args),
+            contentType:"application/json; charset=UTF-8",
+            success:successCall,
+            fail:failCall,
+            error:errorCall
+        });
+        //req.always(alwaysCall);
 };
+})(Zepto);
 
-$.getItem=function(url,success){$.get(url,success);};
+function getItem(url,success){$.get(url,success);}
 
 function Int(target){
     target=parseInt(target);
@@ -94,11 +96,12 @@ function stopPropagation(e) {
         e.stopPropagation();  
     } else {  
         e.cancelBubble = true; //IE阻止冒泡方法  
-    }  
-}  
-//confirmbox
-$.getItem('/static/items/confirmBox.html?v=201503-29',function(data){window.dataObj.confirmBox=data});
-$.confirmBox=function(text,index,type){
+    } 
+} 
+
+///confirmbox
+getItem('/static/items/confirmBox.html?v=201503-29',function(data){window.dataObj.confirmBox=data});
+var confirmBox=function(text,index,type){
         var $box=$(window.dataObj.confirmBox);
         $box.find('.message').text(text);
         if(typeof(index)!='undefined') $box.find('.message').attr({'data-index':index});
@@ -120,52 +123,42 @@ $.confirmBox=function(text,index,type){
             }
         });
 }
-$.confirmRemove=function(){
+var confirmRemove=function(){
     $('#confirmBox').remove();
     $('.modal_bg').remove();
 }
 //word notice
-$.getItem('/static/items/noticeBox.html?v=2015-03-25',function(data){
+getItem('/static/items/noticeBox.html?v=2015-03-25',function(data){
     window.dataObj.noticeBox=data;
      var $box=$(window.dataObj.noticeBox);   
     $('body').append($box);
 });
-$.noticeBox=function(text,item){
+var noticeBox=function(text,item){
         $('#noticeBox').removeClass('hidden').find('.notice').text(text);
         if(item) {item.attr({'disabled':'true'});}
-        $.noticeRemove('noticeBox',item);
-        $.noticeRemove=function () {
-        if (window.dataObj.n_time == 0) {
-            window.dataObj.n_time = 2;
-            $('#noticeBox').addClass('hidden');
-            if(item) {item.removeAttr('disabled');}
-        }
-        else {
-            window.dataObj.n_time--;
-            setTimeout(function() {$.noticeRemove()},1000);
-        }
-    }
+        noticeRemove('noticeBox',item);      
 }
 //modal notice word
-$.warnNotice=function(text){
+var warnNotice=function(text){
     $('.modal-body').find('.warn').remove();
     var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
     $word.text(text);
     $('.modal-body').append($word);
     $('.sure_btn').attr({'disabled':'true'});
-    $.noticeRemove('warn');
+    noticeRemove('warn');
 }
 //time count 2 secends
 window.dataObj.n_time=2;
-$.noticeRemove=function (target) {
+var noticeRemove=function (target,item) {
     if (window.dataObj.n_time == 0) {
         window.dataObj.n_time = 2;
         $('#'+target).addClass('hidden');
         $('.sure_btn').removeAttr('disabled');
+        if(item) {item.removeAttr('disabled');}
     }
     else {
         window.dataObj.n_time--;
-        setTimeout(function() {$.noticeRemove(target)},1000);
+        setTimeout(function() {noticeRemove(target,item)},1000);
     }
 }
 

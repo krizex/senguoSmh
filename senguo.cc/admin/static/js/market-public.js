@@ -174,21 +174,23 @@ function tagText(target,n){
     //AndroidImg('bg_change');
 }
 //public
-$.postJson = function(url, args,successCall, failCall, errorCall,alwaysCall){
-    args._xsrf = window.dataObj._xsrf;
-    var req = $.ajax({
-        type:"post",
-        url:url,
-        data:JSON.stringify(args),
-        contentType:"application/json; charset=UTF-8",
-        success:successCall,
-        fail:failCall,
-        error:errorCall
-    });
-    //req.always(alwaysCall);
+(function ($) {
+    $.postJson = function(url, args,successCall, failCall, errorCall,alwaysCall){
+        args._xsrf = window.dataObj._xsrf;
+        var req = $.ajax({
+            type:"post",
+            url:url,
+            data:JSON.stringify(args),
+            contentType:"application/json; charset=UTF-8",
+            success:successCall,
+            fail:failCall,
+            error:errorCall
+        });
+        //req.always(alwaysCall);
 };
+})(Zepto);
 
-function getItem(url,success){$.get(url,success);};
+function getItem(url,success){$.get(url,success);}
 
 function Int(target){
     target=parseInt(target);
@@ -273,19 +275,7 @@ getItem('/static/items/noticeBox.html?v=2015-03-25',function(data){
 var noticeBox=function(text,item){
         $('#noticeBox').removeClass('hidden').find('.notice').text(text);
         if(item) {item.attr({'disabled':'true'});}
-        noticeRemove('noticeBox',item);
-        var $noticeRemove=function () {
-        if (window.dataObj.n_time == 0) {
-            window.dataObj.n_time = 2;
-            console.log(333333);
-            $('#noticeBox').addClass('hidden');
-            if(item) {console.log(23333);item.removeAttr('disabled');}
-        }
-        else {
-            window.dataObj.n_time--;
-            setTimeout(function() {$noticeRemove()},1000);
-        }
-    }
+        noticeRemove('noticeBox',item);      
 }
 //modal notice word
 var warnNotice=function(text){
@@ -298,15 +288,16 @@ var warnNotice=function(text){
 }
 //time count 2 secends
 window.dataObj.n_time=2;
-var noticeRemove=function (target) {
+var noticeRemove=function (target,item) {
     if (window.dataObj.n_time == 0) {
         window.dataObj.n_time = 2;
         $('#'+target).addClass('hidden');
         $('.sure_btn').removeAttr('disabled');
+        if(item) {item.removeAttr('disabled');}
     }
     else {
         window.dataObj.n_time--;
-        setTimeout(function() {noticeRemove(target)},1000);
+        setTimeout(function() {noticeRemove(target,item)},1000);
     }
 }
 
