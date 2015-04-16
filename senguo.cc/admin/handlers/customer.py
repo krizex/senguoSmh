@@ -85,18 +85,21 @@ class RegistByPhone(CustomerBaseHandler):
 
 class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
-	def get(self):
-		shop_id = self.shop_id
+	def get(self,shop_code):
+		# shop_id = self.shop_id
 		try:
-			shop = self.session.query(models.Shop).filter_by(id =shop_id).first()
+			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
 		except:
 			return self.send_fail('shop error')
 		if shop:
 			shop_name = shop.shop_name
+			shop_id   = shop.id
 		else:
 			return self.send_fail('shop not found')
 		customer_id = self.current_user.id
-
+		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
+		self._shop_code = shop.shop_code
+		self.set_cookie("market_shop_code",str(shop.shop_code))
 		shop_point = 0
 		try:
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
@@ -195,6 +198,12 @@ class ShopProfile(CustomerBaseHandler):
 			return self.send_error(404)
 		shop_id = shop.id
 		shop_name = shop.shop_name
+
+		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
+		self._shop_code = shop.shop_code
+		self.set_cookie("market_shop_code",str(shop.shop_code))
+
+
 		#是否关注判断
 		follow = True
 		if not self.session.query(models.CustomerShopFollow).filter_by(
@@ -360,7 +369,9 @@ class ShopProfile(CustomerBaseHandler):
 
 class Members(CustomerBaseHandler):
 	def get(self):
-		shop_id = self.shop_id
+		# shop_id = self.shop_id
+		shop_id = int(self.get_cookie("market_shop_id"))
+		print(shop_id)
 		admin_id = self.session.query(models.Shop.admin_id).filter_by(id=shop_id).first()
 		if not admin_id:
 			return self.send_error(404)
@@ -914,15 +925,19 @@ class Market(CustomerBaseHandler):
 
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
-	def get(self):
-		shop_id = self.shop_id
+	def get(self,shop_code):
+		# shop_id = self.shop_id
 		customer_id = self.current_user.id
 		phone = self.get_phone(customer_id)
 		
 		storages = {}
-		shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
-		shop_name = shop.shop_name
+		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		if not shop:return self.send_error(404)
+		shop_name = shop.shop_name
+		shop_id = shop.id
+		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
+		self._shop_code = shop.shop_code
+		self.set_cookie("market_shop_code",str(shop.shop_code))
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits) or eval(cart.mgoods))): #购物车为空
 			return self.render("notice/cart-empty.html",context=dict(subpage='cart'))
@@ -955,7 +970,7 @@ class Cart(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
 										 "address_id:int", "message:str", "type:int", "tip?:int",
 										 "today:int")
-	def post(self):#提交订单
+	def post(self,shop_code):#提交订单
 		# print(self)
 		shop_id = self.shop_id
 		fruits = self.args["fruits"]

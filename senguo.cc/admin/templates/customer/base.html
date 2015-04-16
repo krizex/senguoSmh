@@ -57,14 +57,14 @@
                 </a>
             </li>
             <li class="w25 pull-left {{cart_active}} cart_item">
-                <a href="{{reverse_url('customerCart')}}" class="text-grey cart" >
+                <a href="{{reverse_url('customerCart',handler.shop_code)}}" class="text-grey cart" >
                     <em class="bg_change"></em>
                     <span class="cart_num bg-pink text-white hidden">0</span>
                     <p class="text-center">购物篮</p>
                 </a>
             </li>
             <li class="w25 pull-left {{center_active}}">
-                <a href="{{reverse_url('customerHome')}}" class="text-grey my">
+                <a href="{{reverse_url('customerHome',handler.shop_code)}}" class="text-grey my">
                     <em class="bg_change"></em>
                     <p class="text-center">我的</p>
                 </a>

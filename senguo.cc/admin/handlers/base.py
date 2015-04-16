@@ -789,7 +789,7 @@ class WxOauth2:
                 "keyword1" : {"value":shop_name,"color":"#173177"},
                 "keyword2" : {"value":str(order_create),"color":"#173177"},
                 "keyword3" : {"value":goods,"color":"#173177"},
-                "keyword4" : {"value":float('%.1f' % order_totalPrice),"color":"#173177"},
+                "keyword4" : {"value":str(order_totalPrice),"color":"#173177"},
                 "remark"   : {"value":"您的订单我们已经收到，配货后将尽快配送~","color":"#173177"},
             }
         }
