@@ -59,6 +59,8 @@ $(document).ready(function(){
         } 
     });
     $(".lazy_img").lazyload({threshold:100});
+    console.log($('#shop_imgurl').length);
+    console.log(typeof($('#shop_imgurl')));
     wexin();
 });
 
@@ -92,27 +94,25 @@ function wexin(link,imgurl){
                     menuList: ['menuItem:share:appMessage','menuItem:share:timeline'] 
                 });
              }
-             else {
-                    wx.onMenuShareTimeline({
-                     title: '', // 分享标题
-                     link:link, // 分享链接
-                     imgUrl:imgurl, // 分享图标
-                     success: function () {
-                     // 用户确认分享后执行的回调函数
-                     },
-                     cancel: function () {
-                     // 用户取消分享后执行的回调函数
-                     }
-                 });
-                 wx.onMenuShareAppMessage({
-                     title: '', // 分享标题
-                     desc: "一家不错的店铺，快来关注吧~ ", // 分享描述
-                     link:link,
-                     imgUrl:imgurl, // 分享图标
-                     type: '' // 分享类型,music、video或link，不填默认为link
-                 });
+            wx.onMenuShareTimeline({
+             title: '', // 分享标题
+             link:link, // 分享链接
+             imgUrl:imgurl, // 分享图标
+             success: function () {
+             // 用户确认分享后执行的回调函数
+             },
+             cancel: function () {
+             // 用户取消分享后执行的回调函数
              }
          });
+         wx.onMenuShareAppMessage({
+             title: '', // 分享标题
+             desc: "一家不错的店铺，快来关注吧~ ", // 分享描述
+             link:link,
+             imgUrl:imgurl, // 分享图标
+             type: '' // 分享类型,music、video或link，不填默认为link
+         });
+ });
         }
         else return alert(res.error_text);
     })
