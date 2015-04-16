@@ -982,7 +982,7 @@ class Follower(AdminBaseHandler):
 		order_by = self.args["order_by"]
 		page = self.args["page"]
 		page_size = 20
-
+		shop_id = self.current_shop.id
 		count = 1
 
 		if action in ("all", "old"):
@@ -1001,6 +1001,7 @@ class Follower(AdminBaseHandler):
 				q = q.order_by(desc(models.Customer.balance))
 			count = q.count()
 			customers = q.offset(page*page_size).limit(page_size).all()
+
 		elif action == "search":  # 用户搜索，支持根据手机号/真名/昵称搜索
 			wd = self.args["wd"]
 			if wd.isdigit():  # 判断是否为纯数字，纯数字就按照手机号搜索
@@ -1017,7 +1018,11 @@ class Follower(AdminBaseHandler):
 		for x in range(0, len(customers)):  #
 			shop_names = self.session.query(models.Shop.shop_name).join(models.CustomerShopFollow).\
 				filter(models.CustomerShopFollow.customer_id == customers[x].id).all()
+			shop_point = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customers[x].id,\
+				shop_id = shop_id).first()
+			customers[x].shop_point = shop_point
 			customers[x].shop_names = [y[0] for y in shop_names]
+
 
 		return self.render("admin/user-manage.html", customers=customers, count=count, page_sum=count//page_size + 1,
 						   context=dict(subpage='user'))

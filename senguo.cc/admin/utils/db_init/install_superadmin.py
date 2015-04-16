@@ -16,7 +16,7 @@ dict(
      province = "Hubei",
      city = "Wuhan",
      headimgurl=" http://wx.qlogo.cn/mmopen/ajNVdqHZLLBjOHyOeloTE0xiaBoDYqEgGFstIpn78cbKkJEQCRNmJbwrPecdpto6ialBLNTxy7LmvcCUwco2BqcA/0",
-      ="Woody",
+     nickname="Woody",
      sex=1),
 dict(
      unionid = "oxkR_jm8co_E3_TlR5THez96UuN8",
