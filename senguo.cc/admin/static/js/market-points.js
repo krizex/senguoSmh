@@ -49,8 +49,11 @@ var getList=function(page,action){
         if(res.success)
         {
         	if(window.dataObj.points_item==undefined){
-        		getItem('/static/items/customer/points_item.html?v=2015-0329',function(data){window.dataObj.points_item=data;});
-        		initData(res);
+        		getItem('/static/items/customer/points_item.html?v=2015-0329',function(data){
+                    window.dataObj.points_item=data;
+                    initData(res);
+            });
+        		
         	}
              else{
              		initData(res);
@@ -59,7 +62,7 @@ var getList=function(page,action){
         }
         else return noticeBox(res.error_text);
         },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
-        );
+      );
    var initData=function(res){
           var data=res.data;
            for(var key in data){
