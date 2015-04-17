@@ -209,10 +209,11 @@ class _AccountBaseHandler(GlobalBaseHandler):
         
     def send_qiniu_token(self, action, id):
         q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-        token = q.upload_token(BUCKET_SHOP_IMG, expires=120,
+        token = q.upload_token(BUCKET_SHOP_IMG, expires=1800,
                               policy={"callbackUrl": "http://m.senguo.cc/fruitzone/imgcallback",
                                       "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 #        token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
+        print(token)
         return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 
     def get_comments(self, shop_id, page=0, page_size=5):

@@ -26,8 +26,6 @@ class Access(CustomerBaseHandler):
 			return self.redirect(self.reverse_url("customerHome"))
 		elif self._action == "oauth":
 			self.handle_oauth()
-		elif self._action =="register":
-			return self.render("login/m_register.html")
 		else:
 			return self.send_error(404)
 
@@ -64,7 +62,7 @@ class Access(CustomerBaseHandler):
 
 class RegistByPhone(CustomerBaseHandler):
 	def get(self):
-		return self.send_success()
+		return self.render("login/m_register.html")
 
 	@CustomerBaseHandler.check_arguments("phone","password")
 	def post(self):
@@ -1030,6 +1028,8 @@ class Cart(CustomerBaseHandler):
 		end_time = 0
 		freight = 0
 		tip = 0
+		send_time = 0
+		now = datetime.datetime.now()
 		try:config = self.session.query(models.Config).filter_by(id=shop_id).one()
 		except:return self.send_fail("找不到店铺")
 		if self.args["type"] == 2: #按时达
@@ -1037,13 +1037,22 @@ class Cart(CustomerBaseHandler):
 				return self.send_fail("订单总价没达到起送价，请再增加商品")
 			freight = config.freight_on_time  # 运费
 			totalPrice += freight
+			today=int(self.args["today"])
 			try:period = self.session.query(models.Period).filter_by(id=self.args["period_id"]).one()
 			except:return self.send_fail("找不到时间段")
-			if int(self.args["today"]) == 1 and period.start_time.hour*60 + period.start_time.minute - \
+			if today == 1:
+				if period.start_time.hour*60 + period.start_time.minute - \
 					config.stop_range < datetime.datetime.now().hour*60 + datetime.datetime.now().minute:
-				return self.send_fail("下单失败：已超过了该送货时间段的下单时间!请选择下一个时间段！")
+					return self.send_fail("下单失败：已超过了该送货时间段的下单时间!请选择下一个时间段！")
+				send_time = (now).strftime('%Y-%m-%d')+' '+period.start_time.strftime('%H:%M')+'~'+period.end_time.strftime('%H:%M')
+			elif today == 2:
+				tomorrow = now + datetime.timedelta(days = 1)
+				send_time = (tomorrow).strftime('%Y-%m-%d')+' '+period.start_time.strftime('%H:%M')+'~'+period.end_time.strftime('%H:%M')
+				print(send_time)
 			start_time = period.start_time
 			end_time = period.end_time
+			
+
 		elif self.args["type"] == 1:#立即送
 			if totalPrice < config.min_charge_now:
 				return self.send_fail("订单总价没达到起送价，请再增加商品")
@@ -1052,10 +1061,10 @@ class Cart(CustomerBaseHandler):
 			if "tip" in self.args:
 				tip = self.args["tip"]  # 立即送的小费
 				totalPrice += tip
-			now = datetime.datetime.now()
-			later = now + datetime.timedelta(hours = 0.5)
+			later = now + datetime.timedelta(minutes = config.intime_period)
 			start_time = datetime.time(now.hour, now.minute, now.second)
 			end_time = datetime.time(later.hour,later.minute,later.second)
+			send_time =  later.strftime('%Y-%m-%d %H:%M')
 
 		#按时达/立即送 开启/关闭
 		if config.ontime_on == False and self.args["type"] == 2:
@@ -1222,7 +1231,7 @@ class Order(CustomerBaseHandler):
 			else:
 				order.sender_phone =None
 				order.sender_img = None
-			send_time = order.get_sendtime(session,order.id)
+			send_time = order.send_time
 			order_status = order.status
 			order_totalPrice = order.totalPrice
 			order_num = order.num
@@ -1249,8 +1258,8 @@ class Order(CustomerBaseHandler):
 			offset = (page - 1) * 10
 			orders = [x for x in self.current_user.orders if x.status == 1]
 			# woody	
-			for order in orders:
-				order.send_time = order.get_sendtime(session,order.id)
+			# for order in orders:
+			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
@@ -1415,22 +1424,23 @@ class OrderDetail(CustomerBaseHandler):
 				order.sender_phone =None
 				order.sender_img = None
 		delta = datetime.timedelta(1)
-		if order.start_time.minute <10:
-		   w_start_time_minute ='0' + str(order.start_time.minute)
-		else:
-		   w_start_time_minute = str(order.start_time.minute)
-		if order.end_time.minute < 10:
-		   w_end_time_minute = '0' + str(order.end_time.minute)
-		else:
-		   w_end_time_minute = str(order.end_time.minute)
+		print(delta)
+		# if order.start_time.minute <10:
+		#    w_start_time_minute ='0' + str(order.start_time.minute)
+		# else:
+		#    w_start_time_minute = str(order.start_time.minute)
+		# if order.end_time.minute < 10:
+		#    w_end_time_minute = '0' + str(order.end_time.minute)
+		# else:
+		#    w_end_time_minute = str(order.end_time.minute)
 
-		if order.type == 2 and order.today==2:
-		   w_date = order.create_date + delta
-		else:
-		   w_date = order.create_date
-		order.send_time = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
-										order.start_time.hour, w_start_time_minute,
-										  order.end_time.hour, w_end_time_minute)
+		# if order.type == 2 and order.today==2:
+		#    w_date = order.create_date + delta
+		# else:
+		#    w_date = order.create_date
+		# order.send_time = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
+		# 								order.start_time.hour, w_start_time_minute,
+		# 								  order.end_time.hour, w_end_time_minute)
 		return self.render("customer/order-detail.html", order=order,
 						   charge_types=charge_types, mcharge_types=mcharge_types)
 
@@ -1513,18 +1523,6 @@ class InsertData(CustomerBaseHandler):
 		from sqlalchemy import create_engine, func, ForeignKey, Column
 		# print(fun)
 
-		
-		# import pingpp
-		# try:
-		# 	shop_list = self.session.query(models.Shop).all()
-		# except:
-		# 	self.send_fail(" get shop error")
-		# if shop_list:
-		# 	for shop in shop_list:
-		# 		if shop.shop_start_timestamp == None:
-		# 			shop.shop_start_timestamp = shop.create_date_timestamp
-		# 	self.session.commit()
-
 		try:
 			accountinfo_list = self.session.query(models.Accountinfo).all()
 		except:
@@ -1535,34 +1533,29 @@ class InsertData(CustomerBaseHandler):
 					accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
 			self.session.commit()
 
-		# shop_count = self.get_shop_count()
-		# province_shop_count = self.get_province_shop_count(110000)
-		# city_shop_count     = self.get_city_shop_count(110000)
-		# shop_group          = self.get_shop_group()   
-		# return self.send_success(shop_count=shop_count,province_shop_count = province_shop_count,\
-		# 	city_shop_count = city_shop_count,shop_group = shop_group
-		# 	)
+		try:
+			orderlist = self.session.query(models.Order).all()
+		except:
+			self.send_fail("orderlist error")
+		if orderlist:
+			for order in orderlist:
+				# if order.send_time =='0' :
+					# print('login')
+				if order.type == 2: #按时达
+					if order.today == 1:
+						order.send_time = (order.create_date).strftime('%Y-%m-%d')+' '+order.start_time.strftime('%H:%M')+'~'+order.end_time.strftime('%H:%M')
+						print(order.send_time)
+					elif order.today == 2:
+						tomorrow = order.create_date + datetime.timedelta(days = 1)
+						order.send_time = (tomorrow).strftime('%Y-%m-%d')+' '+order.start_time.strftime('%H:%M')+'~'+order.end_time.strftime('%H:%M')
+				elif order.type == 1:#立即送
+					later = order.create_date + datetime.timedelta(minutes = 30)
+					order.send_time =  later.strftime('%Y-%m-%d %H:%M')
+				# else:
+				# 	print('Not NULL')
+			self.session.commit()
 
 		return self.send_success()
 
-		# ch = pingpp(order_no = '1234353',amount = 1,app=dict(id=''))
-		# return self.send_success()
-		# path = "http://m.senguo.cc/customer/test"
-
-		# sign = sign(path)
-		# ret = sign.getSign(path)
-		# jsApi = JsApi_pub()
-		# if not self.args["code"]:
-		#     url = jsApi.createOauthUrlForCode(path)
-		#     return self.redirect(url)
-		# else:
-		#     code = self.args['code']
-		#     orderID = "12345678"
-		#     jsApi.setCode(code)
-		#     openid = jsApi.getOpenid()
-		#     if not openid:
-		#         return self.send_fail("no openid")
-		#     unifiedOrder = UnifiedOrder_pub()
-		#     unifiedOrder.setParameter("body",'senguocc')
-		#     unifiedOrder.setParameter("notify_url",)
+		
 
