@@ -2,11 +2,10 @@
 $(document).ready(function(){
     //search
     $(document).on('click','#searchSubmit',function(evt){Search(evt);});
-    $('.willOpen').on('click',function(){$.noticeBox('即将开放，敬请期待！')});
+    $('.willOpen').on('click',function(){noticeBox('即将开放，敬请期待！')});
     //shop info
-     getShopItem();
-    $.shopsList(1,'',window.dataObj.action);
-    $.scrollLoading();
+    shopsList(1,'',window.dataObj.action);
+    scrollLoading();
     //province and city
     var area=window.dataObj.area;
     //province data
@@ -103,16 +102,12 @@ $(document).ready(function(){
         window.dataObj.action='shop';
         remove_bg();
         $('.shoplist').empty();
-        $.shopsList(1,'',window.dataObj.action);
+        shopsList(1,'',window.dataObj.action);
         $('.list_item').addClass('hidden');
         $('.city_choose').removeClass('city_choosed');
         $('.city_name').text('城市');
     });   
 });
-var getShopItem=function(){
-    $.ajaxSettings.async=false;
-    $.getItem('/static/items/fruitzone/shop_item.html?v=2015-0320',function(data){window.dataObj.shop_item=data;});
-}
 
 function add_bg(){
     $('.area_box').addClass('area_sty');
@@ -123,7 +118,8 @@ function remove_bg(){
     $('body').css({'overflow':'auto'}).attr({'onmousewheel':''});
 }
 
-$.shopItem=function (shops){
+var shopItem=function (shops){
+
     var shop_item=window.dataObj.shop_item;
     for(var key in shops){
                 var $item=$(shop_item);
@@ -161,7 +157,7 @@ window.dataObj.page=1;
 window.dataObj.finished=true;
 window.dataObj.action='shop';
 window.dataObj.type='city';
-$.shopsList=function(page,data,action){
+var shopsList=function(page,data,action){
     var url='';
     var action =action;
     var args={
@@ -178,19 +174,31 @@ $.shopsList=function(page,data,action){
     $.postJson(url,args,function(res){
         if(res.success)
         {
-            var shops=res.shops;
+            if(window.dataObj.shop_item==undefined)
+            {
+                getItem('/static/items/fruitzone/shop_item.html?v=2015-0320',function(data){
+                    window.dataObj.shop_item=data;
+                     initData(res);
+                });
+            }
+            else {
+                initData(res);
+            }   
+        }
+        else return noticeBox(res.error_text);
+        },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        );
+    var initData=function(res){
+        var shops=res.shops;
             window.dataObj.maxnum=res.page_total;
-            $.shopItem(shops);
+            shopItem(shops);
             $('.loading').hide();
             window.dataObj.finished=true;
-        }
-        else return $.noticeBox(res.error_text);
-        },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
-        );
+    }
 };
 
-$.scrollLoading=function(){
-    var range = 10;             //距下边界长度/单位px          //插入元素高度/单位px  
+var scrollLoading=function(){
+    var range = 60;             //距下边界长度/单位px          //插入元素高度/单位px  
     var totalheight = 0;   
     var main = $(".container");                  //主体元素   
     $(window).scroll(function(){
@@ -202,7 +210,7 @@ $.scrollLoading=function(){
             $('.loading').show();
             window.dataObj.finished=false;
             window.dataObj.page++; 
-            $.shopsList(window.dataObj.page,window.dataObj.data,window.dataObj.action);
+            shopsList(window.dataObj.page,window.dataObj.data,window.dataObj.action);
         }       
         else if(window.dataObj.page ==maxnum){
               $('.loading').hide();
@@ -223,7 +231,7 @@ function Search(evt,page){
         action:action,
         page:page
     }
-    if(!q){return $.noticeBox('请输入店铺名！')}
+    if(!q){return noticeBox('请输入店铺名！')}
     $.postJson(url,args,
         function(res){
             if(res.success)
@@ -238,12 +246,12 @@ function Search(evt,page){
                 else {
                     window.dataObj.action='search';
                     window.dataObj.data=q;
-                    $.shopItem(shops,q);  
+                    shopItem(shops,q);  
                 }
             }
-            else return $.noticeBox(res.error_text);
-        },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}    
+            else return noticeBox(res.error_text);
+        },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}    
     );
 }
 
@@ -264,7 +272,7 @@ function filter(data,type,page){
         args.province=Int(data);
         window.dataObj.type=='province'
     }
-    if(!data){return $.noticeBox('选择城市！')}
+    if(!data){return noticeBox('选择城市！')}
     $.postJson(url,args,
         function(res){
             if(res.success)
@@ -282,12 +290,12 @@ function filter(data,type,page){
                 else {
                       window.dataObj.action='filter';
                       window.dataObj.data=Int(data);
-                     $.shopItem(shops,data); 
+                     shopItem(shops,data); 
                 }
             }
-        else return $.noticeBox(res.error_text);
-        },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        else return noticeBox(res.error_text);
+        },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
     );
 }
 

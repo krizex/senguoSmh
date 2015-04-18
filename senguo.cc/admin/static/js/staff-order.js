@@ -75,17 +75,17 @@ $(document).ready(function(){
         var end_hour=checkTime($this.find('.end_hour').val());
         var end_minute=checkTime($this.find('.end_minute').val());
         var status=$this.data('status');
-        $this.find('.send_time').text(start_hour+':'+start_minute+'-'+end_hour+':'+end_minute);
+        // $this.find('.send_time').text(start_hour+':'+start_minute+'-'+end_hour+':'+end_minute);
         if(status==5) $this.addClass('text-grey bg-grey').find('.toggle').addClass('text-grey').find('.finish_btn').removeClass('order_finish').addClass('arrive').text('已完成');
-        if(type==1){
-            $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
-        }
-        else if(type==2&&day==1){
-            $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
-        }
-        else if(type==2&&day==2){
-            $this.find('.send_date').text(create_year+'-'+create_month+'-'+(create_day+1));
-        }  
+        // if(type==1){
+        //     $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
+        // }
+        // else if(type==2&&day==1){
+        //     $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
+        // }
+        // else if(type==2&&day==2){
+        //     $this.find('.send_date').text(create_year+'-'+create_month+'-'+(create_day+1));
+        // }  
     });
 });
 function statusText(target,n){
@@ -120,8 +120,8 @@ function finishOrder(target,id){
             }
             //target.parents('.order-list-item').remove();
         }
-        else return $.noticeBox(res.error_text);
-    }, function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        else return noticeBox(res.error_text);
+    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
 );
 }
 
@@ -130,7 +130,7 @@ function remarkSub(id,index){
     var action='remark';
     var remark=$('.remark-input').val();
     var data=remark;
-    if(remark=='') return $.warnNotice('请输入备注内容');
+    if(remark=='') return warnNotice('请输入备注内容');
     var args={
         action:action,
         order_id:id,
@@ -142,7 +142,7 @@ function remarkSub(id,index){
             var remark_box=new Modal('remark_box');
             remark_box.modal('hide');
         }
-        else return $.noticeBox(res.error_text);
-    }, function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        else return noticeBox(res.error_text);
+    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
     );
 }

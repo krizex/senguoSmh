@@ -56,23 +56,24 @@ function SetCookie(name,value,days){
     document.cookie=name+"="+escape(value)+";path=/;expires="+exp.toGMTString();
 }
 
-$.postJson = function(url, args,successCall, failCall, alwaysCall){
-    args._xsrf = window.dataObj._xsrf;
-    var req = $.ajax({
-        type:"post",
-        url:url,
-        data:JSON.stringify(args),
-        contentType:"application/json; charset=UTF-8",
-        success:successCall,
-        fail:failCall,
-        error:failCall
-    });
-    //req.always(alwaysCall);
+//public
+(function ($) {
+    $.postJson = function(url, args,successCall, failCall, errorCall,alwaysCall){
+        args._xsrf = window.dataObj._xsrf;
+        var req = $.ajax({
+            type:"post",
+            url:url,
+            data:JSON.stringify(args),
+            contentType:"application/json; charset=UTF-8",
+            success:successCall,
+            fail:failCall,
+            error:errorCall
+        });
+        //req.always(alwaysCall);
 };
+})(Zepto);
 
-$.getItem=function(url,success){
-    $.get(url,success);
-};
+function getItem(url,success){$.get(url,success);}
 
 
 function Int(target){
@@ -112,41 +113,75 @@ function is_weixin(){
     }
 })(Zepto);
 
-//word notice
-$.getItem('/static/items/noticeBox.html?v=2015-03-21',function(data){window.dataObj.noticeBox=data});
-$.noticeBox=function(text){
-        var $box=$(window.dataObj.noticeBox);
-        $box.find('.notice').text(text);
-        $('body').append($box);
-        $.noticeRemove('noticeBox');
+//confirmbox
+getItem('/static/items/confirmBox.html?v=201503-29',function(data){window.dataObj.confirmBox=data});
+var confirmBox=function(text,index,type){
+        var $box=$(window.dataObj.confirmBox);
+        $box.find('.message').text(text);
+        if(typeof(index)!='undefined') $box.find('.message').attr({'data-index':index});
+        if(typeof(type)!='undefined') $box.find('.message').attr({'data-type':type});
+        var window_height=$(window).height();
+        var height=$('.container').height();
+        var $mask;
+        if(height<window_height) $mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
+        else $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
+        $('body').append($box,$mask);
+        $(document).on('click','.dismiss',function(){
+            $('#confirmBox').remove();
+            $('.modal_bg').remove();
+        });
+         $(document).on('click','.modal',function(e){
+             if($(e.target).closest('.modal-content').length == 0){
+                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
+                $('#confirmBox').remove();
+            }
+        });
 }
-$.warnNotice=function(text){
+var confirmRemove=function(){
+    $('#confirmBox').remove();
+    $('.modal_bg').remove();
+}
+//word notice
+getItem('/static/items/noticeBox.html?v=2015-03-25',function(data){
+    window.dataObj.noticeBox=data;
+     var $box=$(window.dataObj.noticeBox);   
+    $('body').append($box);
+});
+var noticeBox=function(text,item){
+        $('#noticeBox').removeClass('hidden').find('.notice').text(text);
+        if(item) {item.attr({'disabled':'true'});}
+        noticeRemove('noticeBox',item);      
+}
+//modal notice word
+var warnNotice=function(text){
     $('.modal-body').find('.warn').remove();
     var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
     $word.text(text);
     $('.modal-body').append($word);
     $('.sure_btn').attr({'disabled':'true'});
-    $.noticeRemove('warn');
+    noticeRemove('warn');
 }
 //time count 2 secends
 window.dataObj.n_time=2;
-$.noticeRemove=function (target) {
+var noticeRemove=function (target,item) {
     if (window.dataObj.n_time == 0) {
         window.dataObj.n_time = 2;
-        $('#'+target).remove();
+        $('#'+target).addClass('hidden');
         $('.sure_btn').removeAttr('disabled');
+        if(item) {item.removeAttr('disabled');}
     }
     else {
         window.dataObj.n_time--;
-        setTimeout(function() {$.noticeRemove(target)},1000);
+        setTimeout(function() {noticeRemove(target,item)},1000);
     }
 }
 
+//modal box
 function Modal(target){
     this.target=target;
 }
 Modal.prototype.modal=function(type){
-    var $target=$('#'+this.target);
+    var $target=$('#'+this.target+'');
     if(type=='show')
     {
         var window_height=$(window).height();

@@ -1062,6 +1062,7 @@ class Order(MapBase, _CommonApi):
 	fruits = Column(String(1000))
 	mgoods = Column(String(1000))
 	shop = relationship("Shop", uselist=False,join_depth=1)
+	send_time=Column(String(45))
 
 	def get_num(self,session,order_id):
 		try:

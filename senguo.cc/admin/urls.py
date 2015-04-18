@@ -28,7 +28,7 @@ handlers = [
     (r"/customer/login", handlers.customer.Access, {"action":"login"}, "customerLogin"),
     (r"/customer/oauth", handlers.customer.Access, {"action":"oauth"}, "customerOauth"),
     (r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
-    (r"/customer/register", handlers.customer.Access, {"action":"register"}, "customerRegister"),
+    (r"/customer/register", handlers.customer.RegistByPhone, {}, "customerRegister"),
     
     (r"/customer/profile", handlers.customer.CustomerProfile, {}, "customerProfile"),
     (r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
@@ -55,7 +55,6 @@ handlers = [
     (r"/customer/points", handlers.customer.Points, {}, "customerPoints"),
     (r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
     (r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
-
     (r"/customer/phoneVerify", handlers.fruitzone.PhoneVerify, {
         "action":"customer"}, "customerPhoneVerify"),
     (r"/customer/(\w+)", handlers.customer.Home, {}, "customerHome"),

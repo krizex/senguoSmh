@@ -79,13 +79,13 @@ button:focus{outline:0;}
 .box_sty{width:100%;min-width:320px;max-width:800px;margin:0 auto;}
 
 .border0{border:0;}
-.text_white{color:#fff;}
-.text_green{color:#80de9e;}
-.text_grayd{color:#ddd;}
-.text_grayca{color:#cacaca;}
-.text_grayb1{color:#B1B1B1;}
-.bg_white{background:#fff;}
-.bg_green{background:#80de9e;}
+.text-white{color:#fff;}
+.text-green{color:#80de9e;}
+.text-grayd{color:#ddd;}
+.text-grayca{color:#cacaca;}
+.text-grayb1{color:#B1B1B1;}
+.bg-white{background:#fff;}
+.bg-green{background:#80de9e;}
 .font12{font-size:12px;}
 .font14{font-size:14px;}
 .font16{font-size:16px;}

@@ -1,4 +1,10 @@
 $(document).ready(function(){
+    //if is weixin brower then load wexin api 
+     var shop_code=getCookie('market_shop_code');
+     var shop_logo=$('#shop_imgurl').attr('data-img');
+    if(isWeiXin()){
+        wexin('/'+shop_code,shop_logo);
+    }
     //user sex
     var sex_id=$('.user-sex').data('id');
     sex($('.user-sex'),sex_id);
@@ -45,7 +51,7 @@ $(document).ready(function(){
             $('.addressAdd').show();
             $('.addressEdit').hide();
         }
-       else return $.noticeBox('最多可添加五个收货地址！',$this);
+       else return noticeBox('最多可添加五个收货地址！',$this);
     });
     $('body').on('click','.addressAdd',function(){
         var $this=$(this);
@@ -56,7 +62,7 @@ $(document).ready(function(){
         var $this=$(this);
         var parent=$this.parents('.address-item');
         var index=parent.index();
-        $.confirmBox('确认删除该收货地址吗？//(ㄒoㄒ)//',index);
+        confirmBox('确认删除该收货地址吗？//(ㄒoㄒ)//',index);
     });
     $(document).on('click','.confriming',function(){
         var $this=$(this);
@@ -68,7 +74,7 @@ $(document).ready(function(){
             var id=target.attr('data-id');
             addressDel(target,id);
         }
-        $.confirmRemove();
+        confirmRemove();
     });
 });
 
@@ -88,12 +94,12 @@ function addressEdit(target,action){
     var phone=$('#address_phone').val();
     var address=$('#address_address').val();
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(!name) {return $.warnNotice('请填写收货人姓名！');}
-    if(!phone) {return $.warnNotice('请填写收货人电话！');}
-    if(!regPhone.test(phone)){return $.warnNotice('请填写正确的手机号！');}
-    if(!address) {return $.warnNotice('请填写收货人地址！');}
-    if(name.length>10) {return $.warnNotice('姓名请不要超过10个字！');}
-    if(address.length>50) {return $.warnNotice('地址请不要超过50个字！');}
+    if(!name) {return warnNotice('请填写收货人姓名！');}
+    if(!phone) {return warnNotice('请填写收货人电话！');}
+    if(!regPhone.test(phone)){return warnNotice('请填写正确的手机号！');}
+    if(!address) {return warnNotice('请填写收货人地址！');}
+    if(name.length>10) {return warnNotice('姓名请不要超过10个字！');}
+    if(address.length>50) {return warnNotice('地址请不要超过50个字！');}
     var data={
         receiver:name,
         phone:phone,
@@ -123,8 +129,8 @@ function addressEdit(target,action){
             var address_box=new Modal('address_box');
             address_box.modal('hide');
         }
-        else return $.noticeBox(res.error_text)
-    },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')})
+        else return noticeBox(res.error_text)
+    },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')})
 
 }
 
@@ -142,6 +148,6 @@ function addressDel(target,id){
         if(res.success){
             target.remove();
         }
-        else return $.noticeBox(res.error_text)
-    },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')})
+        else return noticeBox(res.error_text)
+    },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')})
 }

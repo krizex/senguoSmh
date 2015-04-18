@@ -11,7 +11,7 @@ var comments=window.dataObj.comments;
 var page=1;
 
 function getComment(url){
-    $.getItem(url,function(data){
+    getItem(url,function(data){
             window.dataObj.list_item=data;
             var comment=comments;
             commentItem(comment);
@@ -20,7 +20,7 @@ function getComment(url){
 }
 
 function getMore(url){
-    $.getItem(url,function(data){
+    getItem(url,function(data){
         var comment_list=data['date_list'];
         if(comment_list.length>0)
         {
