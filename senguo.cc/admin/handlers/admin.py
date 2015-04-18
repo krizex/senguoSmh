@@ -457,23 +457,23 @@ class Order(AdminBaseHandler):
 			orders = [x for x in self.current_shop.orders if x.type == order_type and x.status == 1]
 			# woody 4.3
 			session = self.session
-			for order in orders:
-				order.send_time = order.get_sendtime(session,order.id)
+			# for order in orders:
+			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time,reverse = True)
 
 		elif order_status == 5:#all
 			orders = [x for x in self.current_shop.orders if x.type == order_type ]
 			session = self.session
-			for order in orders:
-				order.send_time = order.get_sendtime(session,order.id)
+			# for order in orders:
+			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time,reverse = True)
 		elif order_status == 2:#unfinish
 			orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in [2, 3, 4]]
 
 			# woody 4.3
 			session = self.session
-			for order in orders:
-				order.send_time = order.get_sendtime(session,order.id)
+			# for order in orders:
+			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time,reverse = True)
 			
 		elif order_status == 3:
@@ -493,11 +493,11 @@ class Order(AdminBaseHandler):
 		# orders order by start_time
 		# woody
 		session = self.session
-		for order in orders:
-			order.w_send_time = order.get_sendtime(session,order.id) 
+		# for order in orders:
+		# 	order.w_send_time = order.get_sendtime(session,order.id) 
 			# print(order.w_send_time)
 		# print("before sort",orders)
-		orders = sorted(orders , key = lambda x:x.w_send_time)
+		orders = sorted(orders , key = lambda x:x.send_time)
 		# print("after sort",orders)
 		# for order in orders:
 		#     print(order.w_send_time)
@@ -524,9 +524,10 @@ class Order(AdminBaseHandler):
 				w_date = order.create_date + delta
 			else:
 				w_date = order.create_date
-			d["sent_time"] = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
-												order.start_time.hour, w_start_time_minute,
-												  order.end_time.hour, w_end_time_minute)
+			# d["sent_time"] = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
+			# 									order.start_time.hour, w_start_time_minute,
+			# 									  order.end_time.hour, w_end_time_minute)
+			d["sent_time"] = order.send_time
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
 				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
 			SH2s = []
@@ -626,7 +627,8 @@ class Order(AdminBaseHandler):
 				create_date = order.create_date
 				customer_name = order.receiver
 				order_totalPrice = order.totalPrice
-				send_time = order.get_sendtime(self.session,order.id)
+				# send_time = order.get_sendtime(self.session,order.id)
+				send_time = order.send_time
 				# print("ready to send message")
 
 				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time)
@@ -1175,10 +1177,10 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 				w_date = order.create_date + delta
 			else:
 				w_date = order.create_date
-			d["sent_time"] = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
-												order.start_time.hour, w_start_time_minute,
-												  order.end_time.hour, w_end_time_minute)
-
+			# d["sent_time"] = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
+			# 									order.start_time.hour, w_start_time_minute,
+			# 									  order.end_time.hour, w_end_time_minute)
+			d["send_time"] = order.send_time
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
 				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
 			SH2s = []

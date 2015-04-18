@@ -1044,11 +1044,10 @@ class Cart(CustomerBaseHandler):
 				if period.start_time.hour*60 + period.start_time.minute - \
 					config.stop_range < datetime.datetime.now().hour*60 + datetime.datetime.now().minute:
 					return self.send_fail("下单失败：已超过了该送货时间段的下单时间!请选择下一个时间段！")
-				send_time = (now).strftime('%Y-%m-%d')+' '+period.start_time.strftime('%H:%M')+'~'+period.end_time.strftime('%H:%M')
+				send_time = (now).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
 			elif today == 2:
 				tomorrow = now + datetime.timedelta(days = 1)
-				send_time = (tomorrow).strftime('%Y-%m-%d')+' '+period.start_time.strftime('%H:%M')+'~'+period.end_time.strftime('%H:%M')
-				print(send_time)
+				send_time = (tomorrow).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
 			start_time = period.start_time
 			end_time = period.end_time
 			
@@ -1064,7 +1063,7 @@ class Cart(CustomerBaseHandler):
 			later = now + datetime.timedelta(minutes = config.intime_period)
 			start_time = datetime.time(now.hour, now.minute, now.second)
 			end_time = datetime.time(later.hour,later.minute,later.second)
-			send_time =  later.strftime('%Y-%m-%d %H:%M')
+			send_time =  (now).strftime('%Y-%m-%d %H:%M') +'~'+ later.strftime('%H:%M')
 
 		#按时达/立即送 开启/关闭
 		if config.ontime_on == False and self.args["type"] == 2:
@@ -1121,7 +1120,10 @@ class Cart(CustomerBaseHandler):
 							 start_time=start_time,
 							 end_time=end_time,
 							 fruits=str(f_d),
-							 mgoods=str(m_d))
+							 mgoods=str(m_d),
+							 send_time=send_time,
+							 )
+
 		try:
 			self.session.add(order)
 			self.session.commit()
@@ -1178,7 +1180,8 @@ class Cart(CustomerBaseHandler):
 		order_totalPrice = float('%.1f'% totalPrice)
 		print(order_totalPrice,"*******************8")
 		session = self.session
-		send_time     = order.get_sendtime(session,order.id)
+		# send_time     = order.get_sendtime(session,order.id)
+		send_time = order.send_time
 		print(goods,'************************************************')
 		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
 			customer_name,order_totalPrice,send_time,goods)
@@ -1265,7 +1268,7 @@ class Order(CustomerBaseHandler):
 			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
 			if offset + 10 <= total_count:
 				orders = orders[offset:offset + 10]
-			elif offset < total_count and offset + 10 >= total_count:
+			elif offset <= total_count and offset + 10 >= total_count:
 				orders = orders[offset:]
 			else:
 				return self.send_fail("order pages errors")
@@ -1277,8 +1280,8 @@ class Order(CustomerBaseHandler):
 			page = self.args["page"]
 			offset = (page - 1) * 10
 			orders = [x for x in self.current_user.orders if x.status in (2, 3, 4)]
-			for order in orders:
-				order.send_time = order.get_sendtime(session,order.id)
+			# for order in orders:
+			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
@@ -1307,8 +1310,8 @@ class Order(CustomerBaseHandler):
 				if x.status == 6:
 					order6.append(x)
 			orders = order5 + order6
-			for order in orders:
-				order.send_time = order.get_sendtime(session,order.id)
+			# for order in orders:
+			# 	order.send_time = order.get_sendtime(session,order.id)
 			total_count = len(orders)
 			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
 			if offset + 10 <= total_count:
@@ -1324,8 +1327,8 @@ class Order(CustomerBaseHandler):
 			offset = (page - 1) * 10
 			orders = self.current_user.orders
 			session = self.session
-			for order in orders:
-				order.send_time = order.get_sendtime(session,order.id)
+			# for order in orders:
+			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			# print(total_count)
@@ -1424,7 +1427,7 @@ class OrderDetail(CustomerBaseHandler):
 				order.sender_phone =None
 				order.sender_img = None
 		delta = datetime.timedelta(1)
-		print(delta)
+		#print(delta)
 		# if order.start_time.minute <10:
 		#    w_start_time_minute ='0' + str(order.start_time.minute)
 		# else:
@@ -1541,16 +1544,19 @@ class InsertData(CustomerBaseHandler):
 			for order in orderlist:
 				# if order.send_time =='0' :
 					# print('login')
+				create_date =  order.create_date
+				second_date = create_date + datetime.timedelta(days = 1)
 				if order.type == 2: #按时达
 					if order.today == 1:
-						order.send_time = (order.create_date).strftime('%Y-%m-%d')+' '+order.start_time.strftime('%H:%M')+'~'+order.end_time.strftime('%H:%M')
-						print(order.send_time)
+						order.send_time = create_date.strftime('%Y-%m-%d') +' '+\
+						(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
 					elif order.today == 2:
-						tomorrow = order.create_date + datetime.timedelta(days = 1)
-						order.send_time = (tomorrow).strftime('%Y-%m-%d')+' '+order.start_time.strftime('%H:%M')+'~'+order.end_time.strftime('%H:%M')
+						order.send_time = second_date.strftime('%Y-%m-%d')+' '+\
+						(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
 				elif order.type == 1:#立即送
 					later = order.create_date + datetime.timedelta(minutes = 30)
-					order.send_time =  later.strftime('%Y-%m-%d %H:%M')
+					order.send_time =  create_date.strftime('%Y-%m-%d %H:%M') +'~'+later.strftime('%H:%M')
+					#print(order.send_time)
 				# else:
 				# 	print('Not NULL')
 			self.session.commit()

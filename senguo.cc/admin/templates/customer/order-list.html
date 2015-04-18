@@ -3,6 +3,7 @@
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/market-order-list.css')}}"/>
 {% end %}
+{%block back%}{{reverse_url('customerHome',handler.shop_code)}}{% end %}
 {% block top %}我的订单{% end %}
 {% block content %}
 

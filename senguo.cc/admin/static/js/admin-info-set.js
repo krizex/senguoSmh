@@ -282,8 +282,8 @@ function infoEdit(target){
                 else if(action_name=='code')
                 {
                     $('.code').text(shop_code);
-                    $('.shop_link').attr({'href':'http://m.senguo.cc/'+shop_code});
-                    $('#shop_link_img').qrcode({render: "canvas",width: 100,height:100,text: 'http://m.senguo.cc/'+shop_code ,typeNumber  : -1});
+                    $('.shop_link').attr({'href':'http://i.senguo.cc/'+shop_code});
+                    $('#shop_link_img').qrcode({render: "canvas",width: 100,height:100,text: 'http://i.senguo.cc/'+shop_code ,typeNumber  : -1});
                     $('.link_notice').show();
                     $('.notice_word').hide();
                     $('.code_set').hide();
