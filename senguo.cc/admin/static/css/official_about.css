@@ -1,4 +1,13 @@
-.intro{}
+.intro{width:100%;overflow:hidden;}
+.intro .left_img{width:22%;}
+.intro .left_img img{width:100%;margin-left:18%;}
+.intro .word{width:56%;margin-top:3%;}
+.word h1{font-size:48px;}
+.word p{font-size:18px;line-height:22px;}
+.word .con{width:600px;margin:0 auto;}
+.intro .right_img{width:22%}
+.intro .right_img img{width:130%;max-width:130% !important;margin-left:-40%;}
+
 .list{width:100%;margin-top:80px;}
 .list li{width:100%;}
 .list li .img{width:180px;}

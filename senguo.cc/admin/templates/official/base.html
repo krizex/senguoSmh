@@ -28,17 +28,7 @@
             _xsrf: "{{handler.xsrf_token}}"};
 
     </script>
-    <script>
-        var _hmt = _hmt || [];
-        (function() {
-          var hm = document.createElement("script");
-          hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
-          var s = document.getElementsByTagName("script")[0]; 
-          s.parentNode.insertBefore(hm, s);
-        })();
-    </script>
 </head>
-
 <body>
 	<header class="w1000 clearfix head">
 		<div class="login-box pull-right hidden-xs">
@@ -79,6 +69,15 @@
 		<p class="text-center text-grey">鄂ICP备14012961号-1&nbsp;&nbsp;Copyright&copy;2014-2015 senguo.cc版权所有</p>
 		{% end %}
 	</footer>
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
+          var s = document.getElementsByTagName("script")[0]; 
+          s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
     <script src="{{static_url('js/jquery.min.js')}}"></script>
     <script src="{{static_url('js/global.js')}}"></script>
     {% block  bottom-js%}{% end %}
