@@ -14,15 +14,18 @@
 </div>
 <p class="title text-center text_grayb1">使用手机号登录</p>
 <div class="phone_login bg_white">
-	<input type="text" placeholder="请输入手机号" class="phone input_sty border0 text_grayca border_bf8"/>
-	<input type="text" placeholder="请输入密码" class="password input_sty border0 text_grayca"/>
+	<input type="text" placeholder="请输入手机号" class="phone input_sty border0 text_grayca border_bf8" id="phone"/>
+	<input type="password" placeholder="请输入密码" class="password input_sty border0 text_grayca" id="password"/>
 </div>
 <div class="login_check center-block">
-	<button class="btn bg_green text_white login font14">登录</button>
+	<button class="btn bg_green text_white login font14" id="phoneLogin">登录</button>
 	<div class="other clearfix">
 		<a href="#" class="text_grayb1 pull-left">手机号快速注册</a>
 		<a href="#" class="text_grayb1 pull-right">忘记密码?</a>
 	</div>
 </div>
 {% end %}
-{% block bottom %}<script src="{{static_url('js/m_login.js')}}"></script>{% end %}
+{% block bottom %}
+<script src="{{static_url('js/sha256.js')}}"></script>
+<script src="{{static_url('js/m_login.js')}}"></script>
+{% end %}

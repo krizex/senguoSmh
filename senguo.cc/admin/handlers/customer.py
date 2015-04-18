@@ -14,6 +14,7 @@ import json
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
 		self._action = action
+
 	def get(self):
 		next_url = self.get_argument('next', '')
 		if self._action == "login":
@@ -30,11 +31,15 @@ class Access(CustomerBaseHandler):
 		else:
 			return self.send_error(404)
 
+	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("phone", "password", "next?")
 	def post(self):
+		phone = self.args['phone']
+		password = self.args['password']
 		u = models.ShopAdmin.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
+		# print(phone,password)
 		if not u:
-			return self.send_fail(error_text = "用户名或密码错误")
+			return self.send_fail(error_text = '用户不存在或密码不正确 ')
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 		self.redirect(self.args.get("next", self.reverse_url("customerHome")))
 		return self.send_success()
@@ -44,7 +49,7 @@ class Access(CustomerBaseHandler):
 		# todo: handle state
 		code =self.args["code"]
 		mode = self.args["mode"]
-		print("mode: ", mode , ", code get:", code)
+		# print("mode: ", mode , ", code get:", code)
 		if mode not in ["mp", "kf"]:
 			return self.send_error(400)
 
@@ -57,20 +62,45 @@ class Access(CustomerBaseHandler):
 		next_url = self.get_argument("next", self.reverse_url("customerHome"))
 		return self.redirect(next_url)
 
+class RegistByPhone(CustomerBaseHandler):
+	def get(self):
+		return self.send_success()
+
+	@CustomerBaseHandler.check_arguments("phone","password")
+	def post(self):
+		phone = self.args['phone']
+		password = self.args['password']
+
+		u = self.session.query(models.Accountinfo).filter_by(phone = phone).first()
+		if u:
+			return self.send_fail("该手机号 已被注册，请直接登入")
+		else:
+			u = models.Accountinfo(phone = phone ,password = password)
+			self.session.add(u)
+			self.session.commit()
+			return self.send_success()
+
+
+
+
 class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
-	def get(self):
-		shop_id = self.shop_id
+	def get(self,shop_code):
+		# shop_id = self.shop_id
 		try:
-			shop = self.session.query(models.Shop).filter_by(id =shop_id).first()
+			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
 		except:
 			return self.send_fail('shop error')
 		if shop:
 			shop_name = shop.shop_name
+			shop_id   = shop.id
+			shop_logo  = shop.shop_trademark_url
 		else:
 			return self.send_fail('shop not found')
 		customer_id = self.current_user.id
-
+		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
+		self._shop_code = shop.shop_code
+		self.set_cookie("market_shop_code",str(shop.shop_code))
 		shop_point = 0
 		try:
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
@@ -93,10 +123,10 @@ class Home(CustomerBaseHandler):
 			elif order.status == 10:
 				count[6] += 1
 		return self.render("customer/personal-center.html", count=count,shop_point =shop_point, \
-			shop_name = shop_name, context=dict(subpage='center'))
+			shop_name = shop_name,shop_logo = shop_logo, context=dict(subpage='center'))
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data")
-	def post(self):
+	def post(self,shop_code):
 		action = self.args["action"]
 		data = self.args["data"]
 		if action == "add_address":
@@ -157,7 +187,7 @@ class CustomerProfile(CustomerBaseHandler):
 class ShopProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self, shop_code):
-		print(shop_code)
+		# print(shop_code)
 		#self.set_cookie("market_shop_id", shop_id)
 		# shop_code = self.shop_code
 		try:
@@ -169,6 +199,13 @@ class ShopProfile(CustomerBaseHandler):
 			return self.send_error(404)
 		shop_id = shop.id
 		shop_name = shop.shop_name
+		shop_logo   = shop.shop_trademark_url
+
+		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
+		self._shop_code = shop.shop_code
+		self.set_cookie("market_shop_code",str(shop.shop_code))
+
+
 		#是否关注判断
 		follow = True
 		if not self.session.query(models.CustomerShopFollow).filter_by(
@@ -195,7 +232,7 @@ class ShopProfile(CustomerBaseHandler):
 		comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
 		session = self.session
 		w_id = self.current_user.id
-		
+
 		session.commit()
 		# try:
 		#     point = session.query(models.Points).filter_by(id = w_id).first()
@@ -210,14 +247,14 @@ class ShopProfile(CustomerBaseHandler):
 						   fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
 						   service_area=service_area, headimgurls=headimgurls, signin=signin,
 						   comments=self.get_comments(shop_id, page_size=2), comment_sum=comment_sum,
-						   context=dict(subpage='shop'),shop_name = shop_name)
+						   context=dict(subpage='shop'),shop_name = shop_name,shop_logo = shop_logo)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str")
 	def post(self,shop_code):
 		shop_id = self.shop_id
 		action = self.args["action"]
-		if action == "favour": 
+		if action == "favour":
 			if not shop_id:
 				return self.send_fail()
 			try:
@@ -234,8 +271,8 @@ class ShopProfile(CustomerBaseHandler):
 			#     point =models.Points(id = self.current_user.id )
 			#     self.session.add(point)
 			#     self.session.commit()
-			
-		
+
+
 			signin = self.session.query(models.ShopSignIn).filter_by(
 				customer_id=self.current_user.id, shop_id=shop_id).first()
 
@@ -247,8 +284,8 @@ class ShopProfile(CustomerBaseHandler):
 				self.send_fail("shop_follow error")
 			if signin:
 
-				
-				
+
+
 				if signin.last_date == datetime.date.today():
 					return self.send_fail("亲，你今天已经签到了，一天只能签到一次哦")
 				else:  # 今天没签到
@@ -334,7 +371,9 @@ class ShopProfile(CustomerBaseHandler):
 
 class Members(CustomerBaseHandler):
 	def get(self):
-		shop_id = self.shop_id
+		# shop_id = self.shop_id
+		shop_id = int(self.get_cookie("market_shop_id"))
+		print(shop_id)
 		admin_id = self.session.query(models.Shop.admin_id).filter_by(id=shop_id).first()
 		if not admin_id:
 			return self.send_error(404)
@@ -385,6 +424,7 @@ class Market(CustomerBaseHandler):
 		if not shop:
 			return self.send_error(404)
 		shop_name = shop.shop_name
+		shop_logo = shop.shop_trademark_url
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		# self.set_cookie("market_shop_name",str(shop.shop_name))
@@ -457,7 +497,8 @@ class Market(CustomerBaseHandler):
 		return self.render("customer/home.html",
 						   context=dict(cart_count=cart_count, subpage='home', menus=shop.menus,notices=notices,\
 							shop_name=shop.shop_name,w_follow = w_follow,page_count = page_count,fruit_page = fruit_page,\
-							dry_page = dry_page ,mgoods_page = mgoods_page,cart_fs=cart_fs,cart_ms=cart_ms))
+							dry_page = dry_page ,mgoods_page = mgoods_page,cart_fs=cart_fs,cart_ms=cart_ms,\
+							shop_logo = shop_logo))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:int","page?:int","menu_id?:int")
@@ -488,7 +529,7 @@ class Market(CustomerBaseHandler):
 					# print('fruit id',fruit.id)
 					favour = session.query(models.FruitFavour).filter_by(customer_id = customer_id,\
 						f_m_id = fruit.id , type = 0).first()
-					
+
 				except:
 					# print('favour_today error')
 					favour = None
@@ -498,7 +539,7 @@ class Market(CustomerBaseHandler):
 					favour_today = favour.create_date == datetime.date.today()
 				# print('favour_today',favour_today)
 
-				charge_types= []           
+				charge_types= []
 				for charge_type in fruit.charge_types:
 					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
 				if fruit.fruit_type_id >= 1000:
@@ -538,7 +579,7 @@ class Market(CustomerBaseHandler):
 						# print('mgood id',mgood.id)
 						favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,\
 							f_m_id = mgood.id , type = 1).first()
-						
+
 					except:
 						# print(' favour_today error mgood')
 						favour = None
@@ -651,10 +692,10 @@ class Market(CustomerBaseHandler):
 				# print(mgood.id,mgood.unit)
 				try:
 
-					print('mgood id',mgood.id)
+					# print('mgood id',mgood.id)
 					favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,\
 						f_m_id = mgood.id , type = 1).first()
-						
+
 				except:
 					print(' favour_today error mgood')
 
@@ -669,7 +710,7 @@ class Market(CustomerBaseHandler):
 				charge_types = []
 				for charge_type in mgood.mcharge_types:
 					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
-				if mgood.active == 1:				
+				if mgood.active == 1:
 					w_mgoods.append(["mgoods",{'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,\
 						'current_saled':mgood.current_saled,'saled':mgood.saled,'storage':mgood.storage,'favour':mgood.favour,\
 						'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types,\
@@ -682,7 +723,7 @@ class Market(CustomerBaseHandler):
 		#     data = []
 		#     w_tag = ''
 		#     for fruit in m:
-		#         charge_types= []           
+		#         charge_types= []
 		#         for charge_type in fruit.charge_types:
 		#             charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
 		#         if fruit.fruit_type_id >= 1000:
@@ -692,7 +733,7 @@ class Market(CustomerBaseHandler):
 		#         data.append([w_tag,{'id':fruit.id,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
 		#         'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour}])
 		#     return data
-		# pages 
+		# pages
 		# woody
 		session = self.session
 		w_fruits = self.w_getdata(session,fruits,customer_id)
@@ -752,7 +793,7 @@ class Market(CustomerBaseHandler):
 		favour = self.session.query(models.FruitFavour).\
 			filter_by(customer_id=self.current_user.id,f_m_id=charge_type_id, type=menu_type).first()
 
-		#woody 
+		#woody
 		# #???
 		# try:
 		#     point = self.session.query(models.Points).filter_by(id = self.current_user.id).first()
@@ -800,7 +841,7 @@ class Market(CustomerBaseHandler):
 					point_history.point_type = models.POINT_TYPE.FAVOUR
 					point_history.each_point = 1
 					self.session.add(point_history)
-					self.session.commit() 
+					self.session.commit()
 				else:
 					print("point_history None")
 				# else:
@@ -810,7 +851,7 @@ class Market(CustomerBaseHandler):
 					shop_follow.shop_point += 1
 					now = datetime.datetime.now()
 					# print(now,shop_follow.shop_point,'favour')
-				
+
 				favour.create_date = datetime.date.today()
 		else:  # 没找到点赞记录，插入一条
 			self.session.add(models.FruitFavour(customer_id=self.current_user.id,
@@ -828,7 +869,7 @@ class Market(CustomerBaseHandler):
 				point_history.point_type = models.POINT_TYPE.FAVOUR
 				point_history.each_point = 1
 				self.session.add(point_history)
-				self.session.commit() 
+				self.session.commit()
 			else:
 				print("point_history None")
 
@@ -888,15 +929,20 @@ class Market(CustomerBaseHandler):
 
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
-	def get(self):
-		shop_id = self.shop_id
+	def get(self,shop_code):
+		# shop_id = self.shop_id
 		customer_id = self.current_user.id
 		phone = self.get_phone(customer_id)
-		
+
 		storages = {}
-		shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
-		shop_name = shop.shop_name
+		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		if not shop:return self.send_error(404)
+		shop_name = shop.shop_name
+		shop_id = shop.id
+		shop_logo = shop.shop_trademark_url
+		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
+		self._shop_code = shop.shop_code
+		self.set_cookie("market_shop_code",str(shop.shop_code))
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits) or eval(cart.mgoods))): #购物车为空
 			return self.render("notice/cart-empty.html",context=dict(subpage='cart'))
@@ -923,13 +969,13 @@ class Cart(CustomerBaseHandler):
 
 		return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
 						   periods=periods,phone=phone, storages = storages,\
-						   shop_name  = shop_name ,context=dict(subpage='cart'))
+						   shop_name  = shop_name ,shop_logo = shop_logo,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
 										 "address_id:int", "message:str", "type:int", "tip?:int",
 										 "today:int")
-	def post(self):#提交订单
+	def post(self,shop_code):#提交订单
 		# print(self)
 		shop_id = self.shop_id
 		fruits = self.args["fruits"]
@@ -947,7 +993,7 @@ class Cart(CustomerBaseHandler):
 			charge_types = self.session.query(models.ChargeType).\
 				filter(models.ChargeType.id.in_(fruits.keys())).all()
 			for charge_type in charge_types:
-				
+
 				if fruits[str(charge_type.id)] == 0:  # 有可能num为0，直接忽略掉
 					continue
 				totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
@@ -1020,6 +1066,7 @@ class Cart(CustomerBaseHandler):
 		address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		if not address:
 			return self.send_fail("没找到地址", 404)
+		print(address.receiver,'******************************************')
 
 		# 已支付、付款类型、余额、积分处理
 		money_paid = False
@@ -1043,7 +1090,7 @@ class Cart(CustomerBaseHandler):
 		w_admin = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if w_admin is not None:
 			w_SH2_id = w_admin.admin.id
-			print(w_SH2_id)
+			# print(w_SH2_id)
 		# print("*****************************************************************")
 		# print(f_d)
 		# print(mgoods)
@@ -1088,24 +1135,44 @@ class Cart(CustomerBaseHandler):
 			order_type = '按时达'
 		create_date   = order.create_date
 		customer_info = self.session.query(models.Accountinfo).filter_by(id = self.current_user.id).first()
-		customer_name = customer_info.nickname 
+		customer_name = address.receiver
 		c_tourse      = customer_info.wx_openid
-		# print(c_tourse)
+		print(c_tourse,'******************************************')
 
 		##################################################
 		#goods
 		goods = []
-		# print(f_d,m_d)
+		print(f_d,m_d)
+		session = self.session
 		for f in f_d:
-			goods.append([f_d[f].get('fruit_name'),f_d[f].get('num')])
+			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+			# num = f_d[f].get('num')
+			# fruit_id = f_d[f].get('fruit_name')
+			# fruit = session.query(models.Fruit).filter_by(id = fruit_id).first()
+			# if not fruit:
+			# 	return self.send_fail('fruit not found')
+			# fruit_name = fruit.name
+			# charge = f_d[f].get('charge')
+			# goods.append([fruit_name,charge,num])
 		for m in m_d:
-			goods.append([m_d[m].get('fruit_name'),m_d[m].get('num')])
+			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+			# num = m_d[m].get('num')
+			# mgood_id = m_d[m].get('mgoods_name')
+			# mgood = session.query(models.MGoods).filter_by(id = mgood_id).first()
+			# if not mgood:
+			# 	return self.send_fail('mgood not found')
+			# mgood_name = mgood.name
+			# charge =m_d[m].get('charge')
+			# goods.append([mgood_name,charge,num])
+			# print('m',m)
 		goods = str(goods)[1:-1]
-		order_totalPrice = totalPrice
+		order_totalPrice = float('%.1f'% totalPrice)
+		print(order_totalPrice,"*******************8")
 		session = self.session
 		send_time     = order.get_sendtime(session,order.id)
+		print(goods,'************************************************')
 		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
-			customer_name,order_totalPrice,send_time)
+			customer_name,order_totalPrice,send_time,goods)
 		# send message to customer
 		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
 
@@ -1140,7 +1207,7 @@ class Order(CustomerBaseHandler):
 		session = self.session
 		return self.render("customer/order-list.html", context=dict(subpage='center'))
 
-	
+
 
 	@classmethod
 	def get_orderData(self,session,orders):
@@ -1162,7 +1229,7 @@ class Order(CustomerBaseHandler):
 			shop_name = order.shop.shop_name
 			address_text = order.address_text
 			create_date  = order.create_date.strftime(" %Y:%m:%d")
-			print(create_date)
+			# print(create_date)
 			# print(order)
 			data.append({'order_num':order_num,'shop_name':shop_name,'address_text':address_text,\
 				'send_time':send_time,'order_totalPrice':order_totalPrice,'order_status':order_status,\
@@ -1181,7 +1248,7 @@ class Order(CustomerBaseHandler):
 			page = self.args['page']
 			offset = (page - 1) * 10
 			orders = [x for x in self.current_user.orders if x.status == 1]
-			# woody	
+			# woody
 			for order in orders:
 				order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time)
@@ -1226,7 +1293,7 @@ class Order(CustomerBaseHandler):
 			order5 = []
 			order6 = []
 			for x in orderlist:
-				if x.status == 5:		
+				if x.status == 5:
 					order5.append(x)
 				if x.status == 6:
 					order6.append(x)
@@ -1300,6 +1367,25 @@ class Order(CustomerBaseHandler):
 					point_history.each_point = 5
 					self.session.add(point_history)
 					self.session.commit()
+		elif action == "delete_comment":
+			data = self.args['data']
+			order_id = data['order_id']
+			order = self.session.query(models.Order).filter_by(id = order_id).first()
+			if not order:
+				return self.send_fail('order not found')
+			order.status = 5
+			order.comment = 'NULL'
+			order.comment_reply = 'NULL'
+			self.session.commit()
+
+			# recover point
+			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
+				order.customer_id , shop_id = order.shop_id).first()
+			if not shop_follow:
+				return self.send_fail('shop_follow not found')
+			if shop_follow.shop_point:
+				shop_follow.shop_point -= 5
+			#need to rocord this poist history?
 		else:
 			return self.send_error(404)
 		self.session.commit()
@@ -1383,7 +1469,7 @@ class Points(CustomerBaseHandler):
 
 		return self.render("customer/points.html",shop_point = shop_point,pages = pages)
 
-		
+
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("page")
@@ -1427,7 +1513,7 @@ class InsertData(CustomerBaseHandler):
 		from sqlalchemy import create_engine, func, ForeignKey, Column
 		# print(fun)
 
-		
+
 		# import pingpp
 		# try:
 		# 	shop_list = self.session.query(models.Shop).all()
@@ -1452,7 +1538,7 @@ class InsertData(CustomerBaseHandler):
 		# shop_count = self.get_shop_count()
 		# province_shop_count = self.get_province_shop_count(110000)
 		# city_shop_count     = self.get_city_shop_count(110000)
-		# shop_group          = self.get_shop_group()   
+		# shop_group          = self.get_shop_group()
 		# return self.send_success(shop_count=shop_count,province_shop_count = province_shop_count,\
 		# 	city_shop_count = city_shop_count,shop_group = shop_group
 		# 	)
@@ -1461,7 +1547,7 @@ class InsertData(CustomerBaseHandler):
 
 		# ch = pingpp(order_no = '1234353',amount = 1,app=dict(id=''))
 		# return self.send_success()
-		# path = "http://m.senguo.cc/customer/test"
+		# path = "http://i.senguo.cc/customer/test"
 
 		# sign = sign(path)
 		# ret = sign.getSign(path)

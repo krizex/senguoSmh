@@ -54,8 +54,8 @@ class Pysettimer(threading.Thread):
         self.event.set()
 
 #woody
-order_url = 'http://m.senguo.cc:8887/admin'
-staff_order_url = 'http://m.senguo.cc/staff'
+order_url = 'http://i.senguo.cc/admin'
+staff_order_url = 'http://i.senguo.cc/staff'
 
 class GlobalBaseHandler(BaseHandler):
 
@@ -65,7 +65,7 @@ class GlobalBaseHandler(BaseHandler):
             return self._session
         self._session = models.DBSession()
         return self._session
-    
+
     def on_finish(self):
         # release db connection
         if hasattr(self, "_session"):
@@ -105,7 +105,7 @@ class GlobalBaseHandler(BaseHandler):
             if "city" in dis_dict[int(code/10000)*10000].keys():
                 text += " " + dis_dict[int(code/10000)*10000]["city"][code]["name"]
             return text
-        
+
         elif column_name == "order_status":
             text = ""
             if code == models.SYS_ORDER_STATUS.TEMP:
@@ -149,12 +149,12 @@ class _AccountBaseHandler(GlobalBaseHandler):
     def get_wexin_oauth_link(self, next_url=""):
         if not self.__wexin_oauth_url_name__:
             raise Exception("you have to complete this wexin oauth config.")
-        
-        if next_url: 
+
+        if next_url:
             para_str = "?next="+tornado.escape.url_escape(next_url)
         else:
             para_str = ""
-        
+
         if self.is_wexin_browser():
             if para_str: para_str += "&"
             else: para_str = "?"
@@ -172,7 +172,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
                 self.reverse_url(self.__wexin_oauth_url_name__) + para_str)
             link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
         return link
-    
+
     def get_login_url(self):
         return self.get_wexin_oauth_link(next_url=self.request.full_url())
     def get_current_user(self):
@@ -195,7 +195,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
     def set_current_user(self, user, domain=_ARG_DEFAULT):
         if not self.__account_model__ or not self.__account_cookie_name__:
             raise Exception("overwrite model to support authenticate.")
-        if domain is _AccountBaseHandler._ARG_DEFAULT:            
+        if domain is _AccountBaseHandler._ARG_DEFAULT:
             self.set_secure_cookie(self.__account_cookie_name__, str(user.id))
         else:
             self.set_secure_cookie(self.__account_cookie_name__, str(user.id), domain=domain)
@@ -206,11 +206,11 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
     def get_wx_userinfo(self, code, mode):
         return WxOauth2.get_userinfo(code, mode)
-        
+
     def send_qiniu_token(self, action, id):
         q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
         token = q.upload_token(BUCKET_SHOP_IMG, expires=120,
-                              policy={"callbackUrl": "http://m.senguo.cc/fruitzone/imgcallback",
+                              policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
                                       "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 #        token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
         return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
@@ -296,7 +296,7 @@ class SuperBaseHandler(_AccountBaseHandler):
                         shop.status = 0
                         close_shop_list.append(shop_code)
                     if len(fruits) == 0 and len(menus) == 0:
-                        shop.status = 0 
+                        shop.status = 0
                         close_shop_list.append(shop_code)
                     try:
                         follower_count = session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
@@ -573,7 +573,7 @@ class WxOauth2:
                               "&appid={appid}&secret={appsecret}".format(appid=MP_APPID, appsecret=MP_APPSECRET)
     jsapi_ticket_url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={access_token}&type=jsapi"
     template_msg_url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={access_token}"
-    
+
 
     @classmethod
     def get_userinfo(cls, code, mode):
@@ -584,7 +584,7 @@ class WxOauth2:
         userinfo_url = cls.userinfo_url.format(access_token=access_token, openid=openid)
         #print('code',code)
         #print('mode',mode)
-        try:            
+        try:
             data = json.loads(
                 urllib.request.urlopen(userinfo_url).read().decode("utf-8"))
 
@@ -606,7 +606,7 @@ class WxOauth2:
             #Logger.warn("Oauth2 Error", "获取用户信息失败")
             #traceback.print_exc()
             return None
-        
+
         return userinfo_data
 
 
@@ -722,8 +722,9 @@ class WxOauth2:
 
 
     @classmethod
-    def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time):
-        remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n\n' + '请及时登录森果后台处理订单。'
+    def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods):
+        remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n' + "商品详情："  + goods + '\n\n'  + \
+        '请及时登录森果后台处理订单。'
         postdata = {
             'touser' : touser,
             'template_id':"5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg",
@@ -742,6 +743,7 @@ class WxOauth2:
         access_token = cls.get_client_access_token()
         res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
         data = json.loads(res.content.decode("utf-8"))
+        print('data',data)
         if data["errcode"] != 0:
             #print("订单提醒发送失败:",data)
             return False
@@ -749,7 +751,7 @@ class WxOauth2:
 
     @classmethod
     def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time):
-        remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n\n' + '请及时处理订单。'
+        remark = "订单总价：" + str('%.1' % order_totalPrice) + '\n' + "送达时间：" + send_time + '\n\n' + '请及时处理订单。'
         order_type_temp = int(order_type)
         order_type = "即时送" if order_type_temp == 1 else "按时达"
         postdata = {
@@ -787,7 +789,7 @@ class WxOauth2:
                 "keyword1" : {"value":shop_name,"color":"#173177"},
                 "keyword2" : {"value":str(order_create),"color":"#173177"},
                 "keyword3" : {"value":goods,"color":"#173177"},
-                "keyword4" : {"value":order_totalPrice,"color":"#173177"},
+                "keyword4" : {"value":str(order_totalPrice),"color":"#173177"},
                 "remark"   : {"value":"您的订单我们已经收到，配货后将尽快配送~","color":"#173177"},
             }
         }

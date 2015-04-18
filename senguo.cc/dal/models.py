@@ -212,13 +212,13 @@ class _AccountApi(_CommonApi):
 			#####################################################################################
 			# update wx_openid
 			#####################################################################################
-			print(u.accountinfo.wx_openid)
-			start = wx_userinfo['openid'][0:2]
-			print("start:",start)
-			if start == "o5":
-				u.accountinfo.wx_openid = wx_userinfo["openid"]
-				print("update openid")
-			print(wx_userinfo["openid"])
+			# print(u.accountinfo.wx_openid)
+			# start = wx_userinfo['openid'][0:2]
+			# print("start:",start)
+			# if start == "o5":
+			# 	u.accountinfo.wx_openid = wx_userinfo["openid"]
+			# 	print("update openid")
+			# print(wx_userinfo["openid"])
 
 			# print( "openid" + wx_userinfo["openid"])
 
@@ -226,11 +226,14 @@ class _AccountApi(_CommonApi):
 			# update wx_openid
 			#####################################################################################
 			print(u.accountinfo.wx_openid)
-			start = wx_userinfo['openid'][0:2]
-			print("start:",start)
-			if start == "o5":
-				u.accountinfo.wx_openid = wx_userinfo["openid"]
-				print("update openid")
+			old = u.accountinfo.wx_openid
+			old_start = old[0:2]
+			if old_start == "o7":
+				start = wx_userinfo['openid'][0:2]
+				print("start:",start)
+				if start == "o5":
+					u.accountinfo.wx_openid = wx_userinfo["openid"]
+					print("update openid")
 			print(wx_userinfo["openid"])
 			session.commit()
 		
@@ -250,6 +253,7 @@ class _AccountApi(_CommonApi):
 			return u
 		
 		# 基本账户中不存在，先创建基本信息，再添加到该用户账户中去
+		headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
 		account_info = Accountinfo(
 			wx_unionid=wx_userinfo["unionid"],
 			wx_openid=wx_userinfo["openid"],
@@ -257,6 +261,7 @@ class _AccountApi(_CommonApi):
 			wx_province=wx_userinfo["province"],
 			wx_city=wx_userinfo["city"],
 			headimgurl=wx_userinfo["headimgurl"],
+			headimgurl_small = headimgurl_small,
 			nickname=wx_userinfo["nickname"],
 			sex = wx_userinfo["sex"])
 		u = cls()
@@ -1062,16 +1067,17 @@ class Order(MapBase, _CommonApi):
 				# print(charge_type.num)
 				if fruits[int(charge_type.id)]==0:
 					continue
-				print(fruits[int(charge_type.id)]['num'])
+				# print(fruits[int(charge_type.id)]['num'])
 				num = fruits[int(charge_type.id)]['num'] * charge_type.unit_num * charge_type.num
 				charge_type.fruit.storage+= num
 				charge_type.fruit.current_saled -=num
 				charge_type.fruit.saled -= num
 				print(num)
 		if mgoods:
+			print(mgoods,'**********************************')
 			charge_types = session.query(MChargeType).filter(MChargeType.id.in_(mgoods.keys())).all()
 			for charge_type in charge_types:
-				print("before",charge_type.mgoods.storage,charge_type.mgoods.current_saled)
+				# print("before",charge_type.mgoods.storage,charge_type.mgoods.current_saled)
 				if mgoods[str(charge_type.id)]==0:
 					continue
 				num =mgoods[str(charge_type.id)]['num'] *charge_type.unit_num * charge_type.num
@@ -1080,6 +1086,7 @@ class Order(MapBase, _CommonApi):
 				charge_type.mgoods.saled -= num
 		session.commit()
 		return True
+
 	
 
 	def get_sendtime(self,session,order_id):
@@ -1105,9 +1112,18 @@ class Order(MapBase, _CommonApi):
 			order.start_time.hour, w_start_time_minute,order.end_time.hour, w_end_time_minute)
 		return send_time
 
-	# def get_arrival_time(self,order_id):
 
-
+class CommentApply(MapBase, _CommonApi):
+	__tablename__ = 'commentapply'
+	id = Column(Integer , primary_key = True , nullable = False ,autoincrement = True)
+	delete_reason = Column(String(200))
+	order_id = Column(Integer , ForeignKey(Order.id) , nullable = False)
+	shop_id  = Column(Integer , ForeignKey(Shop.id) ,nullable = False)
+	create_date = Column(Date, default=func.curdate())
+	has_done  = Column(Integer , default = 0) # 0 :not ever apply , 1: applied ,success  2:applied but decline
+	order   = relationship("Order")
+	shop    = relationship("Shop")
+	decline_reason = Column(String(200)) # when
 
 #水果单品
 class Fruit(MapBase, _CommonApi):

@@ -5,6 +5,13 @@ $(document).ready(function(){
     window.dataObj.success_href='/notice/success';
     window.dataObj.staff_href='/staff/hire/';
     window.dataObj.current_link=window.location.href;
+    var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
+          var s = document.getElementsByTagName("script")[0]; 
+          s.parentNode.insertBefore(hm, s);
+        })();
     //fastclick initialise
      $(function() {
         FastClick.attach(document.body);
@@ -52,35 +59,43 @@ $(document).ready(function(){
         } 
     });
     $(".lazy_img").lazyload({threshold:100});
-    //if is weixin brower then load wexin api 
-    if(isWeiXin()){wexin()}
+    wexin();
 });
 
-function wexin(){
+function wexin(link,imgurl){
     //微信Api
     var url='/wexin';
     var args={url: window.location.href};
-    var shop_code=getCookie('market_shop_code');
-    var link='http://m.senguo.cc/'+shop_code;
-    var shop_name=getCookie('market_shop_name');
+    if(!link){
+        link='';
+    }
+     if(!imgurl){
+        imgurl='/static/design_img/TDSG.png';
+    }
     $.postJson(url,args,function(res){
         if(res.success){
             var noncestr_val=res.noncestr;
             var timestamp_val=res.timestamp;
             var signature_val=res.signature;
+            var logo_Item=$('#shop_imgurl');
             wx.config({
              debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
              appId: 'wx0ed17cdc9020a96e', // 必填，公众号的唯一标识
              timestamp:timestamp_val, // 必填，生成签名的时间戳
              nonceStr:noncestr_val, // 必填，生成签名的随机串
              signature:signature_val,// 必填，签名，见附录1
-             jsApiList: ['onMenuShareTimeline','onMenuShareAppMessage'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+             jsApiList: ['onMenuShareTimeline','onMenuShareAppMessage','hideMenuItems','hideOptionMenu','showOptionMenu']// 必填，需要使用的JS接口列表，所有JS接口列表见附录2
          });
          wx.ready(function(){
-             wx.onMenuShareTimeline({
-             title: '大家快来关注吧~', // 分享标题
+             if(logo_Item.length==0){
+                wx.hideMenuItems({
+                    menuList: ['menuItem:share:appMessage','menuItem:share:timeline'] 
+                });
+             }
+            wx.onMenuShareTimeline({
+             title: '', // 分享标题
              link:link, // 分享链接
-             imgUrl: '', // 分享图标
+             imgUrl:imgurl, // 分享图标
              success: function () {
              // 用户确认分享后执行的回调函数
              },
@@ -89,13 +104,13 @@ function wexin(){
              }
          });
          wx.onMenuShareAppMessage({
-             title: '大家快来关注吧~', // 分享标题
+             title: '', // 分享标题
              desc: "一家不错的店铺，快来关注吧~ ", // 分享描述
              link:link,
-             imgUrl: "", // 分享图标
+             imgUrl:imgurl, // 分享图标
              type: '' // 分享类型,music、video或link，不填默认为link
-             });
          });
+ });
         }
         else return alert(res.error_text);
     })
@@ -174,21 +189,23 @@ function tagText(target,n){
     //AndroidImg('bg_change');
 }
 //public
-$.postJson = function(url, args,successCall, failCall, errorCall,alwaysCall){
-    args._xsrf = window.dataObj._xsrf;
-    var req = $.ajax({
-        type:"post",
-        url:url,
-        data:JSON.stringify(args),
-        contentType:"application/json; charset=UTF-8",
-        success:successCall,
-        fail:failCall,
-        error:errorCall
-    });
-    //req.always(alwaysCall);
+(function ($) {
+    $.postJson = function(url, args,successCall, failCall, errorCall,alwaysCall){
+        args._xsrf = window.dataObj._xsrf;
+        var req = $.ajax({
+            type:"post",
+            url:url,
+            data:JSON.stringify(args),
+            contentType:"application/json; charset=UTF-8",
+            success:successCall,
+            fail:failCall,
+            error:errorCall
+        });
+        //req.always(alwaysCall);
 };
+})(Zepto);
 
-$.getItem=function(url,success){$.get(url,success);};
+function getItem(url,success){$.get(url,success);}
 
 function Int(target){
     target=parseInt(target);
@@ -237,8 +254,8 @@ function stopPropagation(e) {
     }  
 }  
 //confirmbox
-$.getItem('/static/items/confirmBox.html?v=201503-29',function(data){window.dataObj.confirmBox=data});
-$.confirmBox=function(text,index,type){
+getItem('/static/items/confirmBox.html?v=201503-29',function(data){window.dataObj.confirmBox=data});
+var confirmBox=function(text,index,type){
         var $box=$(window.dataObj.confirmBox);
         $box.find('.message').text(text);
         if(typeof(index)!='undefined') $box.find('.message').attr({'data-index':index});
@@ -260,52 +277,42 @@ $.confirmBox=function(text,index,type){
             }
         });
 }
-$.confirmRemove=function(){
+var confirmRemove=function(){
     $('#confirmBox').remove();
     $('.modal_bg').remove();
 }
 //word notice
-$.getItem('/static/items/noticeBox.html?v=2015-03-25',function(data){
+getItem('/static/items/noticeBox.html?v=2015-03-25',function(data){
     window.dataObj.noticeBox=data;
      var $box=$(window.dataObj.noticeBox);   
     $('body').append($box);
 });
-$.noticeBox=function(text,item){
+var noticeBox=function(text,item){
         $('#noticeBox').removeClass('hidden').find('.notice').text(text);
         if(item) {item.attr({'disabled':'true'});}
-        $.noticeRemove('noticeBox',item);
-        $.noticeRemove=function () {
-        if (window.dataObj.n_time == 0) {
-            window.dataObj.n_time = 2;
-            $('#noticeBox').addClass('hidden');
-            if(item) {item.removeAttr('disabled');}
-        }
-        else {
-            window.dataObj.n_time--;
-            setTimeout(function() {$.noticeRemove()},1000);
-        }
-    }
+        noticeRemove('noticeBox',item);      
 }
 //modal notice word
-$.warnNotice=function(text){
+var warnNotice=function(text){
     $('.modal-body').find('.warn').remove();
     var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
     $word.text(text);
     $('.modal-body').append($word);
     $('.sure_btn').attr({'disabled':'true'});
-    $.noticeRemove('warn');
+    noticeRemove('warn');
 }
 //time count 2 secends
 window.dataObj.n_time=2;
-$.noticeRemove=function (target) {
+var noticeRemove=function (target,item) {
     if (window.dataObj.n_time == 0) {
         window.dataObj.n_time = 2;
         $('#'+target).addClass('hidden');
         $('.sure_btn').removeAttr('disabled');
+        if(item) {item.removeAttr('disabled');}
     }
     else {
         window.dataObj.n_time--;
-        setTimeout(function() {$.noticeRemove(target)},1000);
+        setTimeout(function() {noticeRemove(target,item)},1000);
     }
 }
 

@@ -15,15 +15,6 @@
         window.dataObj = {
             _xsrf: "{{handler.xsrf_token}}"};
     </script>
-    <script>
-        var _hmt = _hmt || [];
-        (function() {
-          var hm = document.createElement("script");
-          hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
-          var s = document.getElementsByTagName("script")[0]; 
-          s.parentNode.insertBefore(hm, s);
-        })();
-    </script>
 </head>
 <body style="height:100%;" >
 {% set subpage = context.get("subpage", "home")%}
@@ -57,14 +48,14 @@
                 </a>
             </li>
             <li class="w25 pull-left {{cart_active}} cart_item">
-                <a href="{{reverse_url('customerCart')}}" class="text-grey cart" >
+                <a href="{{reverse_url('customerCart',handler.shop_code)}}" class="text-grey cart" >
                     <em class="bg_change"></em>
                     <span class="cart_num bg-pink text-white hidden">0</span>
                     <p class="text-center">购物篮</p>
                 </a>
             </li>
             <li class="w25 pull-left {{center_active}}">
-                <a href="{{reverse_url('customerHome')}}" class="text-grey my">
+                <a href="{{reverse_url('customerHome',handler.shop_code)}}" class="text-grey my">
                     <em class="bg_change"></em>
                     <p class="text-center">我的</p>
                 </a>
@@ -79,6 +70,7 @@
     </div>
     {% block other %}{% end %}
     <script src="/static/js/zepto&&fastclick&&lazyload.min.js"></script>
+    <script src="/static/js/jweixin-1.0.js"></script>
     <script src="{{static_url('js/market-public.js')}}"></script>
     {% block bottom %}{% end %}
     <a id="backTop" class="little_pear"><img src="/static/svg/half@2x.png" class="src_change"/></a>

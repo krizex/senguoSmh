@@ -96,7 +96,7 @@
 
 #preview_box .modal-dialog{width:1200px;margin:0 auto;}
 #preview_box .modal-body{padding-top:0px;}
-.preview-box{position:relative;height:420px;overflow:hidden;}
+.preview-box{position:relative;height:580px;overflow:hidden;}
 .preview-list{width:1250px;position:absolute;}
 .preview-list li{float:left;height:120px;margin-right:25px;margin-bottom:25px;padding:5px;border:2px solid #fff;overflow:hidden;text-align:center;}
 .preview-list li img{width:80px;height:80px;}

@@ -29,7 +29,7 @@ handlers = [
     (r"/customer/oauth", handlers.customer.Access, {"action":"oauth"}, "customerOauth"),
     (r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
     (r"/customer/register", handlers.customer.Access, {"action":"register"}, "customerRegister"),
-    (r"/customer", handlers.customer.Home, {}, "customerHome"),
+    
     (r"/customer/profile", handlers.customer.CustomerProfile, {}, "customerProfile"),
     (r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
     #微官网-----待删除
@@ -45,7 +45,7 @@ handlers = [
     #to remove
     (r"/m", handlers.superadmin.Official),
 
-    (r"/customer/cart", handlers.customer.Cart, {}, "customerCart"),
+    (r"/customer/cart/(\w+)", handlers.customer.Cart, {}, "customerCart"),
     (r"/customer/orders", handlers.customer.Order, {}, "customerOrder"),
     (r"/customer/orders/detail/(\d+)", handlers.customer.OrderDetail, {}, "customerOrderDetail"),
     (r"/customer/members", handlers.customer.Members, {}, "customerMembers"),
@@ -55,6 +55,7 @@ handlers = [
     (r"/customer/points", handlers.customer.Points, {}, "customerPoints"),
     (r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
     (r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
+    (r"/customer/(\w+)", handlers.customer.Home, {}, "customerHome"),
 
     (r"/super/oauth", handlers.superadmin.Access,{
         "action":"oauth"}, "superOauth"),

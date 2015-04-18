@@ -1,5 +1,3 @@
-//get item dom
-$.getItem('/static/items/customer/orderlist_item.html?v=2015-0325',function(data){window.dataObj.list_item=data;});    
 $(document).ready(function(){
         //导航active
     window.dataObj.action=$.getUrlParam('action');
@@ -11,14 +9,15 @@ $(document).ready(function(){
         }
     });
     //订单data
-     $.goodsList(1,window.dataObj.action);
-     $.scrollLoading();
-    //取消订单   
+     goodsList(1,window.dataObj.action);
+     scrollLoading();
+   
     $(document).on('click','.order-concel',function () {
+         //取消订单   
         var $this = $(this);
         var id=$this.parents('.order-list-item').data('id');
         var index=$this.parents('.order-list-item').index();
-        $.confirmBox('确认取消该订单吗？//(ㄒoㄒ)//',index,id);
+        confirmBox('确认取消该订单吗？//(ㄒoㄒ)//',index,id);
     });
      $(document).on('click','.confriming',function(){
         var $this=$(this);
@@ -29,7 +28,7 @@ $(document).ready(function(){
         if(result=='true'){
             orderConcel($('.order-list-item').eq(index),type);
             }
-        $.confirmRemove();
+        confirmRemove();
     });
     //评价
     var index;
@@ -50,8 +49,8 @@ window.dataObj.page=1;
 window.dataObj.count=1;
 window.dataObj.action=5;
 window.dataObj.finished=true;
-$.scrollLoading=function(){
-    var range = 10;             //距下边界长度/单位px          //插入元素高度/单位px  
+var scrollLoading=function(){
+    var range = 60;             //距下边界长度/单位px          //插入元素高度/单位px  
     var totalheight = 0;   
     var main = $(".container");                  //主体元素   
     $(window).scroll(function(){
@@ -65,7 +64,7 @@ $.scrollLoading=function(){
             $('.loading').show();
             window.dataObj.finished=false;
             window.dataObj.page++; 
-            $.goodsList(window.dataObj.page,window.dataObj.action);
+            goodsList(window.dataObj.page,window.dataObj.action);
         }       
         else if(window.dataObj.page ==maxnum){
             $('.loading').hide();
@@ -74,7 +73,7 @@ $.scrollLoading=function(){
     }); 
 }   
 
- $.goodsList=function(page,action){
+var goodsList=function(page,action){
     var url='';
     var action=action;
     var args={
@@ -84,7 +83,21 @@ $.scrollLoading=function(){
     $.postJson(url,args,function(res){
         if(res.success)
         {
-            var orders=res.orders;
+            if(window.dataObj.list_item==undefined){
+                getItem('/static/items/customer/orderlist_item.html?v=2015-0325',function(data){
+                    window.dataObj.list_item=data;
+                    initData(res);
+                });    
+            }
+            else {
+                initData(res);
+            }    
+        }
+        else return noticeBox(res.error_text);
+        },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+    );
+    var initData=function (res){
+        var orders=res.orders;
             window.dataObj.total_page=res.total_page;
             if(res.total_page>0){
                 $('.list-header').show();
@@ -193,10 +206,7 @@ $.scrollLoading=function(){
             $('.loading').hide();
             window.dataObj.count++;
             window.dataObj.finished=true;
-        }
-        else return $.noticeBox(res.error_text);
-        },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
-        );
+    }
 };
 
 function orderConcel(target,id){
@@ -214,15 +224,15 @@ function orderConcel(target,id){
             target.find('.status-bar-box').hide();
             target.find('.cancel').text('订单已取消').addClass('text-grey').removeClass('order-concel');
         }
-        else return $.noticeBox(res.error_text)
-    }, function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        else return noticeBox(res.error_text)
+    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
 )
 }
 
 function orderComment(id,order_id,comment){
     var url='';
     var action='comment';
-    if(!comment){return $.warnNotice('请输入您的评论！')}
+    if(!comment){return warnNotice('请输入您的评论！')}
     var data={
         order_id:order_id,
         comment:comment
@@ -241,8 +251,8 @@ function orderComment(id,order_id,comment){
            var commentBox=new Modal('commentBox');
            commentBox.modal('hide');
         }
-        else return $.noticeBox(res.error_text)
-    }, function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        else return noticeBox(res.error_text)
+    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
         );
 }

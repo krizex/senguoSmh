@@ -197,8 +197,21 @@ class ShopManage(SuperBaseHandler):
 		action = self.args["action"]
 		if action == "updateShopStatus":
 			self.handle_updateStatus()
+		elif action == "shopclose":
+			self.handle_shopclose()
 		else:
 			return self.send(400)
+
+	@SuperBaseHandler.check_arguments("shop_id:int")
+	def handle_shopclose(self):
+		shop = models.Shop.get_by_id(self.session,self.args["shop_id"])
+		if not shop:
+			return self.send_error(404)
+		shop.status = 0
+		self.session.commit()
+		return self.send_success()
+
+
 	@SuperBaseHandler.check_arguments("shop_id:int", "new_status:int", "declined_reason?")
 	def handle_updateStatus(self):
 
@@ -276,11 +289,11 @@ class ShopManage(SuperBaseHandler):
 			# inspect whether staff exited
 			######################################################################################
 			temp_staff = self.session.query(models.ShopStaff).get(shop.admin_id)
-			print('temp_staff')
-			print(shop.admin_id)
-			print(temp_staff)
+			# print('temp_staff')
+			# print(shop.admin_id)
+			# print(temp_staff)
 			if temp_staff is None:
-				print('passssssssssssssssssssssssssssssssssssssssss')
+				# print('passssssssssssssssssssssssssssssssssssssssss')
 				self.session.add(models.ShopStaff(id=shop.admin_id, shop_id=shop.id))  # 添加默认员工时先添加一个员工，否则报错
 				self.session.commit()
 
@@ -297,7 +310,7 @@ class ShopManage(SuperBaseHandler):
 			message_name = account_info.realname
 			message_shop_name = shop_temp.shop_name
 			# mobile = account_info.phone
-			print(mobile)
+			# print(mobile)
 		   
 			message_content ='尊敬的{0}，您好，您在森果平台申请的店铺{1}已经通过审核，点击链接查看使用教程 http://dwz.cn/CSY6L'.format(message_name,message_shop_name)
 
@@ -307,7 +320,7 @@ class ShopManage(SuperBaseHandler):
 				content = message_content)
 			headers = dict(Host = '106.ihuyi.cn',)
 			r = requests.post(url,data = postdata , headers = headers)
-			print(r.text)
+			# print(r.text)
 			# test_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'
 
 			WxOauth2.post_template_msg(account_info.wx_openid, shop_temp.shop_name,
@@ -679,7 +692,52 @@ class Comment(SuperBaseHandler):
 	def get(self):
 	    self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'all':10,'all_temp':10}))
 				
+class CommnetApplyDelete(SuperBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		data = []
+		order_info = {}
+		apply_list = self.session.query(models.CommentApply).filter_by(hasDone = 0).all()
+		if comment_apply in apply_list:
+			order = comment_apply.order
+			shop  = comment_apply.shop
+			shop_code = shop.shop_code
+			admin_name= shop.admin.accountinfo.nickname
+			# order info
+			customer_id = order.customer_id
+			customer = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
+			if not customer:
+				return self.send_error(404)
+			name = customer.name
+			comment = order.comment
+			order_create_date = order.create_date
+			num = order.num
+			headimgurl_small = order.headimgurl_small
+			create_date = comment_apply.create_date
+			order_info = dict(
+				headimgurl_small = headimgurl_small,name = name , num = num ,order_create_date = order_create_date,\
+				comment = comment)
+			data.append([shop_code,admin_name ,create_date, comment_apply.delete_reason,order_info])
+		return self.send_success(data = data)
 
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('action','apply_id:int','decline_reason?:str')
+	def post(self):
+		if action == 'commit':
+			comment_id = self.args['apply_id']
+			comment_apply = self.session.query(models.CommentApply).filter_by(id = apply_id).first()
+			if not comment_apply:
+				return self.send_error(404)
+			order = comment_apply.order
+			order.status = 5
+			order.coment = 'NULL'
+			order.comment_reply = 'NULL'
+			self.session.commit()
+		elif action == 'decline':
+			decline_reason = self.args['decline_reason']
+			return self.send_success(decline_reason = decline_reason)
+		else:
+			return self.send_error(404)
 
 
 
