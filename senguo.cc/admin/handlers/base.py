@@ -761,7 +761,7 @@ class WxOauth2:
 
     @classmethod
     def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time):
-        remark = "订单总价：" + str('%.1' % order_totalPrice) + '\n' + "送达时间：" + send_time + '\n\n' + '请及时处理订单。'
+        remark = "订单总价：" + str(order_totalPrice)+ '\n' + "送达时间：" + send_time + '\n\n' + '请及时处理订单。'
         order_type_temp = int(order_type)
         order_type = "即时送" if order_type_temp == 1 else "按时达"
         postdata = {

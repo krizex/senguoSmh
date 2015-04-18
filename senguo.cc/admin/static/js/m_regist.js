@@ -4,7 +4,26 @@ $(document).ready(function(){
 	var $this=$(this);
 	Vrify($this);
 }).on('click','#checkCode',function(){
-	checkCode();
+                var $this=$(this);
+	checkCode($this);
+}).on('click','#accept_rule',function(){
+                var $this=$(this);
+                if($this.hasClass('checked')){
+                    $this.removeClass('checked');
+                    $('#getVrify').removeClass('bg-green').attr({'disabled':true});
+                }
+                else{
+                    $this.addClass('checked');
+                    $('#getVrify').addClass('bg-green').removeAttr('disabled');
+                }
+}).on('click','#subRegist',function(){
+             var $this=$(this);
+            regist($this);
+}).on('click','.backBtn',function(){
+            var $this=$(this);
+            var i=$this.attr('data-back');
+            $('.step'+i).show().siblings('.step-box').show();
+            $('.progress'+i).addClass('active').siblings('.progress').removeClass('active');
 });
 
 var wait=60;
@@ -53,7 +72,7 @@ function Vrify(target){
             {
                 time($('#getVrify'));
                 target.parents('.step-box').hide().next('.step-box').show();
-	  $('.progress1').removeClass('active').siblings('.progress2').addClass('active');
+	  $('.progress2').addClass('active').siblings('.progress').removeClass('active');
             }
             else return noticeBox(res.error_text);
         },
@@ -62,16 +81,14 @@ function Vrify(target){
     );
 }
 
-function checkCode(){
-    var phone=$('#enterPhone').val();
-    var code=$('#enterVrify').val();
+function checkCode(target){
+    var phone=$('#enterPhone').val().trim();
+    var code=$('#enterVrify').val().trim();
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
-    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
-    if(!phone){return warnNotice('请输入手机号');}
-    if(!code){return warnNotice('请输入验证码');}
-    if(!regNumber.test(code)){return warnNotice('验证码只能为数字！');}
-    if(code>0&&phone.length<6){return warnNotice('验证码为六位数字!');}
+    if(!code){return noticeBox('请输入验证码',target);}
+    if(!regNumber.test(code)){return noticeBox('验证码只能为数字！',target);}
+    if(code.length!=4){return noticeBox('验证码为4位数字!',target);}
+    if(!phone){return noticeBox('手机号不能为空',target);}
     var url="/customer/phoneVerify?action=customer";
     var action='checkcode';
     var args={action:action,phone:phone,code:code};
@@ -79,7 +96,30 @@ function checkCode(){
         function(res){
             if(res.success)
             {
-              
+                target.parents('.step-box').hide().next('.step-box').show();
+                $('.progress3').addClass('active').siblings('.progress').removeClass('active');
+            }
+            else noticeBox(res.error_text);
+        },
+        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+    );
+}
+
+function regist(){
+     var phone=$('#enterPhone').val().trim();
+     var password=$('#password').val().trim();
+     var re_password=$('#repassword').val().trim();
+     if(!password) {return noticeBox('密码不能为空!');}
+     if(re_password!=password) {return noticeBox('两次输入的密码不一致!');}
+     var url="";
+    var action='checkcode';
+    var args={phone:phone,password:password};
+    $.postJson(url,args,
+        function(res){
+            if(res.success)
+            {
+                
             }
             else noticeBox(res.error_text);
         },
