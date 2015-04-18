@@ -126,11 +126,14 @@ function orderItem(item){
         var today=item[i]['today'];
         var totalPrice=item[i]['totalPrice'];
         var type=item[i]['type'];
+        var shop_new=item[i]['shop_new'];
               
         if(!message) $item.find('.order-message').hide();
         if(!staff_remark) $item.find('.staff-replay').hide();
         if(!remark||remark==null) $item.find('.saler-remark').hide();
         if(isprint==1) $item.find('.print-order').addClass('text-grey9');
+        if(shop_new==0) {$item.find('.name').text('新'+receiver);}
+        else{$item.find('.name').text(receiver);}
 
         $item.attr({'data-id':id,'data-type':type});
         $item.find('.send-time').text(sent_time);
@@ -139,7 +142,6 @@ function orderItem(item){
         $item.find('.goods-total-charge').text(totalPrice);
         $item.find('.total_price_input').text(totalPrice);
         $item.find('.address_show').text(address_text);
-        $item.find('.name').text(receiver);
         $item.find('.phone').text(phone);
         $item.find('.message-content').text(message);
         $item.find('.staff-remark').text(staff_remark);

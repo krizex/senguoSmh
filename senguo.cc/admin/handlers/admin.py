@@ -531,6 +531,12 @@ class Order(AdminBaseHandler):
 			d["sent_time"] = order.send_time
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
 				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
+			d["shop_new"] = 0
+			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
+				models.CustomerShopFollow.customer_id == order.customer_id).first()
+			if follow:
+				d["shop_new"]=follow.shop_new
+				print(d["shop_new"])
 			SH2s = []
 			for staff in staffs:
 				staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone}
@@ -1198,8 +1204,11 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			# 									  order.end_time.hour, w_end_time_minute)
 			d["send_time"] = order.send_time
 			#yy
-			# d["shop_new"] = 0
-			# follow = self.session.query(models.CustomerShopFollow).filter_by()
+			d["shop_new"] = 0
+			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
+				models.CustomerShopFollow.customer_id == order.customer_id).first()
+			if follow:
+				d["shop_new"]=follow.shop_new
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
 				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
 			SH2s = []
