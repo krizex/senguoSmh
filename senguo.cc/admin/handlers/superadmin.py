@@ -669,7 +669,15 @@ class ShopClose(SuperBaseHandler):
 			return self.send_success()
 
 
+class Cert(SuperBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+	    self.render('superAdmin/shop-cert-apply.html',context=dict(count = {'all':10,'all_temp':10}))
 
+class Comment(SuperBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+	    self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'all':10,'all_temp':10}))
 				
 
 

@@ -1,0 +1,97 @@
+{% extends 'shop-base.html'%}
+{% block shop %}
+    <div class="wrap-comment">
+        <ul class="com-list">
+            <li>
+                <ul class="com-attr group">
+                    <li>店铺：<a href="javascript:;">海贼王的水果店</a></li>
+                    <li>管理员：<a href="javascript:;">海贼王</a></li>
+                    <li>申请时间：<span>2015-4-12  12:23:22</span></li>
+                </ul>
+                <p class="del-com">删除理由：<span>恶意评论，与顾客联系不上，影响店铺经营</span></p>
+                <dl class="com-item group">
+                    <dd><img class="per-img" src="/static/images/test-img.jpg" alt="头像"/></dd>
+                    <dt>
+                        <ul class="com-attr group">
+                            <li><a href="javascript:;">我是海贼王</a></li>
+                            <li><span>2015-4-12  12:23:22</span></li>
+                            <li>订单编号：<span>5151525453</span></li>
+                        </ul>
+                        <p class="com-cont">
+                            这家点的水果不错，送货也快，好喜欢，哈哈！这家点的水果不错，送货也快，好喜欢，哈哈！
+                        </p>
+                    </dt>
+                </dl>
+                <div class="btn-group txt-ac">
+                    <a href="javascript:;" class="blue-btn cancel-btn">拒绝删除</a>
+                    <a href="javascript:;" class="grey-btn ok-btn">确认删除</a>
+                    <span class="super-opinion hide">已删除</span>
+                </div>
+            </li>
+            <li>
+                <ul class="com-attr group">
+                    <li>店铺：<a href="javascript:;">海贼王的水果店</a></li>
+                    <li>管理员：<a href="javascript:;">海贼王</a></li>
+                    <li>申请时间：<span>2015-4-12  12:23:22</span></li>
+                </ul>
+                <p class="del-com">删除理由：<span>恶意评论，与顾客联系不上，影响店铺经营</span></p>
+                <dl class="com-item group">
+                    <dd><img class="per-img" src="/static/images/test-img.jpg" alt="头像"/></dd>
+                    <dt>
+                    <ul class="com-attr group">
+                        <li><a href="javascript:;">我是海贼王</a></li>
+                        <li><span>2015-4-12  12:23:22</span></li>
+                        <li>订单编号：<a href="javascript:;">5151525453</a></li>
+                    </ul>
+                    <p class="com-cont">
+                        这家点的水果不错，送货也快，好喜欢，哈哈！这家点的水果不错，送货也快，好喜欢，哈哈！
+                        这家点的水果不错，送货也快，好喜欢，哈哈！这家点的水果不错，送货也快，好喜欢，哈哈！
+                    </p>
+                    </dt>
+                </dl>
+                <div class="btn-group">
+                    <span class="super-opinion green-txt">已删除</span>
+                </div>
+            </li>
+            <li>
+                <ul class="com-attr group">
+                    <li>店铺：<a href="javascript:;">海贼王的水果店</a></li>
+                    <li>管理员：<a href="javascript:;">海贼王</a></li>
+                    <li>申请时间：<span>2015-4-12  12:23:22</span></li>
+                </ul>
+                <p class="del-com">删除理由：<span>恶意评论，与顾客联系不上，影响店铺经营</span></p>
+                <dl class="com-item group">
+                    <dd><img class="per-img" src="/static/images/test-img.jpg" alt="头像"/></dd>
+                    <dt>
+                        <ul class="com-attr group">
+                            <li><a href="javascript:;">我是海贼王</a></li>
+                            <li><span>2015-4-12  12:23:22</span></li>
+                            <li>订单编号：<a href="javascript:;">5151525453</a></li>
+                        </ul>
+                        <p class="com-cont">
+                            这家点的水果不错，送货也快，好喜欢，哈哈！这家点的水果不错，送货也快，好喜欢，哈哈！
+                        </p>
+                    </dt>
+                </dl>
+                <div class="btn-group">
+                    <span class="super-opinion red-txt">拒绝删除：<span class="super-reason">可以跟顾客沟通，引导顾客自主删除并修改评论</span></span>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="wrap-com-pop hide">
+        <div class="com-pop ov-center">
+            <div class="pop-title">拒绝删除理由：</div>
+            <div class="wrap-area">
+                <textarea id="com-cont"></textarea>
+            </div>
+            <div class="btn-group txt-ac">
+                <a href="javascript:;" class="blue-btn ok-pop">提交</a>
+                <a href="javascript:;" class="grey-btn cancel-pop">取消</a>
+            </div>
+        </div>
+    </div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/superadmin-shop-manage.js')}}"></script>
+{% end %}
