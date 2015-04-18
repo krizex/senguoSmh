@@ -1536,10 +1536,6 @@ class InsertData(CustomerBaseHandler):
 	def get(self):
 		from sqlalchemy import create_engine, func, ForeignKey, Column
 		# print(fun)
-
-<<<<<<< HEAD
-=======
-
 		# import pingpp
 		# try:
 		# 	shop_list = self.session.query(models.Shop).all()
@@ -1551,7 +1547,6 @@ class InsertData(CustomerBaseHandler):
 		# 			shop.shop_start_timestamp = shop.create_date_timestamp
 		# 	self.session.commit()
 
->>>>>>> leaf/senguo2.0
 		try:
 			accountinfo_list = self.session.query(models.Accountinfo).all()
 		except:
@@ -1562,7 +1557,6 @@ class InsertData(CustomerBaseHandler):
 					accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
 			self.session.commit()
 
-<<<<<<< HEAD
 		try:
 			orderlist = self.session.query(models.Order).all()
 		except:
@@ -1589,38 +1583,4 @@ class InsertData(CustomerBaseHandler):
 			self.session.commit()
 
 		return self.send_success()
-
-		
-=======
-		# shop_count = self.get_shop_count()
-		# province_shop_count = self.get_province_shop_count(110000)
-		# city_shop_count     = self.get_city_shop_count(110000)
-		# shop_group          = self.get_shop_group()
-		# return self.send_success(shop_count=shop_count,province_shop_count = province_shop_count,\
-		# 	city_shop_count = city_shop_count,shop_group = shop_group
-		# 	)
-
-		return self.send_success()
-
-		# ch = pingpp(order_no = '1234353',amount = 1,app=dict(id=''))
-		# return self.send_success()
-		# path = "http://i.senguo.cc/customer/test"
-
-		# sign = sign(path)
-		# ret = sign.getSign(path)
-		# jsApi = JsApi_pub()
-		# if not self.args["code"]:
-		#     url = jsApi.createOauthUrlForCode(path)
-		#     return self.redirect(url)
-		# else:
-		#     code = self.args['code']
-		#     orderID = "12345678"
-		#     jsApi.setCode(code)
-		#     openid = jsApi.getOpenid()
-		#     if not openid:
-		#         return self.send_fail("no openid")
-		#     unifiedOrder = UnifiedOrder_pub()
-		#     unifiedOrder.setParameter("body",'senguocc')
-		#     unifiedOrder.setParameter("notify_url",)
->>>>>>> leaf/senguo2.0
 
