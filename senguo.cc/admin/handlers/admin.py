@@ -510,7 +510,7 @@ class Order(AdminBaseHandler):
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
 			d['mgoods'] = eval(d['mgoods'])
-			d['create_date'] = order.create_date.strftime('%Y-%m-%d %R')
+			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			if order.start_time.minute <10:
 				w_start_time_minute ='0' + str(order.start_time.minute)
 			else:
@@ -1207,6 +1207,8 @@ class Config(AdminBaseHandler):
 			pass
 		elif action == "receipt":
 			return self.render("admin/shop-receipt-set.html", receipt_msg=config.receipt_msg,context=dict(subpage='shop_set',shopSubPage='receipt_set'))
+		elif action == "cert":
+        			return self.render("admin/shop-cert-set.html",context=dict(subpage='shop_set',shopSubPage='cert_set'))
 		else:
 			return self.send_error(404)
 

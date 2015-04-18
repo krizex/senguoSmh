@@ -1,4 +1,11 @@
 /*全局样式*/
+html, body, div, span, object,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, address, em, font, img, ins,
+small, strike, strong, tt, var,
+b, i, dl, dt, dd, ol, ul, li,
+form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {margin: 0; padding: 0; list-style:none;border: none; outline: none; vertical-align: baseline;}
 body{font-family:"Microsoft YaHei","arial black",sans-serif;color:#333;font-size:12px;background:#e7e8ec;}
 .w1200{width:1200px;height:auto;margin:0 auto;}
 .w1200_m{width:100%;max-width:1200px;}
@@ -21,7 +28,8 @@ img{border:none;}
 .border-none{border:none !important;}
 .padding-none{padding:0px !important;}
 .mt80{margin-top:80px;}
-
+.group:before,.group:after{content:'';display: block;line-height: 0;height: 0;font-size: 0;clear: both;}
+.group{*zoom:1;}
 /*头部样式*/
 .backstage-header .line50{line-height:45px;}
 .backstage-header .height50{height:45px;}
