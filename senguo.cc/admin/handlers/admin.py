@@ -651,6 +651,14 @@ class Order(AdminBaseHandler):
 					shop_id = order.shop_id
 					totalprice = order.totalPrice
 
+					#
+					
+					customer = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
+					if not customer:
+						return self.send_fail('customer not found')
+					customer.is_new = 1
+					self.session.commit()
+
 					try:
 						shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
 							customer_id,shop_id = shop_id).first()

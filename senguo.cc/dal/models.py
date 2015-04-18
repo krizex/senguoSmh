@@ -339,6 +339,8 @@ class Accountinfo(MapBase, _CommonApi):
 	wx_province = Column(String(32))
 	wx_city = Column(String(32))
 
+	is_new   = Column(Integer) # 0:new , 1:old
+
 	# mp_openid = Column(String(64)) 
 
 	# mp_openid = Column(Integer(64))     #mobile
@@ -1063,6 +1065,7 @@ class Order(MapBase, _CommonApi):
 	mgoods = Column(String(1000))
 	shop = relationship("Shop", uselist=False,join_depth=1)
 	send_time=Column(String(45))
+
 
 	def get_num(self,session,order_id):
 		try:
