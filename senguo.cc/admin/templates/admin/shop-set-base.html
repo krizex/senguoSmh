@@ -8,7 +8,6 @@
 {% set notice_active = '' %}
 {% set receipt_active = ''%}
 {% set info_active = ''%}
-{% set cert_active ='' %}
 
 {% if shopSubPage == 'delivery_set'  %}
     {% set delivery_active ='active' %}
@@ -16,20 +15,17 @@
     {% set notice_active ='active' %}
 {% elif shopSubPage == 'info_set' %}
     {% set info_active ='active' %}
-{% elif shopSubPage == 'cert_set' %}
-    {% set cert_active ='active' %}
 {% else %}
     {% set receipt_active ='active' %}
 {% end %}
 
-<span class="right-title">店铺设置 <a class="shop-link" href="javascript:;">店铺链接:<span>http://senguo.cc/zhoubing</span></span></a></span>
+<span class="right-title">商城设置</span>
 <ul class="shop-set-nav right-nav">
     <!--<li class="{{delivery_active}}" id="deliverySet"><a href="{{reverse_url('adminConfig')}}?action=delivery">配送设置</a></li>-->
     <li class="{{info_active}}" id="infoSet"><a href="{{reverse_url('adminShopConfig')}}">店铺信息</a></li>
     <li class="{{notice_active}}" id="noticeSet"><a href="{{reverse_url('adminConfig')}}?action=notice">公告设置</a></li>
     <!--<li><a href="#">充值设置</a></li>-->
     <li class="{{receipt_active}}" id="receiptSet"><a href="{{reverse_url('adminConfig')}}?action=receipt">小票设置</a></li>
-    <li class="{{cert_active}}" id=""><a href="{{reverse_url('adminConfig')}}?action=cert">店铺认证</a></li>
 </ul>
 <div class="set-description">
     {% if shopSubPage == 'delivery_set' %}

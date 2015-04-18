@@ -4,14 +4,30 @@
 
 {% block content %}
 {% import dal.models as models %}
+{% set action=context.get("action") %}
 {% set count=context["count"]%}
+{% set all_active = ""%}
+{% set applaying_active = ""%}
+{% set pass_active = ""%}
+{% set decline_active = ""%}
+{% set all_apply_active = ""%}
+
+{% if action == "all" %}
+    {% set all_active="acitve"%}
+{% elif action == "all_temp" %}
+    {% set all_apply_active="active"%}
+{% elif action == "applying" %}
+    {% set applaying_active="active"%}
+{% elif action == "accepted" %}
+    {% set pass_active="active"%}
+{% elif action == "declined"%}
+    {% set decline_active='active'%}
+{% end %}
 
 <div class="admin-left text-right pull-left">
     <ul class="nav nav-stacked shop-manage-nav" role="tablist">
-        <li class="active"><a href="{{reverse_url('superShopManage')}}?action=all_temp&&page=1">入驻申请({{count['all_temp']}})</a></li>
-        <li class=""><a href="{{reverse_url('superShopManage')}}?action=all&&page=1">所有店铺({{count['all']}})</a></li>
-        <li class=""><a href="{{reverse_url('supercomment')}}">删除评论申请(100)</a></li>
-        <li class=""><a href="{{reverse_url('supercert')}}">店铺认证申请(100)</a></li>
+        <li class="{{all_apply_active}}"><a href="{{reverse_url('superShopManage')}}?action=all_temp&&page=1">入驻申请({{count['all_temp']}})</a></li>
+        <li class="{{all_active}}"><a href="{{reverse_url('superShopManage')}}?action=all&&page=1">所有店铺({{count['all']}})</a></li>
     </ul>
 </div>
 {% block shop %}

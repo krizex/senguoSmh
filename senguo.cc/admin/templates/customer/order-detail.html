@@ -6,7 +6,6 @@
 {% end %}
 {% block top %}订单详情{% end %}
 {% block content %}
-<<<<<<< HEAD
 {% set left=''%}
 {% set width=''%}
 {% if order.status ==4 %}
@@ -116,78 +115,43 @@
                 </span>-->
             </p>
         </div>
-=======
-<div class="container">
-    <div class="order-item">
-        <h4 class="title">订单详情</h4>
-        <p>订单编号：<span>151515115</span></p>
-        <p>下单时间：<span>2015-02-04 15:15:15</span></p>
-        <p>配送时间：<span>2015-02-04 15:15:15</span></p>
-        <p>订单状态：<span>已评价</span></p>
-        <p>订单备注：<span>无</span></p>
->>>>>>> origin/senguo2.0
     </div>
-    <div class="order-item">
-        <h4 class="title">商品信息</h4>
-        <ul class="goods-lst">
-            <li class="Cm group">
-                <dl class="goods-item">
-                    <dd><img src="/static/images/TDSG_l.png" alt="商品图片"/></dd>
-                    <dt class="bg">
-                        <p class="color">红艳草莓</p>
-                        <p class="color txt-ar"><span class="big">2</span>x<span>1</span>&nbsp;&nbsp;小计：<span>12.0</span>元</p>
-                        <p class="color">6元/1斤</p>
-                    </dt>
-                </dl>
-            </li>
-            <li class="Hbl group">
-                <dl class="goods-item">
-                    <dd><img src="/static/images/TDSG_l.png" alt="商品图片"/></dd>
-                    <dt class="bg">
-                        <p class="color">红艳草莓</p>
-                        <p class="color txt-ar"><span class="big">2</span>x<span>1</span>&nbsp;&nbsp;小计：<span>12.0</span>元</p>
-                        <p class="color">6元/1斤</p>
-                    </dt>
-                </dl>
-            </li>
-        </ul>
-    </div>
-    <div class="order-item">
-        <h4 class="title">收货信息</h4>
-        <p>收货人：<span>周兵</span></p>
-        <p>收货地址：<span>华中科技大学韵苑17栋</span></p>
-        <p>联系电话：<span>12002202002</span></p>
-    </div>
-    <div class="order-item">
-        <h4 class="title">订单金额</h4>
-        <p>商品总金额<span class="fr"><span>36.0</span>元</span></p>
-        <p>运费：<span class="fr"><span>6.0</span>元</span></p>
-        <p>店铺优惠：<span class="fr"><span>0</span>元</span></p>
-        <p class="dash-bt">应付金额：<span class="fr"><span class="black-txt">42.0</span>元</span></p>
-    </div>
-    <div class="order-item">
-        <h4 class="title">订单评价<a href="javascript:;" class="fr" id="del-comment">删除</a></h4>
-        <p><span>李大婉：</span><span>腰果一点都不不脆</span></p>
-        <p class="green-txt">商家回复：<span>亲~不要生气哦！以后我们会改进的啊！</span></p>
-    </div>
-</div>
-<div class="modal fade comment-box" id="pointsBox">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
-            <div class="modal-header">
-                <button type="button" class="close dismiss">✕</button>
-                <h2 class="modal-title line48">删除评论</h2>
-            </div>
-            <div class="modal-body set-width-float text-grey6">
-                <p>删除评论，您的积分也将相应的减少，确定删除吗？</p>
-                <div class="btn-group">
-                    <a href="javascript:;" class="bg-green" id="del-ok">确定</a>
+    <hr />
+    <div id="status-box" >
+        <div class="hint" style="display:none">
+            <p>订单还未开始处理</p>
+        </div>
+        <div class="status-bar-box">
+            <div class="status-bar">
+                <div class="inner bg-green {{width}}"></div>
+                <div class="circle-icon bg-green {{left}}"></div>
+                <div class="status-box {{left}}">
+                    <span class="status" data-id="{{order.status}}">
+                          {% if order.status ==4 and order.sender_img %}
+                        <img src="{{order.sender_img}}" class="sender_img pull-left m-r5"/>
+                        {% end %}
+                        <span class="word pull-left m-r5"></span>
+                        {% if order.status ==4 and order.sender_phone %}
+                        <a href="tel:{{order.sender_phone}}" class="pull-left text-green">拨打</a>
+                        {% end %}
+                    </span>
                 </div>
             </div>
-            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
         </div>
+        <!-- <p class="text-center phone-notice" style="display:none">点击下方电话，可以直接拨号询问订单处理状态~^o^~</p>
+             <p><a href="tel:"></a></p>
+             {% if order.status==4%}
+             <ul class="status-list list">
+
+             </ul>
+             {% end %}
+         </div>
+         <hr />
+         <div class="text-center" >
+             <a class="btn bg-green text-white">再次下单</a>
+         </div>-->
+    <div id="box-border" class="bg_change"></div>
     </div>
-</div>
+</section>
 {% end %}
 {% block bottom %}<script src="{{static_url('js/market-order-detail.js')}}"></script>{% end %}

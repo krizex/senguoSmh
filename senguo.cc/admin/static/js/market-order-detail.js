@@ -35,12 +35,6 @@ $(document).ready(function(){
         }
     }
     removeDom();
-}).on("click","#del-comment",function(){
-    $("#pointsBox").toggle();
-}).on("click","#del-ok",function(){
-    $("#pointsBox").toggle();
-}).on("click",".close",function(){
-    $("#pointsBox").toggle();
 });
 function removeDom(){
     $('.create_time').remove();
