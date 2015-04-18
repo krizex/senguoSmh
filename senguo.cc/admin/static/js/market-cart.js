@@ -662,8 +662,8 @@ function TiePhone(evt){
             {
                 var tie_box=new Modal('tieBox');
                 tie_box.modal('hide');
-                $('#phoneNumber').remove();
-                $('.un_tie').attr({'id':'submitOrder'}).removeClass('bg-grey text-grey9 un_tie').addClass('bg-green text-white');
+                $('.first_notice').remove();
+                $('.un_tie').attr({'id':'submitOrder'}).removeClass('bg-grey99 un_tie').addClass('bg-green');
             }
             else noticeBox(res.error_text);
         },

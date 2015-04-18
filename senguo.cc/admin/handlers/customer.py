@@ -34,12 +34,13 @@ class Access(CustomerBaseHandler):
 	def post(self):
 		phone = self.args['phone']
 		password = self.args['password']
-		u = models.ShopAdmin.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
-		# print(phone,password)
+		# u = models.ShopAdmin.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
+		print(phone,password)
+		u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
 		if not u:
 			return self.send_fail(error_text = '用户不存在或密码不正确 ')
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
-		self.redirect(self.args.get("next", self.reverse_url("customerHome")))
+		self.redirect(self.args.get("next", self.reverse_url("customerHome",handle.shop_code)))
 		return self.send_success()
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
