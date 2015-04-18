@@ -1548,58 +1548,75 @@ class InsertData(CustomerBaseHandler):
 		# 			shop.shop_start_timestamp = shop.create_date_timestamp
 		# 	self.session.commit()
 
-		try:
-			accountinfo_list = self.session.query(models.Accountinfo).all()
-		except:
-			self.send_fail("get accountinfo error")
-		if accountinfo_list:
-			for accountinfo in accountinfo_list:
-				if accountinfo.headimgurl_small is None:
-					accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
-			self.session.commit()
+		# try:
+		# 	accountinfo_list = self.session.query(models.Accountinfo).all()
+		# except:
+		# 	self.send_fail("get accountinfo error")
+		# if accountinfo_list:
+		# 	for accountinfo in accountinfo_list:
+		# 		if accountinfo.headimgurl_small is None:
+		# 			if accountinfo.headimgurl:
+		# 				print(accountinfo.headimgurl)
+		# 				accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
+
+		# 	self.session.commit()
 
 		
-		orderlist = self.session.query(models.Order).all()
-		if not orderlist:
-			self.send_fail("orderlist error")
-		if orderlist:
-			for order in orderlist:
-				# if order.send_time =='0' :
-					# print('login')
-				create_date =  order.create_date
-				second_date = create_date + datetime.timedelta(days = 1)
-				if order.type == 2: #按时达
-					if order.today == 1:
-						order.send_time = create_date.strftime('%Y-%m-%d') +' '+\
-						(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
-					elif order.today == 2:
-						order.send_time = second_date.strftime('%Y-%m-%d')+' '+\
-						(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
-				elif order.type == 1:#立即送
-					later = order.create_date + datetime.timedelta(minutes = 30)
-					order.send_time =  create_date.strftime('%Y-%m-%d %H:%M') +'~'+later.strftime('%H:%M')
-					#print(order.send_time)
-				# else:
-				# 	print('Not NULL')
-			self.session.commit()
+		# orderlist = self.session.query(models.Order).all()
+		# if not orderlist:
+		# 	self.send_fail("orderlist error")
+		# if orderlist:
+		# 	for order in orderlist:
+		# 		# if order.send_time =='0' :
+		# 			# print('login')
+		# 		create_date =  order.create_date
+		# 		second_date = create_date + datetime.timedelta(days = 1)
+		# 		if order.type == 2: #按时达
+		# 			if order.today == 1:
+		# 				order.send_time = create_date.strftime('%Y-%m-%d') +' '+\
+		# 				(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
+		# 			elif order.today == 2:
+		# 				order.send_time = second_date.strftime('%Y-%m-%d')+' '+\
+		# 				(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
+		# 		elif order.type == 1:#立即送
+		# 			later = order.create_date + datetime.timedelta(minutes = 30)
+		# 			order.send_time =  create_date.strftime('%Y-%m-%d %H:%M') +'~'+later.strftime('%H:%M')
+		# 			#print(order.send_time)
+		# 		# else:
+		# 		# 	print('Not NULL')
+		# 	self.session.commit()
 
+		# try:
+		# 	accountinfo_list = self.session.query(models.Accountinfo).all()
+		# except:
+		# 	return self.send_fail('accountinfo_list error')
+		# if accountinfo_list:
+		# 	n = 0
+		# 	for accountinfo in accountinfo_list:
+		# 		customer_id = accountinfo.id
+		# 		order_list = self.session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
+		# 			models.Order.status == 6 ,models.Order.status == 10))).all()
+		# 		# print(len(order_list))
+		# 		if order_list:
+		# 			n = n + 1
+		# 			accountinfo.is_new = 1
+		# 			#print(accountinfo.is_new)
+		# 			self.session.commit()
+		# 	print(n,'***********8')
 		try:
-			accountinfo_list = self.session.query(models.Accountinfo).all()
+			follow_list = self.session.query(models.CustomerShopFollow).all()
 		except:
-			return self.send_fail('accountinfo_list error')
-		if accountinfo_list:
-			n = 0
-			for accountinfo in accountinfo_list:
-				customer_id = accountinfo.id
-				order_list = self.session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
+			return self.send_fail('follow_list error')
+		if follow_list:
+			for follow in follow_list:
+				customer_id = follow.customer_id
+				shop_id = follow.shop_id
+				order_list = self.session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,models.Order.shop_id == shop_id,or_(models.Order.status == 5,\
 					models.Order.status == 6 ,models.Order.status == 10))).all()
-				# print(len(order_list))
 				if order_list:
-					n = n + 1
-					accountinfo.is_new = 1
-					print(accountinfo.is_new)
+					follow.shop_new = 1
 					self.session.commit()
-			print(n,'***********8')
+
 
 		return self.send_success()
 
