@@ -232,7 +232,7 @@ class ShopProfile(CustomerBaseHandler):
 		comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
 		session = self.session
 		w_id = self.current_user.id
-		
+
 		session.commit()
 		# try:
 		#     point = session.query(models.Points).filter_by(id = w_id).first()
@@ -254,7 +254,7 @@ class ShopProfile(CustomerBaseHandler):
 	def post(self,shop_code):
 		shop_id = self.shop_id
 		action = self.args["action"]
-		if action == "favour": 
+		if action == "favour":
 			if not shop_id:
 				return self.send_fail()
 			try:
@@ -271,8 +271,8 @@ class ShopProfile(CustomerBaseHandler):
 			#     point =models.Points(id = self.current_user.id )
 			#     self.session.add(point)
 			#     self.session.commit()
-			
-		
+
+
 			signin = self.session.query(models.ShopSignIn).filter_by(
 				customer_id=self.current_user.id, shop_id=shop_id).first()
 
@@ -284,8 +284,8 @@ class ShopProfile(CustomerBaseHandler):
 				self.send_fail("shop_follow error")
 			if signin:
 
-				
-				
+
+
 				if signin.last_date == datetime.date.today():
 					return self.send_fail("亲，你今天已经签到了，一天只能签到一次哦")
 				else:  # 今天没签到
@@ -529,7 +529,7 @@ class Market(CustomerBaseHandler):
 					# print('fruit id',fruit.id)
 					favour = session.query(models.FruitFavour).filter_by(customer_id = customer_id,\
 						f_m_id = fruit.id , type = 0).first()
-					
+
 				except:
 					# print('favour_today error')
 					favour = None
@@ -539,7 +539,7 @@ class Market(CustomerBaseHandler):
 					favour_today = favour.create_date == datetime.date.today()
 				# print('favour_today',favour_today)
 
-				charge_types= []           
+				charge_types= []
 				for charge_type in fruit.charge_types:
 					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
 				if fruit.fruit_type_id >= 1000:
@@ -579,7 +579,7 @@ class Market(CustomerBaseHandler):
 						# print('mgood id',mgood.id)
 						favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,\
 							f_m_id = mgood.id , type = 1).first()
-						
+
 					except:
 						# print(' favour_today error mgood')
 						favour = None
@@ -695,7 +695,7 @@ class Market(CustomerBaseHandler):
 					# print('mgood id',mgood.id)
 					favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,\
 						f_m_id = mgood.id , type = 1).first()
-						
+
 				except:
 					print(' favour_today error mgood')
 
@@ -710,7 +710,7 @@ class Market(CustomerBaseHandler):
 				charge_types = []
 				for charge_type in mgood.mcharge_types:
 					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
-				if mgood.active == 1:				
+				if mgood.active == 1:
 					w_mgoods.append(["mgoods",{'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,\
 						'current_saled':mgood.current_saled,'saled':mgood.saled,'storage':mgood.storage,'favour':mgood.favour,\
 						'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types,\
@@ -723,7 +723,7 @@ class Market(CustomerBaseHandler):
 		#     data = []
 		#     w_tag = ''
 		#     for fruit in m:
-		#         charge_types= []           
+		#         charge_types= []
 		#         for charge_type in fruit.charge_types:
 		#             charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
 		#         if fruit.fruit_type_id >= 1000:
@@ -733,7 +733,7 @@ class Market(CustomerBaseHandler):
 		#         data.append([w_tag,{'id':fruit.id,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
 		#         'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour}])
 		#     return data
-		# pages 
+		# pages
 		# woody
 		session = self.session
 		w_fruits = self.w_getdata(session,fruits,customer_id)
@@ -793,7 +793,7 @@ class Market(CustomerBaseHandler):
 		favour = self.session.query(models.FruitFavour).\
 			filter_by(customer_id=self.current_user.id,f_m_id=charge_type_id, type=menu_type).first()
 
-		#woody 
+		#woody
 		# #???
 		# try:
 		#     point = self.session.query(models.Points).filter_by(id = self.current_user.id).first()
@@ -841,7 +841,7 @@ class Market(CustomerBaseHandler):
 					point_history.point_type = models.POINT_TYPE.FAVOUR
 					point_history.each_point = 1
 					self.session.add(point_history)
-					self.session.commit() 
+					self.session.commit()
 				else:
 					print("point_history None")
 				# else:
@@ -851,7 +851,7 @@ class Market(CustomerBaseHandler):
 					shop_follow.shop_point += 1
 					now = datetime.datetime.now()
 					# print(now,shop_follow.shop_point,'favour')
-				
+
 				favour.create_date = datetime.date.today()
 		else:  # 没找到点赞记录，插入一条
 			self.session.add(models.FruitFavour(customer_id=self.current_user.id,
@@ -869,7 +869,7 @@ class Market(CustomerBaseHandler):
 				point_history.point_type = models.POINT_TYPE.FAVOUR
 				point_history.each_point = 1
 				self.session.add(point_history)
-				self.session.commit() 
+				self.session.commit()
 			else:
 				print("point_history None")
 
@@ -933,7 +933,7 @@ class Cart(CustomerBaseHandler):
 		# shop_id = self.shop_id
 		customer_id = self.current_user.id
 		phone = self.get_phone(customer_id)
-		
+
 		storages = {}
 		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		if not shop:return self.send_error(404)
@@ -993,7 +993,7 @@ class Cart(CustomerBaseHandler):
 			charge_types = self.session.query(models.ChargeType).\
 				filter(models.ChargeType.id.in_(fruits.keys())).all()
 			for charge_type in charge_types:
-				
+
 				if fruits[str(charge_type.id)] == 0:  # 有可能num为0，直接忽略掉
 					continue
 				totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
@@ -1163,7 +1163,7 @@ class Cart(CustomerBaseHandler):
 			# 	return self.send_fail('mgood not found')
 			# mgood_name = mgood.name
 			# charge =m_d[m].get('charge')
-			# goods.append([mgood_name,charge,num]) 
+			# goods.append([mgood_name,charge,num])
 			# print('m',m)
 		goods = str(goods)[1:-1]
 		order_totalPrice = float('%.1f'% totalPrice)
@@ -1207,7 +1207,7 @@ class Order(CustomerBaseHandler):
 		session = self.session
 		return self.render("customer/order-list.html", context=dict(subpage='center'))
 
-	
+
 
 	@classmethod
 	def get_orderData(self,session,orders):
@@ -1248,7 +1248,7 @@ class Order(CustomerBaseHandler):
 			page = self.args['page']
 			offset = (page - 1) * 10
 			orders = [x for x in self.current_user.orders if x.status == 1]
-			# woody	
+			# woody
 			for order in orders:
 				order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time)
@@ -1293,7 +1293,7 @@ class Order(CustomerBaseHandler):
 			order5 = []
 			order6 = []
 			for x in orderlist:
-				if x.status == 5:		
+				if x.status == 5:
 					order5.append(x)
 				if x.status == 6:
 					order6.append(x)
@@ -1469,7 +1469,7 @@ class Points(CustomerBaseHandler):
 
 		return self.render("customer/points.html",shop_point = shop_point,pages = pages)
 
-		
+
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("page")
@@ -1513,7 +1513,7 @@ class InsertData(CustomerBaseHandler):
 		from sqlalchemy import create_engine, func, ForeignKey, Column
 		# print(fun)
 
-		
+
 		# import pingpp
 		# try:
 		# 	shop_list = self.session.query(models.Shop).all()
@@ -1538,7 +1538,7 @@ class InsertData(CustomerBaseHandler):
 		# shop_count = self.get_shop_count()
 		# province_shop_count = self.get_province_shop_count(110000)
 		# city_shop_count     = self.get_city_shop_count(110000)
-		# shop_group          = self.get_shop_group()   
+		# shop_group          = self.get_shop_group()
 		# return self.send_success(shop_count=shop_count,province_shop_count = province_shop_count,\
 		# 	city_shop_count = city_shop_count,shop_group = shop_group
 		# 	)
@@ -1547,7 +1547,7 @@ class InsertData(CustomerBaseHandler):
 
 		# ch = pingpp(order_no = '1234353',amount = 1,app=dict(id=''))
 		# return self.send_success()
-		# path = "http://m.senguo.cc/customer/test"
+		# path = "http://i.senguo.cc/customer/test"
 
 		# sign = sign(path)
 		# ret = sign.getSign(path)
