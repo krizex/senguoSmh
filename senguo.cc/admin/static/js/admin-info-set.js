@@ -19,8 +19,8 @@ $(document).ready(function(){
                //imgData=canvas.toDataURL(type);
 	//imgData = imgData.replace(_fixType(type),'image/octet-stream');
     }
-   
-    //二维码下载 
+
+    //二维码下载
     $(document).on('click','.download_img',function(){
              var type = 'png';
              var code=$('#shop_code').val();
@@ -119,7 +119,7 @@ $(document).ready(function(){
             else if_city='false';
             $item.attr({'data-code':key,'data-city':if_city}).find('.name').text(area[key]['name']);
             $('.provinceList').append($item);
-            
+
         }
     });
     $(document).on('click','.provinceList li',function(){
@@ -131,7 +131,7 @@ $(document).ready(function(){
         if(if_city=='false') {$('.city_select').hide();}
         else {
              $('.cityList').empty();
-              for(var key in area){    
+              for(var key in area){
                 var city=area[key]['city'];
                 if(code==key){
                     for(var k in city){
@@ -139,7 +139,7 @@ $(document).ready(function(){
                         $item.attr({'data-code':k}).find('.name').text(city[k]['name']);
                         $('.cityList').append($item);
                     }
-                }           
+                }
             }
             $('.city_select').show();
         }
@@ -186,7 +186,7 @@ var saveFile = function(data, filename){
     var save_link = document.createElementNS('http://www.w3.org/1999/xhtml', 'a');
     save_link.href = data;
     save_link.download = filename;
-   
+
     var event = document.createEvent('MouseEvents');
     event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
     save_link.dispatchEvent(event);
@@ -282,8 +282,9 @@ function infoEdit(target){
                 else if(action_name=='code')
                 {
                     $('.code').text(shop_code);
-                    $('.shop_link').attr({'href':'http://i.senguo.cc/'+shop_code});
-                    $('#shop_link_img').qrcode({render: "canvas",width: 100,height:100,text: 'http://i.senguo.cc/'+shop_code ,typeNumber  : -1});
+                    $('.shop_link').attr({'href':'http://senguo.cc/'+shop_code});
+                    $('#shop_link_img').qrcode({render: "canvas",width: 100,height:100,text: 'http://senguo.cc/'+shop_code ,typeNumber  : -1});
+
                     $('.link_notice').show();
                     $('.notice_word').hide();
                     $('.code_set').hide();
