@@ -160,7 +160,7 @@ class CustomerProfile(CustomerBaseHandler):
 	   self.render("customer/profile.html", context=dict(birthday=birthday))
 
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("action", "data")
+	@CustomerBaseHandler.check_arguments("action", "data","old_password?:str")
 	def post(self):
 		action = self.args["action"]
 		data = self.args["data"]
@@ -179,6 +179,14 @@ class CustomerProfile(CustomerBaseHandler):
 			except ValueError as e:
 				return self.send_fail("月份必须为1~12")
 			self.current_user.accountinfo.update(session=self.session, birthday=time.mktime(birthday.timetuple()))
+		elif action == 'add_password':
+			self.current_user.accountinfo.update(session = self.session , password = data)
+		elif action == 'modify_password':
+			old_password = self.args['old_password']
+			if old_password != self.current_user.accountinfo.password:
+				return self.send_fail("密码错误")
+			else:
+				self.current_user.accountinfo.update(session = self.session ,password = data)
 		else:
 			return self.send_error(404)
 		return self.send_success()
@@ -1268,12 +1276,14 @@ class Order(CustomerBaseHandler):
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
+			print(offset)
+			print(total_count)
 			if offset + 10 <= total_count:
 				orders = orders[offset:offset + 10]
 			elif offset < total_count and offset + 10 >= total_count:
 				orders = orders[offset:]
 			else:
-				return self.send_fail("order pages errors")
+				return self.send_fail("没有待收货订单")
 			orders = self.get_orderData(session,orders)
 			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "finish":

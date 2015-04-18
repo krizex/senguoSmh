@@ -499,6 +499,8 @@ class QiniuCallback(FruitzoneBaseHandler):
 			return self.send_success()
 		elif action == "add":  #什么都不用做
 			return self.send_success()
+		elif action == "shopAuth_cookie":
+			return self.send_success()
 		return self.send_error(404)
 
 
@@ -527,6 +529,10 @@ class PhoneVerify(_AccountBaseHandler):
 			self.handle_checkcode()
 		elif self.args["action"] == "gencode_shop_apply":
 			self.handle_gencode_shop_apply()
+		elif self.args["action"] == "checkcode_regist":
+			self.handle_checkcode_regist()
+		elif self.args["action"] == "regist":
+			self.handle_regist()
 		else:
 			return self.send_error(404)
 
@@ -538,25 +544,39 @@ class PhoneVerify(_AccountBaseHandler):
 				return self.send_fail(error_text="手机号已经绑定其他账号")
 			else:
 				return self.send_fail(error_text="手机号已绑定，无需重复绑定")
-		gen_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, phone=self.args["phone"])
+		gen_msg_token(phone=self.args["phone"])
 		return self.send_success()
+	@FruitzoneBaseHandler.check_arguments("phone:str","code:int")
+	def handle_checkcode_regist(self):
+		if not check_msg_token(phone = phone,code = self.args["code"]):
+			return self.send_fail(error_text = "验证码过期或者不正确")
+		else:
+			return self.send_success()
 
+	@FruitzoneBaseHandler.check_arguments("phone:str" , "password")
+	def handle_regist(self):
+		phone = self.args["phone"]
+		password = self.args["password"]
+		new_user = models.Accountinfo(phone = phone ,password = password)
+		self.session.add(new_user)
+		self.session.commit()
+		return self.send_success()
 
 	@FruitzoneBaseHandler.check_arguments("phone:str", "code:int", "password?")
 	def handle_checkcode(self):
-		if not check_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, code=self.args["code"]):
+		if not check_msg_token(phone = phone, code=self.args["code"]):
 		   return self.send_fail(error_text="验证码过期或者不正确")
-		password = self.args['password']
+		# password = self.args['password']
 		# print(password)
-		if password:
-			self.current_user.accountinfo.update(self.session, phone=self.args["phone"],password=self.args["password"])
-		else:
-			self.current_user.accountinfo.update(self.session, phone=self.args["phone"])
+		# if password:
+		# 	self.current_user.accountinfo.update(self.session, phone=self.args["phone"],password=self.args["password"])
+		# else:
+		self.current_user.accountinfo.update(self.session, phone=self.args["phone"])
 		return self.send_success()
 
 	@FruitzoneBaseHandler.check_arguments("phone:str")
 	def handle_gencode_shop_apply(self):
-		gen_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, phone=self.args["phone"])
+		gen_msg_token(phone=self.args["phone"])
 		# print("handle_gencode_shop_apply" + self.current_user.accountinfo.wx_unionid)
 		return self.send_success()
 

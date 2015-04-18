@@ -7,6 +7,7 @@ import datetime
 from sqlalchemy import func, desc, and_, or_, exists
 import qiniu
 from dal.dis_dict import dis_dict
+from libs.msgverify import gen_msg_token,check_msg_token
 
 # 登陆处理
 class Access(AdminBaseHandler):
@@ -866,7 +867,8 @@ class Shelf(AdminBaseHandler):
 			return self.send_qiniu_token("fruit", self.args["id"])
 		elif action == "edit_mgoods_img":
 			return self.send_qiniu_token("mgoods", self.args["id"])
-
+		elif action == "apply_cookie":
+			return self.send_qiniu_token("apply_cookie",self.args["id"])
 		elif action in ["add_charge_type", "edit_active", "edit_fruit", "default_fruit_img"]:  # fruit_id
 			try:fruit = self.session.query(models.Fruit).filter_by(id=self.args["id"]).one()
 			except:return self.send_error(404)
@@ -898,7 +900,7 @@ class Shelf(AdminBaseHandler):
 												unit=data["unit"],
 												tag = data["tag"],
 												#img_url = data["img_url"],
-												intro=data["intro"],
+										 		intro=data["intro"],
 												priority=data["priority"])
 
 			elif action == "default_fruit_img":  # 恢复默认图
@@ -1306,3 +1308,76 @@ class ShopConfig(AdminBaseHandler):
 			shop.have_offline_entity = data["have_offline_entity"]
 		self.session.commit()
 		return self.send_success()
+
+
+class ShopAuthenticate(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments()
+	def get(self):
+		shop_id = self.current_shop.id
+		token = self.get_qiniu_token("shopAuth_cookie",shop_id)
+		self.set_secure_cookie('shopAuth',token,domain=ROOT_HOST_NAME)
+		return self.send_success()
+		# return self.render("admin/shop-info-set.html")
+
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments('name:str','card_id:str','code:int')
+	def post(self):
+		shop_id = self.current_shop.id
+		if action == "edit_handle_img":
+			self.send_qiniu_token("handle_img", shop_id)
+		elif action == "edit_front_img":
+			self.send_qiniu_token('front_img',shop_id)
+		elif action == "edit_behind_img":
+			self.send_qiniu_token('behind_img',shop_id)
+		elif action == "get_code":
+			gen_msg_token(phone=self.args["phone"])
+		elif action == "customer_auth":
+			name = self.args['name']
+			card_id = self.args['card_id']
+			code  = self.args['code']
+			phone = self.args['phone']
+			handle_img = self.args['handle_img']
+			if not check_msg_token(phone,code):
+				return self.send_fail('code error')
+			shop_apply = models.ShopAuthenticate(
+				realname = name,
+				shop_type = 1,
+				card_id = card_id,
+				handle_img = handle_img,
+				has_done  = 0
+				)
+			self.session.add(shop_apply)
+			self.session.commit()
+		elif action == "company_auth":
+			name = self.args['name']
+			company_name = self.args['company_name']
+			shop_type = self.args['shop_type']
+			card_id = self.args['card_id']
+			code = self.args['code']
+			phone = self.args['phone']
+			business_licence = self.args['business_licence']
+			front_img = self.args['front_img']
+			behind_img = self.args['behind_img']
+			if not check_msg_token(phone,code):
+				return self.send_fail('code error')
+			shop_apply = models.ShopAuthenticate(
+				realname = name,
+				company_name = company_name,
+				shop_type = shop_type,
+				business_licence = business_licence,
+				card_id = card_id,
+				front_img = front_img,
+				behind_img = behind_img,
+				has_done = 0
+				)
+			self.session.add(shop_apply)
+			self.session.commit()
+
+
+
+
+
+
+
+

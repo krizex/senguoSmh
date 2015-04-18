@@ -714,21 +714,25 @@ class CommnetApplyDelete(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id:int','decline_reason?:str')
 	def post(self):
+		comment_id = self.args['apply_id']
+		comment_apply = self.session.query(models.CommentApply).filter_by(id = apply_id).first()
+		if not comment_apply:
+			return self.send_error(404)
+		order = comment_apply.order
 		if action == 'commit':
-			comment_id = self.args['apply_id']
-			comment_apply = self.session.query(models.CommentApply).filter_by(id = apply_id).first()
-			if not comment_apply:
-				return self.send_error(404)
-			order = comment_apply.order
 			order.status = 5
 			order.coment = 'NULL'
 			order.comment_reply = 'NULL'
 			self.session.commit()
+			return self.send_success()
 		elif action == 'decline':
-			decline_reason = self.args['decline_reason']
+			comment_apply.decline_reason = self.args['decline_reason']
+			self.session.commit()
 			return self.send_success(decline_reason = decline_reason)
 		else:
 			return self.send_error(404)
+
+
 
 
 

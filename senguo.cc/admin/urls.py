@@ -55,6 +55,9 @@ handlers = [
     (r"/customer/points", handlers.customer.Points, {}, "customerPoints"),
     (r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
     (r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
+
+    (r"/customer/phoneVerify", handlers.fruitzone.PhoneVerify, {
+        "action":"customer"}, "customerPhoneVerify"),
     (r"/customer/(\w+)", handlers.customer.Home, {}, "customerHome"),
 
     (r"/super/oauth", handlers.superadmin.Access,{
@@ -133,6 +136,7 @@ handlers = [
     (r"/admin/config", handlers.admin.Config, {}, "adminConfig"),
     (r"/admin/config/shop", handlers.admin.ShopConfig, {}, "adminShopConfig"),
     (r"/admin/searchorder", handlers.admin.SearchOrder, {}, "adminSearchOrder"),
+    (r"/admin/shopauth",handlers.admin.ShopAuthenticate,{},'adminShopAuth'),
 
     # (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
     # (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
@@ -182,8 +186,7 @@ handlers = [
 
     (r"/fruitzone/phoneVerify", handlers.fruitzone.PhoneVerify, {
         "action":"admin"}, "fruitzonePhoneVerify"),
-    (r"/customer/phoneVerify", handlers.fruitzone.PhoneVerify, {
-        "action":"customer"}, "customerPhoneVerify"),
+    
 
     #信息墙
     (r"/infowall/supply", handlers.infowall.Home, {"action": "supply"}, "infowallHomeSupply"),

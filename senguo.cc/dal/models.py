@@ -490,6 +490,21 @@ class Shop(MapBase, _CommonApi):
 		print('success')
 		return order_count
 
+class ShopAuthenticate(MapBase,_AccountApi):
+	__tablename__ = "shop_auth"
+	id  = Column(Integer,ForeignKey(Accountinfo.id),primary_key = True ,nullable = False)
+	shop_type  = Column(Integer) # 1:person 2:company
+	company_name = Column(String(128))
+	business_licence = Column(String(2048))
+	realname   = Column(String(16))
+	card_id    = Column(String(32))
+	handle_img   = Column(String(2048))
+	front_img  = Column(String(2048))
+	behind_img = Column(String(2048))
+	has_done   = Column(Integer,default = 0) # 0:before done 1:success 2:decline 
+	# code       = Column(Integer)
+
+
 # 角色：商家，即店铺的管理员
 class ShopAdmin(MapBase, _AccountApi):
 	__tablename__ = "shop_admin"
@@ -987,6 +1002,7 @@ class _VerifyCode(MapBase):
 	id = Column(Integer, primary_key=True, autoincrement=True)
 	wx_id = Column(String(100), unique=True)
 	code = Column(Integer)
+	phone = Column(String(32))
 	create_time = Column(DateTime, default=func.now())
 	count = Column(Integer)              # modify to define whether  code is usefull , if count = 1, code is usefull ,if count =0 or others ,code is useless
 
@@ -1078,9 +1094,9 @@ class Order(MapBase, _CommonApi):
 			charge_types = session.query(MChargeType).filter(MChargeType.id.in_(mgoods.keys())).all()
 			for charge_type in charge_types:
 				# print("before",charge_type.mgoods.storage,charge_type.mgoods.current_saled)
-				if mgoods[str(charge_type.id)]==0:
-					continue
-				num =mgoods[str(charge_type.id)]['num'] *charge_type.unit_num * charge_type.num
+				if mgoods[int(charge_type.id)]==0:
+					continue 
+				num =mgoods[int(charge_type.id)]['num'] *charge_type.unit_num * charge_type.num
 				charge_type.mgoods.storage += num
 				charge_type.mgoods.current_saled -= num
 				charge_type.mgoods.saled -= num
