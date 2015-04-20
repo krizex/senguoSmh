@@ -30,6 +30,7 @@ img{border:none;}
 .mt80{margin-top:80px;}
 .group:before,.group:after{content:'';display: block;line-height: 0;height: 0;font-size: 0;clear: both;}
 .group{*zoom:1;}
+.hide{display: none!important;}
 /*头部样式*/
 .backstage-header .line50{line-height:45px;}
 .backstage-header .height50{height:45px;}
@@ -74,7 +75,7 @@ img{border:none;}
 .container-left .nav{margin-top:-1px;}
 .container-left .nav li{border-top:1px solid #ddd;}
 .container-left .nav li span{font-size:16px;color:#666;padding-top:20px;display:block;text-indent:40px;}
-.container-left .nav li span i{display:inline-block;width:18px;height:17px;background:url("../images/left-nav-icon.gif") no-repeat;margin-right:10px;}
+.container-left .nav li span i{display:inline-block;width:18px;height:17px;background:url("../images/left-nav-icon.gif") no-repeat;margin-right:10px;vertical-align: -2px;}
 .container-left .nav li .count i{background-position:0px 0px}
 .container-left .nav li .server i{background-position:-43px 1px}
 .container-left .nav li .manage i{background-position:-84px 1px}

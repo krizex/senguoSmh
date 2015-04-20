@@ -94,6 +94,7 @@
 {% set comment_active = ""%}
 {% set user_static_active='' %}
 {% set order_static_active='' %}
+{% set shopBlance='' %}
 
 {% if subpage == 'goods' %}
     {% set goods_active = 'active' %}
@@ -111,6 +112,8 @@
     {% set user_static_active = 'active' %}
 {% elif subpage == 'orderstatic' %}
     {% set order_static_active = 'active' %}
+{% elif subpage == 'shopBlance' %}
+    {% set shopBlance = 'active' %}
 {% end %}
 <main class="container mt80">
     <div class="container-left pull-left">
@@ -126,6 +129,10 @@
             <li>
                 <span class="server"><i></i>客服</span>
                 <a href="{{reverse_url('adminComment')}}?action=all&&page=0" class="{{comment_active}}">消息与评价</a>
+            </li>
+            <li>
+                <span class="account"><i></i>账户</span>
+                <a href="{{reverse_url('adminShopBalance')}}" class="{{shopBlance}}">账户余额</a>
             </li>
             <li>
                 <span class="manage"><i></i>管理</span>

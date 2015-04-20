@@ -1293,6 +1293,13 @@ class Config(AdminBaseHandler):
 			return self.send_error(404)
 		return self.send_success()
 
+
+class ShopBalance(AdminBaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        subpage = 'shopBlance'
+        return self.render("admin/account-rd.html",context=dict(subpage=subpage))
+
 class ShopConfig(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
