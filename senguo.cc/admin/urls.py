@@ -93,6 +93,7 @@ handlers = [
     ## 店铺申请接入管理
     # 所有店铺
     (r"/super/shopManage", handlers.superadmin.ShopManage, {}, "superShopManage"),
+    (r"super/shopauth",handlers.superadmin.ShopAuthenticate,{},"superShopAuth"),
 
     ## 商城购买订单
     (r"/super/orderManage/", handlers.superadmin.OrderManage, {
@@ -116,6 +117,7 @@ handlers = [
     (r"/super/incstatic", handlers.superadmin.IncStatic, {}, "superIncStatic"),
     (r"/super/dstatic", handlers.superadmin.DistributStatic, {}, "superDStatic"),
     (r"/super/shopstatic", handlers.superadmin.ShopStatic, {}, "superShopStatic"),
+    (r"/super/Commentdelete",handlers.superadmin.CommentApplyDelete,{},"superCommentDelete"),
 
 
     # (r"/super/notice/", handlers.superadmin.Notice),

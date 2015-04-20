@@ -1141,8 +1141,8 @@ class CommentApply(MapBase, _CommonApi):
 	shop_id  = Column(Integer , ForeignKey(Shop.id) ,nullable = False)
 	create_date = Column(Date, default=func.curdate())
 	has_done  = Column(Integer , default = 0) # 0 :not ever apply , 1: applied ,success  2:applied but decline
-	order   = relationship("Order")
-	shop    = relationship("Shop")
+	# order   = relationship("Order")
+	# shop    = relationship("Shop")
 	decline_reason = Column(String(200)) # when
 
 #水果单品

@@ -725,6 +725,17 @@ class Order(AdminBaseHandler):
 				session = self.session
 				order.update(session=session, status=0)
 				order.get_num(session,order.id)
+			# shop_admin apply to delete comment
+			elif action =="apply_delete_comment":
+				order_id = data["order_id"]
+				delete_reason = data["delete_reason"]
+				shop_id  = self.current_shop.id
+				apply_delete = models.CommentApply(order_id = order_id,delete_reason = delete_reason,has_done\
+					=0,shop_id = shop_id)
+				self.session.add(apply_delete)
+				self.session.commit()
+				return self.send_success(status = 0 , msg = 'success',data = {})
+
 			elif action == "print":
 				order.update(session=self.session, isprint=1)
 		# elif action == "search":
@@ -1174,19 +1185,19 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			#date:2015.3.7
 			#TODO:  standardize the format of time
 			################################################################################################
-			if order.start_time.minute <10:
-				w_start_time_minute ='0' + str(order.start_time.minute)
-			else:
-				w_start_time_minute = str(order.start_time.minute)
-			if order.end_time.minute < 10:
-				w_end_time_minute = '0' + str(order.end_time.minute)
-			else:
-				w_end_time_minute = str(order.end_time.minute)
+			# if order.start_time.minute <10:
+			# 	w_start_time_minute ='0' + str(order.start_time.minute)
+			# else:
+			# 	w_start_time_minute = str(order.start_time.minute)
+			# if order.end_time.minute < 10:
+			# 	w_end_time_minute = '0' + str(order.end_time.minute)
+			# else:
+			# 	w_end_time_minute = str(order.end_time.minute)
 
-			if order.type == 2 and order.today==2:
-				w_date = order.create_date + delta
-			else:
-				w_date = order.create_date
+			# if order.type == 2 and order.today==2:
+			# 	w_date = order.create_date + delta
+			# else:
+			# 	w_date = order.create_date
 			# d["sent_time"] = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
 			# 									order.start_time.hour, w_start_time_minute,
 			# 									  order.end_time.hour, w_end_time_minute)
@@ -1334,14 +1345,9 @@ class ShopAuthenticate(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments('name:str','card_id:str','code:int')
 	def post(self):
 		shop_id = self.current_shop.id
-		if action == "edit_handle_img":
-			self.send_qiniu_token("handle_img", shop_id)
-		elif action == "edit_front_img":
-			self.send_qiniu_token('front_img',shop_id)
-		elif action == "edit_behind_img":
-			self.send_qiniu_token('behind_img',shop_id)
-		elif action == "get_code":
+		if action == "get_code":
 			gen_msg_token(phone=self.args["phone"])
+			return self.send_success()
 		elif action == "customer_auth":
 			name = self.args['name']
 			card_id = self.args['card_id']
@@ -1359,10 +1365,10 @@ class ShopAuthenticate(AdminBaseHandler):
 				)
 			self.session.add(shop_apply)
 			self.session.commit()
+			return self.send_success()
 		elif action == "company_auth":
 			name = self.args['name']
 			company_name = self.args['company_name']
-			shop_type = self.args['shop_type']
 			card_id = self.args['card_id']
 			code = self.args['code']
 			phone = self.args['phone']
@@ -1374,7 +1380,7 @@ class ShopAuthenticate(AdminBaseHandler):
 			shop_apply = models.ShopAuthenticate(
 				realname = name,
 				company_name = company_name,
-				shop_type = shop_type,
+				shop_type = 2,
 				business_licence = business_licence,
 				card_id = card_id,
 				front_img = front_img,
@@ -1383,6 +1389,7 @@ class ShopAuthenticate(AdminBaseHandler):
 				)
 			self.session.add(shop_apply)
 			self.session.commit()
+			return self.send_success()
 
 
 

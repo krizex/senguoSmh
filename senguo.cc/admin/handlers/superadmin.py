@@ -683,12 +683,12 @@ class ShopClose(SuperBaseHandler):
 
 
 
-class CommnetApplyDelete(SuperBaseHandler):
+class CommentApplyDelete(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		data = []
 		order_info = {}
-		apply_list = self.session.query(models.CommentApply).filter_by(hasDone = 0).all()
+		apply_list = self.session.query(models.CommentApply).filter_by(has_done = 0).all()
 		if comment_apply in apply_list:
 			order = comment_apply.order
 			shop  = comment_apply.shop
@@ -723,14 +723,42 @@ class CommnetApplyDelete(SuperBaseHandler):
 			order.status = 5
 			order.coment = 'NULL'
 			order.comment_reply = 'NULL'
+			comment_apply.has_done = 1
 			self.session.commit()
-			return self.send_success()
+			return self.send_success(status = 0, msg = 'success',data = {})
 		elif action == 'decline':
 			comment_apply.decline_reason = self.args['decline_reason']
+			comment_apply.has_done = 2
 			self.session.commit()
-			return self.send_success(decline_reason = decline_reason)
+			return self.send_success(status = 0 , msg = 'success' ,data = {})
 		else:
 			return self.send_error(404)
+
+
+class ShopAuthenticate(SuperBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.send_success()
+
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('apply_id','decline?str')
+	def post(self):
+		apply_id = self.args['apply_id']
+		shop_auth_apply = self.session.query(models.ShopAuthenticate).filter_by(id = apply_id).first()
+		if not shop_auth_apply:
+			return self.error(404)
+		if action == 'commit':
+			shop_auth_apply.has_done = 1
+			self.session.commit()
+		elif action == 'decline':
+			decline_reason = self.args['decline_reason']
+			shop_auth_apply.has_done = 2
+			self.session.commit()
+		else:
+			return self.send_error(404)
+		return self.send_success(status=0,msg = 'success',data = {})
+
+
 
 
 
