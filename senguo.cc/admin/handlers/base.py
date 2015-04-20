@@ -190,8 +190,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		if not user_id:
 			self._user = None
 		else:
-			# self._user = self.__account_model__.get_by_id(self.session, user_id)
-			self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
+			self._user = self.__account_model__.get_by_id(self.session, user_id)
+			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:
 				Logger.warn("Suspicious Access", "may be trying to fuck you")
 		return self._user

@@ -1420,24 +1420,7 @@ class Order(CustomerBaseHandler):
 					point_history.each_point = 5
 					self.session.add(point_history)
 					self.session.commit()
-		elif action == "delete_comment":
-			data = self.args['data']
-			order_id = data['order_id']
-			order = self.session.query(models.Order).filter_by(id = order_id).first()
-			if not order:
-				return self.send_fail('order not found')
-			order.status = 5
-			order.comment = 'NULL'
-			order.comment_reply = 'NULL'
-			self.session.commit()
-
-			# recover point
-			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
-				order.customer_id , shop_id = order.shop_id).first()
-			if not shop_follow:
-				return self.send_fail('shop_follow not found')
-			if shop_follow.shop_point:
-				shop_follow.shop_point -= 5
+		
 			#need to rocord this poist history?
 		else:
 			return self.send_error(404)
@@ -1487,6 +1470,33 @@ class OrderDetail(CustomerBaseHandler):
 		# 								  order.end_time.hour, w_end_time_minute)
 		return self.render("customer/order-detail.html", order=order,
 						   charge_types=charge_types, mcharge_types=mcharge_types)
+
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("action", "data?")
+	def post(self,order_id):
+		action = self.args['action']
+		if action == "delete_comment":
+			data = self.args['data']
+			order_id = data['order_id']
+			order = self.session.query(models.Order).filter_by(id = order_id).first()
+			if not order:
+				return self.send_fail('order not found')
+			order.status = 5
+			order.comment = ''
+			order.comment_reply = ''
+			self.session.commit()
+
+			# recover point
+			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
+				order.customer_id , shop_id = order.shop_id).first()
+			if not shop_follow:
+				return self.send_fail('shop_follow not found')
+			if shop_follow.shop_point:
+				shop_follow.shop_point -= 5
+			self.session.commit()
+			self.send_success()
+		else:
+			return self.send_error(404)
 
 
 class Points(CustomerBaseHandler):
