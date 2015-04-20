@@ -186,12 +186,16 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		user_id = self.get_secure_cookie(self.__account_cookie_name__) or b'0'
 		user_id = int(user_id.decode())
 		print(user_id)
+        # print(type(self))
+        # print(self.__account_model__)
 
 		if not user_id:
 			self._user = None
 		else:
-			# self._user = self.__account_model__.get_by_id(self.session, user_id)
-			self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
+			self._user = self.__account_model__.get_by_id(self.session, user_id)
+            # print(self._user)
+            # print(self)
+			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:
 				Logger.warn("Suspicious Access", "may be trying to fuck you")
 		return self._user

@@ -12,6 +12,8 @@ import base64
 import json
 from libs.msgverify import gen_msg_token,check_msg_token
 
+from urls import handlers
+
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
 		self._action = action
@@ -27,7 +29,7 @@ class Access(CustomerBaseHandler):
 			self.clear_current_user()
 			return self.redirect(self.reverse_url("customerHome"))
 		elif self._action == "oauth":
-			self.handle_oauth()
+			self.handle_oauth(next_url)
 		else:
 			return self.send_error(404)
 
@@ -51,7 +53,7 @@ class Access(CustomerBaseHandler):
 		# return self.send_success()
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
-	def handle_oauth(self):
+	def handle_oauth(self,next_url):
 		# todo: handle state
 		code =self.args["code"]
 		mode = self.args["mode"]
@@ -65,7 +67,7 @@ class Access(CustomerBaseHandler):
 		u = models.Customer.register_with_wx(self.session, userinfo)
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 
-		next_url = self.get_argument("next", self.reverse_url("customerHome"))
+		next_url = self.get_argument("next", next_url)
 		return self.redirect(next_url)
 
 class RegistByPhone(CustomerBaseHandler):
