@@ -43,10 +43,9 @@
 .large-img-box img{height:280px;}
 .large-img-box .click-great{display:inline-block;width:100%;padding:10px;padding-left:30px;}
 .large-img-box .modal-footer{padding:0px;}
-
 .large-img-box .modal-dialog{width:100%;max-width:302px;padding:0 10px !important;}
-.large-img-box  .mt42{margin-top:30px !important;}
-.large-img-box  .intro{padding:10px;border-bottom:1px solid #ccc;}
+.large-img-box .mt42{margin-top:30px !important;}
+.large-img-box .intro{padding:10px;border-bottom:1px solid #ccc;}
 .large-img-box .modal-footer{margin-top:0px;border-bottom-left-radius:8px;border-bottom-right-radius:8px;}
 
 .notice-box{min-height:120px;}
@@ -99,6 +98,3 @@
 .fruit-name{display:inline-block;width:120px;overflow:hidden;height:26px;line-height:26px;}
 .loading{height:20px;}
 .no_more{height:20px;}
-
-
-

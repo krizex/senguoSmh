@@ -39,7 +39,7 @@
 .logo-box .uploadifive-button input[type=file]{width:80px !important;height:80px !important;}
 .dropdown-menu li{width:60px;border-bottom:1px solid #ddd;}
 .dropdown-menu li:hover{background-color:#3071a9;color:#fff;}
-.info-set-list textarea{width:300px;}
+.info-set-list textarea{width:610px;height:100px;}
 
 .address-list .active{background:#00D681;color:#fff;}
 .address-list li:hover{background:#00D681;color:#fff;cursor:pointer;}

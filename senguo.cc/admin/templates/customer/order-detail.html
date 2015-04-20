@@ -6,6 +6,120 @@
 {% end %}
 {% block top %}订单详情{% end %}
 {% block content %}
+<!--
+<<<<<<< HEAD
+-->
+{% set left=''%}
+{% set width=''%}
+{% if order.status ==4 %}
+    {% set left='left50' %}
+    {% set width='width50'%}
+{% elif order.status == 5%}
+    {% set left='left100' %}
+    {% set width='width100' %}
+{% elif order.status == 6%}
+    {% set left='left100' %}
+    {% set width='width100' %}
+{% end %}
+{% set fruits=eval(order.fruits)%}
+{% set mgoods=eval(order.mgoods)%}
+<section class="main-container bg-white pt36 mt10">
+    <header class="head-title set-w100-fle pr10">
+        <div class="circle-icon pull-left bg-green img-circle" >
+            <img src="{{static_url('images/order-icon.png')}}" alt="￥" />
+        </div>
+        <h3 class="pull-left">订单详情</h3>
+        <span class="order-status bg-green text-white pull-right font14">{{order.status}}</span>
+    </header>
+    <hr class="clearfix"/>
+    <div class="data-box" >
+        <div class="content" >
+            <p>订单编号：<span>{{order.num}}</span></p>
+            <p>下单时间：<span>{{order.create_date}}</span></p>
+            <p>配送时间：<span class="send_date m-r10">今天</span><span>{{order.send_time}}</span></p>
+            <p>收货人：<span>{{order.receiver}}</span></p>
+            <p>收货地址：<span>{{order.address_text}}</span></p>
+            <p>联系电话：<span>{{order.phone}}</span></p>
+            <p>订单备注：<span>{{order.message or '无'}}</span></p>
+            <input type="hidden" value="{{order.create_date}}" class="create_time"/>
+            <input type="hidden" value="{{order.create_date.year}}" class="create_year"/>
+            <input type="hidden" value="{{order.create_date.month}}" class="create_month"/>
+            <input type="hidden" value="{{order.create_date.day}}" class="create_day"/>
+            <input type="hidden" value="{{order.today}}" class="send_day"/>
+            <ul class="goods-list set-w100-fle">
+                {% for charge_type in  charge_types%}
+                <li class="orderview-goods-item {{charge_type.fruit.fruit_type.code}} set-w100-fle">
+                    <div class="icon-container">
+                        {% if charge_type.fruit.img_url%}
+                        <img src="{{charge_type.fruit.img_url}}?imageView/1/w/170/h/170" class="icon"/>
+                        {% else %}
+                        <img src="/static/design_img/{{charge_type.fruit.fruit_type.code}}.png?v=20150316" class="icon"/>
+                        {% end %}
+                    </div>
+                    <div class="content-list-wrapper">
+                        <ul class="content-list bg">
+                            <li class="l1 set-w100-fle">
+                                <span class="name color">{{fruits[charge_type.id]['fruit_name']}}</span>
+                            </li>
+                            <li class="l2 set-w100-fle" >
+                                <span class="charge">{{fruits[charge_type.id]['charge']}}</span>
+                                <span class="number-box color" >
+                                    <span class="number">{{fruits[charge_type.id]['num']}}</span>
+                                    <span class="bundle">x1</span>
+                                </span>
+                            </li>
+                            <li class="l3 color set-w100-fle">
+                                <div class="circle-icon bg-color text-center" >
+                                    <img src="{{static_url('images/money-icon.png')}}" alt="￥" />
+                                </div>
+                                <span>小计：<span class="price">{{round(charge_type.price*fruits[charge_type.id]['num'], 2)}}</span>元</span>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                {% end %}
+                {% for mcharge_type in mcharge_types%}
+                <li class="orderview-goods-item TDSG set-w100-fle" >
+                    <div class="icon-container">
+                        {% if mcharge_type.mgoods.img_url%}
+                        <img src="{{mcharge_type.mgoods.img_url}}?imageView/1/w/170/h/170" class="icon"/>
+                        {% else %}
+                        <img src="{{static_url('design_img/TDSG.png?v=20150316')}}" class="icon"/>
+                        {% end %}
+                    </div>
+                    <div class="content-list-wrapper">
+                        <ul class="content-list bg">
+                            <li class="l1 set-w100-fle" >
+                                <span class="name color">{{mgoods[mcharge_type.id]['mgoods_name']}}</span>
+                            </li>
+                            <li class="l2 set-w100-fle" >
+                                <span class="charge">{{mgoods[mcharge_type.id]['charge']}}</span>
+                                <span class="number-box color" >
+                                    <span class="number">{{mgoods[mcharge_type.id]['num']}}</span>
+                                    <span class="bundle">x1</span>
+                                </span>
+                            </li>
+                            <li class="l3 color set-w100-fle" >
+                                <div class="circle-icon bg-color text-center" >
+                                    <img src="{{static_url('images/money-icon.png')}}" alt="￥" />
+                                </div>
+                                <span>小计：<span class="price">{{mcharge_type.price}}</span>元</span>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                {% end %}
+            </ul>
+            <p class="total-price clearfix" >
+                合计：
+                <span data-id="total-price">{{order.totalPrice}}</span>元
+                <!--<span data-id="includeFreight">
+                    (含运费<span data-id="freight"></span>元)
+                </span>-->
+            </p>
+        </div>
+<!--
+=======
 <div class="container">
     <div class="order-item">
         <h4 class="title">订单详情</h4>
@@ -14,6 +128,8 @@
         <p>配送时间：<span>2015-02-04 15:15:15</span></p>
         <p>订单状态：<span>已评价</span></p>
         <p>订单备注：<span>无</span></p>
+>>>>>>> origin/senguo2.0
+-->
     </div>
     <div class="order-item">
         <h4 class="title">商品信息</h4>

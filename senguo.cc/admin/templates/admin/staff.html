@@ -27,7 +27,7 @@
     </ul>
     <div class="search-input input-group pull-right">
         <form method="post" action="" id="post">
-            <input type="text" value="" placeholder="输入员工编号或员工姓名进行搜索" class="search-con form-control"/>
+            <input type="text" value="" placeholder="输入员工编号或姓名进行搜索" class="search-con form-control"/>
             <input type="submit" value="员工搜索" class="search-btn form-control"/>
         </form>
     </div>
@@ -90,12 +90,11 @@
                             <span>{{staff.accountinfo.phone}}</span>
                         </p>
                         <p>
-                            编号:
-                            <span>SH-{{staff.id or 0}}</span>
+                            编号：SH-{{staff.id or 0}}
                         </p>
                         {% if staff.hirelink.remark %}
                         <p class="remark_con">
-                            备注: {{staff.hirelink.remark}}
+                            备注：{{staff.hirelink.remark}}
                         </p>
                         {% end %}
                     </div>
@@ -113,11 +112,11 @@
                     <ul class="staff-info-detail pull-right">
                         <li class="set-width-float">
                             <label class="info-title">邮箱：</label>
-                            <span>{{staff.accountinfo.email}}"</span>
+                            <span>{{staff.accountinfo.email}}</span>
                         </li>
                         <li class="set-width-float">
                             <label class="info-title">地址：</label>
-                            <span>{{staff.address}}"</span>
+                            <span>{{staff.address}}</span>
                         </li>
                         <li class="set-width-float">
                             <label class="info-title">姓名：</label>
