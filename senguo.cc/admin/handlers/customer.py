@@ -58,7 +58,7 @@ class Access(CustomerBaseHandler):
 		u = models.Customer.register_with_wx(self.session, userinfo)
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 
-		next_url = self.get_argument("next", self.reverse_url("customerHome",handle.shop_code))
+		next_url = self.get_argument("next", self.reverse_url("customerHome"))
 		return self.redirect(next_url)
 
 class RegistByPhone(CustomerBaseHandler):
