@@ -742,7 +742,7 @@ class CustomerShopFollow(MapBase, _CommonApi):
 	shop_point = Column(Float,default = 0)
 	# pointhistory = relationship("PointHistory")
 	bing_add_point = Column(Integer)  # 1 :
-	shop_new = Column(Integer)
+	shop_new = Column(Integer,default = 0)
 
 class PointHistory(MapBase,_CommonApi):
 	__tablename__ = 'pointhistory'

@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var item_url='/static/items/admin/order-item.html?v=2015-03-007';
+    var item_url='/static/items/admin/order-item.html?v=2015-03-20';
     //订单数据
     if(orders.length==0) $('.order-list-content').append('<h3 class="text-center">无订单信息！</h3>');
     else getOrder(item_url);
@@ -132,8 +132,8 @@ function orderItem(item){
         if(!staff_remark) $item.find('.staff-replay').hide();
         if(!remark||remark==null) $item.find('.saler-remark').hide();
         if(isprint==1) $item.find('.print-order').addClass('text-grey9');
-        if(shop_new==0) {$item.find('.name').text('新'+receiver);}
-        else{$item.find('.name').text(receiver);}
+        if(shop_new!=1) {$item.find('.new').show();}
+        $item.find('.name').text(receiver);
 
         $item.attr({'data-id':id,'data-type':type});
         $item.find('.send-time').text(sent_time);
@@ -396,10 +396,10 @@ function orderEdit(target,action,content){
 		   var phone=target.find('.sender-phone').text();
                    var $sender=parent.find('.order-sender');
                    $sender.find('.sender-code').text(code);
-		   $sender.find('.sender-name').text(name);
+	     $sender.find('.sender-name').text(name);
                    $sender.find('.sender-phone').text(phone);
                    parent.find('.status_send').removeClass('hidden');
-  	           parent.find('.status_order').addClass('hidden');
+  	     parent.find('.status_order').addClass('hidden');
                    parent.find('.status_finish').addClass('hidden');
                    parent.find('.status_word').text('配送中');
                    parent.find('.status-send').addClass('bg-blue').siblings().removeClass('bg-blue');

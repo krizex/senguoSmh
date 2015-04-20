@@ -658,7 +658,7 @@ class Order(AdminBaseHandler):
 
 					#
 					customer_info = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
-					if not customer:
+					if not customer_info:
 						return self.send_fail('customer not found')
 					customer_info.is_new = 1
 					self.session.commit()
@@ -669,6 +669,7 @@ class Order(AdminBaseHandler):
 					if not customer:
 						return self.send_fail('customer error')
 					customer.shop_new = 1
+					print(customer.shop_new,'*****************************')
 					self.session.commit()
 
 					try:
@@ -1207,6 +1208,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			d["shop_new"] = 0
 			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
 				models.CustomerShopFollow.customer_id == order.customer_id).first()
+			print(follow.customer_id)
 			if follow:
 				d["shop_new"]=follow.shop_new
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(

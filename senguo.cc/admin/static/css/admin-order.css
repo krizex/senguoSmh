@@ -163,3 +163,4 @@
 
 .sender_img{width:14px;height:14px;border-radius:50%;}
 .send_person_list{width:80%;max-width:650px;}
+.new{display:inline-block;width:20px;height:20px;border:1px solid #7AD218;color:#7AD218;line-height:20px;text-align:center;margin-left:-25px;margin-right:5px;background-color:#fff;}

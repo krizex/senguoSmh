@@ -137,8 +137,9 @@ $(document).ready(function(){
         noticeBox('亲，你今天已经为该商品点过赞了，一天只能对一个商品赞一次哦');
         //  var check_large=new Modal('large_imgbox');
         // check_large.modal('show');
-    }).on('click','.add_cart a',function(){
+    }).on('click','.add_cart a',function(e){
         //添加到购物车
+         stopDefault(e);
         var link=$(this).attr('href');
         addCart(link);
     }).on('click','.focus-btn',function(){ 
@@ -624,6 +625,14 @@ function mgoods_num(){
     }
 }
 
+function stopDefault(e) { 
+     if ( e && e.preventDefault ) 
+        e.preventDefault(); 
+    else 
+        window.event.returnValue = false;      
+    return false; 
+}
+
 function addCart(link){
     var url='';
     var action = 4;
@@ -636,10 +645,8 @@ function addCart(link){
         fruits:fruits,
         mgoods:mgoods
     };
-    event.preventDefault();
     if(!isEmptyObj(fruits)){fruits={}}
     if(!isEmptyObj(mgoods)){mgoods={}}
-    event.preventDefault();
     $.postJson(url,args,function(res){
             if(res.success)
             {
