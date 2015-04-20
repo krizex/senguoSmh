@@ -1239,6 +1239,8 @@ class Config(AdminBaseHandler):
 			pass
 		elif action == "receipt":
 			return self.render("admin/shop-receipt-set.html", receipt_msg=config.receipt_msg,context=dict(subpage='shop_set',shopSubPage='receipt_set'))
+		elif action == "cert":
+        			return self.render("admin/shop-cert-set.html",context=dict(subpage='shop_set',shopSubPage='cert_set'))
 		else:
 			return self.send_error(404)
 

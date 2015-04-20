@@ -5,7 +5,7 @@
     安装命令：
         Mysql 5.5.37: apt-get install mysql-server
         Mysql connector/python 2.0.1: pip3 install mysql-connector-python
-        tornado-4.0.2:（要先去管网下载安装包，再解压安装）
+        tornado-4.0.2:（要先去官网下载安装包，再解压安装）
             wget https://pypi.python.org/packages/source/t/tornado/tornado-4.0.2.tar.gz;tar -xzvf tornado-4.0.2.tar.gz;cd tornado-4.0.2;sudo python3 setup.py install
         sqlalchemy 0.9: pip3 install sqlalchemy
 
@@ -21,7 +21,7 @@
         2.修改默认的用户名密码（也可以新建一个和默认的用户名相同的用户）。默认的用户名密码在admin/settings.py
 
 注意/建议
-========
+=======
     1. tornado在服务器端不要运行在debug模式，速度会下降1-2倍，也不安全
     2. mysql的管理推荐用workbench，会省很多时间。
     3. 推荐看sqlalchemy的优秀教程（要翻墙）：http://www.pythoncentral.io/series/python-sqlalchemy-database-tutorial/

@@ -10,6 +10,7 @@ import qiniu
 import random
 import base64
 import json
+from libs.msgverify import gen_msg_token,check_msg_token
 
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
@@ -29,19 +30,24 @@ class Access(CustomerBaseHandler):
 		else:
 			return self.send_error(404)
 
-	@tornado.web.authenticated
+
+	#@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("phone", "password", "next?")
 	def post(self):
 		phone = self.args['phone']
 		password = self.args['password']
+		next = self.args['next']
+		print(next)
 		# u = models.ShopAdmin.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
 		print(phone,password)
 		u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
 		if not u:
 			return self.send_fail(error_text = '用户不存在或密码不正确 ')
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
-		self.redirect(self.args.get("next", self.reverse_url("customerHome",handle.shop_code)))
-		return self.send_success()
+		return self.redirect( self.reverse_url("test"))
+		# print('before redirect')
+		# return self.redirect('http://www.baidu.com')
+		# return self.send_success()
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self):
@@ -65,19 +71,42 @@ class RegistByPhone(CustomerBaseHandler):
 	def get(self):
 		return self.render("login/m_register.html")
 
-	@CustomerBaseHandler.check_arguments("phone","password")
-	def post(self):
-		phone = self.args['phone']
-		password = self.args['password']
-
-		u = self.session.query(models.Accountinfo).filter_by(phone = phone).first()
-		if u:
-			return self.send_fail("该手机号 已被注册，请直接登入")
+	@CustomerBaseHandler.check_arguments("phone:str","code:int")
+	def handle_checkcode_regist(self):
+		if not check_msg_token(phone = self.args["phone"],code = self.args["code"]):
+			return self.send_fail(error_text = "验证码过期或者不正确")
 		else:
-			u = models.Accountinfo(phone = phone ,password = password)
-			self.session.add(u)
-			self.session.commit()
 			return self.send_success()
+
+	@CustomerBaseHandler.check_arguments("phone:str")
+	def handle_gencode(self):
+		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first() 
+		if a:
+			return self.send_fail(error_text="手机号已经绑定其他账号")
+		gen_msg_token(phone=self.args["phone"])
+		return self.send_success()
+
+	@CustomerBaseHandler.check_arguments( "action:str",  "phone?:str","password?:str")
+	def post(self):
+		action = self.args['action']
+		if action == "get_code":
+			self.handle_gencode()
+		elif action == 'check_code':
+			self.handle_checkcode_regist()
+		elif action == 'regist':
+			phone = self.args['phone']
+			password = self.args['password']
+
+			u = self.session.query(models.Accountinfo).filter_by(phone = phone).first()
+			if u:
+				return self.send_fail("该手机号 已被注册，请直接登入")
+			else:
+				u = models.Accountinfo(phone = phone ,password = password)
+				self.session.add(u)
+				self.session.commit()
+				self.set_current_user(u, domain=ROOT_HOST_NAME)
+				print(u.id)
+				return self.send_success()
 
 
 

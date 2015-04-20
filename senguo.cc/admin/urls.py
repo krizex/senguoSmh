@@ -43,7 +43,7 @@ handlers = [
 
 
     #to remove
-    (r"/m", handlers.superadmin.Official),
+    (r"/m", handlers.superadmin.Official,{},"test"),
 
     (r"/customer/cart/(\w+)", handlers.customer.Cart, {}, "customerCart"),
     (r"/customer/orders", handlers.customer.Order, {}, "customerOrder"),
@@ -89,6 +89,10 @@ handlers = [
     # 店铺信息详情
     (r"/super/shopProfile/(\d+)", handlers.superadmin.ShopProfile, {}, "superShopProfile"),
     (r"/super/shopclose",handlers.superadmin.ShopClose,{},"shopclose"),
+    #test url
+    (r"/super/cert",handlers.superadmin.Cert,{},"supercert"),
+    (r"/super/comment",handlers.superadmin.Comment,{},"supercomment"),
+
 
     ## 店铺申请接入管理
     # 所有店铺
