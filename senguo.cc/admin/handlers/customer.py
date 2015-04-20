@@ -1505,6 +1505,15 @@ class Points(CustomerBaseHandler):
 
 		return self.send_success(data = data)
 
+class Balance(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+	    return self.render("customer/balance.html")
+
+class Recharge(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+	    return self.render("customer/recharge.html")
 
 class InsertData(CustomerBaseHandler):
 	@tornado.web.authenticated
