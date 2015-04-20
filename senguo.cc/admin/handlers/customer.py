@@ -17,6 +17,7 @@ class Access(CustomerBaseHandler):
 
 	def get(self):
 		next_url = self.get_argument('next', '')
+		print(next_url,'xxxxxx')
 		if self._action == "login":
 			next_url = self.get_argument("next", "")
 			return self.render("login/m_login.html",
@@ -76,6 +77,7 @@ class RegistByPhone(CustomerBaseHandler):
 			u = models.Accountinfo(phone = phone ,password = password)
 			self.session.add(u)
 			self.session.commit()
+			self.set_current_user(u, domain=ROOT_HOST_NAME)
 			return self.send_success()
 
 
@@ -1598,7 +1600,7 @@ class InsertData(CustomerBaseHandler):
 					accountinfo.is_new = 1
 					print(accountinfo.is_new)
 					self.session.commit()
-			print(n,'***********8')
+			# print(n,'')
 
 		return self.send_success()
 
