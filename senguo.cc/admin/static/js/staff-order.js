@@ -75,17 +75,17 @@ $(document).ready(function(){
         var end_hour=checkTime($this.find('.end_hour').val());
         var end_minute=checkTime($this.find('.end_minute').val());
         var status=$this.data('status');
-        $this.find('.send_time').text(start_hour+':'+start_minute+'-'+end_hour+':'+end_minute);
+        // $this.find('.send_time').text(start_hour+':'+start_minute+'-'+end_hour+':'+end_minute);
         if(status==5) $this.addClass('text-grey bg-grey').find('.toggle').addClass('text-grey').find('.finish_btn').removeClass('order_finish').addClass('arrive').text('已完成');
-        if(type==1){
-            $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
-        }
-        else if(type==2&&day==1){
-            $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
-        }
-        else if(type==2&&day==2){
-            $this.find('.send_date').text(create_year+'-'+create_month+'-'+(create_day+1));
-        }  
+        // if(type==1){
+        //     $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
+        // }
+        // else if(type==2&&day==1){
+        //     $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
+        // }
+        // else if(type==2&&day==2){
+        //     $this.find('.send_date').text(create_year+'-'+create_month+'-'+(create_day+1));
+        // }  
     });
 });
 function statusText(target,n){

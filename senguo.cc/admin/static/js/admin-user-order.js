@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var item_url='/static/items/admin/order-item.html?v=2015-03-007';
+    var item_url='/static/items/admin/order-item.html?v=2015-03-20';
     //订单数据
     if(orders.length==0) $('.order-list-content').append('<h3 class="text-center">无订单信息！</h3>');
     else getOrder(item_url);
@@ -119,27 +119,29 @@ function orderItem(item){
         var phone=item[i]['phone'];
         var receiver=item[i]['receiver'];  
         var remark=item[i]['remark'];
-        var sent_time=item[i]['sent_time'];
+        var send_time=item[i]['send_time'];
         var staff_remark=item[i]['staff_remark'];
         var status=item[i]['status'];
         var tip=item[i]['tip'];
         var today=item[i]['today'];
         var totalPrice=item[i]['totalPrice'];
         var type=item[i]['type'];
+        var shop_new=item[i]['shop_new'];
               
         if(!message) $item.find('.order-message').hide();
         if(!staff_remark) $item.find('.staff-replay').hide();
         if(!remark||remark==null) $item.find('.saler-remark').hide();
         if(isprint==1) $item.find('.print-order').addClass('text-grey9');
+        if(shop_new!=1) {$item.find('.new').show();}
+        $item.find('.name').text(receiver);
 
         $item.attr({'data-id':id,'data-type':type});
-        $item.find('.send-time').text(sent_time);
+        $item.find('.send-time').text(send_time);
         $item.find('.order-code').text(num);
         $item.find('.order-price').text(totalPrice);
         $item.find('.goods-total-charge').text(totalPrice);
         $item.find('.total_price_input').text(totalPrice);
         $item.find('.address_show').text(address_text);
-        $item.find('.name').text(receiver);
         $item.find('.phone').text(phone);
         $item.find('.message-content').text(message);
         $item.find('.staff-remark').text(staff_remark);
@@ -394,10 +396,10 @@ function orderEdit(target,action,content){
 		   var phone=target.find('.sender-phone').text();
                    var $sender=parent.find('.order-sender');
                    $sender.find('.sender-code').text(code);
-		   $sender.find('.sender-name').text(name);
+	     $sender.find('.sender-name').text(name);
                    $sender.find('.sender-phone').text(phone);
                    parent.find('.status_send').removeClass('hidden');
-  	           parent.find('.status_order').addClass('hidden');
+  	     parent.find('.status_order').addClass('hidden');
                    parent.find('.status_finish').addClass('hidden');
                    parent.find('.status_word').text('配送中');
                    parent.find('.status-send').addClass('bg-blue').siblings().removeClass('bg-blue');

@@ -43,7 +43,7 @@ def user_subscribe(openid):
 # 3.12
 # woody
 ##################################################################################
-def gen_msg_token(wx_id,phone):
+def gen_msg_token(phone):
     s = DBSession()
     code = "".join(random.sample("123456789",4))
 
@@ -58,8 +58,8 @@ def gen_msg_token(wx_id,phone):
     else:
         try:
             print('send:' + code)
-            print('send wx_id' + wx_id)
-            q = s.query(_VerifyCode).filter(_VerifyCode.wx_id == wx_id).one()
+            # print('send wx_id' + wx_id)
+            q = s.query(_VerifyCode).filter(_VerifyCode.phone == phone).one()
         except:
             q =None
             
@@ -67,9 +67,10 @@ def gen_msg_token(wx_id,phone):
             q.code = code
             q.create_time = datetime.datetime.now()
             q.count = 1
+            # q.phone = phone
         else:
             v = _VerifyCode()
-            v.wx_id = wx_id
+            v.phone = phone
             v.code = code
             v.count = 1          # when count = 1,code is usefull
             s.add(v)
@@ -154,10 +155,10 @@ def gen_msg_token(wx_id,phone):
 
 
 
-def check_msg_token(wx_id, code):
+def check_msg_token(phone, code):
     s = DBSession()
     try:
-        q = s.query(_VerifyCode).filter_by(wx_id=wx_id).one()
+        q = s.query(_VerifyCode).filter_by(phone=phone).one()
     except:
         return False
     print(q.code,code ,q.count,q.wx_id)

@@ -7,6 +7,7 @@ import datetime
 from sqlalchemy import func, desc, and_, or_, exists
 import qiniu
 from dal.dis_dict import dis_dict
+from libs.msgverify import gen_msg_token,check_msg_token
 
 # 登陆处理
 class Access(AdminBaseHandler):
@@ -457,23 +458,23 @@ class Order(AdminBaseHandler):
 			orders = [x for x in self.current_shop.orders if x.type == order_type and x.status == 1]
 			# woody 4.3
 			session = self.session
-			for order in orders:
-				order.send_time = order.get_sendtime(session,order.id)
+			# for order in orders:
+			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time,reverse = True)
 
 		elif order_status == 5:#all
 			orders = [x for x in self.current_shop.orders if x.type == order_type ]
 			session = self.session
-			for order in orders:
-				order.send_time = order.get_sendtime(session,order.id)
+			# for order in orders:
+			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time,reverse = True)
 		elif order_status == 2:#unfinish
 			orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in [2, 3, 4]]
 
 			# woody 4.3
 			session = self.session
-			for order in orders:
-				order.send_time = order.get_sendtime(session,order.id)
+			# for order in orders:
+			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time,reverse = True)
 			
 		elif order_status == 3:
@@ -493,11 +494,11 @@ class Order(AdminBaseHandler):
 		# orders order by start_time
 		# woody
 		session = self.session
-		for order in orders:
-			order.w_send_time = order.get_sendtime(session,order.id) 
+		# for order in orders:
+		# 	order.w_send_time = order.get_sendtime(session,order.id) 
 			# print(order.w_send_time)
 		# print("before sort",orders)
-		orders = sorted(orders , key = lambda x:x.w_send_time)
+		orders = sorted(orders , key = lambda x:x.send_time)
 		# print("after sort",orders)
 		# for order in orders:
 		#     print(order.w_send_time)
@@ -524,11 +525,18 @@ class Order(AdminBaseHandler):
 				w_date = order.create_date + delta
 			else:
 				w_date = order.create_date
-			d["sent_time"] = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
-												order.start_time.hour, w_start_time_minute,
-												  order.end_time.hour, w_end_time_minute)
+			# d["sent_time"] = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
+			# 									order.start_time.hour, w_start_time_minute,
+			# 									  order.end_time.hour, w_end_time_minute)
+			d["sent_time"] = order.send_time
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
 				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
+			d["shop_new"] = 0
+			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
+				models.CustomerShopFollow.customer_id == order.customer_id).first()
+			if follow:
+				d["shop_new"]=follow.shop_new
+				print(d["shop_new"])
 			SH2s = []
 			for staff in staffs:
 				staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone}
@@ -626,7 +634,8 @@ class Order(AdminBaseHandler):
 				create_date = order.create_date
 				customer_name = order.receiver
 				order_totalPrice = order.totalPrice
-				send_time = order.get_sendtime(self.session,order.id)
+				# send_time = order.get_sendtime(self.session,order.id)
+				send_time = order.send_time
 				# print("ready to send message")
 
 				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time)
@@ -636,8 +645,7 @@ class Order(AdminBaseHandler):
 				order.update(session=self.session, status=data["status"])
 				# when the order complete ,
 				# woody
-
-
+				shop_id = self.current_shop.id
 				#shop_point add by order.totalPrice
 				if data["status"] == 5:
 					now = datetime.datetime.now()
@@ -647,6 +655,22 @@ class Order(AdminBaseHandler):
 					customer_id = order.customer_id
 					shop_id = order.shop_id
 					totalprice = order.totalPrice
+
+					#
+					customer_info = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
+					if not customer_info:
+						return self.send_fail('customer not found')
+					customer_info.is_new = 1
+					self.session.commit()
+
+					# 
+					customer = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+						shop_id = shop_id).first()
+					if not customer:
+						return self.send_fail('customer error')
+					customer.shop_new = 1
+					print(customer.shop_new,'*****************************')
+					self.session.commit()
 
 					try:
 						shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
@@ -866,7 +890,8 @@ class Shelf(AdminBaseHandler):
 			return self.send_qiniu_token("fruit", self.args["id"])
 		elif action == "edit_mgoods_img":
 			return self.send_qiniu_token("mgoods", self.args["id"])
-
+		elif action == "apply_cookie":
+			return self.send_qiniu_token("apply_cookie",self.args["id"])
 		elif action in ["add_charge_type", "edit_active", "edit_fruit", "default_fruit_img"]:  # fruit_id
 			try:fruit = self.session.query(models.Fruit).filter_by(id=self.args["id"]).one()
 			except:return self.send_error(404)
@@ -898,7 +923,7 @@ class Shelf(AdminBaseHandler):
 												unit=data["unit"],
 												tag = data["tag"],
 												#img_url = data["img_url"],
-												intro=data["intro"],
+										 		intro=data["intro"],
 												priority=data["priority"])
 
 			elif action == "default_fruit_img":  # 恢复默认图
@@ -1175,10 +1200,17 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 				w_date = order.create_date + delta
 			else:
 				w_date = order.create_date
-			d["sent_time"] = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
-												order.start_time.hour, w_start_time_minute,
-												  order.end_time.hour, w_end_time_minute)
-
+			# d["sent_time"] = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
+			# 									order.start_time.hour, w_start_time_minute,
+			# 									  order.end_time.hour, w_end_time_minute)
+			d["send_time"] = order.send_time
+			#yy
+			d["shop_new"] = 0
+			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
+				models.CustomerShopFollow.customer_id == order.customer_id).first()
+			print(follow.customer_id)
+			if follow:
+				d["shop_new"]=follow.shop_new
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
 				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
 			SH2s = []
@@ -1315,3 +1347,76 @@ class ShopConfig(AdminBaseHandler):
 			shop.have_offline_entity = data["have_offline_entity"]
 		self.session.commit()
 		return self.send_success()
+
+
+class ShopAuthenticate(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments()
+	def get(self):
+		shop_id = self.current_shop.id
+		token = self.get_qiniu_token("shopAuth_cookie",shop_id)
+		self.set_secure_cookie('shopAuth',token,domain=ROOT_HOST_NAME)
+		return self.send_success()
+		# return self.render("admin/shop-info-set.html")
+
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments('name:str','card_id:str','code:int')
+	def post(self):
+		shop_id = self.current_shop.id
+		if action == "edit_handle_img":
+			self.send_qiniu_token("handle_img", shop_id)
+		elif action == "edit_front_img":
+			self.send_qiniu_token('front_img',shop_id)
+		elif action == "edit_behind_img":
+			self.send_qiniu_token('behind_img',shop_id)
+		elif action == "get_code":
+			gen_msg_token(phone=self.args["phone"])
+		elif action == "customer_auth":
+			name = self.args['name']
+			card_id = self.args['card_id']
+			code  = self.args['code']
+			phone = self.args['phone']
+			handle_img = self.args['handle_img']
+			if not check_msg_token(phone,code):
+				return self.send_fail('code error')
+			shop_apply = models.ShopAuthenticate(
+				realname = name,
+				shop_type = 1,
+				card_id = card_id,
+				handle_img = handle_img,
+				has_done  = 0
+				)
+			self.session.add(shop_apply)
+			self.session.commit()
+		elif action == "company_auth":
+			name = self.args['name']
+			company_name = self.args['company_name']
+			shop_type = self.args['shop_type']
+			card_id = self.args['card_id']
+			code = self.args['code']
+			phone = self.args['phone']
+			business_licence = self.args['business_licence']
+			front_img = self.args['front_img']
+			behind_img = self.args['behind_img']
+			if not check_msg_token(phone,code):
+				return self.send_fail('code error')
+			shop_apply = models.ShopAuthenticate(
+				realname = name,
+				company_name = company_name,
+				shop_type = shop_type,
+				business_licence = business_licence,
+				card_id = card_id,
+				front_img = front_img,
+				behind_img = behind_img,
+				has_done = 0
+				)
+			self.session.add(shop_apply)
+			self.session.commit()
+
+
+
+
+
+
+
+

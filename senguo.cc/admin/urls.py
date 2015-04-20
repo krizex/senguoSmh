@@ -28,7 +28,7 @@ handlers = [
     (r"/customer/login", handlers.customer.Access, {"action":"login"}, "customerLogin"),
     (r"/customer/oauth", handlers.customer.Access, {"action":"oauth"}, "customerOauth"),
     (r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
-    (r"/customer/register", handlers.customer.Access, {"action":"register"}, "customerRegister"),
+    (r"/customer/register", handlers.customer.RegistByPhone, {}, "customerRegister"),
     
     (r"/customer/profile", handlers.customer.CustomerProfile, {}, "customerProfile"),
     (r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
@@ -43,7 +43,7 @@ handlers = [
 
 
     #to remove
-    (r"/m", handlers.superadmin.Official),
+    (r"/m", handlers.superadmin.Official,{},"test"),
 
     (r"/customer/cart/(\w+)", handlers.customer.Cart, {}, "customerCart"),
     (r"/customer/orders", handlers.customer.Order, {}, "customerOrder"),
@@ -57,6 +57,8 @@ handlers = [
     (r"/customer/recharge", handlers.customer.Recharge, {}, "customerRecharge"),
     (r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
     (r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
+    (r"/customer/phoneVerify", handlers.fruitzone.PhoneVerify, {
+        "action":"customer"}, "customerPhoneVerify"),
     (r"/customer/(\w+)", handlers.customer.Home, {}, "customerHome"),
 
     (r"/super/oauth", handlers.superadmin.Access,{
@@ -139,7 +141,9 @@ handlers = [
     (r"/admin/config", handlers.admin.Config, {}, "adminConfig"),
     (r"/admin/config/shop", handlers.admin.ShopConfig, {}, "adminShopConfig"),
     (r"/admin/searchorder", handlers.admin.SearchOrder, {}, "adminSearchOrder"),
+    (r"/admin/shopauth",handlers.admin.ShopAuthenticate,{},'adminShopAuth'),
     (r"/admin/shopbalance",handlers.admin.ShopBalance,{},"adminShopBalance"),
+
 
     # (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
     # (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
@@ -189,8 +193,7 @@ handlers = [
 
     (r"/fruitzone/phoneVerify", handlers.fruitzone.PhoneVerify, {
         "action":"admin"}, "fruitzonePhoneVerify"),
-    (r"/customer/phoneVerify", handlers.fruitzone.PhoneVerify, {
-        "action":"customer"}, "customerPhoneVerify"),
+    
 
     #信息墙
     (r"/infowall/supply", handlers.infowall.Home, {"action": "supply"}, "infowallHomeSupply"),

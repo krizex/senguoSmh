@@ -284,6 +284,7 @@ function infoEdit(target){
                     $('.code').text(shop_code);
                     $('.shop_link').attr({'href':'http://senguo.cc/'+shop_code});
                     $('#shop_link_img').qrcode({render: "canvas",width: 100,height:100,text: 'http://senguo.cc/'+shop_code ,typeNumber  : -1});
+
                     $('.link_notice').show();
                     $('.notice_word').hide();
                     $('.code_set').hide();

@@ -10,6 +10,7 @@ import qiniu
 import random
 import base64
 import json
+from libs.msgverify import gen_msg_token,check_msg_token
 
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
@@ -26,23 +27,27 @@ class Access(CustomerBaseHandler):
 			return self.redirect(self.reverse_url("customerHome"))
 		elif self._action == "oauth":
 			self.handle_oauth()
-		elif self._action =="register":
-			return self.render("login/m_register.html")
 		else:
 			return self.send_error(404)
 
-	@tornado.web.authenticated
+
+	#@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("phone", "password", "next?")
 	def post(self):
 		phone = self.args['phone']
 		password = self.args['password']
-		u = models.ShopAdmin.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
-		# print(phone,password)
+		next = self.args['next']
+		print(next)
+		# u = models.ShopAdmin.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
+		print(phone,password)
+		u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
 		if not u:
 			return self.send_fail(error_text = '用户不存在或密码不正确 ')
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
-		self.redirect(self.args.get("next", self.reverse_url("customerHome")))
-		return self.send_success()
+		return self.redirect( self.reverse_url("test"))
+		# print('before redirect')
+		# return self.redirect('http://www.baidu.com')
+		# return self.send_success()
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self):
@@ -64,21 +69,44 @@ class Access(CustomerBaseHandler):
 
 class RegistByPhone(CustomerBaseHandler):
 	def get(self):
+		return self.render("login/m_register.html")
+
+	@CustomerBaseHandler.check_arguments("phone:str","code:int")
+	def handle_checkcode_regist(self):
+		if not check_msg_token(phone = self.args["phone"],code = self.args["code"]):
+			return self.send_fail(error_text = "验证码过期或者不正确")
+		else:
+			return self.send_success()
+
+	@CustomerBaseHandler.check_arguments("phone:str")
+	def handle_gencode(self):
+		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first() 
+		if a:
+			return self.send_fail(error_text="手机号已经绑定其他账号")
+		gen_msg_token(phone=self.args["phone"])
 		return self.send_success()
 
-	@CustomerBaseHandler.check_arguments("phone","password")
+	@CustomerBaseHandler.check_arguments( "action:str",  "phone?:str","password?:str")
 	def post(self):
-		phone = self.args['phone']
-		password = self.args['password']
+		action = self.args['action']
+		if action == "get_code":
+			self.handle_gencode()
+		elif action == 'check_code':
+			self.handle_checkcode_regist()
+		elif action == 'regist':
+			phone = self.args['phone']
+			password = self.args['password']
 
-		u = self.session.query(models.Accountinfo).filter_by(phone = phone).first()
-		if u:
-			return self.send_fail("该手机号 已被注册，请直接登入")
-		else:
-			u = models.Accountinfo(phone = phone ,password = password)
-			self.session.add(u)
-			self.session.commit()
-			return self.send_success()
+			u = self.session.query(models.Accountinfo).filter_by(phone = phone).first()
+			if u:
+				return self.send_fail("该手机号 已被注册，请直接登入")
+			else:
+				u = models.Accountinfo(phone = phone ,password = password)
+				self.session.add(u)
+				self.session.commit()
+				self.set_current_user(u, domain=ROOT_HOST_NAME)
+				print(u.id)
+				return self.send_success()
 
 
 
@@ -161,7 +189,7 @@ class CustomerProfile(CustomerBaseHandler):
 	   self.render("customer/profile.html", context=dict(birthday=birthday))
 
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("action", "data")
+	@CustomerBaseHandler.check_arguments("action", "data","old_password?:str")
 	def post(self):
 		action = self.args["action"]
 		data = self.args["data"]
@@ -180,6 +208,14 @@ class CustomerProfile(CustomerBaseHandler):
 			except ValueError as e:
 				return self.send_fail("月份必须为1~12")
 			self.current_user.accountinfo.update(session=self.session, birthday=time.mktime(birthday.timetuple()))
+		elif action == 'add_password':
+			self.current_user.accountinfo.update(session = self.session , password = data)
+		elif action == 'modify_password':
+			old_password = self.args['old_password']
+			if old_password != self.current_user.accountinfo.password:
+				return self.send_fail("密码错误")
+			else:
+				self.current_user.accountinfo.update(session = self.session ,password = data)
 		else:
 			return self.send_error(404)
 		return self.send_success()
@@ -1030,6 +1066,8 @@ class Cart(CustomerBaseHandler):
 		end_time = 0
 		freight = 0
 		tip = 0
+		send_time = 0
+		now = datetime.datetime.now()
 		try:config = self.session.query(models.Config).filter_by(id=shop_id).one()
 		except:return self.send_fail("找不到店铺")
 		if self.args["type"] == 2: #按时达
@@ -1037,13 +1075,21 @@ class Cart(CustomerBaseHandler):
 				return self.send_fail("订单总价没达到起送价，请再增加商品")
 			freight = config.freight_on_time  # 运费
 			totalPrice += freight
+			today=int(self.args["today"])
 			try:period = self.session.query(models.Period).filter_by(id=self.args["period_id"]).one()
 			except:return self.send_fail("找不到时间段")
-			if int(self.args["today"]) == 1 and period.start_time.hour*60 + period.start_time.minute - \
+			if today == 1:
+				if period.start_time.hour*60 + period.start_time.minute - \
 					config.stop_range < datetime.datetime.now().hour*60 + datetime.datetime.now().minute:
-				return self.send_fail("下单失败：已超过了该送货时间段的下单时间!请选择下一个时间段！")
+					return self.send_fail("下单失败：已超过了该送货时间段的下单时间!请选择下一个时间段！")
+				send_time = (now).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
+			elif today == 2:
+				tomorrow = now + datetime.timedelta(days = 1)
+				send_time = (tomorrow).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
 			start_time = period.start_time
 			end_time = period.end_time
+			
+
 		elif self.args["type"] == 1:#立即送
 			if totalPrice < config.min_charge_now:
 				return self.send_fail("订单总价没达到起送价，请再增加商品")
@@ -1052,10 +1098,10 @@ class Cart(CustomerBaseHandler):
 			if "tip" in self.args:
 				tip = self.args["tip"]  # 立即送的小费
 				totalPrice += tip
-			now = datetime.datetime.now()
-			later = now + datetime.timedelta(hours = 0.5)
+			later = now + datetime.timedelta(minutes = config.intime_period)
 			start_time = datetime.time(now.hour, now.minute, now.second)
 			end_time = datetime.time(later.hour,later.minute,later.second)
+			send_time =  (now).strftime('%Y-%m-%d %H:%M') +'~'+ later.strftime('%H:%M')
 
 		#按时达/立即送 开启/关闭
 		if config.ontime_on == False and self.args["type"] == 2:
@@ -1112,7 +1158,10 @@ class Cart(CustomerBaseHandler):
 							 start_time=start_time,
 							 end_time=end_time,
 							 fruits=str(f_d),
-							 mgoods=str(m_d))
+							 mgoods=str(m_d),
+							 send_time=send_time,
+							 )
+
 		try:
 			self.session.add(order)
 			self.session.commit()
@@ -1169,7 +1218,8 @@ class Cart(CustomerBaseHandler):
 		order_totalPrice = float('%.1f'% totalPrice)
 		print(order_totalPrice,"*******************8")
 		session = self.session
-		send_time     = order.get_sendtime(session,order.id)
+		# send_time     = order.get_sendtime(session,order.id)
+		send_time = order.send_time
 		print(goods,'************************************************')
 		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
 			customer_name,order_totalPrice,send_time,goods)
@@ -1222,7 +1272,7 @@ class Order(CustomerBaseHandler):
 			else:
 				order.sender_phone =None
 				order.sender_img = None
-			send_time = order.get_sendtime(session,order.id)
+			send_time = order.send_time
 			order_status = order.status
 			order_totalPrice = order.totalPrice
 			order_num = order.num
@@ -1248,15 +1298,16 @@ class Order(CustomerBaseHandler):
 			page = self.args['page']
 			offset = (page - 1) * 10
 			orders = [x for x in self.current_user.orders if x.status == 1]
-			# woody
-			for order in orders:
-				order.send_time = order.get_sendtime(session,order.id)
+			# woody	
+			# for order in orders:
+			# 	order.send_time = order.get_sendtime(session,order.id)
+
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
 			if offset + 10 <= total_count:
 				orders = orders[offset:offset + 10]
-			elif offset < total_count and offset + 10 >= total_count:
+			elif offset <= total_count and offset + 10 >= total_count:
 				orders = orders[offset:]
 			else:
 				return self.send_fail("order pages errors")
@@ -1268,17 +1319,19 @@ class Order(CustomerBaseHandler):
 			page = self.args["page"]
 			offset = (page - 1) * 10
 			orders = [x for x in self.current_user.orders if x.status in (2, 3, 4)]
-			for order in orders:
-				order.send_time = order.get_sendtime(session,order.id)
+			# for order in orders:
+			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
+			print(offset)
+			print(total_count)
 			if offset + 10 <= total_count:
 				orders = orders[offset:offset + 10]
 			elif offset < total_count and offset + 10 >= total_count:
 				orders = orders[offset:]
 			else:
-				return self.send_fail("order pages errors")
+				return self.send_fail("没有待收货订单")
 			orders = self.get_orderData(session,orders)
 			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "finish":
@@ -1298,8 +1351,8 @@ class Order(CustomerBaseHandler):
 				if x.status == 6:
 					order6.append(x)
 			orders = order5 + order6
-			for order in orders:
-				order.send_time = order.get_sendtime(session,order.id)
+			# for order in orders:
+			# 	order.send_time = order.get_sendtime(session,order.id)
 			total_count = len(orders)
 			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
 			if offset + 10 <= total_count:
@@ -1315,8 +1368,8 @@ class Order(CustomerBaseHandler):
 			offset = (page - 1) * 10
 			orders = self.current_user.orders
 			session = self.session
-			for order in orders:
-				order.send_time = order.get_sendtime(session,order.id)
+			# for order in orders:
+			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			# print(total_count)
@@ -1415,22 +1468,23 @@ class OrderDetail(CustomerBaseHandler):
 				order.sender_phone =None
 				order.sender_img = None
 		delta = datetime.timedelta(1)
-		if order.start_time.minute <10:
-		   w_start_time_minute ='0' + str(order.start_time.minute)
-		else:
-		   w_start_time_minute = str(order.start_time.minute)
-		if order.end_time.minute < 10:
-		   w_end_time_minute = '0' + str(order.end_time.minute)
-		else:
-		   w_end_time_minute = str(order.end_time.minute)
+		#print(delta)
+		# if order.start_time.minute <10:
+		#    w_start_time_minute ='0' + str(order.start_time.minute)
+		# else:
+		#    w_start_time_minute = str(order.start_time.minute)
+		# if order.end_time.minute < 10:
+		#    w_end_time_minute = '0' + str(order.end_time.minute)
+		# else:
+		#    w_end_time_minute = str(order.end_time.minute)
 
-		if order.type == 2 and order.today==2:
-		   w_date = order.create_date + delta
-		else:
-		   w_date = order.create_date
-		order.send_time = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
-										order.start_time.hour, w_start_time_minute,
-										  order.end_time.hour, w_end_time_minute)
+		# if order.type == 2 and order.today==2:
+		#    w_date = order.create_date + delta
+		# else:
+		#    w_date = order.create_date
+		# order.send_time = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
+		# 								order.start_time.hour, w_start_time_minute,
+		# 								  order.end_time.hour, w_end_time_minute)
 		return self.render("customer/order-detail.html", order=order,
 						   charge_types=charge_types, mcharge_types=mcharge_types)
 
@@ -1521,8 +1575,6 @@ class InsertData(CustomerBaseHandler):
 	def get(self):
 		from sqlalchemy import create_engine, func, ForeignKey, Column
 		# print(fun)
-
-
 		# import pingpp
 		# try:
 		# 	shop_list = self.session.query(models.Shop).all()
@@ -1534,44 +1586,75 @@ class InsertData(CustomerBaseHandler):
 		# 			shop.shop_start_timestamp = shop.create_date_timestamp
 		# 	self.session.commit()
 
-		try:
-			accountinfo_list = self.session.query(models.Accountinfo).all()
-		except:
-			self.send_fail("get accountinfo error")
-		if accountinfo_list:
-			for accountinfo in accountinfo_list:
-				if accountinfo.headimgurl_small is None:
-					accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
-			self.session.commit()
+		# try:
+		# 	accountinfo_list = self.session.query(models.Accountinfo).all()
+		# except:
+		# 	self.send_fail("get accountinfo error")
+		# if accountinfo_list:
+		# 	for accountinfo in accountinfo_list:
+		# 		if accountinfo.headimgurl_small is None:
+		# 			if accountinfo.headimgurl:
+		# 				print(accountinfo.headimgurl)
+		# 				accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
 
-		# shop_count = self.get_shop_count()
-		# province_shop_count = self.get_province_shop_count(110000)
-		# city_shop_count     = self.get_city_shop_count(110000)
-		# shop_group          = self.get_shop_group()
-		# return self.send_success(shop_count=shop_count,province_shop_count = province_shop_count,\
-		# 	city_shop_count = city_shop_count,shop_group = shop_group
-		# 	)
+		# 	self.session.commit()
+
+		
+		# orderlist = self.session.query(models.Order).all()
+		# if not orderlist:
+		# 	self.send_fail("orderlist error")
+		# if orderlist:
+		# 	for order in orderlist:
+		# 		# if order.send_time =='0' :
+		# 			# print('login')
+		# 		create_date =  order.create_date
+		# 		second_date = create_date + datetime.timedelta(days = 1)
+		# 		if order.type == 2: #按时达
+		# 			if order.today == 1:
+		# 				order.send_time = create_date.strftime('%Y-%m-%d') +' '+\
+		# 				(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
+		# 			elif order.today == 2:
+		# 				order.send_time = second_date.strftime('%Y-%m-%d')+' '+\
+		# 				(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
+		# 		elif order.type == 1:#立即送
+		# 			later = order.create_date + datetime.timedelta(minutes = 30)
+		# 			order.send_time =  create_date.strftime('%Y-%m-%d %H:%M') +'~'+later.strftime('%H:%M')
+		# 			#print(order.send_time)
+		# 		# else:
+		# 		# 	print('Not NULL')
+		# 	self.session.commit()
+
+		# try:
+		# 	accountinfo_list = self.session.query(models.Accountinfo).all()
+		# except:
+		# 	return self.send_fail('accountinfo_list error')
+		# if accountinfo_list:
+		# 	n = 0
+		# 	for accountinfo in accountinfo_list:
+		# 		customer_id = accountinfo.id
+		# 		order_list = self.session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
+		# 			models.Order.status == 6 ,models.Order.status == 10))).all()
+		# 		# print(len(order_list))
+		# 		if order_list:
+		# 			n = n + 1
+		# 			accountinfo.is_new = 1
+		# 			#print(accountinfo.is_new)
+		# 			self.session.commit()
+		# 	print(n,'***********8')
+		try:
+			follow_list = self.session.query(models.CustomerShopFollow).all()
+		except:
+			return self.send_fail('follow_list error')
+		if follow_list:
+			for follow in follow_list:
+				customer_id = follow.customer_id
+				shop_id = follow.shop_id
+				order_list = self.session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,models.Order.shop_id == shop_id,or_(models.Order.status == 5,\
+					models.Order.status == 6 ,models.Order.status == 10))).all()
+				if order_list:
+					follow.shop_new = 1
+					self.session.commit()
+
 
 		return self.send_success()
-
-		# ch = pingpp(order_no = '1234353',amount = 1,app=dict(id=''))
-		# return self.send_success()
-		# path = "http://i.senguo.cc/customer/test"
-
-		# sign = sign(path)
-		# ret = sign.getSign(path)
-		# jsApi = JsApi_pub()
-		# if not self.args["code"]:
-		#     url = jsApi.createOauthUrlForCode(path)
-		#     return self.redirect(url)
-		# else:
-		#     code = self.args['code']
-		#     orderID = "12345678"
-		#     jsApi.setCode(code)
-		#     openid = jsApi.getOpenid()
-		#     if not openid:
-		#         return self.send_fail("no openid")
-		#     unifiedOrder = UnifiedOrder_pub()
-		#     unifiedOrder.setParameter("body",'senguocc')
-		#     unifiedOrder.setParameter("notify_url",)
 

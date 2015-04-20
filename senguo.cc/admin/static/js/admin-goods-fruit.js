@@ -1,7 +1,9 @@
 $(document).ready(function(){
     //remove type of menu's button to check all
     var now_type=$.getUrlParam('action');
-    if(now_type=='menu') $('.check-shelf').hide();
+    if(now_type=='menu'){
+        $('.check-shelf').hide();
+    } 
     //查看已上架
     $('.check-shelf').on('click',function(){
          event.preventDefault();
@@ -71,6 +73,10 @@ $(document).ready(function(){
     $('.unshelve-num').text($('.unshelveList').find('a').length);
     $('.fruit-type').text($('.type-class .active').find('.name').text());
     $('.fruit-shelve-num').text($('.type-class .active').find('.num').text());
+     if(now_type=='all'){
+        var all_num=$('.shelve-num').text();
+        $('.fruit-left-title').empty().text('已选择：本类全部已上架商品 共'+all_num+'种');   
+    }
     //图片速选框
     $('#preview_choose').on('click',function(){
 	$('.preview-shelve-list').empty();

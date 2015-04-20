@@ -339,6 +339,8 @@ class Accountinfo(MapBase, _CommonApi):
 	wx_province = Column(String(32))
 	wx_city = Column(String(32))
 
+	is_new   = Column(Integer) # 0:new , 1:old
+
 	# mp_openid = Column(String(64)) 
 
 	# mp_openid = Column(Integer(64))     #mobile
@@ -489,6 +491,21 @@ class Shop(MapBase, _CommonApi):
 			return None
 		print('success')
 		return order_count
+
+class ShopAuthenticate(MapBase,_AccountApi):
+	__tablename__ = "shop_auth"
+	id  = Column(Integer,ForeignKey(Accountinfo.id),primary_key = True ,nullable = False)
+	shop_type  = Column(Integer) # 1:person 2:company
+	company_name = Column(String(128))
+	business_licence = Column(String(2048))
+	realname   = Column(String(16))
+	card_id    = Column(String(32))
+	handle_img   = Column(String(2048))
+	front_img  = Column(String(2048))
+	behind_img = Column(String(2048))
+	has_done   = Column(Integer,default = 0) # 0:before done 1:success 2:decline 
+	# code       = Column(Integer)
+
 
 # 角色：商家，即店铺的管理员
 class ShopAdmin(MapBase, _AccountApi):
@@ -641,6 +658,8 @@ class Customer(MapBase, _AccountApi):
 	#added by woody
 	points = relationship("Points")
 
+	shop_new = Column(Integer) # 0:new ,1:old
+
 #woody
 class Points(MapBase,_CommonApi):
 	__tablename__ = "points"
@@ -723,6 +742,7 @@ class CustomerShopFollow(MapBase, _CommonApi):
 	shop_point = Column(Float,default = 0)
 	# pointhistory = relationship("PointHistory")
 	bing_add_point = Column(Integer)  # 1 :
+	shop_new = Column(Integer,default = 0)
 
 class PointHistory(MapBase,_CommonApi):
 	__tablename__ = 'pointhistory'
@@ -987,6 +1007,7 @@ class _VerifyCode(MapBase):
 	id = Column(Integer, primary_key=True, autoincrement=True)
 	wx_id = Column(String(100), unique=True)
 	code = Column(Integer)
+	phone = Column(String(32))
 	create_time = Column(DateTime, default=func.now())
 	count = Column(Integer)              # modify to define whether  code is usefull , if count = 1, code is usefull ,if count =0 or others ,code is useless
 
@@ -1046,6 +1067,8 @@ class Order(MapBase, _CommonApi):
 	fruits = Column(String(1000))
 	mgoods = Column(String(1000))
 	shop = relationship("Shop", uselist=False,join_depth=1)
+	send_time=Column(String(45))
+
 
 	def get_num(self,session,order_id):
 		try:
@@ -1078,9 +1101,9 @@ class Order(MapBase, _CommonApi):
 			charge_types = session.query(MChargeType).filter(MChargeType.id.in_(mgoods.keys())).all()
 			for charge_type in charge_types:
 				# print("before",charge_type.mgoods.storage,charge_type.mgoods.current_saled)
-				if mgoods[str(charge_type.id)]==0:
-					continue
-				num =mgoods[str(charge_type.id)]['num'] *charge_type.unit_num * charge_type.num
+				if mgoods[int(charge_type.id)]==0:
+					continue 
+				num =mgoods[int(charge_type.id)]['num'] *charge_type.unit_num * charge_type.num
 				charge_type.mgoods.storage += num
 				charge_type.mgoods.current_saled -= num
 				charge_type.mgoods.saled -= num
