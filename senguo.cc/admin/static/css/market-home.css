@@ -18,7 +18,7 @@
 .goods-list-item .number-change{position:relative;width:90px;z-index:10;}
 .goods-list-item .minus-plus{display:inline-block;float:left;width:32px;height:32px;border:none;background:url('../svg/icon_list@2x.png') no-repeat;background-size:120px 180px;position:absolute;z-index:10;}
 .goods-list-item .number-input{width:60px;position:absolute;left:14px;height:30px;line-height:30px;top:1px;border:1px solid #f7f7f8;}
-.goods-list-item .number-plus{right:0;background-position:-33px -71px;}
+.goods-list-item .number-plus{right:1;background-position:-33px -71px;}
 .goods-list-item .number-minus{left:0;background-position:1px -71px;}
 .goods-list-item .to-add{display:inline-block;width:32px;height:32px;background:url('../svg/icon_list@2x.png') no-repeat;background-position:-33px -71px;position:absolute;z-index:10;right:36px;background-size:120px 180px;}
 .goods-list-item .charge-list .to-add{right:26px;}
