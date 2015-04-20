@@ -24,6 +24,13 @@ $(document).ready(function(){
     var user_number=$('.comment-list-item').length;
     getpPage(page,'/admin/comment?action='+action+'page=',user_number);
 
+}).on("click","#contact-user",function(){
+    $(".bs-del-com").modal("toggle");
+}).on("click","#apply-senguo",function(){
+    $(".bs-del-com").modal("toggle");
+    $(".bs-apply-com").modal("toggle");
+}).on("click","#commit-senguo",function(){
+    $(".bs-apply-com").modal("toggle");
 });
 var order_id;
 var page=Int($.getUrlParam('page'));

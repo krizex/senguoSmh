@@ -89,6 +89,10 @@ handlers = [
     # 店铺信息详情
     (r"/super/shopProfile/(\d+)", handlers.superadmin.ShopProfile, {}, "superShopProfile"),
     (r"/super/shopclose",handlers.superadmin.ShopClose,{},"shopclose"),
+    #test url
+    (r"/super/cert",handlers.superadmin.Cert,{},"supercert"),
+    (r"/super/comment",handlers.superadmin.Comment,{},"supercomment"),
+
 
     ## 店铺申请接入管理
     # 所有店铺
@@ -117,7 +121,7 @@ handlers = [
     (r"/super/incstatic", handlers.superadmin.IncStatic, {}, "superIncStatic"),
     (r"/super/dstatic", handlers.superadmin.DistributStatic, {}, "superDStatic"),
     (r"/super/shopstatic", handlers.superadmin.ShopStatic, {}, "superShopStatic"),
-    (r"/super/Commentdelete",handlers.superadmin.CommentApplyDelete,{},"superCommentDelete"),
+    # (r"/super/Commentdelete",handlers.superadmin.CommentApplyDelete,{},"superCommentDelete"),
 
 
     # (r"/super/notice/", handlers.superadmin.Notice),

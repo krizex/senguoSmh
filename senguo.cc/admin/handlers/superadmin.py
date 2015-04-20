@@ -682,8 +682,17 @@ class ShopClose(SuperBaseHandler):
 			return self.send_success()
 
 
+class Cert(SuperBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+	    self.render('superAdmin/shop-cert-apply.html',context=dict(count = {'all':10,'all_temp':10}))
 
-class CommentApplyDelete(SuperBaseHandler):
+# class Comment(SuperBaseHandler):
+# 	@tornado.web.authenticated
+# 	def get(self):
+# 	    self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'all':10,'all_temp':10}))
+				
+class Comment(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		data = []
@@ -709,7 +718,8 @@ class CommentApplyDelete(SuperBaseHandler):
 				headimgurl_small = headimgurl_small,name = name , num = num ,order_create_date = order_create_date,\
 				comment = comment)
 			data.append([shop_code,admin_name ,create_date, comment_apply.delete_reason,order_info])
-		return self.send_success(data = data)
+		# return self.send_success(data = data)
+		self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'all':10,'all_temp':10}))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id:int','decline_reason?:str')

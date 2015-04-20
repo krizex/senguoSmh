@@ -2,16 +2,16 @@
 {% block shop %}
 <div class="admin-right pull-right">
     <ul class="nav apply-nav" role="tablist">
-        <li class="{{all_apply_active}} pull-left">
+        <li class=" pull-left">
             <a href="{{reverse_url('superShopManage')}}?action=all_temp&&page=1">所有店铺({{count['all_temp']}})</a>
         </li>
-        <li class="{{applaying_active}} pull-left">
+        <li class=" pull-left">
             <a href="{{reverse_url('superShopManage')}}?action=applying&&page=1">正在申请接入店铺({{count['applying']}})</a>
         </li>
-        <li class="{{pass_active}} pull-left">
+        <li class=" pull-left">
             <a href="{{reverse_url('superShopManage')}}?action=accepted&&page=1">已经通过申请店铺({{count['accepted']}})</a>
         </li>
-        <li class="{{decline_active}} pull-left">
+        <li class=" pull-left">
             <a href="{{reverse_url('superShopManage')}}?action=declined&&page=1">已被拒绝店铺({{count['declined']}})</a>
         </li>
     </ul>
@@ -40,7 +40,7 @@
             </div>
             <div class="show-info clearfix">
                 <span class="pull-left shop-img">
-                    <img src="{{shop.shop_trademark_url}}" class="w60"/>
+                    <img src="{{shop.shop_trademark_url or '/static/images/TDSG_l.png'}}" class="w60"/>
                 </span>
                 <div class="col-lg-8">
                     <p>
