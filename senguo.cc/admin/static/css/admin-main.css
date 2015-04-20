@@ -1,0 +1,44 @@
+.pl20{padding-left: 20px !important;}
+.pr20{padding-right: 20px !important;}
+.txt-ar{text-align: right !important;}
+.orange-txt{color: #f37651 !important;}
+.green-txt{color: #52b43f !important;}
+.c999{color: #999 !important;}
+.f16{font-size: 16px !important;}
+.f18{font-size: 18px !important;}
+.mt20{margin-top: 20px !important;}
+.mb10{margin-bottom: 10px !important;}
+/*账户余额*/
+.account-top>span{display: inline-block!important;}
+.small-txt{font-size: 14px;color: #666;}
+.acc-money{font-size: 18px;color: #52b43f;margin-left: 40px;}
+.get-money{font-size: 14px;margin-left: 20px;}
+.acc-report{padding-left: 20px;}
+.acc-report>li{line-height: 20px;font-size: 14px;color: #9d9b9c;}
+.wrap-bm{padding-left: 20px;padding-bottom: 20px;}
+.tab-lst{border-bottom: 2px solid #f6f6f6;-webkit-box-sizing: border-box;height:28px;}
+.tab-lst>li{font-size: 14px;color: #666;line-height: 28px;float:left;height:28px;width:70px;margin-right: 20px;cursor: pointer;}
+.tab-lst .active{border-bottom: 2px solid #f66;color: #f66;}
+.acc-con-lst{margin-top: 20px;}
+.acc-con-lst>li{display: none;}
+.acc-con-lst .active{display: block;}
+.tb-account{width: 100%;table-layout: fixed;border-left:1px solid #f6f6f6;border-right:1px solid #f6f6f6;}
+.tb-account td{height: 30px;line-height: 30px;color: #666;font-size: 14px;}
+.tb-account tr:nth-child(2n+1){background-color: #f1f1f1;}
+.tb-account tr:hover{background-color:#f6f6f6;}
+.account-num{display: inline-block;font-size: 14px;margin-right:20px;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
