@@ -55,19 +55,25 @@ $(document).ready(function(){
             }
         });
     }*/
+    var top=$('.top-title').offset().top;
     $('goods-list').last().addClass('m-b60');    
     $('.bottom-nav').find('li').addClass('add_cart');   
     //分类导航置顶
-    // $(window).scroll(function(){
-    //     var wind_dist=$(window).scrollTop();
-    //     //分类滚动监听
-    //     var box=$('.classify-title');
-    //     for(var i=0;i<box.length;i++){
-    //         var dist=box[i].offsetTop;
-    //         var classify=box[i].innerHTML;
-    //         if(wind_dist>=dist){top_title.find('.classify').text(classify);}
-    //     }
-    // });
+    $(window).scroll(function(){
+        //分类滚动监听
+        if($(window).scrollTop()>=top){
+            $('.top-title').addClass('fix-top');
+        }
+        else {
+            $('.top-title').removeClass('fix-top');
+        }
+        // var box=$('.classify-title');
+        // for(var i=0;i<box.length;i++){
+        //     var dist=box[i].offsetTop;
+        //     var classify=box[i].innerHTML;
+        //     if($(window).scrollTop()>=dist){top_title.find('.classify').text(classify);}
+        // }
+    });
     //all numer of page
     var fruit_pages=Int($('#fruit_page').val());
     var dry_pages=Int($('#dry_page').val());
@@ -137,8 +143,9 @@ $(document).ready(function(){
         noticeBox('亲，你今天已经为该商品点过赞了，一天只能对一个商品赞一次哦');
         //  var check_large=new Modal('large_imgbox');
         // check_large.modal('show');
-    }).on('click','.add_cart a',function(){
+    }).on('click','.add_cart a',function(e){
         //添加到购物车
+         stopDefault(e);
         var link=$(this).attr('href');
         addCart(link);
     }).on('click','.focus-btn',function(){ 
@@ -624,6 +631,14 @@ function mgoods_num(){
     }
 }
 
+function stopDefault(e) { 
+     if ( e && e.preventDefault ) 
+        e.preventDefault(); 
+    else 
+        window.event.returnValue = false;      
+    return false; 
+}
+
 function addCart(link){
     var url='';
     var action = 4;
@@ -636,10 +651,8 @@ function addCart(link){
         fruits:fruits,
         mgoods:mgoods
     };
-    event.preventDefault();
     if(!isEmptyObj(fruits)){fruits={}}
     if(!isEmptyObj(mgoods)){mgoods={}}
-    event.preventDefault();
     $.postJson(url,args,function(res){
             if(res.success)
             {

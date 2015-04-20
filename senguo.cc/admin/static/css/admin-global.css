@@ -30,6 +30,7 @@ img{border:none;}
 .mt80{margin-top:80px;}
 .group:before,.group:after{content:'';display: block;line-height: 0;height: 0;font-size: 0;clear: both;}
 .group{*zoom:1;}
+.hide{display: none!important;}
 /*头部样式*/
 .backstage-header .line50{line-height:45px;}
 .backstage-header .height50{height:45px;}
@@ -74,7 +75,7 @@ img{border:none;}
 .container-left .nav{margin-top:-1px;}
 .container-left .nav li{border-top:1px solid #ddd;}
 .container-left .nav li span{font-size:16px;color:#666;padding-top:20px;display:block;text-indent:40px;}
-.container-left .nav li span i{display:inline-block;width:18px;height:17px;background:url("../images/left-nav-icon.gif") no-repeat;margin-right:10px;}
+.container-left .nav li span i{display:inline-block;width:18px;height:17px;background:url("../images/left-nav-icon.gif") no-repeat;margin-right:10px;vertical-align: -2px;}
 .container-left .nav li .count i{background-position:0px 0px}
 .container-left .nav li .server i{background-position:-43px 1px}
 .container-left .nav li .manage i{background-position:-84px 1px}
@@ -114,7 +115,7 @@ img{border:none;}
 /*搜索框样式*/
 .search-input{}
 .search-input input{float:left;}
-.search-input .search-con{width:180px;height:28px;border:1px solid #d9d9d9;color:#999;-ms-line-height:28px;text-indent:30px;background:url("../images/search-icon.gif") no-repeat 8px center;transition:width 0.3s;-moz-transition:width 0.3s;-webkit-transition:width 0.3s;-o-transition:width 0.3s;}
+.search-input .search-con{width:200px;height:28px;border:1px solid #d9d9d9;color:#999;-ms-line-height:28px;text-indent:30px;background:url("../images/search-icon.gif") no-repeat 8px center;transition:width 0.3s;-moz-transition:width 0.3s;-webkit-transition:width 0.3s;-o-transition:width 0.3s;}
 .search-input .search-con:focus{width:266px;}
 .search-input .search-btn{width:70px;height:28px;border:1px solid #d9d9d9;border-left:none;border-top-right-radius:2px;border-bottom-right-radius:2px;background:#f2f2f2;color:#666;}
 
@@ -152,8 +153,8 @@ img{border:none;}
 
 /*弹出框公共样式*/
 .modal-header{background:#f2f2f2;font-size:14px;}
-.modal-sure-btn{display:inline-block;width:100px;height:34px;background:#44b549;color:#fff;border:1px solid #44b549;border-radius:1px;text-align:center;line-height:34px;}
-.modal-concel-btn{display:inline-block;width:100px;height:34px;background:#fff;color:#666;border:1px solid #ccc;border-radius:1px;text-align:center;line-height:34px;margin-left:10px;}
+.modal-sure-btn{display:inline-block;width:100px;height:34px;background:#44b549;color:#fff;border:1px solid #44b549;border-radius:1px;text-align:center;line-height:34px;font-size:14px;padding:0;}
+.modal-concel-btn{display:inline-block;width:100px;height:34px;background:#fff;color:#666;border:1px solid #ccc;border-radius:1px;text-align:center;line-height:34px;margin-left:10px;font-size:14px;padding:0;}
 .modal-footer .btn-box{width:300px;margin:0 auto;}
 
 .text-green{color:#44b549 !important;}

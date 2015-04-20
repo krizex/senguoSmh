@@ -548,7 +548,7 @@ class PhoneVerify(_AccountBaseHandler):
 		return self.send_success()
 	@FruitzoneBaseHandler.check_arguments("phone:str","code:int")
 	def handle_checkcode_regist(self):
-		if not check_msg_token(phone = phone,code = self.args["code"]):
+		if not check_msg_token(phone = self.args["phone"],code = self.args["code"]):
 			return self.send_fail(error_text = "验证码过期或者不正确")
 		else:
 			return self.send_success()
@@ -564,7 +564,7 @@ class PhoneVerify(_AccountBaseHandler):
 
 	@FruitzoneBaseHandler.check_arguments("phone:str", "code:int", "password?")
 	def handle_checkcode(self):
-		if not check_msg_token(phone = phone, code=self.args["code"]):
+		if not check_msg_token(phone = self.args["phone"], code=self.args["code"]):
 		   return self.send_fail(error_text="验证码过期或者不正确")
 		# password = self.args['password']
 		# print(password)

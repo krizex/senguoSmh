@@ -531,6 +531,12 @@ class Order(AdminBaseHandler):
 			d["sent_time"] = order.send_time
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
 				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
+			d["shop_new"] = 0
+			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
+				models.CustomerShopFollow.customer_id == order.customer_id).first()
+			if follow:
+				d["shop_new"]=follow.shop_new
+				print(d["shop_new"])
 			SH2s = []
 			for staff in staffs:
 				staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone}
@@ -639,8 +645,7 @@ class Order(AdminBaseHandler):
 				order.update(session=self.session, status=data["status"])
 				# when the order complete ,
 				# woody
-
-
+				shop_id = self.current_shop.id
 				#shop_point add by order.totalPrice
 				if data["status"] == 5:
 					now = datetime.datetime.now()
@@ -652,11 +657,19 @@ class Order(AdminBaseHandler):
 					totalprice = order.totalPrice
 
 					#
-					
-					customer = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
-					if not customer:
+					customer_info = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
+					if not customer_info:
 						return self.send_fail('customer not found')
-					customer.is_new = 1
+					customer_info.is_new = 1
+					self.session.commit()
+
+					# 
+					customer = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+						shop_id = shop_id).first()
+					if not customer:
+						return self.send_fail('customer error')
+					customer.shop_new = 1
+					print(customer.shop_new,'*****************************')
 					self.session.commit()
 
 					try:
@@ -1202,6 +1215,13 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			# 									order.start_time.hour, w_start_time_minute,
 			# 									  order.end_time.hour, w_end_time_minute)
 			d["send_time"] = order.send_time
+			#yy
+			d["shop_new"] = 0
+			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
+				models.CustomerShopFollow.customer_id == order.customer_id).first()
+			print(follow.customer_id)
+			if follow:
+				d["shop_new"]=follow.shop_new
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
 				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
 			SH2s = []
@@ -1283,6 +1303,13 @@ class Config(AdminBaseHandler):
 		else:
 			return self.send_error(404)
 		return self.send_success()
+
+
+class ShopBalance(AdminBaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        subpage = 'shopBlance'
+        return self.render("admin/account-rd.html",context=dict(subpage=subpage))
 
 class ShopConfig(AdminBaseHandler):
 	@tornado.web.authenticated

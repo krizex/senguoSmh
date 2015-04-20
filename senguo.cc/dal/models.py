@@ -658,6 +658,8 @@ class Customer(MapBase, _AccountApi):
 	#added by woody
 	points = relationship("Points")
 
+	shop_new = Column(Integer) # 0:new ,1:old
+
 #woody
 class Points(MapBase,_CommonApi):
 	__tablename__ = "points"
@@ -740,6 +742,7 @@ class CustomerShopFollow(MapBase, _CommonApi):
 	shop_point = Column(Float,default = 0)
 	# pointhistory = relationship("PointHistory")
 	bing_add_point = Column(Integer)  # 1 :
+	shop_new = Column(Integer,default = 0)
 
 class PointHistory(MapBase,_CommonApi):
 	__tablename__ = 'pointhistory'

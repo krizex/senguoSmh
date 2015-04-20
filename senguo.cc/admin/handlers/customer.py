@@ -10,6 +10,7 @@ import qiniu
 import random
 import base64
 import json
+from libs.msgverify import gen_msg_token,check_msg_token
 
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
@@ -30,18 +31,24 @@ class Access(CustomerBaseHandler):
 		else:
 			return self.send_error(404)
 
-	@tornado.web.authenticated
+
+	#@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("phone", "password", "next?")
 	def post(self):
 		phone = self.args['phone']
 		password = self.args['password']
-		u = models.ShopAdmin.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
-		# print(phone,password)
+		next = self.args['next']
+		print(next)
+		# u = models.ShopAdmin.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
+		print(phone,password)
+		u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
 		if not u:
 			return self.send_fail(error_text = '用户不存在或密码不正确 ')
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
-		self.redirect(self.args.get("next", self.reverse_url("customerHome")))
-		return self.send_success()
+		return self.redirect( self.reverse_url("test"))
+		# print('before redirect')
+		# return self.redirect('http://www.baidu.com')
+		# return self.send_success()
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self):
@@ -65,20 +72,46 @@ class RegistByPhone(CustomerBaseHandler):
 	def get(self):
 		return self.render("login/m_register.html")
 
-	@CustomerBaseHandler.check_arguments("phone","password")
-	def post(self):
-		phone = self.args['phone']
-		password = self.args['password']
-
-		u = self.session.query(models.Accountinfo).filter_by(phone = phone).first()
-		if u:
-			return self.send_fail("该手机号 已被注册，请直接登入")
+	@CustomerBaseHandler.check_arguments("phone:str","code:int")
+	def handle_checkcode_regist(self):
+		if not check_msg_token(phone = self.args["phone"],code = self.args["code"]):
+			return self.send_fail(error_text = "验证码过期或者不正确")
 		else:
 			u = models.Accountinfo(phone = phone ,password = password)
 			self.session.add(u)
 			self.session.commit()
 			self.set_current_user(u, domain=ROOT_HOST_NAME)
 			return self.send_success()
+
+	@CustomerBaseHandler.check_arguments("phone:str")
+	def handle_gencode(self):
+		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first() 
+		if a:
+			return self.send_fail(error_text="手机号已经绑定其他账号")
+		gen_msg_token(phone=self.args["phone"])
+		return self.send_success()
+
+	@CustomerBaseHandler.check_arguments( "action:str",  "phone?:str","password?:str")
+	def post(self):
+		action = self.args['action']
+		if action == "get_code":
+			self.handle_gencode()
+		elif action == 'check_code':
+			self.handle_checkcode_regist()
+		elif action == 'regist':
+			phone = self.args['phone']
+			password = self.args['password']
+
+			u = self.session.query(models.Accountinfo).filter_by(phone = phone).first()
+			if u:
+				return self.send_fail("该手机号 已被注册，请直接登入")
+			else:
+				u = models.Accountinfo(phone = phone ,password = password)
+				self.session.add(u)
+				self.session.commit()
+				self.set_current_user(u, domain=ROOT_HOST_NAME)
+				print(u.id)
+				return self.send_success()
 
 
 
@@ -1549,58 +1582,75 @@ class InsertData(CustomerBaseHandler):
 		# 			shop.shop_start_timestamp = shop.create_date_timestamp
 		# 	self.session.commit()
 
-		try:
-			accountinfo_list = self.session.query(models.Accountinfo).all()
-		except:
-			self.send_fail("get accountinfo error")
-		if accountinfo_list:
-			for accountinfo in accountinfo_list:
-				if accountinfo.headimgurl_small is None:
-					accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
-			self.session.commit()
+		# try:
+		# 	accountinfo_list = self.session.query(models.Accountinfo).all()
+		# except:
+		# 	self.send_fail("get accountinfo error")
+		# if accountinfo_list:
+		# 	for accountinfo in accountinfo_list:
+		# 		if accountinfo.headimgurl_small is None:
+		# 			if accountinfo.headimgurl:
+		# 				print(accountinfo.headimgurl)
+		# 				accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
+
+		# 	self.session.commit()
 
 		
-		orderlist = self.session.query(models.Order).all()
-		if not orderlist:
-			self.send_fail("orderlist error")
-		if orderlist:
-			for order in orderlist:
-				# if order.send_time =='0' :
-					# print('login')
-				create_date =  order.create_date
-				second_date = create_date + datetime.timedelta(days = 1)
-				if order.type == 2: #按时达
-					if order.today == 1:
-						order.send_time = create_date.strftime('%Y-%m-%d') +' '+\
-						(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
-					elif order.today == 2:
-						order.send_time = second_date.strftime('%Y-%m-%d')+' '+\
-						(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
-				elif order.type == 1:#立即送
-					later = order.create_date + datetime.timedelta(minutes = 30)
-					order.send_time =  create_date.strftime('%Y-%m-%d %H:%M') +'~'+later.strftime('%H:%M')
-					#print(order.send_time)
-				# else:
-				# 	print('Not NULL')
-			self.session.commit()
+		# orderlist = self.session.query(models.Order).all()
+		# if not orderlist:
+		# 	self.send_fail("orderlist error")
+		# if orderlist:
+		# 	for order in orderlist:
+		# 		# if order.send_time =='0' :
+		# 			# print('login')
+		# 		create_date =  order.create_date
+		# 		second_date = create_date + datetime.timedelta(days = 1)
+		# 		if order.type == 2: #按时达
+		# 			if order.today == 1:
+		# 				order.send_time = create_date.strftime('%Y-%m-%d') +' '+\
+		# 				(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
+		# 			elif order.today == 2:
+		# 				order.send_time = second_date.strftime('%Y-%m-%d')+' '+\
+		# 				(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
+		# 		elif order.type == 1:#立即送
+		# 			later = order.create_date + datetime.timedelta(minutes = 30)
+		# 			order.send_time =  create_date.strftime('%Y-%m-%d %H:%M') +'~'+later.strftime('%H:%M')
+		# 			#print(order.send_time)
+		# 		# else:
+		# 		# 	print('Not NULL')
+		# 	self.session.commit()
 
+		# try:
+		# 	accountinfo_list = self.session.query(models.Accountinfo).all()
+		# except:
+		# 	return self.send_fail('accountinfo_list error')
+		# if accountinfo_list:
+		# 	n = 0
+		# 	for accountinfo in accountinfo_list:
+		# 		customer_id = accountinfo.id
+		# 		order_list = self.session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
+		# 			models.Order.status == 6 ,models.Order.status == 10))).all()
+		# 		# print(len(order_list))
+		# 		if order_list:
+		# 			n = n + 1
+		# 			accountinfo.is_new = 1
+		# 			#print(accountinfo.is_new)
+		# 			self.session.commit()
+		# 	print(n,'***********8')
 		try:
-			accountinfo_list = self.session.query(models.Accountinfo).all()
+			follow_list = self.session.query(models.CustomerShopFollow).all()
 		except:
-			return self.send_fail('accountinfo_list error')
-		if accountinfo_list:
-			n = 0
-			for accountinfo in accountinfo_list:
-				customer_id = accountinfo.id
-				order_list = self.session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
+			return self.send_fail('follow_list error')
+		if follow_list:
+			for follow in follow_list:
+				customer_id = follow.customer_id
+				shop_id = follow.shop_id
+				order_list = self.session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,models.Order.shop_id == shop_id,or_(models.Order.status == 5,\
 					models.Order.status == 6 ,models.Order.status == 10))).all()
-				# print(len(order_list))
 				if order_list:
-					n = n + 1
-					accountinfo.is_new = 1
-					print(accountinfo.is_new)
+					follow.shop_new = 1
 					self.session.commit()
-			# print(n,'')
+
 
 		return self.send_success()
 

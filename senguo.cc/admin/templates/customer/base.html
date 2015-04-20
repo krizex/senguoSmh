@@ -70,8 +70,9 @@
     </div>
     {% block other %}{% end %}
     <script src="/static/js/zepto&&fastclick&&lazyload.min.js"></script>
+    <script src="{{static_url('js/template.js')}}"></script>
     <script src="/static/js/jweixin-1.0.js"></script>
-    <script src="{{static_url('js/market-public.js')}}"></script>
+    <script src="/static/js/market-public.js"></script>
     {% block bottom %}{% end %}
     <a id="backTop" class="little_pear"><img src="/static/svg/half@2x.png" class="src_change"/></a>
 </body>

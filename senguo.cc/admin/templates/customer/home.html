@@ -74,7 +74,7 @@
 </div>
 <div class="goods-box">
     <!--<p class="text-white no-mar-btom classify-title font18 text-center bg-green" id="fruitPosition">水果单品</p>-->
-    <ul class="goods-list  fruit-list fruit_goods_list">    
+    <ul class="goods-list  fruit-list fruit_goods_list">
     </ul>
     <p class="text-white no-mar-btom classify-title font18 text-center bg-green dryfruit_classify hidden" id="dryFruitPosition">干果单品</p>
     <ul class="goods-list fruit-list dryfruit_goods_list" >
@@ -87,8 +87,8 @@
     {% end %}
     {% end %}
 </div>
-<div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中( > < )~</div>
-<div class="no_more text-center text-grey9 font12 mt10" style="display:none">~没有更多商品了呢~( > < )~</div>
+<div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中 ( > < )~</div>
+<div class="no_more text-center text-grey9 font12 mt10" style="display:none">~没有更多商品了呢 ( > < )~</div>
 {% end %}
 {% block other %}
 <div class="modal fade large-img-box" id="large_imgbox">
@@ -143,3 +143,36 @@
 {% block bottom %}
 <script src="{{static_url('js/market-home.js')}}"></script>
 {% end %}
+<script id="goodsItem" type="text/html">
+         <li class="goods-list-item font10 text-grey {{code}}" data-id="{{id}}" data-type="{{type}}" data-num="{{storage}}">
+            <div class="clearfix box bg">
+                <div class="set-width-float">
+                    <div class="goods-img pull-left">
+                        <a href="javascript:;" class="check-lg-img">
+                            <span class="tag text-white text-center tagItem font8" data-id="{{tag}}"></span>
+                            <img src="/static/images/holder.png?v=20150330" class="img lazy_img" data-original="{{img_url}}">
+                        </a>
+                    </div>
+                    <input type="hidden" class="fruit_intro" value="{{intro}}"/>
+                    <div class="goods-info pull-left">
+                        <div class="show-box">
+                            <p class="clearfix">
+                                <span class="pull-left color fruit-name font14"></span>
+                                <span class="pull-right text-grey sale font12">销量:<span class="color number"></span></span>
+                            </p>
+                            <p class="great-number font12">
+                                <em class="bg_change heart"></em>
+                                <span class="great"></span>
+                            </p>
+                            <div class="charge-first charge-style  font14 color">          
+                            </div>
+                        </div>
+                    </div>
+                    <span class="back-shape bg"></span>
+                    <span class="icon-bg toggle_icon"></span>
+                </div>
+                <ul class="charge-list charge-style color clearfix font14  color" style="display:none;">
+                </ul>
+            </div>
+        </li>
+    </script>

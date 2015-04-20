@@ -209,6 +209,14 @@ class Order(StaffBaseHandler):
                     for s in ss:
                         num = mgoods[s[1].id]["num"]*s[1].unit_num*s[1].num
                         s[0].current_saled -= num
+                #yy
+                if status ==  5:
+                    customer=self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.customer_id==order.customer_id,\
+                        models.CustomerShopFollow.shop_id==order.shop_id).one()
+                    if customer:
+                        print(customer.customer_id)
+                        customer.shop_new=1
+                        self.session.commit()
             else:
                 return self.send.fail("你还没分配工作，请联系商家")
             order.status = status

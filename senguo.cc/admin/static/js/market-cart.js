@@ -474,7 +474,7 @@ function itemDelete(target,menu_type) {
 }
 
 function addressAddEdit(action,name,address,phone,target){
-    var url=window.dataObj.home_href;
+    var url='/customer/'+getCookie('market_shop_code');
     var action=action;
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
     var address_id=$('.address-box').attr('data-id');
@@ -662,8 +662,8 @@ function TiePhone(evt){
             {
                 var tie_box=new Modal('tieBox');
                 tie_box.modal('hide');
-                $('#phoneNumber').remove();
-                $('.un_tie').attr({'id':'submitOrder'}).removeClass('bg-grey text-grey9 un_tie').addClass('bg-green text-white');
+                $('.first_notice').remove();
+                $('.un_tie').attr({'id':'submitOrder'}).removeClass('bg-grey99 un_tie').addClass('bg-green');
             }
             else noticeBox(res.error_text);
         },
