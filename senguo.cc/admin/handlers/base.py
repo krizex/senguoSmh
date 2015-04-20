@@ -186,6 +186,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		user_id = self.get_secure_cookie(self.__account_cookie_name__) or b'0'
 		user_id = int(user_id.decode())
 		print(user_id)
+        # print(type(self))
+        # print(self.__account_model__)
 
 		if not user_id:
 			self._user = None
@@ -233,12 +235,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return token
  
 	def get_comments(self, shop_id, page=0, page_size=5):
-		return self.session.query(models.Accountinfo.headimgurl_small, models.Accountinfo.nickname,
-								  models.Order.comment, models.Order.comment_create_date, models.Order.num,
-								  models.Order.comment_reply,models.Order.id).\
-			filter(models.Order.shop_id == shop_id, models.Order.status == 6,
-				   models.Order.customer_id == models.Accountinfo.id).\
+		comments = self.session.query(models.Accountinfo.headimgurl_small, models.Accountinfo.nickname,\
+			models.Order.comment, models.Order.comment_create_date, models.Order.num,\
+			models.Order.comment_reply,models.Order.id).\
+		filter(models.Order.shop_id == shop_id, models.Order.status == 6,\
+			models.Order.customer_id == models.Accountinfo.id).\
 			order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+		return comments
 
 	def timedelta(self, date):
 		if not date:

@@ -687,38 +687,41 @@ class Cert(SuperBaseHandler):
 	def get(self):
 	    self.render('superAdmin/shop-cert-apply.html',context=dict(count = {'all':10,'all_temp':10}))
 
-class Comment(SuperBaseHandler):
-	@tornado.web.authenticated
-	def get(self):
-	    self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'all':10,'all_temp':10}))
+# class Comment(SuperBaseHandler):
+# 	@tornado.web.authenticated
+# 	def get(self):
+# 	    self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'all':10,'all_temp':10}))
 				
-class CommnetApplyDelete(SuperBaseHandler):
+class Comment(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		data = []
 		order_info = {}
-		apply_list = self.session.query(models.CommentApply).filter_by(hasDone = 0).all()
-		if comment_apply in apply_list:
+		apply_list = self.session.query(models.CommentApply).filter_by(has_done = 0).all()
+		for comment_apply in apply_list:
 			order = comment_apply.order
 			shop  = comment_apply.shop
 			shop_code = shop.shop_code
+			shop_name = shop.shop_name
+			has_done = comment_apply.has_done
 			admin_name= shop.admin.accountinfo.nickname
 			# order info
 			customer_id = order.customer_id
 			customer = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
 			if not customer:
 				return self.send_error(404)
-			name = customer.name
+			name = customer.nickname
 			comment = order.comment
 			order_create_date = order.create_date
 			num = order.num
-			headimgurl_small = order.headimgurl_small
+			headimgurl_small = customer.headimgurl_small
 			create_date = comment_apply.create_date
 			order_info = dict(
 				headimgurl_small = headimgurl_small,name = name , num = num ,order_create_date = order_create_date,\
 				comment = comment)
-			data.append([shop_code,admin_name ,create_date, comment_apply.delete_reason,order_info])
-		return self.send_success(data = data)
+			data.append([shop_code,shop_name,admin_name ,create_date, comment_apply.delete_reason,order_info,has_done])
+		# return self.send_success(data = data)
+		self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'all':10,'all_temp':10},data=data))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id:int','decline_reason?:str')
@@ -732,14 +735,42 @@ class CommnetApplyDelete(SuperBaseHandler):
 			order.status = 5
 			order.coment = 'NULL'
 			order.comment_reply = 'NULL'
+			comment_apply.has_done = 1
 			self.session.commit()
-			return self.send_success()
+			return self.send_success(status = 0, msg = 'success',data = {})
 		elif action == 'decline':
 			comment_apply.decline_reason = self.args['decline_reason']
+			comment_apply.has_done = 2
 			self.session.commit()
-			return self.send_success(decline_reason = decline_reason)
+			return self.send_success(status = 0 , msg = 'success' ,data = {})
 		else:
 			return self.send_error(404)
+
+
+class ShopAuthenticate(SuperBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.send_success()
+
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('apply_id','decline?str')
+	def post(self):
+		apply_id = self.args['apply_id']
+		shop_auth_apply = self.session.query(models.ShopAuthenticate).filter_by(id = apply_id).first()
+		if not shop_auth_apply:
+			return self.error(404)
+		if action == 'commit':
+			shop_auth_apply.has_done = 1
+			self.session.commit()
+		elif action == 'decline':
+			decline_reason = self.args['decline_reason']
+			shop_auth_apply.has_done = 2
+			self.session.commit()
+		else:
+			return self.send_error(404)
+		return self.send_success(status=0,msg = 'success',data = {})
+
+
 
 
 
