@@ -115,18 +115,18 @@
 	    {% end %}
 	    <p class="title font14 pull-left mb0 mt10">店铺简介*</p>
 	    {% if "reApply" in context and context["reApply"] %}
-	    <textarea class="shop-intro" id="shopIntro" placeholder="输入您的店铺简介，请不要超过300个字">{{shop.shop_intro or ''}}</textarea>
+	    <textarea class="shop-intro mt5" id="shopIntro" placeholder="输入您的店铺简介，请不要超过300个字">{{shop.shop_intro or ''}}</textarea>
 	    {% else %}
-	    <textarea class="shop-intro" id="shopIntro" placeholder="输入您的店铺简介，请不要超过300个字"></textarea>
+	    <textarea class="shop-intro mt5" id="shopIntro" placeholder="输入您的店铺简介，请不要超过300个字"></textarea>
 	    {% end %}
 	    <p class="font14 mt10 mb0">服务区域(多选)*</p>
-	    <ul class="area-select  area-choose-list row font14" id="serverArea">
-		<li class="bg-grey5 active"  data-id="1"><a href="javascript:;" class="text-grey3">高校</a></li>
+	    <ul class="area-select area-choose-list row font14 mt5" id="serverArea">
+		<li class="bg-grey5 active" data-id="1"><a href="javascript:;" class="text-grey3">高校</a></li>
 		<li class="bg-grey5" data-id="2"><a href="javascript:;" class="text-grey3">社区</a></li>
 		<li class="bg-grey5" data-id="4"><a href="javascript:;" class="text-grey3">商圈</a></li>
 		<li class="bg-grey5" data-id="8"><a href="javascript:;" class="text-grey3">其他</a></li>
 	    </ul>
-	    <p class="font16 mb0 line40 clearfix">个人信息</p>
+	    <p class="font16 mb0 pt10 line40 clearfix">个人信息</p>
 	    <hr/>
 	    <div class="clearfix mt10">
 		<span class="title line40 pull-left font14">真实姓名*</span>
@@ -163,7 +163,7 @@
 	    <input type="submit" value="提交申请" class="btn text-white bg-green  center-block w80 font16 mt10" id="submitApply"/>
 	    {% end %}
 	    <p class="text-center">
-		<a class="text-grey9 white-color mb10 mt10 center-block" id="back" href="javascript:;">←返回上一步</a>
+		<a class="text-grey9 white-color mb10 mt10 center-block font14" id="back" href="javascript:;">←返回上一步</a>
 	    </p>
 	</div>
 	    <!--<p class="title">是否接入森果后台系统：<a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200343770&idx=1&sn=1230c48bb781da7d7e63d5dc804cbf10#rd" class="to-know">了解一下</a></p>-->

@@ -101,13 +101,13 @@ $(document).ready(function(){
     //按时达配送时间段启用/停用
     $('.period-action').each(function(){
         var $this=$(this);
-        var active=$this.data('id');
+        var active=$this.attr('data-id');
         if(active==1) $this.find('.work-mode').show().siblings('.stop-mode').hide();
         else $this.find('.work-mode').hide().siblings('.stop-mode').show();
     });
     $(document).on('click','.period-action',function(){
         var $this=$(this);
-        var active=$this.data('id');
+        var active=$this.attr('data-id');
         activePeriod($this,active);
     });
     //按时达起送金额
@@ -309,8 +309,14 @@ function activePeriod(target,active){
     };
     $.postJson(url,args,function(res){
             if(res.success){
-                if(active==1) target.find('.work-mode').hide().siblings('.stop-mode').show();
-                else target.find('.work-mode').show().siblings('.stop-mode').hide();
+                if(active==1) 
+                    {
+                        target.attr({'data-id':2}).find('.work-mode').hide().siblings('.stop-mode').show();
+                    }
+                else 
+                    {
+                        target.attr({'data-id':1}).find('.work-mode').show().siblings('.stop-mode').hide();
+                    }
             }
             else return alert(res.error_text);
         },

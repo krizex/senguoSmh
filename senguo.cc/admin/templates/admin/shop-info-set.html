@@ -9,12 +9,12 @@
             <input class="info_hide shop_name" type="text" value="{{current_shop.shop_name}}" style="display:none"/>
         </div>
         <div class="pull-right">
-            <a class="info_edit text-green font14" href="javascript:;">修改</a>
+            <a class="info_edit text-green" href="javascript:;">修改</a>
             <a class="info_sure" href="javascript:;" data-id="name" style="display:none">确定</a>
         </div>
     </li>
     <li class="item clearfix">
-        <span class="w1 pull-left set-inl-blo">店铺logo</span>
+        <span class="w1 pull-left set-inl-blo">店铺Logo</span>
         <div class="w2 pull-left logo-box">
            <img src="{{current_shop.shop_trademark_url or static_url('design_img/TDSG.png')}}?imageView/1/w/80/h/80" id="logoImg">
             <div class="upload-img green-color">
@@ -60,14 +60,14 @@
             <textarea class="info_hide shop_intro" style="display:none">{{current_shop.shop_intro}}</textarea>
         </div>
         <div class="pull-right">
-            <a class="info_edit text-green font14" href="javascript:;">修改</a>
+            <a class="info_edit text-green" href="javascript:;">修改</a>
             <a class="info_sure" href="javascript:;" data-id="intro" style="display:none">确定</a>
         </div>
     </li>
     <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">店铺地址</span>
         <div class="w2 pull-left">
-            <span class="info_show address">{{address}}</span>
+            <p class="info_show address">{{address}}</p>
             <div class="info_hide" style="display:none">
                 <div class="dropdown select-provience pull-left set-right10 province_select" data-toggle="modal" data-target="#provinceList">
                     <button class="btn btn-default dropdown-toggle" type="button">
@@ -86,7 +86,7 @@
 
         </div>
         <div class="pull-right">
-            <a class="info_edit text-green font14" href="javascript:;">修改</a>
+            <a class="info_edit text-green" href="javascript:;">修改</a>
             <a class="info_sure" href="javascript:;" data-id="address" style="display:none">确定</a>
         </div>
     </li>
@@ -97,18 +97,18 @@
             <input class="info_hide shop_phone" type="text" placeholder="" value="{{current_shop.shop_phone or '' }}" style="display:none"/>
         </div>
         <div class="pull-right">
-            <a class="info_edit text-green font14" href="javascript:;">修改</a>
+            <a class="info_edit text-green" href="javascript:;">修改</a>
             <a class="info_sure" href="javascript:;" data-id="phone" style="display:none">确定</a>
         </div>
     </li>
     <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">配送区域</span>
         <div class="w2 pull-left">
-            <span class="info_show deliver_area">{{current_shop.deliver_area or '未设置'}}</span>
+            <p class="info_show deliver_area">{{current_shop.deliver_area or '未设置'}}</p>
             <input class="info_hide deliver-area" type="text" placeholder="请填写配送区域,至多50个字符" value="{{current_shop.deliver_area or ''}}" style="display:none"/>
         </div>
         <div class="pull-right">
-            <a class="info_edit text-green font14" href="javascript:;">修改</a>
+            <a class="info_edit text-green" href="javascript:;">修改</a>
             <a class="info_sure" href="javascript:;" data-id="area" style="display:none">确定</a>
         </div>
     </li>
@@ -128,7 +128,7 @@
             </div>
         </div>
         <div class="pull-right">
-            <a class="info_edit text-green font14" href="javascript:;">修改</a>
+            <a class="info_edit text-green" href="javascript:;">修改</a>
             <a class="info_sure" href="javascript:;" data-id="entity" style="display:none">确定</a>
         </div>
     </li>
