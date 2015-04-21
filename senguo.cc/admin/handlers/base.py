@@ -702,19 +702,39 @@ class WxOauth2:
 
 	@classmethod
 	def get_client_access_token(cls):  # 微信接口调用所需要的access_token,不需要用户授权
-		global access_token
-		if datetime.datetime.now().timestamp() - access_token["create_timestamp"]\
-				< 7100 and access_token["access_token"]:  # jsapi_ticket过期时间为7200s，但为了保险起见7100s刷新一次
-			return access_token["access_token"]
+		session = models.DBSession()
+		# global access_token
+		# if datetime.datetime.now().timestamp() - access_token["create_timestamp"]\
+		# 		< 7100 and access_token["access_token"]:  # jsapi_ticket过期时间为7200s，但为了保险起见7100s刷新一次
+		# 	return access_token["access_token"]
 
+		# data = json.loads(urllib.request.urlopen(cls.client_access_token_url).read().decode("utf-8"))
+		# if "access_token" in data:
+		# 	access_token["access_token"] = data["access_token"]
+		# 	access_token["create_timestamp"] = datetime.datetime.now().timestamp()
+		# 	return data["access_token"]
+		# else:
+		# 	#print("获取微信接口调用的access_token出错：", data)
+		# 	return None
+		try:
+			access_token = session.query(models.AccessToken).first()
+		except:
+			access_token = None
+		if access_token is not None:
+			if datetime.datetime.now().timestamp()- (access_token.create_timestamp) <3600  and access_token.access_token:
+				print(access_token.access_token,'***********')
+				return access_token.access_token
 		data = json.loads(urllib.request.urlopen(cls.client_access_token_url).read().decode("utf-8"))
 		if "access_token" in data:
-			access_token["access_token"] = data["access_token"]
-			access_token["create_timestamp"] = datetime.datetime.now().timestamp()
-			return data["access_token"]
+			access_token = models.AccessToken(access_token = data["access_token"] , create_timestamp = \
+				datetime.datetime.now().timestamp())
+			session.add(access_token)
+			session.commit()
+			return access_token.access_token
 		else:
-			#print("获取微信接口调用的access_token出错：", data)
+			print("access_token error")
 			return None
+
 
 	@classmethod
 	def post_template_msg(cls, touser, shop_name, name, phone):
@@ -846,6 +866,8 @@ class WxOauth2:
 		if data["errcode"] != 0:
 			#print("订单提交成功通知发送失败",data)
 			return False
+		# print('order send SUCCESS')
+		print('send to customer',data)
 		return True
 
 	@classmethod

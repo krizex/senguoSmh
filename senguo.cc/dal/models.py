@@ -311,6 +311,12 @@ class _AccountApi(_CommonApi):
 		return u
 	# * TODO 手机号注册
 
+class AccessToken(MapBase,_CommonApi):
+	__tablename__ = 'access_token'
+	id = Column(Integer,primary_key = True , nullable = False)
+	create_timestamp = Column(Float)
+	access_token = Column(String(200))
+
 #用户的基本信息，每个角色类型都连接到这个表，即一人可能有多个角色，但只有一种基本信息
 class Accountinfo(MapBase, _CommonApi):
 	__tablename__ = "account_info"
