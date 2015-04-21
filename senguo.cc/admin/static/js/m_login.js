@@ -26,7 +26,7 @@ function login(target){
 	};
 	$.postJson(url,args,function(res){
 		if(res.success){
-			
+			window.location.href=next;
 		}
 		else return noticeBox(res.error_text);
 	}, 
