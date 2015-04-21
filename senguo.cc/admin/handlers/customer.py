@@ -1655,23 +1655,23 @@ class InsertData(CustomerBaseHandler):
 		# 		# 	print('Not NULL')
 		# 	self.session.commit()
 
-		# try:
-		# 	accountinfo_list = self.session.query(models.Accountinfo).all()
-		# except:
-		# 	return self.send_fail('accountinfo_list error')
-		# if accountinfo_list:
-		# 	n = 0
-		# 	for accountinfo in accountinfo_list:
-		# 		customer_id = accountinfo.id
-		# 		order_list = self.session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
-		# 			models.Order.status == 6 ,models.Order.status == 10))).all()
-		# 		# print(len(order_list))
-		# 		if order_list:
-		# 			n = n + 1
-		# 			accountinfo.is_new = 1
-		# 			#print(accountinfo.is_new)
-		# 			self.session.commit()
-		# 	print(n,'***********8')
+		try:
+			accountinfo_list = self.session.query(models.Accountinfo).all()
+		except:
+			return self.send_fail('accountinfo_list error')
+		if accountinfo_list:
+			n = 0
+			for accountinfo in accountinfo_list:
+				customer_id = accountinfo.id
+				order_list = self.session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
+					models.Order.status == 6 ,models.Order.status == 10))).all()
+				# print(len(order_list))
+				if order_list:
+					n = n + 1
+					accountinfo.is_new = 1
+					#print(accountinfo.is_new)
+					self.session.commit()
+			print(n,'***********8')
 		try:
 			follow_list = self.session.query(models.CustomerShopFollow).all()
 		except:
