@@ -39,18 +39,25 @@ class Access(CustomerBaseHandler):
 	def post(self):
 		phone = self.args['phone']
 		password = self.args['password']
-		next = self.args['next']
-		print(next)
-		# u = models.ShopAdmin.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
+		
+		u = models.Customer.regist_by_phone_password(self.session, self.args["phone"], self.args["password"])
+		print(u,u.id)
 		print(phone,password)
-		u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
+		# u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
 		if not u:
 			return self.send_fail(error_text = '用户不存在或密码不正确 ')
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
-		return self.redirect( self.reverse_url("test"))
+		# if hasattr(self, "_user"):
+		# 	print(self._user)
+		# else:
+		# 	print('nooooooooooooooooooooooooooo')
+		# return self.redirect( self.reverse_url("test"))
 		# print('before redirect')
 		# return self.redirect('http://www.baidu.com')
-		# return self.send_success()
+		return self.send_success()
+		# next = self.args['next']
+		# print(next)
+		# return self.redirect('/woody')
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self,next_url):
@@ -76,13 +83,14 @@ class RegistByPhone(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments("phone:str","code:int")
 	def handle_checkcode_regist(self):
+		phone = self.args['phone']
 		if not check_msg_token(phone = self.args["phone"],code = self.args["code"]):
 			return self.send_fail(error_text = "验证码过期或者不正确")
 		else:
-			u = models.Accountinfo(phone = phone ,password = password)
-			self.session.add(u)
-			self.session.commit()
-			self.set_current_user(u, domain=ROOT_HOST_NAME)
+			# u = models.Accountinfo(phone = phone ,password = password)
+			# self.session.add(u)
+			# self.session.commit()
+			# self.set_current_user(u, domain=ROOT_HOST_NAME)
 			return self.send_success()
 
 	@CustomerBaseHandler.check_arguments("phone:str")
@@ -103,17 +111,19 @@ class RegistByPhone(CustomerBaseHandler):
 		elif action == 'regist':
 			phone = self.args['phone']
 			password = self.args['password']
+			# u = self.regist_by_phone_password(self.session,phone,password)
+			u = models.Customer.regist_by_phone_password(self.session,phone,password)
 
-			u = self.session.query(models.Accountinfo).filter_by(phone = phone).first()
-			if u:
-				return self.send_fail("该手机号 已被注册，请直接登入")
-			else:
-				u = models.Accountinfo(phone = phone ,password = password)
-				self.session.add(u)
-				self.session.commit()
-				self.set_current_user(u, domain=ROOT_HOST_NAME)
-				print(u.id)
-				return self.send_success()
+			# u = self.session.query(models.Accountinfo).filter_by(phone = phone).first()
+			# if u:
+			# 	return self.send_fail("该手机号 已被注册，请直接登入")
+			# else:
+			# 	u = models.Accountinfo(phone = phone ,password = password)
+			# 	self.session.add(u)
+			# 	self.session.commit()
+			self.set_current_user(u, domain=ROOT_HOST_NAME)
+			print(u.id)
+			return self.send_success()
 
 
 

@@ -209,18 +209,6 @@ class _AccountApi(_CommonApi):
 			u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
 			u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
 			u.accountinfo.nickname = wx_userinfo["nickname"]
-			#####################################################################################
-			# update wx_openid
-			#####################################################################################
-			# print(u.accountinfo.wx_openid)
-			# start = wx_userinfo['openid'][0:2]
-			# print("start:",start)
-			# if start == "o5":
-			# 	u.accountinfo.wx_openid = wx_userinfo["openid"]
-			# 	print("update openid")
-			# print(wx_userinfo["openid"])
-
-			# print( "openid" + wx_userinfo["openid"])
 
 			#####################################################################################
 			# update wx_openid
@@ -284,6 +272,31 @@ class _AccountApi(_CommonApi):
 		except NoResultFound:
 			u = None
 		return u
+
+	#regist by phone
+	# woody
+	@classmethod
+	def regist_by_phone_password(cls,session,phone,password):
+		u = cls.login_by_phone_password(session,phone,password)
+		if u:
+			return u
+		try:
+			account_info = session.query(Accountinfo).filter_by(phone = phone,\
+				password = password).one()
+		except NoResultFound:
+			account_info = None
+		if account_info:
+			u = cls(id = account_info.id)
+			session.add(u)
+			session.commit()
+			return u
+		account_info = Accountinfo(phone = phone,password = password)
+		u = cls()
+		u.accountinfo = account_info
+		session.add(u)
+		session.commit()
+		return u
+
 	# 手机号验证码登录
 	@classmethod
 	def login_by_phone(cls, session, phone):
