@@ -6,5 +6,6 @@ __pycache__
 *.pyc
 *.swp
 nohup.out
+.nohup.out.swl
 .idea/
 senguo.cc/db_migrate/alembic/versions/
