@@ -174,8 +174,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return link
 
 	def get_login_url(self):
-		return self.get_wexin_oauth_link(next_url=self.request.full_url())
-		# return self.reverse_url('customerLogin')
+		# return self.get_wexin_oauth_link(next_url=self.request.full_url())
+		return self.reverse_url('customerLogin')
 	def get_current_user(self):
 		if not self.__account_model__ or not self.__account_cookie_name__:
 			raise Exception("overwrite model to support authenticate.")
@@ -186,12 +186,14 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		user_id = self.get_secure_cookie(self.__account_cookie_name__) or b'0'
 		user_id = int(user_id.decode())
 		print(user_id)
+        # print(type(self))
+        # print(self.__account_model__)
 
 		if not user_id:
 			self._user = None
 		else:
 			self._user = self.__account_model__.get_by_id(self.session, user_id)
-			#self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
+			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:
 				Logger.warn("Suspicious Access", "may be trying to fuck you")
 		return self._user
@@ -233,12 +235,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return token
  
 	def get_comments(self, shop_id, page=0, page_size=5):
-		return self.session.query(models.Accountinfo.headimgurl_small, models.Accountinfo.nickname,
-								  models.Order.comment, models.Order.comment_create_date, models.Order.num,
-								  models.Order.comment_reply,models.Order.id).\
-			filter(models.Order.shop_id == shop_id, models.Order.status == 6,
-				   models.Order.customer_id == models.Accountinfo.id).\
+		comments = self.session.query(models.Accountinfo.headimgurl_small, models.Accountinfo.nickname,\
+			models.Order.comment, models.Order.comment_create_date, models.Order.num,\
+			models.Order.comment_reply,models.Order.id).\
+		filter(models.Order.shop_id == shop_id, models.Order.status == 6,\
+			models.Order.customer_id == models.Accountinfo.id).\
 			order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+		return comments
 
 	def timedelta(self, date):
 		if not date:
