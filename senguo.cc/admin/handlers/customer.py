@@ -25,7 +25,7 @@ class Access(CustomerBaseHandler):
 								 context=dict(next_url=next_url))
 		elif self._action == "logout":
 			self.clear_current_user()
-			return self.redirect(self.reverse_url("customerHome"))
+			return self.redirect(self.reverse_url("customerLogin"))
 		elif self._action == "oauth":
 			self.handle_oauth(next_url)
 		elif self._action == "weixin":

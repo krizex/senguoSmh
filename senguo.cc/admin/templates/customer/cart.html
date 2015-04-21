@@ -232,7 +232,7 @@
             <input id="messageCon" class="message-input input-sty box-style center-block font14 bg-white bg-grey" type="text" value="" placeholder="留个言调戏下客服吧？(⊙_⊙)">
             {% if current_user.accountinfo.is_new ==1 %}
             <button id="submitOrder" class="sub-btn w-per6 bg-green text-white text-center center-block btn mt10 clearfix sure_btn">提交订单</button>
-            {% elif current_user.accountinfo.is_new !=1 and phone == None %}
+            {% elif (current_user.accountinfo.is_new !=1 or current_user.accountinfo.is_new==None) and phone == None %}
             <button  class="sub-btn w-per6 bg-grey99 text-white text-center center-block btn mt10 clearfix un_tie sure_btn">提交订单</button>
             <div class="first_notice center-block clearfix mt10">
                 <span class="pull-left">第一次下单?</span>
