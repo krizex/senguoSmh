@@ -440,7 +440,7 @@ class Comment(AdminBaseHandler):
 			delete_reason = data["delete_reason"]
 			shop_id  = self.current_shop.id
 			apply_delete = models.CommentApply(order_id = order_id,delete_reason = delete_reason,has_done\
-				=1,shop_id = shop_id)
+				=0,shop_id = shop_id)
 			self.session.add(apply_delete)
 			self.session.commit()
 			return self.send_success(status = 0 , msg = 'success',data = {})

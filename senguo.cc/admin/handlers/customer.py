@@ -18,6 +18,7 @@ class Access(CustomerBaseHandler):
 
 	def get(self):
 		next_url = self.get_argument('next', '')
+		print(next_url,'first')
 		if self._action == "login":
 			next_url = self.get_argument("next", "")
 			return self.render("login/m_login.html",
@@ -26,7 +27,9 @@ class Access(CustomerBaseHandler):
 			self.clear_current_user()
 			return self.redirect(self.reverse_url("customerHome"))
 		elif self._action == "oauth":
-			self.handle_oauth()
+			self.handle_oauth(next_url)
+		elif self._action == "weixin":
+			return self.redirect(self.get_weixin_login_url(next_url))
 		else:
 			return self.send_error(404)
 
@@ -53,11 +56,11 @@ class Access(CustomerBaseHandler):
 		# return self.redirect('http://www.baidu.com')
 		return self.send_success()
 		# next = self.args['next']
-		# print(next)
+		print(next)
 		# return self.redirect('/woody')
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
-	def handle_oauth(self):
+	def handle_oauth(self,next_url):
 		# todo: handle state
 		code =self.args["code"]
 		mode = self.args["mode"]
@@ -71,8 +74,18 @@ class Access(CustomerBaseHandler):
 		u = models.Customer.register_with_wx(self.session, userinfo)
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 
-		next_url = self.get_argument("next", self.reverse_url("customerHome"))
+		# next_url = self.get_argument("next", self.reverse_url("fruitzoneShopList"))
+		#print(next_url)
 		return self.redirect(next_url)
+
+class Third(CustomerBaseHandler):
+	def initialize(self, action):
+		self._action = action
+	def get(self):
+		next_url = self.get_argument('next', '')
+		action =self._action
+		if self._action == "weixin":
+			return self.redirect(self.get_weixin_login_url())
 
 class RegistByPhone(CustomerBaseHandler):
 	def get(self):
@@ -457,8 +470,8 @@ class Comment(CustomerBaseHandler):
 		comments = self.get_comments(shop_id, page, 10)
 		date_list = []
 		for comment in comments:
-			date_list.append({"img": comment[0], "name": comment[1],
-							  "comment": comment[2], "time": self.timedelta(comment[3]), "reply":comment[5]})
+			date_list.append({"img": comment[6], "name": comment[7],
+							  "comment": comment[0], "time": self.timedelta(comment[1]), "reply":comment[3]})
 		if page == 0:
 			return self.render("customer/comment.html", date_list=date_list)
 		return self.write(dict(date_list=date_list))
@@ -1493,11 +1506,14 @@ class OrderDetail(CustomerBaseHandler):
 			data = self.args['data']
 			order_id = data['order_id']
 			order = self.session.query(models.Order).filter_by(id = order_id).first()
+			apply_list = self.session.query(models.CommentApply).filter_by(order_id = order_id).first()
 			if not order:
 				return self.send_fail('order not found')
 			order.status = 5
 			order.comment = ''
 			order.comment_reply = ''
+			if apply_list:
+				apply_list.has_done=1
 			self.session.commit()
 
 			# recover point

@@ -11,7 +11,7 @@ from dal.dis_dict import dis_dict
 import time
 import re
 import tornado.web
-from sqlalchemy import desc
+from sqlalchemy import desc,or_
 import datetime
 import qiniu
 from settings import *
@@ -171,11 +171,17 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				APP_OAUTH_CALLBACK_URL+\
 				self.reverse_url(self.__wexin_oauth_url_name__) + para_str)
 			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
+		print(link)
 		return link
 
 	def get_login_url(self):
 		# return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		return self.reverse_url('customerLogin')
+
+	def get_weixin_login_url(self):
+		print(self.request.full_url())
+		next_url =  self.reverse_url("fruitzoneShopList")
+		return self.get_wexin_oauth_link(next_url = next_url)
 	def get_current_user(self):
 		if not self.__account_model__ or not self.__account_cookie_name__:
 			raise Exception("overwrite model to support authenticate.")
@@ -235,12 +241,19 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return token
  
 	def get_comments(self, shop_id, page=0, page_size=5):
-		comments = self.session.query(models.Accountinfo.headimgurl_small, models.Accountinfo.nickname,\
-			models.Order.comment, models.Order.comment_create_date, models.Order.num,\
-			models.Order.comment_reply,models.Order.id).\
-		filter(models.Order.shop_id == shop_id, models.Order.status == 6,\
-			models.Order.customer_id == models.Accountinfo.id).\
-			order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+		# comments = self.session.query(models.Accountinfo.headimgurl_small, models.Accountinfo.nickname,\
+		# 	models.Order.comment, models.Order.comment_create_date, models.Order.num,\
+		# 	models.Order.comment_reply,models.Order.id,models.CommentApply.has_done).\
+		# filter(models.Order.shop_id == shop_id, models.Order.status == 6,\
+		# 	models.CommentApply.order_id == models.Order.id,models.Accountinfo.id == models.Order.customer_id).\
+		# 	order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+		comments =self.session.query(models.Order.comment, models.Order.comment_create_date, models.Order.num,\
+			models.Order.comment_reply,models.Order.id,models.CommentApply.has_done,models.Accountinfo.headimgurl_small, \
+			models.Accountinfo.nickname,models.CommentApply.delete_reason,models.CommentApply.decline_reason).\
+		outerjoin(models.CommentApply, models.Order.id == models.CommentApply.order_id).\
+		join(models.Accountinfo,models.Order.customer_id == models.Accountinfo.id).\
+		filter(models.Order.shop_id == shop_id, models.Order.status == 6).filter(or_(models.CommentApply.has_done !=1,models.CommentApply.has_done ==None )).\
+		order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
 		return comments
 
 	def timedelta(self, date):
@@ -328,6 +341,9 @@ class SuperBaseHandler(_AccountBaseHandler):
 				session.commit()
 			print(close_shop_list)
 			# return self.send_success(close_shop_list = close_shop_list)
+	def get_login_url(self):
+		return self.get_wexin_oauth_link(next_url=self.request.full_url())
+		# return self.reverse_url('customerLogin')
 
 class FruitzoneBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopAdmin
@@ -372,6 +388,10 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 
 		return shoplist
 
+	def get_login_url(self):
+		return self.get_wexin_oauth_link(next_url=self.request.full_url())
+		# return self.reverse_url('customerLogin')
+
 
 class AdminBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopAdmin
@@ -392,6 +412,9 @@ class AdminBaseHandler(_AccountBaseHandler):
 			return
 		else:
 			self.current_shop = shop
+	def get_login_url(self):
+		return self.get_wexin_oauth_link(next_url=self.request.full_url())
+		# return self.reverse_url('customerLogin')
 
 
 class StaffBaseHandler(_AccountBaseHandler):
@@ -417,6 +440,10 @@ class StaffBaseHandler(_AccountBaseHandler):
 		self.hirelink = self.session.query(models.HireLink).filter_by(
 			staff_id=self.current_user.id, shop_id=self.shop_id).one()
 		self.current_user.work = self.hirelink.work
+
+	def get_login_url(self):
+		return self.get_wexin_oauth_link(next_url=self.request.full_url())
+		# return self.reverse_url('customerLogin')
 
 
 

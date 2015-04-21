@@ -41,6 +41,7 @@
 .send_type li a p:last-child{margin-bottom:3px;}
 .send_type li.active a{border-color:#33CC66;}
 .send_type li.active .top{color:#33CC66;}
+.send_type .active .name{color:#33CC66;}
 
 .send_day{overflow:hidden;width:80%;}
 .send_day li{margin-right:10px;}
@@ -58,6 +59,8 @@
 .send-address-choose input{width:84%;height:30px;-ms-line-height:30px;text-indent:14px;margin-bottom:5px;}
 .send-address-choose .address{width:85%;}
 .send-address-choose .to-edit-address{width:15%;margin-top:15px;}
+.send-address-choose .active .phone{color:#33CC66;}
+
 
 .message-input{padding:10px 15px;width:90% !important;border-color:#fff;border-radius:3px;}
 .message-input:focus{border-color:#ddd;}
