@@ -271,7 +271,7 @@ class ShopApply(FruitzoneBaseHandler):
 		#* todo 检查合法性
 
 		if self._action == "apply":
-			if not check_msg_token(wx_id=self.current_user.accountinfo.wx_unionid, code=self.args["code"]):
+			if not check_msg_token(phone=self.args['shop_phone'], code=self.args["code"]):
 				# print('check_msg_token' + self.current_user.accountinfo.wx_unionid)
 				return self.send_fail(error_text="验证码过期或者不正确")  #
 			# 这种检查方式效率比较低

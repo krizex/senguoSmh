@@ -22,7 +22,7 @@
 .acc-con-lst{margin-top: 20px;}
 .acc-con-lst>li{display: none;}
 .acc-con-lst .active{display: block;}
-.tb-account{width: 100%;table-layout: fixed;border-left:1px solid #f6f6f6;border-right:1px solid #f6f6f6;}
+.tb-account{width: 100%;table-layout: fixed;border:1px solid #f6f6f6;}
 .tb-account td{height: 30px;line-height: 30px;color: #666;font-size: 14px;}
 .tb-account tr:nth-child(2n+1){background-color: #f1f1f1;}
 .tb-account tr:hover{background-color:#f6f6f6;}

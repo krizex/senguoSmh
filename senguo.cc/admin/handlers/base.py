@@ -724,6 +724,9 @@ class WxOauth2:
 			if datetime.datetime.now().timestamp()- (access_token.create_timestamp) <3600  and access_token.access_token:
 				print(access_token.access_token,'***********')
 				return access_token.access_token
+			else:
+				session.query(models.AccessToken).delete()
+				session.commit()
 		data = json.loads(urllib.request.urlopen(cls.client_access_token_url).read().decode("utf-8"))
 		if "access_token" in data:
 			access_token = models.AccessToken(access_token = data["access_token"] , create_timestamp = \

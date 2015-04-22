@@ -1605,6 +1605,7 @@ class InsertData(CustomerBaseHandler):
 	# @CustomerBaseHandler.check_arguments("code?:str")
 	def get(self):
 		from sqlalchemy import create_engine, func, ForeignKey, Column
+		session = self.session
 		# print(fun)
 		# import pingpp
 		# try:
@@ -1656,37 +1657,43 @@ class InsertData(CustomerBaseHandler):
 		# 	self.session.commit()
 
 		try:
-			accountinfo_list = self.session.query(models.Accountinfo).all()
+			accountinfo_count = self.session.query(models.Accountinfo).count()
 		except:
 			return self.send_fail('accountinfo_list error')
-		if accountinfo_list:
-			n = 0
-			for accountinfo in accountinfo_list:
-				customer_id = accountinfo.id
-				order_list = self.session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
-					models.Order.status == 6 ,models.Order.status == 10))).all()
-				self.session.close()
-				# print(len(order_list))
-				if order_list:
-					n = n + 1
-					accountinfo.is_new = 1
-					#print(accountinfo.is_new)
-					# self.session.commit()
+		page = int(accountinfo_count/200)  if accountinfo_count % 200 == 0 else int(accountinfo_count/200) +1
+		print(accountinfo_count,page,'******')
+		n = 0
+		for x in range(page):
+			offset  = x * 200
+			n = n + 1
+			print('count',n)
+			accountinfo_list = self.session.query(models.Accountinfo).offset(offset).limit(200)
+			if accountinfo_list:
+				for accountinfo in accountinfo_list:
+					customer_id = accountinfo.id
+					order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
+						models.Order.status == 6 ,models.Order.status == 10))).all()
+					# session.close()
+					# print(len(order_list))
+					if order_list:
+						accountinfo.is_new = 1
+						#print(accountinfo.is_new)
+						# self.session.commit()
 			print(n,'***********8')
-		try:
-			follow_list = self.session.query(models.CustomerShopFollow).all()
-		except:
-			return self.send_fail('follow_list error')
-		if follow_list:
-			for follow in follow_list:
-				customer_id = follow.customer_id
-				shop_id = follow.shop_id
-				order_list = self.session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,models.Order.shop_id == shop_id,or_(models.Order.status == 5,\
-					models.Order.status == 6 ,models.Order.status == 10))).all()
-				self.session.close()
-				if order_list:
-					follow.shop_new = 1
-		self.session.commit()
+		# try:
+		# 	follow_list = session.query(models.CustomerShopFollow).all()
+		# except:
+		# 	return self.send_fail('follow_list error')
+		# if follow_list:
+		# 	for follow in follow_list:
+		# 		customer_id = follow.customer_id
+		# 		shop_id = follow.shop_id
+		# 		order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,models.Order.shop_id == shop_id,or_(models.Order.status == 5,\
+		# 			models.Order.status == 6 ,models.Order.status == 10))).all()
+		# 		# session.close()
+		# 		if order_list:
+		# 			follow.shop_new = 1
+		session.commit()
 
 
 		return self.send_success()
