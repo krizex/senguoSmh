@@ -1669,30 +1669,30 @@ class InsertData(CustomerBaseHandler):
 		# 		# 	print('Not NULL')
 		# 	self.session.commit()
 
-		try:
-			accountinfo_count = self.session.query(models.Accountinfo).count()
-		except:
-			return self.send_fail('accountinfo_list error')
-		page = int(accountinfo_count/200)  if accountinfo_count % 200 == 0 else int(accountinfo_count/200) +1
-		print(accountinfo_count,page,'******')
-		n = 0
-		for x in range(page):
-			offset  = x * 200
-			n = n + 1
-			print('count',n)
-			accountinfo_list = self.session.query(models.Accountinfo).offset(offset).limit(200)
-			if accountinfo_list:
-				for accountinfo in accountinfo_list:
-					customer_id = accountinfo.id
-					order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
-						models.Order.status == 6 ,models.Order.status == 10))).all()
-					# session.close()
-					# print(len(order_list))
-					if order_list:
-						accountinfo.is_new = 1
-						#print(accountinfo.is_new)
-						# self.session.commit()
-			print(n,'***********8')
+		# try:
+		# 	accountinfo_count = self.session.query(models.Accountinfo).count()
+		# except:
+		# 	return self.send_fail('accountinfo_list error')
+		# page = int(accountinfo_count/200)  if accountinfo_count % 200 == 0 else int(accountinfo_count/200) +1
+		# print(accountinfo_count,page,'******')
+		# n = 0
+		# for x in range(page):
+		# 	offset  = x * 200
+		# 	n = n + 1
+		# 	print('count',n)
+		# 	accountinfo_list = self.session.query(models.Accountinfo).offset(offset).limit(200)
+		# 	if accountinfo_list:
+		# 		for accountinfo in accountinfo_list:
+		# 			customer_id = accountinfo.id
+		# 			order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
+		# 				models.Order.status == 6 ,models.Order.status == 10))).all()
+		# 			# session.close()
+		# 			# print(len(order_list))
+		# 			if order_list:
+		# 				accountinfo.is_new = 1
+		# 				#print(accountinfo.is_new)
+		# 				# self.session.commit()
+		# 	print(n,'***********8')
 		try:
 			follow_info= session.query(models.CustomerShopFollow).count()
 		except:
