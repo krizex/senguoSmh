@@ -406,7 +406,7 @@ var goodsList=function(page,action){
         var initData=function(res){
             var w_orders=res.w_orders;
             $('.loading').hide();
-            if(w_orders.length==0){
+            if(w_orders&&w_orders.length==0){
                  $('.no_more').show();
                  return;          
             }
