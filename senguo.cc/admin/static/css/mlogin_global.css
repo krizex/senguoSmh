@@ -85,7 +85,8 @@ button:focus{outline:0;}
 .text-grayca{color:#cacaca;}
 .text-grayb1{color:#B1B1B1;}
 .bg-white{background:#fff;}
-.bg-green{background:#80de9e;}
+.bg-green{background:#80de9e !important;}
+.bg-grey{background:#ccc;}
 .font12{font-size:12px;}
 .font14{font-size:14px;}
 .font16{font-size:16px;}

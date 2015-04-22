@@ -1,3 +1,8 @@
+$(document).ready().on('click','.will-open',function(){
+    noticeBox('即将开放!');
+})
+
+
 function getCookie(key){
     var aCookie = document.cookie.split(";");
     for (var i=0; i < aCookie.length; i++){

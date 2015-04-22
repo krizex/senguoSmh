@@ -18,15 +18,18 @@ class Access(CustomerBaseHandler):
 
 	def get(self):
 		next_url = self.get_argument('next', '')
+		print(next_url,'first')
 		if self._action == "login":
 			next_url = self.get_argument("next", "")
 			return self.render("login/m_login.html",
 								 context=dict(next_url=next_url))
 		elif self._action == "logout":
 			self.clear_current_user()
-			return self.redirect(self.reverse_url("customerHome"))
+			return self.redirect(self.reverse_url("customerLogin"))
 		elif self._action == "oauth":
-			self.handle_oauth()
+			self.handle_oauth(next_url)
+		elif self._action == "weixin":
+			return self.redirect(self.get_weixin_login_url(next_url))
 		else:
 			return self.send_error(404)
 
@@ -53,11 +56,11 @@ class Access(CustomerBaseHandler):
 		# return self.redirect('http://www.baidu.com')
 		return self.send_success()
 		# next = self.args['next']
-		# print(next)
+		print(next)
 		# return self.redirect('/woody')
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
-	def handle_oauth(self):
+	def handle_oauth(self,next_url):
 		# todo: handle state
 		code =self.args["code"]
 		mode = self.args["mode"]
@@ -71,8 +74,18 @@ class Access(CustomerBaseHandler):
 		u = models.Customer.register_with_wx(self.session, userinfo)
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 
-		next_url = self.get_argument("next", self.reverse_url("customerHome"))
+		# next_url = self.get_argument("next", self.reverse_url("fruitzoneShopList"))
+		#print(next_url)
 		return self.redirect(next_url)
+
+class Third(CustomerBaseHandler):
+	def initialize(self, action):
+		self._action = action
+	def get(self):
+		next_url = self.get_argument('next', '')
+		action =self._action
+		if self._action == "weixin":
+			return self.redirect(self.get_weixin_login_url())
 
 class RegistByPhone(CustomerBaseHandler):
 	def get(self):
@@ -457,8 +470,8 @@ class Comment(CustomerBaseHandler):
 		comments = self.get_comments(shop_id, page, 10)
 		date_list = []
 		for comment in comments:
-			date_list.append({"img": comment[0], "name": comment[1],
-							  "comment": comment[2], "time": self.timedelta(comment[3]), "reply":comment[5]})
+			date_list.append({"img": comment[6], "name": comment[7],
+							  "comment": comment[0], "time": self.timedelta(comment[1]), "reply":comment[3]})
 		if page == 0:
 			return self.render("customer/comment.html", date_list=date_list)
 		return self.write(dict(date_list=date_list))
@@ -1493,11 +1506,14 @@ class OrderDetail(CustomerBaseHandler):
 			data = self.args['data']
 			order_id = data['order_id']
 			order = self.session.query(models.Order).filter_by(id = order_id).first()
+			apply_list = self.session.query(models.CommentApply).filter_by(order_id = order_id).first()
 			if not order:
 				return self.send_fail('order not found')
 			order.status = 5
 			order.comment = ''
 			order.comment_reply = ''
+			if apply_list:
+				apply_list.has_done=1
 			self.session.commit()
 
 			# recover point
@@ -1598,6 +1614,7 @@ class InsertData(CustomerBaseHandler):
 	# @CustomerBaseHandler.check_arguments("code?:str")
 	def get(self):
 		from sqlalchemy import create_engine, func, ForeignKey, Column
+		session = self.session
 		# print(fun)
 		# import pingpp
 		# try:
@@ -1648,36 +1665,44 @@ class InsertData(CustomerBaseHandler):
 		# 		# 	print('Not NULL')
 		# 	self.session.commit()
 
-		# try:
-		# 	accountinfo_list = self.session.query(models.Accountinfo).all()
-		# except:
-		# 	return self.send_fail('accountinfo_list error')
-		# if accountinfo_list:
-		# 	n = 0
-		# 	for accountinfo in accountinfo_list:
-		# 		customer_id = accountinfo.id
-		# 		order_list = self.session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
-		# 			models.Order.status == 6 ,models.Order.status == 10))).all()
-		# 		# print(len(order_list))
-		# 		if order_list:
-		# 			n = n + 1
-		# 			accountinfo.is_new = 1
-		# 			#print(accountinfo.is_new)
-		# 			self.session.commit()
-		# 	print(n,'***********8')
 		try:
-			follow_list = self.session.query(models.CustomerShopFollow).all()
+			accountinfo_count = self.session.query(models.Accountinfo).count()
 		except:
-			return self.send_fail('follow_list error')
-		if follow_list:
-			for follow in follow_list:
-				customer_id = follow.customer_id
-				shop_id = follow.shop_id
-				order_list = self.session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,models.Order.shop_id == shop_id,or_(models.Order.status == 5,\
-					models.Order.status == 6 ,models.Order.status == 10))).all()
-				if order_list:
-					follow.shop_new = 1
-					self.session.commit()
+			return self.send_fail('accountinfo_list error')
+		page = int(accountinfo_count/200)  if accountinfo_count % 200 == 0 else int(accountinfo_count/200) +1
+		print(accountinfo_count,page,'******')
+		n = 0
+		for x in range(page):
+			offset  = x * 200
+			n = n + 1
+			print('count',n)
+			accountinfo_list = self.session.query(models.Accountinfo).offset(offset).limit(200)
+			if accountinfo_list:
+				for accountinfo in accountinfo_list:
+					customer_id = accountinfo.id
+					order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
+						models.Order.status == 6 ,models.Order.status == 10))).all()
+					# session.close()
+					# print(len(order_list))
+					if order_list:
+						accountinfo.is_new = 1
+						#print(accountinfo.is_new)
+						# self.session.commit()
+			print(n,'***********8')
+		# try:
+		# 	follow_list = session.query(models.CustomerShopFollow).all()
+		# except:
+		# 	return self.send_fail('follow_list error')
+		# if follow_list:
+		# 	for follow in follow_list:
+		# 		customer_id = follow.customer_id
+		# 		shop_id = follow.shop_id
+		# 		order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,models.Order.shop_id == shop_id,or_(models.Order.status == 5,\
+		# 			models.Order.status == 6 ,models.Order.status == 10))).all()
+		# 		# session.close()
+		# 		if order_list:
+		# 			follow.shop_new = 1
+		session.commit()
 
 
 		return self.send_success()

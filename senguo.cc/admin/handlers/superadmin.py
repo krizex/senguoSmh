@@ -697,8 +697,10 @@ class Comment(SuperBaseHandler):
 	def get(self):
 		data = []
 		order_info = {}
-		apply_list = self.session.query(models.CommentApply).filter_by(has_done = 0).all()
+		#apply_list = self.session.query(models.CommentApply).filter_by(has_done = 0).all()
+		apply_list = self.session.query(models.CommentApply).all()
 		for comment_apply in apply_list:
+			apply_id =comment_apply.id
 			order = comment_apply.order
 			shop  = comment_apply.shop
 			shop_code = shop.shop_code
@@ -719,15 +721,16 @@ class Comment(SuperBaseHandler):
 			order_info = dict(
 				headimgurl_small = headimgurl_small,name = name , num = num ,order_create_date = order_create_date,\
 				comment = comment)
-			data.append([shop_code,shop_name,admin_name ,create_date, comment_apply.delete_reason,order_info,has_done])
+			data.append([shop_code,shop_name,admin_name ,create_date, comment_apply.delete_reason,order_info,has_done,apply_id])
 		# return self.send_success(data = data)
 		self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'all':10,'all_temp':10},data=data))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id:int','decline_reason?:str')
 	def post(self):
+		action = self.args['action']
 		comment_id = self.args['apply_id']
-		comment_apply = self.session.query(models.CommentApply).filter_by(id = apply_id).first()
+		comment_apply = self.session.query(models.CommentApply).filter_by(id = comment_id).first()
 		if not comment_apply:
 			return self.send_error(404)
 		order = comment_apply.order
