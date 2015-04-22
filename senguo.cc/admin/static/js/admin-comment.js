@@ -4,6 +4,17 @@ $(document).ready(function(){
     $('.page-total').text(total_page);
     var user_number=$('.comment-list-item').length;
     getpPage(page,'/admin/comment?action='+action+'page=',user_number);
+    //del status
+    $('.del-com').each(function(){
+        var $this=$(this);
+        var status =$this.attr('data-status');
+        if(status==0){
+            $this.attr({'disabled':true}).text('申请中');
+        }
+        else if( status==2){
+            $this.attr({'disabled':true}).text('申请拒绝');
+        }
+    });
 
 }).on("click","#contact-user",function(){
     $(".bs-del-com").modal("toggle");
@@ -11,7 +22,8 @@ $(document).ready(function(){
     var $this=$(this);
     var parent=$this.parents('li');
     var order_id=Int(parent.attr('data-id'));
-    $(".bs-apply-com").attr({'data-id':order_id});
+    var index=parent.index();
+    $(".bs-apply-com").attr({'data-id':order_id,'data-index':index});
 }).on("click","#apply-senguo",function(){
     $(".bs-del-com").modal("hide");
     $(".bs-apply-com").modal('show');
@@ -83,6 +95,7 @@ function applyDel(target,id){
     var url='';
     var action='apply_delete_comment';
     var id=Int($(".bs-apply-com").attr('data-id'));
+    var index=Int($(".bs-apply-com").attr('data-index'));
     var delete_reason=$('#commit-cont').val();
     if(!delete_reason){
         alert('请输入您的理由!')
@@ -99,7 +112,8 @@ function applyDel(target,id){
             if(res.success)
             {
                 $(".bs-apply-com").modal('hide');
-                alert('申请成功!')
+                $('.del-com').eq(index).attr({'disabled':true}).text('申请中');
+                $('.del-box').eq(index).removeClass('hidden').find('.del-reason').text(delete_reason);
             }
             else alert(res.error_text);
         },

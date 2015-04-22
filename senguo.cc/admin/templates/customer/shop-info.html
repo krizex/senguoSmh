@@ -102,14 +102,14 @@
         {% for comment in comments %}
         <li class="comment-item set-w100-fle">
             <div class="img-box pull-left">
-                <img src="{{comment[0]}}" class="img">
+                <img src="{{comment[6] or '/static/design_img/TDSG.png'}}" class="img">
             </div>
             <div class="con set-w100-fle">
                 <p class="clearfix text-grey">
-                    <span class="pull-left m-b5 font14">{{comment[1]}}</span>
-                    <span class="pull-right">{{handler.timedelta(comment[3])}}</span>
+                    <span class="pull-left m-b5 font14">{{comment[7]}}</span>
+                    <span class="pull-right">{{handler.timedelta(comment[1])}}</span>
                 </p>
-                <p class="text-grey9">{{comment[2] or '无'}}</p>
+                <p class="text-grey9">{{comment[0] or '无'}}</p>
             </div>
         </li>
         {% end %}

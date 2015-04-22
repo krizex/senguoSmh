@@ -9,7 +9,7 @@
 .filter_search  .btn{padding:0px;background:#fff;width:12%;display:inline-block;line-height:30px;}
 
 .shoplist_box{width:100%;}
-.shoplist_box .item{width:100%;margin-top:8px;padding:5px 15px;float:left;}
+.shoplist_box .item{width:100%;margin-top:8px;padding:5px 15px;}
 .shoplist_box .item .logo_box{width:50px;height:50px;border-top-left-radius:999px;border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px;background-clip: padding-box;border-radius: 999px;overflow:hidden;border:5px solid #aeddda;}
 .shoplist_box .item .shop_logo{width:40px;height:40px;border-top-left-radius:999px;border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px;border-radius: 999px;}
 .shoplist_box .item .info{margin-left:15px;}

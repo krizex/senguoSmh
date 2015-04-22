@@ -4,8 +4,8 @@ $(document).ready(function(){
 	var $this=$(this);
 	Vrify($this);
 }).on('click','#checkCode',function(){
-                var $this=$(this);
-	checkCode($this);
+            var $this=$(this);
+            checkCode($this);
 }).on('click','#accept_rule',function(){
                 var $this=$(this);
                 if($this.hasClass('checked')){
@@ -22,8 +22,10 @@ $(document).ready(function(){
 }).on('click','.backBtn',function(){
             var $this=$(this);
             var i=$this.attr('data-back');
-            $('.step'+i).show().siblings('.step-box').show();
+            $('.step'+i).show().siblings('.step-box').hide();
             $('.progress'+i).addClass('active').siblings('.progress').removeClass('active');
+}).on('click','.send',function(){
+        noticeBox('验证码已发送到您手机,稍等一下哟!')
 });
 
 var wait=60;
@@ -74,11 +76,14 @@ function Vrify(target){
                 target.parents('.step-box').hide().next('.step-box').show();
 	  $('.progress2').addClass('active').siblings('.progress').removeClass('active');
             }
-            else return noticeBox(res.error_text);
+            else {
+                return noticeBox(res.error_text,target);
+            }
         },
          function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
         function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
     );
+   $('.getCode').attr({'id':'getVrify'});
 }
 
 function checkCode(target){
@@ -99,7 +104,9 @@ function checkCode(target){
                 target.parents('.step-box').hide().next('.step-box').show();
                 $('.progress3').addClass('active').siblings('.progress').removeClass('active');
             }
-            else noticeBox(res.error_text);
+            else {
+                noticeBox(res.error_text,target);
+            }
         },
         function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
         function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
@@ -124,7 +131,9 @@ function regist(){
             {
                 
             }
-            else noticeBox(res.error_text);
+            else {
+                noticeBox(res.error_text);
+            }
         },
         function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
         function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
