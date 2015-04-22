@@ -1,5 +1,4 @@
-$.getItem('/static/items/official/shop_item.html?v=2015-0320',function(data){window.dataObj.shop_item=data;});  
-$(document).ready(function(){ 
+ $(document).ready(function(){
     //shop total number
      shopTotal();
     //get top8
@@ -85,7 +84,6 @@ $(document).ready(function(){
 	    var str;
 	    var pro_code;
 	    var area=window.dataObj.area;
-	    console.log( window.dataObj.province_code);
 	    for (var p in selected) {
 	        if (selected[p]) {
 	            str = p;
@@ -101,8 +99,7 @@ $(document).ready(function(){
 		   getData('filter',1,'province',pro_code);
 		   $('body','html').animate({scrollTop:'1000px'});
 		}
-	    } 
-	  
+	    }
 	});
               options.series[0].data=[];
               var area=window.dataObj.area;
@@ -217,64 +214,79 @@ var getData=function(action,page,type,data){
 	
 	}
 	$.postJson(url,args,function(res){
-	if(res.success)
-	{
-		var shops=res.shoplist;
-		window.dataObj.page_total=res.page_total;
-		var page_total=window.dataObj.page_total;
-		$('.shoplist').empty();
-		if(shops.length>0) {
-			for(var i in shops){
-			var $item=$(window.dataObj.shop_item);
-			var shop_code=shops[i]['shop_code'];
-			var shop_trademark_url=shops[i]['shop_trademark_url'];
-			var shop_name=shops[i]['shop_name'];
-			var shop_province=shops[i]['shop_province'];
-			var shop_city=shops[i]['shop_city'];
-			var shop_intro=shops[i]['shop_intro'];
-			var owner=shops[i]['shop_admin_name'];
-			//province and city
-			var area=window.dataObj.area;
-			if(shop_city==shop_province) {shop_city=''}			
-			for(var pro in area){
-				if(pro==shop_province){shop_province=area[pro]['name']}
-				for(var cit in area[pro]['city']){
-					if(shop_city&&cit==shop_city){shop_city=area[pro]['city'][cit]['name']}
-					
-				}
-			}
-			if(!shop_trademark_url) {shop_trademark_url='/static/design_img/TDSG_l.png'}
-			$item.find('.shop_link').attr({'href':'/'+shop_code});
-			$item.find('.shop_log').attr({'src':shop_trademark_url+'?imageView/1/w/470/h/470'});
-			$item.find('.shop_name').text(shop_name);
-			$item.find('.owner').text(owner);
-			$item.find('.area').text(shop_province+shop_city);
-			$item.find('.shop_intro').text(shop_intro);
-			$('.shoplist').append($item);
-		}
-	        }
-	        else{$('.shoplist').empty().append('<h4 class="font16 text-center"> 无结果</h4>')}
-	        if(page_total>1&&page!=page_total) {
-	        	$('.pagenation').empty();
-	        	$('.page_box').removeClass('hidden');
-	        	for(var i=1;i<=page_total;i++){
-	        		$item=$('<li class="item"><a href="javascript:;"></a></li>');
-	        		$item.attr({'data-id':i});
-	        		$item.find('a').text(i);
-	        		$('.pagenation').append($item);
-	        	}
-	        	$('.next_page').show();
-	        }
-	        if(page_total==1) {
-	        	$('.page_box').addClass('hidden');
-	        }
-	        if(page<=1){
-	        	$('.pre_page').hide().attr({'data-id':1});
-	        	$('.next_page').attr({'data-id':2});
-	        }
-   	        if(page>=page_total){$('.next_page').hide();}	
-	}
-	else return $.noticeBox(res.error_text);
-	},function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')}
+	if(res.success){
+        if(window.dataObj.shop_item==undefined){
+            $.getItem('/static/items/official/shop_item.html?v=2015-0320',function(data){
+                window.dataObj.shop_item=data;
+                initShop(res);
+            });
+        }else{
+            initShop(res);
+        }
+    }else {
+        $(".shop_list").css("display","none");
+        //return $.noticeBox(res.error_text);
+    }
+	},function(){
+            $(".shop_list").css("display","none");
+           // return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')
+        }
 	);
+}
+function initShop(res){
+    var shops=res.shoplist;
+    window.dataObj.page_total=res.page_total;
+    var page_total=window.dataObj.page_total;
+    $('.shoplist').empty();
+    if(shops.length>0) {
+        for(var i in shops){
+            var $item=$(window.dataObj.shop_item);
+            var shop_code=shops[i]['shop_code'];
+            var shop_trademark_url=shops[i]['shop_trademark_url'];
+            var shop_name=shops[i]['shop_name'];
+            var shop_province=shops[i]['shop_province'];
+            var shop_city=shops[i]['shop_city'];
+            var shop_intro=shops[i]['shop_intro'];
+            var owner=shops[i]['shop_admin_name'];
+            //province and city
+            var area=window.dataObj.area;
+            if(shop_city==shop_province) {shop_city=''}
+            for(var pro in area){
+                if(pro==shop_province){shop_province=area[pro]['name']}
+                for(var cit in area[pro]['city']){
+                    if(shop_city&&cit==shop_city){shop_city=area[pro]['city'][cit]['name']}
+
+                }
+            }
+            if(!shop_trademark_url) {shop_trademark_url='/static/design_img/TDSG_l.png'}
+            $item.find('.shop_link').attr({'href':'/'+shop_code});
+            $item.find('.shop_log').attr({'src':shop_trademark_url+'?imageView/1/w/470/h/470'});
+            $item.find('.shop_name').text(shop_name);
+            $item.find('.owner').text(owner);
+            $item.find('.area').text(shop_province+shop_city);
+            $item.find('.shop_intro').text(shop_intro);
+            $('.shoplist').append($item);
+        }
+    }else{
+        $('.shoplist').empty().append('<h4 class="font16 text-center"> 无结果</h4>')
+    }
+    if(page_total>1&&page!=page_total) {
+        $('.pagenation').empty();
+        $('.page_box').removeClass('hidden');
+        for(var i=1;i<=page_total;i++){
+            $item=$('<li class="item"><a href="javascript:;"></a></li>');
+            $item.attr({'data-id':i});
+            $item.find('a').text(i);
+            $('.pagenation').append($item);
+        }
+        $('.next_page').show();
+    }
+    if(page_total==1) {
+        $('.page_box').addClass('hidden');
+    }
+    if(page<=1){
+        $('.pre_page').hide().attr({'data-id':1});
+        $('.next_page').attr({'data-id':2});
+    }
+    if(page>=page_total){$('.next_page').hide();}
 }
