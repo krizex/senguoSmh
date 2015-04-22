@@ -31,14 +31,14 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .show{display: block!important;}
 .f12{font-size: 12px !important;}
 /*账户余额*/
-.balance-top{margin-top: 40px;background-color: #f98080;padding:10px 15px;}
-.bal-top>dd{width: 65px;height: 65px;}
-.bal-top>dd>img{width: 65px;height: 65px;border-radius: 50%;}
-.bal-top>dt{width: calc(100% - 65px);padding-left:10px;-webkit-box-sizing: border-box;padding-top: 12px;}
+.balance-top{margin-top: 40px;background-color: #f98080;padding:15px 20px;}
+.bal-top>dd{width: 70px;height: 70px;}
+.bal-top>dd>img{width: 70px;height: 70px;border-radius: 50%;}
+.bal-top>dt{width: calc(100% - 70px);padding-left:10px;-webkit-box-sizing: border-box;padding-top: 16px;}
 .bal-shop{font-size: 14px;color: #fff;line-height: 140%;width: calc(100% - 65px);-webkit-box-sizing: border-box;padding-right: 10px;}
 .bal-shop>p{margin-bottom: 4px;}
 .bal-cz{width: 65px;}
-.bal-cz>a{display: block;height: 34px;line-height: 34px;text-align: center;color: #f98080;background-color:#fff;font-size: 16px;border-radius: 5px;box-shadow:0 0 1px 4px #FF7BAC;}
+.bal-cz>a{display: block;height: 34px;line-height: 34px;text-align: center;margin-top:4px;color: #f98080;background-color:#fff;font-size: 14px;border-radius: 5px;box-shadow:0 0 1px 4px #FF7BAC;}
 .wrap-bal-ma{padding: 15px 20px 40px 20px;}
 .bal-balbox{border-radius: 5px;border: 2px solid #e6e6e6;padding: 10px;background-color: #fff;color: #999;line-height: 140%;}
 .bal-balbox>h3{font-size: 16px;font-weight: normal;}
@@ -54,7 +54,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .wrap-rec-ipt>span{display: block;float:left;}
 .wrap-rec-ipt .left{width: 90px;font-size:16px;color: #999;height: 40px;line-height: 40px;text-align: right;}
 .wrap-rec-ipt .right{width: calc(100% - 90px);font-size: 16px;height: 40px;line-height: 40px;color: #999;}
-.rec-ipt{width: calc(100% - 38px);height:40px;line-height: 40px;font-size:16px;color: #999;margin-top: -3px;}
+.rec-ipt{width: calc(100% - 38px);height:40px;font-size:14px;color: #999;margin-top: -3px;}
 .rec-bm-lst{padding: 0 10px;background-color: #fff;margin-top: 10px;}
 .rec-bm-lst>li{padding: 5px 15px;border-bottom: 1px solid #f5f5f5;display: block;}
 .rec-bm-lst>li:last-child{border-bottom: none;}
