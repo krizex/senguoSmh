@@ -1375,8 +1375,13 @@ class ShopAuthenticate(AdminBaseHandler):
 	def post(self):
 		shop_id = self.current_shop.id
 		if action == "get_code":
-			gen_msg_token(phone=self.args["phone"])
-			return self.send_success()
+			# gen_msg_token(phone=self.args["phone"])
+			# return self.send_success()
+			resault = gen_msg_token(phone=self.args["phone"])
+			if resault == True:
+				return self.send_success()
+			else:
+				return self.send_fail(resault)
 		elif action == "customer_auth":
 			name = self.args['name']
 			card_id = self.args['card_id']
