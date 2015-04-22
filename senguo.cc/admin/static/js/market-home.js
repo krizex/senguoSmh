@@ -386,6 +386,7 @@ var goodsList=function(page,action){
     $.postJson(url,args,function(res){
         if(res.success)
         {
+            console.log(window.dataObj);
             //get item dom
             if(window.dataObj.goods_item==undefined){
                 getItem('/static/items/customer/market-goods-item.html?v=2015-0320',function(data){
