@@ -29,6 +29,9 @@ $(document).ready(function(){
     var u = navigator.userAgent, app = navigator.appVersion;
     var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
     var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+    if(isAndroid){
+         alert("i'm android hahahahh");
+    }
     if(isiOS){
         alert("i'm ios hahahahh");
         $('.focus_senguo').each(function(){
