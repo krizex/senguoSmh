@@ -40,5 +40,15 @@ $(document).ready(function(){
         $this.attr({'href':link});
     });
     }
-});
+    if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
+         alert("i'm ios hahahahh");
+        $('.focus_senguo').each(function(){
+        var $this=$(this);
+         var link=$this.attr('data-src');
+        $this.attr({'href':link});
+    } 
+    else if (/(Android)/i.test(navigator.userAgent)) {
+         alert("i'm android hahahahh");
+    }
+    });
 {% end %}
