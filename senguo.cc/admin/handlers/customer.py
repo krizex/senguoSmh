@@ -1669,61 +1669,61 @@ class InsertData(CustomerBaseHandler):
 		# 		# 	print('Not NULL')
 		# 	self.session.commit()
 
-		# try:
-		# 	accountinfo_count = self.session.query(models.Accountinfo).count()
-		# except:
-		# 	return self.send_fail('accountinfo_list error')
-		# page = int(accountinfo_count/200)  if accountinfo_count % 200 == 0 else int(accountinfo_count/200) +1
-		# print(accountinfo_count,page,'******')
-		# n = 0
-		# for x in range(page):
-		# 	offset  = x * 200
-		# 	n = n + 1
-		# 	print('count',n)
-		# 	accountinfo_list = self.session.query(models.Accountinfo).offset(offset).limit(200)
-		# 	if accountinfo_list:
-		# 		for accountinfo in accountinfo_list:
-		# 			customer_id = accountinfo.id
-		# 			order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
-		# 				models.Order.status == 6 ,models.Order.status == 10))).all()
-		# 			# session.close()
-		# 			# print(len(order_list))
-		# 			if order_list:
-		# 				accountinfo.is_new = 1
-		# 				#print(accountinfo.is_new)
-		# 				# self.session.commit()
-		# 	print(n,'***********8')
-		# try:
-		# 	follow_list = session.query(models.CustomerShopFollow).all()
-		# except:
-		# 	return self.send_fail('follow_list error')
-		# if follow_list:
-		# 	for follow in follow_list:
-		# 		customer_id = follow.customer_id
-		# 		shop_id = follow.shop_id
-		# 		order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,models.Order.shop_id == shop_id,or_(models.Order.status == 5,\
-		# 			models.Order.status == 6 ,models.Order.status == 10))).all()
-		# 		# session.close()
-		# 		if order_list:
-		# 			follow.shop_new = 1
+		try:
+			accountinfo_count = self.session.query(models.Accountinfo).count()
+		except:
+			return self.send_fail('accountinfo_list error')
+		page = int(accountinfo_count/200)  if accountinfo_count % 200 == 0 else int(accountinfo_count/200) +1
+		print(accountinfo_count,page,'******')
+		n = 0
+		for x in range(page):
+			offset  = x * 200
+			n = n + 1
+			print('count',n)
+			accountinfo_list = self.session.query(models.Accountinfo).offset(offset).limit(200)
+			if accountinfo_list:
+				for accountinfo in accountinfo_list:
+					customer_id = accountinfo.id
+					order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
+						models.Order.status == 6 ,models.Order.status == 10))).all()
+					# session.close()
+					# print(len(order_list))
+					if order_list:
+						accountinfo.is_new = 1
+						#print(accountinfo.is_new)
+						# self.session.commit()
+			print(n,'***********8')
+		try:
+			follow_info= session.query(models.CustomerShopFollow).count()
+		except:
+			return self.send_fail('follow_list error')
+		f_page = int(follow_info/200)  if follow_info % 200 == 0 else int(follow_info/200) +1
+		for x in range(f_page):
+			offset  = x * 200
+			follow_list = self.session.query(models.CustomerShopFollow).offset(offset).limit(200)
+			if follow_list:
+				for follow in follow_list:
+					customer_id = follow.customer_id
+					shop_id = follow.shop_id
+					order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,models.Order.shop_id == shop_id,or_(models.Order.status == 5,\
+						models.Order.status == 6 ,models.Order.status == 10))).all()
+					# session.close()
+					if order_list:
+						follow.shop_new = 1
+		
 
 		try:
 			config_info = self.session.query(models.Config).count()
 		except:
 			return self.send_fail('config_info error')
 		c_page = int(config_info/200)  if config_info % 200 == 0 else int(config_info/200) +1
-		print(c_page)
-		n1 = 0
 		for x in range(c_page):
 			offset  = x * 200
-			n1= n1 + 1
-			print('count',n1)
 			config_list = self.session.query(models.Config).offset(offset).limit(200)
 			if config_list:
 				for config in config_list:
 					if config.intime_period == 0:
 						config.intime_period = 30
-			print(n1,'@_@')
 		session.commit()
 
 
