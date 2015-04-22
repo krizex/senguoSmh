@@ -544,8 +544,12 @@ class PhoneVerify(_AccountBaseHandler):
 				return self.send_fail(error_text="手机号已经绑定其他账号")
 			else:
 				return self.send_fail(error_text="手机号已绑定，无需重复绑定")
-		gen_msg_token(phone=self.args["phone"])
-		return self.send_success()
+
+		resault = gen_msg_token(phone=self.args["phone"]) 
+		if resault == True:
+			return self.send_success()
+		else:
+			self.send_fail(resault)
 	@FruitzoneBaseHandler.check_arguments("phone:str","code:int")
 	def handle_checkcode_regist(self):
 		if not check_msg_token(phone = self.args["phone"],code = self.args["code"]):
@@ -576,9 +580,12 @@ class PhoneVerify(_AccountBaseHandler):
 
 	@FruitzoneBaseHandler.check_arguments("phone:str")
 	def handle_gencode_shop_apply(self):
-		gen_msg_token(phone=self.args["phone"])
+		resault = gen_msg_token(phone=self.args["phone"])
 		# print("handle_gencode_shop_apply" + self.current_user.accountinfo.wx_unionid)
-		return self.send_success()
+		if resault == True:
+			return self.send_success()
+		else:
+			return self.send_fail(resault)
 
 class SystemPurchase(FruitzoneBaseHandler):
 	"""后台购买相关页面"""

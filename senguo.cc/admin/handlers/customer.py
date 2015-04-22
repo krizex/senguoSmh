@@ -108,8 +108,12 @@ class RegistByPhone(CustomerBaseHandler):
 		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first() 
 		if a:
 			return self.send_fail(error_text="手机号已经绑定其他账号")
-		gen_msg_token(phone=self.args["phone"])
-		return self.send_success()
+
+		resault = gen_msg_token(phone=self.args["phone"])
+		if resault == True:
+			return self.send_success()
+		else:
+			return self.send_fail(resault)
 
 	@CustomerBaseHandler.check_arguments( "action:str",  "phone?:str","password?:str")
 	def post(self):
@@ -1702,6 +1706,9 @@ class InsertData(CustomerBaseHandler):
 		# 		# session.close()
 		# 		if order_list:
 		# 			follow.shop_new = 1
+
+		# try:
+		# 	config_list = self.session.query(models.)
 		session.commit()
 
 

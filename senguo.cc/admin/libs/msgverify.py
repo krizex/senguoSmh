@@ -53,8 +53,8 @@ def gen_msg_token(phone):
     h.close()
     root = ElementTree.fromstring(res.body.decode())
     if not root[0].text == '2':
-        print(root[0].text,root[1].text)
-        return False
+        # print(root[0].text,root[1].text)
+        return root[1].text
     else:
         try:
             print('send:' + code)

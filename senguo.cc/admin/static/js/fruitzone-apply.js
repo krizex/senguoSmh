@@ -317,6 +317,7 @@ function Vrify(){
             if(res.success)
             {
                 time($('#getVrify'));
+                noticeBox('验证码已发送至您的手机,请注意查收');
             }
             else noticeBox(res.error_text);
         },

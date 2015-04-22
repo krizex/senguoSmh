@@ -419,9 +419,18 @@ function SendNowConfig(){
     var end_hour=Int($('#NowEndHour').text());
     var end_minute=Int($('#NowEndMinute').text());
     var intime_period=Int($('#sendNowPeriod').val());
-    if(min_charge_now==null||min_charge_now=='') min_charge_now=0;
-    if(freight_now==null||freight_now=='') freight_now=0;
-    if(min_charge_now>200){return alert('最低起送价请不要超过200元!')}
+    if(min_charge_now==null||min_charge_now=='') {
+        min_charge_now=0;
+    }
+    if(freight_now==null||freight_now=='') {
+        freight_now=0;
+    }
+    if(min_charge_now>200){
+        return alert('最低起送价请不要超过200元!');
+    }
+    if(intime_period==null) {
+        intime_period=30;
+    }
     var args={
         action:action,
         data:{
