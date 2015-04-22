@@ -1722,7 +1722,7 @@ class InsertData(CustomerBaseHandler):
 			config_list = self.session.query(models.Config).offset(offset).limit(200)
 			if config_list:
 				for config in config_list:
-					if config.intime_period == 0:
+					if config.intime_period == 0 or config.intime_period == None:
 						config.intime_period = 30
 		session.commit()
 
