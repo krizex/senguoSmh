@@ -8,9 +8,6 @@
             <li class="active">
                 <a href="{{reverse_url('adminComment')}}?action=all&&page=0">所有评价</a>
             </li>
-            <!--<li>
-                <a href="{{reverse_url('adminComment')}}?action=favor&&page=0">收藏的评价</a>
-            </li>-->
         </ul>
     </div>
     {% if len(comments) != 0 %}
@@ -24,21 +21,31 @@
             {% end %}
             <li class="comment-list-item clearfix bg-grey2 p10 set-top10" data-id="{{comment[6]}}">
                 <div class="col-lg-1 col-md-1 col-xs-2 col-sm-2 p0">
-                    <img src="{{comment[0]}}" class="user-img"/>
+                    <img src="{{comment[0] or '/static/images/TDSG_l.png'}}" class="user-img"/>
                 </div>
-                <div class="col-lg-5 col-md-5 col-xs-5 col-sm-5 p0 user_info">
-                    <p class="user-name line-30">{{comment[1]}}</p>
-                    <p class="text-grey9">{{comment[2]}}</p>
-                    <p class="saler_reply {{hidden}}">商家回复：<span class="reply_word">{{comment[5]}}</span></p>
+                <div class="col-lg-9 col-md-9 col-xs-9 col-sm-9">
+                    <div class="row">
+                        <div class="col-md-4 p0 user_info">
+                            <p class="user-name line-30"><a href="javascript:;">{{comment[1]}}</a></p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="line-30">{{comment[3]}}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="text-primary">
+                                <a href="{{reverse_url('adminSearchOrder')}}?action=order&&id={{comment[4]}}" target="_blank">订单号：<span class="order_id">{{comment[4]}}</span></a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="wrap-text col-md-12">
+                            <p class="text-grey9">{{comment[2]}}</p>
+                            <p class="saler_reply {{hidden}}">商家回复：<span class="reply_word">{{comment[5]}}</span></p>
+                        </div>
+                    </div>
                 </div>
-                <div class="pull-left">
-                    <p class="line-30">{{comment[3]}}</p>
-                    <p class="text-primary">
-                        <a href="{{reverse_url('adminSearchOrder')}}?action=order&&id={{comment[4]}}" target="_blank">订单号：<span class="order_id">{{comment[4]}}</span></a>
-                    </p>
-                </div>
-                <div class="pull-right">
-                    <!--<button class="btn bg-green text-white collect">星标</button>-->
+                <div class="col-lg-2 col-md-2 col-xs-2 col-sm-2 btn-right">
+                    <button class="btn btn-cancel text-white del-com" data-toggle="modal" data-target=".bs-del-com">删除</button>
                     <button class="btn bg-green text-white reply">回复</button>
                 </div>
             </li>
@@ -72,6 +79,31 @@
                 </div>
             </div>
          </div>
+        <div class="modal fade bs-del-com" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content del-com-cont">
+                    <h3>森果平台不主张店主私自删除用户评论过的行为，若该条评论对您的店铺经营产生影响，
+                    您可通过一下两种方式消除影响：</h3>
+                    <p class="mt20">1.联系用户，提示用户<span class="red-txt">主动删除评论</span>，并发表新的评论；</p>
+                    <p>2.提交删除申请，通过审核后，森果团队会帮您删除评论。</p>
+                    <div class="btn-group txt-ac">
+                        <a href="javascript:;" class="bg-green ok-pop" id="contact-user">和用户联系</a>
+                        <a href="javascript:;" class="cancel-pop btn-cancel" id="apply-senguo">向森果申请</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade bs-apply-com" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content del-com-cont">
+                    <p class="apply-title">请提交您需要删除此条评论的理由：</p>
+                    <textarea id="commit-cont"></textarea>
+                    <div class="btn-group txt-ac">
+                        <a href="javascript:;" class="bg-green ok-pop" id="commit-senguo">提交</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% else %}
     <h4 class="text-center">无用户评价！</h4>
     {% end %}

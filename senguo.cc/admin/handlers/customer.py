@@ -10,6 +10,7 @@ import qiniu
 import random
 import base64
 import json
+from libs.msgverify import gen_msg_token,check_msg_token
 
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
@@ -29,19 +30,31 @@ class Access(CustomerBaseHandler):
 		else:
 			return self.send_error(404)
 
-	@tornado.web.authenticated
+
+	#@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("phone", "password", "next?")
 	def post(self):
 		phone = self.args['phone']
 		password = self.args['password']
-		# u = models.ShopAdmin.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
+		
+		u = models.Customer.regist_by_phone_password(self.session, self.args["phone"], self.args["password"])
+		print(u,u.id)
 		print(phone,password)
-		u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
+		# u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
 		if not u:
 			return self.send_fail(error_text = '用户不存在或密码不正确 ')
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
-		self.redirect(self.args.get("next", self.reverse_url("customerHome",handle.shop_code)))
+		# if hasattr(self, "_user"):
+		# 	print(self._user)
+		# else:
+		# 	print('nooooooooooooooooooooooooooo')
+		# return self.redirect( self.reverse_url("test"))
+		# print('before redirect')
+		# return self.redirect('http://www.baidu.com')
 		return self.send_success()
+		# next = self.args['next']
+		# print(next)
+		# return self.redirect('/woody')
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self):
@@ -65,18 +78,48 @@ class RegistByPhone(CustomerBaseHandler):
 	def get(self):
 		return self.render("login/m_register.html")
 
-	@CustomerBaseHandler.check_arguments("phone","password")
-	def post(self):
+	@CustomerBaseHandler.check_arguments("phone:str","code:int")
+	def handle_checkcode_regist(self):
 		phone = self.args['phone']
-		password = self.args['password']
-
-		u = self.session.query(models.Accountinfo).filter_by(phone = phone).first()
-		if u:
-			return self.send_fail("该手机号 已被注册，请直接登入")
+		if not check_msg_token(phone = self.args["phone"],code = self.args["code"]):
+			return self.send_fail(error_text = "验证码过期或者不正确")
 		else:
-			u = models.Accountinfo(phone = phone ,password = password)
-			self.session.add(u)
-			self.session.commit()
+			# u = models.Accountinfo(phone = phone ,password = password)
+			# self.session.add(u)
+			# self.session.commit()
+			# self.set_current_user(u, domain=ROOT_HOST_NAME)
+			return self.send_success()
+
+	@CustomerBaseHandler.check_arguments("phone:str")
+	def handle_gencode(self):
+		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first() 
+		if a:
+			return self.send_fail(error_text="手机号已经绑定其他账号")
+		gen_msg_token(phone=self.args["phone"])
+		return self.send_success()
+
+	@CustomerBaseHandler.check_arguments( "action:str",  "phone?:str","password?:str")
+	def post(self):
+		action = self.args['action']
+		if action == "get_code":
+			self.handle_gencode()
+		elif action == 'check_code':
+			self.handle_checkcode_regist()
+		elif action == 'regist':
+			phone = self.args['phone']
+			password = self.args['password']
+			# u = self.regist_by_phone_password(self.session,phone,password)
+			u = models.Customer.regist_by_phone_password(self.session,phone,password)
+
+			# u = self.session.query(models.Accountinfo).filter_by(phone = phone).first()
+			# if u:
+			# 	return self.send_fail("该手机号 已被注册，请直接登入")
+			# else:
+			# 	u = models.Accountinfo(phone = phone ,password = password)
+			# 	self.session.add(u)
+			# 	self.session.commit()
+			self.set_current_user(u, domain=ROOT_HOST_NAME)
+			print(u.id)
 			return self.send_success()
 
 
@@ -1391,24 +1434,7 @@ class Order(CustomerBaseHandler):
 					point_history.each_point = 5
 					self.session.add(point_history)
 					self.session.commit()
-		elif action == "delete_comment":
-			data = self.args['data']
-			order_id = data['order_id']
-			order = self.session.query(models.Order).filter_by(id = order_id).first()
-			if not order:
-				return self.send_fail('order not found')
-			order.status = 5
-			order.comment = 'NULL'
-			order.comment_reply = 'NULL'
-			self.session.commit()
-
-			# recover point
-			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
-				order.customer_id , shop_id = order.shop_id).first()
-			if not shop_follow:
-				return self.send_fail('shop_follow not found')
-			if shop_follow.shop_point:
-				shop_follow.shop_point -= 5
+		
 			#need to rocord this poist history?
 		else:
 			return self.send_error(404)
@@ -1458,6 +1484,33 @@ class OrderDetail(CustomerBaseHandler):
 		# 								  order.end_time.hour, w_end_time_minute)
 		return self.render("customer/order-detail.html", order=order,
 						   charge_types=charge_types, mcharge_types=mcharge_types)
+
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("action", "data?")
+	def post(self,order_id):
+		action = self.args['action']
+		if action == "delete_comment":
+			data = self.args['data']
+			order_id = data['order_id']
+			order = self.session.query(models.Order).filter_by(id = order_id).first()
+			if not order:
+				return self.send_fail('order not found')
+			order.status = 5
+			order.comment = ''
+			order.comment_reply = ''
+			self.session.commit()
+
+			# recover point
+			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
+				order.customer_id , shop_id = order.shop_id).first()
+			if not shop_follow:
+				return self.send_fail('shop_follow not found')
+			if shop_follow.shop_point:
+				shop_follow.shop_point -= 5
+			self.session.commit()
+			self.send_success()
+		else:
+			return self.send_error(404)
 
 
 class Points(CustomerBaseHandler):
@@ -1530,6 +1583,15 @@ class Points(CustomerBaseHandler):
 
 		return self.send_success(data = data)
 
+class Balance(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+	    return self.render("customer/balance.html")
+
+class Recharge(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+	    return self.render("customer/recharge.html")
 
 class InsertData(CustomerBaseHandler):
 	@tornado.web.authenticated

@@ -1,0 +1,54 @@
+{% extends 'detail-base.html' %}
+{% block title %}账户余额{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/mobile-main.css')}}"/>
+{% end %}
+{% block top %}返回{% end %}
+{% block content %}
+<div class="balance-top">
+    <dl class="bal-top group">
+        <dd class="fl"><img src="/static/images/TDSG_l.png" alt="头像"/></dd>
+        <dt class="fl group">
+            <div class="fl bal-shop">
+                <p class="clip">所在店铺：马灰灰水果店</p>
+                <p class="clip">当前余额：232.8元</p>
+            </div>
+            <div class="fl bal-cz">
+                <a class="cz-btn" href="{{reverse_url('customerRecharge')}}">充值</a>
+            </div>
+        </dt>
+    </dl>
+</div>
+<div class="wrap-bal-ma">
+    <div class="bal-balbox">
+        <h3>余额说明：</h3>
+        <p>1、所充值余额由森果平台（武汉小果科技有限公司）代为收取，在饭给所在店铺；</p>
+        <p>2、余额只能在当前所在店铺下消费；</p>
+        <p>3、充值后您将成为店铺会员，享受余额支付、签到双倍积分、评论双倍积分等特权；</p>
+    </div>
+    <div class="bal-balbm">
+        <h3>账单</h3>
+        <ul class="bal-bm-lst">
+            <li class="group">
+                <div class="item-left fl">
+                    <h4>余额充值</h4>
+                    <p>2015-3-12 12:22:33</p>
+                </div>
+                <div class="item-right fl clip">
+                    +200
+                </div>
+            </li>
+            <li class="group">
+                <div class="item-left fl">
+                    <h4>订单号：2323232323</h4>
+                    <p>2015-3-12 12:22:33</p>
+                </div>
+                <div class="item-right fl clip">
+                    -200
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+{% end %}
+{% block bottom %}<script src="{{static_url('js/market-balance.js')}}"></script>{% end %}

@@ -1,10 +1,9 @@
 $(document).ready(function(){
     //订单状态
-    var status=Int($('.order-status').text());
-    statusText($('.order-status'),status);
     $('.status').each(function(){
-        var $word=$(this).find('.word');
-        statusText($word,status);
+        var $this=$(this);
+        var status=Int($this.attr('data-id'));
+        statusText($this,status);
     });
     //根据订单状态的一些提示
     if(status==1) $('.hint').show();
@@ -35,6 +34,11 @@ $(document).ready(function(){
         }
     }
     removeDom();
+}).on("click","#del-comment",function(){
+    var pointBox=new Modal('pointsBox');
+    pointBox.modal('show');
+}).on("click","#del-ok",function(){
+    delComment();
 });
 function removeDom(){
     $('.create_time').remove();
@@ -51,4 +55,26 @@ function statusText(target,n){
         case 5:target.text('已送达');break;
         case 6:target.text('已评价');break;
     }
+}
+
+function delComment(target,id){
+    var url='';
+    var action='delete_comment';
+    var id=$('.order-id').data('id');
+    var data={
+        order_id:id
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,function(res){
+        if(res.success){
+           var pointBox=new Modal('pointsBox');
+            pointBox.modal('hide');
+            $('.commentBox').remove();
+        }
+        else return noticeBox(res.error_text)
+    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+)
 }

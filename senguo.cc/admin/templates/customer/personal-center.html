@@ -18,14 +18,14 @@
         </a>
         <img src="{{static_url('images/rooftop.png')}}?v=20150316" class="bg"/>
     </div>
-    <div class="bg-white m-b10 clearfix box-style title">
+    <!--<div class="bg-white m-b10 clearfix box-style title">
         <span class="font14">当前店铺积分:<span class="current_point" data-point="{{shop_point}}"></span></span>
         <a href="{{reverse_url('customerPoints')}}" class="text-grey9 pull-right">查看详情>></a>
-    </div>
-    <!--<div class="bg-white m-b10 clearfix font14 box-style">
-        <div class="w50 pull-left text-center border-rd title2"><a href="{{reverse_url('customerPoints')}}" class="text-grey3">积分&nbsp;&nbsp;{{current_user.credits}}</a></div>
-        <div class="w50 pull-left text-center title2">余额&nbsp;&nbsp;{{current_user.balance}}</div>
     </div>-->
+    <div class="bg-white m-b10 clearfix font14 box-style">
+        <div class="w50 pull-left text-center border-rd title2"><a href="{{reverse_url('customerPoints')}}" class="text-grey3">积分&nbsp;&nbsp;{{shop_point}}</a></div>
+        <div class="w50 pull-left text-center title2"><a href="{{reverse_url('customerBalance')}}" class="text-grey3">余额&nbsp;&nbsp;{{current_user.balance}}</a></div>
+    </div>
 
     <div class="bg-white m-b10 clearfix pb0">
         <p class="title clearfix box-style">

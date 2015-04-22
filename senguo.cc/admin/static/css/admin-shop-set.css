@@ -39,7 +39,7 @@
 .logo-box .uploadifive-button input[type=file]{width:80px !important;height:80px !important;}
 .dropdown-menu li{width:60px;border-bottom:1px solid #ddd;}
 .dropdown-menu li:hover{background-color:#3071a9;color:#fff;}
-.info-set-list textarea{width:300px;}
+.info-set-list textarea{width:610px;height:100px;}
 
 .address-list .active{background:#00D681;color:#fff;}
 .address-list li:hover{background:#00D681;color:#fff;cursor:pointer;}
@@ -52,3 +52,33 @@ input{height:30px;-ms-line-height:30px;color:#666;}
 .notice_detail{width:80%;overflow:hidden;}
 
 .download_img{line-height:100px;}
+/*店铺认证*/
+.hide{display: none!important;}
+.shop-link{color: #66b5f2;font-size:14px;display: inline-block;height: 24px;line-height: 24px;}
+.mt15{margin-top: 15px;}
+.red-txt{color: #d32e3e!important;}
+.grey-txt{color:#bcb8b2!important;}
+.wrap-top{padding-left: 40px;padding-bottom: 10px;}
+.cert-title{margin-top: 20px;}
+.cert-title>p{font-size: 12px;line-height: 18px;color: #333;}
+.cert-type{margin-top: 30px;}
+.cert-type .type{float: left;cursor:pointer;padding: 6px 10px;width:200px;margin-right:30px;border: 2px solid #888;border-radius: 3px;}
+.cert-type .type>h3{font-size: 12px;line-height: 16px;color: #222;font-weight:bold;}
+.cert-type .type>p{font-size: 12px;line-height: 16px;color: #666;}
+.cert-type .active{border-color: #78c469;}
+.wrap-bm{background-color: #f6f6f6;padding:15px 0 40px 50px;}
+.per-tb{width: 100%;table-layout: fixed;}
+.per-tb td{padding: 5px 0;}
+.per-tb .left{font-weight: bold;text-align: right;font-size: 14px;}
+.per-tb input{width:200px;border: none;background-color: #fff;margin-left: 8px;height: 30px;font-size: 12px;line-height: 30px;color: #222;}
+.per-tip{font-size: 12px;color: #858585;line-height: 14px;margin-left: 8px;}
+.per-btn{height: 28px;line-height: 28px;width: 160px;margin-left: 8px;text-align: center;color: #fff;border-radius: 3px;background-color: #52b43f;display: block;}
+.get-code{width: 130px;display: inline-block;margin-left: 15px;}
+.mt10{margin-top: 10px!important;}
+.per-commit{margin-top: 50px;}
+.upload-btn{margin-top: 10px;margin-bottom: 10px;}
+.cert-tip{text-align: center;padding: 80px 0;}
+.cert-tip>p{display: inline-block;color: #222;font-size:14px;font-weight: 500;padding-left: 60px;background: url(../images/cert_ok.png) no-repeat left center;height: 40px;line-height: 40px;}
+.ib{display: inline-block;margin-right: 10px;}
+.bg85{background-color: #858585;}
+.upload-img{width:260px;height: 150px;border: 2px solid #999;margin-left: 8px;}

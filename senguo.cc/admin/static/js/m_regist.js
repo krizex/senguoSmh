@@ -60,8 +60,8 @@ function Vrify(target){
     	return noticeBox("电话貌似有错o(╯□╰)o",target);
     }
     
-    var action='gencode';
-    var url="/customer/phoneVerify?action=customer";
+    var action='get_code';
+    var url="";
     var args={
         action:action,
         phone:phone
@@ -89,8 +89,8 @@ function checkCode(target){
     if(!regNumber.test(code)){return noticeBox('验证码只能为数字！',target);}
     if(code.length!=4){return noticeBox('验证码为4位数字!',target);}
     if(!phone){return noticeBox('手机号不能为空',target);}
-    var url="/customer/phoneVerify?action=customer";
-    var action='checkcode_regist';
+    var url="";
+    var action='check_code';
     var args={action:action,phone:phone,code:code};
     $.postJson(url,args,
         function(res){
@@ -116,8 +116,8 @@ function regist(){
     if(password.length<6 || !regPass.test(password)) {return noticeBox('请输入六位以上字母和数字的组合!');}
     password=CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
     var url="";
-    var action='checkcode';
-    var args={phone:phone,password:password};
+    var action='regist';
+    var args={action:action,phone:phone,password:password};
     $.postJson(url,args,
         function(res){
             if(res.success)

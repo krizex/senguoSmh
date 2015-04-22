@@ -1,11 +1,11 @@
 $(document).ready(function(){
-	var w_width=$(window).width();	
+	var w_width=$(window).width();
 	var height = $('.bg').height();
 	$('#slide li').width(w_width);
 	var len = $(".num > li").length;
 	var index = 0;
 	var adTimer;
-	$(".num li").mouseover(function() {
+    $(".num li").mouseover(function() {
 		$('.animate0').animate({"opacity": "0"}, 350);
 		$('.animate1').animate({"right": "-9999px"}, 350);
 		index = $(this).index(); 
@@ -37,5 +37,5 @@ $(document).ready(function(){
 	}
 	showImg(0);
 	index++;
-	initSlide();
+	//initSlide();
 });

@@ -43,7 +43,7 @@ handlers = [
 
 
     #to remove
-    (r"/m", handlers.superadmin.Official),
+    (r"/m", handlers.superadmin.Official,{},"test"),
 
     (r"/customer/cart/(\w+)", handlers.customer.Cart, {}, "customerCart"),
     (r"/customer/orders", handlers.customer.Order, {}, "customerOrder"),
@@ -53,6 +53,8 @@ handlers = [
     (r"/shopProfile/(\w+)", handlers.customer.ShopProfile, {}, "customerShopProfile"),
     (r"/customer/comment", handlers.customer.Comment, {}, "customerComment"),
     (r"/customer/points", handlers.customer.Points, {}, "customerPoints"),
+    (r"/customer/balance", handlers.customer.Balance, {}, "customerBalance"),
+    (r"/customer/recharge", handlers.customer.Recharge, {}, "customerRecharge"),
     (r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
     (r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
     (r"/customer/phoneVerify", handlers.fruitzone.PhoneVerify, {
@@ -89,10 +91,15 @@ handlers = [
     # 店铺信息详情
     (r"/super/shopProfile/(\d+)", handlers.superadmin.ShopProfile, {}, "superShopProfile"),
     (r"/super/shopclose",handlers.superadmin.ShopClose,{},"shopclose"),
+    #test url
+    (r"/super/cert",handlers.superadmin.Cert,{},"supercert"),
+    (r"/super/comment",handlers.superadmin.Comment,{},"supercomment"),
+
 
     ## 店铺申请接入管理
     # 所有店铺
     (r"/super/shopManage", handlers.superadmin.ShopManage, {}, "superShopManage"),
+    (r"super/shopauth",handlers.superadmin.ShopAuthenticate,{},"superShopAuth"),
 
     ## 商城购买订单
     (r"/super/orderManage/", handlers.superadmin.OrderManage, {
@@ -116,6 +123,7 @@ handlers = [
     (r"/super/incstatic", handlers.superadmin.IncStatic, {}, "superIncStatic"),
     (r"/super/dstatic", handlers.superadmin.DistributStatic, {}, "superDStatic"),
     (r"/super/shopstatic", handlers.superadmin.ShopStatic, {}, "superShopStatic"),
+    # (r"/super/Commentdelete",handlers.superadmin.CommentApplyDelete,{},"superCommentDelete"),
 
 
     # (r"/super/notice/", handlers.superadmin.Notice),
@@ -136,6 +144,8 @@ handlers = [
     (r"/admin/config/shop", handlers.admin.ShopConfig, {}, "adminShopConfig"),
     (r"/admin/searchorder", handlers.admin.SearchOrder, {}, "adminSearchOrder"),
     (r"/admin/shopauth",handlers.admin.ShopAuthenticate,{},'adminShopAuth'),
+    (r"/admin/shopbalance",handlers.admin.ShopBalance,{},"adminShopBalance"),
+
 
     # (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
     # (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
