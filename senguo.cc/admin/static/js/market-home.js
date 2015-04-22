@@ -351,6 +351,7 @@ window.dataObj.page=1;
 window.dataObj.count=1;
 window.dataObj.action=5;
 window.dataObj.finished=true;
+$('.no_more').hide();
 var scrollLoading=function(){
     var range = 80;             //距下边界长度/单位px          //插入元素高度/单位px  
     var totalheight = 0;   
@@ -360,11 +361,8 @@ var scrollLoading=function(){
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)  
         if(!maxnum) maxnum=Int($('#page_count').val());
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
-        $('.no_more').hide();
         if(window.dataObj.finished&&(main.height()-range) <= totalheight  && window.dataObj.page < maxnum) { 
             window.dataObj.finished=false;
-            $('.no_more').hide();
-            $('.loading').show();
             window.dataObj.page++; 
             goodsList(window.dataObj.page,window.dataObj.action);
         }       
@@ -383,6 +381,7 @@ var goodsList=function(page,action){
         page:page,
         menu_id:window.dataObj.menu_id
     };
+    $('.loading').show();
     $.postJson(url,args,function(res){
         if(res.success)
         {
@@ -407,6 +406,11 @@ var goodsList=function(page,action){
         );
         var initData=function(res){
             var w_orders=res.w_orders;
+            $('.loading').hide();
+            if(w_orders.length==0){
+                 $('.no_more').show();
+                 return;          
+            }
                     var fruit_list=res.fruit_list;
                     var dry_fruit_list=res.dry_fruit_list;
                     var mgood_list=res.mgood_list;
@@ -448,7 +452,6 @@ var goodsList=function(page,action){
                     };
                     cartNum(c_fs,'.fruit-list');
                     cartNum(c_ms,'.menu-list');
-                    $('.loading').hide();
                     window.dataObj.count++;
                     window.dataObj.finished=true;
         }
