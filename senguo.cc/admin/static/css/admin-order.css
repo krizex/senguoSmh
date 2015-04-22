@@ -1,3 +1,4 @@
+body{-webkit-user-select: none; }
 .orders-mode{width:100%;display:block;height:40px;}
 .orders-mode ul{width:420px;border-left:2px solid #f2f2f2;margin-bottom:0px;font-size:14px;}
 .orders-mode ul li{height:40px;line-height:40px;border:1px solid #f2f2f2;border-left:none;position:relative;}

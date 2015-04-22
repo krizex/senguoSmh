@@ -265,6 +265,7 @@ var confirmBox=function(text,index,type){
         var $mask;
         if(height<window_height) $mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
         else $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
+        //$mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
         $('body').append($box,$mask);
         $(document).on('click','.dismiss',function(){
             $('#confirmBox').remove();

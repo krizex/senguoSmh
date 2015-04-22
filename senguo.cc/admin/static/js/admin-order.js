@@ -419,6 +419,7 @@ function SendNowConfig(){
     var end_hour=Int($('#NowEndHour').text());
     var end_minute=Int($('#NowEndMinute').text());
     var intime_period=Int($('#sendNowPeriod').val());
+    var regNum=/^[0-9]*$/;
     if(min_charge_now==null||min_charge_now=='') {
         min_charge_now=0;
     }
@@ -430,6 +431,12 @@ function SendNowConfig(){
     }
     if(intime_period==null) {
         intime_period=30;
+    }
+    if(!regNum.test(intime_period)){
+        return alert('立即送时间段只能填写数字 ！')
+    }
+    if(intime_period<0||intime_period>120){
+        return alert('立即送时间段只能设置为0~120 ！')
     }
     var args={
         action:action,
