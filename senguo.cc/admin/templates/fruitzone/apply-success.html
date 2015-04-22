@@ -30,6 +30,7 @@ $(document).ready(function(){
     var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
     var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
     if(isiOS){
+        alert("i'm ios hahahahh");
         $('.focus_senguo').each(function(){
         var $this=$(this);
          var link=$this.attr('data-src');
