@@ -59,21 +59,21 @@ $(document).ready(function(){
     $('goods-list').last().addClass('m-b60');    
     $('.bottom-nav').find('li').addClass('add_cart');   
     //分类导航置顶
-    $(window).scroll(function(){
-        //分类滚动监听
-        if($(window).scrollTop()>=top){
-            $('.top-title').addClass('fix-top');
-        }
-        else {
-            $('.top-title').removeClass('fix-top');
-        }
-        // var box=$('.classify-title');
-        // for(var i=0;i<box.length;i++){
-        //     var dist=box[i].offsetTop;
-        //     var classify=box[i].innerHTML;
-        //     if($(window).scrollTop()>=dist){top_title.find('.classify').text(classify);}
-        // }
-    });
+    // $(window).scroll(function(){
+    //     //分类滚动监听
+    //     if($(window).scrollTop()>=top){
+    //         $('.top-title').addClass('fix-top');
+    //     }
+    //     else {
+    //         $('.top-title').removeClass('fix-top');
+    //     }
+    //     // var box=$('.classify-title');
+    //     // for(var i=0;i<box.length;i++){
+    //     //     var dist=box[i].offsetTop;
+    //     //     var classify=box[i].innerHTML;
+    //     //     if($(window).scrollTop()>=dist){top_title.find('.classify').text(classify);}
+    //     // }
+    // });
     //all numer of page
     var fruit_pages=Int($('#fruit_page').val());
     var dry_pages=Int($('#dry_page').val());

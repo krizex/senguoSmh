@@ -11,14 +11,15 @@
 .user-info-detail .info-edit .edit-box{width:100%;border:1px solid #ddd;border-radius:2px;background:#f2f2f2;font-size:1em;padding:0.3em 0;text-indent:5px;}
 
 .tie-popbox .tie-info{width:100%;}
-.tie-popbox .tie-info .input1{width:100%;border:1px solid #ddd;border-radius:2px;background:#F9F9F9;padding:0.5em 0;text-indent:0.5em;margin-bottom:0.5em;}
-.tie-popbox .tie-info .input1:focus{border-color:#00D681;}
-.tie-popbox .tie-info .phone-number{width:100%;float:left;}
-.tie-popbox .tie-info .phone-number .phone{width:65% !important;}
-.tie-popbox .tie-info .phone-number .get-code{width:30%;color:#fff;padding:0.5em 0;text-align:center;}
+.phone-number{width:100%;float:left;}
+.phone-number .phone{width:65% !important;}
+.phone-number .get-code{width:30%;color:#fff;padding:0.5em 0;text-align:center;}
 .tie-popbox  .concel-btn{background:#A0A0A0;color:#fff;width:45%;border-radius:1px;}
 .tie-popbox  .tie-btn{;color:#fff;}
 .concel-btn{background:#999;float:left;color:#fff;}
 .sure-btn{background:#00D289;float:right;color:#fff;}
 .btn-box{margin-top:10px;}
 .height40{height:40px;line-height:40px;}
+
+.input1{width:100%;border:1px solid #ddd;border-radius:2px;background:#F9F9F9;padding:0.5em 0;text-indent:0.5em;margin-bottom:0.5em;}
+.input1:focus{border-color:#00D681;}

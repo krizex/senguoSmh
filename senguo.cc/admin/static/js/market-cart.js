@@ -654,11 +654,11 @@ function TiePhone(evt){
     var code=$('#enterVrify').val();
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
+    if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
     if(!phone){return warnNotice('请输入手机号');}
     if(!code){return warnNotice('请输入验证码');}
     if(!regNumber.test(code)){return warnNotice('验证码只能为数字！');}
-    if(code>0&&phone.length<6){return warnNotice('验证码为六位数字!');}
+    if(code.length>4||code.length<4){return warnNotice('验证码为4位数字!');}
     var url="/customer/phoneVerify?action=customer";
     var action='checkcode';
     var args={action:action,phone:phone,code:code};

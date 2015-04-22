@@ -6,7 +6,7 @@
 {% end %}
 
 {% block content%}
-<div class="user-info-detail pt36">
+<div class="user-info-detail pt36 clea">
     <ul class="set-w100-fle m-b10">
         <li class="item">
             <div class="info-con">
@@ -39,6 +39,21 @@
                     <span class="title pull-left text-grey3">手机号</span>
                     <span class="pull-right  tiephone">{{current_user.accountinfo.phone}}</span>
                 </a>
+            </div>
+        </li>
+         <li class="item">
+            <div class="info-con">
+                {% if current_user.accountinfo.password %}
+                <a href="javascript:;" id="changePwd" class="box">
+                    <span class="title pull-left text-grey3">密码管理</span>  
+                     <span class="pull-right">修改密码</span>
+                </a>
+                 {% else %}
+                 <a href="javascript:;" id="setPwd" class="box">
+                    <span class="title pull-left text-grey3">密码管理</span>  
+                    <span class="pull-right  setPwd">设置密码</span>
+                </a>
+                 {% end %}
             </div>
         </li>
         <li class="item">
@@ -90,16 +105,40 @@
             <div class="modal-body font14 clearfix">
                 <div class="tie-info">
                     <div class="phone-number">
-                        <input type="text" placeholder="输入手机号" class="phone input1 pull-left" id="enterPhone"/>
+                        <input type="tel" placeholder="输入手机号" class="phone input1 pull-left" id="enterPhone"/>
                         <input type="submit" value="获取验证码" class="get-code pull-right bg-green3 sure_btn" id="getVrify"/>
                     </div>
                     <input type="text" placeholder="输入收到的短信验证码" class="input1" id="enterVrify"/>
-                    <input type="password" placeholder="设置一个手机号登陆密码" class="input1" id="loginPassword"/>
-                    <input type="password" placeholder="密码确认" class="input1" id="passwordConfirm"/>
                 </div>
             </div>
             <div class="modal-footer clearfix">
                 <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn"  id="tiePhone">绑定</button>
+            </div>
+             <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="pwdBox">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
+            <div class="modal-header set-width-float">
+                <button type="button" class="close dismiss">✕</button>
+                <h2 class="modal-title  text-center line48"></h2>
+            </div>
+            <div class="modal-body font14 clearfix">
+                <div class="tie-info set-pwd-box" style="display:none">
+                    <input type="password" placeholder="设置一个手机号登陆密码" class="input1" id="loginPassword"/>
+                    <input type="password" placeholder="密码确认" class="input1" id="passwordConfirm"/>
+                </div>
+                <div class="tie-info change-pwd-box" style="display:none">
+                    <input type="password" placeholder=" 原始密码" class="input1" id="originPassword"/>
+                    <input type="password" placeholder="新密码" class="input1" id="newPassword"/>
+                    <input type="password" placeholder="新密码码确认" class="input1" id="newConfirm"/>
+                </div>
+            </div>
+            <div class="modal-footer clearfix">
+                <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn text-white"  id="pwdSure">确定</button>
             </div>
              <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
         </div>

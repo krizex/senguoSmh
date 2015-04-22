@@ -247,6 +247,11 @@ class CustomerProfile(CustomerBaseHandler):
 				return self.send_fail("密码错误")
 			else:
 				self.current_user.accountinfo.update(session = self.session ,password = data)
+		elif action == 'reset_password':
+			data = self.args["data"]
+			new_password = data['password']
+			self.current_user.accountinfo.update(session = self.session ,password = password)
+
 		else:
 			return self.send_error(404)
 		return self.send_success()
