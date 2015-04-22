@@ -744,7 +744,7 @@ class WxOauth2:
 		#print('####################')
 		#print(cls)
 		#print(touser)
-		time = datetime.datetime.now().strftime('%Y-%m-%d %R')
+		time = datetime.datetime.now().strftime('%Y-%m-%d')
 		postdata = {
 			"touser": touser,
 			"template_id": "YDIcdYNMLKk3sDw_yJgpIvmcN5qz_2Uz83N7T9i5O3s",
@@ -768,7 +768,7 @@ class WxOauth2:
 
 	@classmethod
 	def fail_template_msg(cls, touser, shop_name, name, phone,reason):
-		time = datetime.datetime.now().strftime('%Y-%m-%d %R')
+		time = datetime.datetime.now().strftime('%Y-%m-%d')
 		postdata = {
 			"touser": touser,
 			"template_id": "YDIcdYNMLKk3sDw_yJgpIvmcN5qz_2Uz83N7T9i5O3s",
