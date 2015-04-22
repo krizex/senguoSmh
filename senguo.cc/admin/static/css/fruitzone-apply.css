@@ -73,6 +73,7 @@
 .count-list li .word p{width:100%;margin-bottom:-1px !important;}
 .phone-box{padding-bottom:10px !important;background:#fff !important;}
 .to_next{display:inline-block;height:50px;line-height:50px;width:100%;text-align:center;z-index:10;}
+.forward{height:50px;line-height:50px;}
 
 /*.notice_bg{background:#000; filter: Alpha(opacity=80); -moz-opacity:.8; opacity:0.8; width:100%;height:100%;position:absolute;z-index:10;top:0;}
 .notice_box{position:absolute;width:100%;height:100%;z-index:9999;top:0;}
