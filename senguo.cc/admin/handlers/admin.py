@@ -20,12 +20,12 @@ class Access(AdminBaseHandler):
 		next_url = self.get_argument('next', '')
 		if self._action == "login":
 			next_url = self.get_argument("next", "")
-			return self.render("admin/login.html", 
+			return self.render("admin/login.html",
 								 context=dict(next_url=next_url))
 		elif self._action == "logout":
 			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
 			self.clear_current_user()
-			return self.redirect(self.reverse_url("fruitzoneHome"))
+			return self.redirect(self.reverse_url("OfficialHome"))
 		elif self._action == "oauth":
 			self.handle_oauth()
 		else:
@@ -37,7 +37,7 @@ class Access(AdminBaseHandler):
 		if not u:
 			return self.send_fail(error_text = "用户名或密码错误")
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
-		self.redirect(self.args.get("next", self.reverse_url("fruitzoneHome")))
+		self.redirect(self.args.get("next", self.reverse_url("OfficialHome")))
 		return self.send_success()
 
 	@AdminBaseHandler.check_arguments("code", "state?", "mode")
@@ -54,8 +54,8 @@ class Access(AdminBaseHandler):
 			return self.redirect(self.reverse_url("adminLogin"))
 		u = models.ShopAdmin.register_with_wx(self.session, userinfo)
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
-		
-		next_url = self.get_argument("next", self.reverse_url("fruitzoneHome"))
+
+		next_url = self.get_argument("next", self.reverse_url("OfficialHome"))
 		return self.redirect(next_url)
 
 # 商家后台首页
@@ -486,7 +486,7 @@ class Order(AdminBaseHandler):
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time,reverse = True)
-			
+
 		elif order_status == 3:
 			try:
 				orderlist = self.session.query(models.Order).order_by(desc(models.Order.arrival_day),models.Order.arrival_time).\
@@ -505,7 +505,7 @@ class Order(AdminBaseHandler):
 		# woody
 		session = self.session
 		# for order in orders:
-		# 	order.w_send_time = order.get_sendtime(session,order.id) 
+		# 	order.w_send_time = order.get_sendtime(session,order.id)
 			# print(order.w_send_time)
 		# print("before sort",orders)
 		orders = sorted(orders , key = lambda x:x.send_time)
@@ -673,7 +673,7 @@ class Order(AdminBaseHandler):
 					customer_info.is_new = 1
 					self.session.commit()
 
-					# 
+					#
 					customer = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 						shop_id = shop_id).first()
 					if not customer:
@@ -828,7 +828,7 @@ class Shelf(AdminBaseHandler):
 					if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000) or\
 						(self.args["id"] > 1000 and fruit.fruit_type_id < 1000) or fruit.fruit_type_id == 1000:
 						continue
-					
+
 					if fruit.active == 1:
 						fruit_type_d[fruit.fruit_type_id]["sum"] += 1
 						fruits.append(fruit)
@@ -1108,7 +1108,7 @@ class Staff(AdminBaseHandler):
 			except: return self.send_error(404)
 
 			if action == "hire_agree":
-				
+
 				###############################################################################
 				# if the staff exited,send_fail
 				###############################################################################
@@ -1194,7 +1194,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d %R')
 			################################################################################################
-			# modified : woody 
+			# modified : woody
 			#date:2015.3.7
 			#TODO:  standardize the format of time
 			################################################################################################
