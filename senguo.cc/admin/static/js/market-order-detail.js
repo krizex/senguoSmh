@@ -34,11 +34,19 @@ $(document).ready(function(){
         }
     }
     removeDom();
-}).on("click","#del-comment",function(){
+}).on("click","#change-comment",function(){
     var pointBox=new Modal('pointsBox');
     pointBox.modal('show');
 }).on("click","#del-ok",function(){
-    delComment();
+    var comment=$('#new-comment').val();
+    if(!comment){
+        return noticeBox('请输入评论内容');
+    }
+    if(comment.length>300){
+        return noticeBox('至多可以评论300字!');
+    }
+    $('#del-ok').attr({'disabled':true});
+    changeComment(comment);
 });
 function removeDom(){
     $('.create_time').remove();
@@ -56,6 +64,32 @@ function statusText(target,n){
         case 6:target.text('已评价');break;
     }
 }
+
+
+function changeComment(comment){
+    var url='';
+    var action='change_comment';
+    var id=$('.order-id').data('id');
+    var data={
+        order_id:id,
+        comment:comment
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,function(res){
+        if(res.success){
+           var pointBox=new Modal('pointsBox');
+            pointBox.modal('hide');
+            $('.comment_con').text(comment);
+            $('#del-ok').removeAttr('disabled');
+        }
+        else return noticeBox(res.error_text)
+    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+)
+}
+
 
 function delComment(target,id){
     var url='';

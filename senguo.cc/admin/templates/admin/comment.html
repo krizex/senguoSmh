@@ -69,7 +69,7 @@
             <ul>
                 <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
                 <li>
-                    <span class="page-now"></span>/<span class="page-total">{{len(comments)/20}}</span>
+                    <span class="page-now"></span>/<span class="page-total">{{pages}}</span>
                 </li>
                 <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
                 <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
@@ -98,7 +98,7 @@
                 <div class="modal-content del-com-cont">
                     <h3>森果平台不主张店主私自删除用户评论过的行为，若该条评论对您的店铺经营产生影响，
                     您可通过一下两种方式消除影响：</h3>
-                    <p class="mt20">1.联系用户，提示用户<span class="red-txt">主动删除评论</span>，并发表新的评论；</p>
+                    <p class="mt20">1.联系用户，提示用户<span class="red-txt">主动修改评论</span>，并发表新的评论；</p>
                     <p>2.提交删除申请，通过审核后，森果团队会帮您删除评论。</p>
                     <div class="btn-group txt-ac">
                         <a href="javascript:;" class="bg-green ok-pop" id="contact-user">和用户联系</a>
@@ -113,7 +113,7 @@
                     <p class="apply-title">请提交您需要删除此条评论的理由：</p>
                     <textarea id="commit-cont"></textarea>
                     <div class="btn-group txt-ac">
-                        <a href="javascript:;" class="bg-green ok-pop" id="commit-senguo">提交</a>
+                        <button class="bg-green ok-pop text-white" id="commit-senguo">提交</button>
                     </div>
                 </div>
             </div>

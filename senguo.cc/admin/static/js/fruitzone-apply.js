@@ -94,7 +94,16 @@ $(document).ready(function(){
         });
     });
     //手机验证
-    $(document).on('click','#getVrify',function(){Vrify();});
+    $(document).on('click','#getVrify',function(){
+        var phone=$('#phone').val();
+        var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+        if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){return noticeBox("电话貌似有错o(╯□╰)o");}
+        if(!phone){
+            return noticeBox('手机号不能为空');
+        }
+        $('#getVrify').attr({'disabled':true});
+        Vrify(phone);
+    });
     //提交
     $(document).on('click','#submitApply',function(){Apply();});
     $(document).on('click','#submitReapply',function(){reApply();});
@@ -187,7 +196,7 @@ function Apply(evt){
     var code=$('#verify_code').val().trim();
     var phone=$('#phone').val().trim();
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return noticeBox("电话貌似有错o(╯□╰)o");}
+    if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){return noticeBox("电话貌似有错o(╯□╰)o");}
     if(shop_name.length>15){return noticeBox('店铺名称请不要超过15个字符！')}
     if(shop_address_detail.length>50){return noticeBox('详细地址请不要超过50个字符！')}
     if(shop_intro.length>300){return noticeBox('店铺简介请不要超过300个字符！')}
@@ -304,11 +313,7 @@ function reApply(evt){
     );
 }
 
-function Vrify(){
-    var phone=$('#phone').val();
-    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){return noticeBox("电话貌似有错o(╯□╰)o");}
-    if(!phone){return noticeBox('手机号不能为空');}
+function Vrify(phone){
     var action='gencode_shop_apply';
     var url="/fruitzone/phoneVerify?action=admin";
     var args={action:action,phone:phone};
@@ -318,6 +323,7 @@ function Vrify(){
             {
                 time($('#getVrify'));
                 noticeBox('验证码已发送至您的手机,请注意查收');
+                $('#getVrify').removeAttr('disabled');
             }
             else noticeBox(res.error_text);
         },

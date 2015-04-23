@@ -735,9 +735,9 @@ class Comment(SuperBaseHandler):
 			return self.send_error(404)
 		order = comment_apply.order
 		if action == 'commit':
-			order.status = 5
-			order.coment = 'NULL'
-			order.comment_reply = 'NULL'
+			#order.status = 5
+			order.comment = None
+			order.comment_reply = None
 			comment_apply.has_done = 1
 			self.session.commit()
 			return self.send_success(status = 0, msg = 'success',data = {})

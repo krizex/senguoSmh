@@ -469,6 +469,9 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		if not (eval(cart.fruits) or eval(cart.mgoods)):#购物车空了
 			return True
 		return False
+	def get_login_url(self):
+		return self.get_wexin_oauth_link(next_url=self.request.full_url())
+		# return self.reverse_url('customerLogin')
 
 	def _f(self, cart, menu, charge_type_id, inc):
 		d = eval(getattr(cart, menu))
@@ -792,8 +795,9 @@ class WxOauth2:
 
 
 	@classmethod
-	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods):
-		remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n' + "商品详情："  + goods + '\n\n'  + \
+	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods,phone):
+		remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n' + "商品详情："  \
+		+ goods +'\n'  + "顾客电话："  + phone +  '\n\n'  + \
 		'请及时登录森果后台处理订单。'
 		postdata = {
 			'touser' : touser,
@@ -820,8 +824,9 @@ class WxOauth2:
 		return True
 
 	@classmethod
-	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time):
-		remark = "订单总价：" + str(order_totalPrice)+ '\n' + "送达时间：" + send_time + '\n\n' + '请及时处理订单。'
+	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone):
+		remark = "订单总价：" + str(order_totalPrice)+ '\n' + "送达时间：" + send_time + '\n'  + "顾客电话："  + \
+		phone + '\n\n' + '请及时处理订单。'
 		order_type_temp = int(order_type)
 		order_type = "即时送" if order_type_temp == 1 else "按时达"
 		postdata = {

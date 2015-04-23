@@ -233,6 +233,9 @@ function orderComment(id,order_id,comment){
     var url='';
     var action='comment';
     if(!comment){return warnNotice('请输入您的评论！')}
+    if(comment.length>300){
+        warnNotice('至多可以评论300字!');
+    }
     var data={
         order_id:order_id,
         comment:comment

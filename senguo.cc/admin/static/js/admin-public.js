@@ -62,7 +62,7 @@ function hide(trigger,target){
     })
 }
 
-function getpPage(page,url,list){
+function getPage(page,url,total){
     if(page===0) $('.pre-page').hide();
     else{
         $('.pre-page').on('click',function(){
@@ -70,9 +70,7 @@ function getpPage(page,url,list){
             $this.attr({'href':url+(page-1)});
         });
     }
-    if(list<20){
-        $('.jump-to').hide();
-        $('.input-page').hide();
+    if((total-1== page)){
         $('.next-page').hide();
     }
     else{
@@ -83,7 +81,16 @@ function getpPage(page,url,list){
     }
     $('.jump-to').on('click',function(){
         var $this=$(this);
-        var page=Int($('.input-page').val().trim());
-        $this.attr({'href':url+page});
+        var num=Int($('.input-page').val());
+        if(!num){
+            return alert('请输入页码');
+        }
+        if(0<num&&num<=total)
+        {
+            $this.attr({'href':url+(num-1)});
+        }
+        else {
+            return alert('没有该页的数据');
+        }
     });
 }
