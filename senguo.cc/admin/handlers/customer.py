@@ -111,6 +111,7 @@ class RegistByPhone(CustomerBaseHandler):
 
 		resault = gen_msg_token(phone=self.args["phone"])
 		if resault == True:
+			print(resault,'send success')
 			return self.send_success()
 		else:
 			return self.send_fail(resault)
@@ -247,6 +248,11 @@ class CustomerProfile(CustomerBaseHandler):
 				return self.send_fail("密码错误")
 			else:
 				self.current_user.accountinfo.update(session = self.session ,password = data)
+		elif action == 'reset_password':
+			data = self.args["data"]
+			new_password = data['password']
+			self.current_user.accountinfo.update(session = self.session ,password = password)
+
 		else:
 			return self.send_error(404)
 		return self.send_success()
@@ -1209,6 +1215,7 @@ class Cart(CustomerBaseHandler):
 		shop_name     = shop.shop_name
 		order_id      = order.num
 		order_type    = order.type
+		phone         = order.phone
 		if order_type == 1:
 			order_type = '立即送'
 		else:
@@ -1253,7 +1260,7 @@ class Cart(CustomerBaseHandler):
 		send_time = order.send_time
 		print(goods,'************************************************')
 		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
-			customer_name,order_totalPrice,send_time,goods)
+			customer_name,order_totalPrice,send_time,goods,phone)
 		# send message to customer
 		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
 
@@ -1341,7 +1348,7 @@ class Order(CustomerBaseHandler):
 			elif offset <= total_count and offset + 10 >= total_count:
 				orders = orders[offset:]
 			else:
-				return self.send_fail("order pages errors")
+				return self.send_fail("暂无订单")
 			# print('orders',orders)
 			orders = self.get_orderData(session,orders)
 			# print('after ',orders)
@@ -1391,7 +1398,7 @@ class Order(CustomerBaseHandler):
 			elif offset < total_count and offset + 10 >= total_count:
 				orders = orders[offset:]
 			else:
-				return self.send_fail("order pages errors")
+				return self.send_fail("暂无订单")
 			orders = self.get_orderData(session,orders)
 			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "all":
@@ -1410,7 +1417,7 @@ class Order(CustomerBaseHandler):
 			elif offset < total_count and offset + 10 >= total_count:
 				orders = orders[offset:]
 			else:
-				return self.send_fail("order pages errors")
+				return self.send_fail("暂无订单")
 			orders = self.get_orderData(session,orders)
 			# print(orders)
 			return self.send_success(orders = orders ,total_page= total_page)
@@ -1514,8 +1521,8 @@ class OrderDetail(CustomerBaseHandler):
 			if not order:
 				return self.send_fail('order not found')
 			order.status = 5
-			order.comment = ''
-			order.comment_reply = ''
+			order.comment = None
+			order.comment_reply = None
 			if apply_list:
 				apply_list.has_done=1
 			self.session.commit()
@@ -1527,6 +1534,16 @@ class OrderDetail(CustomerBaseHandler):
 				return self.send_fail('shop_follow not found')
 			if shop_follow.shop_point:
 				shop_follow.shop_point -= 5
+			self.session.commit()
+			self.send_success()
+		if action == 'change_comment':
+			data = self.args['data']
+			comment = data['comment']
+			order_id = data['order_id']
+			order = self.session.query(models.Order).filter_by(id = order_id).first()
+			if not order:
+				return self.send_fail('order not found')
+			order.comment = comment
 			self.session.commit()
 			self.send_success()
 		else:
@@ -1655,85 +1672,84 @@ class InsertData(CustomerBaseHandler):
 		# 	self.session.commit()
 
 		
-		# orderlist = self.session.query(models.Order).all()
-		# if not orderlist:
-		# 	self.send_fail("orderlist error")
-		# if orderlist:
-		# 	for order in orderlist:
-		# 		# if order.send_time =='0' :
-		# 			# print('login')
-		# 		create_date =  order.create_date
-		# 		second_date = create_date + datetime.timedelta(days = 1)
-		# 		if order.type == 2: #按时达
-		# 			if order.today == 1:
-		# 				order.send_time = create_date.strftime('%Y-%m-%d') +' '+\
-		# 				(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
-		# 			elif order.today == 2:
-		# 				order.send_time = second_date.strftime('%Y-%m-%d')+' '+\
-		# 				(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
-		# 		elif order.type == 1:#立即送
-		# 			later = order.create_date + datetime.timedelta(minutes = 30)
-		# 			order.send_time =  create_date.strftime('%Y-%m-%d %H:%M') +'~'+later.strftime('%H:%M')
-		# 			#print(order.send_time)
-		# 		# else:
-		# 		# 	print('Not NULL')
-		# 	self.session.commit()
+		orderlist = self.session.query(models.Order).all()
+		if not orderlist:
+			self.send_fail("orderlist error")
+		if orderlist:
+			for order in orderlist:
+				# if order.send_time =='0' :
+					# print('login')
+				create_date =  order.create_date
+				second_date = create_date + datetime.timedelta(days = 1)
+				if order.type == 2: #按时达
+					if order.today == 1:
+						order.send_time = create_date.strftime('%Y-%m-%d') +' '+\
+						(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
+					elif order.today == 2:
+						order.send_time = second_date.strftime('%Y-%m-%d')+' '+\
+						(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
+				elif order.type == 1:#立即送
+					later = order.create_date + datetime.timedelta(minutes = 30)
+					order.send_time =  create_date.strftime('%Y-%m-%d %H:%M') +'~'+later.strftime('%H:%M')
+					#print(order.send_time)
+				# else:
+				# 	print('Not NULL')
+			self.session.commit()
 
-		# try:
-		# 	accountinfo_count = self.session.query(models.Accountinfo).count()
-		# except:
-		# 	return self.send_fail('accountinfo_list error')
-		# page = int(accountinfo_count/200)  if accountinfo_count % 200 == 0 else int(accountinfo_count/200) +1
-		# print(accountinfo_count,page,'******')
-		# n = 0
-		# for x in range(page):
-		# 	offset  = x * 200
-		# 	n = n + 1
-		# 	print('count',n)
-		# 	accountinfo_list = self.session.query(models.Accountinfo).offset(offset).limit(200)
-		# 	if accountinfo_list:
-		# 		for accountinfo in accountinfo_list:
-		# 			customer_id = accountinfo.id
-		# 			order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
-		# 				models.Order.status == 6 ,models.Order.status == 10))).all()
-		# 			# session.close()
-		# 			# print(len(order_list))
-		# 			if order_list:
-		# 				accountinfo.is_new = 1
-		# 				#print(accountinfo.is_new)
-		# 				# self.session.commit()
-		# 	print(n,'***********8')
-		# try:
-		# 	follow_list = session.query(models.CustomerShopFollow).all()
-		# except:
-		# 	return self.send_fail('follow_list error')
-		# if follow_list:
-		# 	for follow in follow_list:
-		# 		customer_id = follow.customer_id
-		# 		shop_id = follow.shop_id
-		# 		order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,models.Order.shop_id == shop_id,or_(models.Order.status == 5,\
-		# 			models.Order.status == 6 ,models.Order.status == 10))).all()
-		# 		# session.close()
-		# 		if order_list:
-		# 			follow.shop_new = 1
+		try:
+			accountinfo_count = self.session.query(models.Accountinfo).count()
+		except:
+			return self.send_fail('accountinfo_list error')
+		page = int(accountinfo_count/200)  if accountinfo_count % 200 == 0 else int(accountinfo_count/200) +1
+		print(accountinfo_count,page,'******22222')
+		n = 0
+		for x in range(page):
+			offset  = x * 200
+			n = n + 1
+			print('count',n)
+			accountinfo_list = self.session.query(models.Accountinfo).offset(offset).limit(200)
+			if accountinfo_list:
+				for accountinfo in accountinfo_list:
+					customer_id = accountinfo.id
+					order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
+						models.Order.status == 6 ,models.Order.status == 10))).all()
+					# session.close()
+					# print(len(order_list))
+					if order_list:
+						accountinfo.is_new = 1
+						#print(accountinfo.is_new)
+						# self.session.commit()
+		try:
+			follow_info= session.query(models.CustomerShopFollow).count()
+		except:
+			return self.send_fail('follow_list error')
+		f_page = int(follow_info/200)  if follow_info % 200 == 0 else int(follow_info/200) +1
+		for x in range(f_page):
+			offset  = x * 200
+			follow_list = self.session.query(models.CustomerShopFollow).offset(offset).limit(200)
+			if follow_list:
+				for follow in follow_list:
+					customer_id = follow.customer_id
+					shop_id = follow.shop_id
+					order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,models.Order.shop_id == shop_id,or_(models.Order.status == 5,\
+						models.Order.status == 6 ,models.Order.status == 10))).all()
+					# session.close()
+					if order_list:
+						follow.shop_new = 1
+		
 
 		try:
 			config_info = self.session.query(models.Config).count()
 		except:
 			return self.send_fail('config_info error')
 		c_page = int(config_info/200)  if config_info % 200 == 0 else int(config_info/200) +1
-		print(c_page)
-		n1 = 0
 		for x in range(c_page):
 			offset  = x * 200
-			n1= n1 + 1
-			print('count',n1)
 			config_list = self.session.query(models.Config).offset(offset).limit(200)
 			if config_list:
 				for config in config_list:
-					if config.intime_period == 0:
+					if config.intime_period == 0 or config.intime_period == None:
 						config.intime_period = 30
-			print(n1,'@_@')
 		session.commit()
 
 

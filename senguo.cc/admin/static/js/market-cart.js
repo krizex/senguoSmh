@@ -116,7 +116,15 @@ $(document).ready(function(){
         var tie_box=new Modal('tieBox');
          tie_box.modal('show');
     });
-    $(document).on('click','#getVrify',function(evt){Vrify(evt);});
+    $(document).on('click','#getVrify',function(evt){
+        evt.preventDefault();
+        var phone=$('#enterPhone').val();
+        var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+        if(phone.length > 11|| phone.length<11 || !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
+        if(!phone){return warnNotice('手机号不能为空');}
+        $('#getVrify').attr({'disabled':true});
+        Vrify(phone);
+    });
     $(document).on('click','#tiePhone',function(evt){TiePhone(evt);});
     //订单提交
     $(document).on('click','#submitOrder',function(){
@@ -192,8 +200,8 @@ $(document).ready(function(){
     });
     //按时达/立即送模式选择
     var intime_on=$('.send-intime').data('config');
-    var now_on=$('.send-now').data('config');
-    if(intime_on=='False'){ //立即送被关闭情况
+    var now_on=$('.send-now').data('config'); 
+    if(intime_on=='False'||typeof(intime_on)=='undefined'){ //立即送被关闭情况
         $('.send-intime').removeClass('active').find('p').addClass('text-grey3');
         $('.send-now').addClass('active');
         $('.send_day').remove();
@@ -237,7 +245,7 @@ $(document).ready(function(){
             }
         });
     }
-    if(now_on=='False'){//立即送被关闭情况
+    if(now_on=='False'||typeof(now_on)=='undefined'){//立即送被关闭情况
         $('.send-now').removeClass('active').find('p').addClass('text-grey3');
         $('.send-intime').addClass('active');
         $('.send_day').show();
@@ -267,10 +275,32 @@ $(document).ready(function(){
         $('#freight_money').text(window.dataObj.freigh_now);
         $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
         //立即送模式选择/立即送最低起送金额提示
-        $('#sendNow').on('click',function(){
+        $('#sendNow').on('click',function(){  
             var $this=$(this);
             var end_time=$('.now_endtime').text();
-            if(time_now<=end_time)
+            var period=Int($this.attr('data-period'));
+            var n=period/60;
+            var stop_time;
+            if(n<1){
+                if(time.getMinutes()+period<60){
+                    stop_time=checkTime(time.getHours())+':'+checkTime(time.getMinutes()+period)+':'+checkTime(time.getSeconds());
+                }
+                else{
+                    stop_time=checkTime(time.getHours()+1)+':'+checkTime(time.getMinutes()+(period-60))+':'+checkTime(time.getSeconds());
+                }
+            }
+            else if(1<=n<=2){
+                period=period-60
+                 if(time.getMinutes()+period<60){
+                    stop_time=checkTime(time.getHours()+1)+':'+checkTime(time.getMinutes()+period)+':'+checkTime(time.getSeconds());
+                }
+                else{
+                    stop_time=checkTime(time.getHours()+2)+':'+checkTime(time.getMinutes()+(period-60))+':'+checkTime(time.getSeconds());
+                }
+            }
+            console.log(stop_time);
+            console.log(end_time);
+            if(stop_time<=end_time)
             {
                 $this.parents('.item').addClass('active').siblings('.item').removeClass('active');
                 $('.send_period').hide();
@@ -307,6 +337,12 @@ $(document).ready(function(){
         $('.now-intro').hide();
         $('#freight_money').text(window.dataObj.freigh_ontime);
         $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
+    }
+    if(typeof(intime_on)=='undefined'&&now_on=='True'){
+        if(window.dataObj.total_price<window.dataObj.mincharge_now){
+            $('.mincharge_now').show();
+            $('.mincharge_intime').hide();
+        }
     }
     //打赏小费
     $('.tip-list .item').on('click',function(){
@@ -378,16 +414,15 @@ function goodsNum(target,action){
                     num++;
                     item.val(num);
                     total=mathFloat(num*price);
+                    getPrice();
                     parent.find('.item_total_price').text(total);
                     var t_price=mathFloat($list_total_price.text());
-                    getPrice();
                     var type=$('#sendType').find('.active').data('id');
                     mincharge(type,t_price);
                 }
                 else if(action==1)
                 {
                     var val=parseInt(item.val());
-                     console.log(val);
                     if(val>=0)
                     {
                         if(val==1){
@@ -407,8 +442,8 @@ function goodsNum(target,action){
                         item.val(num);
                         total=mathFloat(num*price);
                         parent.find('.item_total_price').text(total);
-                        var t_price=mathFloat($list_total_price.text());
                         getPrice();
+                        var t_price=mathFloat($list_total_price.text());
                         var type=$('#sendType').find('.active').data('id');
                         mincharge(type,t_price);
                     }
@@ -615,12 +650,7 @@ function time(evt) {
             1000)
     }
 }
-function Vrify(evt){
-    evt.preventDefault();
-    var phone=$('#enterPhone').val();
-    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
-    if(!phone){return warnNotice('手机号不能为空');}
+function Vrify(phone){
     var action='gencode';
     var url="/customer/phoneVerify?action=customer";
     var args={
@@ -633,6 +663,7 @@ function Vrify(evt){
             {
                 time($('#getVrify'));
                 noticeBox('验证码已发送到您的手机,请注意查收！');
+                $('#getVrify').removeAttr('disabled');
 
             }
             else return noticeBox(res.error_text);
@@ -648,11 +679,11 @@ function TiePhone(evt){
     var code=$('#enterVrify').val();
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
+    if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
     if(!phone){return warnNotice('请输入手机号');}
     if(!code){return warnNotice('请输入验证码');}
     if(!regNumber.test(code)){return warnNotice('验证码只能为数字！');}
-    if(code>0&&phone.length<6){return warnNotice('验证码为六位数字!');}
+    if(code.length>4||code.length<4){return warnNotice('验证码为4位数字!');}
     var url="/customer/phoneVerify?action=customer";
     var action='checkcode';
     var args={action:action,phone:phone,code:code};

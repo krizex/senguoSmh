@@ -60,6 +60,7 @@ $(document).ready(function(){
     $('.bottom-nav').find('li').addClass('add_cart');
     $(".wrap-goods-box").height($(window).height()-50-$(".wrap-notice-box").height());
     //分类导航置顶
+<<<<<<< HEAD
     var s_top = 0;
     $(".wrap-goods-box").scroll(function(){
         //分类滚动监听
@@ -140,6 +141,23 @@ $(document).ready(function(){
         }
         return result;
     }
+=======
+    // $(window).scroll(function(){
+    //     //分类滚动监听
+    //     if($(window).scrollTop()>=top){
+    //         $('.top-title').addClass('fix-top');
+    //     }
+    //     else {
+    //         $('.top-title').removeClass('fix-top');
+    //     }
+    //     // var box=$('.classify-title');
+    //     // for(var i=0;i<box.length;i++){
+    //     //     var dist=box[i].offsetTop;
+    //     //     var classify=box[i].innerHTML;
+    //     //     if($(window).scrollTop()>=dist){top_title.find('.classify').text(classify);}
+    //     // }
+    // });
+>>>>>>> e69d3db8251e8cf0b4fc242ed428951b4f0ed4c7
     //all numer of page
     var fruit_pages=Int($('#fruit_page').val());
     var dry_pages=Int($('#dry_page').val());
@@ -470,8 +488,13 @@ var goodsList=function(page,action){
         var initData=function(res){
             var w_orders=res.w_orders;
             $('.loading').hide();
+<<<<<<< HEAD
             if(w_orders.length==0){
                 $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+=======
+            if(w_orders&&w_orders.length==0){
+                 $('.no_more').show();
+>>>>>>> e69d3db8251e8cf0b4fc242ed428951b4f0ed4c7
                  return;          
             }
                     var fruit_list=res.fruit_list;

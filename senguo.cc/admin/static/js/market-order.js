@@ -49,6 +49,7 @@ window.dataObj.page=1;
 window.dataObj.count=1;
 window.dataObj.action=5;
 window.dataObj.finished=true;
+$('.no_more').hide();
 var scrollLoading=function(){
     var range = 60;             //距下边界长度/单位px          //插入元素高度/单位px  
     var totalheight = 0;   
@@ -58,7 +59,6 @@ var scrollLoading=function(){
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)  
         if(!maxnum) maxnum=window.dataObj.total_page;
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
-        $('.no_more').hide();
         if(window.dataObj.finished&&(main.height()-range) <= totalheight  && window.dataObj.page < maxnum) { 
             $('.no_more').hide();
             $('.loading').show();
@@ -233,6 +233,9 @@ function orderComment(id,order_id,comment){
     var url='';
     var action='comment';
     if(!comment){return warnNotice('请输入您的评论！')}
+    if(comment.length>300){
+        warnNotice('至多可以评论300字!');
+    }
     var data={
         order_id:order_id,
         comment:comment

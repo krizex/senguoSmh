@@ -1,4 +1,4 @@
-.container{padding-bottom: 10px;margin-top:20px;}
+.container{padding-bottom: 10px;padding-top:20px;}
 .order-item{margin-top: 10px;background-color: #fff;padding: 0 10px 10px 10px;}
 .order-item .title{font-weight: 700;font-size: 14px;height: 28px;line-height: 28px;border-bottom:1px solid #f0f0f0;}
 .order-item .title>a{color: #b2b2b2;font-size: 14px;font-weight:normal;}
@@ -14,13 +14,14 @@
 .dash-bt{border-top:1px dashed #f0f0f0;}
 .black-txt{color: #222;}
 .green-txt{color: #84dfa1!important;}
-.comment-box{top: 50%;-webkit-transform:translate(0, -50%)!important;}
+/*.comment-box{top: 50%;-webkit-transform:translate(0, -50%)!important;}*/
 .modal-body>p{font-size: 14px;}
 .btn-group{text-align: center;}
 .btn-group>a{display: inline-block;margin-top:15px;padding: 0 30px;height: 34px;line-height: 34px;color: #fff;font-size: 14px;border-radius: 10px;}
 .bg-green{background-color: #5cb85c;}
 .bg-cancel{background-color: #c3c3c3;}
 .modal-header{top:15px;}
+<<<<<<< HEAD
 .add-comment{background-color: #ff6563;color: #fff;border-radius: 6px;width: 100px;height: 34px;line-height: 34px;text-align: center;font-size: 14px;}
 .wrap-comment-area{text-align: center;}
 .comment-area{font-size: 12px;line-height: 16px;border: none;width: 90%;height: 60px;}
@@ -33,3 +34,6 @@
 
 
 
+=======
+.modal-body>textarea{width:100%;background:#fff;height:100px;border:none;}
+>>>>>>> e69d3db8251e8cf0b4fc242ed428951b4f0ed4c7

@@ -1,9 +1,11 @@
 $(document).ready(function(){   
     //翻页
+    var page=Int($.getUrlParam('page'));
+    var action=$.getUrlParam('action');
+    var total_page=Math.ceil($('.page-total').text());
     $('.page-now').text(page+1);
     $('.page-total').text(total_page);
-    var user_number=$('.comment-list-item').length;
-    getpPage(page,'/admin/comment?action='+action+'page=',user_number);
+    getPage(page,'/admin/comment?action='+action+'&&page=',total_page);
     //del status
     $('.del-com').each(function(){
         var $this=$(this);
@@ -28,7 +30,16 @@ $(document).ready(function(){
     $(".bs-del-com").modal("hide");
     $(".bs-apply-com").modal('show');
 }).on("click","#commit-senguo",function(){
-    applyDel();
+    var $this=$(this);
+     var delete_reason=$('#commit-cont').val();
+    if(!delete_reason){
+        return alert('请输入您的理由!')
+    }
+    if(delete_reason.length>300){
+         return alert('最多可输入300字!')
+    }
+   $('#commit-senguo').attr({'disabled':true});
+    applyDel(delete_reason);
 }).on('click','.reply',function(){
        //回复
         var $this=$(this);
@@ -49,9 +60,6 @@ $(document).ready(function(){
    
     
 var order_id;
-var page=Int($.getUrlParam('page'));
-var action=Int($.getUrlParam('action'));
-var total_page=Math.ceil($('.page-total').text());
 var item_index;
 
 function replay(id,index){
@@ -91,15 +99,11 @@ function collect(target,id){
         function(){alert('网络好像不给力呢~ ( >O< ) ~')})
 }
 
-function applyDel(target,id){
+function applyDel(delete_reason){
     var url='';
     var action='apply_delete_comment';
     var id=Int($(".bs-apply-com").attr('data-id'));
     var index=Int($(".bs-apply-com").attr('data-index'));
-    var delete_reason=$('#commit-cont').val();
-    if(!delete_reason){
-        alert('请输入您的理由!')
-    }
     var data={
         delete_reason:delete_reason
     };
@@ -113,6 +117,7 @@ function applyDel(target,id){
             {
                 $(".bs-apply-com").modal('hide');
                 $('.del-com').eq(index).attr({'disabled':true}).text('申请中');
+                $('#commit-senguo').removeAttr('disabled');
                 $('.del-box').eq(index).removeClass('hidden').find('.del-reason').text(delete_reason);
             }
             else alert(res.error_text);

@@ -6,12 +6,13 @@
 .w-per9{width:90%;}
 .bottom-line{background:url('../svg/cart-paper-border@2x.png') repeat-x;height:8px;background-size:8px;}
 
-.list-group .active{background:#fff;border-color:#ddd;border-left:2px solid #33CC66;}
+.list-group .active{background:#f0f4f0;border-color:#ddd;border-left:2px solid #33CC66;}
 .list-group-item:first-child{border-radius:0px;}
 .list-group-item:last-child{border-radius:0px;}
 .list-group-item{border-left:2px solid #ddd;overflow:hidden;}
-.list-group-item:hover{background:#fff;border-color:#ddd;border-left:2px solid #ddd;}
-.list-group-item.active:hover{background:#fff;border-color:#ddd;border-left-color:#33CC66;}
+
+.list-group-item:hover{background:#f0f4f0;border-color:#ddd;border-left:2px solid #ddd;}
+.list-group-item.active:hover{background:#f0f4f0;border-color:#ddd;border-left-color:#33CC66;}
 
 .cart-list{padding:10px;border-radius:3px;}
 .cart-list-item{position:relative;}
