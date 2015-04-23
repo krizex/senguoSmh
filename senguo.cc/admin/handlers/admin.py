@@ -546,7 +546,7 @@ class Order(AdminBaseHandler):
 				models.CustomerShopFollow.customer_id == order.customer_id).first()
 			if follow:
 				d["shop_new"]=follow.shop_new
-				print("[订单管理]新用户标识：" + d["shop_new"])
+				print("[订单管理]新用户标识：",d["shop_new"])
 			SH2s = []
 			for staff in staffs:
 				staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone}
@@ -679,7 +679,7 @@ class Order(AdminBaseHandler):
 					if not customer:
 						return self.send_fail('customer error')
 					customer.shop_new = 1
-					print('[订单管理]',customer.shop_new,'*****************************')
+					print("[订单管理]",customer.shop_new,'*****************************')
 					self.session.commit()
 
 					try:
@@ -1219,7 +1219,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			d["shop_new"] = 0
 			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
 				models.CustomerShopFollow.customer_id == order.customer_id).first()
-			print('[历史订单]：' + follow.customer_id)
+			print("[历史订单]：",follow.customer_id)
 			if follow:
 				d["shop_new"]=follow.shop_new
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
