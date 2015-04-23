@@ -10,6 +10,7 @@
 .list-group-item:first-child{border-radius:0px;}
 .list-group-item:last-child{border-radius:0px;}
 .list-group-item{border-left:2px solid #ddd;overflow:hidden;}
+
 .list-group-item:hover{background:#f0f4f0;border-color:#ddd;border-left:2px solid #ddd;}
 .list-group-item.active:hover{background:#f0f4f0;border-color:#ddd;border-left-color:#33CC66;}
 
