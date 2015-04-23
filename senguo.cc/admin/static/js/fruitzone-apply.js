@@ -307,7 +307,7 @@ function reApply(evt){
 function Vrify(){
     var phone=$('#phone').val();
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return noticeBox("电话貌似有错o(╯□╰)o");}
+    if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){return noticeBox("电话貌似有错o(╯□╰)o");}
     if(!phone){return noticeBox('手机号不能为空');}
     var action='gencode_shop_apply';
     var url="/fruitzone/phoneVerify?action=admin";

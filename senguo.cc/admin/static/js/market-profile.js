@@ -41,6 +41,22 @@ $(document).ready(function(){
             case 2:$this.text('女');break;
         }
     });
+}).on('click','#setPwd',function(){
+    var pwdBox=new Modal('pwdBox');
+    pwdBox.modal('show');
+    $('.set-pwd-box').show();
+    $('.change-pwd-box').hide();
+    $('#pwdSure').attr({'data-action':'add_password'});   
+}).on('click','#changePwd',function(){
+    var pwdBox=new Modal('pwdBox');
+    pwdBox.modal('show');
+    $('.set-pwd-box').hide();
+    $('.change-pwd-box').show();
+    $('#pwdSure').attr({'data-action':'modify_password'});   
+}).on('click','#pwdSure',function(){
+    var $this=$(this);
+    var action=$this.attr('data-action');
+    setPwd(action);
 });
 
 var wait=60;
@@ -145,7 +161,7 @@ function Vrify(evt){
     evt.preventDefault();
     var phone=$('#enterPhone').val();
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
+    if(phone.length > 11 ||phone.length<11 || !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
     if(!phone){return warnNotice('手机号不能为空');}
     var action='gencode';
     var url="/customer/phoneVerify?action=customer";
@@ -170,24 +186,18 @@ function Vrify(evt){
 
 function TiePhone(evt){
     evt.preventDefault();
-    var phone=$('#enterPhone').val();
-    var code=$('#enterVrify').val();
-    var password=$('#loginPassword').val();
-    var passwconf=$('#passwordConfirm').val();
+    var phone=$('#enterPhone').val().trim();
+    var code=Int($('#enterVrify').val().trim());
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
+    if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
     if(!phone){return warnNotice('请输入手机号');}
-    if(!code){return warnNotice('请输入验证码');}
-    if(!password){return warnNotice('请设置您的手机登录密码！');}
+    if(!code){return warnNotice('请输入验证码');} 
     if(!regNumber.test(code)){return warnNotice('验证码只能为数字！');}
-    if(code>0&&phone.length<6){return warnNotice('验证码为六位数字!');}
-    if(password.length<6){return warnNotice('密码至少为6位！')}
-    if(passwconf!=password){return warnNotice('两次密码输入不一致!')}
-    password = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+    if(code.length>4||code.length<4){return warnNotice('验证码为4位数字!');}
     var url="/customer/phoneVerify?action=customer";
     var action='checkcode';
-    var args={action:action,phone:phone,code:code,password:password};
+    var args={action:action,phone:phone,code:code};
     $.postJson(url,args,
         function(res){
             if(res.success)
@@ -201,4 +211,55 @@ function TiePhone(evt){
         function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
         function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
     );
+}
+
+function setPwd(action){
+     var regPass=/^[0-9a-zA-Z]*$/g;
+     var data;
+     var url='';
+     var args;
+    if(action=='add_password'){
+        var password=$('#loginPassword').val();
+        var passwconf=$('#passwordConfirm').val();
+        if(!password){return warnNotice('请设置您的手机登录密码！');}
+        if(password.length<6 || !regPass.test(password)) {return noticeBox('请输入六位以上字母和数字的组合!');}
+        if(passwconf!=password){return noticeBox('两次密码输入不一致!')}
+        password = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+        data=password;
+            args={
+            action:action,
+            data:data
+        };
+    }  
+    else if(action=='modify_password'){
+        var password=$('#originPassword').val();
+        var newPassword=$('#newPassword').val();
+        var passwconf=$('#newConfirm').val();
+        console.log();
+        if(!password){return warnNotice('请输入原始密码');}
+        if(!newPassword){return warnNotice('请输入新密码！');}
+        if(newPassword.length<6 || !regPass.test(newPassword)) {return noticeBox('请输入六位以上字母和数字的组合!');}
+        if(passwconf!=newPassword){return noticeBox('两次密码输入不一致!')}
+        password = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+        newPassword = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+        data=newPassword;
+        args={
+            action:action,
+            data:data,
+            old_password:password
+        };
+    }    
+     
+        $.postJson(url,args,
+            function(res){
+                if(res.success)
+                {
+                    var pwdBox=new Modal('pwdBox');
+                    pwdBox.modal('hide');
+                }
+                else noticeBox(res.error_text);
+            },
+            function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+            function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        );
 }

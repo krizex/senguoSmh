@@ -21,6 +21,8 @@
         <a href="{{reverse_url('fruitzoneShopList')}}" class="clearfix check_list text-green font16">查看同行商家</a>
         <!--<a href="javascript:;" class="close-page">关闭当前页面</a>-->
     </div>
+    <script type="text/javascript">
+    </script>
 </div>
 {% end %}
 {% block bottom %}
@@ -30,11 +32,19 @@ $(document).ready(function(){
     var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
     var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
     if(isiOS){
-        $('.focus_senguo').each(function(){
-        var $this=$(this);
-         var link=$this.attr('data-src');
-        $this.attr({'href':link});
-    });
+            $('.focus_senguo').each(function(){
+            var $this=$(this);
+             var link=$this.attr('data-src');
+            $this.attr({'href':link});
+        });
     }
-});
+    if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)){
+            $('.focus_senguo').each(function(){
+            var $this=$(this);
+             var link=$this.attr('data-src');
+            $this.attr({'href':link});
+        });
+    }
+    });
+</script>
 {% end %}
