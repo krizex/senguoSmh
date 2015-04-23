@@ -54,6 +54,9 @@ $(document).ready(function(){
         var $parent=$this.parents('.staff-list-item');
         $parent.find('.staff-info-edit').hide();
     });
+}).on('click','.check-order',function(){
+    var $this=$(this);
+    window.open($this.attr('href'));
 });
 
 function hireConfig(target,action,val){
