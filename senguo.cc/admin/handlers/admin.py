@@ -1203,7 +1203,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
 			d['mgoods'] = eval(d['mgoods'])
-			d['create_date'] = order.create_date.strftime('%Y-%m-%d %R')
+			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			################################################################################################
 			# modified : woody
 			#date:2015.3.7
