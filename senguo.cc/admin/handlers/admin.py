@@ -45,7 +45,7 @@ class Access(AdminBaseHandler):
 		# todo: handle state
 		code =self.args["code"]
 		mode = self.args["mode"]
-		# print("mode: ", mode , ", code get:", code)
+		# print("[微信登录]模式：", mode , "，返回码：", code)
 		if mode not in ["mp", "kf"]:
 			return self.send_error(400)
 

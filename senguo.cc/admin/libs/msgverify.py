@@ -53,15 +53,15 @@ def gen_msg_token(phone):
     h.close()
     root = ElementTree.fromstring(res.body.decode())
     if not root[0].text == '2':
-        # print(root[0].text,root[1].text)
+        # print('[验证短信]发送错误：' + root[0].text,root[1].text)
         return root[1].text
     else:
         try:
-            print('send:' + code)
-            # print('send wx_id' + wx_id)
+            print('[验证短信]验证码为：' + code)
+            # print('[验证短信]wx_id：' + wx_id)
             q = s.query(_VerifyCode).filter(_VerifyCode.phone == phone).one()
         except:
-            q =None
+            q = None
 
         if q is not None:
             q.code = code
@@ -161,7 +161,7 @@ def check_msg_token(phone, code):
         q = s.query(_VerifyCode).filter_by(phone=phone).one()
     except:
         return False
-    #print(q.code,code ,q.count,q.wx_id)
+    #print('[验证短信]验证码验证：' + q.code,code,q.count,q.wx_id)
 
     # t = (datetime.datetime.now() - q.create_time)
     # if t.days == 0 and t.seconds >= 18000:
