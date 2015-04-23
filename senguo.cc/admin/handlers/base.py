@@ -182,6 +182,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		print(self.request.full_url())
 		next_url =  self.reverse_url("fruitzoneShopList")
 		return self.get_wexin_oauth_link(next_url = next_url)
+
 	def get_current_user(self):
 		if not self.__account_model__ or not self.__account_cookie_name__:
 			raise Exception("overwrite model to support authenticate.")

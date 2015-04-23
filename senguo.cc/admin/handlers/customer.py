@@ -1630,6 +1630,16 @@ class Recharge(CustomerBaseHandler):
 	def get(self):
 	    return self.render("customer/recharge.html")
 
+class OrderComment(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+	    return self.render("customer/comment-order.html")
+
+class ShopComment(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+	    return self.render("customer/comment-shop.html")
+
 class InsertData(CustomerBaseHandler):
 	@tornado.web.authenticated
 	# @CustomerBaseHandler.check_arguments("code?:str")

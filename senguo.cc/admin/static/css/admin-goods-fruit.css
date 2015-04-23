@@ -36,7 +36,7 @@
 .add-goods-item .upload-img img{height:90px;}
 .add-goods-item .upload-img a{display:inline-block;}
 
-.add-charge-box{border:1px solid #ccc;padding:10px;}
+.add-charge-box{border:1px solid #ccc;padding:10px;margin-top: 10px;}
 .add-charge-list{}
 
 .add-charge-list li{padding:5px 0;border-top:1px solid #ccc;}
