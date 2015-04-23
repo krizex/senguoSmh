@@ -20,75 +20,78 @@
 <input type="hidden" id="dry_page" value="{{context['dry_page']}}"/>
 <input type="hidden" id="shop_name" value="{{context['shop_name']}}"/>
 <span id="shop_imgurl" data-img="{{context['shop_logo']}}"></span>
-<div class="notice-box">
-    <!--<img src="{{static_url('images/banner.png')}}" class="default-banner img"/>-->
-    <div class="notice-board">
-        {% if notices %}
-        <div id="slider" class="swipe" style="visibility: visible;">
-            <div class="swipe-wrap">
-            {% for notice in notices%}
-                <figure>
-                <div class="wrap text-center text-white font16 notice-item">
-                    <label class="title">{{notice[0]}}</label>
-                    <img src="/static/images/banner.png" class="img"/>
-                    <input type="hidden" value="{{notice[1]}}" class="notice-detail"/>
+<div class="wrap-notice-box">
+    <div class="notice-box">
+        <!--<img src="{{static_url('images/banner.png')}}" class="default-banner img"/>-->
+        <div class="notice-board">
+            {% if notices %}
+            <div id="slider" class="swipe" style="visibility: visible;">
+                <div class="swipe-wrap">
+                    {% for notice in notices%}
+                    <figure>
+                        <div class="wrap text-center text-white font16 notice-item">
+                            <label class="title">{{notice[0]}}</label>
+                            <img src="/static/images/banner.png" class="img"/>
+                            <input type="hidden" value="{{notice[1]}}" class="notice-detail"/>
+                        </div>
+                    </figure>
+                    {% end%}
                 </div>
-            </figure>
-            {% end%}
             </div>
+            <nav class="circle">
+                <ul id="position">
+                    {% for notice in notices%}
+                    <li></li>
+                    {% end%}
+                </ul>
+            </nav>
+            {% else %}
+            <img src="/static/images/banner.png" class="default-img img"/>
+            {% end %}
         </div>
-        <nav class="circle">
-            <ul id="position">
-            {% for notice in notices%}
-               <li></li>
-            {% end%}
-            </ul>
-        </nav>
-        {% else %}
-        <img src="/static/images/banner.png" class="default-img img"/>
-        {% end %}
+    </div>
+    <div class="no-mar-btom top-title">
+        <div class="inner text-white rainshed_green  bg_change" id="fruitPosition">
+            <a href="javascript:;"  class="text-white tit choose-classify set-w100-fle text-center">
+                <!--<span>分类</span>
+                <em class="set-inl-blo pull-right"></em>-->
+                <span class="classify text-center set-inl-blo font18"><span id="classify">全部商品</span><em class="icon up font16" style="display:none;"></em><em class="icon down font16" ></em></span>
+            </a>
+        </div>
+        <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle" style="display:none">
+            {% if context['fruit_page'] %}
+            <li class="text-grey6 bg-white pull-left text-center fruit_cassify" id="fruit_goods">水果单品</li>
+            {% end %}
+            {% if context['dry_page'] %}
+            <li class="text-grey6 bg-white pull-left text-center dryfruit_classify" id="dryfruit_goods">干果单品</li>
+            {% end %}
+            {% if menus %}
+            {% for menu in menus  %}
+            <li class="text-grey6 bg-white pull-left text-center menu_goods menu_classify{{menu.id}}" data-id="{{menu.id}}">{{menu.name}}</li>
+            {% end %}
+            {% end %}
+            <li class="text-grey6 bg-white pull-left text-center" id="all_goods">全部商品</li>
+        </ul>
     </div>
 </div>
-<div class="no-mar-btom top-title">
-    <div class="inner text-white rainshed_green  bg_change" id="fruitPosition">
-        <a href="javascript:;"  class="text-white tit choose-classify set-w100-fle text-center">
-            <!--<span>分类</span>
-            <em class="set-inl-blo pull-right"></em>-->
-            <span class="classify text-center set-inl-blo font18"><span id="classify">全部商品</span><em class="icon up font16" style="display:none;"></em><em class="icon down font16" ></em></span>
-        </a>
-    </div>
-    <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle" style="display:none">
-        {% if context['fruit_page'] %}
-        <li class="text-grey6 bg-white pull-left text-center fruit_cassify" id="fruit_goods">水果单品</li>
-        {% end %}
-        {% if context['dry_page'] %}
-        <li class="text-grey6 bg-white pull-left text-center dryfruit_classify" id="dryfruit_goods">干果单品</li>
-        {% end %}
+<div class="wrap-goods-box" id="wrap-goods-box">
+    <div class="goods-box">
+        <!--<p class="text-white no-mar-btom classify-title font18 text-center bg-green" id="fruitPosition">水果单品</p>-->
+        <ul class="goods-list  fruit-list fruit_goods_list">
+        </ul>
+        <p class="text-white no-mar-btom classify-title font18 text-center bg-green dryfruit_classify hidden" id="dryFruitPosition">干果单品</p>
+        <ul class="goods-list fruit-list dryfruit_goods_list" >
+        </ul>
         {% if menus %}
         {% for menu in menus  %}
-        <li class="text-grey6 bg-white pull-left text-center menu_goods menu_classify{{menu.id}}" data-id="{{menu.id}}">{{menu.name}}</li>
-        {% end %}
-        {% end %}
-         <li class="text-grey6 bg-white pull-left text-center" id="all_goods">全部商品</li>
-    </ul>
-</div>
-<div class="goods-box">
-    <!--<p class="text-white no-mar-btom classify-title font18 text-center bg-green" id="fruitPosition">水果单品</p>-->
-    <ul class="goods-list  fruit-list fruit_goods_list">
-    </ul>
-    <p class="text-white no-mar-btom classify-title font18 text-center bg-green dryfruit_classify hidden" id="dryFruitPosition">干果单品</p>
-    <ul class="goods-list fruit-list dryfruit_goods_list" >
-    </ul>
-    {% if menus %}
-    {% for menu in menus  %}
         <p class="text-white no-mar-btom classify-title font18 text-center bg-green menu_classify{{menu.id}} hidden menu_title" id="menu{{menu.id}}">{{menu.name}}</p>
         <ul class="goods-list menu-list menu_goods_list{{menu.id}}" >
         </ul>
-    {% end %}
-    {% end %}
+        {% end %}
+        {% end %}
+    </div>
+    <div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中 ( > < )~</div>
 </div>
-<div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中 ( > < )~</div>
-<div class="no_more text-center text-grey9 font12 mt10" style="display:none">~没有更多商品了呢 ( > < )~</div>
 {% end %}
 {% block other %}
 <div class="modal fade large-img-box" id="large_imgbox">

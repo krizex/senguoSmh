@@ -56,6 +56,8 @@ handlers = [
     (r"/customer/points", handlers.customer.Points, {}, "customerPoints"),
     (r"/customer/balance", handlers.customer.Balance, {}, "customerBalance"),
     (r"/customer/recharge", handlers.customer.Recharge, {}, "customerRecharge"),
+    (r"/customer/shopComment", handlers.customer.ShopComment, {}, "customerShopComment"),
+    (r"/customer/orderComment", handlers.customer.OrderComment, {}, "customerOrderComment"),
     (r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
     (r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
     (r"/customer/phoneVerify", handlers.fruitzone.PhoneVerify, {

@@ -57,23 +57,89 @@ $(document).ready(function(){
     }*/
     var top=$('.top-title').offset().top;
     $('goods-list').last().addClass('m-b60');    
-    $('.bottom-nav').find('li').addClass('add_cart');   
+    $('.bottom-nav').find('li').addClass('add_cart');
+    $(".wrap-goods-box").height($(window).height()-50-$(".wrap-notice-box").height());
     //分类导航置顶
-    $(window).scroll(function(){
+    var s_top = 0;
+    $(".wrap-goods-box").scroll(function(){
         //分类滚动监听
-        if($(window).scrollTop()>=top){
+        if($(".wrap-goods-box").scrollTop()>s_top){
+            $(".notice-box").hide();
             $('.top-title').addClass('fix-top');
+            $(".wrap-goods-box").height($(window).height()-50);
         }
-        else {
+        if($(".wrap-goods-box").scrollTop()==0){
+            $(".notice-box").show();
             $('.top-title').removeClass('fix-top');
+            $(".wrap-goods-box").height($(window).height()-50-$(".wrap-notice-box").height());
         }
-        // var box=$('.classify-title');
-        // for(var i=0;i<box.length;i++){
-        //     var dist=box[i].offsetTop;
-        //     var classify=box[i].innerHTML;
-        //     if($(window).scrollTop()>=dist){top_title.find('.classify').text(classify);}
-        // }
+        s_top = $(".wrap-goods-box").scrollTop();
     });
+    var startX = 0,startY = 0,t = 0;
+    document.addEventListener('touchstart', function (ev) {
+        startX = ev.touches[0].pageX;
+        startY = ev.touches[0].pageY;
+        t = $(".wrap-goods-box").scrollTop();
+    }, false);
+    document.addEventListener('touchmove', function (ev) {
+        event.preventDefault();
+        var moveX,moveY;
+        moveX = ev.touches[0].pageX;
+        moveY = ev.touches[0].pageY;
+        var direction = GetSlideDirection(startX, startY, moveX, moveY);
+        var disY = Math.abs(moveY - startY);
+        switch (direction) {
+            case 0:
+
+                break;
+            case 1:   //上
+                $(".notice-box").css("display","none");
+                $('.top-title').addClass('fix-top');
+                $(".wrap-goods-box").scrollTop(t+disY);
+                break;
+            case 2:   //下
+                var disy = t-disY;
+                if(disy>0){
+                    $(".wrap-goods-box").scrollTop(disy);
+                }else{
+                    $('.top-title').removeClass('fix-top');
+                    $(".notice-box").css("display","block");
+                }
+                break;
+            case 3:   //左
+
+                break;
+            case 4:   //右
+
+                break;
+        }
+    }, false);
+//返回角度
+    function GetSlideAngle(dx, dy) {
+        return Math.atan2(dy, dx) * 180 / Math.PI;
+    }
+//根据起点和终点返回方向 1：向上，2：向下，3：向左，4：向右,0：未滑动
+    function GetSlideDirection(startX, startY, endX, endY) {
+        var dy = startY - endY;
+        var dx = endX - startX;
+        var result = 0;
+        //如果滑动距离太短
+        if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
+            return result;
+        }
+        var angle = GetSlideAngle(dx, dy);
+        if (angle >= -45 && angle < 45) {
+            result = 4;
+        } else if (angle >= 45 && angle < 135) {
+            result = 1;
+        } else if (angle >= -135 && angle < -45) {
+            result = 2;
+        }
+        else if ((angle >= 135 && angle <= 180) || (angle >= -180 && angle < -135)) {
+            result = 3;
+        }
+        return result;
+    }
     //all numer of page
     var fruit_pages=Int($('#fruit_page').val());
     var dry_pages=Int($('#dry_page').val());
@@ -351,14 +417,13 @@ window.dataObj.page=1;
 window.dataObj.count=1;
 window.dataObj.action=5;
 window.dataObj.finished=true;
-$('.no_more').hide();
 var scrollLoading=function(){
     var range = 80;             //距下边界长度/单位px          //插入元素高度/单位px  
     var totalheight = 0;   
     var main = $(".container");                  //主体元素   
-    $(window).scroll(function(){
+    $(".wrap-goods-box").scroll(function(){
         var maxnum = window.dataObj.page_count;            //设置加载最多次数  
-        var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)  
+        var srollPos = $(".wrap-goods-box").scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
         if(!maxnum) maxnum=Int($('#page_count').val());
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
         if(window.dataObj.finished&&(main.height()-range) <= totalheight  && window.dataObj.page < maxnum) { 
@@ -367,8 +432,7 @@ var scrollLoading=function(){
             goodsList(window.dataObj.page,window.dataObj.action);
         }       
         else if(window.dataObj.page ==maxnum){
-              $('.loading').hide();
-              $('.no_more').show();
+              $('.loading').html("~没有更多商品了呢 ( > < )~").show();
         } 
     }); 
 }   
@@ -381,11 +445,10 @@ var goodsList=function(page,action){
         page:page,
         menu_id:window.dataObj.menu_id
     };
-    $('.loading').show();
+    $('.loading').html("~努力加载中 ( > < )~").show();
     $.postJson(url,args,function(res){
         if(res.success)
         {
-            console.log(window.dataObj);
             //get item dom
             if(window.dataObj.goods_item==undefined){
                 getItem('/static/items/customer/market-goods-item.html?v=2015-0320',function(data){
@@ -408,7 +471,7 @@ var goodsList=function(page,action){
             var w_orders=res.w_orders;
             $('.loading').hide();
             if(w_orders.length==0){
-                 $('.no_more').show();
+                $('.loading').html("~没有更多商品了呢 ( > < )~").show();
                  return;          
             }
                     var fruit_list=res.fruit_list;
@@ -528,7 +591,7 @@ var fruitItem=function(box,fruits,type){
                 $charge_item.find('.price').text(price);
                 $charge_item.find('.num').text(num);
                 $charge_item.find('.chargeUnit').text(unit);
-                var $li=$('<li class="border-color set-w100-fle"></li');
+                var $li=$('<li class="border-color set-w100-fle"></li>');
                 $li.append($charge_item);
                 $item.find('.charge-list').append($li);
             }
@@ -540,7 +603,7 @@ var fruitItem=function(box,fruits,type){
             }
         } 
         box.append($item);
-       $('.lazy_img').lazyload({threshold:200});
+        $('.lazy_img').lazyload({container: $("#wrap-goods-box"),threshold:10});
 }
 window.dataObj.fruits={};
 window.dataObj.mgoods={};

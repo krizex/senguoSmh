@@ -2,7 +2,7 @@ body{background-color:#f5f5f7;}
 .map_box{background:url('/static/official_img/slide_bg.jpg') no-repeat;height:882px;background-size:130%;padding-top:60px;}
 .map_box .box{width:800px;margin:0 auto;}
 .map{width:100%;height:700px;}
-.sty1{width:100%;height:18px;line-height:18px;overflow:hidden;}
+.sty1{width:100%;line-height:18px;overflow:hidden;word-break: break-all;}
 .list_box{width:100%;}
 .list_box ul{width:120%;}
 .list_box ul .item{width:205px;height:350px;float:left;margin-right:60px;position:relative;margin-bottom:50px;}
