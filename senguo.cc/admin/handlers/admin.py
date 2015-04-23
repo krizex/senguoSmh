@@ -1219,7 +1219,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			d["shop_new"] = 0
 			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
 				models.CustomerShopFollow.customer_id == order.customer_id).first()
-			print('[历史订单]：'follow.customer_id)
+			print('[历史订单]：' + follow.customer_id)
 			if follow:
 				d["shop_new"]=follow.shop_new
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
