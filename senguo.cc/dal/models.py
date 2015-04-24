@@ -222,7 +222,7 @@ class _AccountApi(_CommonApi):
 				if start == "o5":
 					u.accountinfo.wx_openid = wx_userinfo["openid"]
 					print("[微信登录]更新用户OpenID")
-			print("[微信登录]用户新OpenID为：",wx_userinfo["openid"])
+			print("[微信登录]用户新OpenID：",wx_userinfo["openid"])
 			session.commit()
 		
 			return u

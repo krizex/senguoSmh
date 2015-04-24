@@ -179,7 +179,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		#return self.reverse_url('customerLogin')
 
 	def get_weixin_login_url(self):
-		print("[微信登录]登录链接：",self.request.full_url())
+		print("[微信登录]登录URL：",self.request.full_url())
 		next_url =  self.reverse_url("fruitzoneShopList")
 		return self.get_wexin_oauth_link(next_url = next_url)
 

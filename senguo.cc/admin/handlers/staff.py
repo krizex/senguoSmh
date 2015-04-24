@@ -40,7 +40,7 @@ class Access(StaffBaseHandler):
         # todo: handle state
         code =self.args["code"]
         mode = self.args["mode"]
-        print("mode: ", mode , ", code get:", code)
+        print("[送货员端]微信授权，模式: ", mode , "，返回码：", code)
         if mode not in ["mp", "kf"]:
             return self.send_error(400)
 

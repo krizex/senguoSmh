@@ -18,7 +18,7 @@ class Access(CustomerBaseHandler):
 
 	def get(self):
 		next_url = self.get_argument('next', '')
-		print("[登录]print mark 1",next_url,'first')
+		print("[用户登录]跳转URL：",next_url)
 		if self._action == "login":
 			next_url = self.get_argument("next", "")
 			return self.render("login/m_login.html",
@@ -56,7 +56,7 @@ class Access(CustomerBaseHandler):
 		# return self.redirect('http://www.baidu.com')
 		return self.send_success()
 		# next = self.args['next']
-		print("[手机登录]跳转URI：",next)
+		print("[手机登录]跳转URL：",next)
 		# return self.redirect('/woody')
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
@@ -110,7 +110,7 @@ class RegistByPhone(CustomerBaseHandler):
 			return self.send_fail(error_text="手机号已经绑定其他账号")
 
 		resault = gen_msg_token(phone=self.args["phone"])
-		print("[手机注册]向手机号",phone,"发送验证码")
+		print("[手机注册]发送验证码到手机：",phone)
 		if resault == True:
 			#print("[手机注册]向手机号",phone,"发送短信验证",resault,"成功")
 			return self.send_success()
@@ -157,6 +157,7 @@ class Home(CustomerBaseHandler):
 			shop_id   = shop.id
 			shop_logo  = shop.shop_trademark_url
 		else:
+			print("[访问店铺]店铺不存在：",shop_code)
 			return self.send_fail('shop not found')
 		customer_id = self.current_user.id
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
@@ -269,7 +270,7 @@ class ShopProfile(CustomerBaseHandler):
 		except:
 			return self.send_fail('shop not found')
 		if not shop:
-			print("print mark 2 店铺错误")
+			print("[访问店铺]店铺不存在：",shop_code)
 			return self.send_error(404)
 		shop_id = shop.id
 		shop_name = shop.shop_name
