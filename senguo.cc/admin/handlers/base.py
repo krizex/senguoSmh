@@ -171,7 +171,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				APP_OAUTH_CALLBACK_URL+\
 				self.reverse_url(self.__wexin_oauth_url_name__) + para_str)
 			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
-		print(link)
+		print("[微信登录]授权链接：",link)
 		return link
 
 	def get_login_url(self):
@@ -179,7 +179,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		#return self.reverse_url('customerLogin')
 
 	def get_weixin_login_url(self):
-		print(self.request.full_url())
+		print("[微信登录]登录链接：",self.request.full_url())
 		next_url =  self.reverse_url("fruitzoneShopList")
 		return self.get_wexin_oauth_link(next_url = next_url)
 
@@ -192,7 +192,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 		user_id = self.get_secure_cookie(self.__account_cookie_name__) or b'0'
 		user_id = int(user_id.decode())
-		print(user_id)
+		print("[用户信息]当前用户ID：",user_id)
         # print(type(self))
         # print(self.__account_model__)
 
@@ -230,7 +230,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 							  policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
 									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 #        token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
-		print(token)
+		print("[七牛授权]发送Token：",token)
 		return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 
 	def get_qiniu_token(self,action,id):
@@ -238,9 +238,9 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		token = q.upload_token(BUCKET_SHOP_IMG,expires = 120,\
 			policy = {"callbackUrl":"http://i.senguo.cc/fruitzone/imgcallback",\
 			"callbackBody":"key=$(key)&action=%s&id=%s" % (action,id),"mimeLimit":"image/*"})
-		print(token)
+		print("[七牛授权]获得Token：",token)
 		return token
- 
+
 	def get_comments(self, shop_id, page=0, page_size=5):
 		# comments = self.session.query(models.Accountinfo.headimgurl_small, models.Accountinfo.nickname,\
 		# 	models.Order.comment, models.Order.comment_create_date, models.Order.num,\
@@ -726,7 +726,7 @@ class WxOauth2:
 			access_token = None
 		if access_token is not None:
 			if datetime.datetime.now().timestamp()- (access_token.create_timestamp) <3600  and access_token.access_token:
-				print(access_token.access_token,'***********')
+				print("[微信授权]当前Token：",access_token.access_token)
 				return access_token.access_token
 			else:
 				session.query(models.AccessToken).delete()
@@ -739,7 +739,7 @@ class WxOauth2:
 			session.commit()
 			return access_token.access_token
 		else:
-			print("access_token error")
+			print("[微信授权]Token错误")
 			return None
 
 
@@ -818,7 +818,7 @@ class WxOauth2:
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
 		data = json.loads(res.content.decode("utf-8"))
-		print('data',data)
+		print("[模版消息]发送给管理员：",data)
 		if data["errcode"] != 0:
 			#print("订单提醒发送失败:",data)
 			return False
@@ -876,7 +876,7 @@ class WxOauth2:
 			#print("订单提交成功通知发送失败",data)
 			return False
 		# print('order send SUCCESS')
-		print('send to customer',data)
+		print("[模版消息]发送给客户：",data)
 		return True
 
 	@classmethod
