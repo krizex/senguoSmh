@@ -1028,7 +1028,7 @@ class Follower(AdminBaseHandler):
 		action = self.args["action"]
 		order_by = self.args["order_by"]
 		page = self.args["page"]
-		page_size = 20
+		page_size = 10
 		shop_id = self.current_shop.id
 		count = 1
 
@@ -1070,8 +1070,10 @@ class Follower(AdminBaseHandler):
 			customers[x].shop_point = shop_point.shop_point
 			customers[x].shop_names = [y[0] for y in shop_names]
 
-
-		return self.render("admin/user-manage.html", customers=customers, count=count, page_sum=count//page_size + 1,
+		page_sum=count//page_size
+		if page_sum == 0:
+			page_sum=1
+		return self.render("admin/user-manage.html", customers=customers, count=count, page_sum=page_sum,
 						   context=dict(subpage='user'))
 
 class Staff(AdminBaseHandler):
@@ -1311,6 +1313,13 @@ class Config(AdminBaseHandler):
 			self.session.commit()
 		elif action == "edit_recipe_img":
 			return self.send_qiniu_token("receipt", self.current_shop.id)
+		elif action == "recipe_img_on":#4.24 yy
+			active = self.current_shop.config.receipt_img_active
+			if active == 1:
+				active = 0
+			else:
+				active = 1
+			self.current_shop.config.update(session=self.session,receipt_img_active=active)
 		else:
 			return self.send_error(404)
 		return self.send_success()

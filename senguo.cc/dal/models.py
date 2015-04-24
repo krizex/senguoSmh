@@ -358,8 +358,8 @@ class Accountinfo(MapBase, _CommonApi):
 	wx_province = Column(String(32))
 	wx_city = Column(String(32))
 
-	is_new   = Column(Integer) # 0:new , 1:old
-
+	is_new   = Column(Integer,default = 0) # 0:new , 1:old
+	subscribe  = Column(Integer,default = 0) #0:not foucus,1:foucus#4.24 yy
 	# mp_openid = Column(String(64)) 
 
 	# mp_openid = Column(Integer(64))     #mobile
@@ -677,7 +677,7 @@ class Customer(MapBase, _AccountApi):
 	#added by woody
 	points = relationship("Points")
 
-	shop_new = Column(Integer) # 0:new ,1:old
+	shop_new = Column(Integer,default = 0) # 0:new ,1:old
 
 #woody
 class Points(MapBase,_CommonApi):
@@ -1279,6 +1279,8 @@ class Config(MapBase, _CommonApi):
 	periods = relationship("Period") #时间段设置
 
 	intime_period = Column(Integer,default = 0) 
+	#4.24 add receipt_img_active
+	receipt_img_active = Column(Integer,default = 1)
 
 #商城首页的公告
 class Notice(MapBase):

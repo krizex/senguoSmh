@@ -267,8 +267,9 @@ function orderPrint(target){
     var paid=parent.find('.pay-status').text();
     var totalPrice=parent.find('.goods-total-charge').text();
     var goods=parent.find('.goods-list')[0].innerHTML;
-    var print_remark=$('.shop-receipt-remark').val();
-    var print_img=$('.shop-receipt-img').val();
+    var print_remark=$('.shop-receipt-info').val();
+    var print_img=$('.shop-receipt-info').attr('data-img');
+    var print_img_active=$('.shop-receipt-info').attr('data-active');
     var saler_remark=parent.find('.order_remark').text(); 
     var user_remark=parent.find('.message-content').text(); 
     $.getItem('/static/items/admin/order-print-page.html?v=2015-04-14',function(data){
@@ -287,8 +288,15 @@ function orderPrint(target){
         if(user_remark!='') {$item.find('.user-remark').show().find('.remark').text(user_remark);}
         if(user_remark=='null'){$item.find('.user-remark').hide()}
         if(print_remark) {$item.find('.extra-info-box').show().find('.print-remark').text(print_remark); }
-        if(!print_img) {$item.find('.shop-img').remove();}
-        else {$item.find('.shop-img img').attr({'src':print_img});}
+        if(print_img_active == 1){
+             if(!print_img) {
+                $item.find('.shop-img').remove();
+            }
+            else {
+                $item.find('.shop-img img').attr({'src':print_img});
+                console.log(233333);
+            }
+        }
         if (paid == true) {
             $item.find('.moneyPaid').text('余额支付');
         } else {

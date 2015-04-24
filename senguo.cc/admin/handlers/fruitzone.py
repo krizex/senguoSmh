@@ -235,6 +235,7 @@ class ShopApply(FruitzoneBaseHandler):
 			wx_openid = self.current_user.accountinfo.wx_openid
 			# wx_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'
 			subscribe = WxOauth2.get_user_subcribe(wx_openid)
+			self.current_user.accountinfo.update(session=self.session,subscribe=subscribe)
 			# print("subscribe",subscribe,wx_openid)
 			# subscribe = 0
 			# if not self.current_user.accountinfo.phone or \

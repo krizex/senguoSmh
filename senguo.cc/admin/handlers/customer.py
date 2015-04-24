@@ -1718,26 +1718,26 @@ class InsertData(CustomerBaseHandler):
 		# 				accountinfo.is_new = 1
 		# 				#print(accountinfo.is_new)
 		# 				# self.session.commit()
-		try:
-			follow_info= session.query(models.CustomerShopFollow).count()
-		except:
-			return self.send_fail('follow_list error')
-		f_page = int(follow_info/100)  if follow_info % 100 == 0 else int(follow_info/100) +1
-		n=0
-		for x in range(f_page):
-			offset  = x * 100
-			n=n+1
-			# print(n)
-			follow_list = self.session.query(models.CustomerShopFollow).offset(offset).limit(100)
-			if follow_list:
-				for follow in follow_list:
-					customer_id = follow.customer_id
-					shop_id = follow.shop_id
-					order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,models.Order.shop_id == shop_id,or_(models.Order.status == 5,\
-						models.Order.status == 6 ,models.Order.status == 10))).all()
-					# session.close()
-					if order_list:
-						follow.shop_new = 1
+		# try:
+		# 	follow_info= session.query(models.CustomerShopFollow).count()
+		# except:
+		# 	return self.send_fail('follow_list error')
+		# f_page = int(follow_info/100)  if follow_info % 100 == 0 else int(follow_info/100) +1
+		# n=0
+		# for x in range(f_page):
+		# 	offset  = x * 100
+		# 	n=n+1
+		# 	print(n)
+		# 	follow_list = self.session.query(models.CustomerShopFollow).offset(offset).limit(100)
+		# 	if follow_list:
+		# 		for follow in follow_list:
+		# 			customer_id = follow.customer_id
+		# 			shop_id = follow.shop_id
+		# 			order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,models.Order.shop_id == shop_id,or_(models.Order.status == 5,\
+		# 				models.Order.status == 6 ,models.Order.status == 10))).all()
+		# 			# session.close()
+		# 			if order_list:
+		# 				follow.shop_new = 1
 
 		# try:
 		# 	config_info = self.session.query(models.Config).count()
@@ -1751,7 +1751,6 @@ class InsertData(CustomerBaseHandler):
 		# 		for config in config_list:
 		# 			if config.intime_period == 0 or config.intime_period == None:
 		# 				config.intime_period = 30
-		session.commit()
 
 
 		return self.send_success()
