@@ -199,10 +199,10 @@ class _AccountApi(_CommonApi):
 	def register_with_wx(cls, session, wx_userinfo):
 		# 判断是否在本账户里存在该用户
 		u = cls.login_by_unionid(session, wx_userinfo["unionid"])
-		print("login register_with_wx")
+		print("[微信登录]用户登录")
 		if u:
 			# 已存在用户，则更新微信信息
-			print("user exists")
+			print("[微信登录]用户存在，更新用户资料")
 			u.accountinfo.wx_country=wx_userinfo["country"]
 			u.accountinfo.wx_province=wx_userinfo["province"]
 			u.accountinfo.wx_city=wx_userinfo["city"]
@@ -213,16 +213,16 @@ class _AccountApi(_CommonApi):
 			#####################################################################################
 			# update wx_openid
 			#####################################################################################
-			print(u.accountinfo.wx_openid)
+			print("[微信登录]用户老OpenID：",u.accountinfo.wx_openid)
 			old = u.accountinfo.wx_openid
 			old_start = old[0:2]
 			if old_start == "o7":
 				start = wx_userinfo['openid'][0:2]
-				print("start:",start)
+				print("[微信登录]用户新OpenID为",start,"开头")
 				if start == "o5":
 					u.accountinfo.wx_openid = wx_userinfo["openid"]
-					print("update openid")
-			print(wx_userinfo["openid"])
+					print("[微信登录]更新用户OpenID")
+			print("[微信登录]用户新OpenID为：",wx_userinfo["openid"])
 			session.commit()
 		
 			return u
@@ -506,9 +506,9 @@ class Shop(MapBase, _CommonApi):
 		try:
 			order_count = self.session.query(Order).filter_by(shop_id = shop_id).count()
 		except:
-			print('error')
+			print('print mark 3: error')
 			return None
-		print('success')
+		print('print mark 4: success')
 		return order_count
 
 class ShopAuthenticate(MapBase,_AccountApi):
@@ -1114,9 +1114,9 @@ class Order(MapBase, _CommonApi):
 				charge_type.fruit.storage+= num
 				charge_type.fruit.current_saled -=num
 				charge_type.fruit.saled -= num
-				print(num)
+				print("print mark 5:",num)
 		if mgoods:
-			print(mgoods,'**********************************')
+			print("print mark 6:",mgoods,'**********************************')
 			charge_types = session.query(MChargeType).filter(MChargeType.id.in_(mgoods.keys())).all()
 			for charge_type in charge_types:
 				# print("before",charge_type.mgoods.storage,charge_type.mgoods.current_saled)
