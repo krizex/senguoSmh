@@ -39,10 +39,10 @@ class Access(CustomerBaseHandler):
 	def post(self):
 		phone = self.args['phone']
 		password = self.args['password']
-		
+
 		u = models.Customer.regist_by_phone_password(self.session, self.args["phone"], self.args["password"])
-		print(u,u.id)
-		print(phone,password)
+		print("[手机登录]用户：",u,"，ID：",u.id)
+		print("[手机登录]手机号码：",phone,"，密码：",password)
 		# u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
 		if not u:
 			return self.send_fail(error_text = '用户不存在或密码不正确 ')
@@ -56,7 +56,7 @@ class Access(CustomerBaseHandler):
 		# return self.redirect('http://www.baidu.com')
 		return self.send_success()
 		# next = self.args['next']
-		print(next)
+		print("[手机登录]跳转URI：",next)
 		# return self.redirect('/woody')
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
@@ -105,13 +105,13 @@ class RegistByPhone(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments("phone:str")
 	def handle_gencode(self):
-		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first() 
+		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first()
 		if a:
 			return self.send_fail(error_text="手机号已经绑定其他账号")
 
 		resault = gen_msg_token(phone=self.args["phone"])
 		if resault == True:
-			print(resault,'send success')
+			print([手机注册],resault,'send success')
 			return self.send_success()
 		else:
 			return self.send_fail(resault)
@@ -1125,7 +1125,7 @@ class Cart(CustomerBaseHandler):
 				send_time = (tomorrow).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
 			start_time = period.start_time
 			end_time = period.end_time
-			
+
 
 		elif self.args["type"] == 1:#立即送
 			if totalPrice < config.min_charge_now:
@@ -1336,7 +1336,7 @@ class Order(CustomerBaseHandler):
 			page = self.args['page']
 			offset = (page - 1) * 10
 			orders = [x for x in self.current_user.orders if x.status == 1]
-			# woody	
+			# woody
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 
@@ -1458,7 +1458,7 @@ class Order(CustomerBaseHandler):
 					point_history.each_point = 5
 					self.session.add(point_history)
 					self.session.commit()
-		
+
 			#need to rocord this poist history?
 		else:
 			return self.send_error(404)
@@ -1671,7 +1671,7 @@ class InsertData(CustomerBaseHandler):
 
 		# 	self.session.commit()
 
-		
+
 		orderlist = self.session.query(models.Order).all()
 		if not orderlist:
 			self.send_fail("orderlist error")
@@ -1736,7 +1736,7 @@ class InsertData(CustomerBaseHandler):
 					# session.close()
 					if order_list:
 						follow.shop_new = 1
-		
+
 
 		try:
 			config_info = self.session.query(models.Config).count()
