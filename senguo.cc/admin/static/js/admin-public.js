@@ -52,7 +52,7 @@ function toggle(trigger,target){
         if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
             $this.siblings(target).toggle();
         }
-        return false;
+        //return false;
     })
 }
 

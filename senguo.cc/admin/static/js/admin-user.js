@@ -31,6 +31,6 @@ $(document).ready(function(){
     if(user_type=='all') $('.all_user').addClass('active');
     else if(user_type=='old') $('.old_user').addClass('active');
 }).on('click','.history-order',function(){
-    var $this=$(this);
-    window.open($this.attr('href'));
+    // var $this=$(this);
+    // window.open($this.attr('href'));
 });
