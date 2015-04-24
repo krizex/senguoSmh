@@ -18,7 +18,7 @@ class Access(CustomerBaseHandler):
 
 	def get(self):
 		next_url = self.get_argument('next', '')
-		print(next_url,'first')
+		print("[登录]print mark 1",next_url,'first')
 		if self._action == "login":
 			next_url = self.get_argument("next", "")
 			return self.render("login/m_login.html",
@@ -111,7 +111,7 @@ class RegistByPhone(CustomerBaseHandler):
 
 		resault = gen_msg_token(phone=self.args["phone"])
 		if resault == True:
-			print([手机注册],resault,'send success')
+			print("[手机注册]向手机号",phone,"发送短信验证码：",resault)
 			return self.send_success()
 		else:
 			return self.send_fail(resault)
@@ -137,7 +137,7 @@ class RegistByPhone(CustomerBaseHandler):
 			# 	self.session.add(u)
 			# 	self.session.commit()
 			self.set_current_user(u, domain=ROOT_HOST_NAME)
-			print(u.id)
+			print("[手机注册]手机号",phone,"注册成功，用户ID为：",u.id)
 			return self.send_success()
 
 
@@ -268,7 +268,7 @@ class ShopProfile(CustomerBaseHandler):
 		except:
 			return self.send_fail('shop not found')
 		if not shop:
-			print("error shop")
+			print("print mark 2 店铺错误")
 			return self.send_error(404)
 		shop_id = shop.id
 		shop_name = shop.shop_name
@@ -353,7 +353,7 @@ class ShopProfile(CustomerBaseHandler):
 				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id\
 					,shop_id = shop_id).first()
 			except:
-				print("shop_follow error")
+				print("店铺关注出错")
 				self.send_fail("shop_follow error")
 			if signin:
 
@@ -446,7 +446,7 @@ class Members(CustomerBaseHandler):
 	def get(self):
 		# shop_id = self.shop_id
 		shop_id = int(self.get_cookie("market_shop_id"))
-		print(shop_id)
+		print("[店铺成员]当前店铺ID：",shop_id)
 		admin_id = self.session.query(models.Shop.admin_id).filter_by(id=shop_id).first()
 		if not admin_id:
 			return self.send_error(404)
@@ -1149,7 +1149,7 @@ class Cart(CustomerBaseHandler):
 		address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		if not address:
 			return self.send_fail("没找到地址", 404)
-		print(address.receiver,'******************************************')
+		print("[提交订单]送货地址：",address.receiver)
 
 		# 已支付、付款类型、余额、积分处理
 		money_paid = False
@@ -1224,12 +1224,12 @@ class Cart(CustomerBaseHandler):
 		customer_info = self.session.query(models.Accountinfo).filter_by(id = self.current_user.id).first()
 		customer_name = address.receiver
 		c_tourse      = customer_info.wx_openid
-		print(c_tourse,'******************************************')
+		print("[提交订单]用户OpenID：",c_tourse)
 
 		##################################################
 		#goods
 		goods = []
-		print(f_d,m_d)
+		print("[提交订单]订单详情：",f_d,m_d)
 		session = self.session
 		for f in f_d:
 			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
@@ -1254,11 +1254,11 @@ class Cart(CustomerBaseHandler):
 			# print('m',m)
 		goods = str(goods)[1:-1]
 		order_totalPrice = float('%.1f'% totalPrice)
-		print(order_totalPrice,"*******************8")
+		print("[提交订单]订单总价：",order_totalPrice)
 		session = self.session
 		# send_time     = order.get_sendtime(session,order.id)
 		send_time = order.send_time
-		print(goods,'************************************************')
+		print("[提交订单]订单详情：",goods)
 		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
 			customer_name,order_totalPrice,send_time,goods,phone)
 		# send message to customer
@@ -1362,8 +1362,8 @@ class Order(CustomerBaseHandler):
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
-			print(offset)
-			print(total_count)
+			print("[订单列表]滚动加载offset：",offset)
+			print("[订单列表]滚动加载total：",total_count)
 			if offset + 10 <= total_count:
 				orders = orders[offset:offset + 10]
 			elif offset < total_count and offset + 10 >= total_count:
