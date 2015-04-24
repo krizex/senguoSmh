@@ -151,13 +151,13 @@ class Home(CustomerBaseHandler):
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
 		except:
-			print("[访问店铺]店铺不存在：",shop_code)
 			return self.send_fail('shop error')
 		if shop:
 			shop_name = shop.shop_name
 			shop_id   = shop.id
 			shop_logo  = shop.shop_trademark_url
 		else:
+			print("[访问店铺]店铺不存在：",shop_code)
 			return self.send_fail('shop not found')
 		customer_id = self.current_user.id
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
