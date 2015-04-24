@@ -87,13 +87,13 @@ class ShopAdminManage(SuperBaseHandler):
 			return self.send_error(404)
 		# 排序规则id, offset 和 limit
 		q = q.order_by(models.ShopAdmin.id.desc()).offset(offset).limit(self._page_count)
-		print(q,'*******************************')
+		#print("[超级管理员]",q,'*******************************')
 
 		admins = q.all()
-		print(q.count())
+		#print(q.count())
 		#print(admins)
-		for admin in admins:
-		    print(admin)
+		#for admin in admins:
+		#    print(admin)
 		# admins 是models.ShopAdmin的实例的列表，具体属性可以去dal/models.py中看到
 		return self.render("superAdmin/shop-admin-manage.html", context=dict(admins = admins, count=count,sunpage='shopAadminManage',action=self._action))
 	@tornado.web.authenticated
@@ -253,7 +253,7 @@ class ShopManage(SuperBaseHandler):
 				content = message_fail_content)
 			headers = dict(Host = '106.ihuyi.cn',)
 			r = requests.post(url,data = postdata , headers = headers)
-			print(r.text)
+			print("[超级管理员]审核通知短信平台返回信息：",r.text)
 
 			reason = "原因 : " + message_reason
 

@@ -312,7 +312,7 @@ class SuperBaseHandler(_AccountBaseHandler):
 		try:
 			shops = session.query(models.Shop).filter_by(status = 1).all()
 		except:
-			print('shops error')
+			print("[超级管理员]shops error")
 		if shops:
 			for shop in shops:
 				shop_code = shop.shop_code
@@ -340,7 +340,7 @@ class SuperBaseHandler(_AccountBaseHandler):
 						shop.status =0
 						close_shop_list.append(shop_code)
 				session.commit()
-			print(close_shop_list)
+			print("[超级管理员]关闭店铺：",close_shop_list)
 			# return self.send_success(close_shop_list = close_shop_list)
 	def get_login_url(self):
 		return self.get_wexin_oauth_link(next_url=self.request.full_url())
