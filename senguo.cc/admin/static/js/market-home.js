@@ -63,17 +63,16 @@ $(document).ready(function(){
     var s_top = 0;
    $(window).scroll(function(){
         //分类滚动监听
-        if($(window).scrollTop()>s_top){
-            $(".notice-box").hide();
+        if($(window).scrollTop()>top){
+            //$(".notice-box").hide();
             $('.top-title').addClass('fix-top');
             //$(".wrap-goods-box").height($(window).height()-50);
-        }
-        if($(window).scrollTop()==0){
-            $(".notice-box").show();
+        }else{
+            //$(".notice-box").show();
             $('.top-title').removeClass('fix-top');
             //$(".wrap-goods-box").height($(window).height()-50-$(".wrap-notice-box").height());
         }
-        s_top = $(".wrap-goods-box").scrollTop();
+        //s_top = $(".wrap-goods-box").scrollTop();
     });
 
     /*var startX = 0,startY = 0,t = 0;
@@ -141,21 +140,6 @@ $(document).ready(function(){
         }
         return result;
     }
-    // $(window).scroll(function(){
-    //     //分类滚动监听
-    //     if($(window).scrollTop()>=top){
-    //         $('.top-title').addClass('fix-top');
-    //     }
-    //     else {
-    //         $('.top-title').removeClass('fix-top');
-    //     }
-    //     // var box=$('.classify-title');
-    //     // for(var i=0;i<box.length;i++){
-    //     //     var dist=box[i].offsetTop;
-    //     //     var classify=box[i].innerHTML;
-    //     //     if($(window).scrollTop()>=dist){top_title.find('.classify').text(classify);}
-    //     // }
-    // });
     //all numer of page
     var fruit_pages=Int($('#fruit_page').val());
     var dry_pages=Int($('#dry_page').val());
@@ -492,9 +476,9 @@ var goodsList=function(page,action){
         var initData=function(res){
             var w_orders=res.w_orders;
             $('.loading').hide();
-            if(w_orders.length==0){
-                $('.loading').html("~没有更多商品了呢 ( > < )~").show();
-                 return;
+            if(w_orders&&w_orders.length==0){
+                 $('.no_more').show();
+                 return;          
             }
                     var fruit_list=res.fruit_list;
                     var dry_fruit_list=res.dry_fruit_list;
