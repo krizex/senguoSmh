@@ -24,16 +24,6 @@
 .add-comment{background-color: #ff6563;color: #fff;border-radius: 6px;width: 100px;height: 34px;line-height: 34px;text-align: center;font-size: 14px;}
 .wrap-comment-area{text-align: center;}
 .comment-area{font-size: 12px;line-height: 16px;border: none;width: 90%;height: 60px;}
-<<<<<<< HEAD
-.p-com{padding: 5px 0;line-height: 34px !important;height: 34px;}
-
-
-
-
-
-.modal-body>textarea{width:100%;background:#fff;height:100px;border:none;}
-
-=======
 .p-com{padding: 5px 0;line-height: 34px!important;height: 34px;}
 .modal-body>textarea{width:100%;background:#fff;height:100px;border:none;}
->>>>>>> 9a8b26ea60f62fb0c4d8e87207be2fd792dff45e
+
