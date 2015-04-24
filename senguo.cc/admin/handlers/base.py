@@ -820,7 +820,7 @@ class WxOauth2:
 		data = json.loads(res.content.decode("utf-8"))
 		print("[模版消息]发送给管理员：",data)
 		if data["errcode"] != 0:
-			#print("订单提醒发送失败:",data)
+			#print("[模版消息]订单提醒发送失败:",data)
 			return False
 		return True
 
@@ -847,8 +847,9 @@ class WxOauth2:
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
 		data = json.loads(res.content.decode("utf-8"))
+		print("[模版消息]发送给配送员：",data)
 		if data["errcode"] != 0:
-		#    print("订单提醒发送失败:",data)
+		#    print("[模版消息]订单提醒发送失败:",data)
 			return False
 		return True
 
@@ -873,7 +874,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata))
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			#print("订单提交成功通知发送失败",data)
+			#print("[模版消息]订单提交成功通知发送失败",data)
 			return False
 		# print('order send SUCCESS')
 		print("[模版消息]发送给客户：",data)
