@@ -58,23 +58,23 @@ $(document).ready(function(){
     var top=$('.top-title').offset().top;
     $('goods-list').last().addClass('m-b60');    
     $('.bottom-nav').find('li').addClass('add_cart');
-    //$(".wrap-goods-box").height($(window).height()-50-$(".wrap-notice-box").height());
+    $(".wrap-goods-box").height($(window).height()-50-$(".wrap-notice-box").height());
     //分类导航置顶
     var s_top = 0;
-   $(window).scroll(function(){
+   /* $(".wrap-goods-box").scroll(function(){
         //分类滚动监听
-        if($(window).scrollTop()>s_top){
+        if($(".wrap-goods-box").scrollTop()>s_top){
             $(".notice-box").hide();
             $('.top-title').addClass('fix-top');
-            //$(".wrap-goods-box").height($(window).height()-50);
+            $(".wrap-goods-box").height($(window).height()-50);
         }
-        if($(window).scrollTop()==0){
+        if($(".wrap-goods-box").scrollTop()==0){
             $(".notice-box").show();
             $('.top-title').removeClass('fix-top');
-            //$(".wrap-goods-box").height($(window).height()-50-$(".wrap-notice-box").height());
+            $(".wrap-goods-box").height($(window).height()-50-$(".wrap-notice-box").height());
         }
         s_top = $(".wrap-goods-box").scrollTop();
-    });
+    });*/
 
     /*var startX = 0,startY = 0,t = 0;
     document.addEventListener('touchstart', function (ev) {
@@ -437,9 +437,9 @@ var scrollLoading=function(){
     var range = 80;             //距下边界长度/单位px          //插入元素高度/单位px  
     var totalheight = 0;   
     var main = $(".container");                  //主体元素   
-    $(window).scroll(function(){
+    $(".wrap-goods-box").scroll(function(){
         var maxnum = window.dataObj.page_count;            //设置加载最多次数  
-        var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
+        var srollPos = $(".wrap-goods-box").scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
         if(!maxnum) maxnum=Int($('#page_count').val());
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
         if(window.dataObj.finished&&(main.height()-range) <= totalheight  && window.dataObj.page < maxnum) { 
