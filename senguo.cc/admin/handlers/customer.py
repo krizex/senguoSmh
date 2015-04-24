@@ -110,8 +110,9 @@ class RegistByPhone(CustomerBaseHandler):
 			return self.send_fail(error_text="手机号已经绑定其他账号")
 
 		resault = gen_msg_token(phone=self.args["phone"])
+		print("[手机注册]向手机号",phone,"发送验证码")
 		if resault == True:
-			print("[手机注册]向手机号",phone,"发送短信验证码：",resault)
+			#print("[手机注册]向手机号",phone,"发送短信验证",resault,"成功")
 			return self.send_success()
 		else:
 			return self.send_fail(resault)
