@@ -39,7 +39,7 @@ def main():
     application.listen(options.port)
     if options.debug:debug_str = "in debug mode"
     else:debug_str = "in production mode"
-    print("running senguo.cc {0} @ {1}...".format(debug_str, 
+    print("running senguo.cc {0} @ {1}...".format(debug_str,
                                                  options.port))
     timer_main()
    # print("garbage collector: collected %d objecs"%gc.collect())
@@ -50,7 +50,7 @@ def functest(args):
 def delete(args):
     session =  DBSession()
     session.query(models.AccessToken).delete()
-    print(session.query(models.AccessToken).count(),'hope  it is 0')
+    print("[AccessToken]更新，期望打印0：",session.query(models.AccessToken).count())
     session.commit()
 
 def timer_main():
@@ -61,7 +61,7 @@ def timer_main():
     # time.sleep(10)
     # print('time over')
 
-    
+
 if __name__ == "__main__":
     main()
 

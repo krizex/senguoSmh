@@ -171,7 +171,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				APP_OAUTH_CALLBACK_URL+\
 				self.reverse_url(self.__wexin_oauth_url_name__) + para_str)
 			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
-		print("[微信登录]授权链接：",link)
+		print("[微信授权]授权链接：",link)
 		return link
 
 	def get_login_url(self):
