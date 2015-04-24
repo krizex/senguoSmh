@@ -1723,10 +1723,13 @@ class InsertData(CustomerBaseHandler):
 			follow_info= session.query(models.CustomerShopFollow).count()
 		except:
 			return self.send_fail('follow_list error')
-		f_page = int(follow_info/200)  if follow_info % 200 == 0 else int(follow_info/200) +1
+		f_page = int(follow_info/100)  if follow_info % 100 == 0 else int(follow_info/100) +1
+		n=0
 		for x in range(f_page):
-			offset  = x * 200
-			follow_list = self.session.query(models.CustomerShopFollow).offset(offset).limit(200)
+			offset  = x * 100
+			n=n+1
+			print(n)
+			follow_list = self.session.query(models.CustomerShopFollow).offset(offset).limit(100)
 			if follow_list:
 				for follow in follow_list:
 					customer_id = follow.customer_id
@@ -1736,20 +1739,22 @@ class InsertData(CustomerBaseHandler):
 					# session.close()
 					if order_list:
 						follow.shop_new = 1
+					else:
+						print('23333')
 		
 
-		try:
-			config_info = self.session.query(models.Config).count()
-		except:
-			return self.send_fail('config_info error')
-		c_page = int(config_info/200)  if config_info % 200 == 0 else int(config_info/200) +1
-		for x in range(c_page):
-			offset  = x * 200
-			config_list = self.session.query(models.Config).offset(offset).limit(200)
-			if config_list:
-				for config in config_list:
-					if config.intime_period == 0 or config.intime_period == None:
-						config.intime_period = 30
+		# try:
+		# 	config_info = self.session.query(models.Config).count()
+		# except:
+		# 	return self.send_fail('config_info error')
+		# c_page = int(config_info/200)  if config_info % 200 == 0 else int(config_info/200) +1
+		# for x in range(c_page):
+		# 	offset  = x * 200
+		# 	config_list = self.session.query(models.Config).offset(offset).limit(200)
+		# 	if config_list:
+		# 		for config in config_list:
+		# 			if config.intime_period == 0 or config.intime_period == None:
+		# 				config.intime_period = 30
 		session.commit()
 
 
