@@ -63,17 +63,16 @@ $(document).ready(function(){
     var s_top = 0;
    $(window).scroll(function(){
         //分类滚动监听
-        if($(window).scrollTop()>s_top){
-            $(".notice-box").hide();
+        if($(window).scrollTop()>top){
+            //$(".notice-box").hide();
             $('.top-title').addClass('fix-top');
             //$(".wrap-goods-box").height($(window).height()-50);
-        }
-        if($(window).scrollTop()==0){
-            $(".notice-box").show();
+        }else{
+            //$(".notice-box").show();
             $('.top-title').removeClass('fix-top');
             //$(".wrap-goods-box").height($(window).height()-50-$(".wrap-notice-box").height());
         }
-        s_top = $(".wrap-goods-box").scrollTop();
+        //s_top = $(".wrap-goods-box").scrollTop();
     });
 
     /*var startX = 0,startY = 0,t = 0;
