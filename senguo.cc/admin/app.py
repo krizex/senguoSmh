@@ -13,7 +13,7 @@ define("port", default=8887, help="port, defualt: 8888")
 import os
 
 from urls import handlers
-
+from dal.db_configs import DBSession
 settings = {
     "static_path": os.path.join(os.path.dirname(__file__), "static"),
     "static_url_prefix": "/static/",
@@ -39,22 +39,29 @@ def main():
     application.listen(options.port)
     if options.debug:debug_str = "in debug mode"
     else:debug_str = "in production mode"
-    print("running senguo.cc {0} @ {1}...".format(debug_str, 
+    print("running senguo.cc {0} @ {1}...".format(debug_str,
                                                  options.port))
     timer_main()
-#    print("garbage collector: collected %d objecs"%gc.collect())
+   # print("garbage collector: collected %d objecs"%gc.collect())
     tornado.ioloop.IOLoop.instance().start()
 
 def functest(args):
     print('hello world,this is',args[0])
+def delete(args):
+    session =  DBSession()
+    session.query(models.AccessToken).delete()
+    print("[AccessToken]更新，期望打印0：",session.query(models.AccessToken).count())
+    session.commit()
 
 def timer_main():
     mytime = Pysettimer(SuperBaseHandler.shop_close,(),60*60*24,True)
     mytime.start()
+    deletToken = Pysettimer(delete,(),60*10,True)
+    deletToken.start()
     # time.sleep(10)
     # print('time over')
 
-    
+
 if __name__ == "__main__":
     main()
 

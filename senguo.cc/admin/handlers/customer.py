@@ -39,10 +39,10 @@ class Access(CustomerBaseHandler):
 	def post(self):
 		phone = self.args['phone']
 		password = self.args['password']
-		
+
 		u = models.Customer.regist_by_phone_password(self.session, self.args["phone"], self.args["password"])
-		print(u,u.id)
-		print(phone,password)
+		print("[手机登录]用户：",u,"，ID：",u.id)
+		print("[手机登录]手机号码：",phone,"，密码：",password)
 		# u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
 		if not u:
 			return self.send_fail(error_text = '用户不存在或密码不正确 ')
@@ -56,7 +56,7 @@ class Access(CustomerBaseHandler):
 		# return self.redirect('http://www.baidu.com')
 		return self.send_success()
 		# next = self.args['next']
-		print(next)
+		print("[手机登录]跳转URI：",next)
 		# return self.redirect('/woody')
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
@@ -105,12 +105,13 @@ class RegistByPhone(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments("phone:str")
 	def handle_gencode(self):
-		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first() 
+		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first()
 		if a:
 			return self.send_fail(error_text="手机号已经绑定其他账号")
 
 		resault = gen_msg_token(phone=self.args["phone"])
 		if resault == True:
+			print([手机注册],resault,'send success')
 			return self.send_success()
 		else:
 			return self.send_fail(resault)
@@ -1124,7 +1125,7 @@ class Cart(CustomerBaseHandler):
 				send_time = (tomorrow).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
 			start_time = period.start_time
 			end_time = period.end_time
-			
+
 
 		elif self.args["type"] == 1:#立即送
 			if totalPrice < config.min_charge_now:
@@ -1214,6 +1215,7 @@ class Cart(CustomerBaseHandler):
 		shop_name     = shop.shop_name
 		order_id      = order.num
 		order_type    = order.type
+		phone         = order.phone
 		if order_type == 1:
 			order_type = '立即送'
 		else:
@@ -1258,7 +1260,7 @@ class Cart(CustomerBaseHandler):
 		send_time = order.send_time
 		print(goods,'************************************************')
 		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
-			customer_name,order_totalPrice,send_time,goods)
+			customer_name,order_totalPrice,send_time,goods,phone)
 		# send message to customer
 		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
 
@@ -1334,7 +1336,7 @@ class Order(CustomerBaseHandler):
 			page = self.args['page']
 			offset = (page - 1) * 10
 			orders = [x for x in self.current_user.orders if x.status == 1]
-			# woody	
+			# woody
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 
@@ -1346,7 +1348,7 @@ class Order(CustomerBaseHandler):
 			elif offset <= total_count and offset + 10 >= total_count:
 				orders = orders[offset:]
 			else:
-				return self.send_fail("order pages errors")
+				return self.send_fail("暂无订单")
 			# print('orders',orders)
 			orders = self.get_orderData(session,orders)
 			# print('after ',orders)
@@ -1396,7 +1398,7 @@ class Order(CustomerBaseHandler):
 			elif offset < total_count and offset + 10 >= total_count:
 				orders = orders[offset:]
 			else:
-				return self.send_fail("order pages errors")
+				return self.send_fail("暂无订单")
 			orders = self.get_orderData(session,orders)
 			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "all":
@@ -1415,7 +1417,7 @@ class Order(CustomerBaseHandler):
 			elif offset < total_count and offset + 10 >= total_count:
 				orders = orders[offset:]
 			else:
-				return self.send_fail("order pages errors")
+				return self.send_fail("暂无订单")
 			orders = self.get_orderData(session,orders)
 			# print(orders)
 			return self.send_success(orders = orders ,total_page= total_page)
@@ -1456,7 +1458,7 @@ class Order(CustomerBaseHandler):
 					point_history.each_point = 5
 					self.session.add(point_history)
 					self.session.commit()
-		
+
 			#need to rocord this poist history?
 		else:
 			return self.send_error(404)
@@ -1519,8 +1521,8 @@ class OrderDetail(CustomerBaseHandler):
 			if not order:
 				return self.send_fail('order not found')
 			order.status = 5
-			order.comment = ''
-			order.comment_reply = ''
+			order.comment = None
+			order.comment_reply = None
 			if apply_list:
 				apply_list.has_done=1
 			self.session.commit()
@@ -1532,6 +1534,16 @@ class OrderDetail(CustomerBaseHandler):
 				return self.send_fail('shop_follow not found')
 			if shop_follow.shop_point:
 				shop_follow.shop_point -= 5
+			self.session.commit()
+			self.send_success()
+		if action == 'change_comment':
+			data = self.args['data']
+			comment = data['comment']
+			order_id = data['order_id']
+			order = self.session.query(models.Order).filter_by(id = order_id).first()
+			if not order:
+				return self.send_fail('order not found')
+			order.comment = comment
 			self.session.commit()
 			self.send_success()
 		else:
@@ -1618,6 +1630,16 @@ class Recharge(CustomerBaseHandler):
 	def get(self):
 	    return self.render("customer/recharge.html")
 
+class OrderComment(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+	    return self.render("customer/comment-order.html")
+
+class ShopComment(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+	    return self.render("customer/comment-shop.html")
+
 class InsertData(CustomerBaseHandler):
 	@tornado.web.authenticated
 	# @CustomerBaseHandler.check_arguments("code?:str")
@@ -1649,7 +1671,6 @@ class InsertData(CustomerBaseHandler):
 
 		# 	self.session.commit()
 
-		
 		# orderlist = self.session.query(models.Order).all()
 		# if not orderlist:
 		# 	self.send_fail("orderlist error")
@@ -1679,7 +1700,7 @@ class InsertData(CustomerBaseHandler):
 		# except:
 		# 	return self.send_fail('accountinfo_list error')
 		# page = int(accountinfo_count/200)  if accountinfo_count % 200 == 0 else int(accountinfo_count/200) +1
-		# print(accountinfo_count,page,'******')
+		# print(accountinfo_count,page,'******22222')
 		# n = 0
 		# for x in range(page):
 		# 	offset  = x * 200
@@ -1697,7 +1718,6 @@ class InsertData(CustomerBaseHandler):
 		# 				accountinfo.is_new = 1
 		# 				#print(accountinfo.is_new)
 		# 				# self.session.commit()
-		# 	print(n,'***********8')
 		try:
 			follow_info= session.query(models.CustomerShopFollow).count()
 		except:
@@ -1715,7 +1735,7 @@ class InsertData(CustomerBaseHandler):
 					# session.close()
 					if order_list:
 						follow.shop_new = 1
-		
+
 
 		try:
 			config_info = self.session.query(models.Config).count()
@@ -1733,4 +1753,3 @@ class InsertData(CustomerBaseHandler):
 
 
 		return self.send_success()
-

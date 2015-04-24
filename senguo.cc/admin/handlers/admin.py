@@ -20,12 +20,12 @@ class Access(AdminBaseHandler):
 		next_url = self.get_argument('next', '')
 		if self._action == "login":
 			next_url = self.get_argument("next", "")
-			return self.render("admin/login.html", 
+			return self.render("admin/login.html",
 								 context=dict(next_url=next_url))
 		elif self._action == "logout":
 			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
 			self.clear_current_user()
-			return self.redirect(self.reverse_url("fruitzoneHome"))
+			return self.redirect(self.reverse_url("OfficialHome"))
 		elif self._action == "oauth":
 			self.handle_oauth()
 		else:
@@ -37,7 +37,7 @@ class Access(AdminBaseHandler):
 		if not u:
 			return self.send_fail(error_text = "用户名或密码错误")
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
-		self.redirect(self.args.get("next", self.reverse_url("fruitzoneHome")))
+		self.redirect(self.args.get("next", self.reverse_url("OfficialHome")))
 		return self.send_success()
 
 	@AdminBaseHandler.check_arguments("code", "state?", "mode")
@@ -45,7 +45,7 @@ class Access(AdminBaseHandler):
 		# todo: handle state
 		code =self.args["code"]
 		mode = self.args["mode"]
-		# print("mode: ", mode , ", code get:", code)
+		# print("[微信登录]登录模式：", mode , "，返回码：", code)
 		if mode not in ["mp", "kf"]:
 			return self.send_error(400)
 
@@ -54,8 +54,8 @@ class Access(AdminBaseHandler):
 			return self.redirect(self.reverse_url("adminLogin"))
 		u = models.ShopAdmin.register_with_wx(self.session, userinfo)
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
-		
-		next_url = self.get_argument("next", self.reverse_url("fruitzoneHome"))
+
+		next_url = self.get_argument("next", self.reverse_url("OfficialHome"))
 		return self.redirect(next_url)
 
 # 商家后台首页
@@ -393,10 +393,14 @@ class Comment(AdminBaseHandler):
 	def get(self):
 		action = self.args["action"]
 		page = self.args["page"]
-		page_size = 20
-
+		page_size = 10
+		pages=0
 		if action == "all":
 			comments = self.get_comments(self.current_shop.id, page, page_size)
+			print(comments,len(comments))
+			all_comments = self.session.query(models.Order).filter(models.Order.shop_id == self.current_shop.id,models.Order.status == 6).count()
+			pages = all_comments/10
+			print(pages)
 		elif action == "favor":
 			s = self.session.query(models.ShopFavorComment.order_id).\
 				filter(models.ShopFavorComment.shop_id == self.current_shop.id).all()
@@ -407,10 +411,16 @@ class Comment(AdminBaseHandler):
 				filter(models.Order.id.in_(order_ids), models.Order.status == 6,
 					   models.Order.customer_id == models.Accountinfo.id).\
 				order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+			all_comments = self.session.query(models.Accountinfo.headimgurl, models.Accountinfo.nickname,
+										  models.Order.comment, models.Order.comment_create_date, models.Order.num,
+										  models.Order.comment_reply).\
+				filter(models.Order.id.in_(order_ids), models.Order.status == 6,models.Order.customer_id == models.Accountinfo.id).count()
+			pages = all_comments/10
 			# print(comments)
 		else:
 			return self.send_error(404)
-		return self.render("admin/comment.html", action = action, comments=comments, context=dict(subpage='comment'))
+
+		return self.render("admin/comment.html", action = action, comments=comments, pages=pages,context=dict(subpage='comment'))
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "reply?:str", "order_id:int","data?")
@@ -486,7 +496,7 @@ class Order(AdminBaseHandler):
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time,reverse = True)
-			
+
 		elif order_status == 3:
 			try:
 				orderlist = self.session.query(models.Order).order_by(desc(models.Order.arrival_day),models.Order.arrival_time).\
@@ -505,7 +515,7 @@ class Order(AdminBaseHandler):
 		# woody
 		session = self.session
 		# for order in orders:
-		# 	order.w_send_time = order.get_sendtime(session,order.id) 
+		# 	order.w_send_time = order.get_sendtime(session,order.id)
 			# print(order.w_send_time)
 		# print("before sort",orders)
 		orders = sorted(orders , key = lambda x:x.send_time)
@@ -546,7 +556,7 @@ class Order(AdminBaseHandler):
 				models.CustomerShopFollow.customer_id == order.customer_id).first()
 			if follow:
 				d["shop_new"]=follow.shop_new
-				print(d["shop_new"])
+				print("[订单管理]",order.customer_id,"新用户标识：",d["shop_new"])
 			SH2s = []
 			for staff in staffs:
 				staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone}
@@ -646,9 +656,10 @@ class Order(AdminBaseHandler):
 				order_totalPrice = order.totalPrice
 				# send_time = order.get_sendtime(self.session,order.id)
 				send_time = order.send_time
+				phone = order.phone
 				# print("ready to send message")
 
-				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time)
+				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone)
 				# print("success?")
 
 			elif action == "edit_status":
@@ -673,13 +684,13 @@ class Order(AdminBaseHandler):
 					customer_info.is_new = 1
 					self.session.commit()
 
-					# 
+					#
 					customer = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 						shop_id = shop_id).first()
 					if not customer:
 						return self.send_fail('customer error')
 					customer.shop_new = 1
-					print(customer.shop_new,'*****************************')
+					print("[订单管理]完成订单，",customer_id,"在本店标识置为：",customer.shop_new)
 					self.session.commit()
 
 					try:
@@ -828,7 +839,7 @@ class Shelf(AdminBaseHandler):
 					if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000) or\
 						(self.args["id"] > 1000 and fruit.fruit_type_id < 1000) or fruit.fruit_type_id == 1000:
 						continue
-					
+
 					if fruit.active == 1:
 						fruit_type_d[fruit.fruit_type_id]["sum"] += 1
 						fruits.append(fruit)
@@ -1108,7 +1119,7 @@ class Staff(AdminBaseHandler):
 			except: return self.send_error(404)
 
 			if action == "hire_agree":
-				
+
 				###############################################################################
 				# if the staff exited,send_fail
 				###############################################################################
@@ -1192,9 +1203,9 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
 			d['mgoods'] = eval(d['mgoods'])
-			d['create_date'] = order.create_date.strftime('%Y-%m-%d %R')
+			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			################################################################################################
-			# modified : woody 
+			# modified : woody
 			#date:2015.3.7
 			#TODO:  standardize the format of time
 			################################################################################################
@@ -1219,7 +1230,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			d["shop_new"] = 0
 			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
 				models.CustomerShopFollow.customer_id == order.customer_id).first()
-			print(follow.customer_id)
+			print("[订单查询]用户ID：",follow.customer_id)
 			if follow:
 				d["shop_new"]=follow.shop_new
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(

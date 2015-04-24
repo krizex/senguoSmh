@@ -35,7 +35,6 @@ $(document).ready(function(){
         var $this=$(this);
         staffEdit($this);
     });
-
     toggle('.staff-info','.staff-info-edit');
     //员工上下班
     var $mode=$('.staff-work-mode');
@@ -54,6 +53,11 @@ $(document).ready(function(){
         var $parent=$this.parents('.staff-list-item');
         $parent.find('.staff-info-edit').hide();
     });
+}).on('click','.check-order',function(e){
+    /*var $this=$(this);
+    e.stopPropagation();
+    return false;*/
+    //window.open($this.attr('href'));
 });
 
 function hireConfig(target,action,val){

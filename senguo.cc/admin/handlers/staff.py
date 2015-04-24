@@ -238,7 +238,7 @@ class Hire(StaffBaseHandler):
             if shop.id == int(config_id):return self.write("<center><font color='green'>"
                                                            "你已经是该店铺的员工</font></center>")
         shop_name = self.session.query(models.Shop.shop_name).filter_by(id=config_id).scalar()
-        return self.render("staff/hire.html", config=config, shop_name=shop_name)
+        return self.render("staff/hire.html", config=config, shop_name=shop_name,page='')
     @tornado.web.authenticated
     @StaffBaseHandler.check_arguments("action", "data")
     def post(self, shop_id):

@@ -1,4 +1,7 @@
 $(document).ready(function(){
+    var page=Int($.getUrlParam('page'));
+    var user_type= $.getUrlParam('action');
+    var total_page=Math.ceil($('.page-total').text());
     toggle('.show-info','.hide-info');
     //用户性别
     $('.user-sex').each(function(){
@@ -9,9 +12,9 @@ $(document).ready(function(){
     });
     //翻页
     $('.page-now').text(page+1);
-    $('.page-total').text(totalt_page);
+    $('.page-total').text(total_page);
     var user_number=$('.users-list-item').length;
-    getpPage(page,'/admin/follower?action=all&&order_by=time&&page=',user_number);
+    getPage(page,'/admin/follower?action=all&&order_by=time&&page=',total_page);
     $('.search-btn').on('click',function(){
         var search=$('.search-con').val().trim();
         window.location.href='follower?action=search&&order_by=time&&page=0&&wd='+search;
@@ -27,7 +30,7 @@ $(document).ready(function(){
     //导航active样式
     if(user_type=='all') $('.all_user').addClass('active');
     else if(user_type=='old') $('.old_user').addClass('active');
+}).on('click','.history-order',function(){
+    // var $this=$(this);
+    // window.open($this.attr('href'));
 });
-var page=Int($.getUrlParam('page'));
-var user_type= $.getUrlParam('action');
-var totalt_page=Math.ceil($('.page-total').text());

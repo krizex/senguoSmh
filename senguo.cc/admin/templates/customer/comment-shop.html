@@ -1,0 +1,51 @@
+{% extends 'detail-base.html' %}
+{% block title %}我的订单{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/mobile-main.css')}}"/>
+{% end %}
+{% block content %}
+<div class="header">店铺评分</div>
+<div class="contain">
+    <ul class="point-lst">
+        <li>
+            <div class="point-top">
+                <span>商品质量</span>
+                <span class="fr red-txt"><span class="point" id="zl-point">0</span>分</span>
+            </div>
+            <div class="wrap-point-box">
+                <div class="point-box">
+                    <img src="/static/images/goods_normal.png" alt="设置分数"/>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="point-top">
+                <span>配送速度</span>
+                <span class="fr red-txt"><span class="point" id="sd-point">0</span>分</span>
+            </div>
+            <div class="wrap-point-box">
+                <div class="point-box">
+                    <img src="/static/images/goods_normal.png" alt="设置分数"/>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="point-top">
+                <span>店家服务</span>
+                <span class="fr red-txt"><span class="point" id="fw-point">0</span>分</span>
+            </div>
+            <div class="wrap-point-box">
+                <div class="point-box">
+                    <img src="/static/images/goods_normal.png" alt="设置分数"/>
+                </div>
+            </div>
+        </li>
+    </ul>
+    <div class="wrap-btn-commit">
+        <a href="{{reverse_url('customerOrderComment')}}" class="btn-commit" id="commit-shop-point">提交</a>
+    </div>
+
+</div>
+
+{% end %}
+{% block bottom %}<script src="{{static_url('js/market-comment-shop.js')}}"></script>{% end %}

@@ -22,9 +22,10 @@
 .announcement .item{width:100%;height:50px;line-height:50px;background:url('/static/official_img/horn.png') no-repeat left 10px;background-size:34px;padding-left:34px;}
 .announcement .item .con{display:inline-block;width:160px;overflow:hidden;}
 
-.intro_list{margin-top:60px;}
+.intro_list{margin-top:30px;}
 .intro_list li{width:33.333333%}
 .intro_list li .img{width:210px;}
 .intro_list li  .intro{width:180px;margin:0 auto;}
 .intro_list li  .intro p{margin-bottom:10px;}
 .mt-3{margin-top: -3px!important;}
+.intro-top{margin-bottom: 30px;text-align: center;font-size: 22px;}

@@ -7,7 +7,7 @@
 .wrap-text>p{word-break: break-all;}
 .btn-right{-webkit-box-sizing: border-box;padding-left: 60px;}
 .btn-right>button{width: 80px;height: 30px;line-height: 30px;margin-bottom: 10px;padding: 0;border:1px solid #ccc;border-radius: 2px;}
-.btn-right .bg-green{margin-bottom: 0;}
+.btn-right .bg-green{margin-bottom: 0;clear:both;}
 .red-txt{color: #d3121e!important;}
 .del-com-cont{padding: 20px;width: 600px;}
 .del-com-cont>h3{font-weight: bold;}
@@ -20,6 +20,6 @@
 .mt20{margin-top: 20px;}
 .apply-title{color: #999;}
 .account>i{background-position: 0 0;}
+.ok-pop{clear:both !important;border:none;padding:6px 12px;font-size:14px;}
 
-
-
+               

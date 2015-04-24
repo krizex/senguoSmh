@@ -1,6 +1,5 @@
 $(document).ready(function(){
     $(document).on('click','.info-con',function(){$(this).siblings('.info-edit').toggle();});
-
     $('a.editInfo').each(function(){
         if($(this).text() =='None'||$(this).text() =='')
         {$(this).text('点击设置').css({'color':'#FF3C3C'});}
@@ -18,7 +17,15 @@ $(document).ready(function(){
         var tie_box=new Modal('tieBox');
          tie_box.modal('show');
     });
-    $(document).on('click','#getVrify',function(evt){Vrify(evt);});
+    $(document).on('click','#getVrify',function(evt){
+        evt.preventDefault();
+        var phone=$('#enterPhone').val();
+        var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+        if(phone.length > 11 ||phone.length<11 || !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
+        if(!phone){return warnNotice('手机号不能为空');}
+        $('#getVrify').attr({'disabled':true});
+        Vrify(phone);
+    });
     $(document).on('click','#tiePhone',function(evt){TiePhone(evt);});
     //性别编辑
     $(document).on('click','#userSex',function(){
@@ -157,12 +164,7 @@ function sexEdit(sex,text){
     );
 }
 
-function Vrify(evt){
-    evt.preventDefault();
-    var phone=$('#enterPhone').val();
-    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 11 ||phone.length<11 || !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
-    if(!phone){return warnNotice('手机号不能为空');}
+function Vrify(phone){
     var action='gencode';
     var url="/customer/phoneVerify?action=customer";
     var args={
@@ -175,6 +177,7 @@ function Vrify(evt){
             {
                 time($('#getVrify'));
                 noticeBox('验证码已发送到您的手机,请注意查收！');
+                 $('#getVrify').removeAttr('disabled');
 
             }
             else return noticeBox(res.error_text);

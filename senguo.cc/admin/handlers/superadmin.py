@@ -57,7 +57,10 @@ class ShopAdminManage(SuperBaseHandler):
 	@SuperBaseHandler.check_arguments("page?:int")
 	def get(self):
 		offset = (self.args.get("page", 1)-1) * self._page_count
-		q = self.session.query(models.ShopAdmin)
+		try:
+		    q = self.session.query(models.ShopAdmin)
+		except:
+		    return self.send_error('error')
 		q_all = q
 		t = int(time.time())
 		q_using = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER,
@@ -84,8 +87,13 @@ class ShopAdminManage(SuperBaseHandler):
 			return self.send_error(404)
 		# 排序规则id, offset 和 limit
 		q = q.order_by(models.ShopAdmin.id.desc()).offset(offset).limit(self._page_count)
+		print(q,'*******************************')
 
 		admins = q.all()
+		print(q.count())
+		#print(admins)
+		for admin in admins:
+		    print(admin)
 		# admins 是models.ShopAdmin的实例的列表，具体属性可以去dal/models.py中看到
 		return self.render("superAdmin/shop-admin-manage.html", context=dict(admins = admins, count=count,sunpage='shopAadminManage',action=self._action))
 	@tornado.web.authenticated
@@ -735,9 +743,9 @@ class Comment(SuperBaseHandler):
 			return self.send_error(404)
 		order = comment_apply.order
 		if action == 'commit':
-			order.status = 5
-			order.coment = 'NULL'
-			order.comment_reply = 'NULL'
+			#order.status = 5
+			order.comment = None
+			order.comment_reply = None
 			comment_apply.has_done = 1
 			self.session.commit()
 			return self.send_success(status = 0, msg = 'success',data = {})

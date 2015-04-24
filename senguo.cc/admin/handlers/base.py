@@ -171,7 +171,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				APP_OAUTH_CALLBACK_URL+\
 				self.reverse_url(self.__wexin_oauth_url_name__) + para_str)
 			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
-		print(link)
+		print("[微信授权]授权链接：",link)
 		return link
 
 	def get_login_url(self):
@@ -179,9 +179,10 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		#return self.reverse_url('customerLogin')
 
 	def get_weixin_login_url(self):
-		print(self.request.full_url())
+		print("[微信登录]登录链接：",self.request.full_url())
 		next_url =  self.reverse_url("fruitzoneShopList")
 		return self.get_wexin_oauth_link(next_url = next_url)
+
 	def get_current_user(self):
 		if not self.__account_model__ or not self.__account_cookie_name__:
 			raise Exception("overwrite model to support authenticate.")
@@ -191,7 +192,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 		user_id = self.get_secure_cookie(self.__account_cookie_name__) or b'0'
 		user_id = int(user_id.decode())
-		print(user_id)
+		print("[用户信息]当前用户ID：",user_id)
         # print(type(self))
         # print(self.__account_model__)
 
@@ -229,7 +230,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 							  policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
 									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 #        token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
-		print(token)
+		print("[七牛授权]发送Token：",token)
 		return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 
 	def get_qiniu_token(self,action,id):
@@ -237,9 +238,9 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		token = q.upload_token(BUCKET_SHOP_IMG,expires = 120,\
 			policy = {"callbackUrl":"http://i.senguo.cc/fruitzone/imgcallback",\
 			"callbackBody":"key=$(key)&action=%s&id=%s" % (action,id),"mimeLimit":"image/*"})
-		print(token)
+		print("[七牛授权]获得Token：",token)
 		return token
- 
+
 	def get_comments(self, shop_id, page=0, page_size=5):
 		# comments = self.session.query(models.Accountinfo.headimgurl_small, models.Accountinfo.nickname,\
 		# 	models.Order.comment, models.Order.comment_create_date, models.Order.num,\
@@ -469,6 +470,9 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		if not (eval(cart.fruits) or eval(cart.mgoods)):#购物车空了
 			return True
 		return False
+	def get_login_url(self):
+		return self.get_wexin_oauth_link(next_url=self.request.full_url())
+		# return self.reverse_url('customerLogin')
 
 	def _f(self, cart, menu, charge_type_id, inc):
 		d = eval(getattr(cart, menu))
@@ -722,7 +726,7 @@ class WxOauth2:
 			access_token = None
 		if access_token is not None:
 			if datetime.datetime.now().timestamp()- (access_token.create_timestamp) <3600  and access_token.access_token:
-				print(access_token.access_token,'***********')
+				print("[微信授权]当前Token：",access_token.access_token)
 				return access_token.access_token
 			else:
 				session.query(models.AccessToken).delete()
@@ -735,7 +739,7 @@ class WxOauth2:
 			session.commit()
 			return access_token.access_token
 		else:
-			print("access_token error")
+			print("[微信授权]Token错误")
 			return None
 
 
@@ -792,8 +796,9 @@ class WxOauth2:
 
 
 	@classmethod
-	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods):
-		remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n' + "商品详情："  + goods + '\n\n'  + \
+	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods,phone):
+		remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n' + "商品详情："  \
+		+ goods +'\n'  + "顾客电话："  + phone +  '\n\n'  + \
 		'请及时登录森果后台处理订单。'
 		postdata = {
 			'touser' : touser,
@@ -813,15 +818,16 @@ class WxOauth2:
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
 		data = json.loads(res.content.decode("utf-8"))
-		print('data',data)
+		print("[模版消息]发送给管理员：",data)
 		if data["errcode"] != 0:
 			#print("订单提醒发送失败:",data)
 			return False
 		return True
 
 	@classmethod
-	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time):
-		remark = "订单总价：" + str(order_totalPrice)+ '\n' + "送达时间：" + send_time + '\n\n' + '请及时处理订单。'
+	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone):
+		remark = "订单总价：" + str(order_totalPrice)+ '\n' + "送达时间：" + send_time + '\n'  + "顾客电话："  + \
+		phone + '\n\n' + '请及时处理订单。'
 		order_type_temp = int(order_type)
 		order_type = "即时送" if order_type_temp == 1 else "按时达"
 		postdata = {
@@ -870,7 +876,7 @@ class WxOauth2:
 			#print("订单提交成功通知发送失败",data)
 			return False
 		# print('order send SUCCESS')
-		print('send to customer',data)
+		print("[模版消息]发送给客户：",data)
 		return True
 
 	@classmethod
