@@ -599,7 +599,7 @@ class Order(AdminBaseHandler):
 				period.name = data["name"]
 				period.start_time = start_time
 				period.end_time = end_time
-				print("[订单管理]修改按时达时间，Shop ID：",config_id,"，时间段：",start_time,"~",end_time)
+				print("[订单管理]修改按时达时间，Shop ID：",period_id,"，时间段：",start_time,"~",end_time)
 			elif action == "edit_period_active":
 				period.active = 1 if period.active == 2 else 2
 			self.session.commit()
