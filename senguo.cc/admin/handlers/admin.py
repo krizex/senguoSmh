@@ -8,6 +8,7 @@ from sqlalchemy import func, desc, and_, or_, exists
 import qiniu
 from dal.dis_dict import dis_dict
 from libs.msgverify import gen_msg_token,check_msg_token
+import re
 
 # 登陆处理
 class Access(AdminBaseHandler):
@@ -567,7 +568,6 @@ class Order(AdminBaseHandler):
 					d["SH2"] = staff_data
 			d["SH2s"] = SH2s
 			data.append(d)
-		print(self.current_shop.id,'************shop_id**************')
 		return self.render("admin/orders.html", data = data, order_type=order_type,
 						   count=self._count(), context=dict(subpage='order'))
 
@@ -580,7 +580,6 @@ class Order(AdminBaseHandler):
 		data = self.args["data"]
 		print("[订单管理]当前店铺：",self.current_shop)
 		if action == "add_period":
-			print(self.current_shop.id,'&&&&&&&&&&&&&&&&&&&shop_id&&&&&&&&&&&&&&')
 			start_time = datetime.time(data["start_hour"],data["start_minute"])
 			end_time = datetime.time(data["end_hour"],data["end_minute"])
 			period = models.Period(config_id=self.current_shop.id,
@@ -1290,8 +1289,9 @@ class Config(AdminBaseHandler):
 				self.session.commit()
 				return self.send_success(address1_id=addr1.id)#commit后id会自动生成
 			elif action == "add_notice":
-				notice = models.Notice(summary=data["summary"],
-									   detail=data["detail"])
+				notice = models.Notice(
+					summary=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["summary"]),
+					detail=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["detail"]))    #过滤掉Emoji，否则数据库会报错 --by Sky
 				self.current_shop.config.notices.append(notice)
 				self.session.commit()
 			elif action == "edit_receipt": #小票设置

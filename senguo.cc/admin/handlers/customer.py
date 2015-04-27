@@ -41,7 +41,7 @@ class Access(CustomerBaseHandler):
 		password = self.args['password']
 
 		u = models.Customer.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
-		print("[手机登录]用户：",u,"，ID：",u.id)
+		#print("[手机登录]用户ID：",u.id)
 		print("[手机登录]手机号码：",phone,"，密码：",password)
 		# u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
 		if not u:
@@ -108,9 +108,8 @@ class RegistByPhone(CustomerBaseHandler):
 		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first()
 		if a:
 			return self.send_fail(error_text="手机号已经绑定其他账号")
-
+		print("[手机注册]发送验证码到手机：",self.args["phone"])
 		resault = gen_msg_token(phone=self.args["phone"])
-		print("[手机注册]发送验证码到手机：",phone)
 		if resault == True:
 			#print("[手机注册]向手机号",phone,"发送短信验证",resault,"成功")
 			return self.send_success()
@@ -249,12 +248,17 @@ class CustomerProfile(CustomerBaseHandler):
 			self.current_user.accountinfo.update(session=self.session, birthday=time.mktime(birthday.timetuple()))
 		elif action == 'add_password':
 			self.current_user.accountinfo.update(session = self.session , password = data)
+			print("[设置密码]设置成功，用户ID：",self.current_user.id,"，密码：",data)
 		elif action == 'modify_password':
 			old_password = self.args['old_password']
+			print("[更改密码]输入老密码：",old_password)
+			print("[更改密码]验证老密码：",self.current_user.accountinfo.password)
 			if old_password != self.current_user.accountinfo.password:
+				print("[更改密码]密码验证错误")
 				return self.send_fail("密码错误")
 			else:
 				self.current_user.accountinfo.update(session = self.session ,password = data)
+				print("[更改密码]更改成功，用户ID：",self.current_user.id,"，密码：",data)
 		elif action == 'reset_password':
 			data = self.args["data"]
 			new_password = data['password']
@@ -1017,6 +1021,7 @@ class Cart(CustomerBaseHandler):
 
 		storages = {}
 		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
+		print("[购物篮]当前店铺：",shop)
 		if not shop:return self.send_error(404)
 		shop_name = shop.shop_name
 		shop_id = shop.id
@@ -1045,7 +1050,7 @@ class Cart(CustomerBaseHandler):
 		# periods = [x for x in shop.config.periods if x.active == 1]
 		periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1).all()
 		for period in periods:
-			print(period.start_time,period.end_time)
+			print("[购物篮]读取按时达时段，Shop ID：",period.config_id,"，时间段：",period.start_time,"~",period.end_time)
 		# print('storages',storages)
 
 		# for period in periods:
