@@ -781,4 +781,4 @@ class payTest(FruitzoneBaseHandler):
 		renderPayParams = jsApi.getParameters()
 		print(renderPayParams)
 		# return self.send_success(renderPayParams = renderPayParams)
-		return self.render("fruitzone/paytest.html", context=dict(renderPayParams = renderPayParams))
+		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams)
