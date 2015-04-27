@@ -1290,8 +1290,8 @@ class Config(AdminBaseHandler):
 				return self.send_success(address1_id=addr1.id)#commit后id会自动生成
 			elif action == "add_notice":
 				notice = models.Notice(
-					summary=data["summary"],
-					detail=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["detail"]))#过滤掉Emoji，否则数据库会报错 --by Sky
+					summary=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["summary"]),
+					detail=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["detail"]))    #过滤掉Emoji，否则数据库会报错 --by Sky
 				self.current_shop.config.notices.append(notice)
 				self.session.commit()
 			elif action == "edit_receipt": #小票设置
