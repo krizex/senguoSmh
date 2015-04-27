@@ -41,7 +41,7 @@ class Access(CustomerBaseHandler):
 		password = self.args['password']
 
 		u = models.Customer.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
-		print("[手机登录]用户：",u,"，ID：",u.id)
+		print("[手机登录]用户ID：",u.id)
 		print("[手机登录]手机号码：",phone,"，密码：",password)
 		# u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
 		if not u:
