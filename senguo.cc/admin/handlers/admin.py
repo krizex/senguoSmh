@@ -395,12 +395,13 @@ class Comment(AdminBaseHandler):
 		page = self.args["page"]
 		page_size = 10
 		pages=0
+		print("[用户评价]当前店铺：",self.current_shop)
 		if action == "all":
 			comments = self.get_comments(self.current_shop.id, page, page_size)
-			print("[用户评价]",comments,len(comments))
+			print("[用户评价]详情：",comments,len(comments))
 			all_comments = self.session.query(models.Order).filter(models.Order.shop_id == self.current_shop.id,models.Order.status == 6).count()
 			pages = all_comments/10
-			print("[用户评价]pages",pages)
+			print("[用户评价]页数：",pages)
 		elif action == "favor":
 			s = self.session.query(models.ShopFavorComment.order_id).\
 				filter(models.ShopFavorComment.shop_id == self.current_shop.id).all()
@@ -525,6 +526,7 @@ class Order(AdminBaseHandler):
 
 		data = []
 		delta = datetime.timedelta(1)
+		print("[订单管理]当前店铺：",self.current_shop)
 		for order in orders:
 			order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
 										 'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
@@ -576,6 +578,7 @@ class Order(AdminBaseHandler):
 	def post(self):
 		action = self.args["action"]
 		data = self.args["data"]
+		print("[订单管理]当前店铺：",self.current_shop)
 		if action == "add_period":
 			print(self.current_shop.id,'&&&&&&&&&&&&&&&&&&&shop_id&&&&&&&&&&&&&&')
 			start_time = datetime.time(data["start_hour"],data["start_minute"])
@@ -584,6 +587,7 @@ class Order(AdminBaseHandler):
 								   name=data["name"],
 								   start_time=start_time,
 								   end_time=end_time)
+			print("[订单管理]添加按时达时段，Shop ID：",period.config_id,"，时间段：",start_time,"~",end_time)
 			self.session.add(period)
 			self.session.commit()
 			return self.send_success(period_id=period.id)
@@ -599,8 +603,10 @@ class Order(AdminBaseHandler):
 				period.name = data["name"]
 				period.start_time = start_time
 				period.end_time = end_time
+				print("[订单管理]修改按时达时段，Shop ID：",period.config_id,"，时间段：",start_time,"~",end_time)
 			elif action == "edit_period_active":
 				period.active = 1 if period.active == 2 else 2
+				print("[订单管理]按时达时段启用/停用，Shop ID：",period.config_id,"，时间段：",start_time,"~",end_time,"，状态：",period.active)
 			self.session.commit()
 		elif action == "del_period":
 			try: q = self.session.query(models.Period).filter_by(id=int(data["period_id"]))
