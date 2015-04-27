@@ -6,6 +6,7 @@ import urllib
 import hashlib
 import traceback
 from settings import KF_APPID, KF_APPSECRET, APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
+from settings import TEST_APPID,TEST_APPSECRET
 import tornado.escape
 from dal.dis_dict import dis_dict
 import time
