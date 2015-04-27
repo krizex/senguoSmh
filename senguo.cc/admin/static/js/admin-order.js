@@ -1,4 +1,12 @@
 $(document).ready(function(){
+        //翻页
+    var page=Int($.getUrlParam('page'));
+    var order_type=$.getUrlParam('order_type');
+    var order_status=$.getUrlParam('order_status');
+    var total_page=Math.ceil($('.page-total').text());
+    $('.page-now').text(page+1);
+    $('.page-total').text(total_page);
+    getPage(page,'/admin/order?order_type='+order_type+'&order_status='+order_status+'&page=',total_page);
     $('body').on('mouseenter','.edit_item_box',function(){
         var $this=$(this);
         if($this.hasClass('to-edit-item')){

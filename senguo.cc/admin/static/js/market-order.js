@@ -230,6 +230,7 @@ function orderConcel(target,id){
 }
 
 function orderComment(id,order_id,comment){
+    $('.comment_submit').attr({'disabled':true}).addClass('bg-greyc');
     var url='';
     var action='comment';
     if(!comment){return warnNotice('请输入您的评论！')}
@@ -254,8 +255,19 @@ function orderComment(id,order_id,comment){
            var commentBox=new Modal('commentBox');
            commentBox.modal('hide');
         }
-        else return noticeBox(res.error_text)
-    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
-        );
+        else {
+            noticeBox(res.error_text);
+            $('#commit-senguo').removeAttr('disabled').removeClass('bg-greyc');
+        }
+         if($("#commentBox").not('in')){
+                $('#commit-senguo').removeAttr('disabled').removeClass('bg-greyc');
+            }
+    }, function(){
+        noticeBox('网络好像不给力呢~ ( >O< ) ~');
+        $('#commit-senguo').removeAttr('disabled').removeClass('bg-greyc');
+    },
+    function(){
+        $('#commit-senguo').removeAttr('disabled');
+        noticeBox('服务器貌似出错了~ ( >O< ) ~');
+    });
 }
