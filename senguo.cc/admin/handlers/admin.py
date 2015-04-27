@@ -466,18 +466,24 @@ class Order(AdminBaseHandler):
 	# todo: 当订单越来越多时，current_shop.orders 会不会越来越占内存？
 
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("order_type:int", "order_status:int")
+	@AdminBaseHandler.check_arguments("order_type:int", "order_status:int","page:int")
 	#order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
 	def get(self):
 		order_type = self.args["order_type"]
 		order_status = self.args["order_status"]
+		page = self.args["page"]
+		page_size = 10
+		count = 0
+		page_sum = 0
 		orders = []
 		if order_type == 10:  # 搜索订单：为了格式统一，order_status为order.num
 			orders = self.session.query(models.Order).\
 				filter_by(num=order_status, shop_id=self.current_shop.id).all()
 			order_type = 1
+			count = self.session.query(models.Order).filter_by(type=order_type,status=order_status,shop_id=self.current_shop.id).count()
 		elif order_status == 1:
 			orders = [x for x in self.current_shop.orders if x.type == order_type and x.status == 1]
+			count = len(orders)
 			# woody 4.3
 			session = self.session
 			# for order in orders:
@@ -486,13 +492,14 @@ class Order(AdminBaseHandler):
 
 		elif order_status == 5:#all
 			orders = [x for x in self.current_shop.orders if x.type == order_type ]
+			count = len(orders)
 			session = self.session
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time,reverse = True)
 		elif order_status == 2:#unfinish
 			orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in [2, 3, 4]]
-
+			count = len(orders)
 			# woody 4.3
 			session = self.session
 			# for order in orders:
@@ -507,12 +514,13 @@ class Order(AdminBaseHandler):
 				return self.send_fail("orderlist error")
 			# orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in (5, 6)]
 			orders = [x for x in orderlist if x.type == order_type and x.status in (5, 6)]
+			count = len(orders)
 		elif order_status == 4:
 			pass
 		else:
 			return self.send.send_error(404)
 
-
+		page_sum = count /10
 		# orders order by start_time
 		# woody
 		session = self.session
@@ -520,7 +528,8 @@ class Order(AdminBaseHandler):
 		# 	order.w_send_time = order.get_sendtime(session,order.id)
 			# print(order.w_send_time)
 		# print("before sort",orders)
-		orders = sorted(orders , key = lambda x:x.send_time)
+		page_area = page * page_size
+		orders = sorted(orders , key = lambda x:x.send_time,reverse=True)[page_area:page_area+10]
 		# print("after sort",orders)
 		# for order in orders:
 		#     print(order.w_send_time)
@@ -535,19 +544,19 @@ class Order(AdminBaseHandler):
 			d['fruits'] = eval(d['fruits'])
 			d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
-			if order.start_time.minute <10:
-				w_start_time_minute ='0' + str(order.start_time.minute)
-			else:
-				w_start_time_minute = str(order.start_time.minute)
-			if order.end_time.minute < 10:
-				w_end_time_minute = '0' + str(order.end_time.minute)
-			else:
-				w_end_time_minute = str(order.end_time.minute)
+			# if order.start_time.minute <10:
+			# 	w_start_time_minute ='0' + str(order.start_time.minute)
+			# else:
+			# 	w_start_time_minute = str(order.start_time.minute)
+			# if order.end_time.minute < 10:
+			# 	w_end_time_minute = '0' + str(order.end_time.minute)
+			# else:
+			# 	w_end_time_minute = str(order.end_time.minute)
 
-			if order.type == 2 and order.today==2:
-				w_date = order.create_date + delta
-			else:
-				w_date = order.create_date
+			# if order.type == 2 and order.today==2:
+			# 	w_date = order.create_date + delta
+			# else:
+			# 	w_date = order.create_date
 			# d["sent_time"] = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
 			# 									order.start_time.hour, w_start_time_minute,
 			# 									  order.end_time.hour, w_end_time_minute)
@@ -569,7 +578,7 @@ class Order(AdminBaseHandler):
 			d["SH2s"] = SH2s
 			data.append(d)
 		return self.render("admin/orders.html", data = data, order_type=order_type,
-						   count=self._count(), context=dict(subpage='order'))
+						   count=self._count(),page_sum=page_sum, context=dict(subpage='order'))
 
 
 
@@ -764,7 +773,8 @@ class Order(AdminBaseHandler):
 				order.update(session=self.session, totalPrice=data["totalPrice"])
 			elif action == "del_order":
 				session = self.session
-				order.update(session=session, status=0)
+				del_reason = data["del_reason"]
+				order.update(session=session, status=0,del_reason = del_reason)
 				order.get_num(session,order.id)
 
 			elif action == "print":

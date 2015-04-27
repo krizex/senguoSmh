@@ -6,65 +6,62 @@ $(document).ready(function(){
     //隐藏信息显示
     toggle('.order-content','.list-item-body');
     toggle('.list-title','.list-item-body');
-    $('.sales-list-item').css({'border-color':'#29aae1'});
-    //订单打印
-    $(document).on('click','.print-order',function(){orderPrint($(this)); });
-    //订单删除
-    $(document).on('click','.delete-order',function(){
-        if(confirm('确认删除该订单吗？')){orderDelete($(this));}
-    });
-    //订单状态修改
-    $(document).on('click','.status-order',function(){
+    $('.sales-list-item').css({'border-color':'#29aae1'});  
+}).on('click','.print-order',function(){
+    orderPrint($(this)); //订单打印
+}).on('click','.delete-order',function(){
+    var $this=$(this);
+    var parent=$this.parents('.list-item');
+    var id=parent.data('id');
+    var index=parent.index();
+    var $box=$('.order_set_box');
+    $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('delete_check').removeClass('price_check','mark_check');
+    $box.find('.title').text('订单删除');
+    $('#order_ser_val').val('').attr({'placeholder':'为防止误删除操作，请输入订单删除理由'});
+}).on('click','.delete_check',function(){
+    var $this=$(this);
+    orderDelete();
+}).on('click','.status-order',function(){
         var $this=$(this);
         orderEdit($this,'edit_status',1);
-    });
-    $(document).on('click','.status-send',function(){
-        var $this=$(this);
-        orderEdit($this,'edit_status',4);
-    });
-    $(document).on('click','.status-finish',function(){
-        var $this=$(this);
-        orderEdit($this,'edit_status',5);
-    });
-    //员工修改
-    $(document).on('click','.send_person_list li',function(){
-        var $this=$(this);
-        var val=$this.data('id');
-        orderEdit($this,'edit_SH2',val)
-    });
-    //订单总金额修改
-    $(document).on('click','.price_edit',function(){
-        var $this=$(this);
-        var parent=$this.parents('.list-item');
-	var id=parent.data('id');
-	var index=parent.index();
-        var $box=$('.order_set_box');
-        $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('price_check').removeClass('mark_check');
-        $box.find('.title').text('编辑订单总价格');
-        $('#order_ser_val').val('');
-    });
-    $(document).on('click','.price_check',function(){
-        var $this=$(this);
-        var val=$('#order_ser_val').val();
-        orderEdit($this,'edit_totalPrice',val);
-    });
-    //订单备注
-    $(document).on('click','.order_mark',function(){
-        var $this=$(this);
-        var parent=$this.parents('.list-item');
-	var id=parent.data('id');
-	var index=parent.index();
-        var $box=$('.order_set_box');
-        $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('mark_check').removeClass('price_check');
-        $box.find('.title').text('订单备注');
-        $('#order_ser_val').val('');
-    });
-    $(document).on('click','.mark_check',function(){
-        var $this=$(this);
-        var val=$('#order_ser_val').val();
-        orderEdit($this,'edit_remark',val);
-    });
+}).on('click','.status-send',function(){
+    var $this=$(this);
+    orderEdit($this,'edit_status',4);
+}).on('click','.status-finish',function(){
+    var $this=$(this);
+    orderEdit($this,'edit_status',5);
+}).on('click','.send_person_list li',function(){
+    var $this=$(this);
+    var val=$this.data('id');
+    orderEdit($this,'edit_SH2',val);//员工修改
+}).on('click','.order_mark',function(){
+    var $this=$(this);
+    var parent=$this.parents('.list-item');
+    var id=parent.data('id');
+    var index=parent.index();
+    var $box=$('.order_set_box');
+    $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('mark_check').removeClass('price_check','delete_check');
+    $box.find('.title').text('订单备注').attr({'placeholder':'请输入订单备注'});
+    $('#order_ser_val').val('');
+}).on('click','.mark_check',function(){
+    var $this=$(this);
+    var val=$('#order_ser_val').val();
+    orderEdit($this,'edit_remark',val);
+}).on('click','.price_edit',function(){
+    var $this=$(this);
+    var parent=$this.parents('.list-item');
+    var id=parent.data('id');
+    var index=parent.index();
+    var $box=$('.order_set_box');
+    $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('price_check').removeClass('mark_check','delete_check');
+    $box.find('.title').text('编辑订单总价格');
+    $('#order_ser_val').val('').attr({'placeholder':''});
+}).on('click','.price_check',function(){
+    var $this=$(this);
+    var val=$('#order_ser_val').val();
+    orderEdit($this,'edit_totalPrice',val);
 });
+
 var orders=window.dataObj.order;
 var $list_item;
 var $goods_item;
@@ -127,14 +124,24 @@ function orderItem(item){
         var totalPrice=item[i]['totalPrice'];
         var type=item[i]['type'];
         var shop_new=item[i]['shop_new'];
+        var del_reason=item[i]['del_reason'];
               
-        if(!message) $item.find('.order-message').hide();
-        if(!staff_remark) $item.find('.staff-replay').hide();
-        if(!remark||remark==null) $item.find('.saler-remark').hide();
-        if(isprint==1) $item.find('.print-order').addClass('text-grey9');
-        if(shop_new!=1) {$item.find('.new').show();}
+        if(!message) {
+            $item.find('.order-message').hide();
+        }
+        if(!staff_remark) {
+            $item.find('.staff-replay').hide();
+        }
+        if(!remark||remark==null) {
+            $item.find('.saler-remark').hide();
+        }
+        if(isprint==1) {
+            $item.find('.print-order').addClass('text-grey9');
+        }
+        if(shop_new!=1) {
+            $item.find('.new').show();
+        }
         $item.find('.name').text(receiver);
-
         $item.attr({'data-id':id,'data-type':type});
         $item.find('.send-time').text(send_time);
         $item.find('.order-code').text(num);
@@ -162,8 +169,13 @@ function orderItem(item){
         else $item.find('.pay-status').text('现金支付');
         //订单状态
         if(status==0) {
-        	$item.find('.order-status').empty().text('该订单已取消或删除');
-        	$item.find('.unable_edit').show();
+            if(del_reason!=null){
+                $item.find('.order-status').empty().text('该订单已取消或删除(删除理由:'+del_reason+')');
+            }
+            else{
+                $item.find('.order-status').empty().text('该订单已取消或删除(用户已取消该订单)');
+            }
+            $item.find('.unable_edit').show();
         }
         else if(status==1) {
         	$item.find('.status_order').removeClass('hidden');
@@ -271,7 +283,7 @@ function orderPrint(target){
     var print_img=$('.shop-receipt-info').attr('data-img');
     var print_img_active=$('.shop-receipt-info').attr('data-active');
     var saler_remark=parent.find('.order_remark').text(); 
-    var user_remark=parent.find('.message-content').text(); 
+    var user_remark=parent.find('.message-content').text();
     $.getItem('/static/items/admin/order-print-page.html?v=2015-04-14',function(data){
         var $item=$(data);
         $item.find('.notes-head').text(shop_name);
@@ -333,10 +345,19 @@ function orderPrint(target){
 function orderDelete(target){
     var url=order_link;
     var action='del_order';
-    var parent=target.parents('.order-list-item');
-    var order_id=parent.data('id');
+    var $box=$('.order_set_box');
+    var order_id=$box.attr('data-id');
+    var index=$box.attr('data-target');
+    var del_reason=$('#order_ser_val').val();
+    if(!del_reason){
+        return alert('请输入订单删除的理由!');
+    }
+    if(del_reason.length>300){
+        return alert('删除理由最多可为300字!');
+    }
     var data={
-        order_id:order_id
+        order_id:order_id,
+        del_reason:del_reason
     };
     var args={
         action:action,
@@ -344,7 +365,8 @@ function orderDelete(target){
     };
     $.postJson(url,args,function(res){
             if(res.success){
-                parent.remove();
+                $('.order_set_box').modal('hide');
+                $('.order-list-item').eq(index).remove();
             }
             else return alert(res.error_text);
         },

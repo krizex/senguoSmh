@@ -63,34 +63,58 @@ function hide(trigger,target){
 }
 
 function getPage(page,url,total){
-    if(page===0) $('.pre-page').hide();
-    else{
-        $('.pre-page').on('click',function(){
+    if(total == 1 || total == 0){
+        $('.list-pagination').hide();
+    }
+    else {
+        if(page===0) {
+            $('.pre-page').hide();
+        }
+        else{
+            $('.pre-page').on('click',function(){
+                var $this=$(this);
+                $this.attr({'href':url+(page-1)});
+            });
+        }
+        if((total-1== page)){
+            $('.next-page').hide();
+        }
+        else{
+            $('.next-page').on('click',function(){
+                var $this=$(this);
+                $this.attr({'href':url+(page+1)});
+            });
+        }
+        $('.jump-to').on('click',function(){
             var $this=$(this);
-            $this.attr({'href':url+(page-1)});
+            var num=Int($('.input-page').val());
+            if(!num){
+                return alert('请输入页码');
+            }
+            if(0<num&&num<=total)
+            {
+                $this.attr({'href':url+(num-1)});
+            }
+            else {
+                return alert('没有该页的数据');
+            }
+        });
+        $(document).on('keydown','.input-page',function(){
+            var $this=$(this);
+            if(window.event.keyCode == 13)
+            {
+                    var num=$this.val();
+                    if(!num){
+                        return alert('请输入页码');
+                    }
+                    if(0<num&&num<=total)
+                    {
+                        window.location.href=url+(num-1);
+                    }
+                    else {
+                        return alert('没有该页的数据');
+                    }
+            }
         });
     }
-    if((total-1== page)){
-        $('.next-page').hide();
-    }
-    else{
-        $('.next-page').on('click',function(){
-            var $this=$(this);
-            $this.attr({'href':url+(page+1)});
-        });
-    }
-    $('.jump-to').on('click',function(){
-        var $this=$(this);
-        var num=Int($('.input-page').val());
-        if(!num){
-            return alert('请输入页码');
-        }
-        if(0<num&&num<=total)
-        {
-            $this.attr({'href':url+(num-1)});
-        }
-        else {
-            return alert('没有该页的数据');
-        }
-    });
 }

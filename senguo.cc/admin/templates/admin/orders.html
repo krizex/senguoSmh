@@ -41,11 +41,11 @@
 <div class="orders-mode clearfix">
     <ul class="right-nav pull-left order-type">
         <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3">
-            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1" class="text-grey3">立即送</a>
+            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1&page=0" class="text-grey3">立即送</a>
             <span class="number text-pink">{{count[11]}}</span>
         </li>
         <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3">
-            <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=1" class="text-grey3">按时达</a>
+            <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=1&page=0" class="text-grey3">按时达</a>
             <span class="number text-pink">{{count[21]}}</span>
         </li>
         <!--<li class="text-center col-lg-3">
@@ -95,19 +95,19 @@
 <div class="orders-list-title right-title2">
     <ul class="right-nav pull-left order-status">
         <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=1">未处理<span class="text-pink">{{count1}}</span></a>
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=1&page=0">未处理<span class="text-pink">{{count1}}</span></a>
         </li>
         <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=2">配送中<span class="text-pink">{{count2}}</span></a>
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=2&page=0">配送中<span class="text-pink">{{count2}}</span></a>
         </li>
         <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=3">已送达<span class="text-pink">{{count3}}</span></a>
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=3&page=0">已送达<span class="text-pink">{{count3}}</span></a>
         </li>
         <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=4">售后/退款<span class="text-pink">{{count4}}</span></a>
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=4&page=0">售后/退款<span class="text-pink">{{count4}}</span></a>
         </li>
         <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=5">所有订单<span class="text-pink">{{count5}}</span></a>
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=5&page=0">所有订单<span class="text-pink">{{count5}}</span></a>
         </li>
     </ul>
     <!--<a class="orders-recycle pull-right text-grey9" href="#">订单回收站</a>-->
@@ -122,6 +122,17 @@
     </div>-->
     <ul class="order-list-content set-width-float mt10">
     </ul>
+     <div class="users-pagination list-pagination">
+        <ul>
+            <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+            <li>
+                <span class="page-now"></span>/<span class="page-total">{{page_sum}}</span>
+            </li>
+            <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+            <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+            <li><a href="javascript:;" class="jump-to">跳转</a></li>
+        </ul>
+    </div>
     <input type="hidden" value="{{current_shop.config.receipt_msg}}" class="shop-receipt-info" data-img="{{current_shop.config.receipt_img}}"  data-active="{{current_shop.config.receipt_img_active}}"/>
 </div>
 <div class="order_set_box modal fade" id="" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -134,8 +145,8 @@
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             </div>
             <div class="modal-body set-width-float">
-		<input type="text" id="order_ser_val"/>
-	    </div>
+        	   <input type="text" id="order_ser_val"/>
+            </div>
              <div class="modal-footer">
                 <div class="btn-box">
                     <button type="button" class="pull-right modal-concel-btn" href="javascript:;" data-dismiss="modal">取消</button>

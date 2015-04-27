@@ -309,10 +309,12 @@ var noticeRemove=function (target,item) {
         window.dataObj.n_time = 2;
         $('#'+target).addClass('hidden');
         $('.sure_btn').removeAttr('disabled');
+        console.log(2333);
         if(item) {item.removeAttr('disabled');}
     }
     else {
         window.dataObj.n_time--;
+        console.log(56666);
         setTimeout(function() {noticeRemove(target,item)},1000);
     }
 }

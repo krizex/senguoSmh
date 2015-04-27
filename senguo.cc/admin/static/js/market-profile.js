@@ -63,6 +63,7 @@ $(document).ready(function(){
 }).on('click','#pwdSure',function(){
     var $this=$(this);
     var action=$this.attr('data-action');
+    $('#pwdSure').attr({'disabled':true});
     setPwd(action);
 });
 
@@ -235,21 +236,21 @@ function setPwd(action){
         };
     }  
     else if(action=='modify_password'){
-        var password=$('#originPassword').val();
+        var old_password=$('#originPassword').val();
         var newPassword=$('#newPassword').val();
         var passwconf=$('#newConfirm').val();
         console.log();
-        if(!password){return warnNotice('请输入原始密码');}
+        if(!old_password){return warnNotice('请输入原始密码');}
         if(!newPassword){return warnNotice('请输入新密码！');}
         if(newPassword.length<6 || !regPass.test(newPassword)) {return noticeBox('请输入六位以上字母和数字的组合!');}
         if(passwconf!=newPassword){return noticeBox('两次密码输入不一致!')}
-        password = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
-        newPassword = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+        old_password = CryptoJS.SHA256(old_password).toString(CryptoJS.enc.Hex);
+        newPassword = CryptoJS.SHA256(newPassword).toString(CryptoJS.enc.Hex);
         data=newPassword;
         args={
             action:action,
             data:data,
-            old_password:password
+            old_password:old_password
         };
     }    
      
@@ -259,10 +260,20 @@ function setPwd(action){
                 {
                     var pwdBox=new Modal('pwdBox');
                     pwdBox.modal('hide');
+                    $('#pwdSure').removeAttr('disabled');
                 }
-                else noticeBox(res.error_text);
+                else {
+                    noticeBox(res.error_text);
+                    $('#pwdSure').removeAttr('disabled');
+                }
             },
-            function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-            function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+            function(){
+                rnoticeBox('网络好像不给力呢~ ( >O< ) ~');
+                $('#pwdSure').removeAttr('disabled');
+            },
+            function(){
+                noticeBox('服务器貌似出错了~ ( >O< ) ~');
+                $('#pwdSure').removeAttr('disabled');
+            }
         );
 }
