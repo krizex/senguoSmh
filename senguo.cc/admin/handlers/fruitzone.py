@@ -87,7 +87,7 @@ class ShopList(FruitzoneBaseHandler):
 			page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
 		else:
-			print("city not in args")
+			print("[店铺列表]城市不存在")
 
 		# if "service_area" in self.args:
 		#     q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
