@@ -780,4 +780,5 @@ class payTest(FruitzoneBaseHandler):
 		#jsApi.setPrepayId(prepay_id)
 		renderPayParams = jsApi.getParameters()
 		print(renderPayParams)
-		return self.send_success(renderPayParams = renderPayParams)
+		# return self.send_success(renderPayParams = renderPayParams)
+		return self.render("fruitzone/paytest.html", context=dict(renderPayParams = renderPayParams))
