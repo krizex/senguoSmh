@@ -108,9 +108,8 @@ class RegistByPhone(CustomerBaseHandler):
 		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first()
 		if a:
 			return self.send_fail(error_text="手机号已经绑定其他账号")
-
+		print("[手机注册]发送验证码到手机：",self.args["phone"])
 		resault = gen_msg_token(phone=self.args["phone"])
-		print("[手机注册]发送验证码到手机：",phone)
 		if resault == True:
 			#print("[手机注册]向手机号",phone,"发送短信验证",resault,"成功")
 			return self.send_success()

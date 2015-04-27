@@ -581,8 +581,8 @@ class PhoneVerify(_AccountBaseHandler):
 
 	@FruitzoneBaseHandler.check_arguments("phone:str")
 	def handle_gencode_shop_apply(self):
+		print("[店铺申请]发送证码到手机：",self.args["phone"])
 		resault = gen_msg_token(phone=self.args["phone"])
-		print("[店铺申请]发送证码到手机：",phone)
 		# print("handle_gencode_shop_apply" + self.current_user.accountinfo.wx_unionid)
 		if resault == True:
 			return self.send_success()
