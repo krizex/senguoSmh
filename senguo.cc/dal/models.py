@@ -241,6 +241,7 @@ class _AccountApi(_CommonApi):
 			return u
 		
 		# 基本账户中不存在，先创建基本信息，再添加到该用户账户中去
+		print("[微信登录]用户不存在，注册为新用户")
 		headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
 		account_info = Accountinfo(
 			wx_unionid=wx_userinfo["unionid"],
