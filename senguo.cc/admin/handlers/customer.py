@@ -148,14 +148,16 @@ class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
 		# shop_id = self.shop_id
+		print(shop_code,'shop_code')
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
 		except:
 			return self.send_fail('shop error')
-		if shop:
+		# print(shop.shop_code)
+		if shop is not None:
 			shop_name = shop.shop_name
 			shop_id   = shop.id
-			shop_logo  = shop.shop_trademark_url
+			shop_logo = shop.shop_trademark_url
 		else:
 			print("[访问店铺]店铺不存在：",shop_code)
 			return self.send_fail('shop not found')
@@ -168,12 +170,14 @@ class Home(CustomerBaseHandler):
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
 				customer_id,shop_id =shop_id).first()
 		except:
-			self.send_fail("point show error")
+			return self.send_fail("point show error")
 		if shop_follow:
 			if shop_follow.shop_point:
 				shop_point = shop_follow.shop_point
+				shop_balance = shop_follow.shop_balance
 			else:
 				shop_point = 0
+				shop_balance = 0
 		count = {3: 0, 4: 0, 5: 0, 6: 0}  # 3:未处理 4:待收货，5：已送达，6：售后订单
 		for order in self.current_user.orders:
 			if order.status == 1:
@@ -185,7 +189,8 @@ class Home(CustomerBaseHandler):
 			elif order.status == 10:
 				count[6] += 1
 		return self.render("customer/personal-center.html", count=count,shop_point =shop_point, \
-			shop_name = shop_name,shop_logo = shop_logo, context=dict(subpage='center'))
+			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
+			context=dict(subpage='center'))
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data")
 	def post(self,shop_code):
@@ -1555,6 +1560,73 @@ class OrderDetail(CustomerBaseHandler):
 		else:
 			return self.send_error(404)
 
+class Balance(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		customer_id = self.current_user.id
+		shop_id     = self.shop_id
+		shop_balance= 0
+		history     = []
+		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+			shop_id = shop_id).first()
+		if not shop_follow:
+			return self.send_fail('shop_follow not fount')
+		if shop_follow.shop_balance:
+			shop_balance = shop_follow.shop_balance
+		else:
+			shop_balance = 0
+
+		try:
+			shop_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id =\
+				customer_id , shop_id = shop_id).all()
+		except:
+			return self.send_fail("balance show error ")
+		if shop_balance_history:
+			for temp in shop_history:
+				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
+				history.append([temp.balance_record , temp.balance_value , temp.create_time])
+		count = len(history)
+		pages = int(count/10) if count % 10 == 0 else int(count/10) + 1
+		return self.render("customer/balance.html",shop_balance = shop_balance , pages = pages)
+
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments('page')
+	def post(self):
+		page = self.args["page"]
+		offset = (page-1) * 10
+		customer_id = self.current_user.id
+		shop_id     = self.shop_id
+		history     = []
+		data = []
+
+		try:
+			shop_history = self.session.query(models.BalanceHistory).filter_by(customer_id =\
+				customer_id,shop_id = shop_id).all()
+		except:
+			self.send_fail("balance history error")
+		if shop_history:
+			for temp in shop_history:
+				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
+				history.append([temp.point_type,temp.each_point,temp.create_time])
+			# print(history)
+
+		count = len(history)
+		history = history[::-1]
+		# print('history',history)
+		if offset + 10 <= count:
+			data = history[offset:offset+10]
+		elif offset <= count and offset + 10 >=count:
+			data = history[offset:]
+		else:
+			self.send_fail("history page error")
+		# print("data\n",data)
+
+		return self.send_success(data = data)
+
+
+
+
+
 
 class Points(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -1626,10 +1698,7 @@ class Points(CustomerBaseHandler):
 
 		return self.send_success(data = data)
 
-class Balance(CustomerBaseHandler):
-	@tornado.web.authenticated
-	def get(self):
-	    return self.render("customer/balance.html")
+
 
 class Recharge(CustomerBaseHandler):
 	@tornado.web.authenticated

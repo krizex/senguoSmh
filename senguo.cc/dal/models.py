@@ -762,6 +762,17 @@ class CustomerShopFollow(MapBase, _CommonApi):
 	# pointhistory = relationship("PointHistory")
 	bing_add_point = Column(Integer)  # 1 :
 	shop_new = Column(Integer,default = 0)
+	shop_balance  = Column(Float , default = 0)
+
+
+class BalanceHistory(MapBase,_CommonApi):
+	__tablename__ = 'balancehistory'
+	id = Column(Integer,primary_key = True , nullable = False)
+	customer_id = Column(Integer,ForeignKey(CustomerShopFollow.customer_id),nullable = False)
+	shop_id  = Column(Integer,ForeignKey(CustomerShopFollow.shop_id),nullable = False)
+	balance_record = Column(String(32))
+	balance_value  = Column(Float)
+	create_time    = Column(DateTime,default = func.now())
 
 class PointHistory(MapBase,_CommonApi):
 	__tablename__ = 'pointhistory'
