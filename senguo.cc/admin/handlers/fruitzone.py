@@ -1,4 +1,5 @@
 from handlers.base import FruitzoneBaseHandler, _AccountBaseHandler,WxOauth2
+from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
 import dal.models as models
 import tornado.web
 from  dal.db_configs import DBSession
@@ -86,7 +87,7 @@ class ShopList(FruitzoneBaseHandler):
 			page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
 		else:
-			print("[店铺列表]城市不存在")
+			print("city not in args")
 
 		# if "service_area" in self.args:
 		#     q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
@@ -235,7 +236,6 @@ class ShopApply(FruitzoneBaseHandler):
 			wx_openid = self.current_user.accountinfo.wx_openid
 			# wx_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'
 			subscribe = WxOauth2.get_user_subcribe(wx_openid)
-			self.current_user.accountinfo.update(session=self.session,subscribe=subscribe)
 			# print("subscribe",subscribe,wx_openid)
 			# subscribe = 0
 			# if not self.current_user.accountinfo.phone or \
@@ -737,3 +737,42 @@ class SystemPurchase(FruitzoneBaseHandler):
 			return False
 		
 		return True
+
+
+class payTest(FruitzoneBaseHandler):
+
+	# @tornado.web.authenticated
+	@FruitzoneBaseHandler.check_arguments('code?str')
+	def get(self):
+		print(self.request.full_url())
+		# path = self.request.full_url()
+		path = 'http://auth.senguo.cc/m'
+		jsApi  = JsApi_pub()
+		orderId = '1234'
+		if not self.args.get('code'):
+			url = jsApi.createOauthUrlForCode(path)
+			print(url)
+			return self.redirect(url)
+		else:
+			code = self.args['code']
+			jsApi.setCode(code)
+			openid = jsApi.getOpenid()
+			print(openid)
+			if not openid:
+				print('openid not exit')
+
+		unifiedOrder =   UnifiedOrder_pub()
+		unifiedOrder.setParameter("body",'senguo')
+		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/callback')
+		unifiedOrder.setParameter("openid",openid.encode('utf-8'))
+		unifiedOrder.setParameter("out_trade_no",orderId)
+		orderPriceSplite = (order.price) * 100
+		wxPrice = int(orderPriceSplite)
+		unifiedOrder.setParameter('total_fee',wxPrice)
+		unifiedOrder.setParameter('trade_type',"JSAPI")
+
+		prepay_id = unifiedOrder.getPrepayId()
+		jsApi.setPrepayId(prepay_id)
+		renderPayParams = jsApi.getParameters()
+		print(renderPayParams)
+		return self.send_success(renderPayParams = renderPayParams)

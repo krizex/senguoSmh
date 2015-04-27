@@ -39,7 +39,7 @@ import random
 import urllib
 import hashlib
 import threading
-# from urllib import quote
+from urllib.request import quote
 import xml.etree.ElementTree as ET
 
 try:
@@ -54,13 +54,13 @@ class WxPayConf_pub(object):
 
     #=======【基本信息设置】=====================================
     #微信公众号身份的唯一标识。审核通过后，在微信发送的邮件中查看
-    APPID = "wxdcd30a2ddde50823"
+    APPID = "wx0ed17cdc9020a96e"
     #JSAPI接口中获取openid，审核后在公众平台开启开发模式后可查看
-    APPSECRET = "d7379ce4eaf0ccd82216e69e351381d7"
+    APPSECRET = "6ecd60383b7e26a09d51a12e75649b3e"
     #受理商ID，身份标识
-    MCHID = "1224860502"
+    MCHID = "1223121101"
     #商户支付密钥Key。审核通过后，在微信发送的邮件中查看
-    KEY = "j5349nfk4k3j90gsdj432klfjv87ghkl"
+    KEY = "af8164b968911db7567ff98b73122dbc3"
    
 
     #=======【异步通知url设置】===================================
@@ -358,7 +358,8 @@ class UnifiedOrder_pub(Wxpay_client_pub):
     def createXml(self):
         """生成接口参数xml"""
         #检测必填参数
-        if any(self.parameters[key] is None for key in ("out_trade_no", "body", "total_fee", "notify_url", "trade_type")):
+        if any(self.parameters[key] is None for key in ("out_trade_no", "body", \
+            "total_fee", "notify_url", "trade_type")):
             raise ValueError("missing parameter")
         if self.parameters["trade_type"] == "JSAPI" and self.parameters["openid"] is None:
             raise ValueError("JSAPI need openid parameters")
