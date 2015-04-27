@@ -583,7 +583,7 @@ class Order(AdminBaseHandler):
 								   name=data["name"],
 								   start_time=start_time,
 								   end_time=end_time)
-			print("[订单管理]添加按时达时间，Shop ID：",config_id,"，时间段：",start_time,"~",end_time)
+			print("[订单管理]添加按时达时间，Shop ID：",period.config_id,"，时间段：",start_time,"~",end_time)
 			self.session.add(period)
 			self.session.commit()
 			return self.send_success(period_id=period.id)
