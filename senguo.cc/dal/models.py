@@ -222,7 +222,7 @@ class _AccountApi(_CommonApi):
 				if start == "o5":
 					u.accountinfo.wx_openid = wx_userinfo["openid"]
 					print("[微信登录]更新用户OpenID")
-			print("[微信登录]用户新OpenID为：",wx_userinfo["openid"])
+			print("[微信登录]用户新OpenID：",wx_userinfo["openid"])
 			session.commit()
 		
 			return u
@@ -241,6 +241,7 @@ class _AccountApi(_CommonApi):
 			return u
 		
 		# 基本账户中不存在，先创建基本信息，再添加到该用户账户中去
+		print("[微信登录]用户不存在，注册为新用户")
 		headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
 		account_info = Accountinfo(
 			wx_unionid=wx_userinfo["unionid"],
@@ -1115,9 +1116,9 @@ class Order(MapBase, _CommonApi):
 				charge_type.fruit.storage+= num
 				charge_type.fruit.current_saled -=num
 				charge_type.fruit.saled -= num
-				print("print mark 5:",num)
+				print("[订单管理]取消订单，恢复库存数量(水果)：",num)
 		if mgoods:
-			print("print mark 6:",mgoods,'**********************************')
+			#print("print mark 6:",mgoods,'**********************************')
 			charge_types = session.query(MChargeType).filter(MChargeType.id.in_(mgoods.keys())).all()
 			for charge_type in charge_types:
 				# print("before",charge_type.mgoods.storage,charge_type.mgoods.current_saled)
@@ -1127,6 +1128,7 @@ class Order(MapBase, _CommonApi):
 				charge_type.mgoods.storage += num
 				charge_type.mgoods.current_saled -= num
 				charge_type.mgoods.saled -= num
+				print("[订单管理]取消订单，恢复库存数量(其他)：",num)
 		session.commit()
 		return True
 

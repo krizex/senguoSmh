@@ -1,4 +1,5 @@
 from handlers.base import FruitzoneBaseHandler, _AccountBaseHandler,WxOauth2
+from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
 import dal.models as models
 import tornado.web
 from  dal.db_configs import DBSession
@@ -235,7 +236,6 @@ class ShopApply(FruitzoneBaseHandler):
 			wx_openid = self.current_user.accountinfo.wx_openid
 			# wx_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'
 			subscribe = WxOauth2.get_user_subcribe(wx_openid)
-			self.current_user.accountinfo.update(session=self.session,subscribe=subscribe)
 			# print("subscribe",subscribe,wx_openid)
 			# subscribe = 0
 			# if not self.current_user.accountinfo.phone or \
@@ -581,6 +581,7 @@ class PhoneVerify(_AccountBaseHandler):
 
 	@FruitzoneBaseHandler.check_arguments("phone:str")
 	def handle_gencode_shop_apply(self):
+		print("[店铺申请]发送证码到手机：",self.args["phone"])
 		resault = gen_msg_token(phone=self.args["phone"])
 		# print("handle_gencode_shop_apply" + self.current_user.accountinfo.wx_unionid)
 		if resault == True:
@@ -737,3 +738,46 @@ class SystemPurchase(FruitzoneBaseHandler):
 			return False
 		
 		return True
+
+
+class payTest(FruitzoneBaseHandler):
+
+	# @tornado.web.authenticated
+	@FruitzoneBaseHandler.check_arguments('code?:str')
+	def get(self):
+		print(self.request.full_url())
+		path = self.request.full_url()
+		#path = 'http://auth.senguo.cc/fruitzone/paytest'
+		jsApi  = JsApi_pub()
+		orderId = '1234'
+		print(self.args['code'],'sorry  i dont know')
+		code = self.args.get('code',None)
+		print(code,'how old are you',len(code))
+		if len(code) is 2:
+			url = jsApi.createOauthUrlForCode(path)
+			print(url,'code?')
+			return self.redirect(url)
+		else:
+
+			jsApi.setCode(code)
+			openid = jsApi.getOpenid()
+			print(openid,code,'hope is not []')
+			if not openid:
+				print('openid not exit')
+
+		unifiedOrder =   UnifiedOrder_pub()
+		unifiedOrder.setParameter("body",'senguo')
+		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/callback')
+		unifiedOrder.setParameter("openid",openid.encode('utf-8'))
+		unifiedOrder.setParameter("out_trade_no",orderId)
+		#orderPriceSplite = (order.price) * 100
+		wxPrice = 10086
+		unifiedOrder.setParameter('total_fee',wxPrice)
+		unifiedOrder.setParameter('trade_type',"JSAPI")
+
+		#prepay_id = unifiedOrder.getPrepayId()
+		#print(prepay_id,'prepay_id================')
+		#jsApi.setPrepayId(prepay_id)
+		renderPayParams = jsApi.getParameters()
+		print(renderPayParams)
+		return self.send_success(renderPayParams = renderPayParams)

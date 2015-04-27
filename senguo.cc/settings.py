@@ -8,6 +8,10 @@ APP_OAUTH_CALLBACK_URL = "http://auth.senguo.cc"
 MP_APPID = "wx0ed17cdc9020a96e"
 MP_APPSECRET = "6ecd60383b7e26a09d51a12e75649b3e"
 
+#测试号平台
+TEST_APPID = 'wxda9a51b0a18c983a'
+TEST_APPSECRET = 'b4e6f4340b59d51f6b3c18ee2e024163'
+
 # mysql数据库相关
 MYSQL_DRIVER = "mysqlconnector"
 MYSQL_USERNAME = "monk"
