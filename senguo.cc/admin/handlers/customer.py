@@ -1012,6 +1012,7 @@ class Cart(CustomerBaseHandler):
 
 		storages = {}
 		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
+		print("[购物篮]当前店铺：",shop)
 		if not shop:return self.send_error(404)
 		shop_name = shop.shop_name
 		shop_id = shop.id
@@ -1040,7 +1041,7 @@ class Cart(CustomerBaseHandler):
 		# periods = [x for x in shop.config.periods if x.active == 1]
 		periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1).all()
 		for period in periods:
-			print(period.start_time,period.end_time)
+			print("[购物篮]读取按时达时段，Shop ID：",period.config_id,"，时间段：",period.start_time,"~",period.end_time)
 		# print('storages',storages)
 
 		# for period in periods:
