@@ -141,6 +141,44 @@ class RegistByPhone(CustomerBaseHandler):
 			print("[手机注册]手机号",phone,"注册成功，用户ID为：",u.id)
 			return self.send_success()
 
+class Password(CustomerBaseHandler):
+	def get(self):
+		return self.render("login/m_password.html")
+
+	@CustomerBaseHandler.check_arguments("phone:str","code:int")
+	def handle_checkcode_reset(self):
+		phone = self.args['phone']
+		if not check_msg_token(phone = self.args["phone"],code = self.args["code"]):
+			return self.send_fail(error_text = "验证码过期或者不正确")
+		else:
+			return self.send_success()
+
+	@CustomerBaseHandler.check_arguments("phone:str")
+	def handle_gencode(self):
+		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first()
+		if a:
+			resault = gen_msg_token(phone=self.args["phone"])
+			if resault == True:
+				return self.send_success()
+			else:
+				return self.send_fail(resault)
+		else:
+			return self.send_fail(error_text="该手机号不存在")
+
+	@CustomerBaseHandler.check_arguments( "action:str",  "phone?:str","password?:str")
+	def post(self):
+		action = self.args['action']
+		if action == "get_code":
+			self.handle_gencode()
+		elif action == 'check_code':
+			self.handle_checkcode_reset()
+		elif action == 'reset':
+			phone = self.args['phone']
+			password = self.args['password']
+			u = self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first()
+			u.update(self.session,password=password)
+			return self.send_success()
+
 
 
 

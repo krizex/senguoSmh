@@ -30,6 +30,7 @@ handlers = [
     (r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
     (r"/customer/weixin", handlers.customer.Third, {"action":"weixin"}, "customerWeixin"),
     (r"/customer/register", handlers.customer.RegistByPhone, {}, "customerRegister"),
+    (r"/customer/password", handlers.customer.Password, {}, "customerPassword"),
     
     (r"/customer/profile", handlers.customer.CustomerProfile, {}, "customerProfile"),
     (r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
