@@ -746,8 +746,8 @@ class payTest(FruitzoneBaseHandler):
 	def get(self):
 		print(self.request.full_url())
 		path = self.request.full_url()
-		# path = 'http://auth.senguo.cc/m'
-		jsApi  = JsApi_pub()
+		path = 'http://zone.senguo.cc/m'
+		# jsApi  = JsApi_pub()
 		orderId = '1234'
 		if not self.args.get('code'):
 			url = jsApi.createOauthUrlForCode(path)

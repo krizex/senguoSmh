@@ -40,7 +40,7 @@ class Access(CustomerBaseHandler):
 		phone = self.args['phone']
 		password = self.args['password']
 
-		u = models.Customer.regist_by_phone_password(self.session, self.args["phone"], self.args["password"])
+		u = models.Customer.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
 		print("[手机登录]用户：",u,"，ID：",u.id)
 		print("[手机登录]手机号码：",phone,"，密码：",password)
 		# u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
@@ -498,6 +498,7 @@ class Market(CustomerBaseHandler):
 		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		if not shop:
 			return self.send_error(404)
+		# self.current_shop = shop
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
@@ -1036,7 +1037,10 @@ class Cart(CustomerBaseHandler):
 			mgood_storage = mgood.storage
 			if mgood_id not in storages:
 				storages[mgood_id] = mgood_storage
-		periods = [x for x in shop.config.periods if x.active == 1]
+		# periods = [x for x in shop.config.periods if x.active == 1]
+		periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1).all()
+		for period in periods:
+			print(period.start_time,period.end_time)
 		# print('storages',storages)
 
 		# for period in periods:

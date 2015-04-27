@@ -565,6 +565,7 @@ class Order(AdminBaseHandler):
 					d["SH2"] = staff_data
 			d["SH2s"] = SH2s
 			data.append(d)
+		print(self.current_shop.id,'************shop_id**************')
 		return self.render("admin/orders.html", data = data, order_type=order_type,
 						   count=self._count(), context=dict(subpage='order'))
 
@@ -576,6 +577,7 @@ class Order(AdminBaseHandler):
 		action = self.args["action"]
 		data = self.args["data"]
 		if action == "add_period":
+			print(self.current_shop.id,'&&&&&&&&&&&&&&&&&&&shop_id&&&&&&&&&&&&&&')
 			start_time = datetime.time(data["start_hour"],data["start_minute"])
 			end_time = datetime.time(data["end_hour"],data["end_minute"])
 			period = models.Period(config_id=self.current_shop.id,
