@@ -50,7 +50,6 @@ $(document).ready(function(){
         var $this=$(this);
         var clientHeight= $(window).height();
         var scrollTop=$(window).scrollTop();
-        $("#classify").html($(window).height()+"--"+scrollTop);
         if(scrollTop>=clientHeight/2){
                 $('.little_pear').css("display","block");
             }
@@ -330,13 +329,13 @@ Modal.prototype.modal=function(type){
         $("body").css({'overflow':'hidden'});
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
-                $('body').removeClass('modal_sty').css({'overflow':'auto'});
+                $('body').css({'overflow':'auto'});
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
         $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
-                $('body').removeClass('modal_sty').css({'overflow':'auto'});
+                $('body').css({'overflow':'auto'});
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
