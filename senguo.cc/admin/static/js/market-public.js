@@ -42,6 +42,7 @@ $(document).ready(function(){
     if(window.dataObj.cart_count!=0){
         $('.cart_num').removeClass('hidden').text(window.dataObj.cart_count);
     }
+    $('.lazy_img').lazyload({threshold:100});
     //设置title
     //document.title=$.base64Decode(shop_name)+'一家不错的水果O2O店铺，快来关注吧~';
     //置顶监听
