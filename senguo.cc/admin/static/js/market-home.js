@@ -495,7 +495,7 @@ var goodsList=function(page,action){
         );
         var initData=function(res){
             var w_orders=res.w_orders;
-            if(w_orders.length==0){
+            if(w_orders&&w_orders.length==0){
                  $('.loading').html("~没有更多商品了呢 ( > < )~").show();
                  return;          
             }
