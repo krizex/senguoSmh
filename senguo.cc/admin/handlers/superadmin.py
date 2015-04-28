@@ -255,7 +255,7 @@ class ShopManage(SuperBaseHandler):
 			r = requests.post(url,data = postdata , headers = headers)
 			print("[超级管理员]审核通知短信平台返回信息：",r.text)
 
-			reason = "原因 : " + message_reason
+			reason = "原因：" + message_reason
 
 			# weixin message
 			WxOauth2.fail_template_msg(account_info.wx_openid, shop_temp.shop_name,
