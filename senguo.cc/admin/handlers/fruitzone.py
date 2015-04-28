@@ -752,7 +752,7 @@ class payTest(FruitzoneBaseHandler):
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('fruitzonePayTest')
 		print(path , 'redirect_uri is Ture?')
 		jsApi  = JsApi_pub()
-		orderId = '1234'
+		orderId = ''.join(random.sample('0123456789',5))
 		print(self.args['code'],'sorry  i dont know')
 		code = self.args.get('code',None)
 		print(code,'how old are you',len(code))
@@ -771,16 +771,16 @@ class payTest(FruitzoneBaseHandler):
 		unifiedOrder =   UnifiedOrder_pub()
 		unifiedOrder.setParameter("body",'senguo')
 		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/callback')
-		unifiedOrder.setParameter("openid",openid.encode('utf-8'))
+		unifiedOrder.setParameter("openid",openid)
 		unifiedOrder.setParameter("out_trade_no",orderId)
 		#orderPriceSplite = (order.price) * 100
-		wxPrice = 10086
+		wxPrice = 10
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"JSAPI")
 
-		#prepay_id = unifiedOrder.getPrepayId()
-		#print(prepay_id,'prepay_id================')
-		#jsApi.setPrepayId(prepay_id)
+		prepay_id = unifiedOrder.getPrepayId()
+		print(prepay_id,'prepay_id================')
+		jsApi.setPrepayId(prepay_id)
 		renderPayParams = jsApi.getParameters()
 		print(renderPayParams)
 		noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
