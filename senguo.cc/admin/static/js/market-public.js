@@ -50,6 +50,7 @@ $(document).ready(function(){
         var $this=$(this);
         var clientHeight= $(window).height();
         var scrollTop=$(window).scrollTop();
+        $("#classify").html($(window).height()+"--"+scrollTop);
         if(scrollTop>=clientHeight/2){
                 $('.little_pear').css("display","block");
             }
@@ -306,12 +307,10 @@ var noticeRemove=function (target,item) {
         window.dataObj.n_time = 2;
         $('#'+target).addClass('hidden');
         $('.sure_btn').removeAttr('disabled');
-        console.log(2333);
         if(item) {item.removeAttr('disabled');}
     }
     else {
         window.dataObj.n_time--;
-        console.log(56666);
         setTimeout(function() {noticeRemove(target,item)},1000);
     }
 }

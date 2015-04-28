@@ -453,12 +453,6 @@ var scrollLoading=function(){
         var main = $(".container");                  //主体元素
         if(!maxnum) maxnum=Int($('#page_count').val());
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
-        if(srollPos>=200){
-                $("#backTop").css("display","block");
-            }
-            else{
-                $("#backTop").css("display","none");
-            }
         if(window.dataObj.finished&&(main.height()-range) <= totalheight  && window.dataObj.page < maxnum) {
             window.dataObj.finished=false;
             window.dataObj.page++;
