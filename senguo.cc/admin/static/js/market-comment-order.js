@@ -1,21 +1,20 @@
 /**
  * Created by Administrator on 2015/4/23.
  */
-var imgNameArr = [];
 $(document).ready(function(){
 
 }).on("click","#commit-order-point",function(){
     var user_txt = $("#user-txt").val();
 
 }).on("click",".icon-del",function(){
-    var index = $(this).attr("data-index");
-    imgNameArr.splice(index,1);
     $(this).closest("li").remove();
-    if($("#add-product-image").closest("li").hasClass("hide")){
-        $("#add-product-image").closest("li").removeClass("hide");
+    if($("#add-img").closest("li").hasClass("hide")){
+        $("#add-img").closest("li").removeClass("hide");
         $(".moxie-shim").removeClass("hide");
     }
     $(".moxie-shim").css({width:$("#add-img").width(),height:$("#add-img").height(),left:$("#add-img").closest("li").position().left,top:$("#add-img").closest("li").position().top});//调整按钮的位置
+}).on("click","#commit-order-point",function(){  //提交评价
+
 });
 $(document).ready(function(){
     var width = $("#add-img").width();
@@ -52,16 +51,25 @@ $(document).ready(function(){
                         }
                     }
                 });
+                var $item = $('<li><div class="wrap-img"><div class="img-cover wrap-img-cover"><span class="loader loader-quart"></span></div><img id="'+file.id+'" src="" alt="晒单图片" class="image '+isOri+'"/><a href="javascript:;" class="icon-del hide"></a></div></li>');
+                $("#add-img").closest("li").before($item);
+                if ($("#img-lst").children("li").size() == 5) {
+                    $("#add-img").closest("li").addClass("hide");
+                    $(".moxie-shim").addClass("hide");
+                }
+                $(".moxie-shim").css({left:$("#add-product-image").closest("li").position().left+15,top:$("#add-product-image").closest("li").position().top+15});//调整按钮的位置
                 !function(){
                     previewImage(file,width,function(imgsrc){
-
+                        $("#"+file.id).attr("src",imgsrc);
                     })
                 }();
             },
             'UploadProgress': function (up, file) {
             },
             'FileUploaded': function (up, file, info) {
-                $("#person-img").attr("url","http://shopimg.qiniudn.com/"+$.parseJSON(info).key);
+                $("#" + file.id).prev(".img-cover").addClass("hide");
+                $("#" + file.id).next("a").removeClass("hide");
+                $("#"+file.id).attr("url","http://shopimg.qiniudn.com/"+$.parseJSON(info).key);
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
@@ -74,7 +82,12 @@ $(document).ready(function(){
                     alert(err.code + ": " + err.message);
                 }
                 up.removeFile(err.file.id);
-                $("#person-img").attr("src","").attr("url","").closest(".wrap-img").addClass("hide");
+                $("#"+err.file.id).closest("li").remove();
+                if($("#"+err.file.id).closest("li").index()==3){
+                    $("#add-product-image").closest("li").removeClass("hide");
+                    $(".moxie-shim").removeClass("hide");
+                }
+                $(".moxie-shim").css({left:$("#add-img").closest("li").position().left,top:$("#add-img").closest("li").position().top});//调整按钮的位置
             },
             'Key': function (up, file) {
                 var key = "Web_" + new Date().getTime() + "_" + file.id;
@@ -82,6 +95,12 @@ $(document).ready(function(){
             }
         }
     });
+    /*var imgLink = Qiniu.imageMogr2({
+        auto-orient:true
+    });*/
+    setTimeout(function(){
+        $(".moxie-shim").children("input").attr("capture","camera").attr("accept","image/*").removeAttr("multiple");
+    },500);
 })
 //获取cookie
 function getCookie(key){

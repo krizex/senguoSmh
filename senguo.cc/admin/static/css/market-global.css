@@ -204,10 +204,10 @@ button:focus{outline:0;}
 
 .back-to-top{width:30px;height:30px;line-height:30px;position:fixed;right:0;bottom:60px;}
 
-.return-btn{display:inline-block;width:20%;height:42px;position:absolute;left:0;background:url('../svg/back-white@2x.png') no-repeat 14px 11px;background-size:10px;}
+.return-btn{display:inline-block;width:20%;height:40px;position:absolute;left:0;background:url('../svg/back-white@2x.png') no-repeat 14px 11px;background-size:10px;}
 
-.detail-header{background:#33CC66;height:40px;line-height:40px;position:fixed;background-size:20px;max-width:800px;min-width:320px;z-index:666;width:100%;top:0;}
-.detail-header .title{padding-left:2em;}
+.detail-header{background:#33CC66;height:40px;line-height:40px;position:fixed;background-size:20px;max-width:800px;min-width:320px;z-index:666;width:100%;top:0;text-align: center;}
+.detail-header .title{}
 
 .border-c{border:1px solid #ccc;}
 .rainshed{background:url('../svg/rainshed2@2x.png') repeat-x;height:45px;line-height:42px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;background-size:40px 42px;}

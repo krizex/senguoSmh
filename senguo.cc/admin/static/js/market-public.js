@@ -15,7 +15,7 @@ $(document).ready(function(){
     //fastclick initialise
      $(function() {
         FastClick.attach(document.body);
-    });   
+    });
     //客户端为Android系统替换图片路径
     //AndroidImg('bg_change');
     //AndroidImg('src_change');   
@@ -118,10 +118,10 @@ function wexin(link,imgurl){
 function isWeiXin(){ 
     var ua = window.navigator.userAgent.toLowerCase(); 
         if(ua.match(/MicroMessenger/i) == 'micromessenger'){ 
-        return true; 
+        return true;
         }
-        else{ 
-    } 
+        else{
+    }
 } 
 
 /*function AndroidImg(target){

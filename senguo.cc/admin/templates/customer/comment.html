@@ -21,3 +21,80 @@
 {% block bottom %}
 <script src="{{static_url('js/market-comment.js')}}"></script>
 {% end %}
+<!--新评价详情页面
+{% extends 'detail-base.html' %}
+{% block title %}评价详情{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/baguetteBox.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/mobile-main.css')}}"/>
+{% end %}
+{% block top %}评价详情{% end %}
+{% block content %}
+<div class="contain">
+    <div class="point-show group">
+        <div class="point-left fl pt5">
+            <p class="nor-txt">满意度</p>
+            <p class="percent-txt">98%</p>
+        </div>
+        <div class="point-cen fl">
+            <div class="percent-bar">
+                <span class="bar1"></span>
+            </div>
+            <div class="percent-bar">
+                <span class="bar1"></span>
+            </div>
+            <div class="percent-bar">
+                <span class="bar1"></span>
+            </div>
+        </div>
+        <div class="point-left fr">
+            <p class="nor-txt">89分</p>
+            <p class="nor-txt">100分</p>
+            <p class="nor-txt">98分</p>
+        </div>
+    </div>
+    <ul class="point-com-lst">
+        <li>
+            <dl class="ccom-item group">
+                <dd class="fl">
+                    <img src="/static/images/TDSG_l.png" width="50" height="50" alt="头像"/>
+                </dd>
+                <dt class="fl">
+                    <p><span class="nor-txt">黄铁森</span><span class="time-txt ml20">1天前</span></p>
+                    <p class="com-txt">这榴莲真是醉了，太好吃了，强烈推荐！</p>
+                </dt>
+            </dl>
+        </li>
+        <li>
+            <dl class="ccom-item group">
+                <dd class="fl">
+                    <img src="/static/images/TDSG_l.png" width="50" height="50" alt="头像"/>
+                </dd>
+                <dt class="fl">
+                <p><span class="nor-txt">黄铁森</span><span class="time-txt ml20">1天前</span></p>
+                <p class="com-txt">这榴莲真是醉了，太好吃了，强烈推荐！</p>
+                <ul class="group com-goods-lst">
+                    <li>
+                        <a href="/static/images/anoa-7-md.gif" title="放商品名称"><img src="/static/images/anoa-7-md.gif" alt="晒单图片"/></a>
+                    </li>
+                    <li>
+                        <a href="/static/images/anoa-7-md.gif" title="放商品名称"><img src="/static/images/anoa-7-md.gif" alt="晒单图片"/></a>
+                    </li>
+                    <li>
+                        <a href="/static/images/anoa-7-md.gif" title="放商品名称"><img src="/static/images/anoa-7-md.gif" alt="晒单图片"/></a>
+                    </li>
+                    <li>
+                        <a href="/static/images/anoa-7-md.gif" title="放商品名称"><img src="/static/images/anoa-7-md.gif" alt="晒单图片"/></a>
+                    </li>
+                </ul>
+                </dt>
+            </dl>
+        </li>
+    </ul>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/third/baguetteBox.min.js')}}"></script>
+<script src="{{static_url('js/comment-shop.js')}}"></script>
+{% end %}
+-->

@@ -5,42 +5,84 @@ $(document).ready(function(){
     $(".cert-type .type").removeClass("active").eq(index).addClass("active");
     $(".wrap-bm").addClass("hide").eq(index).removeClass("hide");
 }).on("click","#per-commit",function(){     //个人认证提交
-    //$(".wrap-bm").addClass("hide").eq(2).removeClass("hide");
     var name=$("#per-name").val();
-    var id = $("#per-ID").val();
+    var cardId = $("#per-ID").val();
     var perImg = $("#per-img").attr("url");
     var perCode = $("#per-code").val();
+    var tel = $("#perCode").html();
+    $.ajax({
+        url:"/admin/shopauth",
+        data:{action:"customer_auth",name:name,card_id:cardId,phone:tel,handle_img:perImg,code:perCode},
+        type:"post",
+        success:function(data){
+            if(data.status==0) {
+                $(".wrap-bm").addClass("hide").eq(2).removeClass("hide");
+            }else{
+                alert(data.msg);
+            }
+        }
+    });
 }).on("click","#en-commit",function(){      //企业认证提交
-    //$(".wrap-bm").addClass("hide").eq(2).removeClass("hide");
-
-}).on("click","#getPerCode",function(){
+    var name=$("#en-name").val();
+    var enPerName = $("#en-per-name").val();
+    var licenseImg = $("#license-img").attr("url");
+    var fontImg = $("font-img").attr("url");
+    var reverImg = $("rever-img").attr("url");
+    var code = $("#getEnCode").val();
+    var tel = $("#perCode").html();
+    $.ajax({
+        url:"/admin/shopauth",
+        data:{
+            action:"company_auth",
+            name:name,
+            company_name:enPerName,
+            business_license:licenseImg,
+            font_img:fontImg,
+            behind_img:reverImg,
+            phone:tel,
+            code:code
+        },
+        type:"post",
+        success:function(data){
+            if(data.status==0) {
+                $(".wrap-bm").addClass("hide").eq(2).removeClass("hide");
+            }else{
+                alert(data.msg);
+            }
+        }
+    });
+}).on("click","#getPerCode",function(){   //获取验证码
     if($(this).attr("data-statu")=="1") return false;
+    $(this).addClass("bg85").attr("data-statu", "1");
     var tel = $("#perCode").html();
     var $this = $(this);
     $.ajax({
-        url:"",
-        data:{tel:tel},
+        url:"/admin/shopauth",
+        data:{phone:tel},
         type:"post",
         success:function(data){
-            if(data.success) {
+            if(data.status==0) {
                 getCertCode($this);
             }else{
+                $this.removeClass("bg85").removeAttr("data-statu").html("获取验证码");
                 alert("服务器出故障了，请联系管理员！");
             }
         }
     });
 }).on("click","#getEnCode",function(){
     if($(this).attr("data-statu")=="1") return false;
+    $(this).addClass("bg85").attr("data-statu", "1");
     var tel = $("#perCode").html();
     var $this = $(this);
     $.ajax({
-         url:"",
-         data:{tel:tel},
+         url:"/admin/shopauth",
+         data:{phone:tel},
          type:"post",
          success:function(data){
-             if(data.success) {
+             if(data.status==0) {
                  getCertCode($this);
              }else{
+                 $this.removeClass("bg85").removeAttr("data-statu").html("获取验证码");
                  alert("服务器出故障了，请联系管理员！");
              }
          }
@@ -48,14 +90,14 @@ $(document).ready(function(){
 });
 function getCertCode($obj){
     var i=60,timer=null;
-    $obj.addClass("bg85").attr("data-statu", "1").html("60秒后重新获取");
+    $obj.html("重新发送(60)");
     timer = setInterval(function (){
         i--;
         if(i==0){
             $obj.removeClass("bg85").removeAttr("data-statu").html("获取验证码");
             clearInterval(timer);
         }else{
-            $obj.html(i+"秒后重新获取");
+            $obj.html("重新发送("+i+")");
         }
     },1000);
 }

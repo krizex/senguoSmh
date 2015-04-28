@@ -1,7 +1,8 @@
+var isFull = false,oMove = null;;
 $(document).ready(function(){
+    $("body").height($(window).height()-50);
     var startX = 0,startY = 0,width = $(".wrap-point-box").width()-34,left = 0;
     var oBox = $(".wrap-point-box");
-    var oMove = null;
     for(var i=0; i<oBox.length; i++){
         initEvent(oBox[i]);
     }
@@ -13,70 +14,107 @@ $(document).ready(function(){
             left =  oMove.position().left;
         }, false);
         obj.addEventListener('touchmove', function (ev) {
-            var moveX,moveY,grade,percent;
+            var moveX,moveY,grade,percent,l;
             moveX = ev.touches[0].pageX;
             moveY = ev.touches[0].pageY;
+            l = $(this).offset().left;
             var direction = GetSlideDirection(startX, startY, moveX, moveY);
-            left = moveX-34;
+            left = moveX-34-l;
+            if(left<0){
+                left = 0;
+            }
+            if(left>width){
+                left = width;
+            }
+            percent = (left/width).toFixed(2);
+            oMove.css("left",left+"px");
+            oMove.closest(".point-box").width(17+left);
+            oMove.closest("li").find(".point").html(parseInt(percent*100));
+            if(left==0){
+                grade=0;
+            }else if(left>0 && percent<0.33){
+                grade=1;
+            }else if(percent>=0.33 && percent<=0.66){
+                grade=2;
+            }else{
+                grade=3;
+            }
+            if(parseInt(percent*100)==100){
+                isFull = true;
+            }else{
+                isFull = false;
+            }
+            changeColor(oMove,grade);
             switch (direction) {
                 case 3:   //左
-                    if(left<0){
-                        left = 0;
-                    }
-                    percent = (left/width).toFixed(2);
-                    oMove.css("left",left+"px");
-                    oMove.closest(".point-box").width(17+left);
-                    oMove.closest("li").find(".point").html(parseInt(percent*100));
-                    if(left==0){
-                        grade=0;
-                    }else if(left>0 && percent<0.33){
-                        grade=1;
-                    }else if(percent>=0.33 && percent<=0.66){
-                        grade=2;
-                    }else{
-                        grade=3;
-                    }
-                    changeColor(oMove,grade);
                     break;
                 case 4:   //右
-                    if(left>width){
-                        left = width;
-                    }
-                    percent = (left/width).toFixed(2);
-                    oMove.css("left",left+"px");
-                    oMove.closest(".point-box").width(17+left);
-                    oMove.closest("li").find(".point").html(parseInt(percent*100));
-                    if(left>0 && percent<0.33){
-                        grade=1;
-                    }else if(percent>=0.33 && percent<=0.66){
-                        grade=2;
-                    }else{
-                        grade=3;
-                    }
-                    changeColor(oMove,grade);
                     break;
             }
         }, false);
         obj.addEventListener('touchend', function (ev) {
-            var endX, endY;
-            endX = ev.changedTouches[0].pageX;
-            endY = ev.changedTouches[0].pageY;
-            var direction = GetSlideDirection(startX, startY, endX, endY);
-            switch (direction) {
-                case 3:   //左
-
-                    break;
-                case 4:   //右
-
-                    break;
+            if(isFull){
+                showAnimate($(this).closest("li").index());
             }
         }, false);
     }
+    $(".point-img").on("mousedown",function(ev){
+        var percent = 0,grade=0;
+        oMove = $(this);
+        left =  oMove.position().left;
+        var disX = ev.clientX-oMove.position().left;
+        var _this = oMove.closest(".wrap-point-box");
+        _this.on("mousemove",function(ev){
+            var left = ev.clientX-disX;
+            if(left<0){left=0;}
+            if(left>width){left=width;}
+            oMove.css({left:left});
+            oMove.closest(".point-box").width(17+left);
+            percent = (left/width).toFixed(2);
+            oMove.closest("li").find(".point").html(parseInt(percent*100));
+            if(left==0){
+                grade=0;
+            }else if(left>0 && percent<0.33){
+                grade=1;
+            }else if(percent>=0.33 && percent<=0.66){
+                grade=2;
+            }else{
+                grade=3;
+            }
+            if(parseInt(percent*100)==100){
+                isFull = true;
+            }else{
+                isFull = false;
+            }
+            changeColor(oMove,grade);
+        });
+        if(oMove[0].setCapture){
+            oMove[0].setCapture();
+        }
+        _this.on("mouseup",function(ev){
+            if(oMove[0].releaseCapture){
+                oMove[0].releaseCapture();
+            }
+            if(isFull){
+                showAnimate(oMove.closest("li").index());
+            }
+            _this.unbind("mousemove");
+            _this.unbind("mouseup");
+        });
+        return false;
+    });
+    /**/
 }).on("click","#commit-shop-point",function(){
     var shop_id = 1;
     var zl_point = $("#zl-point").html();
     var sd_point = $("#sd-point").html();
     var fw_point = $("#fw-point").html();
+}).on("mouseup",document,function(){
+    $(".wrap-point-box").unbind("mousemove");
+    $(".wrap-point-box").unbind("mouseup");
+    if(isFull){
+        showAnimate(oMove.closest("li").index());
+    }
 });
 function changeColor($obj,grade){
     switch(grade){
@@ -99,6 +137,31 @@ function changeColor($obj,grade){
             $obj.attr("src","/static/images/goods_best.png");
             $obj.closest(".wrap-point-box").removeClass("shadow-zl shadow-sd shadow-fw").addClass("shadow-fw");
             $obj.closest(".point-box").removeClass("bg-zl bg-sd bg-fw").addClass("bg-fw");
+            break;
+    }
+}
+//显示动画
+function showAnimate(index){
+    switch (index){
+        case 0:
+            $("#goods-list").css("display","block").addClass("zl");
+            setTimeout(function(){
+                $("#goods-list").css("display","none").removeClass("zl");
+            },1700);
+            break;
+        case 1:
+            $("#goods-list").children().addClass("up-down");
+            $("#goods-list").css("display","block").addClass("zl");
+            setTimeout(function(){
+                $("#goods-list").css("display","none").removeClass("zl");
+                $("#goods-list").children().removeClass("up-down");
+            },1700);
+            break;
+        case 2:
+            $("#goods-list").css("display","block").addClass("up");
+            setTimeout(function(){
+                $("#goods-list").css("display","none").removeClass("up");
+            },1700);
             break;
     }
 }

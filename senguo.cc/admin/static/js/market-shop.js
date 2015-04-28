@@ -3,6 +3,11 @@ $(document).ready(function(){
     if(isWeiXin()){
         wexin('',shop_logo);
     }
+    if($(".com-goods-lst").size()>0){
+        baguetteBox.run('.com-goods-lst',{
+            buttons: false
+        });
+    }
 }).on('click','#focus-shop',function(){
     focus();
 }).on('click','.foucus-notice',function(){
