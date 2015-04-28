@@ -55,8 +55,8 @@
 .pay_type .title{width:90px;}
 .pay_type .active .title{color:#33CC66 !important;}
 
-.address-box .tit{width:15%;min-width:50px;line-height:30px;}
-.send-address-choose input{width:84%;height:30px;-ms-line-height:30px;text-indent:14px;margin-bottom:5px;}
+.address-box .tit{width:15%;min-width:45px;line-height:30px;}
+.send-address-choose input{width:80%;height:30px;-ms-line-height:30px;text-indent:10px;margin-bottom:5px;}
 .send-address-choose .address{width:85%;}
 .send-address-choose .to-edit-address{width:15%;margin-top:15px;}
 .send-address-choose .active .phone{color:#33CC66;}
@@ -81,7 +81,7 @@
 
 .list-group{padding:0 10px;}
 .address-box{padding:10px;margin:10px 0;}
-.w200{width:200px;}
+.w118{width:118px;}
 .tie-popbox .tie-info{width:100%;}
 .tie-popbox .tie-info .input1{width:100%;border:1px solid #ddd;border-radius:2px;background:#F9F9F9;padding:0.5em 0;text-indent:0.5em;margin-bottom:0.5em;}
 .tie-popbox .tie-info .input1:focus{border-color:#00D681;}
