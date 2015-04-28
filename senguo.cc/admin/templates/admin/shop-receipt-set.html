@@ -8,11 +8,12 @@
         <td colspan="2">小票附加消息</td>
     </tr>
     <tr class="set-list-item">
-        <!--<td>
-            <div class="mode action-mode">
-                <a class="work-mode" href="javascript:;">已启用</a>
+        <td>
+            <div class="mode action-mode" data-active="{{current_shop.config.receipt_img_active}}">
+                <a class="work-mode hidden" href="javascript:;">已启用</a>
+                <a class="stop-mode hidden" href="javascript:;">未启用</a>
             </div>
-        </td>-->
+        </td>
         <td class="col-lg-4 address-show receipt-img"><img src="{{current_shop.config.receipt_img or '/static/images/TDSG_l.png'}}"/></td>
         <td class="col-lg-4 address-edit"  style="display:none;">
             <div class="logo-box">

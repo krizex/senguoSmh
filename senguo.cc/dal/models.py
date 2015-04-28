@@ -199,10 +199,10 @@ class _AccountApi(_CommonApi):
 	def register_with_wx(cls, session, wx_userinfo):
 		# 判断是否在本账户里存在该用户
 		u = cls.login_by_unionid(session, wx_userinfo["unionid"])
-		print("login register_with_wx")
+		print("[微信登录]用户登录")
 		if u:
 			# 已存在用户，则更新微信信息
-			print("user exists")
+			print("[微信登录]用户存在，更新用户资料")
 			u.accountinfo.wx_country=wx_userinfo["country"]
 			u.accountinfo.wx_province=wx_userinfo["province"]
 			u.accountinfo.wx_city=wx_userinfo["city"]
@@ -213,16 +213,16 @@ class _AccountApi(_CommonApi):
 			#####################################################################################
 			# update wx_openid
 			#####################################################################################
-			print(u.accountinfo.wx_openid)
+			print("[微信登录]用户老OpenID：",u.accountinfo.wx_openid)
 			old = u.accountinfo.wx_openid
 			old_start = old[0:2]
 			if old_start == "o7":
 				start = wx_userinfo['openid'][0:2]
-				print("start:",start)
+				print("[微信登录]用户新OpenID为",start,"开头")
 				if start == "o5":
 					u.accountinfo.wx_openid = wx_userinfo["openid"]
-					print("update openid")
-			print(wx_userinfo["openid"])
+					print("[微信登录]更新用户OpenID")
+			print("[微信登录]用户新OpenID：",wx_userinfo["openid"])
 			session.commit()
 		
 			return u
@@ -241,6 +241,7 @@ class _AccountApi(_CommonApi):
 			return u
 		
 		# 基本账户中不存在，先创建基本信息，再添加到该用户账户中去
+		print("[微信登录]用户不存在，注册为新用户")
 		headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
 		account_info = Accountinfo(
 			wx_unionid=wx_userinfo["unionid"],
@@ -358,8 +359,8 @@ class Accountinfo(MapBase, _CommonApi):
 	wx_province = Column(String(32))
 	wx_city = Column(String(32))
 
-	is_new   = Column(Integer) # 0:new , 1:old
-
+	is_new   = Column(Integer,default = 0) # 0:new , 1:old
+	subscribe  = Column(Integer,default = 0) #0:not foucus,1:foucus#4.24 yy
 	# mp_openid = Column(String(64)) 
 
 	# mp_openid = Column(Integer(64))     #mobile
@@ -506,9 +507,9 @@ class Shop(MapBase, _CommonApi):
 		try:
 			order_count = self.session.query(Order).filter_by(shop_id = shop_id).count()
 		except:
-			print('error')
+			print('print mark 3: error')
 			return None
-		print('success')
+		print('print mark 4: success')
 		return order_count
 
 class ShopAuthenticate(MapBase,_AccountApi):
@@ -677,7 +678,7 @@ class Customer(MapBase, _AccountApi):
 	#added by woody
 	points = relationship("Points")
 
-	shop_new = Column(Integer) # 0:new ,1:old
+	shop_new = Column(Integer,default = 0) # 0:new ,1:old
 
 #woody
 class Points(MapBase,_CommonApi):
@@ -762,6 +763,17 @@ class CustomerShopFollow(MapBase, _CommonApi):
 	# pointhistory = relationship("PointHistory")
 	bing_add_point = Column(Integer)  # 1 :
 	shop_new = Column(Integer,default = 0)
+	shop_balance  = Column(Float , default = 0)
+
+
+class BalanceHistory(MapBase,_CommonApi):
+	__tablename__ = 'balancehistory'
+	id = Column(Integer,primary_key = True , nullable = False)
+	customer_id = Column(Integer,ForeignKey(CustomerShopFollow.customer_id),nullable = False)
+	shop_id  = Column(Integer,ForeignKey(CustomerShopFollow.shop_id),nullable = False)
+	balance_record = Column(String(32))
+	balance_value  = Column(Float)
+	create_time    = Column(DateTime,default = func.now())
 
 class PointHistory(MapBase,_CommonApi):
 	__tablename__ = 'pointhistory'
@@ -1087,6 +1099,7 @@ class Order(MapBase, _CommonApi):
 	mgoods = Column(String(1000))
 	shop = relationship("Shop", uselist=False,join_depth=1)
 	send_time=Column(String(45))
+	del_reason = Column(String(300))
 
 
 	def get_num(self,session,order_id):
@@ -1114,9 +1127,9 @@ class Order(MapBase, _CommonApi):
 				charge_type.fruit.storage+= num
 				charge_type.fruit.current_saled -=num
 				charge_type.fruit.saled -= num
-				print(num)
+				print("[订单管理]取消订单，恢复库存数量(水果)：",num)
 		if mgoods:
-			print(mgoods,'**********************************')
+			#print("print mark 6:",mgoods,'**********************************')
 			charge_types = session.query(MChargeType).filter(MChargeType.id.in_(mgoods.keys())).all()
 			for charge_type in charge_types:
 				# print("before",charge_type.mgoods.storage,charge_type.mgoods.current_saled)
@@ -1126,6 +1139,7 @@ class Order(MapBase, _CommonApi):
 				charge_type.mgoods.storage += num
 				charge_type.mgoods.current_saled -= num
 				charge_type.mgoods.saled -= num
+				print("[订单管理]取消订单，恢复库存数量(其他)：",num)
 		session.commit()
 		return True
 
@@ -1279,6 +1293,8 @@ class Config(MapBase, _CommonApi):
 	periods = relationship("Period") #时间段设置
 
 	intime_period = Column(Integer,default = 0) 
+	#4.24 add receipt_img_active
+	receipt_img_active = Column(Integer,default = 1)
 
 #商城首页的公告
 class Notice(MapBase):

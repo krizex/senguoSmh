@@ -6,6 +6,7 @@ import urllib
 import hashlib
 import traceback
 from settings import KF_APPID, KF_APPSECRET, APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
+# from settings import TEST_APPID,TEST_APPSECRET
 import tornado.escape
 from dal.dis_dict import dis_dict
 import time
@@ -171,7 +172,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				APP_OAUTH_CALLBACK_URL+\
 				self.reverse_url(self.__wexin_oauth_url_name__) + para_str)
 			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
-		print("[微信登录]授权链接：",link)
+		print("[微信授权]授权链接：",link)
 		return link
 
 	def get_login_url(self):
@@ -179,7 +180,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		#return self.reverse_url('customerLogin')
 
 	def get_weixin_login_url(self):
-		print("[微信登录]登录链接：",self.request.full_url())
+		print("[微信登录]登录URL：",self.request.full_url())
 		next_url =  self.reverse_url("fruitzoneShopList")
 		return self.get_wexin_oauth_link(next_url = next_url)
 
@@ -279,6 +280,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			self.render('notice/404.html')
 		elif status_code == 500:
 			self.render('notice/500.html')
+		elif status_code == 400:
+			self.render('notice/400.html')
 		else:
 			super(GlobalBaseHandler, self).write_error(status_code, **kwargs)
 
@@ -312,7 +315,7 @@ class SuperBaseHandler(_AccountBaseHandler):
 		try:
 			shops = session.query(models.Shop).filter_by(status = 1).all()
 		except:
-			print('shops error')
+			print("[超级管理员]shops error")
 		if shops:
 			for shop in shops:
 				shop_code = shop.shop_code
@@ -340,7 +343,7 @@ class SuperBaseHandler(_AccountBaseHandler):
 						shop.status =0
 						close_shop_list.append(shop_code)
 				session.commit()
-			print(close_shop_list)
+			print("[超级管理员]关闭店铺：",close_shop_list)
 			# return self.send_success(close_shop_list = close_shop_list)
 	def get_login_url(self):
 		return self.get_wexin_oauth_link(next_url=self.request.full_url())
@@ -766,7 +769,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			#print("店铺审核模板消息发送失败：", data)
+			print("[模版消息]店铺审核消息发送失败：", data)
 			return False
 		return True
 
@@ -790,7 +793,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			#print("店铺审核模板消息发送失败：", data)
+			print("[模板消息]店铺审核消息发送失败：", data)
 			return False
 		return True
 
@@ -818,10 +821,10 @@ class WxOauth2:
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
 		data = json.loads(res.content.decode("utf-8"))
-		print("[模版消息]发送给管理员：",data)
 		if data["errcode"] != 0:
-			#print("订单提醒发送失败:",data)
+			print("[模版消息]发送给管理员失败：",data)
 			return False
+		print("[模版消息]发送给管理员成功")
 		return True
 
 	@classmethod
@@ -848,8 +851,9 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-		#    print("订单提醒发送失败:",data)
+			print("[模版消息]发送给配送员失败：",data)
 			return False
+		print("[模版消息]发送给配送员成功")
 		return True
 
 
@@ -872,11 +876,12 @@ class WxOauth2:
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata))
 		data = json.loads(res.content.decode("utf-8"))
+
 		if data["errcode"] != 0:
-			#print("订单提交成功通知发送失败",data)
+			print("[模版消息]发送给客户失败：",data)
 			return False
+		print("[模版消息]发送给客户成功")
 		# print('order send SUCCESS')
-		print("[模版消息]发送给客户：",data)
 		return True
 
 	@classmethod

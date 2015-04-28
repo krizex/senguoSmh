@@ -1,6 +1,8 @@
-$(document).ready().on('click','.will-open',function(){
+$(document).ready(function(){
+
+}).on('click','.will-open',function(){
     noticeBox('即将开放!');
-})
+});
 
 
 function getCookie(key){

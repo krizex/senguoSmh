@@ -1,4 +1,5 @@
 from handlers.base import FruitzoneBaseHandler, _AccountBaseHandler,WxOauth2
+from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
 import dal.models as models
 import tornado.web
 from  dal.db_configs import DBSession
@@ -14,6 +15,7 @@ from libs.utils import Logger
 import libs.xmltodict as xmltodict
 import qiniu
 from qiniu.services.storage.bucket import BucketManager
+from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
 
 class Home(FruitzoneBaseHandler):
 	def get(self):
@@ -86,7 +88,7 @@ class ShopList(FruitzoneBaseHandler):
 			page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
 		else:
-			print("city not in args")
+			print("[店铺列表]城市不存在")
 
 		# if "service_area" in self.args:
 		#     q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
@@ -580,6 +582,7 @@ class PhoneVerify(_AccountBaseHandler):
 
 	@FruitzoneBaseHandler.check_arguments("phone:str")
 	def handle_gencode_shop_apply(self):
+		print("[店铺申请]发送证码到手机：",self.args["phone"])
 		resault = gen_msg_token(phone=self.args["phone"])
 		# print("handle_gencode_shop_apply" + self.current_user.accountinfo.wx_unionid)
 		if resault == True:
@@ -736,3 +739,53 @@ class SystemPurchase(FruitzoneBaseHandler):
 			return False
 		
 		return True
+
+
+class payTest(FruitzoneBaseHandler):
+
+	# @tornado.web.authenticated
+	@FruitzoneBaseHandler.check_arguments('code?:str')
+	def get(self):
+		print(self.request.full_url())
+		path_url = self.request.full_url()
+		#path = 'http://auth.senguo.cc/fruitzone/paytest'
+		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('fruitzonePayTest')
+		print(path , 'redirect_uri is Ture?')
+		jsApi  = JsApi_pub()
+		orderId = ''.join(random.sample('0123456789',5))
+		print(self.args['code'],'sorry  i dont know')
+		code = self.args.get('code',None)
+		print(code,'how old are you',len(code))
+		if len(code) is 2:
+			url = jsApi.createOauthUrlForCode(path)
+			print(url,'code?')
+			return self.redirect(url)
+		else:
+
+			jsApi.setCode(code)
+			openid = jsApi.getOpenid()
+			print(openid,code,'hope is not []')
+			if not openid:
+				print('openid not exit')
+
+		unifiedOrder =   UnifiedOrder_pub()
+		unifiedOrder.setParameter("body",'senguo')
+		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/callback')
+		unifiedOrder.setParameter("openid",openid)
+		unifiedOrder.setParameter("out_trade_no",orderId)
+		#orderPriceSplite = (order.price) * 100
+		wxPrice = 10
+		unifiedOrder.setParameter('total_fee',wxPrice)
+		unifiedOrder.setParameter('trade_type',"JSAPI")
+
+		prepay_id = unifiedOrder.getPrepayId()
+		print(prepay_id,'prepay_id================')
+		jsApi.setPrepayId(prepay_id)
+		renderPayParams = jsApi.getParameters()
+		print(renderPayParams)
+		noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
+		timestamp = datetime.datetime.now().timestamp()
+		wxappid = 'wx0ed17cdc9020a96e'
+		
+		# return self.send_success(renderPayParams = renderPayParams)
+		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,noncestr = noncestr , timestamp = timestamp,signature = self.signature(noncestr,timestamp,path_url))

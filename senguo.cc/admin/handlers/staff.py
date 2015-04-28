@@ -40,7 +40,7 @@ class Access(StaffBaseHandler):
         # todo: handle state
         code =self.args["code"]
         mode = self.args["mode"]
-        print("mode: ", mode , ", code get:", code)
+        print("[送货员端]微信授权，模式: ", mode , "，返回码：", code)
         if mode not in ["mp", "kf"]:
             return self.send_error(400)
 
@@ -60,7 +60,7 @@ class Home(StaffBaseHandler):
 
     @tornado.web.authenticated
     def get(self):
-        print(self.shop_id)
+        print("[送货员端]当前店铺ID：",self.shop_id)
 
         try:
             hirelink = self.session.query(models.HireLink).\
@@ -98,8 +98,8 @@ class Home(StaffBaseHandler):
         orders_intime   = len(orders_intime)
         orders_ontime  = len(orders_ontime)
       
-        print('orders_intime',orders_intime)
-        print(orders_ontime)
+        print("[送货员端]立即送订单：",orders_intime)
+        print("[送货员端]按时达订单：",orders_ontime)
         self.set_cookie("orders_intime",str(orders_intime))
         self.set_cookie("orders_ontime",str(orders_ontime))
         return self.render("staff/home.html", page="home")
@@ -214,7 +214,7 @@ class Order(StaffBaseHandler):
                     customer=self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.customer_id==order.customer_id,\
                         models.CustomerShopFollow.shop_id==order.shop_id).one()
                     if customer:
-                        print(customer.customer_id)
+                        print("[送货员端]用户",customer.customer_id,"完成订单，更新用户标识")
                         customer.shop_new=1
                         self.session.commit()
             else:

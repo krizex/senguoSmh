@@ -87,13 +87,13 @@ class ShopAdminManage(SuperBaseHandler):
 			return self.send_error(404)
 		# 排序规则id, offset 和 limit
 		q = q.order_by(models.ShopAdmin.id.desc()).offset(offset).limit(self._page_count)
-		print(q,'*******************************')
+		#print("[超级管理员]",q,'*******************************')
 
 		admins = q.all()
-		print(q.count())
+		#print(q.count())
 		#print(admins)
-		for admin in admins:
-		    print(admin)
+		#for admin in admins:
+		#    print(admin)
 		# admins 是models.ShopAdmin的实例的列表，具体属性可以去dal/models.py中看到
 		return self.render("superAdmin/shop-admin-manage.html", context=dict(admins = admins, count=count,sunpage='shopAadminManage',action=self._action))
 	@tornado.web.authenticated
@@ -140,7 +140,7 @@ class ShopManage(SuperBaseHandler):
 		q_applying = q_temp.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
 		q_declined = q_temp.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
 		q_accepted = q_temp.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
-
+		comment_del = self.session.query(models.CommentApply).filter(models.CommentApply.has_done ==0).count()
 		
 
 		count = {
@@ -148,7 +148,8 @@ class ShopManage(SuperBaseHandler):
 			"applying": q_applying.count(),
 			"accepted": q_accepted.count(),
 			"declined": q_declined.count(),
-			"all": q.count()
+			"all": q.count(),
+			"del_apply":comment_del
 			}
 		if action == "all_temp":
 			q = q_temp
@@ -168,8 +169,8 @@ class ShopManage(SuperBaseHandler):
 				##############################################################################
 				account_info = self.session.query(models.Accountinfo).get(shop.admin_id)
 				wx_openid = account_info.wx_openid
-				subscribe = user_subscribe(wx_openid)
-				data["subscribe"] = subscribe
+				# subscribe = user_subscribe(wx_openid)
+				data["subscribe"] = account_info.subscribe
 				data["shop_trademark_url"] = shop.shop_trademark_url
 				data["shop_name"] = shop.shop_name
 				data["shop_code"] = shop.shop_code
@@ -252,9 +253,9 @@ class ShopManage(SuperBaseHandler):
 				content = message_fail_content)
 			headers = dict(Host = '106.ihuyi.cn',)
 			r = requests.post(url,data = postdata , headers = headers)
-			print(r.text)
+			print("[超级管理员]审核通知短信平台返回信息：",r.text)
 
-			reason = "原因 : " + message_reason
+			reason = "原因：" + message_reason
 
 			# weixin message
 			WxOauth2.fail_template_msg(account_info.wx_openid, shop_temp.shop_name,
@@ -707,6 +708,7 @@ class Comment(SuperBaseHandler):
 		order_info = {}
 		#apply_list = self.session.query(models.CommentApply).filter_by(has_done = 0).all()
 		apply_list = self.session.query(models.CommentApply).all()
+		apply_count = self.session.query(models.CommentApply).filter(models.CommentApply.has_done==0).count()
 		for comment_apply in apply_list:
 			apply_id =comment_apply.id
 			order = comment_apply.order
@@ -731,7 +733,7 @@ class Comment(SuperBaseHandler):
 				comment = comment)
 			data.append([shop_code,shop_name,admin_name ,create_date, comment_apply.delete_reason,order_info,has_done,apply_id])
 		# return self.send_success(data = data)
-		self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'all':10,'all_temp':10},data=data))
+		self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'del_apply':apply_count,'all_temp':'','all':''},data=data))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id:int','decline_reason?:str')

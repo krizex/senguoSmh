@@ -13,9 +13,7 @@ $(document).ready(function(){
           s.parentNode.insertBefore(hm, s);
         })();
     //fastclick initialise
-     $(function() {
-        FastClick.attach(document.body);
-    });
+   FastClick.attach(document.body);
     //客户端为Android系统替换图片路径
     //AndroidImg('bg_change');
     //AndroidImg('src_change');   
@@ -32,8 +30,8 @@ $(document).ready(function(){
         unitText($this,id);
     });
     $(document).on('click','#backTop',function(){
-        document.body.scrollTop =0;
-        $('.little_pear').css({'right':'-40px'});
+        $(window).scrollTop(0);
+        $('.little_pear').css("display","none");
     });
     //从cookie中提取数据
     window.dataObj.shop_id=getCookie('market_shop_id');
@@ -44,22 +42,21 @@ $(document).ready(function(){
     if(window.dataObj.cart_count!=0){
         $('.cart_num').removeClass('hidden').text(window.dataObj.cart_count);
     }
+    $('.lazy_img').lazyload({threshold:100});
     //设置title
     //document.title=$.base64Decode(shop_name)+'一家不错的水果O2O店铺，快来关注吧~';
     //置顶监听
     $(window).on('scroll',function(){
         var $this=$(this);
-        var clientHeight=$this.height();
-        var scrollTop=document.body.scrollTop||document.documentElement.scrollTop;
-        if(!$this.is(":animated")){
-            if(scrollTop>=clientHeight/2){
-                $('.little_pear').animate({'right':'0px'},50);
+        var clientHeight= $(window).height();
+        var scrollTop=$(window).scrollTop();
+        if(scrollTop>=clientHeight/2){
+                $('.little_pear').css("display","block");
             }
-            else $('.little_pear').animate({'right':'-40px'},5);
-        } 
+            else{
+                $('.little_pear').css("display","none");
+            }
     });
-    $(".lazy_img").lazyload({threshold:100});
-    wexin();
 });
 
 function wexin(link,imgurl){
@@ -294,13 +291,18 @@ var noticeBox=function(text,item){
         noticeRemove('noticeBox',item);      
 }
 //modal notice word
-var warnNotice=function(text){
+var warnNotice=function(text,item){
     $('.modal-body').find('.warn').remove();
     var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
     $word.text(text);
     $('.modal-body').append($word);
     $('.sure_btn').attr({'disabled':'true'});
-    noticeRemove('warn');
+    if(item){
+        noticeRemove('warn',item);
+    }
+    else {
+        noticeRemove('warn');
+    }
 }
 //time count 2 secends
 window.dataObj.n_time=2;
@@ -308,8 +310,10 @@ var noticeRemove=function (target,item) {
     if (window.dataObj.n_time == 0) {
         window.dataObj.n_time = 2;
         $('#'+target).addClass('hidden');
-        $('.sure_btn').removeAttr('disabled');
-        if(item) {item.removeAttr('disabled');}
+        $('.sure_btn').removeAttr('disabled').removeClass('bg-greyc');
+        if(item) {
+            item.removeAttr('disabled').removeClass('bg-greyc');
+        }
     }
     else {
         window.dataObj.n_time--;
@@ -327,28 +331,25 @@ Modal.prototype.modal=function(type){
     {
         var window_height=$(window).height();
         var height=$('.container').height();
-        var $mask;
-        if(height<window_height) $mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
-        else $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
-        $('body').append($mask).addClass('modal_sty').attr({'onmousewheel':'return false'}).css({'overflow':'hidden'});
         $target.removeClass('fade').addClass('in').css({'display':'block'});
         $target.find('.warn').remove();
+        $("body").css({'overflow':'hidden'});
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
-                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
+                $('body').css({'overflow':'auto'});
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
         $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
-                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
+                $('body').css({'overflow':'auto'});
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
     }
     else if(type=='hide')
     {
-        $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
+        $('body').removeClass('modal_sty').css({'overflow':'auto'}).find('.modal_bg').remove();
         $target.addClass('fade').removeClass('in').css({'display':'none'});
     }
 }

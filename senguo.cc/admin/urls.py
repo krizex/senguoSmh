@@ -30,6 +30,7 @@ handlers = [
     (r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
     (r"/customer/weixin", handlers.customer.Third, {"action":"weixin"}, "customerWeixin"),
     (r"/customer/register", handlers.customer.RegistByPhone, {}, "customerRegister"),
+    (r"/customer/password", handlers.customer.Password, {}, "customerPassword"),
     
     (r"/customer/profile", handlers.customer.CustomerProfile, {}, "customerProfile"),
     (r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
@@ -56,8 +57,6 @@ handlers = [
     (r"/customer/points", handlers.customer.Points, {}, "customerPoints"),
     (r"/customer/balance", handlers.customer.Balance, {}, "customerBalance"),
     (r"/customer/recharge", handlers.customer.Recharge, {}, "customerRecharge"),
-    (r"/customer/shopComment", handlers.customer.ShopComment, {}, "customerShopComment"),
-    (r"/customer/orderComment", handlers.customer.OrderComment, {}, "customerOrderComment"),
     (r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
     (r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
     (r"/customer/phoneVerify", handlers.fruitzone.PhoneVerify, {
@@ -169,6 +168,7 @@ handlers = [
     (r"/list/shoplist", handlers.fruitzone.ShopList, {}, "fruitzoneShopList"),
     (r"/fruitzone/admin/home", handlers.fruitzone.AdminHome, {}, "fruitzoneAdminHome"),
     (r"/fruitzone/admin/profile", handlers.fruitzone.AdminProfile, {}, "fruitzoneAdminProfile"),
+    (r"/fruitzone/paytest",handlers.fruitzone.payTest,{},"fruitzonePayTest"),
     #to remove  
     #woody
     (r"/apply/toweixin", handlers.fruitzone.ToWeixin, {}, "fruitzoneToWexin"),

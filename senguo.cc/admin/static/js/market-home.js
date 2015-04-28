@@ -328,13 +328,14 @@ $(document).ready(function(){
             else {
                 return noticeBox('最多只能添加999哦!',$this);
             }
-        }).on('blur','.number-input',function(){
+        }).on('change','.number-input',function(){
             var $this=$(this);
             var num=$this.val();
             var change=$this.parents('.number-change');
             var regNum=/^[0-9]*$/;
             var parent=$this.parents('.goods-list-item');
-            var storage=parseFloat(parent.data('num'));
+            var storage_origin=parseFloat(parent.data('num'));
+            var storage=parseFloat(parent.data('storage'));
             var storage_now;
             var num_item=parent.find('.number-input');
             var index=$this.index();
@@ -342,12 +343,18 @@ $(document).ready(function(){
             if(num_item.length>0){
                 for(var i=0;i<num_item.length;i++){
                     if(i!=index){
-                        storage_now=Int(storage-num_item.eq(i).val());
+                        if(num_item.eq(i).val()<storage){
+                             storage_now=storage-num_item.eq(i).val();
+                        }
+                        else{
+                            storage_now=storage;
+                        }  
                     }
                 }
             }
-            else {storage_now=Int(storage)};
-            $this.val(storage_now);
+            else {
+                storage_now=storage;
+            };
             if(!regNum.test(num)) {
                 $this.val(0);
                 change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
@@ -369,34 +376,53 @@ $(document).ready(function(){
                     $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
                     SetCookie('cart_count',window.dataObj.cart_count);
                 }
-            }
-            else{
-                if(result>0) {parent.attr({'data-storage':result});}
-                else parent.attr({'data-storage':0});
-                if(num>999) {
-                    if(storage<999) {
-                        if(storage_now<=0) {$this.val(storage);}
-                        return noticeBox('只有这么多了哦!┑(￣▽ ￣)┍',$this);
+            }   
+            else if(0<num<999){
+                if(num>=storage) {
+                     if(storage_now<=0){
+                        $this.val(0);
                     }
-                    else {
-                        $this.val(999);
-                         return noticeBox('最多只能添加999哦!┑(￣▽ ￣)┍',$this);
+                    else if(storage_now>0){
+                        window.dataObj.cart_count++;
+                        $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
+                        SetCookie('cart_count',window.dataObj.cart_count);
+                         $this.val(Int(storage_now));
+                         if(num_item.length>0){
+                            storage_origin=storage_origin-storage;
+                            for(var i=0;i<num_item.length;i++){
+                                storage_now=storage_origin-num_item.eq(i).val();
+                                //console.log(storage_now);
+                            }
+                        }
+                        else {
+                            storage_now=0;
+                        };
+                         parent.attr({'data-storage':storage_now});
+                         //console.log(233333);
+                        if(storage_now<num) {return noticeBox('只有这么多了哦!┑(￣▽ ￣)┍',$this);}
                     }
                 }
-                else{
-                    if(num>=storage) {
-                         if(storage_now<=0){
-                            if(storage<999) $this.val(storage);
-                            else $this.val(999);
-                            noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)
-                        }
-                        else if(storage_now>0){
-                            window.dataObj.cart_count++;
-                            $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
-                            SetCookie('cart_count',window.dataObj.cart_count);
-                            if(storage_now<num) {return noticeBox('只有这么多了哦!┑(￣▽ ￣)┍',$this);}
-                        }
-                    }
+                else if(num<storage){
+                    $this.val(num);
+                     storage_now=storage_now-num;
+                    parent.attr({'data-storage':storage_now});
+                    //console.log(24444444);
+                }
+            }
+         else if(num>=999) {
+                if(result>0) {parent.attr({'data-storage':result});}
+                else parent.attr({'data-storage':0});
+                if(storage<999) {
+                    $this.val(Int(storage_now));
+                    //console.log(25555555);
+                    return noticeBox('只有这么多了哦!┑(￣▽ ￣)┍',$this);
+                }
+                else {
+                    $this.val(999);
+                    storage_now=storage_now-999;
+                    parent.attr({'data-storage':storage_now});
+                    //console.log(266666);
+                     return noticeBox('最多只能添加999哦!┑(￣▽ ￣)┍',$this);
                 }
             }
         }).on('click','.toggle',function(e){
@@ -417,19 +443,14 @@ window.dataObj.page=1;
 window.dataObj.count=1;
 window.dataObj.action=5;
 window.dataObj.finished=true;
-var scrollLoading=function(){
-    var range = 80;             //距下边界长度/单位px          //插入元素高度/单位px  
-    var totalheight = 0;   
-    var main = $(".container");                  //主体元素   
+$('.loading').html("~努力加载中 ( > < )~").show();
+var scrollLoading=function(){  
     $(window).scroll(function(){
         var maxnum = window.dataObj.page_count;            //设置加载最多次数  
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
-    var range = 80;             //距下边界长度/单位px          //插入元素高度/单位px
-    var totalheight = 0;
-    var main = $(".container");                  //主体元素
-    /*$(".wrap-goods-box").scroll(function(){
-        var maxnum = window.dataObj.page_count;            //设置加载最多次数
-        var srollPos = $(".wrap-goods-box").scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)*/
+        var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
+        var totalheight = 0;
+        var main = $(".container");                  //主体元素
         if(!maxnum) maxnum=Int($('#page_count').val());
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
         if(window.dataObj.finished&&(main.height()-range) <= totalheight  && window.dataObj.page < maxnum) {
@@ -437,12 +458,11 @@ var scrollLoading=function(){
             window.dataObj.page++;
             goodsList(window.dataObj.page,window.dataObj.action);
         }
-        else if(window.dataObj.page ==maxnum){
+        else if(window.dataObj.page == maxnum){
               $('.loading').html("~没有更多商品了呢 ( > < )~").show();
         }
     });
 }
-
 var goodsList=function(page,action){
     var url='';
     var action = action;
@@ -475,9 +495,8 @@ var goodsList=function(page,action){
         );
         var initData=function(res){
             var w_orders=res.w_orders;
-            $('.loading').hide();
             if(w_orders&&w_orders.length==0){
-                 $('.no_more').show();
+                 $('.loading').html("~没有更多商品了呢 ( > < )~").show();
                  return;          
             }
                     var fruit_list=res.fruit_list;

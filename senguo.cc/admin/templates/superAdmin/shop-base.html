@@ -10,7 +10,7 @@
     <ul class="nav nav-stacked shop-manage-nav" role="tablist">
         <li class="active"><a href="{{reverse_url('superShopManage')}}?action=all_temp&&page=1">入驻申请({{count['all_temp']}})</a></li>
         <li class=""><a href="{{reverse_url('superShopManage')}}?action=all&&page=1">所有店铺({{count['all']}})</a></li>
-        <li class=""><a href="{{reverse_url('supercomment')}}">删除评论申请(100)</a></li>
+        <li class=""><a href="{{reverse_url('supercomment')}}">删除评论申请({{count['del_apply']}})</a></li>
         <li class=""><a href="{{reverse_url('supercert')}}">店铺认证申请(100)</a></li>
     </ul>
 </div>

@@ -18,7 +18,7 @@ class Access(CustomerBaseHandler):
 
 	def get(self):
 		next_url = self.get_argument('next', '')
-		print(next_url,'first')
+		print("[用户登录]跳转URL：",next_url)
 		if self._action == "login":
 			next_url = self.get_argument("next", "")
 			return self.render("login/m_login.html",
@@ -39,10 +39,10 @@ class Access(CustomerBaseHandler):
 	def post(self):
 		phone = self.args['phone']
 		password = self.args['password']
-		
-		u = models.Customer.regist_by_phone_password(self.session, self.args["phone"], self.args["password"])
-		print(u,u.id)
-		print(phone,password)
+
+		u = models.Customer.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
+		#print("[手机登录]用户ID：",u.id)
+		print("[手机登录]手机号码：",phone,"，密码：",password)
 		# u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
 		if not u:
 			return self.send_fail(error_text = '用户不存在或密码不正确 ')
@@ -56,7 +56,7 @@ class Access(CustomerBaseHandler):
 		# return self.redirect('http://www.baidu.com')
 		return self.send_success()
 		# next = self.args['next']
-		print(next)
+		print("[手机登录]跳转URL：",next)
 		# return self.redirect('/woody')
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
@@ -105,13 +105,13 @@ class RegistByPhone(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments("phone:str")
 	def handle_gencode(self):
-		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first() 
+		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first()
 		if a:
 			return self.send_fail(error_text="手机号已经绑定其他账号")
-
+		print("[手机注册]发送验证码到手机：",self.args["phone"])
 		resault = gen_msg_token(phone=self.args["phone"])
 		if resault == True:
-			print(resault,'send success')
+			#print("[手机注册]向手机号",phone,"发送短信验证",resault,"成功")
 			return self.send_success()
 		else:
 			return self.send_fail(resault)
@@ -137,7 +137,45 @@ class RegistByPhone(CustomerBaseHandler):
 			# 	self.session.add(u)
 			# 	self.session.commit()
 			self.set_current_user(u, domain=ROOT_HOST_NAME)
-			print(u.id)
+			print("[手机注册]手机号",phone,"注册成功，用户ID为：",u.id)
+			return self.send_success()
+
+class Password(CustomerBaseHandler):
+	def get(self):
+		return self.render("login/m_password.html")
+
+	@CustomerBaseHandler.check_arguments("phone:str","code:int")
+	def handle_checkcode_reset(self):
+		phone = self.args['phone']
+		if not check_msg_token(phone = self.args["phone"],code = self.args["code"]):
+			return self.send_fail(error_text = "验证码过期或者不正确")
+		else:
+			return self.send_success()
+
+	@CustomerBaseHandler.check_arguments("phone:str")
+	def handle_gencode(self):
+		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first()
+		if a:
+			resault = gen_msg_token(phone=self.args["phone"])
+			if resault == True:
+				return self.send_success()
+			else:
+				return self.send_fail(resault)
+		else:
+			return self.send_fail(error_text="该手机号不存在")
+
+	@CustomerBaseHandler.check_arguments( "action:str",  "phone?:str","password?:str")
+	def post(self):
+		action = self.args['action']
+		if action == "get_code":
+			self.handle_gencode()
+		elif action == 'check_code':
+			self.handle_checkcode_reset()
+		elif action == 'reset':
+			phone = self.args['phone']
+			password = self.args['password']
+			u = self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first()
+			u.update(self.session,password=password)
 			return self.send_success()
 
 
@@ -147,15 +185,18 @@ class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
 		# shop_id = self.shop_id
+		print("[访问店铺]店铺号：",shop_code)
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
 		except:
 			return self.send_fail('shop error')
-		if shop:
+		# print(shop.shop_code)
+		if shop is not None:
 			shop_name = shop.shop_name
 			shop_id   = shop.id
-			shop_logo  = shop.shop_trademark_url
+			shop_logo = shop.shop_trademark_url
 		else:
+			print("[访问店铺]店铺不存在：",shop_code)
 			return self.send_fail('shop not found')
 		customer_id = self.current_user.id
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
@@ -166,12 +207,14 @@ class Home(CustomerBaseHandler):
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
 				customer_id,shop_id =shop_id).first()
 		except:
-			self.send_fail("point show error")
+			return self.send_fail("point show error")
 		if shop_follow:
 			if shop_follow.shop_point:
 				shop_point = shop_follow.shop_point
+				shop_balance = shop_follow.shop_balance
 			else:
 				shop_point = 0
+				shop_balance = 0
 		count = {3: 0, 4: 0, 5: 0, 6: 0}  # 3:未处理 4:待收货，5：已送达，6：售后订单
 		for order in self.current_user.orders:
 			if order.status == 1:
@@ -183,7 +226,8 @@ class Home(CustomerBaseHandler):
 			elif order.status == 10:
 				count[6] += 1
 		return self.render("customer/personal-center.html", count=count,shop_point =shop_point, \
-			shop_name = shop_name,shop_logo = shop_logo, context=dict(subpage='center'))
+			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
+			context=dict(subpage='center'))
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data")
 	def post(self,shop_code):
@@ -242,12 +286,17 @@ class CustomerProfile(CustomerBaseHandler):
 			self.current_user.accountinfo.update(session=self.session, birthday=time.mktime(birthday.timetuple()))
 		elif action == 'add_password':
 			self.current_user.accountinfo.update(session = self.session , password = data)
+			print("[设置密码]设置成功，密码：",data)
 		elif action == 'modify_password':
 			old_password = self.args['old_password']
+			print("[更改密码]输入老密码：",old_password)
+			print("[更改密码]验证老密码：",self.current_user.accountinfo.password)
 			if old_password != self.current_user.accountinfo.password:
+				print("[更改密码]密码验证错误")
 				return self.send_fail("密码错误")
 			else:
 				self.current_user.accountinfo.update(session = self.session ,password = data)
+				print("[更改密码]更改成功，新密码：",data)
 		elif action == 'reset_password':
 			data = self.args["data"]
 			new_password = data['password']
@@ -268,7 +317,7 @@ class ShopProfile(CustomerBaseHandler):
 		except:
 			return self.send_fail('shop not found')
 		if not shop:
-			print("error shop")
+			print("[访问店铺]店铺不存在：",shop_code)
 			return self.send_error(404)
 		shop_id = shop.id
 		shop_name = shop.shop_name
@@ -353,7 +402,7 @@ class ShopProfile(CustomerBaseHandler):
 				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id\
 					,shop_id = shop_id).first()
 			except:
-				print("shop_follow error")
+				print("店铺关注出错")
 				self.send_fail("shop_follow error")
 			if signin:
 
@@ -446,7 +495,7 @@ class Members(CustomerBaseHandler):
 	def get(self):
 		# shop_id = self.shop_id
 		shop_id = int(self.get_cookie("market_shop_id"))
-		print(shop_id)
+		print("[店铺成员]当前店铺ID：",shop_id)
 		admin_id = self.session.query(models.Shop.admin_id).filter_by(id=shop_id).first()
 		if not admin_id:
 			return self.send_error(404)
@@ -496,6 +545,7 @@ class Market(CustomerBaseHandler):
 		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		if not shop:
 			return self.send_error(404)
+		# self.current_shop = shop
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
@@ -1009,6 +1059,7 @@ class Cart(CustomerBaseHandler):
 
 		storages = {}
 		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
+		print("[购物篮]当前店铺：",shop)
 		if not shop:return self.send_error(404)
 		shop_name = shop.shop_name
 		shop_id = shop.id
@@ -1034,7 +1085,10 @@ class Cart(CustomerBaseHandler):
 			mgood_storage = mgood.storage
 			if mgood_id not in storages:
 				storages[mgood_id] = mgood_storage
-		periods = [x for x in shop.config.periods if x.active == 1]
+		# periods = [x for x in shop.config.periods if x.active == 1]
+		periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1).all()
+		for period in periods:
+			print("[购物篮]读取按时达时段，Shop ID：",period.config_id,"，时间段：",period.start_time,"~",period.end_time)
 		# print('storages',storages)
 
 		# for period in periods:
@@ -1125,7 +1179,7 @@ class Cart(CustomerBaseHandler):
 				send_time = (tomorrow).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
 			start_time = period.start_time
 			end_time = period.end_time
-			
+
 
 		elif self.args["type"] == 1:#立即送
 			if totalPrice < config.min_charge_now:
@@ -1149,7 +1203,7 @@ class Cart(CustomerBaseHandler):
 		address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		if not address:
 			return self.send_fail("没找到地址", 404)
-		print(address.receiver,'******************************************')
+		print("[提交订单]送货地址：",address.receiver)
 
 		# 已支付、付款类型、余额、积分处理
 		money_paid = False
@@ -1224,12 +1278,12 @@ class Cart(CustomerBaseHandler):
 		customer_info = self.session.query(models.Accountinfo).filter_by(id = self.current_user.id).first()
 		customer_name = address.receiver
 		c_tourse      = customer_info.wx_openid
-		print(c_tourse,'******************************************')
+		print("[提交订单]用户OpenID：",c_tourse)
 
 		##################################################
 		#goods
 		goods = []
-		print(f_d,m_d)
+		print("[提交订单]订单详情：",f_d,m_d)
 		session = self.session
 		for f in f_d:
 			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
@@ -1254,11 +1308,11 @@ class Cart(CustomerBaseHandler):
 			# print('m',m)
 		goods = str(goods)[1:-1]
 		order_totalPrice = float('%.1f'% totalPrice)
-		print(order_totalPrice,"*******************8")
+		print("[提交订单]订单总价：",order_totalPrice)
 		session = self.session
 		# send_time     = order.get_sendtime(session,order.id)
 		send_time = order.send_time
-		print(goods,'************************************************')
+		print("[提交订单]订单详情：",goods)
 		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
 			customer_name,order_totalPrice,send_time,goods,phone)
 		# send message to customer
@@ -1336,7 +1390,7 @@ class Order(CustomerBaseHandler):
 			page = self.args['page']
 			offset = (page - 1) * 10
 			orders = [x for x in self.current_user.orders if x.status == 1]
-			# woody	
+			# woody
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 
@@ -1362,8 +1416,8 @@ class Order(CustomerBaseHandler):
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
-			print(offset)
-			print(total_count)
+			print("[订单列表]滚动加载offset：",offset)
+			print("[订单列表]滚动加载total：",total_count)
 			if offset + 10 <= total_count:
 				orders = orders[offset:offset + 10]
 			elif offset < total_count and offset + 10 >= total_count:
@@ -1458,7 +1512,7 @@ class Order(CustomerBaseHandler):
 					point_history.each_point = 5
 					self.session.add(point_history)
 					self.session.commit()
-		
+
 			#need to rocord this poist history?
 		else:
 			return self.send_error(404)
@@ -1549,6 +1603,73 @@ class OrderDetail(CustomerBaseHandler):
 		else:
 			return self.send_error(404)
 
+class Balance(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		customer_id = self.current_user.id
+		shop_id     = self.shop_id
+		shop_balance= 0
+		history     = []
+		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+			shop_id = shop_id).first()
+		if not shop_follow:
+			return self.send_fail('shop_follow not fount')
+		if shop_follow.shop_balance:
+			shop_balance = shop_follow.shop_balance
+		else:
+			shop_balance = 0
+
+		try:
+			shop_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id =\
+				customer_id , shop_id = shop_id).all()
+		except:
+			return self.send_fail("balance show error ")
+		if shop_balance_history:
+			for temp in shop_history:
+				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
+				history.append([temp.balance_record , temp.balance_value , temp.create_time])
+		count = len(history)
+		pages = int(count/10) if count % 10 == 0 else int(count/10) + 1
+		return self.render("customer/balance.html",shop_balance = shop_balance , pages = pages)
+
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments('page')
+	def post(self):
+		page = self.args["page"]
+		offset = (page-1) * 10
+		customer_id = self.current_user.id
+		shop_id     = self.shop_id
+		history     = []
+		data = []
+
+		try:
+			shop_history = self.session.query(models.BalanceHistory).filter_by(customer_id =\
+				customer_id,shop_id = shop_id).all()
+		except:
+			self.send_fail("balance history error")
+		if shop_history:
+			for temp in shop_history:
+				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
+				history.append([temp.point_type,temp.each_point,temp.create_time])
+			# print(history)
+
+		count = len(history)
+		history = history[::-1]
+		# print('history',history)
+		if offset + 10 <= count:
+			data = history[offset:offset+10]
+		elif offset <= count and offset + 10 >=count:
+			data = history[offset:]
+		else:
+			self.send_fail("history page error")
+		# print("data\n",data)
+
+		return self.send_success(data = data)
+
+
+
+
+
 
 class Points(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -1620,10 +1741,7 @@ class Points(CustomerBaseHandler):
 
 		return self.send_success(data = data)
 
-class Balance(CustomerBaseHandler):
-	@tornado.web.authenticated
-	def get(self):
-	    return self.render("customer/balance.html")
+
 
 class Recharge(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -1671,87 +1789,86 @@ class InsertData(CustomerBaseHandler):
 
 		# 	self.session.commit()
 
-		
-		orderlist = self.session.query(models.Order).all()
-		if not orderlist:
-			self.send_fail("orderlist error")
-		if orderlist:
-			for order in orderlist:
-				# if order.send_time =='0' :
-					# print('login')
-				create_date =  order.create_date
-				second_date = create_date + datetime.timedelta(days = 1)
-				if order.type == 2: #按时达
-					if order.today == 1:
-						order.send_time = create_date.strftime('%Y-%m-%d') +' '+\
-						(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
-					elif order.today == 2:
-						order.send_time = second_date.strftime('%Y-%m-%d')+' '+\
-						(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
-				elif order.type == 1:#立即送
-					later = order.create_date + datetime.timedelta(minutes = 30)
-					order.send_time =  create_date.strftime('%Y-%m-%d %H:%M') +'~'+later.strftime('%H:%M')
-					#print(order.send_time)
-				# else:
-				# 	print('Not NULL')
-			self.session.commit()
+		# orderlist = self.session.query(models.Order).all()
+		# if not orderlist:
+		# 	self.send_fail("orderlist error")
+		# if orderlist:
+		# 	for order in orderlist:
+		# 		# if order.send_time =='0' :
+		# 			# print('login')
+		# 		create_date =  order.create_date
+		# 		second_date = create_date + datetime.timedelta(days = 1)
+		# 		if order.type == 2: #按时达
+		# 			if order.today == 1:
+		# 				order.send_time = create_date.strftime('%Y-%m-%d') +' '+\
+		# 				(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
+		# 			elif order.today == 2:
+		# 				order.send_time = second_date.strftime('%Y-%m-%d')+' '+\
+		# 				(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
+		# 		elif order.type == 1:#立即送
+		# 			later = order.create_date + datetime.timedelta(minutes = 30)
+		# 			order.send_time =  create_date.strftime('%Y-%m-%d %H:%M') +'~'+later.strftime('%H:%M')
+		# 			#print(order.send_time)
+		# 		# else:
+		# 		# 	print('Not NULL')
+		# 	self.session.commit()
 
-		try:
-			accountinfo_count = self.session.query(models.Accountinfo).count()
-		except:
-			return self.send_fail('accountinfo_list error')
-		page = int(accountinfo_count/200)  if accountinfo_count % 200 == 0 else int(accountinfo_count/200) +1
-		print(accountinfo_count,page,'******22222')
-		n = 0
-		for x in range(page):
-			offset  = x * 200
-			n = n + 1
-			print('count',n)
-			accountinfo_list = self.session.query(models.Accountinfo).offset(offset).limit(200)
-			if accountinfo_list:
-				for accountinfo in accountinfo_list:
-					customer_id = accountinfo.id
-					order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
-						models.Order.status == 6 ,models.Order.status == 10))).all()
-					# session.close()
-					# print(len(order_list))
-					if order_list:
-						accountinfo.is_new = 1
-						#print(accountinfo.is_new)
-						# self.session.commit()
-		try:
-			follow_info= session.query(models.CustomerShopFollow).count()
-		except:
-			return self.send_fail('follow_list error')
-		f_page = int(follow_info/200)  if follow_info % 200 == 0 else int(follow_info/200) +1
-		for x in range(f_page):
-			offset  = x * 200
-			follow_list = self.session.query(models.CustomerShopFollow).offset(offset).limit(200)
-			if follow_list:
-				for follow in follow_list:
-					customer_id = follow.customer_id
-					shop_id = follow.shop_id
-					order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,models.Order.shop_id == shop_id,or_(models.Order.status == 5,\
-						models.Order.status == 6 ,models.Order.status == 10))).all()
-					# session.close()
-					if order_list:
-						follow.shop_new = 1
-		
+		# try:
+		# 	accountinfo_count = self.session.query(models.Accountinfo).count()
+		# except:
+		# 	return self.send_fail('accountinfo_list error')
+		# page = int(accountinfo_count/200)  if accountinfo_count % 200 == 0 else int(accountinfo_count/200) +1
+		# print(accountinfo_count,page,'******22222')
+		# n = 0
+		# for x in range(page):
+		# 	offset  = x * 200
+		# 	n = n + 1
+		# 	print('count',n)
+		# 	accountinfo_list = self.session.query(models.Accountinfo).offset(offset).limit(200)
+		# 	if accountinfo_list:
+		# 		for accountinfo in accountinfo_list:
+		# 			customer_id = accountinfo.id
+		# 			order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
+		# 				models.Order.status == 6 ,models.Order.status == 10))).all()
+		# 			# session.close()
+		# 			# print(len(order_list))
+		# 			if order_list:
+		# 				accountinfo.is_new = 1
+		# 				#print(accountinfo.is_new)
+		# 				# self.session.commit()
+		# try:
+		# 	follow_info= session.query(models.CustomerShopFollow).count()
+		# except:
+		# 	return self.send_fail('follow_list error')
+		# f_page = int(follow_info/100)  if follow_info % 100 == 0 else int(follow_info/100) +1
+		# n=0
+		# for x in range(f_page):
+		# 	offset  = x * 100
+		# 	n=n+1
+		# 	print(n)
+		# 	follow_list = self.session.query(models.CustomerShopFollow).offset(offset).limit(100)
+		# 	if follow_list:
+		# 		for follow in follow_list:
+		# 			customer_id = follow.customer_id
+		# 			shop_id = follow.shop_id
+		# 			order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,models.Order.shop_id == shop_id,or_(models.Order.status == 5,\
+		# 				models.Order.status == 6 ,models.Order.status == 10))).all()
+		# 			# session.close()
+		# 			if order_list:
+		# 				follow.shop_new = 1
 
-		try:
-			config_info = self.session.query(models.Config).count()
-		except:
-			return self.send_fail('config_info error')
-		c_page = int(config_info/200)  if config_info % 200 == 0 else int(config_info/200) +1
-		for x in range(c_page):
-			offset  = x * 200
-			config_list = self.session.query(models.Config).offset(offset).limit(200)
-			if config_list:
-				for config in config_list:
-					if config.intime_period == 0 or config.intime_period == None:
-						config.intime_period = 30
-		session.commit()
+		# try:
+		# 	config_info = self.session.query(models.Config).count()
+		# except:
+		# 	return self.send_fail('config_info error')
+		# c_page = int(config_info/200)  if config_info % 200 == 0 else int(config_info/200) +1
+		# for x in range(c_page):
+		# 	offset  = x * 200
+		# 	config_list = self.session.query(models.Config).offset(offset).limit(200)
+		# 	if config_list:
+		# 		for config in config_list:
+		# 			if config.intime_period == 0 or config.intime_period == None:
+		# 				config.intime_period = 30
 
 
 		return self.send_success()
-

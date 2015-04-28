@@ -8,6 +8,7 @@ from sqlalchemy import func, desc, and_, or_, exists
 import qiniu
 from dal.dis_dict import dis_dict
 from libs.msgverify import gen_msg_token,check_msg_token
+import re
 
 # 登陆处理
 class Access(AdminBaseHandler):
@@ -395,12 +396,13 @@ class Comment(AdminBaseHandler):
 		page = self.args["page"]
 		page_size = 10
 		pages=0
+		print("[用户评价]当前店铺：",self.current_shop)
 		if action == "all":
 			comments = self.get_comments(self.current_shop.id, page, page_size)
-			print(comments,len(comments))
+			print("[用户评价]详情：",comments,len(comments))
 			all_comments = self.session.query(models.Order).filter(models.Order.shop_id == self.current_shop.id,models.Order.status == 6).count()
 			pages = all_comments/10
-			print(pages)
+			print("[用户评价]页数：",pages)
 		elif action == "favor":
 			s = self.session.query(models.ShopFavorComment.order_id).\
 				filter(models.ShopFavorComment.shop_id == self.current_shop.id).all()
@@ -464,18 +466,24 @@ class Order(AdminBaseHandler):
 	# todo: 当订单越来越多时，current_shop.orders 会不会越来越占内存？
 
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("order_type:int", "order_status:int")
+	@AdminBaseHandler.check_arguments("order_type:int", "order_status:int","page:int")
 	#order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
 	def get(self):
 		order_type = self.args["order_type"]
 		order_status = self.args["order_status"]
+		page = self.args["page"]
+		page_size = 10
+		count = 0
+		page_sum = 0
 		orders = []
 		if order_type == 10:  # 搜索订单：为了格式统一，order_status为order.num
 			orders = self.session.query(models.Order).\
 				filter_by(num=order_status, shop_id=self.current_shop.id).all()
 			order_type = 1
+			count = self.session.query(models.Order).filter_by(type=order_type,status=order_status,shop_id=self.current_shop.id).count()
 		elif order_status == 1:
 			orders = [x for x in self.current_shop.orders if x.type == order_type and x.status == 1]
+			count = len(orders)
 			# woody 4.3
 			session = self.session
 			# for order in orders:
@@ -484,13 +492,14 @@ class Order(AdminBaseHandler):
 
 		elif order_status == 5:#all
 			orders = [x for x in self.current_shop.orders if x.type == order_type ]
+			count = len(orders)
 			session = self.session
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time,reverse = True)
 		elif order_status == 2:#unfinish
 			orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in [2, 3, 4]]
-
+			count = len(orders)
 			# woody 4.3
 			session = self.session
 			# for order in orders:
@@ -505,12 +514,13 @@ class Order(AdminBaseHandler):
 				return self.send_fail("orderlist error")
 			# orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in (5, 6)]
 			orders = [x for x in orderlist if x.type == order_type and x.status in (5, 6)]
+			count = len(orders)
 		elif order_status == 4:
 			pass
 		else:
 			return self.send.send_error(404)
 
-
+		page_sum = count /10
 		# orders order by start_time
 		# woody
 		session = self.session
@@ -518,13 +528,15 @@ class Order(AdminBaseHandler):
 		# 	order.w_send_time = order.get_sendtime(session,order.id)
 			# print(order.w_send_time)
 		# print("before sort",orders)
-		orders = sorted(orders , key = lambda x:x.send_time)
+		page_area = page * page_size
+		orders = sorted(orders , key = lambda x:x.send_time,reverse=True)[page_area:page_area+10]
 		# print("after sort",orders)
 		# for order in orders:
 		#     print(order.w_send_time)
 
 		data = []
 		delta = datetime.timedelta(1)
+		print("[订单管理]当前店铺：",self.current_shop)
 		for order in orders:
 			order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
 										 'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
@@ -532,19 +544,19 @@ class Order(AdminBaseHandler):
 			d['fruits'] = eval(d['fruits'])
 			d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
-			if order.start_time.minute <10:
-				w_start_time_minute ='0' + str(order.start_time.minute)
-			else:
-				w_start_time_minute = str(order.start_time.minute)
-			if order.end_time.minute < 10:
-				w_end_time_minute = '0' + str(order.end_time.minute)
-			else:
-				w_end_time_minute = str(order.end_time.minute)
+			# if order.start_time.minute <10:
+			# 	w_start_time_minute ='0' + str(order.start_time.minute)
+			# else:
+			# 	w_start_time_minute = str(order.start_time.minute)
+			# if order.end_time.minute < 10:
+			# 	w_end_time_minute = '0' + str(order.end_time.minute)
+			# else:
+			# 	w_end_time_minute = str(order.end_time.minute)
 
-			if order.type == 2 and order.today==2:
-				w_date = order.create_date + delta
-			else:
-				w_date = order.create_date
+			# if order.type == 2 and order.today==2:
+			# 	w_date = order.create_date + delta
+			# else:
+			# 	w_date = order.create_date
 			# d["sent_time"] = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
 			# 									order.start_time.hour, w_start_time_minute,
 			# 									  order.end_time.hour, w_end_time_minute)
@@ -556,7 +568,7 @@ class Order(AdminBaseHandler):
 				models.CustomerShopFollow.customer_id == order.customer_id).first()
 			if follow:
 				d["shop_new"]=follow.shop_new
-				print("[订单管理]",order.customer_id,"新用户标识：",d["shop_new"])
+				print("[订单管理]读取订单，订单用户ID：",order.customer_id,"，新用户标识：",d["shop_new"])
 			SH2s = []
 			for staff in staffs:
 				staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone}
@@ -566,7 +578,7 @@ class Order(AdminBaseHandler):
 			d["SH2s"] = SH2s
 			data.append(d)
 		return self.render("admin/orders.html", data = data, order_type=order_type,
-						   count=self._count(), context=dict(subpage='order'))
+						   count=self._count(),page_sum=page_sum, context=dict(subpage='order'))
 
 
 
@@ -575,6 +587,7 @@ class Order(AdminBaseHandler):
 	def post(self):
 		action = self.args["action"]
 		data = self.args["data"]
+		print("[订单管理]当前店铺：",self.current_shop)
 		if action == "add_period":
 			start_time = datetime.time(data["start_hour"],data["start_minute"])
 			end_time = datetime.time(data["end_hour"],data["end_minute"])
@@ -582,6 +595,7 @@ class Order(AdminBaseHandler):
 								   name=data["name"],
 								   start_time=start_time,
 								   end_time=end_time)
+			print("[订单管理]添加按时达时段，Shop ID：",period.config_id,"，时间段：",start_time,"~",end_time)
 			self.session.add(period)
 			self.session.commit()
 			return self.send_success(period_id=period.id)
@@ -597,8 +611,10 @@ class Order(AdminBaseHandler):
 				period.name = data["name"]
 				period.start_time = start_time
 				period.end_time = end_time
+				print("[订单管理]修改按时达时段，Shop ID：",period.config_id,"，时间段：",start_time,"~",end_time)
 			elif action == "edit_period_active":
 				period.active = 1 if period.active == 2 else 2
+				print("[订单管理]按时达时段启用/停用，Shop ID：",period.config_id,"，状态：",period.active)
 			self.session.commit()
 		elif action == "del_period":
 			try: q = self.session.query(models.Period).filter_by(id=int(data["period_id"]))
@@ -690,7 +706,7 @@ class Order(AdminBaseHandler):
 					if not customer:
 						return self.send_fail('customer error')
 					customer.shop_new = 1
-					print("[订单管理]完成订单，",customer_id,"在本店标识置为：",customer.shop_new)
+					print("[订单管理]用户",customer_id,"完成订单，新用户标识置为：",customer.shop_new)
 					self.session.commit()
 
 					try:
@@ -757,7 +773,8 @@ class Order(AdminBaseHandler):
 				order.update(session=self.session, totalPrice=data["totalPrice"])
 			elif action == "del_order":
 				session = self.session
-				order.update(session=session, status=0)
+				del_reason = data["del_reason"]
+				order.update(session=session, status=0,del_reason = del_reason)
 				order.get_num(session,order.id)
 
 			elif action == "print":
@@ -1028,7 +1045,7 @@ class Follower(AdminBaseHandler):
 		action = self.args["action"]
 		order_by = self.args["order_by"]
 		page = self.args["page"]
-		page_size = 20
+		page_size = 10
 		shop_id = self.current_shop.id
 		count = 1
 
@@ -1070,8 +1087,10 @@ class Follower(AdminBaseHandler):
 			customers[x].shop_point = shop_point.shop_point
 			customers[x].shop_names = [y[0] for y in shop_names]
 
-
-		return self.render("admin/user-manage.html", customers=customers, count=count, page_sum=count//page_size + 1,
+		page_sum=count//page_size
+		if page_sum == 0:
+			page_sum=1
+		return self.render("admin/user-manage.html", customers=customers, count=count, page_sum=page_sum,
 						   context=dict(subpage='user'))
 
 class Staff(AdminBaseHandler):
@@ -1230,7 +1249,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			d["shop_new"] = 0
 			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
 				models.CustomerShopFollow.customer_id == order.customer_id).first()
-			print("[订单查询]用户ID：",follow.customer_id)
+			print("[订单查询]读取订单，订单用户ID：",follow.customer_id)
 			if follow:
 				d["shop_new"]=follow.shop_new
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
@@ -1280,8 +1299,9 @@ class Config(AdminBaseHandler):
 				self.session.commit()
 				return self.send_success(address1_id=addr1.id)#commit后id会自动生成
 			elif action == "add_notice":
-				notice = models.Notice(summary=data["summary"],
-									   detail=data["detail"])
+				notice = models.Notice(
+					summary=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["summary"]),
+					detail=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["detail"]))    #过滤掉Emoji，否则数据库会报错 --by Sky
 				self.current_shop.config.notices.append(notice)
 				self.session.commit()
 			elif action == "edit_receipt": #小票设置
@@ -1311,6 +1331,13 @@ class Config(AdminBaseHandler):
 			self.session.commit()
 		elif action == "edit_recipe_img":
 			return self.send_qiniu_token("receipt", self.current_shop.id)
+		elif action == "recipe_img_on":#4.24 yy
+			active = self.current_shop.config.receipt_img_active
+			if active == 1:
+				active = 0
+			else:
+				active = 1
+			self.current_shop.config.update(session=self.session,receipt_img_active=active)
 		else:
 			return self.send_error(404)
 		return self.send_success()

@@ -45,7 +45,7 @@
             <li class="cart-list-item set-w100-fle menu_item TDSG text-grey m-b5">
                 <div class="box bg set-w100-fle">
                     {% if cart_m[key]['mcharge_type'].mgoods.img_url %}
-                    <img src="" class="goods-img pull-left w15 lazy_img" data-original="{{cart_m[key]['mcharge_type'].mgoods.img_url}}?imageView/1/w/100/h/100"/>
+                    <img src="" class="goods-img pull-left w15 lazy_img" data-original="{{cart_m[key]['mcharge_type'].mgoods.img_url}}?imageView/1/w/170/h/170"/>
                     {% else %}
                     <img src="" class="goods-img pull-left w15 lazy_img" data-original="/static/design_img/TDSG.png?v=20150316"/>
                     {% end %}
@@ -132,13 +132,13 @@
                     <li data-id="1" class="active pull-left item" id="send_today"><a href="javascript:;" class="bg-white text-green">今天</a></li>
                     <li data-id="2" id="send_tomorrow" class="pull-left item"><a href="javascript:;" class="bg-white text-green">明天</a></li>
                 </ul>
-                <div id="sendPeriod" class="send_period list-group  font14">
+                <div id="sendPeriod" class="send_period list-group font14">
                     {% for period in periods%}
                     <button data-id="{{period.id}}" class="list-group-item clearfix available line50 height50 item">
                         <a href="javascript:;" class="text-grey clearfix">
                             <span class="text-grey3 pull-left set-inl-blo period_name text-left">{{period.name}}</span>
                              <span class="pull-left">
-                                 <span class="check-time">{{period.start_time.hour}}</span>:  <span class="check-time">{{period.start_time.minute}}</span>-<span class="intime_endtime"> <span class="check-time">{{period.end_time.hour}}</span>: <span class="check-time">{{period.end_time.minute}}</span></span>
+                                 <span class="check-time">{{period.start_time.hour}}</span> : <span class="check-time">{{period.start_time.minute}}</span> ~ <span class="intime_endtime"><span class="check-time">{{period.end_time.hour}}</span> : <span class="check-time">{{period.end_time.minute}}</span></span>
                              </span>
                             <input type="hidden" class="intime_startHour" value="{{period.start_time.hour}}"/>
                             <input type="hidden" class="intime_startMin" value="{{period.start_time.minute}}"/>
@@ -161,7 +161,7 @@
                      </li>-->
                     <li class="font14 clearfix line50 height50">
                         送货时间：
-                        <span class="now_startime">{{config.start_time_now}}</span>~
+                        <span class="now_startime">{{config.start_time_now}}</span> ~
                         <span class="now_endtime">{{config.end_time_now}}</span>
                     </li>
                 </ul>
@@ -200,7 +200,7 @@
                                 <span class="tit set-inl-blo pull-left">电话：</span>
                                 <input type="text" placeholder="输入收货人有效联系电话"  class="input-sty bg-white pull-left" id="receivePhone"/>
                             </p>
-                            <div class="w200 center-block clearfix mt10">
+                            <div class="w118 center-block clearfix mt10">
                                 <button class="btn text-white pull-right bg-green sure_btn" id="receiveAdd">确定</button>
                                 <button class="btn text-white pull-right bg-green hidden sure_btn" id="receiveEdit">确定</button>
                                 <button class="btn text-white bg-greyc pull-right m-r10" id="receiveCancel">取消</button>
