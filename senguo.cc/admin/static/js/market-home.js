@@ -443,6 +443,7 @@ window.dataObj.page=1;
 window.dataObj.count=1;
 window.dataObj.action=5;
 window.dataObj.finished=true;
+$('.loading').html("~努力加载中 ( > < )~").show();
 var scrollLoading=function(){
     var range = 80;             //距下边界长度/单位px          //插入元素高度/单位px  
     var totalheight = 0;   
@@ -450,7 +451,7 @@ var scrollLoading=function(){
     $(window).scroll(function(){
         var maxnum = window.dataObj.page_count;            //设置加载最多次数  
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
-        var range = 80;             //距下边界长度/单位px          //插入元素高度/单位px
+        var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
         var totalheight = 0;
         var main = $(".container");                  //主体元素
         if(!maxnum) maxnum=Int($('#page_count').val());
@@ -460,12 +461,11 @@ var scrollLoading=function(){
             window.dataObj.page++;
             goodsList(window.dataObj.page,window.dataObj.action);
         }
-        else{
+        else if(window.dataObj.page == maxnum){
               $('.loading').html("~没有更多商品了呢 ( > < )~").show();
         }
     });
 }
-
 var goodsList=function(page,action){
     var url='';
     var action = action;

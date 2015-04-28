@@ -46,7 +46,7 @@ $(document).ready(function(){
     //设置title
     //document.title=$.base64Decode(shop_name)+'一家不错的水果O2O店铺，快来关注吧~';
     //置顶监听
-    $(window).on('scroll',function(){
+    $(window).scroll(function(){
         var $this=$(this);
         var clientHeight=$this.height();
         var scrollTop=$(window).scrollTop();
