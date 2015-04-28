@@ -297,7 +297,7 @@
                                 <input type="text" class="period-name  pull-left text-center edit_item hidden" value="{{period.name}}"/>
                                 <a href="javascript:;" class="delete pull-right set-inl-blo delete-time-period" style="display:none"></a>
                                 <a href="javascript:;" class="edit pull-right set-inl-blo to-edit" style="display:none"></a>
-                                <a href="javascript:;" class="sure-btn pull-right edit_item hidden edit-time-period text-center text-white">✓</a>
+                                <a href="javascript:;" class="sure-btn pull-right edit_item hidden edit-time-period text-center text-white">确定</a>
                             </li>
                             {% end %}
                         </ul>
@@ -329,11 +329,12 @@
             </div>
             <div class="modal-footer">
                 <div class="btn-box">
-                    <button type="button" class="pull-right modal-concel-btn" href="javascript:;" data-dismiss="modal">取消</button>
                     {% if order_type ==1 %}
+                     <button type="button" class="pull-right modal-concel-btn" href="javascript:;" data-dismiss="modal">取消</button>
                     <button type="button" class="pull-left modal-sure-btn" href="javascript:;" id="sendNowConfig">确认</button>
                     {% else %}
-                    <button type="button" class="pull-left modal-sure-btn" href="javascript:;" data-dismiss="modal">确认</button>
+                    <button type="button" class="center-block modal-concel-btn clearfix" href="javascript:;" data-dismiss="modal">取消</button>
+                    <!-- <button type="button" class="pull-left modal-sure-btn" href="javascript:;" data-dismiss="modal">确认</button> -->
                     {% end %}
                 </div>
             </div>
