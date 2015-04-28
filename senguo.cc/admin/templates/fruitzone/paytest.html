@@ -8,20 +8,20 @@
     wx.config({
         debug: false,
         appId: "{{wxappid}}",
-        timestamp: {{wxsign.timestamp}},
-        nonceStr: "{{wxsign.nonceStr}}",
-        signature: "{{wxsign.signature}}",
+        timestamp: {{timestamp}},
+        nonceStr: "{{noncestr}}",
+        signature: "{{signature}}",
         jsApiList: ['onMenuShareTimeline','chooseWXPay','hideMenuItems']
     });
     wx.ready(function(){
         document.querySelector('#getBrandWCPayRequest').onclick = function () {
             // alert('chooseWxpay');
             wx.chooseWXPay({
-                timestamp: {{renderPayParams.timeStamp}},
-                nonceStr: '{{renderPayParams.nonceStr}}',
-                package: '{{renderPayParams.package}}',
-                signType: '{{renderPayParams.signType}}',
-                paySign: '{{renderPayParams.paySign}}',
+                timestamp: {{renderPayParams['timeStamp']}},
+                nonceStr: '{{renderPayParams['nonceStr']}}',
+                package: '{{renderPayParams['package']}}',
+                signType: '{{renderPayParams['signType']}}',
+                paySign: '{{renderPayParams['paySign']}}',
                 success: function (res) {
                     // 支付成功后的回调函数
                     // alert('success');

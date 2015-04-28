@@ -783,5 +783,9 @@ class payTest(FruitzoneBaseHandler):
 		#jsApi.setPrepayId(prepay_id)
 		renderPayParams = jsApi.getParameters()
 		print(renderPayParams)
+		noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
+		timestamp = datetime.datetime.now().timestamp()
+		wxappid = 'wx0ed17cdc9020a96e'
+		
 		# return self.send_success(renderPayParams = renderPayParams)
-		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams)
+		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,noncestr = noncestr , timestamp = timestamp,signature = self.signature(noncestr,timestamp,path))
