@@ -286,7 +286,7 @@ class CustomerProfile(CustomerBaseHandler):
 			self.current_user.accountinfo.update(session=self.session, birthday=time.mktime(birthday.timetuple()))
 		elif action == 'add_password':
 			self.current_user.accountinfo.update(session = self.session , password = data)
-			print("[设置密码]设置成功，用户ID：",self.current_user.id,"，密码：",data)
+			print("[设置密码]设置成功，密码：",data)
 		elif action == 'modify_password':
 			old_password = self.args['old_password']
 			print("[更改密码]输入老密码：",old_password)
@@ -296,7 +296,7 @@ class CustomerProfile(CustomerBaseHandler):
 				return self.send_fail("密码错误")
 			else:
 				self.current_user.accountinfo.update(session = self.session ,password = data)
-				print("[更改密码]更改成功，用户ID：",self.current_user.id,"，密码：",data)
+				print("[更改密码]更改成功，新密码：",data)
 		elif action == 'reset_password':
 			data = self.args["data"]
 			new_password = data['password']
