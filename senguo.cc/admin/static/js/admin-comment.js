@@ -33,10 +33,10 @@ $(document).ready(function(){
     var $this=$(this);
      var delete_reason=$('#commit-cont').val();
     if(!delete_reason){
-        return alert('请输入您的理由!')
+        return alert('请输入您的理由！')
     }
     if(delete_reason.length>300){
-         return alert('最多可输入300字!')
+         return alert('最多可输入300字！')
     }
     applyDel(delete_reason);
 }).on('click','.reply',function(){

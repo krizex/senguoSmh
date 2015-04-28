@@ -170,10 +170,10 @@ function orderItem(item){
         //订单状态
         if(status==0) {
             if(del_reason!=null){
-                $item.find('.order-status').empty().text('该订单已取消或删除(删除理由:'+del_reason+')');
+                $item.find('.order-status').empty().text('该订单已删除（删除原因：'+del_reason+'）');
             }
             else{
-                $item.find('.order-status').empty().text('该订单已取消或删除(用户已取消该订单)');
+                $item.find('.order-status').empty().text('该订单已被用户取消');
             }
             $item.find('.unable_edit').show();
         }
@@ -350,10 +350,10 @@ function orderDelete(target){
     var index=$box.attr('data-target');
     var del_reason=$('#order_ser_val').val();
     if(!del_reason){
-        return alert('请输入订单删除的理由!');
+        return alert('请输入订单删除的原因！');
     }
     if(del_reason.length>300){
-        return alert('删除理由最多可为300字!');
+        return alert('删除原因最多可输入300字！');
     }
     var data={
         order_id:order_id,
