@@ -70,12 +70,12 @@ $(document).ready(function(){
 var wait=60;
 function time(evt) {
     if (wait == 0) {
-        evt.val("获取验证码").css({'background':'#00d681'});
+        evt.val("获取验证码").removeClass('bg-greyc');
         wait = 60;
         $('.get-code').attr({'id':'getVrify'});
     }
     else {
-        evt.val("重新发送(" + wait + ")").css({'background':'#ccc'});
+        evt.val("重新发送(" + wait + ")").addClass('bg-greyc');
         wait--;
         $('.get-code').attr({'id':''});
         setTimeout(function() {

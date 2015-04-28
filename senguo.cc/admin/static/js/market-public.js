@@ -46,9 +46,9 @@ $(document).ready(function(){
     //设置title
     //document.title=$.base64Decode(shop_name)+'一家不错的水果O2O店铺，快来关注吧~';
     //置顶监听
-    $(window).scroll(function(){
+    $(window).on('scroll',function(){
         var $this=$(this);
-        var clientHeight=$this.height();
+        var clientHeight= $(window).height();
         var scrollTop=$(window).scrollTop();
         if(scrollTop>=clientHeight/2){
                 $('.little_pear').css("display","block");
@@ -326,9 +326,9 @@ Modal.prototype.modal=function(type){
     {
         var window_height=$(window).height();
         var height=$('.container').height();
-        $("body").css({"overflow":"hidden"});
         $target.removeClass('fade').addClass('in').css({'display':'block'});
         $target.find('.warn').remove();
+        $("body").css({'overflow':'hidden'});
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
                 $('body').removeClass('modal_sty').css({'overflow':'auto'});

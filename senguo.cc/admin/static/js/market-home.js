@@ -444,10 +444,7 @@ window.dataObj.count=1;
 window.dataObj.action=5;
 window.dataObj.finished=true;
 $('.loading').html("~努力加载中 ( > < )~").show();
-var scrollLoading=function(){
-    var range = 80;             //距下边界长度/单位px          //插入元素高度/单位px  
-    var totalheight = 0;   
-    var main = $(".container");                  //主体元素   
+var scrollLoading=function(){  
     $(window).scroll(function(){
         var maxnum = window.dataObj.page_count;            //设置加载最多次数  
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
@@ -456,6 +453,12 @@ var scrollLoading=function(){
         var main = $(".container");                  //主体元素
         if(!maxnum) maxnum=Int($('#page_count').val());
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
+        if(srollPos>=200){
+                $("#backTop").css("display","block");
+            }
+            else{
+                $("#backTop").css("display","none");
+            }
         if(window.dataObj.finished&&(main.height()-range) <= totalheight  && window.dataObj.page < maxnum) {
             window.dataObj.finished=false;
             window.dataObj.page++;
