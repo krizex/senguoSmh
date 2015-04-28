@@ -280,6 +280,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			self.render('notice/404.html')
 		elif status_code == 500:
 			self.render('notice/500.html')
+		elif status_code == 400:
+			self.render('notice/400.html')
 		else:
 			super(GlobalBaseHandler, self).write_error(status_code, **kwargs)
 

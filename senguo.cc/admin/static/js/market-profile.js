@@ -23,7 +23,7 @@ $(document).ready(function(){
         var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
         if(phone.length > 11 ||phone.length<11 || !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
         if(!phone){return warnNotice('手机号不能为空');}
-        $('#getVrify').attr({'disabled':true});
+        $('#getVrify').attr({'disabled':true}).addClass('bg-greyc');
         Vrify(phone);
     });
     $(document).on('click','#tiePhone',function(evt){TiePhone(evt);});

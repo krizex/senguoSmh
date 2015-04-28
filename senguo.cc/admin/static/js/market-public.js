@@ -13,9 +13,7 @@ $(document).ready(function(){
           s.parentNode.insertBefore(hm, s);
         })();
     //fastclick initialise
-     $(function() {
-        FastClick.attach(document.body);
-    });   
+   FastClick.attach(document.body);
     //客户端为Android系统替换图片路径
     //AndroidImg('bg_change');
     //AndroidImg('src_change');   
@@ -329,10 +327,9 @@ Modal.prototype.modal=function(type){
     {
         var window_height=$(window).height();
         var height=$('.container').height();
+        $("body").css({"overflow":"hidden"});
         var $mask;
-        if(height<window_height) $mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
-        else $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
-        $('body').append($mask).addClass('modal_sty').attr({'onmousewheel':'return false'}).css({'overflow':'hidden'});
+        if(height<window_height) $mask=$('<div class="modal_bg"></div>').css({'height':window_height+"px"});
         $target.removeClass('fade').addClass('in').css({'display':'block'});
         $target.find('.warn').remove();
         $target.on('click',function(e){
