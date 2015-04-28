@@ -13,20 +13,6 @@ $(document).ready(function(){
     $(document).on('click','.info-edit .concel-btn',function(){$(this).parents('.info-edit').hide();});
     $('.info-edit').find('.sure-btn').each(function(){infoEdit($(this))});
     //手机验证
-    $(document).on('click','#phoneNumber',function(){
-        var tie_box=new Modal('tieBox');
-         tie_box.modal('show');
-    });
-    $(document).on('click','#getVrify',function(evt){
-        evt.preventDefault();
-        var phone=$('#enterPhone').val();
-        var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-        if(phone.length > 11 ||phone.length<11 || !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
-        if(!phone){return warnNotice('手机号不能为空');}
-        $('#getVrify').attr({'disabled':true}).addClass('bg-greyc');
-        Vrify(phone);
-    });
-    $(document).on('click','#tiePhone',function(evt){TiePhone(evt);});
     //性别编辑
     $(document).on('click','#userSex',function(){
             var sex_box=new Modal('sexBox');
@@ -65,21 +51,30 @@ $(document).ready(function(){
     var action=$this.attr('data-action');
     $('#pwdSure').attr({'disabled':true});
     setPwd(action);
+}).on('click','#phoneNumber',function(){
+        var tie_box=new Modal('tieBox');
+         tie_box.modal('show');
+}).on('click','#getVrify',function(evt){
+        $('#getVrify').addClass('bg-greyc').attr({'disabled':true}); 
+        var $this=$(this);
+        Vrify($this);
+}).on('click','#tiePhone',function(evt){
+        $('#tiePhone').addClass('bg-greyc').attr({'disabled':true}); 
+        var $this=$(this);
+        TiePhone($this);
 });
 
 var wait=60;
-function time(evt) {
+function time(target) {
     if (wait == 0) {
-        evt.val("获取验证码").removeClass('bg-greyc');
+        target.text("获取验证码").removeClass('bg-greyc').removeAttr('disabled');
         wait = 60;
-        $('.get-code').attr({'id':'getVrify'});
     }
     else {
-        evt.val("重新发送(" + wait + ")").addClass('bg-greyc');
+        target.text("重新发送(" + wait + ")").addClass('bg-greyc').attr({'disabled':true});
         wait--;
-        $('.get-code').attr({'id':''});
         setTimeout(function() {
-                time(evt)
+                time(target)
             },
             1000)
     }
@@ -165,9 +160,19 @@ function sexEdit(sex,text){
     );
 }
 
-function Vrify(phone){
+function Vrify(phone,target){
     var action='gencode';
     var url="/customer/phoneVerify?action=customer";
+    var phone=$('#enterPhone').val();
+    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    if(phone.length > 11 ||phone.length<11 || !regPhone.test(phone)){
+        $('#getVrify').removeClass('bg-greyc').removeAttr('disabled');
+        return warnNotice("电话貌似有错o(╯□╰)o",target);
+    }
+    if(!phone){
+        $('#getVrify').removeClass('bg-greyc').removeAttr('disabled');
+        return warnNotice('手机号不能为空',target);
+    }
     var args={
         action:action,
         phone:phone
@@ -176,29 +181,52 @@ function Vrify(phone){
         function(res){
             if(res.success)
             {
+                noticeBox('验证码已发送到您的手机,请注意查收！',target);
                 time($('#getVrify'));
-                noticeBox('验证码已发送到您的手机,请注意查收！');
-                 $('#getVrify').removeAttr('disabled');
+                //$('#getVrify').removeClass('bg-greyc').removeAttr('disabled');
 
             }
-            else return noticeBox(res.error_text);
+            else{
+                noticeBox(res.error_text);
+                $('#getVrify').removeClass('bg-greyc').removeAttr('disabled');
+            } 
         },
-         function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+         function(){
+            noticeBox('网络好像不给力呢~ ( >O< ) ~',target);
+            $('#getVrify').removeClass('bg-greyc').removeAttr('disabled');
+        },
+        function(){
+            noticeBox('服务器貌似出错了~ ( >O< ) ~',target);
+            $('#getVrify').removeClass('bg-greyc').removeAttr('disabled');
+        }
     );
 }
 
-function TiePhone(evt){
-    evt.preventDefault();
+function TiePhone(target){
     var phone=$('#enterPhone').val().trim();
-    var code=Int($('#enterVrify').val().trim());
+    var code=$('#enterVrify').val().trim();
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
-    if(!phone){return warnNotice('请输入手机号');}
-    if(!code){return warnNotice('请输入验证码');} 
-    if(!regNumber.test(code)){return warnNotice('验证码只能为数字！');}
-    if(code.length>4||code.length<4){return warnNotice('验证码为4位数字!');}
+    if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){
+        $('#tiePhone').removeClass('bg-greyc').removeAttr('disabled');
+        return warnNotice("电话貌似有错o(╯□╰)o",target);
+    }
+    if(!phone){
+        $('#tiePhone').removeClass('bg-greyc').removeAttr('disabled');
+        return warnNotice('请输入手机号',target);
+    }
+    if(!code){
+        $('#tiePhone').removeClass('bg-greyc').removeAttr('disabled');
+        return warnNotice('请输入验证码',target);
+    } 
+    if(!regNumber.test(code)){
+        $('#tiePhone').removeClass('bg-greyc').removeAttr('disabled');
+        return warnNotice('验证码只能为数字！',target);
+    }
+    if(code.length>4||code.length<4){
+        $('#tiePhone').removeClass('bg-greyc').removeAttr('disabled');
+        return warnNotice('验证码为4位数字!',target);
+    }
     var url="/customer/phoneVerify?action=customer";
     var action='checkcode';
     var args={action:action,phone:phone,code:code};
@@ -209,11 +237,19 @@ function TiePhone(evt){
                 $('.tiephone').text(phone).css({'color':'#a8a8a8'});
                 var tie_box=new Modal('tieBox');
                 tie_box.modal('hide');
+                $('#tiePhone').removeClass('bg-greyc').removeAttr('disabled');
             }
-            else noticeBox(res.error_text);
+            else {
+                noticeBox(res.error_text,target);
+                $('#tiePhone').removeClass('bg-greyc').removeAttr('disabled');
+            }
         },
-        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        function(){
+            return noticeBox('网络好像不给力呢~ ( >O< ) ~',target)
+        },
+        function(){
+            return noticeBox('服务器貌似出错了~ ( >O< ) ~'.target)
+        }
     );
 }
 

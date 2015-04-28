@@ -100,8 +100,14 @@ $(document).ready(function(){
         Vrify($this);
     });
     //提交
-    $(document).on('click','#submitApply',function(){Apply();});
-    $(document).on('click','#submitReapply',function(){reApply();});
+    $(document).on('click','#submitApply',function(){
+        $('#submitApply').removeClass('bg-green').attr({'disabled':true});
+        var $this=$(this);
+        Apply($this);
+    });
+    $(document).on('click','#submitReapply',function(){
+        reApply();
+    });
     /*var key='';
     var token='';
     $('#file_upload').uploadifive(
@@ -168,7 +174,7 @@ function time(target) {
     }
 }
 
-function Apply(evt){
+function Apply(target){
     var i=0;
     if($('#serverArea li').eq(0).hasClass('active'))
         i+=1;
@@ -190,24 +196,74 @@ function Apply(evt){
     var wx_Name=$('#wx_Name').val().trim();
     var code=$('#verify_code').val().trim();
     var phone=$('#phone').val().trim();
+    var regNumber=/^[0-9]*[1-9][0-9]*$/;
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){return noticeBox("电话貌似有错o(╯□╰)o");}
-    if(shop_name.length>15){return noticeBox('店铺名称请不要超过15个字符！')}
-    if(shop_address_detail.length>50){return noticeBox('详细地址请不要超过50个字符！')}
-    if(shop_intro.length>300){return noticeBox('店铺简介请不要超过300个字符！')}
-    if (!shop_name){return noticeBox("请输入店铺名称！");}
-    if (!shop_service_area){return noticeBox("请选择服务区域！");}
-    if (!shop_city||!shop_province){return noticeBox("请选择省份城市！");}
-    if (!shop_address_detail){return noticeBox("请输入您的详细地址！");}
-    if (!shop_intro){return noticeBox("请输入您的店铺简介");}
+    if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){
+         $('#submitApply').removeAttr('disabled').addClass('bg-green');
+        return noticeBox("电话貌似有错o(╯□╰)o",target);
+    }
+    if(shop_name.length>15){
+        $('#submitApply').removeAttr('disabled').addClass('bg-green');
+        return noticeBox('店铺名称请不要超过15个字符！',target);
+    }
+    if(shop_address_detail.length>50){
+        $('#submitApply').removeAttr('disabled').addClass('bg-green');
+        return noticeBox('详细地址请不要超过50个字符！',target);
+    }
+    if(shop_intro.length>300){
+        $('#submitApply').removeAttr('disabled').addClass('bg-green');
+        return noticeBox('店铺简介请不要超过300个字符！',target);
+    }
+    if (!shop_name){
+        $('#submitApply').removeAttr('disabled').addClass('bg-green');
+        return noticeBox("请输入店铺名称！",target);
+    }
+    if (!shop_service_area){
+        $('#submitApply').removeAttr('disabled').addClass('bg-green');
+        return noticeBox("请选择服务区域！",target);
+    }
+    if (!shop_city||!shop_province){
+        $('#submitApply').removeAttr('disabled').addClass('bg-green');
+        return noticeBox("请选择省份城市！",target);
+    }
+    if (!shop_address_detail){
+        $('#submitApply').removeAttr('disabled').addClass('bg-green');
+        return noticeBox("请输入您的详细地址！",target);
+    }
+    if (!shop_intro){
+        $('#submitApply').removeAttr('disabled').addClass('bg-green');
+        return noticeBox("请输入您的店铺简介",target);
+    }
     if(typeof(img_key)=='undefined') img_key='';
     var regChinese=/^[\u4e00-\u9faf]+$/;
-    if(!realName){return noticeBox('请输入您的真实姓名！')}
-    if(!regChinese.test(realName)){return noticeBox('请输入您的真实姓名！')}
-    if(!wx_Name){return noticeBox('请输入您的微信号！')}
-    if(!code){return noticeBox('请输入验证码！')}
-    if(!phone){return noticeBox('请输入您的手机号！')}
-    $('#submitApply').addClass('text-grey6').val('提交成功').attr({'disabled':'true'});
+    if(!realName){
+        $('#submitApply').removeAttr('disabled').addClass('bg-green');
+        return noticeBox('请输入您的真实姓名！',target);
+    }
+    if(!regChinese.test(realName)){
+        $('#submitApply').removeAttr('disabled').addClass('bg-green');
+        return noticeBox('请输入您的真实姓名！',target);
+    }
+    if(!wx_Name){
+        $('#submitApply').removeAttr('disabled').addClass('bg-green');
+        return noticeBox('请输入您的微信号！',target);
+    }
+    if(!code){
+        $('#submitApply').removeAttr('disabled').addClass('bg-green');
+        return noticeBox('请输入验证码！',target);
+    }
+    if(!regNumber.test(code)){
+        $('#submitApply').removeAttr('disabled').addClass('bg-green');
+        return noticeBox('验证码只能为数字！',target);
+    }
+    if(code.length>4||code.length<4){
+        $('#submitApply').removeAttr('disabled').addClass('bg-green');
+        return noticeBox('验证码为4位数字!',target);
+    }
+    if(!phone){
+        $('#submitApply').removeAttr('disabled').addClass('bg-green');
+        return noticeBox('请输入您的手机号！',target);
+    }
     var args={
         shop_name:shop_name,
         shop_province:shop_province,
@@ -227,13 +283,17 @@ function Apply(evt){
             if(res.success)
             {
                 window.location.href="/apply/success";
+                $('#submitApply').removeAttr('disabled').addClass('bg-green');
             }
             else {
                 noticeBox(res.error_text);
-                $('#submitApply').removeClass('text-grey6').val('提交申请').removeAttr('disabled');
+                $('#submitApply').removeAttr('disabled').addClass('bg-green');
             }
         },
-        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')}
+        function(){
+            noticeBox('网络好像不给力呢~ ( >O< ) ~');
+            $('#submitApply').removeAttr('disabled').addClass('bg-green');
+        }
     );
 }
 
