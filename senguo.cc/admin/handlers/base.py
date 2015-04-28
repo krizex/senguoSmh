@@ -849,7 +849,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]发送给配送元失败：",data)
+			print("[模版消息]发送给配送员失败：",data)
 			return False
 		print("[模版消息]发送给配送员成功")
 		return True
