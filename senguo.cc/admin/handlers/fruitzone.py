@@ -15,6 +15,7 @@ from libs.utils import Logger
 import libs.xmltodict as xmltodict
 import qiniu
 from qiniu.services.storage.bucket import BucketManager
+from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
 
 class Home(FruitzoneBaseHandler):
 	def get(self):
@@ -748,6 +749,8 @@ class payTest(FruitzoneBaseHandler):
 		print(self.request.full_url())
 		path = self.request.full_url()
 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
+		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('fruitzonePayTest')
+		print(path , 'redirect_uri is Ture?')
 		jsApi  = JsApi_pub()
 		orderId = '1234'
 		print(self.args['code'],'sorry  i dont know')
