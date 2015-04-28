@@ -6,7 +6,7 @@
     <script type="text/javascript">
 
     wx.config({
-        debug: false,
+        debug: true,
         appId: "{{wxappid}}",
         timestamp: {{timestamp}},
         nonceStr: "{{noncestr}}",
@@ -24,7 +24,7 @@
                 paySign: '{{renderPayParams['paySign']}}',
                 success: function (res) {
                     // 支付成功后的回调函数
-                    // alert('success');
+                    alert('success');
                     window.location.href = '/shops/memberOrderList/'
                 }
             });

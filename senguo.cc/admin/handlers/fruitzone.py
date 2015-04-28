@@ -747,7 +747,7 @@ class payTest(FruitzoneBaseHandler):
 	@FruitzoneBaseHandler.check_arguments('code?:str')
 	def get(self):
 		print(self.request.full_url())
-		path = self.request.full_url()
+		path_url = self.request.full_url()
 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('fruitzonePayTest')
 		print(path , 'redirect_uri is Ture?')
@@ -788,4 +788,4 @@ class payTest(FruitzoneBaseHandler):
 		wxappid = 'wx0ed17cdc9020a96e'
 		
 		# return self.send_success(renderPayParams = renderPayParams)
-		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,noncestr = noncestr , timestamp = timestamp,signature = self.signature(noncestr,timestamp,path))
+		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,noncestr = noncestr , timestamp = timestamp,signature = self.signature(noncestr,timestamp,path_url))
