@@ -1208,14 +1208,14 @@ class Cart(CustomerBaseHandler):
 		# 已支付、付款类型、余额、积分处理
 		money_paid = False
 		pay_type = 1
-		if self.args["pay_type"] == 2:
-			if self.current_user.balance >= totalPrice:
-				self.current_user.balance -= totalPrice
-				self.current_user.credits += totalPrice
-				self.session.commit()
-				money_paid = True
-				pay_type = 2
-			else:return self.send_fail("余额不足")
+		
+			# if self.current_user.balance >= totalPrice:
+			# 	self.current_user.balance -= totalPrice
+			# 	self.current_user.credits += totalPrice
+			# 	self.session.commit()
+			# 	money_paid = True
+			# 	pay_type = 2
+			# else:return self.send_fail("余额不足")
 
 		count = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
 		num = str(shop_id) + '%06d' % count
@@ -1242,7 +1242,7 @@ class Cart(CustomerBaseHandler):
 							 freight=freight,
 							 SH2_id = w_SH2_id,
 							 tip=tip,
-							 totalPrice=totalPrice,
+							 totalPrice=totalPrice,  #订单总价 ，单位 元
 							 money_paid=money_paid,
 							 pay_type=pay_type,
 							 today=self.args["today"],#1:今天；2：明天
@@ -1287,25 +1287,9 @@ class Cart(CustomerBaseHandler):
 		session = self.session
 		for f in f_d:
 			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-			# num = f_d[f].get('num')
-			# fruit_id = f_d[f].get('fruit_name')
-			# fruit = session.query(models.Fruit).filter_by(id = fruit_id).first()
-			# if not fruit:
-			# 	return self.send_fail('fruit not found')
-			# fruit_name = fruit.name
-			# charge = f_d[f].get('charge')
-			# goods.append([fruit_name,charge,num])
 		for m in m_d:
 			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
-			# num = m_d[m].get('num')
-			# mgood_id = m_d[m].get('mgoods_name')
-			# mgood = session.query(models.MGoods).filter_by(id = mgood_id).first()
-			# if not mgood:
-			# 	return self.send_fail('mgood not found')
-			# mgood_name = mgood.name
-			# charge =m_d[m].get('charge')
-			# goods.append([mgood_name,charge,num])
-			# print('m',m)
+			
 		goods = str(goods)[1:-1]
 		order_totalPrice = float('%.1f'% totalPrice)
 		print("[提交订单]订单总价：",order_totalPrice)
@@ -1317,6 +1301,37 @@ class Cart(CustomerBaseHandler):
 			customer_name,order_totalPrice,send_time,goods,phone)
 		# send message to customer
 		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
+
+		####################################################
+		# 一次完整的 余额支付 流程，
+		# 订单提交成功后 ，用户余额减少，
+		# 店铺冻结资产 相应增加,
+		# 同时生成余额变动记录,
+		# 订单完成后 店铺冻结资产相应转入 店铺可提现余额
+		# woody 4.29
+		####################################################
+		if self.args["pay_type"] == 2:
+			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
+				shop_id = shop_id).first()
+			if not shop_follow:
+				return self.send_fail('shop_follow not found')
+			shop_follow.shop_balance -= totalPrice * 100  #用户对应 店铺余额减少 ，单位：分
+			self.session.commit()
+			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+			if not shop:
+				return self.send_fail('shop not found')
+			shop.shop_bloackage += totalPrice * 100  #店铺冻结 资产相应增加 ，单位 ：分
+			self.session.commit()
+			##########################################################
+			# 余额支付 用户只有在充值的时候 才会真正发生支付，
+			# 提交订单 只会产生 余额 的变动 ，
+			##########################################################
+			balance_record = '订单号' + order.num
+
+			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
+				shop_id = shop_id ,balance_value = totalPrice * 100 , balance_record = balance_record)
+			self.session.add(balance_history)
+			self.session.commit()
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}', mgoods='{}')#清空购物车
