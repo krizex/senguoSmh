@@ -21,7 +21,8 @@
 {% block bottom %}
 <script src="{{static_url('js/market-comment.js')}}"></script>
 {% end %}
-<!--新评价详情页面
+{#
+<!--新评价详情页面-->
 {% extends 'detail-base.html' %}
 {% block title %}评价详情{% end %}
 {% block head %}
@@ -33,24 +34,30 @@
 <div class="contain">
     <div class="point-show group">
         <div class="point-left fl pt5">
-            <p class="nor-txt">满意度</p>
+            <p class="nor-txt mt2">满意度</p>
             <p class="percent-txt">98%</p>
+        </div>
+        <div class="point-name fl pt5">
+            <span class="line"></span>
+            <p class="nor-txt">质量</p>
+            <p class="nor-txt">速度</p>
+            <p class="nor-txt">服务</p>
         </div>
         <div class="point-cen fl">
             <div class="percent-bar">
                 <span class="bar1"></span>
             </div>
             <div class="percent-bar">
-                <span class="bar1"></span>
+                <span class="bar2"></span>
             </div>
             <div class="percent-bar">
-                <span class="bar1"></span>
+                <span class="bar3"></span>
             </div>
         </div>
         <div class="point-left fr">
-            <p class="nor-txt">89分</p>
-            <p class="nor-txt">100分</p>
-            <p class="nor-txt">98分</p>
+            <p class="nor-txt txt-ar">89分</p>
+            <p class="nor-txt txt-ar">100分</p>
+            <p class="nor-txt txt-ar">98分</p>
         </div>
     </div>
     <ul class="point-com-lst">
@@ -97,4 +104,4 @@
 <script src="{{static_url('js/third/baguetteBox.min.js')}}"></script>
 <script src="{{static_url('js/comment-shop.js')}}"></script>
 {% end %}
--->
+#}

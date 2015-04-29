@@ -17,6 +17,8 @@ $(document).ready(function(){
     signin($this);
 }).on('click','.signed',function(){
     noticeBox('亲，你今天已经签到了，一天只能签到一次哦')
+}).on("click","#show-more",function(){
+    window.location.href=$(this).find("a").attr("href");
 });
 function focus(){
     var url='';
