@@ -47,11 +47,71 @@ $(document).ready(function(){
     var apply_id=$this.parents('.item').attr('data-id');
     var index=$this.parents('.item').index();
     $(".wrap-com-pop").attr({'data-id':apply_id,'data-index':index});
+}).on("click",".refuse",function(e){
+    var $this=$(this);
+    $(".wrap-com-pop").removeClass("hide");
+    var apply_id=$this.parents('.shop-list-item').attr('data-id');
+    var index=$this.parents('.shop-list-item').index();
+    $(".wrap-com-pop").attr({'data-id':apply_id,'data-index':index});
+}).on("click",".ok",function(e){
+     var $this=$(this);
+     var apply_id=$this.parents('.shop-list-item').attr('data-id');
+     if(confirm('确认通过该申请?')){
+          passAuth(apply_id,$this);
+    }
+}).on('click','#submit-apply',function(){
+        rejectAuth();
+}).on("click","#concel-apply",function(e){
+    $(".wrap-com-pop").addClass("hide");
 });
 
 window.onbeforeunload = function(){
     localStorage.setItem("itemIndex",0);
 }
+function passAuth(apply_id,target){
+    var action="commit";
+    var url='';
+    var args={
+        action:action,
+        apply_id:apply_id,
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success)
+            {
+                target.closest('.shop-list-item').find('.box').empty().text('认证成功');
+            }
+        }
+    )
+}
+
+function rejectAuth(){
+     var action="decline";
+    var url='';
+    var apply_id=$(".wrap-com-pop").attr('data-id');
+    var index=$(".wrap-com-pop").attr('data-index');
+    var decline_reason=$('#com-cont').val();
+    if(!decline_reason){
+        return alert(' 输入拒绝理由');
+    }
+    var args={
+        action:action,
+        apply_id:apply_id,
+        decline_reason:decline_reason
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success)
+            {
+                $(".wrap-com-pop").addClass("hide");
+                $('.shop-list-item').eq(index).find('.box').empty().text('认证拒绝:'+decline_reason);
+            }
+        }
+    )
+}
+
+
+
 function Pass(evt){
     var action="updateShopStatus";
     var shop_id=evt.parents('li').data('shopid');

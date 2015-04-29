@@ -94,14 +94,13 @@ handlers = [
     (r"/super/shopProfile/(\d+)", handlers.superadmin.ShopProfile, {}, "superShopProfile"),
     (r"/super/shopclose",handlers.superadmin.ShopClose,{},"shopclose"),
     #test url
-    (r"/super/cert",handlers.superadmin.Cert,{},"supercert"),
     (r"/super/comment",handlers.superadmin.Comment,{},"supercomment"),
 
 
     ## 店铺申请接入管理
     # 所有店铺
     (r"/super/shopManage", handlers.superadmin.ShopManage, {}, "superShopManage"),
-    (r"super/shopauth",handlers.superadmin.ShopAuthenticate,{},"superShopAuth"),
+    (r"/super/shopauth",handlers.superadmin.ShopAuthenticate,{},"superShopAuth"),
 
     ## 商城购买订单
     (r"/super/orderManage/", handlers.superadmin.OrderManage, {

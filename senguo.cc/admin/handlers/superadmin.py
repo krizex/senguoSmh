@@ -141,7 +141,7 @@ class ShopManage(SuperBaseHandler):
 		q_declined = q_temp.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
 		q_accepted = q_temp.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
 		comment_del = self.session.query(models.CommentApply).filter(models.CommentApply.has_done ==0).count()
-		
+		auth_apply=self.session.query(models.ShopAuthenticate).count()
 
 		count = {
 			"all_temp": q_temp.count(),
@@ -149,7 +149,8 @@ class ShopManage(SuperBaseHandler):
 			"accepted": q_accepted.count(),
 			"declined": q_declined.count(),
 			"all": q.count(),
-			"del_apply":comment_del
+			"del_apply":comment_del,
+			"auth_apply":auth_apply
 			}
 		if action == "all_temp":
 			q = q_temp
@@ -690,12 +691,6 @@ class ShopClose(SuperBaseHandler):
 				self.session.commit()
 			return self.send_success()
 
-
-class Cert(SuperBaseHandler):
-	@tornado.web.authenticated
-	def get(self):
-	    self.render('superAdmin/shop-cert-apply.html',context=dict(count = {'all':10,'all_temp':10}))
-
 # class Comment(SuperBaseHandler):
 # 	@tornado.web.authenticated
 # 	def get(self):
@@ -733,7 +728,7 @@ class Comment(SuperBaseHandler):
 				comment = comment)
 			data.append([shop_code,shop_name,admin_name ,create_date, comment_apply.delete_reason,order_info,has_done,apply_id])
 		# return self.send_success(data = data)
-		self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'del_apply':apply_count,'all_temp':'','all':''},data=data))
+		self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'del_apply':apply_count,'all_temp':'','all':'','auth_apply':''},data=data))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id:int','decline_reason?:str')
@@ -762,14 +757,26 @@ class Comment(SuperBaseHandler):
 
 class ShopAuthenticate(SuperBaseHandler):
 	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('page')
 	def get(self):
-		return self.send_success()
+		page=int(self.args["page"])
+		page_size = 10
+		page_area =page*page_size
+		auth_apply=self.session.query(models.ShopAuthenticate).count()
+		auth_apply_list=self.session.query(models.ShopAuthenticate).all()[page_area:page_area+10]
+		count = {'all':'','all_temp':'','del_apply':'','auth_apply':auth_apply}
+		self.render('superAdmin/shop-cert-apply.html',context=dict(count = count,auth_apply_list=auth_apply_list))
 
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments('apply_id','decline?str')
+	@SuperBaseHandler.check_arguments('action','apply_id','decline_reason?:str')
 	def post(self):
+		action = self.args['action']
 		apply_id = self.args['apply_id']
-		shop_auth_apply = self.session.query(models.ShopAuthenticate).filter_by(id = apply_id).first()
+		try:
+			shop_auth_apply = self.session.query(models.ShopAuthenticate).filter_by(id = apply_id).first()
+		except:
+			print('shop_auth_apply')
+
 		if not shop_auth_apply:
 			return self.error(404)
 		if action == 'commit':
@@ -778,6 +785,7 @@ class ShopAuthenticate(SuperBaseHandler):
 		elif action == 'decline':
 			decline_reason = self.args['decline_reason']
 			shop_auth_apply.has_done = 2
+			shop_auth_apply.decline_reason=decline_reason
 			self.session.commit()
 		else:
 			return self.send_error(404)

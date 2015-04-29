@@ -1,48 +1,48 @@
 {% extends 'shop-base.html'%}
 {% block shop %}
+{% set apply_list = context['auth_apply_list'] %}
 <div class="admin-right pull-right">
     <ul class="shop-list  item-list list-group">
-        <li class="row shop-list-item list-group-item">
+    {% for list in apply_list %}
+        {% set type ="" %}
+        {% if list.shop_type == 1%}
+        {% set type='个人认证'%}
+        {% else %}
+        {% set type='企业认证'%}
+        {% end %}
+         <li class="row shop-list-item list-group-item" data-id="{{list.id}}">
+          {% if list.shop_type==1 %}
             <ul class="cert-shop group">
-                <li class=".clip">店铺：<a href="javascript:;">我的水果店</a></li>
-                <li class=".clip">管理员：<a href="javascript:;">马灰大人</a></li>
-                <li class=".clip">申请时间：<span>2014-05-22 22:10:20</span></li>
+                <li class=".clip">店铺：<a href="javascript:;">{{list.shop.shop_name}}</a></li>
+                <li class=".clip">管理员：<a href="javascript:;">{{list.shop.admin.accountinfo.realname}}</a></li>
+                <li class=".clip">申请时间：<span>{{list.create_time}}</span></li>
                 <li class=".clip">认证类型：<span>个人认证</span></li>
-                <li class=".clip">姓名：<span>马灰</span></li>
-                <li class=".clip">身份证号：<span>421202199110201510</span></li>
+                <li class=".clip">姓名：<span>{{list.realname}}</span></li>
+                <li class=".clip">身份证号：<span>{{list.card_id}}</span></li>
             </ul>
             <ul class="cert-person group">
                 <li class="left">
                     身份证照片：
                 </li>
                 <li class="right">
-                    <img src="/static/images/rooftop.png" alt="身份证照片" />
-                    <img src="/static/images/rooftop.png" alt="身份证照片" />
+                    <img src="{{list.handle_img or '/static/images/rooftop.png' }}" alt="身份证照片" />
                 </li>
             </ul>
-            <ul class="cert-person group">
-                <li class="left">&nbsp;</li>
-                <li class="right">
-                    <a href="javascript:;" class="refuse">拒绝</a>
-                    <a href="javascript:;" class="ok">通过</a>
-                </li>
-            </ul>
-        </li>
-        <li class="row shop-list-item list-group-item">
+            {% else %}
             <ul class="cert-shop group">
-                <li class=".clip">店铺：<a href="javascript:;">我的水果店</a></li>
-                <li class=".clip">管理员：<a href="javascript:;">马灰大人</a></li>
-                <li class=".clip">申请时间：<span>2014-05-22 22:10:20</span></li>
+                  <li class=".clip">店铺：<a href="javascript:;">{{list.shop.shop_name}}</a></li>
+                <li class=".clip">管理员：<a href="javascript:;">{{list.shop.admin.accountinfo.realname}}</a></li>
+                <li class=".clip">申请时间：<span>{{list.create_time}}</span></li>
                 <li class=".clip">认证类型：<span>企业认证</span></li>
-                <li class=".clip">企业名称：<span>小果科技有限公司</span></li>
-                <li class=".clip">企业法人：<span>黄铁森</span></li>
+                <li class=".clip">企业名称：<span>{{list.company_name}}</span></li>
+                <li class=".clip">企业法人：<span>{{list.realname}}</span></li>
             </ul>
             <ul class="cert-person group">
                 <li class="left">
                     营业执照：
                 </li>
                 <li class="right">
-                    <img src="/static/images/rooftop.png" alt="营业执照" />
+                    <img src="{{list.business_licence or '/static/images/rooftop.png'}}" alt="营业执照" />
                 </li>
             </ul>
             <ul class="cert-person group">
@@ -50,19 +50,39 @@
                     身份证照片：
                 </li>
                 <li class="right">
-                    <img src="/static/images/rooftop.png" alt="身份证照片" />
-                    <img src="/static/images/rooftop.png" alt="身份证照片" />
+                    <img src="{{list.front_img or '/static/images/rooftop.png'}}" alt="身份证照片" />
+                    <img src="{{list.behind_img or '/static/images/rooftop.png'}}" alt="身份证照片" />
                 </li>
             </ul>
-            <ul class="cert-person group">
+            {% end %}
+            {% if list.has_done == 0 %}
+            <ul class="cert-person group box">
                 <li class="left">&nbsp;</li>
                 <li class="right">
                     <a href="javascript:;" class="refuse">拒绝</a>
                     <a href="javascript:;" class="ok">通过</a>
                 </li>
             </ul>
+            {% elif list.has_done == 1%}
+            <p>认证成功<p>
+            {% else %}
+            <p>认证拒绝:{{list.decline_reason}}<p>
+            {% end %}
         </li>
+    {% end %}
     </ul>
+    <div class="wrap-com-pop hide">
+        <div class="com-pop ov-center">
+            <div class="pop-title">拒绝删除理由：</div>
+            <div class="wrap-area">
+                <textarea id="com-cont"></textarea>
+            </div>
+            <div class="btn-group txt-ac">
+                <a href="javascript:;" class="blue-btn" id="submit-apply">提交</a>
+                <a href="javascript:;" class="grey-btn" id="concel-apply">取消</a>
+            </div>
+        </div>
+    </div>
     <nav>
         <ul class="pager">
             <li><a href="javascript:;" id="PrePage">&larr; 上一页</a></li>
