@@ -262,8 +262,8 @@ function setPwd(action){
         var password=$('#loginPassword').val();
         var passwconf=$('#passwordConfirm').val();
         if(!password){return warnNotice('请设置您的手机登录密码');}
-        if(password.length<6 || !regPass.test(password)) {return noticeBox('请输入六位以上字母和数字的组合!');}
-        if(passwconf!=password){return noticeBox('两次密码输入不一致!')}
+        if(password.length<6 || !regPass.test(password)) {return warnNotice('请输入六位以上字母和数字的组合');}
+        if(passwconf!=password){return warnNotice('两次密码输入不一致')}
         password = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
         data=password;
             args={
@@ -278,8 +278,8 @@ function setPwd(action){
         console.log();
         if(!old_password){return warnNotice('请输入原始密码');}
         if(!newPassword){return warnNotice('请输入新密码');}
-        if(newPassword.length<6 || !regPass.test(newPassword)) {return noticeBox('请输入六位以上字母和数字的组合!');}
-        if(passwconf!=newPassword){return noticeBox('两次密码输入不一致!')}
+        if(newPassword.length<6 || !regPass.test(newPassword)) {return warnNotice('请输入六位以上字母和数字的组合');}
+        if(passwconf!=newPassword){return warnNotice('两次密码输入不一致')}
         old_password = CryptoJS.SHA256(old_password).toString(CryptoJS.enc.Hex);
         newPassword = CryptoJS.SHA256(newPassword).toString(CryptoJS.enc.Hex);
         data=newPassword;
