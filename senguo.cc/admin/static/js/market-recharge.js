@@ -7,7 +7,8 @@ $(document).ready(function(){
     $(this).addClass("checked");
 }).on("click","#commit-rec",function(){
     var money = parseInt($("#money").val());
-    window.location.href="/fruitzone/paytest?totalPrice="+money;
+    SetCookie("money",money,30);
+    window.location.href="/fruitzone/paytest";
 });
 
 /*function wexin(link,imgurl){

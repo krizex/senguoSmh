@@ -748,7 +748,9 @@ class payTest(FruitzoneBaseHandler):
 	def get(self):
 		print(self.request.full_url())
 		path_url = self.request.full_url()
-		totalPrice = self.args['totalPrice']
+		# totalPrice = self.args['totalPrice']
+		totalPrice = self.get_cookie('money')
+		print(totalPrice,'why it is  always 0.1?')
 		jsApi  = JsApi_pub()
 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('fruitzonePayTest')
