@@ -280,22 +280,30 @@ var confirmRemove=function(){
     $('.modal_bg').remove();
 }
 //word notice
-getItem('/static/items/noticeBox.html?v=2015-03-25',function(data){
-    window.dataObj.noticeBox=data;
-     var $box=$(window.dataObj.noticeBox);   
-    $('body').append($box);
-});
+var noticeTimer = null;
+var tempObj = null;
 var noticeBox=function(text,item){
-        $('#noticeBox').removeClass('hidden').find('.notice').text(text);
-        if(item) {item.attr({'disabled':'true'});}
-        noticeRemove('noticeBox',item);      
+    if(tempObj){
+        tempObj.removeAttr('disabled').removeClass('bg-greyc');
+    }
+    clearTimeout(noticeTimer);
+    if($("#noticeBox").size()==0){
+        var $box=$('<div class="notice_bg hidden" id="noticeBox"><div class="notice_box text-center center-block"><p class="notice text-white font14 text-center"></p></div></div>');
+        $('body').append($box);
+    }
+    $("#noticeBox").removeClass('hidden').find('.notice').text(text);
+    if(item) {
+        tempObj = item;
+        item.attr({'disabled':'true'});
+    }
+    noticeRemove('noticeBox',item);
 }
 //modal notice word
 var warnNotice=function(text,item){
-    $('.modal-body').find('.warn').remove();
+    $('.modal-warn').find('.warn').remove();
     var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
     $word.text(text);
-    $('.modal-body').append($word);
+    $('.modal-warn').append($word);
     $('.sure_btn').attr({'disabled':'true'});
     if(item){
         noticeRemove('warn',item);
@@ -305,20 +313,13 @@ var warnNotice=function(text,item){
     }
 }
 //time count 2 secends
-window.dataObj.n_time=2;
 var noticeRemove=function (target,item) {
-    if (window.dataObj.n_time == 0) {
-        window.dataObj.n_time = 2;
+    noticeTimer = setTimeout(function() {
         $('#'+target).addClass('hidden');
-        $('.sure_btn').removeAttr('disabled').removeClass('bg-greyc');
         if(item) {
             item.removeAttr('disabled').removeClass('bg-greyc');
         }
-    }
-    else {
-        window.dataObj.n_time--;
-        setTimeout(function() {noticeRemove(target,item)},1000);
-    }
+    },2000);
 }
 
 //modal box

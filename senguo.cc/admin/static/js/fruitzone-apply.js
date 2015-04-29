@@ -259,7 +259,7 @@ function Apply(target){
     }
     if(code.length>4||code.length<4){
         $('#submitApply').removeAttr('disabled').addClass('bg-green');
-        return noticeBox('验证码为4位数字!',target);
+        return noticeBox('验证码为4位数字！',target);
     }
     if(!phone){
         $('#submitApply').removeAttr('disabled').addClass('bg-green');

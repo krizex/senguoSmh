@@ -13,7 +13,7 @@
 .tie-popbox .tie-info{width:100%;}
 .phone-number{width:100%;float:left;}
 .phone-number .phone{width:65% !important;}
-.phone-number .get-code{width:32%;color:#fff;border-radius:0px;text-align:center;padding:4px 0;}
+.phone-number .get-code{width:32%;color:#fff;border-radius:4px;text-align:center;padding:4px 0;}
 .tie-popbox  .concel-btn{background:#A0A0A0;color:#fff;width:45%;border-radius:1px;}
 .tie-popbox  .tie-btn{;color:#fff;}
 .concel-btn{background:#999;float:left;color:#fff;}

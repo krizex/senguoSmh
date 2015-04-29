@@ -11,7 +11,7 @@ a:hover{text-decoration:none;}
 a:focus{text-decoration: none}
 a:focus{outline:none;}
 input{border:1px solid #eee;outline:none;-webkit-appearance:none;}
-input[type=text]:focus{box-shadow:0px;border-color:#f7f7f8;outline:none;}
+input[type=text]:focus{box-shadow:0px;border-color:#00D681;outline:none;}
 * {-webkit-box-sizing: border-box;-moz-box-sizing:border-box;box-sizing:border-box;padding:0;margin:0;}
 .navbar-fixed-bottom{bottom:0;margin-bottom:0;border-width:1px 0 0;position:fixed;right:0;left:0;z-index:1030;-webkit-transform:translate3d(0,0,0);-o-transform:translate3d(0,0,0);transform:translate3d(0,0,0);}
 *:before,:after{-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;}
@@ -38,7 +38,7 @@ input[type=text]:focus{box-shadow:0px;border-color:#f7f7f8;outline:none;}
 .modal{position:fixed;top:0;right:0;bottom:0;left:0;z-index:1050;background-color:rgba(0,0,0,.5);display:none;height:100%;-webkit-overflow-scrolling:touch;outline:0;overflow: auto;}
 .modal.fade .modal-dialog{-webkit-transition:-webkit-transform .3s ease-out;-o-transition:-o-transform .3s ease-out;transition:transform .3s ease-out;-webkit-transform:translate3d(0,-25%,0);-o-transform:translate3d(0,-25%,0);transform:translate3d(0,-25%,0)}
 .modal.in .modal-dialog{-webkit-transform:translate3d(0,0,0);-o-transform:translate3d(0,0,0);transform:translate3d(0,0,0)}
-.modal-dialog{position:relative;margin:10px auto;top:50%;margin-top:-210px;padding:0 20px;width:320px;}
+.modal-dialog{position:relative;margin:10px auto;top:50%;margin-top:-210px;padding:0 19px;width:320px;}
 .modal-content{position:relative;-webkit-background-clip:padding-box;background-clip:padding-box;border:1px solid #999;border:1px solid rgba(0,0,0,.2);border-radius:8px;outline:0;-webkit-box-shadow:0 3px 9px rgba(0,0,0,.5);box-shadow:0 3px 9px rgba(0,0,0,.5);margin:0 auto;-webkit-box-shadow:0 5px 15px rgba(0,0,0,.5);box-shadow:0 5px 15px rgba(0,0,0,.5);background-color:#F0F4F0 !important;}
 .modal-backdrop{position:fixed;top:0;right:0;bottom:0;left:0;z-index:1040;background-color:#000}
 .modal-backdrop.fade{filter:alpha(opacity=0);opacity:0}
@@ -49,9 +49,9 @@ input[type=text]:focus{box-shadow:0px;border-color:#f7f7f8;outline:none;}
 .modal-head{position:absolute;}
 .modal-title{margin:0;font-weight:normal;}
 .modal-body{position:relative;font-size:1em;padding:0 10px;color:#999;}
-.modal-footer{margin-top:25px;clear:both;}
+.modal-footer{margin-top:30px;clear:both;}
 .modal-footer .btn{position:absolute;left:85px;z-index:6666;border-radius: 20px;padding:6px 40px;}
-.modal-footer .btn+.btn{margin-bottom:0;margin-left:5px;}
+/*.modal-footer .btn+.btn{margin-bottom:0;margin-left:5px;}*/
 .modal-footer .btn-group .btn+.btn{margin-left:-1px}
 .modal-footer .btn-block+.btn-block{margin-left:0}
 .modal-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}
@@ -80,7 +80,7 @@ a:focus{border:none;background-color:none;outline:0;}
 .notice_bg{width:100%;height:auto;position:fixed;top:100px;z-index:9999;}
 .notice_box{width:280px;background:rgba(0,0,0,0.5);padding:20px 10px;border-radius:4px;margin:0 auto;}
 button:focus{outline:0;}
-#warn{position:absolute;padding:5px 20px 5px 0;}
+#warn{position:absolute;padding:5px;font-size:14px;}
 
 .bg-white{background-color:#fff !important;}
 .bg-green{background-color:#33CC66 !important;}

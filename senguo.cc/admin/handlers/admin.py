@@ -737,7 +737,7 @@ class Order(AdminBaseHandler):
 								self.session.add(point_history)
 								self.session.commit()
 
-					if order.pay_type == 2:
+					if order.pay_type == 2:    #余额 支付
 						if shop_follow:
 							if shop_follow.shop_point == None:
 								shop_follow.shop_point =0
@@ -754,7 +754,15 @@ class Order(AdminBaseHandler):
 								self.session.add(point_history)
 								self.session.commit()
 
-					if shop_follow:
+						#订单完成后，将相应店铺冻结资产 转为 店铺余额
+						shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+						if not shop:
+							return self.send_fail('shop not found')
+						shop.shop_balance += order.totalprice * 100
+						shop.shop_blockage -= order.totalprice * 100
+						self.session.commit()
+
+					if shop_follow: 
 						if shop_follow.shop_point == None:
 							shop_follow.shop_point =0
 						shop_follow.shop_point += totalprice
@@ -962,7 +970,7 @@ class Shelf(AdminBaseHandler):
 												unit=data["unit"],
 												tag = data["tag"],
 												#img_url = data["img_url"],
-										 		intro=data["intro"],
+												intro=data["intro"],
 												priority=data["priority"])
 
 			elif action == "default_fruit_img":  # 恢复默认图
@@ -1280,8 +1288,10 @@ class Config(AdminBaseHandler):
 			pass
 		elif action == "receipt":
 			return self.render("admin/shop-receipt-set.html", receipt_msg=config.receipt_msg,context=dict(subpage='shop_set',shopSubPage='receipt_set'))
-		# elif action == "cert":
-  #       			return self.render("admin/shop-cert-set.html",context=dict(subpage='shop_set',shopSubPage='cert_set'))
+
+		elif action == "cert":
+					return self.render("admin/shop-cert-set.html",context=dict(subpage='shop_set',shopSubPage='cert_set'))
+
 		else:
 			return self.send_error(404)
 
@@ -1344,10 +1354,72 @@ class Config(AdminBaseHandler):
 
 
 class ShopBalance(AdminBaseHandler):
-    @tornado.web.authenticated
-    def get(self):
-        subpage = 'shopBlance'
-        return self.render("admin/account-rd.html",context=dict(subpage=subpage))
+	@tornado.web.authenticated
+	def get(self):
+		subpage = 'shopBlance'
+		return self.render("admin/account-rd.html",context=dict(subpage=subpage))
+
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments('action','apply_value?:int')
+	def post(self):
+		action = self.args['action']
+		# 商铺申请提现
+		if action == 'cash':
+			apply_value = self.args['apply_value']
+			shop_id = self.current_shop.id
+			applyCash_history = models.ApplyCashHistory(shop_id = shop_id , apply_value = apply_value ,has_done =0)
+			self.session.add(applyCash_history)
+			self.session.commit()
+			return self.send_success()
+
+		elif action == 'cash_history':
+			history = []
+			history_list = self.session.query(models.ApplyCashHistory).all()
+			if not history_list:
+				return self.send_fail('history_list error')
+			for temp in history_list:
+				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
+				history.append([temp.apply_value,create_time])
+			return self.send_success(history = history)
+
+		elif action == 'all_history':
+			history = []
+			history_list = self.session.query(models.BalanceHistory).all()
+			if not history_list:
+				return self.send_fail('get all BalanceHistory error')
+			for temp in history_list:
+				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
+				history.append([temp.balance_record,create_time,temp.balance_record])
+			return self.send_success(history = history)
+
+		elif action == 'recharge':
+			history = []
+			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0)
+			if not history_list:
+				return self.send_fail('get all BalanceHistory error')
+			for temp in history_list:
+				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
+				history.append([temp.balance_record,create_time,temp.balance_record])
+			return self.send_success(history = history)
+
+		elif action == 'online':
+			history = []
+			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 1)
+			if not history_list:
+				return self.send_fail('get all BalanceHistory error')
+			for temp in history_list:
+				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
+				history.append([temp.balance_record,create_time,temp.balance_record])
+			return self.send_success(history = history)
+			
+		else:
+			return self.send_fail('action error')
+
+
+
+ 
+
+
 
 class ShopConfig(AdminBaseHandler):
 	@tornado.web.authenticated
@@ -1484,6 +1556,13 @@ class ShopAuthenticate(AdminBaseHandler):
 			self.session.add(shop_apply)
 			self.session.commit()
 			return self.send_success()
+
+
+class BalanceManage(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.send_success(haha = 'haha')
+
 
 
 

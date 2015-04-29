@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}【{{shop_name}}】 一家不错的O2O店铺，快来关注吧~{% end %}
+{% block title %}【{{shop_name}}】一家不错的O2O店铺，快来关注吧~{% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/market-center.css')}}"/>
 {% end %}
@@ -18,14 +18,14 @@
         </a>
         <img src="{{static_url('images/rooftop.png')}}?v=20150316" class="bg"/>
     </div>
-    <div class="bg-white m-b10 clearfix box-style title">
-        <span class="font14">当前店铺积分:<span class="current_point" data-point="{{shop_point}}"></span></span>
+    <!--<div class="bg-white m-b10 clearfix box-style title">
+        <span class="font14">当前店铺积分：<span class="current_point" data-point="{{shop_point}}"></span></span>
         <a href="{{reverse_url('customerPoints')}}" class="text-grey9 pull-right">查看详情>></a>
-    </div>
-   <!-- <div class="bg-white m-b10 clearfix font14 box-style">
+    </div>-->
+   <div class="bg-white m-b10 clearfix font14 box-style">
         <div class="w50 pull-left text-center border-rd title2"><a href="{{reverse_url('customerPoints')}}" class="text-grey3">积分&nbsp;&nbsp;{{shop_point}}</a></div>
         <div class="w50 pull-left text-center title2"><a href="{{reverse_url('customerBalance')}}" class="text-grey3">余额&nbsp;&nbsp;{{current_user.balance}}</a></div>
-    </div> -->
+    </div>
 
     <div class="bg-white m-b10 clearfix pb0">
         <p class="title clearfix box-style">
@@ -93,7 +93,7 @@
         <div class="modal-content">
             <div class="modal-top"><img src="/static/images/info_top.png"/></div>
             <div class="modal-header clearfix bg_change">
-                <h4 class="modal-title font16 text-center line48">收货地址</h4>
+                <h2 class="modal-title line48">收货地址</h4>
                 <button type="button" class="close dismiss">✕</button>
             </div>
             <div class="modal-body font14">
@@ -111,6 +111,8 @@
                         <input type="text" id="address_address" class="pull-left bg-white"/>
                     </p>
                 </div>
+            </div>
+            <div class="modal-warn">
             </div>
             <div class="modal-footer text-center">
                 <button class="btn sure_btn bg-green3 text-white addressEdit" style="display:none">确定</button>

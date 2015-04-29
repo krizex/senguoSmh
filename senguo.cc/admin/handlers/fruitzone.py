@@ -744,15 +744,15 @@ class SystemPurchase(FruitzoneBaseHandler):
 class payTest(FruitzoneBaseHandler):
 
 	# @tornado.web.authenticated
-	@FruitzoneBaseHandler.check_arguments('code?:str')
+	@FruitzoneBaseHandler.check_arguments('code?:str','totalPrice?')
 	def get(self):
 		print(self.request.full_url())
 		path_url = self.request.full_url()
+		totalPrice = self.args['totalPrice']
+		jsApi  = JsApi_pub()
 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('fruitzonePayTest')
 		print(path , 'redirect_uri is Ture?')
-		jsApi  = JsApi_pub()
-		orderId = ''.join(random.sample('0123456789',5))
 		print(self.args['code'],'sorry  i dont know')
 		code = self.args.get('code',None)
 		print(code,'how old are you',len(code))
@@ -761,31 +761,76 @@ class payTest(FruitzoneBaseHandler):
 			print(url,'code?')
 			return self.redirect(url)
 		else:
-
+			orderId = str(self.current_user.id) + str(int(time.time()))
 			jsApi.setCode(code)
 			openid = jsApi.getOpenid()
 			print(openid,code,'hope is not []')
 			if not openid:
 				print('openid not exit')
-
-		unifiedOrder =   UnifiedOrder_pub()
-		unifiedOrder.setParameter("body",'senguo')
-		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/callback')
-		unifiedOrder.setParameter("openid",openid)
-		unifiedOrder.setParameter("out_trade_no",orderId)
-		#orderPriceSplite = (order.price) * 100
-		wxPrice = 10
-		unifiedOrder.setParameter('total_fee',wxPrice)
-		unifiedOrder.setParameter('trade_type',"JSAPI")
-
-		prepay_id = unifiedOrder.getPrepayId()
-		print(prepay_id,'prepay_id================')
-		jsApi.setPrepayId(prepay_id)
-		renderPayParams = jsApi.getParameters()
-		print(renderPayParams)
-		noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
-		timestamp = datetime.datetime.now().timestamp()
-		wxappid = 'wx0ed17cdc9020a96e'
+			
+			unifiedOrder =   UnifiedOrder_pub()
+			totalPrice = self.args['totalPrice'] 
+			unifiedOrder.setParameter("body",'senguo')
+			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/callback')
+			unifiedOrder.setParameter("openid",openid.encode('utf-8'))
+			unifiedOrder.setParameter("out_trade_no",orderId)
+			#orderPriceSplite = (order.price) * 100
+			wxPrice = totalPrice * 100
+			unifiedOrder.setParameter('total_fee',wxPrice)
+			unifiedOrder.setParameter('trade_type',"JSAPI")
+			prepay_id = unifiedOrder.getPrepayId()
+			print(prepay_id,'prepay_id================')
+			jsApi.setPrepayId(prepay_id)
+			renderPayParams = jsApi.getParameters()
+			print(renderPayParams)
+			noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
+			timestamp = datetime.datetime.now().timestamp()
+			wxappid = 'wx0ed17cdc9020a96e'
+			signature = self.signature(noncestr,timestamp,path_url)
 		
 		# return self.send_success(renderPayParams = renderPayParams)
-		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,noncestr = noncestr , timestamp = timestamp,signature = self.signature(noncestr,timestamp,path_url))
+		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
+			noncestr = noncestr ,timestamp = timestamp,signature = signature)
+
+	@FruitzoneBaseHandler.check_arguments('code?:str','totalPrice?:float','action','shop_code')
+	def post(self):
+
+		# 微信 余额 支付
+		if action == 'wx_pay':
+
+			shop_code  = self.args['shop_code']
+			shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
+			if not shop:
+				return self.send_fail('shop not found')
+			shop_id = shop.id
+			customer_id = self.current_user.id
+			
+
+			code = self.args['code']
+			path_url = self.request.full_url()
+
+			
+			
+
+			#########################################################
+			#余额增加应放在 支付成功的回调里，此处应有改动
+			#########################################################
+
+			# 支付成功后，用户对应店铺 余额 增加
+			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+				shop_id = shop_id).first()
+			if not shop_follow:
+				return self.send_fail('shop_follow not found')
+			shop_follow.balance_history += wxPrice     #充值成功，余额增加，单位为 分
+			self.session.commit()
+
+			# 支付成功后  生成一条余额支付记录
+			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
+			 balance_value = wxPrice,balance_record = '充值'+ str(totalPrice) + '元')
+			self.session.add(balance_history)
+			self.session.commit()
+
+			return self.send_success()
+		else:
+			return self.send_fail('其它支付方式尚未开发')
+		

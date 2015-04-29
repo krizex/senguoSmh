@@ -28,7 +28,7 @@ $(document).ready(function(){
             $('.step'+i).show().siblings('.step-box').hide();
             $('.progress'+i).addClass('active').siblings('.progress').removeClass('active');
 }).on('click','.send',function(){
-        noticeBox('验证码已发送到您手机,稍等一下哟!')
+        noticeBox('验证码已发送到您手机,稍等一下哟！')
 });
 
 var wait=60;
@@ -58,15 +58,15 @@ function Vrify(target){
     }
     if(phone.length > 11){
             $('#getVrify').addClass('bg-green').removeAttr('disabled');
-    	return noticeBox("电话貌似有错o(╯□╰)o",target);
+    	return noticeBox("手机号貌似有错o(╯□╰)o",target);
     }
     if(phone.length<11){
               $('#getVrify').addClass('bg-green').removeAttr('disabled');
-    	return noticeBox("电话貌似有错o(╯□╰)o",target);
+    	return noticeBox("手机号貌似有错o(╯□╰)o",target);
     }
     if( !regPhone.test(phone)){
              $('#getVrify').addClass('bg-green').removeAttr('disabled');
-    	return noticeBox("电话貌似有错o(╯□╰)o",target);
+    	return noticeBox("手机号貌似有错o(╯□╰)o",target);
     }
     
     var action='get_code';
@@ -106,7 +106,7 @@ function checkCode(target){
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
     if(!code){
         $('#checkCode').addClass('bg-green').removeAttr('disabled');
-        return noticeBox('请输入验证码',target);
+        return noticeBox('请输入验证码！',target);
     }
     if(!regNumber.test(code)){
         $('#checkCode').addClass('bg-green').removeAttr('disabled');
@@ -114,11 +114,11 @@ function checkCode(target){
     }
     if(code.length!=4){
         $('#checkCode').addClass('bg-green').removeAttr('disabled');
-        return noticeBox('验证码为4位数字!',target);
+        return noticeBox('验证码为4位数字！',target);
     }
     if(!phone){
         $('#checkCode').addClass('bg-green').removeAttr('disabled');
-        return noticeBox('手机号不能为空',target);
+        return noticeBox('手机号不能为空！',target);
     }
     var url="";
     var action='check_code';
@@ -154,15 +154,15 @@ function regist(target){
     var regPass=/^[0-9a-zA-Z]*$/g;
     if(!password) {
         $('#subRegist').addClass('bg-green').removeAttr('disabled');
-        return noticeBox('密码不能为空!',target);
+        return noticeBox('密码不能为空！',target);
     }
     if(re_password!=password) {
          $('#subRegist').addClass('bg-green').removeAttr('disabled');
-        return noticeBox('两次输入的密码不一致!',target);}
+        return noticeBox('两次输入的密码不一致！',target);}
 
     if(password.length<6 || !regPass.test(password)) {
          $('#subRegist').addClass('bg-green').removeAttr('disabled');
-        return noticeBox('请输入六位以上字母和数字的组合!',target);
+        return noticeBox('请输入六位以上字母和数字的组合！',target);
     }
     password=CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
     var url="";

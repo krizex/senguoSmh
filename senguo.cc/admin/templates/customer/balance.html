@@ -1,9 +1,9 @@
 {% extends 'detail-base.html' %}
-{% block title %}账户余额{% end %}
+{% block title %}我的余额{% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/mobile-main.css')}}"/>
 {% end %}
-{% block top %}返回{% end %}
+{% block top %}我的余额{% end %}
 {% block content %}
 <div class="balance-top">
     <dl class="bal-top group">
@@ -11,7 +11,7 @@
         <dt class="fl group">
             <div class="fl bal-shop">
                 <p class="clip">所在店铺：马灰灰水果店</p>
-                <p class="clip">当前余额：232.8元</p>
+                <p class="clip">当前余额：{{shop_balance}}元</p>
             </div>
             <div class="fl bal-cz">
                 <a class="cz-btn" href="{{reverse_url('customerRecharge')}}">充值</a>

@@ -167,7 +167,7 @@ function Vrify(phone,target){
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
     if(phone.length > 11 ||phone.length<11 || !regPhone.test(phone)){
         $('#getVrify').removeClass('bg-greyc').removeAttr('disabled');
-        return warnNotice("电话貌似有错o(╯□╰)o",target);
+        return warnNotice("手机号貌似有错o(╯□╰)o",target);
     }
     if(!phone){
         $('#getVrify').removeClass('bg-greyc').removeAttr('disabled');
@@ -209,7 +209,7 @@ function TiePhone(target){
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
     if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){
         $('#tiePhone').removeClass('bg-greyc').removeAttr('disabled');
-        return warnNotice("电话貌似有错o(╯□╰)o",target);
+        return warnNotice("手机号貌似有错o(╯□╰)o",target);
     }
     if(!phone){
         $('#tiePhone').removeClass('bg-greyc').removeAttr('disabled');
@@ -221,11 +221,11 @@ function TiePhone(target){
     } 
     if(!regNumber.test(code)){
         $('#tiePhone').removeClass('bg-greyc').removeAttr('disabled');
-        return warnNotice('验证码只能为数字！',target);
+        return warnNotice('验证码只能为数字',target);
     }
     if(code.length>4||code.length<4){
         $('#tiePhone').removeClass('bg-greyc').removeAttr('disabled');
-        return warnNotice('验证码为4位数字!',target);
+        return warnNotice('验证码为4位数字',target);
     }
     var url="/customer/phoneVerify?action=customer";
     var action='checkcode';
@@ -261,9 +261,9 @@ function setPwd(action){
     if(action=='add_password'){
         var password=$('#loginPassword').val();
         var passwconf=$('#passwordConfirm').val();
-        if(!password){return warnNotice('请设置您的手机登录密码！');}
-        if(password.length<6 || !regPass.test(password)) {return noticeBox('请输入六位以上字母和数字的组合!');}
-        if(passwconf!=password){return noticeBox('两次密码输入不一致!')}
+        if(!password){return warnNotice('请设置您的手机登录密码');}
+        if(password.length<6 || !regPass.test(password)) {return warnNotice('请输入六位以上字母和数字的组合');}
+        if(passwconf!=password){return warnNotice('两次密码输入不一致')}
         password = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
         data=password;
             args={
@@ -277,9 +277,9 @@ function setPwd(action){
         var passwconf=$('#newConfirm').val();
         console.log();
         if(!old_password){return warnNotice('请输入原始密码');}
-        if(!newPassword){return warnNotice('请输入新密码！');}
-        if(newPassword.length<6 || !regPass.test(newPassword)) {return noticeBox('请输入六位以上字母和数字的组合!');}
-        if(passwconf!=newPassword){return noticeBox('两次密码输入不一致!')}
+        if(!newPassword){return warnNotice('请输入新密码');}
+        if(newPassword.length<6 || !regPass.test(newPassword)) {return warnNotice('请输入六位以上字母和数字的组合');}
+        if(passwconf!=newPassword){return warnNotice('两次密码输入不一致')}
         old_password = CryptoJS.SHA256(old_password).toString(CryptoJS.enc.Hex);
         newPassword = CryptoJS.SHA256(newPassword).toString(CryptoJS.enc.Hex);
         data=newPassword;

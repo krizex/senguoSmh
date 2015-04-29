@@ -233,9 +233,9 @@ function orderComment(id,order_id,comment){
     $('.comment_submit').attr({'disabled':true}).addClass('bg-greyc');
     var url='';
     var action='comment';
-    if(!comment){return warnNotice('请输入您的评论！')}
+    if(!comment){return warnNotice('请输入评价内容')}
     if(comment.length>300){
-        warnNotice('至多可以评论300字!');
+        warnNotice('评价内容最多300字');
     }
     var data={
         order_id:order_id,
