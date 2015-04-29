@@ -17,7 +17,7 @@ $(document).ready(function(){
     var $box=$('.order_set_box');
     $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('delete_check').removeClass('price_check','mark_check');
     $box.find('.title').text('订单删除');
-    $('#order_ser_val').val('').attr({'placeholder':'为防止误删除操作，请输入订单删除理由'});
+    $('#order_ser_val').val('').attr({'placeholder':'为防止误删除操作，请输入订单删除原因'});
 }).on('click','.delete_check',function(){
     var $this=$(this);
     orderDelete();
@@ -41,8 +41,8 @@ $(document).ready(function(){
     var index=parent.index();
     var $box=$('.order_set_box');
     $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('mark_check').removeClass('price_check','delete_check');
-    $box.find('.title').text('订单备注').attr({'placeholder':'请输入订单备注'});
-    $('#order_ser_val').val('');
+    $box.find('.title').text('订单备注');
+    $('#order_ser_val').val('').attr({'placeholder':'请输入订单备注'});
 }).on('click','.mark_check',function(){
     var $this=$(this);
     var val=$('#order_ser_val').val();
@@ -54,8 +54,8 @@ $(document).ready(function(){
     var index=parent.index();
     var $box=$('.order_set_box');
     $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('price_check').removeClass('mark_check','delete_check');
-    $box.find('.title').text('编辑订单总价格');
-    $('#order_ser_val').val('').attr({'placeholder':''});
+    $box.find('.title').text('修改订单总价');
+    $('#order_ser_val').val('').attr({'placeholder':'请输入要修改成价格（总价）'});
 }).on('click','.price_check',function(){
     var $this=$(this);
     var val=$('#order_ser_val').val();
