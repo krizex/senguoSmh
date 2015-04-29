@@ -1,4 +1,5 @@
 from handlers.base import CustomerBaseHandler,WxOauth2
+from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
 # from handlers.weixinSign import *
 # from handlers.wxpay import *
 import dal.models as models
@@ -11,6 +12,7 @@ import random
 import base64
 import json
 from libs.msgverify import gen_msg_token,check_msg_token
+from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
 
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
@@ -1638,7 +1640,8 @@ class Balance(CustomerBaseHandler):
 			shop_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id =\
 				customer_id , shop_id = shop_id).all()
 		except:
-			return self.send_fail("balance show error ")
+			shop_balance_history = None
+			print("balance show error ")
 		if shop_balance_history:
 			for temp in shop_history:
 				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
@@ -1646,45 +1649,6 @@ class Balance(CustomerBaseHandler):
 		count = len(history)
 		pages = int(count/10) if count % 10 == 0 else int(count/10) + 1
 		return self.render("customer/balance.html",shop_balance = shop_balance , pages = pages)
-
-	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments('page')
-	def post(self):
-		page = self.args["page"]
-		offset = (page-1) * 10
-		customer_id = self.current_user.id
-		shop_id     = self.shop_id
-		history     = []
-		data = []
-
-		try:
-			shop_history = self.session.query(models.BalanceHistory).filter_by(customer_id =\
-				customer_id,shop_id = shop_id).all()
-		except:
-			self.send_fail("balance history error")
-		if shop_history:
-			for temp in shop_history:
-				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
-				history.append([temp.point_type,temp.each_point,temp.create_time])
-			# print(history)
-
-		count = len(history)
-		history = history[::-1]
-		# print('history',history)
-		if offset + 10 <= count:
-			data = history[offset:offset+10]
-		elif offset <= count and offset + 10 >=count:
-			data = history[offset:]
-		else:
-			self.send_fail("history page error")
-		# print("data\n",data)
-
-		return self.send_success(data = data)
-
-
-
-
-
 
 class Points(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -1760,8 +1724,92 @@ class Points(CustomerBaseHandler):
 
 class Recharge(CustomerBaseHandler):
 	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments('code?:str','action?:str')
 	def get(self):
-	    return self.render("customer/recharge.html")
+		code = ''
+		url=''
+		action = self.args['action']
+		if action == 'get_code':
+			print(self.request.full_url())
+			path_url = self.request.full_url()
+			jsApi  = JsApi_pub()
+			#path = 'http://auth.senguo.cc/fruitzone/paytest'
+			path = APP_OAUTH_CALLBACK_URL + self.reverse_url('customerRecharge')
+			print(path , 'redirect_uri is Ture?')
+			#print(self.args['code'],'sorry  i dont know')
+			code = self.args.get('code',None)
+			print(code,'how old are you',len(code))
+			if len(code) is 2:
+				url = jsApi.createOauthUrlForCode(path)
+				print(url,'code?')
+				#return self.redirect(url)
+			return self.send_success(url = url)
+		return self.render("customer/recharge.html",code = code,url=url )
+
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments('page','code?:str','totalPrice?:float','action?str','shop_code?str')
+	def post(self):
+		if action == 'wx_pay':
+
+			shop_code  = self.args['shop_code']
+			shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
+			if not shop:
+				return self.send_fail('shop not found')
+			shop_id = shop.id
+			customer_id = self.current_user.id
+			code = self.args['code']
+			path_url = self.request.full_url()
+
+			jsApi  = JsApi_pub()
+			orderId = str(self.current_user.id) + str(int(time.time()))
+			jsApi.setCode(code)
+			openid = jsApi.getOpenid()
+			print(openid,code,'hope is not []')
+			if not openid:
+				print('openid not exit')
+			
+			unifiedOrder =   UnifiedOrder_pub()
+			totalPrice = self.args['totalPrice'] 
+			unifiedOrder.setParameter("body",'senguo')
+			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/callback')
+			unifiedOrder.setParameter("openid",openid.encode('utf-8'))
+			unifiedOrder.setParameter("out_trade_no",orderId)
+			#orderPriceSplite = (order.price) * 100
+			wxPrice = totalPrice * 100
+			unifiedOrder.setParameter('total_fee',wxPrice)
+			unifiedOrder.setParameter('trade_type',"JSAPI")
+			prepay_id = unifiedOrder.getPrepayId()
+			print(prepay_id,'prepay_id================')
+			jsApi.setPrepayId(prepay_id)
+			renderPayParams = jsApi.getParameters()
+			print(renderPayParams)
+			noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
+			timestamp = datetime.datetime.now().timestamp()
+			wxappid = 'wx0ed17cdc9020a96e'
+			signature = self.signature(noncestr,timestamp,path_url)
+
+			#########################################################
+			#余额增加应放在 支付成功的回调里，此处应有改动
+			#########################################################
+
+			# 支付成功后，用户对应店铺 余额 增加
+			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+				shop_id = shop_id).first()
+			if not shop_follow:
+				return self.send_fail('shop_follow not found')
+			shop_follow.balance_history += wxPrice     #充值成功，余额增加，单位为 分
+			self.session.commit()
+
+			# 支付成功后  生成一条余额支付记录
+			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
+			 balance_value = wxPrice,balance_record = '充值'+ str(totalPrice) + '元')
+			self.session.add(balance_history)
+			self.session.commit()
+
+			return self.send_success(renderPayParams = renderPayParams,wxappid = wxappid,\
+				noncestr = noncestr ,timestamp = timestamp,signature = signature)
+		else:
+			return self.send_fail('action error')
 
 class OrderComment(CustomerBaseHandler):
 	@tornado.web.authenticated
