@@ -24,4 +24,4 @@
 .wrap-comment-area{text-align: center;}
 .comment-area{font-size: 12px;line-height: 16px;border: none;width: 90%;height: 60px;}
 .p-com{padding: 5px 0;line-height: 34px!important;height: 34px;}
-.modal-body>textarea{width:100%;background:#fff;height:100px;border:none;}
+.modal-body>textarea{width:90%;background:#fff;height:120px;border:none;}
