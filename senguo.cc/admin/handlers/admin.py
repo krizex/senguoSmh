@@ -1355,7 +1355,9 @@ class ShopBalance(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		subpage = 'shopBlance'
-		return self.render("admin/account-rd.html",context=dict(subpage=subpage))
+		shop = self.current_shop
+		shop_balance = shop.shop_balance
+		return self.render("admin/account-rd.html",context=dict(subpage=subpage,shop_balance = shop_balance))
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action','apply_value?:int')
@@ -1412,12 +1414,6 @@ class ShopBalance(AdminBaseHandler):
 			
 		else:
 			return self.send_fail('action error')
-
-
-
- 
-
-
 
 class ShopConfig(AdminBaseHandler):
 	@tornado.web.authenticated
