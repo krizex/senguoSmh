@@ -80,7 +80,7 @@ a:focus{border:none;background-color:none;outline:0;}
 .notice_bg{width:100%;height:auto;position:fixed;top:100px;z-index:9999;}
 .notice_box{width:280px;background:rgba(0,0,0,0.5);padding:20px 10px;border-radius:4px;margin:0 auto;}
 button:focus{outline:0;}
-#warn{position:absolute;padding:7px;}
+#warn{position:absolute;padding:5px;font-size:14px;}
 
 .bg-white{background-color:#fff !important;}
 .bg-green{background-color:#33CC66 !important;}
