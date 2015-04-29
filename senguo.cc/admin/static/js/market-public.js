@@ -292,10 +292,10 @@ var noticeBox=function(text,item){
 }
 //modal notice word
 var warnNotice=function(text,item){
-    $('.modal-body').find('.warn').remove();
+    $('.modal-warn').find('.warn').remove();
     var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
     $word.text(text);
-    $('.modal-body').append($word);
+    $('.modal-warn').append($word);
     $('.sure_btn').attr({'disabled':'true'});
     if(item){
         noticeRemove('warn',item);

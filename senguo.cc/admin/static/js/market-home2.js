@@ -338,11 +338,11 @@ $(document).ready(function(){
             var regNum=/^[0-9]*$/;
             if(!regNum.test(num)) {
                 $this.siblings('.number-input').val(storage);
-                return noticeBox('商品数量只能为整数!',$this);
+                return noticeBox('商品数量只能为整数！',$this);
             }
             if(num<999) {goodsNum($this,2);}
             else {
-                return noticeBox('最多只能添加999哦!',$this);
+                return noticeBox('最多只能添加999哦！',$this);
             }
         }).on('blur','.number-input',function(){
             var $this=$(this);
@@ -370,7 +370,7 @@ $(document).ready(function(){
                 window.dataObj.cart_count--;
                 $('.cart_num').text(window.dataObj.cart_count);
                 SetCookie('cart_count',window.dataObj.cart_count);
-                return noticeBox('商品数量只能为整数!┑(￣▽ ￣)┍',$this);
+                return noticeBox('商品数量只能为整数！┑(￣▽ ￣)┍',$this);
                 parent.attr({'data-storage':storage_now});
             }
             if(num==0){
@@ -392,11 +392,11 @@ $(document).ready(function(){
                 if(num>999) {
                     if(storage<999) {
                         if(storage_now<=0) {$this.val(storage);}
-                        return noticeBox('只有这么多了哦!┑(￣▽ ￣)┍',$this);
+                        return noticeBox('只有这么多了哦！┑(￣▽ ￣)┍',$this);
                     }
                     else {
                         $this.val(999);
-                         return noticeBox('最多只能添加999哦!┑(￣▽ ￣)┍',$this);
+                         return noticeBox('最多只能添加999哦！┑(￣▽ ￣)┍',$this);
                     }          
                 }
                 else{
@@ -410,7 +410,7 @@ $(document).ready(function(){
                             window.dataObj.cart_count++;
                             $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
                             SetCookie('cart_count',window.dataObj.cart_count);
-                            if(storage_now<num) {return noticeBox('只有这么多了哦!┑(￣▽ ￣)┍',$this);}
+                            if(storage_now<num) {return noticeBox('只有这么多了哦！┑(￣▽ ￣)┍',$this);}
                         }
                     }
                 } 

@@ -11,7 +11,7 @@ $(document).ready(function(){
 }).on('click','#focus-shop',function(){
     focus();
 }).on('click','.foucus-notice',function(){
-    noticeBox('请先关注店铺哦!');
+    noticeBox('请先关注店铺哦！');
 }).on('click','.un_sign',function(){
     var $this=$(this);
     signin($this);
@@ -19,6 +19,7 @@ $(document).ready(function(){
     noticeBox('亲，你今天已经签到了，一天只能签到一次哦')
 }).on("click","#show-more",function(){
     window.location.href=$(this).find("a").attr("href");
+    noticeBox('亲，你今天已经签到了，一天只能签到一次哦！')
 });
 function focus(){
     var url='';

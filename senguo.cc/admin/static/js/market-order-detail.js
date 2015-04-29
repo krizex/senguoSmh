@@ -40,10 +40,10 @@ $(document).ready(function(){
 }).on("click","#del-ok",function(){
     var comment=$('#new-comment').val();
     if(!comment){
-        return noticeBox('请输入评论内容');
+        return warnNotice('请输入评价内容');
     }
     if(comment.length>300){
-        return noticeBox('至多可以评论300字!');
+        return warnNotice('评价内容被容最多300字');
     }
     $('#del-ok').attr({'disabled':true});
     changeComment(comment);

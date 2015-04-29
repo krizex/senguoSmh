@@ -47,7 +47,7 @@ html,body{width: 100%}
 .large-img-box img{height:280px;}
 .large-img-box .click-great{display:inline-block;width:100%;padding:10px;padding-left:30px;}
 .large-img-box .modal-footer{padding:0px;}
-.large-img-box .modal-dialog{width:100%;max-width:322px;}
+/*.large-img-box .modal-dialog{width:100%;max-width:322px;}*/
 .large-img-box .mt42{margin-top:30px !important;}
 .large-img-box .intro{padding:10px;border-bottom:1px solid #ccc;}
 .large-img-box .modal-footer{margin-top:0px;border-bottom-left-radius:8px;border-bottom-right-radius:8px;}
@@ -91,7 +91,7 @@ html,body{width: 100%}
 .type-choose li{height:40px;line-height:40px;width:32%;margin-right:1%;border-radius:4px;margin-top:10px;}
 
 .detail-box{}
-.detail-box .detail{padding-top:10px;}
+.detail-box .detail{padding:10px 5px 5px;}
 
 .classify-title{height:42px;line-height:42px;}
 .modal-body{padding:0 !important;}

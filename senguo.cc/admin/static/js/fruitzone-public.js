@@ -31,7 +31,7 @@ $(document).ready(function(){
         $('.fruit-list').append(fruitlist);
     }
     $('.pause-now').on('click',function(){
-        alert('系统封测期，暂停申请一周!');
+        alert('系统封测期，暂停申请一周！');
     })
 
 });

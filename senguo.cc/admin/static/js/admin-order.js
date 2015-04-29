@@ -56,7 +56,7 @@ $(document).ready(function(){
     $(document).on('click','.add-new-time',function(){//添加显示
         var max=$('.time-list').find('.time-list-item').length;
         if(max<20) {
-            $.getItem('/static/items/admin/add-period-item.html?v=2015-0211',function(data){
+            $.getItem('/static/items/admin/add-period-item.html?v=2015-0311',function(data){
                 var $item=$(data);
                 for(var i=0;i<=23;i++)
                 {
@@ -68,7 +68,7 @@ $(document).ready(function(){
                     if(i<=9) i='0'+i;
                     $item.find('.minute-list').append('<li>'+i+'</li>');
                 }
-                $('.add-period').append($item).show();
+                $('.add-period').empty().append($item).show();
             });
 
 
@@ -231,7 +231,7 @@ function addEditPeriod(target,action){
         end_minute:end_minute,
         name:name
     };
-    if(!name){return alert('请输入时段名称！')}
+    if(!name){return alert('请输入时段名称！');}
     if(action=='edit_period') data.period_id=period_id;
     var args={
         action:action,
@@ -241,7 +241,7 @@ function addEditPeriod(target,action){
             if(res.success){
                 if(action=='add_period'){
                     parent.empty().hide();
-                    var item_url='/static/items/admin/send-period-item.html?v=2015-0119';
+                    var item_url='/static/items/admin/send-period-item.html?v=2015-0328';
                     $.getItem(item_url,function(data){
                         var $item=$(data);
                         $item.attr({'data-id':res.period_id});
@@ -435,16 +435,16 @@ function SendNowConfig(){
         freight_now=0;
     }
     if(min_charge_now>200){
-        return alert('最低起送价请不要超过200元!');
+        return alert('最低起送价请不要超过200元！');
     }
     if(intime_period==null) {
         intime_period=30;
     }
     if(!regNum.test(intime_period)){
-        return alert('立即送时间段只能填写数字 ！')
+        return alert('立即送时间段只能填写数字！')
     }
     if(intime_period<0||intime_period>120){
-        return alert('立即送时间段只能设置为0~120 ！')
+        return alert('立即送时间段只能设置为0~120！')
     }
     var args={
         action:action,

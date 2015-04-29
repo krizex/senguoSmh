@@ -124,10 +124,10 @@ body{-webkit-user-select: none; }
 .time-list .time-list-item .action-mode{margin-right:15px;margin-top:5px;}
 .time-list .time-list-item .show_item{line-height:28px;margin-left:10px;}
 
-.add-period{padding:8px 0 8px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;clear:both;}
+.add-period{padding:8px 0 8px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;clear:both;margin-bottom:10px;}
 .add-period .tit{margin-left:0;}
-.sure-btn{width:28px;height:28px;background:#44b549;border:none;margin-right:10px;line-height:28px;font-size:20px;}
-.concel-btn{display:inline-block;width:28px;height:28px;background:#999;border:none;line-height:28px;font-size:20px;}
+.sure-btn{font-size:12px;width:35px;height:28px;background:#44b549;color:#fff;text-align:center;border:none;margin-right:10px;line-height:28px;}
+.concel-btn{display:inline-block;font-size:12px;width:35px;height:28px;color:#fff;background:#999;border:none;line-height:28px;}
 .period-name{border:1px solid #ccc;padding:3px 0;margin:0 10px;width:50px;height:28px;ms-line-height:28px;}
 
 .select-btn .concel-btn{font-size:12px;}
@@ -165,3 +165,5 @@ body{-webkit-user-select: none; }
 .sender_img{width:14px;height:14px;border-radius:50%;}
 .send_person_list{width:80%;max-width:650px;}
 .new{display:inline-block;width:20px;height:20px;border:1px solid #7AD218;color:#7AD218;line-height:20px;text-align:center;margin-left:-25px;margin-right:5px;background-color:#fff;}
+
+.add-new-time{margin:10px 0;clear:both;display:inline-block;}
