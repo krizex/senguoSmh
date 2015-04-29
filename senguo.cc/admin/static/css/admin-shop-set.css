@@ -44,7 +44,7 @@
 .address-list .active{background:#00D681;color:#fff;}
 .address-list li:hover{background:#00D681;color:#fff;cursor:pointer;}
 
-input{height:30px;-ms-line-height:30px;color:#666;}
+input{height:30px;width:400px;-ms-line-height:30px;color:#666;}
 .receipt-img img{height:40px;}
 .receipt-msg{width:80%;overflow:hidden;height:80px;}
 

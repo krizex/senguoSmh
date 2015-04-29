@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}【{{shop_name}}】 一家不错的O2O店铺，快来关注吧~{% end %}
+{% block title %}【{{shop_name}}】一家不错的O2O店铺，快来关注吧~{% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/baguetteBox.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/market-shop.css')}}"/>
@@ -100,7 +100,7 @@
         <div class="title" id="show-more">
             <p class="pull-left font14">店铺评价：</p>
             <p class="pt4">
-                <span class="num-txt">满意度：</span><span class="per-txt">96%</span><span class="num-txt pl20">{{comment_sum}}条评论</span>
+                <!--<span class="num-txt">满意度：</span><span class="per-txt">96%</span>--><span class="num-txt pl20">{{comment_sum}}条评论</span>
                 <a href="{{reverse_url('customerComment')}}?page=0" class="pull-right text-grey9 font12 m-r5">查看更多>></a>
             </p>
         </div>
