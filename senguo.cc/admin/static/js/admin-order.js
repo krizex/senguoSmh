@@ -435,16 +435,16 @@ function SendNowConfig(){
         freight_now=0;
     }
     if(min_charge_now>200){
-        return alert('最低起送价请不要超过200元!');
+        return alert('最低起送价请不要超过200元！');
     }
     if(intime_period==null) {
         intime_period=30;
     }
     if(!regNum.test(intime_period)){
-        return alert('立即送时间段只能填写数字 ！')
+        return alert('立即送时间段只能填写数字！')
     }
     if(intime_period<0||intime_period>120){
-        return alert('立即送时间段只能设置为0~120 ！')
+        return alert('立即送时间段只能设置为0~120！')
     }
     var args={
         action:action,

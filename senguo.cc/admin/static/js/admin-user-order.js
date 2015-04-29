@@ -388,7 +388,7 @@ function orderEdit(target,action,content){
     var args;
     if(action=='edit_remark')
     {
-	if(content.length>100) return alert('订单备注请不要超过100个字!');        
+	if(content.length>100) return alert('订单备注请不要超过100个字！');        
 	data.remark=content;
 	var index=parent.attr('data-target');
     }
@@ -402,7 +402,7 @@ function orderEdit(target,action,content){
     }
     else if(action=='edit_totalPrice')
     {
-	if(!regFloat.test(content)) return alert('订单总价只能为数字!');
+	if(!regFloat.test(content)) return alert('订单总价只能为数字！');
         data.totalPrice=content;
         var index=parent.attr('data-target');
     }

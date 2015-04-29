@@ -167,7 +167,7 @@ function Vrify(phone,target){
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
     if(phone.length > 11 ||phone.length<11 || !regPhone.test(phone)){
         $('#getVrify').removeClass('bg-greyc').removeAttr('disabled');
-        return warnNotice("电话貌似有错o(╯□╰)o",target);
+        return warnNotice("手机号貌似有错o(╯□╰)o",target);
     }
     if(!phone){
         $('#getVrify').removeClass('bg-greyc').removeAttr('disabled');
@@ -209,7 +209,7 @@ function TiePhone(target){
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
     if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){
         $('#tiePhone').removeClass('bg-greyc').removeAttr('disabled');
-        return warnNotice("电话貌似有错o(╯□╰)o",target);
+        return warnNotice("手机号貌似有错o(╯□╰)o",target);
     }
     if(!phone){
         $('#tiePhone').removeClass('bg-greyc').removeAttr('disabled');

@@ -120,7 +120,7 @@ $(document).ready(function(){
         evt.preventDefault();
         var phone=$('#enterPhone').val();
         var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-        if(phone.length > 11|| phone.length<11 || !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
+        if(phone.length > 11|| phone.length<11 || !regPhone.test(phone)){return warnNotice("手机号貌似有错o(╯□╰)o");}
         if(!phone){return warnNotice('手机号不能为空');}
         $('#getVrify').attr({'disabled':true});
         Vrify(phone);
@@ -679,7 +679,7 @@ function TiePhone(evt){
     var code=$('#enterVrify').val();
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
+    if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){return warnNotice("手机号貌似有错o(╯□╰)o");}
     if(!phone){return warnNotice('请输入手机号');}
     if(!code){return warnNotice('请输入验证码');}
     if(!regNumber.test(code)){return warnNotice('验证码只能为数字');}
