@@ -91,7 +91,7 @@ html,body{width: 100%}
 .type-choose li{height:40px;line-height:40px;width:32%;margin-right:1%;border-radius:4px;margin-top:10px;}
 
 .detail-box{}
-.detail-box .detail{padding-top:10px;}
+.detail-box .detail{padding:10px 5px 5px;}
 
 .classify-title{height:42px;line-height:42px;}
 .modal-body{padding:0 !important;}
