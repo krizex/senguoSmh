@@ -633,7 +633,7 @@ function addEditFruit(target,action){
     if(saled!=0&&!regFloat.test(saled)){return alert('销量只能为数字，至多为小数点后两位！');}
     if(storage!=0&&!regFloat.test(storage)){return alert('库存只能为数字，至多为小数点后两位！');}
     if(!regNumber.test(priority)){return alert('优先级只能为整数！');}
-    if(priority<1||priority>5){return alert('优先级只能为1-5！');}
+    if(priority<1||priority>10){return alert('优先级只能为1-10！');}
     if(intro.length>100) {return alert('商品简介请不要超过100个字！');}
     if(name.length>12) {return alert('商品名称请不要超过12个字！');}
     var data={

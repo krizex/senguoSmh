@@ -6,7 +6,7 @@
 <div class="index-title">
     <div class="pull-left title-style">
         <div class="pull-left title-style2 new-item">
-            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1">
+            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1&page=0">
                 <span class="new-order"><i></i>{{new_order_sum}}</span>
                 <p>新增订单</p>
             </a>
@@ -21,7 +21,7 @@
     </div>
     <div class="pull-right title-style">
         <div class="pull-left title-style2 item">
-            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1">
+            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1&page=0">
                 <span class="total-order"><i></i>{{order_sum}}</span>
                 <p>总订单数</p>
             </a>

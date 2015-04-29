@@ -185,7 +185,7 @@ class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
 		# shop_id = self.shop_id
-		print(shop_code,'shop_code')
+		print("[访问店铺]店铺号：",shop_code)
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
 		except:

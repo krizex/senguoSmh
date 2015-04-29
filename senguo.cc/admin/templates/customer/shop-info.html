@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% block title %}【{{shop_name}}】 一家不错的O2O店铺，快来关注吧~{% end %}
-{% block head %}<link rel="stylesheet" href="{{static_url('css/market-shop.css')}}"/>{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/baguetteBox.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/market-shop.css')}}"/>
+{% end %}
 {% block content %}
 <span id="shop_imgurl" data-img="{{shop_logo}}"></span>
 <div class="rainshed text-center font18 text-black fix-title bg_change">店铺详情</div>
@@ -83,7 +86,7 @@
 </div>
 <div class="shop-box bg-white clearfix">
     <p class="title set-w100-fle">
-        <span class="pull-left font14">店铺成员（{{len(headimgurls)}}）：</span>
+        <span class="pull-left font14">店铺成员 ({{len(headimgurls)}})：</span>
         <a href="{{reverse_url('customerMembers')}}" class="pull-right text-grey9 font12 m-r5">查看更多>></a>
         <a href="#" class="staff_href pull-right text-green3 pr10 font12">+加入该店</a>
     </p>
@@ -94,10 +97,53 @@
     </ul>
 </div>
 <div class="shop-box bg-white clearfix">
-    <p class="title set-w100-fle">
-        <span class="pull-left font14">店铺评价（{{comment_sum}}）：</span>
-        <a href="{{reverse_url('customerComment')}}?page=0" class="pull-right text-grey9 font12 m-r5">查看更多>></a>
-    </p>
+        <div class="title" id="show-more">
+            <p class="pull-left font14">店铺评价：</p>
+            <p class="pt4">
+                <span class="num-txt">满意度：</span><span class="per-txt">96%</span><span class="num-txt pl20">{{comment_sum}}条评论</span>
+                <a href="{{reverse_url('customerComment')}}?page=0" class="pull-right text-grey9 font12 m-r5">查看更多>></a>
+            </p>
+        </div>
+    <!--新的店铺评价-->
+    <!--<ul class="point-com-lst">
+        <li>
+            <dl class="ccom-item group">
+                <dd class="fl">
+                    <img src="/static/images/TDSG_l.png" width="50" height="50" alt="头像"/>
+                </dd>
+                <dt class="fl">
+                <p><span class="nor-txt">黄铁森</span><span class="time-txt mr10 pull-right">1天前</span></p>
+                <p class="com-txt">这榴莲真是醉了，太好吃了，强烈推荐！</p>
+                </dt>
+            </dl>
+        </li>
+        <li>
+            <dl class="ccom-item group">
+                <dd class="fl">
+                    <img src="/static/images/TDSG_l.png" width="50" height="50" alt="头像"/>
+                </dd>
+                <dt class="fl">
+                <p><span class="nor-txt">黄铁森</span><span class="time-txt mr10 pull-right">1天前</span></p>
+                <p class="com-txt">这榴莲真是醉了，太好吃了，强烈推荐！</p>
+                <ul class="group com-goods-lst">
+                    <li>
+                        <a href="/static/images/anoa-7-md.gif" title="放商品名称"><img src="/static/images/anoa-7-md.gif" alt="晒单图片"/></a>
+                    </li>
+                    <li>
+                        <a href="/static/images/anoa-7-md.gif" title="放商品名称"><img src="/static/images/anoa-7-md.gif" alt="晒单图片"/></a>
+                    </li>
+                    <li>
+                        <a href="/static/images/anoa-7-md.gif" title="放商品名称"><img src="/static/images/anoa-7-md.gif" alt="晒单图片"/></a>
+                    </li>
+                    <li>
+                        <a href="/static/images/anoa-7-md.gif" title="放商品名称"><img src="/static/images/anoa-7-md.gif" alt="晒单图片"/></a>
+                    </li>
+                </ul>
+                </dt>
+            </dl>
+        </li>
+    </ul>-->
+    {% if comments %}
     <ul class="user-comment clearfix">
         {% for comment in comments %}
         <li class="comment-item set-w100-fle">
@@ -114,6 +160,9 @@
         </li>
         {% end %}
     </ul>
+    {% else %}
+    <p class="no-txt">暂无评价！</p>
+    {% end %}
 </div>
 {% end %}
 {% block other %}
@@ -122,5 +171,6 @@
 {% end %}-->
 {% end %}
 {% block bottom %}
+<script src="{{static_url('js/third/baguetteBox.min.js')}}"></script>
 <script src="{{static_url('js/market-shop.js')}}"></script>
 {% end %}

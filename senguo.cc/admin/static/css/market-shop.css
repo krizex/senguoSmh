@@ -1,4 +1,6 @@
 p{margin-bottom:0px;}
+.pl20{padding-left: 20px;}
+.no-txt{text-align: center;font-size: 14px;line-height: 30px;color: #777;}
 .info1{padding:10px;}
 .shop-logo{margin-right:-95px;}
 .info1 .info{padding-left:95px !important;}
@@ -36,3 +38,25 @@ li:last-child{border-bottom:0px;}
 .shop-info li{position:relative;}
 .phone_icon{position:absolute;right:0;}
 .cert-type{color: #fff;font-size: 12px;border-radius: 2px;background-color: #7cc066;width: 70px;height: 18px;line-height: 18px;display: inline-block;margin-left: 10px;text-align: center;}
+.per-txt{font-size: 12px;color: #7fde9e;}
+.num-txt{font-size: 12px;color: #999;}
+.pt4{padding-top: 4px;}
+.point-com-lst>li{border-bottom: 1px solid #e0e0e0;padding: 10px 0;display: block;}
+.ccom-item>dd{width: 60px;padding-right: 10px;height: 100%;overflow: hidden;}
+.ccom-item>dd>img{width: 50px;height: 50px;border-radius: 50%;border: 5px solid #aeddda;}
+.ccom-item>dt{width: calc(100% - 60px);-webkit-box-sizing: border-box;min-width: 60%;overflow: hidden;padding-top: 4px;}
+.time-txt{color: #999;font-size: 12px;}
+.com-txt{color: #666;line-height: 18px;font-size: 12px;margin-top: 4px;}
+.com-goods-lst{margin-top: 10px;}
+.com-goods-lst>li{float: left;display:block;width: calc(25% - 10px);-webkit-box-sizing: border-box;margin-right: 10px;padding-bottom: calc(25% - 10px);height:0; overflow: hidden;}
+.com-goods-lst>li>img{width: 100%;}
+.blockA{display: block;color: #333;font-size: 14px;}
+.mr10{margin-right: 10px;}
+
+
+
+
+
+
+
+

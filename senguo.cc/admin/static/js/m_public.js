@@ -1,7 +1,7 @@
 $(document).ready(function(){
 
 }).on('click','.will-open',function(){
-    noticeBox('即将开放!');
+    noticeBox('该功能即将开放！');
 });
 
 

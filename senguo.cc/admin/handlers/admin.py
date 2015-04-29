@@ -614,7 +614,7 @@ class Order(AdminBaseHandler):
 				print("[订单管理]修改按时达时段，Shop ID：",period.config_id,"，时间段：",start_time,"~",end_time)
 			elif action == "edit_period_active":
 				period.active = 1 if period.active == 2 else 2
-				print("[订单管理]按时达时段启用/停用，Shop ID：",period.config_id,"，时间段：",start_time,"~",end_time,"，状态：",period.active)
+				print("[订单管理]按时达时段启用/停用，Shop ID：",period.config_id,"，状态：",period.active)
 			self.session.commit()
 		elif action == "del_period":
 			try: q = self.session.query(models.Period).filter_by(id=int(data["period_id"]))
