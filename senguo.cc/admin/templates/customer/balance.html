@@ -10,7 +10,7 @@
         <dd class="fl"><img src="/static/images/TDSG_l.png" alt="头像"/></dd>
         <dt class="fl group">
             <div class="fl bal-shop">
-                <p class="clip">所在店铺：马灰灰水果店</p>
+                <p class="clip">所在店铺：{{shop_name}}</p>
                 <p class="clip">当前余额：{{shop_balance}}元</p>
             </div>
             <div class="fl bal-cz">
@@ -29,26 +29,12 @@
     <div class="bal-balbm">
         <h3>账单</h3>
         <ul class="bal-bm-lst">
-            <li class="group">
-                <div class="item-left fl">
-                    <h4>余额充值</h4>
-                    <p>2015-3-12 12:22:33</p>
-                </div>
-                <div class="item-right fl clip">
-                    +200
-                </div>
-            </li>
-            <li class="group">
-                <div class="item-left fl">
-                    <h4>订单号：2323232323</h4>
-                    <p>2015-3-12 12:22:33</p>
-                </div>
-                <div class="item-right fl clip">
-                    -200
-                </div>
-            </li>
         </ul>
     </div>
 </div>
+ <div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中 ( > < )~</div>
+ <div class="no-recored  text-center" style="display:none"><img src="/static/images/goods_2.png"/><p class="text-center mt10 text-grey9">当前没有任何账单</p></div>
 {% end %}
-{% block bottom %}<script src="{{static_url('js/market-balance.js')}}"></script>{% end %}
+{% block bottom %}
+<script src="{{static_url('js/market-balance.js')}}"></script>
+{% end %}

@@ -2,7 +2,26 @@
 {% block title%}公告设置{% end %}
 
 {% block setcontent %}
-<input type="hidden" id="data" value="{{context['token']}}" data-per="{{context['person_auth']}}" data-com="{{context['company_auth']}}" data-status="{{context['has_done']}}">
+{% set shop_auth = current_shop.shop_auth %}
+{% set auth_change = current_shop.auth_change %}
+{% set active_p='' %}
+{% set active_c='' %}
+{% set status='' %}
+{% set hidden_p='hidden' %}
+{% set hidden_c='hidden' %}
+{% if  auth_change!= 0%}
+    {% set status='1'%}
+{% else %}
+    {% set active_p='active'%}        
+{% end %}
+{% if shop_auth == 1 or shop_auth == 3 %}
+    {% set hidden_p='show' %}
+    {% set active_p='active'%}
+{% elif shop_auth == 2 or shop_auth == 4 %}
+    {% set hidden_c='show' %}
+    {% set active_c='active'%}
+{% end %}
+<input type="hidden" id="data" value="{{context['token']}}" data-per="{{context['person_auth']}}" data-com="{{context['company_auth']}}" data-status="{{context['has_done']}}" data-auth="{{shop_auth}}" data-times="{{auth_change}}">
 <div class="wrap-cert">
     <div class="wrap-top">
         <div class="cert-title">
@@ -18,22 +37,23 @@
         <h4 class="fail-notice text-pink mt10">失败理由：{{context['decline_reason']}}</h4>
         {% end %}
         <div class="cert-type group">
-            <div class="type active scom">
+            <div class="type {{active_p}} scom"  data-status="{{status}}">
                 <h3>个人认证</h3>
                 <p>适合个人、小型创业团队</p>
-                {% if context['apply_type'] == 1 and context['has_done'] == 1 %}
-                <img  class="cert-img" src="/static/images/cert_ok.png">
-                {% end %}
+                <img  class="cert-img {{hidden_p}}" src="/static/images/cert_ok.png">
             </div>
-            <div class="type item encom">
+            <div class="type {{active_c}} item encom"  data-status="{{status}}">
                 <h3>企业认证</h3>
                 <p>适合个体工商户、公司</p>
-                {% if context['apply_type'] == 2 and context['has_done'] == 1 %}
-                <img  class="cert-img" src="/static/images/cert_ok.png">
-                {% end %}
+                <img  class="cert-img {{hidden_c}}" src="/static/images/cert_ok.png">
             </div>
         </div>
     </div>
+    {% if auth_change == 1 %}
+            <p class="text-blue change-notice"><a href="javascript:;" class="change-auth">更改认证类型</a><span class="text-grey9">（您还剩1次更改机会）</span></p>
+    {% elif auth_change == 2 %}
+            <p class="text-grey9 change-notice">认证类型不可更改</p>
+    {% end %}
     <div class="wrap-bm wrap-per-cert">
         <table class="per-tb">
             <colgroup>

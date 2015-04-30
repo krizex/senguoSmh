@@ -1476,7 +1476,12 @@ class ShopAuthenticate(AdminBaseHandler):
 	def get(self):
 		shop_id = self.current_shop.id
 		token = self.get_qiniu_token("shopAuth_cookie",shop_id)
-		auth_apply=self.session.query(models.ShopAuthenticate).filter(models.ShopAuthenticate.shop_id == shop_id).first()
+		try:
+			auth_apply=self.session.query(models.ShopAuthenticate).filter(models.ShopAuthenticate.shop_id == shop_id).\
+			order_by(desc(models.ShopAuthenticate.shop_id)).first()
+		except:
+			print('auth_apply error')
+		print(auth_apply)
 		person_auth=False
 		company_auth=False
 		has_done = 0
@@ -1501,7 +1506,12 @@ class ShopAuthenticate(AdminBaseHandler):
 		shop_id = self.current_shop.id
 		action = self.args["action"]
 		data = self.args["data"]
-		shop_auth_apply = self.session.query(models.ShopAuthenticate).filter_by(shop_id = shop_id)
+		auth_change = self.current_shop.auth_change
+		try:
+			shop_auth_apply = self.session.query(models.ShopAuthenticate).filter_by(shop_id = shop_id)
+		except:
+			print('shop_auth_apply error')
+
 		if action == "get_code":
 			# gen_msg_token(phone=self.args["phone"])
 			# return self.send_success()
@@ -1518,8 +1528,6 @@ class ShopAuthenticate(AdminBaseHandler):
 			handle_img = data['handle_img']
 			if not check_msg_token(phone,code):
 				return self.send_fail('code error')
-			if shop_auth_apply:
-				shop_auth_apply.delete()
 			shop_apply = models.ShopAuthenticate(
 				realname = name,
 				shop_type = 1,
@@ -1541,8 +1549,6 @@ class ShopAuthenticate(AdminBaseHandler):
 			behind_img = data['behind_img']
 			if not check_msg_token(phone,code):
 				return self.send_fail('code error')
-			if shop_auth_apply:
-				shop_auth_apply.delete()
 			shop_apply = models.ShopAuthenticate(
 				realname = name,
 				company_name = company_name,

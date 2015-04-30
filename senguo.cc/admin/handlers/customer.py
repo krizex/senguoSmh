@@ -205,6 +205,7 @@ class Home(CustomerBaseHandler):
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		shop_point = 0
+		shop_balance = 0
 		try:
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
 				customer_id,shop_id =shop_id).first()
@@ -1627,28 +1628,69 @@ class Balance(CustomerBaseHandler):
 		shop_id     = self.shop_id
 		shop_balance= 0
 		history     = []
-		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+		try:
+			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 			shop_id = shop_id).first()
+		except:
+			print('shop_follow none')
+		try:
+			shop=self.session.query(models.Shop).filter_by(id = shop_id).first()
+		except:
+			print('shop none')
+		if shop:
+			shop_name=shop.shop_name
 		if not shop_follow:
-			return self.send_fail('shop_follow not fount')
-		if shop_follow.shop_balance:
-			shop_balance = shop_follow.shop_balance
-		else:
-			shop_balance = 0
+			print('shop_follow not fount')
+		if shop_follow:
+			if shop_follow.shop_balance:
+				shop_balance = shop_follow.shop_balance
+			else:
+				shop_balance = 0
 
+		return self.render("customer/balance.html",shop_balance = shop_balance , shop_name=shop_name)
+
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("page")
+	def post(self):
+		page = int(self.args["page"])
+		offset = (page-1) * 10
+		customer_id = self.current_user.id
+		shop_id     = self.shop_id
+		history     = []
+		data = []
+		pages = 0
+		nomore = False
 		try:
 			shop_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id =\
 				customer_id , shop_id = shop_id).all()
 		except:
 			shop_balance_history = None
 			print("balance show error ")
+		try:
+			count = self.session.query(models.BalanceHistory).filter_by(customer_id =\
+				customer_id , shop_id = shop_id).count()
+			pages = int(count/10) if count % 10 == 0 else int(count/10) + 1
+		except:
+			print('pages 0')
+		if pages == page:
+			nomore = True
 		if shop_balance_history:
-			for temp in shop_history:
+			for temp in shop_balance_history:
 				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
-				history.append([temp.balance_record , temp.balance_value , temp.create_time])
+				history.append({'type':temp.balance_type,'record':temp.balance_record ,'value':temp.balance_value ,'time':temp.create_time})
+
 		count = len(history)
-		pages = int(count/10) if count % 10 == 0 else int(count/10) + 1
-		return self.render("customer/balance.html",shop_balance = shop_balance , pages = pages)
+		history = history[::-1]
+		if offset + 10 <= count:
+			data = history[offset:offset+10]
+		elif offset <= count and offset + 10 >=count:
+			data = history[offset:]
+		else:
+			nomore = True
+			print("history page error")
+		# print("data\n",data)
+
+		return self.send_success(data = data,nomore=nomore)
 
 class Points(CustomerBaseHandler):
 	@tornado.web.authenticated

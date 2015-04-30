@@ -788,9 +788,19 @@ class ShopAuthenticate(SuperBaseHandler):
 		if action == 'commit':
 			shop_auth_apply.has_done = 1
 			if apply_type == 1:
-				shop.shop_auth = 1
+				if shop.auth_change == 0:
+					shop.shop_auth = 1
+					shop.auth_change = 1
+				elif shop.auth_change == 1:
+					shop.shop_auth = 4
+					shop.auth_change = 2
 			elif apply_type == 2:
-				shop.shop_auth = 2
+				if shop.auth_change == 0:
+					shop.shop_auth = 2
+					shop.auth_change = 1
+				elif shop.auth_change == 1:
+					shop.shop_auth = 3
+					shop.auth_change = 2
 			self.session.commit()
 		elif action == 'decline':
 			decline_reason = self.args['decline_reason']

@@ -439,7 +439,8 @@ class Shop(MapBase, _CommonApi):
 	shop_code = Column(String(128), nullable=False, default="not set")
 	create_date_timestamp = Column(Integer, nullable=False)
 	shop_status = Column(Integer, default=SHOP_STATUS.ACCEPTED)  # 1：申请中 2：申请成功 3：拒绝
-	shop_auth =Column(Integer,default =0)#0:未认证 1:个人认证 2:企业认证 3:个人加企业认证 #yy4.29
+	shop_auth =Column(Integer,default =0)#0:未认证 1:个人认证 2:企业认证 3:个人认证转企业认证 4:企业认证转个人认证 #yy4.29
+	auth_change=Column(Integer,default =0)#0未认证 1:认证一次 2:认证两次 #yy4.30
 	# on or off
 	status   = Column(Integer,default = 1) # 1:on ,0:off
 

@@ -2,26 +2,60 @@ $(document).ready(function(){
     var person_auth=$('#data').attr('data-per');
     var company_auth=$('#data').attr('data-com');
     var apply_status=Int($('#data').attr('data-status'));
-    console.log(apply_status);
-    if(person_auth=='True' || company_auth=='True'){
+    var shop_auth=$('#data').attr('data-auth');
+    var times=$('#data').attr('data-times');
+    if(person_auth=='True' && times==0||company_auth=='True'  && times==0){
         $(".wrap-per-cert").addClass('hide');
-        $(".scom").addClass('hide');
         $(".wrap-en-cert").addClass('hide');
-        $(".encom").addClass('hide');
         $('.wrap-cert-tip').removeClass('hide');
+        $(".scom").addClass('hide');
+        $(".encom").addClass('hide');
+        $('.change-notice').addClass('hide');
+        console.log(111);
+    }
+    if(times == 1){
+        $(".wrap-per-cert").addClass('hide');
+        $(".wrap-en-cert").addClass('hide');
+        if(apply_status == 0){
+            $(".scom").addClass('hide');
+            $(".encom").addClass('hide');
+            $('.change-notice').addClass('hide');
+            $('.wrap-cert-tip').removeClass('hide');
+        }
     }
     if(person_auth == 'True' && apply_status==1){
         $('.wrap-cert-tip').addClass('hide');
         $(".scom").removeClass('hide');
+        console.log(333);
     }
     if(company_auth == 'True' && apply_status==1){
         $('.wrap-cert-tip').addClass('hide');
         $(".encom").removeClass('hide');
+        console.log(444);
     }
 }).on("click",".cert-type .type",function(){
     var index = $(this).index();
+    var status=$(this).attr('data-status');
+    if(status==1 ){
+        return false;
+    }
     $(".cert-type .type").removeClass("active").eq(index).addClass("active");
     $(".wrap-bm").addClass("hide").eq(index).removeClass("hide");
+}).on('click','.change-auth',function(){
+    var shop_auth=$('#data').attr('data-auth');
+    if(confirm('您只有一次修改认证类型的机会，确认修改认证类型吗？')){
+         if(shop_auth==1){
+        $(".scom").removeClass('active');
+        $(".encom").addClass('active');
+        $(".wrap-en-cert").removeClass('hide');
+        }
+        else if(shop_auth==2){
+            $(".scom").addClass('active');
+            $(".encom").removeClass('active');
+            $(".wrap-per-cert").removeClass('hide');
+        }
+    }
+   
 }).on("click","#per-commit",function(){     //个人认证提交
      var $this = $(this);
     if($this.attr("data-statu")=="1") {
