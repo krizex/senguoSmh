@@ -63,10 +63,20 @@
                     <a href="javascript:;" class="ok">通过</a>
                 </li>
             </ul>
+             {% if list.shop.shop_auth == 1%}
+            <p>个人认证转企业认证</p>
+            {% elif list.shop.shop_auth == 2%}
+            <p>企业认证转个人认证</p>
+            {% end %}
             {% elif list.has_done == 1%}
             <p>认证成功<p>
             {% else %}
             <p>认证拒绝:{{list.decline_reason}}<p>
+            {% end %}
+             {% if list.shop.shop_auth == 3%}
+            <p>个人认证转企业认证</p>
+            {% elif list.shop.shop_auth == 4%}
+            <p>企业认证转个人认证</p>
             {% end %}
         </li>
     {% end %}
@@ -85,8 +95,8 @@
     </div>
     <nav>
         <ul class="pager">
-            <li><a href="javascript:;" id="PrePage">&larr; 上一页</a></li>
-            <li><a href="javascript:;" id="NextPage">下一页&rarr;</a></li>
+            <li><a href="javascript:;" id="authPrePage">&larr; 上一页</a></li>
+            <li><a href="javascript:;" id="authNextPage">下一页&rarr;</a></li>
         </ul>
     </nav>
 </div>

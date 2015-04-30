@@ -8,7 +8,6 @@ from sqlalchemy import func, desc, and_, or_, exists
 import qiniu
 from dal.dis_dict import dis_dict
 from libs.msgverify import gen_msg_token,check_msg_token
-import re
 
 # 登陆处理
 class Access(AdminBaseHandler):
@@ -521,13 +520,7 @@ class Order(AdminBaseHandler):
 			return self.send.send_error(404)
 
 		page_sum = count /10
-		# orders order by start_time
-		# woody
 		session = self.session
-		# for order in orders:
-		# 	order.w_send_time = order.get_sendtime(session,order.id)
-			# print(order.w_send_time)
-		# print("before sort",orders)
 		page_area = page * page_size
 		orders = sorted(orders , key = lambda x:x.send_time,reverse=True)[page_area:page_area+10]
 		# print("after sort",orders)
@@ -544,22 +537,6 @@ class Order(AdminBaseHandler):
 			d['fruits'] = eval(d['fruits'])
 			d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
-			# if order.start_time.minute <10:
-			# 	w_start_time_minute ='0' + str(order.start_time.minute)
-			# else:
-			# 	w_start_time_minute = str(order.start_time.minute)
-			# if order.end_time.minute < 10:
-			# 	w_end_time_minute = '0' + str(order.end_time.minute)
-			# else:
-			# 	w_end_time_minute = str(order.end_time.minute)
-
-			# if order.type == 2 and order.today==2:
-			# 	w_date = order.create_date + delta
-			# else:
-			# 	w_date = order.create_date
-			# d["sent_time"] = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
-			# 									order.start_time.hour, w_start_time_minute,
-			# 									  order.end_time.hour, w_end_time_minute)
 			d["sent_time"] = order.send_time
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
 				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
@@ -679,6 +656,8 @@ class Order(AdminBaseHandler):
 				# print("success?")
 
 			elif action == "edit_status":
+				if order.status in[5,6]:
+					return self.send_fail("订单已完成。不能修改状态")
 				order.update(session=self.session, status=data["status"])
 				# when the order complete ,
 				# woody
@@ -755,12 +734,13 @@ class Order(AdminBaseHandler):
 								self.session.commit()
 
 						#订单完成后，将相应店铺冻结资产 转为 店铺余额
-						shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-						if not shop:
-							return self.send_fail('shop not found')
-						shop.shop_balance += order.totalprice * 100
-						shop.shop_blockage -= order.totalprice * 100
-						self.session.commit()
+						# 铁说 这是平台思维 已废弃使用 ，改为 用户充值后钱立马到 商铺帐号上
+						# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+						# if not shop:
+						# 	return self.send_fail('shop not found')
+						# shop.shop_balance += order.totalprice * 100
+						# shop.shop_blockage -= order.totalprice * 100
+						# self.session.commit()
 
 					if shop_follow: 
 						if shop_follow.shop_point == None:
@@ -1310,8 +1290,8 @@ class Config(AdminBaseHandler):
 				return self.send_success(address1_id=addr1.id)#commit后id会自动生成
 			elif action == "add_notice":
 				notice = models.Notice(
-					summary=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["summary"]),
-					detail=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["detail"]))    #过滤掉Emoji，否则数据库会报错 --by Sky
+					summary=data["summary"],
+					detail=data["detail"])
 				self.current_shop.config.notices.append(notice)
 				self.session.commit()
 			elif action == "edit_receipt": #小票设置
@@ -1357,24 +1337,36 @@ class ShopBalance(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		subpage = 'shopBlance'
-		return self.render("admin/shop-balance.html",context=dict(subpage=subpage))
+		shop = self.current_shop
+		shop_balance = shop.shop_balance
+		return self.render("admin/shop-balance.html",context=dict(subpage=subpage,shop_balance = shop_balance))
 
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('action','apply_value?:int')
+	@AdminBaseHandler.check_arguments('action','apply_value?:int','alipay_account?:str')
 	def post(self):
 		action = self.args['action']
+		shop_id = self.current_shop.id
 		# 商铺申请提现
+		# 提现申请被超级管理员处理后,会产生一条余额变动记录
 		if action == 'cash':
 			apply_value = self.args['apply_value']
+			alipay_account = self.args['alipay_account']
 			shop_id = self.current_shop.id
-			applyCash_history = models.ApplyCashHistory(shop_id = shop_id , apply_value = apply_value ,has_done =0)
+			shop_code = self.current_shop.shop_code
+			shop_auth = self.current_shop.shop_auth
+			shop_balance = self.current_shop.shop_balance
+			applicant_name = self.current_user.accountinfo.nickname
+			applyCash_history = models.ApplyCashHistory(shop_id = shop_id , apply_value = apply_value ,has_done =0,\
+				shop_code = shop_code,shop_auth = shop_auth , shop_balance = shop_balance,alipay_account = \
+				alipay_account,applicant_name = applicant_name)
 			self.session.add(applyCash_history)
 			self.session.commit()
 			return self.send_success()
 
 		elif action == 'cash_history':
 			history = []
-			history_list = self.session.query(models.ApplyCashHistory).all()
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
+				balance_type = 2).all()
 			if not history_list:
 				return self.send_fail('history_list error')
 			for temp in history_list:
@@ -1384,7 +1376,7 @@ class ShopBalance(AdminBaseHandler):
 
 		elif action == 'all_history':
 			history = []
-			history_list = self.session.query(models.BalanceHistory).all()
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).all()
 			if not history_list:
 				return self.send_fail('get all BalanceHistory error')
 			for temp in history_list:
@@ -1394,7 +1386,8 @@ class ShopBalance(AdminBaseHandler):
 
 		elif action == 'recharge':
 			history = []
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0)
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
+				balance_type = 0).all()
 			if not history_list:
 				return self.send_fail('get all BalanceHistory error')
 			for temp in history_list:
@@ -1404,7 +1397,8 @@ class ShopBalance(AdminBaseHandler):
 
 		elif action == 'online':
 			history = []
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 1)
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
+				balance_type = 3).all()
 			if not history_list:
 				return self.send_fail('get all BalanceHistory error')
 			for temp in history_list:
@@ -1414,12 +1408,6 @@ class ShopBalance(AdminBaseHandler):
 			
 		else:
 			return self.send_fail('action error')
-
-
-
- 
-
-
 
 class ShopConfig(AdminBaseHandler):
 	@tornado.web.authenticated
@@ -1476,7 +1464,11 @@ class ShopAuthenticate(AdminBaseHandler):
 	def get(self):
 		shop_id = self.current_shop.id
 		token = self.get_qiniu_token("shopAuth_cookie",shop_id)
-		auth_apply=self.session.query(models.ShopAuthenticate).filter(models.ShopAuthenticate.shop_id == shop_id).first()
+		try:
+			auth_apply=self.session.query(models.ShopAuthenticate).filter(models.ShopAuthenticate.shop_id == shop_id).\
+			order_by(desc(models.ShopAuthenticate.id)).first()
+		except:
+			print('auth_apply error')
 		person_auth=False
 		company_auth=False
 		has_done = 0
@@ -1486,7 +1478,7 @@ class ShopAuthenticate(AdminBaseHandler):
 			has_done = auth_apply.has_done
 			apply_type = auth_apply.shop_type
 			decline_reason = auth_apply.decline_reason
-			if auth_apply.has_done!=2:
+			if auth_apply.has_done == 0:
 				if auth_apply.shop_type == 1:
 					person_auth = True
 				if auth_apply.shop_type == 2:
@@ -1499,10 +1491,16 @@ class ShopAuthenticate(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments('action','data')
 	def post(self):
 		shop_id = self.current_shop.id
+		print("[店铺认证]当前店铺：",self.current_shop)
 		action = self.args["action"]
 		data = self.args["data"]
-		shop_auth_apply = self.session.query(models.ShopAuthenticate).filter_by(shop_id = shop_id)
+		auth_change = self.current_shop.auth_change
+		try:
+			shop_auth_apply = self.session.query(models.ShopAuthenticate).filter_by(shop_id = shop_id)
+		except:
+			print('shop_auth_apply error')
 		if action == "get_code":
+			print("[店铺认证]发送验证码到手机：",data["phone"])
 			# gen_msg_token(phone=self.args["phone"])
 			# return self.send_success()
 			resault = gen_msg_token(phone=data["phone"])
@@ -1518,8 +1516,6 @@ class ShopAuthenticate(AdminBaseHandler):
 			handle_img = data['handle_img']
 			if not check_msg_token(phone,code):
 				return self.send_fail('code error')
-			if shop_auth_apply:
-				shop_auth_apply.delete()
 			shop_apply = models.ShopAuthenticate(
 				realname = name,
 				shop_type = 1,
@@ -1541,8 +1537,6 @@ class ShopAuthenticate(AdminBaseHandler):
 			behind_img = data['behind_img']
 			if not check_msg_token(phone,code):
 				return self.send_fail('code error')
-			if shop_auth_apply:
-				shop_auth_apply.delete()
 			shop_apply = models.ShopAuthenticate(
 				realname = name,
 				company_name = company_name,

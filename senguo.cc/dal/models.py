@@ -439,7 +439,8 @@ class Shop(MapBase, _CommonApi):
 	shop_code = Column(String(128), nullable=False, default="not set")
 	create_date_timestamp = Column(Integer, nullable=False)
 	shop_status = Column(Integer, default=SHOP_STATUS.ACCEPTED)  # 1：申请中 2：申请成功 3：拒绝
-	shop_auth =Column(Integer,default =0)#0:未认证 1:个人认证 2:企业认证 3:个人加企业认证 #yy4.29
+	shop_auth =Column(Integer,default =0)#0:未认证 1:个人认证 2:企业认证 3:个人认证转企业认证 4:企业认证转个人认证 #yy4.29
+	auth_change=Column(Integer,default =0)#0未认证 1:认证一次 2:认证两次 #yy4.30
 	# on or off
 	status   = Column(Integer,default = 1) # 1:on ,0:off
 
@@ -778,19 +779,30 @@ class ApplyCashHistory(MapBase,_CommonApi):
 	__tablename__ = 'apply_cash'
 	id = Column(Integer,primary_key = True , nullable = False)
 	shop_id = Column(Integer , ForeignKey(Shop.id) ,nullable= False)
+	shop_code = Column(String(64))
+	shop_auth  = Column(Integer)
+	applicant_name  = Column(String(32))
+	shop_balance = Column(Float,default = 0)
+	alipay_account = Column(String(64))
 	value   = Column(Integer) #申请提现的金额，单位：分
 	create_time = Column(DateTime,default = func.now())
 	has_done   = Column(Integer , default = 0) # 0:before done,1: done success,2: decline
 
-
+################################################################################
+# 余额记录 只会在 三处地方产生:
+# 用户充值 ，店铺管理员提现 和 接下来要做的在线支付
+# 即只有真正实现 支付的地方才用到。而用户 余额消费 只是数值上的变动
+################################################################################
 
 class BalanceHistory(MapBase,_CommonApi):
 	__tablename__ = 'balancehistory'
 	id = Column(Integer,primary_key = True , nullable = False)
 	customer_id = Column(Integer,ForeignKey(CustomerShopFollow.customer_id),nullable = False)
+	name = Column(String(32)) #当 balance_type = 0,3 ，时，表示 充值用户的名称 ，
+								#当 balance_type为2 的时候，表示申请提现店铺管理员名称
 	shop_id  = Column(Integer,ForeignKey(CustomerShopFollow.shop_id),nullable = False)
 	balance_record = Column(String(32))  #充值 或者 消费 的 具体记录
-	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:代表订单消费 3:在线支付
+	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:余额消费(没用) 2:提现 3:在线支付
 	balance_value  = Column(Float)
 	create_time    = Column(DateTime,default = func.now())
 
@@ -1285,8 +1297,8 @@ class Cart(MapBase, _CommonApi):
 	__tablename__ = "cart"
 	id = Column(Integer, ForeignKey(Customer.id), primary_key=True, nullable=False)
 	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
-	fruits = Column(String(100), default='{}')
-	mgoods = Column(String(100), default='{}')
+	fruits = Column(String(1000), default='{}')
+	mgoods = Column(String(1000), default='{}')
 
 # 店铺设置
 class Config(MapBase, _CommonApi):

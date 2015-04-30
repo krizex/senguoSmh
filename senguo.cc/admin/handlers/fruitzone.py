@@ -817,7 +817,9 @@ class payTest(FruitzoneBaseHandler):
 			
 
 			#########################################################
-			#余额增加应放在 支付成功的回调里
+			# 用户余额增加 
+			# 同时店铺余额相应增加 
+			# 应放在 支付成功的回调里
 			#########################################################
 
 			# 支付成功后，用户对应店铺 余额 增加
@@ -828,9 +830,15 @@ class payTest(FruitzoneBaseHandler):
 			shop_follow.balance_history += wxPrice     #充值成功，余额增加，单位为 分
 			self.session.commit()
 
+			#########################################################
+			#店铺余额增加
+			#########################################################
+			shop.shop_balance += wxPrice
+
 			# 支付成功后  生成一条余额支付记录
 			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-			 balance_value = wxPrice,balance_record = '充值'+ str(totalPrice) + '元')
+			 balance_value = wxPrice,balance_record = '用户充值'+self.current_user.nickname,name = \
+			 self.current_user.nickname)
 			self.session.add(balance_history)
 			self.session.commit()
 

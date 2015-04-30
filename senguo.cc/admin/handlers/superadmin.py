@@ -141,7 +141,7 @@ class ShopManage(SuperBaseHandler):
 		q_declined = q_temp.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
 		q_accepted = q_temp.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
 		comment_del = self.session.query(models.CommentApply).filter(models.CommentApply.has_done ==0).count()
-		auth_apply=self.session.query(models.ShopAuthenticate).count()
+		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
 
 		count = {
 			"all_temp": q_temp.count(),
@@ -762,10 +762,11 @@ class ShopAuthenticate(SuperBaseHandler):
 		page=int(self.args["page"])
 		page_size = 10
 		page_area =page*page_size
-		auth_apply=self.session.query(models.ShopAuthenticate).count()
-		auth_apply_list=self.session.query(models.ShopAuthenticate).all()[page_area:page_area+10]
+		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
+		#apply_list=self.session.query(models.ShopAuthenticate).all()[page_area:page_area+10]
+		apply_list=self.session.query(models.ShopAuthenticate).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
 		count = {'all':'','all_temp':'','del_apply':'','auth_apply':auth_apply}
-		self.render('superAdmin/shop-cert-apply.html',context=dict(count = count,auth_apply_list=auth_apply_list))
+		self.render('superAdmin/shop-cert-apply.html',context=dict(count = count,auth_apply_list=apply_list))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id','decline_reason?:str','apply_type:int')
@@ -788,19 +789,91 @@ class ShopAuthenticate(SuperBaseHandler):
 		if action == 'commit':
 			shop_auth_apply.has_done = 1
 			if apply_type == 1:
-				shop.shop_auth = 1
+				if shop.auth_change == 0:
+					shop.shop_auth = 1
+					shop.auth_change = 1
+				elif shop.auth_change == 1:
+					shop.shop_auth = 4
+					shop.auth_change = 2
 			elif apply_type == 2:
-				shop.shop_auth = 2
+				if shop.auth_change == 0:
+					shop.shop_auth = 2
+					shop.auth_change = 1
+				elif shop.auth_change == 1:
+					shop.shop_auth = 3
+					shop.auth_change = 2
 			self.session.commit()
 		elif action == 'decline':
 			decline_reason = self.args['decline_reason']
 			shop_auth_apply.has_done = 2
 			shop_auth_apply.decline_reason=decline_reason
-			shop.shop_auth = 0
+			if shop.auth_change == 0:
+				shop.shop_auth = 0
 			self.session.commit()
 		else:
 			return self.send_error(404)
 		return self.send_success(status=0,msg = 'success',data = {})
+
+
+class Balance(SuperBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.send_success()
+
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('action')
+	def post(self):
+		return self.send_success()
+
+class ApplyCash(SuperBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.send_success()
+
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('action','apply_id?:int')
+	def post(self):
+
+		history = []
+		apply_list = None
+
+		if action == 'all_apply':
+			apply_list = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).all()
+		elif action == 'company':
+			apply_list = self,session.query(models.ApplyCashHistory).filter_by(shop_auth = 2,\
+				has_done = 0).all()
+		elif action == 'person':
+			apply_list = self.session.query(models.ApplyCashHistory).filter_by(shop_auth = 1,\
+				has_done = 0).all()
+		elif action == 'decline':
+			apply_id = self.args['apply_id']
+			
+		elif action == 'commit':
+			apply_id = self.args['apply_id']
+			apply_cash = self.session.query(models.ApplyCashHistory).filter_by(id = apply_id).first()
+			if apply_cash:
+				return self.send_fail('apply_cash not found')
+			apply_cash.has_done = 1
+
+			#往 blancehistory中插入一条数据，以免到时候 查看所有记录的时候到两张表中去取 效率低下
+			balance_history = models.BalanceHistory(balance_record = '提现：店铺管理员',balance_type =\
+				2,)
+
+
+
+		if apply_list:
+			for temp in apply_list:
+				history.append([temp.id,temp.shop_code,temp.shop_auth,temp.shop_balance,\
+					temp.create_time,temp.value,temp.alipay_account,temp.applicant_name])
+			return self.send_success(history = history)
+
+
+
+		
+
+
+
+
 
 
 

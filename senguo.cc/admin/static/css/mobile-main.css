@@ -174,8 +174,8 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .zl{-webkit-animation:zl 1.8s linear;}
 .up-down{-webkit-animation: up-down .2s linear 5 alternate;}
 .up{-webkit-animation: up 1.8s ease-in;}
-
-
+.no-recored{width:50%;margin:0 auto;}
+.no-recored img{width:50px;}
 
 
 

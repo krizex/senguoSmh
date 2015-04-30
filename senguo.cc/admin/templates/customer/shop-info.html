@@ -7,9 +7,9 @@
 {% block content %}
 {% set shop_auth ='' %}
 {% set color =''%}
-{% if shop.shop_auth == 1%}
+{% if shop.shop_auth == 1 or shop.shop_auth == 4%}
 {% set shop_auth = '个人认证' %}
-{% elif shop.shop_auth == 2%}
+{% elif shop.shop_auth == 2 or shop.shop_auth == 3%}
 {% set shop_auth = '企业认证' %}
 {% else %}
 {% set shop_auth = '未认证' %}
