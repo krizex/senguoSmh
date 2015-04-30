@@ -520,13 +520,7 @@ class Order(AdminBaseHandler):
 			return self.send.send_error(404)
 
 		page_sum = count /10
-		# orders order by start_time
-		# woody
 		session = self.session
-		# for order in orders:
-		# 	order.w_send_time = order.get_sendtime(session,order.id)
-			# print(order.w_send_time)
-		# print("before sort",orders)
 		page_area = page * page_size
 		orders = sorted(orders , key = lambda x:x.send_time,reverse=True)[page_area:page_area+10]
 		# print("after sort",orders)
@@ -543,22 +537,6 @@ class Order(AdminBaseHandler):
 			d['fruits'] = eval(d['fruits'])
 			d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
-			# if order.start_time.minute <10:
-			# 	w_start_time_minute ='0' + str(order.start_time.minute)
-			# else:
-			# 	w_start_time_minute = str(order.start_time.minute)
-			# if order.end_time.minute < 10:
-			# 	w_end_time_minute = '0' + str(order.end_time.minute)
-			# else:
-			# 	w_end_time_minute = str(order.end_time.minute)
-
-			# if order.type == 2 and order.today==2:
-			# 	w_date = order.create_date + delta
-			# else:
-			# 	w_date = order.create_date
-			# d["sent_time"] = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
-			# 									order.start_time.hour, w_start_time_minute,
-			# 									  order.end_time.hour, w_end_time_minute)
 			d["sent_time"] = order.send_time
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
 				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
@@ -678,6 +656,8 @@ class Order(AdminBaseHandler):
 				# print("success?")
 
 			elif action == "edit_status":
+				if order.status in[5,6]:
+					return self.send_fail("订单已完成。不能修改状态")
 				order.update(session=self.session, status=data["status"])
 				# when the order complete ,
 				# woody
@@ -754,12 +734,13 @@ class Order(AdminBaseHandler):
 								self.session.commit()
 
 						#订单完成后，将相应店铺冻结资产 转为 店铺余额
-						shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-						if not shop:
-							return self.send_fail('shop not found')
-						shop.shop_balance += order.totalprice * 100
-						shop.shop_blockage -= order.totalprice * 100
-						self.session.commit()
+						# 铁说 这是平台思维 已废弃使用 ，改为 用户充值后钱立马到 商铺帐号上
+						# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+						# if not shop:
+						# 	return self.send_fail('shop not found')
+						# shop.shop_balance += order.totalprice * 100
+						# shop.shop_blockage -= order.totalprice * 100
+						# self.session.commit()
 
 					if shop_follow: 
 						if shop_follow.shop_point == None:
@@ -1364,7 +1345,9 @@ class ShopBalance(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments('action','apply_value?:int','alipay_account?:str')
 	def post(self):
 		action = self.args['action']
+		shop_id = self.current_shop.id
 		# 商铺申请提现
+		# 提现申请被超级管理员处理后,会产生一条余额变动记录
 		if action == 'cash':
 			apply_value = self.args['apply_value']
 			alipay_account = self.args['alipay_account']
@@ -1382,7 +1365,8 @@ class ShopBalance(AdminBaseHandler):
 
 		elif action == 'cash_history':
 			history = []
-			history_list = self.session.query(models.ApplyCashHistory).filter_by(shop_id = self.current_shop.id).all()
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
+				balance_type = 2).all()
 			if not history_list:
 				return self.send_fail('history_list error')
 			for temp in history_list:
@@ -1392,7 +1376,7 @@ class ShopBalance(AdminBaseHandler):
 
 		elif action == 'all_history':
 			history = []
-			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = self.current_shop.id).all()
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).all()
 			if not history_list:
 				return self.send_fail('get all BalanceHistory error')
 			for temp in history_list:
@@ -1402,7 +1386,8 @@ class ShopBalance(AdminBaseHandler):
 
 		elif action == 'recharge':
 			history = []
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0).all()
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
+				balance_type = 0).all()
 			if not history_list:
 				return self.send_fail('get all BalanceHistory error')
 			for temp in history_list:
@@ -1412,7 +1397,8 @@ class ShopBalance(AdminBaseHandler):
 
 		elif action == 'online':
 			history = []
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 3).all()
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
+				balance_type = 3).all()
 			if not history_list:
 				return self.send_fail('get all BalanceHistory error')
 			for temp in history_list:

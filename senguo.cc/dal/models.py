@@ -788,13 +788,21 @@ class ApplyCashHistory(MapBase,_CommonApi):
 	create_time = Column(DateTime,default = func.now())
 	has_done   = Column(Integer , default = 0) # 0:before done,1: done success,2: decline
 
+################################################################################
+# 余额记录 只会在 三处地方产生:
+# 用户充值 ，店铺管理员提现 和 接下来要做的在线支付
+# 即只有真正实现 支付的地方才用到。而用户 余额消费 只是数值上的变动
+################################################################################
+
 class BalanceHistory(MapBase,_CommonApi):
 	__tablename__ = 'balancehistory'
 	id = Column(Integer,primary_key = True , nullable = False)
 	customer_id = Column(Integer,ForeignKey(CustomerShopFollow.customer_id),nullable = False)
+	name = Column(String(32)) #当 balance_type = 0,3 ，时，表示 充值用户的名称 ，
+								#当 balance_type为2 的时候，表示申请提现店铺管理员名称
 	shop_id  = Column(Integer,ForeignKey(CustomerShopFollow.shop_id),nullable = False)
 	balance_record = Column(String(32))  #充值 或者 消费 的 具体记录
-	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:代表订单消费 2:提现 3:在线支付
+	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:余额消费(没用) 2:提现 3:在线支付
 	balance_value  = Column(Float)
 	create_time    = Column(DateTime,default = func.now())
 
