@@ -1035,8 +1035,6 @@ class Follower(AdminBaseHandler):
 		page = self.args["page"]
 		page_size = 10
 		shop_id = self.current_shop.id
-		count = 1
-
 		if action in ("all", "old"):
 			if action == "all":  # 所有用户
 				q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
@@ -1074,6 +1072,7 @@ class Follower(AdminBaseHandler):
 				shop_id = shop_id).first()
 			customers[x].shop_point = shop_point.shop_point
 			customers[x].shop_names = [y[0] for y in shop_names]
+			customers[x].shop_balance =shop_point.shop_balance
 
 		page_sum=count//page_size
 		if page_sum == 0:

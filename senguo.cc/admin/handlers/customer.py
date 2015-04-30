@@ -784,7 +784,8 @@ class Market(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("page?:int")
 	def commodity_list(self):
 		#
-		# page = 2
+		# page = 2 
+		print('login  commodity_list')
 		page = self.args["page"]
 		offset = (page -1) * 10
 		customer_id = self.current_user.id
@@ -831,7 +832,7 @@ class Market(CustomerBaseHandler):
 				else:
 					favour_today = favour.create_date == datetime.date.today()
 
-				# print('favour_today',favour_today,'mgood')
+				print('favour_today',favour_today,'mgood')
 
 				charge_types = []
 				for charge_type in mgood.mcharge_types:
@@ -845,20 +846,6 @@ class Market(CustomerBaseHandler):
 
 		w_fruits = []
 		w_dry_fruits = []
-		# def w_getdata(m):
-		#     data = []
-		#     w_tag = ''
-		#     for fruit in m:
-		#         charge_types= []
-		#         for charge_type in fruit.charge_types:
-		#             charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
-		#         if fruit.fruit_type_id >= 1000:
-		#             w_tag = "dry_fruit"
-		#         else:
-		#             w_tag = "fruit"
-		#         data.append([w_tag,{'id':fruit.id,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
-		#         'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour}])
-		#     return data
 		# pages
 		# woody
 		session = self.session
@@ -899,6 +886,7 @@ class Market(CustomerBaseHandler):
 			self.send_error("pages error")
 
 		total_count = count_dry + count_fruit + count_mgoods
+		print(w_orders,'yi bu zhi yao')
 
 		# print('w_orders ',w_orders)
 		# print('w_mgoods',w_mgoods)

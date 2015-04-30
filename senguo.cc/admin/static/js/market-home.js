@@ -471,6 +471,7 @@ var goodsList=function(page,action){
         page:page,
         menu_id:window.dataObj.menu_id
     };
+    // alert('i am here');
     $('.loading').html("~努力加载中 ( > < )~").show();
     $.postJson(url,args,function(res){
         if(res.success)
@@ -491,7 +492,9 @@ var goodsList=function(page,action){
             else initData(res);
         }
         else return noticeBox(res.error_text);
-        },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        },
+        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
         );
         var initData=function(res){
             var w_orders=res.w_orders;
