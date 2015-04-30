@@ -771,14 +771,15 @@ class payTest(FruitzoneBaseHandler):
 			
 			unifiedOrder =   UnifiedOrder_pub()
 			# totalPrice = self.args['totalPrice'] 
-			totalPrice = self.get_cookie('money')
+			totalPrice =float( self.get_cookie('money'))
 			print(totalPrice,'long time no see!')
 			unifiedOrder.setParameter("body",'senguo')
 			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/callback')
-			unifiedOrder.setParameter("openid",openid.encode('utf-8'))
+			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",orderId)
 			#orderPriceSplite = (order.price) * 100
-			wxPrice = totalPrice * 100
+			wxPrice =int(totalPrice * 100)
+			print(wxPrice,'sure')
 			unifiedOrder.setParameter('total_fee',wxPrice)
 			unifiedOrder.setParameter('trade_type',"JSAPI")
 			prepay_id = unifiedOrder.getPrepayId()
@@ -793,7 +794,7 @@ class payTest(FruitzoneBaseHandler):
 		
 		# return self.send_success(renderPayParams = renderPayParams)
 		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
-			noncestr = noncestr ,timestamp = timestamp,signature = signature)
+			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)
 
 	@FruitzoneBaseHandler.check_arguments('code?:str','totalPrice?:float','action','shop_code')
 	def post(self):
