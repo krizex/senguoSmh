@@ -748,7 +748,8 @@ class payTest(FruitzoneBaseHandler):
 	def get(self):
 		print(self.request.full_url())
 		path_url = self.request.full_url()
-		totalPrice = self.args['totalPrice']
+		# totalPrice = self.args['totalPrice']
+
 		jsApi  = JsApi_pub()
 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('fruitzonePayTest')
@@ -769,7 +770,9 @@ class payTest(FruitzoneBaseHandler):
 				print('openid not exit')
 			
 			unifiedOrder =   UnifiedOrder_pub()
-			totalPrice = self.args['totalPrice'] 
+			# totalPrice = self.args['totalPrice'] 
+			totalPrice = self.get_cookie('money')
+			print(totalPrice,'long time no see!')
 			unifiedOrder.setParameter("body",'senguo')
 			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/callback')
 			unifiedOrder.setParameter("openid",openid.encode('utf-8'))
@@ -813,7 +816,12 @@ class payTest(FruitzoneBaseHandler):
 			
 
 			#########################################################
-			#余额增加应放在 支付成功的回调里，此处应有改动
+
+	
+			# 用户余额增加 
+			# 同时店铺余额相应增加 
+			# 应放在 支付成功的回调里
+
 			#########################################################
 
 			# 支付成功后，用户对应店铺 余额 增加
