@@ -1360,21 +1360,28 @@ class ShopBalance(AdminBaseHandler):
 		return self.render("admin/account-rd.html",context=dict(subpage=subpage,shop_balance = shop_balance))
 
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('action','apply_value?:int')
+	@AdminBaseHandler.check_arguments('action','apply_value?:int','alipay_account?:str')
 	def post(self):
 		action = self.args['action']
 		# 商铺申请提现
 		if action == 'cash':
 			apply_value = self.args['apply_value']
+			alipay_account = self.args['alipay_account']
 			shop_id = self.current_shop.id
-			applyCash_history = models.ApplyCashHistory(shop_id = shop_id , apply_value = apply_value ,has_done =0)
+			shop_code = self.current_shop.shop_code
+			shop_auth = self.current_shop.shop_auth
+			shop_balance = self.current_shop.shop_balance
+			applicant_name = self.current_user.accountinfo.nickname
+			applyCash_history = models.ApplyCashHistory(shop_id = shop_id , apply_value = apply_value ,has_done =0,\
+				shop_code = shop_code,shop_auth = shop_auth , shop_balance = shop_balance,alipay_account = \
+				alipay_account,applicant_name = applicant_name)
 			self.session.add(applyCash_history)
 			self.session.commit()
 			return self.send_success()
 
 		elif action == 'cash_history':
 			history = []
-			history_list = self.session.query(models.ApplyCashHistory).all()
+			history_list = self.session.query(models.ApplyCashHistory).filter_by(shop_id = self.current_shop.id).all()
 			if not history_list:
 				return self.send_fail('history_list error')
 			for temp in history_list:
@@ -1384,7 +1391,7 @@ class ShopBalance(AdminBaseHandler):
 
 		elif action == 'all_history':
 			history = []
-			history_list = self.session.query(models.BalanceHistory).all()
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = self.current_shop.id).all()
 			if not history_list:
 				return self.send_fail('get all BalanceHistory error')
 			for temp in history_list:
@@ -1394,7 +1401,7 @@ class ShopBalance(AdminBaseHandler):
 
 		elif action == 'recharge':
 			history = []
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0)
+			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0).all()
 			if not history_list:
 				return self.send_fail('get all BalanceHistory error')
 			for temp in history_list:
@@ -1404,7 +1411,7 @@ class ShopBalance(AdminBaseHandler):
 
 		elif action == 'online':
 			history = []
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 1)
+			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 3).all()
 			if not history_list:
 				return self.send_fail('get all BalanceHistory error')
 			for temp in history_list:

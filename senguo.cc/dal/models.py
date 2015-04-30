@@ -774,11 +774,14 @@ class ApplyCashHistory(MapBase,_CommonApi):
 	__tablename__ = 'apply_cash'
 	id = Column(Integer,primary_key = True , nullable = False)
 	shop_id = Column(Integer , ForeignKey(Shop.id) ,nullable= False)
+	shop_code = Column(String(64))
+	shop_auth  = Column(Integer)
+	applicant_name  = Column(String(32))
+	shop_balance = Column(Float,default = 0)
+	alipay_account = Column(String(64))
 	value   = Column(Integer) #申请提现的金额，单位：分
 	create_time = Column(DateTime,default = func.now())
 	has_done   = Column(Integer , default = 0) # 0:before done,1: done success,2: decline
-
-
 
 class BalanceHistory(MapBase,_CommonApi):
 	__tablename__ = 'balancehistory'
@@ -786,7 +789,7 @@ class BalanceHistory(MapBase,_CommonApi):
 	customer_id = Column(Integer,ForeignKey(CustomerShopFollow.customer_id),nullable = False)
 	shop_id  = Column(Integer,ForeignKey(CustomerShopFollow.shop_id),nullable = False)
 	balance_record = Column(String(32))  #充值 或者 消费 的 具体记录
-	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:代表订单消费 3:在线支付
+	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:代表订单消费 2:提现 3:在线支付
 	balance_value  = Column(Float)
 	create_time    = Column(DateTime,default = func.now())
 
