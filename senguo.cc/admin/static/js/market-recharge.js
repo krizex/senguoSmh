@@ -4,12 +4,13 @@
 $(document).ready(function(){
 
 }).on("click",".rec-bm-lst .check-ipt",function(){
-    $(".rec-bm-lst .check-ipt").removeClass("checked");
-    $(this).addClass("checked");
+    /*$(".rec-bm-lst .check-ipt").removeClass("checked");
+    $(this).addClass("checked");*/
 }).on("click",".rec-bm-lst .check-ipt",function(){
     /*$(".rec-bm-lst .check-ipt").removeClass("checked");
     $(this).addClass("checked");*/
-    var index = $(this).index();
+    var index = $(this).attr("data-index");
+console.log(index);
     if(index>0){
         noticeBox("当前只支持微信支付，其他支付方式正在开发中...");
     }
