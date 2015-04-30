@@ -744,11 +744,14 @@ class SystemPurchase(FruitzoneBaseHandler):
 class payTest(FruitzoneBaseHandler):
 
 	# @tornado.web.authenticated
-	@FruitzoneBaseHandler.check_arguments('code?:str')
+	@FruitzoneBaseHandler.check_arguments('code?:str','totalPrice?')
 	def get(self):
 		print(self.request.full_url())
 		path_url = self.request.full_url()
-		totalPrice = self.args['totalPrice']
+		# totalPrice = self.args['totalPrice']
+		totalPrice = self.get_cookie('money')
+		print(totalPrice,'why it is  always 0.1?')
+		jsApi  = JsApi_pub()
 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('fruitzonePayTest')
 		print(path , 'redirect_uri is Ture?')
@@ -759,31 +762,7 @@ class payTest(FruitzoneBaseHandler):
 			url = jsApi.createOauthUrlForCode(path)
 			print(url,'code?')
 			return self.redirect(url)
-		
-
-			
-		
-		# return self.send_success(renderPayParams = renderPayParams)
-		return self.render("fruitzone/paytest.html",code = code)
-
-	@FruitzoneBaseHandler.check_arguments('code?:str','totalPrice?:float','action','shop_code')
-	def post(self):
-
-		# 微信 余额 支付
-		if action == 'wx_pay':
-
-			shop_code  = self.args['shop_code']
-			shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
-			if not shop:
-				return self.send_fail('shop not found')
-			shop_id = shop.id
-			customer_id = self.current_user.id
-			
-
-			code = self.args['code']
-			path_url = self.request.full_url()
-
-			jsApi  = JsApi_pub()
+		else:
 			orderId = str(self.current_user.id) + str(int(time.time()))
 			jsApi.setCode(code)
 			openid = jsApi.getOpenid()
@@ -810,9 +789,35 @@ class payTest(FruitzoneBaseHandler):
 			timestamp = datetime.datetime.now().timestamp()
 			wxappid = 'wx0ed17cdc9020a96e'
 			signature = self.signature(noncestr,timestamp,path_url)
+		
+		# return self.send_success(renderPayParams = renderPayParams)
+		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
+			noncestr = noncestr ,timestamp = timestamp,signature = signature)
+
+	@FruitzoneBaseHandler.check_arguments('code?:str','totalPrice?:int','action','shop_code')
+	def post(self):
+
+		# 微信 余额 支付
+		if action == 'wx_pay':
+
+			shop_code  = self.args['shop_code']
+			totalPrice = self.args['totalPrice']
+			wxPrice = totalPrice * 100
+			shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
+			if not shop:
+				return self.send_fail('shop not found')
+			shop_id = shop.id
+			customer_id = self.current_user.id
+			
+
+			code = self.args['code']
+			path_url = self.request.full_url()
+
+			
+			
 
 			#########################################################
-			#余额增加应放在 支付成功的回调里，此处应有改动
+			#余额增加应放在 支付成功的回调里
 			#########################################################
 
 			# 支付成功后，用户对应店铺 余额 增加
@@ -829,8 +834,7 @@ class payTest(FruitzoneBaseHandler):
 			self.session.add(balance_history)
 			self.session.commit()
 
-			return self.send_success(renderPayParams = renderPayParams,wxappid = wxappid,\
-				noncestr = noncestr ,timestamp = timestamp,signature = signature)
+			return self.send_success()
 		else:
 			return self.send_fail('其它支付方式尚未开发')
 		

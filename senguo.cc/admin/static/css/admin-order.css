@@ -122,7 +122,7 @@ body{-webkit-user-select: none; }
 .sendIntimeBox .to{margin:0 5px;line-height:28px;}
 .time-list .time-list-item{padding:5px 0;border-bottom:1px solid #ccc;}
 .time-list .time-list-item .action-mode{margin-right:15px;margin-top:5px;}
-.time-list .time-list-item .show_item{line-height:28px;margin-left:10px;}
+.time-list .time-list-item .show_item{line-height:28px;margin:0 10px;}
 
 .add-period{padding:8px 0 8px;border-top:1px solid #ccc;border-bottom:1px solid #ccc;clear:both;margin-bottom:10px;}
 .add-period .tit{margin-left:0;}
@@ -167,3 +167,4 @@ body{-webkit-user-select: none; }
 .new{display:inline-block;width:20px;height:20px;border:1px solid #7AD218;color:#7AD218;line-height:20px;text-align:center;margin-left:-25px;margin-right:5px;background-color:#fff;}
 
 .add-new-time{margin:10px 0;clear:both;display:inline-block;}
+.sendIntimeBox .modal-concel-btn{display:block;margin:0 auto;}

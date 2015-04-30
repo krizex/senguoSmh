@@ -281,14 +281,21 @@ var confirmRemove=function(){
 }
 //word notice
 var noticeTimer = null;
+var tempObj = null;
 var noticeBox=function(text,item){
+    if(tempObj){
+        tempObj.removeAttr('disabled').removeClass('bg-greyc');
+    }
     clearTimeout(noticeTimer);
     if($("#noticeBox").size()==0){
         var $box=$('<div class="notice_bg hidden" id="noticeBox"><div class="notice_box text-center center-block"><p class="notice text-white font14 text-center"></p></div></div>');
         $('body').append($box);
     }
     $("#noticeBox").removeClass('hidden').find('.notice').text(text);
-    if(item) {item.attr({'disabled':'true'});}
+    if(item) {
+        tempObj = item;
+        item.attr({'disabled':'true'});
+    }
     noticeRemove('noticeBox',item);
 }
 //modal notice word
@@ -309,7 +316,6 @@ var warnNotice=function(text,item){
 var noticeRemove=function (target,item) {
     noticeTimer = setTimeout(function() {
         $('#'+target).addClass('hidden');
-        $('.sure_btn').removeAttr('disabled').removeClass('bg-greyc');
         if(item) {
             item.removeAttr('disabled').removeClass('bg-greyc');
         }

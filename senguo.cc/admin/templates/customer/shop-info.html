@@ -1,10 +1,20 @@
 {% extends 'base.html' %}
-{% block title %}【{{shop_name}}】 一家不错的O2O店铺，快来关注吧~{% end %}
+{% block title %}【{{shop_name}}】一家不错的O2O店铺，快来关注吧~{% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/baguetteBox.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/market-shop.css')}}"/>
 {% end %}
 {% block content %}
+{% set shop_auth ='' %}
+{% set color =''%}
+{% if shop.shop_auth == 1%}
+{% set shop_auth = '个人认证' %}
+{% elif shop.shop_auth == 2%}
+{% set shop_auth = '企业认证' %}
+{% else %}
+{% set shop_auth = '未认证' %}
+{% set color='bg-greyc' %}
+{% end %}
 <span id="shop_imgurl" data-img="{{shop_logo}}"></span>
 <div class="rainshed text-center font18 text-black fix-title bg_change">店铺详情</div>
  <div class="info1 bg-white clearfix mt42 pt20">
@@ -12,7 +22,7 @@
          <img src="{{shop.shop_trademark_url or static_url('design_img/TDSG.png')}}?imageView/1/w/170/h/170">
      </div>
      <div class="info set-w100-fle">
-        <p class="font16 line18">{{shop.shop_name}}<!--<span class="cert-type">个人认证</span>--></p>
+        <p class="font16 line18">{{shop.shop_name}}<span class="cert-type {{color}}">{{shop_auth}}</span></p>
         <p class="font12 mt10 m-b10">店铺号：<span class="">{{shop.shop_code}}</span></p>
      </div>
      <div class="info set-w100-fle">
@@ -100,7 +110,7 @@
         <div class="title" id="show-more">
             <p class="pull-left font14">店铺评价：</p>
             <p class="pt4">
-                <span class="num-txt">满意度：</span><span class="per-txt">96%</span><span class="num-txt pl20">{{comment_sum}}条评论</span>
+                <!--<span class="num-txt">满意度：</span><span class="per-txt">96%</span>--><span class="num-txt pl20">{{comment_sum}}条评论</span>
                 <a href="{{reverse_url('customerComment')}}?page=0" class="pull-right text-grey9 font12 m-r5">查看更多>></a>
             </p>
         </div>
