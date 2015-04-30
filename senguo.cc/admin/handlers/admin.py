@@ -1503,6 +1503,7 @@ class ShopAuthenticate(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments('action','data')
 	def post(self):
 		shop_id = self.current_shop.id
+		print("[店铺认证]当前店铺：",self.current_shop)
 		action = self.args["action"]
 		data = self.args["data"]
 		auth_change = self.current_shop.auth_change
