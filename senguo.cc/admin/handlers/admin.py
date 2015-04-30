@@ -1357,7 +1357,7 @@ class ShopBalance(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		subpage = 'shopBlance'
-		return self.render("admin/account-rd.html",context=dict(subpage=subpage))
+		return self.render("admin/shop-balance.html",context=dict(subpage=subpage))
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action','apply_value?:int')
