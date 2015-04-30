@@ -20,7 +20,7 @@
     $(".container").height($(window).height()).css({background:"#f5f5f5"});
     $("#shopName").html(localStorage.getItem("shopName"));
    wx.config({
-            debug: true,
+            debug: false,
             appId: "{{wxappid}}",
             timestamp: {{timestamp}},
             nonceStr: "{{noncestr}}",
