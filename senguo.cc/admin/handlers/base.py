@@ -485,10 +485,10 @@ class CustomerBaseHandler(_AccountBaseHandler):
 				else: d[charge_type_id] = 1
 			elif inc == 1:#减1
 				if charge_type_id in d.keys():
-					if d[charge_type_id] == 1:
+					if int(d[charge_type_id]) == 1:
 						del d[charge_type_id]
 					else:
-						d[charge_type_id] =  d[charge_type_id]  -1
+						d[charge_type_id] =  int(d[charge_type_id])  -1
 				else:return
 			elif inc == 0:#删除
 				if charge_type_id in d.keys(): del d[charge_type_id]
