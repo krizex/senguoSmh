@@ -43,7 +43,7 @@
                     <span>用户积分：{{customer.shop_point}}</span>
                     <!--<span class="user-level text-white text-center">Lv3</span>
                     <span class="level-price text-grey2">566</span>-->
-                    <!--<span class="user-account text-grey2">{{customer.credits}}元</span>-->
+                    <span class="user-account text-grey2 ml10">{{customer.shop_balance}}元</span>
                 </div>
             </div>
             <a href="{{reverse_url('adminSearchOrder')}}?action=customer_order&&id={{customer.id}}" class="history-order pull-right forbid_click" target="_blank" >查看历史订单</a>

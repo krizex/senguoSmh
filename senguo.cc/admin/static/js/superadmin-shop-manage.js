@@ -19,6 +19,14 @@ $(document).ready(function(){
         localStorage.setItem("itemIndex",0);
         $(".shop-manage-nav li").removeClass("active").eq(0).addClass("active");
     }
+}).on('click',"#authPrePage",function(){
+    var page=Int($.getUrlParam('page'));
+    if(page>0) {
+        window.location.href='/super/shopauth?page='+(page-1);
+    }
+}).on('click',"#authNextPage",function(){
+    var page=Int($.getUrlParam('page'));
+    window.location.href='/super/shopauth?page='+(page+1);
 }).on("click",".shop-manage-nav li",function(){
     var index = $(this).index();
     localStorage.setItem("itemIndex",index);

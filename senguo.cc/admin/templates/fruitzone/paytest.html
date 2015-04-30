@@ -4,15 +4,22 @@
 <link rel="stylesheet" href="{{static_url('css/mobile-main.css')}}"/>
 {% end %}
 {% block content%}
+     <p class="pay-title">余额充值</p>
+     <p class="pay-money">¥<span>{{totalPrice}}</span></p>
     <div class="wrap-pay">
-        <p>确认往森果平台个人余额中充值<span class="sum">{{totalPrice}}</span>元？</p>
-        <a href="javascript:;" class="pay-btn" id="getBrandWCPayRequest">确认支付</a>
+        <p><span class="left c999">所在店铺：</span><span class="left txt-ar" id="shopName">{{shop_name}}</span></p>
+        <p><span class="left c999">支付方式：</span><span class="left txt-ar">微信支付</span></p>
     </div>
+    <a href="javascript:;" class="pay-btn" id="getBrandWCPayRequest">现在支付</a>
+    <div class="copy-right">powered by senguo.cc</div>
 {% end %}
+
 {% block bottom %}
 <script src="{{static_url('js/jweixin-1.0.js')}}"></script>
 <script type="text/javascript">
-    wx.config({
+    $(".container").height($(window).height()).css({background:"#f5f5f5"});
+    $("#shopName").html(localStorage.getItem("shopName"));
+   wx.config({
             debug: true,
             appId: "{{wxappid}}",
             timestamp: {{timestamp}},

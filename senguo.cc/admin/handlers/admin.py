@@ -1035,8 +1035,6 @@ class Follower(AdminBaseHandler):
 		page = self.args["page"]
 		page_size = 10
 		shop_id = self.current_shop.id
-		count = 1
-
 		if action in ("all", "old"):
 			if action == "all":  # 所有用户
 				q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
@@ -1074,6 +1072,7 @@ class Follower(AdminBaseHandler):
 				shop_id = shop_id).first()
 			customers[x].shop_point = shop_point.shop_point
 			customers[x].shop_names = [y[0] for y in shop_names]
+			customers[x].shop_balance =shop_point.shop_balance
 
 		page_sum=count//page_size
 		if page_sum == 0:
@@ -1339,7 +1338,7 @@ class ShopBalance(AdminBaseHandler):
 		subpage = 'shopBlance'
 		shop = self.current_shop
 		shop_balance = shop.shop_balance
-		return self.render("admin/account-rd.html",context=dict(subpage=subpage,shop_balance = shop_balance))
+		return self.render("admin/shop-balance.html",shop_balance = shop_balance,context=dict(subpage=subpage))
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action','apply_value?:int','alipay_account?:str')
@@ -1466,10 +1465,9 @@ class ShopAuthenticate(AdminBaseHandler):
 		token = self.get_qiniu_token("shopAuth_cookie",shop_id)
 		try:
 			auth_apply=self.session.query(models.ShopAuthenticate).filter(models.ShopAuthenticate.shop_id == shop_id).\
-			order_by(desc(models.ShopAuthenticate.shop_id)).first()
+			order_by(desc(models.ShopAuthenticate.id)).first()
 		except:
 			print('auth_apply error')
-		print(auth_apply)
 		person_auth=False
 		company_auth=False
 		has_done = 0
@@ -1479,7 +1477,7 @@ class ShopAuthenticate(AdminBaseHandler):
 			has_done = auth_apply.has_done
 			apply_type = auth_apply.shop_type
 			decline_reason = auth_apply.decline_reason
-			if auth_apply.has_done!=2:
+			if auth_apply.has_done == 0:
 				if auth_apply.shop_type == 1:
 					person_auth = True
 				if auth_apply.shop_type == 2:

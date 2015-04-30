@@ -141,7 +141,7 @@ class ShopManage(SuperBaseHandler):
 		q_declined = q_temp.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
 		q_accepted = q_temp.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
 		comment_del = self.session.query(models.CommentApply).filter(models.CommentApply.has_done ==0).count()
-		auth_apply=self.session.query(models.ShopAuthenticate).count()
+		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
 
 		count = {
 			"all_temp": q_temp.count(),
@@ -762,10 +762,11 @@ class ShopAuthenticate(SuperBaseHandler):
 		page=int(self.args["page"])
 		page_size = 10
 		page_area =page*page_size
-		auth_apply=self.session.query(models.ShopAuthenticate).count()
-		auth_apply_list=self.session.query(models.ShopAuthenticate).all()[page_area:page_area+10]
+		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
+		#apply_list=self.session.query(models.ShopAuthenticate).all()[page_area:page_area+10]
+		apply_list=self.session.query(models.ShopAuthenticate).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
 		count = {'all':'','all_temp':'','del_apply':'','auth_apply':auth_apply}
-		self.render('superAdmin/shop-cert-apply.html',context=dict(count = count,auth_apply_list=auth_apply_list))
+		self.render('superAdmin/shop-cert-apply.html',context=dict(count = count,auth_apply_list=apply_list))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id','decline_reason?:str','apply_type:int')
@@ -806,7 +807,8 @@ class ShopAuthenticate(SuperBaseHandler):
 			decline_reason = self.args['decline_reason']
 			shop_auth_apply.has_done = 2
 			shop_auth_apply.decline_reason=decline_reason
-			shop.shop_auth = 0
+			if shop.auth_change == 0:
+				shop.shop_auth = 0
 			self.session.commit()
 		else:
 			return self.send_error(404)
@@ -849,7 +851,7 @@ class ApplyCash(SuperBaseHandler):
 		elif action == 'commit':
 			apply_id = self.args['apply_id']
 			apply_cash = self.session.query(models.ApplyCashHistory).filter_by(id = apply_id).first()
-			if apply_cash not None:
+			if apply_cash:
 				return self.send_fail('apply_cash not found')
 			apply_cash.has_done = 1
 
@@ -859,7 +861,7 @@ class ApplyCash(SuperBaseHandler):
 
 
 
-		if apply_list not None:
+		if apply_list:
 			for temp in apply_list:
 				history.append([temp.id,temp.shop_code,temp.shop_auth,temp.shop_balance,\
 					temp.create_time,temp.value,temp.alipay_account,temp.applicant_name])
