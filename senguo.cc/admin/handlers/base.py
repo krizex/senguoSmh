@@ -265,7 +265,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		if timedelta.days >= 365:
 			return "%d年前" % (timedelta.days/365)
 		elif timedelta.days >= 30:
-			return "%d月前" % (timedelta.days/30)
+			return "%d个月前" % (timedelta.days/30)
 		elif timedelta.days > 0:
 			return "%d天前" % timedelta.days
 		elif timedelta.seconds >= 3600:
@@ -273,7 +273,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		elif timedelta.seconds >= 60:
 			return "%d分钟前" % (timedelta.seconds/60)
 		else:
-			return "%d秒前" % timedelta.seconds
+			return "刚刚"
 
 	def write_error(self, status_code, **kwargs):
 		if status_code == 404:
