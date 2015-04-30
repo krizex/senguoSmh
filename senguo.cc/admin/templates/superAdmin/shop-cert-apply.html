@@ -10,7 +10,7 @@
         {% else %}
         {% set type='企业认证'%}
         {% end %}
-         <li class="row shop-list-item list-group-item" data-id="{{list.id}}">
+         <li class="row shop-list-item list-group-item" data-id="{{list.id}}" data-type="{{list.shop_type}}">
           {% if list.shop_type==1 %}
             <ul class="cert-shop group">
                 <li class=".clip">店铺：<a href="javascript:;">{{list.shop.shop_name}}</a></li>

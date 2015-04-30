@@ -14,7 +14,8 @@
             <p class="grey-txt">1.未设置店铺号；2.店铺信息并非真实和齐全；3.店铺用户数量低于10个；4.店铺上架商品数量低于1。</p>
         </div>
         {% if context['has_done'] == 2%}
-        <h4 class="text-pink mt10">认证失败，失败理由：{{context['decline_reason']}},请重新申请认证</h4>
+        <h4 class="fail-notice text-pink mt10">认证失败,请重新申请认证</h4>
+        <h4 class="fail-notice text-pink mt10">失败理由：{{context['decline_reason']}}</h4>
         {% end %}
         <div class="cert-type group">
             <div class="type active scom">

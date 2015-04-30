@@ -52,12 +52,14 @@ $(document).ready(function(){
     $(".wrap-com-pop").removeClass("hide");
     var apply_id=$this.parents('.shop-list-item').attr('data-id');
     var index=$this.parents('.shop-list-item').index();
-    $(".wrap-com-pop").attr({'data-id':apply_id,'data-index':index});
+    var type=$this.parents('.shop-list-item').attr('data-type');
+    $(".wrap-com-pop").attr({'data-id':apply_id,'data-index':index,'data-type':type});
 }).on("click",".ok",function(e){
      var $this=$(this);
      var apply_id=$this.parents('.shop-list-item').attr('data-id');
+     var type=$this.parents('.shop-list-item').attr('data-type');
      if(confirm('确认通过该申请?')){
-          passAuth(apply_id,$this);
+          passAuth(apply_id,$this,type);
     }
 }).on('click','#submit-apply',function(){
         rejectAuth();
@@ -68,12 +70,14 @@ $(document).ready(function(){
 window.onbeforeunload = function(){
     localStorage.setItem("itemIndex",0);
 }
-function passAuth(apply_id,target){
+function passAuth(apply_id,target,type){
     var action="commit";
     var url='';
+    var type=Int(type);
     var args={
         action:action,
         apply_id:apply_id,
+        apply_type:type
     };
     $.postJson(url,args,
         function(res){
@@ -90,6 +94,7 @@ function rejectAuth(){
     var url='';
     var apply_id=$(".wrap-com-pop").attr('data-id');
     var index=$(".wrap-com-pop").attr('data-index');
+    var type=  Int($(".wrap-com-pop").attr('data-type'));
     var decline_reason=$('#com-cont').val();
     if(!decline_reason){
         return alert(' 输入拒绝理由');
@@ -97,6 +102,7 @@ function rejectAuth(){
     var args={
         action:action,
         apply_id:apply_id,
+        apply_type:type,
         decline_reason:decline_reason
     };
     $.postJson(url,args,

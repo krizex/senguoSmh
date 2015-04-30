@@ -78,7 +78,9 @@ $(document).ready(function(){
                 $(".scom").remove();
                 $(".wrap-en-cert").remove();
                 $(".encom").remove();
+                $('.fail-notice').remove();
             }else{
+                $this.removeClass("bg85").removeAttr("data-statu");
                 alert(res.error_text);
             }
         }
@@ -145,7 +147,9 @@ $(document).ready(function(){
                 $(".scom").remove();
                 $(".wrap-en-cert").remove();
                 $(".encom").remove();
+                $('.fail-notice').remove();
             }else{
+                $this.removeClass("bg85").removeAttr("data-statu");
                 alert(res.error_text);
             }
         }
