@@ -801,7 +801,7 @@ class payTest(FruitzoneBaseHandler):
 
 		# 微信 余额 支付
 		if action == 'wx_pay':
-
+			print('回调成功')
 			shop_code  = self.args['shop_code']
 			shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
 			if not shop:
@@ -828,6 +828,7 @@ class payTest(FruitzoneBaseHandler):
 			# 支付成功后，用户对应店铺 余额 增加
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 				shop_id = shop_id).first()
+			print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
 			if not shop_follow:
 				return self.send_fail('shop_follow not found')
 			shop_follow.balance_history += wxPrice     #充值成功，余额增加，单位为 分
