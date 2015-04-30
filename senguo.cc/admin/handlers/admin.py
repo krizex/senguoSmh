@@ -1478,10 +1478,9 @@ class ShopAuthenticate(AdminBaseHandler):
 		token = self.get_qiniu_token("shopAuth_cookie",shop_id)
 		try:
 			auth_apply=self.session.query(models.ShopAuthenticate).filter(models.ShopAuthenticate.shop_id == shop_id).\
-			order_by(desc(models.ShopAuthenticate.shop_id)).first()
+			order_by(desc(models.ShopAuthenticate.id)).first()
 		except:
 			print('auth_apply error')
-		print(auth_apply)
 		person_auth=False
 		company_auth=False
 		has_done = 0
@@ -1491,7 +1490,7 @@ class ShopAuthenticate(AdminBaseHandler):
 			has_done = auth_apply.has_done
 			apply_type = auth_apply.shop_type
 			decline_reason = auth_apply.decline_reason
-			if auth_apply.has_done!=2:
+			if auth_apply.has_done == 0:
 				if auth_apply.shop_type == 1:
 					person_auth = True
 				if auth_apply.shop_type == 2:

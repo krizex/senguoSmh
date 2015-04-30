@@ -4,16 +4,15 @@ $(document).ready(function(){
     var apply_status=Int($('#data').attr('data-status'));
     var shop_auth=$('#data').attr('data-auth');
     var times=$('#data').attr('data-times');
-    if(person_auth=='True' && times==0||company_auth=='True'  && times==0){
+    if(person_auth=='True' ||company_auth=='True'){
         $(".wrap-per-cert").addClass('hide');
         $(".wrap-en-cert").addClass('hide');
         $('.wrap-cert-tip').removeClass('hide');
         $(".scom").addClass('hide');
         $(".encom").addClass('hide');
         $('.change-notice').addClass('hide');
-        console.log(111);
     }
-    if(times == 1){
+    if(times != 0){
         $(".wrap-per-cert").addClass('hide');
         $(".wrap-en-cert").addClass('hide');
         if(apply_status == 0){
@@ -23,15 +22,8 @@ $(document).ready(function(){
             $('.wrap-cert-tip').removeClass('hide');
         }
     }
-    if(person_auth == 'True' && apply_status==1){
-        $('.wrap-cert-tip').addClass('hide');
-        $(".scom").removeClass('hide');
-        console.log(333);
-    }
-    if(company_auth == 'True' && apply_status==1){
-        $('.wrap-cert-tip').addClass('hide');
-        $(".encom").removeClass('hide');
-        console.log(444);
+    if(shop_auth==1){
+        $(".wrap-per-cert").addClass('hide');
     }
 }).on("click",".cert-type .type",function(){
     var index = $(this).index();
@@ -113,6 +105,7 @@ $(document).ready(function(){
                 $(".wrap-en-cert").remove();
                 $(".encom").remove();
                 $('.fail-notice').remove();
+                $('.change-notice').remove();
             }else{
                 $this.removeClass("bg85").removeAttr("data-statu");
                 alert(res.error_text);
@@ -182,6 +175,7 @@ $(document).ready(function(){
                 $(".wrap-en-cert").remove();
                 $(".encom").remove();
                 $('.fail-notice').remove();
+                $('.change-notice').remove();
             }else{
                 $this.removeClass("bg85").removeAttr("data-statu");
                 alert(res.error_text);

@@ -4,6 +4,8 @@
 {% block setcontent %}
 {% set shop_auth = current_shop.shop_auth %}
 {% set auth_change = current_shop.auth_change %}
+{% set person_auth = context['person_auth']%}
+{% set company_auth = context['company_auth']%}
 {% set active_p='' %}
 {% set active_c='' %}
 {% set status='' %}
@@ -14,14 +16,14 @@
 {% else %}
     {% set active_p='active'%}        
 {% end %}
-{% if shop_auth == 1 or shop_auth == 3 %}
+{% if shop_auth == 1 or shop_auth == 4 %}
     {% set hidden_p='show' %}
     {% set active_p='active'%}
-{% elif shop_auth == 2 or shop_auth == 4 %}
+{% elif shop_auth == 2 or shop_auth == 3 %}
     {% set hidden_c='show' %}
     {% set active_c='active'%}
 {% end %}
-<input type="hidden" id="data" value="{{context['token']}}" data-per="{{context['person_auth']}}" data-com="{{context['company_auth']}}" data-status="{{context['has_done']}}" data-auth="{{shop_auth}}" data-times="{{auth_change}}">
+<input type="hidden" id="data" value="{{context['token']}}" data-per="{{person_auth}}" data-com="{{company_auth}}" data-status="{{context['has_done']}}" data-auth="{{shop_auth}}" data-times="{{auth_change}}">
 <div class="wrap-cert">
     <div class="wrap-top">
         <div class="cert-title">
@@ -36,117 +38,124 @@
         <h4 class="fail-notice text-pink mt10">认证失败,请重新申请认证</h4>
         <h4 class="fail-notice text-pink mt10">失败理由：{{context['decline_reason']}}</h4>
         {% end %}
-        <div class="cert-type group">
-            <div class="type {{active_p}} scom"  data-status="{{status}}">
-                <h3>个人认证</h3>
-                <p>适合个人、小型创业团队</p>
-                <img  class="cert-img {{hidden_p}}" src="/static/images/cert_ok.png">
-            </div>
-            <div class="type {{active_c}} item encom"  data-status="{{status}}">
-                <h3>企业认证</h3>
-                <p>适合个体工商户、公司</p>
-                <img  class="cert-img {{hidden_c}}" src="/static/images/cert_ok.png">
-            </div>
-        </div>
-    </div>
-    {% if auth_change == 1 %}
-            <p class="text-blue change-notice"><a href="javascript:;" class="change-auth">更改认证类型</a><span class="text-grey9">（您还剩1次更改机会）</span></p>
-    {% elif auth_change == 2 %}
-            <p class="text-grey9 change-notice">认证类型不可更改</p>
-    {% end %}
-    <div class="wrap-bm wrap-per-cert">
-        <table class="per-tb">
-            <colgroup>
-                <col width="150"/>
-            </colgroup>
-            <tr>
-                <td class="left">真实姓名：</td>
-                <td><input type="text" placeholder="与身份证上姓名保持一致" id="per-name"/></td>
-            </tr>
-            <tr>
-                <td class="left">身份证帐号：</td>
-                <td><input type="text" placeholder="与身份证上身份证号保持一致" id="per-ID"/></td>
-            </tr>
-            <tr>
-                <td class="left">手持身份证照片：</td>
-                <td>
-                    <p class="per-tip">请上传清晰可见的照片，拍照时请勿用手指遮挡身份证信息</p>
-                    <a href="javascript:;" class="per-btn upload-btn" id="upload-per">上传照片</a>
-                    <div class="wrap-img hide" id="wrap-per-img">
-                        <img class="cert-upload-img" src="" alt="身份证照片" id="person-img"/>
+        {% if person_auth == False and company_auth ==False %}
+                <div class="cert-type group">
+                    <div class="type {{active_p}} scom"  data-status="{{status}}">
+                        <h3>个人认证</h3>
+                        <p>适合个人、小型创业团队</p>
+                        <img  class="cert-img {{hidden_p}}" src="/static/images/cert_ok.png">
                     </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="left">短信验证码：</td>
-                <td>
-                    <input type="text" id="per-code"/><a href="javascript:;" class="per-btn get-code" id="getPerCode">获取验证码</a>
-                    <p class="per-tip mt10">手机验证码将发送到店铺超级管理员绑定的手机号<span id="perCode">{{current_shop.admin.accountinfo.phone}}</span>上</p>
-                </td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td><a href="javascript:;" class="per-btn per-commit" id="per-commit">提交认证</a></td>
-            </tr>
-        </table>
-    </div>
-    <div class="wrap-bm wrap-en-cert hide">
-        <table class="per-tb">
-            <colgroup>
-                <col width="150"/>
-            </colgroup>
-            <tr>
-                <td class="left">企业名称：</td>
-                <td><input type="text" placeholder="与身份证上姓名保持一致" id="en-name"/></td>
-            </tr>
-            <tr>
-                <td class="left">营业执照图片：</td>
-                <td>
-                    <p class="per-tip">请上传清晰可见的照片，图片大小不大于4M</p>
-                    <a href="javascript:;" class="per-btn upload-btn" id="upload-license">上传营业执照</a>
-                    <div class="wrap-img hide" id="wrap-lis-img">
-                        <img class="cert-upload-img" src="" alt="身份证照片" id="license-img"/>
+                    <div class="type {{active_c}} item encom"  data-status="{{status}}">
+                        <h3>企业认证</h3>
+                        <p>适合个体工商户、公司</p>
+                        <img  class="cert-img {{hidden_c}}" src="/static/images/cert_ok.png">
                     </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="left">法人姓名：</td>
-                <td><input type="text" placeholder="与身份证上姓名保持一致" id="en-per-name"/></td>
-            </tr>
-            <tr>
-                <td class="left">法人身份证：</td>
-                <td>
-                    <a href="javascript:;" class="per-btn ib upload-btn" id="upload-font">上传身份证照片（正面）</a>
-                    <a href="javascript:;" class="per-btn ib upload-btn" id="upload-rever">上传身份证照片（反面）</a>
-                    <div class="wrap-img hide" id="wrap-legal-img">
-                        <img class="cert-upload-img" src="" alt="身份证照片" id="font-img"/>
-                        <img class="cert-upload-img" src="" alt="身份证照片" id="rever-img"/>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="left">短信验证码：</td>
-                <td>
-                    <input type="text" id="en-code"/><a href="javascript:;" class="per-btn get-code" id="getEnCode">获取验证码</a>
-                    <p class="per-tip mt10">手机验证码将发送到店铺超级管理员绑定的手机号<span id="enCode">{{current_shop.admin.accountinfo.phone}}</span>上</p>
-                </td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td><a href="javascript:;" class="per-btn per-commit" id="en-commit">提交认证</a></td>
-            </tr>
-        </table>
-    </div>
-    <div class="wrap-bm wrap-cert-tip hide">
-        <div class="cert-tip">
-            {% if context['person_auth'] %}
-            <p><span class="success-type">个人认证</span>提交成功，我们将在<span class="check-time">48</span>小时内完成审核，请耐心等待结果。</p>
-            {% else %}
-            <p><span class="success-type">企业认证</span>提交成功，我们将在<span class="check-time">24</span>小时内完成审核，请耐心等待结果。</p>
+                </div>
+            </div> 
+            {% if auth_change == 1 %}
+                    <p class="text-blue change-notice"><a href="javascript:;" class="change-auth">更改认证类型</a><span class="text-grey9">（您还剩1次更改机会）</span></p>
+            {% elif auth_change == 2 %}
+                    <p class="text-grey9 change-notice">认证类型不可更改</p>
             {% end %}
+        {% end %}
+        {% if auth_change!=2 %}
+        {% if person_auth == False and company_auth ==False %}
+        <div class="wrap-bm wrap-per-cert">
+            <table class="per-tb">
+                <colgroup>
+                    <col width="150"/>
+                </colgroup>
+                <tr>
+                    <td class="left">真实姓名：</td>
+                    <td><input type="text" placeholder="与身份证上姓名保持一致" id="per-name"/></td>
+                </tr>
+                <tr>
+                    <td class="left">身份证帐号：</td>
+                    <td><input type="text" placeholder="与身份证上身份证号保持一致" id="per-ID"/></td>
+                </tr>
+                <tr>
+                    <td class="left">手持身份证照片：</td>
+                    <td>
+                        <p class="per-tip">请上传清晰可见的照片，拍照时请勿用手指遮挡身份证信息</p>
+                        <a href="javascript:;" class="per-btn upload-btn" id="upload-per">上传照片</a>
+                        <div class="wrap-img hide" id="wrap-per-img">
+                            <img class="cert-upload-img" src="" alt="身份证照片" id="person-img"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="left">短信验证码：</td>
+                    <td>
+                        <input type="text" id="per-code"/><a href="javascript:;" class="per-btn get-code" id="getPerCode">获取验证码</a>
+                        <p class="per-tip mt10">手机验证码将发送到店铺超级管理员绑定的手机号<span id="perCode">{{current_shop.admin.accountinfo.phone}}</span>上</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td><a href="javascript:;" class="per-btn per-commit" id="per-commit">提交认证</a></td>
+                </tr>
+            </table>
         </div>
-    </div>
+        <div class="wrap-bm wrap-en-cert hide">
+            <table class="per-tb">
+                <colgroup>
+                    <col width="150"/>
+                </colgroup>
+                <tr>
+                    <td class="left">企业名称：</td>
+                    <td><input type="text" placeholder="与身份证上姓名保持一致" id="en-name"/></td>
+                </tr>
+                <tr>
+                    <td class="left">营业执照图片：</td>
+                    <td>
+                        <p class="per-tip">请上传清晰可见的照片，图片大小不大于4M</p>
+                        <a href="javascript:;" class="per-btn upload-btn" id="upload-license">上传营业执照</a>
+                        <div class="wrap-img hide" id="wrap-lis-img">
+                            <img class="cert-upload-img" src="" alt="身份证照片" id="license-img"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="left">法人姓名：</td>
+                    <td><input type="text" placeholder="与身份证上姓名保持一致" id="en-per-name"/></td>
+                </tr>
+                <tr>
+                    <td class="left">法人身份证：</td>
+                    <td>
+                        <a href="javascript:;" class="per-btn ib upload-btn" id="upload-font">上传身份证照片（正面）</a>
+                        <a href="javascript:;" class="per-btn ib upload-btn" id="upload-rever">上传身份证照片（反面）</a>
+                        <div class="wrap-img hide" id="wrap-legal-img">
+                            <img class="cert-upload-img" src="" alt="身份证照片" id="font-img"/>
+                            <img class="cert-upload-img" src="" alt="身份证照片" id="rever-img"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="left">短信验证码：</td>
+                    <td>
+                        <input type="text" id="en-code"/><a href="javascript:;" class="per-btn get-code" id="getEnCode">获取验证码</a>
+                        <p class="per-tip mt10">手机验证码将发送到店铺超级管理员绑定的手机号<span id="enCode">{{current_shop.admin.accountinfo.phone}}</span>上</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td><a href="javascript:;" class="per-btn per-commit" id="en-commit">提交认证</a></td>
+                </tr>
+            </table>
+        </div>
+        {% end %}
+        <div class="wrap-bm wrap-cert-tip hide">
+            <div class="cert-tip">
+                {% if context['person_auth'] %}
+                <p><span class="success-type">个人认证</span>提交成功，我们将在<span class="check-time">48</span>小时内完成审核，请耐心等待结果。</p>
+                {% else %}
+                <p><span class="success-type">企业认证</span>提交成功，我们将在<span class="check-time">24</span>小时内完成审核，请耐心等待结果。</p>
+                {% end %}
+            </div>
+        </div>
+{% end %}
 </div>
+
 {% end %}
 {% block setbottom %}
 <script src="{{static_url('js/plupload/plupload.full.min.js')}}"></script>
