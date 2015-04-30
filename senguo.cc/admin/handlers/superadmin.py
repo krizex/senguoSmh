@@ -851,7 +851,7 @@ class ApplyCash(SuperBaseHandler):
 		elif action == 'commit':
 			apply_id = self.args['apply_id']
 			apply_cash = self.session.query(models.ApplyCashHistory).filter_by(id = apply_id).first()
-			if apply_cash not None:
+			if apply_cash:
 				return self.send_fail('apply_cash not found')
 			apply_cash.has_done = 1
 
@@ -861,7 +861,7 @@ class ApplyCash(SuperBaseHandler):
 
 
 
-		if apply_list not None:
+		if apply_list:
 			for temp in apply_list:
 				history.append([temp.id,temp.shop_code,temp.shop_auth,temp.shop_balance,\
 					temp.create_time,temp.value,temp.alipay_account,temp.applicant_name])
