@@ -815,6 +815,67 @@ class ShopAuthenticate(SuperBaseHandler):
 		return self.send_success(status=0,msg = 'success',data = {})
 
 
+class Balance(SuperBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.send_success()
+
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('action')
+	def post(self):
+		return self.send_success()
+
+class ApplyCash(SuperBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.send_success()
+
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('action','apply_id?:int')
+	def post(self):
+
+		history = []
+		apply_list = None
+
+		if action == 'all_apply':
+			apply_list = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).all()
+		elif action == 'company':
+			apply_list = self,session.query(models.ApplyCashHistory).filter_by(shop_auth = 2,\
+				has_done = 0).all()
+		elif action == 'person':
+			apply_list = self.session.query(models.ApplyCashHistory).filter_by(shop_auth = 1,\
+				has_done = 0).all()
+		elif action == 'decline':
+			apply_id = self.args['apply_id']
+			
+		elif action == 'commit':
+			apply_id = self.args['apply_id']
+			apply_cash = self.session.query(models.ApplyCashHistory).filter_by(id = apply_id).first()
+			if apply_cash not None:
+				return self.send_fail('apply_cash not found')
+			apply_cash.has_done = 1
+
+			#往 blancehistory中插入一条数据，以免到时候 查看所有记录的时候到两张表中去取 效率低下
+			balance_history = models.BalanceHistory(balance_record = '提现：店铺管理员',balance_type =\
+				2,)
+
+
+
+		if apply_list not None:
+			for temp in apply_list:
+				history.append([temp.id,temp.shop_code,temp.shop_auth,temp.shop_balance,\
+					temp.create_time,temp.value,temp.alipay_account,temp.applicant_name])
+			return self.send_success(history = history)
+
+
+
+		
+
+
+
+
+
+
 
 
 

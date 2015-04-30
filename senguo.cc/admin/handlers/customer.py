@@ -1306,9 +1306,7 @@ class Cart(CustomerBaseHandler):
 		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
 
 		####################################################
-		# 一次完整的 余额支付 流程，
 		# 订单提交成功后 ，用户余额减少，
-		# 店铺冻结资产 相应增加,
 		# 同时生成余额变动记录,
 		# 订单完成后 店铺冻结资产相应转入 店铺可提现余额
 		# woody 4.29
@@ -1320,21 +1318,20 @@ class Cart(CustomerBaseHandler):
 				return self.send_fail('shop_follow not found')
 			shop_follow.shop_balance -= totalPrice * 100  #用户对应 店铺余额减少 ，单位：分
 			self.session.commit()
-			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-			if not shop:
-				return self.send_fail('shop not found')
-			shop.shop_bloackage += totalPrice * 100  #店铺冻结 资产相应增加 ，单位 ：分
-			self.session.commit()
-			##########################################################
-			# 余额支付 用户只有在充值的时候 才会真正发生支付，
-			# 提交订单 只会产生 余额 的变动 ，
-			##########################################################
-			balance_record = '订单号' + order.num
+			
+			# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+			# if not shop:
+			# 	return self.send_fail('shop not found')
+			# shop.shop_bloackage += totalPrice * 100  #店铺冻结 资产相应增加 ，单位 ：分
+			# self.session.commit()
 
-			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
-				shop_id = shop_id ,balance_value = totalPrice * 100 , balance_record = balance_record)
-			self.session.add(balance_history)
-			self.session.commit()
+			# balance_record = '订单号' + order.num
+
+			# 用户 余额支付不产生 余额记录 ，因为只是数值上的变化
+			# balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
+			# 	shop_id = shop_id ,balance_value = totalPrice * 100 , balance_record = balance_record)
+			# self.session.add(balance_history)
+			# self.session.commit()
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}', mgoods='{}')#清空购物车
