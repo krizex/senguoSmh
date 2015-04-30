@@ -1,5 +1,5 @@
 from handlers.base import FruitzoneBaseHandler, _AccountBaseHandler,WxOauth2
-from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
+
 import dal.models as models
 import tornado.web
 from  dal.db_configs import DBSession

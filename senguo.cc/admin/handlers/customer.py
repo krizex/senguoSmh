@@ -1848,6 +1848,111 @@ class ShopComment(CustomerBaseHandler):
 	def get(self):
 	    return self.render("customer/comment-shop.html")
 
+class payTest(CustomerBaseHandler):
+
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments('code?:str','totalPrice?')
+	def get(self):
+		print(self.request.full_url())
+		path_url = self.request.full_url()
+		# totalPrice = self.args['totalPrice']
+
+		jsApi  = JsApi_pub()
+		#path = 'http://auth.senguo.cc/fruitzone/paytest'
+		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('fruitzonePayTest')
+		print(path , 'redirect_uri is Ture?')
+		print(self.args['code'],'sorry  i dont know')
+		code = self.args.get('code',None)
+		print(code,'how old are you',len(code))
+		if len(code) is 2:
+			url = jsApi.createOauthUrlForCode(path)
+			print(url,'code?')
+			return self.redirect(url)
+		else:
+			orderId = str(self.current_user.id) + str(int(time.time()))
+			jsApi.setCode(code)
+			openid = jsApi.getOpenid()
+			print(openid,code,'hope is not []')
+			if not openid:
+				print('openid not exit')
+			
+			unifiedOrder =   UnifiedOrder_pub()
+			# totalPrice = self.args['totalPrice'] 
+			totalPrice =float( self.get_cookie('money'))
+			print(totalPrice,'long time no see!')
+			unifiedOrder.setParameter("body",'senguo')
+			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/callback')
+			unifiedOrder.setParameter("openid",openid)
+			unifiedOrder.setParameter("out_trade_no",orderId)
+			#orderPriceSplite = (order.price) * 100
+			wxPrice =int(totalPrice * 100)
+			print(wxPrice,'sure')
+			unifiedOrder.setParameter('total_fee',wxPrice)
+			unifiedOrder.setParameter('trade_type',"JSAPI")
+			prepay_id = unifiedOrder.getPrepayId()
+			print(prepay_id,'prepay_id================')
+			jsApi.setPrepayId(prepay_id)
+			renderPayParams = jsApi.getParameters()
+			print(renderPayParams)
+			noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
+			timestamp = datetime.datetime.now().timestamp()
+			wxappid = 'wx0ed17cdc9020a96e'
+			signature = self.signature(noncestr,timestamp,path_url)
+		
+		# return self.send_success(renderPayParams = renderPayParams)
+		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
+			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)
+
+	@CustomerBaseHandler.check_arguments('code?:str','totalPrice?:float','action','shop_code')
+	def post(self):
+
+		# 微信 余额 支付
+		if action == 'wx_pay':
+			print('回调成功')
+			shop_code  = self.args['shop_code']
+			shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
+			if not shop:
+				return self.send_fail('shop not found')
+			shop_id = shop.id
+			customer_id = self.current_user.id
+			
+
+			code = self.args['code']
+			path_url = self.request.full_url()
+
+			
+			
+
+			#########################################################
+
+	
+			# 用户余额增加 
+			# 同时店铺余额相应增加 
+			# 应放在 支付成功的回调里
+
+			#########################################################
+
+			# 支付成功后，用户对应店铺 余额 增加
+			# shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+			# 	shop_id = shop_id).first()
+			# print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
+			# if not shop_follow:
+			# 	return self.send_fail('shop_follow not found')
+			shop_follow.balance_history += wxPrice     #充值成功，余额增加，单位为 分
+			self.session.commit()
+
+			# 支付成功后  生成一条余额支付记录
+			# balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
+			#  balance_value = wxPrice,balance_record = '充值'+ str(totalPrice) + '元')
+			# self.session.add(balance_history)
+			# self.session.commit()
+
+			return self.send_success()
+		else:
+			return self.send_fail('其它支付方式尚未开发')
+		
+
+
 class InsertData(CustomerBaseHandler):
 	@tornado.web.authenticated
 	# @CustomerBaseHandler.check_arguments("code?:str")

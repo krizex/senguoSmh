@@ -167,7 +167,7 @@ handlers = [
     (r"/list/shoplist", handlers.fruitzone.ShopList, {}, "fruitzoneShopList"),
     (r"/fruitzone/admin/home", handlers.fruitzone.AdminHome, {}, "fruitzoneAdminHome"),
     (r"/fruitzone/admin/profile", handlers.fruitzone.AdminProfile, {}, "fruitzoneAdminProfile"),
-    (r"/fruitzone/paytest",handlers.fruitzone.payTest,{},"fruitzonePayTest"),
+    (r"/fruitzone/paytest",handlers.customer.payTest,{},"fruitzonePayTest"),
     #to remove  
     #woody
     (r"/apply/toweixin", handlers.fruitzone.ToWeixin, {}, "fruitzoneToWexin"),
