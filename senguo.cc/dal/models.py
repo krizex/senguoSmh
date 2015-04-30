@@ -1286,8 +1286,8 @@ class Cart(MapBase, _CommonApi):
 	__tablename__ = "cart"
 	id = Column(Integer, ForeignKey(Customer.id), primary_key=True, nullable=False)
 	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
-	fruits = Column(String(100), default='{}')
-	mgoods = Column(String(100), default='{}')
+	fruits = Column(String(1000), default='{}')
+	mgoods = Column(String(1000), default='{}')
 
 # 店铺设置
 class Config(MapBase, _CommonApi):

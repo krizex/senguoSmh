@@ -1511,8 +1511,8 @@ class ShopAuthenticate(AdminBaseHandler):
 			shop_auth_apply = self.session.query(models.ShopAuthenticate).filter_by(shop_id = shop_id)
 		except:
 			print('shop_auth_apply error')
-
 		if action == "get_code":
+			print("[店铺认证]发送验证码到手机：",data["phone"])
 			# gen_msg_token(phone=self.args["phone"])
 			# return self.send_success()
 			resault = gen_msg_token(phone=data["phone"])
