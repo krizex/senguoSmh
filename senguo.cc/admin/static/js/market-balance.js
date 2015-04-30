@@ -1,6 +1,7 @@
 $(document).ready(function(){
 	litsitem(1);
 	scrollLoading();
+    localStorage.setItem("shopName",$("#shopName").html());
 });
 
 window.dataObj.page=1;
