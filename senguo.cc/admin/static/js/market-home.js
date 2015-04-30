@@ -491,7 +491,7 @@ var goodsList=function(page,action){
             else initData(res);
         }
         else return noticeBox(res.error_text);
-        },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')}}
         );
         var initData=function(res){
             var w_orders=res.w_orders;
