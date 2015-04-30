@@ -38,7 +38,7 @@
                 success: function (res) {
                 // 支付成功后的回调函数
                 $.ajax({
-                    url:"/customer/recharge",
+                    url:"/fruitzone/paytest",
                     type:"post",
                     data:{action:"wx_pay",_xsrf:window.dataObj._xsrf},
                     success:function(res){

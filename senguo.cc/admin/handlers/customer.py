@@ -1903,26 +1903,26 @@ class payTest(CustomerBaseHandler):
 		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
 			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)
 
-	@CustomerBaseHandler.check_arguments('code?:str','totalPrice?:float','action','shop_code')
+	@CustomerBaseHandler.check_arguments('totalPrice?:float','action')
 	def post(self):
 
 		# 微信 余额 支付
-		if action == 'wx_pay':
+	#	if action == 'wx_pay':
 			print('回调成功')
-			shop_code  = self.args['shop_code']
-			shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
-			if not shop:
-				return self.send_fail('shop not found')
-			shop_id = shop.id
+		#	shop_code  = self.current_shop.shop_code
+		#	shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
+		#	if not shop:
+		#		return self.send_fail('shop not found')
+			shop_id = self.get_cookie('market_shop_id')
 			customer_id = self.current_user.id
 			
 
-			code = self.args['code']
-			path_url = self.request.full_url()
+		#	code = self.args['code']
+		#	path_url = self.request.full_url()
 
 			
 			
-
+			totalPrice =float( self.get_cookie('money'))
 			#########################################################
 
 	
@@ -1932,13 +1932,13 @@ class payTest(CustomerBaseHandler):
 
 			#########################################################
 
-			# 支付成功后，用户对应店铺 余额 增加
-			# shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
-			# 	shop_id = shop_id).first()
-			# print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
-			# if not shop_follow:
-			# 	return self.send_fail('shop_follow not found')
-			shop_follow.balance_history += wxPrice     #充值成功，余额增加，单位为 分
+			# 支付成功后，用户对应店铺 余额 增1加
+			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+				shop_id = shop_id).first()
+			print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
+			if not shop_follow:
+				return self.send_fail('shop_follow not found')
+			shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为 分
 			self.session.commit()
 
 			# 支付成功后  生成一条余额支付记录
@@ -1948,8 +1948,8 @@ class payTest(CustomerBaseHandler):
 			# self.session.commit()
 
 			return self.send_success()
-		else:
-			return self.send_fail('其它支付方式尚未开发')
+	#	else:
+	#		return self.send_fail('其它支付方式尚未开发')
 		
 
 

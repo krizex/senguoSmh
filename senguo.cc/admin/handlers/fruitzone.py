@@ -774,7 +774,7 @@ class payTest(FruitzoneBaseHandler):
 			totalPrice =float( self.get_cookie('money'))
 			print(totalPrice,'long time no see!')
 			unifiedOrder.setParameter("body",'senguo')
-			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/callback')
+			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/')
 			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",orderId)
 			#orderPriceSplite = (order.price) * 100
