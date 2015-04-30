@@ -8,7 +8,6 @@ from sqlalchemy import func, desc, and_, or_, exists
 import qiniu
 from dal.dis_dict import dis_dict
 from libs.msgverify import gen_msg_token,check_msg_token
-import re
 
 # 登陆处理
 class Access(AdminBaseHandler):
@@ -1310,8 +1309,8 @@ class Config(AdminBaseHandler):
 				return self.send_success(address1_id=addr1.id)#commit后id会自动生成
 			elif action == "add_notice":
 				notice = models.Notice(
-					summary=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["summary"]),
-					detail=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["detail"]))    #过滤掉Emoji，否则数据库会报错 --by Sky
+					summary=data["summary"],
+					detail=data["detail"])
 				self.current_shop.config.notices.append(notice)
 				self.session.commit()
 			elif action == "edit_receipt": #小票设置
