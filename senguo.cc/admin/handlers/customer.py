@@ -832,7 +832,7 @@ class Market(CustomerBaseHandler):
 				else:
 					favour_today = favour.create_date == datetime.date.today()
 
-				print('favour_today',favour_today,'mgood')
+				# print('favour_today',favour_today,'mgood')
 
 				charge_types = []
 				for charge_type in mgood.mcharge_types:
@@ -886,7 +886,7 @@ class Market(CustomerBaseHandler):
 			self.send_error("pages error")
 
 		total_count = count_dry + count_fruit + count_mgoods
-		print(w_orders,'yi bu zhi yao')
+		# print(w_orders,'yi bu zhi yao')
 
 		# print('w_orders ',w_orders)
 		# print('w_mgoods',w_mgoods)
