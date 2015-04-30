@@ -4,6 +4,9 @@
 $(document).ready(function(){
 
 }).on("click",".rec-bm-lst .check-ipt",function(){
+    $(".rec-bm-lst .check-ipt").removeClass("checked");
+    $(this).addClass("checked");
+}).on("click",".rec-bm-lst .check-ipt",function(){
     /*$(".rec-bm-lst .check-ipt").removeClass("checked");
     $(this).addClass("checked");*/
     var index = $(this).index();
@@ -14,6 +17,7 @@ $(document).ready(function(){
     var money = $.trim($("#money").val());
     if(isWeiXin()){
         if(isMon(money)){
+            SetCookie("money",money,30);
             window.location.href="/fruitzone/paytest?totalPrice="+money;
         }else{
             noticeBox("您输入的金额格式不对，请重新输入");

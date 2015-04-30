@@ -748,7 +748,9 @@ class payTest(FruitzoneBaseHandler):
 	def get(self):
 		print(self.request.full_url())
 		path_url = self.request.full_url()
-		totalPrice = self.args['totalPrice']
+		# totalPrice = self.args['totalPrice']
+		totalPrice = self.get_cookie('money')
+		print(totalPrice,'why it is  always 0.1?')
 		jsApi  = JsApi_pub()
 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('fruitzonePayTest')
@@ -792,13 +794,15 @@ class payTest(FruitzoneBaseHandler):
 		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
 			noncestr = noncestr ,timestamp = timestamp,signature = signature)
 
-	@FruitzoneBaseHandler.check_arguments('code?:str','totalPrice?:float','action','shop_code')
+	@FruitzoneBaseHandler.check_arguments('code?:str','totalPrice?:int','action','shop_code')
 	def post(self):
 
 		# 微信 余额 支付
 		if action == 'wx_pay':
 
 			shop_code  = self.args['shop_code']
+			totalPrice = self.args['totalPrice']
+			wxPrice = totalPrice * 100
 			shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
 			if not shop:
 				return self.send_fail('shop not found')
@@ -813,7 +817,7 @@ class payTest(FruitzoneBaseHandler):
 			
 
 			#########################################################
-			#余额增加应放在 支付成功的回调里，此处应有改动
+			#余额增加应放在 支付成功的回调里
 			#########################################################
 
 			# 支付成功后，用户对应店铺 余额 增加

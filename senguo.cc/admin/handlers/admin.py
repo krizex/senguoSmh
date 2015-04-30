@@ -1288,8 +1288,10 @@ class Config(AdminBaseHandler):
 			pass
 		elif action == "receipt":
 			return self.render("admin/shop-receipt-set.html", receipt_msg=config.receipt_msg,context=dict(subpage='shop_set',shopSubPage='receipt_set'))
+
 		elif action == "cert":
 					return self.render("admin/shop-cert-set.html",context=dict(subpage='shop_set',shopSubPage='cert_set'))
+
 		else:
 			return self.send_error(404)
 
@@ -1470,64 +1472,86 @@ class ShopConfig(AdminBaseHandler):
 
 class ShopAuthenticate(AdminBaseHandler):
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments()
+	# @AdminBaseHandler.check_arguments()
 	def get(self):
 		shop_id = self.current_shop.id
 		token = self.get_qiniu_token("shopAuth_cookie",shop_id)
-		self.set_secure_cookie('shopAuth',token,domain=ROOT_HOST_NAME)
-		return self.send_success()
-		# return self.render("admin/shop-info-set.html")
+		auth_apply=self.session.query(models.ShopAuthenticate).filter(models.ShopAuthenticate.shop_id == shop_id).first()
+		person_auth=False
+		company_auth=False
+		has_done = 0
+		apply_type = 0
+		decline_reason= ''
+		if auth_apply: 
+			has_done = auth_apply.has_done
+			apply_type = auth_apply.shop_type
+			decline_reason = auth_apply.decline_reason
+			if auth_apply.has_done!=2:
+				if auth_apply.shop_type == 1:
+					person_auth = True
+				if auth_apply.shop_type == 2:
+					company_auth =True
+		#self.set_secure_cookie('shopAuth',token,domain=ROOT_HOST_NAME)
+		return self.render("admin/shop-cert-set.html",context=dict(person_auth=person_auth,company_auth=company_auth,\
+			has_done=has_done,apply_type=apply_type,decline_reason=decline_reason,token=token,subpage='shop_set',shopSubPage='cert_set'))
 
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('name:str','card_id:str','code:int')
+	@AdminBaseHandler.check_arguments('action','data')
 	def post(self):
 		shop_id = self.current_shop.id
+		action = self.args["action"]
+		data = self.args["data"]
+		shop_auth_apply = self.session.query(models.ShopAuthenticate).filter_by(shop_id = shop_id)
 		if action == "get_code":
 			# gen_msg_token(phone=self.args["phone"])
 			# return self.send_success()
-			resault = gen_msg_token(phone=self.args["phone"])
+			resault = gen_msg_token(phone=data["phone"])
 			if resault == True:
 				return self.send_success()
 			else:
 				return self.send_fail(resault)
 		elif action == "customer_auth":
-			name = self.args['name']
-			card_id = self.args['card_id']
-			code  = self.args['code']
-			phone = self.args['phone']
-			handle_img = self.args['handle_img']
+			name = data['name']
+			card_id = data['card_id']
+			code  = data['code']
+			phone = data['phone']
+			handle_img = data['handle_img']
 			if not check_msg_token(phone,code):
 				return self.send_fail('code error')
+			if shop_auth_apply:
+				shop_auth_apply.delete()
 			shop_apply = models.ShopAuthenticate(
 				realname = name,
 				shop_type = 1,
 				card_id = card_id,
 				handle_img = handle_img,
-				has_done  = 0
+				has_done  = 0,
+				shop_id = shop_id
 				)
 			self.session.add(shop_apply)
 			self.session.commit()
 			return self.send_success()
 		elif action == "company_auth":
-			name = self.args['name']
-			company_name = self.args['company_name']
-			card_id = self.args['card_id']
-			code = self.args['code']
-			phone = self.args['phone']
-			business_licence = self.args['business_licence']
-			front_img = self.args['front_img']
-			behind_img = self.args['behind_img']
+			name = data['name']
+			company_name = data['company_name']
+			code = data['code']
+			phone = data['phone']
+			business_licence = data['business_licence']
+			front_img = data['front_img']
+			behind_img = data['behind_img']
 			if not check_msg_token(phone,code):
 				return self.send_fail('code error')
+			if shop_auth_apply:
+				shop_auth_apply.delete()
 			shop_apply = models.ShopAuthenticate(
 				realname = name,
 				company_name = company_name,
 				shop_type = 2,
 				business_licence = business_licence,
-				card_id = card_id,
 				front_img = front_img,
 				behind_img = behind_img,
-				has_done = 0
+				has_done = 0,
+				shop_id =shop_id
 				)
 			self.session.add(shop_apply)
 			self.session.commit()

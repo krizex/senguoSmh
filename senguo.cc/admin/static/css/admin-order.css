@@ -167,3 +167,4 @@ body{-webkit-user-select: none; }
 .new{display:inline-block;width:20px;height:20px;border:1px solid #7AD218;color:#7AD218;line-height:20px;text-align:center;margin-left:-25px;margin-right:5px;background-color:#fff;}
 
 .add-new-time{margin:10px 0;clear:both;display:inline-block;}
+.sendIntimeBox .modal-concel-btn{display:block;margin:0 auto;}

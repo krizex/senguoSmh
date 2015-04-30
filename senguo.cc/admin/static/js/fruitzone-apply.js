@@ -198,6 +198,7 @@ function Apply(target){
     var phone=$('#phone').val().trim();
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    var regChinese=/^[\u4e00-\u9faf]+$/;
     if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){
          $('#submitApply').removeAttr('disabled').addClass('bg-green');
         return noticeBox("电话貌似有错o(╯□╰)o",target);
@@ -235,7 +236,7 @@ function Apply(target){
         return noticeBox("请输入您的店铺简介",target);
     }
     if(typeof(img_key)=='undefined') img_key='';
-    var regChinese=/^[\u4e00-\u9faf]+$/;
+    
     if(!realName){
         $('#submitApply').removeAttr('disabled').addClass('bg-green');
         return noticeBox('请输入您的真实姓名！',target);

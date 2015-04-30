@@ -260,6 +260,28 @@
 .huangxigua .bg-color{background-color:#FFFAF6}
 .huangxigua .icon-bg{border-color:transparent #FFD800 transparent transparent;}
 
+.huanggua .color{color:#FFD800}
+.huanggua .bg{background-color:#FFFAF6}
+.huanggua .bg-color{background-color:#FFFAF6}
+.huanggua .icon-bg{border-color:transparent #FFD800 transparent transparent;}
+.renshenguo .color{color:#FFD800}
+.renshenguo .bg{background-color:#FFFAF6}
+.renshenguo .bg-color{background-color:#FFFAF6}
+.renshenguo .icon-bg{border-color:transparent #FFD800 transparent transparent;}
+.fanshiliu .color{color:#97CA27}
+.fanshiliu .bg{background-color:#FAFFF4}
+.fanshiliu .bg-color{background-color:#97CA27}
+.fanshiliu .icon-bg{border-color:transparent #97CA27 transparent transparent;}
+.sangshen .color{color:#ED3B94}
+.sangshen .bg{background-color:#FFFAFB}
+.sangshen .bg-color{background-color:#ED3B94}
+.sangshen .icon-bg{border-color:transparent #ED3B94 transparent transparent;}
+.ugly .color{color:#FBAB2D}
+.ugly .bg{background-color:#FFFCF2}
+.ugly .bg-color{background-color:#FBAB2D}
+.ugly .icon-bg{border-color:transparent #FBAB2D transparent transparent;}
+
+
 .GANGUO{}
 .yaoguo .color{color:#B87D31}
 .yaoguo .bg{background-color:#FEFAF4}

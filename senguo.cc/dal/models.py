@@ -439,7 +439,7 @@ class Shop(MapBase, _CommonApi):
 	shop_code = Column(String(128), nullable=False, default="not set")
 	create_date_timestamp = Column(Integer, nullable=False)
 	shop_status = Column(Integer, default=SHOP_STATUS.ACCEPTED)  # 1：申请中 2：申请成功 3：拒绝
-
+	shop_auth =Column(Integer,default =0)#0:未认证 1:个人认证 2:企业认证 3:个人加企业认证 #yy4.29
 	# on or off
 	status   = Column(Integer,default = 1) # 1:on ,0:off
 
@@ -518,7 +518,7 @@ class Shop(MapBase, _CommonApi):
 
 class ShopAuthenticate(MapBase,_AccountApi):
 	__tablename__ = "shop_auth"
-	id  = Column(Integer,ForeignKey(Accountinfo.id),primary_key = True ,nullable = False)
+	id  = Column(Integer,primary_key = True ,nullable = False)
 	shop_type  = Column(Integer) # 1:person 2:company
 	company_name = Column(String(128))
 	business_licence = Column(String(2048))
@@ -528,6 +528,10 @@ class ShopAuthenticate(MapBase,_AccountApi):
 	front_img  = Column(String(2048))
 	behind_img = Column(String(2048))
 	has_done   = Column(Integer,default = 0) # 0:before done 1:success 2:decline 
+	shop_id = Column(Integer,ForeignKey(Shop.id))#yy4.29
+	decline_reason =Column(String(200))#yy4.29
+	shop = relationship('Shop')
+	create_time = Column(DateTime, default=func.now())
 	# code       = Column(Integer)
 
 
