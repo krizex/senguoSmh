@@ -471,7 +471,7 @@ var goodsList=function(page,action){
         page:page,
         menu_id:window.dataObj.menu_id
     };
-    alert('i am here');
+    // alert('i am here');
     $('.loading').html("~努力加载中 ( > < )~").show();
     $.postJson(url,args,function(res){
         if(res.success)
