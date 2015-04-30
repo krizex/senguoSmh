@@ -2,84 +2,49 @@
  * Created by Administrator on 2015/4/20.
  */
 $(document).ready(function(){
+
 }).on("click",".rec-bm-lst .check-ipt",function(){
-    $(".rec-bm-lst .check-ipt").removeClass("checked");
-    $(this).addClass("checked");
+    /*$(".rec-bm-lst .check-ipt").removeClass("checked");
+    $(this).addClass("checked");*/
+    var index = $(this).index();
+    if(index>0){
+        noticeBox("当前只支持微信支付，其他支付方式正在开发中...");
+    }
 }).on("click","#commit-rec",function(){
-    var money = parseInt($("#money").val());
-    window.location.href="/fruitzone/paytest?totalPrice="+money;
-});
-
-/*function wexin(link,imgurl){
-    //微信Api
-    var url='/wexin';
-    var args={url: window.location.href};
-    if(!link){
-        link='';
-    }
-    if(!imgurl){
-        imgurl='/static/design_img/TDSG.png';
-    }
-    $.postJson(url,args,function(res){
-        if(res.success){
-            var noncestr_val=res.noncestr;
-            var timestamp_val=res.timestamp;
-            var signature_val=res.signature;
-            var logo_Item=$('#shop_imgurl');
-            wx.config({
-                debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-                appId: 'wx0ed17cdc9020a96e', // 必填，公众号的唯一标识
-                timestamp:timestamp_val, // 必填，生成签名的时间戳
-                nonceStr:noncestr_val, // 必填，生成签名的随机串
-                signature:signature_val,// 必填，签名，见附录1
-                jsApiList: ['onMenuShareTimeline','onMenuShareAppMessage','hideMenuItems','hideOptionMenu','showOptionMenu']// 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-            });
-            wx.ready(function(){
-                   $("#commit-rec").on("click",function(){
-                       var money = $("#money").val();
-                       var code = $("#wx_code").val();
-                       $.ajax({
-                           url:"/customer/recharge?action=get_code",
-                           type:"get",
-                           success:function(res){
-                               if(res.success){
-                                   var renderPayParams = res.renderPayParams;
-                                   var url = res.url;
-                                   wx.chooseWXPay({
-                                       timestamp: renderPayParams['timeStamp'],
-                                       nonceStr: renderPayParams['nonceStr'],
-                                       package: renderPayParams['package'],
-                                       signType: renderPayParams['signType'],
-                                       paySign: renderPayParams['paySign'],
-                                       success: function (res) {
-                                           // 支付成功后的回调函数
-                                           alert('success');
-                                           window.location.href=res.url;
-                                       }
-                                   });
-
-                                   //var code = res.code;
-                                   //var data = {money:money,code:code,action:"wx_pay"};
-                                   *//*$.ajax({
-                                       url:"/customer/recharge",
-                                       type:"post",
-                                       data:data,
-                                       success:function(res){
-                                           if(res.success){
-
-                                           }
-                                       }
-                                   });*//*
-                               }
-                           }
-                       });
-                   });
-               });
+    var money = $.trim($("#money").val());
+    if(isWeiXin()){
+        if(isMon(money)){
+            window.location.href="/fruitzone/paytest?totalPrice="+money;
         }else{
-            return alert(res.error_text);
+            noticeBox("您输入的金额格式不对，请重新输入");
+            return false;
         }
-    });
-}*/
+    }else{
+        noticeBox("当前是微信支付，请在微信客户端中打开此页面支付");
+    }
+});
+function isMon(money){
+    var flag = false;
+    if(money){
+       if(isNaN(money)){
+           flag = false;
+       }else{
+           if(money.indexOf(".")!=-1){
+               var flo = money.split(".")[1];
+               if(flo.length>2){
+                   flag = false;
+               }else{
+                   flag = true;
+               }
+           }else{
+               flag = true;
+           }
+       }
+    }else{
+        flag = false;
+    }
+    return flag;
+}
 function isWeiXin(){
     var ua = window.navigator.userAgent.toLowerCase();
     if(ua.match(/MicroMessenger/i) == 'micromessenger'){
