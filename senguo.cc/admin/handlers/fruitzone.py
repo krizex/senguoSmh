@@ -746,6 +746,7 @@ class payTest(FruitzoneBaseHandler):
 	# @tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments('code?:str','totalPrice?')
 	def get(self):
+		return self.render("fruitzone/paytest.html")
 		print(self.request.full_url())
 		path_url = self.request.full_url()
 		# totalPrice = self.args['totalPrice']

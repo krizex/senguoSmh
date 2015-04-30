@@ -1339,7 +1339,7 @@ class ShopBalance(AdminBaseHandler):
 		subpage = 'shopBlance'
 		shop = self.current_shop
 		shop_balance = shop.shop_balance
-		return self.render("admin/shop-balance.html",context=dict(subpage=subpage,shop_balance = shop_balance))
+		return self.render("admin/shop-balance.html",shop_balance = shop_balance,context=dict(subpage=subpage))
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action','apply_value?:int','alipay_account?:str')
