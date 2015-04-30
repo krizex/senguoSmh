@@ -70,7 +70,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .rec-bm-lst>li:last-child{border-bottom: none;}
 .wrap-rec-item>dd{width: 60px;height: 60px;}
 .wrap-rec-item>dd>img{width: 60px;border-radius: 50%;}
-.wrap-rec-item>dt{width: calc(100% - 60px);-webkit-box-sizing: border-box;padding-left: 10px;margin-top: 10px;max-width: 76%;min-width: 76%;}
+.wrap-rec-item>dt{width: calc(100% - 60px);-webkit-box-sizing: border-box;padding-left: 10px;margin-top: 10px;max-width: 70%;min-width: 70%;}
 .rec-left{width: calc(100% - 30px);max-width: 74%;}
 .rec-left>p{color: #666;line-height: 20px;font-size: 14px;}
 .rec-right{width: 30px;padding-top: 10px;text-align: center;}
@@ -148,7 +148,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .pay-money{font-size: 26px;color: #000;text-align: center;margin-top: 5px;}
 .wrap-pay{position: relative;margin-top: 20px;background-color: #fff;border-top:1px solid #dedede;border-bottom: 1px solid #dedede;padding: 12px 18px;}
 .wrap-pay>p{font-size: 14px;color: #333;line-height: 24px;}
-.pay-btn{display: block;text-align: center;font-size: 14px;height: 32px;line-height: 32px;border-radius: 4px;color: #fff;background-color: #06bf04;width: 92%;margin: 20px auto 0 auto;}
+.pay-btn{display: block;text-align: center;font-size: 16px;height: 40px;line-height: 40px;border-radius: 4px;color: #fff;background-color: #06bf04;width: 92%;margin: 20px auto 0 auto;}
 .wrap-pay .sum{font-size: 20px;color: #80de9e;}
 .wrap-pay .left{width: 100px;display: inline-block;width: 50%;}
 .c999{color: #999!important;}
