@@ -128,7 +128,7 @@
                 <a href="{{reverse_url('adminComment')}}?action=all&&page=0" class="{{comment_active}}">消息与评价</a>
             </li>
 
-            {% if show_balance == False %}
+            {% if current_shop.shop_auth == 1 or current_shop.shop_auth == 2 %}
            <li>
                 <span class="account"><i></i>账户</span>
                 <a href="{{reverse_url('adminShopBalance')}}" class="{{shopBlance}}">账户余额</a>
