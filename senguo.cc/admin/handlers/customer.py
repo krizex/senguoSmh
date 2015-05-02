@@ -1886,7 +1886,7 @@ class payTest(CustomerBaseHandler):
 			# totalPrice = self.args['totalPrice'] 
 			totalPrice =float( self.get_cookie('money'))
 			print(totalPrice,'long time no see!')
-			unifiedOrder.setParameter("body",'senguo')
+			unifiedOrder.setParameter("body",'余额充值')
 			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/callback')
 			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",orderId)
@@ -1955,7 +1955,7 @@ class payTest(CustomerBaseHandler):
 			# 支付成功后  生成一条余额支付记录
 			name = self.current_user.accountinfo.nickname
 			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-				balance_value = wxPrice,balance_record = '用户充值:'+ name  , name = name , balance_type = 0)
+				balance_value = totalPrice,balance_record = '用户充值:'+ name  , name = name , balance_type = 0)
 			self.session.add(balance_history)
 			print(balance_history , '钱没有白充吧？！')
 			self.session.commit()
