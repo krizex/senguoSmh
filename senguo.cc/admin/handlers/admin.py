@@ -67,6 +67,13 @@ class Home(AdminBaseHandler):
 		# if not self.current_shop: #设置默认店铺
 		#     self.current_shop=self.current_user.shops[0]
 		#     self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
+
+		# 用于标识是否显示  店铺 余额
+		show_balance = False
+
+		shop_auth =  self.current_shop.shop_auth
+		if shop_auth in [1,2]:
+			show_balance = True
 		order_sum = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).count()
 		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
 		self.current_shop.new_order_sum = order_sum
@@ -81,8 +88,9 @@ class Home(AdminBaseHandler):
 			filter((models.SysNotice.create_time < datetime.datetime.now()-datetime.timedelta(10))).all()
 		self.session.commit()
 		return self.render("admin/home.html", new_order_sum=new_order_sum, order_sum=order_sum,
-						   new_follower_sum=new_follower_sum, follower_sum=follower_sum,
-						   new_sys_notices=new_sys_notices, sys_notices=sys_notices, context=dict())
+						   new_follower_sum=new_follower_sum, follower_sum=follower_sum,\
+						   show_balance = show_balance,new_sys_notices=new_sys_notices, \
+						   sys_notices=sys_notices, context=dict())
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("shop_id:int")
 	def post(self):  # 商家多个店铺之间的切换
@@ -1338,7 +1346,12 @@ class ShopBalance(AdminBaseHandler):
 		subpage = 'shopBlance'
 		shop = self.current_shop
 		shop_balance = shop.shop_balance
-		return self.render("admin/shop-balance.html",shop_balance = shop_balance,context=dict(subpage=subpage))
+		show_balance = False
+		shop_auth = self.current_shop.shop_auth
+		if shop_auth in [1,2]:
+			show_balance = True
+		return self.render("admin/shop-balance.html",shop_balance = shop_balance,\
+			show_balance = show_balance,context=dict(subpage=subpage))
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action','apply_value?:int','alipay_account?:str')

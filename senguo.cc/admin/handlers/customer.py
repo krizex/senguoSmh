@@ -188,6 +188,8 @@ class Home(CustomerBaseHandler):
 	def get(self,shop_code):
 		# shop_id = self.shop_id
 		print("[访问店铺]店铺号：",shop_code)
+		# 用于标识 是否现实 用户余额 ，当 店铺 认证 通过之后 为 True ，否则为False
+		show_balance = False
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
 		except:
@@ -197,6 +199,9 @@ class Home(CustomerBaseHandler):
 			shop_name = shop.shop_name
 			shop_id   = shop.id
 			shop_logo = shop.shop_trademark_url
+			if shop.shop_auth in [1,2]:
+				show_balance = True
+			print(shop,shop.shop_auth)
 		else:
 			print("[访问店铺]店铺不存在：",shop_code)
 			return self.send_fail('shop not found')
@@ -230,7 +235,7 @@ class Home(CustomerBaseHandler):
 				count[6] += 1
 		return self.render("customer/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
-			context=dict(subpage='center'))
+			show_balance = show_balance,context=dict(subpage='center'))
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data")
 	def post(self,shop_code):
@@ -265,6 +270,7 @@ class CustomerProfile(CustomerBaseHandler):
 	   # 具体可以查看models.ShopAdmin中的属性
 	   time_tuple = time.localtime(self.current_user.accountinfo.birthday)
 	   birthday = time.strftime("%Y-%m", time_tuple)
+	   print(self.current_shop,self.current_shop.shop_auth)
 	   self.render("customer/profile.html", context=dict(birthday=birthday))
 
 	@tornado.web.authenticated
@@ -1048,10 +1054,14 @@ class Cart(CustomerBaseHandler):
 		customer_id = self.current_user.id
 		phone = self.get_phone(customer_id)
 
+		show_balance = False
+
 		storages = {}
 		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
-		print("[购物篮]当前店铺：",shop)
 		if not shop:return self.send_error(404)
+		print("[购物篮]当前店铺：",shop)
+		if shop.shop_auth in [1,2]:
+			show_balance = True
 		shop_name = shop.shop_name
 		shop_id = shop.id
 		shop_logo = shop.shop_trademark_url
@@ -1080,13 +1090,8 @@ class Cart(CustomerBaseHandler):
 		periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1).all()
 		for period in periods:
 			print("[购物篮]读取按时达时段，Shop ID：",period.config_id,"，时间段：",period.start_time,"~",period.end_time)
-		# print('storages',storages)
-
-		# for period in periods:
-		# 	print(period.start_time)
-
 		return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
-						   periods=periods,phone=phone, storages = storages,\
+						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name  = shop_name ,shop_logo = shop_logo,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated

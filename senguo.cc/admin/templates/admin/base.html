@@ -127,10 +127,13 @@
                 <span class="server"><i></i>客服</span>
                 <a href="{{reverse_url('adminComment')}}?action=all&&page=0" class="{{comment_active}}">消息与评价</a>
             </li>
-        <!--   <li>
+
+            {% if show_balance == False %}
+           <li>
                 <span class="account"><i></i>账户</span>
                 <a href="{{reverse_url('adminShopBalance')}}" class="{{shopBlance}}">账户余额</a>
-            </li>-->
+            </li>
+            {% end %}
             
             <li>
                 <span class="manage"><i></i>管理</span>
