@@ -1480,6 +1480,7 @@ class ShopAuthenticate(AdminBaseHandler):
 			auth_apply=self.session.query(models.ShopAuthenticate).filter(models.ShopAuthenticate.shop_id == shop_id).\
 			order_by(desc(models.ShopAuthenticate.id)).first()
 		except:
+			auth_apply = None
 			print('auth_apply error')
 		person_auth=False
 		company_auth=False

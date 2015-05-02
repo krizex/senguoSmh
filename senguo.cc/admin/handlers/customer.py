@@ -1650,6 +1650,7 @@ class Balance(CustomerBaseHandler):
 		data = []
 		pages = 0
 		nomore = False
+		print(customer_id,shop_id)
 		try:
 			shop_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id =\
 				customer_id , shop_id = shop_id).all()
@@ -1949,13 +1950,14 @@ class payTest(CustomerBaseHandler):
 			if not shop:
 				return self.send_fail('shop not found')
 			shop.shop_balance += totalPrice
-			self.session.commit()
+			# self.session.commit()
 
 			# 支付成功后  生成一条余额支付记录
 			name = self.current_user.accountinfo.nickname
 			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
 				balance_value = wxPrice,balance_record = '用户充值:'+ name  , name = name , balance_type = 0)
 			self.session.add(balance_history)
+			print(balance_history , '钱没有白充吧？！')
 			self.session.commit()
 
 			return self.send_success()
