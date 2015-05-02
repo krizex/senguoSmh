@@ -1944,13 +1944,19 @@ class payTest(CustomerBaseHandler):
 			if not shop_follow:
 				return self.send_fail('shop_follow not found')
 			shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为 分
+
+			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+			if not shop:
+				return self.send_fail('shop not found')
+			shop.shop_balance += totalPrice
 			self.session.commit()
 
 			# 支付成功后  生成一条余额支付记录
-			# balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-			#  balance_value = wxPrice,balance_record = '充值'+ str(totalPrice) + '元')
-			# self.session.add(balance_history)
-			# self.session.commit()
+			name = self.current_user.accountinfo.nickname
+			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
+				balance_value = wxPrice,balance_record = '用户充值:'+ name  , name = name , balance_type = 0)
+			self.session.add(balance_history)
+			self.session.commit()
 
 			return self.send_success()
 	#	else:
