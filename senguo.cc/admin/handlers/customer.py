@@ -270,7 +270,7 @@ class CustomerProfile(CustomerBaseHandler):
 	   # 具体可以查看models.ShopAdmin中的属性
 	   time_tuple = time.localtime(self.current_user.accountinfo.birthday)
 	   birthday = time.strftime("%Y-%m", time_tuple)
-	   print(self.current_shop,self.current_shop.shop_auth)
+	   # print(self.current_shop,self.current_shop.shop_auth)
 	   self.render("customer/profile.html", context=dict(birthday=birthday))
 
 	@tornado.web.authenticated
@@ -1100,7 +1100,9 @@ class Cart(CustomerBaseHandler):
 										 "today:int")
 	def post(self,shop_code):#提交订单
 		# print(self)
+		print(self.args['pay_type'],'login?????')
 		shop_id = self.shop_id
+		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
 		mgoods = self.args["mgoods"]
 
@@ -1204,6 +1206,22 @@ class Cart(CustomerBaseHandler):
 		# 已支付、付款类型、余额、积分处理
 		money_paid = False
 		pay_type = 1
+
+		####################################################
+		#  当订单 选择余额付款时 ，应判断 用户在 当前店铺的余额是否大于订单总额
+		####################################################
+		pay_type = self.args['pay_type']
+		if pay_type == 2:
+			print(self.args['pay_type'])
+			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
+				shop_id = shop_id).first()
+			if not shop_follow:
+				return self.send_fail('shop_follow not found')
+			if shop_follow.shop_balance < totalPrice:
+				return self.send_fail("账户余额小于订单总额，请及时充值或选择其它支付方式")  
+			self.session.commit()
+
+
 		
 			# if self.current_user.balance >= totalPrice:
 			# 	self.current_user.balance -= totalPrice
@@ -1304,6 +1322,7 @@ class Cart(CustomerBaseHandler):
 		# 订单完成后 店铺冻结资产相应转入 店铺可提现余额
 		# woody 4.29
 		####################################################
+		# print(self.args['pay_type'],'好难过')
 		if self.args["pay_type"] == 2:
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
 				shop_id = shop_id).first()
