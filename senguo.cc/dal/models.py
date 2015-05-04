@@ -787,6 +787,7 @@ class ApplyCashHistory(MapBase,_CommonApi):
 	value   = Column(Integer) #申请提现的金额，单位：分
 	create_time = Column(DateTime,default = func.now())
 	has_done   = Column(Integer , default = 0) # 0:before done,1: done success,2: decline
+	decline_reason = Column(String(200)) #当申请提现被拒绝后 给商家的理由
 
 ################################################################################
 # 余额记录 只会在 三处地方产生:
@@ -805,6 +806,7 @@ class BalanceHistory(MapBase,_CommonApi):
 	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:余额消费(没用) 2:提现 3:在线支付
 	balance_value  = Column(Float)
 	create_time    = Column(DateTime,default = func.now())
+	customer = relationship("Customer")
 
 class PointHistory(MapBase,_CommonApi):
 	__tablename__ = 'pointhistory'
