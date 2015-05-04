@@ -1538,7 +1538,7 @@ class Order(CustomerBaseHandler):
 			except:
 				return self.send_fail('shop_follow error')
 			if shop_follow:
-				shop_follow.shop_balance += order.shop_balance
+				shop_follow.shop_balance += order.totalPrice
 				self.session.commit()
 		elif action == "comment":
 			data = self.args["data"]
@@ -1979,8 +1979,6 @@ class payTest(CustomerBaseHandler):
 			
 			totalPrice =float( self.get_cookie('money'))
 			#########################################################
-
-	
 			# 用户余额增加 
 			# 同时店铺余额相应增加 
 			# 应放在 支付成功的回调里
