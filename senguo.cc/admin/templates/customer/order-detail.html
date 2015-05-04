@@ -70,6 +70,12 @@
         <p>运费：<span class="fr"><span>{{order.freight}} </span>元</span></p>
         <!--<p>店铺优惠：<span class="fr"><span>0</span>元</span></p>-->
         <p class="dash-bt">应付金额：<span class="fr"><span class="black-txt">{{order.totalPrice}}</span>元</span></p>
+        <p class="">支付方式：<span class="fr"><span class="">
+            {% if order.pay_type==1 %}货到付款
+            {% elif order.pay_type==2 %}余额支付
+            {% elif order.pay_type==3 %}在线支付
+            {% end %}
+        </span></span></p>
     </div>
    <!--新订单评论-->
    <!--<div class="order-item commentBox">

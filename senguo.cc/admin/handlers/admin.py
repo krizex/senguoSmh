@@ -1082,7 +1082,7 @@ class Follower(AdminBaseHandler):
 			customers[x].shop_names = [y[0] for y in shop_names]
 			customers[x].shop_balance =shop_point.shop_balance
 
-		page_sum=count//page_size
+		page_sum=count/page_size
 		if page_sum == 0:
 			page_sum=1
 		return self.render("admin/user-manage.html", customers=customers, count=count, page_sum=page_sum,
@@ -1280,7 +1280,10 @@ class Config(AdminBaseHandler):
 			pass
 			#return self.render("admin/shop-cert-set.html",context=dict(subpage='shop_set',shopSubPage='cert_set'))
 		elif action == "pay":
-			return self.render("admin/shop-pay-set.html",context=dict(subpage='shop_set',shopSubPage='pay_set'))
+			if self.current_shop.shop_auth !=0:
+				return self.render("admin/shop-pay-set.html",context=dict(subpage='shop_set',shopSubPage='pay_set'))
+			else:
+				return self.redirect(self.reverse_url('adminShopConfig'))
 
 		else:
 			return self.send_error(404)
@@ -1372,10 +1375,12 @@ class ShopBalance(AdminBaseHandler):
 		shop_balance = format(shop.shop_balance,'.2f')
 		show_balance = False
 		shop_auth = self.current_shop.shop_auth
-		if shop_auth in [1,2]:
+		if shop_auth in [1,2,3,4]:
 			show_balance = True
-		return self.render("admin/shop-balance.html",shop_balance = shop_balance,\
-			show_balance = show_balance,context=dict(subpage=subpage))
+			return self.render("admin/shop-balance.html",shop_balance = shop_balance,\
+				show_balance = show_balance,context=dict(subpage=subpage))
+		else:
+			return self.redirect(self.reverse_url('adminHome'))
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action','apply_value?:int','alipay_account?:str')

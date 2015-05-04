@@ -162,12 +162,12 @@ function orderItem(item){
         }
         else $item.find('.tips').hide();
         //支付状态
-        if(pay_type==2){
-            $item.find('.pay-status').text('余额支付');
-        }
-        else {
-            $item.find('.pay-status').text('现金支付');
-        }
+        if(pay_type==2){ 
+            $item.find('.pay-status').text('余额支付'); 
+        } 
+        else { 
+            $item.find('.pay-status').text('货到付款'); 
+        } 
         //订单状态
         if(status==0) {
             if(del_reason!=null){

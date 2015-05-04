@@ -300,11 +300,15 @@ var noticeBox=function(text,item){
 }
 //modal notice word
 var warnNotice=function(text,item){
-    $('.modal-warn').find('.warn').remove();
-    var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
-    $word.text(text);
-    $('.modal-warn').append($word);
-    $('.sure_btn').attr({'disabled':'true'});
+    clearTimeout(noticeTimer);
+    if($("#warn").size()>0){
+        $("#warn").text(text);
+        $("#warn").removeClass("hidden");
+    }else{
+        var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
+        $word.text(text);
+        $('.modal-warn').append($word);
+    }
     if(item){
         noticeRemove('warn',item);
     }
