@@ -4,7 +4,7 @@ $(document).ready(function(){
         $this.parents('.set-list-item').find('.address-show').hide();
         $this.parents('.set-list-item').find('.address-edit').show();
     });
-    $('.set-list-item .action-mode').each(function(){
+    $('.action-mode').each(function(){
         var $this=$(this);
         var status=$this.data('status');
         if(status==1)
