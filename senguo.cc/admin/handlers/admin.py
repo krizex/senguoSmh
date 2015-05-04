@@ -1362,6 +1362,13 @@ class Config(AdminBaseHandler):
 				return self.send_fail('您的店铺余额不为0，不可关闭余额支付')
 			elif shop_blockage!=0:
 				return self.send_fail('您尚有余额支付的订单未完成，不可关闭余额支付')
+		elif action == "online_on":
+			active = self.current_shop.config.online_on_active
+			if active == 1:
+				active = 0
+			else:
+				active = 1
+			self.current_shop.config.update(session=self.session,online_on_active=active)
 		else:
 			return self.send_error(404)
 		return self.send_success()

@@ -1676,6 +1676,7 @@ class Balance(CustomerBaseHandler):
 			print('shop none')
 		if shop:
 			shop_name=shop.shop_name
+			shop_logo=shop.shop_trademark_url
 		if not shop_follow:
 			print('shop_follow not fount')
 		if shop_follow:
@@ -1684,7 +1685,7 @@ class Balance(CustomerBaseHandler):
 			else:
 				shop_balance = 0.00
 
-		return self.render("customer/balance.html",shop_balance = shop_balance , shop_name=shop_name)
+		return self.render("customer/balance.html",shop_balance = shop_balance , shop_name=shop_name, shop_logo=shop_logo)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("page:int")

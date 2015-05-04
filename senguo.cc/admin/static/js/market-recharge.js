@@ -14,8 +14,12 @@ $(document).ready(function(){
         noticeBox("当前只支持微信支付，其他支付方式正在开发中...");
     }
 }).on("click","#commit-rec",function(){
-    if($(this).attr("data-statu")==0) return false;
+    //if($(this).attr("data-statu")==0) return false;
     var money = $.trim($("#money").val());
+    if(money==''){
+        noticeBox("充值金额不能为空");
+        return false;
+    }
     if(isWeiXin()){
         if(isMon(money)){
             SetCookie("money",money,30);
@@ -27,12 +31,13 @@ $(document).ready(function(){
     }else{
         noticeBox("当前是微信支付，请在微信客户端中打开此页面支付");
     }
-}).on("keydown keyup","#money",function(){
-    if($.trim($(this).val())!=''){
+}).on("click","#money",function(){
+    $("#commit-rec").attr("data-statu","1").removeClass("grey-bg");
+    /*if($.trim($(this).val())!=''){
         $("#commit-rec").attr("data-statu","1").removeClass("grey-bg");
     }else{
         $("#commit-rec").attr("data-statu","0").addClass("grey-bg");
-    }
+    }*/
 });
 function isMon(money){
     var flag = false;
