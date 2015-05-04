@@ -1055,12 +1055,17 @@ class Cart(CustomerBaseHandler):
 		phone = self.get_phone(customer_id)
 
 		show_balance = False
-
+		balance_value = 0
 		storages = {}
-		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
-		custormer_balance =self.session.query(models.CustomerShopFollow).\
-		filter_by(customer_id = customer_id,shop_id =shop_id ).first()
-		balance_value = custormer_balance.shop_balance
+		try:
+			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
+		except:
+			print('shop error')
+		try:
+			custormer_balance =self.session.query(models.CustomerShopFollow).\
+			filter_by(customer_id = customer_id,shop_id =shop_id ).first()
+		except:
+			print('custormer_balance error')
 		if not shop:return self.send_error(404)
 		print("[购物篮]当前店铺：",shop)
 		if shop.shop_auth in [1,2,3,4]:
@@ -1068,6 +1073,11 @@ class Cart(CustomerBaseHandler):
 		shop_name = shop.shop_name
 		shop_id = shop.id
 		shop_logo = shop.shop_trademark_url
+		cash_on = shop.config.cash_on_active
+		balance_on = shop.config.balance_on_active
+		if custormer_balance:
+			balance_value = custormer_balance.shop_balance
+		
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
@@ -1095,7 +1105,8 @@ class Cart(CustomerBaseHandler):
 			print("[购物篮]读取按时达时段，Shop ID：",period.config_id,"，时间段：",period.start_time,"~",period.end_time)
 		return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
-						   shop_name  = shop_name ,shop_logo = shop_logo,balance_value=balance_value,context=dict(subpage='cart'))
+						   shop_name  = shop_name ,shop_logo = shop_logo,balance_value=balance_value,\
+						   cash_on=cash_on,balance_on=balance_on,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",

@@ -213,13 +213,13 @@
                     <span class="pull-left text-grey3 font14 m-b5">支付方式</span>
                 </p>
                 <ul id="payType" class="pay_type list-group type-choose font12">
-                    <li data-id="1" class="active list-group-item clearfix line50 height50 item">
+                    <li data-id="1" class="active list-group-item clearfix line50 height50 item" data-status="{{cash_on}}">
                         <a href="javascript:;" class="text-grey">
                             <span class="text-grey3 pull-left title set-inl-blo font14">货到付款</span>
                             <span class="pull-left text-grey9">送货员送货时交付现金</span>
                         </a>
                     </li>
-                   <li data-id="2" class="list-group-item clearfix line50 height50 item" id="balance-pay" data-id="{{show_balance}}">
+                   <li data-id="2" class="list-group-item clearfix line50 height50 item" id="balance-pay" data-id="{{show_balance}}" data-status="{{balance_on}}">
 	                        <a href="javascript:;" class="text-grey">
                             <span class="text-grey3 pull-left title set-inl-blo font14">余额支付</span>
                             <span class="pull-left text-grey9">提前支付</span>
