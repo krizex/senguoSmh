@@ -49,8 +49,8 @@ $(document).ready(function(){
 }).on('click','#pwdSure',function(){
     var $this=$(this);
     var action=$this.attr('data-action');
-    $('#pwdSure').attr({'disabled':true});
-    setPwd(action);
+    $('#pwdSure').attr({'disabled':true}).addClass('bg-greyc');
+    setPwd(action,$this);
 }).on('click','#phoneNumber',function(){
         var tie_box=new Modal('tieBox');
          tie_box.modal('show');
@@ -253,7 +253,7 @@ function TiePhone(target){
     );
 }
 
-function setPwd(action){
+function setPwd(action, $obj){
      var regPass=/^[0-9a-zA-Z]*$/g;
      var data;
      var url='';
@@ -261,9 +261,9 @@ function setPwd(action){
     if(action=='add_password'){
         var password=$('#loginPassword').val();
         var passwconf=$('#passwordConfirm').val();
-        if(!password){return warnNotice('请设置您的手机登录密码');}
-        if(password.length<6 || !regPass.test(password)) {return warnNotice('请输入六位以上字母和数字的组合');}
-        if(passwconf!=password){return warnNotice('两次密码输入不一致')}
+        if(!password){return warnNotice('请设置您的手机登录密码',$obj);return false;}
+        if(password.length<6 || !regPass.test(password)) {warnNotice('请输入六位以上字母和数字的组合',$obj);return false;}
+        if(passwconf!=password){warnNotice('两次密码输入不一致',$obj);return false;}
         password = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
         data=password;
             args={
@@ -275,11 +275,13 @@ function setPwd(action){
         var old_password=$('#originPassword').val();
         var newPassword=$('#newPassword').val();
         var passwconf=$('#newConfirm').val();
-        console.log();
-        if(!old_password){return warnNotice('请输入原始密码');}
-        if(!newPassword){return warnNotice('请输入新密码');}
-        if(newPassword.length<6 || !regPass.test(newPassword)) {return warnNotice('请输入六位以上字母和数字的组合');}
-        if(passwconf!=newPassword){return warnNotice('两次密码输入不一致')}
+        if(!old_password){warnNotice('请输入原始密码',$obj);return false;}
+        if(!newPassword){warnNotice('请输入新密码',$obj);return false;}
+        if(newPassword.length<6 || !regPass.test(newPassword)) {
+            warnNotice('请输入六位以上字母和数字的组合',$obj);
+            return false;
+        }
+        if(passwconf!=newPassword){warnNotice('两次密码输入不一致',$obj);return false;}
         old_password = CryptoJS.SHA256(old_password).toString(CryptoJS.enc.Hex);
         newPassword = CryptoJS.SHA256(newPassword).toString(CryptoJS.enc.Hex);
         data=newPassword;
@@ -304,7 +306,7 @@ function setPwd(action){
                 }
             },
             function(){
-                rnoticeBox('网络好像不给力呢~ ( >O< ) ~');
+                noticeBox('网络好像不给力呢~ ( >O< ) ~');
                 $('#pwdSure').removeAttr('disabled');
             },
             function(){
