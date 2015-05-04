@@ -10,7 +10,6 @@ $(document).ready(function(){
     if(times != 0){
         $(".wrap-per-cert").addClass('hide');
         $(".wrap-en-cert").addClass('hide');
-        console.log(233333);
         if(apply_status == 0){
             $(".scom").addClass('hide');
             $(".encom").addClass('hide');
