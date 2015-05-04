@@ -148,7 +148,7 @@
             </table>
         </div>
         {% end %}
-        <div class="wrap-bm wrap-cert-tip hide">
+        <div class="wrap-bm wrap-cert-tip {% if context['person_auth'] or context['company_auth'] %} {% else %} hide {% end %}">
             <div class="cert-tip">
                 {% if context['person_auth'] %}
                 <p><span class="success-type">个人认证</span>提交成功，我们将在<span class="check-time">48</span>小时内完成审核，请耐心等待结果。</p>

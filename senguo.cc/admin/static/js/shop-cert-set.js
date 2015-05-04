@@ -309,7 +309,7 @@ $(function() {
                 } else if (err.code == -601) {
                     alert("图片格式不对哦");
                 } else if (err.code == -200) {
-                    alert("上传出错");
+                    alert("当前页面过期，请刷新页面再上传");
                 } else {
                     alert(err.code + ": " + err.message);
                 }
@@ -363,7 +363,7 @@ $(function() {
                 } else if (err.code == -601) {
                     alert("图片格式不对哦");
                 } else if (err.code == -200) {
-                    alert("上传出错");
+                    alert("当前页面过期，请刷新页面再上传");
                 } else {
                     alert(err.code + ": " + err.message);
                 }
@@ -417,7 +417,7 @@ $(function() {
                 } else if (err.code == -601) {
                     alert("图片格式不对哦");
                 } else if (err.code == -200) {
-                    alert("上传出错");
+                    alert("当前页面过期，请刷新页面再上传");
                 } else {
                     alert(err.code + ": " + err.message);
                 }
@@ -471,7 +471,7 @@ $(function() {
                 } else if (err.code == -601) {
                     alert("图片格式不对哦");
                 } else if (err.code == -200) {
-                    alert("上传出错");
+                    alert("当前页面过期，请刷新页面再上传");
                 } else {
                     alert(err.code + ": " + err.message);
                 }

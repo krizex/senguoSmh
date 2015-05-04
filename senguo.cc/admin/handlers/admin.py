@@ -1362,6 +1362,13 @@ class Config(AdminBaseHandler):
 				return self.send_fail('您的店铺余额不为0，不可关闭余额支付')
 			elif shop_blockage!=0:
 				return self.send_fail('您尚有余额支付的订单未完成，不可关闭余额支付')
+		elif action == "online_on":
+			active = self.current_shop.config.online_on_active
+			if active == 1:
+				active = 0
+			else:
+				active = 1
+			self.current_shop.config.update(session=self.session,online_on_active=active)
 		else:
 			return self.send_error(404)
 		return self.send_success()
@@ -1383,10 +1390,14 @@ class ShopBalance(AdminBaseHandler):
 			return self.redirect(self.reverse_url('adminHome'))
 
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('action','apply_value?:int','alipay_account?:str')
+	@AdminBaseHandler.check_arguments('action','apply_value?:int','alipay_account?:str','page?:int')
 	def post(self):
 		action = self.args['action']
 		shop_id = self.current_shop.id
+		page=self.args['page']
+		page_size=10
+		page_sum=0
+		count=0
 		# 商铺申请提现
 		# 提现申请被超级管理员处理后,会产生一条余额变动记录
 		if action == 'cash':
@@ -1407,44 +1418,48 @@ class ShopBalance(AdminBaseHandler):
 		elif action == 'cash_history':
 			history = []
 			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
-				balance_type = 2).all()
+				balance_type = 2).offset(page*page_size).limit(page_size).all()
+			# count =self.session.query.(models.BalanceHistory).filter_by(shop_id = shop_id,\
+			# 	balance_type = 2).count()
+			# page_sum=count/10
 			if not history_list:
 				return self.send_fail('history_list error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
-				history.append([temp.apply_value,create_time])
-			return self.send_success(history = history)
+				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,'type':temp.balance_type})
+			return self.send_success(history = history,page_sum=page_sum)
 
 		elif action == 'all_history':
 			history = []
-			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).all()
+			history_list = self.session.query(models.BalanceHistory).filter(or_(models.BalanceHistory.balance_type==0,models.BalanceHistory.balance_type==2,models.BalanceHistory.balance_type==3))\
+			.filter_by(shop_id = shop_id).order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			if not history_list:
 				return self.send_fail('get all BalanceHistory error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
-				history.append([temp.balance_record,create_time,temp.balance_record])
+				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,'type':temp.balance_type})
 			return self.send_success(history = history)
 
 		elif action == 'recharge':
 			history = []
 			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
-				balance_type = 0).all()
+				balance_type = 0).offset(page*page_size).limit(page_size).all()
 			if not history_list:
 				return self.send_fail('get all BalanceHistory error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
-				history.append([temp.balance_record,create_time,temp.balance_record])
+				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,'type':temp.balance_type})
 			return self.send_success(history = history)
 
 		elif action == 'online':
 			history = []
 			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
-				balance_type = 3).all()
+				balance_type = 3).offset(page*page_size).limit(page_size).all()
 			if not history_list:
 				return self.send_fail('get all BalanceHistory error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
-				history.append([temp.balance_record,create_time,temp.balance_record])
+				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,'type':temp.balance_type})
 			return self.send_success(history = history)
 			
 		else:
