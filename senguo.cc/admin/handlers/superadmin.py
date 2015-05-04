@@ -823,7 +823,25 @@ class Balance(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action')
 	def post(self):
-		return self.send_success()
+		history = []
+		if action == 'all_history':
+			history_list = self.session.query(models.BalanceHistory).all()
+		elif action == 'recharge':
+			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0).all()
+		elif action == 'online':
+			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 3).all()
+		elif action == 'cash_history':
+			history_list = self.session.query(models.BalanceHistory).filter_by(balance_history =2).all()
+		else:
+			return self.send_error(404)
+		if not history_list:
+			return self.send_fail('history_list error')
+		for temp in history_list:
+				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
+				history.append([temp.balance_record,create_time,temp.balance_record])
+		return self.send_success(history = history)
+
+		# return self.send_success()
 
 class ApplyCash(SuperBaseHandler):
 	@tornado.web.authenticated
@@ -831,7 +849,7 @@ class ApplyCash(SuperBaseHandler):
 		return self.send_success()
 
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments('action','apply_id?:int')
+	@SuperBaseHandler.check_arguments('action','apply_id?:int','decline_reason?:str')
 	def post(self):
 
 		history = []
@@ -847,6 +865,12 @@ class ApplyCash(SuperBaseHandler):
 				has_done = 0).all()
 		elif action == 'decline':
 			apply_id = self.args['apply_id']
+			apply_cash = self.session.query(models.ApplyCashHistory).filter_by(id = apply_id).first()
+			if apply_cash:
+				return self.send_fail('apply_cash not found')
+			apply_cash.has_done = 2
+			apply_cash.decline_reason = self.args['decline_reason']
+			self.session.commit()
 			
 		elif action == 'commit':
 			apply_id = self.args['apply_id']
@@ -857,9 +881,10 @@ class ApplyCash(SuperBaseHandler):
 
 			#往 blancehistory中插入一条数据，以免到时候 查看所有记录的时候到两张表中去取 效率低下
 			balance_history = models.BalanceHistory(balance_record = '提现：店铺管理员',balance_type =\
-				2,)
-
-
+				2,balance_value = apply_cash.value ,customer_id = apply_cash.shop_id,name = \
+				apply_cash.applicant_name,shop_id = apply_cash.shop_id)
+			self.session.add(balance_history)
+			self.session.commit()
 
 		if apply_list:
 			for temp in apply_list:

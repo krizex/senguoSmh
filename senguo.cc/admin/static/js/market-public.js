@@ -301,26 +301,23 @@ var noticeBox=function(text,item){
 //modal notice word
 var warnNotice=function(text,item){
     clearTimeout(noticeTimer);
-    if($("#warn").size()>0){
-        $("#warn").text(text);
-        $("#warn").removeClass("hidden");
-    }else{
-        var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
-        $word.text(text);
-        $('.modal-warn').append($word);
-    }
-    if(item){
-        noticeRemove('warn',item);
-    }
-    else {
-        noticeRemove('warn');
-    }
+    $(".warn").remove();
+    var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
+    $word.text(text);
+    $('.modal-warn').append($word);
+    noticeTimer = setTimeout(function() {
+        $('.warn').addClass('hidden');
+        if(item){
+            item.removeAttr('disabled').removeClass('bg-greyc');
+        }
+    },2000);
 }
 //time count 2 secends
 var noticeRemove=function (target,item) {
     noticeTimer = setTimeout(function() {
         $('#'+target).addClass('hidden');
-        if(item) {
+        console.log($('#'+target).hasClass("hidden"))
+        if(item){
             item.removeAttr('disabled').removeClass('bg-greyc');
         }
     },2000);
