@@ -1935,7 +1935,7 @@ class payTest(CustomerBaseHandler):
 			# totalPrice = self.args['totalPrice'] 
 			totalPrice =float( self.get_cookie('money'))
 			print(totalPrice,'long time no see!')
-			unifiedOrder.setParameter("body",'余额充值')
+			unifiedOrder.setParameter("body",'charge')
 			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/callback')
 			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",orderId)
