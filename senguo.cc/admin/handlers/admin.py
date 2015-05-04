@@ -1082,7 +1082,7 @@ class Follower(AdminBaseHandler):
 			customers[x].shop_names = [y[0] for y in shop_names]
 			customers[x].shop_balance =shop_point.shop_balance
 
-		page_sum=count//page_size
+		page_sum=count/page_size
 		if page_sum == 0:
 			page_sum=1
 		return self.render("admin/user-manage.html", customers=customers, count=count, page_sum=page_sum,
@@ -1277,7 +1277,13 @@ class Config(AdminBaseHandler):
 			return self.render("admin/shop-receipt-set.html", receipt_msg=config.receipt_msg,context=dict(subpage='shop_set',shopSubPage='receipt_set'))
 
 		elif action == "cert":
-					return self.render("admin/shop-cert-set.html",context=dict(subpage='shop_set',shopSubPage='cert_set'))
+			pass
+			#return self.render("admin/shop-cert-set.html",context=dict(subpage='shop_set',shopSubPage='cert_set'))
+		elif action == "pay":
+			if self.current_shop.shop_auth !=0:
+				return self.render("admin/shop-pay-set.html",context=dict(subpage='shop_set',shopSubPage='pay_set'))
+			else:
+				return self.redirect(self.reverse_url('adminShopConfig'))
 
 		else:
 			return self.send_error(404)
@@ -1335,6 +1341,27 @@ class Config(AdminBaseHandler):
 			else:
 				active = 1
 			self.current_shop.config.update(session=self.session,receipt_img_active=active)
+		elif action == "cash_on":
+			active = self.current_shop.config.cash_on_active
+			if active == 1:
+				active = 0
+			else:
+				active = 1
+			self.current_shop.config.update(session=self.session,cash_on_active=active)
+		elif action == "balance_on":
+			active = self.current_shop.config.balance_on_active
+			shop_balance = self.current_shop.shop_balance
+			shop_blockage = self.current_shop.shop_blockage
+			if shop_balance == 0 and shop_blockage == 0:	
+				if active == 1:
+					active = 0
+				else:
+					active = 1
+				self.current_shop.config.update(session=self.session,balance_on_active=active)
+			elif shop_balance !=0:
+				return self.send_fail('您的店铺余额不为0，不可关闭余额支付')
+			elif shop_blockage!=0:
+				return self.send_fail('您尚有余额支付的订单未完成，不可关闭余额支付')
 		else:
 			return self.send_error(404)
 		return self.send_success()
@@ -1345,13 +1372,15 @@ class ShopBalance(AdminBaseHandler):
 	def get(self):
 		subpage = 'shopBlance'
 		shop = self.current_shop
-		shop_balance = shop.shop_balance
+		shop_balance = format(shop.shop_balance,'.2f')
 		show_balance = False
 		shop_auth = self.current_shop.shop_auth
-		if shop_auth in [1,2]:
+		if shop_auth in [1,2,3,4]:
 			show_balance = True
-		return self.render("admin/shop-balance.html",shop_balance = shop_balance,\
-			show_balance = show_balance,context=dict(subpage=subpage))
+			return self.render("admin/shop-balance.html",shop_balance = shop_balance,\
+				show_balance = show_balance,context=dict(subpage=subpage))
+		else:
+			return self.redirect(self.reverse_url('adminHome'))
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action','apply_value?:int','alipay_account?:str')

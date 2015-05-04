@@ -156,7 +156,6 @@ function orderItem(item){
         $item.find('.order-status').attr({'data-id':status});
         $item.find('.order-time').text(create_date);
         $item.find('.saler-remark').val(remark);
-    
         //立即送消费显示
         if(type==1){
             $item.find('.tip').text(tip);
@@ -308,10 +307,9 @@ function orderPrint(target){
             }
             else {
                 $item.find('.shop-img img').attr({'src':print_img});
-                console.log(233333);
             }
         }
-        $item.find('.moneyPaid').text(paid);
+       $item.find('.moneyPaid').text(paid);
         //var OpenWindow = window.open("","","width=500,height=600");
         //OpenWindow.document.body.style.margin = "0";
         //OpenWindow.document.body.style.marginTop = "15px";

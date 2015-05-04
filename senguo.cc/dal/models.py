@@ -495,8 +495,8 @@ class Shop(MapBase, _CommonApi):
 	wx_qr_code = Column(String(1024))
 
 	#店铺  余额 和 冻结 余额
-	shop_balance = Column(Integer,default = 0) 
-	shop_blockage= Column(Integer,default = 0) #当用户下单后，店铺冻结余额增加，当订单完成后 冻结 余额 转入 店铺余额
+	shop_balance = Column(Float,default = 0) 
+	shop_blockage= Column(Float,default = 0) #当用户下单后，店铺冻结余额增加，当订单完成后 冻结 余额 转入 店铺余额
 
 	orders = relationship("Order")
 	staffs = relationship("ShopStaff", secondary="hire_link")
@@ -786,6 +786,7 @@ class ApplyCashHistory(MapBase,_CommonApi):
 	value   = Column(Integer) #申请提现的金额，单位：分
 	create_time = Column(DateTime,default = func.now())
 	has_done   = Column(Integer , default = 0) # 0:before done,1: done success,2: decline
+	decline_reason = Column(String(200)) #当申请提现被拒绝后 给商家的理由
 
 ################################################################################
 # 余额记录 只会在 三处地方产生:
@@ -804,6 +805,7 @@ class BalanceHistory(MapBase,_CommonApi):
 	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:余额消费(没用) 2:提现 3:在线支付
 	balance_value  = Column(Float)
 	create_time    = Column(DateTime,default = func.now())
+	customer = relationship("Customer")
 
 class PointHistory(MapBase,_CommonApi):
 	__tablename__ = 'pointhistory'
@@ -1325,6 +1327,9 @@ class Config(MapBase, _CommonApi):
 	intime_period = Column(Integer,default = 0) 
 	#4.24 add receipt_img_active
 	receipt_img_active = Column(Integer,default = 1)
+	cash_on_active =Column(Integer,default = 1)#0:货到付款关闭 1:货到付款付开启 5.4
+	online_on_active =Column(Integer,default = 1) #0:在线支付关闭 1:在线支付开启 5.4
+	balance_on_active =Column(Integer,default = 1) #0:余额支付关闭 1:余额支付开启 5.4
 
 #商城首页的公告
 class Notice(MapBase):

@@ -76,6 +76,17 @@ $(document).ready(function(){
         }
         confirmRemove();
     });
+}).on('click','.user-balance',function(){
+    var status = $(this).attr('data-status');
+    var statu = $(this).attr("data-auth");
+    if(statu == "False"){
+        noticeBox("当前店铺未认证，此功能暂不可用");
+        return false;
+    }
+    if(status==0){
+         noticeBox("当前店铺已关闭余额支付，此功能暂不可用");
+         return false;
+    }
 });
 
 function sex(target,id){
