@@ -1407,7 +1407,7 @@ class Order(CustomerBaseHandler):
 				'sender_phone':order.sender_phone,'sender_img':order.sender_img,'order_id':order.id,\
 				'message':order.message,'comment':order.comment,'create_date':create_date,\
 				'today':order.today,'type':order.type,'create_year':order.create_date.year,\
-				'create_month':order.create_date.month,'create_day':order.create_date.day})
+				'create_month':order.create_date.month,'create_day':order.create_date.day,'pay_type':order.pay_type})
 		return data
 
 	@tornado.web.authenticated

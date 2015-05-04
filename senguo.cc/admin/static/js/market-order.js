@@ -85,7 +85,7 @@ var goodsList=function(page,action){
         if(res.success)
         {
             if(window.dataObj.list_item==undefined){
-                getItem('/static/items/customer/orderlist_item.html?v=2015-0325',function(data){
+                getItem('/static/items/customer/orderlist_item.html?v='+new Date().getTime(),function(data){
                     window.dataObj.list_item=data;
                     initData(res);
                 });    
@@ -120,11 +120,20 @@ var goodsList=function(page,action){
                     var create_date=orders[i]['create_date'];
                     var create_year=orders[i]['create_year'];
                     var create_month=orders[i]['create_month'];
-                    var create_day=orders[i]['create_day']; 
+                    var create_day=orders[i]['create_day'];
+                    var pay_type = orders[i]['pay_type'];
                     var date=new Date();
                     var year=date.getFullYear();
                     var month=date.getMonth()+1;
                     var day=date.getDate();
+                    var pay_txt = "";
+                    if(pay_type==1){
+                        pay_txt = "货到付款";
+                    }else if(pay_type==2){
+                        pay_txt = "余额支付";
+                    }else{
+                        pay_txt = "在线支付";
+                    }
                     $item.attr({'data-id':id,'data-status':order_status});
                     $item.find('.detail-link').attr({'href':'/customer/orders/detail/'+id});
                     $item.find('.order_num').text(order_num);
@@ -133,6 +142,7 @@ var goodsList=function(page,action){
                     $item.find('.address').text(address_text);
                     $item.find('.price').text(totalPrice);
                     $item.find('.send_time').text(send_time).show();
+                    $item.find('#order_pay_type').children("span").html(pay_txt);
                     if(message) {$item.find('.remark_box').show().find('.remark').text(message);}
                     if(comment) {$item.find('.comment_box').show().find('.comment').text(comment);}
                     if(type==1) {
