@@ -494,11 +494,7 @@ var goodsList=function(page,action){
         else return noticeBox(res.error_text);
         },
         function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~');},
-        function(){
-            goodsList(1,8);
-            noticeBox('服务器貌似出错了~ ( >O< ) ~');
-            return;
-        });
+        function(){noticeBox('服务器貌似出错了~ ( >O< ) ~');});
         var initData=function(res){
             var w_orders=res.w_orders;
             if(w_orders&&w_orders.length==0){
