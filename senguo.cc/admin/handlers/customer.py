@@ -199,7 +199,7 @@ class Home(CustomerBaseHandler):
 			shop_name = shop.shop_name
 			shop_id   = shop.id
 			shop_logo = shop.shop_trademark_url
-			if shop.shop_auth in [1,2]:
+			if shop.shop_auth in [1,2,3,4]:
 				show_balance = True
 			print(shop,shop.shop_auth)
 		else:
@@ -1060,7 +1060,7 @@ class Cart(CustomerBaseHandler):
 		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		if not shop:return self.send_error(404)
 		print("[购物篮]当前店铺：",shop)
-		if shop.shop_auth in [1,2]:
+		if shop.shop_auth in [1,2,3,4]:
 			show_balance = True
 		shop_name = shop.shop_name
 		shop_id = shop.id
@@ -1659,7 +1659,7 @@ class Balance(CustomerBaseHandler):
 		return self.render("customer/balance.html",shop_balance = shop_balance , shop_name=shop_name)
 
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("page")
+	@CustomerBaseHandler.check_arguments("page:int")
 	def post(self):
 		page = int(self.args["page"])
 		offset = (page-1) * 10
@@ -1669,6 +1669,7 @@ class Balance(CustomerBaseHandler):
 		data = []
 		pages = 0
 		nomore = False
+		shop_balance_history=[]
 		print(customer_id,shop_id)
 		try:
 			shop_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id =\
@@ -1676,6 +1677,7 @@ class Balance(CustomerBaseHandler):
 		except:
 			shop_balance_history = None
 			print("balance show error ")
+
 		try:
 			count = self.session.query(models.BalanceHistory).filter_by(customer_id =\
 				customer_id , shop_id = shop_id).count()

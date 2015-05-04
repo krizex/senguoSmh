@@ -4,17 +4,13 @@ $(document).ready(function(){
     var apply_status=Int($('#data').attr('data-status'));
     var shop_auth=$('#data').attr('data-auth');
     var times=$('#data').attr('data-times');
-    if(person_auth=='True' ||company_auth=='True'){
-        $(".wrap-per-cert").addClass('hide');
-        $(".wrap-en-cert").addClass('hide');
-        $('.wrap-cert-tip').removeClass('hide');
-        $(".scom").addClass('hide');
-        $(".encom").addClass('hide');
-        $('.change-notice').addClass('hide');
+    if(person_auth == 'False' && company_auth =='False'){
+        $('.wrap-per-cert').removeClass('hide');
     }
     if(times != 0){
         $(".wrap-per-cert").addClass('hide');
         $(".wrap-en-cert").addClass('hide');
+        console.log(233333);
         if(apply_status == 0){
             $(".scom").addClass('hide');
             $(".encom").addClass('hide');
