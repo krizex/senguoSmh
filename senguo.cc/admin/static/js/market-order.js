@@ -42,6 +42,7 @@ $(document).ready(function(){
     });
     $(document).on('click','.comment_submit', function () {
         var comment=$('.comment-input').val();
+        $('.comment_submit').attr({'disabled':true}).addClass('bg-greyc');
         orderComment(index,comment_order_id,comment);
     });
 });
@@ -230,12 +231,15 @@ function orderConcel(target,id){
 }
 
 function orderComment(id,order_id,comment){
-    $('.comment_submit').attr({'disabled':true}).addClass('bg-greyc');
     var url='';
     var action='comment';
-    if(!comment){return warnNotice('请输入评价内容')}
+    if(!comment){
+        $('.comment_submit').removeAttr('disabled').removeClass('bg-greyc');
+        return warnNotice('请输入评价内容');
+    }
     if(comment.length>300){
-        warnNotice('评价内容最多300字');
+        $('.comment_submit').removeAttr('disabled').removeClass('bg-greyc');
+        return warnNotice('评价内容最多300字');
     }
     var data={
         order_id:order_id,
@@ -254,6 +258,7 @@ function orderComment(id,order_id,comment){
            parent.find('.content').append('<p>评价：'+comment+'</p>');
            var commentBox=new Modal('commentBox');
            commentBox.modal('hide');
+           $('.comment_submit').removeAttr('disabled').removeClass('bg-greyc');
         }
         else {
             noticeBox(res.error_text);
@@ -267,7 +272,7 @@ function orderComment(id,order_id,comment){
         $('#commit-senguo').removeAttr('disabled').removeClass('bg-greyc');
     },
     function(){
-        $('#commit-senguo').removeAttr('disabled');
+        $('.comment_submit').removeAttr('disabled').removeClass('bg-greyc');
         noticeBox('服务器貌似出错了~ ( >O< ) ~');
     });
 }
