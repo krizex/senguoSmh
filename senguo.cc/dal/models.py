@@ -686,7 +686,6 @@ class Customer(MapBase, _AccountApi):
 
 	#added by woody
 	points = relationship("Points")
-
 	shop_new = Column(Integer,default = 0) # 0:new ,1:old
 
 #woody

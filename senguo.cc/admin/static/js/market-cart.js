@@ -350,6 +350,16 @@ $(document).ready(function(){
         if($this.hasClass('active')) $this.removeClass('active');
         else $this.addClass('active').siblings('.item').removeClass('active');
     })
+}).on("click",".pay_type li",function(){
+    var index = $(this).index();
+    if(index == 1){
+        var statu = $(this).attr("data-auth");
+        if(statu == "False"){
+            noticeBox("当前店铺未认证，此功能暂不可用");
+            return false;
+        }
+    }
+    $(".pay_type li").removeClass("active").eq(index).addClass("active");
 });
 window.dataObj.price_list=[];
 window.dataObj.total_price=0;
