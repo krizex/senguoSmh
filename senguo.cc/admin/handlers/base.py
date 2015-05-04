@@ -225,7 +225,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
 
 
-		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30,
+		token = q.upload_token(BUCKET_SHOP_IMG, expires=6000*30,
 
 							  policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
 									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
