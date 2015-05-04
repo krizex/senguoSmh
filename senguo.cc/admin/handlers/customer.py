@@ -1328,7 +1328,7 @@ class Cart(CustomerBaseHandler):
 				shop_id = shop_id).first()
 			if not shop_follow:
 				return self.send_fail('shop_follow not found')
-			shop_follow.shop_balance -= totalPrice * 100  #用户对应 店铺余额减少 ，单位：分
+			shop_follow.shop_balance -= totalPrice   #用户对应 店铺余额减少 ，单位：元
 			self.session.commit()
 			
 			# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
@@ -1337,13 +1337,12 @@ class Cart(CustomerBaseHandler):
 			# shop.shop_bloackage += totalPrice * 100  #店铺冻结 资产相应增加 ，单位 ：分
 			# self.session.commit()
 
-			# balance_record = '订单号' + order.num
-
-			# 用户 余额支付不产生 余额记录 ，因为只是数值上的变化
-			# balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
-			# 	shop_id = shop_id ,balance_value = totalPrice * 100 , balance_record = balance_record)
-			# self.session.add(balance_history)
-			# self.session.commit()
+			#生成一条余额交易记录
+			balance_record = '订单号' + order.num
+			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
+				shop_id = shop_id ,balance_value = totalPrice  , balance_record = balance_record)
+			self.session.add(balance_history)
+			self.session.commit()
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}', mgoods='{}')#清空购物车
@@ -1506,12 +1505,26 @@ class Order(CustomerBaseHandler):
 			data = self.args["data"]
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
 			if not order:return self.send_error(404)
+			if order.status == 0:
+				return self.send_fail("订单已取消，不能重复操作")
 			order.status = 0
 			# recover the sale and storage
 			# woody
 			# 3.27
 			session = self.session
 			order.get_num(session,order.id)
+
+			#订单取消后，如果订单 支付类型是 余额支付时， 余额返回到 用户账户
+			customer_id = order.customer_id
+			shop_id     = order.shop_id
+			try:
+				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
+					customer_id , shop_id = shop_id).first()
+			except:
+				return self.send_fail('shop_follow error')
+			if shop_follow:
+				shop_follow.shop_balance += order.shop_balance
+				self.session.commit()
 		elif action == "comment":
 			data = self.args["data"]
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
@@ -1963,7 +1976,7 @@ class payTest(CustomerBaseHandler):
 			print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
 			if not shop_follow:
 				return self.send_fail('shop_follow not found')
-			shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为 分
+			shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
 
 			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 			if not shop:
