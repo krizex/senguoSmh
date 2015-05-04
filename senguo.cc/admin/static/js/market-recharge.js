@@ -10,11 +10,11 @@ $(document).ready(function(){
     /*$(".rec-bm-lst .check-ipt").removeClass("checked");
     $(this).addClass("checked");*/
     var index = $(this).attr("data-index");
-console.log(index);
     if(index>0){
         noticeBox("当前只支持微信支付，其他支付方式正在开发中...");
     }
 }).on("click","#commit-rec",function(){
+    if($(this).attr("data-statu")==0) return false;
     var money = $.trim($("#money").val());
     if(isWeiXin()){
         if(isMon(money)){
@@ -26,6 +26,12 @@ console.log(index);
         }
     }else{
         noticeBox("当前是微信支付，请在微信客户端中打开此页面支付");
+    }
+}).on("keydown keyup","#money",function(){
+    if($.trim($(this).val())!=''){
+        $("#commit-rec").attr("data-statu","1").removeClass("grey-bg");
+    }else{
+        $("#commit-rec").attr("data-statu","0").addClass("grey-bg");
     }
 });
 function isMon(money){

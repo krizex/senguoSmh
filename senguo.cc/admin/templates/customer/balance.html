@@ -24,7 +24,7 @@
         <h3>余额说明：</h3>
         <p>1、所充值余额由森果平台代为收取，再返给所在店铺；</p>
         <p>2、余额只能在当前所在店铺下消费；</p>
-        <p>3、充值后您将成为店铺会员，享受余额支付、签到双倍积分、评论双倍积分等特权；</p>
+        <p>3、充值后您将成为店铺会员，享受余额支付<!--、签到双倍积分、评论双倍积分等特权-->；</p>
     </div>
     <div class="bal-balbm">
         <h3>账单</h3>
@@ -33,7 +33,10 @@
     </div>
 </div>
  <div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中 ( > < )~</div>
- <div class="no-recored  text-center" style="display:none"><p class="text-center mt10 text-grey9"></p></div>
+ <div class="no-recored  text-center" style="display:none">
+     <img src="/static/images/goods_2.png"/>
+     <p class="text-center mt10 text-grey9">当前没有任何账单</p>
+ </div>
 {% end %}
 {% block bottom %}
 <script src="{{static_url('js/market-balance.js')}}"></script>

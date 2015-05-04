@@ -21,6 +21,7 @@ input[type=text]:focus{box-shadow:0px;border-color:#00D681;outline:none;}
 .group{*zoom:1;}
 .fl{float:left;}
 .fr{float:right;}
+.bk{display: block;}
 .container:before{display:table;content: " ";}
 .pull-left{float:left !important;}
 .pull-right{float:right !important;}

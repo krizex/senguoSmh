@@ -4,7 +4,7 @@ $(document).ready(function(){
         $this.parents('.set-list-item').find('.address-show').hide();
         $this.parents('.set-list-item').find('.address-edit').show();
     });
-    $('.set-list-item .action-mode').each(function(){
+    $('.action-mode').each(function(){
         var $this=$(this);
         var status=$this.data('status');
         if(status==1)
@@ -12,5 +12,55 @@ $(document).ready(function(){
         else $this.find('.stop-mode').show();
 
     });
+}).on('click','.cash_active',function(){
+    var $this=$(this);
+    var status=Int($this.attr('data-status'));
+    var url='';
+    var action="cash_on";
+    var args={
+        action:action,
+        data:''
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                if(status==1){
+                    $this.attr({'data-status':0}).find('.stop-mode').show().siblings('.work-mode').hide();
+                }
+                else if(status == 0){
+                    $this.attr({'data-status':1}).find('.stop-mode').hide().siblings('.work-mode').show();
+                }
+            }
+            else{
+                    alert(res.error_text);
+            }
+        },
+        function(){alert('网络好像不给力呢~ ( >O< ) ~');}
+        );
+}).on('click','.balance_active',function(){
+    var $this=$(this);
+    var status=Int($this.attr('data-status'));
+    var url='';
+    var action="balance_on";
+    var args={
+        action:action,
+        data:''
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                if(status==1){
+                    $this.attr({'data-status':0}).find('.stop-mode').show().siblings('.work-mode').hide();
+                }
+                else if(status == 0){
+                    $this.attr({'data-status':1}).find('.stop-mode').hide().siblings('.work-mode').show();
+                }
+            }
+            else{
+                    alert(res.error_text);
+            }
+        },
+        function(){alert('网络好像不给力呢~ ( >O< ) ~');}
+        );
 });
 var link='/admin/config';

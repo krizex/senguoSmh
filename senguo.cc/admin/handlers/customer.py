@@ -199,7 +199,8 @@ class Home(CustomerBaseHandler):
 			shop_name = shop.shop_name
 			shop_id   = shop.id
 			shop_logo = shop.shop_trademark_url
-			if shop.shop_auth in [1,2]:
+			balance_on = shop.config.balance_on_active
+			if shop.shop_auth in [1,2,3,4]:
 				show_balance = True
 			print(shop,shop.shop_auth)
 		else:
@@ -218,8 +219,8 @@ class Home(CustomerBaseHandler):
 			return self.send_fail("point show error")
 		if shop_follow:
 			if shop_follow.shop_point:
-				shop_point = shop_follow.shop_point
-				shop_balance = shop_follow.shop_balance
+				shop_point = format(shop_follow.shop_point,'.2f')
+				shop_balance = format(shop_follow.shop_balance,'.2f')
 			else:
 				shop_point = 0
 				shop_balance = 0
@@ -235,7 +236,7 @@ class Home(CustomerBaseHandler):
 				count[6] += 1
 		return self.render("customer/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
-			show_balance = show_balance,context=dict(subpage='center'))
+			show_balance = show_balance,balance_on=balance_on,context=dict(subpage='center'))
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data")
 	def post(self,shop_code):
@@ -1050,21 +1051,34 @@ class Market(CustomerBaseHandler):
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
-		# shop_id = self.shop_id
+		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		phone = self.get_phone(customer_id)
 
 		show_balance = False
-
+		balance_value = 0
 		storages = {}
-		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
+		try:
+			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
+		except:
+			print('shop error')
+		try:
+			custormer_balance =self.session.query(models.CustomerShopFollow).\
+			filter_by(customer_id = customer_id,shop_id =shop_id ).first()
+		except:
+			print('custormer_balance error')
 		if not shop:return self.send_error(404)
 		print("[购物篮]当前店铺：",shop)
-		if shop.shop_auth in [1,2]:
+		if shop.shop_auth in [1,2,3,4]:
 			show_balance = True
 		shop_name = shop.shop_name
 		shop_id = shop.id
 		shop_logo = shop.shop_trademark_url
+		cash_on = shop.config.cash_on_active
+		balance_on = shop.config.balance_on_active
+		if custormer_balance:
+			balance_value = format(custormer_balance.shop_balance,'.2f')
+		
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
@@ -1092,7 +1106,8 @@ class Cart(CustomerBaseHandler):
 			print("[购物篮]读取按时达时段，Shop ID：",period.config_id,"，时间段：",period.start_time,"~",period.end_time)
 		return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
-						   shop_name  = shop_name ,shop_logo = shop_logo,context=dict(subpage='cart'))
+						   shop_name  = shop_name ,shop_logo = shop_logo,balance_value=balance_value,\
+						   cash_on=cash_on,balance_on=balance_on,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
@@ -1404,7 +1419,7 @@ class Order(CustomerBaseHandler):
 				'sender_phone':order.sender_phone,'sender_img':order.sender_img,'order_id':order.id,\
 				'message':order.message,'comment':order.comment,'create_date':create_date,\
 				'today':order.today,'type':order.type,'create_year':order.create_date.year,\
-				'create_month':order.create_date.month,'create_day':order.create_date.day})
+				'create_month':order.create_date.month,'create_day':order.create_date.day,'pay_type':order.pay_type})
 		return data
 
 	@tornado.web.authenticated
@@ -1667,12 +1682,12 @@ class Balance(CustomerBaseHandler):
 			if shop_follow.shop_balance:
 				shop_balance = shop_follow.shop_balance
 			else:
-				shop_balance = 0
+				shop_balance = 0.00
 
 		return self.render("customer/balance.html",shop_balance = shop_balance , shop_name=shop_name)
 
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("page")
+	@CustomerBaseHandler.check_arguments("page:int")
 	def post(self):
 		page = int(self.args["page"])
 		offset = (page-1) * 10
@@ -1682,6 +1697,7 @@ class Balance(CustomerBaseHandler):
 		data = []
 		pages = 0
 		nomore = False
+		shop_balance_history=[]
 		print(customer_id,shop_id)
 		try:
 			shop_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id =\
@@ -1689,6 +1705,7 @@ class Balance(CustomerBaseHandler):
 		except:
 			shop_balance_history = None
 			print("balance show error ")
+
 		try:
 			count = self.session.query(models.BalanceHistory).filter_by(customer_id =\
 				customer_id , shop_id = shop_id).count()
@@ -1987,7 +2004,7 @@ class payTest(CustomerBaseHandler):
 			# 支付成功后  生成一条余额支付记录
 			name = self.current_user.accountinfo.nickname
 			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-				balance_value = totalPrice,balance_record = '用户充值:'+ name  , name = name , balance_type = 0)
+				balance_value = totalPrice,balance_record = '用户充值：'+ name  , name = name , balance_type = 0)
 			self.session.add(balance_history)
 			print(balance_history , '钱没有白充吧？！')
 			self.session.commit()

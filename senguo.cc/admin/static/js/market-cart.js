@@ -298,8 +298,6 @@ $(document).ready(function(){
                     stop_time=checkTime(time.getHours()+2)+':'+checkTime(time.getMinutes()+(period-60))+':'+checkTime(time.getSeconds());
                 }
             }
-            console.log(stop_time);
-            console.log(end_time);
             if(stop_time<=end_time)
             {
                 $this.parents('.item').addClass('active').siblings('.item').removeClass('active');
@@ -349,8 +347,50 @@ $(document).ready(function(){
         var $this=$(this);
         if($this.hasClass('active')) $this.removeClass('active');
         else $this.addClass('active').siblings('.item').removeClass('active');
-    })
+    });
+    //pay type active
+    $('.pay_type li').each(function(){
+        var $this=$(this);
+        var index = $this.index();
+        var status = $this.attr('data-status');
+        var statu = $this.attr("data-auth");
+        var type= $this.find('.title').text();
+        if(statu == "False"){
+            $this.removeClass('active').addClass('not_available');
+        }
+        if(status==0){
+            $this.removeClass('active').addClass('not_available').next('li').addClass('active');
+        }
+    });
+}).on("click",".pay_type li",function(){
+    var index = $(this).index();
+    var status = $(this).attr('data-status');
+    var type=$(this).find('.title').text();
+    if(index == 1){
+        var statu = $(this).attr("data-auth");
+        if(statu == "False"){
+            noticeBox("当前店铺未认证，此功能暂不可用");
+            return false;
+        }
+    }
+    if(status==0){
+         noticeBox("当前店铺已关闭"+type);
+         return false;
+    }
+    $(".pay_type li").removeClass("active").eq(index).addClass("active");
+}).on('click','.a-cz',function(){
+    var status = $(this).attr('data-status');
+    var statu = $(this).attr("data-auth");
+    if(statu == "False"){
+        noticeBox("当前店铺未认证，此功能暂不可用");
+        return false;
+    }
+    if(status==0){
+         noticeBox("当前店铺已关闭余额支付，此功能暂不可用");
+         return false;
+    }
 });
+
 window.dataObj.price_list=[];
 window.dataObj.total_price=0;
 window.dataObj.freigh_ontime=Int($('.freigh_ontime').text());
@@ -581,7 +621,8 @@ function orderSubmit(target){
     var mincharge_now=Number($('.mincharge_now .mincharge').text());
     var tip=$('.tip-list').find('.active').data('id');
     window.dataObj.total_price=Number($('#list_total_price').text());
-    if(!today) today=1;
+    if(!pay_type){return noticeBox('请选择支付方式',target);}
+    if(!today){today=1;}
     if(!address_id){return noticeBox('请填写您的收货地址！',target);}
     if(!tip) tip=0;
     for(var i=0;i<fruit_item.length;i++)

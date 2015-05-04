@@ -156,17 +156,18 @@ function orderItem(item){
         $item.find('.order-status').attr({'data-id':status});
         $item.find('.order-time').text(create_date);
         $item.find('.saler-remark').val(remark);
-    
         //立即送消费显示
         if(type==1){
             $item.find('.tip').text(tip);
         }
         else $item.find('.tips').hide();
         //支付状态
-        if(money_paid==true){
-            $item.find('.pay-status').text('余额支付');
-        }
-        else $item.find('.pay-status').text('现金支付');
+        if(pay_type==2){ 
+            $item.find('.pay-status').text('余额支付'); 
+        } 
+        else { 
+            $item.find('.pay-status').text('货到付款'); 
+        } 
         //订单状态
         if(status==0) {
             if(del_reason!=null){
@@ -306,14 +307,9 @@ function orderPrint(target){
             }
             else {
                 $item.find('.shop-img img').attr({'src':print_img});
-                console.log(233333);
             }
         }
-        if (paid == true) {
-            $item.find('.moneyPaid').text('余额支付');
-        } else {
-            $item.find('.moneyPaid').text('现金支付');
-        }
+       $item.find('.moneyPaid').text(paid);
         //var OpenWindow = window.open("","","width=500,height=600");
         //OpenWindow.document.body.style.margin = "0";
         //OpenWindow.document.body.style.marginTop = "15px";

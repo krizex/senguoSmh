@@ -126,7 +126,7 @@
             <div class="modal-top"><img src="/static/images/info_top.png"/></div>
             <div class="modal-header set-width-float">
                 <button type="button" class="close dismiss">✕</button>
-                <h2 class="modal-title text-center line48">设置密码</h2>
+                <h2 class="modal-title text-center line48">{% if current_user.accountinfo.password %}修改密码{% else %}设置密码{% end %}</h2>
             </div>
             <div class="modal-body font14 clearfix">
                 <div class="tie-info set-pwd-box" style="display:none">

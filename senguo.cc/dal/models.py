@@ -495,8 +495,8 @@ class Shop(MapBase, _CommonApi):
 	wx_qr_code = Column(String(1024))
 
 	#店铺  余额 和 冻结 余额
-	shop_balance = Column(Integer,default = 0) 
-	shop_blockage= Column(Integer,default = 0) #当用户下单后，店铺冻结余额增加，当订单完成后 冻结 余额 转入 店铺余额
+	shop_balance = Column(Float,default = 0) 
+	shop_blockage= Column(Float,default = 0) #当用户下单后，店铺冻结余额增加，当订单完成后 冻结 余额 转入 店铺余额
 
 	orders = relationship("Order")
 	staffs = relationship("ShopStaff", secondary="hire_link")
@@ -686,7 +686,6 @@ class Customer(MapBase, _AccountApi):
 
 	#added by woody
 	points = relationship("Points")
-
 	shop_new = Column(Integer,default = 0) # 0:new ,1:old
 
 #woody
@@ -1328,6 +1327,9 @@ class Config(MapBase, _CommonApi):
 	intime_period = Column(Integer,default = 0) 
 	#4.24 add receipt_img_active
 	receipt_img_active = Column(Integer,default = 1)
+	cash_on_active =Column(Integer,default = 1)#0:货到付款关闭 1:货到付款付开启 5.4
+	online_on_active =Column(Integer,default = 1) #0:在线支付关闭 1:在线支付开启 5.4
+	balance_on_active =Column(Integer,default = 1) #0:余额支付关闭 1:余额支付开启 5.4
 
 #商城首页的公告
 class Notice(MapBase):

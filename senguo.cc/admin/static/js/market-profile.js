@@ -37,12 +37,14 @@ $(document).ready(function(){
 }).on('click','#setPwd',function(){
     var pwdBox=new Modal('pwdBox');
     pwdBox.modal('show');
+    $('#pwdBox').find('input').val('');
     $('.set-pwd-box').show();
     $('.change-pwd-box').hide();
     $('#pwdSure').attr({'data-action':'add_password'});   
 }).on('click','#changePwd',function(){
     var pwdBox=new Modal('pwdBox');
     pwdBox.modal('show');
+    $('#pwdBox').find('input').val('');
     $('.set-pwd-box').hide();
     $('.change-pwd-box').show();
     $('#pwdSure').attr({'data-action':'modify_password'});   
@@ -297,6 +299,13 @@ function setPwd(action){
                     var pwdBox=new Modal('pwdBox');
                     pwdBox.modal('hide');
                     $('#pwdSure').removeAttr('disabled');
+                    if(action=='add_password'){
+                        $('#setPwd').attr({'id':'changePwd'}).find('.setPwd').text('修改密码');
+                        noticeBox('密码设置成功');
+                    }
+                    else if(action=='modify_password'){
+                        noticeBox('密码修改成功');
+                    }
                 }
                 else {
                     noticeBox(res.error_text);
