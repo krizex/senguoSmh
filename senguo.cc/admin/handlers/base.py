@@ -19,6 +19,7 @@ import requests
 
 import threading
 
+import re
 
 # import time
 # import random
@@ -646,7 +647,7 @@ class WxOauth2:
 			#    print(key,data[key])
 			userinfo_data = dict(
 				openid=data["openid"],
-				nickname=data["nickname"],
+				nickname=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["nickname"]),#过滤掉Emoji，否则数据库报错
 				sex=data["sex"],
 				province=data["province"],
 				city=data["city"],
