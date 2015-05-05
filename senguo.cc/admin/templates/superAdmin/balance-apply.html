@@ -1,0 +1,73 @@
+{% extends 'count-balance.html' %}
+{% block title%}提现申请{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/superadmin-main.css')}}"/>
+{% end %}
+
+{% block count %}
+<div class="wrap-balance">
+    <ul class="apply-lst group">
+        <li class="active">
+            <p class="title">所有申请</p>
+            <p class="cont">总金额：33333.00元&nbsp;&nbsp;23个</p>
+        </li>
+        <li class="">
+            <p class="title">个人认证</p>
+            <p class="cont">总金额：3333.00元&nbsp;&nbsp;10个</p>
+        </li>
+        <li class="">
+            <p class="title">企业认证</p>
+            <p class="cont">总金额：33330.00元&nbsp;&nbsp;13个</p>
+        </li>
+    </ul>
+    <ul class="apply-cont-lst mt20">
+        <li>
+            <ul class="shop-attr-lst group">
+                <li>店铺名:<a href="javascript:;">马灰灰的水果店</a></li>
+                <li>认证类型：个人认证</li>
+                <li>账户余额：4333.00元</li>
+                <li>提现申请时间：2012年5月5日 12:22:22</li>
+                <li>提现金额：<span class="red-txt">400.00</span>元</li>
+                <li>支付宝帐号：<span class="red-txt">123456@qq.com</span></li>
+                <li>申请人：<a href="javascript:;">马灰</a></li>
+            </ul>
+            <div class="apply-btn-group">
+                <a href="javascript:;" class="ok-btn">通过并已确认支付</a>
+                <a href="javascript:;" class="refuse-btn">拒绝</a>
+            </div>
+            <p class="reason-txt hidden">拒绝理由：申请金额过大</p>
+        </li>
+        <li>
+            <ul class="shop-attr-lst group">
+                <li>店铺名:<a href="javascript:;">马灰灰的水果店</a></li>
+                <li>认证类型：个人认证</li>
+                <li>账户余额：4333.00元</li>
+                <li>提现申请时间：2012年5月5日 12:22:22</li>
+                <li>提现金额：<span class="red-txt">400.00</span>元</li>
+                <li>支付宝帐号：<span class="red-txt">123456@qq.com</span></li>
+                <li>申请人：<a href="javascript:;">马灰</a></li>
+            </ul>
+            <div class="apply-btn-group">
+                <a href="javascript:;" class="ok-btn">通过并已确认支付</a>
+                <a href="javascript:;" class="refuse-btn">拒绝</a>
+            </div>
+            <p class="reason-txt hidden">拒绝理由：申请金额过大</p>
+        </li>
+    </ul>
+</div>
+<div class="wrap-com-pop hide">
+    <div class="com-pop ov-center">
+        <div class="pop-title">拒绝理由：</div>
+        <div class="wrap-area">
+            <textarea id="com-cont"></textarea>
+        </div>
+        <div class="btn-group txt-ac">
+            <a href="javascript:;" class="blue-btn" id="submit-apply">提交</a>
+            <a href="javascript:;" class="grey-btn" id="concel-apply">取消</a>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block js %}
+
+{% end %}

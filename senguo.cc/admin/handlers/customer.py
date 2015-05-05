@@ -1355,7 +1355,9 @@ class Cart(CustomerBaseHandler):
 			#生成一条余额交易记录
 			balance_record = '订单号' + order.num
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
-				shop_id = shop_id ,balance_value = totalPrice  , balance_record = balance_record)
+				shop_id = shop_id ,name = self.current_user.nickname,balance_value = totalPrice ,\
+				balance_record = balance_record,shop_totalPrice = self.current_shop.shop_balance,\
+				customer_totalPrice = shop_follow.shop_balance)
 			self.session.add(balance_history)
 			self.session.commit()
 
@@ -1538,7 +1540,7 @@ class Order(CustomerBaseHandler):
 			except:
 				return self.send_fail('shop_follow error')
 			if shop_follow:
-				shop_follow.shop_balance += order.shop_balance
+				shop_follow.shop_balance += order.totalPrice
 				self.session.commit()
 		elif action == "comment":
 			data = self.args["data"]
@@ -1980,8 +1982,6 @@ class payTest(CustomerBaseHandler):
 			
 			totalPrice =float( self.get_cookie('money'))
 			#########################################################
-
-	
 			# 用户余额增加 
 			# 同时店铺余额相应增加 
 			# 应放在 支付成功的回调里
@@ -2005,7 +2005,8 @@ class payTest(CustomerBaseHandler):
 			# 支付成功后  生成一条余额支付记录
 			name = self.current_user.accountinfo.nickname
 			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-				balance_value = totalPrice,balance_record = '用户充值：'+ name  , name = name , balance_type = 0)
+				balance_value = totalPrice,balance_record = '用户充值：'+ name  , name = name , balance_type = 0,\
+				shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice)
 			self.session.add(balance_history)
 			print(balance_history , '钱没有白充吧？！')
 			self.session.commit()
