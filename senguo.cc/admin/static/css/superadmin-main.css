@@ -39,7 +39,7 @@ p{margin: 0;}
 .apply-lst .title{font-size: 14px;color: #000;line-height: 16px;}
 .apply-lst .cont{font-size: 12px;color: #212121;line-height: 16px;margin-top: 8px;}
 .apply-lst .active .title{color: #52b43f;}
-.apply-cont-lst>li{border: 1px solid #999;border-radius: 2px;padding: 8px 10px;}
+.apply-cont-lst>li{border: 1px solid #999;border-radius: 2px;padding: 8px 10px;margin-bottom: 20px;}
 .shop-attr-lst>li{float: left;margin: 0 40px 15px 0;white-space: nowrap;font-size: 14px;color: #000;line-height: 20px;}
 .apply-btn-group>a{display: inline-block;margin-right: 20px;font-size: 14px;padding: 4px 26px;border-radius: 2px;border: 1px solid #ccc;}
 .apply-btn-group .ok-btn{color: #fff;background-color: #52b43f;}

@@ -17,8 +17,8 @@ $(document).ready(function(){
     var reason = $("#com-cont").val();
     var index =  $(".wrap-com-pop").attr("data-index");
     $.ajax({
-        url:"",
-        data:{type:0,reason:reason},
+        url:"/super/balance",
+        data:{action:"decline",decline_reason:reason},
         type:"post",
         success:function(res){
             if(res.success){
@@ -38,8 +38,8 @@ $(document).ready(function(){
 }).on("click",".ok-btn",function(){    //通过申请
     var $this = $(this);
     $.ajax({
-        url:"",
-        data:{type:1,reason:reason},
+        url:"/super/balance",
+        data:{action:"commit"},
         type:"post",
         success:function(res){
             if(res.success){
