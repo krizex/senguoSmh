@@ -878,11 +878,14 @@ class ApplyCash(SuperBaseHandler):
 			if apply_cash:
 				return self.send_fail('apply_cash not found')
 			apply_cash.has_done = 1
+			shop = self.session.query(models.Shop).filter_by(id = apply_cash.shop_id).first()
+			if not shop:
+				return self.send_fail('shop not found')
 
 			#往 blancehistory中插入一条数据，以免到时候 查看所有记录的时候到两张表中去取 效率低下
 			balance_history = models.BalanceHistory(balance_record = '提现：店铺管理员',balance_type =\
 				2,balance_value = apply_cash.value ,customer_id = apply_cash.shop_id,name = \
-				apply_cash.applicant_name,shop_id = apply_cash.shop_id)
+				apply_cash.applicant_name,shop_id = apply_cash.shop_id,shop_totalPrice = shop.shop_balance)
 			self.session.add(balance_history)
 			self.session.commit()
 
