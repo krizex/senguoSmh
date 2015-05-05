@@ -133,11 +133,14 @@ function history(action,page){
 function cash(){
     var url='';
     var action='cash';
-    var apply_value=;
+    var apply_value=$('.money-ipt').val().trim();
+    var alipay_account=$('.account').val().trim();
+    var account_name=$('.account-name').val().trim();
     var args={
         action:action,
         apply_value:apply_value,
-        alipay_account:alipay_account
+        alipay_account:alipay_account,
+        account_name:account_name
     };
     $.postJson(url,args,
         function(res){

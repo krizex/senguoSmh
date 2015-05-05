@@ -1390,7 +1390,7 @@ class ShopBalance(AdminBaseHandler):
 			return self.redirect(self.reverse_url('adminHome'))
 
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('action','apply_value?:int','alipay_account?:str','page?:int')
+	@AdminBaseHandler.check_arguments('action','apply_value?:int','alipay_account?:str','account_name?:str','page?:int')
 	def post(self):
 		action = self.args['action']
 		shop_id = self.current_shop.id
