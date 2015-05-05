@@ -101,7 +101,8 @@ handlers = [
     # 所有店铺
     (r"/super/shopManage", handlers.superadmin.ShopManage, {}, "superShopManage"),
     (r"/super/shopauth",handlers.superadmin.ShopAuthenticate,{},"superShopAuth"),
-
+    (r"/super/balance",handlers.superadmin.Balance,{},"superBalance"),
+    (r"/super/cash",handlers.superadmin.ApplyCash,{},"superApplyCash"),
     ## 商城购买订单
     (r"/super/orderManage/", handlers.superadmin.OrderManage, {
         "action":"new"}, "superOrderManage"),
