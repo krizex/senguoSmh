@@ -783,7 +783,7 @@ class ApplyCashHistory(MapBase,_CommonApi):
 	applicant_name  = Column(String(32))
 	shop_balance = Column(Float,default = 0)
 	alipay_account = Column(String(64))
-	value   = Column(Integer) #申请提现的金额，单位：分
+	value   = Column(Float,default = 0) #申请提现的金额，单位：元
 	create_time = Column(DateTime,default = func.now())
 	has_done   = Column(Integer , default = 0) # 0:before done,1: done success,2: decline
 	decline_reason = Column(String(200)) #当申请提现被拒绝后 给商家的理由
@@ -806,7 +806,7 @@ class BalanceHistory(MapBase,_CommonApi):
 	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:余额消费(没用) 2:提现 3:在线支付
 	balance_value  = Column(Float)
 	create_time    = Column(DateTime,default = func.now())
-	shop_tatolPrice = Column(Float,default = 0)
+	shop_totalPrice = Column(Float,default = 0)
 	customer_totalPrice = Column(Float,default = 0)
 	#customer = relationship("CustomerShopFollow")
 

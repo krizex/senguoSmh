@@ -1042,6 +1042,8 @@ class Follower(AdminBaseHandler):
 		order_by = self.args["order_by"]
 		page = self.args["page"]
 		page_size = 10
+		count = 0
+		page_sum = 0
 		shop_id = self.current_shop.id
 		if action in ("all", "old"):
 			if action == "all":  # 所有用户
@@ -1379,22 +1381,32 @@ class ShopBalance(AdminBaseHandler):
 	def get(self):
 		subpage = 'shopBlance'
 		shop = self.current_shop
+		shop_id = shop.id
 		shop_balance = format(shop.shop_balance,'.2f')
 		show_balance = False
 		shop_auth = self.current_shop.shop_auth
+		has_done = ''
+		decline_reason = ''
+		try:
+			apply_cash = self.session.query(models.ApplyCashHistory).filter_by(shop_id=shop_id).first()
+			has_done = apply_cash.has_done
+			decline_reason = apply_cash.decline_reason
+		except:
+			print('apply_cash error')
+			
 		if shop_auth in [1,2,3,4]:
 			show_balance = True
 			return self.render("admin/shop-balance.html",shop_balance = shop_balance,\
-				show_balance = show_balance,context=dict(subpage=subpage))
+				show_balance = show_balance,has_done=has_done,decline_reason=decline_reason,context=dict(subpage=subpage))
 		else:
 			return self.redirect(self.reverse_url('adminHome'))
 
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('action','apply_value?:int','alipay_account?:str','account_name?:str','page?:int')
+	@AdminBaseHandler.check_arguments('action','apply_value?:float','alipay_account?:str','account_name?:str','page?:int')
 	def post(self):
 		action = self.args['action']
 		shop_id = self.current_shop.id
-		page=int(self.args['page'])-1
+		page =0
 		page_size=10
 		page_sum=0
 		count=0
@@ -1403,72 +1415,82 @@ class ShopBalance(AdminBaseHandler):
 		if action == 'cash':
 			apply_value = self.args['apply_value']
 			alipay_account = self.args['alipay_account']
+			account_name = self.args['account_name']
 			shop_id = self.current_shop.id
 			shop_code = self.current_shop.shop_code
 			shop_auth = self.current_shop.shop_auth
 			shop_balance = self.current_shop.shop_balance
 			applicant_name = self.current_user.accountinfo.nickname
-			applyCash_history = models.ApplyCashHistory(shop_id = shop_id , apply_value = apply_value ,has_done =0,\
+			applyCash_history = models.ApplyCashHistory(shop_id = shop_id , value = apply_value ,has_done =0,\
 				shop_code = shop_code,shop_auth = shop_auth , shop_balance = shop_balance,alipay_account = \
-				alipay_account,applicant_name = applicant_name)
+				alipay_account,applicant_name = applicant_name,account_name = account_name)
 			self.session.add(applyCash_history)
 			self.session.commit()
 			return self.send_success()
 
 		elif action == 'cash_history':
 			history = []
+			page=int(self.args['page'])-1
 			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
-				balance_type = 2).offset(page*page_size).limit(page_size).all()
+				balance_type = 2).order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			count =self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
 				balance_type = 2).count()
-			page_sum=count/10
+			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				return self.send_fail('history_list error')
+				print('history_list error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
-				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,'type':temp.balance_type})
+				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
+					'type':temp.balance_type,'total':temp.shop_tatolPrice})
 			return self.send_success(history = history,page_sum=page_sum)
 
 		elif action == 'all_history':
 			history = []
-			history_list = self.session.query(models.BalanceHistory).filter(or_(models.BalanceHistory.balance_type==0,models.BalanceHistory.balance_type==2,models.BalanceHistory.balance_type==3))\
+			page=int(self.args['page'])-1
+			history_list = self.session.query(models.BalanceHistory).filter(or_(models.BalanceHistory.balance_type==0,\
+				models.BalanceHistory.balance_type==2,models.BalanceHistory.balance_type==3))\
 			.filter_by(shop_id = shop_id).order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			count =self.session.query(models.BalanceHistory).filter(or_(models.BalanceHistory.balance_type==0,models.BalanceHistory.balance_type==2,models.BalanceHistory.balance_type==3))\
 			.filter_by(shop_id = shop_id).count()
-			page_sum=count/10
+			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				return self.send_fail('get all BalanceHistory error')
+				print('get all BalanceHistory error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
-				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,'type':temp.balance_type})
+				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
+					'type':temp.balance_type,'total':temp.shop_tatolPrice})
 			return self.send_success(history = history,page_sum=page_sum)
 
 		elif action == 'recharge':
 			history = []
+			page=int(self.args['page'])-1
 			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
 				balance_type = 0).offset(page*page_size).limit(page_size).all()
 			count =self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
 				balance_type = 0).count()
-			page_sum=count/10
+			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				return self.send_fail('get all BalanceHistory error')
+				print('get all BalanceHistory error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
-				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,'type':temp.balance_type})
+				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
+					'type':temp.balance_type,'total':temp.shop_tatolPrice})
 			return self.send_success(history = history,page_sum=page_sum)
 
 		elif action == 'online':
 			history = []
+			page=int(self.args['page'])-1
 			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
-				balance_type = 3).offset(page*page_size).limit(page_size).all()
+				balance_type = 3).order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			count =self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
 				balance_type = 3).count()
-			page_sum=count/10
+			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				return self.send_fail('get all BalanceHistory error')
+				print('get all BalanceHistory error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
-				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,'type':temp.balance_type})
+				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
+					'type':temp.balance_type,'total':temp.shop_tatolPrice})
 			return self.send_success(history = history,page_sum=page_sum)
 			
 		else:
