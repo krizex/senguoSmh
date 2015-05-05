@@ -95,8 +95,8 @@ input{height:30px;width:400px;-ms-line-height:30px;color:#666;}
 .edit-box .stop-mode .circle{left:2px;}
 .pay-type-txt{color: #111;font-size: 14px;line-height: 20px;}
 .green-txt{color: #53b540;}
-
-
+.wrap-pay-tpye{border: 1px solid #f2f2f2;border-top:none;padding: 20px;}
+.f14{font-size: 14px;}
 
 
 

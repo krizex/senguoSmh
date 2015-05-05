@@ -805,7 +805,7 @@ class BalanceHistory(MapBase,_CommonApi):
 	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:余额消费(没用) 2:提现 3:在线支付
 	balance_value  = Column(Float)
 	create_time    = Column(DateTime,default = func.now())
-	shop_tatolPrice = Column(Float,default = 0)
+	shop_totalPrice = Column(Float,default = 0)
 	customer_totalPrice = Column(Float,default = 0)
 	#customer = relationship("CustomerShopFollow")
 
