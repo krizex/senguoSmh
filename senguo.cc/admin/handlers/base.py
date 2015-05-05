@@ -19,8 +19,6 @@ import requests
 
 import threading
 
-import re
-
 
 # import time
 # import random
@@ -227,7 +225,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
 
 
-		token = q.upload_token(BUCKET_SHOP_IMG, expires=6000*30,
+		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*10,
 
 							  policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
 									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
@@ -648,7 +646,7 @@ class WxOauth2:
 			#    print(key,data[key])
 			userinfo_data = dict(
 				openid=data["openid"],
-				nickname=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["nickname"]),#过滤掉Emoji，否则数据库报错
+				nickname=data["nickname"],
 				sex=data["sex"],
 				province=data["province"],
 				city=data["city"],
