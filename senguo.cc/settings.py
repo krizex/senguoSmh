@@ -17,7 +17,7 @@ MYSQL_DRIVER = "mysqlconnector"
 MYSQL_USERNAME = "monk"
 MYSQL_PASSWORD = "test123"
 DB_NAME = "senguocc"
-DB_CHARSET = "utf8mb4"
+DB_CHARSET = "utf8"
 
 #手机短信验证的设置
 content = "您的验证码是：【{code}】。请不要把验证码泄露给其他人。"
