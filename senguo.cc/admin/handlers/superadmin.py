@@ -818,7 +818,7 @@ class ShopAuthenticate(SuperBaseHandler):
 class Balance(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.send_success()
+		return self.render('superAdmin/balance-detail.html',context=dict((page="detail"))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action')
@@ -846,7 +846,7 @@ class Balance(SuperBaseHandler):
 class ApplyCash(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.send_success()
+		return self.render('superAdmin/balance-apply.html',context=dict(page="cash"))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id?:int','decline_reason?:str')
@@ -891,8 +891,6 @@ class ApplyCash(SuperBaseHandler):
 				history.append([temp.id,temp.shop_code,temp.shop_auth,temp.shop_balance,\
 					temp.create_time,temp.value,temp.alipay_account,temp.applicant_name])
 			return self.send_success(history = history)
-
-
 
 		
 
