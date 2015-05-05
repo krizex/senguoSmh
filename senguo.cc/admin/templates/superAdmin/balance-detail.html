@@ -5,9 +5,68 @@
 {% end %}
 
 {% block count %}
-余额详情
+<div class="wrap-balance">
+    <div class="account-top">
+        <span class="right-title">平台总余额</span>
+        <span class="acc-money">555415.00<span class="small-txt">元</span></span>
+        <span class="right-title ml50">提现中</span>
+        <span class="acc-money orange-txt">2000.00<span class="small-txt">元</span></span>
+    </div>
+    <ul class="acc-report mt20">
+        <li>1、用户充值或在线支付的金额记入账户余额里。</li>
+        <li>2、在线支付的订单，只有当用户完成评价或订单被完成24小时后，才记入帐号余额中。</li>
+        <li>3、详情里【提现记录】的时间，为森果通过店家提现申请的时间，而非店家申请时间。</li>
+    </ul>
+    <div class="wrap-bm">
+        <ul class="tab-lst group">
+            <li class="active all-list">所有详情</li>
+            <li class="cash-list">提现记录</li>
+            <li class="charge-list">用户充值</li>
+            <li class="online-list">在线支付</li>
+        </ul>
+        <div class="acc-con-lst">
+            <table class="tb-account">
+                <colgroup>
+                    <col width="40%"/>
+                    <col width="30%"/>
+                    <col width="15%"/>
+                    <col width="15%"/>
+                </colgroup>
+                <tr>
+                    <td class="pl20">店铺名：<a href="javascript:;">马灰灰</a></td>
+                    <td class="c999">2015年5月4日 12:20:20</td>
+                    <td class="orange-txt txt-ar"><span class="f16">+4000.00</span><span class="c999">元</span></td>
+                    <td class="green-txt txt-ar pr20"><span class="f16">+2200.00</span><span class="c999">元</span></td>
+                </tr>
+                <tr>
+                    <td class="pl20">店铺名：<a href="javascript:;">马灰灰</a></td>
+                    <td class="c999">2015年5月4日 12:20:20</td>
+                    <td class="orange-txt txt-ar"><span class="f16">+4000.00</span><span class="c999">元</span></td>
+                    <td class="green-txt txt-ar pr20"><span class="f16">+2200.00</span><span class="c999">元</span></td>
+                </tr>
+            </table>
+            <div class="wrap-acc-num mt20">
+                <span class="account-num">累计已提现&nbsp;<span class="green-txt f16">5555.00</span>元</span>
+                <span class="account-num">累计次数&nbsp;<span class="green-txt f16">5555</span>次</span>
+                <span class="account-num">累计人数&nbsp;<span class="green-txt f16">5555</span>人</span>
+            </div>
+        </div>
+    </div>
+    <h4 class="text-center hidden">暂无余额信息！</h4>
+    <div class="users-pagination list-pagination">
+        <ul>
+            <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+            <li>
+                <span class="page-now">1</span>/<span class="page-total">1</span>
+            </li>
+            <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+            <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+            <li><a href="javascript:;" class="jump-to">跳转</a></li>
+        </ul>
+    </div>
+</div>
 
 {% end %}
-{% block bottom %}
+{% block js %}
 
 {% end %}

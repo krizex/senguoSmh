@@ -818,7 +818,7 @@ class ShopAuthenticate(SuperBaseHandler):
 class Balance(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render('superAdmin/balance-detail.html',context=dict((page="detail"))
+		return self.render('superAdmin/balance-detail.html',context=dict(page='detail'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action')
@@ -846,7 +846,7 @@ class Balance(SuperBaseHandler):
 class ApplyCash(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render('superAdmin/balance-apply.html',context=dict(page="cash"))
+		return self.render('superAdmin/balance-apply.html',context=dict(page='cash'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id?:int','decline_reason?:str')
