@@ -130,7 +130,11 @@ function remarkSub(id,index){
     var action='remark';
     var remark=$('.remark-input').val();
     var data=remark;
-    if(remark=='') return warnNotice('请输入备注内容');
+    if(remark=='') {
+        return warnNotice('请输入备注内容!');}
+    if(remark.length>100){
+        return warnNotice('备注不得超过100字!');
+    }
     var args={
         action:action,
         order_id:id,

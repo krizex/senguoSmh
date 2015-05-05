@@ -5,7 +5,7 @@
 <div class="account-top">
     <span class="right-title">账户余额</span>
     <span class="acc-money">{{shop_balance}}<span class="small-txt">元</span></span>
-    <!--<a class="get-money" href="javascript:;" id="get-money" data-target=".bs-apply-com" data-toggle="modal">提现</a>-->
+    <a class="get-money" href="javascript:;" id="get-money" data-target=".bs-apply-com" data-toggle="modal">提现</a>
 </div>
 <ul class="acc-report">
     <li>1、账户余额为森果平台为卖家代收的用户钱款，店铺管理员可以申请提现。</li>
@@ -39,7 +39,7 @@
     </div>
 </div>        
 <h4 class="text-center">暂无账单信息！</h4>
-<div class="users-pagination list-pagination">
+<div class="list-pagination hide">
     <ul>
         <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
         <li>
@@ -53,10 +53,26 @@
 <div class="modal bs-apply-com" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content del-com-cont">
-            <p class="apply-title">请输入提现金额：</p>
-            <div><input tpye="text" class="money-ipt"></div>
-            <div class="btn-group txt-ac">
-                <button class="bg-green ok-pop text-white" id="commit-senguo">提交</button>
+         <div class="modal-header clearfix">
+            <span class="title pull-left" id="myModalLabel">请输入提现金额：</span>
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        </div>
+            <div class="modal-body center-block w200">
+             <p>
+                <span>请填写您的支付宝账号：</span>
+                <input tpye="text" class="account">
+            </p>
+            <p>
+                <span>请填写您的支付宝认证姓名：</span>
+                <input tpye="text" class="account-name">
+            </p>
+            <p>
+                <span>请填写提现金额：</span>
+                <input tpye="text" class="money-ipt">
+            </p>
+            </div>
+            <div class="xt-ac modal-footer">
+                <button class="bg-green ok-pop text-white btn clearfix center-block" id="commit-senguo">提交</button>
             </div>
         </div>
     </div>
