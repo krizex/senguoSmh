@@ -1394,7 +1394,7 @@ class ShopBalance(AdminBaseHandler):
 	def post(self):
 		action = self.args['action']
 		shop_id = self.current_shop.id
-		page=self.args['page']
+		page=int(self.args['page'])-1
 		page_size=10
 		page_sum=0
 		count=0
@@ -1419,9 +1419,9 @@ class ShopBalance(AdminBaseHandler):
 			history = []
 			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
 				balance_type = 2).offset(page*page_size).limit(page_size).all()
-			# count =self.session.query.(models.BalanceHistory).filter_by(shop_id = shop_id,\
-			# 	balance_type = 2).count()
-			# page_sum=count/10
+			count =self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
+				balance_type = 2).count()
+			page_sum=count/10
 			if not history_list:
 				return self.send_fail('history_list error')
 			for temp in history_list:
@@ -1433,34 +1433,43 @@ class ShopBalance(AdminBaseHandler):
 			history = []
 			history_list = self.session.query(models.BalanceHistory).filter(or_(models.BalanceHistory.balance_type==0,models.BalanceHistory.balance_type==2,models.BalanceHistory.balance_type==3))\
 			.filter_by(shop_id = shop_id).order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+			count =self.session.query(models.BalanceHistory).filter(or_(models.BalanceHistory.balance_type==0,models.BalanceHistory.balance_type==2,models.BalanceHistory.balance_type==3))\
+			.filter_by(shop_id = shop_id).count()
+			page_sum=count/10
 			if not history_list:
 				return self.send_fail('get all BalanceHistory error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,'type':temp.balance_type})
-			return self.send_success(history = history)
+			return self.send_success(history = history,page_sum=page_sum)
 
 		elif action == 'recharge':
 			history = []
 			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
 				balance_type = 0).offset(page*page_size).limit(page_size).all()
+			count =self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
+				balance_type = 0).count()
+			page_sum=count/10
 			if not history_list:
 				return self.send_fail('get all BalanceHistory error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,'type':temp.balance_type})
-			return self.send_success(history = history)
+			return self.send_success(history = history,page_sum=page_sum)
 
 		elif action == 'online':
 			history = []
 			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
 				balance_type = 3).offset(page*page_size).limit(page_size).all()
+			count =self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
+				balance_type = 3).count()
+			page_sum=count/10
 			if not history_list:
 				return self.send_fail('get all BalanceHistory error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,'type':temp.balance_type})
-			return self.send_success(history = history)
+			return self.send_success(history = history,page_sum=page_sum)
 			
 		else:
 			return self.send_fail('action error')
