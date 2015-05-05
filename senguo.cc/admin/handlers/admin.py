@@ -768,10 +768,26 @@ class Order(AdminBaseHandler):
 			elif action == "edit_totalPrice":
 				order.update(session=self.session, totalPrice=data["totalPrice"])
 			elif action == "del_order":
+				if order.status == 0:
+					return self.send_fail('订单已经被删除，不能重复操作')
 				session = self.session
 				del_reason = data["del_reason"]
 				order.update(session=session, status=0,del_reason = del_reason)
 				order.get_num(session,order.id)
+
+				#恢复用户账户余额，同时产生一条记录
+				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = order.customer_id,\
+					shop_id = order.shop_id).first()
+				if not shop_follow:
+					return self.send_fail('shop_follow not found')
+				shop_follow.shop_balance += order.totalPrice
+
+				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
+					balance_value = order.totalPrice,balance_record = '订单'+ order.num+'删除 退款：', name = order.receiver,\
+					balance_type = 4,shop_totalPrice = self.current_shop.shop_balance,customer_totalPrice = \
+					shop_follow.shop_balance)
+				self.session.add(balance_history)
+				self.session.commit()
 
 			elif action == "print":
 				order.update(session=self.session, isprint=1)
@@ -1218,27 +1234,6 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			d['fruits'] = eval(d['fruits'])
 			d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
-			################################################################################################
-			# modified : woody
-			#date:2015.3.7
-			#TODO:  standardize the format of time
-			################################################################################################
-			# if order.start_time.minute <10:
-			# 	w_start_time_minute ='0' + str(order.start_time.minute)
-			# else:
-			# 	w_start_time_minute = str(order.start_time.minute)
-			# if order.end_time.minute < 10:
-			# 	w_end_time_minute = '0' + str(order.end_time.minute)
-			# else:
-			# 	w_end_time_minute = str(order.end_time.minute)
-
-			# if order.type == 2 and order.today==2:
-			# 	w_date = order.create_date + delta
-			# else:
-			# 	w_date = order.create_date
-			# d["sent_time"] = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
-			# 									order.start_time.hour, w_start_time_minute,
-			# 									  order.end_time.hour, w_end_time_minute)
 			d["send_time"] = order.send_time
 			#yy
 			d["shop_new"] = 0
