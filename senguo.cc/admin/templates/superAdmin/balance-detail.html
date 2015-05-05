@@ -8,9 +8,9 @@
 <div class="wrap-balance">
     <div class="account-top">
         <span class="right-title">平台总余额</span>
-        <span class="acc-money">555415.00<span class="small-txt">元</span></span>
+        <span class="acc-money">{{total_balance}}<span class="small-txt">元</span></span>
         <span class="right-title ml50">提现中</span>
-        <span class="acc-money orange-txt">2000.00<span class="small-txt">元</span></span>
+        <span class="acc-money orange-txt">{{cash_on}}<span class="small-txt">元</span></span>
     </div>
     <ul class="acc-report mt20">
         <li>1、用户充值或在线支付的金额记入账户余额里。</li>
@@ -19,7 +19,7 @@
     </ul>
     <div class="wrap-bm">
         <ul class="tab-lst group">
-            <li class="active all-list">所有详情</li>
+            <li class="active all-list">所有账单</li>
             <li class="cash-list">提现记录</li>
             <li class="charge-list">用户充值</li>
             <li class="online-list">在线支付</li>
@@ -38,21 +38,15 @@
                     <td class="orange-txt txt-ar"><span class="f16">+4000.00</span><span class="c999">元</span></td>
                     <td class="green-txt txt-ar pr20"><span class="f16">+2200.00</span><span class="c999">元</span></td>
                 </tr>
-                <tr>
-                    <td class="pl20">店铺名：<a href="javascript:;">马灰灰</a></td>
-                    <td class="c999">2015年5月4日 12:20:20</td>
-                    <td class="orange-txt txt-ar"><span class="f16">+4000.00</span><span class="c999">元</span></td>
-                    <td class="green-txt txt-ar pr20"><span class="f16">+2200.00</span><span class="c999">元</span></td>
-                </tr>
             </table>
             <div class="wrap-acc-num mt20">
-                <span class="account-num">累计已提现&nbsp;<span class="green-txt f16">5555.00</span>元</span>
-                <span class="account-num">累计次数&nbsp;<span class="green-txt f16">5555</span>次</span>
+                <span class="account-num">累计已提现&nbsp;<span class="green-txt f16">{{cash_success}}</span>元</span>
+                <span class="account-num">累计次数&nbsp;<span class="green-txt f16">{{cash_times}}</span>次</span>
                 <span class="account-num">累计人数&nbsp;<span class="green-txt f16">5555</span>人</span>
             </div>
         </div>
     </div>
-    <h4 class="text-center hidden">暂无余额信息！</h4>
+    <h4 class="text-center hide no-list">暂无账单信息！</h4>
     <div class="users-pagination list-pagination">
         <ul>
             <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
@@ -68,5 +62,5 @@
 
 {% end %}
 {% block js %}
-
+<script src="{{static_url('js/super-balance.js')}}"></script>
 {% end %}

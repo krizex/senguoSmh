@@ -818,28 +818,55 @@ class ShopAuthenticate(SuperBaseHandler):
 class Balance(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render('superAdmin/balance-detail.html',context=dict(page="detail"))
+		cash_list = []
+		cash_on = 0
+		total_balance = 0
+		cash_success = 0
+		cash_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=0).all()
+		shop_list = self.session.query(models.Shop).all()
+		cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1).all()
+		for item in cash_list:
+			cash_on = cash_on+item.value
+		for item in shop_list:
+			total_balance = total_balance + item.shop_balance
+		for item in cash_success_list:
+			cash_success = cash_success + item.value
+		cash_times=len(cash_success_list)
+		return self.render('superAdmin/balance-detail.html',cash_times=cash_times,cash_success=cash_success,total_balance=total_balance,cash_on=cash_on,context=dict(page="detail"))
 
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments('action')
+	@SuperBaseHandler.check_arguments('action','page:int')
 	def post(self):
 		history = []
+		page =0
+		page_size=15
+		page_sum=0
+		count=0
+		action = self.args['action']
+		page = self.args['page']-1
+		history_list=[]
 		if action == 'all_history':
-			history_list = self.session.query(models.BalanceHistory).all()
+			history_list = self.session.query(models.BalanceHistory).offset(page*page_size).limit(page_size).all()
+			count = self.session.query(models.BalanceHistory).count()
 		elif action == 'recharge':
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0).all()
+			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0).offset(page*page_size).limit(page_size).all()
+			count = self.session.query(models.BalanceHistory).filter_by(balance_type =0).count()
 		elif action == 'online':
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 3).all()
+			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 3).offset(page*page_size).limit(page_size).all()
+			count = self.session.query(models.BalanceHistory).filter_by(balance_type =3).count()
 		elif action == 'cash_history':
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_history =2).all()
+			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type =2).offset(page*page_size).limit(page_size).all()
+			count = self.session.query(models.BalanceHistory).filter_by(balance_type =2).count()
 		else:
 			return self.send_error(404)
 		if not history_list:
-			return self.send_fail('history_list error')
+			print('history_list error')
 		for temp in history_list:
+				shop_name = self.session.query(models.Shop).filter_by(id=temp.shop_id).first().shop_name
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
-				history.append([temp.balance_record,create_time,temp.balance_record])
-		return self.send_success(history = history)
+				history.append({'shop_name':shop_name,'time':create_time,'balance':temp.shop_totalPrice,'balance_value':temp.balance_value,'type':temp.balance_type})
+		page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
+		return self.send_success(history = history,page_sum=page_sum)
 
 		# return self.send_success()
 
