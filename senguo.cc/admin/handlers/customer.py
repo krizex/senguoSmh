@@ -1358,7 +1358,7 @@ class Cart(CustomerBaseHandler):
 			# self.session.commit()
 
 			#生成一条余额交易记录
-			balance_record = '余额消费：订单' + order.num
+			balance_record = '消费：订单' + order.num
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
 				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
 				balance_record = balance_record,shop_totalPrice = current_shop.shop_balance,\
@@ -1559,7 +1559,7 @@ class Order(CustomerBaseHandler):
 					return self.send_fail('shop not found')
 
 				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
-						balance_value = order.totalPrice,balance_record = '订单'+ order.num+'取消退款：', name = order.receiver,\
+						balance_value = order.totalPrice,balance_record = '退款：订单'+ order.num + '取消', name = self.current_user.accountinfo.nickname,\
 						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = \
 						shop_follow.shop_balance)
 				self.session.add(balance_history)
