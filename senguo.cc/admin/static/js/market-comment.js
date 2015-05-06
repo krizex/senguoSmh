@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var item_url='/static/items/customer/comment-list-item.html?v=2015-02-02';
+    var item_url='/static/items/customer/comment-list-item.html?v='+new Date().getTime();
     getComment(item_url);
     $(document).on('click','#getMore',function(){
         var url='/customer/comment?page='+page;

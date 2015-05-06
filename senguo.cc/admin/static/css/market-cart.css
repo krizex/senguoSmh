@@ -58,7 +58,7 @@
 .address-box .tit{width:15%;min-width:45px;line-height:30px;}
 .send-address-choose input{width:80%;height:30px;-ms-line-height:30px;text-indent:10px;margin-bottom:5px;}
 .send-address-choose .address{width:85%;}
-.send-address-choose .to-edit-address{width:15%;margin-top:15px;}
+.send-address-choose .to-edit-address{width:15%;margin-top:16px;}
 .send-address-choose .active .phone{color:#33CC66;}
 
 
@@ -92,4 +92,4 @@
 .tie-popbox  .tie-btn{;color:#fff;}
 .first_notice{width:130px;}
 .first_notice .sure_btn{border:none;background:none;color:#4D91E4;}
-.a-cz{font-size:14px;color: #33CC66;margin: 0 10px;display: inline-block;}
+.a-cz{color: #33CC66;margin: 0 10px;display: inline-block;}
