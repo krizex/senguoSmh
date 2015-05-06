@@ -154,26 +154,10 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .wrap-pay .left{width: 100px;display: inline-block;width: 50%;}
 .c999{color: #999!important;}
 .copy-right{text-align: center;font-size: 12px;color: #999;position: absolute;bottom: 15px;width: 100%;}
-@-webkit-keyframes spin {
-    0% {
-        -webkit-transform: rotate(0deg);
-        tranform: rotate(0deg);
-    }
-    100% {
-        -webkit-transform: rotate(360deg);
-        tranform: rotate(360deg);
-    }
-}
-@keyframes spin {
-    0% {
-        -webkit-transform: rotate(0deg);
-        tranform: rotate(0deg);
-    }
-    100% {
-        -webkit-transform: rotate(360deg);
-        tranform: rotate(360deg);
-    }
-}
+
+@-webkit-keyframes spin {0% {-webkit-transform: rotate(0deg);tranform: rotate(0deg);}100% {-webkit-transform: rotate(360deg);tranform: rotate(360deg);}}
+@keyframes spin {0% { -webkit-transform: rotate(0deg);tranform: rotate(0deg);}100% {-webkit-transform: rotate(360deg);tranform: rotate(360deg);}}
+
 @-webkit-keyframes zl{0%{-webkit-transform:translateX(-270px);} 100%{-webkit-transform:translateX(800px);}}
 @-webkit-keyframes up-down{0%{-webkit-transform:translateY(-80px);} 100%{-webkit-transform:translateY(0px);}}
 @-webkit-keyframes up{0%{-webkit-transform:translateY(0px);} 100%{-webkit-transform:translateY(-800px);}}
