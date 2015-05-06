@@ -21,7 +21,7 @@
 .users-list li .show-info .user-info .user-info-con{line-height:16px;width:300px;}
 .users-list li .show-info .user-info .user-info-con .user-level{width:24px;height:14px;background:#f7c468;}
 .users-list li .show-info .user-info .user-info-con .level-price{font-weight:bold;}
-.users-list li .show-info .user-info  .user-info-con .user-account{background:url("../images/container-icon2.png") no-repeat;margin-left:10px;padding-left:15px;font-weight:bold;}
+.users-list li .show-info .user-info  .user-info-con .user-account{background:url("../images/container-icon2.png") no-repeat;margin-left:10px;padding-left:20px;font-weight:bold;}
 .users-list li .show-info .history-order{text-decoration:underline;line-height:50px;}
 
 .users-list li .hide-info{height:auto;border-top:1px solid #ccc;}
