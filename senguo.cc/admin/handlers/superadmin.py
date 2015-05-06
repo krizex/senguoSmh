@@ -830,6 +830,7 @@ class Balance(SuperBaseHandler):
 			cash_on = cash_on+item.value
 		for item in shop_list:
 			total_balance = total_balance + item.shop_balance
+		total_balance = format(total_balance,'.2f')
 		return self.render('superAdmin/balance-detail.html',cash_times=cash_times,cash_success=cash_success,\
 			total_balance=total_balance,cash_on=cash_on,context=dict(page="detail"))
 
@@ -890,7 +891,11 @@ class Balance(SuperBaseHandler):
 		for temp in history_list:
 				shop_name = self.session.query(models.Shop).filter_by(id=temp.shop_id).first().shop_name
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
-				history.append({'shop_name':shop_name,'time':create_time,'balance':temp.shop_totalPrice,'balance_value':temp.balance_value,'type':temp.balance_type})
+				shop_totalBalance = temp.shop_totalPrice
+				if shop_totalBalance == None:
+					shop_totalBalance=0
+				shop_totalBalance = format(shop_totalBalance,'.2f')
+				history.append({'shop_name':shop_name,'time':create_time,'balance':shop_totalBalance,'balance_value':temp.balance_value,'type':temp.balance_type})
 		page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 		return self.send_success(history = history,page_sum=page_sum,total = total,times = times,persons=persons,pay=pay,left = left)
 

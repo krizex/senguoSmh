@@ -1387,7 +1387,7 @@ class ShopBalance(AdminBaseHandler):
 		shop_auth = self.current_shop.shop_auth
 		has_done = ''
 		decline_reason = ''
-		
+		avilible_cash = 0
 		try:
 			apply_list = self.session.query(models.ApplyCashHistory).filter_by(shop_id=shop_id)
 			apply_cash = apply_list.order_by(desc(models.ApplyCashHistory.create_time)).first()
@@ -1444,7 +1444,7 @@ class ShopBalance(AdminBaseHandler):
 			applicant_name = self.current_user.accountinfo.nickname
 			phone = self.args['phone']
 			if not check_msg_token(phone,code):
-				return self.send_fail('验证码错误')
+				return self.send_fail('验证码过期或不存在')
 			if apply_value>shop_balance:
 				return self.send_fail('您的店铺没有这么多余额')
 			applyCash_history = models.ApplyCashHistory(shop_id = shop_id , value = apply_value ,has_done =0,\
@@ -1467,8 +1467,12 @@ class ShopBalance(AdminBaseHandler):
 				print('history_list error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
+				shop_totalBalance = temp.shop_totalPrice
+				if shop_totalBalance == None:
+					shop_totalBalance=0
+				shop_totalBalance = format(shop_totalBalance,'.2f')
 				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
-					'type':temp.balance_type,'total':temp.shop_totalPrice})
+					'type':temp.balance_type,'total':shop_totalBalance})
 			apply_total = balance_history.all()
 			for item in apply_total:
 				total=total+item.balance_value
@@ -1488,8 +1492,12 @@ class ShopBalance(AdminBaseHandler):
 				print('get all BalanceHistory error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
+				shop_totalBalance = temp.shop_totalPrice
+				if shop_totalBalance == None:
+					shop_totalBalance=0
+				shop_totalBalance = format(shop_totalBalance,'.2f')
 				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
-					'type':temp.balance_type,'total':temp.shop_totalPrice})
+					'type':temp.balance_type,'total':shop_totalBalance})
 			return self.send_success(history = history,page_sum=page_sum)
 
 		elif action == 'recharge':
@@ -1505,8 +1513,12 @@ class ShopBalance(AdminBaseHandler):
 				print('get all BalanceHistory error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
+				shop_totalBalance = temp.shop_totalPrice
+				if shop_totalBalance == None:
+					shop_totalBalance=0
+				shop_totalBalance = format(shop_totalBalance,'.2f')
 				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
-					'type':temp.balance_type,'total':temp.shop_totalPrice})
+					'type':temp.balance_type,'total':shop_totalBalance})
 			apply_total = balance_history.all()
 			for item in apply_total:
 				total = total + item.balance_value
@@ -1532,8 +1544,12 @@ class ShopBalance(AdminBaseHandler):
 				print('get all BalanceHistory error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
+				shop_totalBalance = temp.shop_totalPrice
+				if shop_totalBalance == None:
+					shop_totalBalance=0
+				shop_totalBalance = format(shop_totalBalance,'.2f')
 				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
-					'type':temp.balance_type,'total':temp.shop_totalPrice})
+					'type':temp.balance_type,'total':shop_totalBalance})
 			apply_total = balance_history.all()
 			for item in apply_total:
 				total=total+item.balance_value
