@@ -463,6 +463,9 @@ class Shop(MapBase, _CommonApi):
 	# 是否做实体店
 	have_offline_entity = Column(Integer, default=False)
 
+	cash_account = Column(String(128)) #提现账户 2015-5-06 yy
+	cash_account_name  = Column(String(32)) #提现账户认证名 2015-5-06 yy
+
 ###################################################
 	#the phone of shop ,   added by woody
 	shop_phone=Column(String(16))

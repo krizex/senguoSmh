@@ -6,7 +6,7 @@
     <span class="right-title">账户余额</span>
     <span class="acc-money">{{shop_balance}}<span class="small-txt">元</span></span>
     {% if has_done == 0 %}
-    <a class="get-money" href="javascript:;">一笔提现正在处理中</a>
+    <a class="get-money" href="javascript:;">提现申请已提交成功，我们将在1-3个工作日内完成审核</a>
     {% elif has_done == 2 %}
      <a class="get-money" href="javascript:;" id="get-money" data-target=".bs-apply-com" data-toggle="modal">重新提现</a>
      <span class="text-pink font14 fail-notice">(提现失败 失败理由:{{decline_reason}})</span>
@@ -68,26 +68,54 @@
 <div class="modal bs-apply-com" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content del-com-cont">
-         <div class="modal-header clearfix">
-            <span class="title pull-left" id="myModalLabel">请输入提现金额：</span>
-            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        </div>
-            <div class="modal-body center-block w500 font14">
-             <p class="mb10">
-                <span class="tit w200">请填写您的支付宝账号：</span>
-                <input tpye="text" class="money-ipt  alipay-account">
-            </p>
-            <p class="mb10">
-                <span class="tit w200">请填写您的支付宝认证姓名：</span>
-                <input tpye="text" class="money-ipt account-name">
-            </p>
-            <p>
-                <span class="tit w200">请填写提现金额：</span>
-                <input tpye="text" class="money-ipt money">
-            </p>
+             <div class="modal-header clearfix">
+                <span class="title pull-left" id="myModalLabel">提现申请</span>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             </div>
-            <div class="xt-ac modal-footer">
-                <button class="bg-green ok-pop text-white btn clearfix center-block" id="cash-apply">提交</button>
+            <div class="modal-body  font14">
+                 <div class="apply-cash-box">
+                        <p class ="text-grey pl50">个人认证的店铺，提现时间为3个工作日，节假日顺延</p>
+                        <p class ="text-grey pl50 mb10">企业认证的店铺，提现时间为1个工作日，节假日顺延</p>
+                        <table class="per-tb">
+                            <colgroup>
+                                <col width="150"/>
+                            </colgroup>
+                            <tr>
+                                <td class="left">可提现额度 ： </td>
+                                <td > <span class="green-txt f16 ">{{shop_balance}}</span>元</td>
+                            </tr>
+                            <tr>
+                                <td class="left">提现金额 ： </td>
+                                <td> <input tpye="text" class="money-ipt money"></td>
+                            </tr>
+                            <tr>
+                                <td class="left">支付宝账号：</td>
+                                <td><input tpye="text" class="money-ipt  alipay-account" value="{{current_shop.cash_account or ''}}" placeholder="请填写店铺超级管理员的支付宝账号"></td>
+                            </tr>
+                            <tr>
+                                <td class="left">姓名：</td>
+                                <td>
+                                  <input tpye="text" class="money-ipt account-name" value="{{current_shop.cash_account_name or ''}}" placeholder="请填写店铺超级管理员支付宝认证姓名">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="left">短信验证码：</td>
+                                <td>
+                                    <input type="text" id="per-code"/><a href="javascript:;" class="per-btn get-code" id="getPerCode">获取验证码</a>
+                                    {% if current_shop.admin.accountinfo.phone %}
+                                    <p class="per-tip mt10">手机验证码将发送到店铺超级管理员绑定的手机号<span id="perCode">{{current_shop.admin.accountinfo.phone}}</span>上</p>
+                                    <p class="per-tip mt10">如需修改绑定的手机号，<a href="/customer/profile">修改绑定</a></p>
+                                    {% else %}
+                                    <p class="per-tip mt10">您还没绑定手机号，<a href="/customer/profile">现在绑定</a></p>
+                                    {% end %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td><a href="javascript:;" class="per-btn per-commit" id="cash-apply">申请提现</a></td>
+                            </tr>
+                        </table>
+                    </div>
             </div>
         </div>
     </div>

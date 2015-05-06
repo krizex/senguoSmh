@@ -1406,7 +1406,7 @@ class ShopBalance(AdminBaseHandler):
 			return self.redirect(self.reverse_url('adminHome'))
 
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('action','apply_value?:float','alipay_account?:str','account_name?:str','page?:int')
+	@AdminBaseHandler.check_arguments('action','apply_value?:float','alipay_account?:str','account_name?:str','page?:int','code?:int','phone?:str')
 	def post(self):
 		action = self.args['action']
 		shop_id = self.current_shop.id
@@ -1419,21 +1419,39 @@ class ShopBalance(AdminBaseHandler):
 		persons = 0
 		# 商铺申请提现
 		# 提现申请被超级管理员处理后,会产生一条余额变动记录
-		if action == 'cash':
+		if action == "get_code":
+			phone = self.args['phone']
+			print("[店铺提现]发送验证码到手机：",phone)
+			# gen_msg_token(phone=self.args["phone"])
+			# return self.send_success()
+			admin_phone = self.session.query(models.Shop).filter_by(id = shop_id).first().admin.accountinfo.phone
+			if admin_phone != phone:
+				return send_fail('该手机号不是管理员绑定的手机号')
+			resault = gen_msg_token(phone = phone)
+			if resault == True:
+				return self.send_success()
+			else:
+				return self.send_fail(resault)
+		elif action == 'cash':
 			apply_value = self.args['apply_value']
 			alipay_account = self.args['alipay_account']
 			account_name = self.args['account_name']
+			code = int(self.args['code'])
 			shop_id = self.current_shop.id
 			shop_code = self.current_shop.shop_code
 			shop_auth = self.current_shop.shop_auth
 			shop_balance = self.current_shop.shop_balance
 			applicant_name = self.current_user.accountinfo.nickname
+			phone = self.args['phone']
+			if not check_msg_token(phone,code):
+				return self.send_fail('验证码错误')
 			if apply_value>shop_balance:
 				return self.send_fail('您的店铺没有这么多余额')
 			applyCash_history = models.ApplyCashHistory(shop_id = shop_id , value = apply_value ,has_done =0,\
 				shop_code = shop_code,shop_auth = shop_auth , shop_balance = shop_balance,alipay_account = \
 				alipay_account,applicant_name = applicant_name,account_name = account_name)
 			self.session.add(applyCash_history)
+			self.current_shop.update(self.session,cash_account=alipay_account,cash_account_name=account_name)
 			self.session.commit()
 			return self.send_success()
 

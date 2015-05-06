@@ -50,7 +50,47 @@ $(document).ready(function(){
 }).on('click','#cash-apply',function(){
 	$('#cash-apply').addClass('bg-grey').attr({'disabled':true});
 	cash();
+}).on("click","#getPerCode",function(){   //获取验证码
+    var $this = $(this);
+    if($this.attr("data-statu")=="1") {
+        return false;
+    }
+    $this.addClass("bg85").attr("data-statu", "1");
+    var phone = $("#perCode").text();
+    var args={
+        action:'get_code',
+        phone:phone,
+      _xsrf:window.dataObj._xsrf
+    };
+    $.ajax({
+        url:"",
+        type:"post",
+        data:JSON.stringify(args),
+        contentType:"application/json; charset=UTF-8",
+        success:function(res){
+            if(res.success) {
+                getCertCode($this);
+            }else{
+                $this.removeClass("bg85").removeAttr("data-statu").html("获取验证码");
+                alert(res.error_text);
+            }
+        }
+    });
 });
+
+function getCertCode($obj){
+    var i=60,timer=null;
+    $obj.html("重新发送(60)");
+    timer = setInterval(function (){
+        i--;
+        if(i==0){
+            $obj.removeClass("bg85").removeAttr("data-statu").html("获取验证码");
+            clearInterval(timer);
+        }else{
+            $obj.html("重新发送("+i+")");
+        }
+    },1000);
+}
 
 var num=1;
 var page_sum;
@@ -86,6 +126,9 @@ function history(action,page){
                	$('.online-total').text(res.total);
                	$('.online-times').text(res.times);
                	$('.online-person').text(res.persons);
+               }
+               else if(action=='all_history'){
+                $('.wrap-acc-num').addClass('hidden');
                }
                if(num == 1){
                	$('.pre-page').addClass('hidden');
@@ -168,6 +211,8 @@ function cash(){
     var apply_value=parseFloat($('.money').val().trim());
     var alipay_account=$('.alipay-account').val().trim();
     var account_name=$('.account-name').val().trim();
+    var code=$('#per-code').val().trim();
+     var phone = $("#perCode").text();
     var regFloat=/^[0-9]+([.]{1}[0-9]{1,2})?$/;
     if(!apply_value){
     	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
@@ -185,17 +230,23 @@ function cash(){
     	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
     	return alert('请填写数字，至多为小数点后两位');
     }
+    if(!code){
+    	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
+    	return alert('请填写短信验证码');
+    }
     var args={
         action:action,
         apply_value:apply_value,
         alipay_account:alipay_account,
-        account_name:account_name
+        account_name:account_name,
+        code:code,
+        phone:phone
     };
     $.postJson(url,args,
         function(res){
             if(res.success){
             		$('.bs-apply-com').modal('hide');
-            		$('.get-money').text('一笔提现正在处理中').removeAttr('data-target','data-toggle');
+            		$('.get-money').text('提现申请已提交成功，我们将在1-3个工作日内完成审核').removeAttr('data-target','data-toggle');
             		$('.fail-notice').remove();
                }
             else{
