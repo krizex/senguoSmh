@@ -784,7 +784,7 @@ class Order(AdminBaseHandler):
 					shop_follow.shop_balance += order.totalPrice
 
 					balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
-						balance_value = order.totalPrice,balance_record = '订单'+ order.num+'删除 退款：', name = order.receiver,\
+						balance_value = order.totalPrice,balance_record = '退款：订单'+ order.num+'删除', name = self.current_user.accountinfo.nickname,\
 						balance_type = 4,shop_totalPrice = self.current_shop.shop_balance,customer_totalPrice = \
 						shop_follow.shop_balance)
 					self.session.add(balance_history)
