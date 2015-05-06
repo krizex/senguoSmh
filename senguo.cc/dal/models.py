@@ -499,7 +499,7 @@ class Shop(MapBase, _CommonApi):
 
 	#店铺  余额 和 冻结 余额
 	shop_balance = Column(Float,default = 0) 
-	shop_blockage= Column(Float,default = 0) #当用户下单后，店铺冻结余额增加，当订单完成后 冻结 余额 转入 店铺余额
+	available_balance= Column(Float,default = 0) # 可提现余额 ，当 订单完成后 钱才会转入其中
 
 	orders = relationship("Order")
 	staffs = relationship("ShopStaff", secondary="hire_link")
@@ -808,7 +808,7 @@ class BalanceHistory(MapBase,_CommonApi):
 								#当 balance_type为2 的时候，表示申请提现店铺管理员名称
 	shop_id  = Column(Integer,ForeignKey(CustomerShopFollow.shop_id),nullable = False)
 	balance_record = Column(String(32))  #充值 或者 消费 的 具体记录
-	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:余额消费(没用) 2:提现 3:在线支付
+	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:余额消费 2:提现 3:在线支付 4:商家删除订单 5:用户自己取消订单
 	balance_value  = Column(Float)
 	create_time    = Column(DateTime,default = func.now())
 	shop_totalPrice = Column(Float,default = 0)

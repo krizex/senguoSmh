@@ -553,6 +553,7 @@ class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self, shop_code):
 		# print('self',self)
+		# print(self.request.remote_ip,'ip?')
 		w_follow = True
 		fruits=''
 		dry_fruits=''
@@ -2017,12 +2018,14 @@ class payTest(CustomerBaseHandler):
 			if not shop_follow:
 				return self.send_fail('shop_follow not found')
 			shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
+			self.session.commit()
 
 			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 			if not shop:
 				return self.send_fail('shop not found')
 			shop.shop_balance += totalPrice
-			# self.session.commit()
+			self.session.commit()
+			print(shop.shop_balance ,'充值后 商店 总额')
 
 			# 支付成功后  生成一条余额支付记录
 			name = self.current_user.accountinfo.nickname
