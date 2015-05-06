@@ -1185,7 +1185,7 @@ class Cart(CustomerBaseHandler):
 			if today == 1:
 				if period.start_time.hour*60 + period.start_time.minute - \
 					config.stop_range < datetime.datetime.now().hour*60 + datetime.datetime.now().minute:
-					return self.send_fail("下单失败：已超过了该送货时间段的下单时间!请选择下一个时间段！")
+					return self.send_fail("下单失败：已超过了该送货时间段的下单时间，请选择下一个时间段！")
 				send_time = (now).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
 			elif today == 2:
 				tomorrow = now + datetime.timedelta(days = 1)
