@@ -59,10 +59,10 @@ function litsitem(page){
 	var time=data[i]['time'];
 	var value=data[i]['value'];
 	if(type!=1){
-		value='-'+value
+		value='+'+value
 	}
 	else {
-		value='+'+value
+		value='-'+value
 	}
 	var list_item =render({
 		title:title,
