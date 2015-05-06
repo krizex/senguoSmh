@@ -10,7 +10,7 @@ $(document).ready(function(){
             '<li data-apply-id="{{his.id}}">'+
                 '<ul class="shop-attr-lst group">'+
                     '<li>店铺名:<a href="javascript:;">{{his.shop_name}}</a></li>'+
-                    '<li>认证类型：{{ if his.shop_auth==1 }}个人认证{{ /if }}{{ if his.shop_auth==2 }}企业认证{{ /if }}</li>'+
+                    '<li>认证类型：{{ if his.shop_auth==1 || his.shop_auth==4 }}个人认证{{ /if }}{{ if his.shop_auth==2 || his.shop_auth==3}}企业认证{{ /if }}</li>'+
                     '<li>账户余额：{{his.shop_balance}}元</li>'+
                     '<li>提现申请时间：{{his.create_time}}</li>'+
                     '<li>提现金额：<span class="red-txt">{{his.value}}</span>元</li>'+
@@ -198,6 +198,28 @@ function history(action,page){
             if(res.success){
                var history=res.history;
                page_sum=Math.ceil(res.page_sum);
+                if(action == 'cash_history'){
+                    $('.wrap-acc-num').addClass('hidden');
+                    $('.cash-count').removeClass('hidden');
+                    $('.cash').text(res.total);
+               }
+               else if(action == 'recharge'){
+                    $('.wrap-acc-num').addClass('hidden');
+                    $('.charge-count').removeClass('hidden');
+                    $('.charge-total').text(res.total);
+                    $('.charge-use').text(res.pay);
+                    $('.charge-left').text(res.left);
+               }
+               else if(action == 'online'){
+                    $('.wrap-acc-num').addClass('hidden');
+                    $('.online-count').removeClass('hidden');
+                    $('.online-total').text(res.total);
+                    $('.online-times').text(res.times);
+                    $('.online-person').text(res.persons);
+               }
+               else if(action=='all_history'){
+                $('.wrap-acc-num').addClass('hidden');
+               }
                if(num == 1){
                 $('.pre-page').addClass('hide');
                }

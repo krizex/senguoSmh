@@ -16,10 +16,10 @@ p{margin-bottom:0px;}
 .staff-img{margin-top:10px;margin-bottom:5px;}
 .staff-img li{margin-right:5px;}
 .staff-img li img{width:50px;height:50px;border-radius:50%;}
-.user-comment .comment-item{border-bottom:1px solid #f7f7f7;padding:5px 0;}
-.user-comment .img-box{width:50px;height:50px;margin-right:-50px;overflow:hidden;}
+.user-comment .comment-item{border-bottom:1px solid #f7f7f7;padding:8px 0;}
+.user-comment .img-box{width:40px;height:40px;margin-right:-50px;overflow:hidden;}
 .user-comment .con{padding-left:50px;}
-.user-comment .img{width:40px;border-radius:50%;}
+.user-comment .img{width:40px;height:40px;border-radius:50%;}
 .foucus-notice{max-width:800px;margin:0 auto;height:50px;line-height:50px;overflow:hidden;z-index:9999;}
 .w8{width:75%;}
 .level-box{height:30px;line-height:28px;position:relative;padding:0 30px !important;}

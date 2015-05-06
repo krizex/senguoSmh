@@ -594,6 +594,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 	"""后台购买相关页面"""
 	def initialize(self, action):
 		self._action = action
+		print(self._action)
 
 	@tornado.web.authenticated
 	def get(self):
@@ -630,6 +631,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 							   context=dict(orders=orders, subpage="history"))
 		elif self._action == "systemAccount":
 			return self.render("fruitzone/systempurchase-systemaccount.html", context=dict(subpage="account"))
+		elif self._action == "alipaytest":
+			return self.render("fruitzone/alipayTest.html",context = dict(subpage="alipaytest"))
 		else:
 			return self.send_error(404)
 
@@ -665,8 +668,22 @@ class SystemPurchase(FruitzoneBaseHandler):
 
 		if self._action == "chargeDetail":
 			return self.handle_confirm_payment()
+		elif self._action == "alipaytest":
+			print('is here?')
+			return self.handle_alipaytest()
 		else:
 			return self.send_error(404)
+
+	@FruitzoneBaseHandler.check_arguments('price:str')
+	def handle_alipaytest(self):
+		price = int(self.args['price'])
+		print(price)
+		print('find the correct way to login?')
+		try:
+			url = self.test_create_tmporder_url(1)
+		except Exception as e:
+			return self.send_fail('ca')
+		return self.redirect(url)
 	
 	@FruitzoneBaseHandler.check_arguments("charge_type:int", "pay_type")
 	def handle_confirm_payment(self):
@@ -724,6 +741,21 @@ class SystemPurchase(FruitzoneBaseHandler):
 		)
 		return authed_url
 
+	def test_create_tmporder_url(self, price):
+		# 创建临时订单
+		# TODO: 订单失效时间与清除
+		# tmp_order = self.current_user.add_tmp_order(self.session, charge_data)
+		authed_url = self._alipay.create_direct_pay_by_user_url(
+			out_trade_no= str(int(time.time())),
+			subject = 'alipay charge',
+			total_fee = price,
+			seller_account_name = ALIPAY_SELLER_ACCOUNT,
+			call_back_url= "%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseDealFinishedCallback")),
+			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseDealNotify")),
+			merchant_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseChargeTypes"))
+		)
+		return authed_url
+
 	def check_xsrf_cookie(self):
 		if self._action == "dealNotify":
 			Logger.info("SystemPurchase: it's a notify post from alipay, pass xsrf cookie check")
@@ -739,6 +771,11 @@ class SystemPurchase(FruitzoneBaseHandler):
 			return False
 		
 		return True
+
+class alipayTest(FruitzoneBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render('fruitzone/alipayTest.html')
 
 
 class payTest(FruitzoneBaseHandler):

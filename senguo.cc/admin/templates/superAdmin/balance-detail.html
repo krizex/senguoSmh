@@ -39,10 +39,18 @@
                     <td class="green-txt txt-ar pr20"><span class="f16">+2200.00</span><span class="c999">元</span></td>
                 </tr>
             </table>
-            <div class="wrap-acc-num mt20">
-                <span class="account-num">累计已提现&nbsp;<span class="green-txt f16">{{cash_success}}</span>元</span>
-                <span class="account-num">累计次数&nbsp;<span class="green-txt f16">{{cash_times}}</span>次</span>
-                <span class="account-num">累计人数&nbsp;<span class="green-txt f16">5555</span>人</span>
+             <div class="wrap-acc-num cash-count hidden">
+                <span class="account-num">累计提现&nbsp;<span class="green-txt f16 cash"></span>元</span>
+            </div>
+             <div class="wrap-acc-num charge-count hidden">
+                <span class="account-num">累计充值&nbsp;<span class="green-txt f16 charge-total"></span>元</span>
+                <span class="account-num">用户已使用&nbsp;<span class="green-txt f16 charge-use"></span>元</span>
+                <span class="account-num">未使用剩余&nbsp;<span class="green-txt f16 charge-left"></span>元</span>
+            </div>
+             <div class="wrap-acc-num online-count hidden">
+                <span class="account-num">累计支付&nbsp;<span class="green-txt f16 online-total"></span>元</span>
+                <span class="account-num">累计次数&nbsp;<span class="green-txt f16 online-times"></span>次</span>
+                <span class="account-num">累计人数&nbsp;<span class="green-txt f16 online-person"></span>人</span>
             </div>
         </div>
     </div>

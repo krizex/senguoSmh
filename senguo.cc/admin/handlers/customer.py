@@ -234,6 +234,7 @@ class Home(CustomerBaseHandler):
 				count[5] += 1
 			elif order.status == 10:
 				count[6] += 1
+		print(count)
 		return self.render("customer/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
 			show_balance = show_balance,balance_on=balance_on,context=dict(subpage='center'))
@@ -1120,6 +1121,7 @@ class Cart(CustomerBaseHandler):
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
 		mgoods = self.args["mgoods"]
+		current_shop = self.session.query(models.Shop).filter_by( id = shop_id).first()
 
 		if not (fruits or mgoods):
 			return self.send_fail('请至少选择一种商品')
@@ -1353,10 +1355,10 @@ class Cart(CustomerBaseHandler):
 			# self.session.commit()
 
 			#生成一条余额交易记录
-			balance_record = '订单号' + order.num
+			balance_record = '余额消费：订单' + order.num
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
-				shop_id = shop_id ,name = self.current_user.nickname,balance_value = totalPrice ,\
-				balance_record = balance_record,shop_totalPrice = self.current_shop.shop_balance,\
+				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
+				balance_record = balance_record,shop_totalPrice = current_shop.shop_balance,\
 				customer_totalPrice = shop_follow.shop_balance)
 			self.session.add(balance_history)
 			self.session.commit()
@@ -1427,12 +1429,14 @@ class Order(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data?","page?:int")
 	def post(self):
+		print(self,'self is what?')
 		action = self.args["action"]
 		session = self.session
 		if action == "unhandled":
 			page = self.args['page']
 			offset = (page - 1) * 10
 			orders = [x for x in self.current_user.orders if x.status == 1]
+			print(len(orders),'未处理订单 数量')
 			# woody
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
@@ -1454,6 +1458,7 @@ class Order(CustomerBaseHandler):
 			page = self.args["page"]
 			offset = (page - 1) * 10
 			orders = [x for x in self.current_user.orders if x.status in (2, 3, 4)]
+			print(len(orders),'待收货状态订单')
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time)
@@ -1486,6 +1491,7 @@ class Order(CustomerBaseHandler):
 				if x.status == 6:
 					order6.append(x)
 			orders = order5 + order6
+			print(len(orders),'已完成订单数量')
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 			total_count = len(orders)
@@ -1502,6 +1508,7 @@ class Order(CustomerBaseHandler):
 			page = self.args["page"]
 			offset = (page - 1) * 10
 			orders = self.current_user.orders
+			print(len(orders),'所有订单数量')
 			session = self.session
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
@@ -1530,18 +1537,30 @@ class Order(CustomerBaseHandler):
 			# 3.27
 			session = self.session
 			order.get_num(session,order.id)
-
+			########################################################################################
 			#订单取消后，如果订单 支付类型是 余额支付时， 余额返回到 用户账户
+			#同时产生一条余额记录
+			########################################################################################
 			customer_id = order.customer_id
 			shop_id     = order.shop_id
-			try:
-				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
-					customer_id , shop_id = shop_id).first()
-			except:
-				return self.send_fail('shop_follow error')
-			if shop_follow:
-				shop_follow.shop_balance += order.totalPrice
-				self.session.commit()
+			if order.pay_type == 2:
+				try:
+					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
+						customer_id , shop_id = shop_id).first()
+				except:
+					return self.send_fail('shop_follow error')
+				if shop_follow:
+					shop_follow.shop_balance += order.totalPrice
+				shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+				if not shop:
+					return self.send_fail('shop not found')
+
+				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
+						balance_value = order.totalPrice,balance_record = '订单'+ order.num+'取消退款：', name = order.receiver,\
+						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = \
+						shop_follow.shop_balance)
+				self.session.add(balance_history)
+			self.session.commit()
 		elif action == "comment":
 			data = self.args["data"]
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
@@ -1939,7 +1958,7 @@ class payTest(CustomerBaseHandler):
 			totalPrice =float( self.get_cookie('money'))
 			print(totalPrice,'long time no see!')
 			unifiedOrder.setParameter("body",'charge')
-			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/callback')
+			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/paytest')
 			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",orderId)
 			#orderPriceSplite = (order.price) * 100
@@ -2005,7 +2024,7 @@ class payTest(CustomerBaseHandler):
 			# 支付成功后  生成一条余额支付记录
 			name = self.current_user.accountinfo.nickname
 			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-				balance_value = totalPrice,balance_record = '用户充值：'+ name  , name = name , balance_type = 0,\
+				balance_value = totalPrice,balance_record = '余额充值：'+ name  , name = name , balance_type = 0,\
 				shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice)
 			self.session.add(balance_history)
 			print(balance_history , '钱没有白充吧？！')

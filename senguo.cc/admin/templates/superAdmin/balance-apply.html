@@ -9,15 +9,15 @@
     <ul class="apply-lst group">
         <li class="active" data-action="all_apply">
             <p class="title">所有申请</p>
-            <p class="cont">总金额：33333.00元&nbsp;&nbsp;23个</p>
+            <p class="cont">总金额：{{all_cash}}元&nbsp;&nbsp;{{all_num}}个</p>
         </li>
         <li class="" data-action="person">
             <p class="title">个人认证</p>
-            <p class="cont">总金额：3333.00元&nbsp;&nbsp;10个</p>
+            <p class="cont">总金额：{{person_cash}}元&nbsp;&nbsp;{{person_num}}个</p>
         </li>
         <li class="" data-action="company">
             <p class="title">企业认证</p>
-            <p class="cont">总金额：33330.00元&nbsp;&nbsp;13个</p>
+            <p class="cont">总金额：{{company_cash}}元&nbsp;&nbsp;{{company_num}}个</p>
         </li>
     </ul>
     <ul class="apply-cont-lst" id="apply-cont-lst">
@@ -25,7 +25,7 @@
         <li data-apply-id="{{apply['id']}}">
             <ul class="shop-attr-lst group">
                 <li>店铺名:<a href="javascript:;">{{apply['shop_name']}}</a></li>
-                <li>认证类型：{% if apply['shop_auth'] == 1 %}个人认证{% else %}企业认证{% end %}</li>
+                <li>认证类型：{% if apply['shop_auth'] == 1 or apply['shop_auth'] == 4%}个人认证{% elif apply['shop_auth'] == 2 or apply['shop_auth'] == 3 %}企业认证{% end %}</li>
                 <li>账户余额：{{apply['shop_balance']}}元</li>
                 <li>提现申请时间：{{apply['create_time']}}</li>
                 <li>提现金额：<span class="red-txt">{{apply['value']}}</span>元</li>
