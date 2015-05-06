@@ -58,11 +58,11 @@ function litsitem(page){
 	var type=data[i]['type'];
 	var time=data[i]['time'];
 	var value=data[i]['value'];
-	if(type==0||type==5){
-		value='+'+value
+	if(type!=1){
+		value='-'+value
 	}
 	else {
-		value='-'+value
+		value='+'+value
 	}
 	var list_item =render({
 		title:title,
