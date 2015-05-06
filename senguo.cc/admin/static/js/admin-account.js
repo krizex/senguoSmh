@@ -68,31 +68,50 @@ function history(action,page){
             if(res.success){
                var history=res.history;
                page_sum=Math.ceil(res.page_sum);
+               if(action == 'cash_history'){
+               	$('.wrap-acc-num').addClass('hidden');
+               	$('.cash-count').removeClass('hidden');
+               	$('.cash').text(res.total);
+               }
+               else if(action == 'recharge'){
+               	$('.wrap-acc-num').addClass('hidden');
+               	$('.charge-count').removeClass('hidden');
+               	$('.charge-total').text(res.total);
+               	$('.charge-use').text(res.pay);
+               	$('.charge-left').text(res.left);
+               }
+               else if(action == 'online'){
+               	$('.wrap-acc-num').addClass('hidden');
+               	$('.online-count').removeClass('hidden');
+               	$('.online-total').text(res.total);
+               	$('.online-times').text(res.times);
+               	$('.online-person').text(res.persons);
+               }
                if(num == 1){
-               	$('.pre-page').addClass('hide');
+               	$('.pre-page').addClass('hidden');
                }
                else{
-               	$('.pre-page').removeClass('hide');
+               	$('.pre-page').removeClass('hidden');
                }
                if(page_sum>1){
-               	$('.list-pagination').removeClass('hide');
+               	$('.list-pagination').removeClass('hidden');
                	$('.page-total').text(page_sum);
                }
                else{
-               	$('.list-pagination').addClass('hide');
+               	$('.list-pagination').addClass('hidden');
                }
                if(page==page_sum){
-               	$('.next-page').addClass('hide');
-               	$('.pre-page').removeClass('hide');
+               	$('.next-page').addClass('hidden');
+               	$('.pre-page').removeClass('hidden');
                }
                else{
-               	$('.next-page').removeClass('hide');
+               	$('.next-page').removeClass('hidden');
                }
                if(page_sum==0){
-               	$('.no-list').removeClass('hide');
+               	$('.no-list').removeClass('hidden');
                }
                else{
-		$('.no-list').addClass('hide');
+		$('.no-list').addClass('hidden');
                }
                for(var i in history){
                	var item=' <tr>'
@@ -150,10 +169,6 @@ function cash(){
     var alipay_account=$('.alipay-account').val().trim();
     var account_name=$('.account-name').val().trim();
     var regFloat=/^[0-9]+([.]{1}[0-9]{1,2})?$/;
-     if(!regFloat.test(apply_value)){
-    	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
-    	return alert('请填写数字，至多为小数点后两位');
-    }
     if(!apply_value){
     	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
     	return alert('请填写提现金额');
@@ -166,6 +181,10 @@ function cash(){
     	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
     	return alert('请填写支付宝认证姓名');
     }
+     if(!regFloat.test(apply_value)){
+    	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
+    	return alert('请填写数字，至多为小数点后两位');
+    }
     var args={
         action:action,
         apply_value:apply_value,
@@ -176,6 +195,8 @@ function cash(){
         function(res){
             if(res.success){
             		$('.bs-apply-com').modal('hide');
+            		$('.get-money').text('一笔提现正在处理中').removeAttr('data-target','data-toggle');
+            		$('.fail-notice').remove();
                }
             else{
             	      $('#cash-apply').removeClass('bg-grey').removeAttr('disabled');

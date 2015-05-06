@@ -1120,6 +1120,7 @@ class Cart(CustomerBaseHandler):
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
 		mgoods = self.args["mgoods"]
+		current_shop = self.session.query(models.Shop).filter_by( id = shop_id).first()
 
 		if not (fruits or mgoods):
 			return self.send_fail('请至少选择一种商品')
@@ -1355,8 +1356,8 @@ class Cart(CustomerBaseHandler):
 			#生成一条余额交易记录
 			balance_record = '订单号' + order.num
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
-				shop_id = shop_id ,name = self.current_user.nickname,balance_value = totalPrice ,\
-				balance_record = balance_record,shop_totalPrice = self.current_shop.shop_balance,\
+				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
+				balance_record = balance_record,shop_totalPrice = current_shop.shop_balance,\
 				customer_totalPrice = shop_follow.shop_balance)
 			self.session.add(balance_history)
 			self.session.commit()
