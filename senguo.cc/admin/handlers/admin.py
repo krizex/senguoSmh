@@ -1460,7 +1460,7 @@ class ShopBalance(AdminBaseHandler):
 			count =balance_history.count()
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				print('history_list error')
+				print(' cash history_list error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
@@ -1485,7 +1485,7 @@ class ShopBalance(AdminBaseHandler):
 			count =balance_history.count()
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				print('get all BalanceHistory error')
+				print('get all history error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
@@ -1506,7 +1506,7 @@ class ShopBalance(AdminBaseHandler):
 			count = balance_history.count()
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				print('get all BalanceHistory error')
+				print('get all recharge error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
