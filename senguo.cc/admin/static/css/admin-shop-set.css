@@ -56,7 +56,7 @@ input{height:30px;width:400px;-ms-line-height:30px;color:#666;}
 .hide{display: none!important;}
 .shop-link{color: #66b5f2;font-size:14px;display: inline-block;height: 24px;line-height: 24px;}
 .mt15{margin-top: 15px;}
-.red-txt{color: #d32e3e!important;}
+.red-txt{color: #ff6666!important;}
 .grey-txt{color:#999!important;}
 .wrap-top{padding-left: 40px;padding-bottom: 10px;}
 .cert-title{margin-top: 20px;}
@@ -97,6 +97,7 @@ input{height:30px;width:400px;-ms-line-height:30px;color:#666;}
 .green-txt{color: #53b540;}
 .wrap-pay-tpye{border: 1px solid #f2f2f2;border-top:none;padding: 20px;}
 .f14{font-size: 14px;}
+.f12{font-size: 12px;}
 
 
 
