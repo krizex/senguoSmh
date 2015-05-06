@@ -818,6 +818,7 @@ class ShopAuthenticate(SuperBaseHandler):
 class Balance(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+
 		cash_list = []
 		cash_on = 0
 		total_balance = 0
@@ -826,13 +827,20 @@ class Balance(SuperBaseHandler):
 		cash_persons = 0
 		cash_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=0).all()
 		shop_list = self.session.query(models.Shop).all()
+
+		cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1).all()
+		person_num = self.session.query(models.ApplyCashHistory).distinct(models.ApplyCashHistory.shop_id).count()
+		print(person_num,'haaha')
+
 		for item in cash_list:
 			cash_on = cash_on+item.value
 		for item in shop_list:
 			total_balance = total_balance + item.shop_balance
+
 		total_balance = format(total_balance,'.2f')
 		return self.render('superAdmin/balance-detail.html',cash_times=cash_times,cash_success=cash_success,\
 			total_balance=total_balance,cash_on=cash_on,context=dict(page="detail"))
+
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','page:int')

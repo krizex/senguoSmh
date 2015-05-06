@@ -233,6 +233,9 @@ handlers = [
         "action":"dealSuccess"}, "fruitzoneSystemPurchaseDealSuccess"),
     (r"/fruitzone/systemPurchase/dealNotify", handlers.fruitzone.SystemPurchase, {
         "action":"dealNotify"}, "fruitzoneSystemPurchaseDealNotify"),
+    (r"/fruitzone/systemPurchase/alipaytest",handlers.fruitzone.SystemPurchase,{"action":"alipaytest"},
+        "fruitzoneSystemPurchaseAlipayTest"),
+    # (r"/fruitzone/alipaytest",handlers.fruitzone.alipayTest,{},"fruitzoneSystemPurchaseAlipayTest"),
 
     (r"/fruitzone/imgcallback", handlers.fruitzone.QiniuCallback, {"action":"shop" }, "imgCallback"),
     (r"/fruitzone/shopImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_shop_img"}, "fruitzoneshopImgCallback"),
