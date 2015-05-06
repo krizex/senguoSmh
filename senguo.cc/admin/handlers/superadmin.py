@@ -889,7 +889,7 @@ class ApplyCash(SuperBaseHandler):
 			apply_list = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).offset(page*page_size).limit(10).all()
 			count = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).count()
 		elif action == 'company':
-			apply_list = self,session.query(models.ApplyCashHistory).filter_by(shop_auth = 2,\
+			apply_list = self.session.query(models.ApplyCashHistory).filter_by(shop_auth = 2,\
 				has_done = 0).offset(page*page_size).limit(10).all()
 			count = self.session.query(models.ApplyCashHistory).filter_by(shop_auth = 2,\
 				has_done = 0).count()

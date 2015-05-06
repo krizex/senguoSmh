@@ -1,8 +1,30 @@
 /**
  * Created by Administrator on 2015/5/5.
  */
+var apply_list = "";
+var payPage = 0;
 $(document).ready(function(){
     history('all_history',1);
+    if($("#apply-cont-lst").size()>0){
+        apply_list = '{{each history as his}}'+
+            '<li data-apply-id="{{his.id}}">'+
+                '<ul class="shop-attr-lst group">'+
+                    '<li>店铺名:<a href="javascript:;">{{his.shop_name}}</a></li>'+
+                    '<li>认证类型：{{ if his.shop_auth==1 }}个人认证{{ /if }}{{ if his.shop_auth==2 }}企业认证{{ /if }}</li>'+
+                    '<li>账户余额：{{his.shop_balance}}元</li>'+
+                    '<li>提现申请时间：{{his.create_time}}</li>'+
+                    '<li>提现金额：<span class="red-txt">{{his.value}}</span>元</li>'+
+                    '<li>支付宝帐号：<span class="red-txt">{{his.alipay_account}}</span></li>'+
+                    '<li>申请人：<a href="javascript:;">{{his.applicant_name}}</a></li>'+
+                '</ul>'+
+                '<div class="apply-btn-group">'+
+                    '<a href="javascript:;" class="ok-btn">通过并已确认支付</a>'+
+                    '<a href="javascript:;" class="refuse-btn">拒绝</a>'+
+                '</div>'+
+                '<p class="reason-txt hidden">拒绝理由：申请金额过大</p>'+
+            '</li>'+
+         '{{/each}}';
+    }
 }).on("click",".tab-lst li",function(){
     var index = $(this).index();
     $(".tab-lst li").removeClass("active").eq(index).addClass("active");
@@ -16,24 +38,14 @@ $(document).ready(function(){
         type:"get",
         success:function(res){
             if(res.success){
-                console.log(res);
-                var data = res.data;
-                /*<li data-apply-id="1">
-                    <ul class="shop-attr-lst group">
-                        <li>店铺名:<a href="javascript:;">马灰灰的水果店</a></li>
-                        <li>认证类型：个人认证</li>
-                        <li>账户余额：4333.00元</li>
-                        <li>提现申请时间：2012年5月5日 12:22:22</li>
-                        <li>提现金额：<span class="red-txt">400.00</span>元</li>
-                        <li>支付宝帐号：<span class="red-txt">123456@qq.com</span></li>
-                        <li>申请人：<a href="javascript:;">马灰</a></li>
-                    </ul>
-                    <div class="apply-btn-group">
-                        <a href="javascript:;" class="ok-btn">通过并已确认支付</a>
-                        <a href="javascript:;" class="refuse-btn">拒绝</a>
-                    </div>
-                    <p class="reason-txt hidden">拒绝理由：申请金额过大</p>
-                </li>*/
+                if( res.history.length==0){
+                    $("#apply-cont-lst").html("");
+                    return false;
+                }else{
+                    var render = template.compile(apply_list);
+                    var html = render(res);
+                    $("#apply-cont-lst").html("").html(html);
+                }
             }
         }
     })
@@ -124,6 +136,50 @@ $(document).ready(function(){
 }).on('click','#cash-apply',function(){
     $('#cash-apply').addClass('bg-grey').attr({'disabled':true});
     cash();
+}).on("click","#payPrePage",function(){
+    if(payPage==0){
+        alert("当前已经是第一页");
+        return false;
+    }
+    payPage--;
+    var action = $(".apply-lst").children(".active").attr("data-action");
+    $.ajax({
+        url:"/super/cash",
+        data:{action:action,page:payPage,_xsrf:window.dataObj._xsrf},
+        type:"post",
+        success:function(res){
+            if(res.success){
+                if( res.history.length==0){
+                    alert("当前已经是第一页");
+                    return false;
+                }else{
+                    var render = template.compile(apply_list);
+                    var html = render(res);
+                    $("#apply-cont-lst").html("").html(html);
+                }
+            }
+        }
+    })
+}).on("click","#payNextPage",function(){
+    var action = $(".apply-lst").children(".active").attr("data-action");
+    payPage++;
+    $.ajax({
+        url:"/super/cash",
+        data:{action:action,page:payPage,_xsrf:window.dataObj._xsrf},
+        type:"post",
+        success:function(res){
+            if(res.success){
+                if( res.history.length==0){
+                    alert("已经是最后一页");
+                    return false;
+                }else{
+                    var render = template.compile(apply_list);
+                    var html = render(res);
+                    $("#apply-cont-lst").html("").html(html);
+                }
+            }
+        }
+    })
 });
 
 var num=1;

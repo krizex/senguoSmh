@@ -20,7 +20,7 @@
             <p class="cont">总金额：33330.00元&nbsp;&nbsp;13个</p>
         </li>
     </ul>
-    <ul class="apply-cont-lst">
+    <ul class="apply-cont-lst" id="apply-cont-lst">
         {% for apply in history %}
         <li data-apply-id="{{apply['id']}}">
             <ul class="shop-attr-lst group">
@@ -40,6 +40,12 @@
         </li>
         {% end %}
     </ul>
+    <nav>
+        <ul class="pager">
+            <li><a href="javascript:;" id="payPrePage">&larr; 上一页</a></li>
+            <li><a href="javascript:;" id="payNextPage">下一页&rarr;</a></li>
+        </ul>
+    </nav>
 </div>
 <div class="wrap-com-pop hide">
     <div class="com-pop ov-center">
@@ -55,5 +61,4 @@
 </div>
 {% end %}
 {% block js %}
-
 {% end %}
