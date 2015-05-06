@@ -539,12 +539,15 @@ class Comment(CustomerBaseHandler):
 		page = self.args["page"]
 		comments = self.get_comments(shop_id, page, 10)
 		date_list = []
+		nomore = False
 		for comment in comments:
 			date_list.append({"img": comment[6], "name": comment[7],
 							  "comment": comment[0], "time": self.timedelta(comment[1]), "reply":comment[3]})
+		if date_list == []:
+			nomore = True
 		if page == 0:
-			return self.render("customer/comment.html", date_list=date_list)
-		return self.write(dict(date_list=date_list))
+			return self.render("customer/comment.html", date_list=date_list,nomore=nomore)
+		return self.send_success(date_list=date_list,nomore=nomore)
 
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated

@@ -3,17 +3,26 @@
 {% block top %}店铺评价{% end %}
 {% block content %}
 {% if date_list %}
-{% import json %}
-<script>
-    window.dataObj.comments={% raw json.dumps(date_list) %}
-</script>
-{% end %}
-{% if date_list %}
-<ul class="commnent-list mt42 m-b10 set-w100-fle" id="commnent-list">
-
-</ul>
-<a href="javascript:;" id="getMore" class="btn text-green3 bg-white set-w100-fle">更多评价</a>
-<div class="btn text-green3 bg-white set-w100-fle no-more" style="display:none;">没有更多了</div>
+    <ul class="commnent-list mt42 m-b10 set-w100-fle" id="commnent-list">
+            {% for list in date_list %}
+                <li class="comment-item bg-white set-w100-fle">'
+                    <div class="img-box pull-left">'
+                        <img src="{{list['img']}}" class="user-img">
+                    </div>
+                    <div class="info sty1 pull-left pr10">
+                        <span class="user-name pull-left">{{list['name']}}</span>
+                        <span class="comment-time pull-right">{{list['time']}}</span>
+                    </div>
+                    <div class="comment-text sty1 pull-left pr10">{{list['comment']}}</div>
+                    <div class="comment text-green sty1 pull-left pr10">
+                        {% if list['reply'] %}
+                        商家回复：<span class="reply-text">{{list['reply']}}</span>
+                        {% end %}
+                    </div>
+                </li>
+            {% end %}
+    </ul>
+    <div class="btn text-green3 bg-white set-w100-fle loading" style="display:none;">更多评价</div>
 {% else %}
 <h3 class="text-center mt42 pt36">暂无评价！</h3>
 {% end %}
