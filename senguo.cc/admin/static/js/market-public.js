@@ -316,7 +316,6 @@ var warnNotice=function(text,item){
 var noticeRemove=function (target,item) {
     noticeTimer = setTimeout(function() {
         $('#'+target).addClass('hidden');
-        console.log($('#'+target).hasClass("hidden"))
         if(item){
             item.removeAttr('disabled').removeClass('bg-greyc');
         }

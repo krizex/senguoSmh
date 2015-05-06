@@ -783,15 +783,17 @@ class ApplyCashHistory(MapBase,_CommonApi):
 	applicant_name  = Column(String(32))
 	shop_balance = Column(Float,default = 0)
 	alipay_account = Column(String(64))
-	value   = Column(Integer) #申请提现的金额，单位：分
+	value   = Column(Float,default = 0) #申请提现的金额，单位：元
 	create_time = Column(DateTime,default = func.now())
 	has_done   = Column(Integer , default = 0) # 0:before done,1: done success,2: decline
 	decline_reason = Column(String(200)) #当申请提现被拒绝后 给商家的理由
+	account_name = Column(String(32)) #账户真实姓名
 
 ################################################################################
 # 余额记录 只会在 三处地方产生:
 # 用户充值 ，店铺管理员提现 和 接下来要做的在线支付
 # 即只有真正实现 支付的地方才用到。而用户 余额消费 只是数值上的变动
+# 用户余额消费也会产生记录，只显示给用户自己看
 ################################################################################
 
 class BalanceHistory(MapBase,_CommonApi):

@@ -1542,22 +1542,23 @@ class Order(CustomerBaseHandler):
 			########################################################################################
 			customer_id = order.customer_id
 			shop_id     = order.shop_id
-			try:
-				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
-					customer_id , shop_id = shop_id).first()
-			except:
-				return self.send_fail('shop_follow error')
-			if shop_follow:
-				shop_follow.shop_balance += order.totalPrice
-			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-			if not shop:
-				return self.send_fail('shop not found')
+			if order.pay_type == 2:
+				try:
+					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
+						customer_id , shop_id = shop_id).first()
+				except:
+					return self.send_fail('shop_follow error')
+				if shop_follow:
+					shop_follow.shop_balance += order.totalPrice
+				shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+				if not shop:
+					return self.send_fail('shop not found')
 
-			balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
-					balance_value = order.totalPrice,balance_record = '订单'+ order.num+'取消退款：', name = order.receiver,\
-					balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = \
-					shop_follow.shop_balance)
-			self.session.add(balance_history)
+				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
+						balance_value = order.totalPrice,balance_record = '订单'+ order.num+'取消退款：', name = order.receiver,\
+						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = \
+						shop_follow.shop_balance)
+				self.session.add(balance_history)
 			self.session.commit()
 		elif action == "comment":
 			data = self.args["data"]

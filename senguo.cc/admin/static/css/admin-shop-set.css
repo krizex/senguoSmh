@@ -89,14 +89,14 @@ input{height:30px;width:400px;-ms-line-height:30px;color:#666;}
 .edit-box{background-color: #f5f5f5;padding: 15px 20px;margin-top: 30px;}
 .edit-box .mode a{width:120px;height:32px; border-radius:30px;line-height:30px;position:relative;font-size:14px;}
 .edit-box .mode .circle{position:absolute;display:inline-block;width:28px;height:28px;top:2px;background:#fff;border-radius:50%;}
-.edit-box .work-mode{text-indent:14px;}
+.edit-box .work-mode{text-indent:28px;}
 .edit-box .work-mode .circle{right:2px;}
 .edit-box .stop-mode{text-indent:44px;}
 .edit-box .stop-mode .circle{left:2px;}
 .pay-type-txt{color: #111;font-size: 14px;line-height: 20px;}
 .green-txt{color: #53b540;}
-
-
+.wrap-pay-tpye{border: 1px solid #f2f2f2;border-top:none;padding: 20px;}
+.f14{font-size: 14px;}
 
 
 

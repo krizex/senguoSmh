@@ -818,55 +818,114 @@ class ShopAuthenticate(SuperBaseHandler):
 class Balance(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render('superAdmin/balance-detail.html',context=dict(page="detail"))
+
+		cash_list = []
+		cash_on = 0
+		total_balance = 0
+		cash_success = 0
+		cash_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=0).all()
+		shop_list = self.session.query(models.Shop).all()
+		cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1).all()
+		person_num = self.session.query(models.ApplyCashHistory).distinct(models.ApplyCashHistory.shop_id).count()
+		print(person_num,'haaha')
+		for item in cash_list:
+			cash_on = cash_on+item.value
+		for item in shop_list:
+			total_balance = total_balance + item.shop_balance
+		for item in cash_success_list:
+			cash_success = cash_success + item.value
+		cash_times=len(cash_success_list)
+		return self.render('superAdmin/balance-detail.html',cash_times=cash_times,cash_success=cash_success,\
+			total_balance=total_balance,person_num = person_num,cash_on=cash_on,context=dict(page="detail"))
+
 
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments('action')
+	@SuperBaseHandler.check_arguments('action','page:int')
 	def post(self):
 		history = []
+		page =0
+		page_size=15
+		page_sum=0
+		count=0
+		action = self.args['action']
+		page = self.args['page']-1
+		history_list=[]
 		if action == 'all_history':
-			history_list = self.session.query(models.BalanceHistory).all()
+			history_list = self.session.query(models.BalanceHistory).offset(page*page_size).limit(page_size).all()
+			count = self.session.query(models.BalanceHistory).count()
 		elif action == 'recharge':
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0).all()
+			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0).offset(page*page_size).limit(page_size).all()
+			count = self.session.query(models.BalanceHistory).filter_by(balance_type =0).count()
 		elif action == 'online':
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 3).all()
+			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 3).offset(page*page_size).limit(page_size).all()
+			count = self.session.query(models.BalanceHistory).filter_by(balance_type =3).count()
 		elif action == 'cash_history':
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_history =2).all()
+			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type =2).offset(page*page_size).limit(page_size).all()
+			count = self.session.query(models.BalanceHistory).filter_by(balance_type =2).count()
 		else:
 			return self.send_error(404)
 		if not history_list:
-			return self.send_fail('history_list error')
+			print('history_list error')
 		for temp in history_list:
+				shop_name = self.session.query(models.Shop).filter_by(id=temp.shop_id).first().shop_name
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
-				history.append([temp.balance_record,create_time,temp.balance_record])
-		return self.send_success(history = history)
+				history.append({'shop_name':shop_name,'time':create_time,'balance':temp.shop_totalPrice,'balance_value':temp.balance_value,'type':temp.balance_type})
+		page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
+		return self.send_success(history = history,page_sum=page_sum)
 
 		# return self.send_success()
 
 class ApplyCash(SuperBaseHandler):
+	
 	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('action:?str','page?:int')
 	def get(self):
-		return self.render('superAdmin/balance-apply.html',context=dict(page="cash"))
+		page_size =10
+		page_sum =0
+		count = 0
+		history = []
+		apply_list = None
+		action = self.args['action']
+		nomore = False
+		page = 0
+		if 'page' in self.args:
+			page = int(self.args['page'])
+		if action == 'all_apply' or action == '[]':
+			apply_list = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).offset(page*page_size).limit(10).all()
+			count = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).count()
+		elif action == 'company':
+			apply_list = self,session.query(models.ApplyCashHistory).filter_by(shop_auth = 2,\
+				has_done = 0).offset(page*page_size).limit(10).all()
+			count = self.session.query(models.ApplyCashHistory).filter_by(shop_auth = 2,\
+				has_done = 0).count()
+		elif action == 'person':
+			apply_list = self.session.query(models.ApplyCashHistory).filter_by(shop_auth = 1,\
+				has_done = 0).offset(page*page_size).limit(10).all()
+			count = self.session.query(models.ApplyCashHistory).filter_by(shop_auth = 1,\
+				has_done = 0).count()
+		if apply_list:
+			for temp in apply_list:
+				shop_name = self.session.query(models.Shop).filter_by(id=temp.shop_id).first().shop_name
+				history.append({"id":temp.id,"shop_code":temp.shop_code,"shop_name":shop_name,"shop_auth":temp.shop_auth,\
+					"shop_balance":temp.shop_balance,"create_time":temp.create_time.strftime('%Y-%m-%d %H:%M:%S'),"value":temp.value,\
+					"alipay_account":temp.alipay_account,"applicant_name":temp.applicant_name})
+		page_sum = count/10
+		if action!='[]':
+			return self.send_success(history=history)
+		else:
+			return self.render('superAdmin/balance-apply.html',history=history,context=dict(page='cash'))	
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id?:int','decline_reason?:str')
 	def post(self):
-
 		history = []
 		apply_list = None
-
-		if action == 'all_apply':
-			apply_list = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).all()
-		elif action == 'company':
-			apply_list = self,session.query(models.ApplyCashHistory).filter_by(shop_auth = 2,\
-				has_done = 0).all()
-		elif action == 'person':
-			apply_list = self.session.query(models.ApplyCashHistory).filter_by(shop_auth = 1,\
-				has_done = 0).all()
-		elif action == 'decline':
+		action = self.args['action']
+		apply_cash = ''
+		if action == 'decline':
 			apply_id = self.args['apply_id']
 			apply_cash = self.session.query(models.ApplyCashHistory).filter_by(id = apply_id).first()
-			if apply_cash:
+			if apply_cash == '':
 				return self.send_fail('apply_cash not found')
 			apply_cash.has_done = 2
 			apply_cash.decline_reason = self.args['decline_reason']
@@ -875,7 +934,7 @@ class ApplyCash(SuperBaseHandler):
 		elif action == 'commit':
 			apply_id = self.args['apply_id']
 			apply_cash = self.session.query(models.ApplyCashHistory).filter_by(id = apply_id).first()
-			if apply_cash:
+			if apply_cash == '':
 				return self.send_fail('apply_cash not found')
 			apply_cash.has_done = 1
 			shop = self.session.query(models.Shop).filter_by(id = apply_cash.shop_id).first()
@@ -889,11 +948,8 @@ class ApplyCash(SuperBaseHandler):
 			self.session.add(balance_history)
 			self.session.commit()
 
-		if apply_list:
-			for temp in apply_list:
-				history.append([temp.id,temp.shop_code,temp.shop_auth,temp.shop_balance,\
-					temp.create_time,temp.value,temp.alipay_account,temp.applicant_name])
-			return self.send_success(history = history)
+		
+		return self.send_success(history = history)
 
 		
 
