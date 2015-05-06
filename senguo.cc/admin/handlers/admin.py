@@ -1451,7 +1451,7 @@ class ShopBalance(AdminBaseHandler):
 				shop_code = shop_code,shop_auth = shop_auth , shop_balance = shop_balance,alipay_account = \
 				alipay_account,applicant_name = applicant_name,account_name = account_name)
 			self.session.add(applyCash_history)
-			self.current_shop.update(self.session,cash_account=alipay_account,cash_account_name=account_name)
+			self.current_shop.update(self.session,alipay_account=alipay_account,alipay_account_name=account_name)
 			self.session.commit()
 			return self.send_success()
 
