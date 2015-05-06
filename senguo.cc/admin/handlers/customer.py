@@ -1121,6 +1121,7 @@ class Cart(CustomerBaseHandler):
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
 		mgoods = self.args["mgoods"]
+		current_shop = self.session.query(models.Shop).filter_by( id = shop_id).first()
 
 		if not (fruits or mgoods):
 			return self.send_fail('请至少选择一种商品')
@@ -1186,7 +1187,7 @@ class Cart(CustomerBaseHandler):
 			if today == 1:
 				if period.start_time.hour*60 + period.start_time.minute - \
 					config.stop_range < datetime.datetime.now().hour*60 + datetime.datetime.now().minute:
-					return self.send_fail("下单失败：已超过了该送货时间段的下单时间!请选择下一个时间段！")
+					return self.send_fail("下单失败：已超过了该送货时间段的下单时间，请选择下一个时间段！")
 				send_time = (now).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
 			elif today == 2:
 				tomorrow = now + datetime.timedelta(days = 1)
@@ -1354,10 +1355,10 @@ class Cart(CustomerBaseHandler):
 			# self.session.commit()
 
 			#生成一条余额交易记录
-			balance_record = '订单号' + order.num
+			balance_record = '余额消费：订单' + order.num
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
-				shop_id = shop_id ,name = self.current_user.account_info.nickname,balance_value = totalPrice ,\
-				balance_record = balance_record,shop_totalPrice = shop.shop_balance,\
+				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
+				balance_record = balance_record,shop_totalPrice = current_shop.shop_balance,\
 				customer_totalPrice = shop_follow.shop_balance)
 			self.session.add(balance_history)
 			self.session.commit()
@@ -2023,7 +2024,7 @@ class payTest(CustomerBaseHandler):
 			# 支付成功后  生成一条余额支付记录
 			name = self.current_user.accountinfo.nickname
 			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-				balance_value = totalPrice,balance_record = '用户充值：'+ name  , name = name , balance_type = 0,\
+				balance_value = totalPrice,balance_record = '余额充值：'+ name  , name = name , balance_type = 0,\
 				shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice)
 			self.session.add(balance_history)
 			print(balance_history , '钱没有白充吧？！')

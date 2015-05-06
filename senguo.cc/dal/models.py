@@ -463,6 +463,9 @@ class Shop(MapBase, _CommonApi):
 	# 是否做实体店
 	have_offline_entity = Column(Integer, default=False)
 
+	alipay_account = Column(String(128)) #提现账户 2015-5-06 yy
+	alipay_account_name  = Column(String(32)) #提现账户认证名 2015-5-06 yy
+
 ###################################################
 	#the phone of shop ,   added by woody
 	shop_phone=Column(String(16))
@@ -788,6 +791,7 @@ class ApplyCashHistory(MapBase,_CommonApi):
 	has_done   = Column(Integer , default = 0) # 0:before done,1: done success,2: decline
 	decline_reason = Column(String(200)) #当申请提现被拒绝后 给商家的理由
 	account_name = Column(String(32)) #账户真实姓名
+	shop = relationship("Shop")
 
 ################################################################################
 # 余额记录 只会在 三处地方产生:

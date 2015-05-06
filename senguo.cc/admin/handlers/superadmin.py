@@ -3,7 +3,7 @@ import dal.models as models
 import tornado.web
 import time, datetime
 from settings import ROOT_HOST_NAME
-from sqlalchemy import exists, func, extract, DATE, desc
+from sqlalchemy import exists, func, extract, DATE, desc,or_
 from dal.dis_dict import dis_dict
 from libs.msgverify import check_msg_token,get_access_token,user_subscribe
 
@@ -823,20 +823,23 @@ class Balance(SuperBaseHandler):
 		cash_on = 0
 		total_balance = 0
 		cash_success = 0
+		cash_times = 0
+		cash_persons = 0
 		cash_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=0).all()
 		shop_list = self.session.query(models.Shop).all()
+
 		cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1).all()
 		person_num = self.session.query(models.ApplyCashHistory).distinct(models.ApplyCashHistory.shop_id).count()
 		print(person_num,'haaha')
+
 		for item in cash_list:
 			cash_on = cash_on+item.value
 		for item in shop_list:
 			total_balance = total_balance + item.shop_balance
-		for item in cash_success_list:
-			cash_success = cash_success + item.value
-		cash_times=len(cash_success_list)
+
+		total_balance = format(total_balance,'.2f')
 		return self.render('superAdmin/balance-detail.html',cash_times=cash_times,cash_success=cash_success,\
-			total_balance=total_balance,person_num = person_num,cash_on=cash_on,context=dict(page="detail"))
+			total_balance=total_balance,cash_on=cash_on,context=dict(page="detail"))
 
 
 	@tornado.web.authenticated
@@ -849,19 +852,46 @@ class Balance(SuperBaseHandler):
 		count=0
 		action = self.args['action']
 		page = self.args['page']-1
-		history_list=[]
+		history_list = []
+		total = 0
+		times = 0
+		persons = 0
+		pay = 0
+		left = 0
+		balance_history = self.session.query(models.BalanceHistory).order_by(desc(models.BalanceHistory.create_time))
 		if action == 'all_history':
-			history_list = self.session.query(models.BalanceHistory).offset(page*page_size).limit(page_size).all()
-			count = self.session.query(models.BalanceHistory).count()
+			history_list =balance_history .offset(page*page_size).limit(page_size).all()
+			count = balance_history.count()
 		elif action == 'recharge':
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0).offset(page*page_size).limit(page_size).all()
-			count = self.session.query(models.BalanceHistory).filter_by(balance_type =0).count()
+			history_list = balance_history.filter_by(balance_type = 0).offset(page*page_size).limit(page_size).all()
+			count = balance_history.filter_by(balance_type =0).count()
+			apply_total = balance_history.filter_by(balance_type =0).all()
+			for item in apply_total:
+				total = total + item.balance_value
+			total = format(total,'.2f')	
+			balance_pay_list = balance_history.filter_by(balance_type = 1).all()
+			for item in balance_pay_list:
+				pay = pay + item.balance_value
+			pay = format(pay,'.2f')
+			left = float(total)-float(pay)
+			left = format(left,'.2f')
 		elif action == 'online':
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 3).offset(page*page_size).limit(page_size).all()
-			count = self.session.query(models.BalanceHistory).filter_by(balance_type =3).count()
+			history_list = balance_history.filter_by(balance_type = 3).offset(page*page_size).limit(page_size).all()
+			count = balance_history.filter_by(balance_type =3).count()
+			apply_total = balance_history.filter_by(balance_type = 3).all()
+			for item in apply_total:
+				total=total+item.balance_value
+			total = format(total,'.2f')	
+			times = len(apply_total)
+			persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type = 3).count()
 		elif action == 'cash_history':
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type =2).offset(page*page_size).limit(page_size).all()
-			count = self.session.query(models.BalanceHistory).filter_by(balance_type =2).count()
+			history_list = balance_history.filter_by(balance_type =2).offset(page*page_size).limit(page_size).all()
+			count = balance_history.filter_by(balance_type =2).count()
+			apply_total = balance_history.filter_by(balance_type =2).all()
+			for item in apply_total:
+				total=total+item.balance_value
+			total = format(total,'.2f')	
+			times = len(apply_total)
 		else:
 			return self.send_error(404)
 		if not history_list:
@@ -869,9 +899,13 @@ class Balance(SuperBaseHandler):
 		for temp in history_list:
 				shop_name = self.session.query(models.Shop).filter_by(id=temp.shop_id).first().shop_name
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
-				history.append({'shop_name':shop_name,'time':create_time,'balance':temp.shop_totalPrice,'balance_value':temp.balance_value,'type':temp.balance_type})
+				shop_totalBalance = temp.shop_totalPrice
+				if shop_totalBalance == None:
+					shop_totalBalance=0
+				shop_totalBalance = format(shop_totalBalance,'.2f')
+				history.append({'shop_name':shop_name,'time':create_time,'balance':shop_totalBalance,'balance_value':temp.balance_value,'type':temp.balance_type})
 		page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-		return self.send_success(history = history,page_sum=page_sum)
+		return self.send_success(history = history,page_sum=page_sum,total = total,times = times,persons=persons,pay=pay,left = left)
 
 		# return self.send_success()
 
@@ -888,32 +922,55 @@ class ApplyCash(SuperBaseHandler):
 		action = self.args['action']
 		nomore = False
 		page = 0
+		all_cash = 0
+		person_cash = 0
+		company_cash = 0
+		all_num = 0
+		person_num = 0
+		company_num = 0
+		cash_history = []
+		try:
+			cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0)
+		except:
+			print('no cash_history')
+		if cash_history !=[]:
+			all_num = cash_history.count()
+			person_num = cash_history.filter(or_(models.ApplyCashHistory.shop_auth == 1,models.ApplyCashHistory.shop_auth == 4)).count()
+			company_num = cash_history.filter(or_(models.ApplyCashHistory.shop_auth == 2,models.ApplyCashHistory.shop_auth == 3)).count()
+			for item in cash_history:
+				all_cash = all_cash +item.value
+				shop_auth = item.shop_auth
+				if  shop_auth == 1 or shop_auth == 4 :
+					person_cash = person_cash + item.value
+				elif shop_auth == 2 or shop_auth == 3 :
+					company_cash = company_cash + item.value
+			all_cash=format(all_cash,'.2f')
+			person_cash=format(person_cash,'.2f')
+			company_cash=format(company_cash,'.2f')
+
 		if 'page' in self.args:
 			page = int(self.args['page'])
 		if action == 'all_apply' or action == '[]':
-			apply_list = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).offset(page*page_size).limit(10).all()
-			count = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).count()
+			apply_list =cash_history.offset(page*page_size).limit(page_size).all()
+			count = cash_history.count()
 		elif action == 'company':
-			apply_list = self,session.query(models.ApplyCashHistory).filter_by(shop_auth = 2,\
-				has_done = 0).offset(page*page_size).limit(10).all()
-			count = self.session.query(models.ApplyCashHistory).filter_by(shop_auth = 2,\
-				has_done = 0).count()
+			apply_list = cash_history.filter(or_(models.ApplyCashHistory.shop_auth == 2,models.ApplyCashHistory.shop_auth == 3)).offset(page*page_size).limit(page_size).all()
+			count = cash_history.filter(or_(models.ApplyCashHistory.shop_auth == 1,models.ApplyCashHistory.shop_auth == 4)).count()
 		elif action == 'person':
-			apply_list = self.session.query(models.ApplyCashHistory).filter_by(shop_auth = 1,\
-				has_done = 0).offset(page*page_size).limit(10).all()
-			count = self.session.query(models.ApplyCashHistory).filter_by(shop_auth = 1,\
-				has_done = 0).count()
+			apply_list = cash_history.filter(or_(models.ApplyCashHistory.shop_auth == 1,models.ApplyCashHistory.shop_auth == 4)).offset(page*page_size).limit(page_size).all()
+			count = cash_history.filter(or_(models.ApplyCashHistory.shop_auth == 1,models.ApplyCashHistory.shop_auth == 4)).count()
 		if apply_list:
 			for temp in apply_list:
 				shop_name = self.session.query(models.Shop).filter_by(id=temp.shop_id).first().shop_name
 				history.append({"id":temp.id,"shop_code":temp.shop_code,"shop_name":shop_name,"shop_auth":temp.shop_auth,\
 					"shop_balance":temp.shop_balance,"create_time":temp.create_time.strftime('%Y-%m-%d %H:%M:%S'),"value":temp.value,\
 					"alipay_account":temp.alipay_account,"applicant_name":temp.applicant_name})
-		page_sum = count/10
+		page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 		if action!='[]':
-			return self.send_success(history=history)
+			return self.send_success(history=history,page_sum=page_sum)
 		else:
-			return self.render('superAdmin/balance-apply.html',history=history,context=dict(page='cash'))	
+			return self.render('superAdmin/balance-apply.html',history=history,page_sum=page_sum,all_cash=all_cash,person_cash=person_cash,\
+				company_cash=company_cash,all_num=all_num,person_num=person_num,company_num=company_num,context=dict(page='cash'))	
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id?:int','decline_reason?:str')
@@ -940,10 +997,12 @@ class ApplyCash(SuperBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(id = apply_cash.shop_id).first()
 			if not shop:
 				return self.send_fail('shop not found')
+			shop.shop_balance = shop.shop_balance-apply_cash.value
+			
 
 			#往 blancehistory中插入一条数据，以免到时候 查看所有记录的时候到两张表中去取 效率低下
 			balance_history = models.BalanceHistory(balance_record = '提现：店铺管理员',balance_type =\
-				2,balance_value = apply_cash.value ,customer_id = apply_cash.shop_id,name = \
+				2,balance_value = apply_cash.value ,customer_id = apply_cash.shop.admin.accountinfo.id,name = \
 				apply_cash.applicant_name,shop_id = apply_cash.shop_id,shop_totalPrice = shop.shop_balance)
 			self.session.add(balance_history)
 			self.session.commit()

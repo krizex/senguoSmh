@@ -295,6 +295,7 @@ $(function() {
                     previewImage(file,function(imgsrc){
                         $("#person-img").attr("src",imgsrc);
                         $("#person-img").closest(".wrap-img").removeClass("hide");
+                        $("#person-img").next(".img-cover").removeClass("hidden");
                     })
                 }();
             },
@@ -302,6 +303,7 @@ $(function() {
             },
             'FileUploaded': function (up, file, info) {
                 $("#person-img").attr("url","http://shopimg.qiniudn.com/"+file.id);
+                $("#person-img").next(".img-cover").addClass("hidden");
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
@@ -349,6 +351,7 @@ $(function() {
                     previewImage(file,function(imgsrc){
                         $("#license-img").attr("src",imgsrc);
                         $("#license-img").closest(".wrap-img").removeClass("hide");
+                        $("#license-img").next(".img-cover").removeClass("hidden");
                     })
                 }();
             },
@@ -356,6 +359,7 @@ $(function() {
             },
             'FileUploaded': function (up, file, info) {
                 $("#license-img").attr("url","http://shopimg.qiniudn.com/"+file.id);
+                $("#license-img").next(".img-cover").addClass("hidden");
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
@@ -403,6 +407,7 @@ $(function() {
                     previewImage(file,function(imgsrc){
                         $("#font-img").attr("src",imgsrc);
                         $("#font-img").closest(".wrap-img").removeClass("hide");
+                        $("#font-img").next(".img-cover").removeClass("hidden");
                     })
                 }();
             },
@@ -410,6 +415,7 @@ $(function() {
             },
             'FileUploaded': function (up, file, info) {
                 $("#font-img").attr("url","http://shopimg.qiniudn.com/"+file.id);
+                $("#font-img").next(".img-cover").addClass("hidden");
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
@@ -457,6 +463,7 @@ $(function() {
                     previewImage(file,function(imgsrc){
                         $("#rever-img").attr("src",imgsrc);
                         $("#rever-img").closest(".wrap-img").removeClass("hide");
+                        $("#rever-img").next(".img-cover").removeClass("hidden");
                     })
                 }();
             },
@@ -464,6 +471,7 @@ $(function() {
             },
             'FileUploaded': function (up, file, info) {
                 $("#rever-img").attr("url","http://shopimg.qiniudn.com/"+file.id);
+                $("#rever-img").next(".img-cover").addClass("hidden");
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {

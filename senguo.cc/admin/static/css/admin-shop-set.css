@@ -56,7 +56,7 @@ input{height:30px;width:400px;-ms-line-height:30px;color:#666;}
 .hide{display: none!important;}
 .shop-link{color: #66b5f2;font-size:14px;display: inline-block;height: 24px;line-height: 24px;}
 .mt15{margin-top: 15px;}
-.red-txt{color: #d32e3e!important;}
+.red-txt{color: #ff6666!important;}
 .grey-txt{color:#999!important;}
 .wrap-top{padding-left: 40px;padding-bottom: 10px;}
 .cert-title{margin-top: 20px;}
@@ -85,6 +85,7 @@ input{height:30px;width:400px;-ms-line-height:30px;color:#666;}
 .cert-img{position: absolute;right: 8px;top: 10px;width:25px;}
 .change-notice{padding-left:40px;}
 .bind-btn{color: #0081c2;font-size: 14px;}
+.wrap-img{position: relative;}
 /*支付方式*/
 .edit-box{background-color: #f5f5f5;padding: 15px 20px;margin-top: 30px;}
 .edit-box .mode a{width:120px;height:32px; border-radius:30px;line-height:30px;position:relative;font-size:14px;}
@@ -97,9 +98,15 @@ input{height:30px;width:400px;-ms-line-height:30px;color:#666;}
 .green-txt{color: #53b540;}
 .wrap-pay-tpye{border: 1px solid #f2f2f2;border-top:none;padding: 20px;}
 .f14{font-size: 14px;}
-
-
-
+.f12{font-size: 12px;}
+/*loading*/
+.img-cover{position: absolute;z-index: 90;top:0;left:0;background-color: #ddd;width:268px;height:150px;}
+.img-cover .loader {display: block;position: absolute;width: 30px;height: 30px;vertical-align: middle;left: 50%;top: 50%;-webkit-transform:translate(-50%,-50%);}
+.img-cover .loader-quart {border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.4);}
+.loader-quart:after {content: '';position: absolute;top: -4px;right: -4px;bottom: -4px;left: -4px;border-radius: 50%;border: 4px solid transparent; border-top-color: #fff;-webkit-animation: spin .8s linear infinite;animation: spin .8s linear infinite;}
+@-webkit-keyframes spin {0% {-webkit-transform: rotate(0deg);tranform: rotate(0deg);}100% {-webkit-transform: rotate(360deg);tranform: rotate(360deg);}}
+@keyframes spin {0% { -webkit-transform: rotate(0deg);tranform: rotate(0deg);}100% {-webkit-transform: rotate(360deg);tranform: rotate(360deg);}}
+.mt20{margin-top:20px;}
 
 
 

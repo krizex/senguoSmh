@@ -166,7 +166,7 @@ $(document).ready(function(){
                         $this.addClass('active');
                     }
                 }
-                else if(noticeBox('抱歉，已超过了该送货时间段的下单时间！请选择下一个时间段！',$this)){}
+                else if(noticeBox('抱歉，已超过了该送货时间段的下单时间，请选择下一个时间段！',$this)){}
            });
         });}
         $('.send_period .item').on('click',function(){
@@ -316,7 +316,7 @@ $(document).ready(function(){
             }
             else {
                 $this.parents('.item').removeClass('active').siblings('.item').addClass('active');
-                return noticeBox('不小心超过了"立即送"的送货时间呢，请选择"按时达"时间段！',$this)
+                return noticeBox('不小心超过了“立即送”的送货时间呢，请选择“按时达”时间段！',$this)
             }
         });
     }

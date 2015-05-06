@@ -87,7 +87,7 @@ html,body{width: 100%}
 .top-title .tit .up{background-position:0 0px;}
 .top-title .tit .down{background-position:0 -12px;}
 
-.type-choose{height:auto;overflow:hidden;padding:0 20px 10px;width:101%;background:#f0f4f0;}
+.type-choose{height:auto;overflow:hidden;padding:10px 20px 10px;margin-top:-10px;width:101%;background:#f0f4f0;}
 .type-choose li{height:40px;line-height:40px;width:32%;margin-right:1%;border-radius:4px;margin-top:10px;}
 
 .detail-box{}
