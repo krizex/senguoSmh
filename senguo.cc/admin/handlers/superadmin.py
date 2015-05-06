@@ -310,6 +310,12 @@ class ShopManage(SuperBaseHandler):
 			self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id))  # 把管理者默认为新店铺的二级配送员
 			self.session.commit()
 
+			#把管理员同时设为顾客的身份
+			customer_first = self.session.query(models.Customer).get(shop.admin_id)
+			if customer_first is None:
+				self.session.add(models.Customer(id = shop.admin_id,balance = 0,credits = 0,shop_new = 0))
+				self.session.commit()
+
 			account_info = self.session.query(models.Accountinfo).get(shop_temp.admin_id)
 
 			###################################################################################
