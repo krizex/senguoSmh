@@ -288,7 +288,7 @@ class CustomerProfile(CustomerBaseHandler):
 	   accountinfo =self.session.query(models.Accountinfo).filter_by(id = self.current_user.accountinfo.id).first()
 	   if accountinfo.wx_unionid:
 	   	third.append({'weixin':True})
-	   self.render("customer/profile.html", context=dict(birthday=birthday,third=third))
+	   self.render("customer/profile.html", context=dict(birthday=birthday,third=third,shop_info=shop_info))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data","old_password?:str")
