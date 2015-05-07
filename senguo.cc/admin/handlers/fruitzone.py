@@ -683,7 +683,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 			url = self.test_create_tmporder_url(1)
 		except Exception as e:
 			return self.send_fail('ca')
-		return self.redirect(url)
+		return self.send_success(url = url)
 	
 	@FruitzoneBaseHandler.check_arguments("charge_type:int", "pay_type")
 	def handle_confirm_payment(self):

@@ -26,7 +26,8 @@
     window.dataObj.province_count={% raw json.dumps(context['province_count'])%}
 </script>
 <div class="filter_search bg-white text-grey9 font14">
-    <a href="javascript:;" class="city_choose pull-left dismiss"><span class="city_name pull-left text-center">城市</span><em class="arrow pull-left"></em></a>
+    <input type="hidden" id="city_id" value="{{city_id}}"/>
+    <a href="javascript:;" class="city_choose pull-left dismiss"><span class="city_name pull-left text-center">{{city or '城市'}}</span><em class="arrow pull-left"></em></a>
     <div class="search-box pull-right dismiss" id="search-box">
         <input type="text" placeholder="请输入店铺名" class="search-input pull-left" id="searchKey"/>
         <input type="submit" value="搜索" class="btn pull-right text-center" id="searchSubmit"/>
@@ -85,6 +86,8 @@
 <div class="no_more text-center text-grey9 font12  text-green mt10 mb10" style="display:none">~没有更多了呢 ( > < )~</div>
 {% end %}
 {% block bottom %}
+<script src="http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js" type="text/ecmascript"></script>
+<script src="http://ip.taobao.com/service/getIpInfo.php?ip=115.175.46.209"></script>
 <script src="{{static_url('js/area.js')}}"></script>
 <script src="{{static_url('js/fruitzone-list.js')}}"></script>
 {% end %}
