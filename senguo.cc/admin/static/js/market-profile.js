@@ -4,7 +4,7 @@ $(document).ready(function(){
         if($(this).text() =='None'||$(this).text() =='')
         {$(this).text('点击设置').css({'color':'#FF3C3C'});}
     });
-
+alert("2222");
     $('a.tiephone').each(function(){
         if($(this).text() =='None'||$(this).text() =='')
         {$(this).text('点击绑定手机号').css({'color':'#FF3C3C'});}
