@@ -1,4 +1,6 @@
 $(document).ready(function(){
+    var shop_code=$('#shop_imgurl').attr('data-code');
+    SetCookie('market_shop_code',shop_code);
     var $list_total_price=$('#list_total_price');
     var $receiveAdd=$('#receiveAdd');
     var $receiveEdit=$('#receiveEdit');
