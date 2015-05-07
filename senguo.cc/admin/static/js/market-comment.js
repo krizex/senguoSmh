@@ -17,7 +17,7 @@ function scrollLoading(){
             commentList(current_page);
         }
         else if(nomore==true){
-              $('.loading').html("~没有更多了 ( > < )~").show();
+              $('.loading').html("~没有更多了呢 ( > < )~").show();
         }
     });
 }
@@ -31,7 +31,7 @@ function commentList(page){
                 var comment_list=res.date_list;
                 nomore=res.nomore;
                 if(comment_list&&comment_list.length==0){
-                     $('.loading').html("~没有更多了 ( > < )~").show();
+                     $('.loading').html("~没有更多了呢 ( > < )~").show();
                      return;          
                 }  
                 for(var i in comment_list){

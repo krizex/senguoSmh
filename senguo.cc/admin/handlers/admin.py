@@ -495,7 +495,7 @@ class Order(AdminBaseHandler):
 			session = self.session
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
-			orders.sort(key = lambda order:order.send_time,reverse = True)
+			orders.sort(key = lambda order:order.send_time,reverse = False)
 
 		elif order_status == 5:#all
 			orders = [x for x in self.current_shop.orders if x.type == order_type ]
@@ -773,7 +773,8 @@ class Order(AdminBaseHandler):
 				del_reason = data["del_reason"]
 				order.update(session=session, status=0,del_reason = del_reason)
 				order.get_num(session,order.id)
-
+				customer_id = order.customer_id
+				shop_id = order.shop_id
 				if order.pay_type == 2:
 				#该订单之前 对应的记录作废
 					old_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id = customer_id,\
@@ -1290,7 +1291,8 @@ class Config(AdminBaseHandler):
 				return self.render("admin/shop-pay-set.html",context=dict(subpage='shop_set',shopSubPage='pay_set'))
 			else:
 				return self.redirect(self.reverse_url('adminShopConfig'))
-
+		elif action == "phone":
+			return self.render('admin/shop-phone-set.html',context=dict(subpage='shop_set',shopSubPage='phone_set'))
 		else:
 			return self.send_error(404)
 
@@ -1356,18 +1358,20 @@ class Config(AdminBaseHandler):
 			self.current_shop.config.update(session=self.session,cash_on_active=active)
 		elif action == "balance_on":
 			active = self.current_shop.config.balance_on_active
+			balance_on_active =self.current_shop.config.balance_on_active
 			shop_balance = self.current_shop.shop_balance
 			available_balance = self.current_shop.available_balance
-			if shop_balance == 0 and shop_blockage == 0:	
+			if shop_balance == 0 and available_balance==0:	
 				if active == 1:
 					active = 0
 				else:
 					active = 1
 				self.current_shop.config.update(session=self.session,balance_on_active=active)
-			elif shop_balance !=0:
+			elif shop_balance !=0 and balance_on_active == 1:
 				return self.send_fail('您的店铺余额不为0，不可关闭余额支付')
 			elif available_balance != shop_balance:
 				return self.send_fail('您尚有余额支付的订单未完成，不可关闭余额支付')
+
 		elif action == "online_on":
 			active = self.current_shop.config.online_on_active
 			if active == 1:
@@ -1375,6 +1379,13 @@ class Config(AdminBaseHandler):
 			else:
 				active = 1
 			self.current_shop.config.update(session=self.session,online_on_active=active)
+		elif action =="text_message_on":
+			active = self.current_shop.config.text_message_active
+			if active == 1:
+				active = 0
+			else:
+				active = 1
+			self.current_shop.config.update(session=self.session,text_message_active=active)
 		else:
 			return self.send_error(404)
 		return self.send_success()
@@ -1515,7 +1526,7 @@ class ShopBalance(AdminBaseHandler):
 			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,balance_type = 0).\
 			order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(shop_id = shop_id,balance_type = 0).all()
-			q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(shop_id = shop_id,balance_type = 1).all()
+			q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(shop_id = shop_id,balance_type = 1,is_cancel = 0).all()
 			if q[0][0]:
 				total =q[0][0]
 			count = q[0][1]

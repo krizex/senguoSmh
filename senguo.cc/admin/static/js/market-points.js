@@ -23,17 +23,13 @@ var scrollLoading=function(){
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)  
         if(!maxnum) maxnum=Int($('#page_count').val());
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
-        $('.no_more').hide();
         if(window.dataObj.finished&&(main.height()-range) <= totalheight  && window.dataObj.page < maxnum) { 
-            $('.no_more').hide();
-            $('.loading').show();
             window.dataObj.finished=false;
             window.dataObj.page++; 
             getList(window.dataObj.page);
         }       
         else if(window.dataObj.page ==maxnum){
-        	$('.loading').hide();
-              $('.no_more').show();
+        	$('.loading').html("~没有更多了呢 ( > < )~").show();
         } 
     }); 
 }   

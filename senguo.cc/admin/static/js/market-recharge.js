@@ -37,6 +37,7 @@ $(document).ready(function(){
         }
     }else if(m_type==1){
         if(isMon(money)){
+            SetCookie("money",money,30);
             $.ajax({
                 url:"/fruitzone/systemPurchase/alipaytest",
                 data:{price:money,_xsrf:window.dataObj._xsrf},
