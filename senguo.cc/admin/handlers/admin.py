@@ -530,7 +530,7 @@ class Order(AdminBaseHandler):
 		page_sum = count /10
 		session = self.session
 		page_area = page * page_size
-		orders = sorted(orders , key = lambda x:x.send_time,reverse=True)[page_area:page_area+10]
+		orders = orders[page_area:page_area+10]
 		# print("after sort",orders)
 		# for order in orders:
 		#     print(order.w_send_time)
@@ -773,11 +773,12 @@ class Order(AdminBaseHandler):
 				del_reason = data["del_reason"]
 				order.update(session=session, status=0,del_reason = del_reason)
 				order.get_num(session,order.id)
-
+				customer_id = order.customer_id
+				shop_id = order.shop_id
 				if order.pay_type == 2:
 				#该订单之前 对应的记录作废
-					old_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id = customer_id,\
-						shop_id = shop_id).filter(models.BalanceHistory.balance_record.like(order.num)).first()
+					balance_record = ("%{0}%").format(order.num)
+					old_balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_record.like(balance_record)).first()
 					if old_balance_history is None:
 						print('old histtory not found')
 					else:
@@ -1290,7 +1291,8 @@ class Config(AdminBaseHandler):
 				return self.render("admin/shop-pay-set.html",context=dict(subpage='shop_set',shopSubPage='pay_set'))
 			else:
 				return self.redirect(self.reverse_url('adminShopConfig'))
-
+		elif action == "phone":
+			return self.render('admin/shop-phone-set.html',context=dict(subpage='shop_set',shopSubPage='phone_set'))
 		else:
 			return self.send_error(404)
 
@@ -1358,7 +1360,8 @@ class Config(AdminBaseHandler):
 			active = self.current_shop.config.balance_on_active
 			balance_on_active =self.current_shop.config.balance_on_active
 			shop_balance = self.current_shop.shop_balance
-			if shop_balance == 0:	
+			available_balance = self.current_shop.available_balance
+			if shop_balance == 0 and available_balance==0:	
 				if active == 1:
 					active = 0
 				else:
@@ -1366,6 +1369,9 @@ class Config(AdminBaseHandler):
 				self.current_shop.config.update(session=self.session,balance_on_active=active)
 			elif shop_balance !=0 and balance_on_active == 1:
 				return self.send_fail('您的店铺余额不为0，不可关闭余额支付')
+			elif available_balance != shop_balance:
+				return self.send_fail('您尚有余额支付的订单未完成，不可关闭余额支付')
+
 		elif action == "online_on":
 			active = self.current_shop.config.online_on_active
 			if active == 1:
@@ -1373,6 +1379,13 @@ class Config(AdminBaseHandler):
 			else:
 				active = 1
 			self.current_shop.config.update(session=self.session,online_on_active=active)
+		elif action =="text_message_on":
+			active = self.current_shop.config.text_message_active
+			if active == 1:
+				active = 0
+			else:
+				active = 1
+			self.current_shop.config.update(session=self.session,text_message_active=active)
 		else:
 			return self.send_error(404)
 		return self.send_success()

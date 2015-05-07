@@ -1087,6 +1087,7 @@ class Cart(CustomerBaseHandler):
 		show_balance = False
 		balance_value = 0
 		storages = {}
+		shop_new = 0
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		except:
@@ -1105,19 +1106,19 @@ class Cart(CustomerBaseHandler):
 		shop_name = shop.shop_name
 		shop_id = shop.id
 		shop_logo = shop.shop_trademark_url
-		cash_on = shop.config.cash_on_active
-		balance_on = shop.config.balance_on_active
 		try:
-			custormer_balance =self.session.query(models.CustomerShopFollow).\
+			customer_follow =self.session.query(models.CustomerShopFollow).\
 			filter_by(customer_id = customer_id,shop_id =shop_id ).first()
 		except:
 			print('custormer_balance error')
-		if custormer_balance:
-			balance_value = format(custormer_balance.shop_balance,'.2f')
-		
+		if customer_follow:
+			if customer_follow.shop_balance:
+				balance_value = format(customer_follow.shop_balance,'.2f')
+			shop_new = customer_follow.shop_new
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		print(self.get_cookie('market_shop_id'),'没有报错啊')
 		self._shop_code = shop.shop_code
+
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits) or eval(cart.mgoods))): #购物车为空
@@ -1144,7 +1145,7 @@ class Cart(CustomerBaseHandler):
 		return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name  = shop_name ,shop_code=shop_code,shop_logo = shop_logo,balance_value=balance_value,\
-						   cash_on=cash_on,balance_on=balance_on,context=dict(subpage='cart'))
+						  shop_new=shop_new,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
@@ -1594,12 +1595,15 @@ class Order(CustomerBaseHandler):
 
 				#将 该订单 对应的 余额记录取出来 ，置为 不可用
 
-				old_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id = customer_id,\
-					shop_id = shop_id).filter(models.BalanceHistory.balance_record.like(order.num)).first()
+				balance_record = ("%{0}%").format(order.num)
+				print(balance_record)
+
+				old_balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_record.like(balance_record)).first()
 				if old_balance_history is None:
 					print('old histtory not found')
 				else:
 					old_balance_history.is_cancel = 1
+					print(old_balance_history.is_cancel,'is cancel???')
 					self.session.commit()
 				#同时生成一条新的记录
 				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
@@ -2031,7 +2035,7 @@ class payTest(CustomerBaseHandler):
 		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
 			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)
 
-	@CustomerBaseHandler.check_arguments('totalPrice?:float','action')
+	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?str')
 	def post(self):
 
 		# 微信 余额 支付
@@ -2086,6 +2090,48 @@ class payTest(CustomerBaseHandler):
 			return self.send_success()
 	#	else:
 	#		return self.send_fail('其它支付方式尚未开发')
+
+class AlipayNotify(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		shop_id = self.get_cookie('market_shop_id')
+		customer_id = self.current_user.id
+	#	code = self.args['code']
+	#	path_url = self.request.full_url()
+		totalPrice =float( self.get_cookie('money'))
+		#########################################################
+		# 用户余额增加 
+		# 同时店铺余额相应增加 
+		# 应放在 支付成功的回调里
+		#########################################################
+
+		# 支付成功后，用户对应店铺 余额 增1加
+		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+			shop_id = shop_id).first()
+		print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
+		if not shop_follow:
+			return self.send_fail('shop_follow not found')
+		shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
+		self.session.commit()
+
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if not shop:
+			return self.send_fail('shop not found')
+		shop.shop_balance += totalPrice
+		self.session.commit()
+		print(shop.shop_balance ,'充值后 商店 总额')
+
+		# 支付成功后  生成一条余额支付记录
+		name = self.current_user.accountinfo.nickname
+		balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
+			balance_value = totalPrice,balance_record = '充值：用户 '+ name  , name = name , balance_type = 0,\
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice)
+		self.session.add(balance_history)
+		print(balance_history , '钱没有白充吧？！')
+		self.session.commit()
+		return self.send_success(text = '充值成功')
+		# return self.render('fruitzone/alipayTest.html')
+
 		
 
 
