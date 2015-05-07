@@ -166,6 +166,7 @@
                     <span class="pull-right">{{handler.timedelta(comment[1])}}</span>
                 </p>
                 <p class="text-grey9">{{comment[0] or '无'}}</p>
+                {% if comment[3] %}<p class="text-green">商家回复：{{comment[3]}}</p>{% end %}
             </div>
         </li>
         {% end %}

@@ -869,35 +869,33 @@ class Balance(SuperBaseHandler):
 			history_list =balance_history .offset(page*page_size).limit(page_size).all()
 			count = balance_history.count()
 		elif action == 'recharge':
-			history_list = balance_history.filter_by(balance_type = 0).offset(page*page_size).limit(page_size).all()
-			count = balance_history.filter_by(balance_type =0).count()
-			apply_total = balance_history.filter_by(balance_type =0).all()
-			for item in apply_total:
-				total = total + item.balance_value
+			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0).\
+			order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type = 0).all()
+			q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(balance_type = 1).all()
+			total =q[0][0]
+			count = q[0][1]
+			pay = q1[0][0]
 			total = format(total,'.2f')	
-			balance_pay_list = balance_history.filter_by(balance_type = 1).all()
-			for item in balance_pay_list:
-				pay = pay + item.balance_value
 			pay = format(pay,'.2f')
 			left = float(total)-float(pay)
 			left = format(left,'.2f')
 		elif action == 'online':
-			history_list = balance_history.filter_by(balance_type = 3).offset(page*page_size).limit(page_size).all()
-			count = balance_history.filter_by(balance_type =3).count()
-			apply_total = balance_history.filter_by(balance_type = 3).all()
-			for item in apply_total:
-				total=total+item.balance_value
-			total = format(total,'.2f')	
-			times = len(apply_total)
+			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 3)\
+			.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type =3).all()
 			persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type = 3).count()
+			total =q[0][0]
+			count = q[0][1]
+			times = count
 		elif action == 'cash_history':
-			history_list = balance_history.filter_by(balance_type =2).offset(page*page_size).limit(page_size).all()
-			count = balance_history.filter_by(balance_type =2).count()
-			apply_total = balance_history.filter_by(balance_type =2).all()
-			for item in apply_total:
-				total=total+item.balance_value
+			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 2)\
+			.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type = 2).all()
+			count =q[0][1]
+			total=q[0][0]
 			total = format(total,'.2f')	
-			times = len(apply_total)
+			times = count
 		else:
 			return self.send_error(404)
 		if not history_list:
@@ -936,35 +934,41 @@ class ApplyCash(SuperBaseHandler):
 		company_num = 0
 		cash_history = []
 		try:
-			cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0)
+			cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).all()
 		except:
 			print('no cash_history')
-		if cash_history !=[]:
-			all_num = cash_history.count()
-			person_num = cash_history.filter(or_(models.ApplyCashHistory.shop_auth == 1,models.ApplyCashHistory.shop_auth == 4)).count()
-			company_num = cash_history.filter(or_(models.ApplyCashHistory.shop_auth == 2,models.ApplyCashHistory.shop_auth == 3)).count()
-			for item in cash_history:
-				all_cash = all_cash +item.value
-				shop_auth = item.shop_auth
-				if  shop_auth == 1 or shop_auth == 4 :
-					person_cash = person_cash + item.value
-				elif shop_auth == 2 or shop_auth == 3 :
-					company_cash = company_cash + item.value
-			all_cash=format(all_cash,'.2f')
-			person_cash=format(person_cash,'.2f')
-			company_cash=format(company_cash,'.2f')
+		if cash_history!=[]:
+			alls = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0).all()
+			persons = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0)\
+			.filter(models.ApplyCashHistory.shop_auth.in_([1,4])).all()
+			companys = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0)\
+			.filter(models.ApplyCashHistory.shop_auth.in_([2,3])).all()
+			if alls[0][0]:
+				all_num = alls[0][1]
+				all_cash = alls[0][0]
+			if persons[0][0]:
+				person_num = persons[0][1]
+				person_cash = persons[0][0]
+			if companys[0][0]:
+				company_num = companys[0][1]
+				company_cash = companys[0][0]
+			
+		all_cash=format(all_cash,'.2f')
+		person_cash=format(person_cash,'.2f')
+		company_cash=format(company_cash,'.2f')
 
+		cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0)
 		if 'page' in self.args:
 			page = int(self.args['page'])
 		if action == 'all_apply' or action == '[]':
 			apply_list =cash_history.offset(page*page_size).limit(page_size).all()
 			count = cash_history.count()
 		elif action == 'company':
-			apply_list = cash_history.filter(or_(models.ApplyCashHistory.shop_auth == 2,models.ApplyCashHistory.shop_auth == 3)).offset(page*page_size).limit(page_size).all()
-			count = cash_history.filter(or_(models.ApplyCashHistory.shop_auth == 1,models.ApplyCashHistory.shop_auth == 4)).count()
+			apply_list = cash_history.filter(models.ApplyCashHistory.shop_auth.in_([2,3])).offset(page*page_size).limit(page_size).all()
+			count = cash_history.filter(models.ApplyCashHistory.shop_auth.in_([2,3])).count()
 		elif action == 'person':
-			apply_list = cash_history.filter(or_(models.ApplyCashHistory.shop_auth == 1,models.ApplyCashHistory.shop_auth == 4)).offset(page*page_size).limit(page_size).all()
-			count = cash_history.filter(or_(models.ApplyCashHistory.shop_auth == 1,models.ApplyCashHistory.shop_auth == 4)).count()
+			apply_list = cash_history.filter(models.ApplyCashHistory.shop_auth.in_([1,4])).offset(page*page_size).limit(page_size).all()
+			count = cash_history.filter(models.ApplyCashHistory.shop_auth.in_([1,4])).count()
 		if apply_list:
 			for temp in apply_list:
 				shop_name = self.session.query(models.Shop).filter_by(id=temp.shop_id).first().shop_name

@@ -154,8 +154,9 @@ function history(action,page){
                	$('.no-list').removeClass('hidden');
                }
                else{
-		$('.no-list').addClass('hidden');
+		      $('.no-list').addClass('hidden');
                }
+              $('.page-now').text(num);
                for(var i in history){
                	var item=' <tr>'
 +               			'<td class="pl20 w50">{{title}}：<a href="{{user}}">{{name}}</a>{{record}}</td>'
@@ -212,8 +213,9 @@ function cash(){
     var alipay_account=$('.alipay-account').val().trim();
     var account_name=$('.account-name').val().trim();
     var code=$('#per-code').val().trim();
-     var phone = $("#perCode").text();
+    var phone = $("#perCode").text();
     var regFloat=/^[0-9]+([.]{1}[0-9]{1,2})?$/;
+    var availible_value=parseFloat($('.available-balance').text());
     if(!apply_value){
     	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
     	return alert('请填写提现金额');
@@ -233,6 +235,10 @@ function cash(){
     if(!code){
     	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
     	return alert('请填写短信验证码');
+    }
+    if(apply_value>availible_value){
+      $('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
+      return alert('您没有这么多可提现金额');
     }
     var args={
         action:action,

@@ -5,8 +5,8 @@
 {% if date_list %}
     <ul class="commnent-list mt42 m-b10 set-w100-fle" id="commnent-list">
             {% for list in date_list %}
-                <li class="comment-item bg-white set-w100-fle">'
-                    <div class="img-box pull-left">'
+                <li class="comment-item bg-white set-w100-fle">
+                    <div class="img-box pull-left">
                         <img src="{{list['img']}}" class="user-img">
                     </div>
                     <div class="info sty1 pull-left pr10">
@@ -22,7 +22,7 @@
                 </li>
             {% end %}
     </ul>
-    <div class="btn text-green3 bg-white set-w100-fle loading" style="display:none;">更多评价</div>
+    <div class="btn text-grey9 set-w100-fle loading" style="display:none;">更多评价</div>
 {% else %}
 <h3 class="text-center mt42 pt36">暂无评价！</h3>
 {% end %}
