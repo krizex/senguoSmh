@@ -288,7 +288,7 @@ class CustomerProfile(CustomerBaseHandler):
 	   accountinfo =self.session.query(models.Accountinfo).filter_by(id = self.current_user.accountinfo.id).first()
 	   if accountinfo.wx_unionid:
 	   	third.append({'weixin':True})
-	   self.render("customer/profile.html", context=dict(birthday=birthday,third=third))
+	   self.render("customer/profile.html", context=dict(birthday=birthday,third=third,shop_info=shop_info))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data","old_password?:str")
@@ -1101,6 +1101,7 @@ class Cart(CustomerBaseHandler):
 		if shop.shop_auth in [1,2,3,4]:
 			show_balance = True
 
+		shop_code = shop.shop_code
 		shop_name = shop.shop_name
 		shop_id = shop.id
 		shop_logo = shop.shop_trademark_url
@@ -1142,7 +1143,7 @@ class Cart(CustomerBaseHandler):
 			print("[购物篮]读取按时达时段，Shop ID：",period.config_id,"，时间段：",period.start_time,"~",period.end_time)
 		return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
-						   shop_name  = shop_name ,shop_logo = shop_logo,balance_value=balance_value,\
+						   shop_name  = shop_name ,shop_code=shop_code,shop_logo = shop_logo,balance_value=balance_value,\
 						   cash_on=cash_on,balance_on=balance_on,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
@@ -1548,7 +1549,7 @@ class Order(CustomerBaseHandler):
 			session = self.session
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
-			orders.sort(key = lambda order:order.send_time)
+			orders.sort(key = lambda order:order.send_time,reverse = True)
 			total_count = len(orders)
 			# print(total_count)
 			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
