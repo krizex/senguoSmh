@@ -25,9 +25,12 @@ class Home(FruitzoneBaseHandler):
 	   return self.render("fruitzone/index.html",context=dict(shop_count = shop_count,subpage=""))
 
 class ShopList(FruitzoneBaseHandler):
+	def initialize(self):
+		self.remote_ip = self.request.headers.get('X-Forwarded_For',\
+			self.request.headers.get('X-Real-Ip',self.request.remote_ip))
 	def get(self):
 
-		remote_ip = self.request.remote_ip
+		remote_ip = self.remote_ip
 		print(remote_ip)
 		url = 'http://ip.taobao.com/service/getIpInfo.php?ip={0}'.format(remote_ip)
 		res =  requests.get(url)
