@@ -537,7 +537,7 @@ class Comment(CustomerBaseHandler):
 	def get(self):
 		shop_id = int(self.get_cookie("market_shop_id"))
 		page = self.args["page"]
-		comments = self.get_comments(shop_id, page, 10)
+		comments = self.get_comments(shop_id, page, 20)
 		date_list = []
 		nomore = False
 		for comment in comments:
@@ -557,6 +557,7 @@ class Market(CustomerBaseHandler):
 		w_follow = True
 		fruits=''
 		dry_fruits=''
+		page_size = 10
 		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		if not shop:
 			return self.send_error(404)
@@ -620,16 +621,16 @@ class Market(CustomerBaseHandler):
 			count_mgoods .append([menu.id,len(mgoods[menu.id])])
 			mgoods_len += len(mgoods[menu.id])
 
-		mgoods_page = [[int(x[1]/10) if x[1] % 10 == 0 else int(x[1]/10)+1,x[0]] for x in count_mgoods]
+		mgoods_page = [[int(x[1]/page_size) if x[1] % page_size == 0 else int(x[1]/page_size)+1,x[0]] for x in count_mgoods]
 		notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
 		total_count = len(fruits) + len(dry_fruits)  + mgoods_len
-		if total_count % 10 is 0 :
-			page_count = total_count /10
+		if total_count % page_size is 0 :
+			page_count = total_count /page_size
 		else:
-			page_count = int( total_count / 10) + 1
+			page_count = int( total_count / page_size) + 1
 		# print('page_count' , page_count)
-		fruit_page = int(len(fruits)/10) if len(fruits)% 10 == 0 else int(len(fruits)/10) +1
-		dry_page   = int(len(dry_fruits)/10) if len(dry_fruits)% 10 == 0 else int(len(dry_fruits)/10) +1
+		fruit_page = int(len(fruits)/page_size) if len(fruits)% page_size == 0 else int(len(fruits)/page_size) +1
+		dry_page   = int(len(dry_fruits)/page_size) if len(dry_fruits)% page_size == 0 else int(len(dry_fruits)/page_size) +1
 		# mgoods_page = int(count_mgoods/10) if count_mgoods % 10 == 0 else int(count_mgoods/10) + 1
 		self.set_cookie("cart_count", str(cart_count))
 		return self.render("customer/home.html",
@@ -691,7 +692,8 @@ class Market(CustomerBaseHandler):
 	def mgood_list(self):
 		page = self.args["page"]
 		menu_id = self.args["menu_id"]
-		offset = (page - 1) * 10
+		page_size = 10
+		offset = (page - 1) * page_size
 		shop_id = int(self.get_cookie("market_shop_id"))
 		shop  = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
@@ -731,9 +733,9 @@ class Market(CustomerBaseHandler):
 						'storage':mgood.storage,'favour':mgood.favour,'tag':mgood.tag,'img_url':mgood.img_url,\
 						'intro':mgood.intro,'charge_types':charge_types,'favour_today' : favour_today},menu.id])
 		count_mgoods = len(w_mgoods)
-		if offset + 10 <=count_mgoods:
-			mgood_list = w_mgoods[offset:offset+10]
-		elif offset < count_mgoods and offset + 10 > count_mgoods:
+		if offset + page_size <=count_mgoods:
+			mgood_list = w_mgoods[offset:offset+page_size]
+		elif offset < count_mgoods and offset + page_size > count_mgoods:
 			mgood_list = w_mgoods[offset:]
 		else:
 			self.send_fail("mgood_list page error")
@@ -744,7 +746,8 @@ class Market(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("page?:int")
 	def dry_list(self):
 		page = self.args["page"]
-		offset = (page - 1) * 10
+		page_size = 10
+		offset = (page - 1) * page_size
 		shop_id = int(self.get_cookie("market_shop_id"))
 		customer_id = self.current_user.id
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
@@ -756,11 +759,11 @@ class Market(CustomerBaseHandler):
 		session = self.session
 		w_dry_fruits = self.w_getdata(session,dry_fruits,customer_id)
 		count_dry = len(w_dry_fruits)
-		page = int(count_dry/10) if count_dry % 10 ==0 else int(count_dry/10) +1
+		page = int(count_dry/page_size) if count_dry % page_size ==0 else int(count_dry/page_size) +1
 		# print(page)
-		if offset + 10 <= count_dry:
-			dry_fruit_list = w_dry_fruits[offset:offset+10]
-		elif offset < count_dry and offset + 10 > count_dry:
+		if offset + page_size <= count_dry:
+			dry_fruit_list = w_dry_fruits[offset:offset+page_size]
+		elif offset < count_dry and offset + page_size > count_dry:
 			dry_fruit_list = w_dry_fruits[offset:]
 		else:
 			self.send_fail("dry_fruit_list page error")
@@ -770,7 +773,8 @@ class Market(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("page?:int")
 	def fruit_list(self):
 		page = self.args["page"]
-		offset = (page-1) * 10
+		page_size = 10
+		offset = (page-1) * page_size
 		shop_id = int(self.get_cookie("market_shop_id"))
 		customer_id = self.current_user.id
 		shop   = self.session.query(models.Shop).filter_by(id = shop_id).first()
@@ -782,12 +786,12 @@ class Market(CustomerBaseHandler):
 		session = self.session
 		w_fruits = self.w_getdata(session,fruits,customer_id)
 		count_fruit = len(w_fruits)
-		page = int(count_fruit/10) if count_fruit % 10 == 0 else int(count_fruit/10)+1
+		page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		# page = (count_fruit % 10 == 0)?int(count_fruit/10):int(count_fruit/10)+1
 		# print(page)
-		if offset + 10 <= count_fruit:
-			fruit_list = w_fruits[offset:offset+10]
-		elif offset < count_fruit and offset +10 > count_fruit:
+		if offset + page_size <= count_fruit:
+			fruit_list = w_fruits[offset:offset+page_size]
+		elif offset < count_fruit and offset +page_size > count_fruit:
 			fruit_list = w_fruits[offset:]
 		else:
 			self.send_fail("fruit_list page error")
@@ -799,7 +803,8 @@ class Market(CustomerBaseHandler):
 		# page = 2 
 		print('login  commodity_list')
 		page = self.args["page"]
-		offset = (page -1) * 10
+		page_size = 10
+		offset = (page -1) * page_size
 		customer_id = self.current_user.id
 		shop_id = int(self.get_cookie('market_shop_id'))
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
@@ -867,31 +872,31 @@ class Market(CustomerBaseHandler):
 		w_dry_fruits = self.w_getdata(session, dry_fruits,customer_id)
 		count_dry   = len(w_dry_fruits)
 
-		if offset +10 <= count_fruit:
-			w_orders = w_fruits[offset:offset+10]
+		if offset +page_size <= count_fruit:
+			w_orders = w_fruits[offset:offset+page_size]
 
-		elif offset >= count_fruit and offset + 10 <= count_fruit + count_dry:
-			w_orders = w_dry_fruits[offset - count_fruit:offset+10 - count_fruit ]
+		elif offset >= count_fruit and offset + page_size <= count_fruit + count_dry:
+			w_orders = w_dry_fruits[offset - count_fruit:offset+page_size - count_fruit ]
 
-		elif offset >= count_dry +count_fruit and offset +10 <= count_fruit + count_dry + count_mgoods:
-			w_orders = w_mgoods[offset-(count_dry+count_fruit):offset + 10-(count_dry+count_fruit)]
+		elif offset >= count_dry +count_fruit and offset +page_size <= count_fruit + count_dry + count_mgoods:
+			w_orders = w_mgoods[offset-(count_dry+count_fruit):offset + page_size-(count_dry+count_fruit)]
 
 		elif offset >= count_dry + count_fruit:
 			w_orders = w_mgoods[offset-(count_fruit+count_dry):]
 
-		elif offset < count_fruit and offset + 10 <= count_fruit +count_dry:
-			w_orders =w_fruits[offset:] + w_dry_fruits[0:offset + 10 - count_fruit ]
+		elif offset < count_fruit and offset + page_size <= count_fruit +count_dry:
+			w_orders =w_fruits[offset:] + w_dry_fruits[0:offset + page_size - count_fruit ]
 
-		elif offset >= count_fruit and offset < count_fruit + count_dry and offset + 10 <= count_dry + count_fruit + count_mgoods:
-			w_orders = w_dry_fruits[offset - count_fruit:] + w_mgoods[0:offset + 10 - (count_dry + count_fruit)]
+		elif offset >= count_fruit and offset < count_fruit + count_dry and offset + page_size <= count_dry + count_fruit + count_mgoods:
+			w_orders = w_dry_fruits[offset - count_fruit:] + w_mgoods[0:offset + page_size - (count_dry + count_fruit)]
 
-		elif offset >=  count_fruit and offset < count_fruit + count_dry and offset +10 >= count_fruit + count_dry + count_mgoods:
+		elif offset >=  count_fruit and offset < count_fruit + count_dry and offset +page_size >= count_fruit + count_dry + count_mgoods:
 			w_orders = w_dry_fruits[offset - count_fruit:] + w_mgoods
 
-		elif offset < count_fruit and offset + 10 >= count_fruit + count_dry and offset + 10 <= count_fruit +count_dry + count_mgoods:
-			w_orders = w_fruits[offset:] + w_dry_fruits + w_mgoods[0:offset + 10 - (count_fruit+ count_dry)]
+		elif offset < count_fruit and offset + page_size >= count_fruit + count_dry and offset + page_size <= count_fruit +count_dry + count_mgoods:
+			w_orders = w_fruits[offset:] + w_dry_fruits + w_mgoods[0:offset + page_size - (count_fruit+ count_dry)]
 
-		elif offset < count_fruit and offset + 10 >= count_fruit + count_dry + count_mgoods:
+		elif offset < count_fruit and offset + page_size >= count_fruit + count_dry + count_mgoods:
 			w_orders = w_fruits[offset:] + w_dry_fruits + w_mgoods
 
 		else:
@@ -1440,11 +1445,12 @@ class Order(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("action", "data?","page?:int")
 	def post(self):
 		print(self,'self is what?')
+		page_size = 10
 		action = self.args["action"]
 		session = self.session
 		if action == "unhandled":
 			page = self.args['page']
-			offset = (page - 1) * 10
+			offset = (page - 1) * page_size
 			orders = [x for x in self.current_user.orders if x.status == 1]
 			print(len(orders),'未处理订单 数量')
 			# woody
@@ -1453,10 +1459,10 @@ class Order(CustomerBaseHandler):
 
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
-			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
-			if offset + 10 <= total_count:
-				orders = orders[offset:offset + 10]
-			elif offset <= total_count and offset + 10 >= total_count:
+			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
+			if offset + page_size <= total_count:
+				orders = orders[offset:offset + page_size]
+			elif offset <= total_count and offset + page_size >= total_count:
 				orders = orders[offset:]
 			else:
 				return self.send_fail("暂无订单")
@@ -1466,19 +1472,19 @@ class Order(CustomerBaseHandler):
 			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "waiting":
 			page = self.args["page"]
-			offset = (page - 1) * 10
+			offset = (page - 1) * page_size
 			orders = [x for x in self.current_user.orders if x.status in (2, 3, 4)]
 			print(len(orders),'待收货状态订单')
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
-			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
+			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
 			print("[订单列表]滚动加载offset：",offset)
 			print("[订单列表]滚动加载total：",total_count)
-			if offset + 10 <= total_count:
-				orders = orders[offset:offset + 10]
-			elif offset < total_count and offset + 10 >= total_count:
+			if offset + page_size <= total_count:
+				orders = orders[offset:offset + page_size]
+			elif offset < total_count and offset + page_size >= total_count:
 				orders = orders[offset:]
 			else:
 				return self.send_fail("没有待收货订单")
@@ -1486,7 +1492,7 @@ class Order(CustomerBaseHandler):
 			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "finish":
 			page = self.args['page']
-			offset = (page - 1) * 10
+			offset = (page - 1) * page_size
 			try:
 				orderlist = self.session.query(models.Order).order_by(desc(models.Order.arrival_day),models.Order.arrival_time).\
 				filter_by(customer_id = self.current_user.id).all()
@@ -1505,10 +1511,10 @@ class Order(CustomerBaseHandler):
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 			total_count = len(orders)
-			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
-			if offset + 10 <= total_count:
-				orders = orders[offset:offset + 10]
-			elif offset < total_count and offset + 10 >= total_count:
+			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
+			if offset + page_size <= total_count:
+				orders = orders[offset:offset + page_size]
+			elif offset < total_count and offset + page_size >= total_count:
 				orders = orders[offset:]
 			else:
 				return self.send_fail("暂无订单")
@@ -1516,7 +1522,7 @@ class Order(CustomerBaseHandler):
 			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "all":
 			page = self.args["page"]
-			offset = (page - 1) * 10
+			offset = (page - 1) * page_size
 			orders = self.current_user.orders
 			print(len(orders),'所有订单数量')
 			session = self.session
@@ -1525,10 +1531,10 @@ class Order(CustomerBaseHandler):
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			# print(total_count)
-			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
-			if offset + 10 <= total_count:
-				orders = orders[offset:offset + 10]
-			elif offset < total_count and offset + 10 >= total_count:
+			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
+			if offset + page_size <= total_count:
+				orders = orders[offset:offset + page_size]
+			elif offset < total_count and offset + page_size >= total_count:
 				orders = orders[offset:]
 			else:
 				return self.send_fail("暂无订单")
@@ -1721,8 +1727,9 @@ class Balance(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("page:int")
 	def post(self):
+		page_size = 20
 		page = int(self.args["page"])
-		offset = (page-1) * 10
+		offset = (page-1) * page_size
 		customer_id = self.current_user.id
 		shop_id     = self.shop_id
 		history     = []
@@ -1733,15 +1740,15 @@ class Balance(CustomerBaseHandler):
 		print(customer_id,shop_id)
 		try:
 			shop_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id =\
-				customer_id , shop_id = shop_id).all()
+				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type!=2).all()
 		except:
 			shop_balance_history = None
 			print("balance show error ")
 
 		try:
 			count = self.session.query(models.BalanceHistory).filter_by(customer_id =\
-				customer_id , shop_id = shop_id).count()
-			pages = int(count/10) if count % 10 == 0 else int(count/10) + 1
+				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type!=2).count()
+			pages = int(count/page_size) if count % page_size == 0 else int(count/page_size) + 1
 		except:
 			print('pages 0')
 		if pages == page:
@@ -1753,9 +1760,9 @@ class Balance(CustomerBaseHandler):
 
 		count = len(history)
 		history = history[::-1]
-		if offset + 10 <= count:
-			data = history[offset:offset+10]
-		elif offset <= count and offset + 10 >=count:
+		if offset + page_size <= count:
+			data = history[offset:offset+page_size]
+		elif offset <= count and offset + page_size >=count:
 			data = history[offset:]
 		else:
 			nomore = True
@@ -1771,6 +1778,7 @@ class Points(CustomerBaseHandler):
 		shop_id     = self.shop_id
 		shop_point  = 0
 		history     = []
+		page_size = 22
 		# print(customer_id,shop_id)
 		try:
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
@@ -1794,7 +1802,7 @@ class Points(CustomerBaseHandler):
 				history.append([temp.point_type,temp.each_point,temp.create_time])
 			# print(history)
 		count = len(history)
-		pages = int(count /10) if count % 10 ==0 else int(count/10) + 1
+		pages = int(count /page_size) if count % page_size ==0 else int(count/page_size) + 1
 
 		return self.render("customer/points.html",shop_point = shop_point,pages = pages)
 
@@ -1804,7 +1812,8 @@ class Points(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("page")
 	def post(self):
 		page = self.args["page"]
-		offset = (page-1) * 10
+		page_size = 22
+		offset = (page-1) * page_size
 		customer_id = self.current_user.id
 		shop_id     = self.shop_id
 		history     = []
@@ -1824,9 +1833,9 @@ class Points(CustomerBaseHandler):
 		count = len(history)
 		history = history[::-1]
 		# print('history',history)
-		if offset + 10 <= count:
-			data = history[offset:offset+10]
-		elif offset <= count and offset + 10 >=count:
+		if offset + page_size <= count:
+			data = history[offset:offset+page_size]
+		elif offset <= count and offset + page_size >=count:
 			data = history[offset:]
 		else:
 			self.send_fail("history page error")
