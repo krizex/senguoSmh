@@ -9,13 +9,14 @@ $(document).ready(function(){
     $(this).addClass("checked");*/
     var index = $(this).attr("data-index");
     m_type = index;
-    if(index==2){
-        noticeBox("银行卡支付尚未开通，请选择其他支付方式");
+    if(index>0){
+        noticeBox("当前只支持微信支付，其他方式正在努力开发中...");
         return false;
-    }else{
+    }
+    /*else{
         $(".rec-bm-lst .check-ipt").removeClass("checked");
         $(this).addClass("checked");
-    }
+    }*/
 }).on("click","#commit-rec",function(){
     //if($(this).attr("data-statu")==0) return false;
     var money = $.trim($("#money").val());
