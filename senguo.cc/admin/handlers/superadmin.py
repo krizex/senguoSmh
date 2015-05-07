@@ -1008,7 +1008,7 @@ class ApplyCash(SuperBaseHandler):
 
 			#往 blancehistory中插入一条数据，以免到时候 查看所有记录的时候到两张表中去取 效率低下
 			name = apply_cash.applicant_name
-			balance_history = models.BalanceHistory(balance_record = '提现：管理员'+name,balance_type =\
+			balance_history = models.BalanceHistory(balance_record = '提现：管理员 '+name,balance_type =\
 				2,balance_value = apply_cash.value ,customer_id = apply_cash.shop.admin.accountinfo.id,name = \
 				name,shop_id = apply_cash.shop_id,shop_totalPrice = shop.shop_balance)
 			self.session.add(balance_history)
