@@ -741,14 +741,13 @@ class Order(AdminBaseHandler):
 								self.session.add(point_history)
 								self.session.commit()
 
-						#订单完成后，将相应店铺冻结资产 转为 店铺余额
-						# 铁说 这是平台思维 已废弃使用 ，改为 用户充值后钱立马到 商铺帐号上
-						# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-						# if not shop:
-						# 	return self.send_fail('shop not found')
+						# 订单完成后，将相应店铺可提现 余额相应增加
+						shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+						if not shop:
+							return self.send_fail('shop not found')
 						# shop.shop_balance += order.totalprice * 100
-						# shop.shop_blockage -= order.totalprice * 100
-						# self.session.commit()
+						shop.available_balance += order.totalprice
+						self.session.commit()
 
 					if shop_follow: 
 						if shop_follow.shop_point == None:
@@ -784,7 +783,7 @@ class Order(AdminBaseHandler):
 					shop_follow.shop_balance += order.totalPrice
 
 					balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
-						balance_value = order.totalPrice,balance_record = '订单'+ order.num+'删除 退款：', name = order.receiver,\
+						balance_value = order.totalPrice,balance_record = '退款：订单'+ order.num+'删除', name = self.current_user.accountinfo.nickname,\
 						balance_type = 4,shop_totalPrice = self.current_shop.shop_balance,customer_totalPrice = \
 						shop_follow.shop_balance)
 					self.session.add(balance_history)
@@ -1383,7 +1382,7 @@ class ShopBalance(AdminBaseHandler):
 		shop_auth = self.current_shop.shop_auth
 		has_done = ''
 		decline_reason = ''
-		avilible_cash = 0
+		available_balance = self.current_shop.available_balance
 		try:
 			apply_list = self.session.query(models.ApplyCashHistory).filter_by(shop_id=shop_id)
 			apply_cash = apply_list.order_by(desc(models.ApplyCashHistory.create_time)).first()
@@ -1397,7 +1396,8 @@ class ShopBalance(AdminBaseHandler):
 		if shop_auth in [1,2,3,4]:
 			show_balance = True
 			return self.render("admin/shop-balance.html",shop_balance = shop_balance,\
-				show_balance = show_balance,has_done=has_done,decline_reason=decline_reason,context=dict(subpage=subpage))
+				show_balance = show_balance,has_done=has_done,decline_reason=decline_reason,\
+				available_balance = available_balance, context=dict(subpage=subpage))
 		else:
 			return self.redirect(self.reverse_url('adminHome'))
 
@@ -1430,6 +1430,8 @@ class ShopBalance(AdminBaseHandler):
 				return self.send_fail(resault)
 		elif action == 'cash':
 			apply_value = self.args['apply_value']
+			if apply_value > self.current_shop.available_balance:
+				return self.send_fail("您申请金额大于店铺 可提现的金额，请重新申请")
 			alipay_account = self.args['alipay_account']
 			account_name = self.args['account_name']
 			code = int(self.args['code'])
@@ -1460,7 +1462,7 @@ class ShopBalance(AdminBaseHandler):
 			count =balance_history.count()
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				print('history_list error')
+				print(' cash history_list error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
@@ -1485,7 +1487,7 @@ class ShopBalance(AdminBaseHandler):
 			count =balance_history.count()
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				print('get all BalanceHistory error')
+				print('get all history error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
@@ -1506,7 +1508,7 @@ class ShopBalance(AdminBaseHandler):
 			count = balance_history.count()
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				print('get all BalanceHistory error')
+				print('get all recharge error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice

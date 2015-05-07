@@ -539,17 +539,21 @@ class Comment(CustomerBaseHandler):
 		page = self.args["page"]
 		comments = self.get_comments(shop_id, page, 10)
 		date_list = []
+		nomore = False
 		for comment in comments:
 			date_list.append({"img": comment[6], "name": comment[7],
 							  "comment": comment[0], "time": self.timedelta(comment[1]), "reply":comment[3]})
+		if date_list == []:
+			nomore = True
 		if page == 0:
-			return self.render("customer/comment.html", date_list=date_list)
-		return self.write(dict(date_list=date_list))
+			return self.render("customer/comment.html", date_list=date_list,nomore=nomore)
+		return self.send_success(date_list=date_list,nomore=nomore)
 
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self, shop_code):
 		# print('self',self)
+		# print(self.request.remote_ip,'ip?')
 		w_follow = True
 		fruits=''
 		dry_fruits=''
@@ -1355,7 +1359,7 @@ class Cart(CustomerBaseHandler):
 			# self.session.commit()
 
 			#生成一条余额交易记录
-			balance_record = '余额消费：订单' + order.num
+			balance_record = '消费：订单' + order.num
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
 				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
 				balance_record = balance_record,shop_totalPrice = current_shop.shop_balance,\
@@ -1556,7 +1560,7 @@ class Order(CustomerBaseHandler):
 					return self.send_fail('shop not found')
 
 				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
-						balance_value = order.totalPrice,balance_record = '订单'+ order.num+'取消退款：', name = order.receiver,\
+						balance_value = order.totalPrice,balance_record = '退款：订单'+ order.num + '取消', name = self.current_user.accountinfo.nickname,\
 						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = \
 						shop_follow.shop_balance)
 				self.session.add(balance_history)
@@ -2014,17 +2018,19 @@ class payTest(CustomerBaseHandler):
 			if not shop_follow:
 				return self.send_fail('shop_follow not found')
 			shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
+			self.session.commit()
 
 			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 			if not shop:
 				return self.send_fail('shop not found')
 			shop.shop_balance += totalPrice
-			# self.session.commit()
+			self.session.commit()
+			print(shop.shop_balance ,'充值后 商店 总额')
 
 			# 支付成功后  生成一条余额支付记录
 			name = self.current_user.accountinfo.nickname
 			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-				balance_value = totalPrice,balance_record = '余额充值：'+ name  , name = name , balance_type = 0,\
+				balance_value = totalPrice,balance_record = '充值：用户 '+ name  , name = name , balance_type = 0,\
 				shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice)
 			self.session.add(balance_history)
 			print(balance_history , '钱没有白充吧？！')

@@ -16,6 +16,8 @@ import libs.xmltodict as xmltodict
 import qiniu
 from qiniu.services.storage.bucket import BucketManager
 from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
+import requests
+import json
 
 class Home(FruitzoneBaseHandler):
 	def get(self):
@@ -25,12 +27,30 @@ class Home(FruitzoneBaseHandler):
 class ShopList(FruitzoneBaseHandler):
 	def get(self):
 
+		remote_ip = self.request.remote_ip
+		print(remote_ip)
+		url = 'http://ip.taobao.com/service/getIpInfo.php?ip={0}'.format(remote_ip)
+		res =  requests.get(url)
+		content = res.text
+		print(content)
+		t = json.loads(content)
+		data = t.get('data',None)
+		if data:
+			city = data.get('city',None)
+			city_id = data.get('city_id',None)
+		else:
+			city = None
+			city_id = None
+			print('get city by ip error!')
+		
 		province_count=self.get_shop_group()
 		shop_count = self.get_shop_count()
 		# fruit_types = []
 		# for f_t in self.session.query(models.FruitType).all():
 		#     fruit_types.append(f_t.safe_props())
-		return self.render("fruitzone/list.html", context=dict(province_count=province_count,shop_count=shop_count,subpage="home"))
+		print(city_id+"===========")
+		return self.render("fruitzone/list.html", context=dict(province_count=province_count,\
+			city = city ,city_id = city_id, shop_count=shop_count,subpage="home"))
 
 
 	
@@ -676,11 +696,11 @@ class SystemPurchase(FruitzoneBaseHandler):
 
 	@FruitzoneBaseHandler.check_arguments('price:str')
 	def handle_alipaytest(self):
-		price = int(self.args['price'])
+		price = float(self.args['price'])
 		print(price)
 		print('find the correct way to login?')
 		try:
-			url = self.test_create_tmporder_url(1)
+			url = self.test_create_tmporder_url(price)
 		except Exception as e:
 			return self.send_fail('ca')
 		return self.send_success(url = url)
@@ -750,7 +770,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 			subject = 'alipay charge',
 			total_fee = price,
 			seller_account_name = ALIPAY_SELLER_ACCOUNT,
-			call_back_url= "%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseDealFinishedCallback")),
+			call_back_url= "%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("customerBalance")),
 			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseDealNotify")),
 			merchant_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseChargeTypes"))
 		)

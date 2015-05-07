@@ -310,6 +310,12 @@ class ShopManage(SuperBaseHandler):
 			self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id))  # 把管理者默认为新店铺的二级配送员
 			self.session.commit()
 
+			#把管理员同时设为顾客的身份
+			customer_first = self.session.query(models.Customer).get(shop.admin_id)
+			if customer_first is None:
+				self.session.add(models.Customer(id = shop.admin_id,balance = 0,credits = 0,shop_new = 0))
+				self.session.commit()
+
 			account_info = self.session.query(models.Accountinfo).get(shop_temp.admin_id)
 
 			###################################################################################
@@ -1001,9 +1007,10 @@ class ApplyCash(SuperBaseHandler):
 			
 
 			#往 blancehistory中插入一条数据，以免到时候 查看所有记录的时候到两张表中去取 效率低下
-			balance_history = models.BalanceHistory(balance_record = '提现：店铺管理员',balance_type =\
+			name = apply_cash.applicant_name
+			balance_history = models.BalanceHistory(balance_record = '提现：管理员 '+name,balance_type =\
 				2,balance_value = apply_cash.value ,customer_id = apply_cash.shop.admin.accountinfo.id,name = \
-				apply_cash.applicant_name,shop_id = apply_cash.shop_id,shop_totalPrice = shop.shop_balance)
+				name,shop_id = apply_cash.shop_id,shop_totalPrice = shop.shop_balance)
 			self.session.add(balance_history)
 			self.session.commit()
 
