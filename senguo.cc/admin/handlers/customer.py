@@ -379,7 +379,7 @@ class ShopProfile(CustomerBaseHandler):
 		return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
 						   fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
 						   service_area=service_area, headimgurls=headimgurls, signin=signin,
-						   comments=self.get_comments(shop_id, page_size=2), comment_sum=comment_sum,
+						   comments=self.get_comments(shop_id, page_size=3), comment_sum=comment_sum,
 						   context=dict(subpage='shop'),shop_name = shop_name,shop_logo = shop_logo)
 
 	@tornado.web.authenticated

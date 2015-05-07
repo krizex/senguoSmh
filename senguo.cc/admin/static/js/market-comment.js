@@ -5,7 +5,6 @@ $(document).ready(function(){
 var finished=true;
 var current_page=1;
 var nomore =false;
-$('.loading').html("~努力加载中 ( > < )~").show();
 function scrollLoading(){  
     $(window).scroll(function(){
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
