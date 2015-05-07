@@ -1,4 +1,6 @@
 $(document).ready(function(){
+    var shop_code=$('#shop_imgurl').attr('data-code');
+    SetCookie('market_shop_code',shop_code);
     var $list_total_price=$('#list_total_price');
     var $receiveAdd=$('#receiveAdd');
     var $receiveEdit=$('#receiveEdit');
@@ -166,7 +168,7 @@ $(document).ready(function(){
                         $this.addClass('active');
                     }
                 }
-                else if(noticeBox('抱歉，已超过了该送货时间段的下单时间！请选择下一个时间段！',$this)){}
+                else if(noticeBox('抱歉，已超过了该送货时间段的下单时间，请选择下一个时间段！',$this)){}
            });
         });}
         $('.send_period .item').on('click',function(){
@@ -316,7 +318,7 @@ $(document).ready(function(){
             }
             else {
                 $this.parents('.item').removeClass('active').siblings('.item').addClass('active');
-                return noticeBox('不小心超过了"立即送"的送货时间呢，请选择"按时达"时间段！',$this)
+                return noticeBox('不小心超过了“立即送”的送货时间呢，请选择“按时达”时间段！',$this)
             }
         });
     }
@@ -372,6 +374,10 @@ $(document).ready(function(){
             noticeBox("当前店铺未认证，此功能暂不可用");
             return false;
         }
+    }
+    if(index == 2){
+        noticeBox("目前还不支持在线支付哦，我们会尽快开放此功能");
+        return false;
     }
     if(status==0){
          noticeBox("当前店铺已关闭"+type);

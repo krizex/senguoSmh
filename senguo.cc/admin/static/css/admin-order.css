@@ -3,10 +3,9 @@ body{-webkit-user-select: none; }
 .orders-mode ul{width:420px;border-left:2px solid #f2f2f2;margin-bottom:0px;font-size:14px;}
 .orders-mode ul li{height:40px;line-height:40px;border:1px solid #f2f2f2;border-left:none;position:relative;}
 .orders-mode ul li a{display:block;}
-.orders-mode ul li .number{display:inline-block;width:20px;height:20px;border-radius:50%;line-height:20px;position:absolute;top:5px;right:3px;font-size:10px;}
+.orders-mode ul li .number{display:inline-block;width:20px;height:20px;border-radius:50%;line-height:20px;position:absolute;top:5px;right:3px;font-size:10px;background:#ff6666;color:#fff;}
 .orders-mode ul .active{background:#f2f2f2;border-bottom:1px solid #f2f2f2;}
 .orders-mode ul .active a{font-weight:bold;}
-.orders-mode ul .active .number{color:#fff !important;background:#ff6565;}
 
 
 .orders-mode-lock{width:100%;height:auto;}

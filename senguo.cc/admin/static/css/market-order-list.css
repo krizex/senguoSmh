@@ -4,7 +4,7 @@
 .list-header .left-corner{position:absolute;left:0;width:16px;}
 .list-header .right-corner{position:absolute;right:0;width:16px;}
 .order-list{margin:0 10px;position:relative;overflow:hidden;}
-.order-list-item{color:#444;width:100%;padding:10px 15px;position:relative;border-bottom:2px dashed #eee;}
+.order-list-item{color:#444;width:100%;padding:10px 15px;position:relative;border-bottom:2px dashed #eee;float:left;}
 .order-list-item header{border-bottom:1px solid #eee;padding:10px 0;}
 .order-list-item header .icon{height:20px;width:auto;float:right;}
 .order-list-item header p{font-size:16px;margin:0;display:inline-block;}

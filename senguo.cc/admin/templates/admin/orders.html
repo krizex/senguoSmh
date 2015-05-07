@@ -42,11 +42,11 @@
     <ul class="right-nav pull-left order-type">
         <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3">
             <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1&page=0" class="text-grey3">立即送</a>
-            <span class="number text-pink">{{count[11]}}</span>
+            <span class="number">{{count[11]}}</span>
         </li>
         <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3">
             <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=1&page=0" class="text-grey3">按时达</a>
-            <span class="number text-pink">{{count[21]}}</span>
+            <span class="number">{{count[21]}}</span>
         </li>
         <!--<li class="text-center col-lg-3">
             <a href="#" class="text-grey3">周期购</a>
@@ -95,19 +95,19 @@
 <div class="orders-list-title right-title2">
     <ul class="right-nav pull-left order-status">
         <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=1&page=0">未处理<span class="text-pink">{{count1}}</span></a>
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=1&page=0">未处理&nbsp;<span class="text-pink">{{count1}}</span></a>
         </li>
         <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=2&page=0">配送中<span class="text-pink">{{count2}}</span></a>
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=2&page=0">配送中&nbsp;<span class="text-pink">{{count2}}</span></a>
         </li>
         <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=3&page=0">已送达<span class="text-pink">{{count3}}</span></a>
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=3&page=0">已送达&nbsp;<span class="text-pink">{{count3}}</span></a>
         </li>
         <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=4&page=0">售后/退款<span class="text-pink">{{count4}}</span></a>
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=4&page=0">售后/退款&nbsp;<span class="text-pink">{{count4}}</span></a>
         </li>
         <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=5&page=0">所有订单<span class="text-pink">{{count5}}</span></a>
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=5&page=0">所有订单&nbsp;<span class="text-pink">{{count5}}</span></a>
         </li>
     </ul>
     <!--<a class="orders-recycle pull-right text-grey9" href="#">订单回收站</a>-->

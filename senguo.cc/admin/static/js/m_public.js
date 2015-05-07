@@ -116,38 +116,46 @@ var confirmRemove=function(){
     $('.modal_bg').remove();
 }
 //word notice
-getItem('/static/items/noticeBox.html?v=2015-03-25',function(data){
-    window.dataObj.noticeBox=data;
-     var $box=$(window.dataObj.noticeBox);   
-    $('body').append($box);
-});
+var noticeTimer = null;
+var tempObj = null;
 var noticeBox=function(text,item){
-        $('#noticeBox').removeClass('hidden').find('.notice').text(text);
-        if(item) {item.attr({'disabled':'true'});}
-        noticeRemove('noticeBox',item);      
+    if(tempObj){
+        tempObj.removeAttr('disabled').removeClass('bg-greyc');
+    }
+    clearTimeout(noticeTimer);
+    if($("#noticeBox").size()==0){
+        var $box=$('<div class="notice_bg hidden" id="noticeBox"><div class="notice_box text-center center-block"><p class="notice text-white font14 text-center"></p></div></div>');
+        $('body').append($box);
+    }
+    $("#noticeBox").removeClass('hidden').find('.notice').text(text);
+    if(item) {
+        tempObj = item;
+        item.attr({'disabled':'true'});
+    }
+    noticeRemove('noticeBox',item);
 }
 //modal notice word
-var warnNotice=function(text){
-    $('.modal-body').find('.warn').remove();
+var warnNotice=function(text,item){
+    clearTimeout(noticeTimer);
+    $(".warn").remove();
     var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
     $word.text(text);
-    $('.modal-body').append($word);
-    $('.sure_btn').attr({'disabled':'true'});
-    noticeRemove('warn');
+    $('.modal-warn').append($word);
+    noticeTimer = setTimeout(function() {
+        $('.warn').addClass('hidden');
+        if(item){
+            item.removeAttr('disabled').removeClass('bg-greyc');
+        }
+    },2000);
 }
 //time count 2 secends
-window.dataObj.n_time=2;
 var noticeRemove=function (target,item) {
-    if (window.dataObj.n_time == 0) {
-        window.dataObj.n_time = 2;
+    noticeTimer = setTimeout(function() {
         $('#'+target).addClass('hidden');
-        $('.sure_btn').removeAttr('disabled');
-        if(item) {item.removeAttr('disabled');}
-    }
-    else {
-        window.dataObj.n_time--;
-        setTimeout(function() {noticeRemove(target,item)},1000);
-    }
+        if(item){
+            item.removeAttr('disabled').removeClass('bg-greyc');
+        }
+    },2000);
 }
 
 //modal box
@@ -160,28 +168,25 @@ Modal.prototype.modal=function(type){
     {
         var window_height=$(window).height();
         var height=$('.container').height();
-        var $mask;
-        if(height<window_height) $mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
-        else $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
-        $('body').append($mask).addClass('modal_sty').attr({'onmousewheel':'return false'}).css({'overflow':'hidden'});
         $target.removeClass('fade').addClass('in').css({'display':'block'});
         $target.find('.warn').remove();
+        $("body").css({'overflow':'hidden'});
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
-                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
+                $('body').css({'overflow':'auto'});
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
         $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
-                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
+                $('body').css({'overflow':'auto'});
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
     }
     else if(type=='hide')
     {
-        $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
+        $('body').removeClass('modal_sty').css({'overflow':'auto'}).find('.modal_bg').remove();
         $target.addClass('fade').removeClass('in').css({'display':'none'});
     }
 }

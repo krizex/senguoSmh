@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title%}余额{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/superadmin-count.css')}}"/>{% end %}
+{% block content %}
+{% set page = context.get("page", "detail")%}
+{% set detail_active = ""%}
+{% set cash_active = ""%}
+
+
+{% if page == "detail"%}
+    {% set detail_active = "active"%}
+{% else %}
+    {% set cash_active = "active"%}
+{% end %}
+<div class="row">
+    <div class="admin-left pull-left">
+        <ul class="nav nav-stacked shop-manage-nav text-right" role="tablist">
+            <li class="all nav_item {{detail_active}}">
+                <a href="{{reverse_url('superBalance')}}">余额详情</a>
+            </li>
+            <li class="admin nav_item {{cash_active}}">
+                <a href="{{reverse_url('superApplyCash')}}">提现申请</a>
+            </li>
+        </ul>
+    </div>
+    {% block count %}
+    {% end %}
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/template.js')}}"></script>
+<script src="{{static_url('js/super-balance.js')}}"></script>
+{% end %}

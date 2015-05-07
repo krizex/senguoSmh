@@ -70,19 +70,19 @@
  <ul class="info2 text-center bg-white set-w100-fle font12 m-b10">
      <li class="w25 pull-left">
         <p class="text-grey9 text-center">运营时间</p>
-        <p class="text-center">{{operate_days or 0}}天</p>
+        <p class="mt3 text-center">{{operate_days or 0}}天</p>
      </li>
      <li class="w25 pull-left">
          <p class="text-grey9 text-center">粉丝</p>
-         <p class="text-center">{{fans_sum or 0}}个</p>
+         <p class="mt3 text-center">{{fans_sum or 0}}个</p>
      </li>
      <li class="w25 pull-left">
          <p class="text-grey9 text-center">总订单数</p>
-         <p class="text-center">{{order_sum}}个</p>
+         <p class="mt3 text-center">{{order_sum}}个</p>
      </li>
      <li class="w25 pull-left">
          <p class="text-grey9 text-center">商品种类</p>
-         <p class="text-center">{{goods_sum or 0}}种</p>
+         <p class="mt3 text-center">{{goods_sum or 0}}种</p>
      </li>
  </ul>
 <div class="shop-box bg-white clearfix">
@@ -166,6 +166,7 @@
                     <span class="pull-right">{{handler.timedelta(comment[1])}}</span>
                 </p>
                 <p class="text-grey9">{{comment[0] or '无'}}</p>
+                {% if comment[3] %}<p class="text-green">商家回复：{{comment[3]}}</p>{% end %}
             </div>
         </li>
         {% end %}

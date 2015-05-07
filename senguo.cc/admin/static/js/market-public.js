@@ -5,13 +5,13 @@ $(document).ready(function(){
     window.dataObj.success_href='/notice/success';
     window.dataObj.staff_href='/staff/hire/';
     window.dataObj.current_link=window.location.href;
- //   var _hmt = _hmt || [];
-  //      (function() {
-   //       var hm = document.createElement("script");
-   //       hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
-   //       var s = document.getElementsByTagName("script")[0]; 
-   //       s.parentNode.insertBefore(hm, s);
-    //    })();
+   var _hmt = _hmt || [];
+   (function() {
+     var hm = document.createElement("script");
+     hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
+     var s = document.getElementsByTagName("script")[0]; 
+     s.parentNode.insertBefore(hm, s);
+   })();
     //fastclick initialise
    FastClick.attach(document.body);
     //客户端为Android系统替换图片路径
@@ -316,7 +316,6 @@ var warnNotice=function(text,item){
 var noticeRemove=function (target,item) {
     noticeTimer = setTimeout(function() {
         $('#'+target).addClass('hidden');
-        console.log($('#'+target).hasClass("hidden"))
         if(item){
             item.removeAttr('disabled').removeClass('bg-greyc');
         }

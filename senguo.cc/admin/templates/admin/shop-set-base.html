@@ -10,6 +10,7 @@
 {% set info_active = ''%}
 {% set cert_active ='' %}
 {% set pay_active ='' %}
+{% set phone_active ='' %}
 
 {% if shopSubPage == 'delivery_set'  %}
     {% set delivery_active ='active' %}
@@ -21,11 +22,13 @@
     {% set cert_active ='active' %}
 {% elif shopSubPage =='pay_set' %}
     {% set pay_active ='active' %}
+{% elif shopSubPage =='phone_set' %}
+    {% set phone_active ='active' %}
 {% else %}
     {% set receipt_active ='active' %}
 {% end %}
 {% set shop_code =current_shop.shop_code %}
-<span class="right-title">店铺设置 {% if shop_code and  shop_code!='not set' %}<a class="shop-link" href="{{reverse_url('Market',shop_code)}}" target="_blank">店铺链接:<span>http://senguo.cc/{{shop_code}}</span></span></a>{% else %}请设置店铺号 {% end %}</span>
+<span class="right-title">店铺设置{% if shop_code and shop_code!='not set' %}<span class="shop-link">店铺链接：<a href="{{reverse_url('Market',shop_code)}}" target="_blank">http://senguo.cc/{{shop_code}}</a></span>{% else %}<span class="shop-link">请设置店铺号</span>{% end %}</span>
 <ul class="shop-set-nav right-nav group">
     <!--<li class="{{delivery_active}}" id="deliverySet"><a href="{{reverse_url('adminConfig')}}?action=delivery">配送设置</a></li>-->
     <li class="{{info_active}}" id="infoSet"><a href="{{reverse_url('adminShopConfig')}}">店铺信息</a></li>
@@ -36,6 +39,7 @@
      {% if current_shop.shop_auth !=0 %}
     <li class="{{pay_active}}"><a href="{{reverse_url('adminConfig')}}?action=pay">支付方式</a></li>
     {% end %}
+    <li class="{{phone_active}}"><a href="{{reverse_url('adminConfig')}}?action=phone">短信验证</a></li>
 </ul>
 {% if shopSubPage != 'cert_set' and shopSubPage != 'pay_set'%}
 <div class="set-description">

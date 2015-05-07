@@ -69,7 +69,7 @@ $(document).ready(function(){
             'FileUploaded': function (up, file, info) {
                 $("#" + file.id).prev(".img-cover").addClass("hide");
                 $("#" + file.id).next("a").removeClass("hide");
-                $("#"+file.id).attr("url","http://shopimg.qiniudn.com/"+$.parseJSON(info).key);
+                $("#"+file.id).attr("url","http://shopimg.qiniudn.com/"+file.id);
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
@@ -90,7 +90,7 @@ $(document).ready(function(){
                 $(".moxie-shim").css({left:$("#add-img").closest("li").position().left,top:$("#add-img").closest("li").position().top});//调整按钮的位置
             },
             'Key': function (up, file) {
-                var key = "Web_" + new Date().getTime() + "_" + file.id;
+                var key = file.id;
                 return key;
             }
         }

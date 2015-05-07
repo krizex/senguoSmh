@@ -58,7 +58,7 @@
 .address-box .tit{width:15%;min-width:45px;line-height:30px;}
 .send-address-choose input{width:80%;height:30px;-ms-line-height:30px;text-indent:10px;margin-bottom:5px;}
 .send-address-choose .address{width:85%;}
-.send-address-choose .to-edit-address{width:15%;margin-top:15px;}
+.send-address-choose .to-edit-address{width:15%;margin-top:16px;}
 .send-address-choose .active .phone{color:#33CC66;}
 
 
@@ -82,6 +82,7 @@
 .list-group{padding:0 10px;}
 .address-box{padding:10px;margin:10px 0;}
 .w118{width:118px;}
+.w90{width: 90px;}
 .tie-popbox .tie-info{width:100%;}
 .tie-popbox .tie-info .input1{width:100%;border:1px solid #ddd;border-radius:2px;background:#F9F9F9;padding:0.5em 0;text-indent:0.5em;margin-bottom:0.5em;}
 .tie-popbox .tie-info .input1:focus{border-color:#00D681;}
@@ -92,4 +93,12 @@
 .tie-popbox  .tie-btn{;color:#fff;}
 .first_notice{width:130px;}
 .first_notice .sure_btn{border:none;background:none;color:#4D91E4;}
-.a-cz{font-size:14px;color: #33CC66;margin: 0 10px;display: inline-block;}
+.a-cz{color: #33CC66;margin: 0 10px;display: inline-block;}
+.wrap-online-lst{padding: 0 10px;}
+.online-lst{padding: 5px 0;border:1px solid #ddd;border-left-width: 2px;border-top:none;}
+.online-lst>li{height: 50px;padding: 0 15px;}
+.third-img{width: 40px;height: 40px;margin:4px 0 0 14px;}
+.checkbox-btn{background-image: url('/static/images/uncheck.png');width: 20px;height: 20px;margin-top: 12px;background-repeat: no-repeat;}
+.third-txt{width: 90px;line-height: 48px;}
+.checkboxed{background-image: url('/static/images/checked.png');}
+

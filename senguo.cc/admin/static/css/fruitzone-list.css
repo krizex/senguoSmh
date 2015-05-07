@@ -34,3 +34,7 @@
 .all_city{background:url('/static/images/arrow_down.png') no-repeat 8px 20px;background-size:14px;height:35px;line-height:40px;display:inline-block;width:100%;padding:5px 10px 5px 30px;}
 .shopList{overflow:hidden;}
 .container{position:relative;}
+.pcenter-btn{display: block;position: absolute;right:10px;top:4px;width: 34px;}
+.pcenter-btn>i{display: block;width: 20px;height: 20px;background-image: url('/static/svg/i_per.png');background-repeat: no-repeat;background-size: 20px 20px;margin:0 auto;}
+.pcenter-btn>span{font-size: 12px;color: #fff;display: block;text-align: center;line-height: 14px;}
+

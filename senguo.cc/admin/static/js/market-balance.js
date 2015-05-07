@@ -58,7 +58,7 @@ function litsitem(page){
 	var type=data[i]['type'];
 	var time=data[i]['time'];
 	var value=data[i]['value'];
-	if(type==0){
+	if(type!=1){
 		value='+'+value
 	}
 	else {
