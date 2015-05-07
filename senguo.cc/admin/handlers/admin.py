@@ -495,7 +495,7 @@ class Order(AdminBaseHandler):
 			session = self.session
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
-			orders.sort(key = lambda order:order.send_time,reverse = True)
+			orders.sort(key = lambda order:order.send_time,reverse = False)
 
 		elif order_status == 5:#all
 			orders = [x for x in self.current_shop.orders if x.type == order_type ]

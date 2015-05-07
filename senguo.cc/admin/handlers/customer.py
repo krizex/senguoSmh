@@ -295,8 +295,9 @@ class CustomerProfile(CustomerBaseHandler):
 		elif action == "edit_birthday":
 			year = int(data["year"])
 			month = int(data["month"])
+			day = int(data["day"])
 			try:
-				birthday = datetime.datetime(year=year, month=month, day=19)
+				birthday = datetime.datetime(year=year, month=month, day=day)
 			except ValueError as e:
 				return self.send_fail("月份必须为1~12")
 			self.current_user.accountinfo.update(session=self.session, birthday=time.mktime(birthday.timetuple()))
@@ -1533,7 +1534,7 @@ class Order(CustomerBaseHandler):
 			session = self.session
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
-			orders.sort(key = lambda order:order.send_time)
+			orders.sort(key = lambda order:order.send_time,reverse = True)
 			total_count = len(orders)
 			# print(total_count)
 			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
