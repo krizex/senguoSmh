@@ -22,7 +22,7 @@ class Access(SuperBaseHandler):
 			self.handle_oauth()
 		elif self._action == "logout":
 			self.clear_current_user()
-			return self.redirect(self.reverse_url("superHome"))
+			return self.redirect(self.reverse_url("superShopManage"))
 		else:
 			return self.send_error(404)
 	@SuperBaseHandler.check_arguments("code", "state?", "mode")
@@ -42,7 +42,7 @@ class Access(SuperBaseHandler):
 			return self.write("对不起，你不属于此系统用户，我们拒绝你的加入。")
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 
-		next_url = self.get_argument("next", self.reverse_url("superHome"))
+		next_url = self.get_argument("next", self.reverse_url("superShopManage"))
 		return self.redirect(next_url)
 
 class ShopAdminManage(SuperBaseHandler):
@@ -56,6 +56,7 @@ class ShopAdminManage(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("page?:int")
 	def get(self):
+		return self.redirect('/super/shopManage?action=all_temp&&page=1')
 		offset = (self.args.get("page", 1)-1) * self._page_count
 		try:
 		    q = self.session.query(models.ShopAdmin)
@@ -1012,6 +1013,7 @@ class ApplyCash(SuperBaseHandler):
 			if not shop:
 				return self.send_fail('shop not found')
 			shop.shop_balance = shop.shop_balance-apply_cash.value
+			shop.available_balance = shop.available_balance - apply_cash.value
 			
 
 			#往 blancehistory中插入一条数据，以免到时候 查看所有记录的时候到两张表中去取 效率低下
