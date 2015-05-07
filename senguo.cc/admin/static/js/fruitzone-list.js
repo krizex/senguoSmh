@@ -6,7 +6,8 @@ $(document).ready(function(){
     $('.willOpen').on('click',function(){noticeBox('即将开放，敬请期待！')});
     //shop info
     if(city_id){
-        filter(city_id,'city');
+        window.dataObj.type='city';
+        shopsList(1,city_id,'filter');
     }else{
         shopsList(1,'',window.dataObj.action);
     }
@@ -287,7 +288,7 @@ function filter(data,type,page){
                  var shops=res.shops;
                  $('.list_item').addClass('hidden');
                  $('.city_choose').removeClass('city_choosed');
-                 if(res.shops==''){
+                 if(shops.length==0){
                     $('.shoplist').empty();
                     window.dataObj.maxnum=1;
                     $('.shoplist').append('<h4 class="text-center mt10 text-grey">无搜索结果！</h4>');
