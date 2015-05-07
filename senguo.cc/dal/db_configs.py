@@ -8,5 +8,6 @@ engine = create_engine("mysql+{driver}://{username}:{password}@127.0.0.1/{databa
 engine.execute("SET NAMES utf8mb4;")
 # engine = create_engine("mysql+{driver}://{username}:{password}@127.0.0.1/{database}".format(
 #     driver=MYSQL_DRIVER,username=MYSQL_USERNAME,password=MYSQL_PASSWORD, database=DB_NAME))
+
 MapBase = declarative_base(bind=engine)
 DBSession = sessionmaker(bind=engine, expire_on_commit=False)
