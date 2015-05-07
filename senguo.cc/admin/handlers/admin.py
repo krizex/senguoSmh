@@ -530,7 +530,7 @@ class Order(AdminBaseHandler):
 		page_sum = count /10
 		session = self.session
 		page_area = page * page_size
-		orders = sorted(orders , key = lambda x:x.send_time,reverse=True)[page_area:page_area+10]
+		orders = orders[page_area:page_area+10]
 		# print("after sort",orders)
 		# for order in orders:
 		#     print(order.w_send_time)
