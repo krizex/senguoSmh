@@ -54,7 +54,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .bal-balbox{border-radius: 5px;border: 1px solid #e6e6e6;padding: 10px;background-color: #fff;color: #999;line-height: 140%;}
 .bal-balbox>h3{font-size: 16px;font-weight: normal;}
 .bal-balbox>p{font-size: 14px;}
-.bal-balbm>h3{color: #666;font-size: 18px;margin-top: 10px;font-weight: normal;}
+.bal-balbm>h3{color: #666;font-size: 16px;margin: 10px 0;font-weight: normal;}
 .bal-bm-lst>li{display:block;margin-top: 5px;border: 1px solid #f0f0f0;border-radius: 28px;-webkit-box-sizing: border-box;padding: 8px 15px;background-color: #fff;}
 .bal-bm-lst .item-left{width: calc(100% - 60px);padding-left: 10px;-webkit-box-sizing: border-box;min-width: 60%;}
 .bal-bm-lst .item-right{width: 60px;color: #f78c8c;font-size: 14px;line-height: 35px;text-align: right;}
