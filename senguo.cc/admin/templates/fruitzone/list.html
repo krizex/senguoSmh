@@ -26,7 +26,8 @@
     window.dataObj.province_count={% raw json.dumps(context['province_count'])%}
 </script>
 <div class="filter_search bg-white text-grey9 font14">
-    <a href="javascript:;" class="city_choose pull-left dismiss"><span class="city_name pull-left text-center">城市</span><em class="arrow pull-left"></em></a>
+    <input type="hidden" id="city_id" value="{{context['city_id']}}"/>
+    <a href="javascript:;" class="city_choose pull-left dismiss"><span class="city_name pull-left text-center">{{context['city'] or '城市'}}</span><em class="arrow pull-left"></em></a>
     <div class="search-box pull-right dismiss" id="search-box">
         <input type="text" placeholder="请输入店铺名" class="search-input pull-left" id="searchKey"/>
         <input type="submit" value="搜索" class="btn pull-right text-center" id="searchSubmit"/>

@@ -746,7 +746,7 @@ class Order(AdminBaseHandler):
 						if not shop:
 							return self.send_fail('shop not found')
 						# shop.shop_balance += order.totalprice * 100
-						shop.available_balance += order.totalprice
+						shop.available_balance += totalprice
 						self.session.commit()
 
 					if shop_follow: 
@@ -1382,7 +1382,8 @@ class ShopBalance(AdminBaseHandler):
 		shop_auth = self.current_shop.shop_auth
 		has_done = ''
 		decline_reason = ''
-		available_balance = self.current_shop.available_balance
+		available_balance = format(self.current_shop.available_balance,'.2f')
+		print(available_balance)
 		try:
 			apply_list = self.session.query(models.ApplyCashHistory).filter_by(shop_id=shop_id)
 			apply_cash = apply_list.order_by(desc(models.ApplyCashHistory.create_time)).first()
@@ -1456,13 +1457,16 @@ class ShopBalance(AdminBaseHandler):
 		elif action == 'cash_history':
 			history = []
 			page=int(self.args['page'])-1
-			
-			balance_history = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,balance_type = 2)
-			history_list = balance_history.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-			count =balance_history.count()
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,balance_type = 2)\
+			.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(shop_id = shop_id,balance_type = 2).all()
+			count =q[0][1]
+			total=q[0][0]
+			total = format(total,'.2f')	
+			times = count
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				print('history_list error')
+				print(' cash history_list error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
@@ -1471,23 +1475,18 @@ class ShopBalance(AdminBaseHandler):
 				shop_totalBalance = format(shop_totalBalance,'.2f')
 				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
 					'type':temp.balance_type,'total':shop_totalBalance})
-			apply_total = balance_history.all()
-			for item in apply_total:
-				total=total+item.balance_value
-			total = format(total,'.2f')	
-			times = len(apply_total)
+
 			return self.send_success(history = history,page_sum=page_sum,total=total,times=times)
 
 		elif action == 'all_history':
 			history = []
 			page=int(self.args['page'])-1
-			balance_history = self.session.query(models.BalanceHistory).filter(or_(models.BalanceHistory.balance_type==0,\
-				models.BalanceHistory.balance_type==2,models.BalanceHistory.balance_type==3)).filter_by(shop_id = shop_id)
+			balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_type.in_([0,2,3])).filter_by(shop_id = shop_id)
 			history_list = balance_history.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			count =balance_history.count()
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				print('get all BalanceHistory error')
+				print('get all history error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
@@ -1503,12 +1502,20 @@ class ShopBalance(AdminBaseHandler):
 			page=int(self.args['page'])-1
 			pay = 0
 			left = 0
-			balance_history = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,balance_type = 0)
-			history_list = balance_history.offset(page*page_size).limit(page_size).all()
-			count = balance_history.count()
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,balance_type = 0).\
+			order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(shop_id = shop_id,balance_type = 0).all()
+			q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(shop_id = shop_id,balance_type = 1).all()
+			total =q[0][0]
+			count = q[0][1]
+			pay = q1[0][0]
+			total = format(total,'.2f')	
+			pay = format(pay,'.2f')
+			left = float(total)-float(pay)
+			left = format(left,'.2f')
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				print('get all BalanceHistory error')
+				print('get all recharge error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
@@ -1517,26 +1524,18 @@ class ShopBalance(AdminBaseHandler):
 				shop_totalBalance = format(shop_totalBalance,'.2f')
 				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
 					'type':temp.balance_type,'total':shop_totalBalance})
-			apply_total = balance_history.all()
-			for item in apply_total:
-				total = total + item.balance_value
-			total = format(total,'.2f')	
-			balance_pay_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,balance_type = 1).all()
-			for item in balance_pay_list:
-				pay = pay + item.balance_value
-			pay = format(pay,'.2f')
-			left = float(total)-float(pay)
-			left = format(left,'.2f')
-			# times = len(apply_total)
-			# persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(shop_id = shop_id,balance_type = 0).count()
 			return self.send_success(history = history,page_sum=page_sum,total=total,pay=pay,left=left)
 
 		elif action == 'online':
 			history = []
 			page=int(self.args['page'])-1
-			balance_history = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,balance_type = 3)
-			history_list = balance_history.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-			count =balance_history.count()
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,balance_type = 3)\
+			.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(shop_id = shop_id,balance_type =3).all()
+			persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(shop_id = shop_id,balance_type = 3).count()
+			total =q[0][0]
+			count = q[0][1]
+			times = count
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
 				print('get all BalanceHistory error')
@@ -1548,12 +1547,6 @@ class ShopBalance(AdminBaseHandler):
 				shop_totalBalance = format(shop_totalBalance,'.2f')
 				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
 					'type':temp.balance_type,'total':shop_totalBalance})
-			apply_total = balance_history.all()
-			for item in apply_total:
-				total=total+item.balance_value
-			total = format(total,'.2f')	
-			times = len(apply_total)
-			persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(shop_id = shop_id,balance_type = 3).count()
 			return self.send_success(history = history,page_sum=page_sum,total=total,times=times,persons=persons)
 			
 		else:

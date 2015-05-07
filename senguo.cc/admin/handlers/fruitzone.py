@@ -51,6 +51,7 @@ class ShopList(FruitzoneBaseHandler):
 		# fruit_types = []
 		# for f_t in self.session.query(models.FruitType).all():
 		#     fruit_types.append(f_t.safe_props())
+		print(city_id+"===========")
 		return self.render("fruitzone/list.html", context=dict(province_count=province_count,\
 			city = city ,city_id = city_id, shop_count=shop_count,subpage="home"))
 
@@ -705,7 +706,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 			url = self.test_create_tmporder_url(price)
 		except Exception as e:
 			return self.send_fail('ca')
-		return self.redirect(url)
+		return self.send_success(url = url)
 	
 	@FruitzoneBaseHandler.check_arguments("charge_type:int", "pay_type")
 	def handle_confirm_payment(self):

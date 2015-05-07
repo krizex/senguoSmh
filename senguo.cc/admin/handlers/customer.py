@@ -379,7 +379,7 @@ class ShopProfile(CustomerBaseHandler):
 		return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
 						   fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
 						   service_area=service_area, headimgurls=headimgurls, signin=signin,
-						   comments=self.get_comments(shop_id, page_size=2), comment_sum=comment_sum,
+						   comments=self.get_comments(shop_id, page_size=3), comment_sum=comment_sum,
 						   context=dict(subpage='shop'),shop_name = shop_name,shop_logo = shop_logo)
 
 	@tornado.web.authenticated
@@ -2036,7 +2036,7 @@ class payTest(CustomerBaseHandler):
 			# 支付成功后  生成一条余额支付记录
 			name = self.current_user.accountinfo.nickname
 			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-				balance_value = totalPrice,balance_record = '余额充值：'+ name  , name = name , balance_type = 0,\
+				balance_value = totalPrice,balance_record = '充值：用户 '+ name  , name = name , balance_type = 0,\
 				shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice)
 			self.session.add(balance_history)
 			print(balance_history , '钱没有白充吧？！')

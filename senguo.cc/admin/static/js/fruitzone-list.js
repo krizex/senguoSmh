@@ -1,10 +1,15 @@
 
 $(document).ready(function(){
+    var city_id = $("#city_id").val();
     //search
     $(document).on('click','#searchSubmit',function(evt){Search(evt);});
     $('.willOpen').on('click',function(){noticeBox('即将开放，敬请期待！')});
     //shop info
-    shopsList(1,'',window.dataObj.action);
+    if(city_id){
+        filter(city_id,'city');
+    }else{
+        shopsList(1,'',window.dataObj.action);
+    }
     scrollLoading();
     //province and city
     var area=window.dataObj.area;
@@ -106,7 +111,7 @@ $(document).ready(function(){
         $('.list_item').addClass('hidden');
         $('.city_choose').removeClass('city_choosed');
         $('.city_name').text('城市');
-    });   
+    });
 });
 
 function add_bg(){
@@ -176,7 +181,7 @@ var shopsList=function(page,data,action){
         {
             if(window.dataObj.shop_item==undefined)
             {
-                getItem('/static/items/fruitzone/shop_item.html?v=2015-0320',function(data){
+                getItem('/static/items/fruitzone/shop_item.html?v='+new Date().getTime(),function(data){
                     window.dataObj.shop_item=data;
                      initData(res);
                 });
