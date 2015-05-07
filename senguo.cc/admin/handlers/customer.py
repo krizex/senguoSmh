@@ -270,10 +270,15 @@ class CustomerProfile(CustomerBaseHandler):
 	def get(self):
 	   # 模板中通过current_user获取当前admin的相关数据，
 	   # 具体可以查看models.ShopAdmin中的属性
+	   customer_id = self.current_user.id
 	   time_tuple = time.localtime(self.current_user.accountinfo.birthday)
 	   birthday = time.strftime("%Y-%m", time_tuple)
 	   # print(self.current_shop,self.current_shop.shop_auth)
-	   self.render("customer/profile.html", context=dict(birthday=birthday))
+	   third=[]
+	   accountinfo =self.session.query(models.Accountinfo).filter_by(id = self.current_user.accountinfo.id).first()
+	   if accountinfo.wx_unionid:
+	   	third.append({'weixin':True})
+	   self.render("customer/profile.html", context=dict(birthday=birthday,third=third))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data","old_password?:str")
