@@ -777,8 +777,8 @@ class Order(AdminBaseHandler):
 				shop_id = order.shop_id
 				if order.pay_type == 2:
 				#该订单之前 对应的记录作废
-					old_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id = customer_id,\
-						shop_id = shop_id).filter(models.BalanceHistory.balance_record.like(order.num)).first()
+					balance_record = ("%{0}%").format(order.num)
+					old_balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_record.like(balance_record)).first()
 					if old_balance_history is None:
 						print('old histtory not found')
 					else:

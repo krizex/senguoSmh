@@ -1595,12 +1595,15 @@ class Order(CustomerBaseHandler):
 
 				#将 该订单 对应的 余额记录取出来 ，置为 不可用
 
-				old_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id = customer_id,\
-					shop_id = shop_id).filter(models.BalanceHistory.balance_record.like(order.num)).first()
+				balance_record = ("%{0}%").format(order.num)
+				print(balance_record)
+
+				old_balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_record.like(balance_record)).first()
 				if old_balance_history is None:
 					print('old histtory not found')
 				else:
 					old_balance_history.is_cancel = 1
+					print(old_balance_history.is_cancel,'is cancel???')
 					self.session.commit()
 				#同时生成一条新的记录
 				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
