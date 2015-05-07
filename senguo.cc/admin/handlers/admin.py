@@ -1461,7 +1461,8 @@ class ShopBalance(AdminBaseHandler):
 			.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(shop_id = shop_id,balance_type = 2).all()
 			count =q[0][1]
-			total=q[0][0]
+			if q[0][0]:
+				total=q[0][0]
 			total = format(total,'.2f')	
 			times = count
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
@@ -1506,9 +1507,11 @@ class ShopBalance(AdminBaseHandler):
 			order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(shop_id = shop_id,balance_type = 0).all()
 			q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(shop_id = shop_id,balance_type = 1).all()
-			total =q[0][0]
+			if q[0][0]:
+				total =q[0][0]
 			count = q[0][1]
-			pay = q1[0][0]
+			if q1[0][0]:
+				pay = q1[0][0]
 			total = format(total,'.2f')	
 			pay = format(pay,'.2f')
 			left = float(total)-float(pay)
@@ -1533,9 +1536,11 @@ class ShopBalance(AdminBaseHandler):
 			.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(shop_id = shop_id,balance_type =3).all()
 			persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(shop_id = shop_id,balance_type = 3).count()
-			total =q[0][0]
+			if q[0][0]:
+				total =q[0][0]
 			count = q[0][1]
 			times = count
+			total = format(total,'.2f')	
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
 				print('get all BalanceHistory error')
