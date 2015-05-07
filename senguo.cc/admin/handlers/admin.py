@@ -775,6 +775,15 @@ class Order(AdminBaseHandler):
 				order.get_num(session,order.id)
 
 				if order.pay_type == 2:
+				#该订单之前 对应的记录作废
+					old_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id = customer_id,\
+						shop_id = shop_id).filter(models.BalanceHistory.balance_record.like(order.num)).first()
+					if old_balance_history is None:
+						print('old histtory not found')
+					else:
+						old_balance_history.is_cancel = 1
+						self.session.commit()
+
 				#恢复用户账户余额，同时产生一条记录
 					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = order.customer_id,\
 						shop_id = order.shop_id).first()
@@ -1347,18 +1356,16 @@ class Config(AdminBaseHandler):
 			self.current_shop.config.update(session=self.session,cash_on_active=active)
 		elif action == "balance_on":
 			active = self.current_shop.config.balance_on_active
+			balance_on_active =self.current_shop.config.balance_on_active
 			shop_balance = self.current_shop.shop_balance
-			shop_blockage = self.current_shop.shop_blockage
-			if shop_balance == 0 and shop_blockage == 0:	
+			if shop_balance == 0:	
 				if active == 1:
 					active = 0
 				else:
 					active = 1
 				self.current_shop.config.update(session=self.session,balance_on_active=active)
-			elif shop_balance !=0:
+			elif shop_balance !=0 and balance_on_active == 1:
 				return self.send_fail('您的店铺余额不为0，不可关闭余额支付')
-			elif shop_blockage!=0:
-				return self.send_fail('您尚有余额支付的订单未完成，不可关闭余额支付')
 		elif action == "online_on":
 			active = self.current_shop.config.online_on_active
 			if active == 1:
@@ -1506,7 +1513,7 @@ class ShopBalance(AdminBaseHandler):
 			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,balance_type = 0).\
 			order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(shop_id = shop_id,balance_type = 0).all()
-			q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(shop_id = shop_id,balance_type = 1).all()
+			q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(shop_id = shop_id,balance_type = 1,is_cancel = 0).all()
 			if q[0][0]:
 				total =q[0][0]
 			count = q[0][1]

@@ -108,7 +108,9 @@
                 <span class="title img-title pull-left lh50">第三方帐号绑定</span>
                 <a href="javascript:;">
                     <i class="arr-right pull-right mt8"></i>
+                    {% if context['third'][0]['weixin'] == True %}
                     <a href="javascript:;"><img src="/static/images/wx.png" class="third-img pull-right ml6"/></a>
+                    {% end %}
                 </a>
             </div>
         </li>

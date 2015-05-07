@@ -443,7 +443,6 @@ window.dataObj.page=1;
 window.dataObj.count=1;
 window.dataObj.action=5;
 window.dataObj.finished=true;
-$('.loading').html("~努力加载中 ( > < )~").show();
 var scrollLoading=function(){  
     $(window).scroll(function(){
         var maxnum = window.dataObj.page_count;            //设置加载最多次数  
@@ -472,7 +471,6 @@ var goodsList=function(page,action){
         menu_id:window.dataObj.menu_id
     };
     // alert('i am here');
-    $('.loading').html("~努力加载中 ( > < )~").show();
     $.postJson(url,args,function(res){
         if(res.success)
         {

@@ -872,7 +872,7 @@ class Balance(SuperBaseHandler):
 			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0).\
 			order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type = 0).all()
-			q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(balance_type = 1).all()
+			q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(balance_type = 1,is_cancel = 0).all()
 			if q[0][0]:
 				total =q[0][0]
 			count = q[0][1]
