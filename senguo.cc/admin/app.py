@@ -19,7 +19,7 @@ settings = {
     "static_url_prefix": "/static/",
     "template_path": os.path.join(os.path.dirname(__file__), "templates"),
     "cookie_secret": "shabianishishabianishi",
-    "xsrf_cookies": True
+    "xsrf_cookies": False
 }
 
 class Application(tornado.web.Application):

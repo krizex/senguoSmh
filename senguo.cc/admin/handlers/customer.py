@@ -1937,7 +1937,7 @@ class payTest(CustomerBaseHandler):
 			totalPrice =float( self.get_cookie('money'))
 			print(totalPrice,'long time no see!')
 			unifiedOrder.setParameter("body",'charge')
-			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/callback')
+			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/paytest')
 			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",orderId)
 			#orderPriceSplite = (order.price) * 100
@@ -1959,7 +1959,13 @@ class payTest(CustomerBaseHandler):
 		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
 			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)
 
-	@CustomerBaseHandler.check_arguments('totalPrice?:float','action')
+	def check_xsrf_cookie(self):
+		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		pass
+		return
+
+
+	#@CustomerBaseHandler.check_arguments('totalPrice?:float','action')
 	def post(self):
 
 		# 微信 余额 支付
@@ -2014,7 +2020,10 @@ class payTest(CustomerBaseHandler):
 	#	else:
 	#		return self.send_fail('其它支付方式尚未开发')
 		
-
+	def check_xsrf_cookie(self):
+		print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!pass wxpay xsrf check!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+		pass
+		return
 
 class InsertData(CustomerBaseHandler):
 	@tornado.web.authenticated
