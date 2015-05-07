@@ -2032,7 +2032,7 @@ class payTest(CustomerBaseHandler):
 		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
 			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)
 
-	@CustomerBaseHandler.check_arguments('totalPrice?:float','action')
+	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?str')
 	def post(self):
 
 		# 微信 余额 支付
@@ -2087,6 +2087,48 @@ class payTest(CustomerBaseHandler):
 			return self.send_success()
 	#	else:
 	#		return self.send_fail('其它支付方式尚未开发')
+
+class AlipayNotify(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		shop_id = self.get_cookie('market_shop_id')
+		customer_id = self.current_user.id
+	#	code = self.args['code']
+	#	path_url = self.request.full_url()
+		totalPrice =float( self.get_cookie('money'))
+		#########################################################
+		# 用户余额增加 
+		# 同时店铺余额相应增加 
+		# 应放在 支付成功的回调里
+		#########################################################
+
+		# 支付成功后，用户对应店铺 余额 增1加
+		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+			shop_id = shop_id).first()
+		print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
+		if not shop_follow:
+			return self.send_fail('shop_follow not found')
+		shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
+		self.session.commit()
+
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if not shop:
+			return self.send_fail('shop not found')
+		shop.shop_balance += totalPrice
+		self.session.commit()
+		print(shop.shop_balance ,'充值后 商店 总额')
+
+		# 支付成功后  生成一条余额支付记录
+		name = self.current_user.accountinfo.nickname
+		balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
+			balance_value = totalPrice,balance_record = '充值：用户 '+ name  , name = name , balance_type = 0,\
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice)
+		self.session.add(balance_history)
+		print(balance_history , '钱没有白充吧？！')
+		self.session.commit()
+		return self.send_success(text = '充值成功')
+		# return self.render('fruitzone/alipayTest.html')
+
 		
 
 

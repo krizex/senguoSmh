@@ -34,6 +34,7 @@ handlers = [
     
     (r"/customer/profile", handlers.customer.CustomerProfile, {}, "customerProfile"),
     (r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
+    (r"/customer/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
     #微官网-----待删除
     (r"/", handlers.superadmin.Official),
 
