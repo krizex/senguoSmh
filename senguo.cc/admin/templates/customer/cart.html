@@ -211,16 +211,16 @@
             <div class="send-address-choose clearfix center-block bg-white box-style">
                 <p class="clearfix">
                     <span class="pull-left text-grey3 font14 m-b5">支付方式</span>
-                    <span class="pull-right ">余额：{{balance_value}}元&nbsp;&nbsp;<a href="/customer/recharge" class="a-cz" data-auth="{{show_balance}}" data-status="{{balance_on}}">+充值</a></span>
+                    <span class="pull-right ">余额：{{balance_value}}元&nbsp;&nbsp;<a href="/customer/recharge" class="a-cz" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">+充值</a></span>
                 </p>
                 <ul id="payType" class="pay_type list-group  font12">
-                    <li data-id="1" class="active list-group-item clearfix line50 height50 item" data-status="{{cash_on}}">
+                    <li data-id="1" class="active list-group-item clearfix line50 height50 item" data-status="{{config.cash_on_active}}">
                         <a href="javascript:;" class="text-grey">
                             <span class="text-grey3 pull-left title set-inl-blo font14">货到付款</span>
                             <span class="pull-left text-grey9">送货员送货时交付现金</span>
                         </a>
                     </li>
-                   <li data-id="2" class="list-group-item clearfix line50 height50 item" id="balance-pay" data-auth="{{show_balance}}" data-status="{{balance_on}}">
+                   <li data-id="2" class="list-group-item clearfix line50 height50 item" id="balance-pay" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">
 	           <a href="javascript:;" class="text-grey">
                             <span class="text-grey3 pull-left title set-inl-blo font14">余额支付</span>
                             <span class="pull-left text-grey9">提前支付</span>
@@ -229,14 +229,15 @@
                 </ul>
             </div>
             <input id="messageCon" class="message-input input-sty box-style center-block font14 bg-white bg-grey" type="text" value="" placeholder="留个言调戏下客服吧？(⊙_⊙)">
-            <button id="submitOrder" class="sub-btn w-per6 bg-green text-white text-center center-block btn mt10 clearfix sure_btn">提交订单</button>
-            <!--
+            {% if config.text_message_active  == 0 and shop_new == 0%}
             <button  class="sub-btn w-per6 bg-grey99 text-white text-center center-block btn mt10 clearfix un_tie sure_btn">提交订单</button>
             <div class="first_notice center-block clearfix mt10">
                 <span class="pull-left">第一次下单?</span>
                 <button  class="sure_btn  text-center  pull-right" id="phoneNumber">绑定手机号</button>
             </div>
-            -->
+            {% else %}
+             <button id="submitOrder" class="sub-btn w-per6 bg-green text-white text-center center-block btn mt10 clearfix sure_btn">提交订单</button>
+            {% end %}
         </div>
         <div class="bottom-line"></div>
     </div>

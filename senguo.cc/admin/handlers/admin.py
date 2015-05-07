@@ -773,7 +773,8 @@ class Order(AdminBaseHandler):
 				del_reason = data["del_reason"]
 				order.update(session=session, status=0,del_reason = del_reason)
 				order.get_num(session,order.id)
-
+				customer_id = order.customer_id
+				shop_id = order.shop_id
 				if order.pay_type == 2:
 				#该订单之前 对应的记录作废
 					old_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id = customer_id,\
@@ -1290,7 +1291,8 @@ class Config(AdminBaseHandler):
 				return self.render("admin/shop-pay-set.html",context=dict(subpage='shop_set',shopSubPage='pay_set'))
 			else:
 				return self.redirect(self.reverse_url('adminShopConfig'))
-
+		elif action == "phone":
+			return self.render('admin/shop-phone-set.html',context=dict(subpage='shop_set',shopSubPage='phone_set'))
 		else:
 			return self.send_error(404)
 
@@ -1373,6 +1375,13 @@ class Config(AdminBaseHandler):
 			else:
 				active = 1
 			self.current_shop.config.update(session=self.session,online_on_active=active)
+		elif action =="text_message_on":
+			active = self.current_shop.config.text_message_active
+			if active == 1:
+				active = 0
+			else:
+				active = 1
+			self.current_shop.config.update(session=self.session,text_message_active=active)
 		else:
 			return self.send_error(404)
 		return self.send_success()

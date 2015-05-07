@@ -1336,9 +1336,10 @@ class Config(MapBase, _CommonApi):
 	intime_period = Column(Integer,default = 0) 
 	#4.24 add receipt_img_active
 	receipt_img_active = Column(Integer,default = 1)
-	cash_on_active =Column(Integer,default = 1)#0:货到付款关闭 1:货到付款付开启 5.4
-	online_on_active =Column(Integer,default = 1) #0:在线支付关闭 1:在线支付开启 5.4
-	balance_on_active =Column(Integer,default = 1) #0:余额支付关闭 1:余额支付开启 5.4
+	cash_on_active = Column(Integer,default = 1)#0:货到付款关闭 1:货到付款付开启 5.4
+	online_on_active = Column(Integer,default = 1) #0:在线支付关闭 1:在线支付开启 5.4
+	balance_on_active = Column(Integer,default = 1) #0:余额支付关闭 1:余额支付开启 5.4
+	text_message_active = Column(Integer,default = 0) #首单短信验证 0:关闭 1:开启 5.7
 
 #商城首页的公告
 class Notice(MapBase):

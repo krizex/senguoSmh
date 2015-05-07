@@ -10,6 +10,7 @@
 {% set info_active = ''%}
 {% set cert_active ='' %}
 {% set pay_active ='' %}
+{% set phone_active ='' %}
 
 {% if shopSubPage == 'delivery_set'  %}
     {% set delivery_active ='active' %}
@@ -21,6 +22,8 @@
     {% set cert_active ='active' %}
 {% elif shopSubPage =='pay_set' %}
     {% set pay_active ='active' %}
+{% elif shopSubPage =='phone_set' %}
+    {% set phone_active ='active' %}
 {% else %}
     {% set receipt_active ='active' %}
 {% end %}
@@ -36,6 +39,7 @@
      {% if current_shop.shop_auth !=0 %}
     <li class="{{pay_active}}"><a href="{{reverse_url('adminConfig')}}?action=pay">支付方式</a></li>
     {% end %}
+    <li class="{{phone_active}}"><a href="{{reverse_url('adminConfig')}}?action=phone">短信验证</a></li>
 </ul>
 {% if shopSubPage != 'cert_set' and shopSubPage != 'pay_set'%}
 <div class="set-description">

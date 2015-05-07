@@ -1087,6 +1087,7 @@ class Cart(CustomerBaseHandler):
 		show_balance = False
 		balance_value = 0
 		storages = {}
+		shop_new = 0
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		except:
@@ -1105,19 +1106,19 @@ class Cart(CustomerBaseHandler):
 		shop_name = shop.shop_name
 		shop_id = shop.id
 		shop_logo = shop.shop_trademark_url
-		cash_on = shop.config.cash_on_active
-		balance_on = shop.config.balance_on_active
 		try:
-			custormer_balance =self.session.query(models.CustomerShopFollow).\
+			customer_follow =self.session.query(models.CustomerShopFollow).\
 			filter_by(customer_id = customer_id,shop_id =shop_id ).first()
 		except:
 			print('custormer_balance error')
-		if custormer_balance:
-			balance_value = format(custormer_balance.shop_balance,'.2f')
-		
+		if customer_follow:
+			if customer_follow.shop_balance:
+				balance_value = format(customer_follow.shop_balance,'.2f')
+			shop_new = customer_follow.shop_new
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		print(self.get_cookie('market_shop_id'),'没有报错啊')
 		self._shop_code = shop.shop_code
+
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits) or eval(cart.mgoods))): #购物车为空
@@ -1144,7 +1145,7 @@ class Cart(CustomerBaseHandler):
 		return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name  = shop_name ,shop_code=shop_code,shop_logo = shop_logo,balance_value=balance_value,\
-						   cash_on=cash_on,balance_on=balance_on,context=dict(subpage='cart'))
+						  shop_new=shop_new,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
