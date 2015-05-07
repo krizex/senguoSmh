@@ -271,9 +271,18 @@ class CustomerProfile(CustomerBaseHandler):
 	   # 模板中通过current_user获取当前admin的相关数据，
 	   # 具体可以查看models.ShopAdmin中的属性
 	   time_tuple = time.localtime(self.current_user.accountinfo.birthday)
-	   birthday = time.strftime("%Y-%m", time_tuple)
+	   birthday = time.strftime("%Y-%m-%d", time_tuple)
+	   shop_info = []
+	   follow = ''
+	   try:
+	   		follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id).order_by(models.CustomerShopFollow.create_time.desc()).limit(3).all()
+	   except:
+	   		print('该用户未关注任何店铺')
+	   for shopfollow in follow:
+	   		shop=self.session.query(models.Shop).filter_by(id = shopfollow.shop_id).first()
+	   		shop_info.append({'logo':shop.shop_trademark_url,'shop_code':shop.shop_code})
 	   # print(self.current_shop,self.current_shop.shop_auth)
-	   self.render("customer/profile.html", context=dict(birthday=birthday))
+	   self.render("customer/profile.html", context=dict(birthday=birthday,shop_info=shop_info))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data","old_password?:str")
@@ -290,11 +299,16 @@ class CustomerProfile(CustomerBaseHandler):
 		elif action == "edit_birthday":
 			year = int(data["year"])
 			month = int(data["month"])
+			day = int(data["day"])
 			try:
-				birthday = datetime.datetime(year=year, month=month, day=19)
+				birthday = datetime.datetime(year=year, month=month, day=day)
 			except ValueError as e:
-				return self.send_fail("月份必须为1~12")
+				return self.send_fail("请填写正确的年月日格式")
 			self.current_user.accountinfo.update(session=self.session, birthday=time.mktime(birthday.timetuple()))
+			#time_tuple = time.localtime(birthday)
+			#print(type(time_tuple))
+			birthday = birthday.strftime("%Y-%m-%d")
+			return self.send_success(birthday=birthday)
 		elif action == 'add_password':
 			self.current_user.accountinfo.update(session = self.session , password = data)
 			print("[设置密码]设置成功，密码：",data)

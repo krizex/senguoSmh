@@ -28,14 +28,7 @@
             <div class="info-con h19">
                 <span class="title pull-left">姓名</span>
                 <i class="arr-right pull-right"></i>
-                <a href="javascript:;" class="nickname pull-right s1 editInfo" id="userRealname">{{current_user.accountinfo.realname}}</a>
-            </div>
-            <div class="info-edit" style="display:none;">
-                <input type="text" class="edit-box" id="realnameEdit" value="{{current_user.accountinfo.realname or ''}}" placeholder="请设置"/>
-                <div class="btn-box">
-                    <a href="javascript:;" class="btn concel-btn text-white">取消</a>
-                    <a href="javascript:;" class="btn sure-btn text-white"  data-action="realname">确定</a>
-                </div>
+                <a href="javascript:;" class="nickname pull-right s1" id="userRealname">{{current_user.accountinfo.realname}}</a>
             </div>
         </li>
         <li class="item">
@@ -51,15 +44,7 @@
             <div class="info-con h19">
                 <span class="title pull-left">出生日期</span>
                 <i class="arr-right pull-right"></i>
-                <a href="javascript:;" class="pull-right editInfo" id="userBirthday">{{context['birthday'] or '请设置'}}</a>
-            </div>
-            <div class="info-edit" style="display:none;">
-                <input type="text" class="edit-box" placeholder="请输入您的出生年份 例如：2014" id="yearEdit" value=""/>
-                <input type="text" class="edit-box" placeholder="请输入您的出生月份 例如：05" id="monthEdit" value=""/>
-                <div class="btn-box">
-                    <a href="javascript:;" class="btn concel-btn text-white">取消</a>
-                    <a href="javascript:;" class="btn sure-btn text-white" data-action="birthday">确定</a>
-                </div>
+                <a href="javascript:;" class="pull-right" id="userBirthday">{{context['birthday'] or '请设置'}}</a>
             </div>
         </li>
         <li class="item">
@@ -67,9 +52,9 @@
                 <span class="title img-title pull-left">我浏览过的店铺</span>
                 <a href="javascript:;">
                     <i class="arr-right pull-right mt12"></i>
-                    <a href="javascript:;"><img src="{{current_user.accountinfo.headimgurl}}" class="shop-img pull-right ml6"/></a>
-                    <a href="javascript:;"><img src="{{current_user.accountinfo.headimgurl}}" class="shop-img pull-right ml6"/></a>
-                    <a href="javascript:;"><img src="{{current_user.accountinfo.headimgurl}}" class="shop-img pull-right ml6"/></a>
+                    {% for shop in context['shop_info'] %}
+                    <a href="/{{shop['shop_code']}}"><img src="{{shop['logo'] or '/static/images/TDSG_l.png'}}" class="shop-img pull-right ml6"/></a>
+                    {% end %}
                 </a>
             </div>
         </li>
@@ -123,9 +108,7 @@
                 <span class="title img-title pull-left lh50">第三方帐号绑定</span>
                 <a href="javascript:;">
                     <i class="arr-right pull-right mt8"></i>
-                    <a href="javascript:;"><img src="/static/images/wb.png" class="third-img pull-right ml6"/></a>
-                    <a href="javascript:;"><img src="/static/images/wb.png" class="third-img pull-right ml6"/></a>
-                    <a href="javascript:;"><img src="/static/images/wb.png" class="third-img pull-right ml6"/></a>
+                    <a href="javascript:;"><img src="/static/images/wx.png" class="third-img pull-right ml6"/></a>
                 </a>
             </div>
         </li>
@@ -216,6 +199,48 @@
                     <li class="list-group-item height40" data-id="2">女</li>
                     <li class="list-group-item height40" data-id="0">其他</li>
                 </ul>
+            </div>
+            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
+        </div>
+    </div>
+</div>
+<div class="modal fade sex-popbox" id="nameBox">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
+            <div class="modal-header set-width-float">
+                <button type="button" class="close dismiss">✕</button>
+                <h2 class="modal-title  text-center line48">修改姓名</h2>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="name-ipt input1" id="realnameEdit" placeholder="请输入真实姓名" value="{{current_user.accountinfo.realname or ''}}"/>
+            </div>
+            <div class="modal-warn">
+            </div>
+            <div class="modal-footer clearfix">
+                <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn text-white" id="nameSure">确定</button>
+            </div>
+            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
+        </div>
+    </div>
+</div>
+<div class="modal fade sex-popbox" id="birthBox">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
+            <div class="modal-header set-width-float">
+                <button type="button" class="close dismiss">✕</button>
+                <h2 class="modal-title  text-center line48">修改生日</h2>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="birth-ipt input1" id="year-ipt" placeholder="出生年份,如：2015" value=""/>
+                <input type="text" class="birth-ipt input1" id="month-ipt" placeholder="出生月份,如：05" value=""/>
+                <input type="text" class="birth-ipt input1" id="day-ipt" placeholder="出生当天,如：20" value=""/>
+            </div>
+            <div class="modal-warn">
+            </div>
+            <div class="modal-footer clearfix">
+                <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn text-white" id="birthSure">确定</button>
             </div>
             <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
         </div>

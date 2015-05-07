@@ -42,6 +42,7 @@ $(document).ready(function(){
                 data:{price:money,_xsrf:window.dataObj._xsrf},
                 type:"post",
                 success:function(res){
+                    SetCookie("money",money,30);
                     window.location.href=res.url;
                 }
             })
