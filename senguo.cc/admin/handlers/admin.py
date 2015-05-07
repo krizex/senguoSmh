@@ -1356,10 +1356,9 @@ class Config(AdminBaseHandler):
 			self.current_shop.config.update(session=self.session,cash_on_active=active)
 		elif action == "balance_on":
 			active = self.current_shop.config.balance_on_active
-			balance_on_active =self.current_shop.balance_on_active
+			balance_on_active =self.current_shop.config.balance_on_active
 			shop_balance = self.current_shop.shop_balance
-			shop_blockage = self.current_shop.shop_blockage
-			if shop_balance == 0 and shop_blockage == 0:	
+			if shop_balance == 0:	
 				if active == 1:
 					active = 0
 				else:
@@ -1367,8 +1366,6 @@ class Config(AdminBaseHandler):
 				self.current_shop.config.update(session=self.session,balance_on_active=active)
 			elif shop_balance !=0 and balance_on_active == 1:
 				return self.send_fail('您的店铺余额不为0，不可关闭余额支付')
-			elif shop_blockage!=0:
-				return self.send_fail('您尚有余额支付的订单未完成，不可关闭余额支付')
 		elif action == "online_on":
 			active = self.current_shop.config.online_on_active
 			if active == 1:
