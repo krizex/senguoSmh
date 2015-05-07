@@ -1571,11 +1571,22 @@ class Order(CustomerBaseHandler):
 				if not shop:
 					return self.send_fail('shop not found')
 
+				#将 该订单 对应的 余额记录取出来 ，置为 不可用
+
+				old_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id = customer_id,\
+					shop_id = shop_id).filter(models.BalanceHistory.balance_record.like(order.num)).first()
+				if old_balance_history is None:
+					print('old histtory not found')
+				else:
+					old_balance_history.is_cancel = 1
+					self.session.commit()
+				#同时生成一条新的记录
 				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
 						balance_value = order.totalPrice,balance_record = '退款：订单'+ order.num + '取消', name = self.current_user.accountinfo.nickname,\
 						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = \
 						shop_follow.shop_balance)
 				self.session.add(balance_history)
+
 			self.session.commit()
 		elif action == "comment":
 			data = self.args["data"]

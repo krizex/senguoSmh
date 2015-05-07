@@ -775,6 +775,15 @@ class Order(AdminBaseHandler):
 				order.get_num(session,order.id)
 
 				if order.pay_type == 2:
+				#该订单之前 对应的记录作废
+					old_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id = customer_id,\
+						shop_id = shop_id).filter(models.BalanceHistory.balance_record.like(order.num)).first()
+					if old_balance_history is None:
+						print('old histtory not found')
+					else:
+						old_balance_history.is_cancel = 1
+						self.session.commit()
+
 				#恢复用户账户余额，同时产生一条记录
 					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = order.customer_id,\
 						shop_id = order.shop_id).first()
