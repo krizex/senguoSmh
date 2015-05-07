@@ -495,7 +495,7 @@ class Order(AdminBaseHandler):
 			session = self.session
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
-			orders.sort(key = lambda order:order.send_time,reverse = True)
+			orders.sort(key = lambda order:order.send_time,reverse = False)
 
 		elif order_status == 5:#all
 			orders = [x for x in self.current_shop.orders if x.type == order_type ]
@@ -530,7 +530,7 @@ class Order(AdminBaseHandler):
 		page_sum = count /10
 		session = self.session
 		page_area = page * page_size
-		orders = sorted(orders , key = lambda x:x.send_time,reverse=True)[page_area:page_area+10]
+		orders = orders[page_area:page_area+10]
 		# print("after sort",orders)
 		# for order in orders:
 		#     print(order.w_send_time)
@@ -741,14 +741,13 @@ class Order(AdminBaseHandler):
 								self.session.add(point_history)
 								self.session.commit()
 
-						#订单完成后，将相应店铺冻结资产 转为 店铺余额
-						# 铁说 这是平台思维 已废弃使用 ，改为 用户充值后钱立马到 商铺帐号上
-						# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-						# if not shop:
-						# 	return self.send_fail('shop not found')
+						# 订单完成后，将相应店铺可提现 余额相应增加
+						shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+						if not shop:
+							return self.send_fail('shop not found')
 						# shop.shop_balance += order.totalprice * 100
-						# shop.shop_blockage -= order.totalprice * 100
-						# self.session.commit()
+						shop.available_balance += totalprice
+						self.session.commit()
 
 					if shop_follow: 
 						if shop_follow.shop_point == None:
@@ -768,10 +767,37 @@ class Order(AdminBaseHandler):
 			elif action == "edit_totalPrice":
 				order.update(session=self.session, totalPrice=data["totalPrice"])
 			elif action == "del_order":
+				if order.status == 0:
+					return self.send_fail('订单已经被删除，不能重复操作')
 				session = self.session
 				del_reason = data["del_reason"]
 				order.update(session=session, status=0,del_reason = del_reason)
 				order.get_num(session,order.id)
+				customer_id = order.customer_id
+				shop_id = order.shop_id
+				if order.pay_type == 2:
+				#该订单之前 对应的记录作废
+					balance_record = ("%{0}%").format(order.num)
+					old_balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_record.like(balance_record)).first()
+					if old_balance_history is None:
+						print('old histtory not found')
+					else:
+						old_balance_history.is_cancel = 1
+						self.session.commit()
+
+				#恢复用户账户余额，同时产生一条记录
+					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = order.customer_id,\
+						shop_id = order.shop_id).first()
+					if not shop_follow:
+						return self.send_fail('shop_follow not found')
+					shop_follow.shop_balance += order.totalPrice
+
+					balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
+						balance_value = order.totalPrice,balance_record = '退款：订单'+ order.num+'删除', name = self.current_user.accountinfo.nickname,\
+						balance_type = 4,shop_totalPrice = self.current_shop.shop_balance,customer_totalPrice = \
+						shop_follow.shop_balance)
+					self.session.add(balance_history)
+				self.session.commit()
 
 			elif action == "print":
 				order.update(session=self.session, isprint=1)
@@ -1042,6 +1068,8 @@ class Follower(AdminBaseHandler):
 		order_by = self.args["order_by"]
 		page = self.args["page"]
 		page_size = 10
+		count = 0
+		page_sum = 0
 		shop_id = self.current_shop.id
 		if action in ("all", "old"):
 			if action == "all":  # 所有用户
@@ -1218,27 +1246,6 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			d['fruits'] = eval(d['fruits'])
 			d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
-			################################################################################################
-			# modified : woody
-			#date:2015.3.7
-			#TODO:  standardize the format of time
-			################################################################################################
-			# if order.start_time.minute <10:
-			# 	w_start_time_minute ='0' + str(order.start_time.minute)
-			# else:
-			# 	w_start_time_minute = str(order.start_time.minute)
-			# if order.end_time.minute < 10:
-			# 	w_end_time_minute = '0' + str(order.end_time.minute)
-			# else:
-			# 	w_end_time_minute = str(order.end_time.minute)
-
-			# if order.type == 2 and order.today==2:
-			# 	w_date = order.create_date + delta
-			# else:
-			# 	w_date = order.create_date
-			# d["sent_time"] = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
-			# 									order.start_time.hour, w_start_time_minute,
-			# 									  order.end_time.hour, w_end_time_minute)
 			d["send_time"] = order.send_time
 			#yy
 			d["shop_new"] = 0
@@ -1284,7 +1291,8 @@ class Config(AdminBaseHandler):
 				return self.render("admin/shop-pay-set.html",context=dict(subpage='shop_set',shopSubPage='pay_set'))
 			else:
 				return self.redirect(self.reverse_url('adminShopConfig'))
-
+		elif action == "phone":
+			return self.render('admin/shop-phone-set.html',context=dict(subpage='shop_set',shopSubPage='phone_set'))
 		else:
 			return self.send_error(404)
 
@@ -1350,18 +1358,20 @@ class Config(AdminBaseHandler):
 			self.current_shop.config.update(session=self.session,cash_on_active=active)
 		elif action == "balance_on":
 			active = self.current_shop.config.balance_on_active
+			balance_on_active =self.current_shop.config.balance_on_active
 			shop_balance = self.current_shop.shop_balance
-			shop_blockage = self.current_shop.shop_blockage
-			if shop_balance == 0 and shop_blockage == 0:	
+			available_balance = self.current_shop.available_balance
+			if shop_balance == 0 and available_balance==0:	
 				if active == 1:
 					active = 0
 				else:
 					active = 1
 				self.current_shop.config.update(session=self.session,balance_on_active=active)
-			elif shop_balance !=0:
+			elif shop_balance !=0 and balance_on_active == 1:
 				return self.send_fail('您的店铺余额不为0，不可关闭余额支付')
-			elif shop_blockage!=0:
+			elif available_balance != shop_balance:
 				return self.send_fail('您尚有余额支付的订单未完成，不可关闭余额支付')
+
 		elif action == "online_on":
 			active = self.current_shop.config.online_on_active
 			if active == 1:
@@ -1369,6 +1379,13 @@ class Config(AdminBaseHandler):
 			else:
 				active = 1
 			self.current_shop.config.update(session=self.session,online_on_active=active)
+		elif action =="text_message_on":
+			active = self.current_shop.config.text_message_active
+			if active == 1:
+				active = 0
+			else:
+				active = 1
+			self.current_shop.config.update(session=self.session,text_message_active=active)
 		else:
 			return self.send_error(404)
 		return self.send_success()
@@ -1379,88 +1396,183 @@ class ShopBalance(AdminBaseHandler):
 	def get(self):
 		subpage = 'shopBlance'
 		shop = self.current_shop
+		shop_id = shop.id
 		shop_balance = format(shop.shop_balance,'.2f')
 		show_balance = False
 		shop_auth = self.current_shop.shop_auth
+		has_done = ''
+		decline_reason = ''
+		available_balance = format(self.current_shop.available_balance,'.2f')
+		print(available_balance)
+		try:
+			apply_list = self.session.query(models.ApplyCashHistory).filter_by(shop_id=shop_id)
+			apply_cash = apply_list.order_by(desc(models.ApplyCashHistory.create_time)).first()
+			
+			has_done = apply_cash.has_done
+			decline_reason = apply_cash.decline_reason
+
+		except:
+			print('apply_cash error')
+			
 		if shop_auth in [1,2,3,4]:
 			show_balance = True
 			return self.render("admin/shop-balance.html",shop_balance = shop_balance,\
-				show_balance = show_balance,context=dict(subpage=subpage))
+				show_balance = show_balance,has_done=has_done,decline_reason=decline_reason,\
+				available_balance = available_balance, context=dict(subpage=subpage))
 		else:
 			return self.redirect(self.reverse_url('adminHome'))
 
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('action','apply_value?:int','alipay_account?:str','page?:int')
+	@AdminBaseHandler.check_arguments('action','apply_value?:float','alipay_account?:str','account_name?:str','page?:int','code?:int','phone?:str')
 	def post(self):
 		action = self.args['action']
 		shop_id = self.current_shop.id
-		page=self.args['page']
+		page =0
 		page_size=10
 		page_sum=0
 		count=0
+		total = 0
+		times = 0
+		persons = 0
 		# 商铺申请提现
 		# 提现申请被超级管理员处理后,会产生一条余额变动记录
-		if action == 'cash':
+		if action == "get_code":
+			phone = self.args['phone']
+			print("[店铺提现]发送验证码到手机：",phone)
+			# gen_msg_token(phone=self.args["phone"])
+			# return self.send_success()
+			admin_phone = self.session.query(models.Shop).filter_by(id = shop_id).first().admin.accountinfo.phone
+			if admin_phone != phone:
+				return send_fail('该手机号不是管理员绑定的手机号')
+			resault = gen_msg_token(phone = phone)
+			if resault == True:
+				return self.send_success()
+			else:
+				return self.send_fail(resault)
+		elif action == 'cash':
 			apply_value = self.args['apply_value']
+			if apply_value > self.current_shop.available_balance:
+				return self.send_fail("您申请金额大于店铺 可提现的金额，请重新申请")
 			alipay_account = self.args['alipay_account']
+			account_name = self.args['account_name']
+			code = int(self.args['code'])
 			shop_id = self.current_shop.id
 			shop_code = self.current_shop.shop_code
 			shop_auth = self.current_shop.shop_auth
 			shop_balance = self.current_shop.shop_balance
 			applicant_name = self.current_user.accountinfo.nickname
-			applyCash_history = models.ApplyCashHistory(shop_id = shop_id , apply_value = apply_value ,has_done =0,\
+			phone = self.args['phone']
+			if not check_msg_token(phone,code):
+				return self.send_fail('验证码过期或不存在')
+			if apply_value>shop_balance:
+				return self.send_fail('您的店铺没有这么多余额')
+			applyCash_history = models.ApplyCashHistory(shop_id = shop_id , value = apply_value ,has_done =0,\
 				shop_code = shop_code,shop_auth = shop_auth , shop_balance = shop_balance,alipay_account = \
-				alipay_account,applicant_name = applicant_name)
+				alipay_account,applicant_name = applicant_name,account_name = account_name)
 			self.session.add(applyCash_history)
+			self.current_shop.update(self.session,alipay_account=alipay_account,alipay_account_name=account_name)
 			self.session.commit()
 			return self.send_success()
 
 		elif action == 'cash_history':
 			history = []
-			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
-				balance_type = 2).offset(page*page_size).limit(page_size).all()
-			# count =self.session.query.(models.BalanceHistory).filter_by(shop_id = shop_id,\
-			# 	balance_type = 2).count()
-			# page_sum=count/10
+			page=int(self.args['page'])-1
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,balance_type = 2)\
+			.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(shop_id = shop_id,balance_type = 2).all()
+			count =q[0][1]
+			if q[0][0]:
+				total=q[0][0]
+			total = format(total,'.2f')	
+			times = count
+			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				return self.send_fail('history_list error')
+				print(' cash history_list error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
-				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,'type':temp.balance_type})
-			return self.send_success(history = history,page_sum=page_sum)
+				shop_totalBalance = temp.shop_totalPrice
+				if shop_totalBalance == None:
+					shop_totalBalance=0
+				shop_totalBalance = format(shop_totalBalance,'.2f')
+				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
+					'type':temp.balance_type,'total':shop_totalBalance})
+
+			return self.send_success(history = history,page_sum=page_sum,total=total,times=times)
 
 		elif action == 'all_history':
 			history = []
-			history_list = self.session.query(models.BalanceHistory).filter(or_(models.BalanceHistory.balance_type==0,models.BalanceHistory.balance_type==2,models.BalanceHistory.balance_type==3))\
-			.filter_by(shop_id = shop_id).order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+			page=int(self.args['page'])-1
+			balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_type.in_([0,2,3])).filter_by(shop_id = shop_id)
+			history_list = balance_history.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+			count =balance_history.count()
+			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				return self.send_fail('get all BalanceHistory error')
+				print('get all history error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
-				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,'type':temp.balance_type})
-			return self.send_success(history = history)
+				shop_totalBalance = temp.shop_totalPrice
+				if shop_totalBalance == None:
+					shop_totalBalance=0
+				shop_totalBalance = format(shop_totalBalance,'.2f')
+				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
+					'type':temp.balance_type,'total':shop_totalBalance})
+			return self.send_success(history = history,page_sum=page_sum)
 
 		elif action == 'recharge':
 			history = []
-			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
-				balance_type = 0).offset(page*page_size).limit(page_size).all()
+			page=int(self.args['page'])-1
+			pay = 0
+			left = 0
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,balance_type = 0).\
+			order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(shop_id = shop_id,balance_type = 0).all()
+			q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(shop_id = shop_id,balance_type = 1,is_cancel = 0).all()
+			if q[0][0]:
+				total =q[0][0]
+			count = q[0][1]
+			if q1[0][0]:
+				pay = q1[0][0]
+			total = format(total,'.2f')	
+			pay = format(pay,'.2f')
+			left = float(total)-float(pay)
+			left = format(left,'.2f')
+			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				return self.send_fail('get all BalanceHistory error')
+				print('get all recharge error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
-				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,'type':temp.balance_type})
-			return self.send_success(history = history)
+				shop_totalBalance = temp.shop_totalPrice
+				if shop_totalBalance == None:
+					shop_totalBalance=0
+				shop_totalBalance = format(shop_totalBalance,'.2f')
+				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
+					'type':temp.balance_type,'total':shop_totalBalance})
+			return self.send_success(history = history,page_sum=page_sum,total=total,pay=pay,left=left)
 
 		elif action == 'online':
 			history = []
-			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,\
-				balance_type = 3).offset(page*page_size).limit(page_size).all()
+			page=int(self.args['page'])-1
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,balance_type = 3)\
+			.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(shop_id = shop_id,balance_type =3).all()
+			persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(shop_id = shop_id,balance_type = 3).count()
+			if q[0][0]:
+				total =q[0][0]
+			count = q[0][1]
+			times = count
+			total = format(total,'.2f')	
+			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				return self.send_fail('get all BalanceHistory error')
+				print('get all BalanceHistory error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
-				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,'type':temp.balance_type})
-			return self.send_success(history = history)
+				shop_totalBalance = temp.shop_totalPrice
+				if shop_totalBalance == None:
+					shop_totalBalance=0
+				shop_totalBalance = format(shop_totalBalance,'.2f')
+				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
+					'type':temp.balance_type,'total':shop_totalBalance})
+			return self.send_success(history = history,page_sum=page_sum,total=total,times=times,persons=persons)
 			
 		else:
 			return self.send_fail('action error')

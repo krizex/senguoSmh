@@ -234,6 +234,7 @@ class Home(CustomerBaseHandler):
 				count[5] += 1
 			elif order.status == 10:
 				count[6] += 1
+		print(count)
 		return self.render("customer/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
 			show_balance = show_balance,balance_on=balance_on,context=dict(subpage='center'))
@@ -269,10 +270,25 @@ class CustomerProfile(CustomerBaseHandler):
 	def get(self):
 	   # 模板中通过current_user获取当前admin的相关数据，
 	   # 具体可以查看models.ShopAdmin中的属性
+	   customer_id = self.current_user.id
 	   time_tuple = time.localtime(self.current_user.accountinfo.birthday)
-	   birthday = time.strftime("%Y-%m", time_tuple)
+	   birthday = time.strftime("%Y-%m-%d", time_tuple)
+	   shop_info = []
+	   follow = ''
+	   try:
+	   		follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id).order_by(models.CustomerShopFollow.create_time.desc()).limit(3).all()
+	   except:
+	   		print('该用户未关注任何店铺')
+	   for shopfollow in follow:
+	   		shop=self.session.query(models.Shop).filter_by(id = shopfollow.shop_id).first()
+	   		shop_info.append({'logo':shop.shop_trademark_url,'shop_code':shop.shop_code})
 	   # print(self.current_shop,self.current_shop.shop_auth)
-	   self.render("customer/profile.html", context=dict(birthday=birthday))
+
+	   third=[]
+	   accountinfo =self.session.query(models.Accountinfo).filter_by(id = self.current_user.accountinfo.id).first()
+	   if accountinfo.wx_unionid:
+	   	third.append({'weixin':True})
+	   self.render("customer/profile.html", context=dict(birthday=birthday,third=third,shop_info=shop_info))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data","old_password?:str")
@@ -289,11 +305,16 @@ class CustomerProfile(CustomerBaseHandler):
 		elif action == "edit_birthday":
 			year = int(data["year"])
 			month = int(data["month"])
+			day = int(data["day"])
 			try:
-				birthday = datetime.datetime(year=year, month=month, day=19)
+				birthday = datetime.datetime(year=year, month=month, day=day)
 			except ValueError as e:
-				return self.send_fail("月份必须为1~12")
+				return self.send_fail("请填写正确的年月日格式")
 			self.current_user.accountinfo.update(session=self.session, birthday=time.mktime(birthday.timetuple()))
+			#time_tuple = time.localtime(birthday)
+			#print(type(time_tuple))
+			birthday = birthday.strftime("%Y-%m-%d")
+			return self.send_success(birthday=birthday)
 		elif action == 'add_password':
 			self.current_user.accountinfo.update(session = self.session , password = data)
 			print("[设置密码]设置成功，密码：",data)
@@ -378,7 +399,7 @@ class ShopProfile(CustomerBaseHandler):
 		return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
 						   fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
 						   service_area=service_area, headimgurls=headimgurls, signin=signin,
-						   comments=self.get_comments(shop_id, page_size=2), comment_sum=comment_sum,
+						   comments=self.get_comments(shop_id, page_size=3), comment_sum=comment_sum,
 						   context=dict(subpage='shop'),shop_name = shop_name,shop_logo = shop_logo)
 
 	@tornado.web.authenticated
@@ -536,22 +557,27 @@ class Comment(CustomerBaseHandler):
 	def get(self):
 		shop_id = int(self.get_cookie("market_shop_id"))
 		page = self.args["page"]
-		comments = self.get_comments(shop_id, page, 10)
+		comments = self.get_comments(shop_id, page, 20)
 		date_list = []
+		nomore = False
 		for comment in comments:
 			date_list.append({"img": comment[6], "name": comment[7],
 							  "comment": comment[0], "time": self.timedelta(comment[1]), "reply":comment[3]})
+		if date_list == []:
+			nomore = True
 		if page == 0:
-			return self.render("customer/comment.html", date_list=date_list)
-		return self.write(dict(date_list=date_list))
+			return self.render("customer/comment.html", date_list=date_list,nomore=nomore)
+		return self.send_success(date_list=date_list,nomore=nomore)
 
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self, shop_code):
 		# print('self',self)
+		# print(self.request.remote_ip,'ip?')
 		w_follow = True
 		fruits=''
 		dry_fruits=''
+		page_size = 10
 		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		if not shop:
 			return self.send_error(404)
@@ -615,16 +641,16 @@ class Market(CustomerBaseHandler):
 			count_mgoods .append([menu.id,len(mgoods[menu.id])])
 			mgoods_len += len(mgoods[menu.id])
 
-		mgoods_page = [[int(x[1]/10) if x[1] % 10 == 0 else int(x[1]/10)+1,x[0]] for x in count_mgoods]
+		mgoods_page = [[int(x[1]/page_size) if x[1] % page_size == 0 else int(x[1]/page_size)+1,x[0]] for x in count_mgoods]
 		notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
 		total_count = len(fruits) + len(dry_fruits)  + mgoods_len
-		if total_count % 10 is 0 :
-			page_count = total_count /10
+		if total_count % page_size is 0 :
+			page_count = total_count /page_size
 		else:
-			page_count = int( total_count / 10) + 1
+			page_count = int( total_count / page_size) + 1
 		# print('page_count' , page_count)
-		fruit_page = int(len(fruits)/10) if len(fruits)% 10 == 0 else int(len(fruits)/10) +1
-		dry_page   = int(len(dry_fruits)/10) if len(dry_fruits)% 10 == 0 else int(len(dry_fruits)/10) +1
+		fruit_page = int(len(fruits)/page_size) if len(fruits)% page_size == 0 else int(len(fruits)/page_size) +1
+		dry_page   = int(len(dry_fruits)/page_size) if len(dry_fruits)% page_size == 0 else int(len(dry_fruits)/page_size) +1
 		# mgoods_page = int(count_mgoods/10) if count_mgoods % 10 == 0 else int(count_mgoods/10) + 1
 		self.set_cookie("cart_count", str(cart_count))
 		return self.render("customer/home.html",
@@ -686,7 +712,8 @@ class Market(CustomerBaseHandler):
 	def mgood_list(self):
 		page = self.args["page"]
 		menu_id = self.args["menu_id"]
-		offset = (page - 1) * 10
+		page_size = 10
+		offset = (page - 1) * page_size
 		shop_id = int(self.get_cookie("market_shop_id"))
 		shop  = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
@@ -726,9 +753,9 @@ class Market(CustomerBaseHandler):
 						'storage':mgood.storage,'favour':mgood.favour,'tag':mgood.tag,'img_url':mgood.img_url,\
 						'intro':mgood.intro,'charge_types':charge_types,'favour_today' : favour_today},menu.id])
 		count_mgoods = len(w_mgoods)
-		if offset + 10 <=count_mgoods:
-			mgood_list = w_mgoods[offset:offset+10]
-		elif offset < count_mgoods and offset + 10 > count_mgoods:
+		if offset + page_size <=count_mgoods:
+			mgood_list = w_mgoods[offset:offset+page_size]
+		elif offset < count_mgoods and offset + page_size > count_mgoods:
 			mgood_list = w_mgoods[offset:]
 		else:
 			self.send_fail("mgood_list page error")
@@ -739,7 +766,8 @@ class Market(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("page?:int")
 	def dry_list(self):
 		page = self.args["page"]
-		offset = (page - 1) * 10
+		page_size = 10
+		offset = (page - 1) * page_size
 		shop_id = int(self.get_cookie("market_shop_id"))
 		customer_id = self.current_user.id
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
@@ -751,11 +779,11 @@ class Market(CustomerBaseHandler):
 		session = self.session
 		w_dry_fruits = self.w_getdata(session,dry_fruits,customer_id)
 		count_dry = len(w_dry_fruits)
-		page = int(count_dry/10) if count_dry % 10 ==0 else int(count_dry/10) +1
+		page = int(count_dry/page_size) if count_dry % page_size ==0 else int(count_dry/page_size) +1
 		# print(page)
-		if offset + 10 <= count_dry:
-			dry_fruit_list = w_dry_fruits[offset:offset+10]
-		elif offset < count_dry and offset + 10 > count_dry:
+		if offset + page_size <= count_dry:
+			dry_fruit_list = w_dry_fruits[offset:offset+page_size]
+		elif offset < count_dry and offset + page_size > count_dry:
 			dry_fruit_list = w_dry_fruits[offset:]
 		else:
 			self.send_fail("dry_fruit_list page error")
@@ -765,7 +793,8 @@ class Market(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("page?:int")
 	def fruit_list(self):
 		page = self.args["page"]
-		offset = (page-1) * 10
+		page_size = 10
+		offset = (page-1) * page_size
 		shop_id = int(self.get_cookie("market_shop_id"))
 		customer_id = self.current_user.id
 		shop   = self.session.query(models.Shop).filter_by(id = shop_id).first()
@@ -777,12 +806,12 @@ class Market(CustomerBaseHandler):
 		session = self.session
 		w_fruits = self.w_getdata(session,fruits,customer_id)
 		count_fruit = len(w_fruits)
-		page = int(count_fruit/10) if count_fruit % 10 == 0 else int(count_fruit/10)+1
+		page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		# page = (count_fruit % 10 == 0)?int(count_fruit/10):int(count_fruit/10)+1
 		# print(page)
-		if offset + 10 <= count_fruit:
-			fruit_list = w_fruits[offset:offset+10]
-		elif offset < count_fruit and offset +10 > count_fruit:
+		if offset + page_size <= count_fruit:
+			fruit_list = w_fruits[offset:offset+page_size]
+		elif offset < count_fruit and offset +page_size > count_fruit:
 			fruit_list = w_fruits[offset:]
 		else:
 			self.send_fail("fruit_list page error")
@@ -794,7 +823,8 @@ class Market(CustomerBaseHandler):
 		# page = 2 
 		print('login  commodity_list')
 		page = self.args["page"]
-		offset = (page -1) * 10
+		page_size = 10
+		offset = (page -1) * page_size
 		customer_id = self.current_user.id
 		shop_id = int(self.get_cookie('market_shop_id'))
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
@@ -862,31 +892,31 @@ class Market(CustomerBaseHandler):
 		w_dry_fruits = self.w_getdata(session, dry_fruits,customer_id)
 		count_dry   = len(w_dry_fruits)
 
-		if offset +10 <= count_fruit:
-			w_orders = w_fruits[offset:offset+10]
+		if offset +page_size <= count_fruit:
+			w_orders = w_fruits[offset:offset+page_size]
 
-		elif offset >= count_fruit and offset + 10 <= count_fruit + count_dry:
-			w_orders = w_dry_fruits[offset - count_fruit:offset+10 - count_fruit ]
+		elif offset >= count_fruit and offset + page_size <= count_fruit + count_dry:
+			w_orders = w_dry_fruits[offset - count_fruit:offset+page_size - count_fruit ]
 
-		elif offset >= count_dry +count_fruit and offset +10 <= count_fruit + count_dry + count_mgoods:
-			w_orders = w_mgoods[offset-(count_dry+count_fruit):offset + 10-(count_dry+count_fruit)]
+		elif offset >= count_dry +count_fruit and offset +page_size <= count_fruit + count_dry + count_mgoods:
+			w_orders = w_mgoods[offset-(count_dry+count_fruit):offset + page_size-(count_dry+count_fruit)]
 
 		elif offset >= count_dry + count_fruit:
 			w_orders = w_mgoods[offset-(count_fruit+count_dry):]
 
-		elif offset < count_fruit and offset + 10 <= count_fruit +count_dry:
-			w_orders =w_fruits[offset:] + w_dry_fruits[0:offset + 10 - count_fruit ]
+		elif offset < count_fruit and offset + page_size <= count_fruit +count_dry:
+			w_orders =w_fruits[offset:] + w_dry_fruits[0:offset + page_size - count_fruit ]
 
-		elif offset >= count_fruit and offset < count_fruit + count_dry and offset + 10 <= count_dry + count_fruit + count_mgoods:
-			w_orders = w_dry_fruits[offset - count_fruit:] + w_mgoods[0:offset + 10 - (count_dry + count_fruit)]
+		elif offset >= count_fruit and offset < count_fruit + count_dry and offset + page_size <= count_dry + count_fruit + count_mgoods:
+			w_orders = w_dry_fruits[offset - count_fruit:] + w_mgoods[0:offset + page_size - (count_dry + count_fruit)]
 
-		elif offset >=  count_fruit and offset < count_fruit + count_dry and offset +10 >= count_fruit + count_dry + count_mgoods:
+		elif offset >=  count_fruit and offset < count_fruit + count_dry and offset +page_size >= count_fruit + count_dry + count_mgoods:
 			w_orders = w_dry_fruits[offset - count_fruit:] + w_mgoods
 
-		elif offset < count_fruit and offset + 10 >= count_fruit + count_dry and offset + 10 <= count_fruit +count_dry + count_mgoods:
-			w_orders = w_fruits[offset:] + w_dry_fruits + w_mgoods[0:offset + 10 - (count_fruit+ count_dry)]
+		elif offset < count_fruit and offset + page_size >= count_fruit + count_dry and offset + page_size <= count_fruit +count_dry + count_mgoods:
+			w_orders = w_fruits[offset:] + w_dry_fruits + w_mgoods[0:offset + page_size - (count_fruit+ count_dry)]
 
-		elif offset < count_fruit and offset + 10 >= count_fruit + count_dry + count_mgoods:
+		elif offset < count_fruit and offset + page_size >= count_fruit + count_dry + count_mgoods:
 			w_orders = w_fruits[offset:] + w_dry_fruits + w_mgoods
 
 		else:
@@ -1051,37 +1081,45 @@ class Market(CustomerBaseHandler):
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
-		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		phone = self.get_phone(customer_id)
 
 		show_balance = False
 		balance_value = 0
 		storages = {}
+		shop_new = 0
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		except:
-			print('shop error')
-		try:
-			custormer_balance =self.session.query(models.CustomerShopFollow).\
-			filter_by(customer_id = customer_id,shop_id =shop_id ).first()
-		except:
-			print('custormer_balance error')
+			return self.send_fail('shop error')
 		if not shop:return self.send_error(404)
+
+		self.set_cookie("market_shop_code",str(shop.shop_code))
+		if self.get_cookie("market_shop_code") != shop_code:
+			return self.send_fail('error')
+
 		print("[购物篮]当前店铺：",shop)
 		if shop.shop_auth in [1,2,3,4]:
 			show_balance = True
+
+		shop_code = shop.shop_code
 		shop_name = shop.shop_name
 		shop_id = shop.id
 		shop_logo = shop.shop_trademark_url
-		cash_on = shop.config.cash_on_active
-		balance_on = shop.config.balance_on_active
-		if custormer_balance:
-			balance_value = format(custormer_balance.shop_balance,'.2f')
-		
+		try:
+			customer_follow =self.session.query(models.CustomerShopFollow).\
+			filter_by(customer_id = customer_id,shop_id =shop_id ).first()
+		except:
+			print('custormer_balance error')
+		if customer_follow:
+			if customer_follow.shop_balance:
+				balance_value = format(customer_follow.shop_balance,'.2f')
+			shop_new = customer_follow.shop_new
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
+		print(self.get_cookie('market_shop_id'),'没有报错啊')
 		self._shop_code = shop.shop_code
-		self.set_cookie("market_shop_code",str(shop.shop_code))
+
+
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits) or eval(cart.mgoods))): #购物车为空
 			return self.render("notice/cart-empty.html",context=dict(subpage='cart'))
@@ -1106,8 +1144,8 @@ class Cart(CustomerBaseHandler):
 			print("[购物篮]读取按时达时段，Shop ID：",period.config_id,"，时间段：",period.start_time,"~",period.end_time)
 		return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
-						   shop_name  = shop_name ,shop_logo = shop_logo,balance_value=balance_value,\
-						   cash_on=cash_on,balance_on=balance_on,context=dict(subpage='cart'))
+						   shop_name  = shop_name ,shop_code=shop_code,shop_logo = shop_logo,balance_value=balance_value,\
+						  shop_new=shop_new,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
@@ -1120,6 +1158,7 @@ class Cart(CustomerBaseHandler):
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
 		mgoods = self.args["mgoods"]
+		current_shop = self.session.query(models.Shop).filter_by( id = shop_id).first()
 
 		if not (fruits or mgoods):
 			return self.send_fail('请至少选择一种商品')
@@ -1185,7 +1224,7 @@ class Cart(CustomerBaseHandler):
 			if today == 1:
 				if period.start_time.hour*60 + period.start_time.minute - \
 					config.stop_range < datetime.datetime.now().hour*60 + datetime.datetime.now().minute:
-					return self.send_fail("下单失败：已超过了该送货时间段的下单时间!请选择下一个时间段！")
+					return self.send_fail("下单失败：已超过了该送货时间段的下单时间，请选择下一个时间段！")
 				send_time = (now).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
 			elif today == 2:
 				tomorrow = now + datetime.timedelta(days = 1)
@@ -1353,9 +1392,11 @@ class Cart(CustomerBaseHandler):
 			# self.session.commit()
 
 			#生成一条余额交易记录
-			balance_record = '订单号' + order.num
+			balance_record = '消费：订单' + order.num
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
-				shop_id = shop_id ,balance_value = totalPrice  , balance_record = balance_record)
+				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
+				balance_record = balance_record,shop_totalPrice = current_shop.shop_balance,\
+				customer_totalPrice = shop_follow.shop_balance)
 			self.session.add(balance_history)
 			self.session.commit()
 
@@ -1425,22 +1466,25 @@ class Order(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data?","page?:int")
 	def post(self):
+		print(self,'self is what?')
+		page_size = 10
 		action = self.args["action"]
 		session = self.session
 		if action == "unhandled":
 			page = self.args['page']
-			offset = (page - 1) * 10
+			offset = (page - 1) * page_size
 			orders = [x for x in self.current_user.orders if x.status == 1]
+			print(len(orders),'未处理订单 数量')
 			# woody
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
-			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
-			if offset + 10 <= total_count:
-				orders = orders[offset:offset + 10]
-			elif offset <= total_count and offset + 10 >= total_count:
+			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
+			if offset + page_size <= total_count:
+				orders = orders[offset:offset + page_size]
+			elif offset <= total_count and offset + page_size >= total_count:
 				orders = orders[offset:]
 			else:
 				return self.send_fail("暂无订单")
@@ -1450,18 +1494,19 @@ class Order(CustomerBaseHandler):
 			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "waiting":
 			page = self.args["page"]
-			offset = (page - 1) * 10
+			offset = (page - 1) * page_size
 			orders = [x for x in self.current_user.orders if x.status in (2, 3, 4)]
+			print(len(orders),'待收货状态订单')
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
-			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
+			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
 			print("[订单列表]滚动加载offset：",offset)
 			print("[订单列表]滚动加载total：",total_count)
-			if offset + 10 <= total_count:
-				orders = orders[offset:offset + 10]
-			elif offset < total_count and offset + 10 >= total_count:
+			if offset + page_size <= total_count:
+				orders = orders[offset:offset + page_size]
+			elif offset < total_count and offset + page_size >= total_count:
 				orders = orders[offset:]
 			else:
 				return self.send_fail("没有待收货订单")
@@ -1469,7 +1514,7 @@ class Order(CustomerBaseHandler):
 			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "finish":
 			page = self.args['page']
-			offset = (page - 1) * 10
+			offset = (page - 1) * page_size
 			try:
 				orderlist = self.session.query(models.Order).order_by(desc(models.Order.arrival_day),models.Order.arrival_time).\
 				filter_by(customer_id = self.current_user.id).all()
@@ -1484,13 +1529,14 @@ class Order(CustomerBaseHandler):
 				if x.status == 6:
 					order6.append(x)
 			orders = order5 + order6
+			print(len(orders),'已完成订单数量')
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 			total_count = len(orders)
-			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
-			if offset + 10 <= total_count:
-				orders = orders[offset:offset + 10]
-			elif offset < total_count and offset + 10 >= total_count:
+			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
+			if offset + page_size <= total_count:
+				orders = orders[offset:offset + page_size]
+			elif offset < total_count and offset + page_size >= total_count:
 				orders = orders[offset:]
 			else:
 				return self.send_fail("暂无订单")
@@ -1498,18 +1544,19 @@ class Order(CustomerBaseHandler):
 			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "all":
 			page = self.args["page"]
-			offset = (page - 1) * 10
+			offset = (page - 1) * page_size
 			orders = self.current_user.orders
+			print(len(orders),'所有订单数量')
 			session = self.session
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
-			orders.sort(key = lambda order:order.send_time)
+			orders.sort(key = lambda order:order.send_time,reverse = True)
 			total_count = len(orders)
 			# print(total_count)
-			total_page  =  int(total_count/10) if (total_count % 10 == 0) else int(total_count/10) + 1
-			if offset + 10 <= total_count:
-				orders = orders[offset:offset + 10]
-			elif offset < total_count and offset + 10 >= total_count:
+			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
+			if offset + page_size <= total_count:
+				orders = orders[offset:offset + page_size]
+			elif offset < total_count and offset + page_size >= total_count:
 				orders = orders[offset:]
 			else:
 				return self.send_fail("暂无订单")
@@ -1528,18 +1575,44 @@ class Order(CustomerBaseHandler):
 			# 3.27
 			session = self.session
 			order.get_num(session,order.id)
-
+			########################################################################################
 			#订单取消后，如果订单 支付类型是 余额支付时， 余额返回到 用户账户
+			#同时产生一条余额记录
+			########################################################################################
 			customer_id = order.customer_id
 			shop_id     = order.shop_id
-			try:
-				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
-					customer_id , shop_id = shop_id).first()
-			except:
-				return self.send_fail('shop_follow error')
-			if shop_follow:
-				shop_follow.shop_balance += order.shop_balance
-				self.session.commit()
+			if order.pay_type == 2:
+				try:
+					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
+						customer_id , shop_id = shop_id).first()
+				except:
+					return self.send_fail('shop_follow error')
+				if shop_follow:
+					shop_follow.shop_balance += order.totalPrice
+				shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+				if not shop:
+					return self.send_fail('shop not found')
+
+				#将 该订单 对应的 余额记录取出来 ，置为 不可用
+
+				balance_record = ("%{0}%").format(order.num)
+				print(balance_record)
+
+				old_balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_record.like(balance_record)).first()
+				if old_balance_history is None:
+					print('old histtory not found')
+				else:
+					old_balance_history.is_cancel = 1
+					print(old_balance_history.is_cancel,'is cancel???')
+					self.session.commit()
+				#同时生成一条新的记录
+				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
+						balance_value = order.totalPrice,balance_record = '退款：订单'+ order.num + '取消', name = self.current_user.accountinfo.nickname,\
+						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = \
+						shop_follow.shop_balance)
+				self.session.add(balance_history)
+
+			self.session.commit()
 		elif action == "comment":
 			data = self.args["data"]
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
@@ -1690,8 +1763,9 @@ class Balance(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("page:int")
 	def post(self):
+		page_size = 20
 		page = int(self.args["page"])
-		offset = (page-1) * 10
+		offset = (page-1) * page_size
 		customer_id = self.current_user.id
 		shop_id     = self.shop_id
 		history     = []
@@ -1702,15 +1776,15 @@ class Balance(CustomerBaseHandler):
 		print(customer_id,shop_id)
 		try:
 			shop_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id =\
-				customer_id , shop_id = shop_id).all()
+				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type!=2).all()
 		except:
 			shop_balance_history = None
 			print("balance show error ")
 
 		try:
 			count = self.session.query(models.BalanceHistory).filter_by(customer_id =\
-				customer_id , shop_id = shop_id).count()
-			pages = int(count/10) if count % 10 == 0 else int(count/10) + 1
+				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type!=2).count()
+			pages = int(count/page_size) if count % page_size == 0 else int(count/page_size) + 1
 		except:
 			print('pages 0')
 		if pages == page:
@@ -1722,9 +1796,9 @@ class Balance(CustomerBaseHandler):
 
 		count = len(history)
 		history = history[::-1]
-		if offset + 10 <= count:
-			data = history[offset:offset+10]
-		elif offset <= count and offset + 10 >=count:
+		if offset + page_size <= count:
+			data = history[offset:offset+page_size]
+		elif offset <= count and offset + page_size >=count:
 			data = history[offset:]
 		else:
 			nomore = True
@@ -1740,6 +1814,7 @@ class Points(CustomerBaseHandler):
 		shop_id     = self.shop_id
 		shop_point  = 0
 		history     = []
+		page_size = 22
 		# print(customer_id,shop_id)
 		try:
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
@@ -1763,7 +1838,7 @@ class Points(CustomerBaseHandler):
 				history.append([temp.point_type,temp.each_point,temp.create_time])
 			# print(history)
 		count = len(history)
-		pages = int(count /10) if count % 10 ==0 else int(count/10) + 1
+		pages = int(count /page_size) if count % page_size ==0 else int(count/page_size) + 1
 
 		return self.render("customer/points.html",shop_point = shop_point,pages = pages)
 
@@ -1773,7 +1848,8 @@ class Points(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("page")
 	def post(self):
 		page = self.args["page"]
-		offset = (page-1) * 10
+		page_size = 22
+		offset = (page-1) * page_size
 		customer_id = self.current_user.id
 		shop_id     = self.shop_id
 		history     = []
@@ -1793,9 +1869,9 @@ class Points(CustomerBaseHandler):
 		count = len(history)
 		history = history[::-1]
 		# print('history',history)
-		if offset + 10 <= count:
-			data = history[offset:offset+10]
-		elif offset <= count and offset + 10 >=count:
+		if offset + page_size <= count:
+			data = history[offset:offset+page_size]
+		elif offset <= count and offset + page_size >=count:
 			data = history[offset:]
 		else:
 			self.send_fail("history page error")
@@ -1986,8 +2062,6 @@ class payTest(CustomerBaseHandler):
 			
 			totalPrice =float( self.get_cookie('money'))
 			#########################################################
-
-	
 			# 用户余额增加 
 			# 同时店铺余额相应增加 
 			# 应放在 支付成功的回调里
@@ -2001,17 +2075,20 @@ class payTest(CustomerBaseHandler):
 			if not shop_follow:
 				return self.send_fail('shop_follow not found')
 			shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
+			self.session.commit()
 
 			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 			if not shop:
 				return self.send_fail('shop not found')
 			shop.shop_balance += totalPrice
-			# self.session.commit()
+			self.session.commit()
+			print(shop.shop_balance ,'充值后 商店 总额')
 
 			# 支付成功后  生成一条余额支付记录
 			name = self.current_user.accountinfo.nickname
 			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-				balance_value = totalPrice,balance_record = '用户充值：'+ name  , name = name , balance_type = 0)
+				balance_value = totalPrice,balance_record = '充值：用户 '+ name  , name = name , balance_type = 0,\
+				shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice)
 			self.session.add(balance_history)
 			print(balance_history , '钱没有白充吧？！')
 			self.session.commit()
@@ -2019,6 +2096,48 @@ class payTest(CustomerBaseHandler):
 			return self.send_success()
 	#	else:
 	#		return self.send_fail('其它支付方式尚未开发')
+
+class AlipayNotify(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		shop_id = self.get_cookie('market_shop_id')
+		customer_id = self.current_user.id
+	#	code = self.args['code']
+	#	path_url = self.request.full_url()
+		totalPrice =float( self.get_cookie('money'))
+		#########################################################
+		# 用户余额增加 
+		# 同时店铺余额相应增加 
+		# 应放在 支付成功的回调里
+		#########################################################
+
+		# 支付成功后，用户对应店铺 余额 增1加
+		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+			shop_id = shop_id).first()
+		print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
+		if not shop_follow:
+			return self.send_fail('shop_follow not found')
+		shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
+		self.session.commit()
+
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if not shop:
+			return self.send_fail('shop not found')
+		shop.shop_balance += totalPrice
+		self.session.commit()
+		print(shop.shop_balance ,'充值后 商店 总额')
+
+		# 支付成功后  生成一条余额支付记录
+		name = self.current_user.accountinfo.nickname
+		balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
+			balance_value = totalPrice,balance_record = '充值：用户 '+ name  , name = name , balance_type = 0,\
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice)
+		self.session.add(balance_history)
+		print(balance_history , '钱没有白充吧？！')
+		self.session.commit()
+		return self.send_success(text = '充值成功')
+		# return self.render('fruitzone/alipayTest.html')
+
 		
 	def check_xsrf_cookie(self):
 		print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!pass wxpay xsrf check!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')

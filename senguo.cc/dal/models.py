@@ -463,6 +463,9 @@ class Shop(MapBase, _CommonApi):
 	# 是否做实体店
 	have_offline_entity = Column(Integer, default=False)
 
+	alipay_account = Column(String(128)) #提现账户 2015-5-06 yy
+	alipay_account_name  = Column(String(32)) #提现账户认证名 2015-5-06 yy
+
 ###################################################
 	#the phone of shop ,   added by woody
 	shop_phone=Column(String(16))
@@ -496,7 +499,7 @@ class Shop(MapBase, _CommonApi):
 
 	#店铺  余额 和 冻结 余额
 	shop_balance = Column(Float,default = 0) 
-	shop_blockage= Column(Float,default = 0) #当用户下单后，店铺冻结余额增加，当订单完成后 冻结 余额 转入 店铺余额
+	available_balance= Column(Float,default = 0) # 可提现余额 ，当 订单完成后 钱才会转入其中
 
 	orders = relationship("Order")
 	staffs = relationship("ShopStaff", secondary="hire_link")
@@ -783,15 +786,18 @@ class ApplyCashHistory(MapBase,_CommonApi):
 	applicant_name  = Column(String(32))
 	shop_balance = Column(Float,default = 0)
 	alipay_account = Column(String(64))
-	value   = Column(Integer) #申请提现的金额，单位：分
+	value   = Column(Float,default = 0) #申请提现的金额，单位：元
 	create_time = Column(DateTime,default = func.now())
 	has_done   = Column(Integer , default = 0) # 0:before done,1: done success,2: decline
 	decline_reason = Column(String(200)) #当申请提现被拒绝后 给商家的理由
+	account_name = Column(String(32)) #账户真实姓名
+	shop = relationship("Shop")
 
 ################################################################################
 # 余额记录 只会在 三处地方产生:
 # 用户充值 ，店铺管理员提现 和 接下来要做的在线支付
 # 即只有真正实现 支付的地方才用到。而用户 余额消费 只是数值上的变动
+# 用户余额消费也会产生记录，只显示给用户自己看
 ################################################################################
 
 class BalanceHistory(MapBase,_CommonApi):
@@ -802,9 +808,12 @@ class BalanceHistory(MapBase,_CommonApi):
 								#当 balance_type为2 的时候，表示申请提现店铺管理员名称
 	shop_id  = Column(Integer,ForeignKey(CustomerShopFollow.shop_id),nullable = False)
 	balance_record = Column(String(32))  #充值 或者 消费 的 具体记录
-	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:余额消费(没用) 2:提现 3:在线支付
+	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:余额消费 2:提现 3:在线支付 4:商家删除订单 5:用户自己取消订单
 	balance_value  = Column(Float)
 	create_time    = Column(DateTime,default = func.now())
+	shop_totalPrice = Column(Float,default = 0)
+	customer_totalPrice = Column(Float,default = 0)
+	is_cancel      = Column(Integer,default = 0)  #若订单被取消 ，则充值记录被 置为1
 	#customer = relationship("CustomerShopFollow")
 
 class PointHistory(MapBase,_CommonApi):
@@ -1327,9 +1336,10 @@ class Config(MapBase, _CommonApi):
 	intime_period = Column(Integer,default = 0) 
 	#4.24 add receipt_img_active
 	receipt_img_active = Column(Integer,default = 1)
-	cash_on_active =Column(Integer,default = 1)#0:货到付款关闭 1:货到付款付开启 5.4
-	online_on_active =Column(Integer,default = 1) #0:在线支付关闭 1:在线支付开启 5.4
-	balance_on_active =Column(Integer,default = 1) #0:余额支付关闭 1:余额支付开启 5.4
+	cash_on_active = Column(Integer,default = 1)#0:货到付款关闭 1:货到付款付开启 5.4
+	online_on_active = Column(Integer,default = 1) #0:在线支付关闭 1:在线支付开启 5.4
+	balance_on_active = Column(Integer,default = 1) #0:余额支付关闭 1:余额支付开启 5.4
+	text_message_active = Column(Integer,default = 0) #首单短信验证 0:关闭 1:开启 5.7
 
 #商城首页的公告
 class Notice(MapBase):
