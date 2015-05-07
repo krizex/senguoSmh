@@ -64,6 +64,19 @@ $(document).ready(function(){
         $('#tiePhone').addClass('bg-greyc').attr({'disabled':true}); 
         var $this=$(this);
         TiePhone($this);
+}).on("click","#userRealname",function(){
+    $("#name-ipt").val("");
+    var name_box=new Modal('nameBox');
+    name_box.modal('show');
+}).on("click","#nameSure",function(){
+    nameEdit($("#realnameEdit").val());
+}).on("click","#userBirthday",function(){
+    //birthEdit();
+    $(".birth-ipt").val('');
+    var birth_box = new Modal('birthBox');
+    birth_box.modal('show');
+}).on("click","#birthSure",function(){
+    birthEdit();
 });
 
 var wait=60;
@@ -82,39 +95,20 @@ function time(target) {
     }
 }
 
-
 function infoEdit(target){
     target.on('click',function(){
-        var email, year,month,realname;
+        var email,year,month,realname;
         var regEmail=/^([a-zA-Z0-9]*[-_]?[a-zA-Z0-9]+)*@([a-zA-Z0-9]*[-_]?[a-zA-Z0-9]+)+[\.][a-z]{2,3}([\.][a-z]{2})?$/;
         var regNumber=/^[0-9]*[1-9][0-9]*$/;
-        var regYear=/^(?!0000)[0-9]{4}$/;
-        var regMonth=/^(0?[1-9]|[1][012])$/;
         var action_text=target.data('action');
         var data;
         var action;
-        if(action_text=='realname')
-        {
-            action='edit_realname';
-            realname=$('#realnameEdit').val();
-            if(realname.length>10) return noticeBox('姓名请不要超过10个字');
-            data=realname;
-        }
-        else if(action_text=='email')
+        if(action_text=='email')
         {
             action='edit_email';
             email=$('#mailEdit').val().trim();
             if(!regEmail.test(email)) return noticeBox('邮箱貌似不存在');
             data=email;
-        }
-        else if(action_text=='birthday')
-        {
-            action='edit_birthday';
-            year=$('#yearEdit').val().trim();
-            month=$('#monthEdit').val().trim();
-            if(!regYear.test(year)) return noticeBox('请输入正确的年份！');
-            if(!regMonth.test(month)) return noticeBox('月份只能为1～12！');
-            data={year:year,month:month}
         }
         var url="";
         var args={action: action, data: data};
@@ -143,7 +137,33 @@ function infoEdit(target){
         );
     });
 }
-
+function birthEdit(){
+    var regYear=/^(?!0000)[0-9]{4}$/;
+    var regMonth=/^(0?[1-9]|[1][012])$/;
+    var regDay=/^(0?[1-9]|[123][0-9])$/;
+    var action='edit_birthday';
+    var year=$('#year-ipt').val().trim();
+    var month=$('#month-ipt').val().trim();
+    var day=$('#day-ipt').val().trim();
+    if(!regYear.test(year)) return warnNotice('请输入正确的年份！');
+    if(!regMonth.test(month)) return warnNotice('月份只能为1～12！');
+    if(!regDay.test(day) || parseInt(day)>31) return warnNotice('日期只能为1～31！');
+    var data={year:year,month:month,day:day};
+    var url="";
+    var args={action: action, data: data};
+    $.postJson(url,args,
+        function (res) {
+            if (res.success) {
+                $('#userBirthday').text(res.birthday);
+                var birth_box = new Modal('birthBox');
+                birth_box.modal('hide');
+            }
+            else noticeBox(res.error_txt);
+        },
+        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+    );
+}
 function sexEdit(sex,text){
     var url="";
     var action='edit_sex';
@@ -158,6 +178,27 @@ function sexEdit(sex,text){
             else noticeBox(res.error_text);
         },
          function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+    );
+}
+function nameEdit(name){
+    if(name.length>10){
+        warnNotice("姓名请不要超过10个字");
+        return false;
+    }
+    var action = "edit_realname";
+    var url="";
+    var args={action: action, data: name};
+    $.postJson(url,args,
+        function (res) {
+            if (res.success) {
+                var name_box=new Modal('nameBox');
+                name_box.modal('hide');
+                $('#userRealname').text(name);
+            }
+            else noticeBox(res.error_txt);
+        },
+        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
         function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
     );
 }
