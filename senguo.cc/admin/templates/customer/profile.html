@@ -26,9 +26,11 @@
         </li>-->
         <li class="item">
             <div class="info-con h19">
-                <span class="title pull-left">姓名</span>
-                <i class="arr-right pull-right"></i>
-                <a href="javascript:;" class="nickname pull-right s1" id="userRealname">{{current_user.accountinfo.realname}}</a>
+                <a href="javascript:;" class="box" id="userRealname">
+                    <span class="title pull-left text-grey3">姓名</span>
+                    <i class="arr-right pull-right"></i>
+                    <span class="nickname pull-right s1">{{current_user.accountinfo.realname}}</span>
+                </a>
             </div>
         </li>
         <li class="item">
@@ -42,9 +44,11 @@
         </li>
         <li class="item">
             <div class="info-con h19">
-                <span class="title pull-left">出生日期</span>
-                <i class="arr-right pull-right"></i>
-                <a href="javascript:;" class="pull-right" id="userBirthday">{{context['birthday'] or '请设置'}}</a>
+                <a href="javascript:;" class="box" id="userBirthday">
+                    <span class="title pull-left text-grey3">出生日期</span>
+                    <i class="arr-right pull-right"></i>
+                    <span class="pull-right s1">{{context['birthday'] or '请设置'}}</span>
+                </a>
             </div>
         </li>
         <li class="item">
