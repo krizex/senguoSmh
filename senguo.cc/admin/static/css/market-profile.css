@@ -1,8 +1,8 @@
 .user-info-detail{border-bottom:1px solid #ddd;border-top:1px solid #ddd;}
 .user-info-detail .img-title{line-height:42px;}
-.user-info-detail .user-img{width:42px;height:42px;box-shadow:1px 1px 2px #aaa;border-radius: 50%;}
+.user-info-detail .user-img{width:42px;height:42px;border-radius: 50%;}
 .user-info-detail .shop-img{width:34px;height:34px;border-radius: 50%;}
-.user-info-detail .third-img{width:32px;height:32px;box-shadow:1px 1px 2px #aaa;border-radius: 50%;}
+.user-info-detail .third-img{width:32px;height:32px;border-radius: 50%;}
 .user-info-detail .item{width:100%;float:left;font-size:14px;padding:9px 8px;border-top:1px solid #f1f5f1;background-color:#fff;}
 .user-info-detail .item .box{display:inline-block;width:100%;}
 .user-info-detail .w1{margin-top:1.5em;}
