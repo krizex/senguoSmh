@@ -1,5 +1,9 @@
 $(document).ready(function(){
-    SetCookie("next_url",$("#phoneLogin").attr('data-next'),1);
+    if(window.location.href.indexOf("login")!=-1){
+    }else{
+        SetCookie("next_url",$("#phoneLogin").attr('data-next'),1);
+    }
+
 }).on('click','#phoneLogin',function(){
 	var $this=$(this);
 	$this.attr({'disabled':true});
