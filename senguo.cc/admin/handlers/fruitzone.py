@@ -656,8 +656,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 							   context=dict(orders=orders, subpage="history"))
 		elif self._action == "systemAccount":
 			return self.render("fruitzone/systempurchase-systemaccount.html", context=dict(subpage="account"))
-		# elif self._action == "alipaytest":
-		# 	return self.render("fruitzone/alipayTest.html",context = dict(subpage="alipaytest"))
+		elif self._action == "alipaytest":
+			return self.render("fruitzone/alipayTest.html",context = dict(subpage="alipaytest"))
 		else:
 			return self.send_error(404)
 
@@ -830,6 +830,9 @@ class SystemPurchase(FruitzoneBaseHandler):
 			return self.send_error(403)
 		order_id=str(self.args["out_trade_no"])
 		ali_trade_no=self.args["trade_no"]
+		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
+		if old_balance_history:
+			return self.send_success()
 		print(order_id,ali_trade_no,'hhhhhhhhhhhhhhhhhhhh')
 		data = order_id.split('a')
 		totalPrice = float(data[0])/100
@@ -866,11 +869,11 @@ class SystemPurchase(FruitzoneBaseHandler):
 		name = self.current_user.accountinfo.nickname
 		balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
 			balance_value = totalPrice,balance_record = '充值：用户 '+ name  , name = name , balance_type = 0,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice)
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice,transaction_id =ali_trade_no)
 		self.session.add(balance_history)
 		print(balance_history , '钱没有白充吧？！')
 		self.session.commit()
-		return self.send_success(text = 'success')
-		# return self.render('fruitzone/alipayTest.html')
+		# return self.send_success(text = 'success')
+		return self.redirect(self.reverse_url("customerRecharge"))
 
 
