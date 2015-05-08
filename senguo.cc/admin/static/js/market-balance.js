@@ -1,7 +1,7 @@
 $(document).ready(function(){
 	litsitem(1);
 	scrollLoading();
-    localStorage.setItem("shopName",$("#shopName").html());
+    SetCookie("shopName",$("#shopName").html(),30);
 });
 
 window.dataObj.page=1;
