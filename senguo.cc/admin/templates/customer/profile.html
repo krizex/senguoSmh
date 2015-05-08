@@ -14,7 +14,7 @@
                 <span class="title img-title pull-left">头像</span>
                 <a href="javascript:;">
                     <i class="arr-right pull-right mt12"></i>
-                    <img src="{{current_user.accountinfo.headimgurl_small or '/static/images/TDSG_l.png'}}" class="user-img pull-right"/>
+                    <img src="{{current_user.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}" class="user-img pull-right"/>
                 </a>
             </div>
         </li>
@@ -60,7 +60,7 @@
                     <i class="arr-right pull-right mt12"></i>
                     {% if context['shop_info'] %}
                     {% for shop in context['shop_info'] %}
-                        <a href="/{{shop['shop_code']}}" class="wrap-img  pull-right ml6"><img src="{{shop['logo'] or '/static/images/TDSG_l.png'}}?imageView/1/w/100/h/100" class="shop-img"/></a>
+                        <a href="/{{shop['shop_code']}}" class="wrap-img  pull-right ml6"><img src="{{shop['logo'] or '/static/images/TDSG.png'}}?imageView/1/w/100/h/100" class="shop-img"/></a>
                     {% end %}
                     {% else %}
                         <span class="title img-title pull-right">没有店铺浏览</span>
