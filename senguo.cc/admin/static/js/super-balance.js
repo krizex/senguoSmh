@@ -9,13 +9,14 @@ $(document).ready(function(){
         apply_list = '{{each history as his}}'+
             '<li data-apply-id="{{his.id}}">'+
                 '<ul class="shop-attr-lst group">'+
-                    '<li>店铺名：<a href="javascript:;">{{his.shop_name}}</a></li>'+
+                    '<li>店铺名：<a href="/{{his.shop_code}}">{{his.shop_name}}</a></li>'+
                     '<li>认证类型：{{ if his.shop_auth==1 || his.shop_auth==4 }}个人认证{{ /if }}{{ if his.shop_auth==2 || his.shop_auth==3}}企业认证{{ /if }}</li>'+
                     '<li>账户余额：{{his.shop_balance}}元</li>'+
                     '<li>提现申请时间：{{his.create_time}}</li>'+
                     '<li>提现金额：<span class="red-txt">{{his.value}}</span>元</li>'+
                     '<li>支付宝帐号：<span class="red-txt">{{his.alipay_account}}</span></li>'+
                     '<li>申请人：<a href="javascript:;">{{his.applicant_name}}</a></li>'+
+                    '<li>支付宝真实姓名：{{his.account_name}}</li>'+
                 '</ul>'+
                 '<div class="apply-btn-group">'+
                     '<a href="javascript:;" class="ok-btn">通过并已确认支付</a>'+
@@ -79,20 +80,23 @@ $(document).ready(function(){
 }).on("click",".ok-btn",function(){    //通过申请
     var $this = $(this);
     var apply_id = parseInt($this.closest("li").attr("data-apply-id"));
-    $.ajax({
-        url:"/super/cash",
-        data:{action:"commit",apply_id:apply_id,_xsrf:window.dataObj._xsrf},
-        type:"post",
-        success:function(res){
-            if(res.success){
-                $this.closest("li").children(".apply-btn-group").addClass("hidden");
-                $this.closest("li").children(".reason-txt").html("已通过").removeClass("hidden");
-                alert("操作成功");
-            }else{
-                alert(res.error_text);
+    if(confirm('是否通过并确认支付')){
+            $.ajax({
+            url:"/super/cash",
+            data:{action:"commit",apply_id:apply_id,_xsrf:window.dataObj._xsrf},
+            type:"post",
+            success:function(res){
+                if(res.success){
+                    $this.closest("li").children(".apply-btn-group").addClass("hidden");
+                    $this.closest("li").children(".reason-txt").html("已通过").removeClass("hidden");
+                    alert("操作成功");
+                }else{
+                    alert(res.error_text);
+                }
             }
-        }
-    });
+        });
+    }
+
 }).on('click','.all-list',function(){
     num=1;
     history('all_history',1);
@@ -192,7 +196,7 @@ function history(action,page){
         page:page
     };
     $('.list-pagination').attr({'data-action':action});
-    $('.tb-account').empty();
+    $('.tb-account').find('.con').remove();
     $.postJson(url,args,
         function(res){
             if(res.success){
@@ -247,8 +251,8 @@ function history(action,page){
         $('.no-list').addClass('hide');
                }
                for(var i in history){
-                var item= '<tr>'
-+                                       '<td class="pl20">店铺名：<a href="javascript:;">{{shop_name}}</a> {{title}}</td>'
+                var item= '<tr class="con">'
++                                       '<td class="pl20">店铺名：<a href="/{{shop_code}}">{{shop_name}}</a> {{title}}</td>'
 +                                       '<td class="c999">{{time}}</td>'
 +                                       '<td class="orange-txt txt-ar"><span class="f16">{{balance_value}}</span><span class="c999">元</span></td>'
 +                                       '<td class="green-txt txt-ar pr20"><span class="f16">{{balance}}</span><span class="c999">元</span></td>'
@@ -259,6 +263,7 @@ function history(action,page){
         var value=history[i]['balance_value'];
         var balance=history[i]['balance'];
         var type=history[i]['type'];
+        var shop_code=history[i]['shop_code'];
         var title;
         if(type==0){
             title='充值';
@@ -273,6 +278,7 @@ function history(action,page){
             value='+'+value
         }
         var list_item =render({
+            shop_code:shop_code,
             shop_name:shop_name,
             time:time,
             balance_value:value,

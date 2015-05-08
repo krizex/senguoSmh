@@ -375,6 +375,10 @@ $(document).ready(function(){
             return false;
         }
     }
+    if(index == 2){
+        noticeBox("目前还不支持在线支付哦，我们会尽快开放此功能");
+        return false;
+    }
     if(status==0){
          noticeBox("当前店铺已关闭"+type);
          return false;

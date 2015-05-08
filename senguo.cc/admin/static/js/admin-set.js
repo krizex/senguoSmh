@@ -69,6 +69,8 @@ $(document).ready(function(){
         function(){alert('网络好像不给力呢~ ( >O< ) ~');}
         );
 }).on('click','.online_active',function(){
+    alert("当前此功能还未开放，请等待...");
+    return false;
     var $this=$(this);
     if($this.attr("data-flag")=="off") return false;
     $this.attr("data-flag","off");

@@ -332,10 +332,28 @@ class CustomerProfile(CustomerBaseHandler):
 			data = self.args["data"]
 			new_password = data['password']
 			self.current_user.accountinfo.update(session = self.session ,password = password)
+		elif action == 'bind_wx':
+			next_url = self.args["data"]
+			return self.get_wexin_oauth_link(next_url = next_url)
+			self.bind_wx(next_url)
 
 		else:
 			return self.send_error(404)
 		return self.send_success()
+
+	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
+	def bind_wx(self,next_url):
+		# todo: handle state
+		code =self.args["code"]
+		mode = self.args["mode"]
+		# print("mode: ", mode , ", code get:", code)
+		if mode not in ["mp", "kf"]:
+			return self.send_error(400)
+
+		userinfo = self.get_wx_userinfo(code, mode)
+		if not userinfo:
+			return self.redirect(self.reverse_url("customerLogin"))
+
 
 class ShopProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -557,7 +575,8 @@ class Comment(CustomerBaseHandler):
 	def get(self):
 		shop_id = int(self.get_cookie("market_shop_id"))
 		page = self.args["page"]
-		comments = self.get_comments(shop_id, page, 20)
+		page_size = 20
+		comments = self.get_comments(shop_id, page, page_size)
 		date_list = []
 		nomore = False
 		for comment in comments:
@@ -566,6 +585,8 @@ class Comment(CustomerBaseHandler):
 		if date_list == []:
 			nomore = True
 		if page == 0:
+			if len(date_list)<page_size:
+				nomore = True
 			return self.render("customer/comment.html", date_list=date_list,nomore=nomore)
 		return self.send_success(date_list=date_list,nomore=nomore)
 
@@ -1096,7 +1117,7 @@ class Cart(CustomerBaseHandler):
 
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		if self.get_cookie("market_shop_code") != shop_code:
-			return self.send_fail('error')
+			print(" present market_shop_code doesn't  exist in cookie" )
 
 		print("[购物篮]当前店铺：",shop)
 		if shop.shop_auth in [1,2,3,4]:
@@ -1595,12 +1616,15 @@ class Order(CustomerBaseHandler):
 
 				#将 该订单 对应的 余额记录取出来 ，置为 不可用
 
-				old_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id = customer_id,\
-					shop_id = shop_id).filter(models.BalanceHistory.balance_record.like(order.num)).first()
+				balance_record = ("%{0}%").format(order.num)
+				print(balance_record)
+
+				old_balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_record.like(balance_record)).first()
 				if old_balance_history is None:
 					print('old histtory not found')
 				else:
 					old_balance_history.is_cancel = 1
+					print(old_balance_history.is_cancel,'is cancel???')
 					self.session.commit()
 				#同时生成一条新的记录
 				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
@@ -1752,6 +1776,7 @@ class Balance(CustomerBaseHandler):
 		if shop_follow:
 			if shop_follow.shop_balance:
 				shop_balance = shop_follow.shop_balance
+				shop_balance = format(shop_balance,'.2f')
 			else:
 				shop_balance = 0.00
 
@@ -1824,57 +1849,49 @@ class Points(CustomerBaseHandler):
 			else:
 				shop_point = 0
 
-		try:
-			shop_history = self.session.query(models.PointHistory).filter_by(customer_id =\
-				customer_id,shop_id = shop_id).all()
-		except:
-			self.send_fail("point history error")
-		if shop_history:
-			for temp in shop_history:
-				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
-				history.append([temp.point_type,temp.each_point,temp.create_time])
-			# print(history)
-		count = len(history)
-		pages = int(count /page_size) if count % page_size ==0 else int(count/page_size) + 1
-
-		return self.render("customer/points.html",shop_point = shop_point,pages = pages)
+		return self.render("customer/points.html",shop_point = shop_point)
 
 
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("page")
 	def post(self):
-		page = self.args["page"]
+		page = int(self.args["page"])
 		page_size = 22
 		offset = (page-1) * page_size
 		customer_id = self.current_user.id
 		shop_id     = self.shop_id
 		history     = []
 		data = []
-
+		nomore = False
 		try:
 			shop_history = self.session.query(models.PointHistory).filter_by(customer_id =\
 				customer_id,shop_id = shop_id).all()
 		except:
-			self.send_fail("point history error")
+			print("point history error 2222")
 		if shop_history:
 			for temp in shop_history:
 				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
 				history.append([temp.point_type,temp.each_point,temp.create_time])
 			# print(history)
+		else:
+			nomore=True
 
 		count = len(history)
 		history = history[::-1]
 		# print('history',history)
+		if page==1 and count<=page_size:
+			nomore=True
 		if offset + page_size <= count:
 			data = history[offset:offset+page_size]
 		elif offset <= count and offset + page_size >=count:
 			data = history[offset:]
 		else:
-			self.send_fail("history page error")
+			nomore=True
+			print("nomore history page")
 		# print("data\n",data)
 
-		return self.send_success(data = data)
+		return self.send_success(data = data,nomore=nomore)
 
 
 
@@ -1935,23 +1952,24 @@ class payTest(CustomerBaseHandler):
 			print(url,'code?')
 			return self.redirect(url)
 		else:
-			orderId = str(self.current_user.id) + str(int(time.time()))
+			totalPrice =int((float(self.get_cookie('money')))*100)
+			orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(totalPrice)+'a'+str(int(time.time()))
+			print(orderId,'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 			jsApi.setCode(code)
 			openid = jsApi.getOpenid()
 			print(openid,code,'hope is not []')
 			if not openid:
-				print('openid not exit')
-			
+				print('openid not exit')	
 			unifiedOrder =   UnifiedOrder_pub()
 			# totalPrice = self.args['totalPrice'] 
-			totalPrice =float( self.get_cookie('money'))
+			#totalPrice =float( self.get_cookie('money'))
 			print(totalPrice,'long time no see!')
 			unifiedOrder.setParameter("body",'charge')
-			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/paytest')
+			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/fruitzone/paytest')
 			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",orderId)
 			#orderPriceSplite = (order.price) * 100
-			wxPrice =int(totalPrice * 100)
+			wxPrice =int(totalPrice )
 			print(wxPrice,'sure')
 			unifiedOrder.setParameter('total_fee',wxPrice)
 			unifiedOrder.setParameter('trade_type',"JSAPI")
@@ -1964,23 +1982,46 @@ class payTest(CustomerBaseHandler):
 			timestamp = datetime.datetime.now().timestamp()
 			wxappid = 'wx0ed17cdc9020a96e'
 			signature = self.signature(noncestr,timestamp,path_url)
+			totalPrice = float(totalPrice/100)
 		
 		# return self.send_success(renderPayParams = renderPayParams)
 		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
 			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)
 
-	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?str')
+	def check_xsrf_cookie(self):
+		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		pass
+		return
+
+
+	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?:str')
 	def post(self):
+			print(self.args,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
 
 		# 微信 余额 支付
 	#	if action == 'wx_pay':
 			print('回调成功')
+			data = self.request.body
+			print(self.request.body,'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+			xml = data.decode('utf-8')
+			UnifiedOrder = UnifiedOrder_pub()
+			xmlArray     = UnifiedOrder.xmlToArray(xml)
+			status       = xmlArray['result_code']
+			orderId      = str(xmlArray['out_trade_no'])
+			result       = orderId.split('a')
+			customer_id  = int(result[0])
+			shop_id      = int(result[1])
+			totalPrice   = (float(result[2]))/100
+			transaction_id = str(xmlArray['transaction_id'])
+			if status != 'SUCCESS':
+				return False
 		#	shop_code  = self.current_shop.shop_code
 		#	shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
 		#	if not shop:
 		#		return self.send_fail('shop not found')
-			shop_id = self.get_cookie('market_shop_id')
-			customer_id = self.current_user.id
+			
+			#shop_id = self.get_cookie('market_shop_id')
+			#customer_id = self.current_user.id
 			
 
 		#	code = self.args['code']
@@ -1988,7 +2029,8 @@ class payTest(CustomerBaseHandler):
 
 			
 			
-			totalPrice =float( self.get_cookie('money'))
+			#totalPrice =float( self.get_cookie('money'))
+			print(customer_id,shop_id,totalPrice)
 			#########################################################
 			# 用户余额增加 
 			# 同时店铺余额相应增加 
@@ -1997,9 +2039,13 @@ class payTest(CustomerBaseHandler):
 			#########################################################
 
 			# 支付成功后，用户对应店铺 余额 增1加
+			#判断是否已经回调过，如果记录在表中，则不执行接下来操作
+			old_balance_history=self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
+			if old_balance_history:
+				return self.write('success')
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 				shop_id = shop_id).first()
-			print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
+			print(customer_id, shop_id,'没充到别家店铺去吧')
 			if not shop_follow:
 				return self.send_fail('shop_follow not found')
 			shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
@@ -2013,15 +2059,18 @@ class payTest(CustomerBaseHandler):
 			print(shop.shop_balance ,'充值后 商店 总额')
 
 			# 支付成功后  生成一条余额支付记录
-			name = self.current_user.accountinfo.nickname
-			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
+			customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
+			if customer:
+				name = customer.accountinfo.nickname
+			#name = self.current_user.accountinfo.nickname
+			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 				balance_value = totalPrice,balance_record = '充值：用户 '+ name  , name = name , balance_type = 0,\
-				shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice)
+				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id)
 			self.session.add(balance_history)
 			print(balance_history , '钱没有白充吧？！')
 			self.session.commit()
 
-			return self.send_success()
+			return self.write('success')
 	#	else:
 	#		return self.send_fail('其它支付方式尚未开发')
 
@@ -2081,7 +2130,10 @@ class AlipayNotify(CustomerBaseHandler):
 		# return self.render('fruitzone/alipayTest.html')
 
 		
-
+	def check_xsrf_cookie(self):
+		print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!pass wxpay xsrf check!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+		pass
+		return
 
 class InsertData(CustomerBaseHandler):
 	@tornado.web.authenticated

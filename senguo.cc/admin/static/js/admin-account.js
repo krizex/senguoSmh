@@ -19,6 +19,9 @@ $(document).ready(function(){
 }).on('click','.online-list',function(){
 	num=1;
 	history('online',1);
+}).on('click','.spend-list',function(){
+      num=1;
+      history('spend',1);
 }).on('click','.pre-page',function(){
 	if(num==1){
 		return alert('没有上一页啦！');
@@ -57,6 +60,9 @@ $(document).ready(function(){
     }
     $this.addClass("bg85").attr("data-statu", "1");
     var phone = $("#perCode").text();
+    if(!phone){
+      return alert('管理员还未绑定手机号')
+    }
     var args={
         action:'get_code',
         phone:phone,
@@ -102,7 +108,7 @@ function history(action,page){
         page:page
     };
     $('.list-pagination').attr({'data-action':action});
-    $('.tb-account').empty();
+    $('.tb-account').find('.con').remove();
     $.postJson(url,args,
         function(res){
             if(res.success){
@@ -129,6 +135,11 @@ function history(action,page){
                }
                else if(action=='all_history'){
                 $('.wrap-acc-num').addClass('hidden');
+               }
+               else if(action=='spend'){
+                $('.wrap-acc-num').addClass('hidden');
+                $('.spend-count').removeClass('hidden');
+                $('.spend-total').text(res.total);
                }
                if(num == 1){
                	$('.pre-page').addClass('hidden');
@@ -158,9 +169,10 @@ function history(action,page){
                }
               $('.page-now').text(num);
                for(var i in history){
-               	var item=' <tr>'
-+               			'<td class="pl20 w50">{{title}}：<a href="{{user}}">{{name}}</a>{{record}}</td>'
-+                   			'<td class="c999">{{time}}</td>'
+               	var item=' <tr class="con">'
++               			'<td class="pl20">{{time}}</td>'
++                               '<td>{{record}}</td>'
+// +                   		'<td class=" w50">{{title}}：<a href="{{user}}">{{name}}</a>{{record}}</td>'
 +                 			'<td class="orange-txt txt-ar"><span class="f16">{{value}}</span><span class="c999">元</span></td>'
 +                   			'<td class="green-txt txt-ar pr20"><span class="f16">{{total}}</span><span class="c999">元</span></td>'
 +              		' </tr>';
@@ -173,26 +185,20 @@ function history(action,page){
 		var total=history[i]['total'];
 		var user='/admin/follower?action=search&&order_by=time&&page=0&&wd='+name;
 		var title;
-		if(type==0){
-			title='充值';
+		if(type==0||type==3||type==1){
 			value='+'+value
 		}
-		else if(type==2){
-			title='提现';
+		else if(type==2||type==4||type==5){
 			value='-'+value
-		}
-		else if(type==3){
-			title='在线支付';
-			value='+'+value
 		}
 		var list_item =render({
 			title:title,
 			user:user,
-			record:record,
 			name:name,
 			time:time,
 			value:value,
-			total:total
+			total:total,
+                    record:record
 		});
 		$('.tb-account').append(list_item);
 
@@ -236,9 +242,13 @@ function cash(){
     	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
     	return alert('请填写短信验证码');
     }
+    if(availible_value<100){
+      $('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
+      return alert('您的可提现额度不足100元，无法进行提现操作');
+    }
     if(apply_value>availible_value){
       $('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
-      return alert('您没有这么多可提现金额');
+      return alert('您没有这么多的可提现金额');
     }
     var args={
         action:action,
@@ -252,7 +262,7 @@ function cash(){
         function(res){
             if(res.success){
             		$('.bs-apply-com').modal('hide');
-            		$('.get-money').text('提现申请已提交成功，我们将在1-3个工作日内完成审核').removeAttr('data-target','data-toggle');
+            		$('.get-money').text('提现中：'+apply_value+'元。提现申请已提交成功，我们将在1-3个工作日内完成审核。').removeAttr('data-target','data-toggle');
             		$('.fail-notice').remove();
                }
             else{
