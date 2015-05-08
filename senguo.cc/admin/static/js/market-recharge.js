@@ -18,7 +18,10 @@ $(document).ready(function(){
         $(this).addClass("checked");
     }*/
 }).on("click","#commit-rec",function(){
-    //if($(this).attr("data-statu")==0) return false;
+    if($(this).attr("data-statu")==1){
+        return false;
+    }
+    $(this).attr("data-statu","1");
     var money = $.trim($("#money").val());
     if(money==''){
         noticeBox("充值金额不能为空");
@@ -53,7 +56,7 @@ $(document).ready(function(){
         }
     }
 }).on("click","#money",function(){
-    $("#commit-rec").attr("data-statu","1").removeClass("grey-bg");
+    $("#commit-rec").removeClass("grey-bg");
     /*if($.trim($(this).val())!=''){
         $("#commit-rec").attr("data-statu","1").removeClass("grey-bg");
     }else{
