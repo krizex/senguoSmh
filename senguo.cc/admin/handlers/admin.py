@@ -747,6 +747,11 @@ class Order(AdminBaseHandler):
 							return self.send_fail('shop not found')
 						# shop.shop_balance += order.totalprice * 100
 						shop.available_balance += totalprice
+
+						# available history
+						available_history = models.AvailableHistory(shop_id = shop.id , balance_value = totalprice,\
+							balance_record = '订单' + order.num + '完成',available_balance = shop.available_balance)
+						self.session.add(available_history)
 						self.session.commit()
 
 					if shop_follow: 

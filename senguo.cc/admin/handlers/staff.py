@@ -303,6 +303,11 @@ class Order(StaffBaseHandler):
 						# shop.shop_balance += order.totalprice * 100
 						shop.available_balance += totalprice
 						print(shop.available_balance,'店铺可提现余额')
+
+						# available history
+						available_history = models.AvailableHistory(shop_id = shop.id , balance_value = totalprice,\
+							balance_record = '订单' + order.num + '完成',available_balance = shop.available_balance)
+						self.session.add(available_history)
 						self.session.commit()
 
 					if shop_follow: 

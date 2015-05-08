@@ -791,6 +791,16 @@ class ApplyCashHistory(MapBase,_CommonApi):
 	has_done   = Column(Integer , default = 0) # 0:before done,1: done success,2: decline
 	decline_reason = Column(String(200)) #当申请提现被拒绝后 给商家的理由
 	account_name = Column(String(32)) #账户真实姓名
+	# available_balance = Column(Float,default = 0)   # changed when the order complete and shop admin apply to cash
+	shop = relationship("Shop")
+
+class AvailableBalanceHistory(MapBase,_CommonApi):
+	__tablename__ = 'available_balance_history'
+	id = Column(Integer,primary_key = True ,nullable = False)
+	shop_id = Column(Integer,ForeignKey(Shop.id),nullable = False)
+	balance_record = Column(String(64))
+	balance_value = Column(Float)
+	available_balance = Column(Float)
 	shop = relationship("Shop")
 
 ################################################################################
