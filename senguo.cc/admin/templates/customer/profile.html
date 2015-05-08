@@ -14,7 +14,7 @@
                 <span class="title img-title pull-left">头像</span>
                 <a href="javascript:;">
                     <i class="arr-right pull-right mt12"></i>
-                    <img src="{{current_user.accountinfo.headimgurl_small}}" class="user-img pull-right"/>
+                    <img src="{{current_user.accountinfo.headimgurl_small or '/static/images/TDSG_l.png'}}" class="user-img pull-right"/>
                 </a>
             </div>
         </li>
@@ -29,7 +29,7 @@
                 <a href="javascript:;" class="box" id="userRealname">
                     <span class="title pull-left text-grey3">姓名</span>
                     <i class="arr-right pull-right"></i>
-                    <span class="nickname pull-right s1" id="userName">{{current_user.accountinfo.realname}}</span>
+                    <span class="nickname pull-right s1" id="userName">{{current_user.accountinfo.realname or '无'}}</span>
                 </a>
             </div>
         </li>
@@ -58,8 +58,12 @@
                 <span class="title img-title pull-left">我浏览过的店铺</span>
                 <a href="javascript:;">
                     <i class="arr-right pull-right mt12"></i>
+                    {% if context['shop_info'] %}
                     {% for shop in context['shop_info'] %}
-                    <a href="/{{shop['shop_code']}}" class="wrap-img  pull-right ml6"><img src="{{shop['logo'] or '/static/images/TDSG_l.png'}}?imageView/1/w/100/h/100" class="shop-img"/></a>
+                        <a href="/{{shop['shop_code']}}" class="wrap-img  pull-right ml6"><img src="{{shop['logo'] or '/static/images/TDSG_l.png'}}?imageView/1/w/100/h/100" class="shop-img"/></a>
+                    {% end %}
+                    {% else %}
+                        <span class="title img-title pull-right">没有店铺浏览</span>
                     {% end %}
                 </a>
             </div>
@@ -116,7 +120,7 @@
                 <span class="title img-title pull-left lh50">第三方帐号绑定</span>
                 <a href="javascript:;">
                     <i class="arr-right pull-right mt8"></i>
-                    {% if context['third'][0]['weixin'] == True %}
+                    {% if context['third'] and context['third'][0]['weixin'] == True %}
                     <a href="javascript:;"><img src="/static/images/wx.png" class="third-img pull-right ml6"/></a>
                     {% end %}
                 </a>

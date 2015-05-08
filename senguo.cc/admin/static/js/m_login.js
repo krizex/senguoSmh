@@ -1,5 +1,5 @@
 $(document).ready(function(){
-
+    SetCookie("next_url",$("#phoneLogin").attr('data-next'),1);
 }).on('click','#phoneLogin',function(){
 	var $this=$(this);
 	$this.attr({'disabled':true});
@@ -12,7 +12,6 @@ function login(target){
 	var password=$('#password').val().trim();
 	var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
 	var next=target.attr('data-next');
-    	console.log(next);
     	if(!regPhone.test(phone)){
     		target.removeAttr('disabled');
     		return noticeBox("手机号貌似有错o(╯□╰)o");
@@ -44,7 +43,7 @@ function login(target){
 		if(res.success){
 
 			if(next==''||!next){
-				window.location.href='/list/shoplist';	
+				window.location.href='/list';
 			}
 			else{
 				window.location.href=next;	
