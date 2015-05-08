@@ -6,20 +6,21 @@ $(document).ready(function(){
 
 
 function getCookie(key){
-    var aCookie = document.cookie.split(";");
+    var aCookie = document.cookie.split("; ");
     for (var i=0; i < aCookie.length; i++){
         var aCrumb = aCookie[i].split("=");
-        if (key === aCrumb[0].replace(/^\s*|\s*$/,"")){
-            return unescape(aCrumb[1]);
+        if (key == aCrumb[0]){
+            return aCrumb[1];
         }
     }
+    return '';
 }
 
 function SetCookie(name,value,days){
     var days=arguments[2]?arguments[2]:30; //此 cookie 将被保存 30 天
     var exp=new Date();    //new Date("December 31, 9998");
     exp.setTime(exp.getTime() + days*86400000);
-    document.cookie=name+"="+escape(value)+";path=/;expires="+exp.toGMTString();
+    document.cookie=name+"="+value+";path=/;expires="+exp.toGMTString();
 }
 
 //public

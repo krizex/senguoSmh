@@ -332,10 +332,28 @@ class CustomerProfile(CustomerBaseHandler):
 			data = self.args["data"]
 			new_password = data['password']
 			self.current_user.accountinfo.update(session = self.session ,password = password)
+		elif action == 'bind_wx':
+			next_url = self.args["data"]
+			return self.get_wexin_oauth_link(next_url = next_url)
+			self.bind_wx(next_url)
 
 		else:
 			return self.send_error(404)
 		return self.send_success()
+
+	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
+	def bind_wx(self,next_url):
+		# todo: handle state
+		code =self.args["code"]
+		mode = self.args["mode"]
+		# print("mode: ", mode , ", code get:", code)
+		if mode not in ["mp", "kf"]:
+			return self.send_error(400)
+
+		userinfo = self.get_wx_userinfo(code, mode)
+		if not userinfo:
+			return self.redirect(self.reverse_url("customerLogin"))
+
 
 class ShopProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -557,7 +575,8 @@ class Comment(CustomerBaseHandler):
 	def get(self):
 		shop_id = int(self.get_cookie("market_shop_id"))
 		page = self.args["page"]
-		comments = self.get_comments(shop_id, page, 20)
+		page_size = 20
+		comments = self.get_comments(shop_id, page, page_size)
 		date_list = []
 		nomore = False
 		for comment in comments:
@@ -566,6 +585,8 @@ class Comment(CustomerBaseHandler):
 		if date_list == []:
 			nomore = True
 		if page == 0:
+			if len(date_list)<page_size:
+				nomore = True
 			return self.render("customer/comment.html", date_list=date_list,nomore=nomore)
 		return self.send_success(date_list=date_list,nomore=nomore)
 
@@ -1096,7 +1117,7 @@ class Cart(CustomerBaseHandler):
 
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		if self.get_cookie("market_shop_code") != shop_code:
-			return self.send_fail('error')
+			print(" present market_shop_code doesn't  exist in cookie" )
 
 		print("[购物篮]当前店铺：",shop)
 		if shop.shop_auth in [1,2,3,4]:
@@ -1755,6 +1776,7 @@ class Balance(CustomerBaseHandler):
 		if shop_follow:
 			if shop_follow.shop_balance:
 				shop_balance = shop_follow.shop_balance
+				shop_balance = format(shop_balance,'.2f')
 			else:
 				shop_balance = 0.00
 
@@ -1827,57 +1849,49 @@ class Points(CustomerBaseHandler):
 			else:
 				shop_point = 0
 
-		try:
-			shop_history = self.session.query(models.PointHistory).filter_by(customer_id =\
-				customer_id,shop_id = shop_id).all()
-		except:
-			self.send_fail("point history error")
-		if shop_history:
-			for temp in shop_history:
-				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
-				history.append([temp.point_type,temp.each_point,temp.create_time])
-			# print(history)
-		count = len(history)
-		pages = int(count /page_size) if count % page_size ==0 else int(count/page_size) + 1
-
-		return self.render("customer/points.html",shop_point = shop_point,pages = pages)
+		return self.render("customer/points.html",shop_point = shop_point)
 
 
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("page")
 	def post(self):
-		page = self.args["page"]
+		page = int(self.args["page"])
 		page_size = 22
 		offset = (page-1) * page_size
 		customer_id = self.current_user.id
 		shop_id     = self.shop_id
 		history     = []
 		data = []
-
+		nomore = False
 		try:
 			shop_history = self.session.query(models.PointHistory).filter_by(customer_id =\
 				customer_id,shop_id = shop_id).all()
 		except:
-			self.send_fail("point history error")
+			print("point history error 2222")
 		if shop_history:
 			for temp in shop_history:
 				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
 				history.append([temp.point_type,temp.each_point,temp.create_time])
 			# print(history)
+		else:
+			nomore=True
 
 		count = len(history)
 		history = history[::-1]
 		# print('history',history)
+		if page==1 and count<=page_size:
+			nomore=True
 		if offset + page_size <= count:
 			data = history[offset:offset+page_size]
 		elif offset <= count and offset + page_size >=count:
 			data = history[offset:]
 		else:
-			self.send_fail("history page error")
+			nomore=True
+			print("nomore history page")
 		# print("data\n",data)
 
-		return self.send_success(data = data)
+		return self.send_success(data = data,nomore=nomore)
 
 
 

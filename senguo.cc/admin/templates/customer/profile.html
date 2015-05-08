@@ -1,5 +1,5 @@
 {% extends 'detail-base.html' %}
-{% block title %}个人信息{% end %}
+{% block title %}个人中心{% end %}
 {% block top %}个人中心{% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/market-profile.css')}}"/>
@@ -7,14 +7,14 @@
 
 {% block content%}
 <div class="user-info-detail pt36 clea bm-none">
-    <ul class="set-w100-fle m-b10 pt2">
-        <li class="item-title">基本信息</li>
+    <div class="item-title">基本信息</div>
+    <ul class="pt2 profile-lst bm-line">
         <li class="item bt-none">
             <div class="info-con">
                 <span class="title img-title pull-left">头像</span>
                 <a href="javascript:;">
                     <i class="arr-right pull-right mt12"></i>
-                    <img src="{{current_user.accountinfo.headimgurl}}" class="user-img pull-right"/>
+                    <img src="{{current_user.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}" class="user-img pull-right"/>
                 </a>
             </div>
         </li>
@@ -29,7 +29,7 @@
                 <a href="javascript:;" class="box" id="userRealname">
                     <span class="title pull-left text-grey3">姓名</span>
                     <i class="arr-right pull-right"></i>
-                    <span class="nickname pull-right s1">{{current_user.accountinfo.realname}}</span>
+                    <span class="nickname pull-right s1" id="userName">{{current_user.accountinfo.realname or '无'}}</span>
                 </a>
             </div>
         </li>
@@ -47,17 +47,23 @@
                 <a href="javascript:;" class="box" id="userBirthday">
                     <span class="title pull-left text-grey3">出生日期</span>
                     <i class="arr-right pull-right"></i>
-                    <span class="pull-right s1">{{context['birthday'] or '请设置'}}</span>
+                    <span class="pull-right s1" id="birthDay">{{context['birthday'] or '请设置'}}</span>
                 </a>
             </div>
         </li>
-        <li class="item">
+    </ul>
+    <ul class="profile-lst">
+        <li class="item bt-none">
             <div class="info-con">
                 <span class="title img-title pull-left">我浏览过的店铺</span>
                 <a href="javascript:;">
                     <i class="arr-right pull-right mt12"></i>
+                    {% if context['shop_info'] %}
                     {% for shop in context['shop_info'] %}
-                    <a href="/{{shop['shop_code']}}"><img src="{{shop['logo'] or '/static/images/TDSG_l.png'}}" class="shop-img pull-right ml6"/></a>
+                        <a href="/{{shop['shop_code']}}" class="wrap-img  pull-right ml6"><img src="{{shop['logo'] or '/static/images/TDSG.png'}}?imageView/1/w/100/h/100" class="shop-img"/></a>
+                    {% end %}
+                    {% else %}
+                        <span class="title img-title pull-right">没有店铺浏览</span>
                     {% end %}
                 </a>
             </div>
@@ -80,11 +86,13 @@
                 </a>
             </div>
         </li>
-        <li class="item-title">帐号与安全</li>
+    </ul>
+    <div class="item-title">帐号与安全</div>
+    <ul class="m-b10 profile-lst">
         <li class="item bt-none">
             <div class="info-con h19">
                 <a href="javascript:;" id="phoneNumber" class="box">
-                    <span class="title pull-left text-grey3">手机号绑定 <span class="tel-txt">{{current_user.accountinfo.phone}}</span></span>
+                    <span class="title pull-left text-grey3">手机号绑定 <span class="c999">{{current_user.accountinfo.phone or '未绑定'}}</span></span>
                     <i class="arr-right pull-right"></i>
                     <span class="pull-right  tiephone g-txt">更换</span>
                 </a>
@@ -96,7 +104,7 @@
                 <a href="javascript:;" id="changePwd" class="box">
                     <span class="title pull-left text-grey3">密码管理</span>
                     <i class="arr-right pull-right"></i>
-                     <span class="pull-right g-txt">修改密码</span>
+                     <span class="pull-right g-txt">重置</span>
                 </a>
                  {% else %}
                  <a href="javascript:;" id="setPwd" class="box">
@@ -112,8 +120,10 @@
                 <span class="title img-title pull-left lh50">第三方帐号绑定</span>
                 <a href="javascript:;">
                     <i class="arr-right pull-right mt8"></i>
-                    {% if context['third'][0]['weixin'] == True %}
+                    {% if context['third'] and context['third'][0]['weixin'] == True %}
                     <a href="javascript:;"><img src="/static/images/wx.png" class="third-img pull-right ml6"/></a>
+                    {% else %}
+                    <a href="javascript:;" class="bind_wx"><img src="/static/images/wx_grey.png" class="third-img pull-right ml6"/></a>
                     {% end %}
                 </a>
             </div>

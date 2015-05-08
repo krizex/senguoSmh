@@ -22,7 +22,11 @@
                 </li>
             {% end %}
     </ul>
-    <div class="btn text-grey9 set-w100-fle font12 loading" style="display:none;">更多评价</div>
+   {% if len(date_list) <20%}
+    <div class="btn text-grey9 set-w100-fle font12 loading">~没有更多了呢 ( > < )~</div>
+    {% else %}
+     <div class="btn text-grey9 set-w100-fle font12 loading" style="display:none;">更多评价</div>
+    {% end %}
 {% else %}
 <h3 class="text-center mt42 pt36">暂无评价！</h3>
 {% end %}
@@ -73,7 +77,7 @@
         <li>
             <dl class="ccom-item group">
                 <dd class="fl">
-                    <img src="/static/images/TDSG_l.png" width="50" height="50" alt="头像"/>
+                    <img src="/static/images/TDSG.png" width="50" height="50" alt="头像"/>
                 </dd>
                 <dt class="fl">
                     <p><span class="nor-txt">黄铁森</span><span class="time-txt ml20">1天前</span></p>
@@ -84,7 +88,7 @@
         <li>
             <dl class="ccom-item group">
                 <dd class="fl">
-                    <img src="/static/images/TDSG_l.png" width="50" height="50" alt="头像"/>
+                    <img src="/static/images/TDSG.png" width="50" height="50" alt="头像"/>
                 </dd>
                 <dt class="fl">
                 <p><span class="nor-txt">黄铁森</span><span class="time-txt ml20">1天前</span></p>

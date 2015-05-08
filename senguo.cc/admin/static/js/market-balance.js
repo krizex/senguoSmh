@@ -1,11 +1,11 @@
 $(document).ready(function(){
 	litsitem(1);
 	scrollLoading();
-    localStorage.setItem("shopName",$("#shopName").html());
+    SetCookie("shopName",$("#shopName").html(),30);
 });
 
-window.dataObj.page=1;
-window.dataObj.finished=true;
+var page=1;
+var finished=true;
 var nomore=false;
 $('.loading').html("~努力加载中 ( > < )~").show();
 function scrollLoading(){  
@@ -15,10 +15,10 @@ function scrollLoading(){
         var totalheight = 0;
         var main = $(".container");                  //主体元素
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
-        if(window.dataObj.finished&&(main.height()-range) <= totalheight  && nomore == false) {
-            window.dataObj.finished=false;
-            window.dataObj.page++;
-            litsitem(window.dataObj.page);
+        if(finished== true&&(main.height()-range) <= totalheight  && nomore == false) {
+            finished=false;
+            page++;
+            litsitem(page);
         }
         else if(nomore == true){
               $('.loading').html("~没有更多了呢 ( > < )~").show();
@@ -36,7 +36,7 @@ function litsitem(page){
         {
             nomore=res.nomore;
             var data=res.data;
-            if(data.length==0){
+            if(data.length==0&&page==1){
             		$('.no-recored').show();
             		$('.loading').remove();
             }
@@ -71,7 +71,7 @@ function litsitem(page){
 	});
 	$('.bal-bm-lst').append(list_item);
             }
-            window.dataObj.finished=true;
+            finished=true;
            
         }
         else {

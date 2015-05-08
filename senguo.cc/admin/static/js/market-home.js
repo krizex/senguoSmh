@@ -378,6 +378,7 @@ window.dataObj.page=1;
 window.dataObj.count=1;
 window.dataObj.action=5;
 window.dataObj.finished=true;
+$('.loading').html("~努力加载中 ( > < )~").show();
 var scrollLoading=function(){  
     $(window).scroll(function(){
         var maxnum = window.dataObj.page_count;            //设置加载最多次数  
@@ -409,6 +410,18 @@ var goodsList=function(page,action){
     $.postJson(url,args,function(res){
         if(res.success)
         {
+            if(action==5&&page== 1&&res.w_orders.length<10){
+                    $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+            }
+            if(action==6&&page== 1&&res.fruit_list.length<10){
+                    $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+            }
+            if(action==7&&page== 1&&res.dry_fruit_list.length<10){
+                    $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+            }
+            if(action==8&&page== 1&&res.mgood_list.length<10){
+                    $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+            }
             //get item dom
             if(window.dataObj.goods_item==undefined){
                 getItem('/static/items/customer/market-goods-item.html?v=2015-0320',function(data){
@@ -422,7 +435,9 @@ var goodsList=function(page,action){
                     });
                 });
             }
-            else initData(res);
+            else {
+                initData(res);
+            }
         }
         else {
             noticeBox(res.error_text);

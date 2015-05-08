@@ -176,12 +176,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return link
 
 	def get_login_url(self):
-		return self.get_wexin_oauth_link(next_url=self.request.full_url())
-		#return self.reverse_url('customerLogin')
+		#return self.get_wexin_oauth_link(next_url=self.request.full_url())
+		return self.reverse_url('customerLogin')
 
 	def get_weixin_login_url(self):
 		print("[微信登录]登录URL：",self.request.full_url())
-		next_url =  self.reverse_url("fruitzoneShopList")
+		# next_url =  self.reverse_url("fruitzoneShopList")
+		next_url = self.get_cookie('next_url')
 		return self.get_wexin_oauth_link(next_url = next_url)
 
 	def get_current_user(self):
@@ -647,7 +648,7 @@ class WxOauth2:
 			#    print(key,data[key])
 			userinfo_data = dict(
 				openid=data["openid"],
-				nickname=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["nickname"]),#过滤掉Emoji，否则数据库报错
+				nickname=data["nickname"],
 				sex=data["sex"],
 				province=data["province"],
 				city=data["city"],

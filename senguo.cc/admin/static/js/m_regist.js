@@ -100,7 +100,6 @@ function Vrify(target){
 }
 
 function checkCode(target){
-    console.log(233);
     var phone=$('#enterPhone').val().trim();
     var code=$('#enterVrify').val().trim();
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
@@ -172,7 +171,14 @@ function regist(target){
         function(res){
             if(res.success)
             {
-                 $('#subRegist').addClass('bg-green').removeAttr('disabled');
+                $('#subRegist').addClass('bg-green').removeAttr('disabled');
+                var next = getCookie("next_url");
+                console.log(next);
+                if(next==''){
+                    window.location.href='/list';
+                }else{
+                    window.location.href=next;
+                }
             }
             else {
                 noticeBox(res.error_text);
