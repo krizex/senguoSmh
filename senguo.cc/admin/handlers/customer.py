@@ -557,7 +557,8 @@ class Comment(CustomerBaseHandler):
 	def get(self):
 		shop_id = int(self.get_cookie("market_shop_id"))
 		page = self.args["page"]
-		comments = self.get_comments(shop_id, page, 20)
+		page_size = 20
+		comments = self.get_comments(shop_id, page, page_size)
 		date_list = []
 		nomore = False
 		for comment in comments:
@@ -566,6 +567,8 @@ class Comment(CustomerBaseHandler):
 		if date_list == []:
 			nomore = True
 		if page == 0:
+			if len(date_list)<page_size:
+				nomore = True
 			return self.render("customer/comment.html", date_list=date_list,nomore=nomore)
 		return self.send_success(date_list=date_list,nomore=nomore)
 

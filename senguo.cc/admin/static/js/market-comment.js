@@ -33,7 +33,10 @@ function commentList(page){
                 if(comment_list&&comment_list.length==0){
                      $('.loading').html("~没有更多了呢 ( > < )~").show();
                      return;          
-                }  
+                } 
+                if(nomore==true){
+                    $('.loading').html("~没有更多了呢 ( > < )~").show();
+                }
                 for(var i in comment_list){
                         var item='<li class="comment-item bg-white set-w100-fle">'
             +                            '<div class="img-box pull-left">'

@@ -165,8 +165,8 @@ handlers = [
     # 主页
     (r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次
     (r"/fruitzone", handlers.fruitzone.Home, {}, "fruitzoneHome"),  # 匹配'\' 0~1次
-    (r"/list", handlers.fruitzone.Home, {}, "fruitzoneHome"),
-    (r"/list/shoplist", handlers.fruitzone.ShopList, {}, "fruitzoneShopList"),
+    (r"/index", handlers.fruitzone.Home, {}, "fruitzoneHome"),
+    (r"/list", handlers.fruitzone.ShopList, {}, "fruitzoneShopList"),
     (r"/fruitzone/admin/home", handlers.fruitzone.AdminHome, {}, "fruitzoneAdminHome"),
     (r"/fruitzone/admin/profile", handlers.fruitzone.AdminProfile, {}, "fruitzoneAdminProfile"),
     (r"/fruitzone/paytest",handlers.customer.payTest,{},"fruitzonePayTest"),

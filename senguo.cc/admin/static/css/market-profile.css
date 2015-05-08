@@ -3,8 +3,7 @@
 .user-info-detail .user-img{width:42px;height:42px;border-radius: 50%;}
 .user-info-detail .shop-img{width:34px;height:34px;border-radius: 50%;}
 .user-info-detail .third-img{width:32px;height:32px;border-radius: 50%;}
-
-.user-info-detail .item{width:100%;float:left;font-size:14px;padding:9px 8px 9px 0;border-top:1px solid #f1f5f1;}
+.user-info-detail .item{width:100%;float:left;font-size:14px;padding:12px 8px;border-top:1px solid #f1f5f1;line-height:18px;}
 .user-info-detail .item .box{display:inline-block;width:100%;}
 .user-info-detail .w1{margin-top:1.5em;}
 .user-info-detail li a{color:#999;}
