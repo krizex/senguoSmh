@@ -153,7 +153,7 @@ function birthEdit(){
     $.postJson(url,args,
         function (res) {
             if (res.success) {
-                $('#userBirthday').text(res.birthday);
+                $('#birthDay').text(res.birthday);
                 var birth_box = new Modal('birthBox');
                 birth_box.modal('hide');
             }
@@ -193,7 +193,7 @@ function nameEdit(name){
             if (res.success) {
                 var name_box=new Modal('nameBox');
                 name_box.modal('hide');
-                $('#userRealname').text(name);
+                $('#userName').text(name);
             }
             else noticeBox(res.error_txt);
         },

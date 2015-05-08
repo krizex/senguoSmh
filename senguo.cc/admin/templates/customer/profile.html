@@ -29,7 +29,7 @@
                 <a href="javascript:;" class="box" id="userRealname">
                     <span class="title pull-left text-grey3">姓名</span>
                     <i class="arr-right pull-right"></i>
-                    <span class="nickname pull-right s1">{{current_user.accountinfo.realname}}</span>
+                    <span class="nickname pull-right s1" id="userName">{{current_user.accountinfo.realname}}</span>
                 </a>
             </div>
         </li>
@@ -47,7 +47,7 @@
                 <a href="javascript:;" class="box" id="userBirthday">
                     <span class="title pull-left text-grey3">出生日期</span>
                     <i class="arr-right pull-right"></i>
-                    <span class="pull-right s1">{{context['birthday'] or '请设置'}}</span>
+                    <span class="pull-right s1" id="birthDay">{{context['birthday'] or '请设置'}}</span>
                 </a>
             </div>
         </li>
