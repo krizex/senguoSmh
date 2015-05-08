@@ -29,7 +29,7 @@
                 <a href="javascript:;" class="box" id="userRealname">
                     <span class="title pull-left text-grey3">姓名</span>
                     <i class="arr-right pull-right"></i>
-                    <span class="nickname pull-right s1">{{current_user.accountinfo.realname}}</span>
+                    <span class="nickname pull-right s1" id="userName">{{current_user.accountinfo.realname}}</span>
                 </a>
             </div>
         </li>
@@ -47,7 +47,7 @@
                 <a href="javascript:;" class="box" id="userBirthday">
                     <span class="title pull-left text-grey3">出生日期</span>
                     <i class="arr-right pull-right"></i>
-                    <span class="pull-right s1">{{context['birthday'] or '请设置'}}</span>
+                    <span class="pull-right s1" id="birthDay">{{context['birthday'] or '请设置'}}</span>
                 </a>
             </div>
         </li>
@@ -57,7 +57,7 @@
                 <a href="javascript:;">
                     <i class="arr-right pull-right mt12"></i>
                     {% for shop in context['shop_info'] %}
-                    <a href="/{{shop['shop_code']}}"><img src="{{shop['logo'] or '/static/images/TDSG_l.png'}}" class="shop-img pull-right ml6"/></a>
+                    <a href="/{{shop['shop_code']}}" class="wrap-img  pull-right ml6"><img src="{{shop['logo'] or '/static/images/TDSG_l.png'}}" class="shop-img"/></a>
                     {% end %}
                 </a>
             </div>
@@ -84,7 +84,7 @@
         <li class="item bt-none">
             <div class="info-con h19">
                 <a href="javascript:;" id="phoneNumber" class="box">
-                    <span class="title pull-left text-grey3">手机号绑定 <span class="tel-txt">{{current_user.accountinfo.phone or '未绑定'}}</span></span>
+                    <span class="title pull-left text-grey3">手机号绑定 <span class="c999">{{current_user.accountinfo.phone or '未绑定'}}</span></span>
                     <i class="arr-right pull-right"></i>
                     <span class="pull-right  tiephone g-txt">更换</span>
                 </a>
@@ -96,7 +96,7 @@
                 <a href="javascript:;" id="changePwd" class="box">
                     <span class="title pull-left text-grey3">密码管理</span>
                     <i class="arr-right pull-right"></i>
-                     <span class="pull-right g-txt">修改密码</span>
+                     <span class="pull-right g-txt">重置</span>
                 </a>
                  {% else %}
                  <a href="javascript:;" id="setPwd" class="box">

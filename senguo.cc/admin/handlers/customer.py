@@ -2002,7 +2002,8 @@ class payTest(CustomerBaseHandler):
 			print(url,'code?')
 			return self.redirect(url)
 		else:
-			orderId = str(self.current_user.id) + str(int(time.time()))
+			orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(self.get_cookie('money'))+'a'+str(int(time.time()))
+			print(orderId,'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 			jsApi.setCode(code)
 			openid = jsApi.getOpenid()
 			print(openid,code,'hope is not []')
@@ -2014,7 +2015,7 @@ class payTest(CustomerBaseHandler):
 			totalPrice =float( self.get_cookie('money'))
 			print(totalPrice,'long time no see!')
 			unifiedOrder.setParameter("body",'charge')
-			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/paytest')
+			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/fruitzone/paytest')
 			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",orderId)
 			#orderPriceSplite = (order.price) * 100
@@ -2042,18 +2043,34 @@ class payTest(CustomerBaseHandler):
 		return
 
 
-	#@CustomerBaseHandler.check_arguments('totalPrice?:float','action')
+	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?:str')
 	def post(self):
+			print(self.args,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
 
 		# 微信 余额 支付
 	#	if action == 'wx_pay':
 			print('回调成功')
+			data = self.request.body
+			print(self.request.body,'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+			xml = data.decode('utf-8')
+			UnifiedOrder = UnifiedOrder_pub()
+			xmlArray     = UnifiedOrder.xmlToArray(xml)
+			status       = xmlArray['result_code']
+			orderId      = str(xmlArray['out_trade_no'])
+			result       = orderId.split('a')
+			customer_id  = int(result[0])
+			shop_id      = int(result[1])
+			totalPrice   = float(result[2])
+			
+			
+			
 		#	shop_code  = self.current_shop.shop_code
 		#	shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
 		#	if not shop:
 		#		return self.send_fail('shop not found')
-			shop_id = self.get_cookie('market_shop_id')
-			customer_id = self.current_user.id
+			
+			#shop_id = self.get_cookie('market_shop_id')
+			#customer_id = self.current_user.id
 			
 
 		#	code = self.args['code']
@@ -2061,7 +2078,8 @@ class payTest(CustomerBaseHandler):
 
 			
 			
-			totalPrice =float( self.get_cookie('money'))
+			#totalPrice =float( self.get_cookie('money'))
+			print(customer_id,shop_id,totalPrice)
 			#########################################################
 			# 用户余额增加 
 			# 同时店铺余额相应增加 
@@ -2072,7 +2090,7 @@ class payTest(CustomerBaseHandler):
 			# 支付成功后，用户对应店铺 余额 增1加
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 				shop_id = shop_id).first()
-			print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
+			print(customer_id, shop_id,'没充到别家店铺去吧')
 			if not shop_follow:
 				return self.send_fail('shop_follow not found')
 			shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
@@ -2086,15 +2104,18 @@ class payTest(CustomerBaseHandler):
 			print(shop.shop_balance ,'充值后 商店 总额')
 
 			# 支付成功后  生成一条余额支付记录
-			name = self.current_user.accountinfo.nickname
-			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
+			customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
+			if customer:
+				name = customer.accountinfo.nickname
+			#name = self.current_user.accountinfo.nickname
+			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 				balance_value = totalPrice,balance_record = '充值：用户 '+ name  , name = name , balance_type = 0,\
-				shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice)
+				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance)
 			self.session.add(balance_history)
 			print(balance_history , '钱没有白充吧？！')
 			self.session.commit()
 
-			return self.send_success()
+			return self.write('success')
 	#	else:
 	#		return self.send_fail('其它支付方式尚未开发')
 
