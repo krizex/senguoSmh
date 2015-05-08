@@ -815,6 +815,7 @@ class BalanceHistory(MapBase,_CommonApi):
 	customer_totalPrice = Column(Float,default = 0)
 	is_cancel      = Column(Integer,default = 0)  #若订单被取消 ，则充值记录被 置为1
 	#customer = relationship("CustomerShopFollow")
+	transaction_id = Column(String(64))
 
 class PointHistory(MapBase,_CommonApi):
 	__tablename__ = 'pointhistory'
