@@ -27,6 +27,7 @@
         <li class="cash-list">提现记录</li>
         <li class="charge-list">用户充值</li>
         <li class="online-list">在线支付</li>
+         <li class="spend-list">余额消费记录</li>
     </ul>
     <div class="acc-con-lst">
             <div class="wrap-acc-num cash-count hidden">
@@ -42,17 +43,21 @@
                 <span class="account-num">累计次数&nbsp;<span class="green-txt f16 online-times"></span>次</span>
                 <span class="account-num">累计人数&nbsp;<span class="green-txt f16 online-person"></span>人</span>
             </div>
+              <div class="wrap-acc-num spend-count hidden">
+                <span class="account-num">累计消费&nbsp;<span class="green-txt f16 spend-total"></span>元</span>
+                <span class="account-num">余额被消费过才能提现，对整个账户余额的值无影响</span>
+            </div>
             <table class="tb-account mt20">
                 <colgroup>
-                    <col width="50%"/>
                     <col width="20%"/>
+                     <col width="50%"/>
                     <col width="15%"/>
                     <col width="15%"/>
                 </colgroup>
                 <tr>
-                    <th class="pl20">操作</th>
-                    <th class="">时间</th>
-                    <th class="text-right">余额变动</th>
+                    <th class="pl20">时间</th>
+                    <th class="">操作</th>
+                    <th class="text-right">账户余额变化 </th>
                     <th class="text-right pr20">余额</th>
                 </tr>
             </table>
@@ -83,6 +88,7 @@
                         <p class ="text-grey9 pl50 mb10">企业认证的店铺，提现时间为1个工作日，节假日顺延</p>
                         <p class ="text-pink pl50 mb10">注意：余额支付和在线支付的订单，只有当订单送达（订单无法取消或删除）后，
                         </br>订单金额会才计入可提现额度</p>
+                        <p class ="text-pink pl50 mb10">注意：由于初期提现为人工手动结算，为提高工作人员的工作效率，只有当您的</br>可提现额度满100时才能进行提现，请大家谅解</p>
                         <table class="per-tb">
                             <colgroup>
                                 <col width="150"/>

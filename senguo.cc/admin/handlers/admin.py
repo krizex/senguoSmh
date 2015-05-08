@@ -1514,7 +1514,7 @@ class ShopBalance(AdminBaseHandler):
 		elif action == 'all_history':
 			history = []
 			page=int(self.args['page'])-1
-			balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_type.in_([0,2,3])).filter_by(shop_id = shop_id)
+			balance_history = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id)
 			history_list = balance_history.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			count =balance_history.count()
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
@@ -1585,7 +1585,28 @@ class ShopBalance(AdminBaseHandler):
 				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
 					'type':temp.balance_type,'total':shop_totalBalance})
 			return self.send_success(history = history,page_sum=page_sum,total=total,times=times,persons=persons)
-			
+		elif action =='spend':
+			history = []
+			page=int(self.args['page'])-1
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([1,4,5]))\
+			.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+			count =self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,balance_type =1).count()
+			spend_total = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(shop_id = shop_id,balance_type =1,is_cancel = 0).all()
+			if spend_total[0][0]:
+				total =spend_total[0][0]
+			total = format(total,'.2f')	
+			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
+			if not history_list:
+				print('get all BalanceHistory error')
+			for temp in history_list:
+				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
+				shop_totalBalance = temp.shop_totalPrice
+				if shop_totalBalance == None:
+					shop_totalBalance=0
+				shop_totalBalance = format(shop_totalBalance,'.2f')
+				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
+					'type':temp.balance_type,'total':shop_totalBalance})
+			return self.send_success(history = history,page_sum=page_sum,total=total,times=times,persons=persons)
 		else:
 			return self.send_fail('action error')
 

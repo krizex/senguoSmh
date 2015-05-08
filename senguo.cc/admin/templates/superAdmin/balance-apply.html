@@ -24,13 +24,14 @@
         {% for apply in history %}
         <li data-apply-id="{{apply['id']}}">
             <ul class="shop-attr-lst group">
-                <li>店铺名:<a href="javascript:;">{{apply['shop_name']}}</a></li>
+                <li>店铺名:<a href="/{{apply['shop_code']}}">{{apply['shop_name']}}</a></li>
                 <li>认证类型：{% if apply['shop_auth'] == 1 or apply['shop_auth'] == 4%}个人认证{% elif apply['shop_auth'] == 2 or apply['shop_auth'] == 3 %}企业认证{% end %}</li>
                 <li>账户余额：{{apply['shop_balance']}}元</li>
                 <li>提现申请时间：{{apply['create_time']}}</li>
                 <li>提现金额：<span class="red-txt">{{apply['value']}}</span>元</li>
                 <li>支付宝帐号：<span class="red-txt">{{apply['alipay_account']}}</span></li>
                 <li>申请人：<a href="javascript:;">{{apply['applicant_name']}}</a></li>
+                <li>支付宝真实姓名：{{apply['account_name']}}</li>
             </ul>
             <div class="apply-btn-group">
                 <a href="javascript:;" class="ok-btn">通过并已确认支付</a>

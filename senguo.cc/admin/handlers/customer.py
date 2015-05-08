@@ -332,10 +332,28 @@ class CustomerProfile(CustomerBaseHandler):
 			data = self.args["data"]
 			new_password = data['password']
 			self.current_user.accountinfo.update(session = self.session ,password = password)
+		elif action == 'bind_wx':
+			next_url = self.args["data"]
+			return self.get_wexin_oauth_link(next_url = next_url)
+			self.bind_wx(next_url)
 
 		else:
 			return self.send_error(404)
 		return self.send_success()
+
+	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
+	def bind_wx(self,next_url):
+		# todo: handle state
+		code =self.args["code"]
+		mode = self.args["mode"]
+		# print("mode: ", mode , ", code get:", code)
+		if mode not in ["mp", "kf"]:
+			return self.send_error(400)
+
+		userinfo = self.get_wx_userinfo(code, mode)
+		if not userinfo:
+			return self.redirect(self.reverse_url("customerLogin"))
+
 
 class ShopProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
