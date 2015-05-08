@@ -1017,7 +1017,7 @@ class ApplyCash(SuperBaseHandler):
 			shop.shop_balance = shop.shop_balance-apply_cash.value
 			shop.available_balance = shop.available_balance - apply_cash.value
 			# make a history of shop.available_balance 
-			available_history = models.AvailableHistory(shop_id = shop.id ,balance_record = '提现：管理员 ',balance_value = apply_cash.value,\
+			available_history = models.AvailableBalanceHistory(shop_id = shop.id ,balance_record = '提现：管理员 ',balance_value = apply_cash.value,\
 			available_balance =shop.available_balance )
 			self.session.add(available_history)
 
