@@ -184,6 +184,9 @@ $(document).ready(function(){
     }
     $this.addClass("bg85").attr("data-statu", "1");
     var tel = $("#perCode").text();
+    if(!tel){
+      return alert('管理员还未绑定手机号')
+    }
     var data={
         phone:tel
     };
