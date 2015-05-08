@@ -647,7 +647,7 @@ class WxOauth2:
 			#    print(key,data[key])
 			userinfo_data = dict(
 				openid=data["openid"],
-				nickname=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["nickname"]),#过滤掉Emoji，否则数据库报错
+				nickname=data["nickname"],
 				sex=data["sex"],
 				province=data["province"],
 				city=data["city"],
