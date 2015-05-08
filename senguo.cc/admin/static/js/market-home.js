@@ -410,6 +410,18 @@ var goodsList=function(page,action){
     $.postJson(url,args,function(res){
         if(res.success)
         {
+            if(action==5&&page== 1&&res.w_orders.length<10){
+                    $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+            }
+            if(action==6&&page== 1&&res.fruit_list.length<10){
+                    $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+            }
+            if(action==7&&page== 1&&res.dry_fruit_list.length<10){
+                    $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+            }
+            if(action==8&&page== 1&&res.mgood_list.length<10){
+                    $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+            }
             //get item dom
             if(window.dataObj.goods_item==undefined){
                 getItem('/static/items/customer/market-goods-item.html?v=2015-0320',function(data){
@@ -423,7 +435,9 @@ var goodsList=function(page,action){
                     });
                 });
             }
-            else initData(res);
+            else {
+                initData(res);
+            }
         }
         else {
             noticeBox(res.error_text);
