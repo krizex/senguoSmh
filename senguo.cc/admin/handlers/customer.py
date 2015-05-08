@@ -1828,57 +1828,49 @@ class Points(CustomerBaseHandler):
 			else:
 				shop_point = 0
 
-		try:
-			shop_history = self.session.query(models.PointHistory).filter_by(customer_id =\
-				customer_id,shop_id = shop_id).all()
-		except:
-			self.send_fail("point history error")
-		if shop_history:
-			for temp in shop_history:
-				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
-				history.append([temp.point_type,temp.each_point,temp.create_time])
-			# print(history)
-		count = len(history)
-		pages = int(count /page_size) if count % page_size ==0 else int(count/page_size) + 1
-
-		return self.render("customer/points.html",shop_point = shop_point,pages = pages)
+		return self.render("customer/points.html",shop_point = shop_point)
 
 
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("page")
 	def post(self):
-		page = self.args["page"]
+		page = int(self.args["page"])
 		page_size = 22
 		offset = (page-1) * page_size
 		customer_id = self.current_user.id
 		shop_id     = self.shop_id
 		history     = []
 		data = []
-
+		nomore = False
 		try:
 			shop_history = self.session.query(models.PointHistory).filter_by(customer_id =\
 				customer_id,shop_id = shop_id).all()
 		except:
-			self.send_fail("point history error")
+			print("point history error 2222")
 		if shop_history:
 			for temp in shop_history:
 				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
 				history.append([temp.point_type,temp.each_point,temp.create_time])
 			# print(history)
+		else:
+			nomore=True
 
 		count = len(history)
 		history = history[::-1]
 		# print('history',history)
+		if page==1 and count<=page_size:
+			nomore=True
 		if offset + page_size <= count:
 			data = history[offset:offset+page_size]
 		elif offset <= count and offset + page_size >=count:
 			data = history[offset:]
 		else:
-			self.send_fail("history page error")
+			nomore=True
+			print("nomore history page")
 		# print("data\n",data)
 
-		return self.send_success(data = data)
+		return self.send_success(data = data,nomore=nomore)
 
 
 

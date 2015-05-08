@@ -254,7 +254,7 @@ function cash(){
         function(res){
             if(res.success){
             		$('.bs-apply-com').modal('hide');
-            		$('.get-money').text('提现申请已提交成功，我们将在1-3个工作日内完成审核,提现金额:'+apply_value+'元').removeAttr('data-target','data-toggle');
+            		$('.get-money').text('提现申请已提交成功，我们将在1-3个工作日内完成审核，提现金额：'+apply_value+'元').removeAttr('data-target','data-toggle');
             		$('.fail-notice').remove();
                }
             else{
