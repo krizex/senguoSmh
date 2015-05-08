@@ -244,11 +244,11 @@ function cash(){
     }
     if(availible_value<100){
       $('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
-      return alert('您的可提现额度不足一百，不能进行提现操作');
+      return alert('您的可提现额度不足100元，无法进行提现操作');
     }
     if(apply_value>availible_value){
       $('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
-      return alert('您没有这么多可提现金额');
+      return alert('您没有这么多的可提现金额');
     }
     var args={
         action:action,
