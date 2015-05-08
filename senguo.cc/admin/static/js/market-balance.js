@@ -15,7 +15,7 @@ function scrollLoading(){
         var totalheight = 0;
         var main = $(".container");                  //主体元素
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
-        if(finished&&(main.height()-range) <= totalheight  && nomore == false) {
+        if(finished== true&&(main.height()-range) <= totalheight  && nomore == false) {
             finished=false;
             page++;
             litsitem(page);
@@ -36,7 +36,7 @@ function litsitem(page){
         {
             nomore=res.nomore;
             var data=res.data;
-            if(data.length==0){
+            if(data.length==0&&page==1){
             		$('.no-recored').show();
             		$('.loading').remove();
             }

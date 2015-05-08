@@ -1859,6 +1859,8 @@ class Points(CustomerBaseHandler):
 		count = len(history)
 		history = history[::-1]
 		# print('history',history)
+		if page==1 and count<=page_size:
+			nomore=True
 		if offset + page_size <= count:
 			data = history[offset:offset+page_size]
 		elif offset <= count and offset + page_size >=count:
