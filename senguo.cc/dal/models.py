@@ -420,7 +420,7 @@ class ShopTemp(MapBase, _CommonApi):
 	have_offline_entity = Column(Integer, default=False)
 	# 店铺介绍
 	shop_intro = Column(String(568))
-	shop_phone=Column(String(16))
+	shop_phone=Column(String(32))
 
 	admin = relationship("ShopAdmin")
 

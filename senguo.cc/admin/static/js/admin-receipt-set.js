@@ -44,8 +44,8 @@ $(document).ready(function(){
                 };
             },
             'onUploadComplete':function(){
-                $('#logoImg').show().attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/80/h/80'});
-                $('.receipt-img img').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/80/h/80'});
+                $('#logoImg').show().attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/100/h/100'});
+                $('.receipt-img img').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/100/h/100'});
                 $('.logo-box').find('.filename').hide();
                 $('.logo-box').find('.fileinfo').hide();
                 $('.logo-box').find('.close').hide();
