@@ -648,14 +648,16 @@ class SystemPurchase(FruitzoneBaseHandler):
 							   context=dict(charge_type=charge_type))
 		elif self._action == "dealFinishedCallback":
 			return self.handle_deal_finished_callback()
+		elif self._action == 'alipayCallBack':
+			return self.handle_alipay_finished_callback()
 		elif self._action == "history":
 			orders = self.current_user.success_orders(self.session)
 			return self.render("fruitzone/systempurchase-history.html", 
 							   context=dict(orders=orders, subpage="history"))
 		elif self._action == "systemAccount":
 			return self.render("fruitzone/systempurchase-systemaccount.html", context=dict(subpage="account"))
-		elif self._action == "alipaytest":
-			return self.render("fruitzone/alipayTest.html",context = dict(subpage="alipaytest"))
+		# elif self._action == "alipaytest":
+		# 	return self.render("fruitzone/alipayTest.html",context = dict(subpage="alipaytest"))
 		else:
 			return self.send_error(404)
 
@@ -686,6 +688,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 	def post(self):
 		if self._action == "dealNotify":
 			return self.handle_deal_notify()
+		elif self._action == "aliyNotify":
+			return self.handle_alipay_notify()
 		if not self.current_user:
 			return self.send_error(403)
 
@@ -699,11 +703,13 @@ class SystemPurchase(FruitzoneBaseHandler):
 
 	@FruitzoneBaseHandler.check_arguments('price:str')
 	def handle_alipaytest(self):
+		shop_id = self.get_cookie("market_shop_id")
+		print(shop_id,'idddddddddddddddddddddd')
 		price = float(self.args['price'])
 		print(price)
 		print('find the correct way to login?')
 		try:
-			url = self.test_create_tmporder_url(price)
+			url = self.test_create_tmporder_url(price,shop_id)
 		except Exception as e:
 			return self.send_fail('ca')
 		return self.send_success(url = url)
@@ -723,8 +729,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 				return self.send_fail(error_text="系统繁忙，请稍后重试")
 			return self.redirect(url)
 
-	@FruitzoneBaseHandler.check_arguments(
-		"service", "v","sec_id","sign","notify_data")
+	@FruitzoneBaseHandler.check_arguments("service", "v","sec_id","sign","notify_data")
 	def handle_deal_notify(self):
 		# 验证签名
 		sign = self.args.pop("sign")
@@ -747,6 +752,20 @@ class SystemPurchase(FruitzoneBaseHandler):
 			Logger.error("SystemPurchase Notify Fatal Error: order not found!")
 			return self.write("fail")
 		return self.write("success")
+
+
+	@FruitzoneBaseHandler.check_arguments("service", "v","sec_id","sign","notify_data")
+	def handle_alipay_notify(self):
+		print("login handler_alipay_notify")
+		sign = self.args.pop("sign")
+		signmethod = self._alipay.getSignMethod(**self.args)
+		if signmethod(self.args) != sign:
+			return self.send_error(403)
+		notify_data = xmltodict.parse(self.args["notify_data"]["notify"])
+		orderId = notify_data["out_trade_no"]
+		print("return success?")
+		return self.write("success")
+
 	
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 	def _create_tmporder_url(self, charge_data):
@@ -764,23 +783,29 @@ class SystemPurchase(FruitzoneBaseHandler):
 		)
 		return authed_url
 
-	def test_create_tmporder_url(self, price):
+	def test_create_tmporder_url(self, price,shop_id):
 		# 创建临时订单
 		# TODO: 订单失效时间与清除
 		# tmp_order = self.current_user.add_tmp_order(self.session, charge_data)
+		data = str(price) +'a'+str(shop_id)
+		# url = '/fruitzone/alipaynotify?data={0}'.format(data)
+		# print(url,'url')
+
 		authed_url = self._alipay.create_direct_pay_by_user_url(
-			out_trade_no= str(int(time.time())),
+			out_trade_no= str(price*100) +'a'+str(shop_id)+'a'+str(int(time.time())),
 			subject = 'alipay charge',
 			total_fee = price,
 			seller_account_name = ALIPAY_SELLER_ACCOUNT,
-			call_back_url= "%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("alipayNotify")),
-			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseDealNotify")),
+			# call_back_url= "%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseDealFinishedCallback")),
+			call_back_url = "%s%s"%(ALIPAY_HANDLE_HOST,self.reverse_url("fruitzoneSystemPurchaseAlipayFishedCallback")),
+			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseAliNotify")),
 			merchant_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseChargeTypes"))
 		)
+		# print(self.reverse_url("alipayNotify"),'urlllllllllllllllllllll')
 		return authed_url
 
 	def check_xsrf_cookie(self):
-		if self._action == "dealNotify":
+		if self._action == "dealNotify" or self._action == " ":
 			Logger.info("SystemPurchase: it's a notify post from alipay, pass xsrf cookie check")
 			return True
 		return super().check_xsrf_cookie()
@@ -792,111 +817,60 @@ class SystemPurchase(FruitzoneBaseHandler):
 		if not u.accountinfo.email or not u.accountinfo.phone or \
 		   not u.accountinfo.wx_username or not len(u.shops):
 			return False
-		
 		return True
 
+	@FruitzoneBaseHandler.check_arguments("sign", "result", "out_trade_no","trade_no", "request_token")
+	def handle_alipay_finished_callback(self):
+		# data = self.args['data']
+		print('login',self)
+		sign = self.args.pop("sign")
+		signmethod = self._alipay.getSignMethod()
+		if signmethod(self.args) != sign:
+			Logger.warn("SystemPurchase: sign from alipay error!")
+			return self.send_error(403)
+		order_id=str(self.args["out_trade_no"])
+		ali_trade_no=self.args["trade_no"]
+		print(order_id,ali_trade_no,'hhhhhhhhhhhhhhhhhhhh')
+		data = order_id.split('a')
+		totalPrice = float(data[0])/100
+		# shop_id = self.get_cookie('market_shop_id')
+		shop_id = int(data[1])
+		customer_id = self.current_user.id
+		print(totalPrice,shop_id ,customer_id,'ididid')
+	#	code = self.args['code']
+	#	path_url = self.request.full_url()
+		# totalPrice =float( self.get_cookie('money'))
+		#########################################################
+		# 用户余额增加 
+		# 同时店铺余额相应增加 
+		# 应放在 支付成功的回调里
+		#########################################################
+
+		# 支付成功后，用户对应店铺 余额 增1加
+		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+			shop_id = shop_id).first()
+		print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
+		if not shop_follow:
+			return self.send_fail('shop_follow not found')
+		shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
+		self.session.commit()
+
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if not shop:
+			return self.send_fail('shop not found')
+		shop.shop_balance += totalPrice
+		self.session.commit()
+		print(shop.shop_balance ,'充值后 商店 总额')
+
+		# 支付成功后  生成一条余额支付记录
+		name = self.current_user.accountinfo.nickname
+		balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
+			balance_value = totalPrice,balance_record = '充值：用户 '+ name  , name = name , balance_type = 0,\
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice)
+		self.session.add(balance_history)
+		print(balance_history , '钱没有白充吧？！')
+		self.session.commit()
+		return self.send_success(text = 'success')
+		# return self.render('fruitzone/alipayTest.html')
 
 
-# class payTest(FruitzoneBaseHandler):
-
-# 	# @tornado.web.authenticated
-# 	@FruitzoneBaseHandler.check_arguments('code?:str','totalPrice?')
-# 	def get(self):
-# 		print(self.request.full_url())
-# 		path_url = self.request.full_url()
-# 		# totalPrice = self.args['totalPrice']
-
-# 		jsApi  = JsApi_pub()
-# 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
-# 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('fruitzonePayTest')
-# 		print(path , 'redirect_uri is Ture?')
-# 		print(self.args['code'],'sorry  i dont know')
-# 		code = self.args.get('code',None)
-# 		print(code,'how old are you',len(code))
-# 		if len(code) is 2:
-# 			url = jsApi.createOauthUrlForCode(path)
-# 			print(url,'code?')
-# 			return self.redirect(url)
-# 		else:
-# 			orderId = str(self.current_user.id) + str(int(time.time()))
-# 			jsApi.setCode(code)
-# 			openid = jsApi.getOpenid()
-# 			print(openid,code,'hope is not []')
-# 			if not openid:
-# 				print('openid not exit')
-			
-# 			unifiedOrder =   UnifiedOrder_pub()
-# 			# totalPrice = self.args['totalPrice'] 
-# 			totalPrice =float( self.get_cookie('money'))
-# 			print(totalPrice,'long time no see!')
-# 			unifiedOrder.setParameter("body",'senguo')
-# 			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/')
-# 			unifiedOrder.setParameter("openid",openid)
-# 			unifiedOrder.setParameter("out_trade_no",orderId)
-# 			#orderPriceSplite = (order.price) * 100
-# 			wxPrice =int(totalPrice * 100)
-# 			print(wxPrice,'sure')
-# 			unifiedOrder.setParameter('total_fee',wxPrice)
-# 			unifiedOrder.setParameter('trade_type',"JSAPI")
-# 			prepay_id = unifiedOrder.getPrepayId()
-# 			print(prepay_id,'prepay_id================')
-# 			jsApi.setPrepayId(prepay_id)
-# 			renderPayParams = jsApi.getParameters()
-# 			print(renderPayParams)
-# 			noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
-# 			timestamp = datetime.datetime.now().timestamp()
-# 			wxappid = 'wx0ed17cdc9020a96e'
-# 			signature = self.signature(noncestr,timestamp,path_url)
-		
-# 		# return self.send_success(renderPayParams = renderPayParams)
-# 		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
-# 			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)
-
-# 	@FruitzoneBaseHandler.check_arguments('code?:str','totalPrice?:float','action','shop_code')
-# 	def post(self):
-
-# 		# 微信 余额 支付
-# 		if action == 'wx_pay':
-# 			print('回调成功')
-# 			shop_code  = self.args['shop_code']
-# 			shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
-# 			if not shop:
-# 				return self.send_fail('shop not found')
-# 			shop_id = shop.id
-# 			customer_id = self.current_user.id
-			
-
-# 			code = self.args['code']
-# 			path_url = self.request.full_url()
-
-			
-			
-
-# 			#########################################################
-
-	
-# 			# 用户余额增加 
-# 			# 同时店铺余额相应增加 
-# 			# 应放在 支付成功的回调里
-
-# 			#########################################################
-
-# 			# 支付成功后，用户对应店铺 余额 增加
-# 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
-# 				shop_id = shop_id).first()
-# 			print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
-# 			if not shop_follow:
-# 				return self.send_fail('shop_follow not found')
-# 			shop_follow.balance_history += wxPrice     #充值成功，余额增加，单位为 分
-# 			self.session.commit()
-
-# 			# 支付成功后  生成一条余额支付记录
-# 			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-# 			 balance_value = wxPrice,balance_record = '充值'+ str(totalPrice) + '元')
-# 			self.session.add(balance_history)
-# 			self.session.commit()
-
-# 			return self.send_success()
-# 		else:
-# 			return self.send_fail('其它支付方式尚未开发')
-		

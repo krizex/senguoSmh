@@ -302,7 +302,7 @@ class Order(StaffBaseHandler):
 							return self.send_fail('shop not found')
 						# shop.shop_balance += order.totalprice * 100
 						shop.available_balance += totalprice
-						print(shop.available_balance,'店铺可提现余额')
+						print(shop.available_balance,'shop.available_balance')
 						self.session.commit()
 
 					if shop_follow: 

@@ -396,6 +396,20 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 		return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		# return self.reverse_url('customerLogin')
 
+	@property
+	def shop_id(self):
+		if hasattr(self, "_shop_id"):
+			return self._shop_id
+		shop_id = self.get_cookie("market_shop_id")
+		if not shop_id:
+			print(("shop_id error"))
+			#return self.redirect("/shop/1")  #todo 这里应该重定向到商铺列表
+		self._shop_id = int(shop_id)
+		# if not self.session.query(models.CustomerShopFollow).filter_by(
+		#         customer_id=self.current_user.id, shop_id=shop_id).first():
+		#     return self.redirect("/customer/market/1")  #todo 这里应该重定向到商铺列表
+		return self._shop_id
+
 
 class AdminBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopAdmin

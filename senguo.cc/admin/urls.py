@@ -34,7 +34,7 @@ handlers = [
     
     (r"/customer/profile", handlers.customer.CustomerProfile, {}, "customerProfile"),
     (r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
-    (r"/customer/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
+    # (r"/fruitzone/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
     #微官网-----待删除
     (r"/", handlers.superadmin.Official),
 
@@ -230,13 +230,15 @@ handlers = [
         "action":"chargeDetail"}, "fruitzoneSystemPurchaseChargeDetail"),
     (r"/fruitzone/systemPurchase/dealFinishedCallback", handlers.fruitzone.SystemPurchase, {
         "action":"dealFinishedCallback"}, "fruitzoneSystemPurchaseDealFinishedCallback"),
+    (r"/fruitzone/systemPurchase/alipayFinishedCallback",handlers.fruitzone.SystemPurchase,{
+        "action":"alipayCallBack"},"fruitzoneSystemPurchaseAlipayFishedCallback"),
     (r"/fruitzone/systemPurchase/dealSuccess", handlers.fruitzone.SystemPurchase, {
         "action":"dealSuccess"}, "fruitzoneSystemPurchaseDealSuccess"),
     (r"/fruitzone/systemPurchase/dealNotify", handlers.fruitzone.SystemPurchase, {
         "action":"dealNotify"}, "fruitzoneSystemPurchaseDealNotify"),
     (r"/fruitzone/systemPurchase/alipaytest",handlers.fruitzone.SystemPurchase,{"action":"alipaytest"},
         "fruitzoneSystemPurchaseAlipayTest"),
-    # (r"/fruitzone/alipaytest",handlers.fruitzone.alipayTest,{},"fruitzoneSystemPurchaseAlipayTest"),
+    (r"/fruitzone/aliyNotify",handlers.fruitzone.SystemPurchase,{"action":"aliyNotify"},"fruitzoneSystemPurchaseAliNotify"),
 
     (r"/fruitzone/imgcallback", handlers.fruitzone.QiniuCallback, {"action":"shop" }, "imgCallback"),
     (r"/fruitzone/shopImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_shop_img"}, "fruitzoneshopImgCallback"),
