@@ -1835,7 +1835,7 @@ class Points(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("page")
 	def post(self):
-		page = self.args["page"]
+		page = int(self.args["page"])
 		page_size = 22
 		offset = (page-1) * page_size
 		customer_id = self.current_user.id
