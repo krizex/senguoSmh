@@ -1096,7 +1096,7 @@ class Cart(CustomerBaseHandler):
 
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		if self.get_cookie("market_shop_code") != shop_code:
-			return self.send_fail('error')
+			print(" present market_shop_code doesn't  exist in cookie" )
 
 		print("[购物篮]当前店铺：",shop)
 		if shop.shop_auth in [1,2,3,4]:
@@ -1755,6 +1755,7 @@ class Balance(CustomerBaseHandler):
 		if shop_follow:
 			if shop_follow.shop_balance:
 				shop_balance = shop_follow.shop_balance
+				shop_balance = format(shop_balance,'.2f')
 			else:
 				shop_balance = 0.00
 

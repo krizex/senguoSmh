@@ -6,7 +6,7 @@
     <span class="right-title">账户余额</span>
     <span class="acc-money">{{shop_balance}}<span class="small-txt">元</span></span>
     {% if has_done == 0 %}
-    <a class="get-money" href="javascript:;">提现申请已提交成功，我们将在1-3个工作日内完成审核</a>
+    <a class="get-money" href="javascript:;">提现申请已提交成功，我们将在1-3个工作日内完成审核,提现金额:{{apply_value}}元</a>
     {% elif has_done == 2 %}
      <a class="get-money" href="javascript:;" id="get-money" data-target=".bs-apply-com" data-toggle="modal">重新提现</a>
      <span class="text-pink font14 fail-notice">(提现失败 失败理由:{{decline_reason}})</span>
@@ -49,6 +49,12 @@
                     <col width="15%"/>
                     <col width="15%"/>
                 </colgroup>
+                <tr>
+                    <th class="pl20">操作</th>
+                    <th class="">时间</th>
+                    <th class="text-right">余额变动</th>
+                    <th class="text-right pr20">余额</th>
+                </tr>
             </table>
     </div>
 </div>        
@@ -76,7 +82,7 @@
                         <p class ="text-grey9 pl50">个人认证的店铺，提现时间为3个工作日，节假日顺延</p>
                         <p class ="text-grey9 pl50 mb10">企业认证的店铺，提现时间为1个工作日，节假日顺延</p>
                         <p class ="text-pink pl50 mb10">注意：余额支付和在线支付的订单，只有当订单送达（订单无法取消或删除）后，
-                        </br>　　　订单金额会才计入可提现额度</p>
+                        </br>订单金额会才计入可提现额度</p>
                         <table class="per-tb">
                             <colgroup>
                                 <col width="150"/>

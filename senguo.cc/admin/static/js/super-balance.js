@@ -192,7 +192,7 @@ function history(action,page){
         page:page
     };
     $('.list-pagination').attr({'data-action':action});
-    $('.tb-account').empty();
+    $('.tb-account').find('.con').remove();
     $.postJson(url,args,
         function(res){
             if(res.success){
@@ -247,7 +247,7 @@ function history(action,page){
         $('.no-list').addClass('hide');
                }
                for(var i in history){
-                var item= '<tr>'
+                var item= '<tr class="con">'
 +                                       '<td class="pl20">店铺名：<a href="javascript:;">{{shop_name}}</a> {{title}}</td>'
 +                                       '<td class="c999">{{time}}</td>'
 +                                       '<td class="orange-txt txt-ar"><span class="f16">{{balance_value}}</span><span class="c999">元</span></td>'

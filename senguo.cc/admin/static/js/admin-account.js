@@ -57,6 +57,9 @@ $(document).ready(function(){
     }
     $this.addClass("bg85").attr("data-statu", "1");
     var phone = $("#perCode").text();
+    if(!phone){
+      return alert('管理员还未绑定手机号')
+    }
     var args={
         action:'get_code',
         phone:phone,
@@ -102,7 +105,7 @@ function history(action,page){
         page:page
     };
     $('.list-pagination').attr({'data-action':action});
-    $('.tb-account').empty();
+    $('.tb-account').find('.con').remove();
     $.postJson(url,args,
         function(res){
             if(res.success){
@@ -158,7 +161,7 @@ function history(action,page){
                }
               $('.page-now').text(num);
                for(var i in history){
-               	var item=' <tr>'
+               	var item=' <tr class="con">'
 +               			'<td class="pl20 w50">{{title}}：<a href="{{user}}">{{name}}</a>{{record}}</td>'
 +                   			'<td class="c999">{{time}}</td>'
 +                 			'<td class="orange-txt txt-ar"><span class="f16">{{value}}</span><span class="c999">元</span></td>'
@@ -188,7 +191,6 @@ function history(action,page){
 		var list_item =render({
 			title:title,
 			user:user,
-			record:record,
 			name:name,
 			time:time,
 			value:value,
@@ -252,7 +254,7 @@ function cash(){
         function(res){
             if(res.success){
             		$('.bs-apply-com').modal('hide');
-            		$('.get-money').text('提现申请已提交成功，我们将在1-3个工作日内完成审核').removeAttr('data-target','data-toggle');
+            		$('.get-money').text('提现申请已提交成功，我们将在1-3个工作日内完成审核,提现金额:'+apply_value+'元').removeAttr('data-target','data-toggle');
             		$('.fail-notice').remove();
                }
             else{

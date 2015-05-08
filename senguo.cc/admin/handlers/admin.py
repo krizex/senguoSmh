@@ -1361,16 +1361,16 @@ class Config(AdminBaseHandler):
 			balance_on_active =self.current_shop.config.balance_on_active
 			shop_balance = self.current_shop.shop_balance
 			available_balance = self.current_shop.available_balance
-			if shop_balance == 0 and available_balance==0:	
-				if active == 1:
-					active = 0
-				else:
-					active = 1
-				self.current_shop.config.update(session=self.session,balance_on_active=active)
-			elif shop_balance !=0 and balance_on_active == 1:
+			if shop_balance !=0 and balance_on_active == 1:
 				return self.send_fail('您的店铺余额不为0，不可关闭余额支付')
-			elif available_balance != shop_balance:
+			if available_balance != shop_balance and balance_on_active == 1:
 				return self.send_fail('您尚有余额支付的订单未完成，不可关闭余额支付')
+			if active == 1:
+				active = 0
+			else:
+				active = 1
+			self.current_shop.config.update(session=self.session,balance_on_active=active)
+			
 
 		elif action == "online_on":
 			active = self.current_shop.config.online_on_active
@@ -1402,7 +1402,12 @@ class ShopBalance(AdminBaseHandler):
 		shop_auth = self.current_shop.shop_auth
 		has_done = ''
 		decline_reason = ''
-		available_balance = format(self.current_shop.available_balance,'.2f')
+		apply_value = 0
+		available_balance = self.current_shop.available_balance
+		if available_balance:
+			available_balance = format(available_balance,'.2f')
+		else:
+			available_balance = format(0,'.2f')
 		print(available_balance)
 		try:
 			apply_list = self.session.query(models.ApplyCashHistory).filter_by(shop_id=shop_id)
@@ -1410,6 +1415,11 @@ class ShopBalance(AdminBaseHandler):
 			
 			has_done = apply_cash.has_done
 			decline_reason = apply_cash.decline_reason
+			apply_value = apply_cash.value
+			if apply_value:
+				apply_value = format(apply_value,'.2f')
+			else:
+				apply_value = format(0,'.2f')
 
 		except:
 			print('apply_cash error')
@@ -1418,7 +1428,7 @@ class ShopBalance(AdminBaseHandler):
 			show_balance = True
 			return self.render("admin/shop-balance.html",shop_balance = shop_balance,\
 				show_balance = show_balance,has_done=has_done,decline_reason=decline_reason,\
-				available_balance = available_balance, context=dict(subpage=subpage))
+				available_balance = available_balance, apply_value=apply_value,context=dict(subpage=subpage))
 		else:
 			return self.redirect(self.reverse_url('adminHome'))
 
@@ -1442,6 +1452,8 @@ class ShopBalance(AdminBaseHandler):
 			# gen_msg_token(phone=self.args["phone"])
 			# return self.send_success()
 			admin_phone = self.session.query(models.Shop).filter_by(id = shop_id).first().admin.accountinfo.phone
+			if admin_phone == None:
+				return send_fail('管理员还未绑定手机号')
 			if admin_phone != phone:
 				return send_fail('该手机号不是管理员绑定的手机号')
 			resault = gen_msg_token(phone = phone)
