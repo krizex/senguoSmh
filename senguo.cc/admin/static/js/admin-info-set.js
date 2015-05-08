@@ -251,7 +251,7 @@ function infoEdit(target){
         action='edit_phone';
         shop_phone=$('.shop_phone').val().trim();
         console.log(shop_phone.length);
-        if(!(regNum).test(shop_phone)||11<shop_phone.length||shop_phone.length<5){return alert('"电话貌似有错o(╯□╰)o"')}
+        if(shop_phone.length=0){return alert('"电话不能为空o(╯□╰)o"')}
         data={shop_phone:shop_phone};
     }
     else if(action_name=='area')
