@@ -1,5 +1,9 @@
 $(document).ready(function(){
         //导航active
+    var market_shop_id=getCookie('market_shop_id');
+    if(!market_shop_id){
+        $('.return-btn').hide();
+    }
     window.dataObj.action=$.getUrlParam('action');
     $('.order-nav li').each(function(){
         var $this=$(this);

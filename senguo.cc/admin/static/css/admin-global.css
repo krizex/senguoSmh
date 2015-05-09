@@ -31,6 +31,7 @@ img{border:none;}
 .group:before,.group:after{content:'';display: block;line-height: 0;height: 0;font-size: 0;clear: both;}
 .group{*zoom:1;}
 .hide{display: none!important;}
+.ml20{margin-left: 20px;}
 /*头部样式*/
 .backstage-header .line50{line-height:45px;}
 .backstage-header .height50{height:45px;}

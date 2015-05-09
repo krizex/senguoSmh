@@ -672,6 +672,7 @@ class HireLink(MapBase, _CommonApi):
 	address2 = Column(String(200)) #二级
 	remark = Column(String(500))
 	active = Column(TINYINT, default=1)#1:上班 2：下班
+	default_staff = Column(TINYINT, default=0)#0: 非默认员工 1：默认员工 35.9
 
 # 角色：顾客
 class Customer(MapBase, _AccountApi):
@@ -801,6 +802,7 @@ class AvailableBalanceHistory(MapBase,_CommonApi):
 	balance_record = Column(String(64))
 	balance_value = Column(Float)
 	available_balance = Column(Float)
+	create_time = Column(DateTime,default = func.now()) 
 	shop = relationship("Shop")
 
 ################################################################################

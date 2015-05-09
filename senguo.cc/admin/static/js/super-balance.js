@@ -9,7 +9,7 @@ $(document).ready(function(){
         apply_list = '{{each history as his}}'+
             '<li data-apply-id="{{his.id}}">'+
                 '<ul class="shop-attr-lst group">'+
-                    '<li>店铺名：<a href="/{{his.shop_code}}">{{his.shop_name}}</a></li>'+
+                    '<li>店铺名：<a href="/{{his.shop_code}}" target="_blank">{{his.shop_name}}</a></li>'+
                     '<li>认证类型：{{ if his.shop_auth==1 || his.shop_auth==4 }}个人认证{{ /if }}{{ if his.shop_auth==2 || his.shop_auth==3}}企业认证{{ /if }}</li>'+
                     '<li>账户余额：{{his.shop_balance}}元</li>'+
                     '<li>提现申请时间：{{his.create_time}}</li>'+
@@ -117,6 +117,7 @@ $(document).ready(function(){
         num--;
         var action=$('.list-pagination').attr('data-action');
         history(action,num);
+        $('.page-now').text(num);
     }
 }).on('click','.next-page',function(){
     if(num==page_sum){
@@ -126,6 +127,7 @@ $(document).ready(function(){
         num++;
         var action=$('.list-pagination').attr('data-action');
         history(action,num);
+        $('.page-now').text(num);
     }
 }).on('click','.jump-to',function(){
     var page=$('.input-page').val().trim();
@@ -136,6 +138,7 @@ $(document).ready(function(){
     }
     else{
         history(action,page);
+        $('.page-now').text(num);
     }
 }).on('click','#cash-apply',function(){
     $('#cash-apply').addClass('bg-grey').attr({'disabled':true});
@@ -252,7 +255,7 @@ function history(action,page){
                }
                for(var i in history){
                 var item= '<tr class="con">'
-+                                       '<td class="pl20">店铺名：<a href="/{{shop_code}}">{{shop_name}}</a> {{title}}</td>'
++                                       '<td class="pl20">店铺名：<a href="/{{shop_code}}" target="_blank">{{shop_name}}</a> {{title}}</td>'
 +                                       '<td class="c999">{{time}}</td>'
 +                                       '<td class="orange-txt txt-ar"><span class="f16">{{balance_value}}</span><span class="c999">元</span></td>'
 +                                       '<td class="green-txt txt-ar pr20"><span class="f16">{{balance}}</span><span class="c999">元</span></td>'

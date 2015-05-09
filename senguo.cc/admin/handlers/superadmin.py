@@ -308,7 +308,7 @@ class ShopManage(SuperBaseHandler):
 				self.session.add(models.ShopStaff(id=shop.admin_id, shop_id=shop.id))  # 添加默认员工时先添加一个员工，否则报错
 				self.session.commit()
 
-			self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id))  # 把管理者默认为新店铺的二级配送员
+			self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id,default_staff=1))  # 把管理者默认为新店铺的二级配送员
 			self.session.commit()
 
 			#把管理员同时设为顾客的身份

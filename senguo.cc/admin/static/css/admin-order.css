@@ -43,6 +43,8 @@ body{-webkit-user-select: none; }
 .order-list-item .order-content .fit-active{color:#42b649;}
 .order-list-item .order-content .fit-unactive{color:#ff6666;}
 
+.order-list-item .btn{width:82px;}
+
 .order-list-item .order-message{margin-bottom:5px;}
 .order-list-item .order-message .message-img{width:17px;height:15px;background:url("../images/container-icon.gif") no-repeat 0 -199px;}
 

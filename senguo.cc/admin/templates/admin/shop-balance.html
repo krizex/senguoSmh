@@ -27,7 +27,8 @@
         <li class="cash-list">提现记录</li>
         <li class="charge-list">用户充值</li>
         <li class="online-list">在线支付</li>
-         <li class="spend-list">余额消费记录</li>
+        <li class="spend-list">余额消费记录</li>
+        <li class="available-list">可提现额度</li>
     </ul>
     <div class="acc-con-lst">
             <div class="wrap-acc-num cash-count hidden">
@@ -46,6 +47,9 @@
               <div class="wrap-acc-num spend-count hidden">
                 <span class="account-num">累计消费&nbsp;<span class="green-txt f16 spend-total"></span>元</span>
                 <span class="account-num">余额被消费过才能提现，对整个账户余额的值无影响</span>
+            </div>
+            <div class="wrap-acc-num available-count hidden">
+                <span class="account-num">余额支付与在线支付的订单，只有被用户评价过、或用户没有评价但距离完成时间已过小时，才记入可提现额独里</span>
             </div>
             <table class="tb-account mt20">
                 <colgroup>
