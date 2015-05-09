@@ -18,7 +18,7 @@
 .acc-report>li{line-height: 20px;font-size: 14px;color: #9d9b9c;}
 .wrap-bm{padding-left: 20px;padding-bottom: 20px;}
 .tab-lst{border-bottom: 2px solid #f6f6f6;-webkit-box-sizing: border-box;height:28px;}
-.tab-lst>li{font-size: 14px;color: #666;line-height: 28px;float:left;height:28px;width:100px;text-align:center;margin-right: 20px;cursor: pointer;}
+.tab-lst>li{font-size: 14px;color: #666;line-height: 28px;float:left;height:28px;width:85px;text-align:center;margin-right: 20px;cursor: pointer;}
 .tab-lst .active{border-bottom: 2px solid #52b43f;color: #52b43f;}
 .acc-con-lst{margin-top: 20px;}
 .acc-con-lst>li{display: none;}
