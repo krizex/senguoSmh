@@ -672,7 +672,7 @@ class HireLink(MapBase, _CommonApi):
 	address2 = Column(String(200)) #二级
 	remark = Column(String(500))
 	active = Column(TINYINT, default=1)#1:上班 2：下班
-	default_staff = Column(TINYINT, default=0)#0: 非默认员工 1：默认员工 35.9
+	default_staff = Column(Integer, default=0)#0: 非默认员工 1：默认员工 35.9
 
 # 角色：顾客
 class Customer(MapBase, _AccountApi):
