@@ -776,6 +776,11 @@ class CustomerShopFollow(MapBase, _CommonApi):
 	shop_new = Column(Integer,default = 0)
 	shop_balance  = Column(Float , default = 0)
 
+	commodity_quality = Column(Integer)
+	send_speed        = Column(Integer)
+	shop_service      = Column(Integer)
+
+
 #商家申请 提现
 class ApplyCashHistory(MapBase,_CommonApi):
 	__tablename__ = 'apply_cash'
@@ -1139,6 +1144,7 @@ class Order(MapBase, _CommonApi):
 	comment = Column(String(300))  # 评论
 	comment_create_date = Column(DateTime)
 	comment_reply = Column(String(300))  # 商家回复评论
+	comment_imgUrl= Column(String(200))
 	start_time = Column(Time)
 	end_time = Column(Time)
 	arrival_day  = Column(String(32))

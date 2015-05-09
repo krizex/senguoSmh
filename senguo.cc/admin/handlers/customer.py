@@ -358,9 +358,6 @@ class CustomerProfile(CustomerBaseHandler):
 class ShopProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self, shop_code):
-		# print(shop_code)
-		#self.set_cookie("market_shop_id", shop_id)
-		# shop_code = self.shop_code
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		except:
@@ -375,13 +372,15 @@ class ShopProfile(CustomerBaseHandler):
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
-
-
+		satisfy = 0
 		#是否关注判断
 		follow = True
-		if not self.session.query(models.CustomerShopFollow).filter_by(
-				customer_id=self.current_user.id, shop_id=shop.id).first():
-			follow = False
+		shop_follow =self.session.query(models.CustomerShopFollow).filter_by(customer_id=self.current_user.id, \
+			shop_id=shop.id).first()
+		if not shop_follow:
+				follow = False
+		# else:
+		# 	satisfy = format((shop_follow.commodity_quality + shop_follow.send_speed + shop_follow.shop_service)/300,'.2%')
 		# 今天是否 signin
 		signin = False
 		q=self.session.query(models.ShopSignIn).filter_by(
@@ -403,20 +402,10 @@ class ShopProfile(CustomerBaseHandler):
 		comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
 		session = self.session
 		w_id = self.current_user.id
-
 		session.commit()
-		# try:
-		#     point = session.query(models.Points).filter_by(id = w_id).first()
-		# except:
-		#     point = models.Points(id =w_id)
-		#     session.add(point)
-		# if point:
-		#     point.get_count(session,w_id)
-		# else:
-		#     print("have ran?")
 		return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
 						   fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
-						   service_area=service_area, headimgurls=headimgurls, signin=signin,
+						   service_area=service_area, headimgurls=headimgurls, signin=signin,satisfy=satisfy,
 						   comments=self.get_comments(shop_id, page_size=3), comment_sum=comment_sum,
 						   context=dict(subpage='shop'),shop_name = shop_name,shop_logo = shop_logo)
 
@@ -574,6 +563,12 @@ class Comment(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("page:int")
 	def get(self):
 		shop_id = int(self.get_cookie("market_shop_id"))
+		customer_id = self.current_user.id
+		satisfy = 0
+		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id=customer_id,\
+			shop_id=shop_id).first()
+		if shop_follow:
+			satisfy = format((shop_follow.commodity_quality + shop_follow.send_speed + shop_follow.shop_service)/300,'.2%')
 		page = self.args["page"]
 		page_size = 20
 		comments = self.get_comments(shop_id, page, page_size)
@@ -587,7 +582,7 @@ class Comment(CustomerBaseHandler):
 		if page == 0:
 			if len(date_list)<page_size:
 				nomore = True
-			return self.render("customer/comment.html", date_list=date_list,nomore=nomore)
+			return self.render("customer/comment.html", date_list=date_list,nomore=nomore,satisfy = satisfy)
 		return self.send_success(date_list=date_list,nomore=nomore)
 
 class Market(CustomerBaseHandler):
@@ -1450,7 +1445,9 @@ class Order(CustomerBaseHandler):
 		action = self.args["action"]
 		orders = []
 		session = self.session
-		return self.render("customer/order-list.html", context=dict(subpage='center'))
+		id = str(time.time())
+		qiniuToken = self.get_qiniu_token('comment',id)
+		return self.render("customer/order-list.html", context=dict(subpage='center',qiniuToken = qiniuToken))
 
 
 
@@ -1485,7 +1482,7 @@ class Order(CustomerBaseHandler):
 		return data
 
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("action", "data?","page?:int")
+	@CustomerBaseHandler.check_arguments("action", "data?","page?:int",'imgUrl?:str')
 	def post(self):
 		print(self,'self is what?')
 		page_size = 10
@@ -1634,13 +1631,35 @@ class Order(CustomerBaseHandler):
 				self.session.add(balance_history)
 
 			self.session.commit()
+		elif action == "comment_point":
+			data = self.args["data"]
+			# order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
+			customer_id = self.current_user.id
+			shop_id     = self.current_shop.id
+			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id=customer_id,shop_id=shop_id).first()
+			if not shop_follow:
+				return self.send_error(404)
+			shop_follow.commodity_quality = data["commodity_quality"]
+			shop_follow.send_speed        = data["send_speed"]
+			shop_follow.shop_service      = data["shop_service"]
+			self.session.commit()
+			return self.send_success()
+
 		elif action == "comment":
 			data = self.args["data"]
+			imgUrl = self.args["imgUrl"] 
+			n = 0
+			comment_imgUrl = {}
+			for item in imgUrl:
+				comment_imgUrl[n] = item
+				n += 1
+			comment_imgUrl = json.dumps(comment_imgUrl)
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
 			if not order:return self.send_error(404)
 			order.status = 6
 			order.comment_create_date = datetime.datetime.now()
 			order.comment = data["comment"]
+			order.comment_imgUrl = comment_imgUrl
 
 			# shop_point add by 5
 			# woody

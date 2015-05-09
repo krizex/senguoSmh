@@ -244,19 +244,31 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return token
 
 	def get_comments(self, shop_id, page=0, page_size=5):
-		# comments = self.session.query(models.Accountinfo.headimgurl_small, models.Accountinfo.nickname,\
-		# 	models.Order.comment, models.Order.comment_create_date, models.Order.num,\
-		# 	models.Order.comment_reply,models.Order.id,models.CommentApply.has_done).\
-		# filter(models.Order.shop_id == shop_id, models.Order.status == 6,\
-		# 	models.CommentApply.order_id == models.Order.id,models.Accountinfo.id == models.Order.customer_id).\
-		# 	order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+		comments_new = {}
+		comments_result =[]
 		comments =self.session.query(models.Order.comment, models.Order.comment_create_date, models.Order.num,\
 			models.Order.comment_reply,models.Order.id,models.CommentApply.has_done,models.Accountinfo.headimgurl_small, \
-			models.Accountinfo.nickname,models.CommentApply.delete_reason,models.CommentApply.decline_reason).\
+			models.Accountinfo.nickname,models.CommentApply.delete_reason,\
+			models.CommentApply.decline_reason,models.Order.comment_imgUrl,).\
 		outerjoin(models.CommentApply, models.Order.id == models.CommentApply.order_id).\
 		join(models.Accountinfo,models.Order.customer_id == models.Accountinfo.id).\
 		filter(models.Order.shop_id == shop_id, models.Order.status == 6).filter(or_(models.CommentApply.has_done !=1,models.CommentApply.has_done ==None )).\
 		order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+		print(comments)
+		for item in comments:
+			comments_new['comments']      = item[0]
+			comments_new['create_date']   = item[1]
+			comments_new['order_num']     = item[2]
+			comments_new['comment_reply'] = item[3]
+			comments_new['order_id']      = item[4]
+			comments_new['comment_has_done'] = item[5]
+			comments_new['headimgurl']    = item[6]
+			comments_new['nickname']      = item[7]
+			comments_new['delete_reason'] = item[8]
+			comments_new['comment_imgUrl']= json.loads(item[9]) if item[9] is not None else None
+			print(comments_new)
+			comments_result.append(comments_new)
+		# return comments_result
 		return comments
 
 	def timedelta(self, date):

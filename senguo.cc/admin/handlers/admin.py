@@ -634,6 +634,8 @@ class Order(AdminBaseHandler):
 			if action == "edit_remark":
 				order.update(session=self.session, remark=data["remark"])
 			elif action == "edit_SH2":
+				if order.status in [5,6,10]:
+					return self.send_fail('订单已完成，不允许操作该订单')
 				SH2 = next((x for x in self.current_shop.staffs if x.id == int(data["staff_id"])), None)
 				if not SH2:
 					return self.send_fail("没找到该送货员")
@@ -664,7 +666,7 @@ class Order(AdminBaseHandler):
 				# print("success?")
 
 			elif action == "edit_status":
-				if order.status in[5,6]:
+				if order.status in[5,6,10]:
 					return self.send_fail("订单已完成。不能修改状态")
 				order.update(session=self.session, status=data["status"])
 				# when the order complete ,
@@ -770,6 +772,8 @@ class Order(AdminBaseHandler):
 							self.session.commit()
 
 			elif action == "edit_totalPrice":
+				if order.pay_type == 2:
+					return self.send_fail("余额支付，不能修改价格")
 				order.update(session=self.session, totalPrice=data["totalPrice"])
 			elif action == "del_order":
 				if order.status == 0:
@@ -806,39 +810,6 @@ class Order(AdminBaseHandler):
 
 			elif action == "print":
 				order.update(session=self.session, isprint=1)
-		# elif action == "search":
-		#     order = self.session.query(models.Order).filter(and_(
-		#         models.Order.id == int(data["order_id"]), models.Order.shop_id == self.current_shop.id)).first()
-		#     if order:
-		#         order.__protected_props__ = [customer_id, shop_id, today, JH_id, SH1_id, comment, comment_create_date,
-		#                                      start_time, end_time, create_date, active, fruits, mgoods]
-		#         out_data = order.safe_props()
-		#         out_data["sent_time"] = "%d:%d ~ %d:%d" % (order.start_time.hour, order.start_time.minute,
-		#                                               order.end_time.hour, order.end_time.minute)
-		#         out_data["goods"] = []
-		#         fruits = eval(order.fruits)
-		#         for key in fruits:
-		#             out_data["goods"].append("%s:%s*%d" % (fruits[key]["fruit_name"],fruits[key]["charge"],
-		#                                                  fruits[key]["num"]))
-		#         mgoods = eval(order.mgoods)
-		#         for key in mgoods:
-		#             out_data["goods"].append("%s:%s*%d" % (mgoods[key]["mgoods_name"],mgoods[key]["charge"],
-		#                                                  mgoods[key]["num"]))
-		#         out_data = {"sent_time": "%d:%d ~ %d:%d" % (order.start_time.hour, order.start_time.minute,
-		#                                                  order.end_time.hour, order.end_time.minute),
-		#                     "id": order.id,
-		#                     "total_price": order.totalPrice,
-		#                     "phone": order.phone,
-		#                     "receiver": order.receiver}
-		#
-		#     else:order = {}
-		#     Staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
-		#         models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
-		#     SH2s=[]
-		#     for staff in Staffs:
-		#         SH2s.append(staff.safe_props())
-		#     return self.send_success(order=order, SH2s=SH2s)
-
 		else:
 			return self.send_error(404)
 		return self.send_success()
