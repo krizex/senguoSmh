@@ -396,7 +396,7 @@ class ShopProfile(CustomerBaseHandler):
 						models.Menu.shop_id == shop_id, models.Menu.active == 1).count()
 		address = self.code_to_text("shop_city", shop.shop_city) + " " + shop.shop_address_detail
 		service_area = self.code_to_text("service_area", shop.shop_service_area)
-		staffs = self.session.query(models.HireLink).filter_by(shop_id=shop_id).all()
+		staffs = self.session.query(models.HireLink).filter_by(shop_id=shop_id,active=1).all()
 		shop_members_id = [shop.admin_id]+[x.staff_id for x in staffs]
 		headimgurls = self.session.query(models.Accountinfo.headimgurl_small).\
 			filter(models.Accountinfo.id.in_(shop_members_id)).all()
@@ -550,7 +550,7 @@ class Members(CustomerBaseHandler):
 			return self.send_error(404)
 		admin_id = admin_id[0]
 		members = self.session.query(models.Accountinfo, models.HireLink.work).filter(
-			models.HireLink.shop_id == shop_id, or_(models.Accountinfo.id == models.HireLink.staff_id,
+			models.HireLink.shop_id == shop_id,models.HireLink.active==1, or_(models.Accountinfo.id == models.HireLink.staff_id,
 													models.Accountinfo.id == admin_id)).all()
 		member_list = []
 		def work(id, w):
