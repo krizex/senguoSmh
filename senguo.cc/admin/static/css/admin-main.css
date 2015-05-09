@@ -30,6 +30,7 @@
 /*.tb-account tr:nth-child(2n){background-color: #f1f1f1;}*/
 .tb-account tr:hover{background-color:#f6f6f6;}
 .account-num{display: inline-block;font-size: 14px;margin-right:20px;}
+.available-balance{margin-left: 8px;}
 .money-ipt{width: 200px;height: 30px;font-size: 14px;color: #333;border-radius: 2px;border: 1px solid #cecece;}
 .w200{width:200px;}
 .w500{width:500px;}
