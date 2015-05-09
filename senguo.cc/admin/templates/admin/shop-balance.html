@@ -4,7 +4,7 @@
 {% block content %}
 <div class="account-top">
     <span class="right-title">账户余额</span>
-    <span class="acc-money">{{shop_balance}}<span class="small-txt">元</span></span>
+    <span class="acc-money">{{shop_balance}}<span class="small-txt">&nbsp;元</span></span>
     {% if has_done == 0 %}
     <a class="get-money" href="javascript:;">提现中：{{apply_value}}元。提现申请已提交成功，我们将在1-3个工作日内完成审核。</a>
     {% elif has_done == 2 %}
@@ -93,11 +93,11 @@
                                 <col width="150"/>
                             </colgroup>
                             <tr>
-                                <td class="left">可提现额度 ： </td>
-                                <td > <span class="green-txt f16 available-balance">{{available_balance}}</span>元</td>
+                                <td class="left">可提现额度：</td>
+                                <td > <span class="green-txt f16 available-balance">{{available_balance}}</span>&nbsp;元</td>
                             </tr>
                             <tr>
-                                <td class="left">提现金额 ： </td>
+                                <td class="left">提现金额：</td>
                                 <td> <input tpye="text" class="money-ipt money"></td>
                             </tr>
                             <tr>
