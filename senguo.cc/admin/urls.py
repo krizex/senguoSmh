@@ -148,7 +148,7 @@ handlers = [
     (r"/admin/searchorder", handlers.admin.SearchOrder, {}, "adminSearchOrder"),
     (r"/admin/shopauth",handlers.admin.ShopAuthenticate,{},'adminShopAuth'),
     (r"/admin/shopbalance",handlers.admin.ShopBalance,{},"adminShopBalance"),
-
+	(r"/admin/realtime",handlers.admin.Realtime,{},""),
 
     # (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
     # (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),

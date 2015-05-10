@@ -80,10 +80,12 @@ img{border:none;}
 .container-left .nav li .server i{background-position:-43px 1px}
 .container-left .nav li .manage i{background-position:-84px 1px}
 .container-left .nav li .set i{background-position:-127px 1px}
-.container-left .nav li a{color:#333;text-indent:70px;font-size:14px;padding:10px 0;}
+.container-left .nav li a{color:#333;text-indent:70px;font-size:14px;padding:10px 0;position: relative;}
 .container-left .nav li a:focus{background:#44b549;color:#fff;}
 .container-left .nav .active{background:#44b549;color:#fff;}
-
+.red-tip{color: #fff;font-weight:normal;font-size: 12px;background-color: #ff6666;padding: 0 6px;border-radius: 20px;position: absolute;right: 38px;line-height: 20px;height: 20px;text-indent: 0;-webkit-transform:translate(55%,0);}
+.on_sum{color: #fff !important;font-size:12px !important;font-weight:normal !important;display:inline-block;background-color: #ff6666;padding: 0 7px;border-radius: 20px;right: 20px;line-height: 20px;height: 20px;}
+.red-toll{position: absolute;width: 6px;height: 6px;border-radius: 6px;background-color: #ff6666;right: 34px;top:18px;}
 /*右侧公共样式*/
 .container-right{width:80%;max-width:990px;padding:20px;border-left:1px solid #ddd;min-height:700px;}
 .container-right .right-title{font-size:20px;text-indent:20px;display:block;margin-bottom:20px;}
@@ -221,3 +223,26 @@ input{color:#333;text-indent:5px;}
 .mt10{margin-top:10px;}
 .font14{font-size:14px;}
 .border-none{border:none !important;}
+
+@-webkit-keyframes bounce {
+    0%, 20%, 53%, 80%, 100% {
+        -webkit-transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+        -webkit-transform: translate3d(0,0,0);
+    }
+    40%, 43% {
+        -webkit-transition-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
+        -webkit-transform: translate3d(0, -20px, 0);
+    }
+    70% {
+        -webkit-transition-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
+        -webkit-transform: translate3d(0, -10px, 0);
+    }
+    90% {
+        -webkit-transform: translate3d(0,-4px,0);
+        transform: translate3d(0,-4px,0);
+    }
+}
+.bounce{
+    -webkit-animation:bounce 1.2s infinite;
+    -webkit-transform-origin: center bottom;
+}
