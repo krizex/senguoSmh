@@ -308,7 +308,7 @@ class ShopManage(SuperBaseHandler):
 				self.session.add(models.ShopStaff(id=shop.admin_id, shop_id=shop.id))  # 添加默认员工时先添加一个员工，否则报错
 				self.session.commit()
 
-			self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id))  # 把管理者默认为新店铺的二级配送员
+			self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id,default_staff=1))  # 把管理者默认为新店铺的二级配送员
 			self.session.commit()
 
 			#把管理员同时设为顾客的身份
@@ -906,13 +906,15 @@ class Balance(SuperBaseHandler):
 		if not history_list:
 			print('history_list error')
 		for temp in history_list:
-				shop_name = self.session.query(models.Shop).filter_by(id=temp.shop_id).first().shop_name
+				shop = self.session.query(models.Shop).filter_by(id=temp.shop_id).first()
+				shop_name = shop.shop_name
+				shop_code = shop.shop_code
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
 				if shop_totalBalance == None:
 					shop_totalBalance=0
 				shop_totalBalance = format(shop_totalBalance,'.2f')
-				history.append({'shop_name':shop_name,'time':create_time,'balance':shop_totalBalance,'balance_value':temp.balance_value,'type':temp.balance_type})
+				history.append({'shop_name':shop_name,'shop_code':shop_code,'time':create_time,'balance':shop_totalBalance,'balance_value':temp.balance_value,'type':temp.balance_type})
 		page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 		return self.send_success(history = history,page_sum=page_sum,total = total,times = times,persons=persons,pay=pay,left = left)
 
@@ -979,7 +981,7 @@ class ApplyCash(SuperBaseHandler):
 				shop_name = self.session.query(models.Shop).filter_by(id=temp.shop_id).first().shop_name
 				history.append({"id":temp.id,"shop_code":temp.shop_code,"shop_name":shop_name,"shop_auth":temp.shop_auth,\
 					"shop_balance":temp.shop_balance,"create_time":temp.create_time.strftime('%Y-%m-%d %H:%M:%S'),"value":temp.value,\
-					"alipay_account":temp.alipay_account,"applicant_name":temp.applicant_name})
+					"alipay_account":temp.alipay_account,"applicant_name":temp.applicant_name,'account_name':temp.account_name})
 		page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 		if action!='[]':
 			return self.send_success(history=history,page_sum=page_sum)
@@ -1022,8 +1024,6 @@ class ApplyCash(SuperBaseHandler):
 				name,shop_id = apply_cash.shop_id,shop_totalPrice = shop.shop_balance)
 			self.session.add(balance_history)
 			self.session.commit()
-
-		
 		return self.send_success(history = history)
 
 		

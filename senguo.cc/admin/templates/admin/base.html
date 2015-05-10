@@ -55,10 +55,16 @@
                     </a>
                 </li>-->
                 <li class="area-info">
-                    <img src="{{current_shop.shop_trademark_url or '/static/design_img/TDSG.png'}}" class="admin-img height50 pull-left"/>
+                    <img src="{{current_shop.shop_trademark_url or '/static/design_img/TDSG.png'}}?imageView/1/w/100/h/100" class="admin-img height50 pull-left"/>
                     <div class="admin-info area pull-right">
-                        <p class="job pull-left text-left">{{current_user.accountinfo.nickname}}</p>
-                        <!--<p class="job pull-left text-left">未认证</p>-->
+                        <!-- <p class="job pull-left text-left">{{current_user.accountinfo.nickname}}</p> -->
+                        {% if current_shop.shop_auth in [1,4] %}
+                        <p class="job pull-left text-center">个人认证</p>
+                         {% elif current_shop.shop_auth in [2,3] %}
+                        <p class="job pull-left text-center">企业认证</p>
+                        {% else %}
+                        <p class="job pull-left text-center">未认证</p>
+                        {% end %}
                         <div class="dropdown  area pull-left">
                             <button class="btn btn-default dropdown-toggle area height25 border-none" type="button" id="dropdownMenu1" data-toggle="dropdown">
                                 <em title="{{current_shop.shop_name}}" class="pull-left" id="shop_name">{{current_shop.shop_name}}</em>
@@ -72,6 +78,7 @@
                                 {% end %}
                             </ul>
                         </div>
+                         
                     </div>
                 </li>
                 <li class="line50">

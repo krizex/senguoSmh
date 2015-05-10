@@ -4,7 +4,7 @@
 {% block content %}
 <div class="account-top">
     <span class="right-title">账户余额</span>
-    <span class="acc-money">{{shop_balance}}<span class="small-txt">元</span></span>
+    <span class="acc-money">{{shop_balance}}<span class="small-txt">&nbsp;元</span></span>
     {% if has_done == 0 %}
     <a class="get-money" href="javascript:;">提现中：{{apply_value}}元。提现申请已提交成功，我们将在1-3个工作日内完成审核。</a>
     {% elif has_done == 2 %}
@@ -27,6 +27,8 @@
         <li class="cash-list">提现记录</li>
         <li class="charge-list">用户充值</li>
         <li class="online-list">在线支付</li>
+        <li class="spend-list">余额消费记录</li>
+        <li class="available-list">可提现额度</li>
     </ul>
     <div class="acc-con-lst">
             <div class="wrap-acc-num cash-count hidden">
@@ -42,17 +44,24 @@
                 <span class="account-num">累计次数&nbsp;<span class="green-txt f16 online-times"></span>次</span>
                 <span class="account-num">累计人数&nbsp;<span class="green-txt f16 online-person"></span>人</span>
             </div>
+              <div class="wrap-acc-num spend-count hidden">
+                <span class="account-num">累计消费&nbsp;<span class="green-txt f16 spend-total"></span>元</span>
+                <span class="account-num">余额被消费过才能提现，对整个账户余额的值无影响</span>
+            </div>
+            <div class="wrap-acc-num available-count hidden">
+                <span class="account-num">余额支付与在线支付的订单，只有被用户评价过、或用户没有评价但距离完成时间已过小时，才记入可提现额独里</span>
+            </div>
             <table class="tb-account mt20">
                 <colgroup>
-                    <col width="50%"/>
                     <col width="20%"/>
+                     <col width="50%"/>
                     <col width="15%"/>
                     <col width="15%"/>
                 </colgroup>
                 <tr>
-                    <th class="pl20">操作</th>
-                    <th class="">时间</th>
-                    <th class="text-right">余额变动</th>
+                    <th class="pl20">时间</th>
+                    <th class="">操作</th>
+                    <th class="text-right">账户余额变化 </th>
                     <th class="text-right pr20">余额</th>
                 </tr>
             </table>
@@ -81,18 +90,18 @@
                  <div class="apply-cash-box">
                         <p class ="text-grey9 pl50">个人认证的店铺，提现时间为3个工作日，节假日顺延</p>
                         <p class ="text-grey9 pl50 mb10">企业认证的店铺，提现时间为1个工作日，节假日顺延</p>
-                        <p class ="text-pink pl50 mb10">注意：余额支付和在线支付的订单，只有当订单送达（订单无法取消或删除）后，
-                        </br>订单金额会才计入可提现额度</p>
+                        <p class ="text-pink pl50 mb10">注意：余额支付和在线支付的订单，只有当订单送达（订单无法取消或删除）后，</br>　　　订单金额会才计入可提现额度</p>
+                        <p class ="text-pink pl50 mb10">注意：由于初期提现为人工手动结算，为提高工作人员的工作效率，只有当您的</br>　　　可提现额度满100时才能进行提现，请大家谅解</p>
                         <table class="per-tb">
                             <colgroup>
                                 <col width="150"/>
                             </colgroup>
                             <tr>
-                                <td class="left">可提现额度 ： </td>
-                                <td > <span class="green-txt f16 available-balance">{{available_balance}}</span>元</td>
+                                <td class="left">可提现额度：</td>
+                                <td > <span class="green-txt f16 available-balance">{{available_balance}}</span>&nbsp;元</td>
                             </tr>
                             <tr>
-                                <td class="left">提现金额 ： </td>
+                                <td class="left">提现金额：</td>
                                 <td> <input tpye="text" class="money-ipt money"></td>
                             </tr>
                             <tr>

@@ -142,10 +142,10 @@
 .Shanzhu .bg{background-color:#FFF8FA}
 .Shanzhu .bg-color{background-color:#9E1B39}
 .Shanzhu .icon-bg{border-color:transparent #9E1B39 transparent transparent;}
-.Dhg .color{color:#e8aa02}
-.Dhg .bg-color{background-color:#ffe26d}
-.Dhg .bg{background-color:#fffdf6}
-.Dhg .icon-bg{border-color:transparent #ffe26d transparent transparent;}
+.Hdg .color{color:#e8aa02}
+.Hdg .bg-color{background-color:#ffe26d}
+.Hdg .bg{background-color:#fffdf6}
+.Hdg .icon-bg{border-color:transparent #ffe26d transparent transparent;}
 .Cm .color{color:#E61211}
 .Cm .bg{background-color:#FFF8F4}
 .Cm .bg-color{background-color:#E61211}
@@ -280,6 +280,10 @@
 .ugly .bg{background-color:#FFFCF2}
 .ugly .bg-color{background-color:#FBAB2D}
 .ugly .icon-bg{border-color:transparent #FBAB2D transparent transparent;}
+.yangmei .color{color:#FF6740}
+.yangmei .bg{background-color:#FEF6F6}
+.yangmei .bg-color{background-color:#FF6740}
+.yangmei .icon-bg{border-color:transparent #FF6740 transparent transparent;}
 
 
 .GANGUO{}

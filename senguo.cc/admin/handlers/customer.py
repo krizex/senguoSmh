@@ -332,17 +332,32 @@ class CustomerProfile(CustomerBaseHandler):
 			data = self.args["data"]
 			new_password = data['password']
 			self.current_user.accountinfo.update(session = self.session ,password = password)
+		elif action == 'bind_wx':
+			next_url = self.args["data"]
+			return self.get_wexin_oauth_link(next_url = next_url)
+			self.bind_wx(next_url)
 
 		else:
 			return self.send_error(404)
 		return self.send_success()
 
+	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
+	def bind_wx(self,next_url):
+		# todo: handle state
+		code =self.args["code"]
+		mode = self.args["mode"]
+		# print("mode: ", mode , ", code get:", code)
+		if mode not in ["mp", "kf"]:
+			return self.send_error(400)
+
+		userinfo = self.get_wx_userinfo(code, mode)
+		if not userinfo:
+			return self.redirect(self.reverse_url("customerLogin"))
+
+
 class ShopProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self, shop_code):
-		# print(shop_code)
-		#self.set_cookie("market_shop_id", shop_id)
-		# shop_code = self.shop_code
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		except:
@@ -357,13 +372,15 @@ class ShopProfile(CustomerBaseHandler):
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
-
-
+		satisfy = 0
 		#是否关注判断
 		follow = True
-		if not self.session.query(models.CustomerShopFollow).filter_by(
-				customer_id=self.current_user.id, shop_id=shop.id).first():
-			follow = False
+		shop_follow =self.session.query(models.CustomerShopFollow).filter_by(customer_id=self.current_user.id, \
+			shop_id=shop.id).first()
+		if not shop_follow:
+				follow = False
+		# else:
+		# 	satisfy = format((shop_follow.commodity_quality + shop_follow.send_speed + shop_follow.shop_service)/300,'.2%')
 		# 今天是否 signin
 		signin = False
 		q=self.session.query(models.ShopSignIn).filter_by(
@@ -378,27 +395,17 @@ class ShopProfile(CustomerBaseHandler):
 						models.Menu.shop_id == shop_id, models.Menu.active == 1).count()
 		address = self.code_to_text("shop_city", shop.shop_city) + " " + shop.shop_address_detail
 		service_area = self.code_to_text("service_area", shop.shop_service_area)
-		staffs = self.session.query(models.HireLink).filter_by(shop_id=shop_id).all()
+		staffs = self.session.query(models.HireLink).filter_by(shop_id=shop_id,active=1).all()
 		shop_members_id = [shop.admin_id]+[x.staff_id for x in staffs]
 		headimgurls = self.session.query(models.Accountinfo.headimgurl_small).\
 			filter(models.Accountinfo.id.in_(shop_members_id)).all()
 		comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
 		session = self.session
 		w_id = self.current_user.id
-
 		session.commit()
-		# try:
-		#     point = session.query(models.Points).filter_by(id = w_id).first()
-		# except:
-		#     point = models.Points(id =w_id)
-		#     session.add(point)
-		# if point:
-		#     point.get_count(session,w_id)
-		# else:
-		#     print("have ran?")
 		return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
 						   fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
-						   service_area=service_area, headimgurls=headimgurls, signin=signin,
+						   service_area=service_area, headimgurls=headimgurls, signin=signin,satisfy=satisfy,
 						   comments=self.get_comments(shop_id, page_size=3), comment_sum=comment_sum,
 						   context=dict(subpage='shop'),shop_name = shop_name,shop_logo = shop_logo)
 
@@ -532,7 +539,7 @@ class Members(CustomerBaseHandler):
 			return self.send_error(404)
 		admin_id = admin_id[0]
 		members = self.session.query(models.Accountinfo, models.HireLink.work).filter(
-			models.HireLink.shop_id == shop_id, or_(models.Accountinfo.id == models.HireLink.staff_id,
+			models.HireLink.shop_id == shop_id,models.HireLink.active==1, or_(models.Accountinfo.id == models.HireLink.staff_id,
 													models.Accountinfo.id == admin_id)).all()
 		member_list = []
 		def work(id, w):
@@ -556,6 +563,12 @@ class Comment(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("page:int")
 	def get(self):
 		shop_id = int(self.get_cookie("market_shop_id"))
+		customer_id = self.current_user.id
+		satisfy = 0
+		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id=customer_id,\
+			shop_id=shop_id).first()
+		if shop_follow:
+			satisfy = format((shop_follow.commodity_quality + shop_follow.send_speed + shop_follow.shop_service)/300,'.2%')
 		page = self.args["page"]
 		page_size = 20
 		comments = self.get_comments(shop_id, page, page_size)
@@ -569,7 +582,7 @@ class Comment(CustomerBaseHandler):
 		if page == 0:
 			if len(date_list)<page_size:
 				nomore = True
-			return self.render("customer/comment.html", date_list=date_list,nomore=nomore)
+			return self.render("customer/comment.html", date_list=date_list,nomore=nomore,satisfy = satisfy)
 		return self.send_success(date_list=date_list,nomore=nomore)
 
 class Market(CustomerBaseHandler):
@@ -1296,9 +1309,17 @@ class Cart(CustomerBaseHandler):
 		# woody
 		########################################################################
 		w_admin = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		if w_admin is not None:
-			w_SH2_id = w_admin.admin.id
-			# print(w_SH2_id)
+		default_statff=[]
+		try:
+			default_statff = self.session.query(models.HireLink).filter_by( shop_id =shop_id,default_staff=1).first()
+		except:
+			print('this shop has no default staff')
+		if default_statff:
+			w_SH2_id =default_statff.staff_id
+		else:
+			if w_admin is not None:
+				w_SH2_id = w_admin.admin.id
+		print(w_SH2_id,'iam cart order')
 		# print("*****************************************************************")
 		# print(f_d)
 		# print(mgoods)
@@ -1432,7 +1453,9 @@ class Order(CustomerBaseHandler):
 		action = self.args["action"]
 		orders = []
 		session = self.session
-		return self.render("customer/order-list.html", context=dict(subpage='center'))
+		id = str(time.time())
+		qiniuToken = self.get_qiniu_token('comment',id)
+		return self.render("customer/order-list.html", context=dict(subpage='center',qiniuToken = qiniuToken))
 
 
 
@@ -1467,7 +1490,7 @@ class Order(CustomerBaseHandler):
 		return data
 
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("action", "data?","page?:int")
+	@CustomerBaseHandler.check_arguments("action", "data?","page?:int",'imgUrl?:str')
 	def post(self):
 		print(self,'self is what?')
 		page_size = 10
@@ -1616,13 +1639,35 @@ class Order(CustomerBaseHandler):
 				self.session.add(balance_history)
 
 			self.session.commit()
+		elif action == "comment_point":
+			data = self.args["data"]
+			# order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
+			customer_id = self.current_user.id
+			shop_id     = self.current_shop.id
+			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id=customer_id,shop_id=shop_id).first()
+			if not shop_follow:
+				return self.send_error(404)
+			shop_follow.commodity_quality = data["commodity_quality"]
+			shop_follow.send_speed        = data["send_speed"]
+			shop_follow.shop_service      = data["shop_service"]
+			self.session.commit()
+			return self.send_success()
+
 		elif action == "comment":
 			data = self.args["data"]
+			imgUrl = self.args["imgUrl"] 
+			n = 0
+			comment_imgUrl = {}
+			for item in imgUrl:
+				comment_imgUrl[n] = item
+				n += 1
+			comment_imgUrl = json.dumps(comment_imgUrl)
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
 			if not order:return self.send_error(404)
 			order.status = 6
 			order.comment_create_date = datetime.datetime.now()
 			order.comment = data["comment"]
+			order.comment_imgUrl = comment_imgUrl
 
 			# shop_point add by 5
 			# woody
@@ -1901,70 +1946,7 @@ class Recharge(CustomerBaseHandler):
 			return self.send_success(url = url)
 		return self.render("customer/recharge.html",code = code,url=url )
 
-	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments('page','code?:str','totalPrice?:float','action?str','shop_code?str')
-	def post(self):
-		if action == 'wx_pay':
 
-			shop_code  = self.args['shop_code']
-			shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
-			if not shop:
-				return self.send_fail('shop not found')
-			shop_id = shop.id
-			customer_id = self.current_user.id
-			code = self.args['code']
-			path_url = self.request.full_url()
-
-			jsApi  = JsApi_pub()
-			orderId = str(self.current_user.id) + str(int(time.time()))
-			jsApi.setCode(code)
-			openid = jsApi.getOpenid()
-			print(openid,code,'hope is not []')
-			if not openid:
-				print('openid not exit')
-			
-			unifiedOrder =   UnifiedOrder_pub()
-			totalPrice = self.args['totalPrice'] 
-			unifiedOrder.setParameter("body",'senguo')
-			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/callback')
-			unifiedOrder.setParameter("openid",openid.encode('utf-8'))
-			unifiedOrder.setParameter("out_trade_no",orderId)
-			#orderPriceSplite = (order.price) * 100
-			wxPrice = totalPrice * 100
-			unifiedOrder.setParameter('total_fee',wxPrice)
-			unifiedOrder.setParameter('trade_type',"JSAPI")
-			prepay_id = unifiedOrder.getPrepayId()
-			print(prepay_id,'prepay_id================')
-			jsApi.setPrepayId(prepay_id)
-			renderPayParams = jsApi.getParameters()
-			print(renderPayParams)
-			noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
-			timestamp = datetime.datetime.now().timestamp()
-			wxappid = 'wx0ed17cdc9020a96e'
-			signature = self.signature(noncestr,timestamp,path_url)
-
-			#########################################################
-			#余额增加应放在 支付成功的回调里，此处应有改动
-			#########################################################
-
-			# 支付成功后，用户对应店铺 余额 增加
-			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
-				shop_id = shop_id).first()
-			if not shop_follow:
-				return self.send_fail('shop_follow not found')
-			shop_follow.balance_history += wxPrice     #充值成功，余额增加，单位为 分
-			self.session.commit()
-
-			# 支付成功后  生成一条余额支付记录
-			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-			 balance_value = wxPrice,balance_record = '充值'+ str(totalPrice) + '元')
-			self.session.add(balance_history)
-			self.session.commit()
-
-			return self.send_success(renderPayParams = renderPayParams,wxappid = wxappid,\
-				noncestr = noncestr ,timestamp = timestamp,signature = signature)
-		else:
-			return self.send_fail('action error')
 
 class OrderComment(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -1997,24 +1979,24 @@ class payTest(CustomerBaseHandler):
 			print(url,'code?')
 			return self.redirect(url)
 		else:
-			orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(self.get_cookie('money'))+'a'+str(int(time.time()))
+			totalPrice =int((float(self.get_cookie('money')))*100)
+			orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(totalPrice)+'a'+str(int(time.time()))
 			print(orderId,'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 			jsApi.setCode(code)
 			openid = jsApi.getOpenid()
 			print(openid,code,'hope is not []')
 			if not openid:
-				print('openid not exit')
-			
+				print('openid not exit')	
 			unifiedOrder =   UnifiedOrder_pub()
 			# totalPrice = self.args['totalPrice'] 
-			totalPrice =float( self.get_cookie('money'))
+			#totalPrice =float( self.get_cookie('money'))
 			print(totalPrice,'long time no see!')
 			unifiedOrder.setParameter("body",'charge')
 			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/fruitzone/paytest')
 			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",orderId)
 			#orderPriceSplite = (order.price) * 100
-			wxPrice =int(totalPrice * 100)
+			wxPrice =int(totalPrice )
 			print(wxPrice,'sure')
 			unifiedOrder.setParameter('total_fee',wxPrice)
 			unifiedOrder.setParameter('trade_type',"JSAPI")
@@ -2027,6 +2009,7 @@ class payTest(CustomerBaseHandler):
 			timestamp = datetime.datetime.now().timestamp()
 			wxappid = 'wx0ed17cdc9020a96e'
 			signature = self.signature(noncestr,timestamp,path_url)
+			totalPrice = float(totalPrice/100)
 		
 		# return self.send_success(renderPayParams = renderPayParams)
 		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
@@ -2055,10 +2038,10 @@ class payTest(CustomerBaseHandler):
 			result       = orderId.split('a')
 			customer_id  = int(result[0])
 			shop_id      = int(result[1])
-			totalPrice   = float(result[2])
-			
-			
-			
+			totalPrice   = (float(result[2]))/100
+			transaction_id = str(xmlArray['transaction_id'])
+			if status != 'SUCCESS':
+				return False
 		#	shop_code  = self.current_shop.shop_code
 		#	shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
 		#	if not shop:
@@ -2083,6 +2066,10 @@ class payTest(CustomerBaseHandler):
 			#########################################################
 
 			# 支付成功后，用户对应店铺 余额 增1加
+			#判断是否已经回调过，如果记录在表中，则不执行接下来操作
+			old_balance_history=self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
+			if old_balance_history:
+				return self.write('success')
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 				shop_id = shop_id).first()
 			print(customer_id, shop_id,'没充到别家店铺去吧')
@@ -2105,7 +2092,7 @@ class payTest(CustomerBaseHandler):
 			#name = self.current_user.accountinfo.nickname
 			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 				balance_value = totalPrice,balance_record = '充值：用户 '+ name  , name = name , balance_type = 0,\
-				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance)
+				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id)
 			self.session.add(balance_history)
 			print(balance_history , '钱没有白充吧？！')
 			self.session.commit()
@@ -2116,12 +2103,26 @@ class payTest(CustomerBaseHandler):
 
 class AlipayNotify(CustomerBaseHandler):
 	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("sign", "result", "out_trade_no","trade_no", "request_token")
 	def get(self):
-		shop_id = self.get_cookie('market_shop_id')
+		# data = self.args['data']
+		sign = self.args.pop("sign")
+		signmethod = self._alipay.getSignMethod()
+		if signmethod(self.args) != sign:
+			Logger.warn("SystemPurchase: sign from alipay error!")
+			return self.send_error(403)
+		order_id=int(self.args["out_trade_no"])
+		ali_trade_no=self.args["trade_no"]
+		print(order_id,ali_trade_no,'hhhhhhhhhhhhhhhhhhhh')
+		data = order_id.split('a')
+		totalPrice = float(data[0])
+		# shop_id = self.get_cookie('market_shop_id')
+		shop_id = int(data[1])
 		customer_id = self.current_user.id
+		print(totalPrice,shop_id ,customer_id,'ididid')
 	#	code = self.args['code']
 	#	path_url = self.request.full_url()
-		totalPrice =float( self.get_cookie('money'))
+		# totalPrice =float( self.get_cookie('money'))
 		#########################################################
 		# 用户余额增加 
 		# 同时店铺余额相应增加 
@@ -2152,7 +2153,7 @@ class AlipayNotify(CustomerBaseHandler):
 		self.session.add(balance_history)
 		print(balance_history , '钱没有白充吧？！')
 		self.session.commit()
-		return self.send_success(text = '充值成功')
+		return self.send_success(text = 'success')
 		# return self.render('fruitzone/alipayTest.html')
 
 		

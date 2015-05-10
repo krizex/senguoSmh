@@ -176,12 +176,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return link
 
 	def get_login_url(self):
-		return self.get_wexin_oauth_link(next_url=self.request.full_url())
-		#return self.reverse_url('customerLogin')
+		#return self.get_wexin_oauth_link(next_url=self.request.full_url())
+		return self.reverse_url('customerLogin')
 
 	def get_weixin_login_url(self):
 		print("[微信登录]登录URL：",self.request.full_url())
-		next_url =  self.get_cookie("next_url")
+		# next_url =  self.reverse_url("fruitzoneShopList")
+		next_url = self.get_cookie('next_url')
 		return self.get_wexin_oauth_link(next_url = next_url)
 
 	def get_current_user(self):
@@ -243,19 +244,31 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return token
 
 	def get_comments(self, shop_id, page=0, page_size=5):
-		# comments = self.session.query(models.Accountinfo.headimgurl_small, models.Accountinfo.nickname,\
-		# 	models.Order.comment, models.Order.comment_create_date, models.Order.num,\
-		# 	models.Order.comment_reply,models.Order.id,models.CommentApply.has_done).\
-		# filter(models.Order.shop_id == shop_id, models.Order.status == 6,\
-		# 	models.CommentApply.order_id == models.Order.id,models.Accountinfo.id == models.Order.customer_id).\
-		# 	order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+		comments_new = {}
+		comments_result =[]
 		comments =self.session.query(models.Order.comment, models.Order.comment_create_date, models.Order.num,\
 			models.Order.comment_reply,models.Order.id,models.CommentApply.has_done,models.Accountinfo.headimgurl_small, \
-			models.Accountinfo.nickname,models.CommentApply.delete_reason,models.CommentApply.decline_reason).\
+			models.Accountinfo.nickname,models.CommentApply.delete_reason,\
+			models.CommentApply.decline_reason,models.Order.comment_imgUrl,).\
 		outerjoin(models.CommentApply, models.Order.id == models.CommentApply.order_id).\
 		join(models.Accountinfo,models.Order.customer_id == models.Accountinfo.id).\
 		filter(models.Order.shop_id == shop_id, models.Order.status == 6).filter(or_(models.CommentApply.has_done !=1,models.CommentApply.has_done ==None )).\
 		order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+		print(comments)
+		for item in comments:
+			comments_new['comments']      = item[0]
+			comments_new['create_date']   = item[1]
+			comments_new['order_num']     = item[2]
+			comments_new['comment_reply'] = item[3]
+			comments_new['order_id']      = item[4]
+			comments_new['comment_has_done'] = item[5]
+			comments_new['headimgurl']    = item[6]
+			comments_new['nickname']      = item[7]
+			comments_new['delete_reason'] = item[8]
+			comments_new['comment_imgUrl']= json.loads(item[9]) if item[9] is not None else None
+			print(comments_new)
+			comments_result.append(comments_new)
+		# return comments_result
 		return comments
 
 	def timedelta(self, date):
@@ -396,6 +409,20 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 		return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		# return self.reverse_url('customerLogin')
 
+	@property
+	def shop_id(self):
+		if hasattr(self, "_shop_id"):
+			return self._shop_id
+		shop_id = self.get_cookie("market_shop_id")
+		if not shop_id:
+			print(("shop_id error"))
+			#return self.redirect("/shop/1")  #todo 这里应该重定向到商铺列表
+		self._shop_id = int(shop_id)
+		# if not self.session.query(models.CustomerShopFollow).filter_by(
+		#         customer_id=self.current_user.id, shop_id=shop_id).first():
+		#     return self.redirect("/customer/market/1")  #todo 这里应该重定向到商铺列表
+		return self._shop_id
+
 
 class AdminBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopAdmin
@@ -474,8 +501,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
 			return True
 		return False
 	def get_login_url(self):
-		#return self.get_wexin_oauth_link(next_url=self.request.full_url())
-		return self.reverse_url('customerLogin')
+		return self.get_wexin_oauth_link(next_url=self.request.full_url())
+		# return self.reverse_url('customerLogin')
 
 	def _f(self, cart, menu, charge_type_id, inc):
 		d = eval(getattr(cart, menu))

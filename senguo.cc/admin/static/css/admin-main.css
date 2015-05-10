@@ -18,18 +18,19 @@
 .acc-report>li{line-height: 20px;font-size: 14px;color: #9d9b9c;}
 .wrap-bm{padding-left: 20px;padding-bottom: 20px;}
 .tab-lst{border-bottom: 2px solid #f6f6f6;-webkit-box-sizing: border-box;height:28px;}
-.tab-lst>li{font-size: 14px;color: #666;line-height: 28px;float:left;height:28px;width:70px;margin-right: 20px;cursor: pointer;text-align: center;}
-.tab-lst .active{border-bottom: 2px solid #f66;color: #f66;}
+.tab-lst>li{font-size: 14px;color: #666;line-height: 28px;float:left;height:28px;width:85px;text-align:center;margin-right: 20px;cursor: pointer;}
+.tab-lst .active{border-bottom: 2px solid #52b43f;color: #52b43f;}
 .acc-con-lst{margin-top: 20px;}
 .acc-con-lst>li{display: none;}
 .acc-con-lst .active{display: block;}
-.tb-account{width: 100%;table-layout: fixed;border:1px solid #f6f6f6;}
-.tb-account th{height: 30px;line-height: 30px;color: #33;font-size: 14px;border-bottom:1px solid #eee;}
-.tb-account td{height: 30px;line-height: 30px;color: #666;font-size: 14px;}
+.tb-account{width: 100%;table-layout: fixed;border:1px solid #eee;}
+.tb-account th{height: 30px;line-height: 30px;color: #33;font-size: 14px;}
+.tb-account td{height: 30px;line-height: 30px;color: #666;font-size: 14px;border-bottom:1px solid #eee;}
 .tb-account tr:first-child{background-color:#f6f6f6;}
-.tb-account tr:nth-child(2n){background-color: #f1f1f1;}
+/*.tb-account tr:nth-child(2n){background-color: #f1f1f1;}*/
 .tb-account tr:hover{background-color:#f6f6f6;}
 .account-num{display: inline-block;font-size: 14px;margin-right:20px;}
+.available-balance{margin-left: 8px;}
 .money-ipt{width: 200px;height: 30px;font-size: 14px;color: #333;border-radius: 2px;border: 1px solid #cecece;}
 .w200{width:200px;}
 .w500{width:500px;}

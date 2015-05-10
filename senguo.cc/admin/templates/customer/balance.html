@@ -7,7 +7,7 @@
 {% block content %}
 <div class="balance-top">
     <dl class="bal-top group">
-        <dd class="fl"><img src="{{shop_logo or '/static/images/TDSG_l.png'}}" alt="头像"/></dd>
+        <dd class="fl"><img src="{{shop_logo or '/static/images/TDSG.png'}}?imageView/1/w/170/h/170" alt="头像"/></dd>
         <dt class="fl group">
             <div class="fl bal-shop">
                 <p class="clip">所在店铺：<span id="shopName">{{shop_name}}</span></p>
@@ -34,7 +34,7 @@
 </div>
  <div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中 ( > < )~</div>
  <div class="no-recored  text-center" style="display:none">
-     <img src="/static/images/goods_2.png"/>
+     <img src="/static/images/empty.png"/>
      <p class="text-center mt10 text-grey9">当前没有任何账单</p>
  </div>
 {% end %}

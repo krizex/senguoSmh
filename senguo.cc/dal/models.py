@@ -420,7 +420,7 @@ class ShopTemp(MapBase, _CommonApi):
 	have_offline_entity = Column(Integer, default=False)
 	# 店铺介绍
 	shop_intro = Column(String(568))
-	shop_phone=Column(String(16))
+	shop_phone=Column(String(32))
 
 	admin = relationship("ShopAdmin")
 
@@ -674,6 +674,7 @@ class HireLink(MapBase, _CommonApi):
 	address2 = Column(String(200)) #二级
 	remark = Column(String(500))
 	active = Column(TINYINT, default=1)#1:上班 2：下班
+	default_staff = Column(Integer, default=0)#0: 非默认员工 1：默认员工 35.9
 
 # 角色：顾客
 class Customer(MapBase, _AccountApi):
@@ -778,6 +779,11 @@ class CustomerShopFollow(MapBase, _CommonApi):
 	shop_new = Column(Integer,default = 0)
 	shop_balance  = Column(Float , default = 0)
 
+	commodity_quality = Column(Integer)
+	send_speed        = Column(Integer)
+	shop_service      = Column(Integer)
+
+
 #商家申请 提现
 class ApplyCashHistory(MapBase,_CommonApi):
 	__tablename__ = 'apply_cash'
@@ -793,6 +799,17 @@ class ApplyCashHistory(MapBase,_CommonApi):
 	has_done   = Column(Integer , default = 0) # 0:before done,1: done success,2: decline
 	decline_reason = Column(String(200)) #当申请提现被拒绝后 给商家的理由
 	account_name = Column(String(32)) #账户真实姓名
+	# available_balance = Column(Float,default = 0)   # changed when the order complete and shop admin apply to cash
+	shop = relationship("Shop")
+
+class AvailableBalanceHistory(MapBase,_CommonApi):
+	__tablename__ = 'available_balance_history'
+	id = Column(Integer,primary_key = True ,nullable = False)
+	shop_id = Column(Integer,ForeignKey(Shop.id),nullable = False)
+	balance_record = Column(String(64))
+	balance_value = Column(Float)
+	available_balance = Column(Float)
+	create_time = Column(DateTime,default = func.now()) 
 	shop = relationship("Shop")
 
 ################################################################################
@@ -817,6 +834,7 @@ class BalanceHistory(MapBase,_CommonApi):
 	customer_totalPrice = Column(Float,default = 0)
 	is_cancel      = Column(Integer,default = 0)  #若订单被取消 ，则充值记录被 置为1
 	#customer = relationship("CustomerShopFollow")
+	transaction_id = Column(String(64))
 
 class PointHistory(MapBase,_CommonApi):
 	__tablename__ = 'pointhistory'
@@ -1130,6 +1148,7 @@ class Order(MapBase, _CommonApi):
 	comment = Column(String(300))  # 评论
 	comment_create_date = Column(DateTime)
 	comment_reply = Column(String(300))  # 商家回复评论
+	comment_imgUrl= Column(String(200))
 	start_time = Column(Time)
 	end_time = Column(Time)
 	arrival_day  = Column(String(32))

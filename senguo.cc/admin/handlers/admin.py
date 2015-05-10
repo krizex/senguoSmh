@@ -577,7 +577,7 @@ class Order(AdminBaseHandler):
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["sent_time"] = order.send_time
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
-				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
+				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id,models.HireLink.active == 1)).all()
 			d["shop_new"] = 0
 			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
 				models.CustomerShopFollow.customer_id == order.customer_id).first()
@@ -590,6 +590,7 @@ class Order(AdminBaseHandler):
 				SH2s.append(staff_data)
 				if staff.id == order.SH2_id:  # todo JH、SH1
 					d["SH2"] = staff_data
+					print(d["SH2"],'i am admin order' )
 			d["SH2s"] = SH2s
 			data.append(d)
 		return self.render("admin/orders.html", data = data, order_type=order_type,
@@ -664,6 +665,8 @@ class Order(AdminBaseHandler):
 			if action == "edit_remark":
 				order.update(session=self.session, remark=data["remark"])
 			elif action == "edit_SH2":
+				if order.status in [5,6,10]:
+					return self.send_fail('订单已完成，不允许操作该订单')
 				SH2 = next((x for x in self.current_shop.staffs if x.id == int(data["staff_id"])), None)
 				if not SH2:
 					return self.send_fail("没找到该送货员")
@@ -694,7 +697,7 @@ class Order(AdminBaseHandler):
 				# print("success?")
 
 			elif action == "edit_status":
-				if order.status in[5,6]:
+				if order.status in[5,6,10]:
 					return self.send_fail("订单已完成。不能修改状态")
 				order.update(session=self.session, status=data["status"])
 				# when the order complete ,
@@ -779,6 +782,11 @@ class Order(AdminBaseHandler):
 						# 订单完成后，将相应店铺可提现 余额相应增加
 						# shop.shop_balance += order.totalprice * 100
 						shop.available_balance += totalprice
+
+						# available history
+						available_history = models.AvailableBalanceHistory(shop_id = shop.id , balance_value = totalprice,\
+							balance_record = '订单' + order.num + '完成',available_balance = shop.available_balance)
+						self.session.add(available_history)
 						self.session.commit()
 
 					if shop_follow: 
@@ -797,6 +805,8 @@ class Order(AdminBaseHandler):
 							self.session.commit()
 
 			elif action == "edit_totalPrice":
+				if order.pay_type == 2:
+					return self.send_fail("余额支付，不能修改价格")
 				order.update(session=self.session, totalPrice=data["totalPrice"])
 			elif action == "del_order":
 				if order.status == 0:
@@ -833,39 +843,6 @@ class Order(AdminBaseHandler):
 
 			elif action == "print":
 				order.update(session=self.session, isprint=1)
-		# elif action == "search":
-		#     order = self.session.query(models.Order).filter(and_(
-		#         models.Order.id == int(data["order_id"]), models.Order.shop_id == self.current_shop.id)).first()
-		#     if order:
-		#         order.__protected_props__ = [customer_id, shop_id, today, JH_id, SH1_id, comment, comment_create_date,
-		#                                      start_time, end_time, create_date, active, fruits, mgoods]
-		#         out_data = order.safe_props()
-		#         out_data["sent_time"] = "%d:%d ~ %d:%d" % (order.start_time.hour, order.start_time.minute,
-		#                                               order.end_time.hour, order.end_time.minute)
-		#         out_data["goods"] = []
-		#         fruits = eval(order.fruits)
-		#         for key in fruits:
-		#             out_data["goods"].append("%s:%s*%d" % (fruits[key]["fruit_name"],fruits[key]["charge"],
-		#                                                  fruits[key]["num"]))
-		#         mgoods = eval(order.mgoods)
-		#         for key in mgoods:
-		#             out_data["goods"].append("%s:%s*%d" % (mgoods[key]["mgoods_name"],mgoods[key]["charge"],
-		#                                                  mgoods[key]["num"]))
-		#         out_data = {"sent_time": "%d:%d ~ %d:%d" % (order.start_time.hour, order.start_time.minute,
-		#                                                  order.end_time.hour, order.end_time.minute),
-		#                     "id": order.id,
-		#                     "total_price": order.totalPrice,
-		#                     "phone": order.phone,
-		#                     "receiver": order.receiver}
-		#
-		#     else:order = {}
-		#     Staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
-		#         models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
-		#     SH2s=[]
-		#     for staff in Staffs:
-		#         SH2s.append(staff.safe_props())
-		#     return self.send_success(order=order, SH2s=SH2s)
-
 		else:
 			return self.send_error(404)
 		return self.send_success()
@@ -1236,13 +1213,42 @@ class Staff(AdminBaseHandler):
 			try:hire_link = self.session.query(models.HireLink).filter_by(
 				staff_id=data["staff_id"],shop_id=self.current_shop.id).one()
 			except:return self.send_error(404)
-			active = 1 if hire_link.active==2 else 2
-			hire_link.update(session=self.session, active=active)
+			try:
+				shop = self.session.query(models.Shop).filter_by(id = self.current_shop.id).one()
+				admin_id  =shop.admin.accountinfo.id
+			except :
+				print('this man is not admin')
+			if hire_link.active==2:
+					hire_link.active = 1
+			else:
+				if admin_id and hire_link.staff_id == admin_id:
+					return self.send_fail('管理员不可设置为下班状态')			
+				if hire_link.default_staff == 1:
+					return self.send_fail('请先取消该员工的默认员工状态，再让设置该员工为下班')
+				else:
+					hire_link.active = 2
+			self.session.commit()
 		elif action == "edit_staff":
 			try:hire_link = self.session.query(models.HireLink).filter_by(
 				staff_id=data["staff_id"],shop_id=self.current_shop.id).one()
 			except:return self.send_error(404)
 			hire_link.update(session=self.session, remark=data["remark"])
+		elif action == "default_staff":
+			try:
+				hire_link = self.session.query(models.HireLink).filter_by(staff_id=data["staff_id"],shop_id=self.current_shop.id).one()
+				other_hire =self.session.query(models.HireLink).filter(models.HireLink.staff_id!=data["staff_id"],\
+					models.HireLink.shop_id==self.current_shop.id).all()
+			except:return self.send_error(404)
+			if hire_link.default_staff == 0:
+				if hire_link.active == 2:
+					return self.send_fail('请先设置该员工为上班，才能设置该员工为默认员工')
+				else :
+					hire_link.default_staff =1
+					for hire in other_hire:
+						hire.default_staff =0
+			else:
+		 		hire_link.default_staff=0
+			self.session.commit()
 		else:
 			return self.send_fail()
 		return self.send_success()
@@ -1287,7 +1293,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			if follow:
 				d["shop_new"]=follow.shop_new
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
-				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id)).all()
+				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id,models.HireLink.active ==1 )).all()
 			SH2s = []
 			for staff in staffs:
 				staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone}
@@ -1548,7 +1554,7 @@ class ShopBalance(AdminBaseHandler):
 		elif action == 'all_history':
 			history = []
 			page=int(self.args['page'])-1
-			balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_type.in_([0,2,3])).filter_by(shop_id = shop_id)
+			balance_history = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id)
 			history_list = balance_history.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			count =balance_history.count()
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
@@ -1619,7 +1625,46 @@ class ShopBalance(AdminBaseHandler):
 				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
 					'type':temp.balance_type,'total':shop_totalBalance})
 			return self.send_success(history = history,page_sum=page_sum,total=total,times=times,persons=persons)
-			
+		elif action =='spend':
+			history = []
+			page=int(self.args['page'])-1
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([1,4,5]))\
+			.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+			count = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,balance_type =1).count()
+			spend_total = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(shop_id = shop_id,balance_type =1,is_cancel = 0).all()
+			if spend_total[0][0]:
+				total =spend_total[0][0]
+			total = format(total,'.2f')	
+			page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
+			if not history_list:
+				print('get all BalanceHistory error')
+			for temp in history_list:
+				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
+				shop_totalBalance = temp.shop_totalPrice
+				if shop_totalBalance == None:
+					shop_totalBalance=0
+				shop_totalBalance = format(shop_totalBalance,'.2f')
+				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
+					'type':temp.balance_type,'total':shop_totalBalance})
+			return self.send_success(history = history,page_sum=page_sum,total=total,times=times,persons=persons)
+		elif action == 'available':
+			history = []
+			page = int(self.args['page']-1)
+			history_list = self.session.query(models.AvailableBalanceHistory).filter_by(shop_id = shop_id).\
+			order_by(models.AvailableBalanceHistory.create_time.desc()).all()
+			count =  self.session.query(models.AvailableBalanceHistory).filter_by(shop_id = shop_id).count()
+			page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
+			if not history_list:
+				print('get all AvailableBalanceHistory error')
+			for temp in history_list:
+				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
+				available_balance = temp.available_balance
+				if available_balance == None:
+					available_balance=0
+				available_balance = format(available_balance,'.2f')
+				history.append({'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
+					'total':available_balance})
+			return self.send_success(history = history,page_sum=page_sum)
 		else:
 			return self.send_fail('action error')
 
