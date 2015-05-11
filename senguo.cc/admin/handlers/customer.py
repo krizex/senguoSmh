@@ -1318,11 +1318,11 @@ class Cart(CustomerBaseHandler):
 			w_SH2_id =default_statff.staff_id
 		else:
 			if w_admin is not None:
-				w_SH2_id = w_admin.admin.id
-		print(w_SH2_id,'iam cart order')
+					w_SH2_id = w_admin.admin.id
 		# print("*****************************************************************")
 		# print(f_d)
 		# print(mgoods)
+		print(w_SH2_id,"i'm staff id")
 		order = models.Order(customer_id=self.current_user.id,
 							 shop_id=shop_id,
 							 num=num,
