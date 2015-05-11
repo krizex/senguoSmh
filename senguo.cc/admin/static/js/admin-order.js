@@ -187,21 +187,11 @@ $(document).ready(function(){
                     var index = $(".order-type").children(".active").index();
                     $("#atonce").text(res.atonce);
                     $("#ontime").text(res.ontime);
-                    if(index==0){
-                        $("#not-deal").text(res.atonce);
-                        /*if(res.atonce>0){
-                            $("#new-order-box").removeClass("hidden");
-                        }else{
-                            $("#new-order-box").addClass("hidden");
-                        }*/
-                    }else if(index==1){
-                        $("#not-deal").text(res.ontime);
-                        /*if(res.ontime>0){
-                            $("#new-order-box").removeClass("hidden");
-                        }else{
-                            $("#new-order-box").addClass("hidden");
-                        }*/
-                    }
+                    /*if(res.new_order_sum>0){
+                        $("#new-order-box").removeClass("hidden");
+                    }else{
+                        $("#new-order-box").addClass("hidden");
+                    }*/
                 }
             }
         })
