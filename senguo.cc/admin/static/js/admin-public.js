@@ -33,6 +33,9 @@ if(isWeiXin()){
                     var staff_num = res.staff_num;//员工管理变动
                     $("#on_sum").text(atonce);
                     $("#comment_num").text(msg_num);
+                    $("#order_ordernum").text(new_order_sum);
+                    $("#user_usernum").text(user_num);
+                    $("#staff_staffnum").text(staff_num);
                     if(is_balance>0){
                         $("#is_balance").removeClass("hidden");
                     }else{
@@ -44,9 +47,9 @@ if(isWeiXin()){
                         $("#comment_num").addClass("hidden");
                     }
                     if(new_order_sum>0){
-                        $("#order_ordersum").removeClass("hidden");
+                        $("#order_ordernum").removeClass("hidden");
                     }else{
-                        $("#order_ordersum").addClass("hidden");
+                        $("#order_ordernum").addClass("hidden");
                     }
                     if(user_num>0){
                         $("#user_usernum").removeClass("hidden");
