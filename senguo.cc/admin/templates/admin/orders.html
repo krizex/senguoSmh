@@ -37,16 +37,16 @@
     {% set notice2='启用'%}
 {% end %}
 
-<span class="right-title">订单管理</span>
+<span class="right-title" id="order-title-manage">订单管理</span>
 <div class="orders-mode clearfix">
     <ul class="right-nav pull-left order-type">
         <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3">
             <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1&page=0" class="text-grey3">立即送</a>
-            <span class="number">{{count[11]}}</span>
+            <span class="number" id="atonce">{{count[11]}}</span>
         </li>
         <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3">
             <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=1&page=0" class="text-grey3">按时达</a>
-            <span class="number">{{count[21]}}</span>
+            <span class="number" id="ontime">{{count[21]}}</span>
         </li>
         <!--<li class="text-center col-lg-3">
             <a href="#" class="text-grey3">周期购</a>
@@ -95,7 +95,7 @@
 <div class="orders-list-title right-title2">
     <ul class="right-nav pull-left order-status">
         <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=1&page=0">未处理&nbsp;<span class="text-pink">{{count1}}</span></a>
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=1&page=0">未处理&nbsp;<span class="text-pink" id="not-deal">{{count1}}</span></a>
         </li>
         <li>
             <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=2&page=0">配送中&nbsp;<span class="text-pink">{{count2}}</span></a>
@@ -120,6 +120,7 @@
         <a href="javascript:;" class="print-btn blak-set-btn">批量打印</a>
         <a href="javascript:;" class="blak-set-btn">批量删除</a>
     </div>-->
+    <div class="new-order-box hidden" id="new-order-box">您还有新订单未处理，快来戳我，戳我！！</div>
     <ul class="order-list-content set-width-float mt10">
     </ul>
      <div class="users-pagination list-pagination">
@@ -139,7 +140,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header set-width-float">
-                <span class="title pull-left" id="myModalLabel">
+                <span class="title pull-left">
 
                 </span>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -160,7 +161,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header set-width-float">
-                <span class="title pull-left" id="myModalLabel">
+                <span class="title pull-left">
                     {% if order_type ==1 %}
                     立即送设置
                     {% else %}

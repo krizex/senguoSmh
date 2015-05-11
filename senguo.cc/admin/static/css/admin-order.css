@@ -1,4 +1,4 @@
-body{-webkit-user-select: none; }
+div,p,ul,li,span{-webkit-user-select: none; }
 .orders-mode{width:100%;display:block;height:40px;}
 .orders-mode ul{width:420px;border-left:2px solid #f2f2f2;margin-bottom:0px;font-size:14px;}
 .orders-mode ul li{height:40px;line-height:40px;border:1px solid #f2f2f2;border-left:none;position:relative;}
@@ -6,7 +6,6 @@ body{-webkit-user-select: none; }
 .orders-mode ul li .number{display:inline-block;width:20px;height:20px;border-radius:50%;line-height:20px;position:absolute;top:5px;right:3px;font-size:10px;background:#ff6666;color:#fff;}
 .orders-mode ul .active{background:#f2f2f2;border-bottom:1px solid #f2f2f2;}
 .orders-mode ul .active a{font-weight:bold;}
-
 
 .orders-mode-lock{width:100%;height:auto;}
 .orders-list-title .orders-recycle{line-height:22px;background:url("../images/container-icon.gif") no-repeat;padding-left:20px;margin-right:20px;margin-top:8px;}
@@ -169,3 +168,4 @@ body{-webkit-user-select: none; }
 
 .add-new-time{margin:10px 0;clear:both;display:inline-block;}
 .sendIntimeBox .modal-concel-btn{display:block;margin:0 auto;}
+.new-order-box{line-height: 40px;height: 40px;text-align: center;font-size: 20px;background-color: #ff6666;color: #fff;cursor: pointer;margin-top: 6px;}

@@ -501,6 +501,8 @@ class Shop(MapBase, _CommonApi):
 	shop_balance = Column(Float,default = 0) 
 	available_balance= Column(Float,default = 0) # 可提现余额 ，当 订单完成后 钱才会转入其中
 
+	is_balance = Column(Integer,default = 0) # shop对应的余额是否有变动
+	old_msg = Column(Integer,default = 0) # 已经浏览过的店铺消息与评价数量
 	orders = relationship("Order")
 	staffs = relationship("ShopStaff", secondary="hire_link")
 	fruits = relationship("Fruit", order_by="desc(Fruit.priority)")

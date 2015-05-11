@@ -1,3 +1,4 @@
+var notify = null;
 $(document).ready(function(){
 if (window.screen.width=='600')
     document.write ('<body style="zoom: 55%">');
@@ -17,6 +18,73 @@ if(isWeiXin()){
     $('.container').removeClass('mt80');
     $('.backstage-header').removeClass('header-fix');
 }
+
+    setInterval(function(){
+        $.ajax({
+            url:"/admin/order?order_type=1&order_status=1&page=0&action=allreal",
+            type:"get",
+            success:function(res){
+                if(res.success){
+                    var atonce = res.atonce;//立即送
+                    var msg_num = res.msg_num;//消息与评价
+                    var is_balance = res.is_balance;//余额变动
+                    var new_order_sum = res.new_order_sum;//订单变动
+                    var user_num = res.user_num;//新用户数量变动
+                    var staff_num = res.staff_num;//员工管理变动
+                    $("#on_sum").text(atonce);
+                    $("#comment_num").text(msg_num);
+                    $("#order_ordernum").text(new_order_sum);
+                    $("#user_usernum").text(user_num);
+                    $("#staff_staffnum").text(staff_num);
+                    if(is_balance>0){
+                        $("#is_balance").removeClass("hidden");
+                    }else{
+                        $("#is_balance").addClass("hidden");
+                    }
+                    if(msg_num>0){
+                        $("#comment_num").removeClass("hidden");
+                    }else{
+                        $("#comment_num").addClass("hidden");
+                    }
+                    if(new_order_sum>0){
+                        $("#order_ordernum").removeClass("hidden");
+                    }else{
+                        $("#order_ordernum").addClass("hidden");
+                    }
+                    if(user_num>0){
+                        $("#user_usernum").removeClass("hidden");
+                    }else{
+                        $("#user_usernum").addClass("hidden");
+                    }
+                    if(staff_num>0){
+                        $("#staff_staffnum").removeClass("hidden");
+                    }else{
+                        $("#staff_staffnum").addClass("hidden");
+                    }
+                    if(atonce>0){
+                        $("#on_sum").addClass("bounce");
+                    }else{
+                        $("#on_sum").removeClass("bounce");
+                    }
+                    //桌面提醒
+                    if (window.Notification && Notification.permission !== "granted") {
+                        Notification.requestPermission(function (status) {
+                            if (Notification.permission !== status) {
+                                Notification.permission = status;
+                            }
+                        });
+                    }else if(window.Notification && Notification.permission == "granted" && notify == null){
+                        if(msg_num>0){
+                            notify = new Notification(new Date().toLocaleString(),{"body":"您有新订单未处理，请及时处理哦！","icon":"/static/images/sg.gif"});
+                        }
+                    }
+                }
+            }
+        })
+    },10000);
+}).on("click",".has-red-tip",function(){
+    var action = $(this).attr("data-action");
+
 });
 
 var shop_id=$('#currentShop').data('id');

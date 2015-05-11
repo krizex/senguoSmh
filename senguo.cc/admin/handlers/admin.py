@@ -101,7 +101,17 @@ class Home(AdminBaseHandler):
 			return self.send_error(403)#必须做权限检查：可能这个shop并不属于current_user
 		self.set_secure_cookie("shop_id", str(shop_id), domain=ROOT_HOST_NAME)
 		return self.send_success()
-
+#admin后台轮询
+class Realtime(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		order_sum,new_order_sum,follower_sum,new_follower_sum,on_num = 0,0,0,0,0
+		order_sum = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).count()
+		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
+		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
+		on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
+		return self.send_success(new_order_sum=new_order_sum, order_sum=order_sum,new_follower_sum=new_follower_sum, follower_sum=follower_sum,on_num=on_num)
 # 订单统计
 class OrderStatic(AdminBaseHandler):
 
@@ -407,7 +417,10 @@ class Comment(AdminBaseHandler):
 		if action == "all":
 			comments = self.get_comments(self.current_shop.id, page, page_size)
 			print("[用户评价]详情：",comments,len(comments))
-			all_comments = self.session.query(models.Order).filter(models.Order.shop_id == self.current_shop.id,models.Order.status == 6).count()
+			all_comments = self.session.query(models.Order).filter(models.Order.shop_id == self.current_shop.id,\
+				models.Order.status == 6).count()
+			self.current_shop.old_msg = all_comments
+			self.session.commit()
 			pages = all_comments/10
 			print("[用户评价]页数：",pages)
 		elif action == "favor":
@@ -473,7 +486,7 @@ class Order(AdminBaseHandler):
 	# todo: 当订单越来越多时，current_shop.orders 会不会越来越占内存？
 
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("order_type:int", "order_status:int","page:int")
+	@AdminBaseHandler.check_arguments("order_type:int", "order_status:int","page:int","action?")
 	#order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
 	def get(self):
 		order_type = self.args["order_type"]
@@ -483,7 +496,25 @@ class Order(AdminBaseHandler):
 		count = 0
 		page_sum = 0
 		orders = []
-		if order_type == 10:  # 搜索订单：为了格式统一，order_status为order.num
+		if self.args['action'] == "realtime":  #订单管理页实时获取未处理订单的接口
+			atonce,ontime = 0,0
+			count = self._count()
+			atonce = count[11]
+			ontime = count[21]
+			return self.send_success(atonce=atonce,ontime=ontime)
+		elif self.args['action'] == "allreal": #全局实时更新变量
+			atonce,msg_num,is_balance,new_order_sum,user_num,staff_sum = 0,0,0,0,0,0
+			count = self._count()
+			atonce = count[11]
+			msg_num = self.session.query(models.Order).filter(models.Order.shop_id == self.current_shop.id,\
+				models.Order.status == 6).count() - self.current_shop.old_msg
+			is_balance = self.current_shop.is_balance
+			staff_sum = self.session.query(models.HireForm).filter_by(shop_id = self.current_shop.id).count()
+			new_order_sum = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).count() - (self.current_shop.new_order_sum or 0)
+			user_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count() - (self.current_shop.new_follower_sum or 0)
+			#new_follower_sum
+			return self.send_success(atonce=atonce,msg_num=msg_num,is_balance=is_balance,new_order_sum=new_order_sum,user_num=user_num,staff_sum=staff_sum)
+		elif order_type == 10:  # 搜索订单：为了格式统一，order_status为order.num
 			orders = self.session.query(models.Order).\
 				filter_by(num=order_status, shop_id=self.current_shop.id).all()
 			order_type = 1
@@ -496,7 +527,6 @@ class Order(AdminBaseHandler):
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time,reverse = False)
-
 		elif order_status == 5:#all
 			orders = [x for x in self.current_shop.orders if x.type == order_type ]
 			count = len(orders)
@@ -705,6 +735,11 @@ class Order(AdminBaseHandler):
 					shop_id = order.shop_id
 					totalprice = order.totalPrice
 
+					shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+					if not shop:
+						return self.send_fail('shop not found')
+					shop.is_balance = 1
+
 					#
 					customer_info = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
 					if not customer_info:
@@ -767,9 +802,6 @@ class Order(AdminBaseHandler):
 								self.session.commit()
 
 						# 订单完成后，将相应店铺可提现 余额相应增加
-						shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-						if not shop:
-							return self.send_fail('shop not found')
 						# shop.shop_balance += order.totalprice * 100
 						shop.available_balance += totalprice
 
@@ -1424,6 +1456,8 @@ class ShopBalance(AdminBaseHandler):
 	def get(self):
 		subpage = 'shopBlance'
 		shop = self.current_shop
+		shop.is_balance = 0
+		self.session.commit()
 		shop_id = shop.id
 		shop_balance = format(shop.shop_balance,'.2f')
 		show_balance = False
