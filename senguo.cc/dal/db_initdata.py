@@ -67,6 +67,8 @@ fruit_types = [{'id': 1, 'name': '梨子', 'code': 'Li'},
                {'id': 65, 'name': '桑椹', 'code':'sangshen'},
                {'id': 66, 'name': '丑八怪', 'code':'ugly'},
                {'id': 67, 'name': '杨梅', 'code':'yangmei'},
+               {'id': 68, 'name': '李子', 'code':'lizi'},
+               {'id': 69, 'name': '杏子', 'code':'xingzi'},
 
 
                # 干果类型
