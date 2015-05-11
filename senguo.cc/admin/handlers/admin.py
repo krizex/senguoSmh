@@ -1679,7 +1679,9 @@ class ShopBalance(AdminBaseHandler):
 			if not history_list:
 				print('get all AvailableBalanceHistory error')
 			for temp in history_list:
-				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
+				create_time = ''
+				if temp.create_time:
+					create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				available_balance = temp.available_balance
 				if available_balance == None:
 					available_balance=0
