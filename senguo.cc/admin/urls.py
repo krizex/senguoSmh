@@ -56,6 +56,7 @@ handlers = [
 	# (r"/customer/shopProfile", handlers.customer.ShopProfile, {}, "customerShopProfile"),
 	(r"/shopProfile/(\w+)", handlers.customer.ShopProfile, {}, "customerShopProfile"),
 	(r"/customer/comment", handlers.customer.Comment, {}, "customerComment"),
+	(r"/customer/shopcomment", handlers.customer.ShopComment, {}, "customerShopComment"),
 	(r"/customer/points", handlers.customer.Points, {}, "customerPoints"),
 	(r"/customer/balance", handlers.customer.Balance, {}, "customerBalance"),
 	(r"/customer/recharge", handlers.customer.Recharge, {}, "customerRecharge"),

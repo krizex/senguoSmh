@@ -7,7 +7,7 @@ $(document).ready(function(){
 }).on("click",".rec-bm-lst>li",function(){
     /*$(".rec-bm-lst .check-ipt").removeClass("checked");
     $(this).addClass("checked");*/
-    var index = $(this).attr("data-index");
+    var index = $(this).index();
     m_type = index;
     if(index==2){
         noticeBox("该方式当前不支持，请选用其他支付方式");
