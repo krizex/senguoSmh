@@ -2,7 +2,7 @@
 .points_img{width:70px;}
 .rules{margin-top:18px;border:1px solid #2bace1;}
 .rule_list{width:150px;margin:0 auto;}
-.rule_list li{width:100%;}
+.rule_list li{width:100%;float:left;}
 .points-list{padding:0 20px;}
 .points-list li{padding:15px 15px;width:100%;float:left;border:1px solid #eee;border-radius:28px;margin-bottom:5px;background-color: #fff;color: #999;}
 .points-list li .type{display:inline-block;width:90px;}

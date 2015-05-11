@@ -22,6 +22,9 @@ $(document).ready(function(){
 }).on('click','.spend-list',function(){
       num=1;
       history('spend',1);
+}).on('click','.available-list',function(){
+      num=1;
+      history('available',1);
 }).on('click','.pre-page',function(){
 	if(num==1){
 		return alert('没有上一页啦！');
@@ -140,6 +143,10 @@ function history(action,page){
                 $('.wrap-acc-num').addClass('hidden');
                 $('.spend-count').removeClass('hidden');
                 $('.spend-total').text(res.total);
+               }
+               else if(action =='available'){
+                $('.wrap-acc-num').addClass('hidden');
+                $('.available-count').removeClass('hidden');
                }
                if(num == 1){
                	$('.pre-page').addClass('hidden');

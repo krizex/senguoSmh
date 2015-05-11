@@ -101,7 +101,7 @@
          <li class="item">
             <div class="info-con h19">
                 {% if current_user.accountinfo.password %}
-                <a href="javascript:;" id="changePwd" class="box">
+                <a href="{{reverse_url('customerPassword')}}" class="box">
                     <span class="title pull-left text-grey3">密码管理</span>
                     <i class="arr-right pull-right"></i>
                      <span class="pull-right g-txt">重置</span>
@@ -123,7 +123,7 @@
                     {% if context['third'] and context['third'][0]['weixin'] == True %}
                     <a href="javascript:;"><img src="/static/images/wx.png" class="third-img pull-right ml6"/></a>
                     {% else %}
-                    <a href="javascript:;" class="bind_wx"><img src="/static/images/wx_grey.png" class="third-img pull-right ml6"/></a>
+                    <a href="javascript:;"><img src="/static/images/wx_grey.png" class="third-img pull-right ml6"/></a>
                     {% end %}
                 </a>
             </div>
@@ -143,7 +143,7 @@
         </li>-->
 
     </ul>
-    <a class="btn bg-pink text-white center-block clearfix b-radius0 mt10" href="{{reverse_url('customerLogout')}}">退出登录</a>
+    <a class="back-btn clearfix b-radius0 mt10" href="{{reverse_url('customerLogout')}}">退出登录</a>
     <p class="copy-right">powered by senguo.cc</p>
 </div>
 <div class="modal fade tie-popbox" id="tieBox">
@@ -172,7 +172,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="pwdBox">
+<!--<div class="modal fade" id="pwdBox">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-top"><img src="/static/images/info_top.png"/></div>
@@ -200,7 +200,7 @@
              <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
         </div>
     </div>
-</div>
+</div>-->
 <div class="modal fade sex-popbox" id="sexBox">
     <div class="modal-dialog">
         <div class="modal-content">

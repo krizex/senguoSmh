@@ -234,6 +234,7 @@ class Order(StaffBaseHandler):
 					shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 					if not shop:
 						return self.send_fail("shop not found!")
+					shop.is_balance = 1
 					#
 					customer_info = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
 					if not customer_info:

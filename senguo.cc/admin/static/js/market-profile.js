@@ -1,5 +1,6 @@
 $(document).ready(function(){
     $(document).on('click','.info-con',function(){$(this).siblings('.info-edit').toggle();});
+    $(".phone-box").css("paddingBottom","30px");
     $('a.editInfo').each(function(){
         if($(this).text() =='None'||$(this).text() =='')
         {$(this).text('点击设置').css({'color':'#FF3C3C'});}
@@ -41,12 +42,12 @@ $(document).ready(function(){
     $('.change-pwd-box').hide();
     $('#pwdSure').attr({'data-action':'add_password'});   
 }).on('click','#changePwd',function(){
-    var pwdBox=new Modal('pwdBox');
+    /*var pwdBox=new Modal('pwdBox');
     pwdBox.modal('show');
     $('#pwdBox').find('input').val('');
     $('.set-pwd-box').hide();
     $('.change-pwd-box').show();
-    $('#pwdSure').attr({'data-action':'modify_password'});   
+    $('#pwdSure').attr({'data-action':'modify_password'}); */
 }).on('click','#pwdSure',function(){
     var $this=$(this);
     var action=$this.attr('data-action');

@@ -177,6 +177,27 @@ $(document).ready(function(){
 	     orderSearch();
 	}
     });
+    //实时请求未处理订单
+    setInterval(function(){
+        $.ajax({
+            url:"/admin/order?order_type=1&order_status=1&page=0&action=realtime",
+            type:"get",
+            success:function(res){
+                if(res.success){
+                    var index = $(".order-type").children(".active").index();
+                    $("#atonce").text(res.atonce);
+                    $("#ontime").text(res.ontime);
+                    /*if(res.new_order_sum>0){
+                        $("#new-order-box").removeClass("hidden");
+                    }else{
+                        $("#new-order-box").addClass("hidden");
+                    }*/
+                }
+            }
+        })
+    },10000);
+}).on("click","#new-order-box",function(){
+   window.location.reload(true);
 });
 var link='/admin/order';
 var orderType=$.getUrlParam('order_type');

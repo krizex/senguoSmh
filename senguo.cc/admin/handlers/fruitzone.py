@@ -74,7 +74,7 @@ class ShopList(FruitzoneBaseHandler):
 
 		_page_count =10
 		page=self.args["page"]-1
-		q = self.session.query(models.Shop).order_by(desc(models.Shop.id))\
+		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc())\
 		.filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 			models.Shop.shop_code !='not set' )
 		shop_count = q.count()
@@ -82,8 +82,9 @@ class ShopList(FruitzoneBaseHandler):
 		q=q.offset(page*_page_count).limit(_page_count).all()
 		shops = []
 		for shop in q:
-			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
-										 'wx_nickname', 'wx_qr_code','wxapi_token']
+			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname','auth_change',
+										 'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
+										 'alipay_account','alipay_account_name','available_balance','new_follower_sum','new_order_sum']
 			shops.append(shop.safe_props())
 		return self.send_success(shops=shops,page_total = page_total)
 
@@ -93,7 +94,7 @@ class ShopList(FruitzoneBaseHandler):
 		# 按什么排序？暂时采用id排序
 		_page_count = 10
 		page = self.args["page"] - 1
-		q = self.session.query(models.Shop).order_by(desc(models.Shop.id)).\
+		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
 			filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 				models.Shop.shop_code !='not set' )
 		if "city" in self.args:
@@ -145,7 +146,7 @@ class ShopList(FruitzoneBaseHandler):
 	def handle_search(self):
 		_page_count = 10
 		page = self.args["page"] - 1
-		q = self.session.query(models.Shop).order_by(desc(models.Shop.id)).\
+		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
 			filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"])),
 				   models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 				   models.Shop.shop_code !='not set' )

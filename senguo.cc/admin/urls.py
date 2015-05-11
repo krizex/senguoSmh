@@ -17,6 +17,7 @@ from dal import models
 
 
 handlers = [
+
 	(r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
 	(r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
 	(r"/staff/logout", handlers.staff.Access, {"action":"logout"}, "staffLogout"),
@@ -148,7 +149,7 @@ handlers = [
 	(r"/admin/searchorder", handlers.admin.SearchOrder, {}, "adminSearchOrder"),
 	(r"/admin/shopauth",handlers.admin.ShopAuthenticate,{},'adminShopAuth'),
 	(r"/admin/shopbalance",handlers.admin.ShopBalance,{},"adminShopBalance"),
-
+	(r"/admin/realtime",handlers.admin.Realtime,{},""),
 
 	# (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
 	# (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),

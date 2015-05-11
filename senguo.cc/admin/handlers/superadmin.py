@@ -308,7 +308,7 @@ class ShopManage(SuperBaseHandler):
 				self.session.add(models.ShopStaff(id=shop.admin_id, shop_id=shop.id))  # 添加默认员工时先添加一个员工，否则报错
 				self.session.commit()
 
-			self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id))  # 把管理者默认为新店铺的二级配送员
+			self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id,default_staff=1))  # 把管理者默认为新店铺的二级配送员
 			self.session.commit()
 
 			#把管理员同时设为顾客的身份
@@ -1014,13 +1014,9 @@ class ApplyCash(SuperBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(id = apply_cash.shop_id).first()
 			if not shop:
 				return self.send_fail('shop not found')
+			shop.is_balance = 1
 			shop.shop_balance = shop.shop_balance-apply_cash.value
 			shop.available_balance = shop.available_balance - apply_cash.value
-			# make a history of shop.available_balance 
-			available_history = models.AvailableBalanceHistory(shop_id = shop.id ,balance_record = '提现：管理员 ',balance_value = apply_cash.value,\
-			available_balance =shop.available_balance )
-			self.session.add(available_history)
-
 			#往 blancehistory中插入一条数据，以免到时候 查看所有记录的时候到两张表中去取 效率低下
 			name = apply_cash.applicant_name
 			balance_history = models.BalanceHistory(balance_record = '提现：管理员 '+name,balance_type =\
