@@ -497,11 +497,12 @@ class Order(AdminBaseHandler):
 		page_sum = 0
 		orders = []
 		if self.args['action'] == "realtime":  #订单管理页实时获取未处理订单的接口
-			atonce,ontime = 0,0
+			atonce,ontime,new_order_sum = 0,0,0
 			count = self._count()
 			atonce = count[11]
 			ontime = count[21]
-			return self.send_success(atonce=atonce,ontime=ontime)
+			new_order_sum = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).count() - (self.current_shop.new_order_sum or 0)
+			return self.send_success(atonce=atonce,ontime=ontime,new_order_sum=new_order_sum)
 		elif self.args['action'] == "allreal": #全局实时更新变量
 			atonce,msg_num,is_balance,new_order_sum,user_num,staff_sum = 0,0,0,0,0,0
 			count = self._count()

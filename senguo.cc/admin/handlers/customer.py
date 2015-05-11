@@ -584,7 +584,11 @@ class Comment(CustomerBaseHandler):
 				nomore = True
 			return self.render("customer/comment.html", date_list=date_list,nomore=nomore,satisfy = satisfy)
 		return self.send_success(date_list=date_list,nomore=nomore)
+class ShopComment(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
 
+		return self.render("customer/comment.html")
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self, shop_code):

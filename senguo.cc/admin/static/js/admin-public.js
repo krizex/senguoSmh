@@ -1,4 +1,4 @@
-var notify = null;
+var notify = null,notice = false;
 $(document).ready(function(){
 if (window.screen.width=='600')
     document.write ('<body style="zoom: 55%">');
@@ -47,8 +47,10 @@ if(isWeiXin()){
                         $("#comment_num").addClass("hidden");
                     }
                     if(new_order_sum>0){
+                        notice = true;
                         $("#order_ordernum").removeClass("hidden");
                     }else{
+                        notice = false;
                         $("#order_ordernum").addClass("hidden");
                     }
                     if(user_num>0){
@@ -74,7 +76,7 @@ if(isWeiXin()){
                             }
                         });
                     }else if(window.Notification && Notification.permission == "granted" && notify == null){
-                        if(msg_num>0){
+                        if(new_order_sum>0){
                             notify = new Notification(new Date().toLocaleString(),{"body":"您有新订单未处理，请及时处理哦！","icon":"/static/images/sg.gif"});
                         }
                     }
@@ -82,6 +84,22 @@ if(isWeiXin()){
             }
         })
     },10000);
+    setInterval(function(){
+        var title = document.title;
+        if(notice){
+            if(title.indexOf("【您有新订单】")==-1){
+                document.title = "【您有新订单】"+title;
+                setTimeout(function(){
+                    document.title = title;
+                },1000);
+            }else{
+                document.title = title;
+                setTimeout(function(){
+                    document.title = title.split("【您有新订单】")[1];
+                },1000);
+            }
+        }
+    },2000);
 }).on("click",".has-red-tip",function(){
     var action = $(this).attr("data-action");
 

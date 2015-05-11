@@ -835,6 +835,7 @@ class BalanceHistory(MapBase,_CommonApi):
 	is_cancel      = Column(Integer,default = 0)  #若订单被取消 ，则充值记录被 置为1
 	#customer = relationship("CustomerShopFollow")
 	transaction_id = Column(String(64))
+	superAdmin_id  = Column(Integer,default=0) #当记录是一条提现记录时 ，记下操作的超级管理员id
 
 class PointHistory(MapBase,_CommonApi):
 	__tablename__ = 'pointhistory'

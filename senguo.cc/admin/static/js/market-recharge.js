@@ -4,10 +4,10 @@
 var m_type = 0;
 $(document).ready(function(){
 
-}).on("click",".rec-bm-lst .check-ipt",function(){
+}).on("click",".rec-bm-lst>li",function(){
     /*$(".rec-bm-lst .check-ipt").removeClass("checked");
     $(this).addClass("checked");*/
-    var index = $(this).attr("data-index");
+    var index = $(this).index();
     m_type = index;
     if(index==2){
         noticeBox("该方式当前不支持，请选用其他支付方式");
@@ -15,7 +15,7 @@ $(document).ready(function(){
     }
     else{
         $(".rec-bm-lst .check-ipt").removeClass("checked");
-        $(this).addClass("checked");
+        $(this).find(".check-ipt").addClass("checked");
     }
 }).on("click","#commit-rec",function(){
     if($(this).attr("data-statu")==1){
