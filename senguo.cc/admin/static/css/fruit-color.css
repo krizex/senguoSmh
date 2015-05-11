@@ -284,7 +284,14 @@
 .yangmei .bg{background-color:#FEF6F6}
 .yangmei .bg-color{background-color:#FF6740}
 .yangmei .icon-bg{border-color:transparent #FF6740 transparent transparent;}
-
+.lizi .color{color:#ED3B94}
+.lizi .bg{background-color:#FFFAFB}
+.lizi .bg-color{background-color:#ED3B94}
+.lizi .icon-bg{border-color:transparent #ED3B94 transparent transparent;}
+.xingzi .color{color:#FBAB2D}
+.xingzi .bg{background-color:#FFFCF2}
+.xingzi .bg-color{background-color:#FBAB2D}
+.xingzi .icon-bg{border-color:transparent #FBAB2D transparent transparent;}
 
 .GANGUO{}
 .yaoguo .color{color:#B87D31}

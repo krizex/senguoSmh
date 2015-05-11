@@ -657,8 +657,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 							   context=dict(orders=orders, subpage="history"))
 		elif self._action == "systemAccount":
 			return self.render("fruitzone/systempurchase-systemaccount.html", context=dict(subpage="account"))
-		elif self._action == "alipaytest":
-			return self.render("fruitzone/alipayTest.html",context = dict(subpage="alipaytest"))
+		# elif self._action == "alipaytest":
+		# 	return self.render("fruitzone/alipayTest.html",context = dict(subpage="alipaytest"))
 		else:
 			return self.send_error(404)
 
@@ -688,8 +688,10 @@ class SystemPurchase(FruitzoneBaseHandler):
 
 	def post(self):
 		if self._action == "dealNotify":
+			print("原来你也没有被调用么")
 			return self.handle_deal_notify()
 		elif self._action == "aliyNotify":
+			print('aliyNotify aaaaaaaaaaaaaaa')
 			return self.handle_alipay_notify()
 		if not self.current_user:
 			return self.send_error(403)
@@ -802,11 +804,11 @@ class SystemPurchase(FruitzoneBaseHandler):
 			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseAliNotify")),
 			merchant_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseChargeTypes"))
 		)
-		# print(self.reverse_url("alipayNotify"),'urlllllllllllllllllllll')
+		print(self.reverse_url("fruitzoneSystemPurchaseAliNotify"),'urlllllllllllllllllllll')
 		return authed_url
 
 	def check_xsrf_cookie(self):
-		if self._action == "dealNotify" or self._action == " ":
+		if self._action == "dealNotify" or self._action == "aliyNotify":
 			Logger.info("SystemPurchase: it's a notify post from alipay, pass xsrf cookie check")
 			return True
 		return super().check_xsrf_cookie()
@@ -869,8 +871,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# 支付成功后  生成一条余额支付记录
 		name = self.current_user.accountinfo.nickname
 		balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-			balance_value = totalPrice,balance_record = '充值：用户 '+ name  , name = name , balance_type = 0,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice,transaction_id =ali_trade_no)
+			balance_value = totalPrice,balance_record = '支付宝充值：用户 '+ name  , name = name , balance_type = 0,\
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no)
 		self.session.add(balance_history)
 		print(balance_history , '钱没有白充吧？！')
 		self.session.commit()

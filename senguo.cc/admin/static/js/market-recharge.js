@@ -9,7 +9,7 @@ $(document).ready(function(){
     $(this).addClass("checked");*/
     var index = $(this).index();
     m_type = index;
-    if(index==2){
+    if(index>1){//==2
         noticeBox("该方式当前不支持，请选用其他支付方式");
         return false;
     }
