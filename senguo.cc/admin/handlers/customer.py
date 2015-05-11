@@ -1309,20 +1309,20 @@ class Cart(CustomerBaseHandler):
 		# woody
 		########################################################################
 		w_admin = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		default_statff=[]
-		try:
-			default_statff = self.session.query(models.HireLink).filter_by( shop_id =shop_id,default_staff=1).first()
-		except:
-			print('this shop has no default staff')
-		if default_statff:
-			w_SH2_id =default_statff.staff_id
-		else:
-			if w_admin is not None:
+		# default_statff=[]
+		# try:
+		# 	default_statff = self.session.query(models.HireLink).filter_by( shop_id =shop_id,default_staff=1).first()
+		# except:
+		# 	print('this shop has no default staff')
+		# if default_statff:
+		# 	w_SH2_id =default_statff.staff_id
+		# else:
+		if w_admin is not None:
 				w_SH2_id = w_admin.admin.id
-		print(w_SH2_id,'iam cart order')
 		# print("*****************************************************************")
 		# print(f_d)
 		# print(mgoods)
+		print(w_SH2_id,"i'm staff id")
 		order = models.Order(customer_id=self.current_user.id,
 							 shop_id=shop_id,
 							 num=num,

@@ -674,6 +674,28 @@ class Order(AdminBaseHandler):
 				# woody
 				shop_id = self.current_shop.id
 				#shop_point add by order.totalPrice
+				staff_info = []
+				if data["status"] == 4:
+					try:
+						staff_info = self.session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id )\
+						.filter(models.HireLink.shop_id == shop_id,models.HireLink.default_staff == 1).first()
+					except:
+						return self.send_fail("staff'infomation error")
+						print("didn't find default staff")
+					openid = staff_info.wx_openid
+					staff_name = staff_info.nickname
+					shop_name = self.current_shop.shop_name
+					order_id = order.num
+					order_type = order.type
+					create_date = order.create_date
+					customer_name = order.receiver
+					order_totalPrice = order.totalPrice
+					# send_time = order.get_sendtime(self.session,order.id)
+					send_time = order.send_time
+					phone = order.phone
+					# print("ready to send message")
+
+					WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone) 
 				if data["status"] == 5:
 					now = datetime.datetime.now()
 					order.arrival_day = now.strftime("%Y-%m-%d")
