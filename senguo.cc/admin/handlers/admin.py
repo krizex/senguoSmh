@@ -1673,7 +1673,7 @@ class ShopBalance(AdminBaseHandler):
 				if shop_totalBalance == None:
 					shop_totalBalance=0
 				shop_totalBalance = format(shop_totalBalance,'.2f')
-				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
+				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':value,\
 					'type':temp.balance_type,'total':shop_totalBalance})
 			return self.send_success(history = history,page_sum=page_sum,total=total,times=times,persons=persons)
 		elif action == 'available':

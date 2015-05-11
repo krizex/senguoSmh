@@ -259,6 +259,7 @@ function history(action,page){
 +                                       '<td class="c999">{{time}}</td>'
 +                                       '<td class="orange-txt txt-ar"><span class="f16">{{balance_value}}</span><span class="c999">元</span></td>'
 +                                       '<td class="green-txt txt-ar pr20"><span class="f16">{{balance}}</span><span class="c999">元</span></td>'
++                                       '<td class="txt-ar pr20">{{admin_id}}</td>'
                                 '</tr>'
         var render=template.compile(item);
         var shop_name=history[i]['shop_name'];
@@ -268,17 +269,18 @@ function history(action,page){
         var type=history[i]['type'];
         var shop_code=history[i]['shop_code'];
         var title;
+        var admin_id=history[i]['admin_id'];
         if(type==0){
             title='充值';
-            value='+'+value
+            value='+'+value;
         }
         else if(type==2){
             title='提现';
-            value='-'+value
+            value='-'+value;
         }
         else if(type==3){
             title='在线支付';
-            value='+'+value
+            value='+'+value;
         }
         var list_item =render({
             shop_code:shop_code,
@@ -286,6 +288,7 @@ function history(action,page){
             time:time,
             balance_value:value,
             balance:balance,
+            admin_id:admin_id
         });
         $('.tb-account').append(list_item);
 
