@@ -305,8 +305,8 @@ class Order(StaffBaseHandler):
 						print(shop.available_balance,'店铺可提现余额')
 						# available history
 						balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,\
-							balance_record = "订单完成"+order.num,balance_value = order.totalPrice,shop_totalPrice=\
-							shop.shop_balance,customer_totalPrice = shop_follow.balance_value,available_balance=\
+							balance_record = "可提现额度入账：订单"+order.num+"完成",name = self.current_user.accountinfo.nickname,balance_value = totalprice,shop_totalPrice=\
+							shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,available_balance=\
 							shop.available_balance,balance_type = 6)
 						self.session.add(balance_history)
 						self.session.commit()
