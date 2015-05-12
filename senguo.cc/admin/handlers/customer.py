@@ -344,7 +344,7 @@ class CustomerProfile(CustomerBaseHandler):
 			return self.send_error(404)
 		return self.send_success()
 
-class wxBind(CustomerBaseHandler):
+class WxBind(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def initialize(self, action):
 		self._action = action

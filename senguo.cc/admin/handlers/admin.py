@@ -714,8 +714,12 @@ class Order(AdminBaseHandler):
 					except:
 						return self.send_fail("staff'infomation error")
 						print("didn't find default staff")
-					openid = staff_info.wx_openid
-					staff_name = staff_info.nickname
+					if staff_info:
+						openid = staff_info.wx_openid
+						staff_name = staff_info.nickname
+					else:
+						openid = self.current_shop.admin.accountinfo.wx_openid
+						staff_name = self.current_shop.admin.accountinfo.nickname
 					shop_name = self.current_shop.shop_name
 					order_id = order.num
 					order_type = order.type
@@ -725,9 +729,10 @@ class Order(AdminBaseHandler):
 					# send_time = order.get_sendtime(self.session,order.id)
 					send_time = order.send_time
 					phone = order.phone
+					address = order.address_text
 					# print("ready to send message")
 
-					WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone) 
+					WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone,address) 
 				if data["status"] == 5:
 					now = datetime.datetime.now()
 					order.arrival_day = now.strftime("%Y-%m-%d")
