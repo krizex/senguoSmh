@@ -1021,7 +1021,8 @@ class ApplyCash(SuperBaseHandler):
 			name = apply_cash.applicant_name
 			balance_history = models.BalanceHistory(balance_record = '提现：管理员 '+name,balance_type =\
 				2,balance_value = apply_cash.value ,customer_id = apply_cash.shop.admin.accountinfo.id,name = \
-				name,shop_id = apply_cash.shop_id,shop_totalPrice = shop.shop_balance,superAdmin_id = self.current_user.id)
+				name,shop_id = apply_cash.shop_id,shop_totalPrice = shop.shop_balance,superAdmin_id = \
+				self.current_user.id,available_balance = shop.available_balance)
 			self.session.add(balance_history)
 			self.session.commit()
 		return self.send_success(history = history)
