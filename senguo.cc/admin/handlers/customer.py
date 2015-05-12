@@ -369,13 +369,15 @@ class wxBind(CustomerBaseHandler):
 			return self.send_error(400)
 		wx_userinfo = self.get_wx_userinfo(code, mode)
 		if u.accountinfo.wx_unionid == wx_userinfo["unionid"]:
-			return self.render('notice/bind-notice.html',title='您已绑定该微信，无需重复绑定')
+			return self.redirect(self.reverse_url("customerProfile"))
+			# return self.render('notice/bind-notice.html',title='您已绑定该微信，无需重复绑定')
 		try:
 			user = self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_userinfo["unionid"]).first()
 		except:
 			print("this wx does'nt exist")
 		if user:
-			return self.render('notice/bind-notice.html',title='该微信账号已被绑定，请更换其它微信账号')
+			return self.redirect(self.reverse_url("customerProfile"))
+			# return self.render('notice/bind-notice.html',title='该微信账号已被绑定，请更换其它微信账号')
 		if u:
 			print("[微信绑定]，更新用户资料")
 			u.accountinfo.wx_country=wx_userinfo["country"]
@@ -385,6 +387,7 @@ class wxBind(CustomerBaseHandler):
 			u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
 			u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
 			u.accountinfo.wx_username = wx_userinfo["nickname"]
+			u.accountinfo.nickname = wx_userinfo["nickname"]
 			u.accountinfo.wx_openid = wx_userinfo["openid"]
 			u.accountinfo.wx_unionid = wx_userinfo["unionid"]
 			self.session.commit()

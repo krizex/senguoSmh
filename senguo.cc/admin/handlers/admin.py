@@ -1576,7 +1576,7 @@ class ShopBalance(AdminBaseHandler):
 		elif action == 'all_history':
 			history = []
 			page=int(self.args['page'])-1
-			balance_history = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id)
+			balance_history = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type !=6 )
 			history_list = balance_history.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			count =balance_history.count()
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
@@ -1678,12 +1678,12 @@ class ShopBalance(AdminBaseHandler):
 		elif action == 'available':
 			history = []
 			page = int(self.args['page']-1)
-			history_list = self.session.query(models.AvailableBalanceHistory).filter_by(shop_id = shop_id).\
-			order_by(models.AvailableBalanceHistory.create_time.desc()).all()
-			count =  self.session.query(models.AvailableBalanceHistory).filter_by(shop_id = shop_id).count()
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([2,6])).\
+			order_by(models.BalanceHistory.create_time.desc()).all()
+			count =  self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([2,6])).count()
 			page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
-				print('get all AvailableBalanceHistory error')
+				print('get all BalanceHistory error')
 			for temp in history_list:
 				create_time = ''
 				if temp.create_time:
@@ -1693,7 +1693,7 @@ class ShopBalance(AdminBaseHandler):
 					available_balance=0
 				available_balance = format(available_balance,'.2f')
 				history.append({'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
-					'total':available_balance})
+					'type':temp.balance_type,'total':available_balance})
 			return self.send_success(history = history,page_sum=page_sum)
 		else:
 			return self.send_fail('action error')
