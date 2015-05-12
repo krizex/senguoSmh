@@ -17,7 +17,7 @@ from dal import models
 
 
 handlers = [
-
+	
 	(r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
 	(r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
 	(r"/staff/logout", handlers.staff.Access, {"action":"logout"}, "staffLogout"),

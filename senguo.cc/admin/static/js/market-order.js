@@ -273,6 +273,7 @@ function orderComment(id,order_id,comment){
            var commentBox=new Modal('commentBox');
            commentBox.modal('hide');
            $('.comment_submit').removeAttr('disabled').removeClass('bg-greyc');
+           noticeBox(res.notice);
         }
         else {
             noticeBox(res.error_text);

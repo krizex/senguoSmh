@@ -42,6 +42,9 @@ function signin(target){
         if(res.success){
             $('#signin-shop').find('em').remove();
             $('#signin-shop').addClass('bg-grey3 text-white signed').removeClass('un_sign').find('.sign_text').text('已签到').removeClass('ml20');    
+            if(res.notice){
+                noticeBox(res.notice);
+            } 
         }
         else return noticeBox(res.error_text,target);
     }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},

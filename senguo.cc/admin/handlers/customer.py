@@ -267,9 +267,23 @@ class Home(CustomerBaseHandler):
 
 class CustomerProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("action?")
 	def get(self):
 	   # 模板中通过current_user获取当前admin的相关数据，
 	   # 具体可以查看models.ShopAdmin中的属性
+	   action =''
+	   next_url = self.get_argument('next', '')
+	   if self.args["action"]:
+	   	action = self.args["action"]
+	   if action == 'wx_auth':
+	   	next_url='/customer/profile?action=wx_bind'
+	   	return self.redirect(self.get_wexin_oauth_link(next_url=next_url))
+	   	self.bind_wx(next_url)
+	   	print('hahaha i am here now')
+	   elif action == 'wx_bind':
+	   	print('oh~no i am here now')
+	   	self.bind_wx(next_url)
+
 	   customer_id = self.current_user.id
 	   time_tuple = time.localtime(self.current_user.accountinfo.birthday)
 	   birthday = time.strftime("%Y-%m-%d", time_tuple)
@@ -289,6 +303,20 @@ class CustomerProfile(CustomerBaseHandler):
 	   if accountinfo.wx_unionid:
 	   	third.append({'weixin':True})
 	   self.render("customer/profile.html", context=dict(birthday=birthday,third=third,shop_info=shop_info))
+
+	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
+	def bind_wx(self,next_url):
+		# todo: handle state
+		code =self.args["code"]
+		mode = self.args["mode"]
+		# print("mode: ", mode , ", code get:", code)
+		if mode not in ["mp", "kf"]:
+			print('oh~ no')
+			return self.send_error(400)
+
+		userinfo = self.get_wx_userinfo(code, mode)
+		if not userinfo:
+			return self.redirect(self.reverse_url("customerProfile"))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data","old_password?:str")
@@ -334,25 +362,14 @@ class CustomerProfile(CustomerBaseHandler):
 			self.current_user.accountinfo.update(session = self.session ,password = password)
 		elif action == 'bind_wx':
 			next_url = self.args["data"]
-			return self.get_wexin_oauth_link(next_url = next_url)
-			self.bind_wx(next_url)
+			print(next_url)
+			return self.redirect(self.get_wexin_oauth_link(next_url=next_url))
 
 		else:
 			return self.send_error(404)
 		return self.send_success()
 
-	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
-	def bind_wx(self,next_url):
-		# todo: handle state
-		code =self.args["code"]
-		mode = self.args["mode"]
-		# print("mode: ", mode , ", code get:", code)
-		if mode not in ["mp", "kf"]:
-			return self.send_error(400)
-
-		userinfo = self.get_wx_userinfo(code, mode)
-		if not userinfo:
-			return self.redirect(self.reverse_url("customerLogin"))
+	
 
 
 class ShopProfile(CustomerBaseHandler):
@@ -496,6 +513,7 @@ class ShopProfile(CustomerBaseHandler):
 									point_history.each_point = 5
 									self.session.add(point_history)
 									self.session.commit()
+									return self.send_success(notice='连续签到7天，积分+5')
 
 							signin.keep_days = 0
 					else:
@@ -527,7 +545,7 @@ class ShopProfile(CustomerBaseHandler):
 				#     point.signIn_count += 1
 				#     print("new signin:",point.signIn_count)
 			self.session.commit()
-		return self.send_success()
+		return self.send_success(notice='签到成功，积分+1')
 
 class Members(CustomerBaseHandler):
 	def get(self):
@@ -1069,7 +1087,7 @@ class Market(CustomerBaseHandler):
 			return self.send_error(404)
 		f.favour += 1
 		self.session.commit()
-		return self.send_success()
+		return self.send_success(notice='点赞成功，积分+1')
 
 
 	@CustomerBaseHandler.check_arguments("fruits", "mgoods")
@@ -1697,7 +1715,7 @@ class Order(CustomerBaseHandler):
 		else:
 			return self.send_error(404)
 		self.session.commit()
-		return self.send_success()
+		return self.send_success(notice='评论成功，积分+5')
 
 class OrderDetail(CustomerBaseHandler):
 	@tornado.web.authenticated
