@@ -203,8 +203,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return link
 
 	def get_login_url(self):
-		return self.get_wexin_oauth_link(next_url=self.request.full_url())
-		# return self.reverse_url('customerLogin')
+		#return self.get_wexin_oauth_link(next_url=self.request.full_url())
+		return self.reverse_url('customerLogin')
 
 	def get_weixin_login_url(self):
 		print("[微信登录]登录URL：",self.request.full_url())
@@ -256,7 +256,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*1000,
 
-							  policy={"callbackUrl": ".senguo.cc/fruitzone/imgcallback",
+							  policy={"callbackUrl": "http://test.senguo.cc/fruitzone/imgcallback",
 									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 #        token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
 		print("[七牛授权]发送Token：",token)
@@ -265,7 +265,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	def get_qiniu_token(self,action,id):
 		q = qiniu.Auth(ACCESS_KEY,SECRET_KEY)
 		token = q.upload_token(BUCKET_SHOP_IMG,expires = 60*30*1000,\
-			policy = {"callbackUrl":".senguo.cc/fruitzone/imgcallback",\
+			policy = {"callbackUrl":"http://test.senguo.cc/fruitzone/imgcallback",\
 			"callbackBody":"key=$(key)&action=%s&id=%s" % (action,id),"mimeLimit":"image/*"})
 		print("[七牛授权]获得Token：",token)
 		return token
