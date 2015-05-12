@@ -156,7 +156,7 @@ function staffEdit(target){
     $.postJson(url,args,function(res){
         if(res.success){
             parent.hide();
-            parent.parents('.staff-list-item').find('.info').append('<p>备注:'+remark+'</p>');
+            parent.parents('.staff-list-item').find('.info').append('<p>备注：'+remark+'</p>');
         }
         else return alert(res.error_text)
     },function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
