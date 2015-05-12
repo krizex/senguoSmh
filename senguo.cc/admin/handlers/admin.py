@@ -805,7 +805,7 @@ class Order(AdminBaseHandler):
 						shop.available_balance += totalprice
 						balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,\
 							balance_record = "订单"+order.num+"完成",balance_value = totalprice,shop_totalPrice=\
-							shop.shop_balance,customer_totalPrice = shop_follow.balance_value,available_balance=\
+							shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,available_balance=\
 							shop.available_balance,balance_type = 6)
 						self.session.add(balance_history)
 						self.session.commit()
