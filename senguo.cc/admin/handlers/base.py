@@ -256,7 +256,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*1000,
 
-							  policy={"callbackUrl": "http://test123.senguo.cc/fruitzone/imgcallback",
+							  policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
 									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 #        token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
 		print("[七牛授权]发送Token：",token)
@@ -264,9 +264,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 	def get_qiniu_token(self,action,id):
 		q = qiniu.Auth(ACCESS_KEY,SECRET_KEY)
-		token = q.upload_token(BUCKET_SHOP_IMG,expires = 60*30*1000,\
-			policy = {"callbackUrl":"http://test123.senguo.cc/fruitzone/imgcallback",\
-			"callbackBody":"key=$(key)&action=%s&id=%s" % (action,id),"mimeLimit":"image/*"})
+		token = q.upload_token(BUCKET_SHOP_IMG,expires = 60*30*1000)
 		print("[七牛授权]获得Token：",token)
 		return token
 
@@ -277,7 +275,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		comments =self.session.query(models.Order.comment, models.Order.comment_create_date, models.Order.num,\
 			models.Order.comment_reply,models.Order.id,models.CommentApply.has_done,models.Accountinfo.headimgurl_small, \
 			models.Accountinfo.nickname,models.CommentApply.delete_reason,\
-			models.CommentApply.decline_reason,models.Order.comment_imgUrl,).\
+			models.CommentApply.decline_reason,models.Order.comment_imgUrl).\
 		outerjoin(models.CommentApply, models.Order.id == models.CommentApply.order_id).\
 		join(models.Accountinfo,models.Order.customer_id == models.Accountinfo.id).\
 		filter(models.Order.shop_id == shop_id, models.Order.status == 6).filter(or_(models.CommentApply.has_done !=1,models.CommentApply.has_done ==None )).\
@@ -293,13 +291,11 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			comments_new['nickname']      = item[7]
 			comments_new['delete_reason'] = item[8]
 			comments_new['decline_reason']= item[9]
-			if item[10] is None:
-				comments_new['comment_imgUrl'] = None
+			
+			if item[10]:
+				comments_new['comment_imgUrl'] = item[10].split(',')
 			else:
-				if len(item[10]) < 5:
-					comments_new['comment_imgUrl'] = None
-				else:
-					comments_new['comment_imgUrl'] = item[10]
+				comments_new['comment_imgUrl'] = None
 			#comments_new['comment_imgUrl']= json.loads(item[10]) if item[10] is not None else None
 			comments_result.append(comments_new)
 			comments_array.append([item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],comments_new['comment_imgUrl']])

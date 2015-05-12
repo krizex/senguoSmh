@@ -1152,7 +1152,7 @@ class Order(MapBase, _CommonApi):
 	comment = Column(String(300))  # 评论
 	comment_create_date = Column(DateTime)
 	comment_reply = Column(String(300))  # 商家回复评论
-	comment_imgUrl= Column(String(200))
+	comment_imgUrl= Column(String(400))
 	start_time = Column(Time)
 	end_time = Column(Time)
 	arrival_day  = Column(String(32))

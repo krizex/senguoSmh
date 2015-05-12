@@ -111,10 +111,10 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .wrap-user-txt>textarea{height: 100px;padding:4px;color: #666;line-height: 20px;font-size: 14px;border:1px solid #e6e6e6;border-radius: 14px;}
 .pra-title{font-size: 14px;color: #666;margin: 10px 0;}
 .img-lst{padding-left: 10px;}
-.img-lst>li{float: left;width: calc(25% - 10px);-webkit-box-sizing: border-box;margin-right: 10px;padding-bottom: calc(25% - 10px);height:0;}
+.img-lst>li{float: left;-webkit-box-sizing: border-box;margin-right: 10px;}
 .wrap-add-img{cursor: pointer;}
-.wrap-img{position: relative;z-index:10;}
-.wrap-img>img{width: 100%;}
+.wrap-img{position: relative;z-index:10;text-align: center;height:100%;}
+.wrap-img>img{width: auto;height: 100%;}
 .icon-del{position: absolute;z-index:100;left: 50%;bottom:-4px;width: 18px;height: 18px;margin-left: -9px;background-image: url(../images/icon_del.png);}
 .img-cover{position: absolute;z-index: 90;top:0;left:0;background-color: #ddd;width:100%;height: 0;padding-bottom: 100%;}
 .img-cover .loader {display: block;position: absolute;width: 30px;height: 30px;vertical-align: middle;left: 50%;top: 50%;-webkit-transform:translate(-50%,-50%);}
