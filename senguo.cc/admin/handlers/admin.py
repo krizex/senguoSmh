@@ -692,9 +692,10 @@ class Order(AdminBaseHandler):
 				# send_time = order.get_sendtime(self.session,order.id)
 				send_time = order.send_time
 				phone = order.phone
+				address = order.address_text
 				# print("ready to send message")
 
-				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone)
+				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone,address)
 				# print("success?")
 
 			elif action == "edit_status":
@@ -802,14 +803,12 @@ class Order(AdminBaseHandler):
 								self.session.add(point_history)
 								self.session.commit()
 
-						# 订单完成后，将相应店铺可提现 余额相应增加
-						# shop.shop_balance += order.totalprice * 100
 						shop.available_balance += totalprice
-
-						# available history
-						available_history = models.AvailableBalanceHistory(shop_id = shop.id , balance_value = totalprice,\
-							balance_record = '订单' + order.num + '完成',available_balance = shop.available_balance)
-						self.session.add(available_history)
+						balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,\
+							balance_record = "可提现额度入账：订单"+order.num+"完成",name = self.current_user.accountinfo.nickname,balance_value = totalprice,shop_totalPrice=\
+							shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,available_balance=\
+							shop.available_balance,balance_type = 6)
+						self.session.add(balance_history)
 						self.session.commit()
 
 					if shop_follow: 
