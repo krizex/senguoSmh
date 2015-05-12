@@ -272,7 +272,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 	def get_comments(self, shop_id, page=0, page_size=5):
 		comments_new = {}
-		comments_result =[]
+		comments_result = []
+		comments_array  = []
 		comments =self.session.query(models.Order.comment, models.Order.comment_create_date, models.Order.num,\
 			models.Order.comment_reply,models.Order.id,models.CommentApply.has_done,models.Accountinfo.headimgurl_small, \
 			models.Accountinfo.nickname,models.CommentApply.delete_reason,\
@@ -281,7 +282,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		join(models.Accountinfo,models.Order.customer_id == models.Accountinfo.id).\
 		filter(models.Order.shop_id == shop_id, models.Order.status == 6).filter(or_(models.CommentApply.has_done !=1,models.CommentApply.has_done ==None )).\
 		order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
-		print(comments)
 		for item in comments:
 			comments_new['comments']      = item[0]
 			comments_new['create_date']   = item[1]
@@ -292,11 +292,20 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			comments_new['headimgurl']    = item[6]
 			comments_new['nickname']      = item[7]
 			comments_new['delete_reason'] = item[8]
-			comments_new['comment_imgUrl']= json.loads(item[9]) if item[9] is not None else None
-			print(comments_new)
+			comments_new['decline_reason']= item[9]
+			if item[10] is None:
+				comments_new['comment_imgUrl'] = None
+			else:
+				if len(item[10]) < 5:
+					comments_new['comment_imgUrl'] = None
+				else:
+					comments_new['comment_imgUrl'] = item[10]
+			#comments_new['comment_imgUrl']= json.loads(item[10]) if item[10] is not None else None
 			comments_result.append(comments_new)
+			comments_array.append([item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],comments_new['comment_imgUrl']])
+		#print(comments_result)
 		# return comments_result
-		return comments
+		return comments_array
 
 	def timedelta(self, date):
 		if not date:

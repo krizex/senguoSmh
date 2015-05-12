@@ -1,10 +1,54 @@
 /**
  * Created by Administrator on 2015/4/23.
  */
+var width = 0;
 $(document).ready(function(){
-
-}).on("click","#commit-order-point",function(){
+    width = parseInt($("#img-lst").width()/4)-10;
+    $("#img-lst").children("li").each(function(){
+        $(this).width(width).height(width);
+    });
+}).on("click","#commit-order-point",function(){  //完成评价
     var user_txt = $("#user-txt").val();
+    if(user_txt.length>100){
+        noticeBox("评论要在100个字以内哦！")
+        return false;
+    }
+    if($(this).hasClass("grey-bg")){
+        noticeBox("别点我啦，马上就好！")
+        return false;
+    }
+    $(this).addClass("grey-bg");
+    var imglist = $("#img-lst").find(".image");
+    var imgUrl = {};
+    var order_id = $(this).attr("data-id");
+    var data = {
+        "comment":user_txt,
+        "order_id":order_id
+    };
+    imglist.each(function(i){
+        var url = $(this).attr("url");
+        if(url){
+            imgUrl["i"]=url;
+        }
+    });
+
+    $.ajax({
+        url:"/customer/orders",
+        contentType:"application/json; charset=UTF-8",
+        data:JSON.stringify({"data":data,"imgUrl":imgUrl,"action":"comment",_xsrf:window.dataObj._xsrf}),
+        type:"post",
+        success:function(res){
+            if(res.success){
+                noticeBox(res.notice);
+                setTimeout(function(){
+                    window.location.href="/customer/comment?page=0";
+                },2000);
+            }else{
+                noticeBox(res.error_txt);
+                $(this).removeClass("grey-bg");
+            }
+        }
+    })
 
 }).on("click",".icon-del",function(){
     $(this).closest("li").remove();
@@ -12,12 +56,10 @@ $(document).ready(function(){
         $("#add-img").closest("li").removeClass("hide");
         $(".moxie-shim").removeClass("hide");
     }
-    $(".moxie-shim").css({width:$("#add-img").width(),height:$("#add-img").height(),left:$("#add-img").closest("li").position().left,top:$("#add-img").closest("li").position().top});//调整按钮的位置
-}).on("click","#commit-order-point",function(){  //提交评价
-
+    $(".moxie-shim").css({width:width+"px",height:width+"px",left:$("#add-img").closest("li").position().left,top:$("#add-img").closest("li").position().top});//调整按钮的位置
 });
 $(document).ready(function(){
-    var width = $("#add-img").width();
+
     var uploader = Qiniu.uploader({
         runtimes: 'html5,flash,html4',
         browse_button: 'add-img',
@@ -33,7 +75,7 @@ $(document).ready(function(){
         dragdrop: false,
         chunk_size: '4mb',
         domain: "http://shopimg.qiniudn.com/",
-        uptoken: getCookie("token"),
+        uptoken: $("#token").val(),
         unique_names: false,
         save_key: false,
         auto_start: true,
@@ -57,7 +99,7 @@ $(document).ready(function(){
                     $("#add-img").closest("li").addClass("hide");
                     $(".moxie-shim").addClass("hide");
                 }
-                $(".moxie-shim").css({left:$("#add-product-image").closest("li").position().left+15,top:$("#add-product-image").closest("li").position().top+15});//调整按钮的位置
+                $(".moxie-shim").css({left:$("#add-product-image").closest("li").position().left,top:$("#add-product-image").closest("li").position().top});//调整按钮的位置
                 !function(){
                     previewImage(file,width,function(imgsrc){
                         $("#"+file.id).attr("src",imgsrc);
@@ -77,14 +119,14 @@ $(document).ready(function(){
                 } else if (err.code == -601) {
                     alert("图片格式不对哦");
                 } else if (err.code == -200) {
-                    alert("上传出错");
+                    alert("当前页面过期，请刷新页面");
                 } else {
                     alert(err.code + ": " + err.message);
                 }
                 up.removeFile(err.file.id);
                 $("#"+err.file.id).closest("li").remove();
                 if($("#"+err.file.id).closest("li").index()==3){
-                    $("#add-product-image").closest("li").removeClass("hide");
+                    $("#add-img").closest("li").removeClass("hide");
                     $(".moxie-shim").removeClass("hide");
                 }
                 $(".moxie-shim").css({left:$("#add-img").closest("li").position().left,top:$("#add-img").closest("li").position().top});//调整按钮的位置

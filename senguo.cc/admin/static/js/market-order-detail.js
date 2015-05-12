@@ -34,9 +34,6 @@ $(document).ready(function(){
         }
     }
     removeDom();
-}).on("click","#change-comment",function(){
-    var pointBox=new Modal('pointsBox');
-    pointBox.modal('show');
 }).on("click","#del-ok",function(){
     var comment=$('#new-comment').val();
     if(!comment){

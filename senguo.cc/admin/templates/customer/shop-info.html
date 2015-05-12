@@ -110,64 +110,38 @@
         <div class="title" id="show-more">
             <p class="pull-left font14">店铺评价：</p>
             <p class="pt4">
-                <!--<span class="num-txt">满意度：</span><span class="per-txt">96%</span>--><span class="num-txt pl20">{{comment_sum}}条评论</span>
+                {% if satisfy %}
+                <span class="num-txt">满意度：</span><span class="per-txt">{{satisfy}}</span>
+                {% end %}
+                <span class="num-txt pl20">{{comment_sum}}条评论</span>
                 <a href="{{reverse_url('customerComment')}}?page=0" class="pull-right text-grey9 font12 m-r5">查看更多>></a>
             </p>
         </div>
-    <!--新的店铺评价-->
-    <!--<ul class="point-com-lst">
-        <li>
-            <dl class="ccom-item group">
-                <dd class="fl">
-                    <img src="/static/images/TDSG.png" width="50" height="50" alt="头像"/>
-                </dd>
-                <dt class="fl">
-                <p><span class="nor-txt">黄铁森</span><span class="time-txt mr10 pull-right">1天前</span></p>
-                <p class="com-txt">这榴莲真是醉了，太好吃了，强烈推荐！</p>
-                </dt>
-            </dl>
-        </li>
-        <li>
-            <dl class="ccom-item group">
-                <dd class="fl">
-                    <img src="/static/images/TDSG.png" width="50" height="50" alt="头像"/>
-                </dd>
-                <dt class="fl">
-                <p><span class="nor-txt">黄铁森</span><span class="time-txt mr10 pull-right">1天前</span></p>
-                <p class="com-txt">这榴莲真是醉了，太好吃了，强烈推荐！</p>
-                <ul class="group com-goods-lst">
-                    <li>
-                        <a href="/static/images/anoa-7-md.gif" title="放商品名称"><img src="/static/images/anoa-7-md.gif" alt="晒单图片"/></a>
-                    </li>
-                    <li>
-                        <a href="/static/images/anoa-7-md.gif" title="放商品名称"><img src="/static/images/anoa-7-md.gif" alt="晒单图片"/></a>
-                    </li>
-                    <li>
-                        <a href="/static/images/anoa-7-md.gif" title="放商品名称"><img src="/static/images/anoa-7-md.gif" alt="晒单图片"/></a>
-                    </li>
-                    <li>
-                        <a href="/static/images/anoa-7-md.gif" title="放商品名称"><img src="/static/images/anoa-7-md.gif" alt="晒单图片"/></a>
-                    </li>
-                </ul>
-                </dt>
-            </dl>
-        </li>
-    </ul>-->
     {% if comments %}
-    <ul class="user-comment clearfix">
+    <ul class="point-com-lst">
         {% for comment in comments %}
-        <li class="comment-item set-w100-fle">
-            <div class="img-box pull-left">
-                <img src="{{comment[6] or '/static/design_img/TDSG.png'}}" class="img">
-            </div>
-            <div class="con set-w100-fle">
-                <p class="clearfix text-grey">
-                    <span class="pull-left m-b5 font14">{{comment[7]}}</span>
-                    <span class="pull-right">{{handler.timedelta(comment[1])}}</span>
-                </p>
-                <p class="text-grey9">{{comment[0] or '无'}}</p>
-                {% if comment[3] %}<p class="text-green">商家回复：{{comment[3]}}</p>{% end %}
-            </div>
+        <li>
+            <dl class="ccom-item group">
+                <dd class="fl">
+                    <img src="{{comment[6] or '/static/design_img/TDSG.png'}}" width="50" height="50" alt="头像"/>
+                </dd>
+                <dt class="fl">
+                <p><span class="nor-txt">{{comment[7]}}</span><span class="time-txt mr10 pull-right">{{handler.timedelta(comment[1])}}</span></p>
+                <p class="com-txt">{{comment[0] or '无'}}</p>
+                {% if comment[10] %}
+                <ul class="group com-goods-lst">
+                    {% for img in comment[10] %}
+                    <li>
+                        <a href="{{comment[10][img]}}" title=""><img src="{{comment[10][img]}}?imageView2/5/w/200/h/200" alt="晒单图片"/></a>
+                    </li>
+                    {% end %}
+                </ul>
+                {% end %}
+                {% if comment[3] %}
+                <p class="reply-txt">商家回复：{{comment[3]}}</p>
+                {% end %}
+                </dt>
+            </dl>
         </li>
         {% end %}
     </ul>
