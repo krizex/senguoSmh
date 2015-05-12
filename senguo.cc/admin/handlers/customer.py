@@ -1985,7 +1985,18 @@ class OrderComment(CustomerBaseHandler):
 	def get(self):
 		token = self.get_qiniu_token("order",self.current_user.id)
 		orderid=self.args["orderid"]
-		return self.render("customer/comment-order.html",token=token,order_id=orderid)
+		order = next((x for x in self.current_user.orders if x.id == int(orderid)), None)
+		if order is None:
+			return self.send_fail("订单为空")
+		imgurls = {}
+		comments = order.get_comments()
+		if comments and comments[10]:
+			imgurls = json.loads(comments[10])
+		else:
+			imgurls = None
+		print(imgurls)
+
+		return self.render("customer/comment-order.html",token=token,order_id=orderid,imgurls = imgurls)
 
 class ShopComment(CustomerBaseHandler):
 	@tornado.web.authenticated
