@@ -712,7 +712,6 @@ class Order(AdminBaseHandler):
 						staff_info = self.session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id )\
 						.filter(models.HireLink.shop_id == shop_id,models.HireLink.default_staff == 1).first()
 					except:
-						return self.send_fail("staff'infomation error")
 						print("didn't find default staff")
 					if staff_info:
 						openid = staff_info.wx_openid
@@ -1684,7 +1683,7 @@ class ShopBalance(AdminBaseHandler):
 			history = []
 			page = int(self.args['page']-1)
 			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([2,6])).\
-			order_by(models.BalanceHistory.create_time.desc()).all()
+			order_by(models.BalanceHistory.create_time.desc()).offset(page*page_size).limit(page_size).all()
 			count =  self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([2,6])).count()
 			page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:

@@ -203,8 +203,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return link
 
 	def get_login_url(self):
-		#return self.get_wexin_oauth_link(next_url=self.request.full_url())
-		return self.reverse_url('customerLogin')
+		return self.get_wexin_oauth_link(next_url=self.request.full_url())
+		# return self.reverse_url('customerLogin')
 
 	def get_weixin_login_url(self):
 		print("[微信登录]登录URL：",self.request.full_url())

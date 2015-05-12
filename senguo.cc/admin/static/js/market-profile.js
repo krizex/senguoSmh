@@ -34,6 +34,13 @@ $(document).ready(function(){
             case 2:$this.text('女');break;
         }
     });
+    var wx_notice=$('.third-bind').attr('data-wx');
+    if(wx_notice!=''){
+        noticeBox(wx_notice);
+        setTimeout(function() {
+            window.location.href="/customer/profile";
+        },2000);
+    }
 }).on('click','#setPwd',function(){
     var pwdBox=new Modal('pwdBox');
     pwdBox.modal('show');
@@ -78,7 +85,13 @@ $(document).ready(function(){
 }).on("click","#birthSure",function(){
     birthEdit();
 }).on('click','.bind_wx',function(){
-    bind_wx();
+    // bind_wx();
+    if(isWeiXin()){
+        bind_wx();
+    }
+    else{
+        noticeBox('请在手机上绑定或更换绑定微信账号');
+    }
 }).on('click','.confriming',function(){
     var $this=$(this);
     var result=$this.attr('data-status');
