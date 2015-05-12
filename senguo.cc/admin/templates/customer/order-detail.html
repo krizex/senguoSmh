@@ -77,21 +77,21 @@
             {% end %}
         </span></span></p>
     </div>
-   <!--新订单评论-->
-   <div class="order-item commentBox">
-        <h4 class="title">订单评论</h4>
-        <p class="grey-txt p-com">评论此订单获取更多积分！<a href="{{reverse_url('customerShopComment')}}" class="fr add-comment" id="add-comment">评论</a></p>
-    </div>
     {% if order.comment%}
     <div class="order-item commentBox">
         <!--<h4 class="title">订单评价<a href="javascript:;" class="fr" id="del-comment">删除</a></h4>-->
-        <h4 class="title">订单评价<a href="javascript:;" class="fr" id="change-comment">修改</a></h4>
+        <h4 class="title">订单评论<a href="javascript:;" class="fr" id="change-comment">修改</a></h4>
         <p><span>{{current_user.accountinfo.nickname}}：</span><span class="comment_con">{{order.comment}}</span></p>
         {% if order.comment_reply %}
         <p class="green-txt">商家回复：<span>{{order.comment_reply}}</span></p>
         {% end %}
     </div>
-    {% end%}
+    {% else %}
+    <div class="order-item commentBox">
+        <h4 class="title">订单评论</h4>
+        <p class="grey-txt p-com">评论此订单获取更多积分！<a href="{{reverse_url('customerShopComment')}}?num={{order.id}}" class="fr add-comment" id="add-comment">评论</a></p>
+    </div>
+    {% end %}
 </div>
  <input type="hidden" value="{{order.create_date}}" class="create_time"/>
 <input type="hidden" value="{{order.create_date.year}}" class="create_year"/>

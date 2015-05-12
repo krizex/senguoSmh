@@ -2,9 +2,45 @@
  * Created by Administrator on 2015/4/23.
  */
 $(document).ready(function(){
-
-}).on("click","#commit-order-point",function(){
+}).on("click","#commit-order-point",function(){  //完成评价
     var user_txt = $("#user-txt").val();
+    if(user_txt.length>100){
+        noticeBox("评论太长了，缩减一点吧！")
+        return false;
+    }
+    if($(this).hasClass("grey-bg")){
+        noticeBox("别点我啦，马上就好！")
+        return false;
+    }
+    $(this).addClass("grey-bg");
+    var imglist = $("#img-lst").find(".image");
+    var imgUrl = {};
+    var order_id = $(this).attr("data-id");
+    var data = {
+        "comment":user_txt,
+        "order_id":order_id
+    };
+    imglist.each(function(i){
+        var url = $(this).attr(url);
+        if(url){
+            imgUrl["i"]=url;
+        }
+    });
+
+    $.ajax({
+        url:"/customer/orders",
+        contentType:"application/json; charset=UTF-8",
+        data:JSON.stringify({"data":data,"imgUrl":imgUrl,"action":"comment",_xsrf:window.dataObj._xsrf}),
+        type:"post",
+        success:function(res){
+            if(res.success){
+                window.location.href="/customer/comment?page=0";
+            }else{
+                noticeBox(res.error_txt);
+                $(this).removeClass("grey-bg");
+            }
+        }
+    })
 
 }).on("click",".icon-del",function(){
     $(this).closest("li").remove();
@@ -33,7 +69,7 @@ $(document).ready(function(){
         dragdrop: false,
         chunk_size: '4mb',
         domain: "http://shopimg.qiniudn.com/",
-        uptoken: getCookie("token"),
+        uptoken: $("#token").val(),
         unique_names: false,
         save_key: false,
         auto_start: true,
@@ -77,14 +113,14 @@ $(document).ready(function(){
                 } else if (err.code == -601) {
                     alert("图片格式不对哦");
                 } else if (err.code == -200) {
-                    alert("上传出错");
+                    alert("当前页面过期，请刷新页面");
                 } else {
                     alert(err.code + ": " + err.message);
                 }
                 up.removeFile(err.file.id);
                 $("#"+err.file.id).closest("li").remove();
                 if($("#"+err.file.id).closest("li").index()==3){
-                    $("#add-product-image").closest("li").removeClass("hide");
+                    $("#add-img").closest("li").removeClass("hide");
                     $(".moxie-shim").removeClass("hide");
                 }
                 $(".moxie-shim").css({left:$("#add-img").closest("li").position().left,top:$("#add-img").closest("li").position().top});//调整按钮的位置

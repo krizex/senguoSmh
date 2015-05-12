@@ -1,4 +1,4 @@
-var isFull = false,oMove = null;;
+var isFull = false,oMove = null,drag = false;
 $(document).ready(function(){
     $("body").height($(window).height()-50);
     var startX = 0,startY = 0,width = $(".wrap-point-box").width()-34,left = 0;
@@ -65,6 +65,7 @@ $(document).ready(function(){
         var disX = ev.clientX-oMove.position().left;
         var _this = oMove.closest(".wrap-point-box");
         _this.on("mousemove",function(ev){
+            drag = true;
             var left = ev.clientX-disX;
             if(left<0){left=0;}
             if(left>width){left=width;}
@@ -104,15 +105,39 @@ $(document).ready(function(){
         return false;
     });
     /**/
-}).on("click","#commit-shop-point",function(){
-    var shop_id = 1;
-    var zl_point = $("#zl-point").html();
-    var sd_point = $("#sd-point").html();
-    var fw_point = $("#fw-point").html();
+}).on("click","#commit-shop-point",function(){  //提交店铺评论
+    if($(this).hasClass("grey-bg")){
+        noticeBox("别点我啦，马上就好！")
+        return false;
+    }
+    $(this).addClass("grey-bg");
+    var commodity_quality = parseInt($("#zl-point").html(),10);
+    var send_speed =  parseInt($("#sd-point").html(),10);
+    var shop_service =  parseInt($("#fw-point").html(),10);
+    var data = {
+        "commodity_quality":commodity_quality,
+        "send_speed":send_speed,
+        "shop_service":shop_service
+    };
+    $.ajax({
+        url:"/customer/orders?action=comment_point",
+        contentType:"application/json; charset=UTF-8",
+        data:JSON.stringify({"data":data,"action":"comment_point",_xsrf:window.dataObj._xsrf}),
+        type:"post",
+        success:function(res){
+            if(res.success){
+                window.location.href="/customer/ordercomment?orderid="+$("#commit-shop-point").attr("data-order");
+            }else{
+                noticeBox(res.error_txt);
+                $(this).removeClass("grey-bg");
+            }
+        }
+    })
 }).on("mouseup",document,function(){
     $(".wrap-point-box").unbind("mousemove");
     $(".wrap-point-box").unbind("mouseup");
-    if(isFull){
+    if(isFull && drag){
+        drag = false;
         showAnimate(oMove.closest("li").index());
     }
 });
@@ -144,23 +169,23 @@ function changeColor($obj,grade){
 function showAnimate(index){
     switch (index){
         case 0:
-            $("#goods-list").css("display","block").addClass("zl");
+            $("#goods-list0").css("display","block").addClass("zl");
             setTimeout(function(){
-                $("#goods-list").css("display","none").removeClass("zl");
+                $("#goods-list0").css("display","none").removeClass("zl");
             },1700);
             break;
         case 1:
-            $("#goods-list").children().addClass("up-down");
-            $("#goods-list").css("display","block").addClass("zl");
+            $("#goods-list1").children().addClass("up-down");
+            $("#goods-list1").css("display","block").addClass("zl");
             setTimeout(function(){
-                $("#goods-list").css("display","none").removeClass("zl");
-                $("#goods-list").children().removeClass("up-down");
+                $("#goods-list1").css("display","none").removeClass("zl");
+                $("#goods-list1").children().removeClass("up-down");
             },1700);
             break;
         case 2:
-            $("#goods-list").css("display","block").addClass("up");
+            $("#goods-list2").css("display","block").addClass("up");
             setTimeout(function(){
-                $("#goods-list").css("display","none").removeClass("up");
+                $("#goods-list2").css("display","none").removeClass("up");
             },1700);
             break;
     }

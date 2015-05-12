@@ -1,42 +1,4 @@
 {% extends 'detail-base.html' %}
-{% block head %}<link rel="stylesheet" href="{{static_url('css/market-comment.css')}}"/>{% end %}
-{% block top %}店铺评价{% end %}
-{% block content %}
-{% if date_list %}
-    <ul class="commnent-list mt42 m-b10 set-w100-fle" id="commnent-list">
-            {% for list in date_list %}
-                <li class="comment-item bg-white set-w100-fle">
-                    <div class="img-box pull-left">
-                        <img src="{{list['img']}}" class="user-img">
-                    </div>
-                    <div class="info sty1 pull-left pr10">
-                        <span class="user-name pull-left">{{list['name']}}</span>
-                        <span class="comment-time pull-right">{{list['time']}}</span>
-                    </div>
-                    <div class="comment-text sty1 pull-left pr10">{{list['comment']}}</div>
-                    <div class="comment text-green sty1 pull-left pr10">
-                        {% if list['reply'] %}
-                        商家回复：<span class="reply-text">{{list['reply']}}</span>
-                        {% end %}
-                    </div>
-                </li>
-            {% end %}
-    </ul>
-   {% if len(date_list) <20%}
-    <div class="btn text-grey9 set-w100-fle font12 loading">~没有更多了呢 ( > < )~</div>
-    {% else %}
-     <div class="btn text-grey9 set-w100-fle font12 loading" style="display:none;">更多评价</div>
-    {% end %}
-{% else %}
-<h3 class="text-center mt42 pt36">暂无评价！</h3>
-{% end %}
-{% end %}
-{% block bottom %}
-<script src="{{static_url('js/market-comment.js')}}"></script>
-{% end %}
-{#
-<!--新评价详情页面-->
-{% extends 'detail-base.html' %}
 {% block title %}评价详情{% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/baguetteBox.css')}}"/>
@@ -48,7 +10,7 @@
     <div class="point-show group">
         <div class="point-left fl pt5">
             <p class="nor-txt mt2">满意度</p>
-            <p class="percent-txt">98%</p>
+            <p class="percent-txt">{{satisfy}}</p>
         </div>
         <div class="point-name fl pt5">
             <span class="line"></span>
@@ -58,63 +20,58 @@
         </div>
         <div class="point-cen fl">
             <div class="percent-bar">
-                <span class="bar1"></span>
+                <span class="" id="quality_bar"></span>
             </div>
             <div class="percent-bar">
-                <span class="bar2"></span>
+                <span class="" id="speed_bar"></span>
             </div>
             <div class="percent-bar">
-                <span class="bar3"></span>
+                <span class="" id="service_bar"></span>
             </div>
         </div>
         <div class="point-left fr">
-            <p class="nor-txt txt-ar">89分</p>
-            <p class="nor-txt txt-ar">100分</p>
-            <p class="nor-txt txt-ar">98分</p>
+            <p class="nor-txt txt-ar" id="quality">{{commodity_quality}}分</p>
+            <p class="nor-txt txt-ar" id="speed">{{send_speed}}分</p>
+            <p class="nor-txt txt-ar" id="service">{{shop_service}}分</p>
         </div>
     </div>
     <ul class="point-com-lst">
+        {% for list in date_list %}
         <li>
             <dl class="ccom-item group">
                 <dd class="fl">
-                    <img src="/static/images/TDSG.png" width="50" height="50" alt="头像"/>
+                    <div class="wrap-o-img">
+                        <img src="{{list['img'] or '/static/images/TDSG.png'}}" width="50" height="50" alt="头像"/>
+                    </div>
                 </dd>
-                <dt class="fl">
-                    <p><span class="nor-txt">黄铁森</span><span class="time-txt ml20">1天前</span></p>
-                    <p class="com-txt">这榴莲真是醉了，太好吃了，强烈推荐！</p>
-                </dt>
-            </dl>
-        </li>
-        <li>
-            <dl class="ccom-item group">
-                <dd class="fl">
-                    <img src="/static/images/TDSG.png" width="50" height="50" alt="头像"/>
-                </dd>
-                <dt class="fl">
-                <p><span class="nor-txt">黄铁森</span><span class="time-txt ml20">1天前</span></p>
-                <p class="com-txt">这榴莲真是醉了，太好吃了，强烈推荐！</p>
+                <dt class="fl" class="right-com">
+                <p><span class="nor-txt">{{list['name']}}</span><span class="time-txt ml20">{{list['time']}}</span></p>
+                <p class="com-txt">{{list['comment']}}</p>
+                {% if list['imgurls'] %}
                 <ul class="group com-goods-lst">
-                    <li>
-                        <a href="/static/images/anoa-7-md.gif" title="放商品名称"><img src="/static/images/anoa-7-md.gif" alt="晒单图片"/></a>
-                    </li>
-                    <li>
-                        <a href="/static/images/anoa-7-md.gif" title="放商品名称"><img src="/static/images/anoa-7-md.gif" alt="晒单图片"/></a>
-                    </li>
-                    <li>
-                        <a href="/static/images/anoa-7-md.gif" title="放商品名称"><img src="/static/images/anoa-7-md.gif" alt="晒单图片"/></a>
-                    </li>
-                    <li>
-                        <a href="/static/images/anoa-7-md.gif" title="放商品名称"><img src="/static/images/anoa-7-md.gif" alt="晒单图片"/></a>
-                    </li>
+                    {% for img in list['imgurls'] %}
+                        <li>
+                            <a href="{{list['imgurls'][img]}}" title=""><img src="{{list['imgurls'][img]}}?imageView2/5/w/200/h/200" alt="晒单图片"/></a>
+                        </li>
+                    {% end %}
                 </ul>
+                {% end %}
+                {% if list['reply'] %}
+                    <p class="reply-txt">商家回复：{{list['reply']}}</p>
+                {% end %}
                 </dt>
             </dl>
         </li>
+        {% end %}
     </ul>
+    {% if len(date_list) <20 %}
+    <div class="btn text-grey9 set-w100-fle font12 loading">~没有更多了呢 ( > < )~</div>
+    {% else %}
+    <div class="btn text-grey9 set-w100-fle font12 loading" style="display:none;">更多评价</div>
+    {% end %}
 </div>
 {% end %}
 {% block bottom %}
 <script src="{{static_url('js/third/baguetteBox.min.js')}}"></script>
 <script src="{{static_url('js/comment-shop.js')}}"></script>
 {% end %}
-#}

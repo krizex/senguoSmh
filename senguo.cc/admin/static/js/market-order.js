@@ -39,16 +39,15 @@ $(document).ready(function(){
     var comment_order_id;
     $(document).on('click','.comment-btn',function () {
         var $this = $(this);
-        var commentBox=new Modal('commentBox');
-        commentBox.modal('show');
         index=$this.parents('.order-list-item').index();
         comment_order_id=$this.parents('.order-list-item').data('id');
+        window.location.href="/customer/ordercomment?orderid="+comment_order_id;
     });
-    $(document).on('click','.comment_submit', function () {
+    /*$(document).on('click','.comment_submit', function () {
         var comment=$('.comment-input').val();
         $('.comment_submit').attr({'disabled':true}).addClass('bg-greyc');
         orderComment(index,comment_order_id,comment);
-    });
+    });*/
 });
 window.dataObj.page=1;
 window.dataObj.count=1;
@@ -244,7 +243,9 @@ function orderConcel(target,id){
 )
 }
 
-function orderComment(id,order_id,comment){
+
+/*该方法可以去掉*/
+/*function orderComment(id,order_id,comment){
     var url='';
     var action='comment';
     if(!comment){
@@ -290,3 +291,4 @@ function orderComment(id,order_id,comment){
         noticeBox('服务器貌似出错了~ ( >O< ) ~');
     });
 }
+*/
