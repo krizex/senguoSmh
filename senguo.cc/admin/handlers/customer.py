@@ -1431,13 +1431,6 @@ class Cart(CustomerBaseHandler):
 				return self.send_fail('shop_follow not found')
 			shop_follow.shop_balance -= totalPrice   #用户对应 店铺余额减少 ，单位：元
 			self.session.commit()
-			
-			# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-			# if not shop:
-			# 	return self.send_fail('shop not found')
-			# shop.shop_bloackage += totalPrice * 100  #店铺冻结 资产相应增加 ，单位 ：分
-			# self.session.commit()
-
 			#生成一条余额交易记录
 			balance_record = '消费：订单' + order.num
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
@@ -1742,23 +1735,6 @@ class OrderDetail(CustomerBaseHandler):
 				order.sender_phone =None
 				order.sender_img = None
 		delta = datetime.timedelta(1)
-		#print(delta)
-		# if order.start_time.minute <10:
-		#    w_start_time_minute ='0' + str(order.start_time.minute)
-		# else:
-		#    w_start_time_minute = str(order.start_time.minute)
-		# if order.end_time.minute < 10:
-		#    w_end_time_minute = '0' + str(order.end_time.minute)
-		# else:
-		#    w_end_time_minute = str(order.end_time.minute)
-
-		# if order.type == 2 and order.today==2:
-		#    w_date = order.create_date + delta
-		# else:
-		#    w_date = order.create_date
-		# order.send_time = "%s %d:%s ~ %d:%s" % ((w_date).strftime('%Y-%m-%d'),
-		# 								order.start_time.hour, w_start_time_minute,
-		# 								  order.end_time.hour, w_end_time_minute)
 		return self.render("customer/order-detail.html", order=order,
 						   charge_types=charge_types, mcharge_types=mcharge_types)
 
