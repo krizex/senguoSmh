@@ -914,7 +914,8 @@ class Balance(SuperBaseHandler):
 				if shop_totalBalance == None:
 					shop_totalBalance=0
 				shop_totalBalance = format(shop_totalBalance,'.2f')
-				history.append({'shop_name':shop_name,'shop_code':shop_code,'time':create_time,'balance':shop_totalBalance,'balance_value':temp.balance_value,'type':temp.balance_type})
+				history.append({'shop_name':shop_name,'shop_code':shop_code,'time':create_time,'balance':shop_totalBalance,\
+					'balance_value':temp.balance_value,'type':temp.balance_type,'admin_id':temp.superAdmin_id})
 		page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 		return self.send_success(history = history,page_sum=page_sum,total = total,times = times,persons=persons,pay=pay,left = left)
 
@@ -1021,7 +1022,8 @@ class ApplyCash(SuperBaseHandler):
 			name = apply_cash.applicant_name
 			balance_history = models.BalanceHistory(balance_record = '提现：管理员 '+name,balance_type =\
 				2,balance_value = apply_cash.value ,customer_id = apply_cash.shop.admin.accountinfo.id,name = \
-				name,shop_id = apply_cash.shop_id,shop_totalPrice = shop.shop_balance,superAdmin_id = self.current_user.id)
+				name,shop_id = apply_cash.shop_id,shop_totalPrice = shop.shop_balance,superAdmin_id = \
+				self.current_user.id,available_balance = shop.available_balance)
 			self.session.add(balance_history)
 			self.session.commit()
 		return self.send_success(history = history)

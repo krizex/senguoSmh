@@ -286,7 +286,6 @@ class Order(StaffBaseHandler):
 								shop_follow.shop_point =0
 							shop_follow.shop_point += 2
 							self.session.commit()
-
 							try:
 								point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
 							except:
@@ -305,12 +304,12 @@ class Order(StaffBaseHandler):
 						shop.available_balance += totalprice
 						print(shop.available_balance,'店铺可提现余额')
 						# available history
-						available_history = models.AvailableBalanceHistory(shop_id = shop.id , balance_value = totalprice,\
-							balance_record = '订单' + order.num + '完成',available_balance = shop.available_balance)
-						self.session.add(available_history)
-
+						balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,\
+							balance_record = "可提现额度入账：订单"+order.num+"完成",name = self.current_user.accountinfo.nickname,balance_value = totalprice,shop_totalPrice=\
+							shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,available_balance=\
+							shop.available_balance,balance_type = 6)
+						self.session.add(balance_history)
 						self.session.commit()
-
 					if shop_follow: 
 						if shop_follow.shop_point == None:
 							shop_follow.shop_point =0

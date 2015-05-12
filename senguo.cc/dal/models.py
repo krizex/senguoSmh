@@ -827,7 +827,8 @@ class BalanceHistory(MapBase,_CommonApi):
 								#当 balance_type为2 的时候，表示申请提现店铺管理员名称
 	shop_id  = Column(Integer,ForeignKey(CustomerShopFollow.shop_id),nullable = False)
 	balance_record = Column(String(32))  #充值 或者 消费 的 具体记录
-	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:余额消费 2:提现 3:在线支付 4:商家删除订单 5:用户自己取消订单
+	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:余额消费 2:提现 3:在线支付 4:商家删除订单 5:用户自己取消订单 
+												# 6:余额消费完成 ，可提现额度的变化
 	balance_value  = Column(Float)
 	create_time    = Column(DateTime,default = func.now())
 	shop_totalPrice = Column(Float,default = 0)
@@ -836,6 +837,8 @@ class BalanceHistory(MapBase,_CommonApi):
 	#customer = relationship("CustomerShopFollow")
 	transaction_id = Column(String(64))
 	superAdmin_id  = Column(Integer,default=0) #当记录是一条提现记录时 ，记下操作的超级管理员id
+
+	available_balance = Column(Float,default = 0) 
 
 class PointHistory(MapBase,_CommonApi):
 	__tablename__ = 'pointhistory'

@@ -19,8 +19,6 @@ import requests
 
 import threading
 
-import re
-
 # import time
 # import random
 # # import urllib2
@@ -130,6 +128,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	__account_cookie_name__ = ""
 	__login_url_name__ = ""
 	__wexin_oauth_url_name__ = ""
+	__wexin_bind_url_name__ = "customerwxBind"
 
 	_wx_oauth_pc = "https://open.weixin.qq.com/connect/qrconnect?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_login&state=ohfuck#wechat_redirect"
 	_wx_oauth_weixin = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_userinfo&state=onfuckweixin#wechat_redirect"
@@ -171,6 +170,34 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			redirect_uri = tornado.escape.url_escape(
 				APP_OAUTH_CALLBACK_URL+\
 				self.reverse_url(self.__wexin_oauth_url_name__) + para_str)
+			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
+		print("[微信授权]授权链接：",link)
+		return link
+
+	def get_wexin_oauth_link2(self, next_url=""):
+		if not self.__wexin_bind_url_name__:
+			raise Exception("you have to complete this wexin oauth config.")
+
+		if next_url:
+			para_str = "?next="+tornado.escape.url_escape(next_url)
+		else:
+			para_str = ""
+
+		if self.is_wexin_browser():
+			if para_str: para_str += "&"
+			else: para_str = "?"
+			para_str += "mode=mp"
+			redirect_uri = tornado.escape.url_escape(
+				APP_OAUTH_CALLBACK_URL+\
+				self.reverse_url(self.__wexin_bind_url_name__) + para_str)
+			link =  self._wx_oauth_weixin.format(appid=MP_APPID, redirect_uri=redirect_uri)
+		else:
+			if para_str: para_str += "&"
+			else: para_str = "?"
+			para_str += "mode=kf"
+			redirect_uri = tornado.escape.url_escape(
+				APP_OAUTH_CALLBACK_URL+\
+				self.reverse_url(self.__wexin_bind_url_name__) + para_str)
 			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
 		print("[微信授权]授权链接：",link)
 		return link
@@ -828,9 +855,10 @@ class WxOauth2:
 
 
 	@classmethod
-	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods,phone):
+	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,\
+		order_totalPrice,send_time,goods,phone,address):
 		remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n' + "商品详情："  \
-		+ goods +'\n'  + "顾客电话："  + phone +  '\n\n'  + \
+		+ goods +'\n'  + "顾客电话："  + phone + '\n' + "送货地址：" + address +  '\n\n'  + \
 		'请及时登录森果后台处理订单。'
 		postdata = {
 			'touser' : touser,
@@ -857,9 +885,10 @@ class WxOauth2:
 		return True
 
 	@classmethod
-	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone):
+	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
+		order_totalPrice,send_time,phone,address):
 		remark = "订单总价：" + str(order_totalPrice)+ '\n' + "送达时间：" + send_time + '\n'  + "顾客电话："  + \
-		phone + '\n\n' + '请及时处理订单。'
+		phone + '\n' + "送货地址：" + address  +'\n\n' + '请及时处理订单。'
 		order_type_temp = int(order_type)
 		order_type = "即时送" if order_type_temp == 1 else "按时达"
 		postdata = {

@@ -64,6 +64,7 @@ class Access(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self,next_url):
 		# todo: handle state
+		print("oh~no why i'm here i don't know how did this happen")
 		code =self.args["code"]
 		mode = self.args["mode"]
 		# print("mode: ", mode , ", code get:", code)
@@ -290,6 +291,7 @@ class CustomerProfile(CustomerBaseHandler):
 	   	third.append({'weixin':True})
 	   self.render("customer/profile.html", context=dict(birthday=birthday,third=third,shop_info=shop_info))
 
+	
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data","old_password?:str")
 	def post(self):
@@ -328,32 +330,70 @@ class CustomerProfile(CustomerBaseHandler):
 			else:
 				self.current_user.accountinfo.update(session = self.session ,password = data)
 				print("[更改密码]更改成功，新密码：",data)
+		elif action =='wx_bind':
+			wx_bind = False
+			if self.current_user.accountinfo.wx_unionid:
+				wx_bind = True
+			return self.send_success(wx_bind=wx_bind)
 		elif action == 'reset_password':
 			data = self.args["data"]
 			new_password = data['password']
 			self.current_user.accountinfo.update(session = self.session ,password = password)
-		elif action == 'bind_wx':
-			next_url = self.args["data"]
-			return self.get_wexin_oauth_link(next_url = next_url)
-			self.bind_wx(next_url)
 
 		else:
 			return self.send_error(404)
 		return self.send_success()
+
+class WxBind(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def initialize(self, action):
+		self._action = action
+	def get(self):
+		next_url = self.get_argument('next', '')
+		if self._action == 'wx_auth':
+			print(next_url)
+			return self.redirect(self.get_wexin_oauth_link2(next_url=next_url))
+			print('hahaha i am here now')
+		elif self._action == 'wx_bind':
+			print('oh~no i am here now')
+			return self.bind_wx(next_url)
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def bind_wx(self,next_url):
 		# todo: handle state
 		code =self.args["code"]
 		mode = self.args["mode"]
-		# print("mode: ", mode , ", code get:", code)
+		u = self.current_user
+		user =''
 		if mode not in ["mp", "kf"]:
 			return self.send_error(400)
-
-		userinfo = self.get_wx_userinfo(code, mode)
-		if not userinfo:
-			return self.redirect(self.reverse_url("customerLogin"))
-
+		wx_userinfo = self.get_wx_userinfo(code, mode)
+		if u.accountinfo.wx_unionid == wx_userinfo["unionid"]:
+			return self.redirect(self.reverse_url("customerProfile"))
+			# return self.render('notice/bind-notice.html',title='您已绑定该微信，无需重复绑定')
+		try:
+			user = self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_userinfo["unionid"]).first()
+		except:
+			print("this wx does'nt exist")
+		if user:
+			return self.redirect(self.reverse_url("customerProfile"))
+			# return self.render('notice/bind-notice.html',title='该微信账号已被绑定，请更换其它微信账号')
+		if u:
+			print("[微信绑定]，更新用户资料")
+			u.accountinfo.wx_country=wx_userinfo["country"]
+			u.accountinfo.wx_province=wx_userinfo["province"]
+			u.accountinfo.wx_city=wx_userinfo["city"]
+			u.accountinfo.sex=wx_userinfo["sex"]
+			u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
+			u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+			u.accountinfo.wx_username = wx_userinfo["nickname"]
+			u.accountinfo.nickname = wx_userinfo["nickname"]
+			u.accountinfo.wx_openid = wx_userinfo["openid"]
+			u.accountinfo.wx_unionid = wx_userinfo["unionid"]
+			self.session.commit()
+			return self.redirect(self.reverse_url("customerProfile"))
+		else:
+			print('some thing must be wrong here')
 
 class ShopProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -496,6 +536,7 @@ class ShopProfile(CustomerBaseHandler):
 									point_history.each_point = 5
 									self.session.add(point_history)
 									self.session.commit()
+									return self.send_success(notice='连续签到7天，积分+5')
 
 							signin.keep_days = 0
 					else:
@@ -527,7 +568,7 @@ class ShopProfile(CustomerBaseHandler):
 				#     point.signIn_count += 1
 				#     print("new signin:",point.signIn_count)
 			self.session.commit()
-		return self.send_success()
+		return self.send_success(notice='签到成功，积分+1')
 
 class Members(CustomerBaseHandler):
 	def get(self):
@@ -1070,7 +1111,7 @@ class Market(CustomerBaseHandler):
 			return self.send_error(404)
 		f.favour += 1
 		self.session.commit()
-		return self.send_success()
+		return self.send_success(notice='点赞成功，积分+1')
 
 
 	@CustomerBaseHandler.check_arguments("fruits", "mgoods")
@@ -1393,9 +1434,10 @@ class Cart(CustomerBaseHandler):
 		session = self.session
 		# send_time     = order.get_sendtime(session,order.id)
 		send_time = order.send_time
+		address = order.address_text
 		print("[提交订单]订单详情：",goods)
 		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
-			customer_name,order_totalPrice,send_time,goods,phone)
+			customer_name,order_totalPrice,send_time,goods,phone,address)
 		# send message to customer
 		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
 
@@ -1706,7 +1748,7 @@ class Order(CustomerBaseHandler):
 		else:
 			return self.send_error(404)
 		self.session.commit()
-		return self.send_success()
+		return self.send_success(notice='评论成功，积分+5')
 
 class OrderDetail(CustomerBaseHandler):
 	@tornado.web.authenticated

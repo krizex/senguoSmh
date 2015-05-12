@@ -117,6 +117,8 @@ function history(action,page){
             if(res.success){
                var history=res.history;
                page_sum=Math.ceil(res.page_sum);
+               $('.title3').text('账户余额变化');
+               $('.title4').text('账户余额');
                if(action == 'cash_history'){
                	$('.wrap-acc-num').addClass('hidden');
                	$('.cash-count').removeClass('hidden');
@@ -142,11 +144,13 @@ function history(action,page){
                else if(action=='spend'){
                 $('.wrap-acc-num').addClass('hidden');
                 $('.spend-count').removeClass('hidden');
-                $('.spend-total').text(res.total);
+                $('.spend-total').text(res.total);             
                }
                else if(action =='available'){
                 $('.wrap-acc-num').addClass('hidden');
                 $('.available-count').removeClass('hidden');
+                $('.title3').text('额度变化');
+                $('.title4').text('可提现额度');
                }
                if(num == 1){
                	$('.pre-page').addClass('hidden');
@@ -192,10 +196,10 @@ function history(action,page){
 		var total=history[i]['total'];
 		var user='/admin/follower?action=search&&order_by=time&&page=0&&wd='+name;
 		var title;
-		if(type==0||type==3||type==1){
+		if(type==0||type==3||type==6){
 			value='+'+value
 		}
-		else if(type==2||type==4||type==5){
+		else if(type==2){
 			value='-'+value
 		}
 		var list_item =render({

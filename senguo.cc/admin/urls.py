@@ -17,7 +17,7 @@ from dal import models
 
 
 handlers = [
-
+	
 	(r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
 	(r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
 	(r"/staff/logout", handlers.staff.Access, {"action":"logout"}, "staffLogout"),
@@ -34,6 +34,8 @@ handlers = [
 	(r"/customer/password", handlers.customer.Password, {}, "customerPassword"),
 	
 	(r"/customer/profile", handlers.customer.CustomerProfile, {}, "customerProfile"),
+	(r"/customer/wxauth", handlers.customer.WxBind, {"action":"wx_auth"}, "customerwxAuth"),
+	(r"/customer/wxBind", handlers.customer.WxBind, {"action":"wx_bind"}, "customerwxBind"),
 	(r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
 	# (r"/fruitzone/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
 	#微官网-----待删除

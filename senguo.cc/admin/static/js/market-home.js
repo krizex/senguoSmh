@@ -736,6 +736,10 @@ function great(type,id){
                 });
                 var check_large=new Modal('large_imgbox');
                 check_large.modal('hide');
+                if(res.notice)
+                {
+                    noticeBox(res.notice);
+                }
             }
             else noticeBox(res.error_text);
         },
