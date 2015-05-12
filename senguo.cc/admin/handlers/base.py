@@ -293,7 +293,14 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			comments_new['nickname']      = item[7]
 			comments_new['delete_reason'] = item[8]
 			comments_new['decline_reason']= item[9]
-			comments_new['comment_imgUrl']= json.loads(item[10]) if item[10] is not None else None
+			if item[10] is None:
+				comments_new['comment_imgUrl'] = None
+			else:
+				if len(item[10]) < 5:
+					comments_new['comment_imgUrl'] = None
+				else:
+					comments_new['comment_imgUrl'] = item[10]
+			#comments_new['comment_imgUrl']= json.loads(item[10]) if item[10] is not None else None
 			comments_result.append(comments_new)
 			comments_array.append([item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],comments_new['comment_imgUrl']])
 		#print(comments_result)

@@ -1,11 +1,16 @@
 /**
  * Created by Administrator on 2015/4/23.
  */
+var width = 0;
 $(document).ready(function(){
+    width = parseInt($("#img-lst").width()/4)-10;
+    $("#img-lst").children("li").each(function(){
+        $(this).width(width).height(width);
+    });
 }).on("click","#commit-order-point",function(){  //完成评价
     var user_txt = $("#user-txt").val();
     if(user_txt.length>100){
-        noticeBox("评论太长了，缩减一点吧！")
+        noticeBox("评论要在100个字以内哦！")
         return false;
     }
     if($(this).hasClass("grey-bg")){
@@ -21,7 +26,7 @@ $(document).ready(function(){
         "order_id":order_id
     };
     imglist.each(function(i){
-        var url = $(this).attr(url);
+        var url = $(this).attr("url");
         if(url){
             imgUrl["i"]=url;
         }
@@ -34,7 +39,10 @@ $(document).ready(function(){
         type:"post",
         success:function(res){
             if(res.success){
-                window.location.href="/customer/comment?page=0";
+                noticeBox(res.notice);
+                setTimeout(function(){
+                    window.location.href="/customer/comment?page=0";
+                },2000);
             }else{
                 noticeBox(res.error_txt);
                 $(this).removeClass("grey-bg");
@@ -48,12 +56,10 @@ $(document).ready(function(){
         $("#add-img").closest("li").removeClass("hide");
         $(".moxie-shim").removeClass("hide");
     }
-    $(".moxie-shim").css({width:$("#add-img").width(),height:$("#add-img").height(),left:$("#add-img").closest("li").position().left,top:$("#add-img").closest("li").position().top});//调整按钮的位置
-}).on("click","#commit-order-point",function(){  //提交评价
-
+    $(".moxie-shim").css({width:width+"px",height:width+"px",left:$("#add-img").closest("li").position().left,top:$("#add-img").closest("li").position().top});//调整按钮的位置
 });
 $(document).ready(function(){
-    var width = $("#add-img").width();
+
     var uploader = Qiniu.uploader({
         runtimes: 'html5,flash,html4',
         browse_button: 'add-img',
@@ -93,7 +99,7 @@ $(document).ready(function(){
                     $("#add-img").closest("li").addClass("hide");
                     $(".moxie-shim").addClass("hide");
                 }
-                $(".moxie-shim").css({left:$("#add-product-image").closest("li").position().left+15,top:$("#add-product-image").closest("li").position().top+15});//调整按钮的位置
+                $(".moxie-shim").css({left:$("#add-product-image").closest("li").position().left,top:$("#add-product-image").closest("li").position().top});//调整按钮的位置
                 !function(){
                     previewImage(file,width,function(imgsrc){
                         $("#"+file.id).attr("src",imgsrc);

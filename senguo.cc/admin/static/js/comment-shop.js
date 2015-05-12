@@ -87,7 +87,7 @@ function commentList(page){
                                     '<p class="com-txt">{{comment}}</p>'+
                             '{{ if imgurls }}<ul class="group com-goods-lst">'+
                                 '{{ each imgurls as img index }}'+
-                                    '<li><a href="{{imgurls[img]}}" title=""><img src="{{imgurls[img]}}?imageView2/5/w/200/h/200" alt="晒单图片"/></a></li>'+
+                                    '<li><a href="{{imgurls[img]}}" title=""><img style="width:'+width+'px;height:'+width+'px;" src="{{imgurls[img]}}?imageView2/5/w/200/h/200" alt="晒单图片"/></a></li>'+
                                 '{{/each}}'+
                                 '</ul>{{ /if }}'+
                             '{{ if reply }}'+

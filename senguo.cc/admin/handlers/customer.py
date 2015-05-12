@@ -616,15 +616,22 @@ class Comment(CustomerBaseHandler):
 		page = self.args["page"]
 		page_size = 20
 		comments = self.get_comments(shop_id, page, page_size)
+		print(comments)
 		date_list = []
 		nomore = False
 		for comment in comments:
+			print(type(comment[10]),comment[10],'fffffffffffffffffffllllllllllllllll')
+			if comment[10]:
+				imgurls = json.loads(comment[10])
+			else:
+				imgurls = None
+
 			date_list.append({"img": comment[6], "name": comment[7],
-							"comment": comment[0], "time": self.timedelta(comment[1]), "reply":comment[3], "imgurls":comment[10]})
+							"comment": comment[0], "time": self.timedelta(comment[1]), "reply":comment[3], "imgurls":imgurls})
 		if date_list == []:
 			nomore = True
 		print("====================================")
-		print(date_list)
+		print(date_list,type(date_list),)
 		if page == 0:
 			if len(date_list)<page_size:
 				nomore = True
@@ -1743,12 +1750,13 @@ class Order(CustomerBaseHandler):
 					point_history.each_point = 5
 					self.session.add(point_history)
 					self.session.commit()
+			self.session.commit()
+			return self.send_success(notice='评论成功，积分+5')
 
 			#need to rocord this poist history?
 		else:
 			return self.send_error(404)
-		self.session.commit()
-		return self.send_success(notice='评论成功，积分+5')
+		
 
 class OrderDetail(CustomerBaseHandler):
 	@tornado.web.authenticated
