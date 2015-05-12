@@ -22,11 +22,20 @@
                 <a href="javascript:;" class="icon-del"></a>
             </div>
         </li>-->
+        {% if imgurls %}
+            {% for img in imgurls %}
+            <li>
+                <a href="{{imgurls[img]}}" title=""><img src="{{imgurls[img]}}?imageView2/5/w/200/h/200" alt="晒单图片"/></a>
+            </li>
+            {% end %}
+        {% end %}
+        {% if length<4 %}
         <li>
             <div class="wrap-add-img" id="add-img">
                 <img src="/static/images/add_img.png" alt="添加图片"/>
             </div>
         </li>
+        {% end %}
     </ul>
     <div class="wrap-btn-commit mt40">
         <a href="javascript:;" class="btn-commit" id="commit-order-point" data-id="{{order_id}}">完成评价</a>

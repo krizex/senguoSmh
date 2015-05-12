@@ -2000,11 +2000,12 @@ class OrderComment(CustomerBaseHandler):
 		comments = order.get_comments()
 		if comments and comments[10]:
 			imgurls = json.loads(comments[10])
+			length = len(imgurls)
 		else:
 			imgurls = None
+			length  = 0
 		print(imgurls)
-
-		return self.render("customer/comment-order.html",token=token,order_id=orderid,imgurls = imgurls)
+		return self.render("customer/comment-order.html",token=token,order_id=orderid,imgurls = imgurls,length = length)
 
 class ShopComment(CustomerBaseHandler):
 	@tornado.web.authenticated
