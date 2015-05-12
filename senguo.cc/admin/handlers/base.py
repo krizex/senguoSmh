@@ -19,8 +19,6 @@ import requests
 
 import threading
 
-import re
-
 # import time
 # import random
 # # import urllib2
