@@ -692,9 +692,10 @@ class Order(AdminBaseHandler):
 				# send_time = order.get_sendtime(self.session,order.id)
 				send_time = order.send_time
 				phone = order.phone
+				address = order.address_text
 				# print("ready to send message")
 
-				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone)
+				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone,address)
 				# print("success?")
 
 			elif action == "edit_status":

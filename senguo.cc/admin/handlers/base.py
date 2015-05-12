@@ -826,9 +826,10 @@ class WxOauth2:
 
 
 	@classmethod
-	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods,phone):
+	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,\
+		order_totalPrice,send_time,goods,phone,address):
 		remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n' + "商品详情："  \
-		+ goods +'\n'  + "顾客电话："  + phone +  '\n\n'  + \
+		+ goods +'\n'  + "顾客电话："  + phone + '\n' + "送货地址：" + address +  '\n\n'  + \
 		'请及时登录森果后台处理订单。'
 		postdata = {
 			'touser' : touser,
@@ -855,9 +856,10 @@ class WxOauth2:
 		return True
 
 	@classmethod
-	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone):
+	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
+		order_totalPrice,send_time,phone,address):
 		remark = "订单总价：" + str(order_totalPrice)+ '\n' + "送达时间：" + send_time + '\n'  + "顾客电话："  + \
-		phone + '\n\n' + '请及时处理订单。'
+		phone + '\n' + "送货地址：" + address  +'\n\n' + '请及时处理订单。'
 		order_type_temp = int(order_type)
 		order_type = "即时送" if order_type_temp == 1 else "按时达"
 		postdata = {
