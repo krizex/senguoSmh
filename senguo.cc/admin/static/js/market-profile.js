@@ -79,6 +79,13 @@ $(document).ready(function(){
     birthEdit();
 }).on('click','.bind_wx',function(){
     bind_wx();
+}).on('click','.confriming',function(){
+    var $this=$(this);
+    var result=$this.attr('data-status');
+    if(result=='true'){
+       window.location.href="/customer/wxauth";
+    }
+    confirmRemove();
 });
 
 var wait=60;
@@ -99,13 +106,19 @@ function time(target) {
 
 function bind_wx(){
      var url="";
-    var action='bind_wx';
-    var link=window.location.href;
-    var args={action: action, data:link};
+    var action='wx_bind';
+    var link='';
+    var args={action: action, data:''};
     $.postJson(url,args,
         function (res) {
             if (res.success) {
-                
+                console.log(typeof(res.wx_bind));
+                if(res.wx_bind == true){
+                    confirmBox('您已绑定微信账号，是否确认更换当前绑定微信账号？//(ㄒoㄒ)//');
+                }
+                else{
+                     confirmBox('是否开始绑定微信账号？');
+                }
             }
             else noticeBox(res.error_text);
         },

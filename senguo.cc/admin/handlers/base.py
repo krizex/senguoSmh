@@ -130,6 +130,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	__account_cookie_name__ = ""
 	__login_url_name__ = ""
 	__wexin_oauth_url_name__ = ""
+	__wexin_bind_url_name__ = "customerwxBind"
 
 	_wx_oauth_pc = "https://open.weixin.qq.com/connect/qrconnect?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_login&state=ohfuck#wechat_redirect"
 	_wx_oauth_weixin = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_userinfo&state=onfuckweixin#wechat_redirect"
@@ -171,6 +172,34 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			redirect_uri = tornado.escape.url_escape(
 				APP_OAUTH_CALLBACK_URL+\
 				self.reverse_url(self.__wexin_oauth_url_name__) + para_str)
+			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
+		print("[微信授权]授权链接：",link)
+		return link
+
+	def get_wexin_oauth_link2(self, next_url=""):
+		if not self.__wexin_bind_url_name__:
+			raise Exception("you have to complete this wexin oauth config.")
+
+		if next_url:
+			para_str = "?next="+tornado.escape.url_escape(next_url)
+		else:
+			para_str = ""
+
+		if self.is_wexin_browser():
+			if para_str: para_str += "&"
+			else: para_str = "?"
+			para_str += "mode=mp"
+			redirect_uri = tornado.escape.url_escape(
+				APP_OAUTH_CALLBACK_URL+\
+				self.reverse_url(self.__wexin_bind_url_name__) + para_str)
+			link =  self._wx_oauth_weixin.format(appid=MP_APPID, redirect_uri=redirect_uri)
+		else:
+			if para_str: para_str += "&"
+			else: para_str = "?"
+			para_str += "mode=kf"
+			redirect_uri = tornado.escape.url_escape(
+				APP_OAUTH_CALLBACK_URL+\
+				self.reverse_url(self.__wexin_bind_url_name__) + para_str)
 			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
 		print("[微信授权]授权链接：",link)
 		return link
