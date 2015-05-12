@@ -1994,17 +1994,15 @@ class OrderComment(CustomerBaseHandler):
 		token = self.get_qiniu_token("order",self.current_user.id)
 		orderid=self.args["orderid"]
 		order = next((x for x in self.current_user.orders if x.id == int(orderid)), None)
+		shop_id = order.shop_id
 		if order is None:
 			return self.send_fail("订单为空")
 		imgurls = {}
-		comments = order.get_comments()
-		if comments and comments[10]:
-			imgurls = json.loads(comments[10])
+		if order.comment_imgUrl:
+			imgurls = json.loads(order.comment_imgUrl)
 			length = len(imgurls)
 		else:
-			imgurls = None
-			length  = 0
-		print(imgurls)
+			length = 0
 		return self.render("customer/comment-order.html",token=token,order_id=orderid,imgurls = imgurls,length = length)
 
 class ShopComment(CustomerBaseHandler):

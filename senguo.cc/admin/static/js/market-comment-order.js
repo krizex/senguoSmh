@@ -99,7 +99,7 @@ $(document).ready(function(){
                     $("#add-img").closest("li").addClass("hide");
                     $(".moxie-shim").addClass("hide");
                 }
-                $(".moxie-shim").css({left:$("#add-product-image").closest("li").position().left,top:$("#add-product-image").closest("li").position().top});//调整按钮的位置
+                $(".moxie-shim").css({left:$("#add-img").closest("li").position().left,top:$("#add-img").closest("li").position().top});//调整按钮的位置
                 !function(){
                     previewImage(file,width,function(imgsrc){
                         $("#"+file.id).attr("src",imgsrc);
