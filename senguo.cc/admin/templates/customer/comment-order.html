@@ -7,6 +7,7 @@
 {% block content %}
 <div class="header">订单评价</div>
 <div class="contain">
+    <input type="hidden" id="token" value="{{token}}"/>
     <div class="contain-box">
         <div class="wrap-user-txt">
             <textarea id="user-txt" placeholder="长度在5-100字之间，您的评价对其他用户也有很大帮助"></textarea>
@@ -15,32 +16,13 @@
     </div>
     <ul class="img-lst group" id="img-lst">
         <li>
-            <div class="wrap-img">
-                <div class="img-cover wrap-img-cover"><span class="loader loader-quart"></span></div>
-                <img src="/static/images/anoa-7-md.gif" alt="晒单图片"/>
-                <a href="javascript:;" class="icon-del hide"></a>
-            </div>
-        </li>
-        <li>
-            <div class="wrap-img">
-                <img src="/static/images/anoa-7-md.gif" alt="晒单图片"/>
-                <a href="javascript:;" class="icon-del"></a>
-            </div>
-        </li>
-        <li>
-            <div class="wrap-img">
-                <img src="/static/images/anoa-7-md.gif" alt="晒单图片"/>
-                <a href="javascript:;" class="icon-del"></a>
-            </div>
-        </li>
-        <li>
             <div class="wrap-add-img" id="add-img">
                 <img src="/static/images/add_img.png" alt="添加图片"/>
             </div>
         </li>
     </ul>
     <div class="wrap-btn-commit mt40">
-        <a href="javascript:;" class="btn-commit" id="commit-order-point">完成评价</a>
+        <a href="javascript:;" class="btn-commit" id="commit-order-point" data-id="{{order_id}}">完成评价</a>
     </div>
 </div>
 

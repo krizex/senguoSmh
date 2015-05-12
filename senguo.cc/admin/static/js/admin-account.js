@@ -196,7 +196,7 @@ function history(action,page){
 		var total=history[i]['total'];
 		var user='/admin/follower?action=search&&order_by=time&&page=0&&wd='+name;
 		var title;
-		if(type==0||type==3){
+		if(type==0||type==3||type==6){
 			value='+'+value
 		}
 		else if(type==2){

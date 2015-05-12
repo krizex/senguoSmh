@@ -19,8 +19,6 @@ import requests
 
 import threading
 
-import re
-
 # import time
 # import random
 # # import urllib2
@@ -130,6 +128,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	__account_cookie_name__ = ""
 	__login_url_name__ = ""
 	__wexin_oauth_url_name__ = ""
+	__wexin_bind_url_name__ = "customerwxBind"
 
 	_wx_oauth_pc = "https://open.weixin.qq.com/connect/qrconnect?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_login&state=ohfuck#wechat_redirect"
 	_wx_oauth_weixin = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_userinfo&state=onfuckweixin#wechat_redirect"
@@ -171,6 +170,34 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			redirect_uri = tornado.escape.url_escape(
 				APP_OAUTH_CALLBACK_URL+\
 				self.reverse_url(self.__wexin_oauth_url_name__) + para_str)
+			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
+		print("[微信授权]授权链接：",link)
+		return link
+
+	def get_wexin_oauth_link2(self, next_url=""):
+		if not self.__wexin_bind_url_name__:
+			raise Exception("you have to complete this wexin oauth config.")
+
+		if next_url:
+			para_str = "?next="+tornado.escape.url_escape(next_url)
+		else:
+			para_str = ""
+
+		if self.is_wexin_browser():
+			if para_str: para_str += "&"
+			else: para_str = "?"
+			para_str += "mode=mp"
+			redirect_uri = tornado.escape.url_escape(
+				APP_OAUTH_CALLBACK_URL+\
+				self.reverse_url(self.__wexin_bind_url_name__) + para_str)
+			link =  self._wx_oauth_weixin.format(appid=MP_APPID, redirect_uri=redirect_uri)
+		else:
+			if para_str: para_str += "&"
+			else: para_str = "?"
+			para_str += "mode=kf"
+			redirect_uri = tornado.escape.url_escape(
+				APP_OAUTH_CALLBACK_URL+\
+				self.reverse_url(self.__wexin_bind_url_name__) + para_str)
 			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
 		print("[微信授权]授权链接：",link)
 		return link
@@ -245,7 +272,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 	def get_comments(self, shop_id, page=0, page_size=5):
 		comments_new = {}
-		comments_result =[]
+		comments_result = []
+		comments_array  = []
 		comments =self.session.query(models.Order.comment, models.Order.comment_create_date, models.Order.num,\
 			models.Order.comment_reply,models.Order.id,models.CommentApply.has_done,models.Accountinfo.headimgurl_small, \
 			models.Accountinfo.nickname,models.CommentApply.delete_reason,\
@@ -254,7 +282,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		join(models.Accountinfo,models.Order.customer_id == models.Accountinfo.id).\
 		filter(models.Order.shop_id == shop_id, models.Order.status == 6).filter(or_(models.CommentApply.has_done !=1,models.CommentApply.has_done ==None )).\
 		order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
-		print(comments)
 		for item in comments:
 			comments_new['comments']      = item[0]
 			comments_new['create_date']   = item[1]
@@ -265,11 +292,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			comments_new['headimgurl']    = item[6]
 			comments_new['nickname']      = item[7]
 			comments_new['delete_reason'] = item[8]
-			comments_new['comment_imgUrl']= json.loads(item[9]) if item[9] is not None else None
-			print(comments_new)
+			comments_new['decline_reason']= item[9]
+			comments_new['comment_imgUrl']= json.loads(item[10]) if item[10] is not None else None
 			comments_result.append(comments_new)
+			comments_array.append([item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],comments_new['comment_imgUrl']])
+		#print(comments_result)
 		# return comments_result
-		return comments
+		return comments_array
 
 	def timedelta(self, date):
 		if not date:

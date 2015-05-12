@@ -34,6 +34,8 @@ handlers = [
 	(r"/customer/password", handlers.customer.Password, {}, "customerPassword"),
 	
 	(r"/customer/profile", handlers.customer.CustomerProfile, {}, "customerProfile"),
+	(r"/customer/wxauth", handlers.customer.WxBind, {"action":"wx_auth"}, "customerwxAuth"),
+	(r"/customer/wxBind", handlers.customer.WxBind, {"action":"wx_bind"}, "customerwxBind"),
 	(r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
 	# (r"/fruitzone/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
 	#微官网-----待删除
@@ -57,6 +59,7 @@ handlers = [
 	(r"/shopProfile/(\w+)", handlers.customer.ShopProfile, {}, "customerShopProfile"),
 	(r"/customer/comment", handlers.customer.Comment, {}, "customerComment"),
 	(r"/customer/shopcomment", handlers.customer.ShopComment, {}, "customerShopComment"),
+	(r"/customer/ordercomment", handlers.customer.OrderComment, {}, "customerOrderComment"),
 	(r"/customer/points", handlers.customer.Points, {}, "customerPoints"),
 	(r"/customer/balance", handlers.customer.Balance, {}, "customerBalance"),
 	(r"/customer/recharge", handlers.customer.Recharge, {}, "customerRecharge"),

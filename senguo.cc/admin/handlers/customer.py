@@ -64,6 +64,7 @@ class Access(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self,next_url):
 		# todo: handle state
+		print("oh~no why i'm here i don't know how did this happen")
 		code =self.args["code"]
 		mode = self.args["mode"]
 		# print("mode: ", mode , ", code get:", code)
@@ -267,23 +268,9 @@ class Home(CustomerBaseHandler):
 
 class CustomerProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("action?")
 	def get(self):
 	   # 模板中通过current_user获取当前admin的相关数据，
 	   # 具体可以查看models.ShopAdmin中的属性
-	   action =''
-	   next_url = self.get_argument('next', '')
-	   if self.args["action"]:
-	   	action = self.args["action"]
-	   if action == 'wx_auth':
-	   	next_url='/customer/profile?action=wx_bind'
-	   	return self.redirect(self.get_wexin_oauth_link(next_url=next_url))
-	   	self.bind_wx(next_url)
-	   	print('hahaha i am here now')
-	   elif action == 'wx_bind':
-	   	print('oh~no i am here now')
-	   	self.bind_wx(next_url)
-
 	   customer_id = self.current_user.id
 	   time_tuple = time.localtime(self.current_user.accountinfo.birthday)
 	   birthday = time.strftime("%Y-%m-%d", time_tuple)
@@ -304,20 +291,7 @@ class CustomerProfile(CustomerBaseHandler):
 	   	third.append({'weixin':True})
 	   self.render("customer/profile.html", context=dict(birthday=birthday,third=third,shop_info=shop_info))
 
-	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
-	def bind_wx(self,next_url):
-		# todo: handle state
-		code =self.args["code"]
-		mode = self.args["mode"]
-		# print("mode: ", mode , ", code get:", code)
-		if mode not in ["mp", "kf"]:
-			print('oh~ no')
-			return self.send_error(400)
-
-		userinfo = self.get_wx_userinfo(code, mode)
-		if not userinfo:
-			return self.redirect(self.reverse_url("customerProfile"))
-
+	
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data","old_password?:str")
 	def post(self):
@@ -356,21 +330,70 @@ class CustomerProfile(CustomerBaseHandler):
 			else:
 				self.current_user.accountinfo.update(session = self.session ,password = data)
 				print("[更改密码]更改成功，新密码：",data)
+		elif action =='wx_bind':
+			wx_bind = False
+			if self.current_user.accountinfo.wx_unionid:
+				wx_bind = True
+			return self.send_success(wx_bind=wx_bind)
 		elif action == 'reset_password':
 			data = self.args["data"]
 			new_password = data['password']
 			self.current_user.accountinfo.update(session = self.session ,password = password)
-		elif action == 'bind_wx':
-			next_url = self.args["data"]
-			print(next_url)
-			return self.redirect(self.get_wexin_oauth_link(next_url=next_url))
 
 		else:
 			return self.send_error(404)
 		return self.send_success()
 
-	
+class WxBind(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def initialize(self, action):
+		self._action = action
+	def get(self):
+		next_url = self.get_argument('next', '')
+		if self._action == 'wx_auth':
+			print(next_url)
+			return self.redirect(self.get_wexin_oauth_link2(next_url=next_url))
+			print('hahaha i am here now')
+		elif self._action == 'wx_bind':
+			print('oh~no i am here now')
+			return self.bind_wx(next_url)
 
+	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
+	def bind_wx(self,next_url):
+		# todo: handle state
+		code =self.args["code"]
+		mode = self.args["mode"]
+		u = self.current_user
+		user =''
+		if mode not in ["mp", "kf"]:
+			return self.send_error(400)
+		wx_userinfo = self.get_wx_userinfo(code, mode)
+		if u.accountinfo.wx_unionid == wx_userinfo["unionid"]:
+			return self.redirect(self.reverse_url("customerProfile"))
+			# return self.render('notice/bind-notice.html',title='您已绑定该微信，无需重复绑定')
+		try:
+			user = self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_userinfo["unionid"]).first()
+		except:
+			print("this wx does'nt exist")
+		if user:
+			return self.redirect(self.reverse_url("customerProfile"))
+			# return self.render('notice/bind-notice.html',title='该微信账号已被绑定，请更换其它微信账号')
+		if u:
+			print("[微信绑定]，更新用户资料")
+			u.accountinfo.wx_country=wx_userinfo["country"]
+			u.accountinfo.wx_province=wx_userinfo["province"]
+			u.accountinfo.wx_city=wx_userinfo["city"]
+			u.accountinfo.sex=wx_userinfo["sex"]
+			u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
+			u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+			u.accountinfo.wx_username = wx_userinfo["nickname"]
+			u.accountinfo.nickname = wx_userinfo["nickname"]
+			u.accountinfo.wx_openid = wx_userinfo["openid"]
+			u.accountinfo.wx_unionid = wx_userinfo["unionid"]
+			self.session.commit()
+			return self.redirect(self.reverse_url("customerProfile"))
+		else:
+			print('some thing must be wrong here')
 
 class ShopProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -396,8 +419,8 @@ class ShopProfile(CustomerBaseHandler):
 			shop_id=shop.id).first()
 		if not shop_follow:
 				follow = False
-		# else:
-		# 	satisfy = format((shop_follow.commodity_quality + shop_follow.send_speed + shop_follow.shop_service)/300,'.2%')
+		else:
+			satisfy = format((shop_follow.commodity_quality + shop_follow.send_speed + shop_follow.shop_service)/300,'.0%')
 		# 今天是否 signin
 		signin = False
 		q=self.session.query(models.ShopSignIn).filter_by(
@@ -586,7 +609,10 @@ class Comment(CustomerBaseHandler):
 		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id=customer_id,\
 			shop_id=shop_id).first()
 		if shop_follow:
-			satisfy = format((shop_follow.commodity_quality + shop_follow.send_speed + shop_follow.shop_service)/300,'.2%')
+			send_speed = shop_follow.send_speed
+			shop_service = shop_follow.shop_service
+			commodity_quality = shop_follow.commodity_quality
+			satisfy = format((shop_follow.commodity_quality + shop_follow.send_speed + shop_follow.shop_service)/300,'.0%')
 		page = self.args["page"]
 		page_size = 20
 		comments = self.get_comments(shop_id, page, page_size)
@@ -594,19 +620,17 @@ class Comment(CustomerBaseHandler):
 		nomore = False
 		for comment in comments:
 			date_list.append({"img": comment[6], "name": comment[7],
-							  "comment": comment[0], "time": self.timedelta(comment[1]), "reply":comment[3]})
+							"comment": comment[0], "time": self.timedelta(comment[1]), "reply":comment[3], "imgurls":comment[10]})
 		if date_list == []:
 			nomore = True
+		print("====================================")
+		print(date_list)
 		if page == 0:
 			if len(date_list)<page_size:
 				nomore = True
-			return self.render("customer/comment.html", date_list=date_list,nomore=nomore,satisfy = satisfy)
+			return self.render("customer/comment.html", date_list=date_list,nomore=nomore,satisfy = satisfy,send_speed=send_speed,shop_service = shop_service,commodity_quality=commodity_quality)
 		return self.send_success(date_list=date_list,nomore=nomore)
-class ShopComment(CustomerBaseHandler):
-	@tornado.web.authenticated
-	def get(self):
 
-		return self.render("customer/comment.html")
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self, shop_code):
@@ -1659,39 +1683,47 @@ class Order(CustomerBaseHandler):
 			data = self.args["data"]
 			# order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
 			customer_id = self.current_user.id
-			shop_id     = self.current_shop.id
+			shop_id     = self.get_cookie("market_shop_id")
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id=customer_id,shop_id=shop_id).first()
 			if not shop_follow:
 				return self.send_error(404)
-			shop_follow.commodity_quality = data["commodity_quality"]
-			shop_follow.send_speed        = data["send_speed"]
-			shop_follow.shop_service      = data["shop_service"]
+			print(data["commodity_quality"],data["send_speed"])
+			shop_follow.commodity_quality = int(data["commodity_quality"])
+			shop_follow.send_speed        = int(data["send_speed"])
+			shop_follow.shop_service      = int(data["shop_service"])
 			self.session.commit()
 			return self.send_success()
 
 		elif action == "comment":
 			data = self.args["data"]
-			imgUrl = self.args["imgUrl"] 
-			n = 0
-			comment_imgUrl = {}
-			for item in imgUrl:
-				comment_imgUrl[n] = item
-				n += 1
-			comment_imgUrl = json.dumps(comment_imgUrl)
+			imgUrl = self.args["imgUrl"]
+			print(type(imgUrl))
+			#imgUrl = json.dump(imgUrl)
+		
+			if len(imgUrl) < 5:
+				imgUrl = None
+			print(data["order_id"],'i am order id  from data')
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
+			print(order,'i am order')
 			if not order:return self.send_error(404)
+			print(order.id,'i am ')
 			order.status = 6
 			order.comment_create_date = datetime.datetime.now()
 			order.comment = data["comment"]
-			order.comment_imgUrl = comment_imgUrl
-
+			order.comment_imgUrl = imgUrl
+			shop_follow = ''
 			# shop_point add by 5
 			# woody
+			print(order.customer_id,'i am customer id')
+			print(order.shop_id,'i am shop id')
 			try:
 				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
 					order.customer_id,shop_id = order.shop_id).first()
-			except:
+			except :
+				shop_follow = None
 				self.send_fail("shop_point error")
+
+
 			if shop_follow:
 				if shop_follow.shop_point:
 					shop_follow.shop_point += 5
@@ -1949,13 +1981,18 @@ class Recharge(CustomerBaseHandler):
 
 class OrderComment(CustomerBaseHandler):
 	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments('orderid:str')
 	def get(self):
-	    return self.render("customer/comment-order.html")
+		token = self.get_qiniu_token("order",self.current_user.id)
+		orderid=self.args["orderid"]
+		return self.render("customer/comment-order.html",token=token,order_id=orderid)
 
 class ShopComment(CustomerBaseHandler):
 	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments('num:str')
 	def get(self):
-	    return self.render("customer/comment-shop.html")
+		orderid=self.args["num"]
+		return self.render("customer/comment-shop.html",orderid=orderid)
 
 class payTest(CustomerBaseHandler):
 

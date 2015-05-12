@@ -259,11 +259,7 @@ var confirmBox=function(text,index,type){
         if(typeof(type)!='undefined') $box.find('.message').attr({'data-type':type});
         var window_height=$(window).height();
         var height=$('.container').height();
-        var $mask;
-        if(height<window_height) $mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
-        else $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
-        //$mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
-        $('body').append($box,$mask);
+        $('body').append($box);
         $(document).on('click','.dismiss',function(){
             $('#confirmBox').remove();
             $('.modal_bg').remove();
