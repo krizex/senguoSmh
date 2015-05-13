@@ -166,6 +166,7 @@ button:focus{outline:0;}
 .m-r10{margin-right:10px;}
 .m-b5{margin-bottom:5px !important;}
 .m-b10{margin-bottom:10px !important;}
+.m-b20{margin-bottom:20px !important;}
 .m-b0{margin-bottom:0px !important;}
 .ml20{margin-left:20px;}
 .ml10{margin-left:10px;}
@@ -173,6 +174,7 @@ button:focus{outline:0;}
 .mt42{margin-top:36px !important;}
 .mt40{margin-top:40px !important;}
 .mt10{margin-top:10px !important;}
+.mt20{margin-top:20px !important;}
 .mt100{margin-top:100px !important;}
 .radius0{border-radius:0px !important;}
 
