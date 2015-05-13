@@ -1,7 +1,5 @@
 from handlers.base import CustomerBaseHandler,WxOauth2
 from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
-# from handlers.weixinSign import *
-# from handlers.wxpay import *
 import dal.models as models
 import tornado.web
 from settings import *
