@@ -163,8 +163,8 @@ www.sucaijiayuan.com
 	position: absolute;
 	top: 0;
 	left: 0;
-	-webkit-animation: bounce 2s infinite ease-in-out;
-	        animation: bounce 2s infinite ease-in-out;
+	-webkit-animation: bounce 1s infinite ease-in-out;
+	        animation: bounce 1s infinite ease-in-out;
 }
 
 .double-bounce2 {

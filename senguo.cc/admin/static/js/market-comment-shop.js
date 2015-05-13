@@ -106,15 +106,20 @@ $(document).ready(function(){
     });
     /**/
 }).on("click","#commit-shop-point",function(){  //提交店铺评论
+
+    var commodity_quality = parseInt($("#zl-point").html(),10);
+    var send_speed =  parseInt($("#sd-point").html(),10);
+    var shop_service =  parseInt($("#fw-point").html(),10);
+    if(commodity_quality==0 || send_speed==0 || shop_service==0){
+        noticeBox("每一项多要给你评分哦，给店家点鼓励啊！");
+        return false;
+    }
+    var order_id = $("#commit-shop-point").attr("data-order");
     if($(this).hasClass("grey-bg")){
         noticeBox("别点我啦，马上就好！")
         return false;
     }
     $(this).addClass("grey-bg");
-    var commodity_quality = parseInt($("#zl-point").html(),10);
-    var send_speed =  parseInt($("#sd-point").html(),10);
-    var shop_service =  parseInt($("#fw-point").html(),10);
-    var order_id = $("#commit-shop-point").attr("data-order");
     var data = {
         "commodity_quality":commodity_quality,
         "send_speed":send_speed,
