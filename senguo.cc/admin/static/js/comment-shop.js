@@ -83,7 +83,7 @@ function commentList(page){
                                         '</div>'+
                                     '</dd>'+
                                     '<dt class="fl" class="right-com">'+
-                                    '<p><span class="nor-txt">{{name}}</span><span class="time-txt ml20">{{time}}</span></p>'+
+                                    '<p><span class="text-grey9">{{name}}</span><span class="time-txt ml20">{{time}}</span></p>'+
                                     '<p class="com-txt">{{comment}}</p>'+
                             '{{ if imgurls }}<ul class="group com-goods-lst">'+
                                 '{{ each imgurls as img index }}'+
