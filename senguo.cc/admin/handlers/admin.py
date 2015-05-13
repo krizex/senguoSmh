@@ -24,6 +24,7 @@ class Access(AdminBaseHandler):
 								 context=dict(next_url=next_url))
 		elif self._action == "logout":
 			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
+			self.clear_cookie("customer_id")
 			self.clear_current_user()
 			return self.redirect(self.reverse_url("OfficialHome"))
 		elif self._action == "oauth":
