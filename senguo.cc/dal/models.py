@@ -1167,6 +1167,9 @@ class Order(MapBase, _CommonApi):
 	send_time=Column(String(45))
 	del_reason = Column(String(300))
 
+	commodity_quality = Column(Integer)
+	send_speed        = Column(Integer)
+	shop_service      = Column(Integer)
 
 	def get_num(self,session,order_id):
 		try:

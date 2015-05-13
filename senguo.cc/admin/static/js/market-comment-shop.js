@@ -117,7 +117,8 @@ $(document).ready(function(){
     var data = {
         "commodity_quality":commodity_quality,
         "send_speed":send_speed,
-        "shop_service":shop_service
+        "shop_service":shop_service,
+        'order_id':$("#commit-shop-point").attr("data-order")
     };
     $.ajax({
         url:"/customer/orders?action=comment_point",

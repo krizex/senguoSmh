@@ -41,7 +41,7 @@ $(document).ready(function(){
         var $this = $(this);
         index=$this.parents('.order-list-item').index();
         comment_order_id=$this.parents('.order-list-item').data('id');
-        window.location.href="/customer/ordercomment?orderid="+comment_order_id;
+        window.location.href="/customer/shopcomment?num="+comment_order_id;
     });
     /*$(document).on('click','.comment_submit', function () {
         var comment=$('.comment-input').val();
