@@ -44,7 +44,9 @@ $(document).ready(function(){
         type:"post",
         success:function(res){
             if(res.success){
-                noticeBox(res.notice);
+                if(res.notice!=''){
+                    noticeBox(res.notice);
+                }
                 setTimeout(function(){
                     window.location.href="/customer/comment?page=0";
                 },2000);

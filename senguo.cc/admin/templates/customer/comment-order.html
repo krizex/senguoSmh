@@ -25,7 +25,10 @@
         {% if imgurls %}
             {% for img in imgurls %}
             <li>
-                <a href="{{img}}" title=""><img src="{{img}}?imageView2/5/w/200/h/200" alt="晒单图片"/></a>
+                <div class="wrap-img">
+                    <a href="{{img}}" title=""><img src="{{img}}?imageView2/5/w/200/h/200" alt="晒单图片" url="{{img}}"/></a>
+                    <a href="javascript:;" class="icon-del"></a>
+                </div>
             </li>
             {% end %}
         {% end %}

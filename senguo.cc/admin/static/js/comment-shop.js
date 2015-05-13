@@ -6,6 +6,7 @@ var current_page=1;
 var nomore =false;
 var width = 0;
 $(document).ready(function(){
+    $(".phone-box").css("background","#fff").css("minHeight",$(window).height()+"px");
     width = parseInt($(".com-goods-lst").width()/4)-10;
     $(".com-goods-lst").find("img").each(function(){
         $(this).css({width:width+"px",height:width+"px"});
@@ -87,7 +88,7 @@ function commentList(page){
                                     '<p class="com-txt">{{comment}}</p>'+
                             '{{ if imgurls }}<ul class="group com-goods-lst">'+
                                 '{{ each imgurls as img index }}'+
-                                    '<li><a href="{{imgurls[img]}}" title=""><img style="width:'+width+'px;height:'+width+'px;" src="{{imgurls[img]}}?imageView2/5/w/200/h/200" alt="晒单图片"/></a></li>'+
+                                    '<li><a href="{{img}}" title=""><img style="width:'+width+'px;height:'+width+'px;" src="{{img}}?imageView2/5/w/200/h/200" alt="晒单图片"/></a></li>'+
                                 '{{/each}}'+
                                 '</ul>{{ /if }}'+
                             '{{ if reply }}'+

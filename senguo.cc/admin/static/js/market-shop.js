@@ -1,4 +1,9 @@
+var width = 0;
 $(document).ready(function(){
+    width = parseInt($(".com-goods-lst").width()/4)-12;
+    $(".com-goods-lst>li").each(function(){
+       $(this).width(width).height(width);
+    });
     var shop_logo=$('#shop_imgurl').attr('data-img');
     if(isWeiXin()){
         wexin('',shop_logo);

@@ -6,7 +6,7 @@ import dal.models as models
 import tornado.web
 from settings import *
 import datetime, time
-from sqlalchemy import desc, and_, or_
+from sqlalchemy import desc, and_, or_,func
 import qiniu
 import random
 import base64
@@ -616,10 +616,20 @@ class Comment(CustomerBaseHandler):
 	def get(self):
 		customer_id = self.current_user.id
 		shop_id     = self.get_cookie("market_shop_id")
-		
-		commodity_quality,send_speed,shop_service = self.session.query(func.avg(models.Order.commodity_quality),\
-			func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id)
-		satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
+		satisfy = 0
+		commodity_quality = 0
+		send_speed = 0
+		shop_service = 0
+		q = self.session.query(func.avg(models.Order.commodity_quality),\
+			func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
+		if q[0][0]:
+			commodity_quality = int(q[0][0])
+		if q[0][1]:
+			send_speed = int(q[0][1])
+		if q[0][2]:
+			shop_service = int(q[0][2])
+		if commodity_quality and send_speed and shop_service:
+			satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
 		page = self.args["page"]
 		page_size = 20
 		comments = self.get_comments(shop_id, page, page_size)
@@ -1543,7 +1553,7 @@ class Order(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data?","page?:int",'imgUrl?:str')
 	def post(self):
-		print(self,'self is what?')
+		# print(self,'self is what?')
 		page_size = 10
 		action = self.args["action"]
 		session = self.session
@@ -1606,7 +1616,7 @@ class Order(CustomerBaseHandler):
 				if x.status == 6:
 					order6.append(x)
 			orders = order5 + order6
-			print(len(orders),'已完成订单数量')
+			# print(len(orders),'已完成订单数量')
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 			total_count = len(orders)
@@ -1724,35 +1734,39 @@ class Order(CustomerBaseHandler):
 			print(order,'i am order')
 			if not order:return self.send_error(404)
 			print(order.id,'i am ')
+			comment = order.comment
 			order.status = 6
 			order.comment_create_date = datetime.datetime.now()
 			order.comment = data["comment"]
 			order.comment_imgUrl = imgUrl
 			shop_follow = ''
+			notice = ''
 			# shop_point add by 5
 			# woody
-			try:
-				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
-					order.customer_id,shop_id = order.shop_id).first()
-			except :
-				shop_follow = None
-				self.send_fail("shop_point error")
-
-
-			if shop_follow:
-				if shop_follow.shop_point:
-					shop_follow.shop_point += 5
+			if comment == None:
 				try:
-					point_history = models.PointHistory(customer_id = self.current_user.id , shop_id = order.shop_id)
-				except:
-					self.send_fail("point_history error:COMMENT")
-				if point_history:
-					point_history.point_type = models.POINT_TYPE.COMMENT
-					point_history.each_point = 5
-					self.session.add(point_history)
-					self.session.commit()
+					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
+						order.customer_id,shop_id = order.shop_id).first()
+				except :
+					shop_follow = None
+					self.send_fail("shop_point error")
+
+
+				if shop_follow:
+					if shop_follow.shop_point:
+						shop_follow.shop_point += 5
+					try:
+						point_history = models.PointHistory(customer_id = self.current_user.id , shop_id = order.shop_id)
+					except:
+						self.send_fail("point_history error:COMMENT")
+					if point_history:
+						point_history.point_type = models.POINT_TYPE.COMMENT
+						point_history.each_point = 5
+						notice = '评论成功，积分+5'
+						self.session.add(point_history)
+						self.session.commit()
 			self.session.commit()
-			return self.send_success(notice='评论成功，积分+5')
+			return self.send_success(notice=notice)
 
 			#need to rocord this poist history?
 		else:
@@ -1783,8 +1797,12 @@ class OrderDetail(CustomerBaseHandler):
 				order.sender_phone =None
 				order.sender_img = None
 		delta = datetime.timedelta(1)
+		if order.comment_imgUrl:
+			comment_imgUrl = order.comment_imgUrl.split(',')
+		else:
+			comment_imgUrl = None
 		return self.render("customer/order-detail.html", order=order,
-						   charge_types=charge_types, mcharge_types=mcharge_types)
+						   charge_types=charge_types, mcharge_types=mcharge_types,comment_imgUrl=comment_imgUrl)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data?")
