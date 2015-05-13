@@ -614,16 +614,12 @@ class Comment(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("page:int")
 	def get(self):
-		shop_id = int(self.get_cookie("market_shop_id"))
 		customer_id = self.current_user.id
-		satisfy = 0
-		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id=customer_id,\
-			shop_id=shop_id).first()
-		if shop_follow:
-			send_speed = shop_follow.send_speed
-			shop_service = shop_follow.shop_service
-			commodity_quality = shop_follow.commodity_quality
-			satisfy = format((shop_follow.commodity_quality + shop_follow.send_speed + shop_follow.shop_service)/300,'.0%')
+		shop_id     = self.get_cookie("market_shop_id")
+		
+		commodity_quality,send_speed,shop_service = self.session.query(func.avg(models.Order.commodity_quality),\
+			func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id)
+		satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
 		page = self.args["page"]
 		page_size = 20
 		comments = self.get_comments(shop_id, page, page_size)
@@ -637,7 +633,8 @@ class Comment(CustomerBaseHandler):
 		if page == 0:
 			if len(date_list)<page_size:
 				nomore = True
-			return self.render("customer/comment.html", date_list=date_list,nomore=nomore,satisfy = satisfy,send_speed=send_speed,shop_service = shop_service,commodity_quality=commodity_quality)
+			return self.render("customer/comment.html", date_list=date_list,nomore=nomore,satisfy = satisfy,send_speed=send_speed,\
+				shop_service = shop_service,commodity_quality=commodity_quality)
 		return self.send_success(date_list=date_list,nomore=nomore)
 
 class ShopComment(CustomerBaseHandler):
@@ -1695,16 +1692,28 @@ class Order(CustomerBaseHandler):
 			self.session.commit()
 		elif action == "comment_point":
 			data = self.args["data"]
-			# order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
-			customer_id = self.current_user.id
-			shop_id     = self.get_cookie("market_shop_id")
-			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id=customer_id,shop_id=shop_id).first()
-			if not shop_follow:
-				return self.send_error(404)
-			print(data["commodity_quality"],data["send_speed"])
-			shop_follow.commodity_quality = int(data["commodity_quality"])
-			shop_follow.send_speed        = int(data["send_speed"])
-			shop_follow.shop_service      = int(data["shop_service"])
+			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
+			order.commodity_quality = int(data["commodity_quality"])
+			order.send_speed        = int(data["send_speed"])
+			order.shop_service      = int(data["shop_service"])
+
+			# customer_id = self.current_user.id
+			# shop_id     = self.get_cookie("market_shop_id")
+
+			# commodity_quality,send_speed,shop_service = self.session.query(func.avg(models.Order.commodity_quality),\
+			# 	func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(customer_id =\
+			# 	customer_id,shop_id = shop_id)
+
+			# customer_id = self.current_user.id
+			# shop_id     = self.get_cookie("market_shop_id")
+			# shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id=customer_id,shop_id=shop_id).first()
+			# if not shop_follow:
+			# 	return self.send_error(404)
+			# print(data["commodity_quality"],data["send_speed"])
+			# shop_follow.commodity_quality = commodity_quality
+			# shop_follow.send_speed        = send_speed
+			# shop_follow.shop_service      = shop_service
+
 			self.session.commit()
 			return self.send_success()
 
