@@ -121,16 +121,16 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .img-cover .loader-quart {border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.4);}
 .loader-quart:after {content: '';position: absolute;top: -4px;right: -4px;bottom: -4px;left: -4px;border-radius: 50%;border: 4px solid transparent; border-top-color: #fff;-webkit-animation: spin .8s linear infinite;animation: spin .8s linear infinite;}
 /*评价详情*/
-.point-show{background-color: #f5f7f5;padding: 15px 20px;}
+.point-show{background-color: #f5f7f5;padding: 10px 20px;}
 .point-left{width: 50px;}
 .mt12{margin-top: 12px;}
 .point-name{position: relative;}
-.point-name>p{width: 40px;font-size: 14px;color: #999;line-height: 24px;text-align: center;}
-.point-name .line{position: absolute;left: 0;top: 8px;height: 65px;width: 0px;border-left: 1px solid #bebebe;display: block;}
-.nor-txt{color: #999;font-size: 14px;line-height: 24px;}
+.point-name>p{width: 40px;font-size: 14px;color: #999;line-height: 22px;text-align: center;}
+.point-name .line{position: absolute;left: 0;top: 8px;height: 60px;width: 0px;border-left: 1px solid #bebebe;display: block;}
+.nor-txt{color: #999;font-size: 14px;line-height: 22px;}
 .percent-txt{color: #7fde9e;font-size: 18px;line-height: 140%;}
-.point-cen{width: calc(100% - 140px);-webkit-box-sizing: border-box;min-width: 50%;padding: 0 0 0 8px;}
-.percent-bar{background-color: #d2d3d2;border-radius: 14px;margin: 10px 0;height: 14px;}
+.point-cen{width: calc(100% - 140px);-webkit-box-sizing: border-box;min-width: 50%;padding: 0 0 0 5px;}
+.percent-bar{background-color: #d2d3d2;border-radius: 14px;margin: 10px 0;height: 12px;}
 .percent-bar>span{display: block;width: 20%;height: 12px;border-radius: 14px;}
 .percent-bar .bar1{background-color: #f7cb86;}
 .percent-bar .bar2{background-color: #80de9e;}
