@@ -83,7 +83,6 @@ class Third(CustomerBaseHandler):
 	def initialize(self, action):
 		self._action = action
 	def get(self):
-		next_url = self.get_argument('next', '')
 		action =self._action
 		if self._action == "weixin":
 			return self.redirect(self.get_weixin_login_url())

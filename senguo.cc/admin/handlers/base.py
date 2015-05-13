@@ -210,10 +210,12 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		print("[微信登录]登录URL：",self.request.full_url())
 		# next_url =  self.reverse_url("fruitzoneShopList")
 		next_url = self.get_cookie('next_url')
+		if next_url is None:
+			next_url = self.reverse_url('customerProfile')
 		return self.get_wexin_oauth_link(next_url = next_url)
 
 	def get_current_user(self):
-		print(self.__account_model__,'到底是什么？',self.__account_cookie_name__)
+		# print(self.__account_model__,'到底是什么？',self.__account_cookie_name__)
 		if not self.__account_model__ or not self.__account_cookie_name__:
 			raise Exception("overwrite model to support authenticate.")
 
@@ -266,9 +268,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 	def get_qiniu_token(self,action,id):
 		q = qiniu.Auth(ACCESS_KEY,SECRET_KEY)
-		token = q.upload_token(BUCKET_SHOP_IMG,expires = 120,\
-			policy = {"callbackUrl":"http://i.senguo.cc/fruitzone/imgcallback",\
-			"callbackBody":"key=$(key)&action=%s&id=%s" % (action,id),"mimeLimit":"image/*"})
+		token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
 		print("[七牛授权]获得Token：",token)
 		return token
 
@@ -295,7 +295,10 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			comments_new['nickname']      = item[7]
 			comments_new['delete_reason'] = item[8]
 			comments_new['decline_reason']= item[9]
-			comments_new['comment_imgUrl']= json.loads(item[10]) if item[10] is not None else None
+			if item[10]:
+				comments_new['comment_imgUrl'] = item[10].split(',')
+			else:
+				comments_new['comment_imgUrl'] = None
 			comments_result.append(comments_new)
 			comments_array.append([item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],comments_new['comment_imgUrl']])
 		#print(comments_result)
@@ -348,7 +351,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 class SuperBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.SuperAdmin
-	# __account_cookie_name__ = "super_id"
+	__account_cookie_name__ = "super_id"
 	__wexin_oauth_url_name__ = "superOauth"
 
 	def shop_close(self):
