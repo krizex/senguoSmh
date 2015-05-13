@@ -3,7 +3,7 @@
  */
 var width = 0;
 $(document).ready(function(){
-    width = parseInt($("#img-lst").width()/4)-10;
+    width = parseInt($("#img-lst").width()/4)-15;
     $("#img-lst").children("li").each(function(){
         $(this).width(width).height(width);
     });
@@ -19,23 +19,28 @@ $(document).ready(function(){
     }
     $(this).addClass("grey-bg");
     var imglist = $("#img-lst").find(".image");
-    var imgUrl = {};
+    var imgUrl = [];
     var order_id = $(this).attr("data-id");
-    var data = {
-        "comment":user_txt,
-        "order_id":order_id
-    };
+    var flag = true;
     imglist.each(function(i){
         var url = $(this).attr("url");
         if(url){
-            imgUrl["i"]=url;
+            imgUrl.push(url);
+            flag = false;
         }
     });
-
+    if(flag){
+        imgUrl = "";
+    }
+    var data = {
+        "comment":user_txt,
+        "order_id":order_id,
+        "imgUrl":imgUrl.toString()
+    };
     $.ajax({
         url:"/customer/orders",
         contentType:"application/json; charset=UTF-8",
-        data:JSON.stringify({"data":data,"imgUrl":imgUrl,"action":"comment",_xsrf:window.dataObj._xsrf}),
+        data:JSON.stringify({"data":data,"action":"comment",_xsrf:window.dataObj._xsrf}),
         type:"post",
         success:function(res){
             if(res.success){
@@ -93,7 +98,7 @@ $(document).ready(function(){
                         }
                     }
                 });
-                var $item = $('<li><div class="wrap-img"><div class="img-cover wrap-img-cover"><span class="loader loader-quart"></span></div><img id="'+file.id+'" src="" alt="晒单图片" class="image '+isOri+'"/><a href="javascript:;" class="icon-del hide"></a></div></li>');
+                var $item = $('<li style="width:'+width+'px;height:'+width+'px;"><div class="wrap-img"><div class="img-cover wrap-img-cover"><span class="loader loader-quart"></span></div><img id="'+file.id+'" src="" alt="晒单图片" class="image '+isOri+'"/><a href="javascript:;" class="icon-del hide"></a></div></li>');
                 $("#add-img").closest("li").before($item);
                 if ($("#img-lst").children("li").size() == 5) {
                     $("#add-img").closest("li").addClass("hide");
