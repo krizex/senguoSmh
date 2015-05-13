@@ -6,6 +6,7 @@ var current_page=1;
 var nomore =false;
 var width = 0;
 $(document).ready(function(){
+    $(".phone-box").css("background","#fff").css("minHeight",$(window).height()+"px");
     width = parseInt($(".com-goods-lst").width()/4)-10;
     $(".com-goods-lst").find("img").each(function(){
         $(this).css({width:width+"px",height:width+"px"});
