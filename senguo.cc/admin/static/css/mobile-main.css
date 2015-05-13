@@ -123,15 +123,15 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 /*评价详情*/
 .point-show{background-color: #f5f7f5;padding: 15px 20px;}
 .point-left{width: 50px;}
-.mt2{margin-top: 2px;}
+.mt12{margin-top: 12px;}
 .point-name{position: relative;}
-.point-name>p{width: 40px;font-size: 12px;color: #999;line-height: 17px;text-align: center;}
-.point-name .line{position: absolute;left: 0;top: 8px;height: 46px;width: 0px;border-left: 1px solid #bebebe;display: block;}
-.nor-txt{color: #999;font-size: 14px;line-height: 20px;}
+.point-name>p{width: 40px;font-size: 14px;color: #999;line-height: 24px;text-align: center;}
+.point-name .line{position: absolute;left: 0;top: 8px;height: 65px;width: 0px;border-left: 1px solid #bebebe;display: block;}
+.nor-txt{color: #999;font-size: 14px;line-height: 24px;}
 .percent-txt{color: #7fde9e;font-size: 18px;line-height: 140%;}
 .point-cen{width: calc(100% - 140px);-webkit-box-sizing: border-box;min-width: 50%;padding: 0 0 0 8px;}
-.percent-bar{background-color: #d2d3d2;border-radius: 12px;margin: 6px 0;height: 12px;}
-.percent-bar>span{display: block;width: 20%;height: 12px;border-radius: 12px;}
+.percent-bar{background-color: #d2d3d2;border-radius: 14px;margin: 10px 0;height: 12px;}
+.percent-bar>span{display: block;width: 20%;height: 12px;border-radius: 14px;}
 .percent-bar .bar1{background-color: #f7cb86;}
 .percent-bar .bar2{background-color: #80de9e;}
 .percent-bar .bar3{background-color: #5be8ef;}
