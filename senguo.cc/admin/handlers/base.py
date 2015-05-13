@@ -125,7 +125,7 @@ class FrontBaseHandler(GlobalBaseHandler):
 class _AccountBaseHandler(GlobalBaseHandler):
 	# overwrite this to specify which account is used
 	__account_model__ = None
-	__account_cookie_name__ = ""
+	__account_cookie_name__ = "customer_id"
 	__login_url_name__ = ""
 	__wexin_oauth_url_name__ = ""
 	__wexin_bind_url_name__ = "customerwxBind"
@@ -213,6 +213,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return self.get_wexin_oauth_link(next_url = next_url)
 
 	def get_current_user(self):
+		print(self.__account_model__,'到底是什么？',self.__account_cookie_name__)
 		if not self.__account_model__ or not self.__account_cookie_name__:
 			raise Exception("overwrite model to support authenticate.")
 
@@ -232,6 +233,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:
 				Logger.warn("Suspicious Access", "may be trying to fuck you")
+				
 		return self._user
 
 	_ARG_DEFAULT = []
@@ -346,7 +348,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 class SuperBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.SuperAdmin
-	__account_cookie_name__ = "super_id"
+	# __account_cookie_name__ = "super_id"
 	__wexin_oauth_url_name__ = "superOauth"
 
 	def shop_close(self):
@@ -393,7 +395,7 @@ class SuperBaseHandler(_AccountBaseHandler):
 
 class FruitzoneBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopAdmin
-	__account_cookie_name__ = "admin_id"
+	# __account_cookie_name__ = "admin_id"
 	__wexin_oauth_url_name__ = "adminOauth"
 
 	# get the total,privince,city count of shop
@@ -455,7 +457,7 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 
 class AdminBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopAdmin
-	__account_cookie_name__ = "admin_id"
+	# __account_cookie_name__ = "admin_id"
 	__wexin_oauth_url_name__ = "adminOauth"
 	current_shop = None
 	@tornado.web.authenticated
@@ -479,7 +481,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 
 class StaffBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopStaff
-	__account_cookie_name__ = "staff_id"
+	# __account_cookie_name__ = "staff_id"
 	__wexin_oauth_url_name__ = "staffOauth"
 	shop_id = None
 	shop_name = None
@@ -509,7 +511,7 @@ class StaffBaseHandler(_AccountBaseHandler):
 
 class CustomerBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.Customer
-	__account_cookie_name__ = "customer_id"
+	# __account_cookie_name__ = "customer_id"
 	__wexin_oauth_url_name__ = "customerOauth"
 	@tornado.web.authenticated
 	def save_cart(self, charge_type_id, shop_id, inc, menu_type):
