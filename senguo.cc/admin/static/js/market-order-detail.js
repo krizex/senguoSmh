@@ -1,4 +1,14 @@
+var width = 0;
 $(document).ready(function(){
+    if($(".com-goods-lst").size()>0){
+        width = parseInt($(".com-goods-lst").width()/4)-12;
+        $(".com-goods-lst>li").each(function(){
+            $(this).width(width).height(width);
+        });
+        baguetteBox.run('.com-goods-lst',{
+            buttons: false
+        });
+    }
     //订单状态
     $('.status').each(function(){
         var $this=$(this);
