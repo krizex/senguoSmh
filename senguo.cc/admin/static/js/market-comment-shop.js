@@ -114,10 +114,12 @@ $(document).ready(function(){
     var commodity_quality = parseInt($("#zl-point").html(),10);
     var send_speed =  parseInt($("#sd-point").html(),10);
     var shop_service =  parseInt($("#fw-point").html(),10);
+    var order_id = $("#commit-shop-point").attr("data-order");
     var data = {
         "commodity_quality":commodity_quality,
         "send_speed":send_speed,
-        "shop_service":shop_service
+        "shop_service":shop_service,
+        "order_id":order_id
     };
     $.ajax({
         url:"/customer/orders?action=comment_point",
@@ -126,7 +128,7 @@ $(document).ready(function(){
         type:"post",
         success:function(res){
             if(res.success){
-                window.location.href="/customer/ordercomment?orderid="+$("#commit-shop-point").attr("data-order");
+                window.location.href="/customer/ordercomment?orderid="+order_id;
             }else{
                 noticeBox(res.error_txt);
                 $(this).removeClass("grey-bg");

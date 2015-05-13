@@ -48,8 +48,9 @@ li:last-child{border-bottom:0px;}
 .time-txt{color: #999;font-size: 12px;}
 .com-txt{color: #666;line-height: 18px;font-size: 12px;margin-top: 4px;}
 .com-goods-lst{margin-top: 10px;}
-.com-goods-lst>li{float: left;display:block;width: calc(25% - 10px);-webkit-box-sizing: border-box;margin-right: 10px;padding-bottom: calc(25% - 10px);height:0; overflow: hidden;}
-.com-goods-lst>li>img{width: 100%;}
+.com-goods-lst>li{float: left;display:block;-webkit-box-sizing: border-box;margin-right: 10px; overflow: hidden;}
+.com-goods-lst>li a{display: block;}
+.com-goods-lst>li img{width: 100%;}
 .blockA{display: block;color: #333;font-size: 14px;}
 .mr10{margin-right: 10px;}
 
