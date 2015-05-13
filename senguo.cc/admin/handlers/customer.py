@@ -431,7 +431,10 @@ class ShopProfile(CustomerBaseHandler):
 		if not shop_follow:
 				follow = False
 		else:
-			satisfy = format((shop_follow.commodity_quality + shop_follow.send_speed + shop_follow.shop_service)/300,'.0%')
+			if shop_follow.commodity_quality and shop_follow.send_speed and shop_follow.shop_service:
+				satisfy = format((shop_follow.commodity_quality + shop_follow.send_speed + shop_follow.shop_service)/300,'.0%')
+			else:
+				satisfy = format(1,'.0%')
 		# 今天是否 signin
 		signin = False
 		q=self.session.query(models.ShopSignIn).filter_by(
