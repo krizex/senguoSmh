@@ -63,7 +63,7 @@
                          {% elif current_shop.shop_auth in [2,3] %}
                         <p class="job pull-left text-center">企业认证</p>
                         {% else %}
-                        <p class="job pull-left text-center">未认证</p>
+                        <p class="job pull-left text-center"><a href="{{reverse_url('adminShopAuth')}}">未认证</a></p>
                         {% end %}
                         <div class="dropdown  area pull-left">
                             <button class="btn btn-default dropdown-toggle area height25 border-none" type="button" id="dropdownMenu1" data-toggle="dropdown">
