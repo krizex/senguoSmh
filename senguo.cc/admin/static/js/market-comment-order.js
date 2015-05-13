@@ -9,6 +9,10 @@ $(document).ready(function(){
     });
 }).on("click","#commit-order-point",function(){  //完成评价
     var user_txt = $("#user-txt").val();
+    if($.trim(user_txt).length==0){
+        noticeBox("评论不能为空哦！")
+        return false;
+    }
     if(user_txt.length>100){
         noticeBox("评论要在100个字以内哦！")
         return false;
@@ -75,7 +79,7 @@ $(document).ready(function(){
         filters : {
             max_file_size : '4mb',//限制图片大小
             mime_types: [
-                {title : "image type", extensions : "jpg,jpeg,gif,png"}
+                {title : "image type", extensions : "jpg,jpeg,png"}
             ]
         },
         flash_swf_url: 'static/js/plupload/Moxie.swf',
@@ -122,13 +126,13 @@ $(document).ready(function(){
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
-                    alert("图片大小不能超过4M哦");
+                    noticeBox("图片大小不能超过4M哦");
                 } else if (err.code == -601) {
-                    alert("图片格式不对哦");
+                    noticeBox("图片格式不对哦，只能上传png、jpg格式图片");
                 } else if (err.code == -200) {
-                    alert("当前页面过期，请刷新页面");
+                    noticeBox("当前页面过期，请刷新页面");
                 } else {
-                    alert(err.code + ": " + err.message);
+                    noticeBox(err.code + ": " + err.message);
                 }
                 up.removeFile(err.file.id);
                 $("#"+err.file.id).closest("li").remove();

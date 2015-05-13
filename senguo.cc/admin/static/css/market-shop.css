@@ -43,7 +43,8 @@ li:last-child{border-bottom:0px;}
 .pt4{padding-top: 4px;}
 .point-com-lst>li{border-bottom: 1px solid #e0e0e0;padding: 10px 0;display: block;}
 .ccom-item>dd{width: 60px;padding-right: 10px;height: 100%;overflow: hidden;}
-.ccom-item>dd>img{width: 50px;height: 50px;border-radius: 50%;border: 4px solid #aeddda;}
+.wrap-img{width: 42px;height: 42px;border-radius: 50%;border: 4px solid #aeddda;-webkit-box-sizing: content-box;}
+.ccom-item>dd img{width: 42px;height: 42px;border-radius: 50%;}
 .ccom-item>dt{width: calc(100% - 60px);-webkit-box-sizing: border-box;min-width: 60%;overflow: hidden;}
 .time-txt{color: #999;font-size: 12px;}
 .nor-txt{color: #999;font-size: 14px;}
