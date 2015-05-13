@@ -616,6 +616,7 @@ class Comment(CustomerBaseHandler):
 	def get(self):
 		customer_id = self.current_user.id
 		shop_id     = self.get_cookie("market_shop_id")
+		shop_code = self.get_cookie("market_shop_code")
 		satisfy = 0
 		commodity_quality = 0
 		send_speed = 0
@@ -644,7 +645,7 @@ class Comment(CustomerBaseHandler):
 			if len(date_list)<page_size:
 				nomore = True
 			return self.render("customer/comment.html", date_list=date_list,nomore=nomore,satisfy = satisfy,send_speed=send_speed,\
-				shop_service = shop_service,commodity_quality=commodity_quality)
+				shop_service = shop_service,commodity_quality=commodity_quality,shop_code=shop_code)
 		return self.send_success(date_list=date_list,nomore=nomore)
 
 class ShopComment(CustomerBaseHandler):
