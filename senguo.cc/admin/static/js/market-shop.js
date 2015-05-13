@@ -1,5 +1,6 @@
 var width = 0;
 $(document).ready(function(){
+    $(".com-goods-lst").width($(".ccom-item").width()-60);
     width = parseInt($(".com-goods-lst").width()/4)-12;
     $(".com-goods-lst>li").each(function(){
        $(this).width(width).height(width);

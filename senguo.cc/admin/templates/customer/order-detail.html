@@ -1,6 +1,7 @@
 {% extends 'detail-base.html' %}
 {% block title %}我的订单{% end %}
 {% block head %}
+<link rel="stylesheet" href="{{static_url('css/baguetteBox.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/market-order-detail.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 {% end %}
@@ -131,4 +132,7 @@
     </div>
 </div>
 {% end %}
-{% block bottom %}<script src="{{static_url('js/market-order-detail.js')}}"></script>{% end %}
+{% block bottom %}
+<script src="{{static_url('js/third/baguetteBox.min.js')}}"></script>
+<script src="{{static_url('js/market-order-detail.js')}}"></script>
+{% end %}

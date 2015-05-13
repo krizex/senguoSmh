@@ -25,3 +25,7 @@
 .comment-area{font-size: 12px;line-height: 16px;border: none;width: 90%;height: 60px;}
 .p-com{padding: 5px 0;line-height: 34px!important;height: 34px;}
 .modal-body>textarea{width:90%;background:#fff;height:120px;border:none;}
+.com-goods-lst{margin-top: 10px;}
+.com-goods-lst>li{float: left;display:block;-webkit-box-sizing: border-box;margin-right: 10px; overflow: hidden;}
+.com-goods-lst>li a{display: block;}
+.com-goods-lst>li img{width: 100%;}

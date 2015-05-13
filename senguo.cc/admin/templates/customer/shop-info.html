@@ -123,7 +123,9 @@
         <li>
             <dl class="ccom-item group">
                 <dd class="fl">
-                    <img src="{{comment[6] or '/static/design_img/TDSG.png'}}" width="50" height="50" alt="头像"/>
+                    <div class="wrap-img">
+                        <img src="{{comment[6] or '/static/design_img/TDSG.png'}}" width="50" height="50" alt="头像"/>
+                    </div>
                 </dd>
                 <dt class="fl">
                 <p><span class="nor-txt">{{comment[7]}}</span><span class="time-txt mr10 pull-right">{{handler.timedelta(comment[1])}}</span></p>
