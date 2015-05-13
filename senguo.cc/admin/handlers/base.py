@@ -348,7 +348,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 class SuperBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.SuperAdmin
-	# __account_cookie_name__ = "super_id"
+	__account_cookie_name__ = "super_id"
 	__wexin_oauth_url_name__ = "superOauth"
 
 	def shop_close(self):
