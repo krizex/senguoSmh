@@ -76,7 +76,7 @@ class Home(AdminBaseHandler):
 			show_balance = True
 		order_sum = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).count()
 		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
-		self.current_shop.new_order_sum = order_sum
+		# self.current_shop.new_order_sum = order_sum
 
 		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
 		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
@@ -495,13 +495,17 @@ class Order(AdminBaseHandler):
 		page_size = 10
 		count = 0
 		page_sum = 0
+
+		
+
 		orders = []
 		if self.args['action'] == "realtime":  #订单管理页实时获取未处理订单的接口
 			atonce,ontime,new_order_sum = 0,0,0
 			count = self._count()
 			atonce = count[11]
 			ontime = count[21]
-			new_order_sum = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).count() - (self.current_shop.new_order_sum or 0)
+			new_order_sum = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).count() - \
+			(self.current_shop.new_order_sum or 0)
 			return self.send_success(atonce=atonce,ontime=ontime,new_order_sum=new_order_sum)
 		elif self.args['action'] == "allreal": #全局实时更新变量
 			atonce,msg_num,is_balance,new_order_sum,user_num,staff_sum = 0,0,0,0,0,0
@@ -511,8 +515,10 @@ class Order(AdminBaseHandler):
 				models.Order.status == 6).count() - self.current_shop.old_msg
 			is_balance = self.current_shop.is_balance
 			staff_sum = self.session.query(models.HireForm).filter_by(shop_id = self.current_shop.id).count()
-			new_order_sum = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).count() - (self.current_shop.new_order_sum or 0)
-			user_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count() - (self.current_shop.new_follower_sum or 0)
+			new_order_sum = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).count() - \
+			(self.current_shop.new_order_sum or 0)
+			user_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count() - \
+			(self.current_shop.new_follower_sum or 0)
 			#new_follower_sum
 			return self.send_success(atonce=atonce,msg_num=msg_num,is_balance=is_balance,new_order_sum=new_order_sum,user_num=user_num,staff_sum=staff_sum)
 		elif order_type == 10:  # 搜索订单：为了格式统一，order_status为order.num
@@ -521,6 +527,9 @@ class Order(AdminBaseHandler):
 			order_type = 1
 			count = self.session.query(models.Order).filter_by(type=order_type,status=order_status,shop_id=self.current_shop.id).count()
 		elif order_status == 1:
+			order_sum = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).count()
+			new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+			self.current_shop.new_order_sum = order_sum
 			orders = [x for x in self.current_shop.orders if x.type == order_type and x.status == 1]
 			count = len(orders)
 			# woody 4.3
@@ -528,6 +537,7 @@ class Order(AdminBaseHandler):
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time,reverse = False)
+			session.commit()
 		elif order_status == 5:#all
 			orders = [x for x in self.current_shop.orders if x.type == order_type ]
 			count = len(orders)
