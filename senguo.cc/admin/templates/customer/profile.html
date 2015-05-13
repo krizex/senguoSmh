@@ -60,7 +60,9 @@
                     <i class="arr-right pull-right mt12"></i>
                     {% if context['shop_info'] %}
                     {% for shop in context['shop_info'] %}
-                        <a href="/{{shop['shop_code']}}" class="wrap-img  pull-right ml6"><img src="{{shop['logo'] or '/static/images/TDSG.png'}}?imageView/1/w/100/h/100" class="shop-img"/></a>
+                        <a href="/{{shop['shop_code']}}" class="wrap-img  pull-right ml6">
+                            <span class="wrap-img-b"><img src="{{shop['logo'] or '/static/images/TDSG.png'}}?imageView/1/w/100/h/100" class="shop-img"/></span>
+                        </a>
                     {% end %}
                     {% else %}
                         <span class="title img-title pull-right">没有店铺浏览</span>
@@ -118,7 +120,7 @@
         <li class="item">
             <div class="info-con">
                 <span class="title img-title pull-left lh50">第三方帐号绑定</span>
-                <a href="javascript:;">
+                <a href="javascript:;" class="third-bind" data-wx="{{context['wxnotice']}}">
                     <i class="arr-right pull-right mt8"></i>
                     {% if context['third'] and context['third'][0]['weixin'] == True %}
                     <a href="javascript:;" class="bind_wx"><img src="/static/images/wx.png" class="third-img pull-right ml6"/></a>

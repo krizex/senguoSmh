@@ -268,28 +268,38 @@ class Home(CustomerBaseHandler):
 
 class CustomerProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("action?")
 	def get(self):
-	   # 模板中通过current_user获取当前admin的相关数据，
-	   # 具体可以查看models.ShopAdmin中的属性
-	   customer_id = self.current_user.id
-	   time_tuple = time.localtime(self.current_user.accountinfo.birthday)
-	   birthday = time.strftime("%Y-%m-%d", time_tuple)
-	   shop_info = []
-	   follow = ''
-	   try:
-	   		follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id).order_by(models.CustomerShopFollow.create_time.desc()).limit(3).all()
-	   except:
-	   		print('该用户未关注任何店铺')
-	   for shopfollow in follow:
-	   		shop=self.session.query(models.Shop).filter_by(id = shopfollow.shop_id).first()
-	   		shop_info.append({'logo':shop.shop_trademark_url,'shop_code':shop.shop_code})
-	   # print(self.current_shop,self.current_shop.shop_auth)
+		# 模板中通过current_user获取当前admin的相关数据，
+		# 具体可以查看models.ShopAdmin中的属性
+		customer_id = self.current_user.id
+		time_tuple = time.localtime(self.current_user.accountinfo.birthday)
+		birthday = time.strftime("%Y-%m-%d", time_tuple)
+		shop_info = []
+		follow = ''
+		wxnotice=''
+		if 'action' in self.args:
+			action = self.args['action']
+			if action == 'wxsuccess':
+				wxnotice='微信绑定成功'
+			elif action == 'wxrepeat':
+				wxnotice='您已绑定该微信，无需重复绑定'
+			elif action == 'wxbinded':
+				wxnotice='该微信账号已被绑定，请更换其它微信账号'
+		try:
+				follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id).order_by(models.CustomerShopFollow.create_time.desc()).limit(3).all()
+		except:
+				print('该用户未关注任何店铺')
+		for shopfollow in follow:
+				shop=self.session.query(models.Shop).filter_by(id = shopfollow.shop_id).first()
+				shop_info.append({'logo':shop.shop_trademark_url,'shop_code':shop.shop_code})
+		# print(self.current_shop,self.current_shop.shop_auth)
 
-	   third=[]
-	   accountinfo =self.session.query(models.Accountinfo).filter_by(id = self.current_user.accountinfo.id).first()
-	   if accountinfo.wx_unionid:
-	   	third.append({'weixin':True})
-	   self.render("customer/profile.html", context=dict(birthday=birthday,third=third,shop_info=shop_info))
+		third=[]
+		accountinfo =self.session.query(models.Accountinfo).filter_by(id = self.current_user.accountinfo.id).first()
+		if accountinfo.wx_unionid:
+			third.append({'weixin':True})
+		self.render("customer/profile.html", context=dict(birthday=birthday,third=third,shop_info=shop_info,wxnotice=wxnotice))
 
 	
 	@tornado.web.authenticated
@@ -351,12 +361,13 @@ class WxBind(CustomerBaseHandler):
 	def get(self):
 		next_url = self.get_argument('next', '')
 		if self._action == 'wx_auth':
-			print(next_url)
 			return self.redirect(self.get_wexin_oauth_link2(next_url=next_url))
-			print('hahaha i am here now')
 		elif self._action == 'wx_bind':
-			print('oh~no i am here now')
-			return self.bind_wx(next_url)
+			# return self.bind_wx(next_url)
+			if self.is_wexin_browser():
+				return self.bind_wx(next_url)
+			else:
+				return self.write('this operate  must  on the cell phone')
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def bind_wx(self,next_url):
@@ -369,14 +380,14 @@ class WxBind(CustomerBaseHandler):
 			return self.send_error(400)
 		wx_userinfo = self.get_wx_userinfo(code, mode)
 		if u.accountinfo.wx_unionid == wx_userinfo["unionid"]:
-			return self.redirect(self.reverse_url("customerProfile"))
+			return self.redirect('/customer/profile?action=wxrepeat')
 			# return self.render('notice/bind-notice.html',title='您已绑定该微信，无需重复绑定')
 		try:
 			user = self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_userinfo["unionid"]).first()
 		except:
 			print("this wx does'nt exist")
 		if user:
-			return self.redirect(self.reverse_url("customerProfile"))
+			return self.redirect('/customer/profile?action=wxbinded')
 			# return self.render('notice/bind-notice.html',title='该微信账号已被绑定，请更换其它微信账号')
 		if u:
 			print("[微信绑定]，更新用户资料")
@@ -391,7 +402,7 @@ class WxBind(CustomerBaseHandler):
 			u.accountinfo.wx_openid = wx_userinfo["openid"]
 			u.accountinfo.wx_unionid = wx_userinfo["unionid"]
 			self.session.commit()
-			return self.redirect(self.reverse_url("customerProfile"))
+			return self.redirect('/customer/profile?action=wxsuccess')
 		else:
 			print('some thing must be wrong here')
 
@@ -619,14 +630,17 @@ class Comment(CustomerBaseHandler):
 							"comment": comment[0], "time": self.timedelta(comment[1]), "reply":comment[3], "imgurls":comment[10]})
 		if date_list == []:
 			nomore = True
-		print("====================================")
-		print(date_list)
 		if page == 0:
 			if len(date_list)<page_size:
 				nomore = True
 			return self.render("customer/comment.html", date_list=date_list,nomore=nomore,satisfy = satisfy,send_speed=send_speed,\
 				shop_service = shop_service,commodity_quality=commodity_quality)
 		return self.send_success(date_list=date_list,nomore=nomore)
+
+class ShopComment(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("customer/comment.html")
 
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -1705,13 +1719,7 @@ class Order(CustomerBaseHandler):
 
 		elif action == "comment":
 			data = self.args["data"]
-			imgUrl = self.args["imgUrl"]
-			print(type(imgUrl))
-			#imgUrl = json.dump(imgUrl)
-		
-			if len(imgUrl) < 5:
-				imgUrl = None
-			print(data["order_id"],'i am order id  from data')
+			imgUrl = data["imgUrl"]
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
 			print(order,'i am order')
 			if not order:return self.send_error(404)
@@ -1723,8 +1731,6 @@ class Order(CustomerBaseHandler):
 			shop_follow = ''
 			# shop_point add by 5
 			# woody
-			print(order.customer_id,'i am customer id')
-			print(order.shop_id,'i am shop id')
 			try:
 				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
 					order.customer_id,shop_id = order.shop_id).first()
@@ -1745,12 +1751,13 @@ class Order(CustomerBaseHandler):
 					point_history.each_point = 5
 					self.session.add(point_history)
 					self.session.commit()
+			self.session.commit()
+			return self.send_success(notice='评论成功，积分+5')
 
 			#need to rocord this poist history?
 		else:
 			return self.send_error(404)
-		self.session.commit()
-		return self.send_success(notice='评论成功，积分+5')
+		
 
 class OrderDetail(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -1995,17 +2002,17 @@ class OrderComment(CustomerBaseHandler):
 		token = self.get_qiniu_token("order",self.current_user.id)
 		orderid=self.args["orderid"]
 		order = next((x for x in self.current_user.orders if x.id == int(orderid)), None)
+		shop_id = order.shop_id
 		if order is None:
 			return self.send_fail("订单为空")
-		imgurls = {}
-		comments = order.get_comments()
-		if comments and comments[10]:
-			imgurls = json.loads(comments[10])
+		imgurls = []
+		if order.comment_imgUrl:
+			imgurls = order.comment_imgUrl.split(',')
+			length = len(imgurls)
 		else:
 			imgurls = None
-		print(imgurls)
-
-		return self.render("customer/comment-order.html",token=token,order_id=orderid,imgurls = imgurls)
+			length = 0
+		return self.render("customer/comment-order.html",token=token,order_id=orderid,imgurls = imgurls,length = length)
 
 class ShopComment(CustomerBaseHandler):
 	@tornado.web.authenticated

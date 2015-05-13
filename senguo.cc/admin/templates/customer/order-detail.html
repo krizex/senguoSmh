@@ -80,7 +80,7 @@
     {% if order.comment%}
     <div class="order-item commentBox">
         <!--<h4 class="title">订单评价<a href="javascript:;" class="fr" id="del-comment">删除</a></h4>-->
-        <h4 class="title">订单评论<a href="javascript:;" class="fr" id="change-comment">修改</a></h4>
+        <h4 class="title">订单评论<a href="/customer/ordercomment?orderid={{order.id}}" class="fr">修改</a></h4>
         <p><span>{{current_user.accountinfo.nickname}}：</span><span class="comment_con">{{order.comment}}</span></p>
         {% if order.comment_reply %}
         <p class="green-txt">商家回复：<span>{{order.comment_reply}}</span></p>
