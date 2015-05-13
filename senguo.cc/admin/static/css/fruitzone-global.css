@@ -109,6 +109,8 @@ button:focus{outline:0;}
 .bg-green{background:#80e0a0 !important;}
 .bg-greyf5{background:#f5f5f5 !important;}
 
+.bg-greyc{background-color:#ccc;}
+
 .text-green{color:#80e0a0;}
 .text-red{color:#FF0808;}
 .text-grey3{color:#333;}
