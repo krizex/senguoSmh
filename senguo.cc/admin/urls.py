@@ -5,6 +5,7 @@ import handlers.superadmin
 import handlers.fruitzone
 import handlers.infowall
 import handlers.official
+import handlers.onlinePay
 from dal import models
 #todo:handlers太大会不会影响性能？
 
@@ -67,6 +68,7 @@ handlers = [
 	(r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
 	(r"/customer/phoneVerify", handlers.fruitzone.PhoneVerify, {
 		"action":"customer"}, "customerPhoneVerify"),
+	(r"/customer/onlinewxpay",handlers.onlinePay.OnlineWxPay,{},"onlineWxPay"),
 	(r"/customer/(\w+)", handlers.customer.Home, {}, "customerHome"),
 
 	(r"/super/oauth", handlers.superadmin.Access,{

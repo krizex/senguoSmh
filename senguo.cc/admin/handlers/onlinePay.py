@@ -14,16 +14,19 @@ from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_N
 
 class OnlineWxPay(CustomerBaseHandler):
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments('code?:str','totalPrice?')
+	@CustomerBaseHandler.check_arguments('code?:str','order_num?:str')
 	def get(self):
 		print(self.request.full_url())
 		path_url = self.request.full_url()
-		return self.send_success()
-		# totalPrice = self.args['totalPrice']
+		order_num = self.get_cookie("order_num")
+		order = self.session.query(models.Order).filter_by(num = order_num).first()
+		if not order:
+			return self.send_fail('order not found')
+		totalPrice = order.totalPrice
 
 		jsApi  = JsApi_pub()
 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
-		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('fruitzonePayTest')
+		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('onlineWxPay')
 		print(path , 'redirect_uri is Ture?')
 		print(self.args['code'],'sorry  i dont know')
 		code = self.args.get('code',None)
@@ -33,9 +36,6 @@ class OnlineWxPay(CustomerBaseHandler):
 			print(url,'code?')
 			return self.redirect(url)
 		else:
-			totalPrice =int((float(self.get_cookie('money')))*100)
-			orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(totalPrice)+'a'+str(int(time.time()))
-			print(orderId,'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 			jsApi.setCode(code)
 			openid = jsApi.getOpenid()
 			print(openid,code,'hope is not []')
@@ -46,11 +46,11 @@ class OnlineWxPay(CustomerBaseHandler):
 			#totalPrice =float( self.get_cookie('money'))
 			print(totalPrice,'long time no see!')
 			unifiedOrder.setParameter("body",'charge')
-			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/fruitzone/paytest')
+			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
 			unifiedOrder.setParameter("openid",openid)
-			unifiedOrder.setParameter("out_trade_no",orderId)
+			unifiedOrder.setParameter("out_trade_no",order_num)
 			#orderPriceSplite = (order.price) * 100
-			wxPrice =int(totalPrice )
+			wxPrice =int(totalPrice * 100)
 			print(wxPrice,'sure')
 			unifiedOrder.setParameter('total_fee',wxPrice)
 			unifiedOrder.setParameter('trade_type',"JSAPI")
@@ -63,9 +63,6 @@ class OnlineWxPay(CustomerBaseHandler):
 			timestamp = datetime.datetime.now().timestamp()
 			wxappid = 'wx0ed17cdc9020a96e'
 			signature = self.signature(noncestr,timestamp,path_url)
-			totalPrice = float(totalPrice/100)
-		
-		# return self.send_success(renderPayParams = renderPayParams)
 		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
 			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)
 
@@ -78,81 +75,67 @@ class OnlineWxPay(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?:str')
 	def post(self):
 			print(self.args,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-
-		# 微信 余额 支付
-	#	if action == 'wx_pay':
-			print('回调成功')
+			##############################################################
+			# 微信在线支付成功回调
+			# 修改订单状态 :支付订单刚生成时 状态为-1.完成支付后状态变为1
+			# 增加相应店铺 相应的余额
+			# 生成一条余额记录
+			##############################################################
+			print('微信在线支付回调成功')
 			data = self.request.body
 			print(self.request.body,'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
 			xml = data.decode('utf-8')
 			UnifiedOrder = UnifiedOrder_pub()
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
 			status       = xmlArray['result_code']
-			orderId      = str(xmlArray['out_trade_no'])
-			result       = orderId.split('a')
-			customer_id  = int(result[0])
-			shop_id      = int(result[1])
-			totalPrice   = (float(result[2]))/100
+			order_num    = str(xmlArray['out_trade_no'])
+			# result       = orderId.split('a')
+			# customer_id  = int(result[0])
+			# shop_id      = int(result[1])
+			# totalPrice   = (float(result[2]))/100
 			transaction_id = str(xmlArray['transaction_id'])
 			if status != 'SUCCESS':
 				return False
-		#	shop_code  = self.current_shop.shop_code
-		#	shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
-		#	if not shop:
-		#		return self.send_fail('shop not found')
-			
-			#shop_id = self.get_cookie('market_shop_id')
-			#customer_id = self.current_user.id
-			
 
-		#	code = self.args['code']
-		#	path_url = self.request.full_url()
+			order = self.session.query(models.Order).filter_by(num = order_num).first()
+			if not order:
+				return self.send_fail('order not found')
+			customer_id = order.customer_id
+			shop_id     = order.shop_id
+			totalPrice  = order.totalPrice
 
-			
-			
-			#totalPrice =float( self.get_cookie('money'))
-			print(customer_id,shop_id,totalPrice)
-			#########################################################
-			# 用户余额增加 
-			# 同时店铺余额相应增加 
-			# 应放在 支付成功的回调里
+			order.status = 1  #修改订单状态
 
-			#########################################################
-
-			# 支付成功后，用户对应店铺 余额 增1加
 			#判断是否已经回调过，如果记录在表中，则不执行接下来操作
 			old_balance_history=self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
 			if old_balance_history:
 				return self.write('success')
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 				shop_id = shop_id).first()
-			print(customer_id, shop_id,'没充到别家店铺去吧')
 			if not shop_follow:
 				return self.send_fail('shop_follow not found')
-			shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
-			self.session.commit()
+			
+			# 修改店铺余额
 
 			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 			if not shop:
 				return self.send_fail('shop not found')
 			shop.shop_balance += totalPrice
 			self.session.commit()
-			print(shop.shop_balance ,'充值后 商店 总额')
+			print(shop.shop_balance ,'支付后 商店总额')
 
 			# 支付成功后  生成一条余额支付记录
 			customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
 			if customer:
 				name = customer.accountinfo.nickname
-			#name = self.current_user.accountinfo.nickname
+			else:
+				return self.send_fail('customer not found')
 			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
-				balance_value = totalPrice,balance_record = '充值：用户 '+ name  , name = name , balance_type = 0,\
+				balance_value = totalPrice,balance_record = '微信在线支付：用户 '+ name  , name = name , balance_type = 3,\
 				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id)
 			self.session.add(balance_history)
 			print(balance_history , '钱没有白充吧？！')
 			self.session.commit()
-
 			return self.write('success')
-	#	else:
-	#		return self.send_fail('其它支付方式尚未开发')
 
 
