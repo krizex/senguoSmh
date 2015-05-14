@@ -101,6 +101,8 @@ class ShopList(FruitzoneBaseHandler):
 		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
 			filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 				models.Shop.shop_code !='not set' )
+		shops = []
+		
 		if "city" in self.args:
 			q = q.filter_by(shop_city=self.args["city"])
 			shop_count = q.count()
@@ -108,6 +110,10 @@ class ShopList(FruitzoneBaseHandler):
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			#print('page_total',page_total)
 			q = q.offset(page * _page_count).limit(_page_count).all()
+			for shop in q:
+				shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
+										 'wx_nickname', 'wx_qr_code','wxapi_token']
+				shops.append(shop.safe_props())
 			
 		elif "province" in self.args:
 			# print('province')
@@ -115,8 +121,11 @@ class ShopList(FruitzoneBaseHandler):
 			shop_count = q.count()
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
+			for shop in q:
+				shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
+										 'wx_nickname', 'wx_qr_code','wxapi_token']
+				shops.append(shop.safe_props())
 		else:
-			nomore = True
 			print("[店铺列表]城市不存在")
 
 		# if "service_area" in self.args:
@@ -139,12 +148,6 @@ class ShopList(FruitzoneBaseHandler):
 		# else:
 		#     q = q.limit(self._page_count)
 		
-
-		shops = []
-		for shop in q:
-			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
-										 'wx_nickname', 'wx_qr_code','wxapi_token']
-			shops.append(shop.safe_props())
 		if shops == [] or len(shops)<_page_count:
 			nomore =True
 		return self.send_success(shops=shops,nomore = nomore)
