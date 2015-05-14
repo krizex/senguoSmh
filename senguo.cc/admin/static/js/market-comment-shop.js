@@ -149,26 +149,31 @@ $(document).ready(function(){
     }
 });
 function changeColor($obj,grade){
-    switch(grade){
-        case 0:
-            $obj.attr("src","/static/images/goods_normal.png");
-            $obj.closest(".wrap-point-box").removeClass("shadow-zl shadow-sd shadow-fw");
-            $obj.closest(".point-box").removeClass("bg-zl bg-sd bg-fw");
-            break;
+    if(grade==0){
+        $obj.attr("src","/static/images/goods_normal.png");
+        $obj.closest(".wrap-point-box").removeClass("shadow-zl shadow-sd shadow-fw");
+        $obj.closest(".point-box").removeClass("bg-zl bg-sd bg-fw");
+        return false;
+    }else if(grade==1){
+        $obj.attr("src","/static/images/goods_bad.png");
+    }else if(grade==2){
+        $obj.attr("src","/static/images/goods_good.png");
+    }else if(grade==3){
+        $obj.attr("src","/static/images/goods_best.png");
+    }
+    var index = parseInt($obj.attr("data-id"));
+    switch(index){
         case 1:
-            $obj.attr("src","/static/images/goods_bad.png");
-            $obj.closest(".wrap-point-box").removeClass("shadow-zl shadow-sd shadow-fw").addClass("shadow-zl");
-            $obj.closest(".point-box").removeClass("bg-zl bg-sd bg-fw").addClass("bg-zl");
+            $obj.closest(".wrap-point-box").addClass("shadow-zl");
+            $obj.closest(".point-box").addClass("bg-zl");
             break;
         case 2:
-            $obj.attr("src","/static/images/goods_good.png");
-            $obj.closest(".wrap-point-box").removeClass("shadow-zl shadow-sd shadow-fw").addClass("shadow-sd");
-            $obj.closest(".point-box").removeClass("bg-zl bg-sd bg-fw").addClass("bg-sd");
+            $obj.closest(".wrap-point-box").addClass("shadow-sd");
+            $obj.closest(".point-box").addClass("bg-sd");
             break;
         case 3:
-            $obj.attr("src","/static/images/goods_best.png");
-            $obj.closest(".wrap-point-box").removeClass("shadow-zl shadow-sd shadow-fw").addClass("shadow-fw");
-            $obj.closest(".point-box").removeClass("bg-zl bg-sd bg-fw").addClass("bg-fw");
+            $obj.closest(".wrap-point-box").addClass("shadow-fw");
+            $obj.closest(".point-box").addClass("bg-fw");
             break;
     }
 }

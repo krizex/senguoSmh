@@ -18,6 +18,9 @@ from qiniu.services.storage.bucket import BucketManager
 from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
 import requests
 import json
+import tornado.gen
+from tornado.concurrent import run_on_executor
+from concurrent.futures import ThreadPoolExecutor
 
 class Home(FruitzoneBaseHandler):
 	def get(self):
@@ -72,13 +75,14 @@ class ShopList(FruitzoneBaseHandler):
 	@FruitzoneBaseHandler.check_arguments("page:int")
 	def handle_shop(self):
 
-		_page_count =10
+		_page_count =15
 		page=self.args["page"]-1
+		nomore = False
 		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc())\
 		.filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 			models.Shop.shop_code !='not set' )
 		shop_count = q.count()
-		page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
+		# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 		q=q.offset(page*_page_count).limit(_page_count).all()
 		shops = []
 		for shop in q:
@@ -86,31 +90,44 @@ class ShopList(FruitzoneBaseHandler):
 										 'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
 										 'alipay_account','alipay_account_name','available_balance','new_follower_sum','new_order_sum']
 			shops.append(shop.safe_props())
-		return self.send_success(shops=shops,page_total = page_total)
+		if shops == [] or len(shops)<_page_count:
+			nomore =True
+		return self.send_success(shops=shops,nomore = nomore)
 
 	@FruitzoneBaseHandler.check_arguments("skip?:int","limit?:int","province?:int",
 									  "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids?:list","page:int")
 	def handle_filter(self):
 		# 按什么排序？暂时采用id排序
-		_page_count = 10
+		_page_count = 15
 		page = self.args["page"] - 1
+		nomore = False
 		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
 			filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 				models.Shop.shop_code !='not set' )
+		shops = []
+		
 		if "city" in self.args:
 			q = q.filter_by(shop_city=self.args["city"])
 			shop_count = q.count()
 			#print('shop_count',shop_count)
-			page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
+			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			#print('page_total',page_total)
 			q = q.offset(page * _page_count).limit(_page_count).all()
+			for shop in q:
+				shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
+										 'wx_nickname', 'wx_qr_code','wxapi_token']
+				shops.append(shop.safe_props())
 			
 		elif "province" in self.args:
 			# print('province')
 			q = q.filter_by(shop_province=self.args["province"])
 			shop_count = q.count()
-			page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
+			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
+			for shop in q:
+				shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
+										 'wx_nickname', 'wx_qr_code','wxapi_token']
+				shops.append(shop.safe_props())
 		else:
 			print("[店铺列表]城市不存在")
 
@@ -134,32 +151,31 @@ class ShopList(FruitzoneBaseHandler):
 		# else:
 		#     q = q.limit(self._page_count)
 		
-
-		shops = []
-		for shop in q:
-			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
-										 'wx_nickname', 'wx_qr_code','wxapi_token']
-			shops.append(shop.safe_props())
-		return self.send_success(shops=shops,page_total = page_total)
+		if shops == [] or len(shops)<_page_count:
+			nomore =True
+		return self.send_success(shops=shops,nomore = nomore)
 
 	@FruitzoneBaseHandler.check_arguments("q","page:int")
 	def handle_search(self):
-		_page_count = 10
+		_page_count = 15
 		page = self.args["page"] - 1
+		nomore = False
 		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
 			filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"])),
 				   models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 				   models.Shop.shop_code !='not set' )
 		shops = []
 		shop_count = q.count()
-		page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
+		# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 		q = q.offset(page * _page_count).limit(_page_count).all()
 		
 		for shop in q:
 			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
 										 'wx_nickname', 'wx_qr_code','wxapi_token']
 			shops.append(shop.safe_props())
-		return self.send_success(shops=shops ,page_total = page_total)
+		if shops == [] or len(shops)<_page_count:
+			nomore =True
+		return self.send_success(shops=shops ,nomore = nomore)
 
 class Community(FruitzoneBaseHandler):
 	def get(self):
@@ -535,6 +551,7 @@ class QiniuCallback(FruitzoneBaseHandler):
 		return
 
 class PhoneVerify(_AccountBaseHandler):
+	executor = ThreadPoolExecutor(2)
 
 	def initialize(self, action):
 		if action == "admin":
@@ -547,21 +564,25 @@ class PhoneVerify(_AccountBaseHandler):
 			self.__wexin_oauth_url_name__ = "customerOauth"
 
 	@tornado.web.authenticated
+	@tornado.web.asynchronous
+	@tornado.gen.engine
 	@FruitzoneBaseHandler.check_arguments("action:str")
 	def post(self):
 		if self.args["action"] == "gencode":
-			self.handle_gencode()
+			yield self.handle_gencode()
 		elif self.args["action"] == "checkcode":
-			self.handle_checkcode()
+			yield self.handle_checkcode()
 		elif self.args["action"] == "gencode_shop_apply":
-			self.handle_gencode_shop_apply()
+			yield self.handle_gencode_shop_apply()
 		elif self.args["action"] == "checkcode_regist":
-			self.handle_checkcode_regist()
+			yield self.handle_checkcode_regist()
 		elif self.args["action"] == "regist":
-			self.handle_regist()
+			yield self.handle_regist()
 		else:
-			return self.send_error(404)
+			yield self.send_error(404)
+		self.finish()
 
+	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str")
 	def handle_gencode(self):
 		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first() 
@@ -575,7 +596,9 @@ class PhoneVerify(_AccountBaseHandler):
 		if resault == True:
 			return self.send_success()
 		else:
-			self.send_fail(resault)
+			return self.send_fail(resault)
+
+	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str","code:int")
 	def handle_checkcode_regist(self):
 		if not check_msg_token(phone = self.args["phone"],code = self.args["code"]):
@@ -583,6 +606,8 @@ class PhoneVerify(_AccountBaseHandler):
 		else:
 			return self.send_success()
 
+
+	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str" , "password")
 	def handle_regist(self):
 		phone = self.args["phone"]
@@ -592,6 +617,7 @@ class PhoneVerify(_AccountBaseHandler):
 		self.session.commit()
 		return self.send_success()
 
+	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str", "code:int", "password?")
 	def handle_checkcode(self):
 		if not check_msg_token(phone = self.args["phone"], code=self.args["code"]):
@@ -604,6 +630,7 @@ class PhoneVerify(_AccountBaseHandler):
 		self.current_user.accountinfo.update(self.session, phone=self.args["phone"])
 		return self.send_success()
 
+	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str")
 	def handle_gencode_shop_apply(self):
 		print("[店铺申请]发送证码到手机：",self.args["phone"])

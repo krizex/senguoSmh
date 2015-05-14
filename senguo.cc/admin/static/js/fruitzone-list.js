@@ -6,6 +6,7 @@ $(document).ready(function(){
     $('.willOpen').on('click',function(){noticeBox('即将开放，敬请期待！')});
     //shop info
     if(city_id){
+        window.dataObj.action='filter';
         window.dataObj.type='city';
         shopsList(1,city_id,'filter');
     }else{
@@ -199,6 +200,7 @@ window.dataObj.page=1;
 window.dataObj.finished=true;
 window.dataObj.action='shop';
 window.dataObj.type='city';
+var nomore = false;
 var shopsList=function(page,data,action){
     var url='';
     var action =action;
@@ -217,6 +219,7 @@ var shopsList=function(page,data,action){
         if(res.success)
         {
                 initData(res);
+                nomore =res.nomore;
         }
         else return noticeBox(res.error_text);
         },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~');}
@@ -235,17 +238,16 @@ var scrollLoading=function(){
     var totalheight = 0;   
     var main = $(".container");                  //主体元素   
     $(window).scroll(function(){
-        var maxnum =window.dataObj.maxnum;            //设置加载最多次数  
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)  
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
-        if(window.dataObj.finished&&(main.height()-range) <= totalheight  && window.dataObj.page < maxnum) { 
+        if(window.dataObj.finished&&(main.height()-range) <= totalheight  && nomore==false) { 
             $('.no_more').hide();
             $('.loading').show();
             window.dataObj.finished=false;
             window.dataObj.page++; 
             shopsList(window.dataObj.page,window.dataObj.data,window.dataObj.action);
         }       
-        else if(window.dataObj.page ==maxnum){
+        else if(nomore==true){
               $('.loading').hide();
               $('.no_more').show();
         } 
@@ -271,6 +273,7 @@ function Search(evt,page){
             {
                 $('.shoplist').empty();
                  var shops=res.shops;
+                 nomore = res.nomore;
                 if(res.shops==''){
                     $('.shoplist').empty();
                     window.dataObj.maxnum=1;
@@ -313,6 +316,8 @@ function filter(data,type,page){
                 remove_bg();
                 $('.shoplist').empty();
                  var shops=res.shops;
+                 nomore = res.nomore;
+
                  $('.list_item').addClass('hidden');
                  $('.city_choose').removeClass('city_choosed');
                  if(shops.length==0){
