@@ -23,13 +23,14 @@ $(document).ready(function(){
     scrollLoading();
 });
 function initBar(point,$obj){
-    if(point<33){
-        $obj.addClass("bar1").css("width",point+"%");
+    $obj.css("width",point+"%");
+    /*if(point<33){
+        $obj.css("width",point+"%");
     }else if(point>=33 && point<66){
-        $obj.addClass("bar2").css("width",point+"%");
+        $obj.css("width",point+"%");
     }else{
-        $obj.addClass("bar3").css("width",point+"%");
-    }
+        $obj.css("width",point+"%");
+    }*/
 }
 function scrollLoading(){
     $(window).scroll(function(){
