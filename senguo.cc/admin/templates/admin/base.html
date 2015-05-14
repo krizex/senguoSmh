@@ -59,11 +59,11 @@
                     <div class="admin-info area pull-right">
                         <!-- <p class="job pull-left text-left">{{current_user.accountinfo.nickname}}</p> -->
                         {% if current_shop.shop_auth in [1,4] %}
-                        <p class="job pull-left text-center">个人认证</p>
+                        <p class="job pull-left text-left">个人认证</p>
                          {% elif current_shop.shop_auth in [2,3] %}
-                        <p class="job pull-left text-center">企业认证</p>
+                        <p class="job pull-left text-left">企业认证</p>
                         {% else %}
-                        <p class="job pull-left text-center"><a href="{{reverse_url('adminShopAuth')}}">未认证</a></p>
+                        <p class="job pull-left text-left"><a href="{{reverse_url('adminShopAuth')}}">未认证</a></p>
                         {% end %}
                         <div class="dropdown  area pull-left">
                             <button class="btn btn-default dropdown-toggle area height25 border-none" type="button" id="dropdownMenu1" data-toggle="dropdown">
