@@ -18,6 +18,9 @@ from qiniu.services.storage.bucket import BucketManager
 from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
 import requests
 import json
+import tornado.gen
+from tornado.concurrent import run_on_executor
+from concurrent.futures import ThreadPoolExecutor
 
 class Home(FruitzoneBaseHandler):
 	def get(self):
@@ -548,6 +551,7 @@ class QiniuCallback(FruitzoneBaseHandler):
 		return
 
 class PhoneVerify(_AccountBaseHandler):
+	executor = ThreadPoolExecutor(2)
 
 	def initialize(self, action):
 		if action == "admin":
@@ -560,21 +564,25 @@ class PhoneVerify(_AccountBaseHandler):
 			self.__wexin_oauth_url_name__ = "customerOauth"
 
 	@tornado.web.authenticated
+	@tornado.web.asynchronous
+	@tornado.gen.engine
 	@FruitzoneBaseHandler.check_arguments("action:str")
 	def post(self):
 		if self.args["action"] == "gencode":
-			self.handle_gencode()
+			yield self.handle_gencode()
 		elif self.args["action"] == "checkcode":
-			self.handle_checkcode()
+			yield self.handle_checkcode()
 		elif self.args["action"] == "gencode_shop_apply":
-			self.handle_gencode_shop_apply()
+			yield self.handle_gencode_shop_apply()
 		elif self.args["action"] == "checkcode_regist":
-			self.handle_checkcode_regist()
+			yield self.handle_checkcode_regist()
 		elif self.args["action"] == "regist":
-			self.handle_regist()
+			yield self.handle_regist()
 		else:
-			return self.send_error(404)
+			yield self.send_error(404)
+		self.finish()
 
+	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str")
 	def handle_gencode(self):
 		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first() 
@@ -588,7 +596,9 @@ class PhoneVerify(_AccountBaseHandler):
 		if resault == True:
 			return self.send_success()
 		else:
-			self.send_fail(resault)
+			return self.send_fail(resault)
+
+	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str","code:int")
 	def handle_checkcode_regist(self):
 		if not check_msg_token(phone = self.args["phone"],code = self.args["code"]):
@@ -596,6 +606,8 @@ class PhoneVerify(_AccountBaseHandler):
 		else:
 			return self.send_success()
 
+
+	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str" , "password")
 	def handle_regist(self):
 		phone = self.args["phone"]
@@ -605,6 +617,7 @@ class PhoneVerify(_AccountBaseHandler):
 		self.session.commit()
 		return self.send_success()
 
+	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str", "code:int", "password?")
 	def handle_checkcode(self):
 		if not check_msg_token(phone = self.args["phone"], code=self.args["code"]):
@@ -617,6 +630,7 @@ class PhoneVerify(_AccountBaseHandler):
 		self.current_user.accountinfo.update(self.session, phone=self.args["phone"])
 		return self.send_success()
 
+	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str")
 	def handle_gencode_shop_apply(self):
 		print("[店铺申请]发送证码到手机：",self.args["phone"])
