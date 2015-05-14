@@ -1503,7 +1503,7 @@ class Cart(CustomerBaseHandler):
 
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
-			online_type = self.args['online_type']:
+			online_type = self.args['online_type']
 			self.set_cookie('order_num',order.num)
 			order.online_type = online_type
 			self.session.commit()
