@@ -13,6 +13,7 @@ from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_N
 class ConfessionWall(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
+		confession = self.session.query(models.ConfessionWall).
 		self.render('confession/home.html')
 
 class ConfessionPublic(CustomerBaseHandler):
@@ -24,8 +25,10 @@ class ConfessionPublic(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("data")
 	def post(self):
 		data = self.args["data"]
+		shop_id= get_cookie("shop_id")
 		confession = models.ConfessionWall(
-			customer_id=self.current_user.id,
+			customer_id = self.current_user.id,
+			shop_id = shop_id,
 			other_name = data["name"],
 			other_phone = data["phone"],
 			confession_type = data["type"],
