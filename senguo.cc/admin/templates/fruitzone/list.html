@@ -5,6 +5,14 @@
 <link rel="stylesheet" href="{{static_url('css/fruitzone-list.css')}}"/>
 {% end %}
 {% block header%}
+
+{% end%}
+
+{% block content%}
+{% import json %}
+<script type="text/javascript">
+    window.dataObj.province_count={% raw json.dumps(context['province_count'])%}
+</script>
 <header class="herder bg-green text-white text-center">
         <a href="{{reverse_url('fruitzoneHome')}}" class="back"></a>
         <span class="title font16">店铺列表</span>
@@ -18,13 +26,6 @@
         </ul>-->
    <!--<p style="color:red;text-align:center;margin-top:1em"><small>平台公测中，店铺数据暂未通过审核</small></p>-->
 </header>
-{% end%}
-
-{% block content%}
-{% import json %}
-<script type="text/javascript">
-    window.dataObj.province_count={% raw json.dumps(context['province_count'])%}
-</script>
 <div class="filter_search bg-white text-grey9 font14">
     <input type="hidden" id="city_id" value="{{context['city_id']}}"/>
     <a href="javascript:;" class="city_choose pull-left dismiss"><span class="city_name pull-left text-center">{{context['city'] or '城市'}}</span><em class="arrow pull-left"></em></a>
