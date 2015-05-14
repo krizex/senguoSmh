@@ -72,13 +72,14 @@ class ShopList(FruitzoneBaseHandler):
 	@FruitzoneBaseHandler.check_arguments("page:int")
 	def handle_shop(self):
 
-		_page_count =10
+		_page_count =15
 		page=self.args["page"]-1
+		nomore = False
 		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc())\
 		.filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 			models.Shop.shop_code !='not set' )
 		shop_count = q.count()
-		page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
+		# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 		q=q.offset(page*_page_count).limit(_page_count).all()
 		shops = []
 		for shop in q:
@@ -86,14 +87,17 @@ class ShopList(FruitzoneBaseHandler):
 										 'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
 										 'alipay_account','alipay_account_name','available_balance','new_follower_sum','new_order_sum']
 			shops.append(shop.safe_props())
-		return self.send_success(shops=shops,page_total = page_total)
+		if shops == [] or len(shops)<_page_count:
+			nomore =True
+		return self.send_success(shops=shops,nomore = nomore)
 
 	@FruitzoneBaseHandler.check_arguments("skip?:int","limit?:int","province?:int",
 									  "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids?:list","page:int")
 	def handle_filter(self):
 		# 按什么排序？暂时采用id排序
-		_page_count = 10
+		_page_count = 15
 		page = self.args["page"] - 1
+		nomore = False
 		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
 			filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 				models.Shop.shop_code !='not set' )
@@ -101,7 +105,7 @@ class ShopList(FruitzoneBaseHandler):
 			q = q.filter_by(shop_city=self.args["city"])
 			shop_count = q.count()
 			#print('shop_count',shop_count)
-			page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
+			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			#print('page_total',page_total)
 			q = q.offset(page * _page_count).limit(_page_count).all()
 			
@@ -109,7 +113,7 @@ class ShopList(FruitzoneBaseHandler):
 			# print('province')
 			q = q.filter_by(shop_province=self.args["province"])
 			shop_count = q.count()
-			page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
+			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
 		else:
 			print("[店铺列表]城市不存在")
@@ -140,26 +144,31 @@ class ShopList(FruitzoneBaseHandler):
 			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
 										 'wx_nickname', 'wx_qr_code','wxapi_token']
 			shops.append(shop.safe_props())
-		return self.send_success(shops=shops,page_total = page_total)
+		if shops == [] or len(shops)<_page_count:
+			nomore =True
+		return self.send_success(shops=shops,nomore = nomore)
 
 	@FruitzoneBaseHandler.check_arguments("q","page:int")
 	def handle_search(self):
-		_page_count = 10
+		_page_count = 15
 		page = self.args["page"] - 1
+		nomore = False
 		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
 			filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"])),
 				   models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 				   models.Shop.shop_code !='not set' )
 		shops = []
 		shop_count = q.count()
-		page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
+		# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 		q = q.offset(page * _page_count).limit(_page_count).all()
 		
 		for shop in q:
 			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
 										 'wx_nickname', 'wx_qr_code','wxapi_token']
 			shops.append(shop.safe_props())
-		return self.send_success(shops=shops ,page_total = page_total)
+		if shops == [] or len(shops)<_page_count:
+			nomore =True
+		return self.send_success(shops=shops ,nomore = nomore)
 
 class Community(FruitzoneBaseHandler):
 	def get(self):
