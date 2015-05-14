@@ -1,4 +1,12 @@
 $(document).ready(function(){
+        //翻页
+    var page=Int($.getUrlParam('page'));
+    var order_type=$.getUrlParam('order_type');
+    var order_status=$.getUrlParam('order_status');
+    var total_page=Math.ceil($('.page-total').text());
+    $('.page-now').text(page+1);
+    $('.page-total').text(total_page);
+    getPage(page,'/admin/order?order_type='+order_type+'&order_status='+order_status+'&page=',total_page);
     $('body').on('mouseenter','.edit_item_box',function(){
         var $this=$(this);
         if($this.hasClass('to-edit-item')){
@@ -48,7 +56,7 @@ $(document).ready(function(){
     $(document).on('click','.add-new-time',function(){//添加显示
         var max=$('.time-list').find('.time-list-item').length;
         if(max<20) {
-            $.getItem('/static/items/admin/add-period-item.html?v=2015-0211',function(data){
+            $.getItem('/static/items/admin/add-period-item.html?v=2015-0311',function(data){
                 var $item=$(data);
                 for(var i=0;i<=23;i++)
                 {
@@ -60,7 +68,7 @@ $(document).ready(function(){
                     if(i<=9) i='0'+i;
                     $item.find('.minute-list').append('<li>'+i+'</li>');
                 }
-                $('.add-period').append($item).show();
+                $('.add-period').empty().append($item).show();
             });
 
 
@@ -169,6 +177,27 @@ $(document).ready(function(){
 	     orderSearch();
 	}
     });
+    //实时请求未处理订单
+    setInterval(function(){
+        $.ajax({
+            url:"/admin/order?order_type=1&order_status=1&page=0&action=realtime",
+            type:"get",
+            success:function(res){
+                if(res.success){
+                    var index = $(".order-type").children(".active").index();
+                    $("#atonce").text(res.atonce);
+                    $("#ontime").text(res.ontime);
+                    /*if(res.new_order_sum>0){
+                        $("#new-order-box").removeClass("hidden");
+                    }else{
+                        $("#new-order-box").addClass("hidden");
+                    }*/
+                }
+            }
+        })
+    },10000);
+}).on("click","#new-order-box",function(){
+   window.location.reload(true);
 });
 var link='/admin/order';
 var orderType=$.getUrlParam('order_type');
@@ -223,7 +252,7 @@ function addEditPeriod(target,action){
         end_minute:end_minute,
         name:name
     };
-    if(!name){return alert('请输入时段名称！')}
+    if(!name){return alert('请输入时段名称！');}
     if(action=='edit_period') data.period_id=period_id;
     var args={
         action:action,
@@ -233,7 +262,7 @@ function addEditPeriod(target,action){
             if(res.success){
                 if(action=='add_period'){
                     parent.empty().hide();
-                    var item_url='/static/items/admin/send-period-item.html?v=2015-0119';
+                    var item_url='/static/items/admin/send-period-item.html?v=2015-0328';
                     $.getItem(item_url,function(data){
                         var $item=$(data);
                         $item.attr({'data-id':res.period_id});
@@ -427,16 +456,16 @@ function SendNowConfig(){
         freight_now=0;
     }
     if(min_charge_now>200){
-        return alert('最低起送价请不要超过200元!');
+        return alert('最低起送价请不要超过200元！');
     }
     if(intime_period==null) {
         intime_period=30;
     }
     if(!regNum.test(intime_period)){
-        return alert('立即送时间段只能填写数字 ！')
+        return alert('立即送时间段只能填写数字！')
     }
     if(intime_period<0||intime_period>120){
-        return alert('立即送时间段只能设置为0~120 ！')
+        return alert('立即送时间段只能设置为0~120！')
     }
     var args={
         action:action,

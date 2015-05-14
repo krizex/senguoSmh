@@ -1,4 +1,14 @@
+var width = 0;
 $(document).ready(function(){
+    if($(".com-goods-lst").size()>0){
+        width = parseInt($(".com-goods-lst").width()/4)-12;
+        $(".com-goods-lst>li").each(function(){
+            $(this).width(width).height(width);
+        });
+        baguetteBox.run('.com-goods-lst',{
+            buttons: false
+        });
+    }
     //订单状态
     $('.status').each(function(){
         var $this=$(this);
@@ -34,16 +44,13 @@ $(document).ready(function(){
         }
     }
     removeDom();
-}).on("click","#change-comment",function(){
-    var pointBox=new Modal('pointsBox');
-    pointBox.modal('show');
 }).on("click","#del-ok",function(){
     var comment=$('#new-comment').val();
     if(!comment){
-        return noticeBox('请输入评论内容');
+        return warnNotice('请输入评价内容');
     }
     if(comment.length>300){
-        return noticeBox('至多可以评论300字!');
+        return warnNotice('评价内容被容最多300字');
     }
     $('#del-ok').attr({'disabled':true});
     changeComment(comment);

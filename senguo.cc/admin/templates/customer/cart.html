@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}【{{shop_name}}】 一家不错的O2O店铺，快来关注吧~{% end %}
+{% block title %}【{{shop_name}}】一家不错的O2O店铺，快来关注吧~{% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/market-cart.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 {% end %}
 {% block content %}
-    <span id="shop_imgurl" data-img="{{shop_logo}}"></span>
+    <span id="shop_imgurl" data-img="{{shop_logo}}" data-code="{{shop_code}}"></span>
     <div class="rainshed bg_change fix-title"></div>
     <div class="bg-box">
         <ul class="cart-list set-w100-fle mt42 m-b0">
@@ -45,7 +45,7 @@
             <li class="cart-list-item set-w100-fle menu_item TDSG text-grey m-b5">
                 <div class="box bg set-w100-fle">
                     {% if cart_m[key]['mcharge_type'].mgoods.img_url %}
-                    <img src="" class="goods-img pull-left w15 lazy_img" data-original="{{cart_m[key]['mcharge_type'].mgoods.img_url}}?imageView/1/w/100/h/100"/>
+                    <img src="" class="goods-img pull-left w15 lazy_img" data-original="{{cart_m[key]['mcharge_type'].mgoods.img_url}}?imageView/1/w/170/h/170"/>
                     {% else %}
                     <img src="" class="goods-img pull-left w15 lazy_img" data-original="/static/design_img/TDSG.png?v=20150316"/>
                     {% end %}
@@ -87,8 +87,8 @@
                 <span class="pull-right tit2 text-right"><span id="final_price"></span>元</span>
                 <span class="pull-right tit text-right">实付金额：</span>
             </div>
-            <p class="text-center text-pink mincharge_intime" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"按时达"起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元</p>
-            <p class="text-center text-pink mincharge_now" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到"立即送"起送价金额<span class="mincharge">{{config.min_charge_now}}</span>元</p>
+            <p class="text-center text-pink mincharge_intime" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到“按时达”起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元</p>
+            <p class="text-center text-pink mincharge_now" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到“立即送”起送价金额<span class="mincharge">{{config.min_charge_now}}</span>元</p>
             <div class="send-time-choose clearfix center-block bg-white box-style">
                 <p class="text-left text-grey3 font14 m-b5">收货时间</p>
                 {% set active=''%}
@@ -132,13 +132,13 @@
                     <li data-id="1" class="active pull-left item" id="send_today"><a href="javascript:;" class="bg-white text-green">今天</a></li>
                     <li data-id="2" id="send_tomorrow" class="pull-left item"><a href="javascript:;" class="bg-white text-green">明天</a></li>
                 </ul>
-                <div id="sendPeriod" class="send_period list-group  font14">
+                <div id="sendPeriod" class="send_period list-group font14">
                     {% for period in periods%}
                     <button data-id="{{period.id}}" class="list-group-item clearfix available line50 height50 item">
                         <a href="javascript:;" class="text-grey clearfix">
                             <span class="text-grey3 pull-left set-inl-blo period_name text-left">{{period.name}}</span>
                              <span class="pull-left">
-                                 <span class="check-time">{{period.start_time.hour}}</span>:  <span class="check-time">{{period.start_time.minute}}</span>-<span class="intime_endtime"> <span class="check-time">{{period.end_time.hour}}</span>: <span class="check-time">{{period.end_time.minute}}</span></span>
+                                 <span class="check-time">{{period.start_time.hour}}</span> : <span class="check-time">{{period.start_time.minute}}</span> ~ <span class="intime_endtime"><span class="check-time">{{period.end_time.hour}}</span> : <span class="check-time">{{period.end_time.minute}}</span></span>
                              </span>
                             <input type="hidden" class="intime_startHour" value="{{period.start_time.hour}}"/>
                             <input type="hidden" class="intime_startMin" value="{{period.start_time.minute}}"/>
@@ -161,7 +161,7 @@
                      </li>-->
                     <li class="font14 clearfix line50 height50">
                         送货时间：
-                        <span class="now_startime">{{config.start_time_now}}</span>~
+                        <span class="now_startime">{{config.start_time_now}}</span> ~
                         <span class="now_endtime">{{config.end_time_now}}</span>
                     </li>
                 </ul>
@@ -200,7 +200,7 @@
                                 <span class="tit set-inl-blo pull-left">电话：</span>
                                 <input type="text" placeholder="输入收货人有效联系电话"  class="input-sty bg-white pull-left" id="receivePhone"/>
                             </p>
-                            <div class="w200 center-block clearfix mt10">
+                            <div class="w118 center-block clearfix mt10">
                                 <button class="btn text-white pull-right bg-green sure_btn" id="receiveAdd">确定</button>
                                 <button class="btn text-white pull-right bg-green hidden sure_btn" id="receiveEdit">确定</button>
                                 <button class="btn text-white bg-greyc pull-right m-r10" id="receiveCancel">取消</button>
@@ -211,33 +211,54 @@
             <div class="send-address-choose clearfix center-block bg-white box-style">
                 <p class="clearfix">
                     <span class="pull-left text-grey3 font14 m-b5">支付方式</span>
-                    <!--<a href="javascript:;" class="text-green pull-right font12 m-r10" id="charge">充值</a>
-                    <span class="pull-right pr10 font12">账户余额：{{current_user.balance}}元</span>-->
+                    <span class="pull-right ">余额：{{balance_value}}元&nbsp;&nbsp;<a href="/customer/recharge" class="a-cz" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">+充值</a></span>
                 </p>
-                <ul id="payType" class="pay_type list-group type-choose font12">
-                    <li data-id="1" class="active list-group-item clearfix line50 height50 item">
+                <ul id="payType" class="pay_type list-group font12">
+                    <li data-id="1" class="active list-group-item clearfix line50 height50 item" data-status="{{config.cash_on_active}}">
                         <a href="javascript:;" class="text-grey">
                             <span class="text-grey3 pull-left title set-inl-blo font14">货到付款</span>
-                            <span class="pull-left text-grey9">送货员送货时交付现金</span>
+                            <span class="pull-left text-grey9">先下单，收到商品时付款</span>
                         </a>
                     </li>
-                    <!--<li data-id="2" class="list-group-item clearfix line50 height50">
-                        <a href="javascript:;" class="text-grey">
+                   <li data-id="2" class="list-group-item clearfix line50 height50 item" id="balance-pay" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">
+	                    <a href="javascript:;" class="text-grey">
                             <span class="text-grey3 pull-left title set-inl-blo font14">余额支付</span>
-                            <span class="pull-left text-grey9">提前支付</span>
+                            <span class="pull-left text-grey9" style="max-width: 60%;">使用充值的余额极速下单</span>
                         </a>
-                    </li>-->
+                    </li>
+                    <li data-id="3" class="list-group-item clearfix line50 height50 item" id="online-pay" data-auth="" data-status="">
+                        <a href="javascript:;" class="text-grey">
+                            <span class="text-grey3 pull-left title set-inl-blo font14">在线支付</span>
+                            <span class="pull-left text-grey9" style="max-width: 60%;">下单的同时完成付款</span>
+                        </a>
+                    </li>
                 </ul>
+                <div class="group"></div>
+                <div class="wrap-online-lst hidden">
+                    <ul class="online-lst">
+                        <li class="group" data-type="wx">
+                            <a href="javascript:;" class="pull-right checkbox-btn checkboxed"></a>
+                            <span class="pull-left w90"><img src="/static/images/wx.png" class="third-img" alt="微信支付"/></span>
+                            <span class="pull-left text-grey9 third-txt">微信支付</span>
+                        </li>
+                        <li class="group" data-type="alipay">
+                            <a href="javascript:;" class="pull-right checkbox-btn"></a>
+                            <span class="pull-left w90"><img src="/static/images/alipay.png" class="third-img" alt="支付宝支付"/></span>
+                            <span class="pull-left text-grey9 third-txt">支付宝支付</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <input id="messageCon" class="message-input input-sty box-style center-block font14 bg-white bg-grey" type="text" value="" placeholder="留个言调戏下客服吧？(⊙_⊙)">
-            <button id="submitOrder" class="sub-btn w-per6 bg-green text-white text-center center-block btn mt10 clearfix sure_btn">提交订单</button>
-            <!--
+            {% if config.text_message_active  == 1 and shop_new !=1 and current_user.accountinfo.phone == None %}
             <button  class="sub-btn w-per6 bg-grey99 text-white text-center center-block btn mt10 clearfix un_tie sure_btn">提交订单</button>
             <div class="first_notice center-block clearfix mt10">
                 <span class="pull-left">第一次下单?</span>
                 <button  class="sure_btn  text-center  pull-right" id="phoneNumber">绑定手机号</button>
             </div>
-            -->
+            {% else %}
+             <button id="submitOrder" class="sub-btn w-per6 bg-green text-white text-center center-block btn mt10 clearfix sure_btn">提交订单</button>
+            {% end %}
         </div>
         <div class="bottom-line"></div>
     </div>
@@ -254,11 +275,13 @@
             <div class="modal-body font14 clearfix">
                 <div class="tie-info">
                     <div class="phone-number">
-                        <input type="text" placeholder="输入手机号" class="phone input1 pull-left" id="enterPhone"/>
+                        <input type="text" placeholder="请输入手机号" class="phone input1 pull-left" id="enterPhone"/>
                         <input type="submit" value="获取验证码" class="get-code pull-right bg-green3 sure_btn" id="getVrify"/>
                     </div>
-                    <input type="text" placeholder="输入收到的短信验证码" class="input1" id="enterVrify"/>
+                    <input type="text" placeholder="请输入收到的短信验证码" class="input1" id="enterVrify"/>
                 </div>
+            </div>
+            <div class="modal-warn">
             </div>
             <div class="modal-footer clearfix">
                 <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn"  id="tiePhone">绑定</button>

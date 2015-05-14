@@ -1,7 +1,20 @@
 {% extends 'base.html' %}
-{% block title %}【{{shop_name}}】 一家不错的O2O店铺，快来关注吧~{% end %}
-{% block head %}<link rel="stylesheet" href="{{static_url('css/market-shop.css')}}"/>{% end %}
+{% block title %}【{{shop_name}}】一家不错的O2O店铺，快来关注吧~{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/baguetteBox.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/market-shop.css')}}"/>
+{% end %}
 {% block content %}
+{% set shop_auth ='' %}
+{% set color =''%}
+{% if shop.shop_auth == 1 or shop.shop_auth == 4%}
+{% set shop_auth = '个人认证' %}
+{% elif shop.shop_auth == 2 or shop.shop_auth == 3%}
+{% set shop_auth = '企业认证' %}
+{% else %}
+{% set shop_auth = '未认证' %}
+{% set color='bg-greyc' %}
+{% end %}
 <span id="shop_imgurl" data-img="{{shop_logo}}"></span>
 <div class="rainshed text-center font18 text-black fix-title bg_change">店铺详情</div>
  <div class="info1 bg-white clearfix mt42 pt20">
@@ -9,7 +22,7 @@
          <img src="{{shop.shop_trademark_url or static_url('design_img/TDSG.png')}}?imageView/1/w/170/h/170">
      </div>
      <div class="info set-w100-fle">
-        <p class="font16 line18">{{shop.shop_name}}<!--<span class="cert-type">个人认证</span>--></p>
+        <p class="font16 line18">{{shop.shop_name}}<span class="cert-type {{color}}">{{shop_auth}}</span></p>
         <p class="font12 mt10 m-b10">店铺号：<span class="">{{shop.shop_code}}</span></p>
      </div>
      <div class="info set-w100-fle">
@@ -57,19 +70,19 @@
  <ul class="info2 text-center bg-white set-w100-fle font12 m-b10">
      <li class="w25 pull-left">
         <p class="text-grey9 text-center">运营时间</p>
-        <p class="text-center">{{operate_days or 0}}天</p>
+        <p class="mt3 text-center">{{operate_days or 0}}天</p>
      </li>
      <li class="w25 pull-left">
          <p class="text-grey9 text-center">粉丝</p>
-         <p class="text-center">{{fans_sum or 0}}个</p>
+         <p class="mt3 text-center">{{fans_sum or 0}}个</p>
      </li>
      <li class="w25 pull-left">
          <p class="text-grey9 text-center">总订单数</p>
-         <p class="text-center">{{order_sum}}个</p>
+         <p class="mt3 text-center">{{order_sum}}个</p>
      </li>
      <li class="w25 pull-left">
          <p class="text-grey9 text-center">商品种类</p>
-         <p class="text-center">{{goods_sum or 0}}种</p>
+         <p class="mt3 text-center">{{goods_sum or 0}}种</p>
      </li>
  </ul>
 <div class="shop-box bg-white clearfix">
@@ -77,13 +90,13 @@
     <ul class="shop-info text-grey9 font14">
         <li class="set-w100-fle"><span class="pull-left">店铺地址：</span><span class="pull-left set-inl-blo w8">{{address}}</span></li>
         <li class="set-w100-fle"><span class="pull-left">配送区域：</span><span class="pull-left set-inl-blo w8">{{shop.deliver_area or '无'}}<!--<em class="area-icon set-inl-blo pull-right"></em>--></span></li>
-        <li class="set-w100-fle">联系电话：{{shop.shop_phone or '无'}}<a href="tel:{{shop.shop_phone }}" class="phone_icon"><em class="phone-icon set-inl-blo bg_change"></em></a></li>
+        <li class="set-w100-fle"><span class="pull-left">联系电话：</span><span class="pull-left set-inl-blo w8">{{shop.shop_phone or '无'}}<a href="tel:{{shop.shop_phone }}" class="phone_icon"><em class="phone-icon set-inl-blo bg_change"></em></a></span></li>
         <li class="set-w100-fle"><span class="pull-left">店铺简介：</span><span class="pull-left set-inl-blo w8">{{shop.shop_intro or '无'}}</span></li>
     </ul>
 </div>
 <div class="shop-box bg-white clearfix">
     <p class="title set-w100-fle">
-        <span class="pull-left font14">店铺成员（{{len(headimgurls)}}）：</span>
+        <span class="pull-left font14">店铺成员 ({{len(headimgurls)}})：</span>
         <a href="{{reverse_url('customerMembers')}}" class="pull-right text-grey9 font12 m-r5">查看更多>></a>
         <a href="#" class="staff_href pull-right text-green3 pr10 font12">+加入该店</a>
     </p>
@@ -94,26 +107,49 @@
     </ul>
 </div>
 <div class="shop-box bg-white clearfix">
-    <p class="title set-w100-fle">
-        <span class="pull-left font14">店铺评价（{{comment_sum}}）：</span>
-        <a href="{{reverse_url('customerComment')}}?page=0" class="pull-right text-grey9 font12 m-r5">查看更多>></a>
-    </p>
-    <ul class="user-comment clearfix">
+        <div class="title" id="show-more">
+            <p class="pull-left font14">店铺评价：</p>
+            <p class="pt4">
+                {% if satisfy %}
+                <span class="num-txt">满意度：</span><span class="per-txt">{{satisfy}}</span>
+                {% end %}
+                <span class="num-txt pl20">{{comment_sum}}条评论</span>
+                <a href="{{reverse_url('customerComment')}}?page=0" class="pull-right text-grey9 font12 m-r5">查看更多>></a>
+            </p>
+        </div>
+    {% if comments %}
+    <ul class="point-com-lst">
         {% for comment in comments %}
-        <li class="comment-item set-w100-fle">
-            <div class="img-box pull-left">
-                <img src="{{comment[6] or '/static/design_img/TDSG.png'}}" class="img">
-            </div>
-            <div class="con set-w100-fle">
-                <p class="clearfix text-grey">
-                    <span class="pull-left m-b5 font14">{{comment[7]}}</span>
-                    <span class="pull-right">{{handler.timedelta(comment[1])}}</span>
-                </p>
-                <p class="text-grey9">{{comment[0] or '无'}}</p>
-            </div>
+        <li>
+            <dl class="ccom-item group">
+                <dd class="fl">
+                    <div class="wrap-img">
+                        <img src="{{comment[6] or '/static/design_img/TDSG.png'}}" width="50" height="50" alt="头像"/>
+                    </div>
+                </dd>
+                <dt class="fl">
+                <p class="mt4"><span class="nor-txt">{{comment[7]}}</span><span class="time-txt mr10 pull-right">{{handler.timedelta(comment[1])}}</span></p>
+                <p class="com-txt">{{comment[0] or '无'}}</p>
+                {% if comment[10] %}
+                <ul class="group com-goods-lst">
+                    {% for img in comment[10] %}
+                    <li>
+                        <a href="{{img}}" title=""><img src="{{img}}?imageView2/5/w/200/h/200" alt="晒单图片"/></a>
+                    </li>
+                    {% end %}
+                </ul>
+                {% end %}
+                {% if comment[3] %}
+                <p class="reply-txt">商家回复：{{comment[3]}}</p>
+                {% end %}
+                </dt>
+            </dl>
         </li>
         {% end %}
     </ul>
+    {% else %}
+    <p class="no-txt">暂无评价！</p>
+    {% end %}
 </div>
 {% end %}
 {% block other %}
@@ -122,5 +158,6 @@
 {% end %}-->
 {% end %}
 {% block bottom %}
+<script src="{{static_url('js/third/baguetteBox.min.js')}}"></script>
 <script src="{{static_url('js/market-shop.js')}}"></script>
 {% end %}

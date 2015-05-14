@@ -1,5 +1,9 @@
 $(document).ready(function(){
         //导航active
+    var market_shop_id=getCookie('market_shop_id');
+    if(!market_shop_id){
+        $('.return-btn').hide();
+    }
     window.dataObj.action=$.getUrlParam('action');
     $('.order-nav li').each(function(){
         var $this=$(this);
@@ -35,15 +39,15 @@ $(document).ready(function(){
     var comment_order_id;
     $(document).on('click','.comment-btn',function () {
         var $this = $(this);
-        var commentBox=new Modal('commentBox');
-        commentBox.modal('show');
         index=$this.parents('.order-list-item').index();
         comment_order_id=$this.parents('.order-list-item').data('id');
+        window.location.href="/customer/shopcomment?num="+comment_order_id;
     });
-    $(document).on('click','.comment_submit', function () {
+    /*$(document).on('click','.comment_submit', function () {
         var comment=$('.comment-input').val();
+        $('.comment_submit').attr({'disabled':true}).addClass('bg-greyc');
         orderComment(index,comment_order_id,comment);
-    });
+    });*/
 });
 window.dataObj.page=1;
 window.dataObj.count=1;
@@ -84,7 +88,7 @@ var goodsList=function(page,action){
         if(res.success)
         {
             if(window.dataObj.list_item==undefined){
-                getItem('/static/items/customer/orderlist_item.html?v=2015-0325',function(data){
+                getItem('/static/items/customer/orderlist_item.html?v='+new Date().getTime(),function(data){
                     window.dataObj.list_item=data;
                     initData(res);
                 });    
@@ -119,11 +123,20 @@ var goodsList=function(page,action){
                     var create_date=orders[i]['create_date'];
                     var create_year=orders[i]['create_year'];
                     var create_month=orders[i]['create_month'];
-                    var create_day=orders[i]['create_day']; 
+                    var create_day=orders[i]['create_day'];
+                    var pay_type = orders[i]['pay_type'];
                     var date=new Date();
                     var year=date.getFullYear();
                     var month=date.getMonth()+1;
                     var day=date.getDate();
+                    var pay_txt = "";
+                    if(pay_type==1){
+                        pay_txt = "货到付款";
+                    }else if(pay_type==2){
+                        pay_txt = "余额支付";
+                    }else{
+                        pay_txt = "在线支付";
+                    }
                     $item.attr({'data-id':id,'data-status':order_status});
                     $item.find('.detail-link').attr({'href':'/customer/orders/detail/'+id});
                     $item.find('.order_num').text(order_num);
@@ -132,6 +145,7 @@ var goodsList=function(page,action){
                     $item.find('.address').text(address_text);
                     $item.find('.price').text(totalPrice);
                     $item.find('.send_time').text(send_time).show();
+                    $item.find('#order_pay_type').children("span").html(pay_txt);
                     if(message) {$item.find('.remark_box').show().find('.remark').text(message);}
                     if(comment) {$item.find('.comment_box').show().find('.comment').text(comment);}
                     if(type==1) {
@@ -229,12 +243,18 @@ function orderConcel(target,id){
 )
 }
 
-function orderComment(id,order_id,comment){
+
+/*该方法可以去掉*/
+/*function orderComment(id,order_id,comment){
     var url='';
     var action='comment';
-    if(!comment){return warnNotice('请输入您的评论！')}
+    if(!comment){
+        $('.comment_submit').removeAttr('disabled').removeClass('bg-greyc');
+        return warnNotice('请输入评价内容');
+    }
     if(comment.length>300){
-        warnNotice('至多可以评论300字!');
+        $('.comment_submit').removeAttr('disabled').removeClass('bg-greyc');
+        return warnNotice('评价内容最多300字');
     }
     var data={
         order_id:order_id,
@@ -253,9 +273,23 @@ function orderComment(id,order_id,comment){
            parent.find('.content').append('<p>评价：'+comment+'</p>');
            var commentBox=new Modal('commentBox');
            commentBox.modal('hide');
+           $('.comment_submit').removeAttr('disabled').removeClass('bg-greyc');
+           noticeBox(res.notice);
         }
-        else return noticeBox(res.error_text)
-    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
-        );
+        else {
+            noticeBox(res.error_text);
+            $('#commit-senguo').removeAttr('disabled').removeClass('bg-greyc');
+        }
+         if($("#commentBox").not('in')){
+                $('#commit-senguo').removeAttr('disabled').removeClass('bg-greyc');
+            }
+    }, function(){
+        noticeBox('网络好像不给力呢~ ( >O< ) ~');
+        $('#commit-senguo').removeAttr('disabled').removeClass('bg-greyc');
+    },
+    function(){
+        $('.comment_submit').removeAttr('disabled').removeClass('bg-greyc');
+        noticeBox('服务器貌似出错了~ ( >O< ) ~');
+    });
 }
+*/

@@ -75,71 +75,6 @@ $(document).ready(function(){
         //s_top = $(".wrap-goods-box").scrollTop();
     });
 
-    /*var startX = 0,startY = 0,t = 0;
-    document.addEventListener('touchstart', function (ev) {
-        startX = ev.touches[0].pageX;
-        startY = ev.touches[0].pageY;
-        t = $(".wrap-goods-box").scrollTop();
-    }, false);
-    document.addEventListener('touchmove', function (ev) {
-        event.preventDefault();
-        var moveX,moveY;
-        moveX = ev.touches[0].pageX;
-        moveY = ev.touches[0].pageY;
-        var direction = GetSlideDirection(startX, startY, moveX, moveY);
-        var disY = Math.abs(moveY - startY);
-        switch (direction) {
-            case 0:
-
-                break;
-            case 1:   //上
-                $(".notice-box").css("display","none");
-                $('.top-title').addClass('fix-top');
-                $(".wrap-goods-box").scrollTop(t+disY);
-                break;
-            case 2:   //下
-                var disy = t-disY;
-                if(disy>0){
-                    $(".wrap-goods-box").scrollTop(disy);
-                }else{
-                    $('.top-title').removeClass('fix-top');
-                    $(".notice-box").css("display","block");
-                }
-                break;
-            case 3:   //左
-
-                break;
-            case 4:   //右
-
-                break;
-        }
-    }, false);*/
-//返回角度
-    function GetSlideAngle(dx, dy) {
-        return Math.atan2(dy, dx) * 180 / Math.PI;
-    }
-//根据起点和终点返回方向 1：向上，2：向下，3：向左，4：向右,0：未滑动
-    function GetSlideDirection(startX, startY, endX, endY) {
-        var dy = startY - endY;
-        var dx = endX - startX;
-        var result = 0;
-        //如果滑动距离太短
-        if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
-            return result;
-        }
-        var angle = GetSlideAngle(dx, dy);
-        if (angle >= -45 && angle < 45) {
-            result = 4;
-        } else if (angle >= 45 && angle < 135) {
-            result = 1;
-        } else if (angle >= -135 && angle < -45) {
-            result = 2;
-        }
-        else if ((angle >= 135 && angle <= 180) || (angle >= -180 && angle < -135)) {
-            result = 3;
-        }
-        return result;
-    }
     //all numer of page
     var fruit_pages=Int($('#fruit_page').val());
     var dry_pages=Int($('#dry_page').val());
@@ -322,19 +257,20 @@ $(document).ready(function(){
             var regNum=/^[0-9]*$/;
             if(!regNum.test(num)) {
                 $this.siblings('.number-input').val(storage);
-                return noticeBox('商品数量只能为整数!',$this);
+                return noticeBox('商品数量只能为整数！',$this);
             }
             if(num<999) {goodsNum($this,2);}
             else {
-                return noticeBox('最多只能添加999哦!',$this);
+                return noticeBox('最多只能添加999哦！',$this);
             }
-        }).on('blur','.number-input',function(){
+        }).on('change','.number-input',function(){
             var $this=$(this);
             var num=$this.val();
             var change=$this.parents('.number-change');
             var regNum=/^[0-9]*$/;
             var parent=$this.parents('.goods-list-item');
-            var storage=parseFloat(parent.data('num'));
+            var storage_origin=parseFloat(parent.data('num'));
+            var storage=parseFloat(parent.data('storage'));
             var storage_now;
             var num_item=parent.find('.number-input');
             var index=$this.index();
@@ -342,19 +278,25 @@ $(document).ready(function(){
             if(num_item.length>0){
                 for(var i=0;i<num_item.length;i++){
                     if(i!=index){
-                        storage_now=Int(storage-num_item.eq(i).val());
+                        if(num_item.eq(i).val()<storage){
+                             storage_now=storage-num_item.eq(i).val();
+                        }
+                        else{
+                            storage_now=storage;
+                        }  
                     }
                 }
             }
-            else {storage_now=Int(storage)};
-            $this.val(storage_now);
+            else {
+                storage_now=storage;
+            };
             if(!regNum.test(num)) {
                 $this.val(0);
                 change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
                 window.dataObj.cart_count--;
                 $('.cart_num').text(window.dataObj.cart_count);
                 SetCookie('cart_count',window.dataObj.cart_count);
-                return noticeBox('商品数量只能为整数!┑(￣▽ ￣)┍',$this);
+                return noticeBox('商品数量只能为整数！┑(￣▽ ￣)┍',$this);
                 parent.attr({'data-storage':storage_now});
             }
             if(num==0){
@@ -369,34 +311,53 @@ $(document).ready(function(){
                     $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
                     SetCookie('cart_count',window.dataObj.cart_count);
                 }
-            }
-            else{
-                if(result>0) {parent.attr({'data-storage':result});}
-                else parent.attr({'data-storage':0});
-                if(num>999) {
-                    if(storage<999) {
-                        if(storage_now<=0) {$this.val(storage);}
-                        return noticeBox('只有这么多了哦!┑(￣▽ ￣)┍',$this);
+            }   
+            else if(0<num<999){
+                if(num>=storage) {
+                     if(storage_now<=0){
+                        $this.val(0);
                     }
-                    else {
-                        $this.val(999);
-                         return noticeBox('最多只能添加999哦!┑(￣▽ ￣)┍',$this);
+                    else if(storage_now>0){
+                        window.dataObj.cart_count++;
+                        $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
+                        SetCookie('cart_count',window.dataObj.cart_count);
+                         $this.val(Int(storage_now));
+                         if(num_item.length>0){
+                            storage_origin=storage_origin-storage;
+                            for(var i=0;i<num_item.length;i++){
+                                storage_now=storage_origin-num_item.eq(i).val();
+                                //console.log(storage_now);
+                            }
+                        }
+                        else {
+                            storage_now=0;
+                        };
+                         parent.attr({'data-storage':storage_now});
+                         //console.log(233333);
+                        if(storage_now<num) {return noticeBox('只有这么多了哦！┑(￣▽ ￣)┍',$this);}
                     }
                 }
-                else{
-                    if(num>=storage) {
-                         if(storage_now<=0){
-                            if(storage<999) $this.val(storage);
-                            else $this.val(999);
-                            noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)
-                        }
-                        else if(storage_now>0){
-                            window.dataObj.cart_count++;
-                            $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
-                            SetCookie('cart_count',window.dataObj.cart_count);
-                            if(storage_now<num) {return noticeBox('只有这么多了哦!┑(￣▽ ￣)┍',$this);}
-                        }
-                    }
+                else if(num<storage){
+                    $this.val(num);
+                     storage_now=storage_now-num;
+                    parent.attr({'data-storage':storage_now});
+                    //console.log(24444444);
+                }
+            }
+         else if(num>=999) {
+                if(result>0) {parent.attr({'data-storage':result});}
+                else parent.attr({'data-storage':0});
+                if(storage<999) {
+                    $this.val(Int(storage_now));
+                    //console.log(25555555);
+                    return noticeBox('只有这么多了哦！┑(￣▽ ￣)┍',$this);
+                }
+                else {
+                    $this.val(999);
+                    storage_now=storage_now-999;
+                    parent.attr({'data-storage':storage_now});
+                    //console.log(266666);
+                     return noticeBox('最多只能添加999哦！┑(￣▽ ￣)┍',$this);
                 }
             }
         }).on('click','.toggle',function(e){
@@ -417,19 +378,14 @@ window.dataObj.page=1;
 window.dataObj.count=1;
 window.dataObj.action=5;
 window.dataObj.finished=true;
-var scrollLoading=function(){
-    var range = 80;             //距下边界长度/单位px          //插入元素高度/单位px  
-    var totalheight = 0;   
-    var main = $(".container");                  //主体元素   
+$('.loading').html("~努力加载中 ( > < )~").show();
+var scrollLoading=function(){  
     $(window).scroll(function(){
         var maxnum = window.dataObj.page_count;            //设置加载最多次数  
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
-    var range = 80;             //距下边界长度/单位px          //插入元素高度/单位px
-    var totalheight = 0;
-    var main = $(".container");                  //主体元素
-    /*$(".wrap-goods-box").scroll(function(){
-        var maxnum = window.dataObj.page_count;            //设置加载最多次数
-        var srollPos = $(".wrap-goods-box").scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)*/
+        var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
+        var totalheight = 0;
+        var main = $(".container");                  //主体元素
         if(!maxnum) maxnum=Int($('#page_count').val());
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
         if(window.dataObj.finished&&(main.height()-range) <= totalheight  && window.dataObj.page < maxnum) {
@@ -437,12 +393,11 @@ var scrollLoading=function(){
             window.dataObj.page++;
             goodsList(window.dataObj.page,window.dataObj.action);
         }
-        else if(window.dataObj.page ==maxnum){
+        else if(window.dataObj.page == maxnum){
               $('.loading').html("~没有更多商品了呢 ( > < )~").show();
         }
     });
 }
-
 var goodsList=function(page,action){
     var url='';
     var action = action;
@@ -451,10 +406,22 @@ var goodsList=function(page,action){
         page:page,
         menu_id:window.dataObj.menu_id
     };
-    $('.loading').html("~努力加载中 ( > < )~").show();
+    // alert('i am here');
     $.postJson(url,args,function(res){
         if(res.success)
         {
+            if(action==5&&page== 1&&res.w_orders.length<10){
+                    $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+            }
+            if(action==6&&page== 1&&res.fruit_list.length<10){
+                    $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+            }
+            if(action==7&&page== 1&&res.dry_fruit_list.length<10){
+                    $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+            }
+            if(action==8&&page== 1&&res.mgood_list.length<10){
+                    $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+            }
             //get item dom
             if(window.dataObj.goods_item==undefined){
                 getItem('/static/items/customer/market-goods-item.html?v=2015-0320',function(data){
@@ -468,16 +435,20 @@ var goodsList=function(page,action){
                     });
                 });
             }
-            else initData(res);
+            else {
+                initData(res);
+            }
         }
-        else return noticeBox(res.error_text);
-        },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
-        );
+        else {
+            noticeBox(res.error_text);
+        }
+        },
+        function(){noticeBox('网络好像不给力呢~ ( >O< ) ~');},
+        function(){noticeBox('服务器貌似出错了~ ( >O< ) ~');});
         var initData=function(res){
             var w_orders=res.w_orders;
-            $('.loading').hide();
             if(w_orders&&w_orders.length==0){
-                 $('.no_more').show();
+                 $('.loading').html("~没有更多商品了呢 ( > < )~").show();
                  return;          
             }
                     var fruit_list=res.fruit_list;
@@ -765,6 +736,10 @@ function great(type,id){
                 });
                 var check_large=new Modal('large_imgbox');
                 check_large.modal('hide');
+                if(res.notice)
+                {
+                    noticeBox(res.notice);
+                }
             }
             else noticeBox(res.error_text);
         },

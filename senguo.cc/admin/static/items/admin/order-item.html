@@ -10,7 +10,7 @@
             <span class="text-grey9">金额：</span><span><span class="order-price goods-total-charge"></span>元</span>
             <!--<span class="tips">（其中小费<span class="tip"></span>元）</span>-->
         </span>
-	<span class="pay-status pull-left pay-btn text-grey9" data-pay="">现金支付</span>
+	<span class="pay-status pull-left pay-btn" data-pay="">支付方式</span>
         <a class="print-order pull-right forbid_click" href="javascript:;" data-id="">打印</a>
     </div>
     <!--list-title-end-->
@@ -45,16 +45,20 @@
                     <span class="status">已确认收货</span>
                 </div>
             </div>
-	    <div class="btn-group pull-right font14 forbid_click status-change able_edit" style="display:none;">
+            <div class="pull-right font14 forbid_click status-change able_edit">
+                  <button class="status-send to-send btn btn-default"  style="display:none;">开始配送</button>
+                  <button class="status-finish to-finish btn btn-default" style="display:none;">完成订单</button>
+            </div>
+	  <!--   <div class="btn-group pull-right font14 forbid_click status-change able_edit" style="display:none;">
 		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-		    <span class="status_word">未处理</span><span class="caret pull-right"></span>
+		    <span class="status_word">未处理</span>
 		</button>
 		<ul class="dropdown-menu" role="menu">
 		    <li class="status-order">未处理</li>
 		    <li class="status-send">配送中</li>
 		    <li class="status-finish">已完成</li>
 		</ul>
-	   </div>
+	   </div> -->
 	   <span class="font12 pull-right set-inl-blo w100 text-center bg-white height30 unable_edit" style="display:none;">已评价</span>
         </div>
         <!--order-status-end-->

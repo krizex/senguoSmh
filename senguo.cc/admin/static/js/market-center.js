@@ -76,6 +76,17 @@ $(document).ready(function(){
         }
         confirmRemove();
     });
+}).on('click','.user-balance',function(){
+    var status = $(this).attr('data-status');
+    var statu = $(this).attr("data-auth");
+    if(statu == "False"){
+        noticeBox("当前店铺未认证，此功能暂不可用");
+        return false;
+    }
+    if(status==0){
+         noticeBox("当前店铺已关闭余额支付，此功能暂不可用");
+         return false;
+    }
 });
 
 function sex(target,id){
@@ -94,12 +105,12 @@ function addressEdit(target,action){
     var phone=$('#address_phone').val();
     var address=$('#address_address').val();
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(!name) {return warnNotice('请填写收货人姓名！');}
-    if(!phone) {return warnNotice('请填写收货人电话！');}
-    if(!regPhone.test(phone)){return warnNotice('请填写正确的手机号！');}
-    if(!address) {return warnNotice('请填写收货人地址！');}
-    if(name.length>10) {return warnNotice('姓名请不要超过10个字！');}
-    if(address.length>50) {return warnNotice('地址请不要超过50个字！');}
+    if(!name) {return warnNotice('请填写收货人姓名');}
+    if(!phone) {return warnNotice('请填写收货人电话');}
+    if(!regPhone.test(phone)){return warnNotice('请填写正确的手机号');}
+    if(!address) {return warnNotice('请填写收货人地址');}
+    if(name.length>10) {return warnNotice('姓名请不要超过10个字');}
+    if(address.length>50) {return warnNotice('地址请不要超过50个字');}
     var data={
         receiver:name,
         phone:phone,

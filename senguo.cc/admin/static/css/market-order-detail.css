@@ -11,7 +11,7 @@
 .goods-item>dt>p{font-size:12px;line-height: 20px;}
 .big{font-size: 18px!important;}
 .txt-ar{text-align: right!important;}
-.dash-bt{border-top:1px dashed #f0f0f0;}
+.dash-bt{border-top:1px dashed #e7e7e7;}
 .black-txt{color: #222;}
 .green-txt{color: #84dfa1!important;}
 /*.comment-box{top: 50%;-webkit-transform:translate(0, -50%)!important;}*/
@@ -20,9 +20,12 @@
 .btn-group>a{display: inline-block;margin-top:15px;padding: 0 30px;height: 34px;line-height: 34px;color: #fff;font-size: 14px;border-radius: 10px;}
 .bg-green{background-color: #5cb85c;}
 .bg-cancel{background-color: #c3c3c3;}
-.modal-header{top:15px;}
 .add-comment{background-color: #ff6563;color: #fff;border-radius: 6px;width: 100px;height: 34px;line-height: 34px;text-align: center;font-size: 14px;}
 .wrap-comment-area{text-align: center;}
 .comment-area{font-size: 12px;line-height: 16px;border: none;width: 90%;height: 60px;}
 .p-com{padding: 5px 0;line-height: 34px!important;height: 34px;}
-.modal-body>textarea{width:100%;background:#fff;height:100px;border:none;}
+.modal-body>textarea{width:90%;background:#fff;height:120px;border:none;}
+.com-goods-lst{margin-top: 10px;}
+.com-goods-lst>li{float: left;display:block;-webkit-box-sizing: border-box;margin-right: 10px; overflow: hidden;}
+.com-goods-lst>li a{display: block;}
+.com-goods-lst>li img{width: 100%;}

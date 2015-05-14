@@ -92,7 +92,7 @@ $(document).ready(function(){
                 };
             },
             'onUploadComplete':function(){
-                $('#logoImg').show().attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/80/h/80','data-key':key});
+                $('#logoImg').show().attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/100/h/100','data-key':key});
                 $('.logo-box').find('.filename').hide();
                 $('.logo-box').find('.fileinfo').hide();
                 $('.logo-box').find('.close').hide();
@@ -100,11 +100,13 @@ $(document).ready(function(){
         });
 
     //城市编码转换
-    var proc=$('.reProvince').data('code');
-    var citc=$('.reCity').data('code');
-    $('.reProvince').text(provinceArea(proc));
-    if(citc!=proc)
-    {$('.reCity').text(cityArea(proc,citc));}
+    // var proc=$('.reProvince').data('code');
+    // var citc=$('.reCity').data('code');
+    // $('.reProvince').text(provinceArea(proc));
+    // if(citc!=proc&&citc)
+    // {
+    //     $('.reCity').text(cityArea(proc,citc));
+    // }
     var area=window.dataObj.area;
     $(document).on('click','.province_select',function(){
         $('.provinceList').empty();
@@ -119,7 +121,6 @@ $(document).ready(function(){
             else if_city='false';
             $item.attr({'data-code':key,'data-city':if_city}).find('.name').text(area[key]['name']);
             $('.provinceList').append($item);
-
         }
     });
     $(document).on('click','.provinceList li',function(){
@@ -128,7 +129,10 @@ $(document).ready(function(){
         var text=$this.text();
         var if_city=$this.attr('data-city');
         $('#provinceAddress').attr({'data-code':code}).text(text);
-        if(if_city=='false') {$('.city_select').hide();}
+        if(if_city=='false') {
+            $('.city_select').hide(); 
+            $('#cityAddress').attr('data-code',code).text('');
+        }
         else {
              $('.cityList').empty();
               for(var key in area){
@@ -230,12 +234,13 @@ function infoEdit(target){
         var province=$('#provinceAddress').text();
         var city=$('#cityAddress').text();
         if(!shop_city) {
-            shop_city=$('#provinceAddress').attr('data-code');
-            city='';
+            return alert('请选择城市！');
         }
         address=province+city+$('#addressDetail').val();
         shop_address_detail=$('#addressDetail').val().trim();
-        if(shop_address_detail.length>50){return alert('详细地址请不要超过50个字符！')}
+        if(shop_address_detail.length>50){
+            return alert('详细地址请不要超过50个字符！');
+        }
         data={
             shop_city:shop_city,
             shop_address_detail:shop_address_detail
@@ -246,7 +251,7 @@ function infoEdit(target){
         action='edit_phone';
         shop_phone=$('.shop_phone').val().trim();
         console.log(shop_phone.length);
-        if(!(regNum).test(shop_phone)||11<shop_phone.length||shop_phone.length<5){return alert('"电话貌似有错o(╯□╰)o"')}
+        if(shop_phone.length=0){return alert('"电话不能为空o(╯□╰)o"')}
         data={shop_phone:shop_phone};
     }
     else if(action_name=='area')

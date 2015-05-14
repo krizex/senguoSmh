@@ -1,4 +1,6 @@
 $(document).ready(function(){
+    var shop_code=$('#shop_imgurl').attr('data-code');
+    SetCookie('market_shop_code',shop_code);
     var $list_total_price=$('#list_total_price');
     var $receiveAdd=$('#receiveAdd');
     var $receiveEdit=$('#receiveEdit');
@@ -120,7 +122,7 @@ $(document).ready(function(){
         evt.preventDefault();
         var phone=$('#enterPhone').val();
         var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-        if(phone.length > 11|| phone.length<11 || !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
+        if(phone.length > 11|| phone.length<11 || !regPhone.test(phone)){return warnNotice("手机号貌似有错o(╯□╰)o");}
         if(!phone){return warnNotice('手机号不能为空');}
         $('#getVrify').attr({'disabled':true});
         Vrify(phone);
@@ -166,7 +168,7 @@ $(document).ready(function(){
                         $this.addClass('active');
                     }
                 }
-                else if(noticeBox('抱歉，已超过了该送货时间段的下单时间!请选择下一个时间段！',$this)){}
+                else if(noticeBox('抱歉，已超过了该送货时间段的下单时间，请选择下一个时间段！',$this)){}
            });
         });}
         $('.send_period .item').on('click',function(){
@@ -298,8 +300,6 @@ $(document).ready(function(){
                     stop_time=checkTime(time.getHours()+2)+':'+checkTime(time.getMinutes()+(period-60))+':'+checkTime(time.getSeconds());
                 }
             }
-            console.log(stop_time);
-            console.log(end_time);
             if(stop_time<=end_time)
             {
                 $this.parents('.item').addClass('active').siblings('.item').removeClass('active');
@@ -318,7 +318,7 @@ $(document).ready(function(){
             }
             else {
                 $this.parents('.item').removeClass('active').siblings('.item').addClass('active');
-                return noticeBox('不小心超过了"立即送"的送货时间呢，请选择"按时达"时间段！',$this)
+                return noticeBox('不小心超过了“立即送”的送货时间呢，请选择“按时达”时间段！',$this)
             }
         });
     }
@@ -349,8 +349,54 @@ $(document).ready(function(){
         var $this=$(this);
         if($this.hasClass('active')) $this.removeClass('active');
         else $this.addClass('active').siblings('.item').removeClass('active');
-    })
+    });
+    //pay type active
+    $('.pay_type li').each(function(){
+        var $this=$(this);
+        var index = $this.index();
+        var status = $this.attr('data-status');
+        var statu = $this.attr("data-auth");
+        var type= $this.find('.title').text();
+        if(statu == "False"){
+            $this.removeClass('active').addClass('not_available');
+        }
+        if(status==0){
+            $this.removeClass('active').addClass('not_available').next('li').addClass('active');
+        }
+    });
+}).on("click",".pay_type li",function(){
+    var index = $(this).index();
+    var status = $(this).attr('data-status');
+    var type=$(this).find('.title').text();
+    if(index == 1){
+        var statu = $(this).attr("data-auth");
+        if(statu == "False"){
+            noticeBox("当前店铺未认证，此功能暂不可用");
+            return false;
+        }
+    }
+    if(index == 2){
+        noticeBox("目前还不支持在线支付哦，我们会尽快开放此功能");
+        return false;
+    }
+    if(status==0){
+         noticeBox("当前店铺已关闭"+type);
+         return false;
+    }
+    $(".pay_type li").removeClass("active").eq(index).addClass("active");
+}).on('click','.a-cz',function(){
+    var status = $(this).attr('data-status');
+    var statu = $(this).attr("data-auth");
+    if(statu == "False"){
+        noticeBox("当前店铺未认证，此功能暂不可用");
+        return false;
+    }
+    if(status==0){
+         noticeBox("当前店铺已关闭余额支付，此功能暂不可用");
+         return false;
+    }
 });
+
 window.dataObj.price_list=[];
 window.dataObj.total_price=0;
 window.dataObj.freigh_ontime=Int($('.freigh_ontime').text());
@@ -581,7 +627,8 @@ function orderSubmit(target){
     var mincharge_now=Number($('.mincharge_now .mincharge').text());
     var tip=$('.tip-list').find('.active').data('id');
     window.dataObj.total_price=Number($('#list_total_price').text());
-    if(!today) today=1;
+    if(!pay_type){return noticeBox('请选择支付方式',target);}
+    if(!today){today=1;}
     if(!address_id){return noticeBox('请填写您的收货地址！',target);}
     if(!tip) tip=0;
     for(var i=0;i<fruit_item.length;i++)
@@ -621,6 +668,9 @@ function orderSubmit(target){
     };
     $.postJson(url,args,function(res) {
         if (res.success) {
+            if(res.notice){
+                noticeBox(res.notice);
+            }
             SetCookie('cart_count',0);
             window.location.href=window.dataObj.success_href;
         }
@@ -679,11 +729,11 @@ function TiePhone(evt){
     var code=$('#enterVrify').val();
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
     var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){return warnNotice("电话貌似有错o(╯□╰)o");}
+    if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){return warnNotice("手机号貌似有错o(╯□╰)o");}
     if(!phone){return warnNotice('请输入手机号');}
     if(!code){return warnNotice('请输入验证码');}
-    if(!regNumber.test(code)){return warnNotice('验证码只能为数字！');}
-    if(code.length>4||code.length<4){return warnNotice('验证码为4位数字!');}
+    if(!regNumber.test(code)){return warnNotice('验证码只能为数字');}
+    if(code.length>4||code.length<4){return warnNotice('验证码为4位数字');}
     var url="/customer/phoneVerify?action=customer";
     var action='checkcode';
     var args={action:action,phone:phone,code:code};

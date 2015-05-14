@@ -5,17 +5,15 @@ $(document).ready(function(){
     window.dataObj.success_href='/notice/success';
     window.dataObj.staff_href='/staff/hire/';
     window.dataObj.current_link=window.location.href;
-    var _hmt = _hmt || [];
-        (function() {
-          var hm = document.createElement("script");
-          hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
-          var s = document.getElementsByTagName("script")[0]; 
-          s.parentNode.insertBefore(hm, s);
-        })();
+   var _hmt = _hmt || [];
+   (function() {
+     var hm = document.createElement("script");
+     hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
+     var s = document.getElementsByTagName("script")[0]; 
+     s.parentNode.insertBefore(hm, s);
+   })();
     //fastclick initialise
-     $(function() {
-        FastClick.attach(document.body);
-    });   
+   FastClick.attach(document.body);
     //客户端为Android系统替换图片路径
     //AndroidImg('bg_change');
     //AndroidImg('src_change');   
@@ -32,8 +30,8 @@ $(document).ready(function(){
         unitText($this,id);
     });
     $(document).on('click','#backTop',function(){
-        document.body.scrollTop =0;
-        $('.little_pear').css({'right':'-40px'});
+        $(window).scrollTop(0);
+        $('.little_pear').css("display","none");
     });
     //从cookie中提取数据
     window.dataObj.shop_id=getCookie('market_shop_id');
@@ -44,22 +42,21 @@ $(document).ready(function(){
     if(window.dataObj.cart_count!=0){
         $('.cart_num').removeClass('hidden').text(window.dataObj.cart_count);
     }
+    $('.lazy_img').lazyload({threshold:100});
     //设置title
     //document.title=$.base64Decode(shop_name)+'一家不错的水果O2O店铺，快来关注吧~';
     //置顶监听
     $(window).on('scroll',function(){
         var $this=$(this);
-        var clientHeight=$this.height();
-        var scrollTop=document.body.scrollTop||document.documentElement.scrollTop;
-        if(!$this.is(":animated")){
-            if(scrollTop>=clientHeight/2){
-                $('.little_pear').animate({'right':'0px'},50);
+        var clientHeight= $(window).height();
+        var scrollTop=$(window).scrollTop();
+        if(scrollTop>=clientHeight/2){
+                $('.little_pear').css("display","block");
             }
-            else $('.little_pear').animate({'right':'-40px'},5);
-        } 
+            else{
+                $('.little_pear').css("display","none");
+            }
     });
-    $(".lazy_img").lazyload({threshold:100});
-    wexin();
 });
 
 function wexin(link,imgurl){
@@ -118,10 +115,10 @@ function wexin(link,imgurl){
 function isWeiXin(){ 
     var ua = window.navigator.userAgent.toLowerCase(); 
         if(ua.match(/MicroMessenger/i) == 'micromessenger'){ 
-        return true; 
+        return true;
         }
-        else{ 
-    } 
+        else{
+    }
 } 
 
 /*function AndroidImg(target){
@@ -262,11 +259,7 @@ var confirmBox=function(text,index,type){
         if(typeof(type)!='undefined') $box.find('.message').attr({'data-type':type});
         var window_height=$(window).height();
         var height=$('.container').height();
-        var $mask;
-        if(height<window_height) $mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
-        else $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
-        //$mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
-        $('body').append($box,$mask);
+        $('body').append($box);
         $(document).on('click','.dismiss',function(){
             $('#confirmBox').remove();
             $('.modal_bg').remove();
@@ -283,38 +276,46 @@ var confirmRemove=function(){
     $('.modal_bg').remove();
 }
 //word notice
-getItem('/static/items/noticeBox.html?v=2015-03-25',function(data){
-    window.dataObj.noticeBox=data;
-     var $box=$(window.dataObj.noticeBox);   
-    $('body').append($box);
-});
+var noticeTimer = null;
+var tempObj = null;
 var noticeBox=function(text,item){
-        $('#noticeBox').removeClass('hidden').find('.notice').text(text);
-        if(item) {item.attr({'disabled':'true'});}
-        noticeRemove('noticeBox',item);      
+    if(tempObj){
+        tempObj.removeAttr('disabled').removeClass('bg-greyc');
+    }
+    clearTimeout(noticeTimer);
+    if($("#noticeBox").size()==0){
+        var $box=$('<div class="notice_bg hidden" id="noticeBox"><div class="notice_box text-center center-block"><p class="notice text-white font14 text-center"></p></div></div>');
+        $('body').append($box);
+    }
+    $("#noticeBox").removeClass('hidden').find('.notice').text(text);
+    if(item) {
+        tempObj = item;
+        item.attr({'disabled':'true'});
+    }
+    noticeRemove('noticeBox',item);
 }
 //modal notice word
-var warnNotice=function(text){
-    $('.modal-body').find('.warn').remove();
+var warnNotice=function(text,item){
+    clearTimeout(noticeTimer);
+    $(".warn").remove();
     var $word=$('<p class="warn text-pink text-center" id="warn"></p>');
     $word.text(text);
-    $('.modal-body').append($word);
-    $('.sure_btn').attr({'disabled':'true'});
-    noticeRemove('warn');
+    $('.modal-warn').append($word);
+    noticeTimer = setTimeout(function() {
+        $('.warn').addClass('hidden');
+        if(item){
+            item.removeAttr('disabled').removeClass('bg-greyc');
+        }
+    },2000);
 }
 //time count 2 secends
-window.dataObj.n_time=2;
 var noticeRemove=function (target,item) {
-    if (window.dataObj.n_time == 0) {
-        window.dataObj.n_time = 2;
+    noticeTimer = setTimeout(function() {
         $('#'+target).addClass('hidden');
-        $('.sure_btn').removeAttr('disabled');
-        if(item) {item.removeAttr('disabled');}
-    }
-    else {
-        window.dataObj.n_time--;
-        setTimeout(function() {noticeRemove(target,item)},1000);
-    }
+        if(item){
+            item.removeAttr('disabled').removeClass('bg-greyc');
+        }
+    },2000);
 }
 
 //modal box
@@ -327,28 +328,25 @@ Modal.prototype.modal=function(type){
     {
         var window_height=$(window).height();
         var height=$('.container').height();
-        var $mask;
-        if(height<window_height) $mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
-        else $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
-        $('body').append($mask).addClass('modal_sty').attr({'onmousewheel':'return false'}).css({'overflow':'hidden'});
         $target.removeClass('fade').addClass('in').css({'display':'block'});
         $target.find('.warn').remove();
+        $("body").css({'overflow':'hidden'});
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
-                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
+                $('body').css({'overflow':'auto'});
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
         $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
-                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
+                $('body').css({'overflow':'auto'});
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
     }
     else if(type=='hide')
     {
-        $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
+        $('body').removeClass('modal_sty').css({'overflow':'auto'}).find('.modal_bg').remove();
         $target.addClass('fade').removeClass('in').css({'display':'none'});
     }
 }

@@ -44,16 +44,28 @@ $(document).ready(function(){
                 };
             },
             'onUploadComplete':function(){
-                $('#logoImg').show().attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/80/h/80'});
-                $('.receipt-img img').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/80/h/80'});
+                $('#logoImg').show().attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/100/h/100'});
+                $('.receipt-img img').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/100/h/100'});
                 $('.logo-box').find('.filename').hide();
                 $('.logo-box').find('.fileinfo').hide();
                 $('.logo-box').find('.close').hide();
             }
         });
+    var active= $('.action-mode').attr('data-active');
+     if(active==1){
+           $('.action-mode').find('.stop-mode').addClass('hidden').siblings('.work-mode').removeClass('hidden');     
+    }
+    else{
+        $('.action-mode').find('.stop-mode').removeClass('hidden').siblings('.work-mode').addClass('hidden');
+    }
+}).on('click','.action-mode',function(){
+    var $this=$(this);
+    var active= $this.attr('data-active');
+    receiptImgActive(active);
 });
+
 function receiptEdit(target){
-    var url=link;
+    var url='';
     var action="edit_receipt";
     var receipt_msg=$('.receipt-msg').val();
     if(!receipt_msg){ receipt_msg=''}
@@ -71,6 +83,24 @@ function receiptEdit(target){
                 $('.receipt-msg-con').text(receipt_msg);
                 target.parents('.set-list-item').find('.address-show').show();
                 target.parents('.set-list-item').find('.address-edit').hide();
+            }
+        })
+}
+
+function receiptImgActive(active){
+    var url='';
+    var action="recipe_img_on";
+    var args={
+        action:action,
+        data:''
+    };
+    $.postJson(url,args,
+        function(res){
+            if(active==1){
+                $('.action-mode').attr({'data-active':0}).find('.stop-mode').removeClass('hidden').siblings('.work-mode').addClass('hidden');
+            }
+            else{
+                $('.action-mode').attr({'data-active':1}).find('.stop-mode').addClass('hidden').siblings('.work-mode').removeClass('hidden');
             }
         })
 }

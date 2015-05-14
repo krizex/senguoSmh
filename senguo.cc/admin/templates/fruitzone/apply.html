@@ -150,7 +150,7 @@
 	    </div>
 	    <div class="clearfix mt10">
 		<span class="title line40 pull-left font14">&nbsp;</span>
-		<button class="btn bg-green text-white able_get" id="getVrify">获取手机验证码</button>
+		<button class="btn bg-green bg-greyc text-white able_get" id="getVrify">获取手机验证码</button>
 	    </div>
 	    <div class="clearfix mt10">
 		<span class="title line40 pull-left font14">验证码*</span>
@@ -158,9 +158,9 @@
 	    </div>
 	    <p class="mt10 text-center">*您的个人信息仅用作店铺审核使用，我们将严格保密</p>
 	    {% if "reApply" in context and context["reApply"] %}
-	    <input type="submit" value="提交申请" class="btn text-white bg-green  center-block w80 font16 mt10" id="submitReapply"/>
+	    <input type="submit" value="提交申请" class="btn text-white bg-green  bg-greyc center-block w80 font16 mt10" id="submitReapply"/>
 	    {% else %}
-	    <input type="submit" value="提交申请" class="btn text-white bg-green  center-block w80 font16 mt10" id="submitApply"/>
+	    <input type="submit" value="提交申请" class="btn text-white bg-green  bg-greyc center-block w80 font16 mt10" id="submitApply"/>
 	    {% end %}
 	    <p class="text-center">
 		<a class="text-grey9 white-color mb10 mt10 center-block font14 forward" id="back" href="javascript:;">←返回上一步</a>
@@ -180,6 +180,7 @@
 		            </ul>
 		        </div>
 		    </div>
+		    <div class="modal-warn"></div>
 		</div>
 	    </div>
 	</div>
@@ -197,6 +198,7 @@
 		            </ul>
 		        </div>
 		    </div>
+		    <div class="modal-warn"></div>
 		</div>
 	    </div>
 	</div>

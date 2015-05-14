@@ -1,10 +1,16 @@
 
 $(document).ready(function(){
+    var city_id = $("#city_id").val();
     //search
     $(document).on('click','#searchSubmit',function(evt){Search(evt);});
     $('.willOpen').on('click',function(){noticeBox('即将开放，敬请期待！')});
     //shop info
-    shopsList(1,'',window.dataObj.action);
+    if(city_id){
+        window.dataObj.type='city';
+        shopsList(1,city_id,'filter');
+    }else{
+        shopsList(1,'',window.dataObj.action);
+    }
     scrollLoading();
     //province and city
     var area=window.dataObj.area;
@@ -106,7 +112,7 @@ $(document).ready(function(){
         $('.list_item').addClass('hidden');
         $('.city_choose').removeClass('city_choosed');
         $('.city_name').text('城市');
-    });   
+    });
 });
 
 function add_bg(){
@@ -121,8 +127,22 @@ function remove_bg(){
 var shopItem=function (shops){
 
     var shop_item=window.dataObj.shop_item;
+    var $item = '<li class="item bg-white">'+
+                            '<a href="{{link}}" class="shop_link">'+
+                            '<div class="clearfix">'+
+                                '<div class="logo_box pull-left">'+
+                                    '<img src="{{logo_url}}" class="shop_logo lazy_img"/>'+
+                                '</div>'+
+                                '<div class="pull-left info">'+
+                                    '<p class="shop_name font14">{{shop_name}}<span class="shop_auth  {{hide}}">{{shop_auth}}</span></p>'+
+                                    '<p class="text-grey9">店铺号：<span class="shop_code">{{shop_code}}</span></p>'+
+                                '</div>'+
+                            '</div>'+
+                            '<p class="sty1 mt10 clearfix">地址：<span class="address">{{address}}</span></p>'+
+                            '<p class="sty1">店铺简介：<span class="intro">{{intro}}</span></p>'+
+                            '</a>'+
+                        '</li>';
     for(var key in shops){
-                var $item=$(shop_item);
                 var logo_url=shops[key]['shop_trademark_url'];
                 var name=shops[key]['shop_name'];
                 var shop_code=shops[key]['shop_code'];
@@ -130,27 +150,49 @@ var shopItem=function (shops){
                 var city=shops[key]['shop_city'];
                 var address=shops[key]['shop_address_detail'];
                 var intro=shops[key]['shop_intro'];
+                var shop_auth=shops[key]['shop_auth'];
                 var area=window.dataObj.area;
-                if(province==city) city='';
+                var hide='';
+                if(province==city) {
+                    city='';
+                }
                 for(var key in area){
                     if(key==province){
                         province=area[key]['name']
-                        if(city){
+                        if(city!=''){
                             var cities=area[key]['city'];
                             for(var code in cities){
-                                if(code==city){city=cities[code]['name']}
+                                if(code==city){
+                                    city=cities[code]['name'];
+                                }
                             }
                         }
                     }
                  }
-                if(!logo_url) logo_url='/static/design_img/Li_l.png';
-                $item.find('.shop_link').attr({'href':'/'+shop_code});
-                $item.find('.shop_logo').attr({'src':logo_url+'?imageView/1/w/100/h/100'});
-                $item.find('.shop_name').text(name);
-                $item.find('.shop_code').text(shop_code);
-                $item.find('.address').text(province+city+address);
-                $item.find('.intro').text(intro);
-                $('.shoplist').append($item);
+                if(!logo_url) {
+                    logo_url='/static/design_img/Li_l.png';
+                }
+                if(shop_auth==1||shop_auth==4){
+                    shop_auth='个人认证';
+                }
+                else if(shop_auth==2||shop_auth==3){
+                    shop_auth='企业认证';
+                }
+                else {
+                    hide='hidden';
+                }
+                var render=template.compile($item);
+                var content=render({
+                    link:'/'+shop_code,
+                    logo_url:logo_url+'?imageView/1/w/100/h/100',
+                    shop_name:name,
+                    shop_code:shop_code,
+                    shop_auth:shop_auth,
+                    address:province+city+address,
+                    intro:intro,
+                    hide:hide
+                });
+                $('.shoplist').append(content);
             }
 }
 window.dataObj.page=1;
@@ -174,19 +216,10 @@ var shopsList=function(page,data,action){
     $.postJson(url,args,function(res){
         if(res.success)
         {
-            if(window.dataObj.shop_item==undefined)
-            {
-                getItem('/static/items/fruitzone/shop_item.html?v=2015-0320',function(data){
-                    window.dataObj.shop_item=data;
-                     initData(res);
-                });
-            }
-            else {
                 initData(res);
-            }   
         }
         else return noticeBox(res.error_text);
-        },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~');}
         );
     var initData=function(res){
         var shops=res.shops;
@@ -282,7 +315,7 @@ function filter(data,type,page){
                  var shops=res.shops;
                  $('.list_item').addClass('hidden');
                  $('.city_choose').removeClass('city_choosed');
-                 if(res.shops==''){
+                 if(shops.length==0){
                     $('.shoplist').empty();
                     window.dataObj.maxnum=1;
                     $('.shoplist').append('<h4 class="text-center mt10 text-grey">无搜索结果！</h4>');

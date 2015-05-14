@@ -6,10 +6,10 @@ import urllib
 import hashlib
 import traceback
 from settings import KF_APPID, KF_APPSECRET, APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
+# from settings import TEST_APPID,TEST_APPSECRET
 import tornado.escape
 from dal.dis_dict import dis_dict
 import time
-import re
 import tornado.web
 from sqlalchemy import desc,or_
 import datetime
@@ -18,7 +18,6 @@ from settings import *
 import requests
 
 import threading
-
 
 # import time
 # import random
@@ -126,9 +125,10 @@ class FrontBaseHandler(GlobalBaseHandler):
 class _AccountBaseHandler(GlobalBaseHandler):
 	# overwrite this to specify which account is used
 	__account_model__ = None
-	__account_cookie_name__ = ""
+	__account_cookie_name__ = "customer_id"
 	__login_url_name__ = ""
 	__wexin_oauth_url_name__ = ""
+	__wexin_bind_url_name__ = "customerwxBind"
 
 	_wx_oauth_pc = "https://open.weixin.qq.com/connect/qrconnect?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_login&state=ohfuck#wechat_redirect"
 	_wx_oauth_weixin = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_userinfo&state=onfuckweixin#wechat_redirect"
@@ -174,16 +174,48 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		print("[微信授权]授权链接：",link)
 		return link
 
+	def get_wexin_oauth_link2(self, next_url=""):
+		if not self.__wexin_bind_url_name__:
+			raise Exception("you have to complete this wexin oauth config.")
+
+		if next_url:
+			para_str = "?next="+tornado.escape.url_escape(next_url)
+		else:
+			para_str = ""
+
+		if self.is_wexin_browser():
+			if para_str: para_str += "&"
+			else: para_str = "?"
+			para_str += "mode=mp"
+			redirect_uri = tornado.escape.url_escape(
+				APP_OAUTH_CALLBACK_URL+\
+				self.reverse_url(self.__wexin_bind_url_name__) + para_str)
+			link =  self._wx_oauth_weixin.format(appid=MP_APPID, redirect_uri=redirect_uri)
+		else:
+			if para_str: para_str += "&"
+			else: para_str = "?"
+			para_str += "mode=kf"
+			redirect_uri = tornado.escape.url_escape(
+				APP_OAUTH_CALLBACK_URL+\
+				self.reverse_url(self.__wexin_bind_url_name__) + para_str)
+			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
+		print("[微信授权]授权链接：",link)
+		return link
+
 	def get_login_url(self):
-		return self.get_wexin_oauth_link(next_url=self.request.full_url())
-		#return self.reverse_url('customerLogin')
+		#return self.get_wexin_oauth_link(next_url=self.request.full_url())
+		return self.reverse_url('customerLogin')
 
 	def get_weixin_login_url(self):
-		print("[微信登录]登录链接：",self.request.full_url())
-		next_url =  self.reverse_url("fruitzoneShopList")
+		print("[微信登录]登录URL：",self.request.full_url())
+		# next_url =  self.reverse_url("fruitzoneShopList")
+		next_url = self.get_cookie('next_url')
+		if next_url is None:
+			next_url = self.reverse_url('customerProfile')
 		return self.get_wexin_oauth_link(next_url = next_url)
 
 	def get_current_user(self):
+		# print(self.__account_model__,'到底是什么？',self.__account_cookie_name__)
 		if not self.__account_model__ or not self.__account_cookie_name__:
 			raise Exception("overwrite model to support authenticate.")
 
@@ -203,6 +235,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:
 				Logger.warn("Suspicious Access", "may be trying to fuck you")
+				
 		return self._user
 
 	_ARG_DEFAULT = []
@@ -225,7 +258,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
 
 
-		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30,
+		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*10,
 
 							  policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
 									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
@@ -235,27 +268,42 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 	def get_qiniu_token(self,action,id):
 		q = qiniu.Auth(ACCESS_KEY,SECRET_KEY)
-		token = q.upload_token(BUCKET_SHOP_IMG,expires = 120,\
-			policy = {"callbackUrl":"http://i.senguo.cc/fruitzone/imgcallback",\
-			"callbackBody":"key=$(key)&action=%s&id=%s" % (action,id),"mimeLimit":"image/*"})
+		token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
 		print("[七牛授权]获得Token：",token)
 		return token
 
 	def get_comments(self, shop_id, page=0, page_size=5):
-		# comments = self.session.query(models.Accountinfo.headimgurl_small, models.Accountinfo.nickname,\
-		# 	models.Order.comment, models.Order.comment_create_date, models.Order.num,\
-		# 	models.Order.comment_reply,models.Order.id,models.CommentApply.has_done).\
-		# filter(models.Order.shop_id == shop_id, models.Order.status == 6,\
-		# 	models.CommentApply.order_id == models.Order.id,models.Accountinfo.id == models.Order.customer_id).\
-		# 	order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+		comments_new = {}
+		comments_result = []
+		comments_array  = []
 		comments =self.session.query(models.Order.comment, models.Order.comment_create_date, models.Order.num,\
 			models.Order.comment_reply,models.Order.id,models.CommentApply.has_done,models.Accountinfo.headimgurl_small, \
-			models.Accountinfo.nickname,models.CommentApply.delete_reason,models.CommentApply.decline_reason).\
+			models.Accountinfo.nickname,models.CommentApply.delete_reason,\
+			models.CommentApply.decline_reason,models.Order.comment_imgUrl,).\
 		outerjoin(models.CommentApply, models.Order.id == models.CommentApply.order_id).\
 		join(models.Accountinfo,models.Order.customer_id == models.Accountinfo.id).\
 		filter(models.Order.shop_id == shop_id, models.Order.status == 6).filter(or_(models.CommentApply.has_done !=1,models.CommentApply.has_done ==None )).\
 		order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
-		return comments
+		for item in comments:
+			comments_new['comments']      = item[0]
+			comments_new['create_date']   = item[1]
+			comments_new['order_num']     = item[2]
+			comments_new['comment_reply'] = item[3]
+			comments_new['order_id']      = item[4]
+			comments_new['comment_has_done'] = item[5]
+			comments_new['headimgurl']    = item[6]
+			comments_new['nickname']      = item[7]
+			comments_new['delete_reason'] = item[8]
+			comments_new['decline_reason']= item[9]
+			if item[10]:
+				comments_new['comment_imgUrl'] = item[10].split(',')
+			else:
+				comments_new['comment_imgUrl'] = None
+			comments_result.append(comments_new)
+			comments_array.append([item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],comments_new['comment_imgUrl']])
+		#print(comments_result)
+		# return comments_result
+		return comments_array
 
 	def timedelta(self, date):
 		if not date:
@@ -264,7 +312,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		if timedelta.days >= 365:
 			return "%d年前" % (timedelta.days/365)
 		elif timedelta.days >= 30:
-			return "%d月前" % (timedelta.days/30)
+			return "%d个月前" % (timedelta.days/30)
 		elif timedelta.days > 0:
 			return "%d天前" % timedelta.days
 		elif timedelta.seconds >= 3600:
@@ -272,13 +320,15 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		elif timedelta.seconds >= 60:
 			return "%d分钟前" % (timedelta.seconds/60)
 		else:
-			return "%d秒前" % timedelta.seconds
+			return "刚刚"
 
 	def write_error(self, status_code, **kwargs):
 		if status_code == 404:
 			self.render('notice/404.html')
 		elif status_code == 500:
 			self.render('notice/500.html')
+		elif status_code == 400:
+			self.render('notice/400.html')
 		else:
 			super(GlobalBaseHandler, self).write_error(status_code, **kwargs)
 
@@ -312,7 +362,7 @@ class SuperBaseHandler(_AccountBaseHandler):
 		try:
 			shops = session.query(models.Shop).filter_by(status = 1).all()
 		except:
-			print('shops error')
+			print("[超级管理员]shops error")
 		if shops:
 			for shop in shops:
 				shop_code = shop.shop_code
@@ -340,7 +390,7 @@ class SuperBaseHandler(_AccountBaseHandler):
 						shop.status =0
 						close_shop_list.append(shop_code)
 				session.commit()
-			print(close_shop_list)
+			print("[超级管理员]关闭店铺：",close_shop_list)
 			# return self.send_success(close_shop_list = close_shop_list)
 	def get_login_url(self):
 		return self.get_wexin_oauth_link(next_url=self.request.full_url())
@@ -348,7 +398,7 @@ class SuperBaseHandler(_AccountBaseHandler):
 
 class FruitzoneBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopAdmin
-	__account_cookie_name__ = "admin_id"
+	# __account_cookie_name__ = "admin_id"
 	__wexin_oauth_url_name__ = "adminOauth"
 
 	# get the total,privince,city count of shop
@@ -393,10 +443,24 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 		return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		# return self.reverse_url('customerLogin')
 
+	@property
+	def shop_id(self):
+		if hasattr(self, "_shop_id"):
+			return self._shop_id
+		shop_id = self.get_cookie("market_shop_id")
+		if not shop_id:
+			print(("shop_id error"))
+			#return self.redirect("/shop/1")  #todo 这里应该重定向到商铺列表
+		self._shop_id = int(shop_id)
+		# if not self.session.query(models.CustomerShopFollow).filter_by(
+		#         customer_id=self.current_user.id, shop_id=shop_id).first():
+		#     return self.redirect("/customer/market/1")  #todo 这里应该重定向到商铺列表
+		return self._shop_id
+
 
 class AdminBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopAdmin
-	__account_cookie_name__ = "admin_id"
+	# __account_cookie_name__ = "admin_id"
 	__wexin_oauth_url_name__ = "adminOauth"
 	current_shop = None
 	@tornado.web.authenticated
@@ -420,7 +484,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 
 class StaffBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopStaff
-	__account_cookie_name__ = "staff_id"
+	# __account_cookie_name__ = "staff_id"
 	__wexin_oauth_url_name__ = "staffOauth"
 	shop_id = None
 	shop_name = None
@@ -450,7 +514,7 @@ class StaffBaseHandler(_AccountBaseHandler):
 
 class CustomerBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.Customer
-	__account_cookie_name__ = "customer_id"
+	# __account_cookie_name__ = "customer_id"
 	__wexin_oauth_url_name__ = "customerOauth"
 	@tornado.web.authenticated
 	def save_cart(self, charge_type_id, shop_id, inc, menu_type):
@@ -472,7 +536,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		return False
 	def get_login_url(self):
 		return self.get_wexin_oauth_link(next_url=self.request.full_url())
-		# return self.reverse_url('customerLogin')
+		#return self.reverse_url('customerLogin')
 
 	def _f(self, cart, menu, charge_type_id, inc):
 		d = eval(getattr(cart, menu))
@@ -483,10 +547,10 @@ class CustomerBaseHandler(_AccountBaseHandler):
 				else: d[charge_type_id] = 1
 			elif inc == 1:#减1
 				if charge_type_id in d.keys():
-					if d[charge_type_id] == 1:
+					if int(d[charge_type_id]) == 1:
 						del d[charge_type_id]
 					else:
-						d[charge_type_id] =  d[charge_type_id]  -1
+						d[charge_type_id] =  int(d[charge_type_id])  -1
 				else:return
 			elif inc == 0:#删除
 				if charge_type_id in d.keys(): del d[charge_type_id]
@@ -644,7 +708,7 @@ class WxOauth2:
 			#    print(key,data[key])
 			userinfo_data = dict(
 				openid=data["openid"],
-				nickname=re.compile(u'[\U00010000-\U0010ffff]').sub(u'',data["nickname"]),#过滤掉Emoji，否则数据库报错
+				nickname=data["nickname"],
 				sex=data["sex"],
 				province=data["province"],
 				city=data["city"],
@@ -766,7 +830,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			#print("店铺审核模板消息发送失败：", data)
+			print("[模版消息]店铺审核消息发送失败：", data)
 			return False
 		return True
 
@@ -790,15 +854,16 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			#print("店铺审核模板消息发送失败：", data)
+			print("[模板消息]店铺审核消息发送失败：", data)
 			return False
 		return True
 
 
 	@classmethod
-	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods,phone):
+	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,\
+		order_totalPrice,send_time,goods,phone,address):
 		remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n' + "商品详情："  \
-		+ goods +'\n'  + "顾客电话："  + phone +  '\n\n'  + \
+		+ goods +'\n'  + "顾客电话："  + phone + '\n' + "送货地址：" + address +  '\n\n'  + \
 		'请及时登录森果后台处理订单。'
 		postdata = {
 			'touser' : touser,
@@ -818,16 +883,17 @@ class WxOauth2:
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
 		data = json.loads(res.content.decode("utf-8"))
-		print("[模版消息]发送给管理员：",data)
 		if data["errcode"] != 0:
-			#print("订单提醒发送失败:",data)
+			print("[模版消息]发送给管理员失败：",data)
 			return False
+		print("[模版消息]发送给管理员成功")
 		return True
 
 	@classmethod
-	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone):
+	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
+		order_totalPrice,send_time,phone,address):
 		remark = "订单总价：" + str(order_totalPrice)+ '\n' + "送达时间：" + send_time + '\n'  + "顾客电话："  + \
-		phone + '\n\n' + '请及时处理订单。'
+		phone + '\n' + "送货地址：" + address  +'\n\n' + '请及时处理订单。'
 		order_type_temp = int(order_type)
 		order_type = "即时送" if order_type_temp == 1 else "按时达"
 		postdata = {
@@ -848,8 +914,9 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-		#    print("订单提醒发送失败:",data)
+			print("[模版消息]发送给配送员失败：",data)
 			return False
+		print("[模版消息]发送给配送员成功")
 		return True
 
 
@@ -872,11 +939,12 @@ class WxOauth2:
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata))
 		data = json.loads(res.content.decode("utf-8"))
+
 		if data["errcode"] != 0:
-			#print("订单提交成功通知发送失败",data)
+			print("[模版消息]发送给客户失败：",data)
 			return False
+		print("[模版消息]发送给客户成功")
 		# print('order send SUCCESS')
-		print("[模版消息]发送给客户：",data)
 		return True
 
 	@classmethod
@@ -906,70 +974,6 @@ class WxOauth2:
 		authorize?appid={0}&redirect_uri={1}&response_type=code&scope={2}&state={3}#\
 		wechat_redirect'.format(appid,redirect_url,scope,state)
 		return url
-
-	# @classmethod
-	# def formatBizQueryParaMap(cls,paraMap,urlencode):
-	#     slist = sorted(paraMap)
-	#     buff = []
-	#     for k in slist:
-	#         v =  quote(paraMap[k]) if urlencode else paraMap[k]
-	#         buff.append("{0}={1}".format(k,v))
-	#     return "&".join(buff)
-
-	# @classmethod
-	# def getSign(self,obj):
-	#     #商户支付密钥Key。审核通过后，在微信发送的邮件中查看
-	#     KEY = ''
-	#     String = self.formatBizQueryParaMap(obj,False)
-	#     String = "{0}&key={1}".format(String,KEY)
-	#     String = hashlib.md5(String).hexdigest()
-	#     result = String.upper()
-	#     return result
-
-	# @classmethod
-	# def postXML(self,xml,url,second=30 ,post=True):
-	#     curl = pycurl.Curl()
-	#     curl.setopt(pycurl.URL,url)
-	#     curl.setopt(pycurl.TIMEOUT,second)
-
-	#     if post:
-	#         curl.setopt(pycurl.POST,True)
-	#         curl.setopt(pycurl.POSTFIELDS,xml)
-	#     buff = StringIO()
-	#     curl.setopt(pycurl.WRITEFUNCTION,buff.write)
-
-	#     curl.perform()
-	#     return buff.getvalue()
-
-	# @classmethod
-	# def createXml(self):
-	#     parameters = {}
-	#     parameters["appid"] = MP_APPID
-	#     parameters["mch_id"]= ""
-	#     parameters["spbill_create_ip"] = "127.0.0.1"
-	#     parameters["noncestr_str"] = self.createNoncestr()
-	#     parameters["sign"]  = self.getSign(parameters)
-	#     return arrayToXml(parameters)
-
-	# @classmethod
-	# def createNoncestr(self):
-	#     chars = "abcdefghijklmnopqrstuvwxyz0123456789"
-	#     strs = []
-	#     for x in range(length):
-	#         strs.append(chars[random.randrange(0,len(chars))])
-	#     return "".join(strs)
-
-	# @classmethod
-	# def arrayToXml(self,arr):
-	#     xml = ["<xml>"]
-	#     for k,v in arr.iteritems():
-	#         if v.isdigit()
-	#             xml.append("<{0}>{1}</{0}>".format(k,v))
-	#         else:
-	#             xml.append("<{0}><![CDATA{1}]></{0}>").format(k,v)
-	#     xml.append("</xml>")
-	#     return "".join(xml)
-
 
 
 

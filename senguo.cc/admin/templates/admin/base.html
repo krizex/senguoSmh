@@ -39,15 +39,15 @@
                         实时消息
                         <span>0</span>
                     </a>
-                </li>
+                </li>-->
                 <li class="active send-now line50">
-                    <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1">
+                    <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1&page=0">
                         <i class="send-img height50 pull-left"></i>
                         立即送
-                        <span>{{num}}</span>
+                        <span class="on_sum" id="on_sum">{{num}}</span>
                     </a>
                 </li>
-               <li class="line50">
+               <!--<li class="line50">
                     <a href="javascript:;" class="developing">
                         <i class="message-img height50 pull-left"></i>
                         留言
@@ -55,10 +55,16 @@
                     </a>
                 </li>-->
                 <li class="area-info">
-                    <img src="{{current_shop.shop_trademark_url or '/static/design_img/TDSG.png'}}" class="admin-img height50 pull-left"/>
+                    <img src="{{current_shop.shop_trademark_url or '/static/design_img/TDSG.png'}}?imageView/1/w/100/h/100" class="admin-img height50 pull-left"/>
                     <div class="admin-info area pull-right">
-                        <p class="job pull-left text-left">{{current_user.accountinfo.nickname}}</p>
-                        <!--<p class="job pull-left text-left">未认证</p>-->
+                        <!-- <p class="job pull-left text-left">{{current_user.accountinfo.nickname}}</p> -->
+                        {% if current_shop.shop_auth in [1,4] %}
+                        <p class="job pull-left text-left">个人认证</p>
+                         {% elif current_shop.shop_auth in [2,3] %}
+                        <p class="job pull-left text-left">企业认证</p>
+                        {% else %}
+                        <p class="job pull-left text-left"><a href="{{reverse_url('adminShopAuth')}}">未认证</a></p>
+                        {% end %}
                         <div class="dropdown  area pull-left">
                             <button class="btn btn-default dropdown-toggle area height25 border-none" type="button" id="dropdownMenu1" data-toggle="dropdown">
                                 <em title="{{current_shop.shop_name}}" class="pull-left" id="shop_name">{{current_shop.shop_name}}</em>
@@ -72,6 +78,7 @@
                                 {% end %}
                             </ul>
                         </div>
+                         
                     </div>
                 </li>
                 <li class="line50">
@@ -125,18 +132,22 @@
             </li>
             <li>
                 <span class="server"><i></i>客服</span>
-                <a href="{{reverse_url('adminComment')}}?action=all&&page=0" class="{{comment_active}}">消息与评价</a>
+                <a href="{{reverse_url('adminComment')}}?action=all&&page=0" class="{{comment_active}} has-red-tip" data-action="msg">消息与评价<b class="red-tip hidden" id="comment_num">10</b></a>
             </li>
-           <!-- <li>
+
+            {% if current_shop.shop_auth !=0 %}
+           <li>
                 <span class="account"><i></i>账户</span>
-                <a href="{{reverse_url('adminShopBalance')}}" class="{{shopBlance}}">账户余额</a>
-            </li>-->
+                <a href="{{reverse_url('adminShopBalance')}}" class="{{shopBlance}} has-red-tip" data-action="account">账户余额<b class="red-toll hidden" id="is_balance"></b></a>
+            </li>
+            {% end %}
+            
             <li>
                 <span class="manage"><i></i>管理</span>
-                <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1" class="{{order_active}}">订单管理</a>
+                <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1&page=0" class="{{order_active}} has-red-tip" data-action="order">订单管理<b class="red-tip hidden" id="order_ordernum">200</b></a>
                 <a href="{{reverse_url('adminShelf')}}?action=fruit&id=1" class="{{goods_active}}">商品管理</a>
-                <a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0" class="{{user_active}}">用户管理</a>
-                <a href="{{reverse_url('adminStaffJH')}}?action=SH2" class="{{staff_active}}">员工管理</a>
+                <a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0" class="{{user_active}} has-red-tip" data-action="user">用户管理<b class="red-tip hidden" id="user_usernum">5</b></a>
+                <a href="{{reverse_url('adminStaffJH')}}?action=SH2" class="{{staff_active}} has-red-tip" data-action="staff">员工管理<b class="red-tip hidden" id="staff_staffnum">5</b></a>
                 <!--<a href="javascript:;" class="developing">财务管理</a>
                 <a href="javascript:;" class="developing">活动管理</a>-->
             </li>
@@ -152,6 +163,7 @@
 </main>
 <script src="/static/js/jquery.min.js"></script>
 <script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/template.js"></script>
 <script src="{{static_url('js/global.js')}}"></script>
 <script src="{{static_url('js/admin-public.js')}}"></script>
 {% block bottom %}{% end %}

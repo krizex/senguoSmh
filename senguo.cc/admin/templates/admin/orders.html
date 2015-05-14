@@ -37,16 +37,16 @@
     {% set notice2='启用'%}
 {% end %}
 
-<span class="right-title">订单管理</span>
+<span class="right-title" id="order-title-manage">订单管理</span>
 <div class="orders-mode clearfix">
     <ul class="right-nav pull-left order-type">
         <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3">
-            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1" class="text-grey3">立即送</a>
-            <span class="number text-pink">{{count[11]}}</span>
+            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1&page=0" class="text-grey3">立即送</a>
+            <span class="number" id="atonce">{{count[11]}}</span>
         </li>
         <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3">
-            <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=1" class="text-grey3">按时达</a>
-            <span class="number text-pink">{{count[21]}}</span>
+            <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=1&page=0" class="text-grey3">按时达</a>
+            <span class="number" id="ontime">{{count[21]}}</span>
         </li>
         <!--<li class="text-center col-lg-3">
             <a href="#" class="text-grey3">周期购</a>
@@ -95,19 +95,19 @@
 <div class="orders-list-title right-title2">
     <ul class="right-nav pull-left order-status">
         <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=1">未处理<span class="text-pink">{{count1}}</span></a>
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=1&page=0">未处理&nbsp;<span class="text-pink" id="not-deal">{{count1}}</span></a>
         </li>
         <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=2">配送中<span class="text-pink">{{count2}}</span></a>
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=2&page=0">配送中&nbsp;<span class="text-pink">{{count2}}</span></a>
         </li>
         <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=3">已送达<span class="text-pink">{{count3}}</span></a>
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=3&page=0">已送达&nbsp;<span class="text-pink">{{count3}}</span></a>
         </li>
         <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=4">售后/退款<span class="text-pink">{{count4}}</span></a>
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=4&page=0">售后/退款&nbsp;<span class="text-pink">{{count4}}</span></a>
         </li>
         <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=5">所有订单<span class="text-pink">{{count5}}</span></a>
+            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=5&page=0">所有订单&nbsp;<span class="text-pink">{{count5}}</span></a>
         </li>
     </ul>
     <!--<a class="orders-recycle pull-right text-grey9" href="#">订单回收站</a>-->
@@ -120,23 +120,34 @@
         <a href="javascript:;" class="print-btn blak-set-btn">批量打印</a>
         <a href="javascript:;" class="blak-set-btn">批量删除</a>
     </div>-->
+    <div class="new-order-box hidden" id="new-order-box">您还有新订单未处理，快来戳我，戳我！！</div>
     <ul class="order-list-content set-width-float mt10">
     </ul>
-    <input type="hidden" value="{{current_shop.config.receipt_msg}}" class="shop-receipt-remark"/>
-    <input type="hidden" value="{{current_shop.config.receipt_img}}" class="shop-receipt-img"/>
+     <div class="users-pagination list-pagination">
+        <ul>
+            <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+            <li>
+                <span class="page-now"></span>/<span class="page-total">{{page_sum}}</span>
+            </li>
+            <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+            <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+            <li><a href="javascript:;" class="jump-to">跳转</a></li>
+        </ul>
+    </div>
+    <input type="hidden" value="{{current_shop.config.receipt_msg}}" class="shop-receipt-info" data-img="{{current_shop.config.receipt_img}}"  data-active="{{current_shop.config.receipt_img_active}}"/>
 </div>
 <div class="order_set_box modal fade" id="" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header set-width-float">
-                <span class="title pull-left" id="myModalLabel">
+                <span class="title pull-left">
 
                 </span>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             </div>
             <div class="modal-body set-width-float">
-		<input type="text" id="order_ser_val"/>
-	    </div>
+        	   <input type="text" id="order_ser_val"/>
+            </div>
              <div class="modal-footer">
                 <div class="btn-box">
                     <button type="button" class="pull-right modal-concel-btn" href="javascript:;" data-dismiss="modal">取消</button>
@@ -150,7 +161,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header set-width-float">
-                <span class="title pull-left" id="myModalLabel">
+                <span class="title pull-left">
                     {% if order_type ==1 %}
                     立即送设置
                     {% else %}
@@ -222,7 +233,7 @@
                         <span class="show_value show_item pull-left tit">{{current_shop.config.min_charge_on_time or 0}}</span>
                         <input class="pull-left money edit_item hidden" type="number" value="{{current_shop.config.min_charge_on_time or 0}}" id="sendMoney"/>
                         <span class="tit pull-left set-left10">元</span>
-                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden sendMoney pl text-center text-white">✓</a>
+                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden sendMoney pl text-center text-white">确定</a>
                         <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
                     </div>
                     <span class="tit pull-left t1">配送费：</span>
@@ -230,7 +241,7 @@
                         <span class="show_value show_item pull-left tit">{{current_shop.config.freight_on_time or 0}}</span>
                         <input class="pull-left freight edit_item hidden" type="number" value="{{current_shop.config.freight_on_time or 0}}" id="freight_intime"/>
                         <span class="tit pull-left set-left10">元</span>
-                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden sendfreight text-center text-white">✓</a>
+                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden sendfreight text-center text-white">确定</a>
                         <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
                     </div>
                     <p class="tit clearfix">配送时间：</p>
@@ -287,7 +298,7 @@
                                 <input type="text" class="period-name  pull-left text-center edit_item hidden" value="{{period.name}}"/>
                                 <a href="javascript:;" class="delete pull-right set-inl-blo delete-time-period" style="display:none"></a>
                                 <a href="javascript:;" class="edit pull-right set-inl-blo to-edit" style="display:none"></a>
-                                <a href="javascript:;" class="sure-btn pull-right edit_item hidden edit-time-period text-center text-white">✓</a>
+                                <a href="javascript:;" class="sure-btn pull-right edit_item hidden edit-time-period text-center text-white">确定</a>
                             </li>
                             {% end %}
                         </ul>
@@ -319,11 +330,12 @@
             </div>
             <div class="modal-footer">
                 <div class="btn-box">
-                    <button type="button" class="pull-right modal-concel-btn" href="javascript:;" data-dismiss="modal">取消</button>
                     {% if order_type ==1 %}
+                     <button type="button" class="pull-right modal-concel-btn" href="javascript:;" data-dismiss="modal">取消</button>
                     <button type="button" class="pull-left modal-sure-btn" href="javascript:;" id="sendNowConfig">确认</button>
                     {% else %}
-                    <button type="button" class="pull-left modal-sure-btn" href="javascript:;" data-dismiss="modal">确认</button>
+                    <button type="button" class="center-block modal-concel-btn clearfix" style="display:block;margin-left:100px" href="javascript:;" data-dismiss="modal">关闭</button>
+                    <!-- <button type="button" class="pull-left modal-sure-btn" href="javascript:;" data-dismiss="modal">确认</button> -->
                     {% end %}
                 </div>
             </div>
