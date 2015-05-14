@@ -418,29 +418,29 @@ class ShopProfile(CustomerBaseHandler):
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		satisfy = 0
+		commodity_quality = 0
+		send_speed        = 0
+		satisfy           = 0
 		#是否关注判断
 		follow = True
 		shop_follow =self.session.query(models.CustomerShopFollow).filter_by(customer_id=self.current_user.id, \
 			shop_id=shop.id).first()
 		if not shop_follow:
 				follow = False
-		# else:
-		# 	if shop_follow.commodity_quality and shop_follow.send_speed and shop_follow.shop_service:
-		# 		satisfy = format((shop_follow.commodity_quality + shop_follow.send_speed + shop_follow.shop_service)/300,'.0%')
-		# 	else:
-		# 		satisfy = format(1,'.0%')
-		q = self.session.query(func.avg(models.Order.commodity_quality),\
-			func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
-		if q[0][0]:
-			commodity_quality = int(q[0][0])
-		if q[0][1]:
-			send_speed = int(q[0][1])
-		if q[0][2]:
-			shop_service = int(q[0][2])
-		if commodity_quality and send_speed and shop_service:
-			satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
-		else:
-			satisfy = format(1,'.0%')
+		orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
+		if orders:
+			q = self.session.query(func.avg(models.Order.commodity_quality),\
+				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
+			if q[0][0]:
+				commodity_quality = int(q[0][0])
+			if q[0][1]:
+				send_speed = int(q[0][1])
+			if q[0][2]:
+				shop_service = int(q[0][2])
+			if commodity_quality and send_speed and shop_service:
+				satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
+			else:
+				satisfy = format(1,'.0%')
 		# 今天是否 signin
 		signin = False
 		q=self.session.query(models.ShopSignIn).filter_by(
@@ -630,16 +630,18 @@ class Comment(CustomerBaseHandler):
 		commodity_quality = 0
 		send_speed = 0
 		shop_service = 0
-		q = self.session.query(func.avg(models.Order.commodity_quality),\
-			func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
-		if q[0][0]:
-			commodity_quality = int(q[0][0])
-		if q[0][1]:
-			send_speed = int(q[0][1])
-		if q[0][2]:
-			shop_service = int(q[0][2])
-		if commodity_quality and send_speed and shop_service:
-			satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
+		orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
+		if orders:
+			q = self.session.query(func.avg(models.Order.commodity_quality),\
+				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
+			if q[0][0]:
+				commodity_quality = int(q[0][0])
+			if q[0][1]:
+				send_speed = int(q[0][1])
+			if q[0][2]:
+				shop_service = int(q[0][2])
+			if commodity_quality and send_speed and shop_service:
+				satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
 		page = self.args["page"]
 		page_size = 20
 		comments = self.get_comments(shop_id, page, page_size)

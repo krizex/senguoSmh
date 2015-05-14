@@ -478,8 +478,8 @@ class AdminBaseHandler(_AccountBaseHandler):
 		else:
 			self.current_shop = shop
 	def get_login_url(self):
-		return self.get_wexin_oauth_link(next_url=self.request.full_url())
-		# return self.reverse_url('customerLogin')
+		# return self.get_wexin_oauth_link(next_url=self.request.full_url())
+		return self.reverse_url('customerLogin')
 
 
 class StaffBaseHandler(_AccountBaseHandler):
