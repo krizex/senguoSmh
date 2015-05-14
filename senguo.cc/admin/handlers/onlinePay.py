@@ -23,7 +23,11 @@ class OnlineWxPay(CustomerBaseHandler):
 		if not order:
 			return self.send_fail('order not found')
 		totalPrice = order.totalPrice
-
+		shop_id   = order.shop_id
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if not shop:
+			return self.send_fail('shop not found')
+		shopName = shop.shop_name
 		jsApi  = JsApi_pub()
 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('onlineWxPay')
@@ -63,8 +67,9 @@ class OnlineWxPay(CustomerBaseHandler):
 			timestamp = datetime.datetime.now().timestamp()
 			wxappid = 'wx0ed17cdc9020a96e'
 			signature = self.signature(noncestr,timestamp,path_url)
-		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
-			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)
+		return self.render("fruitzone/paywx.html",renderPayParams = renderPayParams,wxappid = wxappid,\
+			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice,\
+			shopName = shopName)
 
 	def check_xsrf_cookie(self):
 		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
