@@ -8,9 +8,6 @@ $(document).ready(function(){
     var $receiveName=$('#receiveName');
     var $receiveAddress=$('#receiveAddress');
     var $receivePhone=$('#receivePhone');
-    $('#charge').on('click',function(){
-        return noticeBox('该功能年后开放,敬请期待！');
-    });
     //运费默认值
     if(!window.dataObj.freigh_ontime) window.dataObj.freigh_ontime=0;
     if(!window.dataObj.freigh_now) window.dataObj.freigh_now=0;
@@ -368,6 +365,9 @@ $(document).ready(function(){
     var index = $(this).index();
     var status = $(this).attr('data-status');
     var type=$(this).find('.title').text();
+    if(index != 2){
+        $(".wrap-online-lst").addClass("hidden");
+    }
     if(index == 1){
         var statu = $(this).attr("data-auth");
         if(statu == "False"){
@@ -376,8 +376,10 @@ $(document).ready(function(){
         }
     }
     if(index == 2){
-        noticeBox("目前还不支持在线支付哦，我们会尽快开放此功能");
-        return false;
+        /*noticeBox("目前还不支持在线支付哦，我们会尽快开放此功能");
+        return false;*/
+        //window.location.href=""
+        $(".wrap-online-lst").toggleClass("hidden");
     }
     if(status==0){
          noticeBox("当前店铺已关闭"+type);
@@ -395,6 +397,10 @@ $(document).ready(function(){
          noticeBox("当前店铺已关闭余额支付，此功能暂不可用");
          return false;
     }
+}).on("click",".online-lst li",function(){   //选择在线支付方式
+    /*$(".online-lst").find(".checkbox-btn").removeClass("checkboxed");
+    $("#online-pay").attr("data-tpye",$(this).attr("data-type"));
+    $(this).children("a").addClass("checkboxed");*/
 });
 
 window.dataObj.price_list=[];
@@ -616,6 +622,7 @@ function orderSubmit(target){
     var url='';
     var fruits={};
     var mgoods={};
+    var online_type = "";
     var type=$('#sendType').find('.active').data('id');
     var today=$('#sendDay').find('.active').data('id');
     var period_id=$('#sendPeriod').find('.active').data('id');
@@ -626,6 +633,9 @@ function orderSubmit(target){
     var mincharge_intime=Number($('.mincharge_intime .mincharge').text());
     var mincharge_now=Number($('.mincharge_now .mincharge').text());
     var tip=$('.tip-list').find('.active').data('id');
+    if(pay_type == 3){
+        online_type = $("#online-pay").attr("data-type");
+    }
     window.dataObj.total_price=Number($('#list_total_price').text());
     if(!pay_type){return noticeBox('请选择支付方式',target);}
     if(!today){today=1;}
@@ -664,7 +674,8 @@ function orderSubmit(target){
         address_id:address_id,
         pay_type:pay_type,
         message:message,
-        tip:tip
+        tip:tip,
+        online_type:online_type
     };
     $.postJson(url,args,function(res) {
         if (res.success) {

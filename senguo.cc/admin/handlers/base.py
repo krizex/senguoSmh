@@ -683,7 +683,7 @@ access_token = {"access_token": '', "create_timestamp": 0}
 class WxOauth2:
 	token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}" \
 				"&secret={appsecret}&code={code}&grant_type=authorization_code"
-	userinfo_url = "https://api.weixin.qq.com/sns/userinfo?access_token={access_token}&openid={openid}"
+	userinfo_url = "https://api.weixin.qq.com/sns/userinfo?access_token={access_token}&openid={openid}&lang=zh_CN"
 	client_access_token_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential" \
 							  "&appid={appid}&secret={appsecret}".format(appid=MP_APPID, appsecret=MP_APPSECRET)
 	jsapi_ticket_url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={access_token}&type=jsapi"
