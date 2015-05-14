@@ -1470,10 +1470,11 @@ class Cart(CustomerBaseHandler):
 		send_time = order.send_time
 		address = order.address_text
 		print("[提交订单]订单详情：",goods)
-		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
-			customer_name,order_totalPrice,send_time,goods,phone,address)
-		# send message to customer
-		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
+		if self.args['pay_type'] != 3:
+			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
+				customer_name,order_totalPrice,send_time,goods,phone,address)
+			# send message to customer
+			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
 
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
