@@ -157,7 +157,7 @@ function staffEdit(target){
         if(res.success){
             parent.hide();
             parent.parents('.staff-list-item').find('.remark_con').remove();
-            parent.parents('.staff-list-item').find('.info').append('<p class="remark_con">备注:'+remark+'</p>');
+            parent.parents('.staff-list-item').find('.info').append('<p class="remark_con">备注：'+remark+'</p>');
         }
         else return alert(res.error_text)
     },function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}

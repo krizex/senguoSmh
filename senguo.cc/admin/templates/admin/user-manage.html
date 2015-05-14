@@ -36,7 +36,7 @@
     {% for customer in customers %}
     <li class="users-list-item  clearfix">
         <div class="show-info set-w100-fle">
-            <img class="user-img pull-left" src="{{customer.accountinfo.headimgurl}}"/>
+            <img class="user-img pull-left" src="{{customer.accountinfo.headimgurl or '/static/images/TDSG.png'}}"/>
             <div class="user-info pull-left">
                 <span class="user-name set-inl-blo">{{customer.accountinfo.nickname}}<i class="user-sex pull-right set-inl-blo" data-id="{{customer.accountinfo.sex}}"></i></span>
                 <div class="user-info-con">

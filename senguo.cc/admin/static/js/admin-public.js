@@ -25,23 +25,39 @@ if(isWeiXin()){
     setInterval(function(){
         var title = document.title;
         if(notice){
-            if(title.indexOf("【您有新订单】")==-1){
+            if(title.indexOf("】")==-1){
                 document.title = "【您有新订单】"+title;
                 setTimeout(function(){
-                    document.title = title;
-                },1000);
+                    document.title = "【　　　　　】"+title;
+                },500);
             }else{
-                document.title = title;
+                switchTitle(title);
                 setTimeout(function(){
-                    document.title = title.split("【您有新订单】")[1];
-                },1000);
+                    switchTitle(title);
+                },500);
+            }
+        }else{
+            if(title.indexOf("【　　　　　】")!=-1){
+                document.title = title.split("【　　　　　】")[1];
+            }
+            if(title.indexOf("【您有新订单】")!=-1){
+                document.title = title.split("【您有新订单】")[1];
             }
         }
-    },2000);
+    },1000);
 }).on("click",".has-red-tip",function(){
     var action = $(this).attr("data-action");
 
 });
+
+function switchTitle(title){
+    if(title.indexOf("【　　　　　】")!=-1){
+        document.title = "【您有新订单】"+title.split("【　　　　　】")[1];
+    }
+    if(title.indexOf("【您有新订单】")!=-1){
+        document.title = "【　　　　　】"+title.split("【您有新订单】")[1];
+    }
+}
 
 function getRealData(){
     $.ajax({
@@ -101,7 +117,7 @@ function getRealData(){
                     });
                 }else if(window.Notification && Notification.permission == "granted" && notify == null){
                     if(new_order_sum>0){
-                        notify = new Notification(new Date().toLocaleString(),{"body":"您有新订单未处理，请及时处理哦！","icon":"/static/images/sg.gif"});
+                        notify = new Notification(new Date().toLocaleString(),{"body":"您有新订单未处理，请及时处理哦！","icon":"/static/images/sg.gif","tag":new Date().getTime()});
                     }
                 }
             }
