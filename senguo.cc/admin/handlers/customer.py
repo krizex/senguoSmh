@@ -1423,9 +1423,6 @@ class Cart(CustomerBaseHandler):
 							 fruits=str(f_d),
 							 mgoods=str(m_d),
 							 send_time=send_time,
-							 send_speed = 100,
-							 shop_service = 100,
-							 commodity_quality = 100
 							 )
 
 		try:
