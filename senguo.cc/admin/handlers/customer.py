@@ -1241,7 +1241,7 @@ class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
 										 "address_id:int", "message:str", "type:int", "tip?:int",
-										 "today:int",'online_type?str')
+										 "today:int",'online_type?:str')
 	def post(self,shop_code):#提交订单
 		# print(self)
 		print(self.args['pay_type'],'login?????')
@@ -1504,10 +1504,11 @@ class Cart(CustomerBaseHandler):
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
 			online_type = self.args['online_type']
-			self.set_cookie('order_num',order.num)
+			self.set_cookie('order_num',str(order.num))
+			self.set_cookie('online_totalPrice',str(order.totalPrice))
 			order.online_type = online_type
 			self.session.commit()
-			return self.send_success(sucess_url = self.reverse_url('onlineWxPay'))
+			return self.send_success(success_url = self.reverse_url('onlineWxPay'))
 		return self.send_success()
 
 class Notice(CustomerBaseHandler):
