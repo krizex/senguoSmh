@@ -1143,7 +1143,7 @@ class Order(MapBase, _CommonApi):
 	remark = Column(String(100)) #商家备注
 	totalPrice = Column(Float)
 	money_paid = Column(Boolean, default=False)
-	pay_type = Column(TINYINT, default=1)#付款方式：1：货到付款，2：余额
+	pay_type = Column(TINYINT, default=1)#付款方式：1：货到付款，2：余额 3:在线支付
 	today = Column(TINYINT, default=1) #送货时间1:今天 2：明天
 	JH_id = Column(Integer, nullable=True) #捡货员id,(当员工被删除时可能会有问题)
 	SH1_id = Column(Integer, nullable=True) #一级送货员id

@@ -1,7 +1,5 @@
 from handlers.base import CustomerBaseHandler,WxOauth2
 from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
-# from handlers.weixinSign import *
-# from handlers.wxpay import *
 import dal.models as models
 import tornado.web
 from settings import *
@@ -1900,14 +1898,14 @@ class Balance(CustomerBaseHandler):
 		print(customer_id,shop_id)
 		try:
 			shop_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id =\
-				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type!=2).all()
+				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([1,3,4,5,0])).all()
 		except:
 			shop_balance_history = None
 			print("balance show error ")
 
 		try:
 			count = self.session.query(models.BalanceHistory).filter_by(customer_id =\
-				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type!=2).count()
+				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([1,3,4,5,0])).count()
 			pages = int(count/page_size) if count % page_size == 0 else int(count/page_size) + 1
 		except:
 			print('pages 0')

@@ -29,12 +29,12 @@ if(isWeiXin()){
                 document.title = "【您有新订单】"+title;
                 setTimeout(function(){
                     document.title = "【　　　　　】"+title;
-                },1000);
+                },500);
             }else{
                 switchTitle(title);
                 setTimeout(function(){
                     switchTitle(title);
-                },1000);
+                },500);
             }
         }else{
             if(title.indexOf("【　　　　　】")!=-1){
@@ -44,7 +44,7 @@ if(isWeiXin()){
                 document.title = title.split("【您有新订单】")[1];
             }
         }
-    },2000);
+    },1000);
 }).on("click",".has-red-tip",function(){
     var action = $(this).attr("data-action");
 

@@ -569,10 +569,10 @@ class DistributStatic(SuperBaseHandler):
 	@tornado.web.authenticated
 	def post(self):
 		total = self.session.query(models.Accountinfo).count()
-		sex = self.session.query(models.Accountinfo.sex, func.count()).group_by(models.Accountinfo.sex).all()
-		province = self.session.query(models.Accountinfo.wx_province, func.count()).\
+		sex = self.session.query(models.Accountinfo.sex, func.count()).order_by(func.count().desc()).group_by(models.Accountinfo.sex).all()
+		province = self.session.query(models.Accountinfo.wx_province, func.count()).order_by(func.count().desc()).\
 			group_by(models.Accountinfo.wx_province).all()
-		city = self.session.query(models.Accountinfo.wx_city, func.count()).\
+		city = self.session.query(models.Accountinfo.wx_city, func.count()).order_by(func.count().desc()).\
 			group_by(models.Accountinfo.wx_city).all()
 		return self.send_success(total=total, sex=sex, province=province, city=city)
 
