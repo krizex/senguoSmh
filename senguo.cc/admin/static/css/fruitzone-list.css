@@ -1,7 +1,7 @@
 .container{background:none;}
-.herder{position:fixed;top:0;}
+.herder{position:fixed;top:0;z-index:9999;}
 .area_box{padding-top:90px;}
-.filter_search{height:50px;line-height:30px;padding:10px 15px;position:fixed;top:40px;width:100%;min-width:320px;max-width:800px;}
+.filter_search{height:50px;line-height:30px;padding:10px 15px;position:fixed;top:40px;width:100%;min-width:320px;max-width:800px;z-index:9999;}
 .filter_search  .city_choose{width:20%;min-width:40px;height:30px;overflow:hidden;padding-right:5px;}
 .filter_search  .city_choose .city_name{display:inline-block;width:80%;overflow:hidden;}
 .filter_search  .city_choose .arrow{margin-top:15px;}
@@ -17,7 +17,7 @@
 .shoplist_box .item .info{margin-left:15px;}
 .shoplist_box .item .shop_name{margin:5px 0 3px;}
 .shoplist_box .item .sty1{line-height:20px;}
-.area_sty{width:100%;height:100%;background:rgba(0,0,0,0.5);position:absolute;left:0;z-index:999;overflow:hidden;}
+.area_sty{width:100%;height:100%;background:rgba(0,0,0,0.5);position:fixed;top:0;z-index:999;overflow:hidden;min-width:320px;max-width:800px;}
 .area_list{position:relative;width:100%;}
 .area_list li{width:100%;float:left;overflow:hidden;}
 .area_list li .name{display:inline-block;width:80px;height:20px;overflow:hidden;}

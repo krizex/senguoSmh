@@ -6,6 +6,7 @@ $(document).ready(function(){
     $('.willOpen').on('click',function(){noticeBox('即将开放，敬请期待！')});
     //shop info
     if(city_id){
+        window.dataObj.action='filter';
         window.dataObj.type='city';
         shopsList(1,city_id,'filter');
     }else{
