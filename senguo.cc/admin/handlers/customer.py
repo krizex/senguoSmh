@@ -1369,15 +1369,6 @@ class Cart(CustomerBaseHandler):
 			self.session.commit()
 
 
-		
-			# if self.current_user.balance >= totalPrice:
-			# 	self.current_user.balance -= totalPrice
-			# 	self.current_user.credits += totalPrice
-			# 	self.session.commit()
-			# 	money_paid = True
-			# 	pay_type = 2
-			# else:return self.send_fail("余额不足")
-
 		count = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
 		num = str(shop_id) + '%06d' % count
 		########################################################################
@@ -1467,7 +1458,6 @@ class Cart(CustomerBaseHandler):
 		goods = str(goods)[1:-1]
 		order_totalPrice = float('%.1f'% totalPrice)
 		print("[提交订单]订单总价：",order_totalPrice)
-		session = self.session
 		# send_time     = order.get_sendtime(session,order.id)
 		send_time = order.send_time
 		address = order.address_text

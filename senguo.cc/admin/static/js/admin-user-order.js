@@ -174,6 +174,11 @@ function orderItem(item){
             $item.find('.pay-status').text('余额支付'); 
             $item.find('.price_edit').hide();
         } 
+        else if(pay_type == 3){
+            $item.find('.pay-status').text('在线支付'); 
+            $item.find('.price_edit').hide();
+
+        }
         else { 
             $item.find('.pay-status').text('货到付款'); 
         } 
