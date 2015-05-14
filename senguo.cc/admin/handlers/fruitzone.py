@@ -116,6 +116,7 @@ class ShopList(FruitzoneBaseHandler):
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
 		else:
+			nomore = True
 			print("[店铺列表]城市不存在")
 
 		# if "service_area" in self.args:
