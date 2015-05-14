@@ -893,7 +893,7 @@ class WxOauth2:
 	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
 		order_totalPrice,send_time,phone,address):
 		remark = "订单总价：" + str(order_totalPrice)+ '\n' + "送达时间：" + send_time + '\n'  + "顾客电话："  + \
-		phone + '\n' + "送货地址：" + address  +'\n\n' + '请及时处理订单。'
+		phone + '\n' + "送货地址：" + address  +'\n\n' + '请及时配送订单。'
 		order_type_temp = int(order_type)
 		order_type = "即时送" if order_type_temp == 1 else "按时达"
 		postdata = {
@@ -901,7 +901,7 @@ class WxOauth2:
 			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
 			'url':staff_order_url,
 			"data":{
-				"first":{"value":"{0}您好，店铺{1}收到了新的订单！".format(staff_name,shop_name),"color": "#173177"},
+				"first":{"value":"配送员{0}您好，店铺{1}有新的订单需要配送。".format(staff_name,shop_name),"color": "#173177"},
 				"tradeDateTime":{"value":str(create_date),"color":"#173177"},
 				"orderType":{"value":order_type,"color":"#173177"},
 				"customerInfo":{"value":customer_name,"color":"#173177"},
