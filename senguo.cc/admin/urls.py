@@ -71,6 +71,9 @@ handlers = [
 	(r"/customer/onlinewxpay",handlers.onlinePay.OnlineWxPay,{},"onlineWxPay"),
 	(r"/customer/(\w+)", handlers.customer.Home, {}, "customerHome"),
 
+
+	(r"/activity/confession", handlers.activity.ConfessionWall, {}, "activityConfession"),
+
 	(r"/super/oauth", handlers.superadmin.Access,{
 		"action":"oauth"}, "superOauth"),
 	(r"/super/logout", handlers.superadmin.Access,{

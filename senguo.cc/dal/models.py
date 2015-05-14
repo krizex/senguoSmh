@@ -1438,6 +1438,20 @@ class ShopFavorComment(MapBase):
 	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
 	order_id = Column(Integer, ForeignKey(Order.id), primary_key=True, nullable=False)
 
+
+
+class ConfessionWall(MapBase, _CommonApi):
+	__tablename__ = 'confession_wall'
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	customer_id = Column(Integer, ForeignKey(Customer.id),nullable=False)
+	shop_id = Column(Integer, ForeignKey(Shop.id),nullable=False)
+	confession = Column(String(500))
+	create_time = Column(DateTime,default = func.now())
+	other_name = Column(String(64))
+	other_phone = Column(String(32))
+	confession_type = Column(Integer,default=0) #0:匿名 1:实名
+
+
 def init_db_data():
 	MapBase.metadata.create_all()
 	# add fruittypes to database
@@ -1463,5 +1477,6 @@ def init_db_data():
 	s.close()
 	print("init db success")
 	return True
+
 
 

@@ -1819,7 +1819,7 @@ class ShopAuthenticate(AdminBaseHandler):
 			phone = data['phone']
 			handle_img = data['handle_img']
 			if not check_msg_token(phone,code):
-				return self.send_fail('code error')
+				return self.send_fail('验证码过期或者不正确')
 			shop_apply = models.ShopAuthenticate(
 				realname = name,
 				shop_type = 1,
@@ -1840,7 +1840,7 @@ class ShopAuthenticate(AdminBaseHandler):
 			front_img = data['front_img']
 			behind_img = data['behind_img']
 			if not check_msg_token(phone,code):
-				return self.send_fail('code error')
+				return self.send_fail('验证码过期或者不正确')
 			shop_apply = models.ShopAuthenticate(
 				realname = name,
 				company_name = company_name,
