@@ -62,10 +62,8 @@ class Access(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self,next_url):
 		# todo: handle state
-		print("oh~no why i'm here i don't know how did this happen")
 		code =self.args["code"]
 		mode = self.args["mode"]
-		# print("mode: ", mode , ", code get:", code)
 		if mode not in ["mp", "kf"]:
 			return self.send_error(400)
 
@@ -74,9 +72,6 @@ class Access(CustomerBaseHandler):
 			return self.redirect(self.reverse_url("customerLogin"))
 		u = models.Customer.register_with_wx(self.session, userinfo)
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
-
-		# next_url = self.get_argument("next", self.reverse_url("fruitzoneShopList"))
-		#print(next_url)
 		return self.redirect(next_url)
 
 class Third(CustomerBaseHandler):
@@ -427,11 +422,23 @@ class ShopProfile(CustomerBaseHandler):
 			shop_id=shop.id).first()
 		if not shop_follow:
 				follow = False
+		# else:
+		# 	if shop_follow.commodity_quality and shop_follow.send_speed and shop_follow.shop_service:
+		# 		satisfy = format((shop_follow.commodity_quality + shop_follow.send_speed + shop_follow.shop_service)/300,'.0%')
+		# 	else:
+		# 		satisfy = format(1,'.0%')
+		q = self.session.query(func.avg(models.Order.commodity_quality),\
+			func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
+		if q[0][0]:
+			commodity_quality = int(q[0][0])
+		if q[0][1]:
+			send_speed = int(q[0][1])
+		if q[0][2]:
+			shop_service = int(q[0][2])
+		if commodity_quality and send_speed and shop_service:
+			satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
 		else:
-			if shop_follow.commodity_quality and shop_follow.send_speed and shop_follow.shop_service:
-				satisfy = format((shop_follow.commodity_quality + shop_follow.send_speed + shop_follow.shop_service)/300,'.0%')
-			else:
-				satisfy = format(1,'.0%')
+			satisfy = format(1,'.0%')
 		# 今天是否 signin
 		signin = False
 		q=self.session.query(models.ShopSignIn).filter_by(
@@ -1891,14 +1898,14 @@ class Balance(CustomerBaseHandler):
 		print(customer_id,shop_id)
 		try:
 			shop_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id =\
-				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type!=2).all()
+				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([1,3,4,5,0])).all()
 		except:
 			shop_balance_history = None
 			print("balance show error ")
 
 		try:
 			count = self.session.query(models.BalanceHistory).filter_by(customer_id =\
-				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type!=2).count()
+				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([1,3,4,5,0])).count()
 			pages = int(count/page_size) if count % page_size == 0 else int(count/page_size) + 1
 		except:
 			print('pages 0')

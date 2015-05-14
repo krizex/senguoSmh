@@ -161,12 +161,12 @@ function time(target) {
     if (wait == 0) {
         target.text("获取验证码").removeAttr('disabled').addClass('bg-green');
         wait = 60;
-        $('.able_get').attr({'id':'getVrify'});
+        $('.able_get').attr({'id':'getVrify'}).text("获取验证码").removeAttr('disabled').addClass('bg-green');
     }
     else {
-        target.text("重新发送(" + wait + ")").removeAttr('disabled').removeClass('bg-green').css({'background':'#ccc'});
+        target.text("重新发送(" + wait + ")").removeAttr('disabled').removeClass('bg-green');
         wait--;
-        $('.able_get').attr({'id':''});
+        $('.able_get').attr({'id':''}).text("重新发送(" + wait + ")").removeAttr('disabled').removeClass('bg-green');
         setTimeout(function() {
                 time(target)
             },

@@ -539,7 +539,7 @@ class PhoneVerify(_AccountBaseHandler):
 	def initialize(self, action):
 		if action == "admin":
 			self.__account_model__ = models.ShopAdmin
-			self.__account_cookie_name__ = "admin_id"
+			self.__account_cookie_name__ = "customer_id"
 			self.__wexin_oauth_url_name__ = "adminOauth"
 		elif action == "customer":
 			self.__account_model__ = models.Customer
