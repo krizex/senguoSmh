@@ -322,7 +322,7 @@ function TiePhone(target){
         function(res){
             if(res.success)
             {
-                $('.tiephone').text(phone).css({'color':'#a8a8a8'});
+                $('.phone').text(phone).css({'color':'#a8a8a8'});
                 var tie_box=new Modal('tieBox');
                 tie_box.modal('hide');
                 $('#tiePhone').removeClass('bg-greyc').removeAttr('disabled');

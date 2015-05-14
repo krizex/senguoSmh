@@ -1137,13 +1137,13 @@ class Order(MapBase, _CommonApi):
 	status = Column(TINYINT, default=ORDER_STATUS.ORDERED)  # 订单状态:DELETED = 0,ORDERED = 1, JH = 2,SH1 = 3
 														   # #SH2 = 4,Received=5，FINISH = 6, AFTER_SALE = 10
 	type = Column(TINYINT) #订单类型 1:立即送 2：按时达
-	intime_period = Column(Integer,default = 0) #when type is 1,it's usefull
+	intime_period = Column(Integer,default = 30) #when type is 1,it's usefull
 	freight = Column(SMALLINT, default=0)  # 订单运费
 	tip = Column(SMALLINT, default=0)  # 小费（暂时只有立即送可提供运费）
 	remark = Column(String(100)) #商家备注
 	totalPrice = Column(Float)
 	money_paid = Column(Boolean, default=False)
-	pay_type = Column(TINYINT, default=1)#付款方式：1：货到付款，2：余额
+	pay_type = Column(TINYINT, default=1)#付款方式：1：货到付款，2：余额 3:在线支付
 	today = Column(TINYINT, default=1) #送货时间1:今天 2：明天
 	JH_id = Column(Integer, nullable=True) #捡货员id,(当员工被删除时可能会有问题)
 	SH1_id = Column(Integer, nullable=True) #一级送货员id
