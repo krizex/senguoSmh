@@ -10,22 +10,12 @@
         <p><span class="left c999">所在店铺：</span><span class="left txt-ar" id="shopName">{{shopName}}</span></p>
         <p><span class="left c999">支付方式：</span><span class="left txt-ar">支付宝支付</span></p>
     </div>
-    <a href="javascript:;" class="pay-btn" id="getBrandWCPayRequest" data-url="{{alipayUrl}}" data-id="1">现在支付</a>
+    <a href="{{alipayUrl}}" class="pay-btn" id="getBrandWCPayRequest">现在支付</a>
     <div class="copy-right">powered by senguo.cc</div>
 {% end %}
 
 {% block bottom %}
 <script type="text/javascript">
-     $(document).on('click','#getBrandWCPayRequest',function(){
-     	var $this=$(this);
-     	var id=parseInt($this.attr('data-id');)
-     	var link=$this.attr('data-url');
-     	$this.attr({'data-id':0});
-     	if(id==1){
-     		window.location.href=link;
-     	}
-     	
-     });
     $(".container").height($(window).height()).css({background:"#f5f5f5"});
 </script>
 {% end %}

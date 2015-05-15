@@ -236,7 +236,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		order_id = order.id
 		price    = order.totalPrice
 		try:
-			url = self.create_alipay_url(order_id,price)
+			url = self.create_alipay_url(price,order_id)
 		except Exception as e:
 			return self.send_fail(error_text = '系统繁忙 ，请稍后再试')
 		# return self.redirect(url)
@@ -246,6 +246,7 @@ class OnlineAliPay(CustomerBaseHandler):
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 
 	def create_alipay_url(self,price,order_id):
+		print('login create_alipay_url',price,order_id)
 		authed_url = self._alipay.create_direct_pay_by_user_url(
 			out_trade_no = str(order_id),
 			subject      = 'alipay',
@@ -254,6 +255,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			call_back_url = "%s%s"%(ALIPAY_HANDLE_HOST,self.reverse_url("onlineAlipayFishedCallback")),
 			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("onlineAliNotify")),
 			)
+		print('hhhhhahahahahahahahah')
 		print(authed_url,'authed_url')
 		return authed_url
 
