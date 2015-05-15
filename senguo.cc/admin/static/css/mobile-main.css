@@ -76,7 +76,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .rec-left{width: calc(100% - 30px);max-width: 74%;}
 .rec-left>p{color: #666;line-height: 20px;font-size: 14px;}
 .rec-right{width: 30px;padding-top: 10px;text-align: center;}
-.rec-right>input{width: 20px;height: 20px;border: none;background: url(../images/uncheck.png) no-repeat;}
+.rec-right>input{width: 20px;height: 20px;border: none;background: url(../images/uncheck.png) no-repeat;background-size:20px !important;background-position:center center;}
 .rec-right .checked{background: url(../images/checked.png) no-repeat;}
 .wrap-commit{margin-top: 40px;text-align: center;}
 .wrap-commit>a{display: inline-block;width: 80%;height: 40px;line-height: 40px;text-align: center;color: #fff;background-color: #80de9e;border-radius: 20px;max-width: 200px;font-size: 16px;}
