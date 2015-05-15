@@ -1671,6 +1671,8 @@ class Order(CustomerBaseHandler):
 			if not order:return self.send_error(404)
 			if order.status == 0:
 				return self.send_fail("订单已取消，不能重复操作")
+			if order.pay_type == 3:
+				return self.send_fail("在线支付订单 暂时不允许删除 如有疑问 请直接与店家联系")
 			order.status = 0
 			# recover the sale and storage
 			# woody
