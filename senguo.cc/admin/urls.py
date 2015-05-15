@@ -52,6 +52,14 @@ handlers = [
 	#to remove
 	(r"/m", handlers.superadmin.Official,{},"test"),
 
+	#支付宝在线支付
+	(r"/customer/onlineAliPay/onlineAliPayCallback",handlers.onlinePay.OnlineAliPay,{'action':'onlineAliPayCallback'},
+		"onlineAlipayFishedCallback"),
+	(r"/customer/onlineAliPay/onlineAliNotify",handlers.onlinePay.OnlineAliPay,{'action':'onlineAliNotify'},
+		"onlineAliNotify"),
+	(r"/customer/onlinePay/onlineAliPay",handlers.onlinePay.OnlineAliPay,{'action':'onlineAliPay'},
+		"onlineAliPay"),
+	
 	(r"/customer/cart/(\w+)", handlers.customer.Cart, {}, "customerCart"),
 	(r"/customer/orders", handlers.customer.Order, {}, "customerOrder"),
 	(r"/customer/orders/detail/(\d+)", handlers.customer.OrderDetail, {}, "customerOrderDetail"),
