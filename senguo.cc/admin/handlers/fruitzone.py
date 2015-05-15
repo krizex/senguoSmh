@@ -821,8 +821,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 		print(customer_id, shop_id,'没充到别家店铺去吧')
 		if not shop_follow:
 			return self.send_fail('shop_follow not found')
-		#shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
-		#self.session.commit()
+		shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
+		self.session.commit()
 
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
