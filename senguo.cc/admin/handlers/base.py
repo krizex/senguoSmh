@@ -921,11 +921,11 @@ class WxOauth2:
 
 
 	@classmethod
-	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPriceo,order.id):
+	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPriceo,order_realid):
 		postdata = {
 			'touser' : touser,
 			'template_id':'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0',
-			'url'    : 'http://i.senguo.cc/customer/orders/detail/'+order.id,
+			'url'    : 'http://i.senguo.cc/customer/orders/detail/'+order_realid,
 			'topcolor': "#FF0000",
 			"data":{
 				"first"    : {"value":"您的订单已提交成功","color":"#173177"},
