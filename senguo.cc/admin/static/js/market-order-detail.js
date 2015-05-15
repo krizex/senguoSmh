@@ -54,6 +54,11 @@ $(document).ready(function(){
     }
     $('#del-ok').attr({'disabled':true});
     changeComment(comment);
+}).on("click","#cancel-order",function(){
+    var order_id = $(this).attr("data-id");
+    confirmBox('确认取消该订单吗？//(ㄒoㄒ)//');
+}).on("click",".confriming",function(){
+    confirmRemove();
 });
 function removeDom(){
     $('.create_time').remove();
@@ -97,7 +102,28 @@ function changeComment(comment){
 )
 }
 
-
+function cancelOrder(id){
+    var order_id = id;
+    var url='';
+    var action='cancel_order';
+    var data={
+        order_id:order_id
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,function(res){
+            if(res.success){
+                noticeBox("订单取消成功！");
+                setTimeout(function(){
+                    window.location.href="/customer/orders?action=all";
+                },2000);
+            }
+            else return noticeBox(res.error_text)
+        }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+    )
+}
 function delComment(target,id){
     var url='';
     var action='delete_comment';

@@ -1712,7 +1712,6 @@ class Order(CustomerBaseHandler):
 					print('old histtory not found')
 				else:
 					old_balance_history.is_cancel = 1
-					print(old_balance_history.is_cancel,'is cancel???')
 					self.session.commit()
 				#同时生成一条新的记录
 				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
@@ -1720,8 +1719,8 @@ class Order(CustomerBaseHandler):
 						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = \
 						shop_follow.shop_balance)
 				self.session.add(balance_history)
-
 			self.session.commit()
+			return self.send_success()
 		elif action == "comment_point":
 			data = self.args["data"]
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
@@ -1823,8 +1822,9 @@ class OrderDetail(CustomerBaseHandler):
 			comment_imgUrl = order.comment_imgUrl.split(',')
 		else:
 			comment_imgUrl = None
+		shop_code = order.shop.shop_code
 		return self.render("customer/order-detail.html", order=order,
-						   charge_types=charge_types, mcharge_types=mcharge_types,comment_imgUrl=comment_imgUrl)
+						   charge_types=charge_types, mcharge_types=mcharge_types,comment_imgUrl=comment_imgUrl,shop_code=shop_code)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data?")

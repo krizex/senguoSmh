@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title%}支付宝支付{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/mobile-main.css')}}"/>
+{% end %}
+{% block content%}
+     <p class="pay-title">在线支付</p>
+     <p class="pay-money">¥<span>{{totalPrice}}</span></p>
+    <div class="wrap-pay">
+        <p><span class="left c999">所在店铺：</span><span class="left txt-ar" id="shopName">{{shopName}}</span></p>
+        <p><span class="left c999">支付方式：</span><span class="left txt-ar">支付宝支付</span></p>
+    </div>
+    <a href="{{alipayUrl}}" class="pay-btn" id="getBrandWCPayRequest">现在支付</a>
+    <div class="copy-right">powered by senguo.cc</div>
+{% end %}
+
+{% block bottom %}
+<script type="text/javascript">
+    $(".container").height($(window).height()).css({background:"#f5f5f5"});
+</script>
+{% end %}
