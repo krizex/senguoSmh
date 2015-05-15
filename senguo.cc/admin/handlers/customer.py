@@ -1461,7 +1461,7 @@ class Cart(CustomerBaseHandler):
 		# send_time     = order.get_sendtime(session,order.id)
 		send_time = order.send_time
 		address = order.address_text
-		order_realid = str(order.id)
+		order_realid = order.id
 		print("[提交订单]订单详情：",goods)
 		if self.args['pay_type'] != 3:
 			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
