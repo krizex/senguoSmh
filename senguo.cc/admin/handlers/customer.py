@@ -2019,7 +2019,6 @@ class Recharge(CustomerBaseHandler):
 		url=''
 		action = self.args['action']
 		if action == 'get_code':
-			print(self.request.full_url())
 			path_url = self.request.full_url()
 			jsApi  = JsApi_pub()
 			#path = 'http://auth.senguo.cc/fruitzone/paytest'

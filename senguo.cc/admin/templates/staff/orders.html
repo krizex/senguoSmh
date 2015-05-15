@@ -25,7 +25,13 @@
                     </span>
                 </div>
                 <div class="button-box forbid_click">
+                    {% if order.status==4 %}
                     <button class="btn clear-btn text-white bg-green2 order_finish finish_btn" data-id="{{order.id}}">完成</button>
+                    {% elif order.status ==5 %}
+                    <button class="btn clear-btn text-white bg-green2  finish_btn arrive" data-id="{{order.id}}">已完成</button>
+                     {% elif order.status ==6 %}
+                    <button class="btn clear-btn text-white bg-green2  finish_btn arrive" data-id="{{order.id}}">已评价</button>
+                    {% end %}
                 </div>
             </div>
             <div class="content text-grey">

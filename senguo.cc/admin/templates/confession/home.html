@@ -1,0 +1,19 @@
+{% extends 'base.html'%}
+{% block content %}
+<div class="confession-notice bg-green txt-ac">
+	<h1 class="text-white">{{shop_name}}-告白墙</h1>
+	<p>hehheheheh</p>
+</div>
+<div class="box group">
+	<ul class="cofession-list group">
+		
+	</ul>
+</div>
+ <div class="text-grey9 set-w100-fle font12 loading txt-ac mt10">~努力加载中 ( > < )~</div>
+ <div class="home-bottom bg-green">
+	<a href="{{reverse_url('ConfessionPublic')}}" class="txt-ac text-white bg-green to-confess fl">我要告白</a>
+	<a href="{{reverse_url('ConfessionCenter')}}" class="txt-ac to-center fl"></a>
+</div>
+{% end %}{% block bottom %}
+<script src="/static/js/confession/home.js"></script>
+{% end %}
