@@ -143,7 +143,7 @@ $(document).ready(function(){
     var stop_range=Int($('.stop-range').val());
     var today=$('#sendDay').find('.active').data('id');
     if(today==1) {
-        $('.send_period .item').each(function(){
+        $('.send_period .list-group-item').each(function(){
             var $this=$(this);
             var intime_startHour=Int($this.find('.intime_startHour').val());
             var intime_startMin=Int($this.find('.intime_startMin').val());
@@ -218,7 +218,7 @@ $(document).ready(function(){
                 $('.intime-intro').hide();
                 $('.now-intro').show();
             }
-            else noticeBox('按时达模式已关闭，请选择立即送模式！',$this);
+            else noticeBox('按时达模式已关闭，请选择立即送模式！',$(this));
         })
     }
     else{
@@ -398,9 +398,14 @@ $(document).ready(function(){
          return false;
     }
 }).on("click",".online-lst li",function(){   //选择在线支付方式
-    /*$(".online-lst").find(".checkbox-btn").removeClass("checkboxed");
+    /*var index = $(this).index();
+    if(index ==1 ){
+        noticeBox("目前只支持微信支付哦！");
+        return false;
+    }*/
+    $(".online-lst").find(".checkbox-btn").removeClass("checkboxed");
     $("#online-pay").attr("data-tpye",$(this).attr("data-type"));
-    $(this).children("a").addClass("checkboxed");*/
+    $(this).children("a").addClass("checkboxed");
 });
 
 window.dataObj.price_list=[];
@@ -625,7 +630,7 @@ function orderSubmit(target){
     var online_type = "";
     var type=$('#sendType').find('.active').data('id');
     var today=$('#sendDay').find('.active').data('id');
-    var period_id=$('#sendPeriod').find('.active').data('id');
+    var period_id=$('#sendPerTime').find('.active').data('id');
     var address_id=$('#addressType').find('.active').data('id');
     var pay_type=$('#payType').find('.active').data('id');
     var message=$('#messageCon').val();

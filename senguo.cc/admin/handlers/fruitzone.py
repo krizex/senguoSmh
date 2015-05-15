@@ -734,12 +734,13 @@ class SystemPurchase(FruitzoneBaseHandler):
 	@FruitzoneBaseHandler.check_arguments('price:str')
 	def handle_alipaytest(self):
 		shop_id = self.get_cookie("market_shop_id")
-		print(shop_id,'idddddddddddddddddddddd')
+		customer_id = self.current_user.id
+		print(shop_id,customer_id,'idddddddddddddddddddddd')
 		price = float(self.args['price'])
 		print(price)
 		print('find the correct way to login?')
 		try:
-			url = self.test_create_tmporder_url(price,shop_id)
+			url = self.test_create_tmporder_url(price,shop_id,customer_id)
 		except Exception as e:
 			return self.send_fail('ca')
 		return self.send_success(url = url)
@@ -791,8 +792,56 @@ class SystemPurchase(FruitzoneBaseHandler):
 		signmethod = self._alipay.getSignMethod(**self.args)
 		if signmethod(self.args) != sign:
 			return self.send_error(403)
-		notify_data = xmltodict.parse(self.args["notify_data"]["notify"])
+		print(self.args['notify_data'])
+		notify_data = xmltodict.parse(self.args["notify_data"])["notify"]
 		orderId = notify_data["out_trade_no"]
+		ali_trade_no=notify_data["trade_no"]
+		print(ali_trade_no,'hehehehehe')
+		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
+		if old_balance_history:
+			return self.send_success()
+		data = orderId.split('a')
+		totalPrice = float(data[0])/100
+		# shop_id = self.get_cookie('market_shop_id')
+		shop_id = int(data[1])
+		customer_id = int(data[2])
+		print(totalPrice,shop_id ,customer_id,'ididid')
+	#	code = self.args['code']
+	#	path_url = self.request.full_url()
+		# totalPrice =float( self.get_cookie('money'))
+		#########################################################
+		# 用户余额增加 
+		# 同时店铺余额相应增加 
+		# 应放在 支付成功的回调里
+		#########################################################
+
+		# 支付成功后，用户对应店铺 余额 增1加
+		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+			shop_id = shop_id).first()
+		print(customer_id, shop_id,'没充到别家店铺去吧')
+		if not shop_follow:
+			return self.send_fail('shop_follow not found')
+		shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
+		self.session.commit()
+
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if not shop:
+			return self.send_fail('shop not found')
+		shop.shop_balance += totalPrice
+		self.session.commit()
+		print(shop.shop_balance ,'充值后 商店 总额')
+		customer = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
+		if not customer:
+			return self.send_fail("customer not found")
+		name = customer.nickname
+
+		# 支付成功后  生成一条余额支付记录
+		balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
+			balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no)
+		self.session.add(balance_history)
+		print(balance_history , '钱没有白充吧？！')
+		self.session.commit()
 		print("return success?")
 		return self.write("success")
 
@@ -813,16 +862,16 @@ class SystemPurchase(FruitzoneBaseHandler):
 		)
 		return authed_url
 
-	def test_create_tmporder_url(self, price,shop_id):
+	def test_create_tmporder_url(self, price,shop_id,customer_id):
 		# 创建临时订单
 		# TODO: 订单失效时间与清除
 		# tmp_order = self.current_user.add_tmp_order(self.session, charge_data)
-		data = str(price) +'a'+str(shop_id)
+		data = str(price) +'a'+str(shop_id)+'a'+str(customer_id)
 		# url = '/fruitzone/alipaynotify?data={0}'.format(data)
 		# print(url,'url')
 
 		authed_url = self._alipay.create_direct_pay_by_user_url(
-			out_trade_no= str(price*100) +'a'+str(shop_id)+'a'+str(int(time.time())),
+			out_trade_no= str(price*100) +'a'+str(shop_id)+'a'+ str(customer_id)  + 'a'+ str(int(time.time())),
 			subject = 'alipay charge',
 			total_fee = price,
 			seller_account_name = ALIPAY_SELLER_ACCOUNT,
@@ -862,7 +911,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 		ali_trade_no=self.args["trade_no"]
 		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
 		if old_balance_history:
-			return self.send_success()
+			return self.redirect(self.reverse_url("customerRecharge"))
+
 		print(order_id,ali_trade_no,'hhhhhhhhhhhhhhhhhhhh')
 		data = order_id.split('a')
 		totalPrice = float(data[0])/100
@@ -898,7 +948,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# 支付成功后  生成一条余额支付记录
 		name = self.current_user.accountinfo.nickname
 		balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-			balance_value = totalPrice,balance_record = '支付宝充值：用户 '+ name  , name = name , balance_type = 0,\
+			balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
 			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no)
 		self.session.add(balance_history)
 		print(balance_history , '钱没有白充吧？！')

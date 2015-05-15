@@ -9,7 +9,7 @@
 {% block content %}
 {% set fruits=eval(order.fruits)%}
 {% set mgoods=eval(order.mgoods)%}
-<div class="container">
+<div class="container mb50">
     <div class="order-item">
         <h4 class="title">订单详情</h4>
         <p>订单编号：<span class="order-id" data-id="{{order.id}}">{{order.num}}</span></p>
@@ -81,7 +81,7 @@
     {% if order.comment%}
     <div class="order-item commentBox">
         <!--<h4 class="title">订单评价<a href="javascript:;" class="fr" id="del-comment">删除</a></h4>-->
-        <h4 class="title">订单评论<a href="/customer/ordercomment?orderid={{order.id}}" class="fr">修改</a></h4>
+        <h4 class="title">订单评论</h4>
         <p><span>{{current_user.accountinfo.nickname}}：</span><span class="comment_con">{{order.comment}}</span></p>
         {% if comment_imgUrl %}
         <ul class="group com-goods-lst">
@@ -97,14 +97,26 @@
         {% end %}
     </div>
     {% else %}
-    {% if order.status == 5 %}
-    <div class="order-item commentBox">
-        <h4 class="title">订单评论</h4>
-        <p class="grey-txt p-com">评论此订单获取更多积分！<a href="{{reverse_url('customerShopComment')}}?num={{order.id}}" class="fr add-comment" id="add-comment">评论</a></p>
-    </div>
-    {% end %}
     {% end %}
 </div>
+{% if order.comment%}
+<div class="wrap-bm-btn">
+    <a class="fr add-comment white-btn" href="/customer/ordercomment?orderid={{order.id}}">修改评价</a>
+    <a class="fr go-shopping white-btn" href="/{{shop_code}}">继续购买</a>
+</div>
+{% end %}
+{% if order.status == 5 %}
+<div class="wrap-bm-btn">
+    <a class="fr add-comment red-btn" href="{{reverse_url('customerShopComment')}}?num={{order.id}}">评价</a>
+    <a class="fr go-shopping white-btn" href="/{{shop_code}}">继续购买</a>
+</div>
+{% end %}
+{% if order.status == -1 %}
+<div class="wrap-bm-btn">
+    <a class="fr add-comment red-btn" href="{{reverse_url('customerShopComment')}}?num={{order.id}}">去支付</a>
+    <a class="fr white-btn" href="javascript:;" data-id="{{order.id}}" id="cancel-order">取消订单</a>
+</div>
+{% end %}
  <input type="hidden" value="{{order.create_date}}" class="create_time"/>
 <input type="hidden" value="{{order.create_date.year}}" class="create_year"/>
 <input type="hidden" value="{{order.create_date.month}}" class="create_month"/>

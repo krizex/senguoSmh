@@ -24,7 +24,7 @@ password = "sg201404"
 ALIPAY_PID = "2088511484939521"
 ALIPAY_KEY="oknunsvpq83x358worr6obs7zo2h1xxw"
 ALIPAY_SELLER_ACCOUNT = "senguo@senguo.cc"
-ALIPAY_HANDLE_HOST = "http://auth.senguo.cc"
+ALIPAY_HANDLE_HOST = "http://i.senguo.cc"
 
 #七牛云的参数
 ACCESS_KEY = "Pm0tzHLClI6iHqxdkCbwlSwHWZycbQoRFQwdqEI_"

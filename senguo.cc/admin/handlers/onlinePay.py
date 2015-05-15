@@ -23,7 +23,11 @@ class OnlineWxPay(CustomerBaseHandler):
 		if not order:
 			return self.send_fail('order not found')
 		totalPrice = order.totalPrice
-
+		shop_id   = order.shop_id
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if not shop:
+			return self.send_fail('shop not found')
+		shopName = shop.shop_name
 		jsApi  = JsApi_pub()
 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('onlineWxPay')
@@ -63,8 +67,9 @@ class OnlineWxPay(CustomerBaseHandler):
 			timestamp = datetime.datetime.now().timestamp()
 			wxappid = 'wx0ed17cdc9020a96e'
 			signature = self.signature(noncestr,timestamp,path_url)
-		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
-			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)
+		return self.render("fruitzone/paywx.html",renderPayParams = renderPayParams,wxappid = wxappid,\
+			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice,\
+			shopName = shopName)
 
 	def check_xsrf_cookie(self):
 		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -80,6 +85,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			# 修改订单状态 :支付订单刚生成时 状态为-1.完成支付后状态变为1
 			# 增加相应店铺 相应的余额
 			# 生成一条余额记录
+			# 给店铺管理员 和 顾客 发送微信消息
 			##############################################################
 			print('微信在线支付回调成功')
 			data = self.request.body
@@ -115,7 +121,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			if not shop_follow:
 				return self.send_fail('shop_follow not found')
 			
-			# 修改店铺余额
+			# 修改店铺总余额
 
 			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 			if not shop:
@@ -131,11 +137,65 @@ class OnlineWxPay(CustomerBaseHandler):
 			else:
 				return self.send_fail('customer not found')
 			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
-				balance_value = totalPrice,balance_record = '微信在线支付：用户 '+ name  , name = name , balance_type = 3,\
+				balance_value = totalPrice,balance_record = '在线支付(微信)：订单'+ order.num, name = name , balance_type = 3,\
 				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id)
 			self.session.add(balance_history)
 			print(balance_history , '钱没有白充吧？！')
 			self.session.commit()
+
+			# send weixin message
+			admin_name = shop.admin.accountinfo.nickname
+			touser     = shop.admin.accountinfo.wx_openid
+			shop_name  = shop.shop_name
+			order_id   = order.num
+			order_type = "立即送" if order.type == 1 else "按时达"
+			phone      = order.phone
+			create_date= order.create_date
+			customer_name = order.receiver
+			c_tourse      = customer.accountinfo.wx_openid
+			print("[提交订单]用户OpenID：",c_tourse)
+
+			#goods 
+			goods = []
+			f_d = eval(order.fruits)
+			m_d = eval(order.mgoods)
+			for f in f_d:
+				goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+			for m in m_d:
+				goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+			goods = str(goods)[1:-1]
+			print(goods,'goods到底装的什么')
+			order_totalPrice = float('%.1f'% totalPrice)
+			print("[提交订单]订单总价：",order_totalPrice)
+			# send_time     = order.get_sendtime(session,order.id)
+			send_time = order.send_time
+			address = order.address_text
+
+			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
+				customer_name,order_totalPrice,send_time,goods,phone,address)
+			# send message to customer
+			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
 			return self.write('success')
+
+
+
+class OnlineAliPay(CustomerBaseHandler):
+	def initialize(self,action):
+		self._action = action
+
+	@tornado.web.authenticated
+	def get(self):
+		pass
+
+	# @tornado.web.authenticated
+	def post(self):
+		if self._action == 'OnAliyNotify':
+			return self.handle_onAlipay_notify()
+		if not self.current_user:
+			return self.send_error(403)
+
+
+
+
 
 

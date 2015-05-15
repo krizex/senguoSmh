@@ -761,6 +761,7 @@ class Order(AdminBaseHandler):
 					if not customer_info:
 						return self.send_fail('customer not found')
 					customer_info.is_new = 1
+					name = customer_info.nickname
 					self.session.commit()
 
 					#
@@ -819,11 +820,21 @@ class Order(AdminBaseHandler):
 
 						shop.available_balance += totalprice
 						balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,\
-							balance_record = "可提现额度入账：订单"+order.num+"完成",name = self.current_user.accountinfo.nickname,balance_value = totalprice,shop_totalPrice=\
+							balance_record = "可提现额度入账：订单"+order.num+"完成",name = name,balance_value = totalprice,shop_totalPrice=\
 							shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,available_balance=\
 							shop.available_balance,balance_type = 6)
 						self.session.add(balance_history)
 						self.session.commit()
+
+					if order.pay_type == 3:
+						shop.available_balance += totalprice
+						balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,\
+							balance_record = "可提现额度入账：订单"+order.num+"完成",name = name,balance_value = totalprice,shop_totalPrice=\
+							shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,available_balance=\
+							shop.available_balance,balance_type = 7)
+						self.session.add(balance_history)
+						self.session.commit()
+
 
 					if shop_follow: 
 						if shop_follow.shop_point == None:
@@ -847,6 +858,8 @@ class Order(AdminBaseHandler):
 			elif action == "del_order":
 				if order.status == 0:
 					return self.send_fail('订单已经被删除，不能重复操作')
+				if order.pay_type == 3:
+					return self.send_fail("在线支付订单 不允许删除")
 				session = self.session
 				del_reason = data["del_reason"]
 				order.update(session=session, status=0,del_reason = del_reason)
@@ -871,7 +884,7 @@ class Order(AdminBaseHandler):
 					shop_follow.shop_balance += order.totalPrice
 
 					balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
-						balance_value = order.totalPrice,balance_record = '退款：订单'+ order.num+'删除', name = self.current_user.accountinfo.nickname,\
+						balance_value = order.totalPrice,balance_record = '余额退款：订单'+ order.num+'删除', name = self.current_user.accountinfo.nickname,\
 						balance_type = 4,shop_totalPrice = self.current_shop.shop_balance,customer_totalPrice = \
 						shop_follow.shop_balance)
 					self.session.add(balance_history)
@@ -1590,7 +1603,7 @@ class ShopBalance(AdminBaseHandler):
 		elif action == 'all_history':
 			history = []
 			page=int(self.args['page'])-1
-			balance_history = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type !=6 )
+			balance_history = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,2,3,4,5]))
 			history_list = balance_history.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			count =balance_history.count()
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
@@ -1664,12 +1677,13 @@ class ShopBalance(AdminBaseHandler):
 				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':temp.balance_value,\
 					'type':temp.balance_type,'total':shop_totalBalance})
 			return self.send_success(history = history,page_sum=page_sum,total=total,times=times,persons=persons)
+
 		elif action =='spend':
 			history = []
 			page=int(self.args['page'])-1
 			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,2,4,5]))\
 			.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-			count = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,balance_type =1).count()
+			count = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,2,4,5])).count()
 			spend_total = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(shop_id = shop_id,balance_type =1,is_cancel = 0).all()
 			if spend_total[0][0]:
 				total =spend_total[0][0]
@@ -1689,12 +1703,13 @@ class ShopBalance(AdminBaseHandler):
 				history.append({'name':temp.name,'record':temp.balance_record,'time':create_time,'value':value,\
 					'type':temp.balance_type,'total':shop_totalBalance})
 			return self.send_success(history = history,page_sum=page_sum,total=total,times=times,persons=persons)
+
 		elif action == 'available':
 			history = []
 			page = int(self.args['page']-1)
-			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([2,6])).\
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([2,6,7])).\
 			order_by(models.BalanceHistory.create_time.desc()).offset(page*page_size).limit(page_size).all()
-			count =  self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([2,6])).count()
+			count =  self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([2,6,7])).count()
 			page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			if not history_list:
 				print('get all BalanceHistory error')
