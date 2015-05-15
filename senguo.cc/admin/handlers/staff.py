@@ -183,6 +183,8 @@ class Order(StaffBaseHandler):
 		try:order = self.session.query(models.Order).filter_by(id=self.args["order_id"]).one()
 		except:return self.send_fail("没找到该订单", 404)
 		if action == "finish":
+			if order.status in [5,6]:
+				return self.send_fail('订单已完成，不允许重复操作')
 			if self.current_user.work == 1:#JH
 				if order.status == 3:
 					return self.send_fail("已完成操作，请勿重复")
