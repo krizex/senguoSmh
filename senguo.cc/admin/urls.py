@@ -6,6 +6,7 @@ import handlers.fruitzone
 import handlers.infowall
 import handlers.official
 import handlers.onlinePay
+import handlers.activity
 from dal import models
 #todo:handlers太大会不会影响性能？
 
@@ -71,9 +72,12 @@ handlers = [
 	(r"/customer/onlinewxpay",handlers.onlinePay.OnlineWxPay,{},"onlineWxPay"),
 	(r"/customer/(\w+)", handlers.customer.Home, {}, "customerHome"),
 
-
-	(r"/activity/confession", handlers.activity.ConfessionWall, {}, "activityConfession"),
-
+	#告白墙
+	(r"/confession/public", handlers.activity.ConfessionPublic, {}, "ConfessionPublic"),
+	(r"/confession/center", handlers.activity.ConfessionCenter, {}, "ConfessionCenter"),
+	(r"/confession/list", handlers.activity.ConfessionList, {}, "ConfessionList"),
+	(r"/confession/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
+	
 	(r"/super/oauth", handlers.superadmin.Access,{
 		"action":"oauth"}, "superOauth"),
 	(r"/super/logout", handlers.superadmin.Access,{

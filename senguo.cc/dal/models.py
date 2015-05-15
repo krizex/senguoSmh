@@ -1449,8 +1449,23 @@ class ConfessionWall(MapBase, _CommonApi):
 	create_time = Column(DateTime,default = func.now())
 	other_name = Column(String(64))
 	other_phone = Column(String(32))
-	confession_type = Column(Integer,default=0) #0:匿名 1:实名
+	confession_type = Column(Integer,default = 0) #0:匿名 1:实名
+	great = Column(Integer,default = 0)
+	comment = Column(Integer,default = 0)
+	floor = Column(Integer,default = 0)
 
+class ConfessionComment(MapBase, _CommonApi):
+	__tablename__ = 'confession_comment'
+	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
+	wall_id = Column(Integer,ForeignKey(ConfessionWall.id),nullable = False)
+	customer_id = Column(Integer, ForeignKey(Customer.id),nullable=False)
+	comment = Column(String(500))
+	create_time = Column(DateTime,default = func.now())
+
+class ConfessionGreat(MapBase, _CommonApi):
+	__tablename__ = 'confession_great'
+	customer_id = Column(Integer, ForeignKey(Customer.id),primary_key=True,nullable=False)
+	wall_id = Column(Integer,ForeignKey(ConfessionWall.id),primary_key=True,nullable = False)
 
 def init_db_data():
 	MapBase.metadata.create_all()

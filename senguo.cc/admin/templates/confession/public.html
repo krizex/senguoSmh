@@ -1,0 +1,62 @@
+{% extends 'base.html'%}
+{% block content %}
+ <header class="detail-header text-white center-block">
+    <a href="/confession/{{shop_code}}" class="return-btn bg_change">&nbsp;</a>
+    <span class="title font16">我要告白</span>
+</header>
+<div class="box mt50">
+	<table class="table">
+		<colgroup width="25%"></colgroup>
+		<colgroup width="75%"></colgroup>
+		<tr>
+			<td>To:</td>
+			<td>
+				<input type="text" placeholder="想对谁告白呢？写出TA的姓名" class="sty1" id="other-name"/>
+			</td>
+		</tr>
+		<tr>
+			<td>Ta的手机号:</td>
+			<td>
+				<input type="text" placeholder="写上TA的手机号，方便我们礼品派送哦" class="sty1" id="other-phone"/>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<textarea placeholder="在这里写上告白的内容吧～" class="sty2" id="confession"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td>From:</td>
+			<td>
+				<img src="{{current_user.accountinfo.headimgurl_small}}" class="img">
+				<span>{{current_user.accountinfo.nickname}}</span>	
+			</td>
+		</tr>
+		<tr>
+			<td>你的手机号:</td>
+			<td>
+				{% if current_user.accountinfo.phone %}
+				{{current_user.accountinfo.phone}}
+				{% else %}
+				未绑定 <a href="#">点击绑定</a>
+				{% end %}	
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" class="text-grey6">	绑定自己手机号后，通过与告白人填写的手机号配对，你能看到所有给你的告白哦～
+			</td>
+		</tr>
+		<tr>
+			<td>发布方式:</td>
+			<td>
+				<button type="button" class="btn text-white btn-small type-btn active" data-id="0">匿名</button>
+				<button type="button" class="btn text-white btn-small type-btn ml10" data-id="1">实名</button>	
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2"><button class="btn text-white pub-btn font16">发布</button></td>
+		</tr>
+	</table>
+</div>
+{% end %}{% block bottom %}<script src="/static/js/confession/public.js"></script>{% end %}
