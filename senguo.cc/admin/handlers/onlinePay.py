@@ -178,3 +178,24 @@ class OnlineWxPay(CustomerBaseHandler):
 			return self.write('success')
 
 
+
+class OnlineAliPay(CustomerBaseHandler):
+	def initialize(self,action):
+		self._action = action
+
+	@tornado.web.authenticated
+	def get(self):
+		pass
+
+	# @tornado.web.authenticated
+	def post(self):
+		if self._action == 'OnAliyNotify':
+			return self.handle_onAlipay_notify()
+		if not self.current_user:
+			return self.send_error(403)
+
+
+
+
+
+
