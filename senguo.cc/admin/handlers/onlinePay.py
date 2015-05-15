@@ -183,35 +183,65 @@ class OnlineWxPay(CustomerBaseHandler):
 class OnlineAliPay(CustomerBaseHandler):
 	def initialize(self,action):
 		self._action = action
+		self.order_num = None
+		print(self._action,'action')
 
 	@tornado.web.authenticated
 	def get(self):
-		if self._action == 'onlineAliPayCallback':
+		if self._action == 'AliPayCallback':
 			return self.handle_onAlipay_callback()
+		elif self._action == "AliPay":
+			print("login in Alipay")
+			order_num = self.get_cookie("order_num",None)
+			self.order_num = order_num
+			order = self.session.query(models.Order).filter_by(num = order_num).first()
+			if not order:
+				return self.send_fail('order not found')
+			totalPrice = order.totalPrice
+			# shop_id   = order.shop_id
+			# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+			# if not shop:
+			# 	return self.send_fail('shop not found')
+			shopName = order.shop.shop_name
+			alipayUrl =  self.handle_onAlipay()
+			print(order_num,totalPrice,shopName,alipayUrl)
+			return self.render("fruitzone/payali.html",totalPrice = totalPrice,shopName = shopName,\
+				alipayUrl = alipayUrl)
 		else:
-			return self.send_error(404)
+			return self.send_fail('4044')
 	# @tornado.web.authenticated
 	def post(self):
-		if self._action == 'onlineAliyNotify':
+		if self._action == 'AliyNotify':
 			return self.handle_onAlipay_notify()
 		if not self.current_user:
 			return self.send_error(403)
-		if self._action == "onlineAliPay":
+		if self._action == "AliPay":
 			return self.handle_onAlipay()
 		else:
 			return self.send_error(404)
 
-	@CustomerBaseHandler.check_arguments("order_id:str","price?:float")
+	# @CustomerBaseHandler.check_arguments("order_id:str","price?:float")
 	def handle_onAlipay(self):
-		order = models.Order.get_by_id(self.session,int(self.args['order_id']))
+		print('login handle_onAlipay')
+		order_num = self.order_num if self.order_num else 'NULL'
+		print(order_num,'order_num')
+		# order = models.Order.get_by_id(self.session,int(self.args['order_id']))
+		order = self.session.query(models.Order).filter_by(num = str(order_num)).first()
 		if not order:
+			print('order not found')
 			return self.send_fail(error_text="抱歉 ，此订单不存在")
 		#跳转到支付页
+		else:
+			print(order)
+		order_id = order.id
+		price    = order.totalPrice
 		try:
 			url = self.create_alipay_url(order_id,price)
 		except Exception as e:
 			return self.send_fail(error_text = '系统繁忙 ，请稍后再试')
-		return self.redirect(url)
+		# return self.redirect(url)
+		print(url,'urlurlurl')
+		return url
 
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 
@@ -224,6 +254,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			call_back_url = "%s%s"%(ALIPAY_HANDLE_HOST,self.reverse_url("onlineAlipayFishedCallback")),
 			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("onlineAliNotify")),
 			)
+		print(authed_url,'authed_url')
 		return authed_url
 
 	def check_xsrf_cookie(self):
