@@ -826,7 +826,7 @@ class Order(AdminBaseHandler):
 						self.session.add(balance_history)
 						self.session.commit()
 
-					if order.order_type == 3:
+					if order.pay_type == 3:
 						shop.available_balance += totalprice
 						balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,\
 							balance_record = "可提现额度入账：订单"+order.num+"完成",name = name,balance_value = totalprice,shop_totalPrice=\
