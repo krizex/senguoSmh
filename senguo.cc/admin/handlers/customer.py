@@ -1498,11 +1498,17 @@ class Cart(CustomerBaseHandler):
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
 			online_type = self.args['online_type']
+			print(online_type,'online_type')
 			self.set_cookie('order_num',str(order.num))
+			print(order.num,'order.numnumnumnum')
 			self.set_cookie('online_totalPrice',str(order.totalPrice))
 			order.online_type = online_type
 			self.session.commit()
-			return self.send_success(success_url = self.reverse_url('onlineWxPay'))
+			# if online_type == 'wx':
+			# 	success_url = self.reverse_url('onlineWxPay')
+			# else:
+			success_url = self.reverse_url('onlineAliPay')
+			return self.send_success(success_url = success_url)
 		return self.send_success()
 
 class Notice(CustomerBaseHandler):
