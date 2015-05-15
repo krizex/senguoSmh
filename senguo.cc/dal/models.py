@@ -802,16 +802,6 @@ class ApplyCashHistory(MapBase,_CommonApi):
 	# available_balance = Column(Float,default = 0)   # changed when the order complete and shop admin apply to cash
 	shop = relationship("Shop")
 
-class AvailableBalanceHistory(MapBase,_CommonApi):
-	__tablename__ = 'available_balance_history'
-	id = Column(Integer,primary_key = True ,nullable = False)
-	shop_id = Column(Integer,ForeignKey(Shop.id),nullable = False)
-	balance_record = Column(String(64))
-	balance_value = Column(Float)
-	available_balance = Column(Float)
-	create_time = Column(DateTime,default = func.now()) 
-	shop = relationship("Shop")
-
 ################################################################################
 # 余额记录 只会在 三处地方产生:
 # 用户充值 ，店铺管理员提现 和 接下来要做的在线支付

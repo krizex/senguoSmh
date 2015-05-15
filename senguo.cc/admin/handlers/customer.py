@@ -1461,12 +1461,13 @@ class Cart(CustomerBaseHandler):
 		# send_time     = order.get_sendtime(session,order.id)
 		send_time = order.send_time
 		address = order.address_text
+		order_realid = order.id
 		print("[提交订单]订单详情：",goods)
 		if self.args['pay_type'] != 3:
 			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
 				customer_name,order_totalPrice,send_time,goods,phone,address)
 			# send message to customer
-			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
+			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
 
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
@@ -1483,7 +1484,7 @@ class Cart(CustomerBaseHandler):
 			shop_follow.shop_balance -= totalPrice   #用户对应 店铺余额减少 ，单位：元
 			self.session.commit()
 			#生成一条余额交易记录
-			balance_record = '消费：订单' + order.num
+			balance_record = '余额支付：订单' + order.num
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
 				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
 				balance_record = balance_record,shop_totalPrice = current_shop.shop_balance,\
@@ -1707,16 +1708,15 @@ class Order(CustomerBaseHandler):
 					print('old histtory not found')
 				else:
 					old_balance_history.is_cancel = 1
-					print(old_balance_history.is_cancel,'is cancel???')
 					self.session.commit()
 				#同时生成一条新的记录
 				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
-						balance_value = order.totalPrice,balance_record = '退款：订单'+ order.num + '取消', name = self.current_user.accountinfo.nickname,\
+						balance_value = order.totalPrice,balance_record = '余额退款：订单'+ order.num + '取消', name = self.current_user.accountinfo.nickname,\
 						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = \
 						shop_follow.shop_balance)
 				self.session.add(balance_history)
-
 			self.session.commit()
+			return self.send_success()
 		elif action == "comment_point":
 			data = self.args["data"]
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
@@ -1818,8 +1818,9 @@ class OrderDetail(CustomerBaseHandler):
 			comment_imgUrl = order.comment_imgUrl.split(',')
 		else:
 			comment_imgUrl = None
+		shop_code = order.shop.shop_code
 		return self.render("customer/order-detail.html", order=order,
-						   charge_types=charge_types, mcharge_types=mcharge_types,comment_imgUrl=comment_imgUrl)
+						   charge_types=charge_types, mcharge_types=mcharge_types,comment_imgUrl=comment_imgUrl,shop_code=shop_code)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data?")
@@ -2189,7 +2190,7 @@ class payTest(CustomerBaseHandler):
 				name = customer.accountinfo.nickname
 			#name = self.current_user.accountinfo.nickname
 			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
-				balance_value = totalPrice,balance_record = '充值：用户 '+ name  , name = name , balance_type = 0,\
+				balance_value = totalPrice,balance_record = '余额充值(微信)：用户 '+ name  , name = name , balance_type = 0,\
 				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id)
 			self.session.add(balance_history)
 			print(balance_history , '钱没有白充吧？！')
@@ -2246,7 +2247,7 @@ class AlipayNotify(CustomerBaseHandler):
 		# 支付成功后  生成一条余额支付记录
 		name = self.current_user.accountinfo.nickname
 		balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-			balance_value = totalPrice,balance_record = '充值：用户 '+ name  , name = name , balance_type = 0,\
+			balance_value = totalPrice,balance_record = '余额充值(微信)：用户 '+ name  , name = name , balance_type = 0,\
 			shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice)
 		self.session.add(balance_history)
 		print(balance_history , '钱没有白充吧？！')
