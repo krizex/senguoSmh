@@ -18,6 +18,9 @@ from qiniu.services.storage.bucket import BucketManager
 from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
 import requests
 import json
+import tornado.gen
+from tornado.concurrent import run_on_executor
+from concurrent.futures import ThreadPoolExecutor
 
 class Home(FruitzoneBaseHandler):
 	def get(self):
@@ -101,6 +104,8 @@ class ShopList(FruitzoneBaseHandler):
 		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
 			filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 				models.Shop.shop_code !='not set' )
+		shops = []
+		
 		if "city" in self.args:
 			q = q.filter_by(shop_city=self.args["city"])
 			shop_count = q.count()
@@ -108,6 +113,10 @@ class ShopList(FruitzoneBaseHandler):
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			#print('page_total',page_total)
 			q = q.offset(page * _page_count).limit(_page_count).all()
+			for shop in q:
+				shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
+										 'wx_nickname', 'wx_qr_code','wxapi_token']
+				shops.append(shop.safe_props())
 			
 		elif "province" in self.args:
 			# print('province')
@@ -115,6 +124,10 @@ class ShopList(FruitzoneBaseHandler):
 			shop_count = q.count()
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
+			for shop in q:
+				shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
+										 'wx_nickname', 'wx_qr_code','wxapi_token']
+				shops.append(shop.safe_props())
 		else:
 			print("[店铺列表]城市不存在")
 
@@ -138,12 +151,6 @@ class ShopList(FruitzoneBaseHandler):
 		# else:
 		#     q = q.limit(self._page_count)
 		
-
-		shops = []
-		for shop in q:
-			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname',
-										 'wx_nickname', 'wx_qr_code','wxapi_token']
-			shops.append(shop.safe_props())
 		if shops == [] or len(shops)<_page_count:
 			nomore =True
 		return self.send_success(shops=shops,nomore = nomore)
@@ -544,6 +551,7 @@ class QiniuCallback(FruitzoneBaseHandler):
 		return
 
 class PhoneVerify(_AccountBaseHandler):
+	executor = ThreadPoolExecutor(2)
 
 	def initialize(self, action):
 		if action == "admin":
@@ -556,21 +564,25 @@ class PhoneVerify(_AccountBaseHandler):
 			self.__wexin_oauth_url_name__ = "customerOauth"
 
 	@tornado.web.authenticated
+	@tornado.web.asynchronous
+	@tornado.gen.engine
 	@FruitzoneBaseHandler.check_arguments("action:str")
 	def post(self):
 		if self.args["action"] == "gencode":
-			self.handle_gencode()
+			yield self.handle_gencode()
 		elif self.args["action"] == "checkcode":
-			self.handle_checkcode()
+			yield self.handle_checkcode()
 		elif self.args["action"] == "gencode_shop_apply":
-			self.handle_gencode_shop_apply()
+			yield self.handle_gencode_shop_apply()
 		elif self.args["action"] == "checkcode_regist":
-			self.handle_checkcode_regist()
+			yield self.handle_checkcode_regist()
 		elif self.args["action"] == "regist":
-			self.handle_regist()
+			yield self.handle_regist()
 		else:
-			return self.send_error(404)
+			yield self.send_error(404)
+		self.finish()
 
+	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str")
 	def handle_gencode(self):
 		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first() 
@@ -584,7 +596,9 @@ class PhoneVerify(_AccountBaseHandler):
 		if resault == True:
 			return self.send_success()
 		else:
-			self.send_fail(resault)
+			return self.send_fail(resault)
+
+	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str","code:int")
 	def handle_checkcode_regist(self):
 		if not check_msg_token(phone = self.args["phone"],code = self.args["code"]):
@@ -592,6 +606,8 @@ class PhoneVerify(_AccountBaseHandler):
 		else:
 			return self.send_success()
 
+
+	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str" , "password")
 	def handle_regist(self):
 		phone = self.args["phone"]
@@ -601,6 +617,7 @@ class PhoneVerify(_AccountBaseHandler):
 		self.session.commit()
 		return self.send_success()
 
+	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str", "code:int", "password?")
 	def handle_checkcode(self):
 		if not check_msg_token(phone = self.args["phone"], code=self.args["code"]):
@@ -613,6 +630,7 @@ class PhoneVerify(_AccountBaseHandler):
 		self.current_user.accountinfo.update(self.session, phone=self.args["phone"])
 		return self.send_success()
 
+	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str")
 	def handle_gencode_shop_apply(self):
 		print("[店铺申请]发送证码到手机：",self.args["phone"])
@@ -716,12 +734,13 @@ class SystemPurchase(FruitzoneBaseHandler):
 	@FruitzoneBaseHandler.check_arguments('price:str')
 	def handle_alipaytest(self):
 		shop_id = self.get_cookie("market_shop_id")
-		print(shop_id,'idddddddddddddddddddddd')
+		customer_id = self.current_user.id
+		print(shop_id,customer_id,'idddddddddddddddddddddd')
 		price = float(self.args['price'])
 		print(price)
 		print('find the correct way to login?')
 		try:
-			url = self.test_create_tmporder_url(price,shop_id)
+			url = self.test_create_tmporder_url(price,shop_id,customer_id)
 		except Exception as e:
 			return self.send_fail('ca')
 		return self.send_success(url = url)
@@ -773,8 +792,56 @@ class SystemPurchase(FruitzoneBaseHandler):
 		signmethod = self._alipay.getSignMethod(**self.args)
 		if signmethod(self.args) != sign:
 			return self.send_error(403)
-		notify_data = xmltodict.parse(self.args["notify_data"]["notify"])
+		print(self.args['notify_data'])
+		notify_data = xmltodict.parse(self.args["notify_data"])["notify"]
 		orderId = notify_data["out_trade_no"]
+		ali_trade_no=notify_data["trade_no"]
+		print(ali_trade_no,'hehehehehe')
+		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
+		if old_balance_history:
+			return self.send_success()
+		data = orderId.split('a')
+		totalPrice = float(data[0])/100
+		# shop_id = self.get_cookie('market_shop_id')
+		shop_id = int(data[1])
+		customer_id = int(data[2])
+		print(totalPrice,shop_id ,customer_id,'ididid')
+	#	code = self.args['code']
+	#	path_url = self.request.full_url()
+		# totalPrice =float( self.get_cookie('money'))
+		#########################################################
+		# 用户余额增加 
+		# 同时店铺余额相应增加 
+		# 应放在 支付成功的回调里
+		#########################################################
+
+		# 支付成功后，用户对应店铺 余额 增1加
+		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+			shop_id = shop_id).first()
+		print(customer_id, shop_id,'没充到别家店铺去吧')
+		if not shop_follow:
+			return self.send_fail('shop_follow not found')
+		shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
+		self.session.commit()
+
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if not shop:
+			return self.send_fail('shop not found')
+		shop.shop_balance += totalPrice
+		self.session.commit()
+		print(shop.shop_balance ,'充值后 商店 总额')
+		customer = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
+		if not customer:
+			return self.send_fail("customer not found")
+		name = customer.nickname
+
+		# 支付成功后  生成一条余额支付记录
+		balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
+			balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no)
+		self.session.add(balance_history)
+		print(balance_history , '钱没有白充吧？！')
+		self.session.commit()
 		print("return success?")
 		return self.write("success")
 
@@ -795,16 +862,16 @@ class SystemPurchase(FruitzoneBaseHandler):
 		)
 		return authed_url
 
-	def test_create_tmporder_url(self, price,shop_id):
+	def test_create_tmporder_url(self, price,shop_id,customer_id):
 		# 创建临时订单
 		# TODO: 订单失效时间与清除
 		# tmp_order = self.current_user.add_tmp_order(self.session, charge_data)
-		data = str(price) +'a'+str(shop_id)
+		data = str(price) +'a'+str(shop_id)+'a'+str(customer_id)
 		# url = '/fruitzone/alipaynotify?data={0}'.format(data)
 		# print(url,'url')
 
 		authed_url = self._alipay.create_direct_pay_by_user_url(
-			out_trade_no= str(price*100) +'a'+str(shop_id)+'a'+str(int(time.time())),
+			out_trade_no= str(price*100) +'a'+str(shop_id)+'a'+ str(customer_id)  + 'a'+ str(int(time.time())),
 			subject = 'alipay charge',
 			total_fee = price,
 			seller_account_name = ALIPAY_SELLER_ACCOUNT,
@@ -844,7 +911,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 		ali_trade_no=self.args["trade_no"]
 		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
 		if old_balance_history:
-			return self.send_success()
+			return self.redirect(self.reverse_url("customerRecharge"))
+
 		print(order_id,ali_trade_no,'hhhhhhhhhhhhhhhhhhhh')
 		data = order_id.split('a')
 		totalPrice = float(data[0])/100
@@ -880,7 +948,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# 支付成功后  生成一条余额支付记录
 		name = self.current_user.accountinfo.nickname
 		balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-			balance_value = totalPrice,balance_record = '支付宝充值：用户 '+ name  , name = name , balance_type = 0,\
+			balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
 			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no)
 		self.session.add(balance_history)
 		print(balance_history , '钱没有白充吧？！')

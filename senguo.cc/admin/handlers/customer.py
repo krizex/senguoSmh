@@ -416,29 +416,29 @@ class ShopProfile(CustomerBaseHandler):
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		satisfy = 0
+		commodity_quality = 0
+		send_speed        = 0
+		satisfy           = 0
 		#是否关注判断
 		follow = True
 		shop_follow =self.session.query(models.CustomerShopFollow).filter_by(customer_id=self.current_user.id, \
 			shop_id=shop.id).first()
 		if not shop_follow:
 				follow = False
-		# else:
-		# 	if shop_follow.commodity_quality and shop_follow.send_speed and shop_follow.shop_service:
-		# 		satisfy = format((shop_follow.commodity_quality + shop_follow.send_speed + shop_follow.shop_service)/300,'.0%')
-		# 	else:
-		# 		satisfy = format(1,'.0%')
-		q = self.session.query(func.avg(models.Order.commodity_quality),\
-			func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
-		if q[0][0]:
-			commodity_quality = int(q[0][0])
-		if q[0][1]:
-			send_speed = int(q[0][1])
-		if q[0][2]:
-			shop_service = int(q[0][2])
-		if commodity_quality and send_speed and shop_service:
-			satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
-		else:
-			satisfy = format(1,'.0%')
+		orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
+		if orders:
+			q = self.session.query(func.avg(models.Order.commodity_quality),\
+				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
+			if q[0][0]:
+				commodity_quality = int(q[0][0])
+			if q[0][1]:
+				send_speed = int(q[0][1])
+			if q[0][2]:
+				shop_service = int(q[0][2])
+			if commodity_quality and send_speed and shop_service:
+				satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
+			else:
+				satisfy = format(1,'.0%')
 		# 今天是否 signin
 		signin = False
 		q=self.session.query(models.ShopSignIn).filter_by(
@@ -628,16 +628,18 @@ class Comment(CustomerBaseHandler):
 		commodity_quality = 0
 		send_speed = 0
 		shop_service = 0
-		q = self.session.query(func.avg(models.Order.commodity_quality),\
-			func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
-		if q[0][0]:
-			commodity_quality = int(q[0][0])
-		if q[0][1]:
-			send_speed = int(q[0][1])
-		if q[0][2]:
-			shop_service = int(q[0][2])
-		if commodity_quality and send_speed and shop_service:
-			satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
+		orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
+		if orders:
+			q = self.session.query(func.avg(models.Order.commodity_quality),\
+				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
+			if q[0][0]:
+				commodity_quality = int(q[0][0])
+			if q[0][1]:
+				send_speed = int(q[0][1])
+			if q[0][2]:
+				shop_service = int(q[0][2])
+			if commodity_quality and send_speed and shop_service:
+				satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
 		page = self.args["page"]
 		page_size = 20
 		comments = self.get_comments(shop_id, page, page_size)
@@ -1367,15 +1369,6 @@ class Cart(CustomerBaseHandler):
 			self.session.commit()
 
 
-		
-			# if self.current_user.balance >= totalPrice:
-			# 	self.current_user.balance -= totalPrice
-			# 	self.current_user.credits += totalPrice
-			# 	self.session.commit()
-			# 	money_paid = True
-			# 	pay_type = 2
-			# else:return self.send_fail("余额不足")
-
 		count = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
 		num = str(shop_id) + '%06d' % count
 		########################################################################
@@ -1465,15 +1458,15 @@ class Cart(CustomerBaseHandler):
 		goods = str(goods)[1:-1]
 		order_totalPrice = float('%.1f'% totalPrice)
 		print("[提交订单]订单总价：",order_totalPrice)
-		session = self.session
 		# send_time     = order.get_sendtime(session,order.id)
 		send_time = order.send_time
 		address = order.address_text
 		print("[提交订单]订单详情：",goods)
-		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
-			customer_name,order_totalPrice,send_time,goods,phone,address)
-		# send message to customer
-		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
+		if self.args['pay_type'] != 3:
+			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
+				customer_name,order_totalPrice,send_time,goods,phone,address)
+			# send message to customer
+			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
 
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
@@ -1490,7 +1483,7 @@ class Cart(CustomerBaseHandler):
 			shop_follow.shop_balance -= totalPrice   #用户对应 店铺余额减少 ，单位：元
 			self.session.commit()
 			#生成一条余额交易记录
-			balance_record = '消费：订单' + order.num
+			balance_record = '余额支付：订单' + order.num
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
 				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
 				balance_record = balance_record,shop_totalPrice = current_shop.shop_balance,\
@@ -1678,6 +1671,8 @@ class Order(CustomerBaseHandler):
 			if not order:return self.send_error(404)
 			if order.status == 0:
 				return self.send_fail("订单已取消，不能重复操作")
+			if order.pay_type == 3:
+				return self.send_fail("在线支付订单 暂时不允许删除 如有疑问 请直接与店家联系")
 			order.status = 0
 			# recover the sale and storage
 			# woody
@@ -1715,7 +1710,7 @@ class Order(CustomerBaseHandler):
 					self.session.commit()
 				#同时生成一条新的记录
 				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
-						balance_value = order.totalPrice,balance_record = '退款：订单'+ order.num + '取消', name = self.current_user.accountinfo.nickname,\
+						balance_value = order.totalPrice,balance_record = '余额退款：订单'+ order.num + '取消', name = self.current_user.accountinfo.nickname,\
 						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = \
 						shop_follow.shop_balance)
 				self.session.add(balance_history)
@@ -1912,14 +1907,14 @@ class Balance(CustomerBaseHandler):
 		print(customer_id,shop_id)
 		try:
 			shop_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id =\
-				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([1,3,4,5,0])).all()
+				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,4,5])).all()
 		except:
 			shop_balance_history = None
 			print("balance show error ")
 
 		try:
 			count = self.session.query(models.BalanceHistory).filter_by(customer_id =\
-				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([1,3,4,5,0])).count()
+				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,4,5])).count()
 			pages = int(count/page_size) if count % page_size == 0 else int(count/page_size) + 1
 		except:
 			print('pages 0')
@@ -2194,7 +2189,7 @@ class payTest(CustomerBaseHandler):
 				name = customer.accountinfo.nickname
 			#name = self.current_user.accountinfo.nickname
 			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
-				balance_value = totalPrice,balance_record = '充值：用户 '+ name  , name = name , balance_type = 0,\
+				balance_value = totalPrice,balance_record = '余额充值(微信)：用户 '+ name  , name = name , balance_type = 0,\
 				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id)
 			self.session.add(balance_history)
 			print(balance_history , '钱没有白充吧？！')
@@ -2251,7 +2246,7 @@ class AlipayNotify(CustomerBaseHandler):
 		# 支付成功后  生成一条余额支付记录
 		name = self.current_user.accountinfo.nickname
 		balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-			balance_value = totalPrice,balance_record = '充值：用户 '+ name  , name = name , balance_type = 0,\
+			balance_value = totalPrice,balance_record = '余额充值(微信)：用户 '+ name  , name = name , balance_type = 0,\
 			shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice)
 		self.session.add(balance_history)
 		print(balance_history , '钱没有白充吧？！')
