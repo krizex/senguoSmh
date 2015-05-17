@@ -10,7 +10,7 @@
         <p><span class="left c999">所在店铺：</span><span class="left txt-ar" id="shopName">{{shopName}}</span></p>
         <p><span class="left c999">支付方式：</span><span class="left txt-ar">微信支付</span></p>
     </div>
-    <a href="javascript:;" class="pay-btn" id="getBrandWCPayRequest" data-id="1">现在支付</a>
+    <a href="javascript:;" class="pay-btn" id="getBrandWCPayRequest" >现在支付</a>
     <div class="copy-right">powered by senguo.cc</div>
 {% end %}
 
@@ -28,9 +28,6 @@
     });
     wx.ready(function(){
         document.querySelector('#getBrandWCPayRequest').onclick = function () {
-            var id=parseInt($this.attr('data-id');)
-            $this.attr({'data-id':0});
-            if(id==1){
                 wx.chooseWXPay({
                         timestamp: {{renderPayParams['timeStamp']}},
                         nonceStr: '{{renderPayParams['nonceStr']}}',
@@ -51,7 +48,7 @@
                         });
                     }
                 });
-            }
+           
             
     }
 })
