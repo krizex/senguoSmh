@@ -1161,6 +1161,8 @@ class Order(MapBase, _CommonApi):
 	send_speed        = Column(Integer)
 	shop_service      = Column(Integer)
 
+	online_type       = Column(String(8))
+
 	def get_num(self,session,order_id):
 		try:
 			order = session.query(Order).filter_by(id = order_id).first()
