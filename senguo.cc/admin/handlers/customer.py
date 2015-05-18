@@ -1252,6 +1252,7 @@ class Cart(CustomerBaseHandler):
 		fruits = self.args["fruits"]
 		mgoods = self.args["mgoods"]
 		current_shop = self.session.query(models.Shop).filter_by( id = shop_id).first()
+		online_type = ''
 
 		if not (fruits or mgoods):
 			return self.send_fail('请至少选择一种商品')
@@ -1392,6 +1393,7 @@ class Cart(CustomerBaseHandler):
 		# print(mgoods)
 		if self.args['pay_type'] == 3:
 			order_status = -1
+			online_type = self.args['online_type']
 		else:
 			order_status = 1
 		print(w_SH2_id,"i'm staff id")
@@ -1416,6 +1418,7 @@ class Cart(CustomerBaseHandler):
 							 mgoods=str(m_d),
 							 send_time=send_time,
 							 status  = order_status,
+							 online_type = online_type,
 							 )
 
 		try:
