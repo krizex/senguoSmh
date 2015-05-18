@@ -30,7 +30,7 @@
 	<p class="font14">你的手机号：{% if current_user.accountinfo.phone %}
 		{{current_user.accountinfo.phone}}
 		{% else %}
-		未绑定 <a href="{{reverse_url('customerProfile')}}" class="text-grey6">点击绑定</p>
+		未绑定 <a href="{{reverse_url('customerProfile')}}" class="text-grey6">点击绑定</a></p>
 		{% end %}</td>
 	<p class="text-grey6 mb20">绑定自己手机号后，通过与告白人填写的手机号配对，你能看到所有给你的告白哦～	</p>
 	<table class="table">
