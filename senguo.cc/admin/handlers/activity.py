@@ -23,9 +23,10 @@ class ConfessionHome(CustomerBaseHandler):
 			self.set_cookie("market_shop_id", str(shop.id))
 			self.set_cookie("market_shop_code",str(shop.shop_code))
 			shop_name = shop.shop_name
+			shop_code = shop.shop_code
 		else:
 			return self.send_error(404)
-		return self.render('confession/home.html',shop_name=shop_name)
+		return self.render('confession/home.html',shop_name=shop_name,shop_code=shop_code)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("page?:int","action:str","data?")
@@ -77,15 +78,21 @@ class ConfessionHome(CustomerBaseHandler):
 
 class ConfessionPublic(CustomerBaseHandler):
 	@tornado.web.authenticated
-	def get(self):
-		shop_code = self.get_cookie('market_shop_code')
+	def get(self,shop_code):
 		return self.render('confession/public.html',shop_code=shop_code)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("data")
-	def post(self):
+	def post(self,shop_code):
 		data = self.args["data"]
-		shop_id = self.get_cookie('market_shop_id')
+		try:
+			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
+		except:
+			return self.send_fail('shop error')
+		if shop:
+			shop_id = shop.id
+		else :
+			return self.send_fail('shop error')
 		floor = 0
 		try:
 			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
@@ -112,10 +119,17 @@ class ConfessionPublic(CustomerBaseHandler):
 
 class ConfessionCenter(CustomerBaseHandler):
 	@tornado.web.authenticated
-	def get(self):
+	def get(self,shop_code):
 		customer_id = self.current_user.id
-		shop_id = self.get_cookie('market_shop_id')
-		shop_code = self.get_cookie('market_shop_code')
+		try:
+			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
+		except:
+			return self.send_fail('shop error')
+		if shop:
+			shop_id = shop.id
+			shop_code = shop.shop_code
+		else :
+			return self.send_fail('shop error')
 		pub_count = self.session.query(models.ConfessionWall).filter_by(customer_id = customer_id,shop_id=shop_id).count()
 		receive_count = self.session.query(models.ConfessionWall).filter_by(other_phone = self.current_user.accountinfo.phone).count()
 		comment_count =  self.session.query(models.ConfessionWall).\
@@ -125,15 +139,17 @@ class ConfessionCenter(CustomerBaseHandler):
 class ConfessionList(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action","page:int")
-	def get(self):
+	def get(self,shop_code):
 		action = self.args["action"]
 		customer_id = self.current_user.id
-		shop_id = self.get_cookie('market_shop_id')
 		try:
-			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
 		except:
-			return self.send_fail('店铺不存在')
-		shop_id = shop.id
+			return self.send_fail('shop error')
+		if shop:
+			shop_id = shop.id
+		else :
+			return self.send_fail('shop error')
 		data = []
 		datalist = []
 		page_size = 10

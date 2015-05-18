@@ -10,16 +10,19 @@
 {% set fruits=eval(order.fruits)%}
 {% set mgoods=eval(order.mgoods)%}
 <div class="container mb50">
-    <div class="order-item">
-        <h4 class="title">订单详情</h4>
-        <p>订单编号：<span class="order-id" data-id="{{order.id}}">{{order.num}}</span></p>
-        <p>下单时间：<span>{{order.create_date}}</span></p>
-        <p>配送时间：<span class="send_date m-r10">今天</span><span>{{order.send_time}}</span></p>
-        <p>订单状态：<span class="status" data-id="{{order.status}}"></span></p>
-        <p>订单备注：<span>{{order.message or '无'}}</span></p>
+    <div class="order-grade">
+        <div class="order-line">
+            <div class="order-line-grade"></div>
+            <div class="order-wawa">
+                <img src="{{order.sender_img}} or '/static/images/TDSG.PNG'" alt="配送员头像"/>
+            </div>
+            <div class="order-status-txt">
+                <span id="status-txt" data-id="{{order.status}}">配送中</span><a href="tel:{{order.phone}}">拨号</a>
+            </div>
+        </div>
     </div>
     <div class="order-item">
-        <h4 class="title">商品信息</h4>
+        <h4 class="top-title"><span class="black-txt">马辉辉的水果店</span><span class="arr-right"></span><a href="tel:{{order.phone}}" class="contact-us fr">联系客服</a></h4>
         <ul class="goods-lst">
         {% for charge_type in  charge_types%}
             <li class="group {{charge_type.fruit.fruit_type.code}}">
@@ -58,25 +61,25 @@
             </li>
             {% end %}
         </ul>
-    </div>
-    <div class="order-item">
-        <h4 class="title">收货信息</h4>
-        <p>收货人：<span>{{order.receiver}}</span></p>
-        <p>收货地址：<span>{{order.address_text}}</span></p>
-        <p>联系电话：<span>{{order.phone}}</span></p>
-    </div>
-    <div class="order-item">
-        <h4 class="title">订单金额</h4>
-        <p>商品总金额<span class="fr"><span>{{order.totalPrice-order.freight}}</span>元</span></p>
-        <p>运费：<span class="fr"><span>{{order.freight}} </span>元</span></p>
+        <p>商品总价<span class="fr"><span class="text-red3">{{order.totalPrice-order.freight}}元</span></span></p>
+        <p>配送费<span class="fr"><span class="text-red3">{{order.freight}}元</span></span></p>
         <!--<p>店铺优惠：<span class="fr"><span>0</span>元</span></p>-->
-        <p class="dash-bt">应付金额：<span class="fr"><span class="black-txt">{{order.totalPrice}}</span>元</span></p>
-        <p class="">支付方式：<span class="fr"><span class="">
+        <p class="dash-bt group"><span class="fr black-txt">应付款：<span class="text-red3">{{order.totalPrice}}元</span></span></p>
+    </div>
+    <div class="order-item pt10">
+        <p class="text-black">订单编号：<span class="order-id" data-id="{{order.id}}">{{order.num}}</span></p>
+        <p>下单时间：<span>{{order.create_date}}</span></p>
+        <p>收货人：<span>{{order.receiver}}</span></p>
+        <p>联系电话：<span>{{order.phone}}</span></p>
+        <p>收货地址：<span>{{order.address_text}}</span></p>
+        <p>配送时间：<span class="send_date m-r10">今天</span><span>{{order.send_time}}</span></p>
+        <p>订单备注：<span>{{order.message or '无'}}</span></p>
+        <p class="text-black">支付方式：<span class="">
             {% if order.pay_type==1 %}货到付款
             {% elif order.pay_type==2 %}余额支付
-            {% elif order.pay_type==3 %}在线支付
+            {% elif order.pay_type==3 %}在线支付{% if online_type=='wx'%}-微信支付{% elif online_type=='alipay'%}-支付宝支付{% end %}
             {% end %}
-        </span></span></p>
+        </span></p>
     </div>
     {% if order.comment%}
     <div class="order-item commentBox">
@@ -113,7 +116,7 @@
 {% end %}
 {% if order.status == -1 %}
 <div class="wrap-bm-btn">
-    <a class="fr add-comment red-btn" href="{{reverse_url('customerShopComment')}}?num={{order.id}}">去支付</a>
+    <a class="fr add-comment red-btn" href="{% if online_type=='wx'%}/customer/onlinewxpay{% elif online_type=='alipay'%}/customer/online/alipay{% end %}">去支付</a>
     <a class="fr white-btn" href="javascript:;" data-id="{{order.id}}" id="cancel-order">取消订单</a>
 </div>
 {% end %}

@@ -1471,7 +1471,6 @@ class Cart(CustomerBaseHandler):
 				customer_name,order_totalPrice,send_time,goods,phone,address)
 			# send message to customer
 			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
-
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
 		# 同时生成余额变动记录,
@@ -1810,6 +1809,11 @@ class OrderDetail(CustomerBaseHandler):
 			models.ChargeType.id.in_(eval(order.fruits).keys())).all()
 		mcharge_types = self.session.query(models.MChargeType).filter(
 			models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
+		if order.pay_type == 3:
+			online_type = order.online_type
+		else:
+			online_type = None
+		
 
 		###################################################################
 		# time's format
@@ -1831,7 +1835,8 @@ class OrderDetail(CustomerBaseHandler):
 			comment_imgUrl = None
 		shop_code = order.shop.shop_code
 		return self.render("customer/order-detail.html", order=order,
-						   charge_types=charge_types, mcharge_types=mcharge_types,comment_imgUrl=comment_imgUrl,shop_code=shop_code)
+						   charge_types=charge_types, mcharge_types=mcharge_types,comment_imgUrl=comment_imgUrl,\
+						   shop_code=shop_code,online_type=online_type)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data?")
@@ -2023,7 +2028,10 @@ class Recharge(CustomerBaseHandler):
 		code = ''
 		url=''
 		action = self.args['action']
+		next_url = self.get_argument('next', '')
+		print(next_url,'wo 233333333333')
 		if action == 'get_code':
+			print(self.request.full_url())
 			path_url = self.request.full_url()
 			jsApi  = JsApi_pub()
 			#path = 'http://auth.senguo.cc/fruitzone/paytest'
