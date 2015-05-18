@@ -315,7 +315,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		else:
 			return self.send_fail('customer not found')
 		balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
-			balance_value = totalPrice,balance_record = '微信在线支付：订单'+ order.num, name = name , balance_type = 3,\
+			balance_value = totalPrice,balance_record = '在线支付(支付宝)：订单'+ order.num, name = name , balance_type = 3,\
 			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id= ali_trade_no)
 		self.session.add(balance_history)
 		print(balance_history , '钱没有白充吧？！')
@@ -404,7 +404,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		else:
 			return self.send_fail('customer not found')
 		balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
-			balance_value = totalPrice,balance_record = '微信在线支付：订单'+ order.num, name = name , balance_type = 3,\
+			balance_value = totalPrice,balance_record = '在线支付(支付宝)：订单'+ order.num, name = name , balance_type = 3,\
 			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=ali_trade_no)
 		self.session.add(balance_history)
 		print(balance_history , '钱没有白充吧？！')

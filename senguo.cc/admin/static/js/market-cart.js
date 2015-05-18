@@ -368,22 +368,17 @@ $(document).ready(function(){
     if(index != 2){
         $(".wrap-online-lst").addClass("hidden");
     }
-    if(index == 1){
-        var statu = $(this).attr("data-auth");
-        if(statu == "False"){
-            noticeBox("当前店铺未认证，此功能暂不可用");
-            return false;
-        }
-    }
-    if(index == 2){
-        /*noticeBox("目前还不支持在线支付哦，我们会尽快开放此功能");
-        return false;*/
-        //window.location.href=""
-        $(".wrap-online-lst").toggleClass("hidden");
+    var statu = $(this).attr("data-auth");
+    if(statu == "False"){
+        noticeBox("当前店铺未认证，此功能暂不可用");
+        return false;
     }
     if(status==0){
-         noticeBox("当前店铺已关闭"+type);
-         return false;
+        noticeBox("当前店铺已关闭"+type);
+        return false;
+    }
+    if(index == 2){
+        $(".wrap-online-lst").toggleClass("hidden");
     }
     $(".pay_type li").removeClass("active").eq(index).addClass("active");
 }).on('click','.a-cz',function(){
@@ -669,7 +664,7 @@ function orderSubmit(target){
         if(window.dataObj.total_price<mincharge_now) return noticeBox('您的订单未达到立即送最低起送金额！',target);
     }
     if(!type){return noticeBox('请选择送货时段！',target)}
-    $('#submitOrder').addClass('bg-grey text-grey3').text('提交成功').attr({'disabled':'true'});
+    $('#submitOrder').addClass('bg-grey text-grey3').text('提交中...').attr({'disabled':'true'});
     var args={
         fruits:fruits,
         mgoods:mgoods,
@@ -688,7 +683,7 @@ function orderSubmit(target){
                 noticeBox(res.notice);
             }
             SetCookie('cart_count',0);
-            if( pay_type==3){
+            if(pay_type==3){
                 window.location.href=res.success_url;
             }else{
                window.location.href=window.dataObj.success_href; 

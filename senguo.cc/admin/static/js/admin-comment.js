@@ -17,7 +17,10 @@ $(document).ready(function(){
             $this.attr({'disabled':true}).text('申请拒绝');
         }
     });
-
+    //init baguetteBox
+    baguetteBox.run('.wrap-imgs',{
+        buttons: false
+    });
 }).on("click","#contact-user",function(){
     $(".bs-del-com").modal("toggle");
 }).on('click','.del-com',function(){

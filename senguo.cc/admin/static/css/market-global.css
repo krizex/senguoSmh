@@ -114,13 +114,14 @@ button:focus{outline:0;}
 .text-pink{color:#ff6666 !important;}
 .text-red{color:#E01445 !important;}
 .text-red2{color:#F98F8F !important;}
+.text-red3{color: #f25f5f !important;}
 .text-orange{color:#E07D14 !important;}
 .text-brown{color:#9E6D48 !important;}
 
 .box-shadow{box-shadow:0px 0px 8px #aaa;}
 
 .padding-right-none{padding-right:0px;}
-.phone-box{width:100%;min-width:320px;max-width:800px;margin:0 auto;padding-bottom:100px;background-color: #F0F4F0;min-height: 100%;}
+.phone-box{width:100%;min-width:320px;max-width:800px;margin:0 auto;padding-bottom:100px;background-color: #F0F4F0;min-height: 100%;overflow-x: hidden;}
 
 .bottom-nav{max-width:800px;margin:0 auto;height:50px;overflow:hidden;border-top:1px solid #ddd;background:rgba(252,252,252,0.9)}
 .bottom-nav ul{margin-bottom:0;}
