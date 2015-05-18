@@ -1461,13 +1461,13 @@ class Cart(CustomerBaseHandler):
 		# send_time     = order.get_sendtime(session,order.id)
 		send_time = order.send_time
 		address = order.address_text
+		order_realid = order.id
 		print("[提交订单]订单详情：",goods)
 		if self.args['pay_type'] != 3:
 			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
 				customer_name,order_totalPrice,send_time,goods,phone,address)
 			# send message to customer
-			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
-
+			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
 		# 同时生成余额变动记录,
@@ -1497,11 +1497,19 @@ class Cart(CustomerBaseHandler):
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
 			online_type = self.args['online_type']
+			print(online_type,'online_type')
 			self.set_cookie('order_num',str(order.num))
+			print(order.num,'order.numnumnumnum')
 			self.set_cookie('online_totalPrice',str(order.totalPrice))
 			order.online_type = online_type
 			self.session.commit()
-			return self.send_success(success_url = self.reverse_url('onlineWxPay'))
+			if online_type == 'wx':
+				success_url = self.reverse_url('onlineWxPay')
+			elif online_type == 'alipay':
+				success_url = self.reverse_url('onlineAliPay')
+			else:
+				print(online_type,'wx or alipay?')
+			return self.send_success(success_url = success_url)
 		return self.send_success()
 
 class Notice(CustomerBaseHandler):

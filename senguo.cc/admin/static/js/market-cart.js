@@ -687,7 +687,7 @@ function orderSubmit(target){
             }
             SetCookie('cart_count',0);
             if(pay_type==3){
-                //window.location.href=res.success_url;
+                window.location.href=res.success_url;
             }else{
                window.location.href=window.dataObj.success_href; 
             }
