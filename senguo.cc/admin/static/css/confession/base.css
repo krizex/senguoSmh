@@ -108,8 +108,8 @@ h1{font-size:18px;}
 .pub-btn{background:#E17163;height:40px;margin-top:20px;}
 
 .p-box1{padding:5px;}
-.p-box1 .tit{display:inline-block;width:15%;line-height:30px;max-width:50px;overflow:hidden;}
-.p-box1 input{display:inline-block;width:85%;}
+.p-box1 .tit{display:inline-block;line-height:30px;width:50px;overflow:hidden;}
+.p-box1 input{display:inline-block;width:80%;}
 .p-box1 .line1{border-bottom:1px solid #ddd;}
 .p-box2{height:60px;border:1px solid #E17163;border-radius:2px;position:relative;}
 .p-box2 .left{width:30%;background:#eee;height:100%;}

@@ -1,4 +1,5 @@
 $(document).ready(function(){
+	$(".container").css('minHeight',$(window).height()+"px");
 	var action=$.getUrlParam('action');
 	var _nomore=$('#data').attr('data-more');
 	if(typeof(action) == undefined || action=='' ||action==null ){
