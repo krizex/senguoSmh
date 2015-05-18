@@ -87,7 +87,7 @@
 
 .available{color:#333 !important;}
 .available span{color:#333 !important;}
-.not_available{border-color:#ddd;color:#ccc !important;}
+.not_available{border-color:#f0f4f0;color:#ccc !important;}
 .not_available span{color:#ccc !important;}
 
 .left70{left:70px !important;}

@@ -64,6 +64,37 @@
         </div>
     </li>
     <li class="item clearfix">
+        <span class="w1 pull-left set-inl-blo">配送区域</span>
+        <div class="w2 pull-left">
+            <p class="info_show deliver_area">{{current_shop.deliver_area or '未设置'}}</p>
+            <input class="info_hide deliver-area" type="text" placeholder="请填写配送区域,至多50个字符" value="{{current_shop.deliver_area or ''}}" style="display:none"/>
+        </div>
+        <div class="pull-right">
+            <a class="info_edit text-green" href="javascript:;">修改</a>
+            <a class="info_sure" href="javascript:;" data-id="area" style="display:none">确定</a>
+        </div>
+    </li>
+    <li class="item clearfix">
+        <span class="w1 pull-left set-inl-blo">实体店情况</span>
+        <div class="w2 pull-left ">
+            <span class="offline_entity info_show" data-id="{{current_shop.have_offline_entity}}"></span>
+            <div class="dropdown info_hide" style="display:none">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+                    <span class="offline_entity" id="offline_entity" data-id="{{current_shop.have_offline_entity}}"></span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu offline_entity-list" role="menu" aria-labelledby="dropdownMenu1">
+                    <li role="presentation" data-id="1" class="text-center">有</li>
+                    <li role="presentation" data-id="2" class="text-center">没有</li>
+                </ul>
+            </div>
+        </div>
+        <div class="pull-right">
+            <a class="info_edit text-green" href="javascript:;">修改</a>
+            <a class="info_sure" href="javascript:;" data-id="entity" style="display:none">确定</a>
+        </div>
+    </li>
+    <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">店铺地址</span>
         <div class="w2 pull-left">
             <p class="info_show address">{{address}}</p>
@@ -98,37 +129,6 @@
         <div class="pull-right">
             <a class="info_edit text-green" href="javascript:;">修改</a>
             <a class="info_sure" href="javascript:;" data-id="phone" style="display:none">确定</a>
-        </div>
-    </li>
-    <li class="item clearfix">
-        <span class="w1 pull-left set-inl-blo">配送区域</span>
-        <div class="w2 pull-left">
-            <p class="info_show deliver_area">{{current_shop.deliver_area or '未设置'}}</p>
-            <input class="info_hide deliver-area" type="text" placeholder="请填写配送区域,至多50个字符" value="{{current_shop.deliver_area or ''}}" style="display:none"/>
-        </div>
-        <div class="pull-right">
-            <a class="info_edit text-green" href="javascript:;">修改</a>
-            <a class="info_sure" href="javascript:;" data-id="area" style="display:none">确定</a>
-        </div>
-    </li>
-    <li class="item clearfix">
-        <span class="w1 pull-left set-inl-blo">实体店情况</span>
-        <div class="w2 pull-left ">
-            <span class="offline_entity info_show" data-id="{{current_shop.have_offline_entity}}"></span>
-            <div class="dropdown info_hide" style="display:none">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-                    <span class="offline_entity" id="offline_entity" data-id="{{current_shop.have_offline_entity}}"></span>
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu offline_entity-list" role="menu" aria-labelledby="dropdownMenu1">
-                    <li role="presentation" data-id="1" class="text-center">有</li>
-                    <li role="presentation" data-id="2" class="text-center">没有</li>
-                </ul>
-            </div>
-        </div>
-        <div class="pull-right">
-            <a class="info_edit text-green" href="javascript:;">修改</a>
-            <a class="info_sure" href="javascript:;" data-id="entity" style="display:none">确定</a>
         </div>
     </li>
 </ul>

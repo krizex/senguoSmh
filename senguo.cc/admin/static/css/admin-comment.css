@@ -21,5 +21,6 @@
 .apply-title{color: #999;}
 .account>i{background-position: 0 0;}
 .ok-pop{clear:both !important;border:none;padding:6px 12px;font-size:14px;}
-
-               
+.wrap-imgs{margin-top: 10px;}
+.wrap-imgs .row{padding-left: 30px;-webkit-box-sizing: border-box;}
+.wrap-imgs .col-md-3 img{width:46px;height:46px;}
