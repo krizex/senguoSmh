@@ -114,7 +114,7 @@ function data(datalist){
                 $('.loading').html("~没有更多了呢 ( > < )~").show();
             }
             for(var i in datalist){
-                var item ='<li class="{{sty}}">'+
+                var item ='<li class="{{sty}} font14">'+
                 		'<div class="top">'+
                 			'{{user}}  TO  {{name}}'+
                 		'</div>'+
