@@ -2017,6 +2017,8 @@ class Recharge(CustomerBaseHandler):
 		code = ''
 		url=''
 		action = self.args['action']
+		next_url = self.get_argument('next', '')
+		print(next_url,'wo 233333333333')
 		if action == 'get_code':
 			print(self.request.full_url())
 			path_url = self.request.full_url()

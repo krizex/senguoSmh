@@ -1876,8 +1876,13 @@ class BalanceManage(AdminBaseHandler):
 	def get(self):
 		return self.send_success(haha = 'haha')
 
-
-
+class Marketing(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action")
+	def get(self):
+		action=self.args["action"]
+		if action == "lovewall":
+			return self.render("admin/lovewall.html",subpage = 'marketing')
 
 
 

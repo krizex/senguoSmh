@@ -81,10 +81,10 @@ handlers = [
 	(r"/customer/(\w+)", handlers.customer.Home, {}, "customerHome"),
 
 	#告白墙
-	(r"/confession/public", handlers.activity.ConfessionPublic, {}, "ConfessionPublic"),
-	(r"/confession/center", handlers.activity.ConfessionCenter, {}, "ConfessionCenter"),
-	(r"/confession/list", handlers.activity.ConfessionList, {}, "ConfessionList"),
-	(r"/confession/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
+	(r"/lovewall/public/(\w+)", handlers.activity.ConfessionPublic, {}, "ConfessionPublic"),
+	(r"/lovewall/center/(\w+)", handlers.activity.ConfessionCenter, {}, "ConfessionCenter"),
+	(r"/lovewall/list/(\w+)", handlers.activity.ConfessionList, {}, "ConfessionList"),
+	(r"/lovewall/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
 	
 	(r"/super/oauth", handlers.superadmin.Access,{
 		"action":"oauth"}, "superOauth"),
@@ -171,6 +171,7 @@ handlers = [
 	(r"/admin/shopauth",handlers.admin.ShopAuthenticate,{},'adminShopAuth'),
 	(r"/admin/shopbalance",handlers.admin.ShopBalance,{},"adminShopBalance"),
 	(r"/admin/realtime",handlers.admin.Realtime,{},""),
+	(r"/admin/marketing",handlers.admin.Marketing,{},"adminMarketing"),
 
 	# (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
 	# (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
