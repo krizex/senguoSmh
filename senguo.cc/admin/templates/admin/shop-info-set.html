@@ -95,6 +95,17 @@
         </div>
     </li>
     <li class="item clearfix">
+        <span class="w1 pull-left set-inl-blo">店铺联系电话</span>
+        <div class="w2 pull-left">
+            <span class="info_show phone">{{current_shop.shop_phone or '未设置' }}</span>
+            <input class="info_hide shop_phone" type="text" placeholder="" value="{{current_shop.shop_phone or '' }}" style="display:none"/>
+        </div>
+        <div class="pull-right">
+            <a class="info_edit text-green" href="javascript:;">修改</a>
+            <a class="info_sure" href="javascript:;" data-id="phone" style="display:none">确定</a>
+        </div>
+    </li>
+    <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">店铺地址</span>
         <div class="w2 pull-left">
             <p class="info_show address">{{address}}</p>
@@ -113,24 +124,13 @@
                 </div>
                 <input type="text" class="input-box input1 pull-left" placeholder="请填写详细地址,至多50个字符" id="addressDetail" value="{{current_shop.shop_address_detail or ''}}"/>
             </div>
-
         </div>
         <div class="pull-right">
             <a class="info_edit text-green" href="javascript:;">修改</a>
             <a class="info_sure" href="javascript:;" data-id="address" style="display:none">确定</a>
         </div>
     </li>
-    <li class="item clearfix">
-        <span class="w1 pull-left set-inl-blo">店铺联系电话</span>
-        <div class="w2 pull-left">
-            <span class="info_show phone">{{current_shop.shop_phone or '未设置' }}</span>
-            <input class="info_hide shop_phone" type="text" placeholder="" value="{{current_shop.shop_phone or '' }}" style="display:none"/>
-        </div>
-        <div class="pull-right">
-            <a class="info_edit text-green" href="javascript:;">修改</a>
-            <a class="info_sure" href="javascript:;" data-id="phone" style="display:none">确定</a>
-        </div>
-    </li>
+
 </ul>
 <div class="modal fade select-popbox" id="provinceList" tabindex="-1" role="dialog" aria-labelledby="provinceAddress" aria-hidden="true">
     <div class="modal-dialog">
