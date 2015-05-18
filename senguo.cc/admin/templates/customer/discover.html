@@ -7,7 +7,9 @@
 <div class="rainshed2 text-center font18 text-white bg_change fix-title"></div>
 <div class="mt42"></div>
 <ul class="mt20">
+{% if confess_active == 1 %}
     <li class="title clearfix bg-white font14"><a href="{{reverse_url('ConfessionHome',shop_code)}}" class="text-grey3" style="display:block;text-indent:14px;">告白墙</a></li>
+{% end %}
 </ul>
 {% end %}
 

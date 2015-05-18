@@ -38,7 +38,7 @@ $(document).ready(function(){
 			{
 				$this.removeClass('bg-greyc').removeAttr('disabled');
 				//noticeBox('发布成功');
-				window.location.href="/confession/"+getCookie('market_shop_code');
+				window.location.href="/lovewall/"+getCookie('market_shop_code');
 			}
 			else {
 				$this.removeClass('bg-greyc').removeAttr('disabled');
