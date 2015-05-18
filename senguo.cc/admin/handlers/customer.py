@@ -1798,6 +1798,10 @@ class OrderDetail(CustomerBaseHandler):
 			models.ChargeType.id.in_(eval(order.fruits).keys())).all()
 		mcharge_types = self.session.query(models.MChargeType).filter(
 			models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
+		if order.pay_type == 3:
+			online_type = order.online_type
+		else:
+			online_type = None
 
 		###################################################################
 		# time's format
@@ -1819,7 +1823,8 @@ class OrderDetail(CustomerBaseHandler):
 			comment_imgUrl = None
 		shop_code = order.shop.shop_code
 		return self.render("customer/order-detail.html", order=order,
-						   charge_types=charge_types, mcharge_types=mcharge_types,comment_imgUrl=comment_imgUrl,shop_code=shop_code)
+						   charge_types=charge_types, mcharge_types=mcharge_types,comment_imgUrl=comment_imgUrl,\
+						   shop_code=shop_code,online_type=online_type)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data?")
