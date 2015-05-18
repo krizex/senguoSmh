@@ -115,7 +115,7 @@ h1{font-size:18px;}
 .p-box2 .left{width:30%;background:#eee;height:100%;}
 .p-box2 .img{margin-top:12px;}
 .p-box2 .right{width:70%;line-height:50px;text-indent:15px;}
-.p-box2  .people{position:absolute;right:0;display:inline-block;width:50px;height:115px;background:url('/static/confess/hai.jpg') no-repeat;background-size:50px;top:-20px;}
+.p-box2  .people{position:absolute;right:0;display:inline-block;width:50px;height:115px;background:url('/static/confess/hai.png') no-repeat;background-size:50px;top:-20px;}
 
 /*home*/
 .confession-notice{width:100%;height:auto;position:relative;}
