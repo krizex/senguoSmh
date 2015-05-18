@@ -96,6 +96,12 @@ function statusText(n){
             $(".order-line-grade").css("width","100%");
             $(".order-status-txt").css("left","100%");
             break;
+        case -1:
+            $("#status-txt").text('未付款');
+            $(".order-wawa").css("left","0");
+            $(".order-line-grade").css("width","0");
+            $(".order-status-txt").css("left","0");
+            break;
     }
 }
 

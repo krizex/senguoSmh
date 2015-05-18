@@ -14,7 +14,7 @@
         <div class="order-line">
             <div class="order-line-grade"></div>
             <div class="order-wawa">
-                <img src="{{order.sender_img}} or '/static/images/TDSG.PNG'" alt="配送员头像"/>
+                <a href="tel:{{order.phone}}"><img src="{{order.sender_img}} or '/static/images/TDSG.PNG'" alt="配送员头像"/></a>
             </div>
             <div class="order-status-txt">
                 <span id="status-txt" data-id="{{order.status}}">配送中</span><a href="tel:{{order.phone}}">拨号</a>
@@ -22,7 +22,7 @@
         </div>
     </div>
     <div class="order-item">
-        <h4 class="top-title"><span class="black-txt">马辉辉的水果店</span><span class="arr-right"></span><a href="tel:{{order.phone}}" class="contact-us fr">联系客服</a></h4>
+        <h4 class="top-title"><span class="black-txt">{{shop_name}}</span><span class="arr-right"></span><a href="tel:{{order.phone}}" class="contact-us fr">联系客服</a></h4>
         <ul class="goods-lst">
         {% for charge_type in  charge_types%}
             <li class="group {{charge_type.fruit.fruit_type.code}}">

@@ -37,7 +37,7 @@
 .order-line{height: 10px;border-radius: 10px;background-color: #d0d0d0;margin:30px 0;position: relative;}
 .order-line-grade{background-color: #33CC66;position: absolute;top: 0;left: 0;height: 10px;border-radius: 10px;}
 .order-wawa{position: absolute;width: 40px;height:40px;background-size: contain;top: -14px;margin-left: -20px;border-radius: 50%;}
-.order-wawa>img{width: 40px;height: 40px;border-radius: 50%;}
+.order-wawa img{width: 40px;height: 40px;border-radius: 50%;}
 .order-status-txt{position: absolute;display: inline-block;line-height: 20px;font-size: 12px;-webkit-transform:translate(-50%,0);top:28px;color:#999;width: 100px;text-align: center;}
 .order-status-txt>a{color: #52b43f;font-size: 12px;margin-left:5px;}
 .contact-us{border: 1px solid #f0f4f0;font-size: 14px;height: 28px;line-height: 28px;color:#999;width: 80px;text-align: center;border-radius: 4px;padding-left: 15px;-webkit-box-sizing: content-box;margin-top: 6px;}
