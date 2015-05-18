@@ -1504,10 +1504,12 @@ class Cart(CustomerBaseHandler):
 			self.set_cookie('online_totalPrice',str(order.totalPrice))
 			order.online_type = online_type
 			self.session.commit()
-			# if online_type == 'wx':
-			# 	success_url = self.reverse_url('onlineWxPay')
-			# else:
-			success_url = self.reverse_url('onlineAliPay')
+			if online_type == 'wx':
+				success_url = self.reverse_url('onlineWxPay')
+			elif online_type == 'alipay':
+				success_url = self.reverse_url('onlineAliPay')
+			else:
+				print(online_type,'wx or alipay?')
 			return self.send_success(success_url = success_url)
 		return self.send_success()
 

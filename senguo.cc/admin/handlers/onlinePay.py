@@ -10,6 +10,7 @@ import qiniu
 import random
 import base64
 import json
+import libs.xmltodict as xmltodict
 from libs.msgverify import gen_msg_token,check_msg_token
 from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
 
@@ -100,7 +101,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			# customer_id  = int(result[0])
 			# shop_id      = int(result[1])
 			# totalPrice   = (float(result[2]))/100
-			transaction_id = str(xmlArray['transaction_id'])
+			transaction_id = str(xmlArray['trade_no'])
 			if status != 'SUCCESS':
 				return False
 
@@ -211,10 +212,10 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.send_fail('4044')
 	# @tornado.web.authenticated
 	def post(self):
-		if self._action == 'AliyNotify':
+		if self._action == 'AliNotify':
 			return self.handle_onAlipay_notify()
-		if not self.current_user:
-			return self.send_error(403)
+		#if not self.current_user:
+		#	return self.send_error(403)
 		if self._action == "AliPay":
 			return self.handle_onAlipay()
 		else:
@@ -236,7 +237,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		order_id = order.id
 		price    = order.totalPrice
 		try:
-			url = self.create_alipay_url(order_id,price)
+			url = self.create_alipay_url(price,order_id)
 		except Exception as e:
 			return self.send_fail(error_text = '系统繁忙 ，请稍后再试')
 		# return self.redirect(url)
@@ -246,6 +247,7 @@ class OnlineAliPay(CustomerBaseHandler):
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 
 	def create_alipay_url(self,price,order_id):
+		print('login create_alipay_url',price,order_id)
 		authed_url = self._alipay.create_direct_pay_by_user_url(
 			out_trade_no = str(order_id),
 			subject      = 'alipay',
@@ -254,6 +256,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			call_back_url = "%s%s"%(ALIPAY_HANDLE_HOST,self.reverse_url("onlineAlipayFishedCallback")),
 			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("onlineAliNotify")),
 			)
+		print('hhhhhahahahahahahahah')
 		print(authed_url,'authed_url')
 		return authed_url
 
@@ -313,7 +316,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.send_fail('customer not found')
 		balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 			balance_value = totalPrice,balance_record = '微信在线支付：订单'+ order.num, name = name , balance_type = 3,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id)
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id= ali_trade_no)
 		self.session.add(balance_history)
 		print(balance_history , '钱没有白充吧？！')
 		self.session.commit()
@@ -349,7 +352,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
 			customer_name,order_totalPrice,send_time,goods,phone,address)
 		# send message to customer
-		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
+		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 		return self.write('success')
 
 
@@ -402,7 +405,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.send_fail('customer not found')
 		balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 			balance_value = totalPrice,balance_record = '微信在线支付：订单'+ order.num, name = name , balance_type = 3,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id)
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=ali_trade_no)
 		self.session.add(balance_history)
 		print(balance_history , '钱没有白充吧？！')
 		self.session.commit()
@@ -438,7 +441,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
 			customer_name,order_totalPrice,send_time,goods,phone,address)
 		# send message to customer
-		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
+		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 
 		return self.redirect(self.reverse_url("customerRecharge"))
 
