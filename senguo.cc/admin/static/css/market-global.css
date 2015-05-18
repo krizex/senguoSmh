@@ -231,6 +231,7 @@ button:focus{outline:0;}
 .w50{width:50%;}
 .w33{width:33.333333333333333%}
 .w25{width:25%;}
+.w20{width:20%;}
 .b-radius0{border-radius:0px !important;}
 
 .cart_num{position:absolute;display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;top:4px;}
