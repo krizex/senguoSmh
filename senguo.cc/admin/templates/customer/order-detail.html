@@ -116,7 +116,7 @@
 {% end %}
 {% if order.status == -1 %}
 <div class="wrap-bm-btn">
-    <a class="fr add-comment red-btn" href="{{reverse_url('customerShopComment')}}?num={{order.id}}">去支付</a>
+    <a class="fr add-comment red-btn" href="{% if online_type=='wx'%}/customer/onlinewxpay{% elif online_type=='alipay'%}/customer/online/alipay{% end %}">去支付</a>
     <a class="fr white-btn" href="javascript:;" data-id="{{order.id}}" id="cancel-order">取消订单</a>
 </div>
 {% end %}

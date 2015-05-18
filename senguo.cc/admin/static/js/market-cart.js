@@ -375,16 +375,14 @@ $(document).ready(function(){
             return false;
         }
     }
+    if(status==0){
+        noticeBox("当前店铺已关闭"+type);
+        return false;
+    }
     if(index == 2){
-        /*noticeBox("目前还不支持在线支付哦，我们会尽快开放此功能");
-        return false;*/
-        //window.location.href=""
         $(".wrap-online-lst").toggleClass("hidden");
     }
-    if(status==0){
-         noticeBox("当前店铺已关闭"+type);
-         return false;
-    }
+
     $(".pay_type li").removeClass("active").eq(index).addClass("active");
 }).on('click','.a-cz',function(){
     var status = $(this).attr('data-status');
@@ -688,8 +686,8 @@ function orderSubmit(target){
                 noticeBox(res.notice);
             }
             SetCookie('cart_count',0);
-            if( pay_type==3){
-                window.location.href=res.success_url;
+            if(pay_type==3){
+                //window.location.href=res.success_url;
             }else{
                window.location.href=window.dataObj.success_href; 
             }
