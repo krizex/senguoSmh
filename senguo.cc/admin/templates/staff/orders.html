@@ -20,8 +20,11 @@
                 <div class="pl-10">
                     <span>编号：{{order.num}}</span>
                     <span class="money_paid" data-pay="{{order.money_paid}}">
-                        <span class="paid" style="display:none;">已付款 </span>
-                        <span class="unpay text-grey">订单总价：<span class="text-red">{{order.totalPrice}}元</span></span>
+                        {% if order.pay_type in [2,3] %}
+                        <span class="paid">已付款</span>
+                        {% else %}
+                        <span class="unpay text-grey">应收款：<span class="text-red">{{order.totalPrice}}元</span></span>
+                        {% end %}
                     </span>
                 </div>
                 <div class="button-box forbid_click">

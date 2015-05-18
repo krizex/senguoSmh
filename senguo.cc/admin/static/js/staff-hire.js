@@ -82,7 +82,7 @@ function hireApply(){
     $.postJson(url,args,function(res){
         if(res.success){
            noticeBox('申请成功');
-           $('#submit').addClass('bg-grey3').css({'border-color':'#ccc'}).text('提交成功').attr({'id':''});
+           $('#submit').addClass('bg-grey3').css({'border-color':'#ccc'}).text('提交中...').attr({'id':''});
             window.history.back(-1);
         }
         else return noticeBox(res.error_text);
