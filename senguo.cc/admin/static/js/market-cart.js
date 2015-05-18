@@ -667,7 +667,7 @@ function orderSubmit(target){
         if(window.dataObj.total_price<mincharge_now) return noticeBox('您的订单未达到立即送最低起送金额！',target);
     }
     if(!type){return noticeBox('请选择送货时段！',target)}
-    $('#submitOrder').addClass('bg-grey text-grey3').text('提交成功').attr({'disabled':'true'});
+    $('#submitOrder').addClass('bg-grey text-grey3').text('提交中...').attr({'disabled':'true'});
     var args={
         fruits:fruits,
         mgoods:mgoods,
