@@ -258,6 +258,11 @@ class Home(CustomerBaseHandler):
 			self.session.commit()
 		return self.send_success()
 
+class Discover(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self,shop_code):
+		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_code=shop_code)
+
 class CustomerProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action?")
@@ -2382,5 +2387,16 @@ class InsertData(CustomerBaseHandler):
 		# 			if config.intime_period == 0 or config.intime_period == None:
 		# 				config.intime_period = 30
 
-
+		try:
+			shop_list = self.session.query(models.Shop).all()
+		except:
+			print('no shop at all')
+		if shop_list:
+			for shop in shop_list:
+				shop_id = shop.id
+				market = models.Marketing( id = shop_id )
+				self.session.add(market)
+				self.session.commit()
 		return self.send_success()
+
+

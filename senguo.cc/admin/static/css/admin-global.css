@@ -224,6 +224,7 @@ input{color:#333;text-indent:5px;}
 .mt10{margin-top:10px;}
 .font14{font-size:14px;}
 .border-none{border:none !important;}
+.mt20{margin-top:20px;}
 
 @-webkit-keyframes bounce {
     0%, 20%, 53%, 80%, 100% {

@@ -1878,12 +1878,33 @@ class BalanceManage(AdminBaseHandler):
 
 class Marketing(AdminBaseHandler):
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action")
+	@AdminBaseHandler.check_arguments("action:str")
 	def get(self):
-		action=self.args["action"]
+		action = self.args["action"]
 		if action == "lovewall":
-			return self.render("admin/lovewall.html",subpage = 'marketing')
+			return self.render("admin/lovewall.html",context=dict(subpage = 'marketing'))
 
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action:str","data?:str")
+	def post(self):
+		action = self.args["action"]
+		current_shop = self.current_shop
+		if action == "confess_active":
+			active = current_shop.marketing.confess_active
+			current_shop.marketing.confess_active = 0 if active == 1 else 1
+		elif action == "confess_notice":
+			current_shop.marketing.confess_notice = self.args["data"]
+		elif action =="confess_type":
+			_type = current_shop.marketing.confess_type
+			print(_type)
+			current_shop.marketing.confess_type = 0 if _type == 1 else 1
+		elif action == "confess_only":
+			only = current_shop.marketing.confess_only
+			current_shop.marketing.confess_only = 0 if only == 1 else 1
+		else:
+			return self.send_fail('something must wrong')
+		self.session.commit()
+		return self.send_success()
 
 
 

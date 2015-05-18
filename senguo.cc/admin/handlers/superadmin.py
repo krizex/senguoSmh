@@ -274,7 +274,7 @@ class ShopManage(SuperBaseHandler):
 
 			config = models.Config()
 			config.periods.extend([period1, period2, period3])
-
+			marketing = models.Marketing()
 
 
 			# 把临时表的内容复制到shop表
@@ -289,6 +289,7 @@ class ShopManage(SuperBaseHandler):
 										 have_offline_entity=shop_temp.have_offline_entity,
 										 shop_intro=shop_temp.shop_intro)
 			shop.config = config
+			shop.marketing = marketing
 			# shop.create_date_timestamp = time.time()
 			# woody
 			shop.shop_start_timestamp = time.time()

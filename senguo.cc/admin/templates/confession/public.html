@@ -1,53 +1,47 @@
 {% extends 'base.html'%}
 {% block content %}
  <header class="detail-header text-white center-block">
-    <a href="/confession/{{shop_code}}" class="return-btn bg_change">&nbsp;</a>
+    <a href="{{reverse_url('ConfessionHome',shop_code)}}" class="return-btn bg_change">&nbsp;</a>
     <span class="title font16">我要告白</span>
 </header>
-<div class="box mt50">
+<div class="pub-box box mt50">
+	<p class="font14 mb10">对方信息：</p>
+	<div class="p-box1 bg-white mb20">
+		<div class="group line1">
+			<span class="fl tit">姓名</span>
+			<input type="text" placeholder="想对谁告白呢？写出TA的姓名" class="sty1 fr" id="other-name"/>
+		</div>
+		<div class="group">
+			<span class="fl tit">手机号</span>
+			<input type="text" placeholder="写上TA的手机号，方便我们礼品派送哦" class="sty1 fr" id="other-phone"/>
+		</div>
+		
+	</div>
+	<p class="font14 mb10">你的信息：</p>
+	<div class="p-box2 group bg-white mb10">
+		<div class="left fl txt-ac">
+			<img src="{{current_user.accountinfo.headimgurl_small}}" class="img">
+		</div>
+		<div class="right fr">
+			<span>{{current_user.accountinfo.nickname}}</span>
+		</div>
+		<span class="people"></span>
+	</div>
+	<p class="font14">你的手机号：{% if current_user.accountinfo.phone %}
+		{{current_user.accountinfo.phone}}
+		{% else %}
+		未绑定 <a href="#">点击绑定</p>
+		{% end %}</td>
+	<p class="text-grey6 mb20">绑定自己手机号后，通过与告白人填写的手机号配对，你能看到所有给你的告白哦～	</p>
 	<table class="table">
-		<colgroup width="25%"></colgroup>
-		<colgroup width="75%"></colgroup>
+		<colgroup width="30%"></colgroup>
+		<colgroup width="70%"></colgroup>
 		<tr>
-			<td>To:</td>
-			<td>
-				<input type="text" placeholder="想对谁告白呢？写出TA的姓名" class="sty1" id="other-name"/>
-			</td>
-		</tr>
-		<tr>
-			<td>Ta的手机号:</td>
-			<td>
-				<input type="text" placeholder="写上TA的手机号，方便我们礼品派送哦" class="sty1" id="other-phone"/>
-			</td>
-		</tr>
-		<tr>
-			<td></td>
-			<td>
+			<td colspan="2">
 				<textarea placeholder="在这里写上告白的内容吧～" class="sty2" id="confession"></textarea>
 			</td>
 		</tr>
-		<tr>
-			<td>From:</td>
-			<td>
-				<img src="{{current_user.accountinfo.headimgurl_small}}" class="img">
-				<span>{{current_user.accountinfo.nickname}}</span>	
-			</td>
-		</tr>
-		<tr>
-			<td>你的手机号:</td>
-			<td>
-				{% if current_user.accountinfo.phone %}
-				{{current_user.accountinfo.phone}}
-				{% else %}
-				未绑定 <a href="#">点击绑定</a>
-				{% end %}	
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2" class="text-grey6">	绑定自己手机号后，通过与告白人填写的手机号配对，你能看到所有给你的告白哦～
-			</td>
-		</tr>
-		<tr>
+		<tr class="font14"> 
 			<td>发布方式:</td>
 			<td>
 				<button type="button" class="btn text-white btn-small type-btn active" data-id="0">匿名</button>
