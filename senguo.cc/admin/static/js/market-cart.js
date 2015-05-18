@@ -404,7 +404,7 @@ $(document).ready(function(){
         return false;
     }*/
     $(".online-lst").find(".checkbox-btn").removeClass("checkboxed");
-    $("#online-pay").attr("data-tpye",$(this).attr("data-type"));
+    $("#online-pay").attr("data-type",$(this).attr("data-type"));
     $(this).children("a").addClass("checkboxed");
 });
 

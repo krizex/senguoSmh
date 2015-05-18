@@ -6,6 +6,7 @@ import handlers.fruitzone
 import handlers.infowall
 import handlers.official
 import handlers.onlinePay
+import handlers.activity
 from dal import models
 #todo:handlers太大会不会影响性能？
 
@@ -52,6 +53,14 @@ handlers = [
 	#to remove
 	(r"/m", handlers.superadmin.Official,{},"test"),
 
+	#支付宝在线支付
+	(r"/customer/online/aliPaycallback",handlers.onlinePay.OnlineAliPay,{'action':'AliPayCallback'},
+		"onlineAlipayFishedCallback"),
+	(r"/customer/online/alinotify",handlers.onlinePay.OnlineAliPay,{'action':'AliNotify'},
+		"onlineAliNotify"),
+	(r"/customer/online/alipay",handlers.onlinePay.OnlineAliPay,{'action':'AliPay'},
+		"onlineAliPay"),
+
 	(r"/customer/cart/(\w+)", handlers.customer.Cart, {}, "customerCart"),
 	(r"/customer/orders", handlers.customer.Order, {}, "customerOrder"),
 	(r"/customer/orders/detail/(\d+)", handlers.customer.OrderDetail, {}, "customerOrderDetail"),
@@ -71,6 +80,12 @@ handlers = [
 	(r"/customer/onlinewxpay",handlers.onlinePay.OnlineWxPay,{},"onlineWxPay"),
 	(r"/customer/(\w+)", handlers.customer.Home, {}, "customerHome"),
 
+	#告白墙
+	(r"/confession/public", handlers.activity.ConfessionPublic, {}, "ConfessionPublic"),
+	(r"/confession/center", handlers.activity.ConfessionCenter, {}, "ConfessionCenter"),
+	(r"/confession/list", handlers.activity.ConfessionList, {}, "ConfessionList"),
+	(r"/confession/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
+	
 	(r"/super/oauth", handlers.superadmin.Access,{
 		"action":"oauth"}, "superOauth"),
 	(r"/super/logout", handlers.superadmin.Access,{

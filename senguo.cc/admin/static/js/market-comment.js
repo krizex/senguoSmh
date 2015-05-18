@@ -5,6 +5,7 @@ $(document).ready(function(){
 var finished=true;
 var current_page=1;
 var nomore =false;
+var page=0;
 function scrollLoading(){  
     $(window).scroll(function(){
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
@@ -14,6 +15,7 @@ function scrollLoading(){
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
         if(finished == true &&(main.height()-range) <= totalheight  &&nomore==false ) {
             finished=false;
+            page++;
             commentList(current_page);
         }
         else if(nomore==true){

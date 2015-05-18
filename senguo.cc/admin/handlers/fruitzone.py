@@ -911,7 +911,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		ali_trade_no=self.args["trade_no"]
 		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
 		if old_balance_history:
-			return self.redirect(self.reverse_url("customerRecharge"))
+			return self.redirect(self.reverse_url("customerBalance"))
 
 		print(order_id,ali_trade_no,'hhhhhhhhhhhhhhhhhhhh')
 		data = order_id.split('a')
@@ -954,6 +954,6 @@ class SystemPurchase(FruitzoneBaseHandler):
 		print(balance_history , '钱没有白充吧？！')
 		self.session.commit()
 		# return self.send_success(text = 'success')
-		return self.redirect(self.reverse_url("customerRecharge"))
+		return self.redirect(self.reverse_url("customerBalance"))
 
 
