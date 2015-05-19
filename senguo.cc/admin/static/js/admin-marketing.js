@@ -4,9 +4,9 @@ $('.mode').each(function(){
         var status=$this.data('status');
         if(status==1)
             {
-            	$this.addClass('work-mode');}
+            	$this.addClass('work-mode').find('.tit').text('已启用');}
         else {
-        	$this.addClass('stop-mode');}
+        	$this.addClass('stop-mode').find('.tit').text('未启用');}
 
 });
 $('.action-btn').each(function(){
@@ -61,10 +61,10 @@ $('.action-btn').each(function(){
 	        if(res.success){
 	            $this.attr("data-flag","on");
 	            if(status==1){
-	                $this.attr({'data-status':0}).addClass('stop-mode').removeClass('work-mode');
+	                $this.attr({'data-status':0}).addClass('stop-mode').removeClass('work-mode').find('.tit').text('未启用');
 	            }
 	            else if(status == 0){
-	                $this.attr({'data-status':1}).removeClass('stop-mode').addClass('work-mode');
+	                $this.attr({'data-status':1}).removeClass('stop-mode').addClass('work-mode').find('.tit').text('已启用');;
 	            }
 	        }
 	        else{
@@ -88,10 +88,10 @@ $('.action-btn').each(function(){
 	        if(res.success){
 	            $this.attr("data-flag","on");
 	            if(status==1){
-	                $this.attr({'data-status':0}).addClass('stop-mode').removeClass('work-mode');
+	                $this.attr({'data-status':0}).addClass('stop-mode').removeClass('work-mode').find('.tit').text('未启用');
 	            }
 	            else if(status == 0){
-	                $this.attr({'data-status':1}).removeClass('stop-mode').addClass('work-mode');
+	                $this.attr({'data-status':1}).removeClass('stop-mode').addClass('work-mode').find('.tit').text('已启用');;
 	            }
 	        }
 	        else{

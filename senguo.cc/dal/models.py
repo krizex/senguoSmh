@@ -1452,6 +1452,7 @@ class ConfessionWall(MapBase, _CommonApi):
 	create_time = Column(DateTime,default = func.now())
 	other_name = Column(String(64))
 	other_phone = Column(String(32))
+	other_address = Column(String(128))
 	confession_type = Column(Integer,default = 0) #0:匿名 1:实名
 	great = Column(Integer,default = 0)
 	comment = Column(Integer,default = 0)

@@ -10,6 +10,9 @@ import base64
 import json
 from libs.msgverify import gen_msg_token,check_msg_token
 from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
+import tornado.gen
+from tornado.concurrent import run_on_executor
+from concurrent.futures import ThreadPoolExecutor
 
 class ConfessionHome(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -133,12 +136,28 @@ class ConfessionHome(CustomerBaseHandler):
 class ConfessionPublic(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
-		return self.render('confession/public.html',shop_code=shop_code)
+		_type=''
+		try:
+			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
+		except:
+			return self.send_fail('shop error')
+		if shop:
+			_type = shop.marketing.confess_type
+		return self.render('confession/public.html',shop_code=shop_code,_type=_type)
 
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("data")
+	# @tornado.web.asynchronous
+	# @tornado.gen.engine
 	def post(self,shop_code):
+		self.handle_public(shop_code)
+		# self.finish()
+
+
+	# @run_on_executor
+	@CustomerBaseHandler.check_arguments("data")
+	def handle_public(self,shop_code):
 		data = self.args["data"]
+		floor = 0
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
 		except:
@@ -147,29 +166,42 @@ class ConfessionPublic(CustomerBaseHandler):
 			shop_id = shop.id
 		else :
 			return self.send_fail('shop error')
-		floor = 0
+		
 		try:
-			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		except:
-			return self.send_fail('店铺不存在')
-		try:
-			floor = self.session.query(models.ConfessionWall).filter_by(shop_id = shop.id).count()
+			floor = self.session.query(models.ConfessionWall).filter_by(shop_id = shop_id).count()
 			floor = floor+1
 		except:
 			floor = 0
-		shop_id = shop.id
-		confession = models.ConfessionWall(
-			customer_id = self.current_user.id,
-			shop_id = shop_id,
-			other_name = data["name"],
-			other_phone = data["phone"],
-			confession_type = int(data["type"]),
-			confession = data["confession"],
-			floor = floor
-		)
+		confess_type = shop.marketing.confess_type
+		confess_only = shop.marketing.confess_only
+		if confess_only == 1:
+			now =  time.strftime('%Y-%m-%d', time.localtime( time.time() ) )
+			confess_list = self.session.query(models.ConfessionWall).order_by(models.ConfessionWall.create_time).all()
+			for _list in confess_list:
+				if _list.create_time.strftime('%Y-%m-%d') == now:
+					return self.send_fail('一天只能发布一条告白哦')
+		if  confess_type == 1:
+			confession = models.ConfessionWall(
+				customer_id = self.current_user.id,
+				shop_id = shop_id,
+				other_name = data["name"],
+				other_phone = data["phone"],
+				other_address =data["address"],
+				confession_type = int(data["type"]),
+				confession = data["confession"],
+				floor = floor
+			)
+		else :
+			confession = models.ConfessionWall(
+				customer_id = self.current_user.id,
+				shop_id = shop_id,
+				confession_type = int(data["type"]),
+				confession = data["confession"],
+				floor = floor
+			)
 		self.session.add(confession)
 		self.session.commit()
-		return self.send_success()
+		return self.send_success()	
 
 class ConfessionCenter(CustomerBaseHandler):
 	@tornado.web.authenticated
