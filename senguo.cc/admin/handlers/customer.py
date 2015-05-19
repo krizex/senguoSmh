@@ -2006,7 +2006,7 @@ class Points(CustomerBaseHandler):
 			shop_history = self.session.query(models.PointHistory).filter_by(customer_id =\
 				customer_id,shop_id = shop_id).all()
 		except:
-			# print("point history error 2222")
+			print("point history error 2222")
 		if shop_history:
 			for temp in shop_history:
 				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
