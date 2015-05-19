@@ -393,11 +393,6 @@ $(document).ready(function(){
          return false;
     }
 }).on("click",".online-lst li",function(){   //选择在线支付方式
-    /*var index = $(this).index();
-    if(index ==1 ){
-        noticeBox("目前只支持微信支付哦！");
-        return false;
-    }*/
     $(".online-lst").find(".checkbox-btn").removeClass("checkboxed");
     $("#online-pay").attr("data-type",$(this).attr("data-type"));
     $(this).children("a").addClass("checkboxed");
@@ -684,7 +679,8 @@ function orderSubmit(target){
             }
             SetCookie('cart_count',0);
             if(pay_type==3){
-                window.location.href=res.success_url;
+                //window.location.href=res.success_url;
+                window.location.href="/customer/orders/detail/"+res.order_id;
             }else{
                window.location.href=window.dataObj.success_href; 
             }
