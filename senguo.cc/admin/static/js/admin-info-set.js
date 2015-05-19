@@ -187,7 +187,7 @@ function initBmap(){
     var myGeo = new BMap.Geocoder();
     // 将地址解析结果显示在地图上,并调整地图视野
     getPointByName(map, myGeo, address);
-    $("#search-lbs").on("click",function(){
+    $("#search-lbs,#save-lbs").on("click",function(){
         var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
         getPointByName(map, myGeo, address,true);
     });
