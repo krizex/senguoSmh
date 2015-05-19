@@ -1946,7 +1946,7 @@ class Balance(CustomerBaseHandler):
 				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,4,5])).count()
 			pages = int(count/page_size) if count % page_size == 0 else int(count/page_size) + 1
 		except:
-			# print('pages 0')
+			print('pages 0')
 		if pages == page:
 			nomore = True
 		if shop_balance_history:
