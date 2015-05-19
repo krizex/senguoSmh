@@ -313,6 +313,8 @@ function infoEdit(target){
             return alert('详细地址请不要超过50个字符！');
         }
         data={
+            lon:$("#info_address").attr("data-lng"),//经度
+            lat:$("#info_address").attr("data-lat"),//纬度
             shop_city:shop_city,
             shop_address_detail:shop_address_detail
         };
