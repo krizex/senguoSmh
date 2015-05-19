@@ -1468,8 +1468,10 @@ class ConfessionComment(MapBase, _CommonApi):
 
 class ConfessionGreat(MapBase, _CommonApi):
 	__tablename__ = 'confession_great'
-	customer_id = Column(Integer, ForeignKey(Customer.id),primary_key=True,nullable=False)
-	wall_id = Column(Integer,ForeignKey(ConfessionWall.id),primary_key=True,nullable = False)
+	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
+	customer_id = Column(Integer, ForeignKey(Customer.id),nullable=False)
+	wall_id = Column(Integer,ForeignKey(ConfessionWall.id),nullable = False)
+	create_time = Column(DateTime,default = func.now())
 
 def init_db_data():
 	MapBase.metadata.create_all()
