@@ -181,6 +181,7 @@ function initBmap(){
     var map = new BMap.Map("bmap");          // 创建地图实例
     var point = new BMap.Point(114.421659, 30.512769);  // 创建点坐标
     var marker = null;
+    var timer = null;
     map.enableScrollWheelZoom();
     map.centerAndZoom(point, 19);
     var myGeo = new BMap.Geocoder();
@@ -211,8 +212,9 @@ function initBmap(){
                         $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
                         $("#info_address").html(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
                         initProviceAndCityCode(addComp.province,addComp.city);
+                        clearTimeout(timer);
                         $("#area-tip-box").html("地理位置已经获取，不要忘记点击保存哦！").removeClass("hidden");
-                        setTimeout(function(){
+                        timer = setTimeout(function(){
                             $("#area-tip-box").addClass("hidden");
                         },4000);
                     });
@@ -220,8 +222,9 @@ function initBmap(){
                 }
             }else{
                 if(flag){
+                    clearTimeout(timer);
                     $("#area-tip-box").html("根据您填写的地址未能找到正确位置，请重新填写哦！").removeClass("hidden");
-                    setTimeout(function(){
+                    timer = setTimeout(function(){
                         $("#area-tip-box").addClass("hidden");
                     },4000);
                 }
