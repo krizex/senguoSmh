@@ -130,7 +130,7 @@ h1{font-size:18px;}
 
 .home-bottom{height:50px;position:fixed;bottom:0;width:100px;right:0;}
 .to-market{display:inline-block;position:fixed;left:5px;bottom:5px;width:40px;height:40px;text-align:center;background:#fff;border-radius:50%;}
-.to-market i{display:inline-block;background:url('/static/svg/icon_list@2x.png') no-repeat;background-position:0 -24px;width:21px;height:21px;margin:0 auto;background-size:140px;margin-top:10px;overflow:hidden;}
+.to-market i{display:inline-block;background:url('/static/svg/icon_list-2.png') no-repeat;background-position:0 -24px;width:21px;height:21px;margin:0 auto;background-size:140px;margin-top:10px;overflow:hidden;}
 
 .cofession-list li{width:100%;float:left;margin-bottom:20px;position:relative;overflow:hidden;}
 .cofession-list li .top{background-size:25px 33px !important;height:33px;line-height:33px;padding:0 5px;position:absolute;width:100%;}

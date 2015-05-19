@@ -413,16 +413,16 @@ class Comment(AdminBaseHandler):
 		page = self.args["page"]
 		page_size = 10
 		pages=0
-		print("[用户评价]当前店铺：",self.current_shop)
+		# print("[用户评价]当前店铺：",self.current_shop)
 		if action == "all":
 			comments = self.get_comments(self.current_shop.id, page, page_size)
-			print("[用户评价]详情：",comments,len(comments))
+			# print("[用户评价]详情：",comments,len(comments))
 			all_comments = self.session.query(models.Order).filter(models.Order.shop_id == self.current_shop.id,\
 				models.Order.status == 6).count()
 			self.current_shop.old_msg = all_comments
 			self.session.commit()
 			pages = all_comments/10
-			print("[用户评价]页数：",pages)
+			# print("[用户评价]页数：",pages)
 		elif action == "favor":
 			s = self.session.query(models.ShopFavorComment.order_id).\
 				filter(models.ShopFavorComment.shop_id == self.current_shop.id).all()
@@ -578,7 +578,7 @@ class Order(AdminBaseHandler):
 
 		data = []
 		delta = datetime.timedelta(1)
-		print("[订单管理]当前店铺：",self.current_shop)
+		# print("[订单管理]当前店铺：",self.current_shop)
 		for order in orders:
 			order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
 										 'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
@@ -594,14 +594,14 @@ class Order(AdminBaseHandler):
 				models.CustomerShopFollow.customer_id == order.customer_id).first()
 			if follow:
 				d["shop_new"]=follow.shop_new
-				print("[订单管理]读取订单，订单用户ID：",order.customer_id,"，新用户标识：",d["shop_new"])
+				# print("[订单管理]读取订单，订单用户ID：",order.customer_id,"，新用户标识：",d["shop_new"])
 			SH2s = []
 			for staff in staffs:
 				staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone}
 				SH2s.append(staff_data)
 				if staff.id == order.SH2_id:  # todo JH、SH1
 					d["SH2"] = staff_data
-					print(d["SH2"],'i am admin order' )
+					# print(d["SH2"],'i am admin order' )
 			d["SH2s"] = SH2s
 			data.append(d)
 		return self.render("admin/orders.html", data = data, order_type=order_type,
@@ -614,7 +614,7 @@ class Order(AdminBaseHandler):
 	def post(self):
 		action = self.args["action"]
 		data = self.args["data"]
-		print("[订单管理]当前店铺：",self.current_shop)
+		# print("[订单管理]当前店铺：",self.current_shop)
 		if action == "add_period":
 			start_time = datetime.time(data["start_hour"],data["start_minute"])
 			end_time = datetime.time(data["end_hour"],data["end_minute"])
@@ -622,7 +622,7 @@ class Order(AdminBaseHandler):
 								   name=data["name"],
 								   start_time=start_time,
 								   end_time=end_time)
-			print("[订单管理]添加按时达时段，Shop ID：",period.config_id,"，时间段：",start_time,"~",end_time)
+			# print("[订单管理]添加按时达时段，Shop ID：",period.config_id,"，时间段：",start_time,"~",end_time)
 			self.session.add(period)
 			self.session.commit()
 			return self.send_success(period_id=period.id)
@@ -638,10 +638,10 @@ class Order(AdminBaseHandler):
 				period.name = data["name"]
 				period.start_time = start_time
 				period.end_time = end_time
-				print("[订单管理]修改按时达时段，Shop ID：",period.config_id,"，时间段：",start_time,"~",end_time)
+				# print("[订单管理]修改按时达时段，Shop ID：",period.config_id,"，时间段：",start_time,"~",end_time)
 			elif action == "edit_period_active":
 				period.active = 1 if period.active == 2 else 2
-				print("[订单管理]按时达时段启用/停用，Shop ID：",period.config_id,"，状态：",period.active)
+				# print("[订单管理]按时达时段启用/停用，Shop ID：",period.config_id,"，状态：",period.active)
 			self.session.commit()
 		elif action == "del_period":
 			try: q = self.session.query(models.Period).filter_by(id=int(data["period_id"]))
@@ -770,7 +770,7 @@ class Order(AdminBaseHandler):
 					if not customer:
 						return self.send_fail('customer error')
 					customer.shop_new = 1
-					print("[订单管理]用户",customer_id,"完成订单，新用户标识置为：",customer.shop_new)
+					# print("[订单管理]用户",customer_id,"完成订单，新用户标识置为：",customer.shop_new)
 					self.session.commit()
 
 					try:
@@ -1338,7 +1338,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			d["shop_new"] = 0
 			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
 				models.CustomerShopFollow.customer_id == order.customer_id).first()
-			print("[订单查询]读取订单，订单用户ID：",follow.customer_id)
+			# print("[订单查询]读取订单，订单用户ID：",follow.customer_id)
 			if follow:
 				d["shop_new"]=follow.shop_new
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
@@ -1497,7 +1497,7 @@ class ShopBalance(AdminBaseHandler):
 			available_balance = format(available_balance,'.2f')
 		else:
 			available_balance = format(0,'.2f')
-		print(available_balance)
+		# print(available_balance)
 		try:
 			apply_list = self.session.query(models.ApplyCashHistory).filter_by(shop_id=shop_id)
 			apply_cash = apply_list.order_by(desc(models.ApplyCashHistory.create_time)).first()
@@ -1537,7 +1537,7 @@ class ShopBalance(AdminBaseHandler):
 		# 提现申请被超级管理员处理后,会产生一条余额变动记录
 		if action == "get_code":
 			phone = self.args['phone']
-			print("[店铺提现]发送验证码到手机：",phone)
+			# print("[店铺提现]发送验证码到手机：",phone)
 			# gen_msg_token(phone=self.args["phone"])
 			# return self.send_success()
 			admin_phone = self.session.query(models.Shop).filter_by(id = shop_id).first().admin.accountinfo.phone
@@ -1587,8 +1587,8 @@ class ShopBalance(AdminBaseHandler):
 			total = format(total,'.2f')	
 			times = count
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-			if not history_list:
-				print(' cash history_list error')
+			#if not history_list:
+			#	print('cash history_list error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
@@ -1607,8 +1607,8 @@ class ShopBalance(AdminBaseHandler):
 			history_list = balance_history.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			count =balance_history.count()
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-			if not history_list:
-				print('get all history error')
+			#if not history_list:
+			#	print('get all history error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
@@ -1641,8 +1641,8 @@ class ShopBalance(AdminBaseHandler):
 			left = float(total)-float(pay)
 			left = format(left,'.2f')
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-			if not history_list:
-				print('get all recharge error')
+			#if not history_list:
+			#	print('get all recharge error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
@@ -1666,8 +1666,8 @@ class ShopBalance(AdminBaseHandler):
 			times = count
 			total = format(total,'.2f')	
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-			if not history_list:
-				print('get all BalanceHistory error')
+			#if not history_list:
+			#	print('get all BalanceHistory error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
@@ -1689,8 +1689,8 @@ class ShopBalance(AdminBaseHandler):
 				total =spend_total[0][0]
 			total = format(total,'.2f')	
 			page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-			if not history_list:
-				print('get all BalanceHistory error')
+			#if not history_list:
+			#	print('get all BalanceHistory error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
@@ -1711,8 +1711,8 @@ class ShopBalance(AdminBaseHandler):
 			order_by(models.BalanceHistory.create_time.desc()).offset(page*page_size).limit(page_size).all()
 			count =  self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([2,6,7])).count()
 			page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-			if not history_list:
-				print('get all BalanceHistory error')
+			#if not history_list:
+			#	print('get all BalanceHistory error')
 			for temp in history_list:
 				create_time = ''
 				if temp.create_time:
@@ -1764,11 +1764,15 @@ class ShopConfig(AdminBaseHandler):
 			shop.shop_phone = data["shop_phone"]
 		elif action == "edit_address":
 			shop_city = int(data["shop_city"])
+			lat       = float(data["lat"])
+			lon       = float(data['lon'])
 			shop_address_detail = data["shop_address_detail"]
 			if shop_city//10000*10000 not in dis_dict:
 				return self.send_fail("没有该省份")
 			shop.shop_province = shop_city//10000*10000
 			shop.shop_city = shop_city
+			shop.lat       = lat
+			shop.lon       = lon
 			shop.shop_address_detail = shop_address_detail
 		elif action == "edit_deliver_area":
 			shop.deliver_area = data["deliver_area"]
@@ -1812,7 +1816,7 @@ class ShopAuthenticate(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments('action','data')
 	def post(self):
 		shop_id = self.current_shop.id
-		print("[店铺认证]当前店铺：",self.current_shop)
+		# print("[店铺认证]当前店铺：",self.current_shop)
 		action = self.args["action"]
 		data = self.args["data"]
 		auth_change = self.current_shop.auth_change
@@ -1821,7 +1825,7 @@ class ShopAuthenticate(AdminBaseHandler):
 		except:
 			print('shop_auth_apply error')
 		if action == "get_code":
-			print("[店铺认证]发送验证码到手机：",data["phone"])
+			# print("[店铺认证]发送验证码到手机：",data["phone"])
 			# gen_msg_token(phone=self.args["phone"])
 			# return self.send_success()
 			resault = gen_msg_token(phone=data["phone"])

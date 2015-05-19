@@ -34,11 +34,11 @@ class ShopList(FruitzoneBaseHandler):
 	def get(self):
 
 		remote_ip = self.remote_ip
-		print(remote_ip)
+		# print(remote_ip)
 		url = 'http://ip.taobao.com/service/getIpInfo.php?ip={0}'.format(remote_ip)
 		res =  requests.get(url)
 		content = res.text
-		print(content)
+		# print(content)
 		t = json.loads(content)
 		data = t.get('data',None)
 		if data:
@@ -54,7 +54,7 @@ class ShopList(FruitzoneBaseHandler):
 		# fruit_types = []
 		# for f_t in self.session.query(models.FruitType).all():
 		#     fruit_types.append(f_t.safe_props())
-		print(city_id+"===========")
+		# print(city_id+"===========")
 		return self.render("fruitzone/list.html", context=dict(province_count=province_count,\
 			city = city ,city_id = city_id, shop_count=shop_count,subpage="home"))
 
@@ -633,7 +633,7 @@ class PhoneVerify(_AccountBaseHandler):
 	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str")
 	def handle_gencode_shop_apply(self):
-		print("[店铺申请]发送证码到手机：",self.args["phone"])
+		# print("[店铺申请]发送证码到手机：",self.args["phone"])
 		resault = gen_msg_token(phone=self.args["phone"])
 		# print("handle_gencode_shop_apply" + self.current_user.accountinfo.wx_unionid)
 		if resault == True:
@@ -645,7 +645,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 	"""后台购买相关页面"""
 	def initialize(self, action):
 		self._action = action
-		print(self._action)
+		# print(self._action)
 
 	@tornado.web.authenticated
 	def get(self):

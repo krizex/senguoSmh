@@ -97,11 +97,13 @@ class OnlineWxPay(CustomerBaseHandler):
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
 			status       = xmlArray['result_code']
 			order_num    = str(xmlArray['out_trade_no'])
+
 			# result       = orderId.split('a')
 			# customer_id  = int(result[0])
 			# shop_id      = int(result[1])
 			# totalPrice   = (float(result[2]))/100
-			transaction_id = str(xmlArray['trade_no'])
+			transaction_id = str(xmlArray['transaction_id'])
+
 			if status != 'SUCCESS':
 				return False
 

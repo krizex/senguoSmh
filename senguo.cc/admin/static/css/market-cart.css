@@ -28,7 +28,7 @@
 .cart-list-item .action-box{position:absolute;right:5px;top:35%;}
 .cart-list-item .charge-item{height:30px;line-height:30px;position:absolute;bottom:0;}
 .cart-list-item .number-change{position:relative;width:90px;}
-.cart-list-item .minus-plus{display:inline-block;float:left;border:none;width:32px;height:32px;background:url('../svg/icon_list@2x.png') no-repeat;position:absolute;z-index:10;background-size:140px 180px;}
+.cart-list-item .minus-plus{display:inline-block;float:left;border:none;width:32px;height:32px;background:url('../svg/icon_list-2.png') no-repeat;position:absolute;z-index:10;background-size:140px 180px;}
 .cart-list-item .number-input{width:28%;width:60px;position:absolute;left:14px;height:30px;line-height:30px;top:0;border:0.5px solid #f7f7f8;}
 .cart-list-item .number-plus{right:0;background-position:-34px -72px;}
 .cart-list-item .number-minus{left:0;background-position:0 -72px;}
