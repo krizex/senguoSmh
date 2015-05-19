@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, func, ForeignKey, Column
-from sqlalchemy.types import String, Integer, Boolean, Float, Date, BigInteger, DateTime, Time, SMALLINT,Double
+from sqlalchemy.types import String, Integer, Boolean, Float, Date, BigInteger, DateTime, Time, SMALLINT
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.dialects.mysql import TINYINT
@@ -459,8 +459,6 @@ class Shop(MapBase, _CommonApi):
 	shop_city = Column(Integer)
 	shop_address_detail = Column(String(1024), nullable=False)
 	shop_sales_range = Column(String(128))
-	lat              = Column(Double)  #纬度
-	lon              = Column(Double)  #经度
 
 	# 是否做实体店
 	have_offline_entity = Column(Integer, default=False)
