@@ -21,7 +21,7 @@ if(isWeiXin()){
     getRealData();
     setInterval(function(){
         getRealData();
-    },10000);
+    },20000);
     setInterval(function(){
         var title = document.title;
         if(notice){

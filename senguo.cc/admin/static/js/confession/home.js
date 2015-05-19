@@ -1,14 +1,18 @@
 $(document).ready(function(){
+	$(".container").css('minHeight',$(window).height()+"px");
 	var action=$.getUrlParam('action');
+	var _nomore=$('#data').attr('data-more');
 	if(typeof(action) == undefined || action=='' ||action==null ){
 		getData(0);
 		scrollLoading();
 	}
 	else{
-		scrollLoading2();
+
+		if(_nomore =='False'){
+			scrollLoading2();
+		}
 	}
-	var nomore=$('#data').attr('data-more');
-	if(nomore=='True'){
+	if(_nomore=='True'){
 		$('.loading').html("~没有更多了呢 ( > < )~").show();
 	}
 	else{
@@ -111,7 +115,7 @@ function data(datalist){
                 $('.loading').html("~没有更多了呢 ( > < )~").show();
             }
             for(var i in datalist){
-                var item ='<li class="{{sty}}">'+
+                var item ='<li class="{{sty}} font14">'+
                 		'<div class="top">'+
                 			'{{user}}  TO  {{name}}'+
                 		'</div>'+
@@ -140,7 +144,7 @@ function data(datalist){
                 var comment=datalist[i]['comment'];
                 var name=datalist[i]['name'];
                 var confession = datalist[i]['confession'];
-                var type = datalist[i]['type'];
+                var type = Int(datalist[i]['type']);
                 var floor =datalist[i]['floor'];
                 var great=datalist[i]['great'];
                 var comment=datalist[i]['comment'];
@@ -153,6 +157,9 @@ function data(datalist){
                 }
                 else{
                 	sty='sty0';
+                }
+                if(type==0){
+                	user='匿名用户';	
                 }
                 var list_item =render({
                     imgurl:imgurl,

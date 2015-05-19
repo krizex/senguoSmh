@@ -108,14 +108,14 @@ h1{font-size:18px;}
 .pub-btn{background:#E17163;height:40px;margin-top:20px;}
 
 .p-box1{padding:5px;}
-.p-box1 .tit{display:inline-block;width:15%;line-height:30px;}
-.p-box1 input{display:inline-block;width:85%;}
+.p-box1 .tit{display:inline-block;line-height:30px;width:50px;overflow:hidden;}
+.p-box1 input{display:inline-block;width:80%;}
 .p-box1 .line1{border-bottom:1px solid #ddd;}
 .p-box2{height:60px;border:1px solid #E17163;border-radius:2px;position:relative;}
 .p-box2 .left{width:30%;background:#eee;height:100%;}
 .p-box2 .img{margin-top:12px;}
 .p-box2 .right{width:70%;line-height:50px;text-indent:15px;}
-.p-box2  .people{position:absolute;right:0;display:inline-block;width:50px;height:115px;background:url('/static/confess/hai.jpg') no-repeat;background-size:50px;top:-20px;}
+.p-box2  .people{position:absolute;right:0;display:inline-block;width:50px;height:115px;background:url('/static/confess/hai.png') no-repeat;background-size:50px;top:-20px;}
 
 /*home*/
 .confession-notice{width:100%;height:auto;position:relative;}
@@ -125,7 +125,7 @@ h1{font-size:18px;}
 
 .home-bottom{height:50px;position:fixed;bottom:0;width:100px;right:0;}
 .to-market{display:inline-block;position:fixed;left:5px;bottom:5px;width:40px;height:40px;text-align:center;background:#fff;border-radius:50%;}
-.to-market i{display:inline-block;background:url('/static/svg/icon_list@2x.png') no-repeat;background-position:0 -24px;width:21px;height:21px;margin:0 auto;background-size:120px;margin-top:10px;overflow:hidden;}
+.to-market i{display:inline-block;background:url('/static/svg/icon_list@2x.png') no-repeat;background-position:0 -24px;width:21px;height:21px;margin:0 auto;background-size:140px;margin-top:10px;overflow:hidden;}
 
 .cofession-list li{width:100%;float:left;margin-top:20px;position:relative;overflow:hidden;}
 .cofession-list li .top{background-size:25px 33px !important;height:33px;line-height:33px;padding:0 5px;position:absolute;width:100%;}

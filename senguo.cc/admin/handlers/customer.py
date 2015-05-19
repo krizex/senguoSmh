@@ -261,7 +261,13 @@ class Home(CustomerBaseHandler):
 class Discover(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
-		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_code=shop_code)
+		try:
+			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
+		except:
+			return self.send_fail('shop error')
+		if shop:
+			confess_active = shop.marketing.confess_active
+		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_code=shop_code,confess_active=confess_active)
 
 class CustomerProfile(CustomerBaseHandler):
 	@tornado.web.authenticated

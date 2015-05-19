@@ -7,28 +7,59 @@ $(document).ready(function(){
 	var $this=$(this);
 	$this.addClass('bg-greyc').attr({'disabled':true});
 	var url='';
-	var name=$('#other-name').val().trim();
-	var phone=$('#other-phone').val().trim();
-	var type=$('.type-btn.active').attr('data-id');
-	var confession=$('#confession').val().trim();
-	if(!name){
-		$this.removeClass('bg-greyc').removeAttr('disabled');
-		return noticeBox('请填写TA的姓名哦～')
+	var mode_type=parseInt($('.pub-box').attr('data-type'));
+	var type= $('.type-btn.active').attr('data-id');
+	var confession= $('#confession').val().trim();
+	if (mode_type == 1){
+		var name = $('#other-name').val().trim();
+		var phone = $('#other-phone').val().trim();
+		var address = $('#other-address').val().trim();
+		if(!name){
+			$this.removeClass('bg-greyc').removeAttr('disabled');
+			return noticeBox('请填写TA的姓名哦～')
+		}
+		if(name.length>20){
+			$this.removeClass('bg-greyc').removeAttr('disabled');
+			return noticeBox('姓名请不要超过20字～')
+		}
+		if(!phone){
+			$this.removeClass('bg-greyc').removeAttr('disabled');
+			return noticeBox('请填写TA的手机号，方便我们礼品派送哦～ ')
+		}
+		if(phone.length>11||phone.length<11){
+			$this.removeClass('bg-greyc').removeAttr('disabled');
+			return noticeBox('手机号貌似不正确～ ')
+		}
+		if(!confession){
+			$this.removeClass('bg-greyc').removeAttr('disabled');
+			return noticeBox('请填上告白的内容吧～')
+		}
+		if(confession.length>500){
+			$this.removeClass('bg-greyc').removeAttr('disabled');
+			return noticeBox('真心的告白，不需要如此多的文字～')
+		}
+		if(!address){
+			$this.removeClass('bg-greyc').removeAttr('disabled');
+			return noticeBox('请填写TA的地址，方便我们礼品派送哦～ ')
+		}
+		if(address.length>50){
+			$this.removeClass('bg-greyc').removeAttr('disabled');
+			return noticeBox('地址请不要超过50字～ ')
+		}
+		var data={
+			name:name,
+			phone:phone,
+			address:address,
+			type:type,
+			confession:confession
+		};
 	}
-	if(!phone){
-		$this.removeClass('bg-greyc').removeAttr('disabled');
-		return noticeBox('请填写TA的手机号，方便我们礼品派送哦～ ')
+	else{
+		var data={
+			type:type,
+			confession:confession
+		};
 	}
-	if(!confession){
-		$this.removeClass('bg-greyc').removeAttr('disabled');
-		return noticeBox('请填上告白的内容吧～')
-	}
-	var data={
-		name:name,
-		phone:phone,
-		type:type,
-		confession:confession
-	};
 	var args={
 		data:data
 	};
@@ -38,7 +69,7 @@ $(document).ready(function(){
 			{
 				$this.removeClass('bg-greyc').removeAttr('disabled');
 				//noticeBox('发布成功');
-				window.location.href="/confession/"+getCookie('market_shop_code');
+				window.location.href="/lovewall/"+$('.pub-box').attr('data-code');
 			}
 			else {
 				$this.removeClass('bg-greyc').removeAttr('disabled');
