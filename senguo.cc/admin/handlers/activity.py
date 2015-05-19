@@ -139,6 +139,13 @@ class ConfessionHome(CustomerBaseHandler):
 				nomore = True
 			return self.send_success(datalist=datalist,nomore=nomore)
 		elif action =="great":
+			import time  # why??????????????????????????????????????????
+			now =  time.strftime('%Y-%m-%d', time.localtime() )
+			confess_list = self.session.query(models.ConfessionGreat).filter_by(wall_id = self.args["data"]["id"],customer_id = \
+				self.current_user.id).order_by(models.ConfessionGreat.create_time).all()
+			for _list in confess_list:
+				if _list.create_time.strftime('%Y-%m-%d') == now:
+					return self.send_fail('一天只能点一次赞哦')
 			confession = self.session.query(models.ConfessionWall).filter_by( id = self.args["data"]["id"]).first()
 			great = models.ConfessionGreat(
 				wall_id = self.args["data"]["id"],
