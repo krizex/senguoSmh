@@ -267,7 +267,13 @@ class Discover(CustomerBaseHandler):
 			return self.send_fail('shop error')
 		if shop:
 			confess_active = shop.marketing.confess_active
-		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_code=shop_code,confess_active=confess_active)
+			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
+			self.set_cookie("market_shop_code",str(shop.shop_code))
+		try:
+			confess_count =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id,scan=0).count()
+		except:
+			confess_count = 0 
+		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_code=shop_code,confess_active=confess_active,confess_count=confess_count)
 
 class ShopArea(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -1939,13 +1945,13 @@ class Balance(CustomerBaseHandler):
 		page = int(self.args["page"])
 		offset = (page-1) * page_size
 		customer_id = self.current_user.id
-		shop_id     = self.shop_id
-		history     = []
+		shop_id  = self.shop_id
+		history   = []
 		data = []
 		pages = 0
 		nomore = False
 		shop_balance_history=[]
-		# print(customer_id,shop_id)
+		history =[]
 		try:
 			shop_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id =\
 				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,4,5])).all()
@@ -1959,13 +1965,14 @@ class Balance(CustomerBaseHandler):
 			pages = int(count/page_size) if count % page_size == 0 else int(count/page_size) + 1
 		except:
 			print('pages 0')
+
 		if pages == page:
 			nomore = True
+
 		if shop_balance_history:
 			for temp in shop_balance_history:
 				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
 				history.append({'type':temp.balance_type,'record':temp.balance_record ,'value':temp.balance_value ,'time':temp.create_time})
-
 		count = len(history)
 		history = history[::-1]
 		if offset + page_size <= count:
@@ -2019,6 +2026,7 @@ class Points(CustomerBaseHandler):
 				customer_id,shop_id = shop_id).all()
 		except:
 			print("point history error 2222")
+
 		if shop_history:
 			for temp in shop_history:
 				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')

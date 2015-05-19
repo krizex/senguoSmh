@@ -1129,16 +1129,19 @@ class Follower(AdminBaseHandler):
 		count = 0
 		page_sum = 0
 		shop_id = self.current_shop.id
-		if action in ("all", "old"):
+		if action in ("all", "old","charge"):
 			if action == "all":  # 所有用户
 				q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id)
 				if order_by == "time":
 					q = q.order_by(desc(models.CustomerShopFollow.create_time))
-			else:  # 老用户
+			elif action == "old":  # 老用户
 				q = self.session.query(models.Customer).\
 					join(models.Order).filter( and_(models.Order.shop_id == self.current_shop.id,\
 						or_(models.Order.status==5,models.Order.status==6,models.Order.status==10))).distinct()
+			elif action == "charge":
+				q = self.session.query(models.Customer).join(models.BalanceHistory,models.Customer.id == models.BalanceHistory.customer_id).\
+					filter(models.BalanceHistory.shop_id == self.current_shop.id,models.BalanceHistory.balance_type==1).distinct()
 			if order_by == "credits":
 				q = q.order_by(desc(models.Customer.credits))
 			elif order_by == "balance":
@@ -1157,6 +1160,7 @@ class Follower(AdminBaseHandler):
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
 					join(models.Accountinfo).filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),
 														models.Accountinfo.realname.like("%%%s%%" % wd))).all()
+			
 		else:
 			return self.send_error(404)
 		for x in range(0, len(customers)):  #

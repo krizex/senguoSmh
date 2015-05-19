@@ -43,8 +43,6 @@ $(document).ready(function(){
         $('.cart_num').removeClass('hidden').text(window.dataObj.cart_count);
     }
     $('.lazy_img').lazyload({threshold:100});
-    //设置title
-    //document.title=$.base64Decode(shop_name)+'一家不错的水果O2O店铺，快来关注吧~';
     //置顶监听
     $(window).on('scroll',function(){
         var $this=$(this);
@@ -57,6 +55,17 @@ $(document).ready(function(){
                 $('.little_pear').css("display","none");
             }
     });
+    //confess wall has some new
+    var confess_new = parseInt(getCookie('confess_new'));
+    var confess_shop_id = getCookie('confess_shop_id');
+    if(confess_shop_id==window.dataObj.shop_id){
+        if(confess_new !=0){
+            $('.discover-new').removeClass('hidden');
+        }
+        else{
+            $('.discover-new').addClass('hidden');
+        }
+    }
 });
 
 function wexin(link,imgurl){

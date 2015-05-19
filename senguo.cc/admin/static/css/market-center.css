@@ -38,7 +38,7 @@ hr{margin-top:0px !important;;margin-bottom:0px !important;margin-left:24px;}
 .add-address{background:#fff;border:1px solid #fff;}
 .add-address:focus{outline:none;}
 
-.discover-list a{display:block;}
+.discover-list a{display:inline-block;width:100%;height:45px;}
 .discover-list  li{position:relative;}
 .discover-list .circle{position:absolute;display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;top:12px;text-align:center;right:15px;}
 .confess i{display:inline-block;width:15px;height:15px;background:url('../svg/icon_list@2x.png') -85px -34px;background-size:100px;margin:15px 5px 0 10px;}

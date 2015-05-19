@@ -31,6 +31,15 @@ class ConfessionHome(CustomerBaseHandler):
 			notice = shop.marketing.confess_notice
 		else:
 			return self.send_error(404)
+
+		try:
+			confess_list =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id).all()
+			for confess in confess_list :
+				confess.scan = 1
+			self.session.commit()
+		except:
+			confess_list = []
+
 		action = self.args["action"]
 		if action != []:
 			customer_id = self.current_user.id
@@ -56,13 +65,13 @@ class ConfessionHome(CustomerBaseHandler):
 			elif action == "receive":
 				try:
 					data = self.session.query(models.ConfessionWall).\
-					filter_by(other_phone = self.current_user.accountinfo.phone,status = 1).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
+					filter_by(other_phone = self.current_user.accountinfo.phone,shop_id=shop_id,status = 1).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
 				except:
 					print("current_user didn't tie the cell phone")
 			elif action == "comment":
 				try:
 					data = self.session.query(models.ConfessionWall).\
-					join(models.ConfessionComment,models.ConfessionWall.id == models.ConfessionComment.wall_id).filter(models.ConfessionWall.status == 1).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
+					join(models.ConfessionComment,models.ConfessionWall.id == models.ConfessionComment.wall_id).filter(models.ConfessionWall.status == 1,models.ConfessionWall.shop_id == shop_id).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
 				except:
 					print("current_user didn't comment any confession")
 			for d in data:
@@ -136,6 +145,7 @@ class ConfessionHome(CustomerBaseHandler):
 				customer_id = self.current_user.id
 			)
 			confession.great = confession.great +1
+			confession.scan = 0
 			self.session.add(great)
 			self.session.commit()
 			return self.send_success()
@@ -147,6 +157,7 @@ class ConfessionHome(CustomerBaseHandler):
 				comment = self.args["data"]["comment"]
 			)
 			confession.conmment = confession.conmment +1
+			confession.scan = 0
 			self.session.add(comment)
 			self.session.commit()
 			return self.send_success()
@@ -196,7 +207,7 @@ class ConfessionPublic(CustomerBaseHandler):
 		confess_only = shop.marketing.confess_only
 		if confess_only == 1:
 			now =  time.strftime('%Y-%m-%d', time.localtime( time.time() ) )
-			confess_list = self.session.query(models.ConfessionWall).order_by(models.ConfessionWall.create_time).all()
+			confess_list = self.session.query(models.ConfessionWall).filter_by(shop_id = shop_id).order_by(models.ConfessionWall.create_time).all()
 			for _list in confess_list:
 				if _list.create_time.strftime('%Y-%m-%d') == now:
 					return self.send_fail('一天只能发布一条告白哦')
@@ -221,6 +232,8 @@ class ConfessionPublic(CustomerBaseHandler):
 			)
 		self.session.add(confession)
 		self.session.commit()
+		self.set_cookie('confess_new',str(1))
+		self.set_cookie('confess_shop_id',str(shop_id))
 		return self.send_success()	
 
 class ConfessionCenter(CustomerBaseHandler):
@@ -238,9 +251,9 @@ class ConfessionCenter(CustomerBaseHandler):
 		else :
 			return self.send_fail('shop error')
 		pub_count = self.session.query(models.ConfessionWall).filter_by(customer_id = customer_id,shop_id=shop_id,status = 1).count()
-		receive_count = self.session.query(models.ConfessionWall).filter_by(other_phone = self.current_user.accountinfo.phone,status = 1).count()
+		receive_count = self.session.query(models.ConfessionWall).filter_by(other_phone = self.current_user.accountinfo.phone,shop_id=shop_id,status = 1).count()
 		comment_count =  self.session.query(models.ConfessionWall).\
-		join(models.ConfessionComment,models.ConfessionWall.id == models.ConfessionComment.wall_id).filter(models.ConfessionWall.status == 1).distinct().count()
+		join(models.ConfessionComment,models.ConfessionWall.id == models.ConfessionComment.wall_id).filter(models.ConfessionWall.status == 1,models.ConfessionWall.shop_id == shop_id).distinct().count()
 		return self.render('confession/center.html',shop_name=shop_name,pub_count=pub_count,receive_count=receive_count,comment_count=comment_count,shop_code=shop_code)
 
 class ConfessionList(CustomerBaseHandler):
