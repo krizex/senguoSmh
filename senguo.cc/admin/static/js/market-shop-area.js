@@ -1,7 +1,9 @@
 $(document).ready(function(){
+    if(navigator.userAgent.indexOf("iPhone")>-1){
+        $("#go-back").css("display","none");
+    }
     $(".wrap-area-box").height($(window).height());
     initBmap();
-
 }).on("click","#go-back",function(){
     history.go(-1);
 });
