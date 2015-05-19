@@ -32,7 +32,7 @@
 	{% set sty ='sty2' %}
 	{% end %}
 	<li class="{{sty}} font14" data-id="{{data['id']}}">
-                	<div class="top">{% if data['type']==0 %}匿名用户{% else %} {{data['user']}} {% end %}  TO  {{data['name']}}</div>
+                	<div class="top">{% if data['type']==0 %}匿名用户{% else %} {{data['user']}} {% end %}  {% if data['name'] %}TO  {{data['name']}}{% end %}</div>
                 	<div class="confession">{{data['confession']}}</div>
                 	<p class="mt10 group"><span class="fr ml10">{{data['floor']}}楼</span><span class="fr">{{data['time']}}</span></p>
                 	<p class="group mt10"><a href="javascript:;" class="fr great">点赞(<span class="num">{{data['great']}}</span>)</a></p>

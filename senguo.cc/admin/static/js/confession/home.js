@@ -2,7 +2,6 @@ $(document).ready(function(){
 	$(".container").css('minHeight',$(window).height()+"px");
 	var action=$.getUrlParam('action');
 	var _nomore=$('#data').attr('data-more');
-            console.log(stop);
 	if(typeof(action) == undefined || action=='' ||action==null ){
 		getData(0);
 		scrollLoading();
@@ -19,6 +18,7 @@ $(document).ready(function(){
 	else{
 		$('.loading').html("~努力加载中 ( > < )~").show();
 	}
+            SetCookie('confess_new',0);
 }).on('click','.great',function(){
     var $this=$(this);
     var url='';
@@ -161,7 +161,7 @@ function data(datalist){
             for(var i in datalist){
                 var item ='<li class="{{sty}} font14" data-id="{{id}}">'+
                 		'<div class="top">'+
-                			'{{user}}  TO  {{name}}'+
+                			'{{user}}  {{if name }}TO  {{name}} {{/if}}'+
                 		'</div>'+
                 		'<div class="confession">{{confession}}</div>'+
                 		'<p class="group mt10"><span class="fr ml10">{{floor}}楼</span><span class="fr">{{time}}</span></p>'+
