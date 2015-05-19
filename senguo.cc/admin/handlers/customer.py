@@ -195,7 +195,7 @@ class Home(CustomerBaseHandler):
 			balance_on = shop.config.balance_on_active
 			if shop.shop_auth in [1,2,3,4]:
 				show_balance = True
-			print(shop,shop.shop_auth)
+			# print(shop,shop.shop_auth)
 		else:
 			print("[访问店铺]店铺不存在：",shop_code)
 			return self.send_fail('shop not found')
@@ -227,7 +227,7 @@ class Home(CustomerBaseHandler):
 				count[5] += 1
 			elif order.status == 10:
 				count[6] += 1
-		print(count)
+		# print(count)
 		return self.render("customer/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
 			show_balance = show_balance,balance_on=balance_on,context=dict(subpage='center'))
@@ -274,6 +274,20 @@ class Discover(CustomerBaseHandler):
 		except:
 			confess_count = 0 
 		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_code=shop_code,confess_active=confess_active,confess_count=confess_count)
+
+class ShopArea(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self,shop_code):
+		address = None
+		shop =  self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
+		if not shop:
+			return self.send_fail('shop not found')
+		lat = shop.lat
+		lon = shop.lon
+		shop_name = shop.shop_name
+		address = self.code_to_text("shop_city", shop.shop_city) + " " + shop.shop_address_detail
+
+		return self.render('customer/shop-area.html',context=dict(subpage=''),address = address,lat = lat ,lon = lon,shop_name=shop_name)
 
 class CustomerProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -394,12 +408,12 @@ class WxBind(CustomerBaseHandler):
 		try:
 			user = self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_userinfo["unionid"]).first()
 		except:
-			print("this wx does'nt exist")
+			print("[微信绑定]微信不存在")
 		if user:
 			return self.redirect('/customer/profile?action=wxbinded')
 			# return self.render('notice/bind-notice.html',title='该微信账号已被绑定，请更换其它微信账号')
 		if u:
-			print("[微信绑定]，更新用户资料")
+			print("[微信绑定]更新用户资料")
 			u.accountinfo.wx_country=wx_userinfo["country"]
 			u.accountinfo.wx_province=wx_userinfo["province"]
 			u.accountinfo.wx_city=wx_userinfo["city"]
@@ -413,7 +427,7 @@ class WxBind(CustomerBaseHandler):
 			self.session.commit()
 			return self.redirect('/customer/profile?action=wxsuccess')
 		else:
-			print('some thing must be wrong here')
+			print('[微信绑定]微信绑定错误')
 
 class ShopProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -609,7 +623,7 @@ class Members(CustomerBaseHandler):
 	def get(self):
 		# shop_id = self.shop_id
 		shop_id = int(self.get_cookie("market_shop_id"))
-		print("[店铺成员]当前店铺ID：",shop_id)
+		# print("[店铺成员]当前店铺ID：",shop_id)
 		admin_id = self.session.query(models.Shop.admin_id).filter_by(id=shop_id).first()
 		if not admin_id:
 			return self.send_error(404)
@@ -1952,8 +1966,7 @@ class Balance(CustomerBaseHandler):
 				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,4,5])).count()
 			pages = int(count/page_size) if count % page_size == 0 else int(count/page_size) + 1
 		except:
-			pages=0
-			# print('pages 0')
+			print('pages 0')
 
 		if pages == page:
 			nomore = True
@@ -2014,8 +2027,8 @@ class Points(CustomerBaseHandler):
 			shop_history = self.session.query(models.PointHistory).filter_by(customer_id =\
 				customer_id,shop_id = shop_id).all()
 		except:
-			shop_history = []
-			# print("point history error 2222")
+			print("point history error 2222")
+
 		if shop_history:
 			for temp in shop_history:
 				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
