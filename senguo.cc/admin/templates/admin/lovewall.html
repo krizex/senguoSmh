@@ -18,6 +18,11 @@
         <td></td>
     </tr>
     <tr>
+        <td class="text-grey">告白墙管理</td>
+        <td><a href="{{reverse_url('adminConfession')}}?action=all&&page=0">http://senguo.cc/{{reverse_url('adminConfession')}}?action=all&&page=0</a></td>
+        <td></td>
+    </tr>
+    <tr>
         <td class="text-grey">告白墙公告</td>
         <td>
             <p class="wall-content">{{current_shop.marketing.confess_notice or '无'}}</p>
@@ -40,7 +45,7 @@
     </tr>
     <tr>
         <td class="text-grey">单条发布限定</td>
-        <td>开启后，限定每个用户一天只能发布一个告白，适合在各大节日里做改白有奖的活动。</td>
+        <td>开启后，限定每个用户一天只能发布一个告白，适合在各大节日里做告白有奖的活动。</td>
         <td>
              <a class="mode  pull-right mt10 confess-only" data-flag="on" title="点击切换状态" data-status="{{current_shop.marketing.confess_only}}"><span class="tit">已启用</span><span class="circle"></span></a>
         </td>

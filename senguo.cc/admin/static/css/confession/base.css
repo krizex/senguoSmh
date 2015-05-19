@@ -69,7 +69,7 @@ a:focus{border:none;background-color:none;outline:0;}
 button:focus{outline:0;}
 #warn{position:absolute;padding:5px;font-size:14px;}
 html{min-height:100%;}
-body{margin:0;font-size:12px;font-family:"microsoft yahei";color:#333;background:#fff;min-height:100%;}
+body{margin:0;font-size:12px;font-family:"microsoft yahei";color:#333;min-height:100%;background:#FDF3D8;}
 .container{width:100%;max-width:800px;min-width:320px;margin:0 auto;background:#FDF3D8;min-height:480px;height:100%;overflow:hidden;padding-bottom:80px;}
 .little_pear{position:fixed;z-index:9999;top:70%;right:0px;display:none;width:40px;height:49px;}
 .btn{border-radius:5px;display:inline-block;}
@@ -118,6 +118,11 @@ h1{font-size:18px;}
 .p-box2  .people{position:absolute;right:0;display:inline-block;width:50px;height:115px;background:url('/static/confess/hai.png') no-repeat;background-size:50px;top:-20px;}
 
 /*home*/
+.filter{width:100%;}
+.filter li{width:50%;margin:5px 0;}
+.filter li a{display:inline-block;width:30px;padding:3px 0;text-align:center;color:#999;margin:0 10px;}
+.filter li.active a{color:#E17163;border-color:#E17163;}
+
 .confession-notice{width:100%;height:auto;position:relative;}
 .confession-notice .bg{width:100%;}
 .confession-notice .con{position:absolute;left:0;top:0;width:100%;}
@@ -125,18 +130,21 @@ h1{font-size:18px;}
 
 .home-bottom{height:50px;position:fixed;bottom:0;width:100px;right:0;}
 .to-market{display:inline-block;position:fixed;left:5px;bottom:5px;width:40px;height:40px;text-align:center;background:#fff;border-radius:50%;}
-.to-market i{display:inline-block;background:url('/static/svg/icon_list@2x.png') no-repeat;background-position:0 -24px;width:21px;height:21px;margin:0 auto;background-size:140px;margin-top:10px;overflow:hidden;}
+.to-market i{display:inline-block;background:url('/static/svg/icon_list-2.png') no-repeat;background-position:0 -24px;width:21px;height:21px;margin:0 auto;background-size:140px;margin-top:10px;overflow:hidden;}
 
-.cofession-list li{width:100%;float:left;margin-top:20px;position:relative;overflow:hidden;}
+.cofession-list li{width:100%;float:left;margin-bottom:20px;position:relative;overflow:hidden;}
 .cofession-list li .top{background-size:25px 33px !important;height:33px;line-height:33px;padding:0 5px;position:absolute;width:100%;}
 .cofession-list  .confession{min-height:60px;padding-top:35px;text-indent:5px;}
 .cofession-list li.sty0{color:#3A3736;}
+.cofession-list li.sty0 a{color:#3A3736;}
 .cofession-list li.sty0 .top{background:url('/static/confess/grey.png') repeat-x;}
 .cofession-list li.sty0 .confession{background:#F7F5F0;}
 .cofession-list li.sty1{color:#80AADA;}
+.cofession-list li.sty1 a{color:#80AADA;}
 .cofession-list li.sty1 .top{background:url('/static/confess/blue.png') repeat-x;}
 .cofession-list li.sty1 .confession{background:#EEF7F9;}
 .cofession-list li.sty2{color:#D97768;}
+.cofession-list li.sty2 a{color:#D97768;}
 .cofession-list li.sty2 .top{background:url('/static/confess/pink.png') repeat-x;}
 .cofession-list li.sty2 .confession{background:#FBF4E2;}
 .cofession-list .box-left{width:18%;}
