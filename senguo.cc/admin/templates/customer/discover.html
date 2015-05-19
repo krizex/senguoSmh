@@ -6,9 +6,16 @@
 {% block content %}
 <div class="rainshed2 text-center font18 text-white bg_change fix-title"></div>
 <div class="mt42"></div>
-<ul class="mt20">
+<ul class="mt20 discover-list">
 {% if confess_active == 1 %}
-    <li class="title clearfix bg-white font14"><a href="{{reverse_url('ConfessionHome',shop_code)}}" class="text-grey3" style="display:block;text-indent:14px;">告白墙</a></li>
+    <li class="title clearfix bg-white font14 confess">
+	    <a href="{{reverse_url('ConfessionHome',shop_code)}}" class="text-grey3">
+	    	<i class="pull-left"></i>
+	    	<span class="pull-left">告白墙</span>
+	    	<span class="pull-left ml10 text-grey9">看果友们的真情告白</span>
+	    	<span class="circle bg-pink text-white hidden">1</span>
+	    </a>
+    </li>
 {% end %}
 </ul>
 {% end %}

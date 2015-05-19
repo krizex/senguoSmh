@@ -134,18 +134,19 @@ button:focus{outline:0;}
 .bottom-nav .home em{background-position:0 0;}
 .bottom-nav .goods em{background-position:-25px 0px;}
 .bottom-nav .cart em{background-position:-50px 0px;}
-.bottom-nav .discover em{background-position:-119px 0px;}
+.bottom-nav .discover em{background-position:-120px 0px;}
 .bottom-nav .my em{background-position:-75px 0px;}
 .bottom-nav li:hover .home em{background-position:0 -24px;}
 .bottom-nav li:hover .goods em{background-position:-25px -24px;}
 .bottom-nav li:hover .cart em{background-position:-50px -24px;}
 .bottom-nav li:hover .my em{background-position:-75px -23px;}
-.bottom-nav li:hover .discover em{background-position:-119px -24px;}
+.bottom-nav li:hover .discover em{background-position:-120px -24px;}
 .bottom-nav .active .home em{background-position:0 -24px;}
 .bottom-nav .active .goods em{background-position:-25px -24px;}
 .bottom-nav .active .cart em{background-position:-50px -24px;}
 .bottom-nav .active .my em{background-position:-75px -23px;}
-.bottom-nav .active .discover em{background-position:-119px -24px;}
+.bottom-nav .active .discover em{background-position:-120px -24px;}
+.bottom-nav .circle{position:absolute;display:inline-block;width:5px;height:5px;border-radius:50%;top:5px;}
 
 .set-inl-blo{display:inline-block;}
 .no-mar-btom{margin-bottom:0px;}

@@ -1909,6 +1909,44 @@ class Marketing(AdminBaseHandler):
 		return self.send_success()
 
 
+class Confession(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action:str", "page:int")
+	def get(self):
+		action = self.args["action"]
+		page = self.args["page"]
+		page_size = 10
+		pages=0
+		confession = ''
+		datalist = []
+		if action == "all":
+			q = self.session.query(models.ConfessionWall).filter_by( shop_id = self.current_shop.id,status = 1).order_by(models.ConfessionWall.create_time.desc())
+		elif action == "hot":
+			q = self.session.query(models.ConfessionWall).filter_by( shop_id = self.current_shop.id,status = 1).order_by(models.ConfessionWall.great.desc())	
+		else:
+			return self.send_error(404)
+		confession = q.offset(page*page_size).limit(page_size).all()
+		count = q.count()
+		pages = count/page_size
+		for data in confession:
+			info = self.session.query(models.Customer).filter_by(id=data.customer_id).first()
+			user = info.accountinfo.nickname
+			imgurl = info.accountinfo.headimgurl_small
+			sex = info.accountinfo.sex
+			time = data.create_time.strftime('%Y-%m-%d %H:%M:%S')
+			datalist.append({'id':data.id,'user':user,'imgurl':imgurl,'time':time,'name':data.other_name,\
+				'type':data.confession_type,'confession':data.confession,'great':data.great,\
+				'comment':data.comment,'floor':data.floor,'sex':sex,'address':data.other_address,'phone':data.other_phone})
+		return self.render("admin/confession.html", action = action, datalist=datalist, pages=pages,context=dict(subpage='marketing'))
 
+	@AdminBaseHandler.check_arguments("action:str", "data")
+	def post(self):
+		action = self.args["action"]
+		if action == 'del_confess':
+			_id = self.args["data"]["id"]
+			q = self.session.query(models.ConfessionWall).filter_by( id = _id).first()
+			q.status = 0
+			self.session.commit()
+		return self.send_success()
 
 

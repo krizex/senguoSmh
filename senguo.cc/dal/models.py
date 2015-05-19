@@ -1457,6 +1457,7 @@ class ConfessionWall(MapBase, _CommonApi):
 	great = Column(Integer,default = 0)
 	comment = Column(Integer,default = 0)
 	floor = Column(Integer,default = 0)
+	status = Column(Integer,default = 1) #0:删除 1:正常
 
 class ConfessionComment(MapBase, _CommonApi):
 	__tablename__ = 'confession_comment'

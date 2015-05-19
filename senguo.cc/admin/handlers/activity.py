@@ -50,19 +50,19 @@ class ConfessionHome(CustomerBaseHandler):
 			if action == "public":
 				try:
 					data = self.session.query(models.ConfessionWall).\
-					filter_by(customer_id = customer_id,shop_id=shop_id).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
+					filter_by(customer_id = customer_id,shop_id=shop_id,status = 1).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
 				except:
 					print("haven't public any confession")
 			elif action == "receive":
 				try:
 					data = self.session.query(models.ConfessionWall).\
-					filter_by(other_phone = self.current_user.accountinfo.phone).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
+					filter_by(other_phone = self.current_user.accountinfo.phone,status = 1).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
 				except:
 					print("current_user didn't tie the cell phone")
 			elif action == "comment":
 				try:
 					data = self.session.query(models.ConfessionWall).\
-					join(models.ConfessionComment,models.ConfessionWall.id == models.ConfessionComment.wall_id).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
+					join(models.ConfessionComment,models.ConfessionWall.id == models.ConfessionComment.wall_id).filter(models.ConfessionWall.status == 1).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
 				except:
 					print("current_user didn't comment any confession")
 			for d in data:
@@ -98,7 +98,7 @@ class ConfessionHome(CustomerBaseHandler):
 			page = self.args["page"]
 			nomore = False
 			datalist = []
-			confession = self.session.query(models.ConfessionWall).filter_by(shop_id=shop_id).\
+			confession = self.session.query(models.ConfessionWall).filter_by(shop_id=shop_id,status = 1).\
 			order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
 			for data in confession:
 				info = self.session.query(models.Customer).filter_by(id=data.customer_id).first()
@@ -116,7 +116,7 @@ class ConfessionHome(CustomerBaseHandler):
 			page = self.args["page"]
 			nomore = False
 			datalist = []
-			confession = self.session.query(models.ConfessionWall).filter_by(shop_id=shop_id).\
+			confession = self.session.query(models.ConfessionWall).filter_by(shop_id=shop_id,status = 1).\
 			order_by(models.ConfessionWall.great.desc()).offset(page*page_size).limit(page_size).all()
 			for data in confession:
 				info = self.session.query(models.Customer).filter_by(id=data.customer_id).first()
@@ -237,10 +237,10 @@ class ConfessionCenter(CustomerBaseHandler):
 			shop_name = shop.shop_name
 		else :
 			return self.send_fail('shop error')
-		pub_count = self.session.query(models.ConfessionWall).filter_by(customer_id = customer_id,shop_id=shop_id).count()
-		receive_count = self.session.query(models.ConfessionWall).filter_by(other_phone = self.current_user.accountinfo.phone).count()
+		pub_count = self.session.query(models.ConfessionWall).filter_by(customer_id = customer_id,shop_id=shop_id,status = 1).count()
+		receive_count = self.session.query(models.ConfessionWall).filter_by(other_phone = self.current_user.accountinfo.phone,status = 1).count()
 		comment_count =  self.session.query(models.ConfessionWall).\
-		join(models.ConfessionComment,models.ConfessionWall.id == models.ConfessionComment.wall_id).distinct().count()
+		join(models.ConfessionComment,models.ConfessionWall.id == models.ConfessionComment.wall_id).filter(models.ConfessionWall.status == 1).distinct().count()
 		return self.render('confession/center.html',shop_name=shop_name,pub_count=pub_count,receive_count=receive_count,comment_count=comment_count,shop_code=shop_code)
 
 class ConfessionList(CustomerBaseHandler):
