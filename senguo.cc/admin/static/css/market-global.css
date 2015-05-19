@@ -127,7 +127,7 @@ button:focus{outline:0;}
 .bottom-nav ul{margin-bottom:0;}
 .bottom-nav li{text-align:center;position:relative;height:46px;}
 .bottom-nav li a{display:block;background-size:2em !important;padding-top:7px;}
-.bottom-nav li a em{display:inline-block;background:url('../svg/icon_list@2x.png') no-repeat;width:21px;height:21px;margin:0 auto;background-size:140px;overflow:hidden;}
+.bottom-nav li a em{display:inline-block;background:url('../svg/icon_list.png') no-repeat;width:21px;height:21px;margin:0 auto;background-size:140px;overflow:hidden;}
 .bottom-nav li a p{line-height:14px;}
 .bottom-nav li:hover a{color:#80c26b !important;}
 .bottom-nav .active a{color:#80c26b !important;}
