@@ -36,16 +36,7 @@
                         paySign: '{{renderPayParams['paySign']}}',
                         success: function (res) {
                         // 支付成功后的回调函数
-                        $.ajax({
-                            url:"/fruitzone/xxx",
-                            type:"post",
-                            data:{action:"wx_pay",_xsrf:window.dataObj._xsrf},
-                            success:function(res){
-                                if(res.success){
-                                    window.location.href = '/customer/balance';
-                                }
-                            }
-                        });
+                        window.location.href = '/notice/success';
                     }
                 });
            
