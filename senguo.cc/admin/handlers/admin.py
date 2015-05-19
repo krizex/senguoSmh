@@ -1762,11 +1762,15 @@ class ShopConfig(AdminBaseHandler):
 			shop.shop_phone = data["shop_phone"]
 		elif action == "edit_address":
 			shop_city = int(data["shop_city"])
+			lat       = float(data["lat"])
+			lon       = float(data['lon'])
 			shop_address_detail = data["shop_address_detail"]
 			if shop_city//10000*10000 not in dis_dict:
 				return self.send_fail("没有该省份")
 			shop.shop_province = shop_city//10000*10000
 			shop.shop_city = shop_city
+			shop.lat       = lat
+			shop.lon       = lon
 			shop.shop_address_detail = shop_address_detail
 		elif action == "edit_deliver_area":
 			shop.deliver_area = data["deliver_area"]
