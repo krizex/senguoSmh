@@ -177,32 +177,73 @@ $(document).ready(function(){
 });
 //初始化百度地图
 function initBmap(){
-    var address = $("#provinceAddress").text();
+    var address = $("#info_address").html();
     var map = new BMap.Map("bmap");          // 创建地图实例
     var point = new BMap.Point(114.421659, 30.512769);  // 创建点坐标
+    var marker = null;
     map.enableScrollWheelZoom();
-    map.centerAndZoom(point, 15);
-   // var geoControl = new GetControl();
-   // map.addControl(geoControl);
-    // 创建地址解析器实例
+    map.centerAndZoom(point, 19);
     var myGeo = new BMap.Geocoder();
     // 将地址解析结果显示在地图上,并调整地图视野
-    myGeo.getPoint("湖北省武汉市珞瑜路剑桥春天9栋", function(point){
-        if (point) {
-            map.centerAndZoom(point, 19);
-            var marker = new BMap.Marker(point);
-            marker.addEventListener("dragend",attribute);
-            map.addOverlay(marker);
-            marker.setAnimation(BMAP_ANIMATION_BOUNCE);
-            marker.enableDragging();
-            function attribute(){
-                var p = marker.getPosition();  //获取marker的位置
-                alert("marker的位置是" + p.lng + "," + p.lat);
+    getPointByName(map, myGeo, address);
+    $("#search-lbs").on("click",function(){
+        var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
+        getPointByName(map, myGeo, address,true);
+    });
+    $("#hand-search").on("click",function(){
+        marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+        marker.enableDragging();
+    });
+    function getPointByName(map, myGeo, address,flag){
+        myGeo.getPoint(address, function(point){
+            if (point) {
+                map.centerAndZoom(point, 19);
+                marker = new BMap.Marker(point);
+                marker.addEventListener("dragend",attribute);
+                map.addOverlay(marker);
+                function attribute(){
+                    var p = marker.getPosition();  //获取marker的位置
+                    myGeo.getLocation(p, function(rs){
+                        var addComp = rs.addressComponents;
+                        $("#provinceAddress").text(addComp.province);
+                        $("#cityAddress").text(addComp.city);
+                        $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
+                        $("#info_address").html(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+                        initProviceAndCityCode(addComp.province,addComp.city);
+                        $("#area-tip-box").html("地理位置已经获取，不要忘记点击保存哦！").removeClass("hidden");
+                        setTimeout(function(){
+                            $("#area-tip-box").addClass("hidden");
+                        },4000);
+                    });
+                    $("#info_address").attr("data-lng",p.lng).attr("data-lat", p.lat);
+                }
+            }else{
+                if(flag){
+                    $("#area-tip-box").html("根据您填写的地址未能找到正确位置，请重新填写哦！").removeClass("hidden");
+                    setTimeout(function(){
+                        $("#area-tip-box").addClass("hidden");
+                    },4000);
+                }
             }
-        }else{
-            alert("您选择地址没有解析到结果!");
+        });
+    }
+}
+//根据省市名称获取code
+function initProviceAndCityCode(p, c){
+    $.each(window.dataObj.area,function(name,value){
+        if(value.name==p){
+            $("#provinceAddress").attr("data-code",name);
+            if(value['city']){
+                $.each(value.city,function(i,n){
+                    if(n.name==c){
+                        $("#provinceAddress").attr("data-code",i);
+                        return false;
+                    }
+                })
+            }
+            return false;
         }
-    }, "北京市");
+    })
 }
 //获取mimeType
 var _fixType = function(type) {
@@ -335,6 +376,12 @@ function infoEdit(target){
                 else if(action_name=='phone')
                 {
                     $('.phone').text(shop_phone);
+                }
+                else if(action_name=='address'){
+                    $("#area-tip-box").html("店铺地图位置设置成功！").removeClass("hidden");
+                    setTimeout(function(){
+                        $("#area-tip-box").addClass("hidden");
+                    },2000);
                 }
                 else if(action_name=='area')
                 {
