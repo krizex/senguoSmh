@@ -101,7 +101,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			# customer_id  = int(result[0])
 			# shop_id      = int(result[1])
 			# totalPrice   = (float(result[2]))/100
-			transaction_id = str(xmlArray['trade_no'])
+			transaction_id = str(xmlArray['transaction_id'])
 			if status != 'SUCCESS':
 				return False
 
