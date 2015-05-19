@@ -82,7 +82,7 @@ a:focus{border:none;background-color:none;outline:0;}
 .notice_box{width:280px;background:rgba(0,0,0,0.5);padding:20px 10px;border-radius:4px;margin:0 auto;}
 button:focus{outline:0;}
 #warn{position:absolute;padding:5px;font-size:14px;}
-
+.hand{cursor: pointer;}
 .bg-white{background-color:#fff !important;}
 .bg-green{background-color:#33CC66 !important;}
 .bg-green3{background-color:#7EE578 !important;}

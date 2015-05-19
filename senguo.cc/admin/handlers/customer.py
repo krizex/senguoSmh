@@ -269,6 +269,20 @@ class Discover(CustomerBaseHandler):
 			confess_active = shop.marketing.confess_active
 		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_code=shop_code,confess_active=confess_active)
 
+class ShopArea(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self,shop_code):
+		address = None
+		shop =  self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
+		if not shop:
+			return self.send_fail('shop not found')
+		lat = shop.lat
+		lon = shop.lon
+		shop_name = shop.shop_name
+		address = self.code_to_text("shop_city", shop.shop_city) + " " + shop.shop_address_detail
+
+		return self.render('customer/shop-area.html',context=dict(subpage=''),address = address,lat = lat ,lon = lon,shop_name=shop_name)
+
 class CustomerProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action?")

@@ -204,6 +204,7 @@ function initBmap(){
                 function attribute(){
                     var p = marker.getPosition();  //获取marker的位置
                     myGeo.getLocation(p, function(rs){
+                        marker.setAnimation();
                         var addComp = rs.addressComponents;
                         $("#provinceAddress").text(addComp.province);
                         $("#cityAddress").text(addComp.city);
