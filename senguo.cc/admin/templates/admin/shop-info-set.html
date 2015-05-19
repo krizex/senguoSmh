@@ -108,8 +108,8 @@
     <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">店铺地址</span>
         <div class="w2 pull-left">
-            <p class="info_show address">{{address}}</p>
-            <div class="info_hide" style="display:none">
+            <p class="info_show address hidden">{{address}}</p>
+            <div class="info_hide">
                 <div class="dropdown select-provience pull-left set-right10 province_select" data-toggle="modal" data-target="#provinceList">
                     <button class="btn btn-default dropdown-toggle" type="button">
                         <span  id="provinceAddress" data-code="{{current_shop.shop_province or ''}}" class="reProvince">选择省份</span>
@@ -123,16 +123,18 @@
                     </button>
                 </div>
                 <input type="text" class="input-box input1 pull-left" placeholder="请填写详细地址,至多50个字符" id="addressDetail" value="{{current_shop.shop_address_detail or ''}}"/>
+                <input type="button" class="pull-left search-lbs" id="search-lbs" value="地图搜索"/>
             </div>
         </div>
         <div class="pull-right">
-            <a class="info_edit text-green" href="javascript:;">修改</a>
-            <a class="info_sure" href="javascript:;" data-id="address" style="display:none">确定</a>
+            <a class="info_edit text-green hidden" href="javascript:;">修改</a>
+            <a class="info_sure" href="javascript:;" data-id="address">确定</a>
         </div>
     </li>
     <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">地图定位</span>
-        <div class="w2 pull-left">
+        <div class="w2 pull-left wrap-bmap-box">
+            <span class="hand-search">手动标注位置</span>
             <div class="wrap-bmap" id="bmap">
 
             </div>
@@ -179,6 +181,9 @@
             </div>
         </div>
     </div>
+</div>
+<div class="area-tip-box hidden" id="area-tip-box">
+    地理位置已经确认，不要忘记点击确定哦！
 </div>
 {% end %}
 {% block bottom %}

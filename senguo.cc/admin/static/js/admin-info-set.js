@@ -159,11 +159,11 @@ $(document).ready(function(){
     });
     //店铺信息编辑
     $('.info_edit').each(function(){
-        var $this=$(this);
-        $this.on('click',function(){
-            $this.hide().siblings('.info_sure').show().parents('li').find('.info_show').hide().siblings('.info_hide').show();
-        });
-    });
+     var $this=$(this);
+     $this.on('click',function(){
+     $this.hide().siblings('.info_sure').show().parents('li').find('.info_show').hide().siblings('.info_hide').show();
+     });
+     });
     $('.info_sure').each(function(){
         var $this=$(this);
         $this.on('click',function(){
@@ -175,9 +175,11 @@ $(document).ready(function(){
         });
     });
 });
+//初始化百度地图
 function initBmap(){
+    var address = $("#provinceAddress").text();
     var map = new BMap.Map("bmap");          // 创建地图实例
-    var point = new BMap.Point(116.404, 39.915);  // 创建点坐标
+    var point = new BMap.Point(114.421659, 30.512769);  // 创建点坐标
     map.enableScrollWheelZoom();
     map.centerAndZoom(point, 15);
    // var geoControl = new GetControl();
@@ -189,8 +191,14 @@ function initBmap(){
         if (point) {
             map.centerAndZoom(point, 19);
             var marker = new BMap.Marker(point);
+            marker.addEventListener("dragend",attribute);
             map.addOverlay(marker);
             marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+            marker.enableDragging();
+            function attribute(){
+                var p = marker.getPosition();  //获取marker的位置
+                alert("marker的位置是" + p.lng + "," + p.lat);
+            }
         }else{
             alert("您选择地址没有解析到结果!");
         }
@@ -324,10 +332,6 @@ function infoEdit(target){
                 {
                     $('.intro').text(shop_intro);
                 }
-                else if(action_name=='address')
-                {
-                    $('.address').text(address);
-                }
                 else if(action_name=='phone')
                 {
                     $('.phone').text(shop_phone);
@@ -340,7 +344,9 @@ function infoEdit(target){
                 {
                     $('.offline_entity').text(entity_text);
                 }
-                target.hide().siblings('.info_edit').show().parents('li').find('.info_show').show().siblings('.info_hide').hide();
+                if(action_name!='address'){
+                    target.hide().siblings('.info_edit').show().parents('li').find('.info_show').show().siblings('.info_hide').hide();
+                }
             }
             else  alert(res.error_text);
         },
