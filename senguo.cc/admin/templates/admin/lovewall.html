@@ -1,44 +1,52 @@
-{% extends 'shop-set-base.html' %}
-{% block title%}支付设置{% end %}
+{% extends 'market-base.html' %}
+{% block title%}营销设置{% end %}
 
 {% block setcontent %}
-<div class="edit-box bg-greya group">
-    <div class="mode action-mode cash_active pull-right mt10" data-flag="on" title="点击切换状态" data-status="{{current_shop.config.cash_on_active}}">
-        <a class="work-mode" href="javascript:;" style="display:none;">已启用<span class="circle"></span></a>
-        <a class="stop-mode" href="javascript:;" style="display:none;">未启用<span class="circle"></span></a>
-    </div>
-    <div class="wrap-pay-txt">
-        <p class="pay-type-txt">货到付款</p>
-        <p class="grey-txt mt10 f12">用户先下单，收到商品付款，由送货员收取货款，使用方便。<span class="green-txt">推荐开启</span></p>
-    </div>
+{% if shop_code and shop_code!='not set' %}
+<div class="clearfix top-box">
+    <p>任意用户都能在您的告白墙留言，用户之间也能参与互动。能有效增加商城用户粘度。 </p>
+    <p>开启后，在商城 -发现-告白墙界面可以看到。</p>
+    <button class="btn text-white  action-btn confess-active" data-status="{{current_shop.marketing.confess_active}}" data-flag="on">停用</button>
 </div>
-<div class="edit-box bg-greya group">
-    <div class="mode action-mode balance_active pull-right mt10" data-flag="on" title="点击切换状态" data-status="{{current_shop.config.balance_on_active}}">
-        <a class="work-mode" href="javascript:;" style="display:none;">已启用<span class="circle"></span></a>
-        <a class="stop-mode" href="javascript:;" style="display:none;">未启用<span class="circle"></span></a>
-    </div>
-    <div>
-        <p class="pay-type-txt">余额支付</p>
-        <p class="grey-txt mt10 f12">用户提前在店铺充值，急速下单。极大程度提高用户粘度。<span class="green-txt">推荐开启</span></p>
-    </div>
-</div>
-<div class="wrap-pay-tpye">
-    <p class="f12">店铺认证后默认开启，只有当账户余额为0且当所有余额支付的订单完成，余额支付才能关闭。</p>
-    <p class="mt10 f12 red-txt">注意：网页版微信支付只能在微信聊天窗口、微信群、朋友圈进行，订阅号下不能使用微信支付。订阅号卖家请提示用户复制店铺链接到浏览器或非订阅号区域进行充值。</p>
-    <p class="mt10 f12">微信支付、支付宝支付、银联支付以及商家体现所产生的、由平台收取的2%手续费，森果平台全额补贴，卖家不用支付一分钱！</p>
-</div>
-<div class="edit-box bg-greya group">
-    <div class="mode action-mode online_active pull-right mt10" data-flag="on" title="点击切换状态" data-status="{{current_shop.config.online_on_active}}">
-        <a class="work-mode" href="javascript:;" style="display:none;">已启用<span class="circle"></span></a>
-        <a class="stop-mode" href="javascript:;" style="display:none;">未启用<span class="circle"></span></a>
-    </div>
-    <div>
-        <p class="pay-type-txt">在线支付</p>
-        <p class="grey-txt mt10 f12">用户下单时使用支付宝支付或者微信支付，下单的同时完成付款。<span class="green-txt">推荐开启</span></p>
-    </div>
-</div>
-<div class="wrap-pay-tpye">
-    <p class="f12 red-txt">注意：网页版微信支付只能在微信聊天窗口、微信群、朋友圈进行，订阅号下不能使用微信支付。订阅号卖家请提示用户复制店铺链接到浏览器或非订阅号区域进行充值。</p>
-    <p class="mt10 f12">微信支付、支付宝支付、银联支付以及商家体现所产生的、由平台收取的2%手续费，森果平台全额补贴，卖家不用支付一分钱！</p>
-</div>
+<table class="clearfix set-box">
+    <colgroup width="15%"></colgroup>
+    <colgroup width="75%"></colgroup>
+    <colgroup width="10%"></colgroup>
+    <tr>
+        <td class="text-grey">告白墙地址</td>
+        <td><a href="{{reverse_url('ConfessionHome',shop_code)}}">http://senguo.cc/lovewall/{{shop_code}}</a></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="text-grey">告白墙公告</td>
+        <td>
+            <p class="wall-content">{{current_shop.marketing.confess_notice or '无'}}</p>
+            <textarea class="wall-notice" style="display:none;">{{current_shop.marketing.confess_notice or ''}}</textarea>
+        </td>
+        <td class="font14 text-right">
+            <a href="javascript:;" class="notice-edit">修改</a>
+            <a href="javascript:;" class="notice-sure" style="display:none">确定</a>
+        </td>
+    </tr>
+    <tr>
+        <td class="text-grey">告白模式</td>
+        <td>
+            <p>告白模式开启后，发布告白需输入【对方】，信息展示卡片上能显示告白人和告白对象。</p>
+            <p>关闭后，告白墙功能与【微社区】功能类似，方便商城用户交流反馈。</p>
+        </td>
+        <td>
+                <a class="mode pull-right mt10 confess-type" data-flag="on" title="点击切换状态" data-status="{{current_shop.marketing.confess_type}}" ><span class="tit">已启用</span><span class="circle"></span></a>
+        </td>
+    </tr>
+    <tr>
+        <td class="text-grey">单条发布限定</td>
+        <td>开启后，限定每个用户一天只能发布一个告白，适合在各大节日里做改白有奖的活动。</td>
+        <td>
+             <a class="mode  pull-right mt10 confess-only" data-flag="on" title="点击切换状态" data-status="{{current_shop.marketing.confess_only}}"><span class="tit">已启用</span><span class="circle"></span></a>
+        </td>
+    </tr>
+</table>
+{% else %}
+ <h4 class="mt20">您还未设置店铺号，不能进行营销设置，<a href="{{reverse_url('adminShopConfig')}}">点击设置店铺号</a></h4>
+ {% end %}
 {% end %}

@@ -82,13 +82,13 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .wrap-commit>a{display: inline-block;width: 80%;height: 40px;line-height: 40px;text-align: center;color: #fff;background-color: #80de9e;border-radius: 20px;max-width: 200px;font-size: 16px;}
 /*店铺评价*/
 .contain{padding-top: 40px;}
-.point-lst{padding: 20px 30px;}
+.point-lst{padding: 20px 40px;}
 .point-lst>li{margin-bottom: 20px;display: block;}
 .point-top{font-size: 14px;color: #666;line-height: 140%;}
 .red-txt{color: #ff8a8a !important;}
-.wrap-point-box{margin-top: 10px;background-color: #caccca;height: 34px;border-radius: 34px;box-shadow: 0 0 0 4px #dedede;}
-.point-box{position: relative;z-index:10;width: 17px;height: 34px;background-color: #caccca;border-top-left-radius: 34px;border-bottom-left-radius: 34px;}
-.point-box>img{position: absolute;z-index:80;left: 0;top: 0;border-radius: 50%;height: 34px;width: 34px;cursor: move;max-width: 34px;}
+.wrap-point-box{margin-top: 10px;background-color: #caccca;height: 40px;border-radius: 40px;box-shadow: 0 0 0 4px #dedede;}
+.point-box{position: relative;z-index:10;width: 17px;height: 40px;background-color: #caccca;border-top-left-radius: 40px;border-bottom-left-radius: 40px;}
+.point-box>img{position: absolute;z-index:80;left: 0;top: 0;border-radius: 50%;height: 40px;width: 40px;cursor: move;max-width: 40px;}
 .wrap-btn-commit{text-align: center;}
 .shadow-zl{box-shadow: 0 0 0 4px rgba(249,109,6,.1);}
 .bg-zl{background-color: #f7cb86;}
@@ -107,6 +107,9 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .goods6{background-image: url(../images/goods_6.png);}
 .goods7{background-image: url(../images/goods_7.png);}
 .goods8{background-image: url(../images/goods_8.png);}
+.zl-bg{background-color: #FCE1BE;}
+.sd-bg{background-color: #C8FCD6;}
+.fw-bg{background-color: #CAFCFC;}
 /*订单评价*/
 .contain-box{padding: 20px 10px 0 10px;}
 .wrap-user-txt>textarea{height: 100px;padding:4px;color: #666;line-height: 20px;font-size: 14px;border:1px solid #e6e6e6;border-radius: 14px;}

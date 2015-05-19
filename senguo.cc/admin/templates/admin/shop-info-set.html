@@ -64,43 +64,6 @@
         </div>
     </li>
     <li class="item clearfix">
-        <span class="w1 pull-left set-inl-blo">店铺地址</span>
-        <div class="w2 pull-left">
-            <p class="info_show address">{{address}}</p>
-            <div class="info_hide" style="display:none">
-                <div class="dropdown select-provience pull-left set-right10 province_select" data-toggle="modal" data-target="#provinceList">
-                    <button class="btn btn-default dropdown-toggle" type="button">
-                        <span  id="provinceAddress" data-code="{{current_shop.shop_province or ''}}" class="reProvince">选择省份</span>
-                        <span class="caret"></span>
-                    </button>
-                </div>
-                <div class="dropdown pull-left select-city set-right10 city_select" data-toggle="modal" data-target="#cityList">
-                    <button class="btn btn-default dropdown-toggle" type="button">
-                        <span id="cityAddress" data-code="{{current_shop.shop_city or ''}}" class="reCity">选择城市</span>
-                        <span class="caret"></span>
-                    </button>
-                </div>
-                <input type="text" class="input-box input1 pull-left" placeholder="请填写详细地址,至多50个字符" id="addressDetail" value="{{current_shop.shop_address_detail or ''}}"/>
-            </div>
-
-        </div>
-        <div class="pull-right">
-            <a class="info_edit text-green" href="javascript:;">修改</a>
-            <a class="info_sure" href="javascript:;" data-id="address" style="display:none">确定</a>
-        </div>
-    </li>
-    <li class="item clearfix">
-        <span class="w1 pull-left set-inl-blo">店铺联系电话</span>
-        <div class="w2 pull-left">
-            <span class="info_show phone">{{current_shop.shop_phone or '未设置' }}</span>
-            <input class="info_hide shop_phone" type="text" placeholder="" value="{{current_shop.shop_phone or '' }}" style="display:none"/>
-        </div>
-        <div class="pull-right">
-            <a class="info_edit text-green" href="javascript:;">修改</a>
-            <a class="info_sure" href="javascript:;" data-id="phone" style="display:none">确定</a>
-        </div>
-    </li>
-    <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">配送区域</span>
         <div class="w2 pull-left">
             <p class="info_show deliver_area">{{current_shop.deliver_area or '未设置'}}</p>
@@ -129,6 +92,50 @@
         <div class="pull-right">
             <a class="info_edit text-green" href="javascript:;">修改</a>
             <a class="info_sure" href="javascript:;" data-id="entity" style="display:none">确定</a>
+        </div>
+    </li>
+    <li class="item clearfix">
+        <span class="w1 pull-left set-inl-blo">店铺联系电话</span>
+        <div class="w2 pull-left">
+            <span class="info_show phone">{{current_shop.shop_phone or '未设置' }}</span>
+            <input class="info_hide shop_phone" type="text" placeholder="" value="{{current_shop.shop_phone or '' }}" style="display:none"/>
+        </div>
+        <div class="pull-right">
+            <a class="info_edit text-green" href="javascript:;">修改</a>
+            <a class="info_sure" href="javascript:;" data-id="phone" style="display:none">确定</a>
+        </div>
+    </li>
+    <li class="item clearfix">
+        <span class="w1 pull-left set-inl-blo">店铺地址</span>
+        <div class="w2 pull-left">
+            <p class="info_show address">{{address}}</p>
+            <div class="info_hide" style="display:none">
+                <div class="dropdown select-provience pull-left set-right10 province_select" data-toggle="modal" data-target="#provinceList">
+                    <button class="btn btn-default dropdown-toggle" type="button">
+                        <span  id="provinceAddress" data-code="{{current_shop.shop_province or ''}}" class="reProvince">选择省份</span>
+                        <span class="caret"></span>
+                    </button>
+                </div>
+                <div class="dropdown pull-left select-city set-right10 city_select" data-toggle="modal" data-target="#cityList">
+                    <button class="btn btn-default dropdown-toggle" type="button">
+                        <span id="cityAddress" data-code="{{current_shop.shop_city or ''}}" class="reCity">选择城市</span>
+                        <span class="caret"></span>
+                    </button>
+                </div>
+                <input type="text" class="input-box input1 pull-left" placeholder="请填写详细地址,至多50个字符" id="addressDetail" value="{{current_shop.shop_address_detail or ''}}"/>
+            </div>
+        </div>
+        <div class="pull-right">
+            <a class="info_edit text-green" href="javascript:;">修改</a>
+            <a class="info_sure" href="javascript:;" data-id="address" style="display:none">确定</a>
+        </div>
+    </li>
+    <li class="item clearfix">
+        <span class="w1 pull-left set-inl-blo">地图定位</span>
+        <div class="w2 pull-left">
+            <div class="wrap-bmap" id="bmap">
+
+            </div>
         </div>
     </li>
 </ul>
@@ -175,6 +182,7 @@
 </div>
 {% end %}
 {% block bottom %}
+<script src="http://api.map.baidu.com/api?v=2.0&ak=2595684c343d6499bf469da8a9c18231"></script>
 <script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>
 <script src="{{static_url('js/jquery.qrcode.min.js')}}"></script>
 <script src="{{static_url('js/area.js')}}"></script>

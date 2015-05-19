@@ -1,9 +1,46 @@
 $(document).ready(function(){
-	getData(0);
-	scrollLoading();
+	$(".container").css('minHeight',$(window).height()+"px");
+	var action=$.getUrlParam('action');
+	var _nomore=$('#data').attr('data-more');
+	if(typeof(action) == undefined || action=='' ||action==null ){
+		getData(0);
+		scrollLoading();
+	}
+	else{
+
+		if(_nomore =='False'){
+			scrollLoading2();
+		}
+	}
+	if(_nomore=='True'){
+		$('.loading').html("~没有更多了呢 ( > < )~").show();
+	}
+	else{
+		$('.loading').html("~努力加载中 ( > < )~").show();
+	}
 });
-var page=1;
+var page = 1;
+var nomore = false;
+var finished = true;
 function scrollLoading(){
+    $(window).scroll(function(){
+        var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
+        var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
+        var totalheight = 0;
+        var main = $(".container");
+        totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
+        if(finished == true &&(main.height()-range) <= totalheight  &&nomore==false ) {
+            finished=false;
+            getData(page);
+            page++;
+        }
+        else if(nomore==true){
+            $('.loading').html("~没有更多了呢 ( > < )~").show();
+        }
+    });
+}
+
+function scrollLoading2(){
     $(window).scroll(function(){
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
         var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
@@ -35,63 +72,106 @@ function getData(page){
 			{
 				  var datalist=res.datalist;
 			                nomore=res.nomore;
-			                if(datalist&&datalist.length==0){
-			                    $('.loading').html("~没有更多了呢 ( > < )~").show();
-			                    return false;
-			                }
-			                if(nomore==true){
-			                    $('.loading').html("~没有更多了呢 ( > < )~").show();
-			                }
-			                for(var i in datalist){
-			                    var item ='<li>'+
-						'<div class="box-left fl txt-ac">'+
-							'<img src="{{imgurl}}" class="img"/>'+
-							'<p>{{user}}</p>'+
-							'<p>{{time}}</p>'+
-						'</div>'+
-						'<div class="box-right fl">'+
-							'<p class="group mb10"><span class="fl">TO:{{name}}</span><span class="fr">{{floor}}楼</span></p>'+
-							'<div class="bg-white mb10 confession">{{confession}}</div>'+
-							'<div class="group">'+
-								'<a href="javascript:;" class="fr ml10 text-grey3">点赞({{great}})</a>'+
-								'<a href="javascript:;" class="fr ml10 text-grey3">评论({{comment}})</a>'+
-								'<a href="javascript:;" class="fr ml10 text-grey3">猜</a>'+
-							'</div>'+
-						'</div>'+
-					'</li>';
-			                    var render = template.compile(item);
-			                    var imgurl=datalist[i]['imgurl'] || '/static/images/TDSG.png';
-			                    var user=datalist[i]['user'];
-			                    var time=datalist[i]['time'];
-			                    var comment=datalist[i]['comment'];
-			                    var name=datalist[i]['name'];
-			                    var confession = datalist[i]['confession'];
-			                    var type = datalist[i]['type'];
-			                    var floor =datalist[i]['floor'];
-			                    var great=datalist[i]['great'];
-			                    var comment=datalist[i]['comment'];
-			                    var list_item =render({
-			                        imgurl:imgurl,
-			                        user:user,
-			                        name:name,
-			                        time:time,
-			                        comment:comment,
-			                        confession:confession,
-			                        floor:floor,
-			                        great:great
-			                    });
-			                    $(".cofession-list").append(list_item);
-			                }
+			                data(datalist);
 			                finished=true;
 			}
 			else {
-				
+				return alert(res.error_text);
 			}
 		},function(){
-			return noticeBox('网络好像不给力呢~ ( >O< ) ~');
+			return alert('网络好像不给力呢~ ( >O< ) ~');
 		},
 		function(){
-			return noticeBox('服务器貌似出错了~ ( >O< ) ~');
+			return alert('服务器貌似出错了~ ( >O< ) ~');
 		}    
 	);
+}
+
+function getData2(page){
+    var action=$.getUrlParam('action');
+    $('.loading').html("~努力加载中 ( > < )~").show();
+    $.ajax({
+        url:'/lovewall/'+$('#data').attr('data-code')+'?action='+action+'page='+page,
+        type:"get",
+        success:function(res){
+            if(res.success){
+	  var datalist=res.datalist;
+                nomore=res.nomore;
+                data(datalist);
+                finished=true;
+	}
+	else {
+		return alert(res.error_text);
+	}
+    }})
+};
+
+function data(datalist){
+            if(datalist&&datalist.length==0){
+                $('.loading').html("~没有更多了呢 ( > < )~").show();
+                return false;
+            }
+            if(nomore==true){
+                $('.loading').html("~没有更多了呢 ( > < )~").show();
+            }
+            for(var i in datalist){
+                var item ='<li class="{{sty}} font14">'+
+                		'<div class="top">'+
+                			'{{user}}  TO  {{name}}'+
+                		'</div>'+
+                		'<div class="confession">{{confession}}</div>'+
+                		'<p class="mt10"><span class="fr ml10">{{floor}}楼</span><span class="fr">{{time}}</span></p>'+
+		// '<div class="box-left fl txt-ac">'+
+		// 	'<img src="{{imgurl}}" class="img"/>'+
+		// 	'<p>{{user}}</p>'+
+		// 	'<p>{{time}}</p>'+
+		// '</div>'+
+		// '<div class="box-right fl">'+
+		// 	'<p class="group mb10"><span class="fl">TO:{{name}}</span><span class="fr">{{floor}}楼</span></p>'+
+		// 	'<div class="bg-white mb10 confession">{{confession}}</div>'+
+		// 	'<div class="group">'+
+		// 		'<a href="javascript:;" class="fr ml10 text-grey3">点赞({{great}})</a>'+
+		// 		'<a href="javascript:;" class="fr ml10 text-grey3">评论({{comment}})</a>'+
+		// 		'<a href="javascript:;" class="fr ml10 text-grey3">猜</a>'+
+		// 	'</div>'+
+		// '</div>'+
+	'</li>';
+                var render = template.compile(item);
+                var imgurl=datalist[i]['imgurl'] || '/static/images/TDSG.png';
+                var user=datalist[i]['user'];
+                var time=datalist[i]['time'];
+                var sex=Int(datalist[i]['sex']);
+                var comment=datalist[i]['comment'];
+                var name=datalist[i]['name'];
+                var confession = datalist[i]['confession'];
+                var type = Int(datalist[i]['type']);
+                var floor =datalist[i]['floor'];
+                var great=datalist[i]['great'];
+                var comment=datalist[i]['comment'];
+                var sty;
+                if(sex==1){
+                	sty='sty1';
+                }
+                else if(sex ==2 ){
+                	sty='sty2';
+                }
+                else{
+                	sty='sty0';
+                }
+                if(type==0){
+                	user='匿名用户';	
+                }
+                var list_item =render({
+                    imgurl:imgurl,
+                    user:user,
+                    name:name,
+                    time:time,
+                    comment:comment,
+                    confession:confession,
+                    floor:floor,
+                    great:great,
+                    sty:sty
+                });
+                $(".cofession-list").append(list_item);
+            }
 }

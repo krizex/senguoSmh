@@ -1,19 +1,63 @@
 {% extends 'base.html'%}
 {% block content %}
-<div class="confession-notice bg-green txt-ac">
-	<h1 class="text-white">{{shop_name}}-告白墙</h1>
-	<p>hehheheheh</p>
+<div class="confession-notice bg-pink txt-ac">
+	<div class="con">
+		<h1 class="text-white mt10">{{shop_name}}-告白墙</h1>
+	</div>
+	<p class="text-white notice">{{notice or '矮油，没有公告咧～'}}</p>
+	<img src="/static/confess/notice-borad.png" class="bg"/>
 </div>
+<span type="hidden"  id="data" data-more="{{nomore}}" data-code="{{shop_code}}"></span>
 <div class="box group">
 	<ul class="cofession-list group">
-		
+	{% if 'datalist'  in context %}
+	{% if context['datalist'] == [] %}
+	<div  class="txt-ac no-record">
+		<img src="/static/images/empty.png" class="mb10"/>
+		<h1>这里啥也没有!</h1>
+	</div>
+	{% else %}
+	{% for data in context['datalist'] %}
+	{% set sty='' %}
+	{% if data['sex'] == 0 %}
+	{% set  sty ='sty0' %}
+	{% elif data['sex'] == 1%}
+	{% set sty ='sty1' %}
+	{% else %}
+	{% set sty ='sty2' %}
+	{% end %}
+	<li class="{{sty}} font14">
+                	<div class="top">{% if data['type']==0 %}匿名用户{% else %} {{data['user']}} {% end %}  TO  {{data['name']}}</div>
+                	<div class="confession">{{data['confession']}}</div>
+                	<p class="mt10"><span class="fr ml10">{{data['floor']}}楼</span><span class="fr">{{data['time']}}</span></p>
+               </li>
+	<!-- <li>
+		<div class="box-left fl txt-ac">
+			<img src="{{data['imgurl']}}" class="img"/>
+			<p>{{data['user']}}</p>
+			<p>{{data['time']}}</p>
+		</div>
+		<div class="box-right fl">
+			<p class="group mb10"><span class="fl">TO:{{data['name']}}</span><span class="fr">{{data['floor']}}楼</span></p>
+			<div class="bg-white mb10 confession">{{data['confession']}}</div>
+			<div class="group">
+				<a href="javascript:;" class="fr ml10 text-grey3">点赞({{data['great']}})</a>
+				<a href="javascript:;" class="fr ml10 text-grey3">评论({{data['comment']}})</a>
+				<a href="javascript:;" class="fr ml10 text-grey3">猜</a>
+			</div>
+		</div>
+	</li> -->
+	{% end %}
+	{% end %}
+	{% end %}	
 	</ul>
 </div>
  <div class="text-grey9 set-w100-fle font12 loading txt-ac mt10">~努力加载中 ( > < )~</div>
- <div class="home-bottom bg-green">
-	<a href="/lovewall/public/{{shop_code}}" class="txt-ac text-white bg-green to-confess fl">我要告白</a>
-	<a href="/lovewall/center/{{shop_code}}" class="txt-ac to-center fl"></a>
+ <div class="home-bottom">
+	<a href="{{reverse_url('ConfessionCenter',shop_code)}}" class="txt-ac text-white bg-green to-confess fl"><i></i></a>
+	<a href="{{reverse_url('ConfessionPublic',shop_code)}}" class="txt-ac to-center fr"><i></i></a>
 </div>
+<a href="{{reverse_url('customerShopProfile',handler.shop_code)}}" class="txt-ac to-market"><i></i></a>
 {% end %}{% block bottom %}
-<script src="/static/js/confession/home.js"></script>
+<script src="{{static_url('js/confession/home.js')}}"></script>
 {% end %}

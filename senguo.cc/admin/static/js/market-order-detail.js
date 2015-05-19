@@ -71,30 +71,42 @@ function statusText(n){
             $(".order-wawa").css("left","0%");
             $(".order-line-grade").css("width","0%");
             $(".order-status-txt").css("left","0%");
+            $(".tel-btn").show();
             break;
         case 1:
             $("#status-txt").text('已下单');
             $(".order-wawa").css("left","0%");
             $(".order-line-grade").css("width","0%");
             $(".order-status-txt").css("left","0%");
+            $(".tel-btn").show();
             break;
         case 4:
             $("#status-txt").text('配送中');
             $(".order-wawa").css("left","50%");
             $(".order-line-grade").css("width","50%");
             $(".order-status-txt").css("left","50%");
+            $(".tel-btn").show();
             break;
         case 5:
             $("#status-txt").text('已送达');
             $(".order-wawa").css("left","100%");
             $(".order-line-grade").css("width","100%");
             $(".order-status-txt").css("left","100%");
+            $(".tel-btn").show();
             break;
         case 6:
             $("#status-txt").text('已评价');
             $(".order-wawa").css("left","100%");
             $(".order-line-grade").css("width","100%");
             $(".order-status-txt").css("left","100%");
+            $(".tel-btn").show();
+            break;
+        case -1:
+            $("#status-txt").text('未付款');
+            $(".order-wawa").css("left","0");
+            $(".order-line-grade").css("width","0");
+            $(".order-status-txt").css("left","0");
+            $(".tel-btn").hide();
             break;
     }
 }

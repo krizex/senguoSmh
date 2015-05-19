@@ -258,6 +258,17 @@ class Home(CustomerBaseHandler):
 			self.session.commit()
 		return self.send_success()
 
+class Discover(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self,shop_code):
+		try:
+			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
+		except:
+			return self.send_fail('shop error')
+		if shop:
+			confess_active = shop.marketing.confess_active
+		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_code=shop_code,confess_active=confess_active)
+
 class CustomerProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action?")
@@ -1834,9 +1845,10 @@ class OrderDetail(CustomerBaseHandler):
 		else:
 			comment_imgUrl = None
 		shop_code = order.shop.shop_code
+		shop_name = order.shop.shop_name
 		return self.render("customer/order-detail.html", order=order,
 						   charge_types=charge_types, mcharge_types=mcharge_types,comment_imgUrl=comment_imgUrl,\
-						   shop_code=shop_code,online_type=online_type)
+						   shop_code=shop_code,online_type=online_type,shop_name=shop_name)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data?")
@@ -2391,5 +2403,16 @@ class InsertData(CustomerBaseHandler):
 		# 			if config.intime_period == 0 or config.intime_period == None:
 		# 				config.intime_period = 30
 
-
+		try:
+			shop_list = self.session.query(models.Shop).all()
+		except:
+			print('no shop at all')
+		if shop_list:
+			for shop in shop_list:
+				shop_id = shop.id
+				market = models.Marketing( id = shop_id )
+				self.session.add(market)
+				self.session.commit()
 		return self.send_success()
+
+

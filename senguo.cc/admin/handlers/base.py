@@ -104,6 +104,14 @@ class GlobalBaseHandler(BaseHandler):
 			if "city" in dis_dict[int(code/10000)*10000].keys():
 				text += " " + dis_dict[int(code/10000)*10000]["city"][code]["name"]
 			return text
+		elif column_name == "city":
+			if "city" in dis_dict[int(code/10000)*10000].keys():
+				text = " " + dis_dict[int(code/10000)*10000]["city"][code]["name"]
+			return text
+
+		elif column_name == "province":
+			text = dis_dict[int(code)]["name"]
+			return text
 
 		elif column_name == "order_status":
 			text = ""
@@ -279,7 +287,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		comments =self.session.query(models.Order.comment, models.Order.comment_create_date, models.Order.num,\
 			models.Order.comment_reply,models.Order.id,models.CommentApply.has_done,models.Accountinfo.headimgurl_small, \
 			models.Accountinfo.nickname,models.CommentApply.delete_reason,\
-			models.CommentApply.decline_reason,models.Order.comment_imgUrl,).\
+			models.CommentApply.decline_reason,models.Order.comment_imgUrl,models.Order.commodity_quality,models.Order.send_speed,models.Order.shop_service).\
 		outerjoin(models.CommentApply, models.Order.id == models.CommentApply.order_id).\
 		join(models.Accountinfo,models.Order.customer_id == models.Accountinfo.id).\
 		filter(models.Order.shop_id == shop_id, models.Order.status == 6).filter(or_(models.CommentApply.has_done !=1,models.CommentApply.has_done ==None )).\
@@ -299,8 +307,12 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				comments_new['comment_imgUrl'] = item[10].split(',')
 			else:
 				comments_new['comment_imgUrl'] = None
+			comments_new['commodity_quality'] = item[11]
+			comments_new['send_speed']        = item[12]
+			comments_new['shop_service']      = item[13]
 			comments_result.append(comments_new)
-			comments_array.append([item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],comments_new['comment_imgUrl']])
+			comments_array.append([item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],\
+				comments_new['comment_imgUrl'],item[11],item[12],item[13]])
 		#print(comments_result)
 		# return comments_result
 		return comments_array

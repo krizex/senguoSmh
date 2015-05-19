@@ -158,10 +158,12 @@
                 <span class="set"><i></i>设置</span>
                 <a href="{{reverse_url('adminShopConfig')}}" class="{{shop_set_active}}" id="shopPage">店铺设置</a>
             </li>
+            {% if current_shop.shop_auth !=0 %}
              <li>
                 <span class="set"><i></i>营销</span>
                 <a href="{{reverse_url('adminMarketing')}}?action=lovewall" class="{{marketing_active}}" id="shopPage">营销和玩法</a>
             </li>
+            {% end %}
         </ul>
     </div>
     <div class="container-right pull-left">

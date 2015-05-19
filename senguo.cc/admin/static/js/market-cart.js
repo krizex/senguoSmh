@@ -368,12 +368,10 @@ $(document).ready(function(){
     if(index != 2){
         $(".wrap-online-lst").addClass("hidden");
     }
-    if(index == 1){
-        var statu = $(this).attr("data-auth");
-        if(statu == "False"){
-            noticeBox("当前店铺未认证，此功能暂不可用");
-            return false;
-        }
+    var statu = $(this).attr("data-auth");
+    if(statu == "False"){
+        noticeBox("当前店铺未认证，此功能暂不可用");
+        return false;
     }
     if(status==0){
         noticeBox("当前店铺已关闭"+type);
@@ -382,7 +380,6 @@ $(document).ready(function(){
     if(index == 2){
         $(".wrap-online-lst").toggleClass("hidden");
     }
-
     $(".pay_type li").removeClass("active").eq(index).addClass("active");
 }).on('click','.a-cz',function(){
     var status = $(this).attr('data-status');
@@ -667,7 +664,7 @@ function orderSubmit(target){
         if(window.dataObj.total_price<mincharge_now) return noticeBox('您的订单未达到立即送最低起送金额！',target);
     }
     if(!type){return noticeBox('请选择送货时段！',target)}
-    $('#submitOrder').addClass('bg-grey text-grey3').text('提交成功').attr({'disabled':'true'});
+    $('#submitOrder').addClass('bg-grey text-grey3').text('提交中...').attr({'disabled':'true'});
     var args={
         fruits:fruits,
         mgoods:mgoods,

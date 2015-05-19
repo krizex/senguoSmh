@@ -52,6 +52,12 @@ input{height:30px;width:400px;-ms-line-height:30px;color:#666;}
 .notice_detail{width:80%;overflow:hidden;}
 
 .download_img{line-height:100px;}
+
+.address-list>ul>li{line-height: 28px;border-top:1px solid #f0f4f0;}
+.address-list>ul>li:last-child{border-bottom: 1px solid #f0f4f0;}
+.address-list>ul>li:hover{background-color: #efefef;}
+.address-list>ul>li:hover span{color: #666;}
+.wrap-bmap{width: 700px;height: 500px;border: 1px solid #ddd;}
 /*店铺认证*/
 .hide{display: none!important;}
 .shop-link{color: #66b5f2;font-size:14px;display: inline-block;height: 24px;line-height: 24px;}

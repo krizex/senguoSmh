@@ -510,6 +510,8 @@ class Shop(MapBase, _CommonApi):
 	fruits = relationship("Fruit", order_by="desc(Fruit.priority)")
 	menus = relationship("Menu", uselist=True)
 	config = relationship("Config", uselist=False)
+	marketing = relationship("Marketing", uselist=False)
+
 	def __repr__(self):
 		return "<Shop: {0} (id={1}, code={2})>".format(
 			self.shop_name, self.id, self.shop_code)
@@ -1363,6 +1365,15 @@ class Config(MapBase, _CommonApi):
 	balance_on_active = Column(Integer,default = 1) #0:余额支付关闭 1:余额支付开启 5.4
 	text_message_active = Column(Integer,default = 0) #首单短信验证 0:关闭 1:开启 5.7
 
+#店铺营销
+class Marketing(MapBase, _CommonApi):
+	__tablename__="marketing"
+	id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
+	confess_active = Column(Integer,default = 1) #1:告白墙开启 0:告白墙关闭
+	confess_notice = Column(String(500))
+	confess_type = Column(Integer,default = 1) #1:告白模式 0:非告白模式
+	confess_only = Column(Integer,default = 0) #1:单条发布开启  0:单条发布关闭
+
 #商城首页的公告
 class Notice(MapBase):
 	__tablename__ = "notice"
@@ -1443,6 +1454,7 @@ class ConfessionWall(MapBase, _CommonApi):
 	create_time = Column(DateTime,default = func.now())
 	other_name = Column(String(64))
 	other_phone = Column(String(32))
+	other_address = Column(String(128))
 	confession_type = Column(Integer,default = 0) #0:匿名 1:实名
 	great = Column(Integer,default = 0)
 	comment = Column(Integer,default = 0)

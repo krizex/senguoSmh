@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    initBmap();
     var code=$('#shop_code').val();
     if(code=='not set'||code=='') {
         $('.notice_word').show();
@@ -174,6 +175,27 @@ $(document).ready(function(){
         });
     });
 });
+function initBmap(){
+    var map = new BMap.Map("bmap");          // 创建地图实例
+    var point = new BMap.Point(116.404, 39.915);  // 创建点坐标
+    map.enableScrollWheelZoom();
+    map.centerAndZoom(point, 15);
+   // var geoControl = new GetControl();
+   // map.addControl(geoControl);
+    // 创建地址解析器实例
+    var myGeo = new BMap.Geocoder();
+    // 将地址解析结果显示在地图上,并调整地图视野
+    myGeo.getPoint("湖北省武汉市珞瑜路剑桥春天9栋", function(point){
+        if (point) {
+            map.centerAndZoom(point, 19);
+            var marker = new BMap.Marker(point);
+            map.addOverlay(marker);
+            marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+        }else{
+            alert("您选择地址没有解析到结果!");
+        }
+    }, "北京市");
+}
 //获取mimeType
 var _fixType = function(type) {
     type = type.toLowerCase().replace(/jpg/i, 'jpeg');
