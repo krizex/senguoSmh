@@ -46,7 +46,8 @@ handlers = [
 	(r"/customer/wxBind", handlers.customer.WxBind, {"action":"wx_bind"}, "customerwxBind"),
 	(r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
 	(r"/customer/discover/(\w+)",handlers.customer.Discover,{},"customerDiscover"),
-
+	#支付宝微信下支付提示中间页
+	#(r"/customer/alipaytip", handlers.customer.AlipayTip, {}, "alipaytip"),
 	# (r"/fruitzone/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
 	#微官网-----待删除
 	(r"/", handlers.superadmin.Official),
@@ -56,7 +57,6 @@ handlers = [
 
 	(r"/official/shoplist",handlers.official.ShopList,{},"OfficialShopList"),
 	(r"/official/about",handlers.official.About,{},"OfficialAbout"),
-
 
 	#to remove
 	(r"/m", handlers.superadmin.Official,{},"test"),

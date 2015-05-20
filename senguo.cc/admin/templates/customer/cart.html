@@ -107,7 +107,7 @@
                             <span class="pull-left title set-inl-blo font14 line50">按时达</span>
                             <p class="text-grey9 title-right">
                                 <span class="text-grey3">起送价：{{config.min_charge_on_time or 0}}元&nbsp;&nbsp;&nbsp;配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元</span>
-                                <span class="mt3">订单将根据您选择的时间段送达</span>
+                                <span class="mt3">根据选择的时间段送达</span>
                             </p>
                         </a>
                     </button>
@@ -145,7 +145,7 @@
                             <span class="pull-left title set-inl-blo font14 line50">立即送</span>
                             <p class="text-grey9 title-right">
                                 <span class="text-grey3">起送价：{{config.min_charge_now or 0}}元&nbsp;&nbsp;&nbsp;配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元</span>
-                                <span class="mt3">订单将在{{config.intime_period or 0}}分钟内送到您的手上</span>
+                                <span class="mt3">{{config.intime_period or 0}}分钟内送到</span>
                             </p>
                         </a>
                     </button>

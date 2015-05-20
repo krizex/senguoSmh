@@ -172,12 +172,18 @@ var goodsList=function(page,action){
                         else {
                             $item.find('.send_date').text('').hide();
                         }
-                    }
-                     if(order_status==0) {
+                     }
+
+                     if(order_status==-1){
+                         $item.find('.order-concel').show();
+                         $item.find('.status-bar-box').show();
+                         $item.find('.word').text('未支付');
+                     }
+                     if(order_status==0){
                         $item.find('.order_conceled').show();
                         $item.find('.status-bar-box').hide();
                         $item.find('.word').text('已取消');
-                    }
+                     }
                      else if(order_status==1) {
                         $item.find('.cancel').show();
                         $item.find('.word').text('已下单');
@@ -222,7 +228,6 @@ var goodsList=function(page,action){
             window.dataObj.finished=true;
     }
 };
-
 function orderConcel(target,id){
     var url='';
     var action='cancel_order';
@@ -242,54 +247,3 @@ function orderConcel(target,id){
     }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
 )
 }
-
-
-/*该方法可以去掉*/
-/*function orderComment(id,order_id,comment){
-    var url='';
-    var action='comment';
-    if(!comment){
-        $('.comment_submit').removeAttr('disabled').removeClass('bg-greyc');
-        return warnNotice('请输入评价内容');
-    }
-    if(comment.length>300){
-        $('.comment_submit').removeAttr('disabled').removeClass('bg-greyc');
-        return warnNotice('评价内容最多300字');
-    }
-    var data={
-        order_id:order_id,
-        comment:comment
-    };
-    var args={
-        action:action,
-        data:data
-    };
-    $.postJson(url,args,function(res){
-        if(res.success){
-           var parent=$('.order-list-item').eq(id);
-           parent.find('.status-bar-box').hide();
-           parent.find('.btn-box').remove();
-           parent.find('.notice').text('已送达');
-           parent.find('.content').append('<p>评价：'+comment+'</p>');
-           var commentBox=new Modal('commentBox');
-           commentBox.modal('hide');
-           $('.comment_submit').removeAttr('disabled').removeClass('bg-greyc');
-           noticeBox(res.notice);
-        }
-        else {
-            noticeBox(res.error_text);
-            $('#commit-senguo').removeAttr('disabled').removeClass('bg-greyc');
-        }
-         if($("#commentBox").not('in')){
-                $('#commit-senguo').removeAttr('disabled').removeClass('bg-greyc');
-            }
-    }, function(){
-        noticeBox('网络好像不给力呢~ ( >O< ) ~');
-        $('#commit-senguo').removeAttr('disabled').removeClass('bg-greyc');
-    },
-    function(){
-        $('.comment_submit').removeAttr('disabled').removeClass('bg-greyc');
-        noticeBox('服务器貌似出错了~ ( >O< ) ~');
-    });
-}
-*/

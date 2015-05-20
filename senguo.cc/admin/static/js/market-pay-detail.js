@@ -5,13 +5,9 @@ $(document).ready(function(){
         $(".com-goods-lst>li").each(function(){
             $(this).width(width).height(width);
         });
-        baguetteBox.run('.com-goods-lst',{
-            buttons: false
-        });
     }
     //订单状态
     statusText(parseInt($('#status-txt').attr('data-id')));
-
     //根据订单状态的一些提示
     if(status==1) $('.hint').show();
     else $('.phone-notice').show();
@@ -41,23 +37,28 @@ $(document).ready(function(){
         }
     }
     removeDom();
-}).on("click","#del-ok",function(){
-    var comment=$('#new-comment').val();
-    if(!comment){
-        return warnNotice('请输入评价内容');
-    }
-    if(comment.length>300){
-        return warnNotice('评价内容被容最多300字');
-    }
-    $('#del-ok').attr({'disabled':true});
-    changeComment(comment);
 }).on("click","#cancel-order",function(){
     confirmBox('确认取消该订单吗？//(ㄒoㄒ)//',"sure-order");
 }).on("click","#sure-order",function(){
     var order_id = $("#cancel-order").attr("data-id");
     cancelOrder(order_id);
     confirmRemove();
+}).on("click","#go-alipay",function(){
+    if(isWeiXin()){
+        window.location.href="";
+    }else{
+        window.location.href=$(this).attr("data-url");
+    }
 });
+function isWeiXin(){
+    var ua = window.navigator.userAgent.toLowerCase();
+    if(ua.match(/MicroMessenger/i) == 'micromessenger'){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
 function removeDom(){
     $('.create_time').remove();
     $('.create_year').remove();
@@ -111,31 +112,6 @@ function statusText(n){
             break;
     }
 }
-
-
-function changeComment(comment){
-    var url='';
-    var action='change_comment';
-    var id=$('.order-id').data('id');
-    var data={
-        order_id:id,
-        comment:comment
-    };
-    var args={
-        action:action,
-        data:data
-    };
-    $.postJson(url,args,function(res){
-        if(res.success){
-           var pointBox=new Modal('pointsBox');
-            pointBox.modal('hide');
-            $('.comment_con').text(comment);
-            $('#del-ok').removeAttr('disabled');
-        }
-        else return noticeBox(res.error_text)
-    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
-)
-}
 function cancelOrder(id){
     var order_id = id;
     var url='';
@@ -157,25 +133,4 @@ function cancelOrder(id){
             else return noticeBox(res.error_text)
         }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
     )
-}
-function delComment(target,id){
-    var url='';
-    var action='delete_comment';
-    var id=$('.order-id').data('id');
-    var data={
-        order_id:id
-    };
-    var args={
-        action:action,
-        data:data
-    };
-    $.postJson(url,args,function(res){
-        if(res.success){
-           var pointBox=new Modal('pointsBox');
-            pointBox.modal('hide');
-            $('.commentBox').remove();
-        }
-        else return noticeBox(res.error_text)
-    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
-)
 }
