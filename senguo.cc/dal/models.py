@@ -1462,6 +1462,8 @@ class ConfessionWall(MapBase, _CommonApi):
 	great = Column(Integer,default = 0)
 	comment = Column(Integer,default = 0)
 	floor = Column(Integer,default = 0)
+	status = Column(Integer,default = 1) #0:删除 1:正常
+	scan = Column(Integer,default = 1) #0:未浏览 1:已浏览 
 
 class ConfessionComment(MapBase, _CommonApi):
 	__tablename__ = 'confession_comment'
@@ -1473,8 +1475,10 @@ class ConfessionComment(MapBase, _CommonApi):
 
 class ConfessionGreat(MapBase, _CommonApi):
 	__tablename__ = 'confession_great'
-	customer_id = Column(Integer, ForeignKey(Customer.id),primary_key=True,nullable=False)
-	wall_id = Column(Integer,ForeignKey(ConfessionWall.id),primary_key=True,nullable = False)
+	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
+	customer_id = Column(Integer, ForeignKey(Customer.id),nullable=False)
+	wall_id = Column(Integer,ForeignKey(ConfessionWall.id),nullable = False)
+	create_time = Column(DateTime,default = func.now())
 
 def init_db_data():
 	MapBase.metadata.create_all()

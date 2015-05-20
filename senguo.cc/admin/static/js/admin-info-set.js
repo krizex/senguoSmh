@@ -159,11 +159,11 @@ $(document).ready(function(){
     });
     //店铺信息编辑
     $('.info_edit').each(function(){
-        var $this=$(this);
-        $this.on('click',function(){
-            $this.hide().siblings('.info_sure').show().parents('li').find('.info_show').hide().siblings('.info_hide').show();
-        });
-    });
+     var $this=$(this);
+     $this.on('click',function(){
+     $this.hide().siblings('.info_sure').show().parents('li').find('.info_show').hide().siblings('.info_hide').show();
+     });
+     });
     $('.info_sure').each(function(){
         var $this=$(this);
         $this.on('click',function(){
@@ -175,26 +175,85 @@ $(document).ready(function(){
         });
     });
 });
+//初始化百度地图
 function initBmap(){
+    var address = $("#info_address").html();
     var map = new BMap.Map("bmap");          // 创建地图实例
-    var point = new BMap.Point(116.404, 39.915);  // 创建点坐标
+    var point = new BMap.Point(114.421659, 30.512769);  // 创建点坐标
+    var marker = null;
+    var timer = null;
     map.enableScrollWheelZoom();
-    map.centerAndZoom(point, 15);
-   // var geoControl = new GetControl();
-   // map.addControl(geoControl);
-    // 创建地址解析器实例
+    map.centerAndZoom(point, 19);
     var myGeo = new BMap.Geocoder();
     // 将地址解析结果显示在地图上,并调整地图视野
-    myGeo.getPoint("湖北省武汉市珞瑜路剑桥春天9栋", function(point){
-        if (point) {
-            map.centerAndZoom(point, 19);
-            var marker = new BMap.Marker(point);
-            map.addOverlay(marker);
-            marker.setAnimation(BMAP_ANIMATION_BOUNCE);
-        }else{
-            alert("您选择地址没有解析到结果!");
+    getPointByName(map, myGeo, address);
+    $(document).on("keydown",function(ev){
+        if(ev.keyCode==13){
+            var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
+            getPointByName(map, myGeo, address,true);
         }
-    }, "北京市");
+    });
+    $("#search-lbs,#save-lbs").on("click",function(){
+        var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
+        getPointByName(map, myGeo, address,true);
+    });
+    $("#hand-search").on("click",function(){
+        marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+        marker.enableDragging();
+    });
+    function getPointByName(map, myGeo, address,flag){
+        myGeo.getPoint(address, function(point){
+            if (point) {
+                map.centerAndZoom(point, 19);
+                marker = new BMap.Marker(point);
+                marker.addEventListener("dragend",attribute);
+                map.addOverlay(marker);
+                function attribute(){
+                    var p = marker.getPosition();  //获取marker的位置
+                    myGeo.getLocation(p, function(rs){
+                        marker.setAnimation();
+                        var addComp = rs.addressComponents;
+                        $("#provinceAddress").text(addComp.province);
+                        $("#cityAddress").text(addComp.city);
+                        $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
+                        $("#info_address").html(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+                        initProviceAndCityCode(addComp.province,addComp.city);
+                        clearTimeout(timer);
+                        $("#area-tip-box").html("地理位置已经获取，不要忘记点击保存哦！").removeClass("hidden");
+                        timer = setTimeout(function(){
+                            $("#area-tip-box").addClass("hidden");
+                        },4000);
+                    });
+                    $("#info_address").attr("data-lng",p.lng).attr("data-lat", p.lat);
+                }
+            }else{
+                if(flag){
+                    clearTimeout(timer);
+                    $("#area-tip-box").html("根据您填写的地址未能找到正确位置，请重新填写哦！").removeClass("hidden");
+                    timer = setTimeout(function(){
+                        $("#area-tip-box").addClass("hidden");
+                    },4000);
+                }
+            }
+        });
+    }
+}
+//根据省市名称获取code
+function initProviceAndCityCode(p, c){
+    $.each(window.dataObj.area,function(name,value){
+        if(value.name==p){
+            $("#provinceAddress").attr("data-code",name);
+            if(value['city']){
+                $.each(value.city,function(i,n){
+                    if(n.name==c){
+                        $("#provinceAddress").attr("data-code",i);
+                        return false;
+                    }
+                })
+            }
+            return false;
+        }
+    })
 }
 //获取mimeType
 var _fixType = function(type) {
@@ -264,6 +323,8 @@ function infoEdit(target){
             return alert('详细地址请不要超过50个字符！');
         }
         data={
+            lon:$("#info_address").attr("data-lng"),//经度
+            lat:$("#info_address").attr("data-lat"),//纬度
             shop_city:shop_city,
             shop_address_detail:shop_address_detail
         };
@@ -324,13 +385,15 @@ function infoEdit(target){
                 {
                     $('.intro').text(shop_intro);
                 }
-                else if(action_name=='address')
-                {
-                    $('.address').text(address);
-                }
                 else if(action_name=='phone')
                 {
                     $('.phone').text(shop_phone);
+                }
+                else if(action_name=='address'){
+                    $("#area-tip-box").html("店铺地图位置设置成功！").removeClass("hidden");
+                    setTimeout(function(){
+                        $("#area-tip-box").addClass("hidden");
+                    },2000);
                 }
                 else if(action_name=='area')
                 {
@@ -340,7 +403,9 @@ function infoEdit(target){
                 {
                     $('.offline_entity').text(entity_text);
                 }
-                target.hide().siblings('.info_edit').show().parents('li').find('.info_show').show().siblings('.info_hide').hide();
+                if(action_name!='address'){
+                    target.hide().siblings('.info_edit').show().parents('li').find('.info_show').show().siblings('.info_hide').hide();
+                }
             }
             else  alert(res.error_text);
         },

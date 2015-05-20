@@ -18,10 +18,54 @@ $(document).ready(function(){
 	else{
 		$('.loading').html("~努力加载中 ( > < )~").show();
 	}
+            SetCookie('confess_new',0);
+}).on('click','.great',function(){
+    var $this=$(this);
+    var url='';
+    var action='great';
+    var id=$this.parents('li').attr('data-id');
+    var num=parseInt($this.find('.num').text());
+    var data={
+        id:id
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success)
+            {
+                num++;
+                $this.find('.num').text(num);
+            }
+            else {
+                return alert(res.error_text);
+            }
+        },function(){
+            return alert('网络好像不给力呢~ ( >O< ) ~');
+        },
+        function(){
+            return alert('服务器貌似出错了~ ( >O< ) ~');
+        }    
+    );
+}).on('click','.filter li',function(){
+    var $this =$(this);
+    var type = $this.attr('data-type');
+    data_action = type;
+    $this.addClass('active').siblings('li').removeClass('active');
+    $(".cofession-list").empty();
+    page = 1;
+    stop = true;
+    getData(0);
+    scrollLoading();
 });
+
 var page = 1;
 var nomore = false;
 var finished = true;
+var data_action = 'new';
+var stop = false;
 function scrollLoading(){
     $(window).scroll(function(){
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
@@ -47,9 +91,9 @@ function scrollLoading2(){
         var totalheight = 0;
         var main = $(".container");
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
-        if(finished == true &&(main.height()-range) <= totalheight  &&nomore==false ) {
+        if(finished == true &&(main.height()-range) <= totalheight  &&nomore==false&&stop==false ) {
             finished=false;
-            getData(page);
+            getData2(page);
             page++;
         }
         else if(nomore==true){
@@ -59,8 +103,8 @@ function scrollLoading2(){
 }
 
 function getData(page){
-	var url='';
-	var action='get';
+	var url='/lovewall/'+$('#data').attr('data-code');
+	var action=data_action;
 	var page=page;
 	var args={
 		action:action,
@@ -91,7 +135,7 @@ function getData2(page){
     var action=$.getUrlParam('action');
     $('.loading').html("~努力加载中 ( > < )~").show();
     $.ajax({
-        url:'/lovewall/'+$('#data').attr('data-code')+'?action='+action+'page='+page,
+        url:'/lovewall/'+$('#data').attr('data-code')+'?action='+action+'&page='+page,
         type:"get",
         success:function(res){
             if(res.success){
@@ -115,12 +159,13 @@ function data(datalist){
                 $('.loading').html("~没有更多了呢 ( > < )~").show();
             }
             for(var i in datalist){
-                var item ='<li class="{{sty}} font14">'+
+                var item ='<li class="{{sty}} font14" data-id="{{id}}">'+
                 		'<div class="top">'+
-                			'{{user}}  TO  {{name}}'+
+                			'{{user}}  {{if name }}TO  {{name}} {{/if}}'+
                 		'</div>'+
                 		'<div class="confession">{{confession}}</div>'+
-                		'<p class="mt10"><span class="fr ml10">{{floor}}楼</span><span class="fr">{{time}}</span></p>'+
+                		'<p class="group mt10"><span class="fr ml10">{{floor}}楼</span><span class="fr">{{time}}</span></p>'+
+                                        '<p class="group mt10"><a href="javascript:;" class="fr great">点赞(<span class="num">{{great}}</span>)</a></p>'+
 		// '<div class="box-left fl txt-ac">'+
 		// 	'<img src="{{imgurl}}" class="img"/>'+
 		// 	'<p>{{user}}</p>'+
@@ -137,6 +182,7 @@ function data(datalist){
 		// '</div>'+
 	'</li>';
                 var render = template.compile(item);
+                var id=datalist[i]['id'];
                 var imgurl=datalist[i]['imgurl'] || '/static/images/TDSG.png';
                 var user=datalist[i]['user'];
                 var time=datalist[i]['time'];
@@ -162,6 +208,7 @@ function data(datalist){
                 	user='匿名用户';	
                 }
                 var list_item =render({
+                    id:id,
                     imgurl:imgurl,
                     user:user,
                     name:name,

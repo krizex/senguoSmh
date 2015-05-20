@@ -445,7 +445,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		# send message to customer
 		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 
-		return self.redirect(self.reverse_url("customerRecharge"))
+		return self.redirect(self.reverse_url("noticeSuccess"))
 
 
 

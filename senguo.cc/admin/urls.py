@@ -87,7 +87,8 @@ handlers = [
 		"action":"customer"}, "customerPhoneVerify"),
 	(r"/customer/onlinewxpay",handlers.onlinePay.OnlineWxPay,{},"onlineWxPay"),
 	(r"/customer/(\w+)", handlers.customer.Home, {}, "customerHome"),
-
+	#店铺地图
+	(r"/shoparea/(\w+)",handlers.customer.ShopArea,{},"shoparea"),
 	
 	
 	(r"/super/oauth", handlers.superadmin.Access,{
@@ -176,6 +177,7 @@ handlers = [
 	(r"/admin/shopbalance",handlers.admin.ShopBalance,{},"adminShopBalance"),
 	(r"/admin/realtime",handlers.admin.Realtime,{},""),
 	(r"/admin/marketing",handlers.admin.Marketing,{},"adminMarketing"),
+	(r"/admin/confession",handlers.admin.Confession,{},"adminConfession"),
 
 	# (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
 	# (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),

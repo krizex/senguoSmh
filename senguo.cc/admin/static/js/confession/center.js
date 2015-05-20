@@ -4,6 +4,7 @@ $(document).ready(function(){
                   $('.loading').html("~没有更多了呢 ( > < )~").show();
         }
     scrollLoading();
+    SetCookie('confess_new',0);
 });
 var finished=true;
 var current_page=1;

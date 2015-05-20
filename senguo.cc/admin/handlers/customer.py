@@ -195,7 +195,7 @@ class Home(CustomerBaseHandler):
 			balance_on = shop.config.balance_on_active
 			if shop.shop_auth in [1,2,3,4]:
 				show_balance = True
-			print(shop,shop.shop_auth)
+			# print(shop,shop.shop_auth)
 		else:
 			print("[访问店铺]店铺不存在：",shop_code)
 			return self.send_fail('shop not found')
@@ -227,7 +227,7 @@ class Home(CustomerBaseHandler):
 				count[5] += 1
 			elif order.status == 10:
 				count[6] += 1
-		print(count)
+		# print(count)
 		return self.render("customer/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
 			show_balance = show_balance,balance_on=balance_on,context=dict(subpage='center'))
@@ -267,7 +267,27 @@ class Discover(CustomerBaseHandler):
 			return self.send_fail('shop error')
 		if shop:
 			confess_active = shop.marketing.confess_active
-		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_code=shop_code,confess_active=confess_active)
+			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
+			self.set_cookie("market_shop_code",str(shop.shop_code))
+		try:
+			confess_count =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id,scan=0).count()
+		except:
+			confess_count = 0 
+		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_code=shop_code,confess_active=confess_active,confess_count=confess_count)
+
+class ShopArea(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self,shop_code):
+		address = None
+		shop =  self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
+		if not shop:
+			return self.send_fail('shop not found')
+		lat = shop.lat
+		lon = shop.lon
+		shop_name = shop.shop_name
+		address = self.code_to_text("shop_city", shop.shop_city) + " " + shop.shop_address_detail
+
+		return self.render('customer/shop-area.html',context=dict(subpage=''),address = address,lat = lat ,lon = lon,shop_name=shop_name)
 
 class CustomerProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -388,12 +408,12 @@ class WxBind(CustomerBaseHandler):
 		try:
 			user = self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_userinfo["unionid"]).first()
 		except:
-			print("this wx does'nt exist")
+			print("[微信绑定]微信不存在")
 		if user:
 			return self.redirect('/customer/profile?action=wxbinded')
 			# return self.render('notice/bind-notice.html',title='该微信账号已被绑定，请更换其它微信账号')
 		if u:
-			print("[微信绑定]，更新用户资料")
+			print("[微信绑定]更新用户资料")
 			u.accountinfo.wx_country=wx_userinfo["country"]
 			u.accountinfo.wx_province=wx_userinfo["province"]
 			u.accountinfo.wx_city=wx_userinfo["city"]
@@ -407,7 +427,7 @@ class WxBind(CustomerBaseHandler):
 			self.session.commit()
 			return self.redirect('/customer/profile?action=wxsuccess')
 		else:
-			print('some thing must be wrong here')
+			print('[微信绑定]微信绑定错误')
 
 class ShopProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -603,7 +623,7 @@ class Members(CustomerBaseHandler):
 	def get(self):
 		# shop_id = self.shop_id
 		shop_id = int(self.get_cookie("market_shop_id"))
-		print("[店铺成员]当前店铺ID：",shop_id)
+		# print("[店铺成员]当前店铺ID：",shop_id)
 		admin_id = self.session.query(models.Shop.admin_id).filter_by(id=shop_id).first()
 		if not admin_id:
 			return self.send_error(404)
@@ -925,7 +945,7 @@ class Market(CustomerBaseHandler):
 	def commodity_list(self):
 		#
 		# page = 2 
-		print('login  commodity_list')
+		# print('login  commodity_list')
 		page = self.args["page"]
 		page_size = 10
 		offset = (page -1) * page_size
@@ -965,7 +985,7 @@ class Market(CustomerBaseHandler):
 						f_m_id = mgood.id , type = 1).first()
 
 				except:
-					print(' favour_today error mgood')
+					print('favour_today error mgood')
 
 					favour = None
 				if favour is None:
@@ -1200,9 +1220,9 @@ class Cart(CustomerBaseHandler):
 
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		if self.get_cookie("market_shop_code") != shop_code:
-			print(" present market_shop_code doesn't  exist in cookie" )
+			print("present market_shop_code doesn't exist in cookie" )
 
-		print("[购物篮]当前店铺：",shop)
+		# print("[购物篮]当前店铺：",shop)
 		if shop.shop_auth in [1,2,3,4]:
 			show_balance = True
 
@@ -1220,7 +1240,7 @@ class Cart(CustomerBaseHandler):
 				balance_value = format(customer_follow.shop_balance,'.2f')
 			shop_new = customer_follow.shop_new
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
-		print(self.get_cookie('market_shop_id'),'没有报错啊')
+		# print(self.get_cookie('market_shop_id'),'没有报错啊')
 		self._shop_code = shop.shop_code
 
 
@@ -1244,8 +1264,8 @@ class Cart(CustomerBaseHandler):
 				storages[mgood_id] = mgood_storage
 		# periods = [x for x in shop.config.periods if x.active == 1]
 		periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1).all()
-		for period in periods:
-			print("[购物篮]读取按时达时段，Shop ID：",period.config_id,"，时间段：",period.start_time,"~",period.end_time)
+		#for period in periods:
+		#	print("[购物篮]读取按时达时段，Shop ID：",period.config_id,"，时间段：",period.start_time,"~",period.end_time)
 		return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name  = shop_name ,shop_code=shop_code,shop_logo = shop_logo,balance_value=balance_value,\
@@ -1360,7 +1380,7 @@ class Cart(CustomerBaseHandler):
 		address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		if not address:
 			return self.send_fail("没找到地址", 404)
-		print("[提交订单]送货地址：",address.receiver)
+		# print("[提交订单]送货地址：",address.receiver)
 
 		# 已支付、付款类型、余额、积分处理
 		money_paid = False
@@ -1407,7 +1427,7 @@ class Cart(CustomerBaseHandler):
 			online_type = self.args['online_type']
 		else:
 			order_status = 1
-		print(w_SH2_id,"i'm staff id")
+		# print(w_SH2_id,"i'm staff id")
 		order = models.Order(customer_id=self.current_user.id,
 							 shop_id=shop_id,
 							 num=num,
@@ -1457,12 +1477,12 @@ class Cart(CustomerBaseHandler):
 		customer_info = self.session.query(models.Accountinfo).filter_by(id = self.current_user.id).first()
 		customer_name = address.receiver
 		c_tourse      = customer_info.wx_openid
-		print("[提交订单]用户OpenID：",c_tourse)
+		# print("[提交订单]用户OpenID：",c_tourse)
 
 		##################################################
 		#goods
 		goods = []
-		print("[提交订单]订单详情：",f_d,m_d)
+		# print("[提交订单]订单详情：",f_d,m_d)
 		session = self.session
 		for f in f_d:
 			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
@@ -1471,12 +1491,12 @@ class Cart(CustomerBaseHandler):
 			
 		goods = str(goods)[1:-1]
 		order_totalPrice = float('%.1f'% totalPrice)
-		print("[提交订单]订单总价：",order_totalPrice)
+		# print("[提交订单]订单总价：",order_totalPrice)
 		# send_time     = order.get_sendtime(session,order.id)
 		send_time = order.send_time
 		address = order.address_text
 		order_realid = order.id
-		print("[提交订单]订单详情：",goods)
+		# print("[提交订单]订单详情：",goods)
 		if self.args['pay_type'] != 3:
 			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
 				customer_name,order_totalPrice,send_time,goods,phone,address)
@@ -1511,9 +1531,7 @@ class Cart(CustomerBaseHandler):
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
 			online_type = self.args['online_type']
-			print(online_type,'online_type')
 			self.set_cookie('order_num',str(order.num))
-			print(order.num,'order.numnumnumnum')
 			self.set_cookie('online_totalPrice',str(order.totalPrice))
 			order.online_type = online_type
 			self.session.commit()
@@ -1523,7 +1541,7 @@ class Cart(CustomerBaseHandler):
 				success_url = self.reverse_url('onlineAliPay')
 			else:
 				print(online_type,'wx or alipay?')
-			return self.send_success(success_url = success_url)
+			return self.send_success(order_id = order.id)
 		return self.send_success()
 
 class Notice(CustomerBaseHandler):
@@ -1598,7 +1616,7 @@ class Order(CustomerBaseHandler):
 			page = self.args['page']
 			offset = (page - 1) * page_size
 			orders = [x for x in self.current_user.orders if x.status == 1]
-			print(len(orders),'未处理订单 数量')
+			# print(len(orders),'未处理订单 数量')
 			# woody
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
@@ -1620,14 +1638,14 @@ class Order(CustomerBaseHandler):
 			page = self.args["page"]
 			offset = (page - 1) * page_size
 			orders = [x for x in self.current_user.orders if x.status in (2, 3, 4)]
-			print(len(orders),'待收货状态订单')
+			# print(len(orders),'待收货状态订单')
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
-			print("[订单列表]滚动加载offset：",offset)
-			print("[订单列表]滚动加载total：",total_count)
+			# print("[订单列表]滚动加载offset：",offset)
+			# print("[订单列表]滚动加载total：",total_count)
 			if offset + page_size <= total_count:
 				orders = orders[offset:offset + page_size]
 			elif offset < total_count and offset + page_size >= total_count:
@@ -1670,7 +1688,7 @@ class Order(CustomerBaseHandler):
 			page = self.args["page"]
 			offset = (page - 1) * page_size
 			orders = self.current_user.orders
-			print(len(orders),'所有订单数量')
+			# print(len(orders),'所有订单数量')
 			session = self.session
 			# for order in orders:
 			# 	order.send_time = order.get_sendtime(session,order.id)
@@ -1769,9 +1787,9 @@ class Order(CustomerBaseHandler):
 			data = self.args["data"]
 			imgUrl = data["imgUrl"]
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
-			print(order,'i am order')
+			# print(order,'i am order')
 			if not order:return self.send_error(404)
-			print(order.id,'i am ')
+			# print(order.id,'i am ')
 			comment = order.comment
 			order.status = 6
 			order.comment_create_date = datetime.datetime.now()
@@ -1927,19 +1945,19 @@ class Balance(CustomerBaseHandler):
 		page = int(self.args["page"])
 		offset = (page-1) * page_size
 		customer_id = self.current_user.id
-		shop_id     = self.shop_id
-		history     = []
+		shop_id  = self.shop_id
+		history   = []
 		data = []
 		pages = 0
 		nomore = False
 		shop_balance_history=[]
-		print(customer_id,shop_id)
+		history =[]
 		try:
 			shop_balance_history = self.session.query(models.BalanceHistory).filter_by(customer_id =\
 				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,4,5])).all()
 		except:
 			shop_balance_history = None
-			print("balance show error ")
+			# print("balance show error ")
 
 		try:
 			count = self.session.query(models.BalanceHistory).filter_by(customer_id =\
@@ -1947,13 +1965,14 @@ class Balance(CustomerBaseHandler):
 			pages = int(count/page_size) if count % page_size == 0 else int(count/page_size) + 1
 		except:
 			print('pages 0')
+
 		if pages == page:
 			nomore = True
+
 		if shop_balance_history:
 			for temp in shop_balance_history:
 				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
 				history.append({'type':temp.balance_type,'record':temp.balance_record ,'value':temp.balance_value ,'time':temp.create_time})
-
 		count = len(history)
 		history = history[::-1]
 		if offset + page_size <= count:
@@ -1962,7 +1981,7 @@ class Balance(CustomerBaseHandler):
 			data = history[offset:]
 		else:
 			nomore = True
-			print("history page error")
+			# print("history page error")
 		# print("data\n",data)
 
 		return self.send_success(data = data,nomore=nomore)
@@ -2007,6 +2026,7 @@ class Points(CustomerBaseHandler):
 				customer_id,shop_id = shop_id).all()
 		except:
 			print("point history error 2222")
+
 		if shop_history:
 			for temp in shop_history:
 				temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
@@ -2026,7 +2046,7 @@ class Points(CustomerBaseHandler):
 			data = history[offset:]
 		else:
 			nomore=True
-			print("nomore history page")
+			# print("nomore history page")
 		# print("data\n",data)
 
 		return self.send_success(data = data,nomore=nomore)

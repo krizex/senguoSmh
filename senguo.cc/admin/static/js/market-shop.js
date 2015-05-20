@@ -26,6 +26,8 @@ $(document).ready(function(){
     noticeBox('亲，你今天已经签到了，一天只能签到一次哦！')
 }).on("click","#show-more",function(){
     window.location.href=$(this).find("a").attr("href");
+}).on("click","#go-shop-area",function(){
+    window.location.href="/shoparea/"+$("#shop_code").text();
 });
 function focus(){
     var url='';

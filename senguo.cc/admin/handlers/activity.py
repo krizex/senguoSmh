@@ -31,6 +31,15 @@ class ConfessionHome(CustomerBaseHandler):
 			notice = shop.marketing.confess_notice
 		else:
 			return self.send_error(404)
+
+		try:
+			confess_list =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id).all()
+			for confess in confess_list :
+				confess.scan = 1
+			self.session.commit()
+		except:
+			confess_list = []
+
 		action = self.args["action"]
 		if action != []:
 			customer_id = self.current_user.id
@@ -50,19 +59,19 @@ class ConfessionHome(CustomerBaseHandler):
 			if action == "public":
 				try:
 					data = self.session.query(models.ConfessionWall).\
-					filter_by(customer_id = customer_id,shop_id=shop_id).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
+					filter_by(customer_id = customer_id,shop_id=shop_id,status = 1).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
 				except:
 					print("haven't public any confession")
 			elif action == "receive":
 				try:
 					data = self.session.query(models.ConfessionWall).\
-					filter_by(other_phone = self.current_user.accountinfo.phone).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
+					filter_by(other_phone = self.current_user.accountinfo.phone,shop_id=shop_id,status = 1).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
 				except:
 					print("current_user didn't tie the cell phone")
 			elif action == "comment":
 				try:
 					data = self.session.query(models.ConfessionWall).\
-					join(models.ConfessionComment,models.ConfessionWall.id == models.ConfessionComment.wall_id).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
+					join(models.ConfessionComment,models.ConfessionWall.id == models.ConfessionComment.wall_id).filter(models.ConfessionWall.status == 1,models.ConfessionWall.shop_id == shop_id).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
 				except:
 					print("current_user didn't comment any confession")
 			for d in data:
@@ -71,7 +80,7 @@ class ConfessionHome(CustomerBaseHandler):
 				sex = info.accountinfo.sex
 				imgurl = info.accountinfo.headimgurl_small
 				time = d.create_time.strftime('%Y-%m-%d %H:%M:%S')
-				datalist.append({'user':user,'imgurl':imgurl,'time':time,'name':d.other_name,\
+				datalist.append({'id':d.id,'user':user,'imgurl':imgurl,'time':time,'name':d.other_name,\
 					'type':d.confession_type,'confession':d.confession,'great':d.great,'comment':d.comment,'floor':d.floor,'sex':sex})
 			if datalist == [] or len(datalist) < page_size:
 				nomore = True
@@ -93,12 +102,12 @@ class ConfessionHome(CustomerBaseHandler):
 		except:
 			return self.send_fail('店铺不存在')
 		shop_id = shop.id
-		if action == "get":
+		if action == "new":
 			page_size = 10
 			page = self.args["page"]
 			nomore = False
 			datalist = []
-			confession = self.session.query(models.ConfessionWall).filter_by(shop_id=shop_id).\
+			confession = self.session.query(models.ConfessionWall).filter_by(shop_id=shop_id,status = 1).\
 			order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
 			for data in confession:
 				info = self.session.query(models.Customer).filter_by(id=data.customer_id).first()
@@ -106,18 +115,44 @@ class ConfessionHome(CustomerBaseHandler):
 				imgurl = info.accountinfo.headimgurl_small
 				sex = info.accountinfo.sex
 				time = data.create_time.strftime('%Y-%m-%d %H:%M:%S')
-				datalist.append({'user':user,'imgurl':imgurl,'time':time,'name':data.other_name,\
+				datalist.append({'id':data.id,'user':user,'imgurl':imgurl,'time':time,'name':data.other_name,\
+					'type':data.confession_type,'confession':data.confession,'great':data.great,'comment':data.comment,'floor':data.floor,'sex':sex})
+			if datalist == [] or len(datalist) < page_size:
+				nomore = True
+			return self.send_success(datalist=datalist,nomore=nomore)
+		elif action == "hot":
+			page_size = 10
+			page = self.args["page"]
+			nomore = False
+			datalist = []
+			confession = self.session.query(models.ConfessionWall).filter_by(shop_id=shop_id,status = 1).\
+			order_by(models.ConfessionWall.great.desc()).offset(page*page_size).limit(page_size).all()
+			for data in confession:
+				info = self.session.query(models.Customer).filter_by(id=data.customer_id).first()
+				user = info.accountinfo.nickname
+				imgurl = info.accountinfo.headimgurl_small
+				sex = info.accountinfo.sex
+				time = data.create_time.strftime('%Y-%m-%d %H:%M:%S')
+				datalist.append({'id':data.id,'user':user,'imgurl':imgurl,'time':time,'name':data.other_name,\
 					'type':data.confession_type,'confession':data.confession,'great':data.great,'comment':data.comment,'floor':data.floor,'sex':sex})
 			if datalist == [] or len(datalist) < page_size:
 				nomore = True
 			return self.send_success(datalist=datalist,nomore=nomore)
 		elif action =="great":
+			import time  # why??????????????????????????????????????????
+			now =  time.strftime('%Y-%m-%d', time.localtime() )
+			confess_list = self.session.query(models.ConfessionGreat).filter_by(wall_id = self.args["data"]["id"],customer_id = \
+				self.current_user.id).order_by(models.ConfessionGreat.create_time).all()
+			for _list in confess_list:
+				if _list.create_time.strftime('%Y-%m-%d') == now:
+					return self.send_fail('一天只能点一次赞哦')
 			confession = self.session.query(models.ConfessionWall).filter_by( id = self.args["data"]["id"]).first()
 			great = models.ConfessionGreat(
 				wall_id = self.args["data"]["id"],
 				customer_id = self.current_user.id
 			)
 			confession.great = confession.great +1
+			confession.scan = 0
 			self.session.add(great)
 			self.session.commit()
 			return self.send_success()
@@ -129,6 +164,7 @@ class ConfessionHome(CustomerBaseHandler):
 				comment = self.args["data"]["comment"]
 			)
 			confession.conmment = confession.conmment +1
+			confession.scan = 0
 			self.session.add(comment)
 			self.session.commit()
 			return self.send_success()
@@ -137,13 +173,15 @@ class ConfessionPublic(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
 		_type=''
+		shop_name=''
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
 		except:
 			return self.send_fail('shop error')
 		if shop:
 			_type = shop.marketing.confess_type
-		return self.render('confession/public.html',shop_code=shop_code,_type=_type)
+			shop_name = shop.shop_name
+		return self.render('confession/public.html',shop_code=shop_code,shop_name=shop_name,_type=_type)
 
 	@tornado.web.authenticated
 	# @tornado.web.asynchronous
@@ -176,7 +214,7 @@ class ConfessionPublic(CustomerBaseHandler):
 		confess_only = shop.marketing.confess_only
 		if confess_only == 1:
 			now =  time.strftime('%Y-%m-%d', time.localtime( time.time() ) )
-			confess_list = self.session.query(models.ConfessionWall).order_by(models.ConfessionWall.create_time).all()
+			confess_list = self.session.query(models.ConfessionWall).filter_by(shop_id = shop_id).order_by(models.ConfessionWall.create_time).all()
 			for _list in confess_list:
 				if _list.create_time.strftime('%Y-%m-%d') == now:
 					return self.send_fail('一天只能发布一条告白哦')
@@ -201,6 +239,8 @@ class ConfessionPublic(CustomerBaseHandler):
 			)
 		self.session.add(confession)
 		self.session.commit()
+		self.set_cookie('confess_new',str(1))
+		self.set_cookie('confess_shop_id',str(shop_id))
 		return self.send_success()	
 
 class ConfessionCenter(CustomerBaseHandler):
@@ -214,13 +254,14 @@ class ConfessionCenter(CustomerBaseHandler):
 		if shop:
 			shop_id = shop.id
 			shop_code = shop.shop_code
+			shop_name = shop.shop_name
 		else :
 			return self.send_fail('shop error')
-		pub_count = self.session.query(models.ConfessionWall).filter_by(customer_id = customer_id,shop_id=shop_id).count()
-		receive_count = self.session.query(models.ConfessionWall).filter_by(other_phone = self.current_user.accountinfo.phone).count()
+		pub_count = self.session.query(models.ConfessionWall).filter_by(customer_id = customer_id,shop_id=shop_id,status = 1).count()
+		receive_count = self.session.query(models.ConfessionWall).filter_by(other_phone = self.current_user.accountinfo.phone,shop_id=shop_id,status = 1).count()
 		comment_count =  self.session.query(models.ConfessionWall).\
-		join(models.ConfessionComment,models.ConfessionWall.id == models.ConfessionComment.wall_id).distinct().count()
-		return self.render('confession/center.html',pub_count=pub_count,receive_count=receive_count,comment_count=comment_count,shop_code=shop_code)
+		join(models.ConfessionComment,models.ConfessionWall.id == models.ConfessionComment.wall_id).filter(models.ConfessionWall.status == 1,models.ConfessionWall.shop_id == shop_id).distinct().count()
+		return self.render('confession/center.html',shop_name=shop_name,pub_count=pub_count,receive_count=receive_count,comment_count=comment_count,shop_code=shop_code)
 
 class ConfessionList(CustomerBaseHandler):
 	@tornado.web.authenticated

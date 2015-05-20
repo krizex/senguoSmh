@@ -32,6 +32,7 @@ img{border:none;}
 .group{*zoom:1;}
 .hide{display: none!important;}
 .ml20{margin-left: 20px;}
+.hand{cursor: pointer;}
 /*头部样式*/
 .backstage-header .line50{line-height:45px;}
 .backstage-header .height50{height:45px;}
