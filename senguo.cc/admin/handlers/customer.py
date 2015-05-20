@@ -1573,8 +1573,6 @@ class Order(CustomerBaseHandler):
 		qiniuToken = self.get_qiniu_token('comment',id)
 		return self.render("customer/order-list.html", context=dict(subpage='center',qiniuToken = qiniuToken))
 
-
-
 	@classmethod
 	def get_orderData(self,session,orders):
 		# print('orders',orders)
@@ -1618,7 +1616,7 @@ class Order(CustomerBaseHandler):
 			page = self.args['page']
 
 			offset = (page - 1) * page_size
-			orders = [x for x in self.current_user.orders if x.status == 1]
+			orders = [x for x in self.current_user.orders if x.status == 1 or x.status == -1]
 			# print(len(orders),'未处理订单 数量')
 			# woody
 			# for order in orders:

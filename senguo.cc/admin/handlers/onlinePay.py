@@ -42,6 +42,12 @@ class OnlineWxPay(CustomerBaseHandler):
 		pay_type    = order.pay_type
 		online_type = order.online_type
 		status      = order.status
+
+		charge_types = self.session.query(models.ChargeType).filter(
+			models.ChargeType.id.in_(eval(order.fruits).keys())).all()
+		mcharge_types = self.session.query(models.MChargeType).filter(
+			models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
+
 		if order.type == 2:
 			freight = order.shop.config.freight_on_time
 		else:
@@ -103,7 +109,8 @@ class OnlineWxPay(CustomerBaseHandler):
 			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice,\
 			shopName = shopName,create_date=create_date,receiver=receiver,phone=phone,address=address,\
 			send_time = send_time,remark=remark,pay_type=pay_type,online_type=online_type,freight = freight,\
-			goods = goods,sender_phone=sender_phone,sender_img=sender_img)
+			goods = goods,sender_phone=sender_phone,sender_img=sender_img,charge_types=charge_types,\
+			mcharge_types = mcharge_types)
 
 	def check_xsrf_cookie(self):
 		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -216,11 +223,10 @@ class OnlineWxPay(CustomerBaseHandler):
 
 class OrderDetail(CustomerBaseHandler):
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("url?:str")
+	@CustomerBaseHandler.check_arguments("alipayUrl?:str")
 	def get(self):
-		url = self.args['url']
-		
-		return self.render("customer/alipay-tip.html")
+		alipayUrl = self.args['alipayUrl']
+		return self.render("customer/alipay-tip.html",alipayUrl = alipayUrl)
 
 
 
@@ -245,6 +251,10 @@ class OnlineAliPay(CustomerBaseHandler):
 				return self.send_fail('order not found')
 			totalPrice = order.totalPrice
 			alipayUrl =  self.handle_onAlipay()
+			print(alipayUrl,'alipayUrl')
+
+			charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
+			mcharge_types = self.session.query(models.MChargeType).filter(models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
 
 			shop_id   = order.shop_id
 			shopName  = order.shop.shop_name
@@ -277,12 +287,12 @@ class OnlineAliPay(CustomerBaseHandler):
 				goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
 			for m in m_d:
 				goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
-				print(order_num,totalPrice,shopName,alipayUrl)
-				return self.render("fruitzone/payali.html",totalPrice = totalPrice,shopName = shopName,\
-					alipayUrl = alipayUrl,create_date=create_date,receiver=receiver,phone=phone,\
-					address=address,send_time=send_time,remark=remark,pay_type=pay_type,online_type=\
-					online_type,status=status,freight=freight,sender_phone=sender_phone,sender_img=\
-					sender_img,goods = goods)
+			return self.render("fruitzone/payali.html",totalPrice = totalPrice,shopName = shopName,\
+				alipayUrl = alipayUrl,create_date=create_date,receiver=receiver,phone=phone,\
+				address=address,send_time=send_time,remark=remark,pay_type=pay_type,online_type=\
+				online_type,status=status,freight=freight,sender_phone=sender_phone,sender_img=\
+				sender_img,goods = goods,order=order,charge_types=charge_types,mcharge_types\
+				=mcharge_types)
 		else:
 			return self.send_fail('404')
 	# @tornado.web.authenticated
