@@ -490,7 +490,6 @@ class Order(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments("order_type:int", "order_status:int","page:int","action?")
 	#order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
 	def get(self):
-		time.sleep(100)
 		order_type = self.args["order_type"]
 		order_status = self.args["order_status"]
 		page = self.args["page"]
