@@ -204,7 +204,8 @@ class ConfessionComment(CustomerBaseHandler):
 				author_info = self.session.query(models.Customer).filter_by( id = c.comment_author_id).first()
 				comment_author = ''
 				if author_info:
-					comment_author = author_info.accountinfo.nickname
+					if author_info.accountinfo:
+						comment_author = author_info.accountinfo.nickname
 				time = c.create_time.strftime('%Y-%m-%d')
 				comment.append({'id':c.id,'nickname':info.accountinfo.nickname,'time':time,'comment':c.comment,'type':c._type,\
 					'comment_author':comment_author})
