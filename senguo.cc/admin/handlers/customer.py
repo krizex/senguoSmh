@@ -1541,7 +1541,7 @@ class Cart(CustomerBaseHandler):
 				success_url = self.reverse_url('onlineAliPay')
 			else:
 				print(online_type,'wx or alipay?')
-			return self.send_success(order_id = order.id)
+			return self.send_success(order_id = order.id,success_url=success_url)
 		return self.send_success()
 
 class Notice(CustomerBaseHandler):
