@@ -907,7 +907,7 @@ class WxOauth2:
 	@classmethod
 	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
 		order_totalPrice,send_time,phone,address):
-		remark = "订单总价：" + str(order_totalPrice)+ '\n'
+		remark = "订单总价：" + str(order_totalPrice)+ '\n'\
 			   + "送达时间：" + send_time + '\n'\
 			   + "客户电话：" + phone + '\n'\
 			   + "送货地址：" + address  +'\n\n'\
