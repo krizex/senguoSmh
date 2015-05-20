@@ -78,7 +78,7 @@ function getOrder(url){
     $.getItem(url,function(data){
             $list_item=data;
             //商品列表item
-    	    getGoodsItem('/static/items/admin/order-goods-item.html?v=2015-03-7');
+    	    getGoodsItem('/static/items/admin/order-goods-item.html?v=2015-05-7');
     	    //员工列表item
     	    getStaffItem('/static/items/admin/order-staff-item.html?v=2015-03-7');
             orderItem(orders);
@@ -131,6 +131,7 @@ function orderItem(item){
         var type=item[i]['type'];
         var shop_new=item[i]['shop_new'];
         var del_reason=item[i]['del_reason'];
+        var nickname=item[i]['nickname'];
               
         if(!message) {
             $item.find('.order-message').hide();
@@ -147,7 +148,8 @@ function orderItem(item){
         if(shop_new!=1) {
             $item.find('.new').show();
         }
-        $item.find('.name').text(receiver);
+        $item.find('.name').text(nickname).attr('href','/admin/follower?action=search&&order_by=time&&page=0&&wd='+nickname);
+        $item.find('.receiver').text(receiver);
         $item.attr({'data-id':id,'data-type':type});
         $item.find('.send-time').text(send_time);
         $item.find('.order-code').text(num);

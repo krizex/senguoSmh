@@ -24,6 +24,7 @@ handlers = [
 	(r"/lovewall/public/(\w+)", handlers.activity.ConfessionPublic, {}, "ConfessionPublic"),
 	(r"/lovewall/center/(\w+)", handlers.activity.ConfessionCenter, {}, "ConfessionCenter"),
 	(r"/lovewall/list/(\w+)", handlers.activity.ConfessionList, {}, "ConfessionList"),
+	(r"/lovewall/comment/(\w+)", handlers.activity.ConfessionComment, {}, "ConfessionComment"),
 	(r"/lovewall/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
 	
 	(r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),

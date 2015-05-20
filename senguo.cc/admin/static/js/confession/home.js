@@ -40,13 +40,13 @@ $(document).ready(function(){
                 $this.find('.num').text(num);
             }
             else {
-                return alert(res.error_text);
+                return noticeBox(res.error_text);
             }
         },function(){
-            return alert('网络好像不给力呢~ ( >O< ) ~');
+            return noticeBox('网络好像不给力呢~ ( >O< ) ~');
         },
         function(){
-            return alert('服务器貌似出错了~ ( >O< ) ~');
+            return noticeBox('服务器貌似出错了~ ( >O< ) ~');
         }    
     );
 }).on('click','.filter li',function(){
@@ -120,13 +120,13 @@ function getData(page){
 			                finished=true;
 			}
 			else {
-				return alert(res.error_text);
+				return noticeBox(res.error_text);
 			}
 		},function(){
-			return alert('网络好像不给力呢~ ( >O< ) ~');
+			return noticeBox('网络好像不给力呢~ ( >O< ) ~');
 		},
 		function(){
-			return alert('服务器貌似出错了~ ( >O< ) ~');
+			return noticeBox('服务器貌似出错了~ ( >O< ) ~');
 		}    
 	);
 }
@@ -145,12 +145,13 @@ function getData2(page){
                 finished=true;
 	}
 	else {
-		return alert(res.error_text);
+		return noticeBox(res.error_text);
 	}
     }})
 };
 
 function data(datalist){
+            var shop_code=$('#data').attr('data-code');
             if(datalist&&datalist.length==0){
                 $('.loading').html("~没有更多了呢 ( > < )~").show();
                 return false;
@@ -160,26 +161,16 @@ function data(datalist){
             }
             for(var i in datalist){
                 var item ='<li class="{{sty}} font14" data-id="{{id}}">'+
-                		'<div class="top">'+
-                			'{{user}}  {{if name }}TO  {{name}} {{/if}}'+
+                		'<div class="top group">'+
+                			'<span>{{user}}  {{if name }}TO  {{name}} {{/if}}</span>'+
+                                                     '<span class="fr ml10">{{floor}}楼</span>'+
                 		'</div>'+
-                		'<div class="confession">{{confession}}</div>'+
-                		'<p class="group mt10"><span class="fr ml10">{{floor}}楼</span><span class="fr">{{time}}</span></p>'+
-                                        '<p class="group mt10"><a href="javascript:;" class="fr great">点赞(<span class="num">{{great}}</span>)</a></p>'+
-		// '<div class="box-left fl txt-ac">'+
-		// 	'<img src="{{imgurl}}" class="img"/>'+
-		// 	'<p>{{user}}</p>'+
-		// 	'<p>{{time}}</p>'+
-		// '</div>'+
-		// '<div class="box-right fl">'+
-		// 	'<p class="group mb10"><span class="fl">TO:{{name}}</span><span class="fr">{{floor}}楼</span></p>'+
-		// 	'<div class="bg-white mb10 confession">{{confession}}</div>'+
-		// 	'<div class="group">'+
-		// 		'<a href="javascript:;" class="fr ml10 text-grey3">点赞({{great}})</a>'+
-		// 		'<a href="javascript:;" class="fr ml10 text-grey3">评论({{comment}})</a>'+
-		// 		'<a href="javascript:;" class="fr ml10 text-grey3">猜</a>'+
-		// 	'</div>'+
-		// '</div>'+
+                		'<div class="confession">'+
+                                            '<p><a href="/lovewall/comment/'+shop_code+'?num={{id}}">{{confession}}</a></p>'+
+                                            '<p class="group mt10"><span class="fr">{{time}}</span></p>'+
+                                            '<p class="group mt10"><a href="javascript:;" class="fr great ml10">点赞(<span class="num">{{great}}</span>)</a>'+
+                                             '<a href="/lovewall/comment/'+shop_code+'?num={{id}}" class="comment fr text-grey3">评论(<span class="num">{{comment}}</span>)</a></p>'+
+                                        '</div>'+                                                   
 	'</li>';
                 var render = template.compile(item);
                 var id=datalist[i]['id'];

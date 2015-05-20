@@ -1,0 +1,56 @@
+{% extends 'base.html'%}
+{% block title %}{{shop_name}}-告白墙-评论详情{% end %}
+{% block content %}
+ <header class="detail-header text-white center-block">
+    <a href="{{reverse_url('ConfessionHome',shop_code)}}" class="return-btn bg_change">&nbsp;</a>
+    <span class="title font16">告白墙-评论详情</span>
+</header>
+<div class="bg-white confess-info" data-code="{{shop_code}}" data-id="{{confess[0]['id']}}">
+	<div class="mt50 group info">
+		<div class="fl img">
+			<img src="{{confess[0]['imgurl']}}">
+		</div>
+		<div class="fl other ml10">
+			<p class="font14 text-pink">{{confess[0]['user']}}</p>
+			<p class="mt5">{{confess[0]['time']}}</p>
+		</div>
+	</div>
+	<div class="confess group mt10">
+		{{confess[0]['confession']}}
+	</div>
+	<div class="group some-btn mt10">
+		<a href="javascript:;" class="fr comment-btn ml10 text-grey6"><i class="fl"></i><span class="num">{{confess[0]['comment']}}</span></a>
+		<a href="javascript:;" class="fr  great-btn text-grey6 great"><i class="fl"></i><span class="num">{{confess[0]['great']}}</span></a>
+	</div>
+	<div class="mt10 bg-pink2 p10 comment-list {% if comment == [] %} hidden{% end %}">
+		<ul>
+
+			{% for con in comment %}
+			<li data-id="{{con['id']}}"><span class="text-pink"><span class="name">{{con['nickname']}}</span>{% if con['type'] == 1%}回复{{con['comment_author']}}{% end %}：</span><span class="mr10">{{con['comment']}}</span><span class="text-grey9 time">{{con['time']}}</span></li>
+			{% end %}
+			
+		</ul>
+	</div>
+</div>
+<div class="group comment-box bg-white">
+	 <input class="comment-text group" placeholder="我也评论一句..."/>	
+	<button class="btn  sub-comment mt10 text-white bg-pink fr">评论</button>
+</div>
+<div class="modal fade" id="replay_box">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-top"><img src="/static/images/info_top.png"/></div>
+            <div class="modal-header clearfix bg_change">
+                <button type="button" class="close dismiss">✕</button>
+            </div>
+            <div class="modal-body font14 group">
+            		<input class="replay-text group" placeholder="我也评论一句..."/>
+            		 <div class="modal-warn mt5 txt-ac"></div>
+            		<button class="btn  sub-replay mt20 text-white bg-pink"> 回复</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}{% block bottom %}
+<script src="{{static_url('js/confession/comment.js')}}"></script>
+{% end %}

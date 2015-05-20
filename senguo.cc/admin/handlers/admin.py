@@ -587,6 +587,8 @@ class Order(AdminBaseHandler):
 			d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["sent_time"] = order.send_time
+			info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
+			d["nickname"] = info.accountinfo.nickname
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
 				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id,models.HireLink.active == 1)).all()
 			d["shop_new"] = 0

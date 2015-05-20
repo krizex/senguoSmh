@@ -1472,6 +1472,8 @@ class ConfessionComment(MapBase, _CommonApi):
 	customer_id = Column(Integer, ForeignKey(Customer.id),nullable=False)
 	comment = Column(String(500))
 	create_time = Column(DateTime,default = func.now())
+	_type = Column(Integer,default = 0) #0: 评论  1:回复
+	comment_author_id = Column(Integer,default = 0)#评论作者id
 
 class ConfessionGreat(MapBase, _CommonApi):
 	__tablename__ = 'confession_great'
