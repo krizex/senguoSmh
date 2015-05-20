@@ -52,7 +52,7 @@ $(document).ready(function(){
     $('#del-ok').attr({'disabled':true});
     changeComment(comment);
 }).on("click","#cancel-order",function(){
-    confirmBox('确认取消该订单吗？//(ㄒoㄒ)//',"sure-order");
+    confirmBox('确认取消该订单吗？//(ㄒoㄒ)//','','',"sure-order");
 }).on("click","#sure-order",function(){
     var order_id = $("#cancel-order").attr("data-id");
     cancelOrder(order_id);
@@ -137,8 +137,8 @@ function changeComment(comment){
 )
 }
 function cancelOrder(id){
-    var order_id = id;
-    var url='';
+    var order_id = parseInt(id);
+    var url='/customer/order';
     var action='cancel_order';
     var data={
         order_id:order_id
