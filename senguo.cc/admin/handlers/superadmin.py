@@ -891,7 +891,7 @@ class Balance(SuperBaseHandler):
 			persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type = 3).count()
 			if q[0][0]:
 				total = q[0][0]
-			total = format(q[0][0],'.2f')
+			total = format(total,'.2f')
 			count = q[0][1]
 			times = count
 		elif action == 'cash_history':
