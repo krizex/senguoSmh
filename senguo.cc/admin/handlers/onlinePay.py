@@ -169,7 +169,7 @@ class OnlineWxPay(CustomerBaseHandler):
 				goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 			goods = str(goods)[1:-1]
 			print(goods,'goods到底装的什么')
-			order_totalPrice = float('%.1f'% totalPrice)
+			order_totalPrice = float('%.2f'% totalPrice)
 			print("[提交订单]订单总价：",order_totalPrice)
 			# send_time     = order.get_sendtime(session,order.id)
 			send_time = order.send_time
@@ -345,7 +345,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		goods = str(goods)[1:-1]
 		print(goods,'goods到底装的什么')
-		order_totalPrice = float('%.1f'% totalPrice)
+		order_totalPrice = float('%.2f'% totalPrice)
 		print("[提交订单]订单总价：",order_totalPrice)
 		# send_time     = order.get_sendtime(session,order.id)
 		send_time = order.send_time
@@ -434,7 +434,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		goods = str(goods)[1:-1]
 		print(goods,'goods到底装的什么')
-		order_totalPrice = float('%.1f'% totalPrice)
+		order_totalPrice = float('%.2f'% totalPrice)
 		print("[提交订单]订单总价：",order_totalPrice)
 		# send_time     = order.get_sendtime(session,order.id)
 		send_time = order.send_time
