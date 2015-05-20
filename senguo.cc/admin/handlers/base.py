@@ -19,20 +19,48 @@ import requests
 
 import threading
 
-# import time
-# import random
-# # import urllib2
-# import threading
-# from urllib import quote
-# import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial, wraps
 
+EXECUTOR = ThreadPoolExecutor(max_workers=4)
 
-# try:
-#     import pycurl
-#     from cStringIO import StringIO
-# except ImportError:
-#     pycurl = None
+def unblock(f):
 
+	@tornado.web.asynchronous
+	@wraps(f)
+	def wrapper(*args, **kwargs):
+		self = args[0]
+
+		def callback(future):
+			# pass
+			self.finish()
+
+		EXECUTOR.submit(
+			partial(f, *args, **kwargs)
+		).add_done_callback(
+			lambda future: tornado.ioloop.IOLoop.instance().add_callback(
+				partial(callback, future)))
+
+	return wrapper
+
+def get_unblock(f):
+
+	@tornado.web.asynchronous
+	@wraps(f)
+	def wrapper(*args, **kwargs):
+		self = args[0]
+
+		def callback(future):
+			pass
+			# self.finish()
+
+		EXECUTOR.submit(
+			partial(f, *args, **kwargs)
+		).add_done_callback(
+			lambda future: tornado.ioloop.IOLoop.instance().add_callback(
+				partial(callback, future)))
+
+	return wrapper
 # 4.14 woody
 class Pysettimer(threading.Thread):
 	def __init__(self,function,args = None ,timeout = 1 ,is_loop = False):
@@ -233,8 +261,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		user_id = self.get_secure_cookie(self.__account_cookie_name__) or b'0'
 		user_id = int(user_id.decode())
 		print("[用户信息]当前用户ID：",user_id)
-        # print(type(self))
-        # print(self.__account_model__)
+		# print(type(self))
+		# print(self.__account_model__)
 
 		if not user_id:
 			self._user = None
@@ -874,16 +902,19 @@ class WxOauth2:
 	@classmethod
 	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,\
 		order_totalPrice,send_time,goods,phone,address):
-		remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n' + "商品详情："  \
-		+ goods +'\n'  + "顾客电话："  + phone + '\n' + "送货地址：" + address +  '\n\n'  + \
-		'请及时登录森果后台处理订单。'
+		remark = "订单总价：" + str(order_totalPrice) + '\n'\
+			   + "送达时间：" + send_time + '\n'\
+			   + "客户电话：" + phone + '\n'\
+			   + "送货地址：" + address + '\n'\
+			   + "商品详情：" + goods + '\n\n'\
+			   + "请及时登录森果后台处理订单。"
 		postdata = {
 			'touser' : touser,
 			'template_id':"5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg",
 			"url":order_url,
 			"topcolor":"#FF0000",
 			"data":{
-				"first":{"value":"管理员{0}您好，店铺{1}收到了新的订单！".format(admin_name,shop_name),"color": "#173177"},
+				"first":{"value":"管理员 {0} 您好，店铺『{1}』收到了新的订单！".format(admin_name,shop_name),"color": "#173177"},
 				"tradeDateTime":{"value":str(create_date),"color":"#173177"},
 				"orderType":{"value":order_type,"color":"#173177"},
 				"customerInfo":{"value":customer_name,"color":"#173177"},
@@ -904,8 +935,11 @@ class WxOauth2:
 	@classmethod
 	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
 		order_totalPrice,send_time,phone,address):
-		remark = "订单总价：" + str(order_totalPrice)+ '\n' + "送达时间：" + send_time + '\n'  + "顾客电话："  + \
-		phone + '\n' + "送货地址：" + address  +'\n\n' + '请及时配送订单。'
+		remark = "订单总价：" + str(order_totalPrice)+ '\n'\
+			   + "送达时间：" + send_time + '\n'\
+			   + "客户电话：" + phone + '\n'\
+			   + "送货地址：" + address  +'\n\n'\
+			   + "请及时配送订单。"
 		order_type_temp = int(order_type)
 		order_type = "即时送" if order_type_temp == 1 else "按时达"
 		postdata = {
@@ -913,7 +947,7 @@ class WxOauth2:
 			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
 			'url':staff_order_url,
 			"data":{
-				"first":{"value":"配送员{0}您好，店铺{1}有新的订单需要配送。".format(staff_name,shop_name),"color": "#173177"},
+				"first":{"value":"配送员 {0} 您好，店铺『{1}』有新的订单需要配送。".format(staff_name,shop_name),"color": "#173177"},
 				"tradeDateTime":{"value":str(create_date),"color":"#173177"},
 				"orderType":{"value":order_type,"color":"#173177"},
 				"customerInfo":{"value":customer_name,"color":"#173177"},

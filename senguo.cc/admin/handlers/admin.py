@@ -1,4 +1,4 @@
-from handlers.base import AdminBaseHandler,WxOauth2
+from handlers.base import AdminBaseHandler,WxOauth2,unblock,get_unblock
 import dal.models as models
 import tornado.web
 from settings import *
@@ -486,6 +486,7 @@ class Order(AdminBaseHandler):
 	# todo: 当订单越来越多时，current_shop.orders 会不会越来越占内存？
 
 	@tornado.web.authenticated
+	#@get_unblock
 	@AdminBaseHandler.check_arguments("order_type:int", "order_status:int","page:int","action?")
 	#order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
 	def get(self):
@@ -495,9 +496,6 @@ class Order(AdminBaseHandler):
 		page_size = 10
 		count = 0
 		page_sum = 0
-
-		
-
 		orders = []
 		if self.args['action'] == "realtime":  #订单管理页实时获取未处理订单的接口
 			atonce,ontime,new_order_sum = 0,0,0
@@ -612,6 +610,7 @@ class Order(AdminBaseHandler):
 
 
 	@tornado.web.authenticated
+	@unblock
 	@AdminBaseHandler.check_arguments("action", "data")
 	def post(self):
 		action = self.args["action"]

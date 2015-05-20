@@ -890,7 +890,8 @@ class Balance(SuperBaseHandler):
 			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type =3).all()
 			persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type = 3).count()
 			if q[0][0]:
-				total =q[0][0]
+				total = q[0][0]
+			total = format(total,'.2f')
 			count = q[0][1]
 			times = count
 		elif action == 'cash_history':
