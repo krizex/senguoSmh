@@ -12,6 +12,31 @@ import json
 from libs.msgverify import gen_msg_token,check_msg_token
 from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
 
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial, wraps
+
+EXECUTOR = ThreadPoolExecutor(max_workers=4)
+
+def unblock(f):
+
+    @tornado.web.asynchronous
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        self = args[0]
+
+        def callback(future):
+            self.write(future.result())
+            self.finish()
+
+        EXECUTOR.submit(
+            partial(f, *args, **kwargs)
+        ).add_done_callback(
+            lambda future: tornado.ioloop.IOLoop.instance().add_callback(
+                partial(callback, future)))
+
+    return wrapper
+
+
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
 		self._action = action
@@ -1490,7 +1515,7 @@ class Cart(CustomerBaseHandler):
 			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 			
 		goods = str(goods)[1:-1]
-		order_totalPrice = float('%.1f'% totalPrice)
+		order_totalPrice = float('%.2f'% totalPrice)
 		# print("[提交订单]订单总价：",order_totalPrice)
 		# send_time     = order.get_sendtime(session,order.id)
 		send_time = order.send_time
@@ -1541,7 +1566,7 @@ class Cart(CustomerBaseHandler):
 				success_url = self.reverse_url('onlineAliPay')
 			else:
 				print(online_type,'wx or alipay?')
-			return self.send_success(order_id = order.id)
+			return self.send_success(order_id = order.id,success_url=success_url)
 		return self.send_success()
 
 class Notice(CustomerBaseHandler):
@@ -2315,122 +2340,21 @@ class InsertData(CustomerBaseHandler):
 	def get(self):
 		from sqlalchemy import create_engine, func, ForeignKey, Column
 		session = self.session
-		# print(fun)
-		# import pingpp
+		
+		
+
+	
 		# try:
 		# 	shop_list = self.session.query(models.Shop).all()
 		# except:
-		# 	self.send_fail(" get shop error")
+		# 	print('no shop at all')
 		# if shop_list:
 		# 	for shop in shop_list:
-		# 		if shop.shop_start_timestamp == None:
-		# 			shop.shop_start_timestamp = shop.create_date_timestamp
-		# 	self.session.commit()
-
-		# try:
-		# 	accountinfo_list = self.session.query(models.Accountinfo).all()
-		# except:
-		# 	self.send_fail("get accountinfo error")
-		# if accountinfo_list:
-		# 	for accountinfo in accountinfo_list:
-		# 		if accountinfo.headimgurl_small is None:
-		# 			if accountinfo.headimgurl:
-		# 				print(accountinfo.headimgurl)
-		# 				accountinfo.headimgurl_small = accountinfo.headimgurl[0:-1]+'132'
-
-		# 	self.session.commit()
-
-		# orderlist = self.session.query(models.Order).all()
-		# if not orderlist:
-		# 	self.send_fail("orderlist error")
-		# if orderlist:
-		# 	for order in orderlist:
-		# 		# if order.send_time =='0' :
-		# 			# print('login')
-		# 		create_date =  order.create_date
-		# 		second_date = create_date + datetime.timedelta(days = 1)
-		# 		if order.type == 2: #按时达
-		# 			if order.today == 1:
-		# 				order.send_time = create_date.strftime('%Y-%m-%d') +' '+\
-		# 				(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
-		# 			elif order.today == 2:
-		# 				order.send_time = second_date.strftime('%Y-%m-%d')+' '+\
-		# 				(order.start_time).strftime('%H:%M')+'~'+(order.end_time).strftime('%H:%M')
-		# 		elif order.type == 1:#立即送
-		# 			later = order.create_date + datetime.timedelta(minutes = 30)
-		# 			order.send_time =  create_date.strftime('%Y-%m-%d %H:%M') +'~'+later.strftime('%H:%M')
-		# 			#print(order.send_time)
-		# 		# else:
-		# 		# 	print('Not NULL')
-		# 	self.session.commit()
-
-		# try:
-		# 	accountinfo_count = self.session.query(models.Accountinfo).count()
-		# except:
-		# 	return self.send_fail('accountinfo_list error')
-		# page = int(accountinfo_count/200)  if accountinfo_count % 200 == 0 else int(accountinfo_count/200) +1
-		# print(accountinfo_count,page,'******22222')
-		# n = 0
-		# for x in range(page):
-		# 	offset  = x * 200
-		# 	n = n + 1
-		# 	print('count',n)
-		# 	accountinfo_list = self.session.query(models.Accountinfo).offset(offset).limit(200)
-		# 	if accountinfo_list:
-		# 		for accountinfo in accountinfo_list:
-		# 			customer_id = accountinfo.id
-		# 			order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,or_(models.Order.status == 5,\
-		# 				models.Order.status == 6 ,models.Order.status == 10))).all()
-		# 			# session.close()
-		# 			# print(len(order_list))
-		# 			if order_list:
-		# 				accountinfo.is_new = 1
-		# 				#print(accountinfo.is_new)
-		# 				# self.session.commit()
-		# try:
-		# 	follow_info= session.query(models.CustomerShopFollow).count()
-		# except:
-		# 	return self.send_fail('follow_list error')
-		# f_page = int(follow_info/100)  if follow_info % 100 == 0 else int(follow_info/100) +1
-		# n=0
-		# for x in range(f_page):
-		# 	offset  = x * 100
-		# 	n=n+1
-		# 	print(n)
-		# 	follow_list = self.session.query(models.CustomerShopFollow).offset(offset).limit(100)
-		# 	if follow_list:
-		# 		for follow in follow_list:
-		# 			customer_id = follow.customer_id
-		# 			shop_id = follow.shop_id
-		# 			order_list = session.query(models.Order).filter(and_(models.Order.customer_id == customer_id,models.Order.shop_id == shop_id,or_(models.Order.status == 5,\
-		# 				models.Order.status == 6 ,models.Order.status == 10))).all()
-		# 			# session.close()
-		# 			if order_list:
-		# 				follow.shop_new = 1
-
-		# try:
-		# 	config_info = self.session.query(models.Config).count()
-		# except:
-		# 	return self.send_fail('config_info error')
-		# c_page = int(config_info/200)  if config_info % 200 == 0 else int(config_info/200) +1
-		# for x in range(c_page):
-		# 	offset  = x * 200
-		# 	config_list = self.session.query(models.Config).offset(offset).limit(200)
-		# 	if config_list:
-		# 		for config in config_list:
-		# 			if config.intime_period == 0 or config.intime_period == None:
-		# 				config.intime_period = 30
-
-		try:
-			shop_list = self.session.query(models.Shop).all()
-		except:
-			print('no shop at all')
-		if shop_list:
-			for shop in shop_list:
-				shop_id = shop.id
-				market = models.Marketing( id = shop_id )
-				self.session.add(market)
-				self.session.commit()
+		# 		shop_id = shop.id
+		# 		market = models.Marketing( id = shop_id )
+		# 		self.session.add(market)
+		# 		self.session.commit()
+		time.sleep(100)
 		return self.send_success()
 
 

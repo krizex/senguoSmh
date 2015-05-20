@@ -31,6 +31,36 @@ class OnlineWxPay(CustomerBaseHandler):
 			return self.send_fail('shop not found')
 		shopName = shop.shop_name
 		jsApi  = JsApi_pub()
+
+		# order detail
+		create_date = order.create_date
+		receiver    = order.receiver
+		phone       = order.phone
+		address     = order.address_text
+		send_time   = order.send_time
+		remark      = order.remark
+		pay_type    = order.pay_type
+		online_type = order.online_type
+		status      = order.status
+		if order.type == 2:
+			freight = order.shop.config.freight_on_time
+		else:
+			freight = order.shop.config.freight_now
+		staff_id = order.SH2_id
+		staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id).first()
+		if staff_info is not None:
+				sender_phone = staff_info.phone
+				sender_img = staff_info.headimgurl_small
+		else:
+				sender_phone =None
+				sender_img = None
+		goods = []
+		f_d = eval(order.fruits)
+		m_d = eval(order.mgoods)
+		for f in f_d:
+			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+		for m in m_d:
+			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('onlineWxPay')
 		print(path , 'redirect_uri is Ture?')
@@ -71,7 +101,9 @@ class OnlineWxPay(CustomerBaseHandler):
 			signature = self.signature(noncestr,timestamp,path_url)
 		return self.render("fruitzone/paywx.html",renderPayParams = renderPayParams,wxappid = wxappid,\
 			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice,\
-			shopName = shopName)
+			shopName = shopName,create_date=create_date,receiver=receiver,phone=phone,address=address,\
+			send_time = send_time,remark=remark,pay_type=pay_type,online_type=online_type,freight = freight,\
+			goods = goods,sender_phone=sender_phone,sender_img=sender_img)
 
 	def check_xsrf_cookie(self):
 		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -169,7 +201,7 @@ class OnlineWxPay(CustomerBaseHandler):
 				goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 			goods = str(goods)[1:-1]
 			print(goods,'goods到底装的什么')
-			order_totalPrice = float('%.1f'% totalPrice)
+			order_totalPrice = float('%.2f'% totalPrice)
 			print("[提交订单]订单总价：",order_totalPrice)
 			# send_time     = order.get_sendtime(session,order.id)
 			send_time = order.send_time
@@ -178,7 +210,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
 				customer_name,order_totalPrice,send_time,goods,phone,address)
 			# send message to customer
-			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice)
+			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 			return self.write('success')
 
 
@@ -201,17 +233,47 @@ class OnlineAliPay(CustomerBaseHandler):
 			if not order:
 				return self.send_fail('order not found')
 			totalPrice = order.totalPrice
-			# shop_id   = order.shop_id
-			# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-			# if not shop:
-			# 	return self.send_fail('shop not found')
-			shopName = order.shop.shop_name
 			alipayUrl =  self.handle_onAlipay()
-			print(order_num,totalPrice,shopName,alipayUrl)
-			return self.render("fruitzone/payali.html",totalPrice = totalPrice,shopName = shopName,\
-				alipayUrl = alipayUrl)
+
+			shop_id   = order.shop_id
+			shopName  = order.shop.shop_name
+			# order detail
+			create_date = order.create_date
+			receiver    = order.receiver
+			phone       = order.phone
+			address     = order.address_text
+			send_time   = order.send_time
+			remark      = order.remark
+			pay_type    = order.pay_type
+			online_type = order.online_type
+			status      = order.status
+			if order.type == 2:
+				freight = order.shop.config.freight_on_time
+			else:
+				freight = order.shop.config.freight_now
+			staff_id = order.SH2_id
+			staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id).first()
+			if staff_info is not None:
+					sender_phone = staff_info.phone
+					sender_img = staff_info.headimgurl_small
+			else:
+					sender_phone =None
+					sender_img = None
+			goods = []
+			f_d = eval(order.fruits)
+			m_d = eval(order.mgoods)
+			for f in f_d:
+				goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+			for m in m_d:
+				goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+				print(order_num,totalPrice,shopName,alipayUrl)
+				return self.render("fruitzone/payali.html",totalPrice = totalPrice,shopName = shopName,\
+					alipayUrl = alipayUrl,create_date=create_date,receiver=receiver,phone=phone,\
+					address=address,send_time=send_time,remark=remark,pay_type=pay_type,online_type=\
+					online_type,status=status,freight=freight,sender_phone=sender_phone,sender_img=\
+					sender_img,goods = goods)
 		else:
-			return self.send_fail('4044')
+			return self.send_fail('404')
 	# @tornado.web.authenticated
 	def post(self):
 		if self._action == 'AliNotify':
@@ -238,6 +300,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			print(order)
 		order_id = order.id
 		price    = order.totalPrice
+
 		try:
 			url = self.create_alipay_url(price,order_id)
 		except Exception as e:
@@ -345,7 +408,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		goods = str(goods)[1:-1]
 		print(goods,'goods到底装的什么')
-		order_totalPrice = float('%.1f'% totalPrice)
+		order_totalPrice = float('%.2f'% totalPrice)
 		print("[提交订单]订单总价：",order_totalPrice)
 		# send_time     = order.get_sendtime(session,order.id)
 		send_time = order.send_time
@@ -434,7 +497,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		goods = str(goods)[1:-1]
 		print(goods,'goods到底装的什么')
-		order_totalPrice = float('%.1f'% totalPrice)
+		order_totalPrice = float('%.2f'% totalPrice)
 		print("[提交订单]订单总价：",order_totalPrice)
 		# send_time     = order.get_sendtime(session,order.id)
 		send_time = order.send_time
