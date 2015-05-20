@@ -221,6 +221,17 @@ class OnlineWxPay(CustomerBaseHandler):
 			return self.write('success')
 
 
+class OrderDetail(CustomerBaseHandler):
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("url?:str")
+	def get(self):
+		url = self.args['url']
+		
+		return self.render("customer/alipay-tip.html")
+
+
+
+
 
 class OnlineAliPay(CustomerBaseHandler):
 	def initialize(self,action):

@@ -1,4 +1,4 @@
-from handlers.base import CustomerBaseHandler,WxOauth2
+from handlers.base import CustomerBaseHandler,WxOauth2,unblock,get_unblock
 from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
 import dal.models as models
 import tornado.web
@@ -11,31 +11,6 @@ import base64
 import json
 from libs.msgverify import gen_msg_token,check_msg_token
 from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
-
-from concurrent.futures import ThreadPoolExecutor
-from functools import partial, wraps
-
-EXECUTOR = ThreadPoolExecutor(max_workers=4)
-
-def unblock(f):
-
-    @tornado.web.asynchronous
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        self = args[0]
-
-        def callback(future):
-            self.write(future.result())
-            self.finish()
-
-        EXECUTOR.submit(
-            partial(f, *args, **kwargs)
-        ).add_done_callback(
-            lambda future: tornado.ioloop.IOLoop.instance().add_callback(
-                partial(callback, future)))
-
-    return wrapper
-
 
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
@@ -720,9 +695,8 @@ class ShopComment(CustomerBaseHandler):
 
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
+	@get_unblock
 	def get(self, shop_code):
-		# print('self',self)
-		# print(self.request.remote_ip,'ip?')
 		w_follow = True
 		fruits=''
 		dry_fruits=''
@@ -1297,6 +1271,7 @@ class Cart(CustomerBaseHandler):
 						  shop_new=shop_new,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
+	@unblock
 	@CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
 										 "address_id:int", "message:str", "type:int", "tip?:int",
 										 "today:int",'online_type?:str')
@@ -1630,6 +1605,7 @@ class Order(CustomerBaseHandler):
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data?","page?:int",'imgUrl?:str')
+	@unblock
 	def post(self):
 		# print(self,'self is what?')
 		page_size = 10
@@ -1637,6 +1613,7 @@ class Order(CustomerBaseHandler):
 		session = self.session
 		if action == "unhandled":
 			page = self.args['page']
+
 			offset = (page - 1) * page_size
 			orders = [x for x in self.current_user.orders if x.status == 1 or x.status == -1]
 			# print(len(orders),'未处理订单 数量')
@@ -2337,6 +2314,7 @@ class AlipayNotify(CustomerBaseHandler):
 class InsertData(CustomerBaseHandler):
 	@tornado.web.authenticated
 	# @CustomerBaseHandler.check_arguments("code?:str")
+	@unblock
 	def get(self):
 		from sqlalchemy import create_engine, func, ForeignKey, Column
 		session = self.session
@@ -2354,7 +2332,8 @@ class InsertData(CustomerBaseHandler):
 		# 		market = models.Marketing( id = shop_id )
 		# 		self.session.add(market)
 		# 		self.session.commit()
-		time.sleep(100)
+		time.sleep(10)
+		print("终于睡醒了")
 		return self.send_success()
 
 
