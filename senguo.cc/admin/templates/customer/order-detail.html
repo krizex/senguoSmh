@@ -16,9 +16,9 @@
             <div class="order-wawa">
                 <a href="tel:{{order.phone}}">
                 {% if order.status == -1%}
-                <img src="/static/images/TDSG.PNG" alt="配送员头像"/>
+                <img src="/static/images/TDSG.png" alt="配送员头像"/>
                 {% else %}
-                <img src="{{order.sender_img}} or '/static/images/TDSG.PNG'" alt="配送员头像"/>
+                <img src="{{order.sender_img}} or '/static/images/TDSG.png'" alt="配送员头像"/>
                 {% end %}
                 </a>
             </div>
