@@ -170,7 +170,7 @@ function data(datalist){
                                             '<p class="group mt10"><a href="javascript:;" class="fr great ml10">点赞(<span class="num">{{great}}</span>)</a>'+
                                              '<a href="/lovewall/comment/'+shop_code+'?num={{id}}" class="comment fr text-grey3">评论(<span class="num">{{comment}}</span>)</a></p>'+
                                         '</div>'+        
-                                        '<p class="group mt10"><span class="fr">{{time}}</span></p>'+                                           
+                                        '<p class="group mt5"><span class="fr">{{time}}&nbsp;&nbsp;{{floor}}楼</span></p>'+                                           
 	'</li>';
                 var render = template.compile(item);
                 var id=datalist[i]['id'];
