@@ -163,7 +163,6 @@ function data(datalist){
                 var item ='<li class="{{sty}} font14" data-id="{{id}}">'+
                 		'<div class="top group">'+
                 			'<span>{{user}}  {{if name }}TO  {{name}} {{/if}}</span>'+
-                                                     '<span class="fr ml10">{{floor}}楼</span>'+
                 		'</div>'+
                 		'<div class="confession">'+
                                             '<p><a href="/lovewall/comment/'+shop_code+'?num={{id}}">{{confession}}</a></p>'+
