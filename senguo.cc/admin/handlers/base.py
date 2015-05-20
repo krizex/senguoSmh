@@ -878,7 +878,7 @@ class WxOauth2:
 			   + "送达时间：" + send_time + '\n'\
 			   + "客户电话：" + phone + '\n'\
 			   + "送货地址：" + address + '\n'\
-			   + "商品详情：" + goods + '\n\n'\ 
+			   + "商品详情：" + goods + '\n\n'\
 			   + "请及时登录森果后台处理订单。"
 		postdata = {
 			'touser' : touser,
