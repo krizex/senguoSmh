@@ -132,7 +132,7 @@ h1{font-size:18px;}
 
 /*home*/
 .filter{width:100%;}
-.filter li{width:50%;margin:5px 0;}
+.filter li{width:50%;padding:5px 0;background:#fff;}
 .filter li a{display:inline-block;width:30px;padding:3px 0;text-align:center;color:#999;margin:0 10px;}
 .filter li.active a{color:#E17163;border-color:#E17163;}
 
@@ -147,7 +147,7 @@ h1{font-size:18px;}
 .to-market{display:inline-block;position:fixed;left:5px;bottom:5px;width:40px;height:40px;text-align:center;background:#fff;border-radius:50%;}
 .to-market i{display:inline-block;background:url('/static/svg/icon_list-2.png') no-repeat;background-position:0 -24px;width:21px;height:21px;margin:0 auto;background-size:140px;margin-top:10px;overflow:hidden;}
 
-.cofession-list li{width:100%;float:left;margin-bottom:10px;position:relative;overflow:hidden;}
+.cofession-list li{width:100%;float:left;margin-top:10px;position:relative;overflow:hidden;}
 .cofession-list li .top{background-size:25px 33px !important;height:33px;line-height:33px;padding:0 5px;position:absolute;width:100%;}
 .cofession-list .confession{min-height:60px;padding:40px 10px 10px;}
 .cofession-list li.sty0{color:#3A3736;}
@@ -188,9 +188,9 @@ h1{font-size:18px;}
 .some-btn{line-height:20px;padding-right:10px;}
 .great-btn i{display:inline-block;width:20px;height:20px;background:url('/static/confess/great.png') no-repeat;background-size:19px;margin-right:5px;}
 .comment-btn i{display:inline-block;width:20px;height:20px;background:url('/static/confess/comment.png') no-repeat;background-size:20px;margin-right:5px;}
-.comment-box{margin:0 auto;padding:10px;}
-.comment-text{border:1px solid #ddd;height:30px;padding:5px;}
-.sub-comment{width:80px;padding:8px;}
+.comment-box{margin:0 auto;padding:5px;position:fixed;bottom:0;width:100%;max-width:800px;min-width:320px;overflow:hidden;border:1px solid #ddd;background:#f9f9f9;}
+.comment-text{border:1px solid #ddd;height:30px;padding:8px;width:78%;}
+.sub-comment{width:20%;height:30px;padding:8px;border:1px solid #ddd;border-radius:2px;color:#666;}
 .comment-list{padding:10px;}
 .comment-list .time{word-break:break-word;}
 .comment-list li{margin-top:5px;}
