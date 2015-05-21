@@ -29,7 +29,7 @@ class OnlineWxPay(CustomerBaseHandler):
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
 			return self.send_fail('shop not found')
-		shopName = shop.shop_name
+		shop_name = shop.shop_name
 		jsApi  = JsApi_pub()
 
 		# order detail
@@ -107,10 +107,10 @@ class OnlineWxPay(CustomerBaseHandler):
 			signature = self.signature(noncestr,timestamp,path_url)
 		return self.render("fruitzone/paywx.html",renderPayParams = renderPayParams,wxappid = wxappid,\
 			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice,\
-			shopName = shopName,create_date=create_date,receiver=receiver,phone=phone,address=address,\
+			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
 			send_time = send_time,remark=remark,pay_type=pay_type,online_type=online_type,freight = freight,\
 			goods = goods,sender_phone=sender_phone,sender_img=sender_img,charge_types=charge_types,\
-			mcharge_types = mcharge_types)
+			mcharge_types = mcharge_types,order=order)
 
 	def check_xsrf_cookie(self):
 		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -222,10 +222,11 @@ class OnlineWxPay(CustomerBaseHandler):
 
 
 class OrderDetail(CustomerBaseHandler):
-	@tornado.web.authenticated
+	#@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("alipayUrl?:str")
 	def get(self):
 		alipayUrl = self.args['alipayUrl']
+		print(alipayUrl,'dddddddddddddddddddddddddddddddddddddddddddddd')
 		return self.render("customer/alipay-tip.html",alipayUrl = alipayUrl)
 
 
