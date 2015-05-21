@@ -182,6 +182,7 @@ function initBmap(){
     var point = new BMap.Point(114.421659, 30.512769);  // 创建点坐标
     var marker = null;
     var timer = null;
+    var isHand = false;
     map.enableScrollWheelZoom();
     map.centerAndZoom(point, 19);
     var myGeo = new BMap.Geocoder();
@@ -193,7 +194,7 @@ function initBmap(){
             getPointByName(map, myGeo, address,true);
         }
     });
-    $("#search-lbs,#save-lbs").on("click",function(){
+    $("#search-lbs").on("click",function(){
         var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
         getPointByName(map, myGeo, address,true);
     });
@@ -201,14 +202,22 @@ function initBmap(){
         marker.setAnimation(BMAP_ANIMATION_BOUNCE);
         marker.enableDragging();
     });
+    $("#save-lbs").on("click",function(){
+        if(!isHand){
+            var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
+            getPointByName(map, myGeo, address,true);
+        }
+    });
     function getPointByName(map, myGeo, address,flag){
         myGeo.getPoint(address, function(point){
             if (point) {
+                map.removeOverlay(marker);
                 map.centerAndZoom(point, 19);
                 marker = new BMap.Marker(point);
                 marker.addEventListener("dragend",attribute);
                 map.addOverlay(marker);
                 function attribute(){
+                    isHand = true;
                     var p = marker.getPosition();  //获取marker的位置
                     myGeo.getLocation(p, function(rs){
                         marker.setAnimation();

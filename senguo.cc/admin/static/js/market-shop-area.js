@@ -9,9 +9,9 @@ $(document).ready(function(){
 });
 //初始化百度地图
 function initBmap() {
-    var address = $("#bmap").attr("data-address");
-    var lon = $("#bmap").attr("data-lon");//经度
-    var lat = $("#bmap").attr("data-lat");
+    var address = $.trim($("#bmap").attr("data-address"));
+    var lon = parseFloat($("#bmap").attr("data-lon"));//经度
+    var lat = parseFloat($("#bmap").attr("data-lat"));
     var name = $("#bmap").attr("data-name");
     var map = new BMap.Map("bmap");          // 创建地图实例
     var marker = null,oPoint = null;
@@ -22,7 +22,7 @@ function initBmap() {
         enableMessage:false//设置允许信息窗发送短息
     };
     if (lon != 0) {
-        oPoint = new BMap.Point(parseFloat(lon), parseFloat(lat));  // 创建点坐标
+        oPoint = new BMap.Point(lon, lat);  // 创建点坐标
         map.enableScrollWheelZoom();
         map.centerAndZoom(oPoint, 19);
         marker = new BMap.Marker(oPoint);

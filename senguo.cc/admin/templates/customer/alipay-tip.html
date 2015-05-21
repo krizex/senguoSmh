@@ -17,6 +17,9 @@
         .tip-area{float:right;width: 64%;top: 10px;right: 10px;}
         .tip-area>img{width: 100%;}
         .tip-txt{padding: 0 15%;text-align: center;color: #fff;font-size: 16px;line-height: 26px;float:right;width: 100%;-webkit-box-sizing: border-box;}
+        .back-area{height: 32px;color: #fff;margin-top: 50px; float:right;width: 100%;text-align: center;}
+        .back-btn{width: 32px;height: 32px;background: url('/static/images/icon_back.png') no-repeat;display: inline-block;-webkit-transform:rotate(180deg);}
+        .back-txt{font-size: 16px;vertical-align: 8px;}
     </style>
 </head>
 <body>
@@ -28,6 +31,10 @@
     <p class="tip-txt">
         请在右上角菜单栏中选择浏览器中打开，以便完成支付
     </p>
+    <div class="back-area" id="back-btn">
+        <i class="back-btn"></i>
+        <span class="back-txt">返回</span>
+    </div>
 </div>
 <script src="/static/js/zepto.js"></script>
 <script>
@@ -37,6 +44,8 @@
         }else{
             window.location.href=$("#go-url").val();
         }
+    }).on("click","#back-btn",function(){
+        window.location.href="";
     });
 </script>
 </body>
