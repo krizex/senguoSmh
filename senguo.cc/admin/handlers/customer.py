@@ -1698,10 +1698,10 @@ class Order(CustomerBaseHandler):
 			order5 = []
 			order6 = []
 			for x in orderlist:
-				#if x.status == 5:
-				#	order5.append(x)
-				if x.status == 6:
-					order6.append(x)
+				if x.status == 5:
+					order5.append(x)
+				#if x.status == 6:
+				#	order6.append(x)
 			orders = order5 + order6
 			# print(len(orders),'已完成订单数量')
 			# for order in orders:
