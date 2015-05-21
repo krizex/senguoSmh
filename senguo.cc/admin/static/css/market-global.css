@@ -139,7 +139,7 @@ button:focus{outline:0;}
 .bottom-nav li:hover .home em{background-position:0 -24px;}
 .bottom-nav li:hover .goods em{background-position:-25px -24px;}
 .bottom-nav li:hover .cart em{background-position:-50px -24px;}
-.bottom-nav li:hover .my em{background-position:-75px -23px;}
+.bottom-nav li:hover .my em{background-position:-75px -24px;}
 .bottom-nav li:hover .discover em{background-position:-120px -24px;}
 .bottom-nav .active .home em{background-position:0 -24px;}
 .bottom-nav .active .goods em{background-position:-25px -24px;}
@@ -238,6 +238,6 @@ button:focus{outline:0;}
 .w20{width:20%;}
 .b-radius0{border-radius:0px !important;}
 
-.cart_num{position:absolute;display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;top:4px;}
+.cart_num{position:absolute;display:inline-block;width:18px;height:18px;line-height:19px;border-radius:50%;top:4px;}
 .little_pear{position:fixed;z-index:9999;top:70%;right:0px;display:none;width:40px;height:49px;}
 .fix-title{position:fixed;z-index:666;top:0;}
