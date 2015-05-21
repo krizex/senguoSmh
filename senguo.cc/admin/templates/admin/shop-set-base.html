@@ -28,20 +28,22 @@
     {% set receipt_active ='active' %}
 {% end %}
 {% set shop_code =current_shop.shop_code %}
-<span class="right-title">店铺设置{% if shop_code and shop_code!='not set' %}<span class="shop-link">店铺链接：<a href="{{reverse_url('Market',shop_code)}}" target="_blank">http://senguo.cc/{{shop_code}}</a></span>{% else %}<span class="shop-link">请设置店铺号</span>{% end %}</span>
-<ul class="shop-set-nav right-nav group">
-    <!--<li class="{{delivery_active}}" id="deliverySet"><a href="{{reverse_url('adminConfig')}}?action=delivery">配送设置</a></li>-->
-    <li class="{{info_active}}" id="infoSet"><a href="{{reverse_url('adminShopConfig')}}">店铺信息</a></li>
-    <li class="{{notice_active}}" id="noticeSet"><a href="{{reverse_url('adminConfig')}}?action=notice">公告设置</a></li>
-    <!--<li><a href="#">充值设置</a></li>-->
-    <li class="{{receipt_active}}" id="receiptSet"><a href="{{reverse_url('adminConfig')}}?action=receipt">小票设置</a></li>
-    <li class="{{cert_active}}" id=""><a href="{{reverse_url('adminShopAuth')}}">店铺认证</a></li>
-     {% if current_shop.shop_auth !=0 %}
-    <li class="{{pay_active}}"><a href="{{reverse_url('adminConfig')}}?action=pay">支付方式</a></li>
-    {% end %}
-    <li class="{{phone_active}}"><a href="{{reverse_url('adminConfig')}}?action=phone">短信验证</a></li>
-</ul>
-{% if shopSubPage != 'cert_set' and shopSubPage != 'pay_set'%}
+<span class="right-title">店铺设置{% if shop_code and shop_code!='not set' %}<span class="shop-link ml10">店铺链接：<a href="{{reverse_url('Market',shop_code)}}" target="_blank">http://senguo.cc/{{shop_code}}</a></span>{% else %}<span class="shop-link">请设置店铺号</span>{% end %}</span>
+<div class="subnav-box">
+    <ul class="subnav group">
+        <!--<li class="{{delivery_active}}" id="deliverySet"><a href="{{reverse_url('adminConfig')}}?action=delivery">配送设置</a></li>-->
+        <li class="{{info_active}}" id="infoSet"><a href="{{reverse_url('adminShopConfig')}}">店铺信息</a></li>
+        <li class="{{notice_active}}" id="noticeSet"><a href="{{reverse_url('adminConfig')}}?action=notice">公告设置</a></li>
+        <!--<li><a href="#">充值设置</a></li>-->
+        <li class="{{receipt_active}}" id="receiptSet"><a href="{{reverse_url('adminConfig')}}?action=receipt">小票设置</a></li>
+        <li class="{{cert_active}}" id=""><a href="{{reverse_url('adminShopAuth')}}">店铺认证</a></li>
+         {% if current_shop.shop_auth !=0 %}
+        <li class="{{pay_active}}"><a href="{{reverse_url('adminConfig')}}?action=pay">支付方式</a></li>
+        {% end %}
+        <li class="{{phone_active}}"><a href="{{reverse_url('adminConfig')}}?action=phone">短信验证</a></li>
+    </ul>
+</div>
+{% if shopSubPage != 'cert_set' and shopSubPage != 'pay_set' and shopSubPage !='info_set'  and shopSubPage !='phone_set'%}
 <div class="set-description">
     {% if shopSubPage == 'delivery_set' %}
     <p>通过编辑配送地址，确定前台商城用户以及员工责任区域的地址选择项</p>

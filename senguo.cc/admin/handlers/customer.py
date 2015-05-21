@@ -292,13 +292,14 @@ class Discover(CustomerBaseHandler):
 			return self.send_fail('shop error')
 		if shop:
 			confess_active = shop.marketing.confess_active
+			shop_auth = shop.shop_auth
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self.set_cookie("market_shop_code",str(shop.shop_code))
 		try:
 			confess_count =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id,scan=0).count()
 		except:
 			confess_count = 0 
-		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_code=shop_code,confess_active=confess_active,confess_count=confess_count)
+		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_code=shop_code,shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count)
 
 class ShopArea(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -1309,6 +1310,13 @@ class Cart(CustomerBaseHandler):
 		mgoods = self.args["mgoods"]
 		current_shop = self.session.query(models.Shop).filter_by( id = shop_id).first()
 		online_type = ''
+		shop_status = current_shop.status
+		if shop_status == 0:
+			return self.send_fail('该店铺已关闭，暂不能下单(っ´▽`)っ')
+		elif shop_status == 2:
+			return self.send_fail('该店铺正在筹备中，暂不能下单(っ´▽`)っ')
+		elif shop_status == 3:
+			return self.send_fail('该店铺正在休息中，暂不能下单(っ´▽`)っ')
 
 		if not (fruits or mgoods):
 			return self.send_fail('请至少选择一种商品')

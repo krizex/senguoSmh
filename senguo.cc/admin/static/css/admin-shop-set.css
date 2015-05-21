@@ -1,10 +1,4 @@
-.shop-set-nav{width:100%;}
-.shop-set-nav li{float:left;width:100px;height:40px;text-align:center;line-height:42px;border-width:2px 1px 1px;border-color:#f2f2f2;border-style:solid ;}
-.shop-set-nav li a{color:#333;font-size:14px;display:block;}
-.shop-set-nav .active{background:#f2f2f2;border-width:2px 1px 1px;border-style:solid ;}
-.shop-set-nav .active a{font-weight:bold;display:block;}
-
-.set-description{width:100%;background:#f2f2f2;padding:20px;clear:both;}
+.set-description{width:100%;background:#FBFBFB;padding:20px;clear:both;}
 .set-description p{margin-bottom:0px;}
 
 .set-list{width:100%;margin-top:10px;}
@@ -25,8 +19,8 @@
 .new-notice-title{width:60%;margin-bottom:10px;}
 .new-notice-detail{width:60%;height:100px;}
 
-.info-set-list{padding:0 15px;}
-.info-set-list .item{border-bottom:1px solid #ccc;padding:15px 5px;}
+.info-set-list{border:1px solid #eee;border-bottom:none;}
+.info-set-list .item{border-bottom:1px solid #eee;padding:15px;}
 .info-set-list .w1{width:20%;}
 .info-set-list p{max-width:610px;}
 .logo-box{width:80px;height:80px;display:inline-block;text-align:center;position:relative;overflow:hidden;}
@@ -69,7 +63,7 @@
 .mt15{margin-top: 15px;}
 .red-txt{color: #ff6666!important;}
 .grey-txt{color:#999!important;}
-.wrap-top{padding-left: 40px;padding-bottom: 10px;}
+.wrap-top{padding-left: 10px;padding-bottom: 10px;}
 .cert-title{margin-top: 20px;}
 .cert-title>p{font-size: 12px;line-height: 18px;color: #333;}
 .cert-type{margin-top: 30px;}
@@ -98,7 +92,7 @@
 .bind-btn{color: #0081c2;font-size: 14px;}
 .wrap-img{position: relative;}
 /*支付方式*/
-.edit-box{background-color: #f5f5f5;padding: 15px 20px;margin-top: 30px;}
+.edit-box{background-color: #FBFBFB;padding: 15px 20px;margin-top: 30px;}
 .edit-box .mode a{width:120px;height:32px; border-radius:30px;line-height:30px;position:relative;font-size:14px;}
 .edit-box .mode .circle{position:absolute;display:inline-block;width:28px;height:28px;top:2px;background:#fff;border-radius:50%;}
 .edit-box .work-mode{text-indent:28px;}
@@ -107,7 +101,7 @@
 .edit-box .stop-mode .circle{left:2px;}
 .pay-type-txt{color: #111;font-size: 14px;line-height: 20px;}
 .green-txt{color: #53b540;}
-.wrap-pay-tpye{border: 1px solid #f2f2f2;border-top:none;padding: 20px;}
+.wrap-pay-tpye{border-top:none;padding: 20px;}
 .f14{font-size: 14px;}
 .f12{font-size: 12px;}
 /*loading*/
@@ -118,6 +112,9 @@
 @-webkit-keyframes spin {0% {-webkit-transform: rotate(0deg);tranform: rotate(0deg);}100% {-webkit-transform: rotate(360deg);tranform: rotate(360deg);}}
 @keyframes spin {0% { -webkit-transform: rotate(0deg);tranform: rotate(0deg);}100% {-webkit-transform: rotate(360deg);tranform: rotate(360deg);}}
 .mt20{margin-top:20px;}
+
+.shop_status-list{margin-top:-1px;}
+.shop_status-list li{font-size:12px;width:88px;height:30px;line-height:30px;}
 
 
 

@@ -43,6 +43,22 @@ $(document).ready(function(){
         if(text==1) $this.text('有');
         else $this.text('没有');
     });
+     $('.shop-status').each(function(){
+        var $this=$(this);
+        var status=Int($this.attr('data-id'));
+        if(status==0) {
+            $this.text('店铺关闭');
+        }
+        else if(status==1) {
+            $this.text('营业中');
+        }
+        else if(status==2) {
+            $this.text('筹备中');
+        }
+        else if(status==3) {
+            $this.text('休息中');
+        }
+    });
 
     $('.offline_entity-list li').on('click',function(){
         var $this=$(this);
@@ -174,6 +190,11 @@ $(document).ready(function(){
             else infoEdit($this);
         });
     });
+}).on('click','.shop_status-list li',function(){
+    var $this=$(this);
+    var status=$this.attr('data-id');
+    var text =$this.text();
+    $('#shop_status').attr({'data-id':status}).text(text);
 });
 //初始化百度地图
 function initBmap(){
@@ -363,6 +384,12 @@ function infoEdit(target){
         entity_text=$('#offline_entity').text();
         data={have_offline_entity:have_offline_entity};
     }
+    else if(action_name=='status'){
+        action='shop_status';
+        var shop_status=$('#shop_status').attr('data-id');
+        var status_text=$('#shop_status').text();
+        data={shop_status:shop_status};
+    }
     var args={
         action:action,
         data:data
@@ -412,6 +439,9 @@ function infoEdit(target){
                 {
                     $('.offline_entity').text(entity_text);
                 }
+                 else if(action_name=='status'){
+                    $('.shop-status').text(status_text);
+                 }
                 if(action_name!='address'){
                     target.hide().siblings('.info_edit').show().parents('li').find('.info_show').show().siblings('.info_hide').hide();
                 }

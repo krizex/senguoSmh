@@ -13,17 +13,17 @@
     <colgroup width="75%"></colgroup>
     <colgroup width="10%"></colgroup>
     <tr>
-        <td class="text-grey">告白墙地址</td>
+        <td class="text-grey9">告白墙地址</td>
         <td><a href="{{reverse_url('ConfessionHome',shop_code)}}">http://senguo.cc/lovewall/{{shop_code}}</a></td>
         <td></td>
     </tr>
     <tr>
-        <td class="text-grey">告白墙管理</td>
+        <td class="text-grey9">告白墙管理</td>
         <td><a href="{{reverse_url('adminConfession')}}?action=all&&page=0">http://senguo.cc/{{reverse_url('adminConfession')}}?action=all&&page=0</a></td>
         <td></td>
     </tr>
     <tr>
-        <td class="text-grey">告白墙公告</td>
+        <td class="text-grey9">告白墙公告</td>
         <td>
             <p class="wall-content">{{current_shop.marketing.confess_notice or '无'}}</p>
             <textarea class="wall-notice" style="display:none;">{{current_shop.marketing.confess_notice or ''}}</textarea>
@@ -34,7 +34,7 @@
         </td>
     </tr>
     <tr>
-        <td class="text-grey">告白模式</td>
+        <td class="text-grey9">告白模式</td>
         <td>
             <p>告白模式开启后，发布告白需输入【对方】，信息展示卡片上能显示告白人和告白对象。</p>
             <p>关闭后，告白墙功能与【微社区】功能类似，方便商城用户交流反馈。</p>
@@ -44,7 +44,7 @@
         </td>
     </tr>
     <tr>
-        <td class="text-grey">单条发布限定</td>
+        <td class="text-grey9">单条发布限定</td>
         <td>开启后，限定每个用户一天只能发布一个告白，适合在各大节日里做告白有奖的活动。</td>
         <td>
              <a class="mode  pull-right mt10 confess-only" data-flag="on" title="点击切换状态" data-status="{{current_shop.marketing.confess_only}}"><span class="tit">已启用</span><span class="circle"></span></a>

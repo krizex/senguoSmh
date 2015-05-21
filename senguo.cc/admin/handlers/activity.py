@@ -145,7 +145,7 @@ class ConfessionHome(CustomerBaseHandler):
 				self.current_user.id).order_by(models.ConfessionGreat.create_time).all()
 			for _list in confess_list:
 				if _list.create_time.strftime('%Y-%m-%d') == now:
-					return self.send_fail('一天只能点一次赞哦')
+					return self.send_fail('您已经点过赞啦！')
 			confession = self.session.query(models.ConfessionWall).filter_by( id = self.args["data"]["id"]).first()
 			great = models.ConfessionGreat(
 				wall_id = self.args["data"]["id"],
