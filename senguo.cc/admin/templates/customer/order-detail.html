@@ -115,9 +115,11 @@
     <a class="fr go-shopping white-btn" href="/{{shop_code}}">继续购买</a>
 </div>
 {% end %}
-{% if order.status == -1 %}
+{% if order.status == -1 or order.status == 1%}
 <div class="wrap-bm-btn">
+    {% if order.status == -1 %}
     <a class="fr add-comment red-btn" href="{% if online_type=='wx'%}/customer/onlinewxpay{% elif online_type=='alipay'%}/customer/online/alipay{% end %}">去支付</a>
+    {% end %}
     <a class="fr white-btn" href="javascript:;" data-id="{{order.id}}" id="cancel-order">取消订单</a>
 </div>
 {% end %}

@@ -138,7 +138,7 @@ function changeComment(comment){
 }
 function cancelOrder(id){
     var order_id = parseInt(id);
-    var url='/customer/order';
+    var url='/customer/orders';
     var action='cancel_order';
     var data={
         order_id:order_id
