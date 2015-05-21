@@ -161,13 +161,14 @@ var shopItem=function (shops){
     var shop_item=window.dataObj.shop_item;
     var $item = '<li class="item bg-white">'+
                             '<a href="{{link}}" class="shop_link">'+
+                            '<div class="shop-status {{statu}}"></div>'+
                             '<div class="clearfix pr">'+
                                 '<div class="logo_box pull-left">'+
                                     '<img src="{{logo_url}}" class="shop_logo lazy_img"/>'+
                                 '</div>'+
                                 '<div class="pull-left info">'+
                                     '<p class="shop_name font14">{{shop_name}}<span class="shop_auth  {{hide}}">{{shop_auth}}</span></p>'+
-                                    '<p class="shop_attr">满意度 98% | 评价 33 | 商品数 990</p>'+
+                                    '<p class="shop_attr">满意度 {{satisfy}} | 评价 {{comment_count}} | 商品数 {{goods_count}}</p>'+
                                     '<p class="text-grey9"><i class="location"></i><span class="shop_code">{{address}}</span></p>'+
                                 '</div>'+
                             '</div>'+
@@ -183,10 +184,20 @@ var shopItem=function (shops){
                 var address=shops[key]['shop_address_detail'];
                 var intro=shops[key]['shop_intro'];
                 var shop_auth=shops[key]['shop_auth'];
+                var satisfy = shops[key]['satisfy'];
+                var comment_count = shops[key]['comment_count'];
+                var goods_count = shops[key]['goods_count'];
+                var status = shops[key]['status'];
                 var area=window.dataObj.area;
                 var hide='';
+                var statu = '';
                 if(province==city) {
                     city='';
+                }
+                if(status == 2){
+                    statu = 'shop-waiting';
+                }else if(status == 3){
+                    statu = 'shop-rest';
                 }
                 for(var key in area){
                     if(key==province){
@@ -218,8 +229,12 @@ var shopItem=function (shops){
                     shop_code:shop_code,
                     shop_auth:shop_auth,
                     address:province+city+address,
+                    satisfy:satisfy,
+                    comment_count:comment_count,
+                    goods_count:goods_count,
                     intro:intro,
-                    hide:hide
+                    hide:hide,
+                    statu:statu
                 });
                 $('.shoplist').append(content);
             }

@@ -11,7 +11,10 @@
 .filter_search  .btn{padding:0px;background:#fff;width:12%;display:inline-block;line-height:30px;}
 .pr{position: relative;}
 .shoplist_box{width:100%;clear:both;}
-.shoplist_box .item{width:100%;margin-top:8px;padding:5px 15px;float:left;}
+.shoplist_box .item{width:100%;margin-top:8px;padding:5px 15px;float:left;position: relative;}
+.shop-status{position: absolute;width: 80px;height: 54px;right: 0;top: 0;background-size: contain;background-repeat: no-repeat;}
+.shop-waiting{background-image: url('/static/images/shop_waiting.png');}
+.shop-rest{background-image: url('/static/images/shop_rest.png');}
 .shoplist_box .item .logo_box{position:absolute;top:0;left:0;width:56px;height:56px;border-top-left-radius:999px;border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px;background-clip: padding-box;border-radius: 999px;overflow:hidden;border:2px solid #aeddda;}
 .shoplist_box .item .shop_logo{width:52px;height:52px;border-top-left-radius:999px;border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px;border-radius: 999px;}
 .shoplist_box .item .info{padding-left: 66px;width: 100%;}
