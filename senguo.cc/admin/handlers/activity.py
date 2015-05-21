@@ -197,7 +197,7 @@ class ConfessionComment(CustomerBaseHandler):
 			confess_time = confess_list.create_time.strftime('%Y-%m-%d %H:%M')
 			if confess_list.confession_type == 0 :
 				user = '匿名用户'
-				imgurl = '/static/images/goods_good.png'
+				imgurl = '/static/images/TDSG.png'
 			else :
 				user = confess_customer.accountinfo.nickname
 				imgurl = confess_customer.accountinfo.headimgurl_small
