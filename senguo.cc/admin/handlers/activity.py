@@ -262,6 +262,7 @@ class ConfessionComment(CustomerBaseHandler):
 				_type = 1,
 				comment_author_id = comment.customer_id
 			)
+			confession.comment = confession.comment +1
 			confession.scan = 0
 			self.session.add(reply)
 			self.session.commit()

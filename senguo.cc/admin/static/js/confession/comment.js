@@ -103,6 +103,7 @@ $(document).ready(function(){
         var action='replay';
         var id=$('#replay_box').attr('data-id');
         var replay =$('.replay-text ').val().trim();
+        var num =parseInt($('.comment-btn .num').text());
         if(!replay){
             $this.removeClass('bg-greyc').removeAttr('disabled');
             return warnNotice('请输入评论的内容╮（╯◇╰）╭');
@@ -126,9 +127,10 @@ $(document).ready(function(){
                 {
              	       var data=res.data;
              	       $('.replay-text ').val('');
+             	        num++;
                     $this.removeClass('bg-greyc').removeAttr('disabled');
                      var item='<li data-id="{{id}}">'+
-                    		'<span class="text-pink"><span class="name">{{nickname}}</span>回复{{comment_author}}：</span>'+
+                    		'<span class="text-pink"><span class="name">{{nickname}}：</span>@{{comment_author}}：</span>'+
                     		'<span class="mr10">{{comment}}</span>'+
                     		'<span class="text-grey9 time">{{time}}</span>'+
                     '</li>';
@@ -141,6 +143,7 @@ $(document).ready(function(){
                      	comment_author:data['comment_author']
                      });
                     $('.comment-list ul').append(list);
+                    $('.comment-btn .num').text(num);
                     var replay_box=new Modal('replay_box');
 	       replay_box.modal('hide');
                 }
