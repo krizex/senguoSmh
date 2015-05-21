@@ -32,7 +32,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .show{display: block!important;}
 .f12{font-size: 12px !important;}
 .header{background:#33CC66;height:40px;text-align:center;line-height:40px;position:fixed;background-size:20px;max-width:800px;min-width:320px;z-index:666;width:100%;top:0;color: #fff;font-size: 16px;}
-.btn-commit{height:34px;line-height: 34px;font-size:14px;width: 200px;color: #fff;background-color: #80de9e;border-radius: 34px;display: inline-block;}
+.btn-commit{height:40px;line-height: 40px;font-size:14px;width: 200px;color: #fff;background-color: #80de9e;border-radius: 40px;display: inline-block;}
 .mt20{margin-top: 20px;}
 .mt40{margin-top: 40px;}
 .ml20{margin-left: 20px;}
