@@ -1,7 +1,10 @@
 $(document).ready(function(){
 
-}).on('click','.container',function(){
-	$('.comment-box').addClass('hidden');
+}).on('click','.container',function(e){
+	if($(e.target).closest('.comment-box').length == 0){
+		$('.comment-box').addClass('hidden');	
+	}
+	
 }).on('click','.comment-btn',function(){
 	var $this=$(this);
 	$('.comment-box').removeClass('hidden');
