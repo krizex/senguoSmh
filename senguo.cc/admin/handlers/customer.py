@@ -248,7 +248,7 @@ class Home(CustomerBaseHandler):
 				count[3] += 1
 			elif order.status in (2, 3, 4):
 				count[4] += 1
-			elif order.status in == 6:
+			elif order.status == 6:
 				count[5] += 1
 			elif order.status == 10:
 				count[6] += 1
