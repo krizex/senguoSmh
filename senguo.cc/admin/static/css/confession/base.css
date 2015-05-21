@@ -187,7 +187,7 @@ h1{font-size:18px;}
 .info .img img{border-radius:50%;}
 .some-btn{line-height:20px;padding-right:10px;}
 .great-btn i{display:inline-block;width:18px;height:18px;background:url('/static/confess/great.png') no-repeat;background-size:18px;margin-right:5px;}
-.comment-btn i{display:inline-block;width:20px;height:20px;background:url('/static/confess/comment.png') no-repeat;background-size:20px;margin-right:5px;}
+.comment-btn i{display:inline-block;width:18px;height:18px;background:url('/static/confess/comment.png') no-repeat;background-size:18px;margin-right:5px;}
 .comment-box{margin:0 auto;padding:5px;position:fixed;bottom:0;width:100%;max-width:800px;min-width:320px;overflow:hidden;border:1px solid #ddd;background:#f9f9f9;}
 .comment-text{border:1px solid #ddd;height:30px;text-indent:5px;width:78%;}
 .sub-comment{width:20%;height:30px;padding:8px;border:1px solid #ddd;border-radius:2px;color:#666;}
