@@ -28,8 +28,8 @@
 .address-box .modal-body input{background:#f2f2f2;height:30px;width:165px;line-height:30px;text-indent:5px;}
 
 .collect-icon{width:20px;height:15px;background:url('../svg/icon_list-2.png') -99px -27px;margin-right:5px;background-size:140px;margin-top:15px;}
-.address-icon{width:20px;height:15px;background:url('../svg/icon_list-2.png') -99px -46px;margin-right:5px;background-size:140px;margin-top:15px;}
-.order-icon{width:20px;height:18px;background:url('../svg/icon_list-2.png') -99px -1px;margin-right:5px;background-size:140px;margin-top:14px;}
+.address-icon{width:20px;height:20px;background:url('../svg/icon_list-2.png') -98px -24px;margin-right:10px;background-size:140px;margin-top:13px;}
+.order-icon{width:20px;height:20px;background:url('../svg/icon_list-2.png') -98px 0;margin-right:10px;background-size:140px;margin-top:13px;}
 
 hr{margin-top:0px !important;;margin-bottom:0px !important;margin-left:24px;}
 .height20{height:20px;line-height:20px;}
@@ -42,5 +42,5 @@ hr{margin-top:0px !important;;margin-bottom:0px !important;margin-left:24px;}
 .discover-list  li{position:relative;}
 .discover-list .circle{position:absolute;display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;top:12px;text-align:center;right:15px;}
 
-.confess i{display:inline-block;width:15px;height:15px;background:url('../svg/icon_list-2.png') -85px -34px;background-size:100px;margin:15px 5px 0 10px;}
+.confess i{display:inline-block;width:18px;height:18px;background:url('../svg/icon_list-2.png') -122px -48px;background-size:140px;margin:14px 15px 0 15px;}
 

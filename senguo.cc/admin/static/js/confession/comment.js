@@ -108,7 +108,7 @@ $(document).ready(function(){
 	$('.comment-box').removeClass('hidden');
 	$('.comment-text ').val('');
 	$('.sub-comment').attr('id','sub-replay');
-	$('.comment-box').attr({'data-id':id}).find('.comment-text').attr('placeholder','回复'+name);
+	$('.comment-box').attr({'data-id':id}).find('.comment-text').attr('placeholder','@'+name);
 }).on('click','#sub-replay',function(){
         var $this=$(this);
         $this.addClass('bg-greyc').attr({'disabled':true});
