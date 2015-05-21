@@ -80,7 +80,6 @@
         <p>订单备注：<span>{{order.message or '无'}}</span></p>
         <p class="text-black">支付方式：<span class="">{% if order.pay_type==1 %}货到付款{% elif order.pay_type==2 %}余额支付{% elif order.pay_type==3 %}在线支付{% if online_type=='wx'%}-微信支付{% elif online_type=='alipay'%}-支付宝支付{% end %}{% end %}</span></p>
     </div>
-    {% end %}
 </div>
 <div class="wrap-bm-btn">
     <a class="fr add-comment red-btn" href="javascript:;" id="getBrandWCPayRequest">去支付</a>
