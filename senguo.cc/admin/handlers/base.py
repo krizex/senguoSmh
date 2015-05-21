@@ -446,19 +446,19 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 	def get_shop_count(self):
 		try:
 			shop_count = self.session.query(models.Shop).filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-				models.Shop.shop_code !='not set',models.Shop.status !=0 ).count()
+				models.Shop.shop_code !='not set' ).count()
 		except:
 			return self.send_fail("shop count error")
 		return shop_count
 	def get_province_shop_count(self,shop_province):
 		try:
-			shop_count = self.session.query(models.Shop).filter(shop_province == shop_province,shop_code !='not set' ,status !=0).count()
+			shop_count = self.session.query(models.Shop).filter(shop_province == shop_province,shop_code !='not set' ).count()
 		except:
 			return self.send_fail('shop_province error')
 		return shop_count
 	def get_city_shop_count(self,shop_city):
 		try:
-			shop_count = self.session.query(models.Shop).filter(shop_city == shop_city,shop_code !='not set'  ,status !=0).count()
+			shop_count = self.session.query(models.Shop).filter(shop_city == shop_city,shop_code !='not set' ).count()
 		except:
 			return self.send_fail('shop_city error')
 		return shop_count
@@ -467,7 +467,7 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 		from sqlalchemy import func
 		try:
 			shop_count = self.session.query(models.Shop.shop_province,func.count(models.Shop.shop_province)).\
-			filter(models.Shop.shop_code != 'not set',models.Shop.status !=0).group_by(models.Shop.shop_province).all()
+			filter(models.Shop.shop_code != 'not set').group_by(models.Shop.shop_province).all()
 		except:
 			return self.send_fail('group error')
 		#print(type(shop_count))
