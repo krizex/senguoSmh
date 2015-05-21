@@ -31,6 +31,9 @@
 	{% else %}
 	{% set sty ='sty2' %}
 	{% end %}
+	{% if data['type']==0 %}
+	{% set  sty ='sty0' %}
+	{% end %}
 	<li class="{{sty}} font14" data-id="{{data['id']}}">
                 	<div class="top group">
                 		<span>{% if data['type']==0 %}匿名用户{% else %} {{data['user']}} {% end %}  {% if data['name'] %}TO  {{data['name']}}{% end %}</span>

@@ -1,7 +1,7 @@
 .container{padding-bottom: 10px;padding-top:20px;}
 .order-item{margin-top: 10px;background-color: #fff;padding: 0 10px 10px 10px;}
 .order-item .title{font-weight: 700;font-size: 14px;height: 28px;line-height: 28px;border-bottom:1px solid #f0f0f0;}
-.order-item .top-title{font-size: 14px;height: 44px;line-height: 44px;border-bottom:1px solid #f0f4f0;padding-left: 25px;background: url('/static/images/icon_shop.png') no-repeat left center;}
+.order-item .top-title{font-size: 14px;height: 44px;line-height: 44px;border-bottom:1px solid #f0f4f0;padding-left: 25px;background: url('/static/images/icon_shop.png') no-repeat left center;background-size: 18px 18px;}
 .order-item .title>a{color: #b2b2b2;font-size: 14px;font-weight:normal;}
 .order-item>p{line-height: 24px;font-size: 14px;color: #999;margin-top: 4px;}
 .goods-lst{padding-bottom: 10px;}

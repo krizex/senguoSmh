@@ -195,7 +195,8 @@ function data(datalist){
                 	sty='sty0';
                 }
                 if(type==0){
-                	user='匿名用户';	
+                	user='匿名用户';
+                           sty='sty0';	
                 }
                 var list_item =render({
                     id:id,

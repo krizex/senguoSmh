@@ -1,5 +1,15 @@
 $(document).ready(function(){
 
+}).on('click','.container',function(e){
+	if($(e.target).closest('.comment-box').length == 0){
+		$('.comment-box').addClass('hidden');	
+	}
+	
+}).on('click','.comment-btn',function(){
+	var $this=$(this);
+	$('.comment-box').removeClass('hidden');
+	$('.comment-text ').val('').attr('placeholder','我也评论一句...');
+	$('.sub-comment').attr('id','sub-comment');
 }).on('click','.great',function(){
     var $this=$(this);
     var url='/lovewall/'+$('.confess-info').attr('data-code');
@@ -30,7 +40,7 @@ $(document).ready(function(){
             return noticeBox('服务器貌似出错了~ ( >O< ) ~');
         }    
     );
-}).on('click','.sub-comment',function(){
+}).on('click','#sub-comment',function(){
         var $this=$(this);
         $this.addClass('bg-greyc').attr({'disabled':true});
         var url='';
@@ -76,6 +86,8 @@ $(document).ready(function(){
                      });
                     $('.comment-list').removeClass('hidden').find('ul').append(list);
                     $('.comment-btn .num').text(num);
+                    $('.comment-box').addClass('hidden');
+                    $('html,body').scrollTop($('.comment-list li').last().offset().top);
                 }
                 else {
                     return noticeBox(res.error_text);
@@ -91,18 +103,20 @@ $(document).ready(function(){
         );
 }).on('click','.comment-list li',function(){
 	var $this=$(this);
-	var replay_box=new Modal('replay_box');
 	var name = $this.find('.name').text();
 	var id =$this.attr('data-id');
-	replay_box.modal('show');
-	$('#replay_box').attr({'data-id':id}).find('.replay-text').attr('placeholder','回复'+name);
-}).on('click','.sub-replay',function(){
+	$('.comment-box').removeClass('hidden');
+	$('.comment-text ').val('');
+	$('.sub-comment').attr('id','sub-replay');
+	$('.comment-box').attr({'data-id':id}).find('.comment-text').attr('placeholder','@'+name);
+}).on('click','#sub-replay',function(){
         var $this=$(this);
         $this.addClass('bg-greyc').attr({'disabled':true});
         var url='';
         var action='replay';
-        var id=$('#replay_box').attr('data-id');
-        var replay =$('.replay-text ').val().trim();
+        var id=$('.comment-box').attr('data-id');
+        var replay =$('.comment-text ').val().trim();
+        var num =parseInt($('.comment-btn .num').text());
         if(!replay){
             $this.removeClass('bg-greyc').removeAttr('disabled');
             return warnNotice('请输入评论的内容╮（╯◇╰）╭');
@@ -125,10 +139,11 @@ $(document).ready(function(){
                 if(res.success)
                 {
              	       var data=res.data;
-             	       $('.replay-text ').val('');
+             	       $('.comment-text ').val('');
+             	        num++;
                     $this.removeClass('bg-greyc').removeAttr('disabled');
                      var item='<li data-id="{{id}}">'+
-                    		'<span class="text-pink"><span class="name">{{nickname}}</span>回复{{comment_author}}：</span>'+
+                    		'<span class="text-pink"><span class="name">{{nickname}}：</span>@{{comment_author}}</span>'+
                     		'<span class="mr10">{{comment}}</span>'+
                     		'<span class="text-grey9 time">{{time}}</span>'+
                     '</li>';
@@ -141,8 +156,9 @@ $(document).ready(function(){
                      	comment_author:data['comment_author']
                      });
                     $('.comment-list ul').append(list);
-                    var replay_box=new Modal('replay_box');
-	       replay_box.modal('hide');
+                    $('.comment-btn .num').text(num);
+                    $('.comment-box').addClass('hidden');
+                    $('html,body').scrollTop($('.comment-list li').last().offset().top);
                 }
                 else {
                     return noticeBox(res.error_text);

@@ -144,7 +144,7 @@ button:focus{outline:0;}
 .bottom-nav .active .home em{background-position:0 -24px;}
 .bottom-nav .active .goods em{background-position:-25px -24px;}
 .bottom-nav .active .cart em{background-position:-50px -24px;}
-.bottom-nav .active .my em{background-position:-75px -23px;}
+.bottom-nav .active .my em{background-position:-75px -24px;}
 .bottom-nav .active .discover em{background-position:-120px -24px;}
 .bottom-nav .circle{position:absolute;display:inline-block;width:5px;height:5px;border-radius:50%;top:5px;}
 
