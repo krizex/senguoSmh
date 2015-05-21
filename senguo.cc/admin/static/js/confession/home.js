@@ -163,14 +163,13 @@ function data(datalist){
                 var item ='<li class="{{sty}} font14" data-id="{{id}}">'+
                 		'<div class="top group">'+
                 			'<span>{{user}}  {{if name }}TO  {{name}} {{/if}}</span>'+
-                                                     '<span class="fr ml10">{{floor}}楼</span>'+
                 		'</div>'+
                 		'<div class="confession">'+
                                             '<p><a href="/lovewall/comment/'+shop_code+'?num={{id}}">{{confession}}</a></p>'+
-                                            '<p class="group mt10"><span class="fr">{{time}}</span></p>'+
                                             '<p class="group mt10"><a href="javascript:;" class="fr great ml10">点赞(<span class="num">{{great}}</span>)</a>'+
                                              '<a href="/lovewall/comment/'+shop_code+'?num={{id}}" class="comment fr text-grey3">评论(<span class="num">{{comment}}</span>)</a></p>'+
-                                        '</div>'+                                                   
+                                        '</div>'+        
+                                        '<p class="group mt5 mr5"><span class="fr">{{time}}&nbsp;&nbsp;{{floor}}楼</span></p>'+                                           
 	'</li>';
                 var render = template.compile(item);
                 var id=datalist[i]['id'];

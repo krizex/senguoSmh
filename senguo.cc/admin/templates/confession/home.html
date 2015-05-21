@@ -34,13 +34,12 @@
 	<li class="{{sty}} font14" data-id="{{data['id']}}">
                 	<div class="top group">
                 		<span>{% if data['type']==0 %}匿名用户{% else %} {{data['user']}} {% end %}  {% if data['name'] %}TO  {{data['name']}}{% end %}</span>
-                		<span class="fr ml10">{{data['floor']}}楼</span>
                 	</div>
                 	<div class="confession">
                 		<p><a href="{{reverse_url('ConfessionComment',shop_code)}}?num={{data['id']}}">{{data['confession']}}</a></p>
-                		<p class="mt10 group"><span class="fr">{{data['time']}}</span></p>
                 		<p class="group mt10"><a href="javascript:;" class="fr great ml10">点赞(<span class="num">{{data['great']}}</span>)</a><a href="{{reverse_url('ConfessionComment',shop_code)}}?num={{data['id']}}" class="comment fr  text-grey3">评论(<span class="num">{{data['comment']}}</span>)</a></p>
                 	</div>
+                	<p class="mt5 group mr5"><span class="fr">{{data['time']}}&nbsp;&nbsp;{{data['floor']}}楼</span></p>
                </li>
 	{% end %}
 	{% end %}
