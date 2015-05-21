@@ -1,19 +1,9 @@
 /*----------------------------------admin-goods----------------------------------------*/
-.goods-classify{width:100%;clear:both;display:block;height:40px;}
-.goods-classify ul{border-left:2px solid #f5f5f5;margin-bottom:0px;font-size:14px;}
-.goods-classify ul li{float:left;width:100px;height:40px;line-height:40px;text-align:center;border:1px solid #f2f2f2;border-left:none;position:relative;}
-.goods-classify ul li a{color:#333;display:block;}
-.goods-classify ul .active{background:#f5f5f5;}
-.goods-classify ul .active a{font-weight:bold;}
-.goods-classify ul .active .number{color:#fff;background:#ff6565;}
-.goods-classify ul li .class_name_edit{position:absolute;top:2px;right:2px;}
 
-.goods-mode-lock{width:100%;clear:both;background:#f5f5f5;height:80px;}
+.admin-goods-list{width:100%;float:left;border:1px solid #eee;margin-top:10px;}
+.admin-goods-list .goods-list-con{width:700px;font-size:14px;border-right:1px solid #eee;margin-top:-1px;padding:10px 0;}
 
-.admin-goods-list{width:100%;float:left;border:1px solid #ddd;}
-.admin-goods-list .goods-list-con{width:700px;font-size:14px;border-right:1px solid #ccc;margin-top:-1px;padding:10px 0;}
-
-.goods-list-item .goods-info{padding:10px;background:#fff;margin-left:10px;width:90%;border:1px solid #ddd;background:#f9f9f9;}
+.goods-list-item .goods-info{padding:10px;background:#fff;margin-left:10px;width:90%;border:1px solid #eee;background:#f9f9f9;}
 .goods-list-item .goods-info .info-box{width:80%;}
 .goods-list-item hr{border-color:#ccc;margin-top:10px;margin-bottom:10px;}
 .admin-goods-list .goods-list-con .goods-list-item{width:100%;float:left;padding:10px 10px 0;position:relative;}
@@ -63,12 +53,12 @@
 .upload-box .uploadImg{position:absolute;z-index:999;width:100%;opacity:0;}
 .upload-box p{position:absolute;top:0;}
 
-.add-new-goods{width:50%;margin:0 auto;background:#f3f3f3;height:50px;line-height:50px;text-align:center;font-size:16px;margin-top:10px;}
+.add-new-goods{width:50%;margin:0 auto;background:#fbfbfb;height:50px;line-height:50px;text-align:center;font-size:16px;margin-top:10px;}
 .add-new-goods strong{}
 
 .dropdown-toggle{padding:3px 12px;}
 
-.shelve-list{width:210px;overflow:hidden;border-left:1px solid #ccc;margin-left:-1px;}
+.shelve-list{width:210px;overflow:hidden;border-left:1px solid #eee;margin-left:-1px;}
 .shelve-list .title{height:34px;font-size:14px;line-height:34px;padding-left:15px;}
 .shelve-list .shelve-list{margin-bottom:10px;width:240px;}
 .shelve-list .shelve-list a{display:inline-block;float:left;width:60px;height:24px;line-height:24px;text-align:center;border-radius:1px;margin-left:8px;margin-top:10px;}
@@ -89,8 +79,8 @@
 .w-auto-60{width:60% !important;}
 
 .set-padding-10{padding:10px;}
-.fruit-left-title{padding:10px;border-bottom:1px solid #ddd;}
-.fruit-right-title{padding:10px;border-bottom:1px solid #ddd;margin-top:3px;}
+.fruit-left-title{padding:10px;border-bottom:1px solid #eee;}
+.fruit-right-title{padding:10px;border-bottom:1px solid #eee;margin-top:3px;}
 .fruit-right-title .btn{border-radius:0px;padding:3px 8px;}
 .fruit-right-title .tit{line-height:26px;padding-left:20px;}
 

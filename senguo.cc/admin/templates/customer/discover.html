@@ -7,7 +7,8 @@
 <div class="rainshed2 text-center font18 text-white bg_change fix-title"></div>
 <div class="mt42"></div>
 <ul class="mt20 discover-list">
-{% if confess_active == 1 %}
+{% if shop_auth != 0%}
+{% if confess_active == 1%}
     <li class="title clearfix bg-white font14 confess">
 	    <a href="{{reverse_url('ConfessionHome',shop_code)}}" class="text-grey3 confess-wall">
 	    	<i class="pull-left"></i>
@@ -16,6 +17,7 @@
 	    	<span class="confess-circle circle bg-pink text-white hidden">{{confess_count}}</span>
 	    </a>
     </li>
+{% end %}
 {% end %}
 </ul>
 {% end %}

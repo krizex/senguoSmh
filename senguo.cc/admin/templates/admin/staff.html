@@ -18,23 +18,22 @@
 {% end %}
 {% set current_shop=handler.current_shop %}
 <span class="right-title">员工管理</span>
-<div class="staff-classify">
-    <ul class="classify-nav right-nav pull-left">
+<div class="subnav-box">
+    <ul class="subnav pull-left">
         <!--<li class="{{jh_active}}"><a href="{{reverse_url('adminStaffJH')}}?action=JH">仓库拣货</a></li>
         <li class="{{sh1_active}}"><a href="{{reverse_url('adminStaffJH')}}?action=SH1">一级配送</a></li>-->
         <li class="{{sh2_active}}"><a href="{{reverse_url('adminStaffJH')}}?action=SH2">配送员</a></li>
         <li class="{{hire_active}}"><a href="{{reverse_url('adminStaffJH')}}?action=hire">招募员工</a></li>
     </ul>
-    <div class="search-input input-group pull-right">
+    <div class="search-input input-group">
         <form method="post" action="" id="post">
-            <input type="text" value="" placeholder="输入员工编号或姓名进行搜索" class="search-con form-control"/>
-            <input type="submit" value="员工搜索" class="search-btn form-control"/>
+            <input type="text" value="" placeholder="输入员工编号或姓名进行搜索" class="search-con form-control pull-left"/>
+            <input type="submit" value="员工搜索" class="search-btn form-control pull-left"/>
         </form>
     </div>
     <!--<a href="#" class="group-send-btn pull-right" data-toggle="modal" data-target="#messageBox">群发功能</a>-->
 </div>
-<!--staff-classify-end-->
-<div class="staff-mode-lock">
+<div class="mode-lock">
     {% if page=='sh2' %}
         <div class="mode-content unlock-mode pull-left">
             <p class="lock-unlock">已开启仓库配送环节</p>

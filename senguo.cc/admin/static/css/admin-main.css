@@ -14,9 +14,9 @@
 .small-txt{font-size: 14px;color: #666;}
 .acc-money{font-size: 18px;color: #52b43f;margin-left: 40px;}
 .get-money{font-size: 14px;margin-left: 20px;}
-.acc-report{padding-left: 20px;}
+.acc-report{padding:10px;background:#fbfbfb;}
 .acc-report>li{line-height: 20px;font-size: 14px;color: #9d9b9c;}
-.wrap-bm{padding-left: 20px;padding-bottom: 20px;}
+.wrap-bm{padding-bottom: 20px;}
 .tab-lst{border-bottom: 2px solid #f6f6f6;-webkit-box-sizing: border-box;height:28px;}
 .tab-lst>li{font-size: 14px;color: #666;line-height: 28px;float:left;height:28px;width:85px;text-align:center;margin-right: 20px;cursor: pointer;}
 .tab-lst .active{border-bottom: 2px solid #52b43f;color: #52b43f;}

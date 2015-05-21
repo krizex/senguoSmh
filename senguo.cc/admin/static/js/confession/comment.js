@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-}).on('click','.container',function(e){
+}).on('click','body',function(e){
 	if($(e.target).closest('.comment-box').length == 0){
 		$('.comment-box').addClass('hidden');	
 	}

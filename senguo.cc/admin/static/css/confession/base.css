@@ -84,7 +84,7 @@ body{margin:0;font-size:12px;font-family:"microsoft yahei";color:#333;min-height
 .text-white{color:#fff;}
 .text-green{color:#50E3C2;}
 .text-grey3{color:#333;}
-.text-grey6{color:#666;}
+.text-grey6{color:#666 !important;}
 .text-grey9{color:#999;}
 .text-pink{color:#E17163;}
 .bg-white{background:#fff;}
@@ -104,6 +104,7 @@ body{margin:0;font-size:12px;font-family:"microsoft yahei";color:#333;min-height
 .mt50{margin-top:50px;}
 .mr5{margin-right:5px;}
 .mr10{margin-right:10px;}
+.pr0{padding-right:0px !important;}
 table{overflow:hidden;}
 textarea{border:none;}
 h1{font-size:18px;}

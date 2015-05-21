@@ -40,7 +40,10 @@
                 	</div>
                 	<div class="confession">
                 		<p><a href="{{reverse_url('ConfessionComment',shop_code)}}?num={{data['id']}}">{{data['confession']}}</a></p>
-                		<p class="group mt10"><a href="javascript:;" class="fr great ml10">点赞(<span class="num">{{data['great']}}</span>)</a><a href="{{reverse_url('ConfessionComment',shop_code)}}?num={{data['id']}}" class="comment fr  text-grey3">评论(<span class="num">{{data['comment']}}</span>)</a></p>
+                		<p class="group mt10 some-btn pr0">
+                			<a href="{{reverse_url('ConfessionComment',shop_code)}}?num={{data['id']}}" class="comment-btn fr  text-grey3 ml10"><i class="fl"></i><span class="num">{{data['comment']}}</span></a>
+                			<a href="javascript:;" class="fr great-btn"><i class="fl"></i><span class="num">{{data['great']}}</span></a>
+                		</p>
                 	</div>
                 	<p class="mt5 group mr5"><span class="fr">{{data['time']}}&nbsp;&nbsp;{{data['floor']}}楼</span></p>
                </li>

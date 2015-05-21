@@ -3,8 +3,8 @@
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-user.css')}}"/>{% end %}
 {% block content %}
 <span class="right-title">用户管理</span>
-<div class="orders-list-title right-title2 clearfix">
-    <ul class="right-nav pull-left">
+<div class="subnav-box clearfix">
+    <ul class="subnav pull-left">
         <li class="all_user">
             <a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0">所有用户</a>
         </li>
