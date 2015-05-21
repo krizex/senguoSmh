@@ -164,12 +164,13 @@ button:focus{outline:0;}
 
 .input-sty{background:#f2f2f2;border-radius:2px;}
 
-.mt3{margin-top:3px !important;}
+.mt1{margin-top:1px !important;}
 .mt5{margin-top:5px !important;}
 .m-b60{margin-bottom:60px;}
 .m-r5{margin-right:5px;}
 .m-r10{margin-right:10px;}
 .m-b5{margin-bottom:5px !important;}
+.m-b8{margin-bottom:8px !important;}
 .m-b10{margin-bottom:10px !important;}
 .m-b20{margin-bottom:20px !important;}
 .m-b0{margin-bottom:0px !important;}
