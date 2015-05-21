@@ -140,15 +140,13 @@ class ShopList(FruitzoneBaseHandler):
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			#print('page_total',page_total)
 			q = q.offset(page * _page_count).limit(_page_count).all()
-			shops = self.get_data(q)
-			
+
 		elif "province" in self.args:
 			# print('province')
 			q = q.filter_by(shop_province=self.args["province"])
 			shop_count = q.count()
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
-			shops = self.get_data(q)
 		else:
 			print("[店铺列表]城市不存在")
 
@@ -171,7 +169,7 @@ class ShopList(FruitzoneBaseHandler):
 		#     q = q.limit(self.args["limit"])
 		# else:
 		#     q = q.limit(self._page_count)
-		
+		shops = self.get_data(q)
 		if shops == [] or len(shops)<_page_count:
 			nomore =True
 		return self.send_success(shops=shops,nomore = nomore)
