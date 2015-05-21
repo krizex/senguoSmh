@@ -126,7 +126,7 @@ class ConfessionHome(CustomerBaseHandler):
 			nomore = False
 			datalist = []
 			confession = self.session.query(models.ConfessionWall).filter_by(shop_id=shop_id,status = 1).\
-			order_by(models.ConfessionWall.comment.desc()).offset(page*page_size).limit(page_size).all()
+			order_by(models.ConfessionWall.great.desc()).offset(page*page_size).limit(page_size).all()
 			for data in confession:
 				info = self.session.query(models.Customer).filter_by(id=data.customer_id).first()
 				user = info.accountinfo.nickname
