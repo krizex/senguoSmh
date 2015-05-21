@@ -85,8 +85,18 @@
 </div>
 <div class="loading text-center text-grey9 font12  text-green mt10 mb10" style="display:none">~努力加载中 ( > < )~</div>
 <div class="no_more text-center text-grey9 font12  text-green mt10 mb10" style="display:none">~没有更多了呢 ( > < )~</div>
+<div class="wrap-loading-box hidden">
+    <div class="loading-box">
+        <div class="loader">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+    </div>
+</div>
 {% end %}
 {% block bottom %}
+<script src="http://api.map.baidu.com/api?v=2.0&ak=2595684c343d6499bf469da8a9c18231"></script>
 <script src="{{static_url('js/area.js')}}"></script>
 <script src="{{static_url('js/fruitzone-list.js')}}"></script>
 {% end %}

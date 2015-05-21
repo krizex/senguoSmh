@@ -9,14 +9,15 @@
 .filter_search  .search-box{width:80%;}
 .filter_search .search-input{width:88%;height:30px;border:none;background:#f4f4f4;border-radius:20px;text-indent:10px;}
 .filter_search  .btn{padding:0px;background:#fff;width:12%;display:inline-block;line-height:30px;}
-
+.pr{position: relative;}
 .shoplist_box{width:100%;clear:both;}
 .shoplist_box .item{width:100%;margin-top:8px;padding:5px 15px;float:left;}
-.shoplist_box .item .logo_box{width:50px;height:50px;border-top-left-radius:999px;border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px;background-clip: padding-box;border-radius: 999px;overflow:hidden;border:4px solid #aeddda;}
-.shoplist_box .item .shop_logo{width:42px;height:42px;border-top-left-radius:999px;border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px;border-radius: 999px;}
-.shoplist_box .item .info{margin-left:15px;}
-.shoplist_box .item .shop_name{margin:5px 0 3px;}
+.shoplist_box .item .logo_box{position:absolute;top:0;left:0;width:56px;height:56px;border-top-left-radius:999px;border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px;background-clip: padding-box;border-radius: 999px;overflow:hidden;border:2px solid #aeddda;}
+.shoplist_box .item .shop_logo{width:52px;height:52px;border-top-left-radius:999px;border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px;border-radius: 999px;}
+.shoplist_box .item .info{padding-left: 66px;width: 100%;}
+.shoplist_box .item .shop_name{margin-top:2px;}
 .shoplist_box .item .sty1{line-height:20px;}
+.shop-intro{padding-top: 8px;border-top:1px solid #d8dad9;margin-top: 10px;}
 .area_sty{width:100%;height:100%;background:rgba(0,0,0,0.5);position:fixed;top:0;z-index:999;overflow:hidden;min-width:320px;max-width:800px;}
 .area_list{position:relative;width:100%;}
 .area_list li{width:100%;float:left;overflow:hidden;}
@@ -39,5 +40,43 @@
 .pcenter-btn{display: block;position: absolute;right:10px;top:4px;width: 34px;}
 .pcenter-btn>i{display: block;width: 20px;height: 20px;background-image: url('/static/svg/i_per.png');background-repeat: no-repeat;background-size: 20px 20px;margin:0 auto;}
 .pcenter-btn>span{font-size: 12px;color: #fff;display: block;text-align: center;line-height: 14px;}
-.shop_auth{display:inline-block;color:#fff;text-align:center;background-color:#7cc066;font-size:12px;margin-left:10px;padding:0 2px;}
+.shop_auth{display:inline-block;width:56px;height:18px;line-height:16px;color:#fff;text-align:center;font-size:12px;margin-left:4px;color: #96c1a4;border: 1px solid #96c1a4;border-radius: 16px;-webkit-transform:scale(.8);}
+.shop_attr{color: #999;font-size: 12px;line-height: 18px;}
+.location{display: inline-block;width: 15px;height: 18px;float:left;background-image: url('/static/images/icon_list.png');background-repeat: no-repeat;background-size: 92%;background-position: 0 -24px;}
 
+.wrap-loading-box{width: 100%;height: 100%;position: fixed;width: 100%;max-width: 800px;min-width: 320px;background-color: rgba(255,255,255,.6);top: 0;}
+.loading-box{position: fixed;z-index:9999;top: 50%;left:50%;-webkit-transform:translate(-50%, -50%);display: -webkit-flex;display: flex;-webkit-justify-content: center;justify-content: center;}
+.loading-box .loader {-webkit-align-self: center;align-self: center;width: 99px; text-indent: -9999em;}
+.loading-box .ball {border-radius: 50%;background-color: #fe6a7c;width: 10px; height: 10px;position: absolute;top: 0;left: 0;-webkit-animation: loading 1.2s linear infinite; animation: loading 1.2s linear infinite;}
+.loading-box .ball:nth-of-type(2) {-webkit-animation-delay: 0.4s;animation-delay: 0.4s;}
+.loading-box .ball:nth-of-type(3) {-webkit-animation-delay: 0.8s;animation-delay: 0.8s;}
+@-webkit-keyframes loading {
+    0% {
+        opacity: 0;
+        -webkit-transform: scale(0.5);
+        transform: scale(0.5);
+    }
+    20% {
+        opacity: 1;
+        -webkit-transform: scale(1);
+        transform: scale(1);
+    }
+    40% {
+        -webkit-transform: translate3d(33px, 0, 0);
+        transform: translate3d(33px, 0, 0);
+    }
+    60% {
+        -webkit-transform: translate3d(66px, 0, 0);
+        transform: translate3d(66px, 0, 0);
+    }
+    80% {
+        -webkit-transform: translate3d(99px, 0, 0);
+        transform: translate3d(99px, 0, 0);
+        opacity: 1;
+    }
+    100% {
+        -webkit-transform: translate3d(99px, 0, 0) scale(0.5);
+        transform: translate3d(99px, 0, 0) scale(0.5);
+        opacity: 0;
+    }
+}

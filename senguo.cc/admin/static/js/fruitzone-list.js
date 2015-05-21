@@ -1,4 +1,4 @@
-
+var pCode = 0,cCode = 0;
 $(document).ready(function(){
     var city_id = $("#city_id").val();
     //search
@@ -116,6 +116,37 @@ $(document).ready(function(){
     });
 });
 
+//获取用户当前地理位置
+function initLocation(){
+    if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(function(position){
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;
+
+        },function(error){
+            if(error.code == error.PERMISSION_DENIED){
+                console.log("您拒绝了地理位置信息服务");
+            }
+        });
+    }
+}
+//根据省市名称获取code
+function initProviceAndCityCode(p, c){
+    $.each(window.dataObj.area,function(name,value){
+        if(value.name==p){
+            pCode = name;
+            if(value['city']){
+                $.each(value.city,function(i,n){
+                    if(n.name==c){
+                        cCode = i;
+                        return false;
+                    }
+                })
+            }
+            return false;
+        }
+    })
+}
 function add_bg(){
     $('.area_box').addClass('area_sty');
     $('body').css({'overflow':'hidden'}).attr({'onmousewheel':'return false'});
@@ -130,17 +161,17 @@ var shopItem=function (shops){
     var shop_item=window.dataObj.shop_item;
     var $item = '<li class="item bg-white">'+
                             '<a href="{{link}}" class="shop_link">'+
-                            '<div class="clearfix">'+
+                            '<div class="clearfix pr">'+
                                 '<div class="logo_box pull-left">'+
                                     '<img src="{{logo_url}}" class="shop_logo lazy_img"/>'+
                                 '</div>'+
                                 '<div class="pull-left info">'+
                                     '<p class="shop_name font14">{{shop_name}}<span class="shop_auth  {{hide}}">{{shop_auth}}</span></p>'+
-                                    '<p class="text-grey9">店铺号：<span class="shop_code">{{shop_code}}</span></p>'+
+                                    '<p class="shop_attr">满意度 98% | 评价 33 | 商品数 990</p>'+
+                                    '<p class="text-grey9"><i class="location"></i><span class="shop_code">{{address}}</span></p>'+
                                 '</div>'+
                             '</div>'+
-                            '<p class="sty1 mt10 clearfix">地址：<span class="address">{{address}}</span></p>'+
-                            '<p class="sty1">店铺简介：<span class="intro">{{intro}}</span></p>'+
+                            '<p class="sty1 shop-intro">店铺简介：<span class="intro">{{intro}}</span></p>'+
                             '</a>'+
                         '</li>';
     for(var key in shops){
@@ -173,11 +204,8 @@ var shopItem=function (shops){
                 if(!logo_url) {
                     logo_url='/static/design_img/Li_l.png';
                 }
-                if(shop_auth==1||shop_auth==4){
-                    shop_auth='个人认证';
-                }
-                else if(shop_auth==2||shop_auth==3){
-                    shop_auth='企业认证';
+                if(shop_auth>0){
+                    shop_auth='已认证';
                 }
                 else {
                     hide='hidden';
