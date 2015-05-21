@@ -195,7 +195,13 @@ class ConfessionComment(CustomerBaseHandler):
 
 		if confess_list:
 			confess_time = confess_list.create_time.strftime('%Y-%m-%d %H:%M')
-			confess.append({'id':confess_list.id,'user':confess_customer.accountinfo.nickname,'imgurl':confess_customer.accountinfo.headimgurl_small,\
+			if confess_list.confession_type == 0 :
+				user = '匿名用户'
+				imgurl = '/static/images/goods_good.png'
+			else :
+				user = confess_customer.accountinfo.nickname
+				imgurl = confess_customer.accountinfo.headimgurl_small
+			confess.append({'id':confess_list.id,'user':user,'imgurl':imgurl,\
 				'time':confess_time,'name':confess_list.other_name,'type':confess_list.confession_type,'confession':confess_list.confession,'great':confess_list.great,\
 				'comment':confess_list.comment,'floor':confess_list.floor,'sex':confess_customer.accountinfo.sex})
 		if comment_list:
@@ -258,6 +264,7 @@ class ConfessionComment(CustomerBaseHandler):
 				_type = 1,
 				comment_author_id = comment.customer_id
 			)
+			confession.comment = confession.comment +1
 			confession.scan = 0
 			self.session.add(reply)
 			self.session.commit()

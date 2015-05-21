@@ -244,7 +244,7 @@ class Home(CustomerBaseHandler):
 				shop_balance = 0
 		count = {3: 0, 4: 0, 5: 0, 6: 0}  # 3:未处理 4:待收货，5：已送达，6：售后订单
 		for order in self.current_user.orders:
-			if order.status == 1:
+			if order.status == 1 or order.status == -1:
 				count[3] += 1
 			elif order.status in (2, 3, 4):
 				count[4] += 1
@@ -1734,10 +1734,12 @@ class Order(CustomerBaseHandler):
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
 			if not order:return self.send_error(404)
 			if order.status == 0:
-				return self.send_fail("订单已取消，不能重复操作")
+				return self.send_fail("订单已经取消，不能重复操作")
 			if order.pay_type == 3 and order.status!=-1:
-				return self.send_fail("在线支付订单 暂时不允许取消 如有疑问 请直接与店家联系")
+				return self.send_fail("在线支付『已付款』的订单暂时不能取消，如有疑问请直接与店家联系")
+			print(order.status,"==================================")
 			order.status = 0
+			print(order.status,"----------------------------------------")
 			# recover the sale and storage
 			# woody
 			# 3.27
