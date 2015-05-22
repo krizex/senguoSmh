@@ -57,7 +57,9 @@ li:last-child{border-bottom:0px;}
 .mt4{margin-top: 4px !important;}
 
 .arr-right{background-image: url('../images/arr-right.png');width:8px;display:block;margin-left:6px;height:14px;background-size:contain;background-repeat:no-repeat;position:relative;top:16px;}
-.shopinfo-icon{width:20px;height:20px;background:url('../images/icon_shop.png');margin-right:10px;background-size:20px 20px;margin-top:13px;}
+.shop-icon{width:20px;height:20px;background:url('../images/icon_shop.png');margin-right:10px;background-size:20px 20px;margin-top:13px;}
+.staff-icon{width:20px;height:20px;background:url('../images/icon_staff.png');margin-right:10px;background-size:20px 20px;margin-top:13px;}
+.comment-icon{width:20px;height:20px;background:url('../images/icon_comment.png');margin-right:10px;background-size:20px 20px;margin-top:13px;}
 .title{height:45px;line-height:45px;}
 .box-style{padding:0 10px;}
 .bm-line{border-bottom:1px solid #f2f2f2;}
