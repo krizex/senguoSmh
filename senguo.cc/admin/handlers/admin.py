@@ -4,7 +4,7 @@ import tornado.web
 from settings import *
 import time
 import datetime
-from sqlalchemy import func, desc, and_, or_, exists
+from sqlalchemy import func, desc, and_, or_, exists,not_
 import qiniu
 from dal.dis_dict import dis_dict
 from libs.msgverify import gen_msg_token,check_msg_token
@@ -74,7 +74,8 @@ class Home(AdminBaseHandler):
 		shop_auth =  self.current_shop.shop_auth
 		if shop_auth in [1,2]:
 			show_balance = True
-		order_sum = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).count()
+		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
+			not_(models.Order.status.in_([-1,0]))).count()
 		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
 		# self.current_shop.new_order_sum = order_sum
 
@@ -106,7 +107,8 @@ class Realtime(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		order_sum,new_order_sum,follower_sum,new_follower_sum,on_num = 0,0,0,0,0
-		order_sum = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).count()
+		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
+			not_(models.Order.status.in_([-1,0]))).count()
 		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
 		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
 		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
@@ -149,7 +151,8 @@ class OrderStatic(AdminBaseHandler):
 									models.Order.pay_type). \
 			filter(models.Order.shop_id == self.current_shop.id,
 				   models.Order.create_date >= start_date,
-				   models.Order.create_date <= end_date).all()
+				   models.Order.create_date <= end_date,
+				   not_(models.Order.status.in_([-1,0]))).all()
 
 		data = {}
 		for x in range(1, end_date.day+1):  # 初始化数据
@@ -184,7 +187,7 @@ class OrderStatic(AdminBaseHandler):
 	def order_time(self):
 		type = self.args["type"]
 		q = self.session.query(func.hour(models.Order.create_date), func.count()).\
-				filter_by(shop_id=self.current_shop.id)
+				filter(models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0])))
 		if type == 1:  # 累计数据
 			pass
 		elif type == 2:  # 昨天数据
@@ -208,7 +211,7 @@ class OrderStatic(AdminBaseHandler):
 	def recive_time(self):
 		type = self.args["type"]
 		q = self.session.query(models.Order.type, models.Order.start_time, models.Order.end_time).\
-			filter_by(shop_id=self.current_shop.id)
+			filter(models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0])))
 		if type == 1:
 			orders = q.all()
 		elif type == 2:
@@ -242,7 +245,7 @@ class OrderStatic(AdminBaseHandler):
 		s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
 			filter_by(shop_id=self.current_shop.id).\
 			filter(models.Order.create_date >= start_date,
-				   models.Order.create_date <= end_date).\
+				   models.Order.create_date <= end_date,not_(models.Order.status.in_([-1,0]))).\
 			group_by(func.year(models.Order.create_date),
 					 func.month(models.Order.create_date),
 					 func.day(models.Order.create_date)).\
@@ -250,7 +253,7 @@ class OrderStatic(AdminBaseHandler):
 
 		# 总订单数
 		total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
-			filter_by(shop_id=self.current_shop.id).\
+			filter(models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0]))).\
 			filter(models.Order.create_date <= end_date).all()
 		total = list(total[0])
 
@@ -259,7 +262,7 @@ class OrderStatic(AdminBaseHandler):
 		s_old = self.session.query(models.Order.create_date, func.count()).\
 			filter(models.Order.create_date >= start_date,
 				   models.Order.create_date <= end_date,
-				   models.Order.customer_id.in_(ids)).\
+				   models.Order.customer_id.in_(ids),not_(models.Order.status.in_([-1,0]))).\
 			group_by(func.year(models.Order.create_date),
 					 func.month(models.Order.create_date),
 					 func.day(models.Order.create_date)).\
@@ -269,7 +272,7 @@ class OrderStatic(AdminBaseHandler):
 		old_total = self.session.query(models.Order).\
 			filter_by(shop_id=self.current_shop.id).\
 			filter(models.Order.create_date <= end_date,
-				   models.Order.customer_id.in_(ids)).count()
+				   models.Order.customer_id.in_(ids),not_(models.Order.status.in_([-1,0]))).count()
 
 
 		data = []
@@ -299,7 +302,7 @@ class OrderStatic(AdminBaseHandler):
 			if total[1] <= 0:
 				break
 		first_order = self.session.query(models.Order).\
-			filter_by(shop_id=self.current_shop.id).\
+			filter(models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0]))).\
 			order_by(models.Order.create_date).first()
 		if first_order:  # 新开的店铺一个order都没有，所以要判断一下
 			page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
@@ -310,7 +313,7 @@ class OrderStatic(AdminBaseHandler):
 	# 老用户的id
 	def old_follower_ids(self, shop_id):
 		q = self.session.query(models.Order.customer_id).\
-			filter_by(shop_id=shop_id).\
+			filter(models.Order.shop_id==shop_id,not_(models.Order.status.in_([-1,0]))).\
 			group_by(models.Order.customer_id).\
 			having(func.count(models.Order.customer_id) > 1).all()
 		ids = [x[0] for x in q]
@@ -502,8 +505,8 @@ class Order(AdminBaseHandler):
 			count = self._count()
 			atonce = count[11]
 			ontime = count[21]
-			new_order_sum = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).count() - \
-			(self.current_shop.new_order_sum or 0)
+			new_order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
+				not_(models.Order.status.in_([-1,0]))).count() -(self.current_shop.new_order_sum or 0)
 			return self.send_success(atonce=atonce,ontime=ontime,new_order_sum=new_order_sum)
 		elif self.args['action'] == "allreal": #全局实时更新变量
 			atonce,msg_num,is_balance,new_order_sum,user_num,staff_sum = 0,0,0,0,0,0
@@ -513,19 +516,21 @@ class Order(AdminBaseHandler):
 				models.Order.status == 6).count() - self.current_shop.old_msg
 			is_balance = self.current_shop.is_balance
 			staff_sum = self.session.query(models.HireForm).filter_by(shop_id = self.current_shop.id).count()
-			new_order_sum = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).count() - \
-			(self.current_shop.new_order_sum or 0)
+			new_order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
+				not_(models.Order.status.in_([-1,0]))).count() - (self.current_shop.new_order_sum or 0)
 			user_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count() - \
 			(self.current_shop.new_follower_sum or 0)
 			#new_follower_sum
 			return self.send_success(atonce=atonce,msg_num=msg_num,is_balance=is_balance,new_order_sum=new_order_sum,user_num=user_num,staff_sum=staff_sum)
 		elif order_type == 10:  # 搜索订单：为了格式统一，order_status为order.num
-			orders = self.session.query(models.Order).\
-				filter_by(num=order_status, shop_id=self.current_shop.id).all()
+			orders = self.session.query(models.Order).filter(models.Order.num==order_status,\
+				models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0]))).all()
 			order_type = 1
-			count = self.session.query(models.Order).filter_by(type=order_type,status=order_status,shop_id=self.current_shop.id).count()
+			count = self.session.query(models.Order).filter(models.Order.type==order_type,models.Order.status==order_status,\
+				models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0]))).count()
 		elif order_status == 1:
-			order_sum = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).count()
+			order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
+				not_(models.Order.status.in_([-1,0]))).count()
 			new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
 			self.current_shop.new_order_sum = order_sum
 			orders = [x for x in self.current_shop.orders if x.type == order_type and x.status == 1]
@@ -554,8 +559,9 @@ class Order(AdminBaseHandler):
 
 		elif order_status == 3:
 			try:
-				orderlist = self.session.query(models.Order).order_by(desc(models.Order.arrival_day),models.Order.arrival_time).\
-				filter_by(type = order_type,shop_id = self.current_shop.id).all()
+				orderlist = self.session.query(models.Order).order_by(desc(models.Order.arrival_day),models.Order.arrival_time\
+					).filter(models.Order.type == order_type,models.Order.shop_id == self.current_shop.id,\
+					not_(models.Order.status.in_([-1,0]))).all()
 			except:
 				return self.send_fail("orderlist error")
 			# orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in (5, 6)]
@@ -780,8 +786,8 @@ class Order(AdminBaseHandler):
 					except:
 						self.send_fail("shop_point error")
 					try:
-						order_count = self.session.query(models.Order).filter_by(customer_id = customer_id,\
-							shop_id = shop_id).count()
+						order_count = self.session.query(models.Order).filter(models.Order.customer_id == customer_id,\
+							models.Order.shop_id == shop_id,not_(models.Order.status.in_([-1,0]))).count()
 					except:
 						self.send_fail("find order by customer_id and shop_id error")
 					# the first order , shop_point add by 5
@@ -1301,7 +1307,7 @@ class Staff(AdminBaseHandler):
 					for hire in other_hire:
 						hire.default_staff =0
 			else:
-		 		hire_link.default_staff=0
+				hire_link.default_staff=0
 			self.session.commit()
 		else:
 			return self.send_fail()
@@ -1315,16 +1321,19 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 		action = self.args["action"]
 		subpage=''
 		if action == 'customer_order':
-			orders = self.session.query(models.Order).filter_by(
-				customer_id=self.args['id'], shop_id=self.current_shop.id).all()
+			orders = self.session.query(models.Order).filter(
+				models.Order.customer_id==self.args['id'], models.Order.shop_id==self.current_shop.id,\
+				not_(models.Order.status.in_([-1,0]))).all()
 			subpage='user'
 		elif action == 'SH2_order':
-			orders = self.session.query(models.Order).filter_by(
-				SH2_id=self.args['id'], shop_id=self.current_shop.id).all()
+			orders = self.session.query(models.Order).filter(
+				models.Order.SH2_id==self.args['id'], models.Order.shop_id==self.current_shop.id,\
+				not_(models.Order.status.in_([-1,0]))).all()
 			subpage='staff'
 		elif action == 'order':
-			orders = self.session.query(models.Order).filter_by(
-				num=self.args['id'], shop_id=self.current_shop.id).all()
+			orders = self.session.query(models.Order).filter(
+				models.Ordernum==self.args['id'], models.Order.shop_id==self.current_shop.id,\
+				not_(models.Order.status.in_([-1,0]))).all()
 			subpage='order'
 		else:
 			return self.send_error(404)
