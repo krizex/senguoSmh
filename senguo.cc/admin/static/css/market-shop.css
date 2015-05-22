@@ -4,8 +4,8 @@ p{margin-bottom:0px;}
 .info1{padding:10px;}
 .shop-logo{margin-right:-95px;}
 .info1 .info{padding-left:95px !important;}
-.info2{padding:10px;border-top:1px solid #f7f7f7;}
-.info2 li{padding:0px;border-right:1px solid #f3f3f3;}
+.info2{padding:10px;border-top:1px solid #f2f2f2;}
+.info2 li{padding:0px;border-right:1px solid #f2f2f2;}
 .info2 li:last-child{border-right:0px;}
 .shop-logo{width:85px;height:85px;overflow:hidden;}
 .shop-logo img{width:100%;}
@@ -16,7 +16,7 @@ p{margin-bottom:0px;}
 .staff-img{margin-top:10px;margin-bottom:5px;}
 .staff-img li{margin-right:5px;}
 .staff-img li img{width:50px;height:50px;border-radius:50%;}
-.user-comment .comment-item{border-top:1px solid #f7f7f7;padding:8px 0;}
+.user-comment .comment-item{border-top:1px solid #f2f2f2;padding:8px 0;}
 .user-comment .img-box{width:40px;height:40px;margin-right:-50px;overflow:hidden;}
 .user-comment .con{padding-left:50px;}
 .user-comment .img{width:40px;height:40px;border-radius:50%;}
