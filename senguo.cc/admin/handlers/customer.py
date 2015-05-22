@@ -248,7 +248,7 @@ class Home(CustomerBaseHandler):
 				count[3] += 1
 			elif order.status in (2, 3, 4):
 				count[4] += 1
-			elif order.status in (5, 6):
+			elif order.status == 5:
 				count[5] += 1
 			elif order.status == 10:
 				count[6] += 1
@@ -1700,8 +1700,8 @@ class Order(CustomerBaseHandler):
 			for x in orderlist:
 				if x.status == 5:
 					order5.append(x)
-				if x.status == 6:
-					order6.append(x)
+				#if x.status == 6:
+				#	order6.append(x)
 			orders = order5 + order6
 			# print(len(orders),'已完成订单数量')
 			# for order in orders:
