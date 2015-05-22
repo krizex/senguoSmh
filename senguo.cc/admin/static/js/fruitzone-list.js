@@ -1,4 +1,4 @@
-var pCode = 0,cCode = 0,refuse_flag = true;
+var ulat = 0,ulng = 0,refuse_flag = true;
 $(document).ready(function(){
     var city_id = $("#city_id").val();
     //search
@@ -114,6 +114,7 @@ $(document).ready(function(){
         $('.city_choose').removeClass('city_choosed');
         $('.city_name').text('城市');
     });
+    //条件选择
     $(document).on("click",".school,.comme",function(){
         $(this).children(".c-list").toggle();
     });
@@ -126,6 +127,9 @@ $(document).ready(function(){
         var action = $(this).attr("data-action");
         $(this).closest(".choose-item").children("span").text($(this).html());
         $(this).closest("ul").hide();
+        if(action==""){ //选择最近
+
+        }
     });
 }).on("click","#search-btn",function(){
     $("#search-box").toggle();
@@ -135,8 +139,8 @@ $(document).ready(function(){
 function initLocation(){
     if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(function(position){
-            var lat = position.coords.latitude;
-            var lng = position.coords.longitude;
+            ulat = position.coords.latitude;
+            ulng = position.coords.longitude;
 
         },function(error){
             if(error.code == error.PERMISSION_DENIED){
@@ -148,6 +152,7 @@ function initLocation(){
 }
 //根据省市名称获取code
 function initProviceAndCityCode(p, c){
+    var pCode = 0,cCode = 0;
     $.each(window.dataObj.area,function(name,value){
         if(value.name==p){
             pCode = name;
@@ -162,6 +167,21 @@ function initProviceAndCityCode(p, c){
             return false;
         }
     })
+    return {pCode:pCode,cCode:cCode};
+}
+/*根据经纬度获取距离*/
+function getDist(lat,lng){
+    if(lat == 0) return false;
+    var res = '';
+    var pointA = new BMap.Point(ulat,ulng);  // 用户坐标
+    var pointB = new BMap.Point(lat,lng);  // 店铺坐标
+    var distance = map.getDistance(pointA,pointB);
+    if(distance<1000){
+        res = distance.toFixed(0)+"m";
+    }else{
+        res = (distance/1000).toFixed(1)+"km";
+    }
+    return res;
 }
 function add_bg(){
     $('.area_box').addClass('area_sty');
@@ -184,7 +204,7 @@ var shopItem=function (shops){
                                 '<div class="pull-left info">'+
                                     '<p class="shop_name font14">{{shop_name}}<span class="shop_auth  {{hide}}">{{shop_auth}}</span></p>'+
                                     '<p class="shop_attr">满意度 {{satisfy}} | 评价 {{comment_count}} | 商品数 {{goods_count}}</p>'+
-                                    '<p class="text-grey9 adre-box"><span class="distance">7.5km</span><i class="location"></i><span class="shop_code">{{address}}</span></p>'+
+                                    '<p class="text-grey9 adre-box"><span class="distance {{dishide}}">{{distance}}</span><i class="location"></i><span class="shop_code">{{address}}</span></p>'+
                                 '</div>'+
                             '</div>'+
                             '<p class="sty1 shop-intro">店铺简介：<span class="intro">{{intro}}</span></p>'+
@@ -203,20 +223,31 @@ var shopItem=function (shops){
                 var comment_count = shops[key]['comment_count'];
                 var goods_count = shops[key]['goods_count'];
                 var status = shops[key]['status'];
+                var lat = shops[key]['lon'];//经度
+                var lon = shops[key]['lat'];//纬度
                 var area=window.dataObj.area;
                 var hide='';
                 var statu = '';
+                var dishide = '';
+                var distance = '';
+                var link = '/'+shop_code;
+                if(lat == 0 || ulat == 0){
+                    dishide = "hidden";
+                }else{
+                    distance = getDist(lat,lon);
+                }
                 if(province==city) {
                     city='';
                 }
                 if(status == 2){
                     statu = 'shop-waiting';
+                    link = 'javascript:;';
                 }else if(status == 3){
                     statu = 'shop-rest';
                 }
                 for(var key in area){
                     if(key==province){
-                        province=area[key]['name']
+                        province=area[key]['name'];
                         if(city!=''){
                             var cities=area[key]['city'];
                             for(var code in cities){
@@ -238,7 +269,7 @@ var shopItem=function (shops){
                 }
                 var render=template.compile($item);
                 var content=render({
-                    link:'/'+shop_code,
+                    link:link,
                     logo_url:logo_url+'?imageView/1/w/100/h/100',
                     shop_name:name,
                     shop_code:shop_code,
@@ -249,7 +280,9 @@ var shopItem=function (shops){
                     goods_count:goods_count,
                     intro:intro,
                     hide:hide,
-                    statu:statu
+                    statu:statu,
+                    dishide:dishide,
+                    distance:distance
                 });
                 $('.shoplist').append(content);
             }

@@ -734,6 +734,7 @@ class Market(CustomerBaseHandler):
 		# self.current_shop = shop
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
+		shop_status = shop.status
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		# self.set_cookie("market_shop_name",str(shop.shop_name))
@@ -807,7 +808,7 @@ class Market(CustomerBaseHandler):
 						   context=dict(cart_count=cart_count, subpage='home', menus=shop.menus,notices=notices,\
 							shop_name=shop.shop_name,w_follow = w_follow,page_count = page_count,fruit_page = fruit_page,\
 							dry_page = dry_page ,mgoods_page = mgoods_page,cart_fs=cart_fs,cart_ms=cart_ms,\
-							shop_logo = shop_logo))
+							shop_logo = shop_logo,shop_status=shop_status))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:int","page?:int","menu_id?:int")

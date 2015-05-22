@@ -14,6 +14,7 @@
     window.dataObj.cart_fs = {% raw json.dumps(context["cart_fs"]) %}
     window.dataObj.cart_ms = {% raw json.dumps(context["cart_ms"]) %}
 </script>
+<input type="hidden" id="shop_status" value="{{context['shop_status']}}"/>
 <input type="hidden" id="if_focus" value="{{context['w_follow']}}"/>
 <input type="hidden" id="page_count" value="{{context['page_count']}}"/>
 <input type="hidden" id="fruit_page" value="{{context['fruit_page']}}"/>
