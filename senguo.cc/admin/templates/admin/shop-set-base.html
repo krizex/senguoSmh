@@ -11,6 +11,7 @@
 {% set cert_active ='' %}
 {% set pay_active ='' %}
 {% set phone_active ='' %}
+{% set admin_active= ''%}
 
 {% if shopSubPage == 'delivery_set'  %}
     {% set delivery_active ='active' %}
@@ -24,6 +25,8 @@
     {% set pay_active ='active' %}
 {% elif shopSubPage =='phone_set' %}
     {% set phone_active ='active' %}
+{% elif shopSubPage =='admin_set' %}
+    {% set admin_active ='active' %}
 {% else %}
     {% set receipt_active ='active' %}
 {% end %}
@@ -39,23 +42,11 @@
         <li class="{{cert_active}}" id=""><a href="{{reverse_url('adminShopAuth')}}">店铺认证</a></li>
          {% if current_shop.shop_auth !=0 %}
         <li class="{{pay_active}}"><a href="{{reverse_url('adminConfig')}}?action=pay">支付方式</a></li>
-        {% end %}
         <li class="{{phone_active}}"><a href="{{reverse_url('adminConfig')}}?action=phone">短信验证</a></li>
+       <!--  <li class="{{admin_active}}"><a href="{{reverse_url('adminConfig')}}?action=admin">管理员设置</a></li> -->
+        {% end %} 
     </ul>
 </div>
-{% if shopSubPage != 'cert_set' and shopSubPage != 'pay_set' and shopSubPage !='info_set'  and shopSubPage !='phone_set'%}
-<div class="set-description">
-    {% if shopSubPage == 'delivery_set' %}
-    <p>通过编辑配送地址，确定前台商城用户以及员工责任区域的地址选择项</p>
-    <p>地址增加后将不能删除和修改。</p>
-    {% elif shopSubPage == 'notice_set' %}
-    <p>编辑和修改商城水果公告栏的内容</p>
-    <p>摘要为公告栏直接显示的内容，用户可点击查看详情。</p>
-    {% elif shopSubPage == 'receipt_set' %}
-    <p>修改小票附加信息</p>
-    {% end %}
-</div>
-{% end %}
 {% block setcontent %}{% end %}
 {% end %}
 {% block bottom %}

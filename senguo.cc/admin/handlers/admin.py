@@ -1410,6 +1410,8 @@ class Config(AdminBaseHandler):
 				return self.redirect(self.reverse_url('adminShopConfig'))
 		elif action == "phone":
 			return self.render('admin/shop-phone-set.html',context=dict(subpage='shop_set',shopSubPage='phone_set'))
+		elif action == "admin":
+			return self.render('admin/admin-set.html',context=dict(subpage='shop_set',shopSubPage='admin_set'))
 		else:
 			return self.send_error(404)
 
@@ -1503,6 +1505,7 @@ class Config(AdminBaseHandler):
 			else:
 				active = 1
 			self.current_shop.config.update(session=self.session,text_message_active=active)
+		
 		else:
 			return self.send_error(404)
 		return self.send_success()
