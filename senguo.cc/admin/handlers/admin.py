@@ -1792,6 +1792,8 @@ class ShopConfig(AdminBaseHandler):
 			shop.deliver_area = data["deliver_area"]
 		elif action == "edit_have_offline_entity":
 			shop.have_offline_entity = data["have_offline_entity"]
+		elif action =="shop_status":
+			shop.status = int(data["shop_status"])
 		self.session.commit()
 		return self.send_success()
 

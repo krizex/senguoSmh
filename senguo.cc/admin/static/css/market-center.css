@@ -12,7 +12,7 @@
 .title{height:45px;line-height:45px;}
 .title2{height:30px;line-height:30px;margin:10px 0;}
 
-.center-nav{width:100%;padding:10px 0;border-top:1px solid #ddd;}
+.center-nav{width:100%;padding:12px 0;border-top:1px solid #ddd;}
 .center-nav li{border-left:1px solid #ddd;}
 .center-nav li:first-child{border-left:0px;}
  p{margin-bottom:0px !important;}
@@ -28,8 +28,14 @@
 .address-box .modal-body input{background:#f2f2f2;height:30px;width:165px;line-height:30px;text-indent:5px;}
 
 .collect-icon{width:20px;height:15px;background:url('../svg/icon_list-2.png') -99px -27px;margin-right:5px;background-size:140px;margin-top:15px;}
-.address-icon{width:20px;height:15px;background:url('../svg/icon_list-2.png') -99px -46px;margin-right:5px;background-size:140px;margin-top:15px;}
-.order-icon{width:20px;height:18px;background:url('../svg/icon_list-2.png') -99px -1px;margin-right:5px;background-size:140px;margin-top:14px;}
+.address-icon{width:20px;height:20px;background:url('../svg/icon_list-2.png') -98px -24px;margin-right:10px;background-size:140px;margin-top:13px;}
+.order-icon{width:21px;height:20px;background:url('../svg/icon_list-2.png') -98px 0;margin-right:10px;background-size:140px;margin-top:13px;}
+
+.order-num{position:absolute;display:inline-block;min-width:16px;height:16px;line-height:17px;border-radius:8px;font-size:10px;margin:-4px -6px;padding:0 4px;}
+.order1-icon{width:20px;height:20px;background:url('../images/order1.png');background-size:20px 20px;}
+.order2-icon{width:20px;height:20px;background:url('../images/order2.png');background-size:20px 20px;}
+.order3-icon{width:20px;height:20px;background:url('../images/order3.png');background-size:20px 20px;}
+.order4-icon{width:20px;height:20px;background:url('../images/order1.png');background-size:20px 20px;}
 
 hr{margin-top:0px !important;;margin-bottom:0px !important;margin-left:24px;}
 .height20{height:20px;line-height:20px;}
@@ -43,4 +49,3 @@ hr{margin-top:0px !important;;margin-bottom:0px !important;margin-left:24px;}
 .discover-list .circle{position:absolute;display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;top:12px;text-align:center;right:15px;}
 
 .confess i{display:inline-block;width:18px;height:18px;background:url('../svg/icon_list-2.png') -122px -48px;background-size:140px;margin:14px 15px 0 15px;}
-

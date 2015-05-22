@@ -916,8 +916,11 @@ class Balance(SuperBaseHandler):
 				if shop_totalBalance == None:
 					shop_totalBalance=0
 				shop_totalBalance = format(shop_totalBalance,'.2f')
+				record = ''
+				if temp.balance_type in [0,3]:
+					record = temp.balance_record[0:8]
 				history.append({'shop_name':shop_name,'shop_code':shop_code,'time':create_time,'balance':shop_totalBalance,\
-					'balance_value':temp.balance_value,'type':temp.balance_type,'admin_id':temp.superAdmin_id})
+					'balance_value':temp.balance_value,'type':temp.balance_type,'admin_id':temp.superAdmin_id,'record':record})
 		page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 		return self.send_success(history = history,page_sum=page_sum,total = total,times = times,persons=persons,pay=pay,left = left)
 

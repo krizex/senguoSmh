@@ -40,7 +40,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .show{display: block!important;}
 .f12{font-size: 12px !important;}
 .header{background:#33CC66;height:40px;text-align:center;line-height:40px;position:fixed;background-size:20px;max-width:800px;min-width:320px;z-index:666;width:100%;top:0;color: #fff;font-size: 16px;}
-.btn-commit{height:34px;line-height: 34px;font-size:14px;width: 200px;color: #fff;background-color: #80de9e;border-radius: 34px;display: inline-block;}
+.btn-commit{height:40px;line-height: 40px;font-size:14px;width: 200px;color: #fff;background-color: #80de9e;border-radius: 40px;display: inline-block;}
 .rotate-img{-webkit-transform:rotate(90deg);transform:rotate(90deg);}
 .rotate-img2{-webkit-transform:rotate(180deg);transform:rotate(180deg);}
 .pt5{padding-top: 5px;}
@@ -84,7 +84,7 @@ body{margin:0;font-size:12px;font-family:"microsoft yahei";color:#333;min-height
 .text-white{color:#fff;}
 .text-green{color:#50E3C2;}
 .text-grey3{color:#333;}
-.text-grey6{color:#666;}
+.text-grey6{color:#666 !important;}
 .text-grey9{color:#999;}
 .text-pink{color:#E17163;}
 .bg-white{background:#fff;}
@@ -104,6 +104,7 @@ body{margin:0;font-size:12px;font-family:"microsoft yahei";color:#333;min-height
 .mt50{margin-top:50px;}
 .mr5{margin-right:5px;}
 .mr10{margin-right:10px;}
+.pr0{padding-right:0px !important;}
 table{overflow:hidden;}
 textarea{border:none;}
 h1{font-size:18px;}

@@ -33,28 +33,40 @@
             <a href="{{reverse_url('customerOrder')}}?action=all" class="text-grey9 pull-right font12">查看全部订单>></a>
         </p>
         <ul class="center-nav row text-center m-b0 clearfix font12 center-block box-style">
-            <li class="w25 pull-left prl0 m-b10">
+            <li class="w25 pull-left prl0 m-b8">
                 <a href="{{reverse_url('customerOrder')}}?action=unhandled">
-                    <p class="text-grey3 text-center">未处理</p>
-                    <p class="mt3 text-pink text-center">{{count[3]}}</p>
+                    <em class="order1-icon set-inl-blo bg_change"></em>
+                    {% if count[3] != 0 %}
+                    <span class="order-num bg-pink text-white">{{count[3]}}</span>
+                    {% end %}
+                    <p class="text-grey3 text-center font10 mt1">未处理</p>
                 </a>
             </li>
-            <li class="w25 pull-left prl0 m-b10">
+            <li class="w25 pull-left prl0 m-b8">
                 <a href="{{reverse_url('customerOrder')}}?action=waiting">
-                    <p class="text-grey3 text-center">待收货</p>
-                    <p class="mt3 text-pink text-center">{{count[4]}}</p>
+                    <em class="order2-icon set-inl-blo bg_change"></em>
+                    {% if count[4] != 0 %}
+                    <span class="order-num bg-pink text-white">{{count[4]}}</span>
+                    {% end %}
+                    <p class="text-grey3 text-center font10 mt1">待收货</p>
                 </a>
             </li>
-            <li class="w25 pull-left prl0 m-b10">
+            <li class="w25 pull-left prl0 m-b8">
                 <a href="{{reverse_url('customerOrder')}}?action=finish">
-                    <p class="text-grey3 text-center">已送达</p>
-                    <p class="mt3 text-grey2 text-center">{{count[5]}}</p>
+                    <em class="order3-icon set-inl-blo bg_change"></em>
+                    {% if count[5] != 0 %}
+                    <span class="order-num bg-pink text-white">{{count[5]}}</span>
+                    {% end %}
+                    <p class="text-grey3 text-center font10 mt1">未评价</p>
                 </a>
             </li>
-            <li class="w25 pull-left prl0 m-b10">
+            <li class="w25 pull-left prl0 m-b8">
                 <a href="#">
-                    <p class="text-grey3 text-center">售后订单</p>
-                    <p class="mt3 text-pink text-center">{{count[6]}}</p>
+                    <em class="order4-icon set-inl-blo bg_change"></em>
+                    {% if count[6] != 0 %}
+                    <span class="order-num bg-pink text-white">{{count[6]}}</span>
+                    {% end %}
+                    <p class="text-grey3 text-center font10 mt1">售后订单</p>
                 </a>
             </li>
         </ul>

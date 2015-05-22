@@ -19,7 +19,7 @@ $(document).ready(function(){
 		$('.loading').html("~努力加载中 ( > < )~").show();
 	}
             SetCookie('confess_new',0);
-}).on('click','.great',function(){
+}).on('click','.great-btn',function(){
     var $this=$(this);
     var url='';
     var action='great';
@@ -166,8 +166,10 @@ function data(datalist){
                 		'</div>'+
                 		'<div class="confession">'+
                                             '<p><a href="/lovewall/comment/'+shop_code+'?num={{id}}">{{confession}}</a></p>'+
-                                            '<p class="group mt10"><a href="javascript:;" class="fr great ml10">点赞(<span class="num">{{great}}</span>)</a>'+
-                                             '<a href="/lovewall/comment/'+shop_code+'?num={{id}}" class="comment fr text-grey3">评论(<span class="num">{{comment}}</span>)</a></p>'+
+                                            '<p class="group mt10 some-btn pr0">'+
+                                             '<a href="/lovewall/comment/'+shop_code+'?num={{id}}" class="comment-btn fr text-grey3 ml10"><i class="fl"></i><span class="num">{{comment}}</span></a>'+
+                                             '<a href="javascript:;" class="fr great-btn"><i class="fl"></i><span class="num">{{great}}</span></a>'+
+                                             '</p>'+
                                         '</div>'+        
                                         '<p class="group mt5 mr5"><span class="fr">{{time}}&nbsp;&nbsp;{{floor}}楼</span></p>'+                                           
 	'</li>';
