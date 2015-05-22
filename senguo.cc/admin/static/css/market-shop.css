@@ -12,11 +12,11 @@ p{margin-bottom:0px;}
 .shop-box{padding:10px;margin:10px 0;}
 .shop-box .title{border-bottom:1px solid #ddd;padding-bottom:5px;}
 .shop-info{}
-.shop-info li{border-bottom:1px solid #f7f7f7;padding:10px 0;}
+.shop-info li{border-top:1px solid #f2f2f2;padding:10px;}
 .staff-img{margin-top:10px;margin-bottom:5px;}
 .staff-img li{margin-right:5px;}
 .staff-img li img{width:50px;height:50px;border-radius:50%;}
-.user-comment .comment-item{border-bottom:1px solid #f7f7f7;padding:8px 0;}
+.user-comment .comment-item{border-top:1px solid #f7f7f7;padding:8px 0;}
 .user-comment .img-box{width:40px;height:40px;margin-right:-50px;overflow:hidden;}
 .user-comment .con{padding-left:50px;}
 .user-comment .img{width:40px;height:40px;border-radius:50%;}
@@ -58,9 +58,7 @@ li:last-child{border-bottom:0px;}
 .mr10{margin-right: 10px;}
 .mt4{margin-top: 4px !important;}
 
-
-
-
-
-
-
+.arr-right{background-image: url('../images/arr-right.png');width:8px;display:block;margin-left:6px;height:14px;background-size:contain;background-repeat:no-repeat;position:relative;top:5px;}
+.shopinfo-icon{width:20px;height:20px;background:url('../images/icon_shop.png');margin-right:10px;background-size:20px 20px;margin-top:13px;}
+.title{height:45px;line-height:45px;}
+.box-style{padding:0 10px;}

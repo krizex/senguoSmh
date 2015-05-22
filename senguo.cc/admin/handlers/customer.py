@@ -1461,7 +1461,7 @@ class Cart(CustomerBaseHandler):
 			online_type = self.args['online_type']
 		else:
 			order_status = 1
-		# print(w_SH2_id,"i'm staff id")
+		print(w_SH2_id,"i'm staff id")
 		order = models.Order(customer_id=self.current_user.id,
 							 shop_id=shop_id,
 							 num=num,
@@ -1485,6 +1485,7 @@ class Cart(CustomerBaseHandler):
 							 status  = order_status,
 							 online_type = online_type,
 							 )
+		print(order)
 
 		try:
 			self.session.add(order)
