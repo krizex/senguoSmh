@@ -153,6 +153,57 @@ class GlobalBaseHandler(BaseHandler):
 				text = "SYS_ORDER_STATUS: 此编码不存在"
 			return text
 
+	#获取订单详情
+	def get_order_detail(self,session,order_id):
+		data = {}
+		try:
+			order = session.query(models.Order).filter_by(id = order_id).first()
+		except NoResultFound:
+			order = None
+
+		goods = []
+		f_d = eval(order.fruits)
+		m_d = eval(order.mgoods)
+		for f in f_d:
+			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+		for m in m_d:
+			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+
+		staff_id = order.SH2_id
+		staff_info = session.query(models.Accountinfo).filter_by(id = staff_id).first()
+		if staff_info is not None:
+				sender_phone = staff_info.phone
+				sender_img = staff_info.headimgurl_small
+		else:
+				sender_phone =None
+				sender_img = None
+
+		data['totalPrice']    = order.totalPrice
+		data['charge_types']  = session.query(models.ChargeType).\
+		filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
+		data['mcharge_types'] = session.query(models.MChargeType).\
+		filter(models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
+		data['shop_name']     = order.shop.shop_name
+		data['create_date']   = order.create_date
+		data['receiver']      = order.receiver
+		data['phone']         = order.phone
+		data['address']       = order.address_text
+		data['send_time']     = order.send_time
+		data['remark']        = order.remark
+		data['pay_type']      = order.pay_type
+		data['online_type']   = order.online_type
+		data['status']        = order.status
+		data['freight']       = order.shop.config.freight_on_time if order.type == 2 else order.shop.config.freight_now
+		data['goods']         = goods
+		data['sender_phone']  = sender_phone
+		data['sender_img']    = sender_img
+
+		return data
+ 
+
+
+
+
 class FrontBaseHandler(GlobalBaseHandler):
 	pass
 
