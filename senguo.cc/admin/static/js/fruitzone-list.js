@@ -1,4 +1,4 @@
-var pCode = 0,cCode = 0;
+var pCode = 0,cCode = 0,refuse_flag = true;
 $(document).ready(function(){
     var city_id = $("#city_id").val();
     //search
@@ -114,6 +114,21 @@ $(document).ready(function(){
         $('.city_choose').removeClass('city_choosed');
         $('.city_name').text('城市');
     });
+    $(document).on("click",".school,.comme",function(){
+        $(this).children(".c-list").toggle();
+    });
+    $(document).on("click",".s-list li",function(){
+        var action = $(this).attr("data-action");
+        $(this).closest(".choose-item").children("span").text($(this).html());
+        $(this).closest("ul").hide();
+    });
+    $(document).on("click",".com-list li",function(){
+        var action = $(this).attr("data-action");
+        $(this).closest(".choose-item").children("span").text($(this).html());
+        $(this).closest("ul").hide();
+    });
+}).on("click","#search-btn",function(){
+    $("#search-box").toggle();
 });
 
 //获取用户当前地理位置
@@ -125,6 +140,7 @@ function initLocation(){
 
         },function(error){
             if(error.code == error.PERMISSION_DENIED){
+                refuse_flag = false;
                 console.log("您拒绝了地理位置信息服务");
             }
         });
@@ -157,7 +173,6 @@ function remove_bg(){
 }
 
 var shopItem=function (shops){
-
     var shop_item=window.dataObj.shop_item;
     var $item = '<li class="item bg-white">'+
                             '<a href="{{link}}" class="shop_link">'+
@@ -169,7 +184,7 @@ var shopItem=function (shops){
                                 '<div class="pull-left info">'+
                                     '<p class="shop_name font14">{{shop_name}}<span class="shop_auth  {{hide}}">{{shop_auth}}</span></p>'+
                                     '<p class="shop_attr">满意度 {{satisfy}} | 评价 {{comment_count}} | 商品数 {{goods_count}}</p>'+
-                                    '<p class="text-grey9"><i class="location"></i><span class="shop_code">{{address}}</span></p>'+
+                                    '<p class="text-grey9 adre-box"><span class="distance">7.5km</span><i class="location"></i><span class="shop_code">{{address}}</span></p>'+
                                 '</div>'+
                             '</div>'+
                             '<p class="sty1 shop-intro">店铺简介：<span class="intro">{{intro}}</span></p>'+
@@ -228,7 +243,7 @@ var shopItem=function (shops){
                     shop_name:name,
                     shop_code:shop_code,
                     shop_auth:shop_auth,
-                    address:province+city+address,
+                    address:city+address,
                     satisfy:satisfy,
                     comment_count:comment_count,
                     goods_count:goods_count,
