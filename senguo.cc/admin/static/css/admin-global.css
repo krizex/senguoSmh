@@ -30,8 +30,8 @@ img{border:none;}
 .mt80{margin-top:80px;}
 .group:before,.group:after{content:'';display: block;line-height: 0;height: 0;font-size: 0;clear: both;}
 .group{*zoom:1;}
-.hide{display: none!important;}
-.ml20{margin-left: 20px;}
+.hide{display: none !important;}
+.ml20{margin-left: 20px  !important;}
 .hand{cursor: pointer;}
 /*头部样式*/
 .backstage-header .line50{line-height:45px;}

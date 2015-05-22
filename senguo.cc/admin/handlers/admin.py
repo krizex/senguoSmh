@@ -908,6 +908,13 @@ class Order(AdminBaseHandler):
 				if not order:
 					return self.send_fail("没找到订单",order.onum)
 				self.edit_status(order,data['status'])
+		elif action == "batch_print":
+			order_list_id = data["order_list_id"]
+			for key in order_list_id:	
+				order = next((x for x in self.current_shop.orders if x.id==int(key)), None)
+				if not order:
+					return self.send_fail("没找到订单",order.onum)
+				order.update(session=self.session, isprint=1)
 		else:
 			return self.send_error(404)
 		return self.send_success()
