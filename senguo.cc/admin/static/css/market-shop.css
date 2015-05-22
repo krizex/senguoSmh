@@ -11,7 +11,8 @@ p{margin-bottom:0px;}
 .shop-logo img{width:100%;}
 .shop-box{padding:10px;margin:10px 0;}
 .shop-box .title{border-bottom:1px solid #ddd;padding-bottom:5px;}
-.shop-info li{border-top:1px solid #f2f2f2;padding:12px 10px;}
+.shop-info{padding-left:10px;}
+.shop-info li{border-top:1px solid #f2f2f2;padding:12px 10px 12px 0;}
 .staff-img{margin-top:10px;margin-bottom:5px;}
 .staff-img li{margin-right:5px;}
 .staff-img li img{width:50px;height:50px;border-radius:50%;}
@@ -59,3 +60,5 @@ li:last-child{border-bottom:0px;}
 .shopinfo-icon{width:20px;height:20px;background:url('../images/icon_shop.png');margin-right:10px;background-size:20px 20px;margin-top:13px;}
 .title{height:45px;line-height:45px;}
 .box-style{padding:0 10px;}
+.bm-line{border-bottom: 1px solid #f2f2f2;}
+.bt-none {border-top:none !important;}
