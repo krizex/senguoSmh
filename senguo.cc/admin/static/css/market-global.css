@@ -164,12 +164,14 @@ button:focus{outline:0;}
 
 .input-sty{background:#f2f2f2;border-radius:2px;}
 
+.mt1{margin-top:1px !important;}
 .mt3{margin-top:3px !important;}
 .mt5{margin-top:5px !important;}
 .m-b60{margin-bottom:60px;}
 .m-r5{margin-right:5px;}
 .m-r10{margin-right:10px;}
 .m-b5{margin-bottom:5px !important;}
+.m-b8{margin-bottom:8px !important;}
 .m-b10{margin-bottom:10px !important;}
 .m-b20{margin-bottom:20px !important;}
 .m-b0{margin-bottom:0px !important;}
@@ -230,7 +232,7 @@ button:focus{outline:0;}
 .border-ca{border:1px solid #eee !important;}
 .border-bd{border-bottom:1px solid #ddd;}
 .border-td{border-top:1px solid #ddd;}
-.border-rd{border-right:1px solid #ddd;}
+.border-rd{border-right:1px solid #f2f2f2;}
 .w49{width:49%;}
 .w50{width:50%;}
 .w33{width:33.333333333333333%}

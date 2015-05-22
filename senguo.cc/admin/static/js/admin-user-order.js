@@ -286,7 +286,7 @@ function orderPrint(target){
     var shop_name=$('#shop_name').text();
     var order_time=parent.find('.order-time').text();
     var delivery_time=parent.find('.send-time').text();
-    var receiver=parent.find('.name').first().text();
+    var receiver=parent.find('.receiver').text();
     var address=parent.find('.address').first().text();
     var phone=parent.find('.phone').first().text();
     //var remark=parent.find('.message-content').first().text();
