@@ -42,4 +42,4 @@
 .order-status-txt>a{color: #52b43f;font-size: 12px;margin-left:5px;}
 .contact-us{border: 1px solid #f0f4f0;font-size: 14px;height: 28px;line-height: 28px;color:#999;width: 86px;text-align: center;border-radius: 4px;;-webkit-box-sizing: content-box;margin-top: 6px;}
 .i-contact{width: 17px;height: 20px;background: url('../svg/icon_list-2.png') no-repeat -14px -36px;background-size: 114px 146px;display: inline-block;position: relative;top: 4px;}
-.arr-right{display: inline-block;width: 10px;height:14px;background-image: url("/static/images/arr-right.png");background-size: contain;background-repeat: no-repeat;position: relative;top: 2px;left: 10px;}
+.arr-right{display: inline-block;width: 8px;height:14px;background-image: url("../images/arr-right.png");background-size: contain;background-repeat: no-repeat;position: relative;top: 2px;left: 10px;}
