@@ -39,7 +39,7 @@ li:last-child{border-bottom:0px;}
 .per-txt{font-size: 12px;color: #7fde9e;}
 .num-txt{font-size: 12px;color: #999;}
 .comment-satisfy{padding: 0 0 10px 30px;}
-.point-com-lst>li{border-bottom: 1px solid #e0e0e0;padding: 10px;display: block;}
+.point-com-lst>li{border-bottom: 1px solid #f2f2f2;padding: 10px 10px 10px 0;margin-left: 10px;display: block;}
 .ccom-item>dd{width: 60px;padding-right: 10px;height: 100%;overflow: hidden;}
 .wrap-img{width: 42px;height: 42px;border-radius: 50%;border: 4px solid #aeddda;-webkit-box-sizing: content-box;}
 .ccom-item>dd img{width: 42px;height: 42px;border-radius: 50%;}
