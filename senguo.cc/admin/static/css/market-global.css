@@ -232,7 +232,7 @@ button:focus{outline:0;}
 .border-ca{border:1px solid #eee !important;}
 .border-bd{border-bottom:1px solid #ddd;}
 .border-td{border-top:1px solid #ddd;}
-.border-rd{border-right:1px solid #ddd;}
+.border-rd{border-right:1px solid #f2f2f2;}
 .w49{width:49%;}
 .w50{width:50%;}
 .w33{width:33.333333333333333%}
