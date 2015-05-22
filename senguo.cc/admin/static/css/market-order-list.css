@@ -38,4 +38,4 @@
 .content{padding:10px 0 0;}
 .next{display:inline-block;width:6px;height:10px;background:url('../svg/arrow_right@2x.png');margin-top:5px;margin-left:3px;}
 .sender_img{width:20px;height:20px;border-radius:50%;margin-left:-25px;}
-.arr-right{background-image: url('../images/arr-right.png');width:8px;display:block;margin-left:6px;height:14px;background-size:contain;background-repeat:no-repeat;position:relative;top:5px;}
+.arr-right{background-image: url('../images/arr-right.png');width:8px;display:block;margin-left:6px;height:14px;background-size:contain;background-repeat:no-repeat;position:relative;top:3px;}
