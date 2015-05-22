@@ -181,7 +181,7 @@ h1{font-size:18px;}
 .center-box p:hover{border-color:#E17163;}
 .center-box p:active{border-color:#E17163;}
 .center-box p a{display:inline-block;padding:10px 0;width:100%;}
-.arr-right{background-image: url('../../images/arr-right.png');width: 8px;display: block;margin-left: 6px;height: 18px;background-size: contain;background-repeat: no-repeat;position: relative;top: 2px;}
+.arr-right{background-image: url('../../images/arr-right.png');width: 8px;display: block;margin-left: 6px;height: 14px;background-size: contain;background-repeat: no-repeat;position: relative;top: 2px;}
 
 .confess-info{padding:10px;}
 .info .img{width:40px;height:40px;border-radius:50%;}
