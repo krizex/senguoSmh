@@ -229,9 +229,18 @@ class OrderDetail(CustomerBaseHandler):
 		print(alipayUrl,'dddddddddddddddddddddddddddddddddddddddddddddd')
 		return self.render("customer/alipay-tip.html",alipayUrl = alipayUrl)
 
-
-
-
+	@CustomerBaseHandler.check_arguments("order_id?:str")
+	def post(self):
+		order_id = int(self.args['order_id'])
+		order = models.Order.get_by_id(self.session,order_id)
+		if not order:
+			return self.send_fail(error_text = 'class OrderDetail:order not found!')
+		if order.status == -1:
+			return self.redirect(self.reverse_url('onlineAliPay'))
+		elif order.status == 1:
+			return self.redirect(self.reverse_url('noticeSuccess'))
+		else:
+			return self.send_fail(error_text ='order status error')
 
 class OnlineAliPay(CustomerBaseHandler):
 	def initialize(self,action):
@@ -339,6 +348,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			out_trade_no = str(order_id),
 			subject      = 'alipay',
 			total_fee    = float(price),
+			#defaultbank  = CMB,
 			seller_account_name = ALIPAY_SELLER_ACCOUNT,
 			call_back_url = "%s%s"%(ALIPAY_HANDLE_HOST,self.reverse_url("onlineAlipayFishedCallback")),
 			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("onlineAliNotify")),
@@ -531,6 +541,9 @@ class OnlineAliPay(CustomerBaseHandler):
 		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 
 		return self.redirect(self.reverse_url("noticeSuccess"))
+
+
+
 
 
 

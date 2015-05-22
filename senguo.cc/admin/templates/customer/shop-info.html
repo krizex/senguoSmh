@@ -85,20 +85,21 @@
          <p class="mt3 text-center">{{goods_sum or 0}}种</p>
      </li>
  </ul>
-<div class="shop-box bg-white clearfix">
-    <p class="title font14 clearfix">店铺信息：</p>
+<div class="bg-white m-b10 clearfix pb0">
+    <p class="title clearfix box-style bm-line">
+        <span class="pull-left font14"><em class="shopinfo-icon set-inl-blo pull-left bg_change"></em>店铺信息</span></p>
     <ul class="shop-info text-grey9 font14">
-        <li class="set-w100-fle hand" id="go-shop-area"><span class="pull-left">店铺地址：</span><span class="pull-left set-inl-blo w8">{{address}}</span><em class="area-icon set-inl-blo pull-right"></em></li>
+        <li class="set-w100-fle hand bt-none" id="go-shop-area"><span class="pull-left">店铺地址：</span><span class="pull-left set-inl-blo w8">{{address}}</span><em class="area-icon set-inl-blo pull-right"></em></li>
         <li class="set-w100-fle"><span class="pull-left">配送区域：</span><span class="pull-left set-inl-blo w8">{{shop.deliver_area or '无'}}</span></li>
-        <li class="set-w100-fle"><span class="pull-left">联系电话：</span><span class="pull-left set-inl-blo w8">{{shop.shop_phone or '无'}}<a href="tel:{{shop.shop_phone }}" class="phone_icon"><em class="phone-icon set-inl-blo bg_change"></em></a></span></li>
+        <li class="set-w100-fle"><span class="pull-left">联系电话：</span><span class="pull-left set-inl-blo w8">{{shop.shop_phone or '无'}}</span><a href="tel:{{shop.shop_phone}}"><em class="phone-icon set-inl-blo pull-right"></em></a></li>
         <li class="set-w100-fle"><span class="pull-left">店铺简介：</span><span class="pull-left set-inl-blo w8">{{shop.shop_intro or '无'}}</span></li>
     </ul>
 </div>
-<div class="shop-box bg-white clearfix">
-    <p class="title set-w100-fle">
-        <span class="pull-left font14">店铺成员 ({{len(headimgurls)}})：</span>
-        <a href="{{reverse_url('customerMembers')}}" class="pull-right text-grey9 font12 m-r5">查看更多>></a>
-        <a href="#" class="staff_href pull-right text-green3 pr10 font12">+加入该店</a>
+<div class="bg-white m-b10 clearfix pb0">
+    <p class="title clearfix box-style bm-line">
+        <span class="pull-left font14"><em class="shopinfo-icon set-inl-blo pull-left bg_change"></em>店铺成员 ({{len(headimgurls)}})</span>
+        <a href="{{reverse_url('customerMembers')}}" class="pull-right text-grey9 font14 m-r5">更多<i class="arr-right pull-right"></i></a>
+        <a href="#" class="staff_href pull-right text-green3 pr10 font14">+加入该店</a>
     </p>
     <ul class="staff-img set-w100-fle">
         {% for staff_img in headimgurls %}
@@ -106,15 +107,15 @@
         {% end %}
     </ul>
 </div>
-<div class="shop-box bg-white clearfix">
-        <div class="title" id="show-more">
-            <p class="pull-left font14">店铺评价：</p>
+<div class="bg-white m-b10 clearfix pb0">
+        <div class="title clearfix box-style bm-line" id="show-more">
+            <p class="pull-left font14"><em class="shopinfo-icon set-inl-blo pull-left bg_change"></em>店铺评价</p>
             <p class="pt4">
                 {% if satisfy %}
                 <span class="num-txt">满意度：</span><span class="per-txt">{{satisfy}}</span>
                 {% end %}
                 <span class="num-txt pl20">{{comment_sum}}条评论</span>
-                <a href="{{reverse_url('customerComment')}}?page=0" class="pull-right text-grey9 font12 m-r5">查看更多>></a>
+                <a href="{{reverse_url('customerComment')}}?page=0" class="pull-right text-grey9 font12 m-r5">更多<i class="arr-right pull-right"></i></a>
             </p>
         </div>
     {% if comments %}
