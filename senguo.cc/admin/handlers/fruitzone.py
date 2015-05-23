@@ -150,8 +150,8 @@ class ShopList(FruitzoneBaseHandler):
 		else:
 			print("[店铺列表]城市不存在")
 
-		# if "service_area" in self.args:
-		#     q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
+		if "service_area" in self.args:
+			q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
 		# if "live_month" in self.args:
 		#     q = q.filter(models.Shop.shop_start_timestamp < time.time()-self.args["live_month"]*(30*24*60*60))
 

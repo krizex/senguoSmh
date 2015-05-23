@@ -199,6 +199,25 @@ class GlobalBaseHandler(BaseHandler):
 		data['sender_img']    = sender_img
 
 		return data
+
+	#获去店铺信息
+	def get_shopInfo(self,shop):
+		data = {}
+		data['shop_name']     = shop.shop_name
+		data['shop_code']     = shop.shop_code
+		data['shop_province'] = shop.shop_province
+		data['shop_city']     = shop.shop_city
+		data['shop_address_detail'] = shop.shop_address_detail
+		data['shop_intro']    = shop.shop_intro
+		data['shop_trademark_url']  = shop.shop_trademark_url
+		data['shop_admin_name']= shop.admin.accountinfo.nickname
+		data['order_count']   = shop.order_count
+		data['shop_auth']     = shop.shop_auth
+		data['shop_status']   = shop.shop_status
+		data['auth_change']   = shop.auth_change
+		data['status']        = shop.status
+
+		return data
  
 
 
@@ -751,7 +770,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 	def get_city_shop_count(self,shop_city):
 		try:
 			shop_count = self.session.query(models.Shop).filter_by(shop_city = shop_city).count()
-		except:
+		except:		
 			return self.send_fail('shop_city error')
 		return shop_count
 
