@@ -167,9 +167,9 @@ $(document).ready(function(){
     }).on('click','.choose-classify',function(){
         var $this=$(this);
         $this.find('.icon').toggle();
-        $('.goods-class-choose').toggle(100);
+        $('.goods-class-choose').toggle();
     }).on('click','.goods-class-choose li',function(){
-        $('.goods-class-choose').hide(100);
+        $('.goods-class-choose').hide();
     }).on('click','#all_goods',function(){
         //get all goods
         $('.goods-list').empty();
@@ -369,7 +369,7 @@ $(document).ready(function(){
             var $charge_list=$this.parents('.goods-list-item').find('.charge-list');
             if(target.closest('.forbid_click').length == 0){
                 $parent.find('.back-shape').toggleClass('hidden');
-                $charge_list.toggle(1000);
+                $charge_list.toggle();
                 $parent.find('.toggle_icon').toggleClass('arrow');
                 $parent.toggleClass('pr35');
             };
