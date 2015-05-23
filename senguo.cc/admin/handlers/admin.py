@@ -93,15 +93,32 @@ class Home(AdminBaseHandler):
 						   show_balance = show_balance,new_sys_notices=new_sys_notices, \
 						   sys_notices=sys_notices, context=dict())
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("shop_id:int")
-	def post(self):  # 商家多个店铺之间的切换
-		shop_id = self.args["shop_id"]
-		try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
-		except:return self.send_error(404)
-		if shop.admin != self.current_user:
-			return self.send_error(403)#必须做权限检查：可能这个shop并不属于current_user
-		self.set_secure_cookie("shop_id", str(shop_id), domain=ROOT_HOST_NAME)
-		return self.send_success()
+	@AdminBaseHandler.check_arguments("action","data?")
+	def post(self):  # 商家 or 管理员多个店铺之间的切换
+		action = self.args["action"]
+		if action == 'shop_change':
+			shop_id = int(self.args["data"]["shop_id"])
+			try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
+			except:return self.send_error(404)
+			admin = self.session.query(models.RelShopAdmin).filter_by(shop_id=shop_id,account_id=self.current_user.id,status=1).first()
+			if not admin and shop.admin != self.current_user:
+				return self.send_error(403)#必须做权限检查：可能这个shop并不属于current_user
+			self.current_shop = shop
+			self.set_secure_cookie("shop_id", str(shop.id), domain=ROOT_HOST_NAME)
+			return self.send_success(n=self.current_shop.id)
+		elif action == 'other_shop':
+			shoplist=[]
+			try:
+				shop = self.session.query(models.Shop).join(models.RelShopAdmin,models.Shop.id == models.RelShopAdmin.shop_id)\
+				.filter(models.RelAdminTemp.account_id==self.current_user.accountinfo.id).all()
+			except:
+				shoplist=[]
+			if shop:
+				for q in shop:
+					shoplist.append({'id':q.id,'shop_name':q.shop_name})
+			return self.send_success(data=shoplist)
+		else:
+			return self.send_error(404)
 #admin后台轮询
 class Realtime(AdminBaseHandler):
 	@tornado.web.authenticated
@@ -1386,11 +1403,12 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 
 class Config(AdminBaseHandler):
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action")
+	@AdminBaseHandler.check_arguments("action",'status?:int')
 	def get(self):
 		try:config = self.session.query(models.Config).filter_by(id=self.current_shop.id).one()
 		except:return self.send_error(404)
 		action = self.args["action"]
+		print(self.current_shop.id,'2333333')
 		if action == "delivery":
 			return self.render("admin/shop-address-set.html", addresses=config.addresses,context=dict(subpage='shop_set',shopSubPage='delivery_set'))
 		elif action == "notice":
@@ -1412,7 +1430,14 @@ class Config(AdminBaseHandler):
 			return self.render('admin/shop-phone-set.html',context=dict(subpage='shop_set',shopSubPage='phone_set'))
 		elif action == "admin":
 			if self.current_shop.shop_auth !=0:
-				return self.render('admin/admin-set.html',context=dict(subpage='shop_set',shopSubPage='admin_set'))
+				notice=''
+				if 'status' in self.args:
+					status = self.args['status']
+					if status == 'success':
+						notice='管理员添加成功'
+					elif status == 'fail':
+						notice='您不是超级管理员，无法进行管理员添加操作'
+				return self.render('admin/admin-set.html',context=dict(subpage='shop_set',shopSubPage='admin_set'),notice=notice)
 			else:
 				return self.redirect(self.reverse_url('adminShopConfig'))
 			
@@ -1509,10 +1534,80 @@ class Config(AdminBaseHandler):
 			else:
 				active = 1
 			self.current_shop.config.update(session=self.session,text_message_active=active)
-
+		elif action =="search_user":
+			_id = int(self.args["data"]["id"])
+			data = []
+			info  = self.session.query(models.Accountinfo).filter_by(id = _id).first()
+			if not info:
+				return self.send_fail('该用户不存在')
+			customer = self.session.query(models.Customer).filter_by(id = info.id).first()
+			if not customer:
+				return self.send_fail('该用户还没有关注您的店铺')
+			customer_shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id= customer.id,shop_id=self.current_shop.id).first()
+			if not customer_shop_follow:
+				return self.send_fail('该用户还没有关注您的店铺')
+			if info and customer and customer_shop_follow:
+				data.append({'imgurl':info.headimgurl_small,'nickname':info.nickname,'id':info.id})
+				return self.send_success(data=data)
+		elif action =="add_admin":
+			#生成一张临时管理员表
+			_id = int(self.args["data"]["id"])
+			if self.current_shop.admin.accountinfo.id == _id:
+				return self.send_fail('该用户已经是店铺的管理员')
+			admin = self.session.query(models.RelShopAdmin).filter_by(shop_id = self.current_shop.id,account_id = _id,status=1).first()
+			if admin:
+				return self.send_fail('该用户已经是店铺的管理员')
+			else:
+				admin_temp=models.RelAdminTemp(
+					shop_id = self.current_shop.id,
+					account_id = _id
+				)
+				self.session.add(admin_temp)
+				self.session.commit()
+			return self.send_success()
+		elif action =="delete_admin":
+			_id = int(self.args["data"]["id"])
+			admin = self.session.query(models.RelShopAdmin).filter_by(shop_id = self.current_shop.id,account_id = _id).first()
+			admin.status = 0
+			self.session.commit()
+			return self.send_success()
 		else:
 			return self.send_error(404)
 		return self.send_success()
+
+class AdminAuth(AdminBaseHandler):
+	@tornado.web.authenticated
+	def initialize(self, action):
+		self._action = action
+	def get(self):
+		next_url = self.get_argument('next', '')
+		if self._action == 'wxauth':
+			return self.redirect(self.get_wexin_oauth_link2(next_url=next_url))
+		elif self._action == 'wxcheck':
+			return self.check_admin(next_url)
+
+	@AdminBaseHandler.check_arguments("code", "state?", "mode")
+	def check_admin(self,next_url):
+		# todo: handle state
+		code =self.args["code"]
+		mode = self.args["mode"]
+		user =''
+		if mode not in ["mp", "kf"]:
+			return self.send_error(400)
+		wx_userinfo = self.get_wx_userinfo(code, mode)
+		if self.current_shop.admin.accountinfo.wx_unionid == wx_userinfo["unionid"]:
+			temp = self.session.query(models.RelAdminTemp).filter_by(shop_id = self.current_shop.id).order_by(models.RelAdminTemp.create_time.desc()).first()
+			#超级管理员授权成功,将临时管理员表信息放入关系表中
+			admin = models.RelShopAdmin(
+					account_id=temp.account_id,
+					shop_id=temp.shop_id
+				)
+			self.session.add(admin)
+			self.session.commit()
+			return self.redirect('/admin/config?action=admin&status=success')
+
+		else:
+			return self.redirect('/admin/config?action=admin&status=fail')
 
 
 class ShopBalance(AdminBaseHandler):

@@ -378,17 +378,17 @@ class CustomerProfile(CustomerBaseHandler):
 			return self.send_success(birthday=birthday)
 		elif action == 'add_password':
 			self.current_user.accountinfo.update(session = self.session , password = data)
-			print("[设置密码]设置成功，密码：",data)
+			# print("[设置密码]设置成功，密码：",data)
 		elif action == 'modify_password':
 			old_password = self.args['old_password']
-			print("[更改密码]输入老密码：",old_password)
-			print("[更改密码]验证老密码：",self.current_user.accountinfo.password)
+			# print("[更改密码]输入老密码：",old_password)
+			# print("[更改密码]验证老密码：",self.current_user.accountinfo.password)
 			if old_password != self.current_user.accountinfo.password:
-				print("[更改密码]密码验证错误")
+				# print("[更改密码]密码验证错误")
 				return self.send_fail("密码错误")
 			else:
 				self.current_user.accountinfo.update(session = self.session ,password = data)
-				print("[更改密码]更改成功，新密码：",data)
+				# print("[更改密码]更改成功，新密码：",data)
 		elif action =='wx_bind':
 			wx_bind = False
 			if self.current_user.accountinfo.wx_unionid:

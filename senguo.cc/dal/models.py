@@ -553,8 +553,16 @@ class RelShopAdmin(MapBase, _AccountApi):
 
 	id = Column(Integer, primary_key=True, nullable=False)
 	shop_id  = Column(Integer, ForeignKey(Shop.id), nullable=False)
-	shop_admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
+	account_id = Column(Integer, ForeignKey(Accountinfo.id), nullable=False)
 	status = Column(Integer,default = 1) #0:been deleted 1:normal
+	accountinfo = relationship(Accountinfo)
+
+class RelAdminTemp(MapBase, _AccountApi):
+	__tablename__ = "rel_admin_temp"
+	id = Column(Integer, primary_key=True, nullable=False,autoincrement=True)
+	shop_id  = Column(Integer, ForeignKey(Shop.id), nullable=False)
+	account_id = Column(Integer, ForeignKey(Accountinfo.id),nullable=False)
+	create_time = Column(DateTime, default=func.now())
 
 # 角色：商家，即店铺的管理员
 class ShopAdmin(MapBase, _AccountApi):

@@ -126,7 +126,84 @@ $(document).ready(function(){
         },
         function(){alert('网络好像不给力呢~ ( >O< ) ~');}
         );
+}).on('click','.add-admin',function(){
+    $('.set-box').modal('show');
 }).on('click','.user-search',function(){
-
+    var $this=$(this);
+    if($this.attr("data-flag")=="off") return false;
+    $this.attr("data-flag","off");
+    var regNumber=/^[0-9]*[1-9][0-9]*$/;
+    var id =$('.search-user').val().trim();
+     if(!id){
+        $this.attr("data-flag","on");
+        return alert('请输入用户id');
+    }
+    if(!regNumber.test(id)){
+        $this.attr("data-flag","on");
+        return alert('请输入正确的用户id');
+    }
+    var url='';
+    var data={id:id};
+    var action="search_user";
+    var args={
+        action:action,
+        data:data
+    };
+    $('.user-list').empty();
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                $this.attr("data-flag","on");
+                var item='<li data-id="{{id}}">'+
+                                    '<span class="w1 pull-left"><img src="{{imgurl}}"/></span>'+
+                                    '<div class="w2 pull-left">'+
+                                        '<span class="name">{{nickname}}</span>'+
+                                    '</div>'+
+                                    '<div class="pull-right">'+
+                                        '<a class="add_admin" href="javascript:;">添加</a>'+
+                                   ' </div>'+
+                                '</li>'
+                var imgurl=res.data[0]['imgurl'];
+                var nickname=res.data[0]['nickname'];
+                var render=template.compile(item);
+                var content =render({
+                    id:id,
+                    imgurl:imgurl,
+                    nickname:nickname
+                });
+                $('.user-list').append(content);
+            }
+            else{
+                    $this.attr("data-flag","on");
+                    return alert(res.error_text);
+            }
+        },
+        function(){$this.attr("data-flag","on");alert('网络好像不给力呢~ ( >O< ) ~');}
+        );
+}).on('click','.add_admin',function(){
+    var $this=$(this);
+    if($this.attr("data-flag")=="off") return false;
+    $this.attr("data-flag","off");
+    var id =$this.parents('li').attr('data-id');
+    var url='';
+    var data={id:id};
+    var action="add_admin";
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                $this.attr("data-flag","on");
+                 window.location.href="/admin/wxauth"
+            }
+            else{
+                    $this.attr("data-flag","on");
+                    return alert(res.error_text);
+            }
+        },
+        function(){$this.attr("data-flag","on");alert('网络好像不给力呢~ ( >O< ) ~');}
+        );
 });
 var link='/admin/config';
