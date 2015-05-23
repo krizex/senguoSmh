@@ -153,16 +153,16 @@ $(document).ready(function(){
 });
 function changeColor($obj,grade){
     if(grade==0){
-        $obj.attr("src","/static/images/goods_normal.png");
+        $obj.attr("src","/static/images/comment_normal.png");
         $obj.closest(".wrap-point-box").removeClass("shadow-zl shadow-sd shadow-fw");
         $obj.closest(".point-box").removeClass("bg-zl bg-sd bg-fw");
         return false;
     }else if(grade==1){
-        $obj.attr("src","/static/images/goods_bad.png");
+        $obj.attr("src","/static/images/comment_bad.png");
     }else if(grade==2){
-        $obj.attr("src","/static/images/goods_good.png");
+        $obj.attr("src","/static/images/comment_good.png");
     }else if(grade==3){
-        $obj.attr("src","/static/images/goods_best.png");
+        $obj.attr("src","/static/images/comment_best.png");
     }
     var index = parseInt($obj.attr("data-id"));
     switch(index){
