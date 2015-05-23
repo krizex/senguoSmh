@@ -508,6 +508,7 @@ class Shop(MapBase, _CommonApi):
 
 	is_balance = Column(Integer,default = 0) # shop对应的余额是否有变动
 	old_msg = Column(Integer,default = 0) # 已经浏览过的店铺消息与评价数量
+	order_count = Column(Integer,default = 0) # 店铺已完成订单总数
 	orders = relationship("Order")
 	staffs = relationship("ShopStaff", secondary="hire_link")
 	fruits = relationship("Fruit", order_by="desc(Fruit.priority)")

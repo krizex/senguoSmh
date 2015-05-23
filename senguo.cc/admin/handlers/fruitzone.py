@@ -78,7 +78,8 @@ class ShopList(FruitzoneBaseHandler):
 				satisfy = 0
 				shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname','auth_change',
 											 'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
-											 'alipay_account','alipay_account_name','available_balance','new_follower_sum','new_order_sum']
+											 'alipay_account','alipay_account_name','available_balance',\
+											 'new_follower_sum','new_order_sum']
 				orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).first()
 				if orders:
 					commodity_quality = 0
@@ -102,7 +103,10 @@ class ShopList(FruitzoneBaseHandler):
 				shop.comment_count = comment_count
 				shop.goods_count = fruit_count+mgoods_count		
 				shops.append(shop.safe_props())
+		print(shops,'shops')
 		return shops
+
+
 
 	@FruitzoneBaseHandler.check_arguments("page:int")
 	def handle_shop(self):
@@ -122,7 +126,8 @@ class ShopList(FruitzoneBaseHandler):
 		return self.send_success(shops=shops,nomore = nomore)
 
 	@FruitzoneBaseHandler.check_arguments("skip?:int","limit?:int","province?:int",
-									  "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids?:list","page:int")
+									  "city?:int", "service_area?:int", "live_month?:int",
+									  "onsalefruit_ids?:list","page:int","key_word?:int")
 	def handle_filter(self):
 		# 按什么排序？暂时采用id排序
 		_page_count = 15
@@ -150,8 +155,8 @@ class ShopList(FruitzoneBaseHandler):
 		else:
 			print("[店铺列表]城市不存在")
 
-		# if "service_area" in self.args:
-		#     q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
+		if "service_area" in self.args:
+			q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
 		# if "live_month" in self.args:
 		#     q = q.filter(models.Shop.shop_start_timestamp < time.time()-self.args["live_month"]*(30*24*60*60))
 
@@ -170,6 +175,24 @@ class ShopList(FruitzoneBaseHandler):
 		# else:
 		#     q = q.limit(self._page_count)
 		shops = self.get_data(q)
+		if "key_word" in self.args:
+			key_word = int(self.args['key_word'])
+			if key_word == 1: #商品最多
+				shops.sort(key = lambda shop:shop.goods_count,reverse = True)
+			elif key_word == 2: #距离最近
+				lat1 = float(self.args['lat'])
+				lon1 = float(self.args['lon'])
+				for shop in shops:
+					lat2 = shop['lat']
+					lon2 = shop['lon']
+					shop['distance'] = self.get_distance(lat1,lon1,lat2,lon2)
+				shops.sort(key = lambda shop:shop.distance , reverse = True)
+			elif key_word == 3: #满意度最高
+				shops.sort(key = lambda shop:shop.satisfy,reverse = True)
+			elif key_word == 4: #评价最多
+				shops.sort(key = lambda shop:shop.comment_count , reverse = True)
+			else:
+				return self.send_fail(error_text = 'key_word error')
 		if shops == [] or len(shops)<_page_count:
 			nomore =True
 		return self.send_success(shops=shops,nomore = nomore)

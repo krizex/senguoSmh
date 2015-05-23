@@ -81,13 +81,13 @@ button:focus{outline:0;}
 .title-box{width:100%;text-align:center;height:40px;line-height:40px;position:relative;position:relative;}
 .title-box .title{font-size:16px;}
 .title-box .logo{height:4.5em;position:absolute;left:2em;top:1em;}
-.title-box .return-btn{display:inline-block;width:2em;height:3em;position:absolute;top:0.8em;left:0.5em;background:url('../images/back-white-2px.png') no-repeat center center;}
+.title-box .return-btn{display:inline-block;width:2em;height:3em;position:absolute;top:0.8em;left:0.5em;background:url('../images/arrow_left.png') no-repeat center center;}
 .title-box .to-some{position:absolute;top:0.8em;right:0.5em;font-size:1.4em;display:inline-block;border:1px solid #fff;height:2em;line-height:2em;color:#fff;padding:0 0.8em;border-radius:2px;}
 .title-box h1{margin:0;line-height:3em;}
 .title-box .content-title{height:6em;}
 
 .title-box2{width:100%;display:block;background:#80e0a0;text-indent:3em;font-size:1.8em;height:3em;line-height:3em;color:#fff;box-shadow:1px 1px 2px #aaa;position:relative;}
-.title-box2 .return-btn{display:inline-block;width:2em;height:3em;position:absolute;top:0;left:0.5em;background:url('../images/back-white-2px.png') no-repeat center center;}
+.title-box2 .return-btn{display:inline-block;width:2em;height:3em;position:absolute;top:0;left:0.5em;background:url('../images/arrow_left.png') no-repeat center center;}
 .title-box2 .to-some{position:absolute;top:0.5em;right:0.5em;display:inline-block;border:1px solid #fff;height:2em;line-height:2em;color:#fff;padding:0 0.8em;text-indent:0px;border-radius:2px;font-size:0.9em;}
 
 .btn-box{margin-top:1em;}

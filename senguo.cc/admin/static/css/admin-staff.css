@@ -62,7 +62,7 @@
 .staff-message-box .staff-list{width:105%;margin-top:10px;}
 .staff-message-box .staff-list a{display:inline-block;background:#29aae1;float:left;margin-right:10px;width:40px;height:40px;position:relative;}
 .staff-message-box .staff-list a img{width:40px;height:40px;}
-.staff-message-box .staff-list .check{position:absolute;top:0;left:0;display:inline-block;width:16px;height:15px;background:url("../images/check.jpg")}
+.staff-message-box .staff-list .check{position:absolute;top:0;left:0;display:inline-block;width:16px;height:16px;background:url("../images/check_checked.png");background-size:16px 16px;}
 
 .staff-recruit-content{width:100%;float:left;border:1px solid #ccc;margin-top:20px;}
 .staff-recruit-content .title{height:35px;line-height:35px;background:#f2f2f2;padding:0 20px;}
