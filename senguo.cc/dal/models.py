@@ -449,7 +449,6 @@ class Shop(MapBase, _CommonApi):
 
 	admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
 	admin = relationship("ShopAdmin")
-	shop_admin_id = Column(String(20)) #could be add or delete
 
 	# 店铺标志
 	shop_trademark_url = Column(String(2048))
@@ -548,6 +547,14 @@ class ShopAuthenticate(MapBase,_AccountApi):
 	create_time = Column(DateTime, default=func.now())
 	# code       = Column(Integer)
 
+class RelShopAdmin(MapBase, _AccountApi):
+	__tablename__ = "rel_shop_admin"
+	__relationship_props__ = ["accountinfo"]
+
+	id = Column(Integer, primary_key=True, nullable=False)
+	shop_id  = Column(Integer, ForeignKey(Shop.id), nullable=False)
+	shop_admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
+	status = Column(Integer,default = 1) #0:been deleted 1:normal
 
 # 角色：商家，即店铺的管理员
 class ShopAdmin(MapBase, _AccountApi):
@@ -558,7 +565,6 @@ class ShopAdmin(MapBase, _AccountApi):
 
 	id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
 	accountinfo = relationship(Accountinfo)
-	
 	# 角色类型，SHOPADMIN_ROLE_TYPE: [SHOP_OWNER, SYSTEM_USER]
 	role = Column(Integer, nullable=False, default=SHOPADMIN_ROLE_TYPE.SHOP_OWNER)
 	# 权限类型，SHOPADMIN_PRIVILEGE: [ALL, ]

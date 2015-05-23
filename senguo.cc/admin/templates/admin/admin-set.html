@@ -17,5 +17,49 @@
             <a class="info_edit" href="javascript:;">修改</a>
         </div>
     </li>
+
+    <li class="item clearfix">
+        <span class="w1 pull-left set-inl-blo"><img src=""/></span>
+        <div class="w2 pull-left">
+            <span class="info_show name"></span>
+            <span>店铺管理员</span>
+        </div>
+        <div class="pull-right">
+            <a class="delete_admin" href="javascript:;">删除</a>
+        </div>
+    </li>
  </ul>
+ <a href="javascript:;" class="add-admin">+添加管理员</a>
+         <div class="modal fade reply-box" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content bg-white">
+                    <div class="modal-header clearfix">
+                        <span class="title pull-left" id="myModalLabel">添加管理员</span>
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    </div>
+                    <div class="modal-body">
+                    	<div class="search-box">
+                        		<input type="text" class="search-input"/>
+                        		<button class="user-search btn">搜索</button>
+                        	</div>
+                        	<ul class="">
+                        		<li>
+				<span class="w1 pull-left set-inl-blo"><img src=""/></span>
+				<div class="w2 pull-left">
+					<span class="info_show name"></span>
+					<span>店铺管理员</span>
+				</div>
+				<div class="pull-right">
+					<a class="add_admin" href="javascript:;">确定</a>
+				</div>
+                        		</li>
+                        	</ul>
+                    </div>
+                    <div class="modal-footer">
+                         <button class="btn bg-green admin-sure text-white pull-left">确定</button>
+                         <button class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+                    </div>
+                </div>
+            </div>
+         </div>
 {% end %}

@@ -43,7 +43,7 @@
          {% if current_shop.shop_auth !=0 %}
         <li class="{{pay_active}}"><a href="{{reverse_url('adminConfig')}}?action=pay">支付方式</a></li>
         <li class="{{phone_active}}"><a href="{{reverse_url('adminConfig')}}?action=phone">短信验证</a></li>
-       <!--  <li class="{{admin_active}}"><a href="{{reverse_url('adminConfig')}}?action=admin">管理员设置</a></li> -->
+        <li class="{{admin_active}}"><a href="{{reverse_url('adminConfig')}}?action=admin">管理员设置</a></li>
         {% end %} 
     </ul>
 </div>

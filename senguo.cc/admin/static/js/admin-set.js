@@ -126,5 +126,7 @@ $(document).ready(function(){
         },
         function(){alert('网络好像不给力呢~ ( >O< ) ~');}
         );
+}).on('click','.user-search',function(){
+
 });
 var link='/admin/config';
