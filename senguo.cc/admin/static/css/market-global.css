@@ -245,8 +245,8 @@ button:focus{outline:0;}
 .fix-title{position:fixed;z-index:666;top:0;}
 
 .anim-bounceIn {
-    -webkit-animation: bounceIn 1s ease 0s 1;
-            animation: bounceIn 1s ease 0s 1;
+    -webkit-animation: bounceIn 0.8s ease 0s 1;
+            animation: bounceIn 0.8s ease 0s 1;
 }
 
  @-webkit-keyframes bounceIn {
