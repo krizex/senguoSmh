@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var item_url='/static/items/admin/order-item.html?v=2015-03-25';
+    var item_url='/static/items/admin/order-item.html?v=2015-05-22';
     //订单数据
     if(orders.length==0) $('.order-list-content').append('<h3 class="text-center">无订单信息！</h3>');
     else getOrder(item_url);
@@ -104,9 +104,9 @@ function getOrder(url){
     $.getItem(url,function(data){
             $list_item=data;
             //商品列表item
-    	    getGoodsItem('/static/items/admin/order-goods-item.html?v=2015-05-20');
+    	    getGoodsItem('/static/items/admin/order-goods-item.html?v=2015-05-22');
     	    //员工列表item
-    	    getStaffItem('/static/items/admin/order-staff-item.html?v=2015-03-20');
+    	    getStaffItem('/static/items/admin/order-staff-item.html?v=2015-03-22');
             orderItem(orders);
         }
     );
@@ -370,7 +370,7 @@ function orderPrint(target,action){
             var saler_remark=parent.find('.order_remark').text(); 
             var user_remark=parent.find('.message-content').text();
 
-            $.getItem('/static/items/admin/order-print-page.html?v=2015-04-14',function(data){
+            $.getItem('/static/items/admin/order-print-page.html?v=2015-05-14',function(data){
                 var $item=$(data);
                 $item.find('.notes-head').text(shop_name);
                 $item.find('.orderId').text(order_num);
