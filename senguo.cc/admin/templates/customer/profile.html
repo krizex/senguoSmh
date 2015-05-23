@@ -93,28 +93,34 @@
     <ul class="m-b20 profile-lst">
         <li class="item bt-none">
             <div class="info-con h19">
-                <a href="javascript:;" id="phoneNumber" class="box">
-                    <span class="title pull-left text-grey3">手机号绑定 <span class="c999 phone">{{current_user.accountinfo.phone or '未绑定'}}</span></span>
+                <a href="javascript:;" id="senguoID" class="box">
+                    <span class="title pull-left text-grey3">我的森果ID&nbsp;&nbsp;<span class="c999 phone">{{current_user.accountinfo.id}}</span></span>
                     <i class="arr-right pull-right"></i>
-                    <span class="pull-right  tiephone g-txt">更换</span>
+                    <span class="pull-right question-icon g-txt"></span>
                 </a>
             </div>
         </li>
-         <li class="item">
+        <li class="item">
             <div class="info-con h19">
-                {% if current_user.accountinfo.password %}
+                <a href="javascript:;" id="phoneNumber" class="box">
+                    <span class="title pull-left text-grey3">手机号绑定&nbsp;&nbsp;<span class="c999 phone">{{current_user.accountinfo.phone or '未绑定'}}</span></span>
+                    <i class="arr-right pull-right"></i>
+                    <span class="pull-right tiephone g-txt">更换</span>
+                </a>
+            </div>
+        </li>
+        <li class="item">
+            <div class="info-con h19">
                 <a href="{{reverse_url('customerPassword')}}" class="box">
                     <span class="title pull-left text-grey3">密码管理</span>
                     <i class="arr-right pull-right"></i>
                      <span class="pull-right g-txt">重置</span>
                 </a>
-                 {% else %}
-                 <a href="javascript:;" id="setPwd" class="box">
+              <!--    <a href="javascript:;" id="setPwd" class="box">
                     <span class="title pull-left text-grey3">密码管理</span>
                      <i class="arr-right pull-right"></i>
                     <span class="pull-right setPwd g-txt">设置密码</span>
-                </a>
-                 {% end %}
+                </a> -->
             </div>
         </li>
         <li class="item">
@@ -259,6 +265,21 @@
             </div>
             <div class="modal-footer clearfix">
                 <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn text-white" id="birthSure">确定</button>
+            </div>
+            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
+        </div>
+    </div>
+</div>
+<div class="modal fade sex-popbox" id="questionBox">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
+            <div class="modal-header set-width-float">
+                <button type="button" class="close dismiss">✕</button>
+                <h2 class="modal-title  text-center line48">什么是森果ID？</h2>
+            </div>
+            <div class="modal-body">
+                <p class="font14 text-center">森果ID是您在森果平台的唯一身份标识</p>
             </div>
             <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
         </div>
