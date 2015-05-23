@@ -1350,7 +1350,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			subpage='staff'
 		elif action == 'order':
 			orders = self.session.query(models.Order).filter(
-				models.Ordernum==self.args['id'], models.Order.shop_id==self.current_shop.id,\
+				models.Order.num==self.args['id'], models.Order.shop_id==self.current_shop.id,\
 				not_(models.Order.status.in_([-1,0]))).all()
 			subpage='order'
 		else:

@@ -167,7 +167,7 @@
 .new-order-box{line-height: 40px;height: 40px;text-align: center;font-size: 20px;background-color: #ff6666;color: #fff;cursor: pointer;margin-top: 6px;}
 .func-box{line-height:28px;}
 .check{display:inline-block;width:16px;height:16px;border:1px solid #ccc;}
-.checked{background:url('/static/images/check.png') no-repeat center center;background-size:14px}
+.checked{background:url('/static/images/check_checked.png') no-repeat center center;background-size:14px}
 .func-box .check{margin:6px 5px 0 9px;}
 .order-list-item  .check{position:absolute;left:8px;top:16px;}
 .blak-set-btn{height:28px;line-height:28px;padding:0 8px;color:#333;}
