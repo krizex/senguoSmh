@@ -1,0 +1,21 @@
+{% extends 'shop-set-base.html' %}
+{% block title%}管理员设置{% end %}
+
+{% block setcontent %}
+<div class="set-description">
+    <p>店铺管理员拥有：店铺登录、店铺订单提醒等权限（管理员必须关注森果服务号sen-guo） </p>
+    <p>超级管理员可以添加多个管理员来同时管理店铺。</p>
+</div>
+<ul class="info-set-list mt10">
+    <li class="item clearfix">
+        <span class="w1 pull-left set-inl-blo"><img src="{{current_shop.admin.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}"/></span>
+        <div class="w2 pull-left">
+            <span class="info_show name">{{current_shop.admin.accountinfo.nickname}}</span>
+            <span>超级管理员</span>
+        </div>
+        <div class="pull-right">
+            <a class="info_edit" href="javascript:;">修改</a>
+        </div>
+    </li>
+ </ul>
+{% end %}

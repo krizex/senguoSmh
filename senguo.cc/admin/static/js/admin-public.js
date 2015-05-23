@@ -117,7 +117,7 @@ function getRealData(){
                     });
                 }else if(window.Notification && Notification.permission == "granted" && notify == null){
                     if(new_order_sum>0){
-                        notify = new Notification(new Date().toLocaleString(),{"body":"您收到了新的订单，请及时处理哦！","icon":"/static/images/sg.gif","tag":new Date().getTime()});
+                        notify = new Notification(new Date().toLocaleString(),{"body":"您收到了新的订单，请及时处理哦！","icon":"/static/images/sg.png","tag":new Date().getTime()});
                     }
                 }
             }

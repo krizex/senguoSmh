@@ -76,8 +76,8 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .rec-left{width: calc(100% - 30px);max-width: 74%;}
 .rec-left>p{color: #666;line-height: 20px;font-size: 14px;}
 .rec-right{width: 30px;padding-top: 10px;text-align: center;}
-.rec-right>input{width: 20px;height: 20px;border: none;background: url(../images/uncheck.png) no-repeat;background-size: 20px 20px;border-radius:2px;}
-.rec-right .checked{background: url(../images/checked.png) no-repeat;background-size: 20px 20px;}
+.rec-right>input{width: 20px;height: 20px;border: none;background: url(../images/check_uncheck.png) no-repeat;background-size: 20px 20px;border-radius:2px;}
+.rec-right .checked{background: url(../images/check_checked.png) no-repeat;background-size: 20px 20px;}
 .wrap-commit{margin-top: 40px;text-align: center;}
 .wrap-commit>a{display: inline-block;width: 80%;height: 40px;line-height: 40px;text-align: center;color: #fff;background-color: #80de9e;border-radius: 20px;max-width: 200px;font-size: 16px;}
 /*店铺评价*/
@@ -119,7 +119,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .wrap-add-img{cursor: pointer;}
 .wrap-img{position: relative;z-index:10;text-align: center;height:100%;}
 .wrap-img>img{width: auto;height: 100%;}
-.icon-del{position: absolute;z-index:100;left: 50%;bottom:-4px;width: 18px;height: 18px;margin-left: -9px;background-image: url(../images/icon_del.png);}
+.icon-del{position: absolute;z-index:100;left: 50%;bottom:-4px;width: 18px;height: 18px;margin-left: -9px;background-image: url(../images/comment_delimg.png);}
 .img-cover{position: absolute;z-index: 90;top:0;left:0;background-color: #ddd;width:100%;height: 0;padding-bottom: 100%;}
 .img-cover .loader {display: block;position: absolute;width: 30px;height: 30px;vertical-align: middle;left: 50%;top: 50%;-webkit-transform:translate(-50%,-50%);}
 .img-cover .loader-quart {border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.4);}
@@ -130,7 +130,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .mt12{margin-top: 12px;}
 .point-name{position: relative;}
 .point-name>p{width: 40px;font-size: 14px;color: #999;line-height: 22px;text-align: center;}
-.point-name .line{position: absolute;left: 0;top: 8px;height: 60px;width: 0px;border-left: 1px solid #bebebe;display: block;}
+.point-name .line{position: absolute;left: 0;top: 8px;height: 60px;width: 0px;border-left: 1px solid #ccc;display: block;}
 .nor-txt{color: #999;font-size: 14px;line-height: 22px;}
 .percent-txt{color: #7fde9e;font-size: 18px;line-height: 140%;}
 .point-cen{width: calc(100% - 140px);-webkit-box-sizing: border-box;min-width: 50%;padding: 0 0 0 5px;}
@@ -140,7 +140,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .percent-bar .bar2{background-color: #80de9e;}
 .percent-bar .bar3{background-color: #5be8ef;}
 .point-com-lst{padding: 0 10px 10px 10px;}
-.point-com-lst>li{border-bottom: 1px solid #e0e0e0;padding: 10px 0;}
+.point-com-lst>li{border-bottom: 1px solid #f2f2f2;padding: 10px 0;}
 .ccom-item{position: relative;}
 .ccom-item>dd{width: 60px;padding-right: 10px;height: 100%;overflow: hidden;position: absolute;left: 0;top: 0;min-height:60px;}
 .wrap-o-img{width: 40px;height: 40px;border-radius: 50%;border: 4px solid #aeddda;-webkit-box-sizing: content-box;}

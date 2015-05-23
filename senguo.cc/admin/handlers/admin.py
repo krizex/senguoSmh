@@ -662,6 +662,8 @@ class Order(AdminBaseHandler):
 			if not shop:
 				return self.send_fail('shop not found')
 			shop.is_balance = 1
+			shop.order_count += 1  #店铺订单数加1
+
 
 			#
 			customer_info = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
@@ -1348,7 +1350,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			subpage='staff'
 		elif action == 'order':
 			orders = self.session.query(models.Order).filter(
-				models.Ordernum==self.args['id'], models.Order.shop_id==self.current_shop.id,\
+				models.Order.num==self.args['id'], models.Order.shop_id==self.current_shop.id,\
 				not_(models.Order.status.in_([-1,0]))).all()
 			subpage='order'
 		else:
@@ -1410,6 +1412,8 @@ class Config(AdminBaseHandler):
 				return self.redirect(self.reverse_url('adminShopConfig'))
 		elif action == "phone":
 			return self.render('admin/shop-phone-set.html',context=dict(subpage='shop_set',shopSubPage='phone_set'))
+		elif action == "admin":
+			return self.render('admin/admin-set.html',context=dict(subpage='shop_set',shopSubPage='admin_set'))
 		else:
 			return self.send_error(404)
 
@@ -1503,6 +1507,7 @@ class Config(AdminBaseHandler):
 			else:
 				active = 1
 			self.current_shop.config.update(session=self.session,text_message_active=active)
+		
 		else:
 			return self.send_error(404)
 		return self.send_success()

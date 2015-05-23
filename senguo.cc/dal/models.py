@@ -449,6 +449,7 @@ class Shop(MapBase, _CommonApi):
 
 	admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
 	admin = relationship("ShopAdmin")
+	shop_admin_id = Column(String(20)) #could be add or delete
 
 	# 店铺标志
 	shop_trademark_url = Column(String(2048))
@@ -508,6 +509,7 @@ class Shop(MapBase, _CommonApi):
 
 	is_balance = Column(Integer,default = 0) # shop对应的余额是否有变动
 	old_msg = Column(Integer,default = 0) # 已经浏览过的店铺消息与评价数量
+	order_count = Column(Integer,default = 0) # 店铺已完成订单总数
 	orders = relationship("Order")
 	staffs = relationship("ShopStaff", secondary="hire_link")
 	fruits = relationship("Fruit", order_by="desc(Fruit.priority)")

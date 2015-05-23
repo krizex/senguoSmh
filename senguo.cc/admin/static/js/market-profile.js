@@ -84,6 +84,9 @@ $(document).ready(function(){
     birth_box.modal('show');
 }).on("click","#birthSure",function(){
     birthEdit();
+}).on("click","#senguoID",function(){
+    var question_box=new Modal('questionBox');
+    question_box.modal('show');
 }).on('click','.bind_wx',function(){
     // bind_wx();
     if(isWeiXin()){
