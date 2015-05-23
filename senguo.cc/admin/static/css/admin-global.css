@@ -130,8 +130,8 @@ img{border:none;}
 .mode-set .stop-btn{background:#ff6666;}
 
 .mode-content{padding-left:75px;}
-.unlock-mode{background:url("../images/un-lock.gif") no-repeat 20px center;}
-.lock-mode{background:url("../images/lock.gif") no-repeat 40px center;}
+.unlock-mode{background:url("../images/un-lock.gif") no-repeat 22px center;}
+.lock-mode{background:url("../images/lock.gif") no-repeat 22px center;}
 .mode-content .lock-unlock{color:#000;margin:5px 0;}
 .mode-content .mode-introduce{color:#666;margin:0;}
 .mode-content .set-introduce{color:#666;margin:0;}
