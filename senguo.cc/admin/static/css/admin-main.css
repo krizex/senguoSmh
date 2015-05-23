@@ -44,6 +44,6 @@
 .apply-cash-box .per-tb .left{font-weight: bold;text-align: right;font-size: 14px;}
 .apply-cash-box .per-tb input{width:220px;border: none;background-color: #fff;margin-left: 8px;height: 30px;font-size:12px;line-height:30px;color:#222;border:1px solid #eee;}
 .apply-cash-box .per-tip{font-size: 12px;color: #858585;line-height: 14px;margin-left: 8px;}
-.apply-cash-box .per-btn{height: 28px;line-height: 28px;width: 160px;margin-left: 8px;text-align: center;color: #fff;border-radius: 3px;background-color: #52b43f;display: block;}
+.apply-cash-box .per-btn{height: 28px;line-height: 28px;width: 160px;margin-left: 48px;text-align: center;color: #fff;border-radius: 3px;background-color: #52b43f;display: block;}
 .apply-cash-box .get-code{width: 130px;display: inline-block;margin-left: 15px;}
 
