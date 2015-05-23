@@ -78,7 +78,8 @@ class ShopList(FruitzoneBaseHandler):
 				satisfy = 0
 				shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname','auth_change',
 											 'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
-											 'alipay_account','alipay_account_name','available_balance','new_follower_sum','new_order_sum']
+											 'alipay_account','alipay_account_name','available_balance',\
+											 'new_follower_sum','new_order_sum']
 				orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).first()
 				if orders:
 					commodity_quality = 0
@@ -104,6 +105,8 @@ class ShopList(FruitzoneBaseHandler):
 				shops.append(shop.safe_props())
 		print(shops,'shops')
 		return shops
+
+
 
 	@FruitzoneBaseHandler.check_arguments("page:int")
 	def handle_shop(self):
@@ -177,7 +180,13 @@ class ShopList(FruitzoneBaseHandler):
 			if key_word == 1: #商品最多
 				shops.sort(key = lambda shop:shop.goods_count,reverse = True)
 			elif key_word == 2: #距离最近
-				pass
+				lat1 = float(self.args['lat'])
+				lon1 = float(self.args['lon'])
+				for shop in shops:
+					lat2 = shop['lat']
+					lon2 = shop['lon']
+					shop['distance'] = self.get_distance(lat1,lon1,lat2,lon2)
+				shops.sort(key = lambda shop:shop.distance , reverse = True)
 			elif key_word == 3: #满意度最高
 				shops.sort(key = lambda shop:shop.satisfy,reverse = True)
 			elif key_word == 4: #评价最多

@@ -16,6 +16,7 @@ import datetime
 import qiniu
 from settings import *
 import requests
+import math
 
 import threading
 
@@ -100,6 +101,13 @@ class GlobalBaseHandler(BaseHandler):
 
 	def timestamp_to_str(self, timestamp):
 		return time.strftime("%Y-%m-%d %H:%M", time.gmtime(timestamp))
+
+	def get_distance(self,lat1,lon1,lat2,lon2):
+		hsinX = math.sin((lon1 - lon2) * 0.5)
+		hsinY = math.sin((lat1 - lat2) * 0.5)
+		h = hsinY * hsinY + (math.cos(lat1) * math.cos(lat2) * hsinX * hsinX)
+		return 2 * math.atan2(math.sqrt(h), math.sqrt(1 - h)) * 6367000
+
 
 	def code_to_text(self, column_name, code):
 		text = ""
