@@ -24,6 +24,7 @@
 </head>
 <body>
 <div class="wrap-area-box">
+    <input type="hidden" id="order_id" value="{{order_id}}"/>
     <input type="hidden" id="go-url" value="{{alipayUrl}}"/>
     <div class="tip-area">
         <img src="/static/images/order_tip.png" alt="点击右上角选择浏览器中打开"/>
@@ -45,7 +46,7 @@
             window.location.href=$("#go-url").val();
         }
     }).on("click","#back-btn",function(){
-        window.location.href="";
+        window.location.href="/customer/online/justorder?order_id="+$("#order_id").val();
     });
 </script>
 </body>

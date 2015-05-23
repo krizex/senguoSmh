@@ -225,6 +225,7 @@ var shopItem=function (shops){
                 var status = shops[key]['status'];
                 var lat = shops[key]['lon'];//经度
                 var lon = shops[key]['lat'];//纬度
+        console.log(lat+"==="+lon);
                 var area=window.dataObj.area;
                 var hide='';
                 var statu = '';

@@ -35,10 +35,10 @@ $(document).ready(function(){
                 }
             }
             else{
-                    alert(res.error_text);
+                Tip(res.error_text);
             }
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~');}
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~');}
         );
 }).on('click','.balance_active',function(){
     var $this=$(this);
@@ -63,10 +63,10 @@ $(document).ready(function(){
                 }
             }
             else{
-                    alert(res.error_text);
+                Tip(res.error_text);
             }
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~');}
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~');}
         );
 }).on('click','.online_active',function(){
     var $this=$(this);
@@ -91,10 +91,10 @@ $(document).ready(function(){
                 }
             }
             else{
-                alert(res.error_text);
+                Tip(res.error_text);
             }
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~');}
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~');}
     );
 }).on('click','.message_active',function(){
     var $this=$(this);
@@ -119,10 +119,10 @@ $(document).ready(function(){
                 }
             }
             else{
-                    alert(res.error_text);
+                Tip(res.error_text);
             }
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~');}
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~');}
         );
 });
 var link='/admin/config';

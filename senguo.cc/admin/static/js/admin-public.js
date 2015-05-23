@@ -10,7 +10,7 @@ $('#currentShopChange li').on('click',function(){
     shopChnage(shop_id);
 });
 $('.developing').on('click',function(){
-    alert('此功能暂未开放！');
+    Tip('此功能暂未开放！');
 });
 //if weixin
 if(isWeiXin()){
@@ -195,14 +195,14 @@ function getPage(page,url,total){
             var $this=$(this);
             var num=Int($('.input-page').val());
             if(!num){
-                return alert('请输入页码');
+                return Tip('请输入页码');
             }
             if(0<num&&num<=total)
             {
                 $this.attr({'href':url+(num-1)});
             }
             else {
-                return alert('没有该页的数据');
+                return Tip('没有该页的数据');
             }
         });
         $(document).on('keydown','.input-page',function(){
@@ -211,14 +211,14 @@ function getPage(page,url,total){
             {
                     var num=$this.val();
                     if(!num){
-                        return alert('请输入页码');
+                        return Tip('请输入页码');
                     }
                     if(0<num&&num<=total)
                     {
                         window.location.href=url+(num-1);
                     }
                     else {
-                        return alert('没有该页的数据');
+                        return Tip('没有该页的数据');
                     }
             }
         });

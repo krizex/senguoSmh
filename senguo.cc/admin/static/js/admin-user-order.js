@@ -324,7 +324,7 @@ function orderPrint(target,action){
             list.push(order_id);
         });
         if(list.length==0){
-            return alert('您还未选择任何订单！');  
+            return Tip('您还未选择任何订单！');
         }
         data.order_list_id=list;
     }
@@ -346,9 +346,9 @@ function orderPrint(target,action){
                     window.print();
                     window.document.body.innerHTML=inner;
                 }
-                else return alert(res.error_text);
+                else return Tip(res.error_text);
             },
-            function(){return alert('网络错误！')}
+            function(){return Tip('网络错误！')}
         );
         function getData(target){
             var parent=target.parents('.order-list-item');
@@ -408,10 +408,10 @@ function orderDelete(target){
     var index=$box.attr('data-target');
     var del_reason=$('#order_ser_val').val();
     if(!del_reason){
-        return alert('请输入订单删除的原因！');
+        return Tip('请输入订单删除的原因！');
     }
     if(del_reason.length>300){
-        return alert('删除原因最多可输入300字！');
+        return Tip('删除原因最多可输入300字！');
     }
     var data={
         order_id:order_id,
@@ -426,9 +426,9 @@ function orderDelete(target){
                 $('.order_set_box').modal('hide');
                 $('.order-list-item').eq(index).remove();
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){return alert('网络错误！')}
+        function(){return Tip('网络错误！')}
     )
 }
 
@@ -451,7 +451,7 @@ function orderEdit(target,action,content){
     }
     if(action=='edit_remark')
     {
-	if(content.length>100) return alert('订单备注请不要超过100个字！');        
+	if(content.length>100) return Tip('订单备注请不要超过100个字！');
 	data.remark=content;
 	var index=parent.attr('data-target');
     }
@@ -465,7 +465,7 @@ function orderEdit(target,action,content){
     }
     else if(action=='edit_totalPrice')
     {
-       if(!regFloat.test(content)) return alert('订单总价只能为数字！');
+       if(!regFloat.test(content)) return Tip('订单总价只能为数字！');
         data.totalPrice=content;
         var index=parent.attr('data-target');
     }
@@ -477,7 +477,7 @@ function orderEdit(target,action,content){
             list.push(id);
         });
         if(list.length==0){
-            return alert('您还未选择任何订单！');  
+            return Tip('您还未选择任何订单！');
         }
         data.status=Int(content);
         data.order_list_id=list;
@@ -565,9 +565,9 @@ function orderEdit(target,action,content){
                    $('.order-list-item').eq(index).find('.order-price').text(content);
                 }
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){return alert('网络错误！')}
+        function(){return Tip('网络错误！')}
     )
 }
 

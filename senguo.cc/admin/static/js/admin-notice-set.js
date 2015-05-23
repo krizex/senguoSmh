@@ -26,10 +26,10 @@ function noticeAdd(){
     var action="add_notice";
     var summary=$('.new-notice-title').val();
     var detail=$('.new-notice-detail').val();
-    if(summary.length>15){return alert('摘要请不要超过15个字！')}
-    if(detail.length>200){return alert('详情请不要超过200个字！')}
-    if(!summary){return alert('请输入摘要！')}
-    if(!detail){return alert('请输入详情！')}
+    if(summary.length>15){return Tip('摘要请不要超过15个字！')}
+    if(detail.length>200){return Tip('详情请不要超过200个字！')}
+    if(!summary){return Tip('请输入摘要！')}
+    if(!detail){return Tip('请输入详情！')}
     var data={
         summary:summary,
         detail:detail
@@ -44,9 +44,9 @@ function noticeAdd(){
                 $('#noticeBox').modal('hide');
 		window.location.reload();
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~')});
 }
 function noticeEdit(target){
     var url=link;
@@ -55,10 +55,10 @@ function noticeEdit(target){
     var notice_id=parent.data('id');
     var summary=parent.find('.notice_summary').val();
     var detail=parent.find('.notice_detail').val();
-    if(summary.length>15){return alert('摘要请不要超过15个字！')}
-    if(detail.length>200){return alert('详情请不要超过200个字！')}
-    if(!summary){return alert('摘要不能为空！')}
-    if(!detail){return alert('详情不能为空！')}
+    if(summary.length>15){return Tip('摘要请不要超过15个字！')}
+    if(detail.length>200){return Tip('详情请不要超过200个字！')}
+    if(!summary){return Tip('摘要不能为空！')}
+    if(!detail){return Tip('详情不能为空！')}
     var data={
         notice_id:notice_id,
         summary:summary,
@@ -78,9 +78,9 @@ function noticeEdit(target){
                 parent.find('.address-edit').hide();
                 parent.find('.address-show').show();
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~')});
 }
 
 function noticeActive(target){
@@ -107,7 +107,7 @@ function noticeActive(target){
                     target.attr({'data-status':1});
                 }
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~')});
 }

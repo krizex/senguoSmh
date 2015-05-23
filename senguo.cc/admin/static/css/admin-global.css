@@ -230,7 +230,8 @@ input{color:#333;text-indent:5px;}
 .border-none{border:none !important;}
 .mt20{margin-top:20px;}
 .container-left .nav .account>i{background: url('/static/images/account.png') no-repeat;background-size: contain;}
-
+/*提示框样式*/
+.zb-tip{min-width: 360px;max-width:500px;padding:15px 0;line-height: 28px;text-align: center;font-size: 14px;background-color: rgba(255,101,99,.8);border-radius: 6px;position: fixed;top: 100px;left: 50%;z-index: 999;color: #fff;-webkit-transform:translate(-50%,0);}
 
 @-webkit-keyframes bounce1 {
     0%, 20%, 53%, 80%, 100% {

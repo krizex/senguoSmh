@@ -1,6 +1,9 @@
 $(document).ready(function(){
      var shop_logo=$('#shop_imgurl').attr('data-img');
-    console.log($("#shop_status").val());
+    console.log();
+    if(parseInt($("#shop_status").val())==3){
+        noticeBox("店铺休息中，暂不接收新订单");
+    }
     if(isWeiXin()){
         wexin('',shop_logo);
     }

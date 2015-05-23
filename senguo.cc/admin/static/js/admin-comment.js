@@ -36,10 +36,10 @@ $(document).ready(function(){
     var $this=$(this);
      var delete_reason=$('#commit-cont').val();
     if(!delete_reason){
-        return alert('请输入您的理由！')
+        return Tip('请输入您的理由！')
     }
     if(delete_reason.length>300){
-         return alert('最多可输入300字！')
+         return Tip('最多可输入300字！')
     }
     applyDel(delete_reason);
 }).on('click','.reply',function(){
@@ -79,9 +79,9 @@ function replay(id,index){
                 $('.reply-box').modal('hide');
                 $('.comment-list-item').eq(index).find('.saler_reply').removeClass('hidden').find('.reply_word').text(reply);
             }
-            else alert(res.error_text);
+            else Tip(res.error_text);
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~')})
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~')})
 }
 
 function collect(target,id){
@@ -96,9 +96,9 @@ function collect(target,id){
             {
                 target.remove();
             }
-            else alert(res.error_text);
+            else Tip(res.error_text);
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~')})
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~')})
 }
 
 function applyDel(delete_reason){
@@ -122,14 +122,13 @@ function applyDel(delete_reason){
                 $('.del-com').eq(index).attr({'disabled':true}).text('申请中');
                 $('.del-box').eq(index).removeClass('hidden').find('.del-reason').text(delete_reason);   
                 $('#commit-senguo').removeAttr('disabled').removeClass('bg-grey');
-            }
-            else {
+            }else {
                 $('#commit-senguo').removeAttr('disabled').removeClass('bg-grey');
-                alert(res.error_text);
+                Tip(res.error_text);
             }
         },
         function(){
-            alert('网络好像不给力呢~ ( >O< ) ~');
+            Tip('网络好像不给力呢~ ( >O< ) ~');
             $('#commit-senguo').removeAttr('disabled').removeClass('bg-grey');
         });
 }
