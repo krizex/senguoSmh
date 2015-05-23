@@ -148,7 +148,7 @@ function shopChnage(shop_id){
     var args={action:'shop_change',data:data};
     $.postJson(url,args,function(res){
         if(res.success){
-            // window.location.reload();
+            window.location.reload();
         }
     });
 }

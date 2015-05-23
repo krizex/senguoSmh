@@ -116,13 +116,21 @@
 .shop_status-list{margin-top:-1px;}
 .shop_status-list li{font-size:12px;width:88px;height:30px;line-height:30px;}
 
-
-
-
-
-
-
-
+.admin-set-list{}
+.admin-set-list{border:1px solid #eee;border-bottom:none;}
+.admin-set-list .item{border-bottom:1px solid #eee;padding:10px;}
+.admin-set-list .w1{width:10%;}
+.admin-set-list p{max-width:610px;}
+.admin-set-list .img{width:40px;height:40px;border-radius:50%;}
+.admin-set-list .w2{line-height:40px;}
+.admin-set-list .name{display:inline-block;width:150px;}
+.search-user{height:33px;width:80%;border:1px solid #ddd;margin-right:10px;}
+.set-box .modal-body{min-height:120px;}
+.set-box .user-list{margin-top:10px;}
+.set-box .user-list .img{width:40px;height:40px;border-radius:50%;}
+.set-box .user-list .name{display:inline-block;width:150px;margin-top:10px;margin-left:10px;}
+.set-box .user-list .add_admin{margin-top:10px;margin-left:10px;}
+.user-search{border-radius:0px;}
 
 
 

@@ -12,6 +12,12 @@ $(document).ready(function(){
         else $this.find('.stop-mode').show();
 
     });
+    if($.getUrlParam('action')=='admin' && $.getUrlParam('status')=='fail'){
+        var notice=$('.add-admin').attr('data-notice');
+        if(notice!=''){
+            return alert(notice);
+        }
+    }
 }).on('click','.cash_active',function(){
     var $this=$(this);
     if($this.attr("data-flag")=="off") return false;
@@ -128,6 +134,36 @@ $(document).ready(function(){
         );
 }).on('click','.add-admin',function(){
     $('.set-box').modal('show');
+}).on('click','.delete-admin',function(){
+     var $this=$(this);
+    if($this.attr("data-flag")=="off") return false;
+    $this.attr("data-flag","off");
+    if(confirm('是否确定删除该管理员?')){
+        var id =$this.parents('li').attr('data-id');
+        var url='';
+        var data={id:id};
+        var action="delete_admin";
+        var args={
+            action:action,
+            data:data
+        };
+        $.postJson(url,args,
+            function(res){
+                if(res.success){
+                    $this.attr("data-flag","on");
+                    $this.parents('li').remove();
+                }
+                else{
+                        $this.attr("data-flag","on");
+                        return alert(res.error_text);
+                }
+            },
+            function(){$this.attr("data-flag","on");alert('网络好像不给力呢~ ( >O< ) ~');}
+            );
+    }
+    else{
+        $this.attr("data-flag","on");
+    }
 }).on('click','.user-search',function(){
     var $this=$(this);
     if($this.attr("data-flag")=="off") return false;
@@ -154,14 +190,12 @@ $(document).ready(function(){
         function(res){
             if(res.success){
                 $this.attr("data-flag","on");
-                var item='<li data-id="{{id}}">'+
-                                    '<span class="w1 pull-left"><img src="{{imgurl}}"/></span>'+
-                                    '<div class="w2 pull-left">'+
-                                        '<span class="name">{{nickname}}</span>'+
+                var item='<li data-id="{{id}}" class="font14">'+
+                                    '<span class="pull-left"><img src="{{imgurl}}" class="img"/></span>'+
+                                    '<div class="pull-left">'+
+                                        '<span class="name pull-left">{{nickname}}</span>'+
                                     '</div>'+
-                                    '<div class="pull-right">'+
-                                        '<a class="add_admin" href="javascript:;">添加</a>'+
-                                   ' </div>'+
+                                    '<a class="add_admin pull-left" href="javascript:;">+添加</a>'+
                                 '</li>'
                 var imgurl=res.data[0]['imgurl'];
                 var nickname=res.data[0]['nickname'];
@@ -196,9 +230,10 @@ $(document).ready(function(){
         function(res){
             if(res.success){
                 $this.attr("data-flag","on");
-                 window.location.href="/admin/wxauth"
-            }
-            else{
+                if(confirm('是否添加该用户为店铺管理员？点击确定后请使用超级管理员微信进行二维码扫描')){
+                    window.location.href="/admin/wxauth";
+                }
+            }else{
                     $this.attr("data-flag","on");
                     return alert(res.error_text);
             }

@@ -561,7 +561,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 		shop_id = self.get_secure_cookie("shop_id") or b'0'
 		shop_id = int(shop_id.decode())
 		try:
-			admin = self.session.query(models.RelShopAdmin).filter_by(account_id=self.current_user.id,status=1).first()
+			admin = self.session.query(models.RelShopAdmin).filter_by(account_id=self.current_user.accountinfo.id,status=1).first()
 		except:
 			admin = None
 
@@ -571,13 +571,25 @@ class AdminBaseHandler(_AccountBaseHandler):
 					one_shop = self.session.query(models.Shop).filter_by(id = admin.shop_id).first()
 				except:
 					return self.finish("您还不是任何店铺的管理员，请先申请")
-				if one_shop:
+				if not shop_id:
 					self.current_shop = one_shop
 					self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
+				else:
+					try:
+						shop = self.session.query(models.Shop).join(models.RelShopAdmin,models.Shop.id == models.RelShopAdmin.shop_id)\
+						.filter(models.Shop.id == shop_id,models.RelShopAdmin.account_id == self.current_user.accountinfo.id,models.RelShopAdmin.status == 1).first()
+					except:
+						shop = None
+					self.current_shop = shop
 			else:
 				return self.finish("你还没有店铺，请先申请")
 		else:
-			shop = next((x for x in self.current_user.shops if x.id == shop_id), None)
+			if admin:
+				shop = next((x for x in self.current_user.shops if x.id == shop_id), \
+					self.session.query(models.Shop).join(models.RelShopAdmin,models.Shop.id == models.RelShopAdmin.shop_id)\
+					.filter(models.Shop.id == shop_id,models.RelShopAdmin.account_id == self.current_user.accountinfo.id,models.RelShopAdmin.status == 1).first())
+			else:
+				shop = next((x for x in self.current_user.shops if x.id == shop_id), None)
 			if not shop_id or not shop:#初次登陆，默认选择一个店铺
 				self.current_shop = self.current_user.shops[0]
 				self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
@@ -968,6 +980,31 @@ class WxOauth2:
 			return False
 		return True
 
+	@classmethod
+	def post_add_msg(cls, touser, shop_name, name):
+		#print('####################')
+		#print(cls)
+		#print(touser)
+		time = datetime.datetime.now().strftime('%Y-%m-%d')
+		postdata = {
+			"touser": touser,
+			"template_id": "YDIcdYNMLKk3sDw_yJgpIvmcN5qz_2Uz83N7T9i5O3s",
+			"url": "http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&"
+				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
+			"topcolor": "#FF0000",
+			"data": {
+				"first": {"value": "您好，“%s”" % name, "color": "#173177"},
+				"keyword1": {"value": "您被 “%s”添加为管理员！" % shop_name, "color": "#173177"},
+				"keyword3": {"value": time, "color": "#173177"},
+				}
+		}
+		access_token = cls.get_client_access_token()
+		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
+		data = json.loads(res.content.decode("utf-8"))
+		if data["errcode"] != 0:
+			print("[模版消息]店铺审核消息发送失败：", data)
+			return False
+		return True
 
 	@classmethod
 	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,\

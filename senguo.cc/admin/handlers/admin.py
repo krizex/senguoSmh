@@ -8,6 +8,7 @@ from sqlalchemy import func, desc, and_, or_, exists,not_
 import qiniu
 from dal.dis_dict import dis_dict
 from libs.msgverify import gen_msg_token,check_msg_token
+import requests
 
 # 登陆处理
 class Access(AdminBaseHandler):
@@ -105,12 +106,12 @@ class Home(AdminBaseHandler):
 				return self.send_error(403)#必须做权限检查：可能这个shop并不属于current_user
 			self.current_shop = shop
 			self.set_secure_cookie("shop_id", str(shop.id), domain=ROOT_HOST_NAME)
-			return self.send_success(n=self.current_shop.id)
+			return self.send_success()
 		elif action == 'other_shop':
 			shoplist=[]
 			try:
 				shop = self.session.query(models.Shop).join(models.RelShopAdmin,models.Shop.id == models.RelShopAdmin.shop_id)\
-				.filter(models.RelAdminTemp.account_id==self.current_user.accountinfo.id).all()
+				.filter(models.RelShopAdmin.account_id==self.current_user.accountinfo.id,models.RelShopAdmin.status ==1 ).all()
 			except:
 				shoplist=[]
 			if shop:
@@ -1408,7 +1409,6 @@ class Config(AdminBaseHandler):
 		try:config = self.session.query(models.Config).filter_by(id=self.current_shop.id).one()
 		except:return self.send_error(404)
 		action = self.args["action"]
-		print(self.current_shop.id,'2333333')
 		if action == "delivery":
 			return self.render("admin/shop-address-set.html", addresses=config.addresses,context=dict(subpage='shop_set',shopSubPage='delivery_set'))
 		elif action == "notice":
@@ -1437,7 +1437,11 @@ class Config(AdminBaseHandler):
 						notice='管理员添加成功'
 					elif status == 'fail':
 						notice='您不是超级管理员，无法进行管理员添加操作'
-				return self.render('admin/admin-set.html',context=dict(subpage='shop_set',shopSubPage='admin_set'),notice=notice)
+				admin_list = self.session.query(models.RelShopAdmin).filter_by(shop_id = self.current_shop.id,status =1).all()
+				datalist =[]
+				for admin in admin_list:
+					datalist.append({'id':admin.accountinfo.id,'imgurl':admin.accountinfo.headimgurl_small,'nickname':admin.accountinfo.nickname})
+				return self.render('admin/admin-set.html',context=dict(subpage='shop_set',shopSubPage='admin_set'),notice=notice,datalist=datalist)
 			else:
 				return self.redirect(self.reverse_url('adminShopConfig'))
 			
@@ -1550,8 +1554,12 @@ class Config(AdminBaseHandler):
 				data.append({'imgurl':info.headimgurl_small,'nickname':info.nickname,'id':info.id})
 				return self.send_success(data=data)
 		elif action =="add_admin":
-			#生成一张临时管理员表
+			if self.current_shop.admin.id !=self.current_user.id:
+				return self.send_fail('您没有添加管理员的权限')
 			_id = int(self.args["data"]["id"])
+			admin_count = self.session.query(models.RelShopAdmin).filter_by(shop_id = self.current_shop.id,status = 1).count()
+			if admin_count == 3:
+				return self.send_fail('至多可添加三个管理员')
 			if self.current_shop.admin.accountinfo.id == _id:
 				return self.send_fail('该用户已经是店铺的管理员')
 			admin = self.session.query(models.RelShopAdmin).filter_by(shop_id = self.current_shop.id,account_id = _id,status=1).first()
@@ -1563,11 +1571,16 @@ class Config(AdminBaseHandler):
 					account_id = _id
 				)
 				self.session.add(admin_temp)
-				self.session.commit()
+				self.session.commit()#生成一张临时管理员表
 			return self.send_success()
 		elif action =="delete_admin":
+			if self.current_shop.admin.id !=self.current_user.id:
+				return self.send_fail('您没有删除管理员的权限')
 			_id = int(self.args["data"]["id"])
-			admin = self.session.query(models.RelShopAdmin).filter_by(shop_id = self.current_shop.id,account_id = _id).first()
+			try:
+				admin = self.session.query(models.RelShopAdmin).filter_by(shop_id = self.current_shop.id,account_id = _id,status=1).first()
+			except:
+				return self.send_fail('该管理员不存在')
 			admin.status = 0
 			self.session.commit()
 			return self.send_success()
@@ -1598,13 +1611,34 @@ class AdminAuth(AdminBaseHandler):
 		if self.current_shop.admin.accountinfo.wx_unionid == wx_userinfo["unionid"]:
 			temp = self.session.query(models.RelAdminTemp).filter_by(shop_id = self.current_shop.id).order_by(models.RelAdminTemp.create_time.desc()).first()
 			#超级管理员授权成功,将临时管理员表信息放入关系表中
-			admin = models.RelShopAdmin(
-					account_id=temp.account_id,
-					shop_id=temp.shop_id
-				)
-			self.session.add(admin)
+			try:
+				admin_already = self.session.query(models.RelShopAdmin).filter_by(account_id=temp.account_id,shop_id=temp.shop_id).first()
+			except:
+				admin_already = None
+			if admin_already:
+				admin_already.status = 1
+			else:
+				admin = models.RelShopAdmin(
+						account_id=temp.account_id,
+						shop_id=temp.shop_id
+					)
+				self.session.add(admin)
 			self.session.commit()
-			return self.redirect('/admin/config?action=admin&status=success')
+			url = 'http://106.ihuyi.cn/webservice/sms.php?method=Submit'     # message'url
+			account_info = self.session.query(models.Accountinfo).filter_by(id=temp.account_id).first()
+			message_name = account_info.nickname
+			mobile = account_info.phone
+			message_shop_name = self.current_shop.shop_name
+			print(mobile)
+			message_content ='尊敬的{0}，您好，被{1}添加为管理员'.format(message_name,message_shop_name)
+			postdata = dict(account='cf_senguocc',
+				password='sg201404',
+				mobile=mobile,
+				content = message_content)
+			headers = dict(Host = '106.ihuyi.cn',)
+			r = requests.post(url,data = postdata , headers = headers)
+			WxOauth2.post_add_msg(account_info.wx_openid, message_shop_name,account_info.nickname)
+			return self.redirect('/admin/config?action=admin')
 
 		else:
 			return self.redirect('/admin/config?action=admin&status=fail')
