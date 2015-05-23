@@ -94,12 +94,11 @@ img{border:none;}
 .mode-lock{background:#fbfbfb;width:100%;float:left;padding:10px 0;}
 
 .subnav-box{position:relative;height:40px;border-bottom:1px solid #eee;width:100%;overflow:hidden;}
-.subnav{width:100%;}
 .subnav li{float:left;width:90px;height:40px;text-align:center;line-height:42px;}
 .subnav li a{color:#333;font-size:14px;display:block;}
 .subnav .active{border-bottom:3px solid #52b43f;margin-top:-1px;}
 .subnav .active a{display:block;}
-.subnav-box .search-input{position:absolute;right:0;width:270px;top:5px;}
+.subnav-box .search-input{top:5px;}
 
 /*部分按钮样式*/
 .btn-style{display:inline-block;width:74px;height:24px;border:1px solid #ccc;border-top-left-radius:2px;border-top-right-radius:2px;line-height:24px;text-align:center;}
@@ -119,7 +118,6 @@ img{border:none;}
 .check-btn{width:25px;height:25px;border-radius:50%;background:#44b549;display:inline-block;line-height:25px;font-size:16px;}
 
 /*搜索框样式*/
-.search-input{}
 .search-input input{float:left;}
 .search-input .search-con{width:200px;height:28px;border:1px solid #d9d9d9;color:#999;-ms-line-height:28px;text-indent:30px;background:url("../images/search-icon.gif") no-repeat 8px center;transition:width 0.3s;-moz-transition:width 0.3s;-webkit-transition:width 0.3s;-o-transition:width 0.3s;}
 .search-input .search-con:focus{width:266px;}
