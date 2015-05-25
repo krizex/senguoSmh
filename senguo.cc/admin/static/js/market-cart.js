@@ -52,7 +52,7 @@ $(document).ready(function(){
     //类型切换增加active
     $(document).on('click','.type-choose .item',function(){
         var $this=$(this);
-        $this.removeClass('anim-pulse')
+        $this.removeClass('anim-pulse');
         $this.addClass('active anim-pulse').siblings().removeClass('active anim-pulse');
     });
     //收货地址添加
