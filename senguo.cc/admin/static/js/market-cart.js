@@ -402,9 +402,9 @@ $(document).ready(function(){
          return false;
     }
 }).on("click",".online-lst li",function(){   //选择在线支付方式
-    pulse($(".online-lst li"));
     $(".online-lst").find(".checkbox-btn").removeClass("checkboxed");
     $("#online-pay").attr("data-type",$(this).attr("data-type"));
+    pulse($(this));
     $(this).children("a").addClass("checkboxed");
 });
 
