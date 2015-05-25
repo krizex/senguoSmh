@@ -171,7 +171,10 @@ $(document).ready(function(){
         });}
         $('.send_period .item').on('click',function(){
             var $this=$(this);
-            if($this.hasClass('available')) {$this.addClass('active').siblings().removeClass('active')}
+            if($this.hasClass('available')) {
+                pulse($this);
+                $this.addClass('active').siblings().removeClass('active');
+            }
         });
     //按时达选择今天
     $('#send_today').on('click',function(){
@@ -258,6 +261,7 @@ $(document).ready(function(){
         $('.send-now').on('click',function(){
             $(this).removeClass('active');
             if(intime_on=='True'){
+                pulse($('.send-intime'));
                 $('.send-intime').addClass('active');
                 $('.send_day').show();
                 $('.send_period').show();
