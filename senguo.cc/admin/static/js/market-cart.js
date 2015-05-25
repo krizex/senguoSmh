@@ -359,7 +359,7 @@ $(document).ready(function(){
         var index = $this.index();
         var status = $this.attr('data-status');
         var statu = $this.attr("data-auth");
-        var type= $this.find('.title').text();
+        var type = $this.find('.title').text();
         if(statu == "False"){
             $this.removeClass('active').addClass('not_available');
         }
@@ -386,6 +386,7 @@ $(document).ready(function(){
     if(index == 2){
         $(".wrap-online-lst").toggleClass("hidden");
     }
+    pulse($(".pay_type li"));
     $(".pay_type li").removeClass("active").eq(index).addClass("active");
 }).on('click','.a-cz',function(){
     var status = $(this).attr('data-status');
@@ -399,6 +400,7 @@ $(document).ready(function(){
          return false;
     }
 }).on("click",".online-lst li",function(){   //选择在线支付方式
+    pulse($(".online-lst li"));
     $(".online-lst").find(".checkbox-btn").removeClass("checkboxed");
     $("#online-pay").attr("data-type",$(this).attr("data-type"));
     $(this).children("a").addClass("checkboxed");
