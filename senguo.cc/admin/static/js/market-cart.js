@@ -52,7 +52,7 @@ $(document).ready(function(){
     //类型切换增加active
     $(document).on('click','.type-choose .item',function(){
         var $this=$(this);
-        $this.addClass('active').siblings().removeClass('active');
+        $this.removeClass('anim-pulse').addClass('active anim-pulse').siblings().removeClass('active');
     });
     //收货地址添加
     var max=$('.address_list .item').length;
@@ -257,7 +257,7 @@ $(document).ready(function(){
         $('.send-now').on('click',function(){
             $(this).removeClass('active');
             if(intime_on=='True'){
-                $('.send-intime').removeClass('anim-pulse').addClass('active anim-pulse');
+                $('.send-intime').addClass('active');
                 $('.send_day').show();
                 $('.send_period').show();
                 $('.intime-intro').show();
