@@ -585,7 +585,7 @@ var fruitItem=function(box,fruits,type){
         }
         box.append($item);
         //$('.lazy_img').lazyload({container: $("#wrap-goods-box"),threshold:10});
-        $('.lazy_img').lazyload({threshold:100});
+        $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
 };
 window.dataObj.fruits={};
 window.dataObj.mgoods={};
