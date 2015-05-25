@@ -86,7 +86,7 @@ $(document).ready(function(){
                 'token':''
             },
             'onFallback':function(){
-                            return alert('您的浏览器不支持此插件！建议使用谷歌浏览器！');
+                            return Tip('您的浏览器不支持此插件！建议使用谷歌浏览器！');
                         },
             'onUpload' :function(){
                 $.ajaxSetup({
@@ -101,7 +101,7 @@ $(document).ready(function(){
                         token=res.token;
                     },
                     function(){
-                        alert('网络好像不给力呢~ ( >O< ) ~！');}
+                        Tip('网络好像不给力呢~ ( >O< ) ~！');}
                 );
                 $('#file_upload').data('uploadifive').settings.formData = {
                     'key':key,
@@ -202,7 +202,7 @@ function initBmap(){
     var map = new BMap.Map("bmap");          // 创建地图实例
     var point = new BMap.Point(114.421659, 30.512769);  // 创建点坐标
     var marker = null;
-    var timer = null;
+    var isHand = false;
     map.enableScrollWheelZoom();
     map.centerAndZoom(point, 19);
     var myGeo = new BMap.Geocoder();
@@ -214,7 +214,7 @@ function initBmap(){
             getPointByName(map, myGeo, address,true);
         }
     });
-    $("#search-lbs,#save-lbs").on("click",function(){
+    $("#search-lbs").on("click",function(){
         var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
         getPointByName(map, myGeo, address,true);
     });
@@ -222,14 +222,22 @@ function initBmap(){
         marker.setAnimation(BMAP_ANIMATION_BOUNCE);
         marker.enableDragging();
     });
+    $("#save-lbs").on("click",function(){
+        if(!isHand){
+            var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
+            getPointByName(map, myGeo, address,true);
+        }
+    });
     function getPointByName(map, myGeo, address,flag){
         myGeo.getPoint(address, function(point){
             if (point) {
+                map.removeOverlay(marker);
                 map.centerAndZoom(point, 19);
                 marker = new BMap.Marker(point);
                 marker.addEventListener("dragend",attribute);
                 map.addOverlay(marker);
                 function attribute(){
+                    isHand = true;
                     var p = marker.getPosition();  //获取marker的位置
                     myGeo.getLocation(p, function(rs){
                         marker.setAnimation();
@@ -239,21 +247,13 @@ function initBmap(){
                         $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
                         $("#info_address").html(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
                         initProviceAndCityCode(addComp.province,addComp.city);
-                        clearTimeout(timer);
-                        $("#area-tip-box").html("地理位置已经获取，不要忘记点击保存哦！").removeClass("hidden");
-                        timer = setTimeout(function(){
-                            $("#area-tip-box").addClass("hidden");
-                        },4000);
+                        Tip("地理位置已经获取，不要忘记点击保存哦！");
                     });
                     $("#info_address").attr("data-lng",p.lng).attr("data-lat", p.lat);
                 }
             }else{
                 if(flag){
-                    clearTimeout(timer);
-                    $("#area-tip-box").html("根据您填写的地址未能找到正确位置，请重新填写哦！").removeClass("hidden");
-                    timer = setTimeout(function(){
-                        $("#area-tip-box").addClass("hidden");
-                    },4000);
+                    Tip("根据您填写的地址未能找到正确位置，请重新填写哦！");
                 }
             }
         });
@@ -310,7 +310,7 @@ function infoEdit(target){
         {
             action='edit_shop_name';
             shop_name=$('.shop_name').val().trim();
-            if(shop_name.length>15){return alert('店铺名称请不要超过15个字符！')}
+            if(shop_name.length>15){return Tip('店铺名称请不要超过15个字符！')}
             data={shop_name:shop_name};
         }
     else if(action_name=='code')
@@ -318,15 +318,15 @@ function infoEdit(target){
         var reg=/^\w+$/;
         action='edit_shop_code';
         shop_code=$('.shop_code').val().trim();
-        if(!reg.test(shop_code)){return alert('店铺号只能为字母、数字以及下划线组成！')}
-        if(shop_code.length<6){return alert('店铺号至少为6位数！')}
+        if(!reg.test(shop_code)){return Tip('店铺号只能为字母、数字以及下划线组成！')}
+        if(shop_code.length<6){return Tip('店铺号至少为6位数！')}
         data={shop_code:shop_code};
     }
     else if(action_name=='intro')
     {
         action='edit_shop_intro';
         shop_intro=$('.shop_intro').val().trim();
-        if(shop_intro.length>300){return alert('店铺简介请不要超过300个字符！')}
+        if(shop_intro.length>300){return Tip('店铺简介请不要超过300个字符！')}
         data={shop_intro:shop_intro};
     }
     else if(action_name=='address')
@@ -336,12 +336,12 @@ function infoEdit(target){
         var province=$('#provinceAddress').text();
         var city=$('#cityAddress').text();
         if(!shop_city) {
-            return alert('请选择城市！');
+            return Tip('请选择城市！');
         }
         address=province+city+$('#addressDetail').val();
         shop_address_detail=$('#addressDetail').val().trim();
         if(shop_address_detail.length>50){
-            return alert('详细地址请不要超过50个字符！');
+            return Tip('详细地址请不要超过50个字符！');
         }
         data={
             lon:$("#info_address").attr("data-lng"),//经度
@@ -355,7 +355,7 @@ function infoEdit(target){
         action='edit_phone';
         shop_phone=$('.shop_phone').val().trim();
         console.log(shop_phone.length);
-        if(shop_phone.length=0){return alert('"电话不能为空o(╯□╰)o"')}
+        if(shop_phone.length=0){return Tip('"电话不能为空o(╯□╰)o"')}
         data={shop_phone:shop_phone};
     }
     else if(action_name=='area')
@@ -437,9 +437,9 @@ function infoEdit(target){
                     target.hide().siblings('.info_edit').show().parents('li').find('.info_show').show().siblings('.info_hide').hide();
                 }
             }
-            else  alert(res.error_text);
+            else  Tip(res.error_text);
         },
         function(){
-            alert('网络好像不给力呢~ ( >O< ) ~！');}
+            Tip('网络好像不给力呢~ ( >O< ) ~！');}
     );
 }

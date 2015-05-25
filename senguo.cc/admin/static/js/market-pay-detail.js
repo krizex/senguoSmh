@@ -45,7 +45,7 @@ $(document).ready(function(){
     confirmRemove();
 }).on("click","#go-alipay",function(){
     if(isWeiXin()){
-        window.location.href="/customer/online/orderdetail?alipayUrl="+encodeURIComponent($(this).attr("data-url"));
+        window.location.href="/customer/online/orderdetail?alipayUrl="+encodeURIComponent($(this).attr("data-url"))+"&order_id="+$("#cancel-order").attr("data-id");
     }else{
         window.location.href=$(this).attr("data-url");
     }

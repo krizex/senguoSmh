@@ -1,24 +1,11 @@
-{% set home_active=''%}
-{% set shop_active=''%}
-{% set community_active=''%}
-{% set about_active=''%}
-{% if context['subpage'] == 'home'%}
-	{% set home_active='active'%}
-{% elif context['subpage'] == 'about'%}
-	{% set about_active='active'%}
-{% elif context['subpage'] == 'community'%}
-	{% set community_active='active'%}
-{% elif context['subpage'] == 'shop'%}
-	{% set shop_active='active'%}
-{% end %}
-
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title></title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chorme=1">
+<meta name="keywords" content="森果,水果商城,水果O2O,微信卖水果,水果系统,森果后台,微信商城运营,生鲜商城,线上水果">
+<meta name="description" content="森果是帮助商家在微信上搭建微信商城的平台，提供店铺、商品、订单、消息和客户的管理模块，同时还提供丰富的营销应用和活动插件。">
+<title>森果O2O平台</title>
 <link href="{{static_url('css/official_base.css')}}" rel="stylesheet">
 <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
 <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
@@ -29,6 +16,20 @@
 
     </script>
 </head>
+{% set home_active=''%}
+{% set shop_active=''%}
+{% set community_active=''%}
+{% set about_active=''%}
+{% if context['subpage'] == 'home'%}
+{% set home_active='active'%}
+{% elif context['subpage'] == 'about'%}
+{% set about_active='active'%}
+{% elif context['subpage'] == 'community'%}
+{% set community_active='active'%}
+{% elif context['subpage'] == 'shop'%}
+{% set shop_active='active'%}
+{% end %}
+
 <body>
 	<header class="w1000 clearfix head">
 		<div class="login-box pull-right hidden-xs">

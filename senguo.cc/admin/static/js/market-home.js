@@ -1,5 +1,9 @@
 $(document).ready(function(){
      var shop_logo=$('#shop_imgurl').attr('data-img');
+    console.log();
+    if(parseInt($("#shop_status").val())==3){
+        noticeBox("店铺休息中，暂不接收新订单");
+    }
     if(isWeiXin()){
         wexin('',shop_logo);
     }
@@ -167,9 +171,9 @@ $(document).ready(function(){
     }).on('click','.choose-classify',function(){
         var $this=$(this);
         $this.find('.icon').toggle();
-        $('.goods-class-choose').toggle(100);
+        $('.goods-class-choose').toggle();
     }).on('click','.goods-class-choose li',function(){
-        $('.goods-class-choose').hide(100);
+        $('.goods-class-choose').hide();
     }).on('click','#all_goods',function(){
         //get all goods
         $('.goods-list').empty();
@@ -369,7 +373,7 @@ $(document).ready(function(){
             var $charge_list=$this.parents('.goods-list-item').find('.charge-list');
             if(target.closest('.forbid_click').length == 0){
                 $parent.find('.back-shape').toggleClass('hidden');
-                $charge_list.toggle(1);
+                $charge_list.toggle();
                 $parent.find('.toggle_icon').toggleClass('arrow');
                 $parent.toggleClass('pr35');
             };
@@ -581,7 +585,7 @@ var fruitItem=function(box,fruits,type){
         }
         box.append($item);
         //$('.lazy_img').lazyload({container: $("#wrap-goods-box"),threshold:10});
-        $('.lazy_img').lazyload({threshold:100});
+        $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
 };
 window.dataObj.fruits={};
 window.dataObj.mgoods={};

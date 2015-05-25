@@ -15,7 +15,7 @@ $(document).ready(function(){
     if($.getUrlParam('action')=='admin' && $.getUrlParam('status')=='fail'){
         var notice=$('.add-admin').attr('data-notice');
         if(notice!=''){
-            alert(notice);
+            Tip(notice);
             setTimeout(function() {
             window.location.href="/admin/config?action=admin";
              },2000);
@@ -44,10 +44,10 @@ $(document).ready(function(){
                 }
             }
             else{
-                    alert(res.error_text);
+                Tip(res.error_text);
             }
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~');}
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~');}
         );
 }).on('click','.balance_active',function(){
     var $this=$(this);
@@ -72,14 +72,12 @@ $(document).ready(function(){
                 }
             }
             else{
-                    alert(res.error_text);
+                Tip(res.error_text);
             }
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~');}
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~');}
         );
 }).on('click','.online_active',function(){
-    /*alert("当前此功能还未开放，请等待...");
-    return false;*/
     var $this=$(this);
     if($this.attr("data-flag")=="off") return false;
     $this.attr("data-flag","off");
@@ -102,10 +100,10 @@ $(document).ready(function(){
                 }
             }
             else{
-                alert(res.error_text);
+                Tip(res.error_text);
             }
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~');}
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~');}
     );
 }).on('click','.message_active',function(){
     var $this=$(this);
@@ -130,10 +128,10 @@ $(document).ready(function(){
                 }
             }
             else{
-                    alert(res.error_text);
+                Tip(res.error_text);
             }
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~');}
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~');}
         );
 }).on('click','.add-admin',function(){
     $('.set-box').modal('show');
@@ -158,10 +156,10 @@ $(document).ready(function(){
                 }
                 else{
                         $this.attr("data-flag","on");
-                        return alert(res.error_text);
+                        return Tip(res.error_text);
                 }
             },
-            function(){$this.attr("data-flag","on");alert('网络好像不给力呢~ ( >O< ) ~');}
+            function(){$this.attr("data-flag","on");return Tip('网络好像不给力呢~ ( >O< ) ~');}
             );
     }
     else{
@@ -175,11 +173,11 @@ $(document).ready(function(){
     var id =$('.search-user').val().trim();
      if(!id){
         $this.attr("data-flag","on");
-        return alert('请输入用户id');
+        return Tip('请输入用户id');
     }
     if(!regNumber.test(id)){
         $this.attr("data-flag","on");
-        return alert('请输入正确的用户id');
+        return Tip('请输入正确的用户id');
     }
     var url='';
     var data={id:id};
@@ -212,10 +210,10 @@ $(document).ready(function(){
             }
             else{
                     $this.attr("data-flag","on");
-                    return alert(res.error_text);
+                    return Tip(res.error_text);
             }
         },
-        function(){$this.attr("data-flag","on");alert('网络好像不给力呢~ ( >O< ) ~');}
+        function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
         );
 }).on('click','.add_admin',function(){
     var $this=$(this);
@@ -238,10 +236,10 @@ $(document).ready(function(){
                 }
             }else{
                     $this.attr("data-flag","on");
-                    return alert(res.error_text);
+                    return Tip(res.error_text);
             }
         },
-        function(){$this.attr("data-flag","on");alert('网络好像不给力呢~ ( >O< ) ~');}
+        function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
         );
 }).on('click','.set-super-receive',function(){
      var $this=$(this);
@@ -265,10 +263,10 @@ $(document).ready(function(){
                 }
             }else{
                     $this.attr("data-flag","on");
-                    return alert(res.error_text);
+                    return Tip(res.error_text);
             }
         },
-        function(){$this.attr("data-flag","on");alert('网络好像不给力呢~ ( >O< ) ~');}
+        function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
         );
 }).on('click','.set-receive',function(){
      var $this=$(this);
@@ -296,10 +294,10 @@ $(document).ready(function(){
             }
             else{
                     $this.attr("data-flag","on");
-                    return alert(res.error_text);
+                    return Tip(res.error_text);
             }
         },
-        function(){$this.attr("data-flag","on");alert('网络好像不给力呢~ ( >O< ) ~');}
+        function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
         );
 
 });

@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var item_url='/static/items/admin/order-item.html?v=2015-03-25';
+    var item_url='/static/items/admin/order-item.html?v=2015-05-22';
     //订单数据
     if(orders.length==0) $('.order-list-content').append('<h3 class="text-center">无订单信息！</h3>');
     else getOrder(item_url);
@@ -104,9 +104,9 @@ function getOrder(url){
     $.getItem(url,function(data){
             $list_item=data;
             //商品列表item
-    	    getGoodsItem('/static/items/admin/order-goods-item.html?v=2015-05-20');
+    	    getGoodsItem('/static/items/admin/order-goods-item.html?v=2015-05-22');
     	    //员工列表item
-    	    getStaffItem('/static/items/admin/order-staff-item.html?v=2015-03-20');
+    	    getStaffItem('/static/items/admin/order-staff-item.html?v=2015-03-22');
             orderItem(orders);
         }
     );
@@ -324,7 +324,7 @@ function orderPrint(target,action){
             list.push(order_id);
         });
         if(list.length==0){
-            return alert('您还未选择任何订单！');  
+            return Tip('您还未选择任何订单！');
         }
         data.order_list_id=list;
     }
@@ -346,9 +346,9 @@ function orderPrint(target,action){
                     window.print();
                     window.document.body.innerHTML=inner;
                 }
-                else return alert(res.error_text);
+                else return Tip(res.error_text);
             },
-            function(){return alert('网络错误！')}
+            function(){return Tip('网络错误！')}
         );
         function getData(target){
             var parent=target.parents('.order-list-item');
@@ -370,7 +370,7 @@ function orderPrint(target,action){
             var saler_remark=parent.find('.order_remark').text(); 
             var user_remark=parent.find('.message-content').text();
 
-            $.getItem('/static/items/admin/order-print-page.html?v=2015-04-14',function(data){
+            $.getItem('/static/items/admin/order-print-page.html?v=2015-05-14',function(data){
                 var $item=$(data);
                 $item.find('.notes-head').text(shop_name);
                 $item.find('.orderId').text(order_num);
@@ -408,10 +408,10 @@ function orderDelete(target){
     var index=$box.attr('data-target');
     var del_reason=$('#order_ser_val').val();
     if(!del_reason){
-        return alert('请输入订单删除的原因！');
+        return Tip('请输入订单删除的原因！');
     }
     if(del_reason.length>300){
-        return alert('删除原因最多可输入300字！');
+        return Tip('删除原因最多可输入300字！');
     }
     var data={
         order_id:order_id,
@@ -426,9 +426,9 @@ function orderDelete(target){
                 $('.order_set_box').modal('hide');
                 $('.order-list-item').eq(index).remove();
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){return alert('网络错误！')}
+        function(){return Tip('网络错误！')}
     )
 }
 
@@ -451,7 +451,7 @@ function orderEdit(target,action,content){
     }
     if(action=='edit_remark')
     {
-	if(content.length>100) return alert('订单备注请不要超过100个字！');        
+	if(content.length>100) return Tip('订单备注请不要超过100个字！');
 	data.remark=content;
 	var index=parent.attr('data-target');
     }
@@ -465,7 +465,7 @@ function orderEdit(target,action,content){
     }
     else if(action=='edit_totalPrice')
     {
-       if(!regFloat.test(content)) return alert('订单总价只能为数字！');
+       if(!regFloat.test(content)) return Tip('订单总价只能为数字！');
         data.totalPrice=content;
         var index=parent.attr('data-target');
     }
@@ -477,7 +477,7 @@ function orderEdit(target,action,content){
             list.push(id);
         });
         if(list.length==0){
-            return alert('您还未选择任何订单！');  
+            return Tip('您还未选择任何订单！');
         }
         data.status=Int(content);
         data.order_list_id=list;
@@ -560,10 +560,9 @@ function orderEdit(target,action,content){
                 }
             }
             else {
-                return alert(res.error_text);
-            }
+                return Tip(res.error_text);}
         },
-        function(){return alert('网络错误！')}
+        function(){return Tip('网络错误！')}
     )
 }
 

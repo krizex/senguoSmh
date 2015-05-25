@@ -31,7 +31,7 @@
     {% set receipt_active ='active' %}
 {% end %}
 {% set shop_code =current_shop.shop_code %}
-<span class="right-title">店铺设置{% if shop_code and shop_code!='not set' %}<span class="shop-link ml10">店铺链接：<a href="{{reverse_url('Market',shop_code)}}" target="_blank">http://senguo.cc/{{shop_code}}</a></span>{% else %}<span class="shop-link">请设置店铺号</span>{% end %}</span>
+<span class="right-title">店铺设置{% if shop_code and shop_code!='not set' %}<span class="shop-link ml10">店铺链接：<a href="{{reverse_url('Market',shop_code)}}" target="_blank">http://senguo.cc/{{shop_code}}</a></span>{% else %}<span class="shop-link ml10">请设置店铺号</span>{% end %}</span>
 <div class="subnav-box">
     <ul class="subnav group">
         <!--<li class="{{delivery_active}}" id="deliverySet"><a href="{{reverse_url('adminConfig')}}?action=delivery">配送设置</a></li>-->

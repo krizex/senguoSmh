@@ -1,4 +1,4 @@
-$(document).ready(function(){
+ $(document).ready(function(){
     window.dataObj.shop_href='/customer/shopProfile';
     window.dataObj.market_href='/shop/none';
     window.dataObj.home_href='/customer';

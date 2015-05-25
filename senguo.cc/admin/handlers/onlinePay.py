@@ -234,14 +234,15 @@ class OnlineWxPay(CustomerBaseHandler):
 
 class OrderDetail(CustomerBaseHandler):
 	#@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("alipayUrl?:str")
+	@CustomerBaseHandler.check_arguments("alipayUrl?:str","order_id?:str")
 	def get(self):
 		alipayUrl = self.args['alipayUrl']
-		print(alipayUrl,'dddddddddddddddddddddddddddddddddddddddddddddd')
-		return self.render("customer/alipay-tip.html",alipayUrl = alipayUrl)
+		order_id = self.args['order_id']
+		return self.render("customer/alipay-tip.html",alipayUrl = alipayUrl,order_id = order_id)
 
+class JustOrder(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("order_id?:str")
-	def post(self):
+	def get(self):
 		order_id = int(self.args['order_id'])
 		order = models.Order.get_by_id(self.session,order_id)
 		if not order:

@@ -8,7 +8,7 @@ else if (window.screen.width=='800')
 otherShop();
 
 $('.developing').on('click',function(){
-    alert('此功能暂未开放！');
+    Tip('此功能暂未开放！');
 });
 //if weixin
 if(isWeiXin()){
@@ -118,7 +118,7 @@ function getRealData(){
                     });
                 }else if(window.Notification && Notification.permission == "granted" && notify == null){
                     if(new_order_sum>0){
-                        notify = new Notification(new Date().toLocaleString(),{"body":"您收到了新的订单，请及时处理哦！","icon":"/static/images/sg.gif","tag":new Date().getTime()});
+                        notify = new Notification(new Date().toLocaleString(),{"body":"您收到了新的订单，请及时处理哦！","icon":"/static/images/sg.png","tag":new Date().getTime()});
                     }
                 }
             }
@@ -223,14 +223,14 @@ function getPage(page,url,total){
             var $this=$(this);
             var num=Int($('.input-page').val());
             if(!num){
-                return alert('请输入页码');
+                return Tip('请输入页码');
             }
             if(0<num&&num<=total)
             {
                 $this.attr({'href':url+(num-1)});
             }
             else {
-                return alert('没有该页的数据');
+                return Tip('没有该页的数据');
             }
         });
         $(document).on('keydown','.input-page',function(){
@@ -239,14 +239,14 @@ function getPage(page,url,total){
             {
                     var num=$this.val();
                     if(!num){
-                        return alert('请输入页码');
+                        return Tip('请输入页码');
                     }
                     if(0<num&&num<=total)
                     {
                         window.location.href=url+(num-1);
                     }
                     else {
-                        return alert('没有该页的数据');
+                        return Tip('没有该页的数据');
                     }
             }
         });

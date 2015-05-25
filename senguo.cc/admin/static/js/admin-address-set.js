@@ -72,7 +72,7 @@ function address1Edit(target){
     var url=link;
     var data=target.siblings('.address1-value').val().trim();
     var action="add_addr1";
-    if(!data) return alert('地址不能为空！');
+    if(!data) return Tip('地址不能为空！');
     var args={
         action:action,
         data:data
@@ -82,7 +82,7 @@ function address1Edit(target){
         function(res){
             if(res.success){
                 target.parents('.add-address-item').find('.address1-value').attr({"data-id":res.address1_id});
-                alert('一级地址添加成功');
+                Tip('一级地址添加成功');
             }
         })
 }
@@ -95,8 +95,8 @@ function address2Edit(id,data){
      addr1_id:address1_id
     };
     var action="add_addr2";
-    if(!address1_id) return alert('请先确认添加一级地址！');
-    if(!data) return alert('地址不能为空！');
+    if(!address1_id) return Tip('请先确认添加一级地址！');
+    if(!data) return Tip('地址不能为空！');
     var args={
         action:action,
         data:data
@@ -104,8 +104,7 @@ function address2Edit(id,data){
     $.postJson(url,args,
         function(res){
             if(res.success){
-
-                alert('二级级地址添加成功');
+                Tip('二级级地址添加成功');
             }
         })
 }
@@ -114,7 +113,7 @@ function editAddres1Status(target,id){
     var url=link;
     var action="edit_addr1_active";
     var data={addr1_id:id};
-    if(!id) return alert('请先确认添加一级地址！');
+    if(!id) return Tip('请先确认添加一级地址！');
     var args={
         action:action,
         data:data
@@ -123,7 +122,7 @@ function editAddres1Status(target,id){
         function(res){
             if(res.success){
                 worMode(target);
-                alert('状态修改成功');
+                Tip('状态修改成功');
             }
         })
 }
@@ -132,7 +131,7 @@ function editAddres2Status(target,id){
     var url=link;
     var action="edit_addr2_active";
     var data={addr2_id:id};
-    if(!id) return alert('请先确认添加一级地址！');
+    if(!id) return Tip('请先确认添加一级地址！');
     var args={
         action:action,
         data:data
@@ -141,7 +140,7 @@ function editAddres2Status(target,id){
         function(res){
             if(res.success){
                 worMode(target);
-                alert('状态修改成功');
+                Tip('状态修改成功');
             }
         })
 }

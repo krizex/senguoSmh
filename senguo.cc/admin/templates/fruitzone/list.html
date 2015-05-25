@@ -14,25 +14,35 @@
     window.dataObj.province_count={% raw json.dumps(context['province_count'])%}
 </script>
 <header class="herder bg-green text-white text-center">
-        <a href="{{reverse_url('fruitzoneHome')}}" class="back"></a>
+        <a href="/customer/profile" class="pcenter-btn"></a>
         <span class="title font16">店铺列表</span>
-        <a href="/customer/profile" class="pcenter-btn">
-            <i></i>
-            <span>我的</span>
-        </a>
-        <!--<ul class="home-head">
-            <li class="active"><a href="{{reverse_url('fruitzoneHome')}}">零售商</a></li>
-            <li class="willOpen"><a href="javascript:;">供应商</a></li>
-        </ul>-->
-   <!--<p style="color:red;text-align:center;margin-top:1em"><small>平台公测中，店铺数据暂未通过审核</small></p>-->
+        <a href="javascript:;" class="search-btn" id="search-btn"></a>
 </header>
 <div class="filter_search bg-white text-grey9 font14">
-    <input type="hidden" id="city_id" value="{{context['city_id']}}"/>
-    <a href="javascript:;" class="city_choose pull-left dismiss"><span class="city_name pull-left text-center">{{context['city'] or '城市'}}</span><em class="arrow pull-left"></em></a>
-    <div class="search-box pull-right dismiss" id="search-box">
+    <div class="search-box" id="search-box">
         <input type="text" placeholder="请输入店铺名" class="search-input pull-left" id="searchKey"/>
         <input type="submit" value="搜索" class="btn pull-right text-center" id="searchSubmit"/>
     </div>
+    <input type="hidden" id="city_id" value="{{context['city_id']}}"/>
+    <a href="javascript:;" class="choose-item city_choose pull-left dismiss"><span class="c-item city_name text-center">{{context['city'] or '城市'}}</span><em class="arrow"></em></a>
+    <a href="javascript:;" class="choose-item pull-left school">
+        <span class="c-item school_name text-center" id="school_name" data-key="2">高校</span><em class="arrow"></em>
+        <ul class="c-list s-list">
+            <li data-key="1">社区</li>
+            <li data-key="2">高校</li>
+            <li data-key="4">商圈</li>
+            <li data-key="8">其他</li>
+        </ul>
+    </a>
+    <a href="javascript:;" class="choose-item pull-left comme">
+        <span class="c-item comm_name text-center" id="comm_name" data-key="4">评价最多</span><em class="arrow"></em>
+        <ul class="c-list com-list">
+            <li data-key="4">评价最多</li>
+            <li data-key="2">离我最近</li>
+            <li data-key="1">商品最多</li>
+            <li data-key="3">满意度最高</li>
+        </ul>
+    </a>
 </div>
 
 <!-- <div class="filter-box">
@@ -85,8 +95,18 @@
 </div>
 <div class="loading text-center text-grey9 font12  text-green mt10 mb10" style="display:none">~努力加载中 ( > < )~</div>
 <div class="no_more text-center text-grey9 font12  text-green mt10 mb10" style="display:none">~没有更多了呢 ( > < )~</div>
+<div class="wrap-loading-box hidden">
+    <div class="loading-box">
+        <div class="loader">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+    </div>
+</div>
 {% end %}
 {% block bottom %}
+<script src="http://api.map.baidu.com/api?v=2.0&ak=2595684c343d6499bf469da8a9c18231"></script>
 <script src="{{static_url('js/area.js')}}"></script>
 <script src="{{static_url('js/fruitzone-list.js')}}"></script>
 {% end %}

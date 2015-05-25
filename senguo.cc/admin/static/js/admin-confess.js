@@ -28,11 +28,11 @@ $(document).ready(function(){
                 }
                 else {
                     $this.removeAttr('disabled').removeClass('bg-grey');
-                    alert(res.error_text);
+                    Tip(res.error_text);
                 }
             },
             function(){
-                alert('网络好像不给力呢~ ( >O< ) ~');
+                Tip('网络好像不给力呢~ ( >O< ) ~');
                 $this.removeAttr('disabled').removeClass('bg-grey');
             });
         }

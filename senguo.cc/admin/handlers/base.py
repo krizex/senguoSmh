@@ -16,6 +16,7 @@ import datetime
 import qiniu
 from settings import *
 import requests
+import math
 
 import threading
 
@@ -100,6 +101,13 @@ class GlobalBaseHandler(BaseHandler):
 
 	def timestamp_to_str(self, timestamp):
 		return time.strftime("%Y-%m-%d %H:%M", time.gmtime(timestamp))
+
+	def get_distance(self,lat1,lon1,lat2,lon2):
+		hsinX = math.sin((lon1 - lon2) * 0.5)
+		hsinY = math.sin((lat1 - lat2) * 0.5)
+		h = hsinY * hsinY + (math.cos(lat1) * math.cos(lat2) * hsinX * hsinX)
+		return 2 * math.atan2(math.sqrt(h), math.sqrt(1 - h)) * 6367000
+
 
 	def code_to_text(self, column_name, code):
 		text = ""
@@ -197,6 +205,25 @@ class GlobalBaseHandler(BaseHandler):
 		data['goods']         = goods
 		data['sender_phone']  = sender_phone
 		data['sender_img']    = sender_img
+
+		return data
+
+	#获去店铺信息
+	def get_shopInfo(self,shop):
+		data = {}
+		data['shop_name']     = shop.shop_name
+		data['shop_code']     = shop.shop_code
+		data['shop_province'] = shop.shop_province
+		data['shop_city']     = shop.shop_city
+		data['shop_address_detail'] = shop.shop_address_detail
+		data['shop_intro']    = shop.shop_intro
+		data['shop_trademark_url']  = shop.shop_trademark_url
+		data['shop_admin_name']= shop.admin.accountinfo.nickname
+		data['order_count']   = shop.order_count
+		data['shop_auth']     = shop.shop_auth
+		data['shop_status']   = shop.shop_status
+		data['auth_change']   = shop.auth_change
+		data['status']        = shop.status
 
 		return data
  
@@ -782,7 +809,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 	def get_city_shop_count(self,shop_city):
 		try:
 			shop_count = self.session.query(models.Shop).filter_by(shop_city = shop_city).count()
-		except:
+		except:		
 			return self.send_fail('shop_city error')
 		return shop_count
 

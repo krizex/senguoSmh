@@ -1,8 +1,8 @@
-.mode{display:inline-block;border-radius:30px;width:120px;height:32px;position:relative;line-height:32px;font-size:14px;top:8px;}
+.mode{display:inline-block;border-radius:30px;width:120px;height:32px;position:relative;line-height:30px;font-size:14px;top:8px;}
 .mode .circle{display:inline-block;width:28px;height:28px;background:#fff;border-radius:50%;position:absolute;top:2px;}
-.work-mode{text-indent:14px;}
+.work-mode{text-indent:28px;}
 .work-mode .circle{right:2px;}
-.stop-mode{text-indent:34px;}
+.stop-mode{text-indent:44px;}
 .stop-mode .circle{left:2px;}
 
 .top-box{line-height:20px;margin-bottom:20px;position:relative;padding:15px;background:#FBFBFB;}
