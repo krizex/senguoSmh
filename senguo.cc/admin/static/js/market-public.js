@@ -1,5 +1,4 @@
  $(document).ready(function(){
-    $.fx.off ＝ true;
     window.dataObj.shop_href='/customer/shopProfile';
     window.dataObj.market_href='/shop/none';
     window.dataObj.home_href='/customer';
