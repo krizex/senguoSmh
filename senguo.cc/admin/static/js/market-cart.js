@@ -236,7 +236,7 @@ $(document).ready(function(){
         //按时达模式选择
         $('#sendInTime').on('click',function(){
             var $this=$(this);
-            pulse($this);
+            pulse($this.parents('.item'));
             $this.parents('.item').addClass('active').siblings('.item').removeClass('active');
             $('.send_period').show();
             $('.send_day').show();
@@ -323,7 +323,7 @@ $(document).ready(function(){
                 }
             }
             else {
-                pulse($this);
+                pulse($this.parents('.item'));
                 $this.parents('.item').removeClass('active').siblings('.item').addClass('active');
                 return noticeBox('不小心超过了“立即送”的送货时间呢，请选择“按时达”时间段！',$this)
             }
