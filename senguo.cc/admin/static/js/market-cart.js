@@ -52,15 +52,13 @@ $(document).ready(function(){
     //类型切换增加active
     $(document).on('click','.type-choose .item',function(){
         var $this=$(this);
-        $this.addClass('active').siblings().removeClass('active');
+        $this.addClass('active anim-pulse').siblings().removeClass('active anim-pulse');
+        $this.addEventListener("webkitAnimationEnd", function(){
+            $this.removeClass('anim-pulse');
+        },false);
         //setTimeout(function(){
         //    $this.removeClass('anim-pulse');
         //},200);
-    $this.animate({
-  opacity: 0.25, left: '50px',
-  color: '#abcdef',
-  rotateZ: '45deg', translate3d: '0,10px,0'
-}, 500, 'ease-out')
 
     });
     //收货地址添加
