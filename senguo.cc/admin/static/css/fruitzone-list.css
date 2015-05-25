@@ -6,7 +6,7 @@
 .city_choose{width: 22%;}
 .school{width: 35%;}
 .comme{width: 42%;}
-.filter_search  .choose-item .c-item{display:block;padding-right:24px;text-align:right;overflow:hidden;}
+.filter_search  .choose-item .c-item{display:block;padding-right:24px;text-align:right;overflow:hidden; height: 30px;}
 .filter_search  .choose-item .arrow{display: inline-block;position: absolute;right: 0;top: 7px;width: 18px;height:14px;background-image: url('/static/images/icon_list.png');background-repeat: no-repeat;background-size: 80%;background-position: 0 -10px;}
 .filter_search  .search-box{position: absolute;height: 40px;top: 0;left: 0;background-color: #fff;z-index: 888;width: 100%;padding-left: 10px;padding-top: 5px;display: none;}
 .filter_search .search-input{width:88%;height:30px;border:none;background:#f4f4f4;border-radius:20px;text-indent:10px;}

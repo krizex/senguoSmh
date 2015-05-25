@@ -102,6 +102,11 @@ class Home(AdminBaseHandler):
 			return self.send_error(403)#必须做权限检查：可能这个shop并不属于current_user
 		self.set_secure_cookie("shop_id", str(shop_id), domain=ROOT_HOST_NAME)
 		return self.send_success()
+#admin 店铺切换
+class SwitchShop(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("admin/switch-shop.html", context=dict())
 #admin后台轮询
 class Realtime(AdminBaseHandler):
 	@tornado.web.authenticated
