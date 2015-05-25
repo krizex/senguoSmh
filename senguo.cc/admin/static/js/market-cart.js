@@ -386,7 +386,7 @@ $(document).ready(function(){
     if(index == 2){
         $(".wrap-online-lst").toggleClass("hidden");
     }
-    pulse($(".pay_type li"));
+    pulse($(".pay_type li").eq(index));
     $(".pay_type li").removeClass("active").eq(index).addClass("active");
 }).on('click','.a-cz',function(){
     var status = $(this).attr('data-status');
