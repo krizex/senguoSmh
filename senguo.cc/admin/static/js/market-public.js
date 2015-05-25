@@ -338,7 +338,7 @@ Modal.prototype.modal=function(type){
     {
         var window_height=$(window).height();
         var height=$('.container').height();
-        $target.removeClass('anim-fadeOut')//.addClass('in').css({'display':'block'});
+        $target.removeClass('anim-fadeOut').css({'display':'block'});
         $target.find('.warn').remove();
         $("body").css({'overflow':'hidden'});
         $target.on('click',function(e){
