@@ -52,17 +52,8 @@ $(document).ready(function(){
     //类型切换增加active
     $(document).on('click','.type-choose .item',function(){
         var $this=$(this);
-        $this.removeClass('anim-pulse').addClass('anim-pulse').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function(){
-            $this.removeClass('anim-pulse');
-        });
+        pulse($this);
         $this.addClass('active').siblings().removeClass('active');
-        //$this.on('webkitAnimationEnd', function(){
-        //    $this.removeClass('anim-pulse');
-        //},false);
-        //setTimeout(function(){
-        //    $this.removeClass('anim-pulse');
-        //},200);
-
     });
     //收货地址添加
     var max=$('.address_list .item').length;
@@ -512,7 +503,7 @@ function goodsNum(target,action){
         function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
              function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')})
 }
-
+//判断起送价
 function mincharge(n,price){
     if(n==2){
         if(price<window.dataObj.mincharge_intime){
@@ -529,7 +520,7 @@ function mincharge(n,price){
         else $('.mincharge_now').hide();
     }
 }
-
+//删除商品
 function itemDelete(target,menu_type) {
     var $list_total_price=$('#list_total_price');
     var url = '/cart';
@@ -564,7 +555,7 @@ function itemDelete(target,menu_type) {
         },
         function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
-
+//地址添加修改
 function addressAddEdit(action,name,address,phone,target){
     var url='/customer/'+getCookie('market_shop_code');
     var action=action;
@@ -622,7 +613,7 @@ function addressAddEdit(action,name,address,phone,target){
     function(){noticeBox('网络好像不给力呢~ ( >O< ) ~')},
     function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
-
+//订单提交
 function orderSubmit(target){
     var url='';
     var fruits={};
@@ -703,7 +694,7 @@ function orderSubmit(target){
     function(){noticeBox('网络好像不给力呢~ ( >O< ) ~')},
     function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
-
+//获取手机验证码倒计时
 var wait=60;
 function time(evt) {
     if (wait == 0) {
@@ -721,6 +712,7 @@ function time(evt) {
             1000)
     }
 }
+//获取手机验证码
 function Vrify(phone){
     var action='gencode';
     var url="/customer/phoneVerify?action=customer";
@@ -739,11 +731,11 @@ function Vrify(phone){
             }
             else return noticeBox(res.error_text);
         },
-         function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
         function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
     );
 }
-
+//手机绑定
 function TiePhone(evt){
     evt.preventDefault();
     var phone=$('#enterPhone').val();
@@ -772,4 +764,10 @@ function TiePhone(evt){
         function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
         function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
     );
+}
+//点选动画
+function pulse(target){
+    target.removeClass('anim-pulse').addClass('anim-pulse').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function(){
+        target.removeClass('anim-pulse');
+    });
 }
