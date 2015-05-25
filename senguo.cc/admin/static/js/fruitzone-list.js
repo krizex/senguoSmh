@@ -3,7 +3,6 @@ $(document).ready(function(){
     var city_id = $("#city_id").val();
     //search
     $(document).on('click','#searchSubmit',function(evt){Search(evt);});
-    $('.willOpen').on('click',function(){noticeBox('即将开放，敬请期待！')});
     //shop info
     if(city_id){
         window.dataObj.action='filter';
@@ -118,17 +117,21 @@ $(document).ready(function(){
     $(document).on("click",".school,.comme",function(){
         $(this).children(".c-list").toggle();
     });
+    //选择区域
     $(document).on("click",".s-list li",function(){
-        var action = $(this).attr("data-action");
-        $(this).closest(".choose-item").children("span").text($(this).html());
+        var service_area = $(this).attr("data-key");
+        $("#school_name").text($(this).html()).attr("data-key",service_area);
         $(this).closest("ul").hide();
     });
+    //选择规则
     $(document).on("click",".com-list li",function(){
-        var action = $(this).attr("data-action");
-        $(this).closest(".choose-item").children("span").text($(this).html());
+        var key_word = $(this).attr("data-key");
+        $("#comm_name").text($(this).html()).attr("data-key",key_word);
         $(this).closest("ul").hide();
-        if(action==""){ //选择最近
+        if(parseInt(key_word)==2 && refuse_flag){ //选择最近
 
+        }else{
+            initLocation();
         }
     });
 }).on("click","#search-btn",function(){
@@ -225,7 +228,6 @@ var shopItem=function (shops){
                 var status = shops[key]['status'];
                 var lat = shops[key]['lon'];//经度
                 var lon = shops[key]['lat'];//纬度
-        console.log(lat+"==="+lon);
                 var area=window.dataObj.area;
                 var hide='';
                 var statu = '';
@@ -303,6 +305,8 @@ var shopsList=function(page,data,action){
     if(action=='filter') {
         if(window.dataObj.type=='city') {args.city=data}
         else if(window.dataObj.type=='province') {args.province=data}
+        args.service_area = $("#school_name").attr("data-key");
+        args.key_word = $("#comm_name").attr("data-key");
     }
     else if(action=='search') {
         args.q=data
@@ -310,8 +314,8 @@ var shopsList=function(page,data,action){
     $.postJson(url,args,function(res){
         if(res.success)
         {
-                initData(res);
-                nomore =res.nomore;
+            initData(res);
+            nomore =res.nomore;
         }
         else return noticeBox(res.error_text);
         },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~');}
@@ -390,7 +394,9 @@ function filter(data,type,page){
      if(!page){page=1}
     var args={
         action:action,
-        page:page
+        page:page,
+        service_area:$("#school_name").attr("data-key"),
+        key_word:$("#comm_name").attr("data-key")
     };
     if(type=='city') {
         args.city=Int(data);
@@ -409,7 +415,6 @@ function filter(data,type,page){
                 $('.shoplist').empty();
                  var shops=res.shops;
                  nomore = res.nomore;
-
                  $('.list_item').addClass('hidden');
                  $('.city_choose').removeClass('city_choosed');
                  if(shops.length==0){
