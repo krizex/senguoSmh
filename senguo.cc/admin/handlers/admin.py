@@ -633,10 +633,10 @@ class Order(AdminBaseHandler):
 
 
 	def edit_status(self,order,order_status):
-		print('i am here now')
-		if order.status in[5,6,10]:
-			return self.send_fail("订单已完成。不能修改状态")
-		order.update(session=self.session, status=order_status)
+		if order_status == 4:
+			order.update(self.session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
+		elif order_status == 5:
+			order.update(self.session, status=order_status,finish_admin_id = self.current_user.accountinfo.id)
 		# when the order complete ,
 		# woody
 		shop_id = self.current_shop.id
@@ -876,6 +876,8 @@ class Order(AdminBaseHandler):
 				# print("success?")
 
 			elif action == "edit_status":
+				if order.status in[5,6,10]:
+					return self.send_fail("订单已完成。不能修改状态")
 				self.edit_status(order,data['status'])
 
 			elif action == "edit_totalPrice":
@@ -921,10 +923,21 @@ class Order(AdminBaseHandler):
 				order.update(session=self.session, isprint=1)
 		elif action == "batch_edit_status":
 			order_list_id = data["order_list_id"]
+			notice = ''
 			for key in order_list_id:	
 				order = next((x for x in self.current_shop.orders if x.id==int(key)), None)
+				if order.status == 4 and data['status'] ==4:
+					notice = "订单"+str(order.num)+"订单已在配送中,请不要重复操作"
+					return self.send_fail(notice)
+				if order.status == 5 and data['status'] ==5:
+					notice = "订单"+str(order.num)+"已完成,请不要重复操作"
+					return self.send_fail(notice)
+				if order.status in[5,6,10]:
+					notice = "订单"+str(order.num)+"已完成,请不要重复操作"
+					return self.send_fail(notice)
 				if not order:
-					return self.send_fail("没找到订单",order.onum)
+					notice = "没找到订单",order.onum
+					return self.send_fail(notice)
 				self.edit_status(order,data['status'])
 		elif action == "batch_print":
 			order_list_id = data["order_list_id"]
@@ -1404,7 +1417,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 
 class Config(AdminBaseHandler):
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action",'status?:int')
+	@AdminBaseHandler.check_arguments("action",'status?')
 	def get(self):
 		try:config = self.session.query(models.Config).filter_by(id=self.current_shop.id).one()
 		except:return self.send_error(404)
@@ -1432,7 +1445,7 @@ class Config(AdminBaseHandler):
 			if self.current_shop.shop_auth !=0:
 				notice=''
 				if 'status' in self.args:
-					status = self.args['status']
+					status = self.args["status"]
 					if status == 'success':
 						notice='管理员添加成功'
 					elif status == 'fail':
@@ -1440,7 +1453,7 @@ class Config(AdminBaseHandler):
 				admin_list = self.session.query(models.RelShopAdmin).filter_by(shop_id = self.current_shop.id,status =1).all()
 				datalist =[]
 				for admin in admin_list:
-					datalist.append({'id':admin.accountinfo.id,'imgurl':admin.accountinfo.headimgurl_small,'nickname':admin.accountinfo.nickname})
+					datalist.append({'id':admin.accountinfo.id,'imgurl':admin.accountinfo.headimgurl_small,'nickname':admin.accountinfo.nickname,'temp_active':admin.temp_active})
 				return self.render('admin/admin-set.html',context=dict(subpage='shop_set',shopSubPage='admin_set'),notice=notice,datalist=datalist)
 			else:
 				return self.redirect(self.reverse_url('adminShopConfig'))
@@ -1584,6 +1597,31 @@ class Config(AdminBaseHandler):
 			admin.status = 0
 			self.session.commit()
 			return self.send_success()
+		elif action =="super_temp_active":
+			_super = self.current_shop.admin
+			if _super.id !=self.current_user.id:
+				return self.send_fail('您没有这项操作的权限')
+			_super.temp_active = 0 if _super.temp_active == 1 else 1
+			self.session.commit()
+			return self.send_success()
+		elif action =="admin_temp_active":
+			_super = self.current_shop.admin
+			if _super.id !=self.current_user.id:
+				return self.send_fail('您没有这项操作的权限')
+			_id = int(self.args["data"]["id"])
+			try:
+				admin = self.session.query(models.RelShopAdmin).filter_by(shop_id = self.current_shop.id,account_id = _id,status=1).first()
+			except:
+				return self.send_fail('该管理员不存在')
+			admin.temp_active = 0 if admin.temp_active == 1 else 1
+			try:
+				other_admin = self.session.query(models.RelShopAdmin).filter_by(shop_id = self.current_shop.id).filter(models.RelShopAdmin.account_id != _id).all()
+			except:
+				other_admin = None
+			for admin in other_admin:
+				admin.temp_active  = 0
+			self.session.commit()
+			return self.send_success()
 		else:
 			return self.send_error(404)
 		return self.send_success()
@@ -1637,6 +1675,7 @@ class AdminAuth(AdminBaseHandler):
 				content = message_content)
 			headers = dict(Host = '106.ihuyi.cn',)
 			r = requests.post(url,data = postdata , headers = headers)
+			print(r.text)
 			WxOauth2.post_add_msg(account_info.wx_openid, message_shop_name,account_info.nickname)
 			return self.redirect('/admin/config?action=admin')
 

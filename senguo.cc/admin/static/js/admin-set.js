@@ -15,7 +15,10 @@ $(document).ready(function(){
     if($.getUrlParam('action')=='admin' && $.getUrlParam('status')=='fail'){
         var notice=$('.add-admin').attr('data-notice');
         if(notice!=''){
-            return alert(notice);
+            alert(notice);
+            setTimeout(function() {
+            window.location.href="/admin/config?action=admin";
+             },2000);
         }
     }
 }).on('click','.cash_active',function(){
@@ -240,5 +243,64 @@ $(document).ready(function(){
         },
         function(){$this.attr("data-flag","on");alert('网络好像不给力呢~ ( >O< ) ~');}
         );
+}).on('click','.set-super-receive',function(){
+     var $this=$(this);
+    if($this.attr("data-flag")=="off") return false;
+    $this.attr("data-flag","off");
+    var status =parseInt($this.attr('data-status'));
+    var url='';
+    var action="super_temp_active";
+    var args={
+        action:action,
+        data:''
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                $this.attr("data-flag","on");
+                if(status==1){
+                    $this.text('开启订单提醒').attr('data-status',0);
+                }else{
+                    $this.text('关闭订单提醒').attr('data-status',1);
+                }
+            }else{
+                    $this.attr("data-flag","on");
+                    return alert(res.error_text);
+            }
+        },
+        function(){$this.attr("data-flag","on");alert('网络好像不给力呢~ ( >O< ) ~');}
+        );
+}).on('click','.set-receive',function(){
+     var $this=$(this);
+    if($this.attr("data-flag")=="off") return false;
+    $this.attr("data-flag","off");
+    var status =parseInt($this.attr('data-status'));
+    var id =$this.parents('li').attr('data-id');
+    var url='';
+    var data={id:id};
+    var action="admin_temp_active";
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                $this.attr("data-flag","on");
+                 if(status==1){
+                    $this.text('开启订单提醒').attr('data-status',0);
+                }else{
+                    $this.text('关闭订单提醒').attr('data-status',1);
+                    $this.parents('li').siblings('li').find('.set-receive').text('开启订单提醒').attr('data-status',0);
+                }
+            }
+            else{
+                    $this.attr("data-flag","on");
+                    return alert(res.error_text);
+            }
+        },
+        function(){$this.attr("data-flag","on");alert('网络好像不给力呢~ ( >O< ) ~');}
+        );
+
 });
 var link='/admin/config';

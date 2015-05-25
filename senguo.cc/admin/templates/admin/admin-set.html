@@ -5,6 +5,7 @@
 <div class="set-description">
     <p>店铺管理员拥有：店铺登录、店铺订单提醒等权限（管理员必须关注森果服务号sen-guo） </p>
     <p>超级管理员可以添加多个管理员来同时管理店铺。</p>
+    <p>除超级管理员外只能设置一个管理员同时接收订单消息，超级管理员可以关闭自己的订单提醒</p>
 </div>
 <ul class="admin-set-list mt10">
     <li class="item clearfix">
@@ -13,6 +14,10 @@
             <span class="info_show name">{{current_shop.admin.accountinfo.nickname}}</span>
             <span>超级管理员</span>
         </div>
+        <div class="pull-right mt10">
+            {% set super_temp_active = current_shop.admin.temp_active %}
+            <a class="set-super-receive" href="javascript:;" data-status="{{super_temp_active}}">{% if super_temp_active == 1%}关闭{% else %}开启{% end %}订单提醒</a>
+        </div> 
     </li>
 {% for data in datalist %}
     <li class="item clearfix" data-id="{{data['id']}}">
@@ -21,8 +26,9 @@
             <span class="info_show name">{{data['nickname']}}</span>
             <span>店铺管理员</span>
         </div>
-        <div class="pull-right">
-            <a class="delete-admin" href="javascript:;">删除</a>
+        <div class="pull-right mt10">
+            <a class="set-receive pull-right ml10" href="javascript:;" data-status="{{data['temp_active']}}">{% if data['temp_active'] == 1%}关闭{% else %}开启{% end %}订单提醒</a>
+            <a class="delete-admin pull-right" href="javascript:;">删除</a>
         </div>
     </li>
     {% end %}

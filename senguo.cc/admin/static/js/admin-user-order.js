@@ -488,15 +488,12 @@ function orderEdit(target,action,content){
     };
     $.postJson(url,args,function(res){
             if(res.success){
-                if(action=='edit_remark')
-                {
+                if(action=='edit_remark'){
                     parent.modal('hide');
 	       var $remark_box=$('.order-list-item').eq(index).find('.saler-remark');
              	       $remark_box.show().find('.order_remark').text(content);
                     $('.order-list-item').eq(index).find('.saler-remark').val(content);
-                }
-                else if(action=='edit_SH2')
-                {
+                }else if(action=='edit_SH2'){
                    var code=target.find('.sender-code').text();
 	      var name=target.find('.sender-name').text();
 	      var phone=target.find('.sender-phone').text();
@@ -513,9 +510,7 @@ function orderEdit(target,action,content){
                    parent.find('.status_finish').addClass('hidden');
                    parent.find('.status_word').text('配送中');
                    parent.find('.status-send').addClass('bg-blue').siblings().removeClass('bg-blue');
-                }
-                else if(action=='edit_status')
-                {
+                }else if(action=='edit_status'){
 		target.addClass('bg-blue').siblings().removeClass('bg-blue');
 		var status=target.text();
 		parent.find('.status_word').text(status);
@@ -529,15 +524,16 @@ function orderEdit(target,action,content){
   	                           parent.find('.status_order').addClass('hidden');
 			parent.find('.status_finish').addClass('hidden');
                                         target.attr({'disabled':true}).text('配送中');
+                                        parent.find('.check').removeClass('order-check');
 		  }
             	               else if(content==5) {
             			parent.find('.status_finish').removeClass('hidden');
               	             parent.find('.status_order').addClass('hidden');
             			parent.find('.status_send').addClass('hidden');
                                         target.attr({'disabled':true}).text('已完成');
+                                        parent.find('.check').removeClass('order-check');
             		  }
-                }
-                else if(action=='batch_edit_status'){
+                }else if(action=='batch_edit_status'){
                         if(content==4) {
                             $('.order-checked').each(function(){
                                 var $this=$(this);
@@ -558,14 +554,14 @@ function orderEdit(target,action,content){
                                 $item.find('.to-finish').attr({'disabled':true}).text('已完成');
                              });
                         }
-                }
-                else if(action=='edit_totalPrice')
-                {
-		   parent.modal('hide');
+                }else if(action=='edit_totalPrice'){
+	      parent.modal('hide');
                    $('.order-list-item').eq(index).find('.order-price').text(content);
                 }
             }
-            else return alert(res.error_text);
+            else {
+                return alert(res.error_text);
+            }
         },
         function(){return alert('网络错误！')}
     )
