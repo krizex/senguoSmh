@@ -255,6 +255,8 @@ $(document).ready(function(){
         $('#freight_money').text(window.dataObj.freigh_ontime);
         $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
         $('.send-now').on('click',function(){
+            $(this).removeClass('anim-pulse');
+            $(this).addClass('anim-pulse');
             $(this).removeClass('active');
             if(intime_on=='True'){
                 $('.send-intime').addClass('active');

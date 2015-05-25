@@ -137,6 +137,11 @@ class ShopList(FruitzoneBaseHandler):
 			filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 				models.Shop.shop_code !='not set',models.Shop.status !=0 )
 		shops = []
+
+		if "service_area" in self.args:
+			service_area = int(self.args['service_area'])
+			q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
+			# q = q.filter_by(shop_service_area = service_area)
 		
 		if "city" in self.args:
 			q = q.filter_by(shop_city=self.args["city"])
@@ -155,10 +160,10 @@ class ShopList(FruitzoneBaseHandler):
 		else:
 			print("[店铺列表]城市不存在")
 
-		if "service_area" in self.args:
-			q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
+		
 		# if "live_month" in self.args:
 		#     q = q.filter(models.Shop.shop_start_timestamp < time.time()-self.args["live_month"]*(30*24*60*60))
+
 
 		# if "onsalefruit_ids" in self.args and self.args["onsalefruit_ids"]:
 		#     q = q.filter(models.Shop.id.in_(
@@ -178,7 +183,7 @@ class ShopList(FruitzoneBaseHandler):
 		if "key_word" in self.args:
 			key_word = int(self.args['key_word'])
 			if key_word == 1: #商品最多
-				shops.sort(key = lambda shop:shop.goods_count,reverse = True)
+				shops.sort(key = lambda shop:shop['goods_count'],reverse = True)
 			elif key_word == 2: #距离最近
 				lat1 = float(self.args['lat'])
 				lon1 = float(self.args['lon'])
@@ -186,11 +191,11 @@ class ShopList(FruitzoneBaseHandler):
 					lat2 = shop['lat']
 					lon2 = shop['lon']
 					shop['distance'] = self.get_distance(lat1,lon1,lat2,lon2)
-				shops.sort(key = lambda shop:shop.distance , reverse = True)
+				shops.sort(key = lambda shop:shop['distance'] , reverse = True)
 			elif key_word == 3: #满意度最高
-				shops.sort(key = lambda shop:shop.satisfy,reverse = True)
+				shops.sort(key = lambda shop:shop['satisfy'],reverse = True)
 			elif key_word == 4: #评价最多
-				shops.sort(key = lambda shop:shop.comment_count , reverse = True)
+				shops.sort(key = lambda shop:shop['comment_count'] , reverse = True)
 			else:
 				return self.send_fail(error_text = 'key_word error')
 		if shops == [] or len(shops)<_page_count:

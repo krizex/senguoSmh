@@ -226,6 +226,7 @@ class OrderDetail(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("alipayUrl?:str","order_id?:str")
 	def get(self):
 		alipayUrl = self.args['alipayUrl']
+		order_id = self.args['order_id']
 		return self.render("customer/alipay-tip.html",alipayUrl = alipayUrl,order_id = order_id)
 
 class JustOrder(CustomerBaseHandler):
