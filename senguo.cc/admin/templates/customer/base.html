@@ -14,11 +14,11 @@
     <link rel="stylesheet" href="{{static_url('css/market-global.css')}}"/>
     <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
     <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
-    {% block head %}{% end %}
     <script>
         window.dataObj = {
             _xsrf: "{{handler.xsrf_token}}"};
     </script>
+    {% block head %}{% end %}
 </head>
 <body>
 {% set subpage = context.get("subpage", "home")%}

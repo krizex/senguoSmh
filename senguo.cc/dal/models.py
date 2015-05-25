@@ -449,7 +449,6 @@ class Shop(MapBase, _CommonApi):
 
 	admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
 	admin = relationship("ShopAdmin")
-	shop_admin_id = Column(String(20)) #could be add or delete
 
 	# 店铺标志
 	shop_trademark_url = Column(String(2048))
