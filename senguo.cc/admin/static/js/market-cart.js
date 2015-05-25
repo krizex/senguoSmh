@@ -55,7 +55,7 @@ $(document).ready(function(){
         $this.addClass('active anim-pulse').siblings().removeClass('active anim-pulse');
         setTimeout(function(){
             $this.removeClass('anim-pulse');
-        },200);
+        },0);
 
     });
     //收货地址添加
