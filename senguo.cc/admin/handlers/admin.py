@@ -8,6 +8,8 @@ from sqlalchemy import func, desc, and_, or_, exists,not_
 import qiniu
 from dal.dis_dict import dis_dict
 from libs.msgverify import gen_msg_token,check_msg_token
+import base64
+
 
 # 登陆处理
 class Access(AdminBaseHandler):
@@ -487,7 +489,6 @@ class Comment(AdminBaseHandler):
 # 订单管理
 class Order(AdminBaseHandler):
 	# todo: 当订单越来越多时，current_shop.orders 会不会越来越占内存？
-
 	@tornado.web.authenticated
 	#@get_unblock
 	@AdminBaseHandler.check_arguments("order_type:int", "order_status:int","page:int","action?")
@@ -1185,7 +1186,12 @@ class Follower(AdminBaseHandler):
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
 					join(models.Accountinfo).filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),
 														models.Accountinfo.realname.like("%%%s%%" % wd))).all()
-			
+		elif action =="filter":
+			wd = self.args["wd"]
+			d["customer_id"] = base64.b64decode(wd)
+			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+					join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).first()
 		else:
 			return self.send_error(404)
 		for x in range(0, len(customers)):  #
@@ -1195,13 +1201,30 @@ class Follower(AdminBaseHandler):
 				shop_id = shop_id).first()
 			customers[x].shop_point = shop_point.shop_point
 			customers[x].shop_names = [y[0] for y in shop_names]
-			customers[x].shop_balance =shop_point.shop_balance
+			customers[x].shop_balance = shop_point.shop_balance
+			customers[x].remark = shop_point.remark
 
 		page_sum=count/page_size
 		if page_sum == 0:
 			page_sum=1
 		return self.render("admin/user-manage.html", customers=customers, count=count, page_sum=page_sum,
 						   context=dict(subpage='user'))
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action:str", "data")
+	def post(self):
+		action = self.args["action"]
+		data = self.args["data"]
+		if action == 'remark':
+			try:
+				customer = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id,customer_id=int(data["id"])).first()
+			except:
+				customer = None
+				return self.send_fail('没有该用户信息')
+			if customer:
+				customer.remark = data["remark"]
+				self.session.commit()
+				return self.send_success()
+
 
 class Staff(AdminBaseHandler):
 	@tornado.web.authenticated
@@ -1366,6 +1389,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 			d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["send_time"] = order.send_time
+
 			#yy
 			d["shop_new"] = 0
 			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\

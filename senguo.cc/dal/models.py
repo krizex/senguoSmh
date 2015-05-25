@@ -790,6 +790,7 @@ class CustomerShopFollow(MapBase, _CommonApi):
 	commodity_quality = Column(Integer)
 	send_speed        = Column(Integer)
 	shop_service      = Column(Integer)
+	remark = Column(String(200))#5.25 customer_remark
 
 
 #商家申请 提现

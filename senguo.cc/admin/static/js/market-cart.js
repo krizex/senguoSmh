@@ -153,7 +153,8 @@ $(document).ready(function(){
                 time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
             }
             else{
-                time=checkTime(intime_startHour-1)+':'+checkTime(60-(stop_range-intime_startMin))+':00';
+                n = parseInt(stop_range/60)
+                time=checkTime(intime_startHour-n)+':'+checkTime(60-(stop_range-60*n-intime_startMin))+':00';
             }
             if (time < time_now) {
                 $this.removeClass('available').addClass('not_available').removeClass('active');
@@ -183,8 +184,9 @@ $(document).ready(function(){
             if(stop_range<=intime_startMin){
                 time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
             }
-            else{
-                time=checkTime(intime_startHour-1)+':'+checkTime(60-(stop_range-intime_startMin))+':00';
+           else{
+                n = parseInt(stop_range/60)
+                time=checkTime(intime_startHour-n)+':'+checkTime(60-(stop_range-60*n-intime_startMin))+':00';
             }
             if (time < time_now) {$this.removeClass('available').addClass('not_available').removeClass('active');}
             $('.send_period .available').first().addClass('active').siblings().removeClass('active');
