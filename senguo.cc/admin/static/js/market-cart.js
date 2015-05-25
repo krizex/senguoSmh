@@ -217,7 +217,7 @@ $(document).ready(function(){
         $('.send-intime').on('click',function(){
             $(this).removeClass('active');
             if(now_on=='True'){
-                pulse($('.send-now'));
+                pulse($(this));
                 $('.send-now').addClass('active');
                 $('.send_now').show();
                 $('.intime-intro').hide();
@@ -262,7 +262,7 @@ $(document).ready(function(){
         $('.send-now').on('click',function(){
             $(this).removeClass('active');
             if(intime_on=='True'){
-                pulse($('.send-intime'));
+                pulse($(this));
                 $('.send-intime').addClass('active');
                 $('.send_day').show();
                 $('.send_period').show();
@@ -353,7 +353,7 @@ $(document).ready(function(){
         if($this.hasClass('active')) $this.removeClass('active');
         else $this.addClass('active').siblings('.item').removeClass('active');
     });
-    //pay type active
+    //支付方式选择
     $('.pay_type li').each(function(){
         var $this=$(this);
         var index = $this.index();
