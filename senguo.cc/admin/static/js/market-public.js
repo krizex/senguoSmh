@@ -338,25 +338,25 @@ Modal.prototype.modal=function(type){
     {
         var window_height=$(window).height();
         var height=$('.container').height();
-        $target.removeClass('fade').addClass('in').css({'display':'block'});
+        $target.removeClass('anim-fadeOut').addClass('anim-fadeIn')//.css({'display':'block'});
         $target.find('.warn').remove();
         $("body").css({'overflow':'hidden'});
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
                 $('body').css({'overflow':'auto'});
-                $target.addClass('fade').removeClass('in')//.css({'display':'none'});
+                $target.addClass('anim-fadeOut').removeClass('anim-fadeIn')//.css({'display':'none'});
             }
         });
         $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
                 $('body').css({'overflow':'auto'});
-                $target.addClass('fade').removeClass('in')//.css({'display':'none'});
+                $target.addClass('anim-fadeOut').removeClass('anim-fadeIn')//.css({'display':'none'});
             }
         });
     }
     else if(type=='hide')
     {
         $('body').removeClass('modal_sty').css({'overflow':'auto'}).find('.modal_bg').remove();
-        $target.addClass('fade').removeClass('in')//.css({'display':'none'});
+        $target.addClass('anim-fadeOut').removeClass('anim-fadeIn')//.css({'display':'none'});
     }
 }

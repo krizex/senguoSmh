@@ -397,7 +397,7 @@ button:focus{outline:0;}
  }
 
 
-.anim-fadeOut .fade {
+.anim-fadeOut {
     display: none;
     -webkit-animation: fadeOut 0.3s ease 0s 1;
             animation: fadeOut 0.3s ease 0s 1;
@@ -427,7 +427,8 @@ button:focus{outline:0;}
  }
  }
  
- .anim-bounceIn {
+ .anim-fadeIn {
+    display: block;
     -webkit-animation: fadeIn 0.3s ease 0s 1;
             animation: fadeIn 0.3s ease 0s 1;
 }
@@ -456,21 +457,3 @@ button:focus{outline:0;}
  }
  }
  
-     
-.anim-fadeIn {
-    display: block;
-    -webkit-animation: fadeIn 0.3s ease 0s 1;
-            animation: fadeIn 0.3s ease 0s 1;
-}
-
- @keyframes fadeIn {
- 0% {
- opacity: 0;
- filter: alpha(opacity=0);
- }
-
- 100% {
- opacity: 1;
- filter: alpha(opacity=100);
- }
- }
