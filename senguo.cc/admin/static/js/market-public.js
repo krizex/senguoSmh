@@ -338,19 +338,19 @@ Modal.prototype.modal=function(type){
     {
         var window_height=$(window).height();
         var height=$('.container').height();
-        $target.removeClass('anim-fadeOut').addClass('in')//.css({'display':'block'});
+        $target.removeClass('fade').addClass('in').css({'display':'block'});
         $target.find('.warn').remove();
         $("body").css({'overflow':'hidden'});
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
                 $('body').css({'overflow':'auto'});
-                $target.addClass('anim-fadeOut').removeClass('in')//.css({'display':'none'});
+                $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
         $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
                 $('body').css({'overflow':'auto'});
-                $target.addClass('anim-fadeOut').removeClass('in')//.css({'display':'none'});
+                $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
     }

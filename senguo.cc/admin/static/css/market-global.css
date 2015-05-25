@@ -391,36 +391,3 @@ button:focus{outline:0;}
  transform: scale3d(1, 1, 1);
  }
  }
-
-
-.anim-fadeOut {
-    display: none;
-    -webkit-animation: fadeOut 0.3s ease 0s 1;
-            animation: fadeOut 0.3s ease 0s 1;
-}
-
- @-webkit-keyframes fadeOut {
- 0% {
- opacity: 1;
- filter: alpha(opacity=100);
- }
-
- 100% {
- opacity: 0;
- filter: alpha(opacity=0);
- }
- }
-
- @keyframes fadeOut {
- 0% {
- opacity: 1;
- filter: alpha(opacity=100);
- }
-
- 100% {
- opacity: 0;
- filter: alpha(opacity=0);
- }
- }
-
-.in{display: block;}
