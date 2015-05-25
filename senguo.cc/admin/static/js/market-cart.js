@@ -308,6 +308,7 @@ $(document).ready(function(){
             }
             if(stop_time<=end_time)
             {
+                pulse($this.parents('.item'));
                 $this.parents('.item').addClass('active').siblings('.item').removeClass('active');
                 $('.send_period').hide();
                 $('.send_day').hide();
@@ -323,7 +324,6 @@ $(document).ready(function(){
                 }
             }
             else {
-                pulse($this.parents('.item'));
                 $this.parents('.item').removeClass('active').siblings('.item').addClass('active');
                 return noticeBox('不小心超过了“立即送”的送货时间呢，请选择“按时达”时间段！',$this)
             }
