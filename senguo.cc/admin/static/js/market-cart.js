@@ -53,7 +53,7 @@ $(document).ready(function(){
     $(document).on('click','.type-choose .item',function(){
         var $this=$(this);
         $this.addClass('active anim-pulse').siblings().removeClass('active anim-pulse');
-        $this.addEventListener("webkitAnimationEnd", function(){
+        $this.on('webkitAnimationEnd', function(){
             $this.removeClass('anim-pulse');
         },false);
         //setTimeout(function(){
