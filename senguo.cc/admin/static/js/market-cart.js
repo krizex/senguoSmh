@@ -14,7 +14,7 @@ $(document).ready(function(){
     $('.address_list .item').eq(0).addClass('active');
     window.dataObj.mincharge_now=Int($('.mincharge_now').find('.mincharge').text());
     window.dataObj.mincharge_intime=Int($('.mincharge_intime').find('.mincharge').text());
-    //price
+    //价格
     getPrice();
     //按时达最低起送金额提示
     if(window.dataObj.total_price<window.dataObj.mincharge_intime) $('.mincharge_intime').show();
@@ -107,7 +107,7 @@ $(document).ready(function(){
         var phone=$receivePhone.val();
         addressAddEdit('edit_address',name,address,phone,$this);
     });
-    //tie phone
+    //手机绑定验证
     $(document).on('click','.un_tie',function(){
         noticeBox('您还未绑定手机号，点击下方手机绑定按钮进行绑定');
     });
@@ -236,6 +236,7 @@ $(document).ready(function(){
         //按时达模式选择
         $('#sendInTime').on('click',function(){
             var $this=$(this);
+            pulse($this);
             $this.parents('.item').addClass('active').siblings('.item').removeClass('active');
             $('.send_period').show();
             $('.send_day').show();
@@ -322,6 +323,7 @@ $(document).ready(function(){
                 }
             }
             else {
+                pulse($this);
                 $this.parents('.item').removeClass('active').siblings('.item').addClass('active');
                 return noticeBox('不小心超过了“立即送”的送货时间呢，请选择“按时达”时间段！',$this)
             }
