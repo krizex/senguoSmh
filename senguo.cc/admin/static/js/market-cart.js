@@ -217,6 +217,7 @@ $(document).ready(function(){
         $('.send-intime').on('click',function(){
             $(this).removeClass('active');
             if(now_on=='True'){
+                pulse($('.send-now'));
                 $('.send-now').addClass('active');
                 $('.send_now').show();
                 $('.intime-intro').hide();
