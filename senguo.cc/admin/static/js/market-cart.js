@@ -52,7 +52,7 @@ $(document).ready(function(){
     //类型切换增加active
     $(document).on('click','.type-choose .item',function(){
         var $this=$(this);
-        $this.addClass('active').siblings().removeClass('active');
+        $this.addClass('active anim-pulse').siblings().removeClass('active anim-pulse');
     });
     //收货地址添加
     var max=$('.address_list .item').length;
@@ -162,7 +162,7 @@ $(document).ready(function(){
                 if($this.hasClass('available')) {
                     var today_now = $('#sendDay').find('.active').data('id');
                     if (today_now == 1 && time >= time_now) {
-                        $this.addClass('active');
+                        $this.addClass('active anim-pulse');
                     }
                 }
                 else if(noticeBox('抱歉，已超过了该送货时间段的下单时间，请选择下一个时间段！',$this)){}
@@ -170,7 +170,7 @@ $(document).ready(function(){
         });}
         $('.send_period .item').on('click',function(){
             var $this=$(this);
-            if($this.hasClass('available')) {$this.addClass('active').siblings().removeClass('active')}
+            if($this.hasClass('available')) {$this.addClass('active anim-pulse').siblings().removeClass('active anim-pulse')}
         });
     //按时达选择今天
     $('#send_today').on('click',function(){
@@ -186,7 +186,7 @@ $(document).ready(function(){
                 time=checkTime(intime_startHour-1)+':'+checkTime(60-(stop_range-intime_startMin))+':00';
             }
             if (time < time_now) {$this.removeClass('available').addClass('not_available').removeClass('active');}
-            $('.send_period .available').first().addClass('active').siblings().removeClass('active');
+            $('.send_period .available').first().addClass('active anim-pulse').siblings().removeClass('active anim-pulse');
         });
     });
     //按时达选择明天
@@ -195,7 +195,7 @@ $(document).ready(function(){
             var $this=$(this);
             $this.addClass('available').removeClass('not_available');
         });
-        $('.send_period .item').first().addClass('active').siblings().removeClass('active');
+        $('.send_period .item').first().addClass('active anim-pulse').siblings().removeClass('active anim-pulse');
     });
     //按时达/立即送模式选择
     var intime_on=$('.send-intime').data('config');
@@ -229,7 +229,7 @@ $(document).ready(function(){
         //按时达模式选择
         $('#sendInTime').on('click',function(){
             var $this=$(this);
-            $this.parents('.item').addClass('active').siblings('.item').removeClass('active');
+            $this.parents('.item').addClass('active anim-pulse').siblings('.item').removeClass('active anim-pulse');
             $('.send_period').show();
             $('.send_day').show();
             $('.send_now').hide();
@@ -255,9 +255,9 @@ $(document).ready(function(){
         $('#freight_money').text(window.dataObj.freigh_ontime);
         $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
         $('.send-now').on('click',function(){
-            $(this).removeClass('active');
+            $(this).removeClass('active anim-pulse');
             if(intime_on=='True'){
-                $('.send-intime').addClass('active');
+                $('.send-intime').addClass('active anim-pulse');
                 $('.send_day').show();
                 $('.send_period').show();
                 $('.intime-intro').show();
@@ -299,7 +299,7 @@ $(document).ready(function(){
             }
             if(stop_time<=end_time)
             {
-                $this.parents('.item').addClass('active').siblings('.item').removeClass('active');
+                $this.parents('.item').addClass('active anim-pulse').siblings('.item').removeClass('active anim-pulse');
                 $('.send_period').hide();
                 $('.send_day').hide();
                 $('.send_now').show();
@@ -314,7 +314,7 @@ $(document).ready(function(){
                 }
             }
             else {
-                $this.parents('.item').removeClass('active').siblings('.item').addClass('active');
+                $this.parents('.item').removeClass('active anim-pulse').siblings('.item').addClass('active anim-pulse');
                 return noticeBox('不小心超过了“立即送”的送货时间呢，请选择“按时达”时间段！',$this)
             }
         });
@@ -345,7 +345,7 @@ $(document).ready(function(){
     $('.tip-list .item').on('click',function(){
         var $this=$(this);
         if($this.hasClass('active')) $this.removeClass('active');
-        else $this.addClass('active').siblings('.item').removeClass('active');
+        else $this.addClass('active anim-pulse').siblings('.item').removeClass('active anim-pulse');
     });
     //pay type active
     $('.pay_type li').each(function(){
@@ -380,7 +380,7 @@ $(document).ready(function(){
     if(index == 2){
         $(".wrap-online-lst").toggleClass("hidden");
     }
-    $(".pay_type li").removeClass("active").eq(index).addClass("active");
+    $(".pay_type li").removeClass("active anim-pulse").eq(index).addClass("active anim-pulse");
 }).on('click','.a-cz',function(){
     var status = $(this).attr('data-status');
     var statu = $(this).attr("data-auth");
