@@ -52,10 +52,13 @@ $(document).ready(function(){
     //类型切换增加active
     $(document).on('click','.type-choose .item',function(){
         var $this=$(this);
-        $this.addClass('active anim-pulse').siblings().removeClass('active anim-pulse');
-        $this.on('webkitAnimationEnd', function(){
+        $this.removeClass('anim-pulse').addClass('anim-pulse').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function(){
             $this.removeClass('anim-pulse');
-        },false);
+        });
+        $this.addClass('active').siblings().removeClass('active');
+        //$this.on('webkitAnimationEnd', function(){
+        //    $this.removeClass('anim-pulse');
+        //},false);
         //setTimeout(function(){
         //    $this.removeClass('anim-pulse');
         //},200);
