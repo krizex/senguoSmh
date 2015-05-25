@@ -357,6 +357,6 @@ Modal.prototype.modal=function(type){
     else if(type=='hide')
     {
         $('body').removeClass('modal_sty').css({'overflow':'auto'}).find('.modal_bg').remove();
-        $target.addClass('fade').removeClass('in').css({'display':'none'});
+        $target.addClass('anim-fadeOut').removeClass('anim-fadeIn')//.css({'display':'none'});
     }
 }
