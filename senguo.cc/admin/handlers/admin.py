@@ -103,7 +103,7 @@ class Home(AdminBaseHandler):
 			shop_id = int(self.args["data"]["shop_id"])
 			try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
 			except:return self.send_error(404)
-			admin = self.session.query(models.RelShopAdmin).filter_by(shop_id=shop_id,account_id=self.current_user.id,status=1).first()
+			admin = self.session.query(models.HireLink).filter_by(shop_id=shop_id,staff_id=self.current_user.id,active=1,work=9).first()
 			if not admin and shop.admin != self.current_user:
 				return self.send_error(403)#必须做权限检查：可能这个shop并不属于current_user
 			self.current_shop = shop
@@ -112,13 +112,13 @@ class Home(AdminBaseHandler):
 		elif action == 'other_shop':
 			shoplist=[]
 			try:
-				shop = self.session.query(models.Shop).join(models.RelShopAdmin,models.Shop.id == models.RelShopAdmin.shop_id)\
-				.filter(models.RelShopAdmin.account_id==self.current_user.accountinfo.id,models.RelShopAdmin.status ==1 ).all()
+				hire_link = self.session.query(models.HireLink).filter_by(staff_id =self.current_user.accountinfo.id,active=1,work=9).all()
 			except:
-				shoplist=[]
-			if shop:
-				for q in shop:
-					shoplist.append({'id':q.id,'shop_name':q.shop_name})
+				hire_link = None
+			if hire_link:
+				for hire in hire_link:
+					shop = self.session.query(models.Shop).filter_by(id=hire.shop_id).first()
+					shoplist.append({'id':shop.id,'shop_name':shop.shop_name})
 			return self.send_success(data=shoplist)
 		else:
 			return self.send_error(404)
@@ -1476,10 +1476,11 @@ class Config(AdminBaseHandler):
 						notice='管理员添加成功'
 					elif status == 'fail':
 						notice='您不是超级管理员，无法进行管理员添加操作'
-				admin_list = self.session.query(models.RelShopAdmin).filter_by(shop_id = self.current_shop.id,status =1).all()
+				admin_list = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,active =1,work = 9 ).all()
 				datalist =[]
 				for admin in admin_list:
-					datalist.append({'id':admin.accountinfo.id,'imgurl':admin.accountinfo.headimgurl_small,'nickname':admin.accountinfo.nickname,'temp_active':admin.temp_active})
+					info = self.session.query(models.ShopStaff).filter_by(id=admin.staff_id).first()
+					datalist.append({'id':info.accountinfo.id,'imgurl':info.accountinfo.headimgurl_small,'nickname':info.accountinfo.nickname,'temp_active':admin.temp_active})
 				return self.render('admin/admin-set.html',context=dict(subpage='shop_set',shopSubPage='admin_set'),notice=notice,datalist=datalist)
 			else:
 				return self.redirect(self.reverse_url('adminShopConfig'))
@@ -1596,38 +1597,51 @@ class Config(AdminBaseHandler):
 			if self.current_shop.admin.id !=self.current_user.id:
 				return self.send_fail('您没有添加管理员的权限')
 			_id = int(self.args["data"]["id"])
-			admin_count = self.session.query(models.RelShopAdmin).filter_by(shop_id = self.current_shop.id,status = 1).count()
+			admin_count = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,active = 1,work=9).count()
 			if admin_count == 3:
 				return self.send_fail('至多可添加三个管理员')
 			if self.current_shop.admin.accountinfo.id == _id:
 				return self.send_fail('该用户已经是店铺的管理员')
-			admin = self.session.query(models.RelShopAdmin).filter_by(shop_id = self.current_shop.id,account_id = _id,status=1).first()
+			admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).first()
 			if admin:
 				return self.send_fail('该用户已经是店铺的管理员')
 			else:
-				admin_temp=models.RelAdminTemp(
-					shop_id = self.current_shop.id,
-					account_id = _id
-				)
-				self.session.add(admin_temp)
-				self.session.commit()#生成一张临时管理员表
+				staff  =self.session.query(models.ShopStaff).filter_by( id = _id).first()
+				hire_form = self.session.query(models.HireForm).filter_by(shop_id = self.current_shop.id,staff_id = _id).first()
+				if not staff:
+					staff_temp = models.ShopStaff(
+						id = _id,
+						shop_id = self.current_shop.id
+						)
+					self.session.add(admin_temp)
+				if hire_form:
+					hire_form.work = 9
+				else:
+					#生成一张临时管理员 申请表
+					admin_temp = models.HireForm(
+						staff_id = _id,
+						shop_id = self.current_shop.id,
+						work = 9
+						)
+					self.session.add(admin_temp)
+				self.session.commit()
 			return self.send_success()
 		elif action =="delete_admin":
 			if self.current_shop.admin.id !=self.current_user.id:
 				return self.send_fail('您没有删除管理员的权限')
 			_id = int(self.args["data"]["id"])
 			try:
-				admin = self.session.query(models.RelShopAdmin).filter_by(shop_id = self.current_shop.id,account_id = _id,status=1).first()
+				admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).first()
 			except:
 				return self.send_fail('该管理员不存在')
-			admin.status = 0
+			admin.active = 0
 			self.session.commit()
 			return self.send_success()
 		elif action =="super_temp_active":
-			_super = self.current_shop.admin
-			if _super.id !=self.current_user.id:
+			super_temp_active = self.current_shop.super_temp_active
+			if self.current_shop.admin.id !=self.current_user.id:
 				return self.send_fail('您没有这项操作的权限')
-			_super.temp_active = 0 if _super.temp_active == 1 else 1
+			self.current_shop.super_temp_active = 0 if super_temp_active == 1 else 1
 			self.session.commit()
 			return self.send_success()
 		elif action =="admin_temp_active":
@@ -1636,12 +1650,12 @@ class Config(AdminBaseHandler):
 				return self.send_fail('您没有这项操作的权限')
 			_id = int(self.args["data"]["id"])
 			try:
-				admin = self.session.query(models.RelShopAdmin).filter_by(shop_id = self.current_shop.id,account_id = _id,status=1).first()
+				admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).first()
 			except:
 				return self.send_fail('该管理员不存在')
 			admin.temp_active = 0 if admin.temp_active == 1 else 1
 			try:
-				other_admin = self.session.query(models.RelShopAdmin).filter_by(shop_id = self.current_shop.id).filter(models.RelShopAdmin.account_id != _id).all()
+				other_admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,work = 9).filter(models.HireLink.staff_id != _id).all()
 			except:
 				other_admin = None
 			for admin in other_admin:
@@ -1673,23 +1687,25 @@ class AdminAuth(AdminBaseHandler):
 			return self.send_error(400)
 		wx_userinfo = self.get_wx_userinfo(code, mode)
 		if self.current_shop.admin.accountinfo.wx_unionid == wx_userinfo["unionid"]:
-			temp = self.session.query(models.RelAdminTemp).filter_by(shop_id = self.current_shop.id).order_by(models.RelAdminTemp.create_time.desc()).first()
+			temp = self.session.query(models.HireForm).filter_by(shop_id = self.current_shop.id,work=9).order_by(models.HireForm.create_time.desc()).first()
 			#超级管理员授权成功,将临时管理员表信息放入关系表中
 			try:
-				admin_already = self.session.query(models.RelShopAdmin).filter_by(account_id=temp.account_id,shop_id=temp.shop_id).first()
+				staff_already = self.session.query(models.HireLink).filter_by(staff_id=temp.staff_id,shop_id=temp.shop_id).first()
 			except:
-				admin_already = None
-			if admin_already:
-				admin_already.status = 1
+				staff_already = None
+			if staff_already:
+				staff_already.active = 1
+				staff_already.work = 9
 			else:
-				admin = models.RelShopAdmin(
-						account_id=temp.account_id,
-						shop_id=temp.shop_id
+				admin = models.HireLink(
+						staff_id = temp.staff_id,
+						shop_id = temp.shop_id,
+						work = 9
 					)
 				self.session.add(admin)
 			self.session.commit()
 			url = 'http://106.ihuyi.cn/webservice/sms.php?method=Submit'     # message'url
-			account_info = self.session.query(models.Accountinfo).filter_by(id=temp.account_id).first()
+			account_info = self.session.query(models.Accountinfo).filter_by(id=temp.staff.accountinfo.id).first()
 			message_name = account_info.nickname
 			mobile = account_info.phone
 			message_shop_name = self.current_shop.shop_name

@@ -1502,13 +1502,6 @@ class Cart(CustomerBaseHandler):
 		order_id      = order.num
 		order_type    = order.type
 		phone         = order.phone
-		try:
-			other_admin = self.session.query(models.RelShopAdmin).filter_by(shop_id = shop_id,status=1,temp_active=1).first()
-		except:
-			other_admin = None
-		if other_admin:
-			other_touser = other_admin.accountinfo.wx_openid
-			other_name = other_admin.accountinfo.nickname
 		if order_type == 1:
 			order_type = '立即送'
 		else:
@@ -1538,10 +1531,18 @@ class Cart(CustomerBaseHandler):
 		order_realid = order.id
 		# print("[提交订单]订单详情：",goods)
 		if self.args['pay_type'] != 3:
-			if w_admin.admin.temp_active !=0:
+			if w_admin.super_temp_active !=0:
 				WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
 					customer_name,order_totalPrice,send_time,goods,phone,address)
+			try:
+				other_admin = self.session.query(models.HireLink).filter_by(shop_id = shop.id,active=1,work=9,temp_active=1).first()
+			except:
+				other_admin = None
 			if other_admin:
+				info =self.session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id)\
+				.filter(models.ShopStaff.id == other_admin.staff_id).first()
+				other_touser = info.wx_openid
+				other_name = info.nickname
 				WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,\
 					customer_name,order_totalPrice,send_time,goods,phone,address)
 			# send message to customer

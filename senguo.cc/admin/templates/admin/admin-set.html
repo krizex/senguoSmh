@@ -15,7 +15,7 @@
             <span>超级管理员</span>
         </div>
         <div class="pull-right mt10">
-            {% set super_temp_active = current_shop.admin.temp_active %}
+            {% set super_temp_active = current_shop.super_temp_active %}
             <a class="set-super-receive" href="javascript:;" data-status="{{super_temp_active}}">{% if super_temp_active == 1%}关闭{% else %}开启{% end %}订单提醒</a>
         </div> 
     </li>
