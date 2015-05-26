@@ -564,6 +564,7 @@ function itemDelete(target,menu_type) {
                 mincharge(type,t_price);  
                 var cart_n=Int($('.cart_num').text());
                 if(cart_n>0){
+                    wobble($('.cart_num'));
                     $('.cart_num').text(cart_n-1);
                     SetCookie('cart_count',cart_n-1);
                 }
