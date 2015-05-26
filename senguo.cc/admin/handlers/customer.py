@@ -1,4 +1,4 @@
-from handlers.base import CustomerBaseHandler,WxOauth2
+from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth
 from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
 import dal.models as models
 import tornado.web
@@ -55,6 +55,11 @@ class Access(CustomerBaseHandler):
 			self.handle_oauth(next_url)
 		elif self._action == "weixin":
 			return self.redirect(self.get_weixin_login_url(next_url))
+		elif self._action == 'qq':
+			return self.redirect(self.get_get_qq_login_link(next_url))
+		elif self._action == 'qqoauth':
+			qq_account = self.get_cookie('qq_account')
+			self.handle_qq_oauth(next_url,qq_account)
 		else:
 			return self.send_error(404)
 
@@ -83,6 +88,17 @@ class Access(CustomerBaseHandler):
 		# next = self.args['next']
 		print("[手机登录]跳转URL：",next)
 		# return self.redirect('/woody')
+
+	@CustomerBaseHandler.check_arguments("code")
+	def handle_qq_auth(self,next_url,qq_account):
+		code = self.args['code']
+		userinfo = QqOauth.get_qqinfo(code,qq_account)
+		if not userinfo:
+			return self.redirect(self.reverse_url("customerLogin"))
+		u = mode.Customer.register_with_qq(self.session,qq_account)
+		self.set_current_user(u,domain = ROOT_HOST_NAME)
+		return self.redirect(next_url)
+
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self,next_url):

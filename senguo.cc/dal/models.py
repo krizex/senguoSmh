@@ -3,6 +3,7 @@ from sqlalchemy.types import String, Integer, Boolean, Float, Date, BigInteger, 
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.dialects.mysql import TINYINT
+from settings import QQ_APPID,QQ_APPKEY
 
 from dal.db_configs import MapBase, DBSession
 from dal.dis_dict import dis_dict
@@ -197,6 +198,41 @@ class _AccountApi(_CommonApi):
 		except NoResultFound:
 			u = None
 		return u
+	# qq login
+	def login_by_qq(cls,session,qq_account):
+		s = session
+		try:
+			u = s.query(cls).filter(
+				Accountinfo.qq_account == cls.qq_account,
+				Accountinfo.id == cls.id).one()
+		except NoResultFound:
+			u = None
+		return u
+
+	# qq注册
+	@classmethod
+	def register_with_qq(cls,session,qq_account):
+		u = cls.login_by_qq(session,qq_account)
+		if u:
+			return u
+		try:
+			account_info == self.session.query(Accountinfo).filter_by(qq_account\
+				=qq_account).first()
+		except NoResultFound:
+			account_info = None
+		if account_info:
+			u = cls(id = account_info.id)
+			session.add(u)
+			session.commit()
+			return u
+		else:
+			account_info = Accountinfo(qq_account = qq_account)
+			u.accountinfo = account_info
+			session.add(u)
+			session.commit()
+			return u
+
+
 	# 微信注册API（注意）
 	@classmethod
 	def register_with_wx(cls, session, wx_userinfo):
@@ -338,6 +374,7 @@ class Accountinfo(MapBase, _CommonApi):
 
 	# 账户访问信息 (phone/email, password)/(wx_unionid)用来登录
 	phone = Column(String(32), unique=True, default=None)
+	qq_account = Column(String(32))
 	email = Column(String(64), default=None)
 	password = Column(String(128), default=None)
 	wx_unionid = Column(String(64), unique=True)
