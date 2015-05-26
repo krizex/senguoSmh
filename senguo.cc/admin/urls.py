@@ -200,6 +200,7 @@ handlers = [
 	(r"/fruitzone/admin/home", handlers.fruitzone.AdminHome, {}, "fruitzoneAdminHome"),
 	(r"/fruitzone/admin/profile", handlers.fruitzone.AdminProfile, {}, "fruitzoneAdminProfile"),
 	(r"/fruitzone/paytest",handlers.customer.payTest,{},"fruitzonePayTest"),
+	(r"/fruitzone/searchlist",handlers.fruitzone.SearchList,{},"searchlist"),
 	#to remove  
 	#woody
 	(r"/apply/toweixin", handlers.fruitzone.ToWeixin, {}, "fruitzoneToWexin"),

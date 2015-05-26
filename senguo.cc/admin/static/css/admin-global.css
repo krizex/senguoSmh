@@ -254,7 +254,7 @@ input{color:#333;text-indent:5px;}
 .sw-head{padding: 15px 0 15px 30px;background-color: #e7e7eb;}
 .sw-bm{padding: 50px;}
 .sw-list>li{float: left;margin-right: 30px;margin-bottom:20px;border: 1px solid #ccc;position: relative;width: 500px;padding: 10px;}
-.sw-list dl>dt{width: 60px;margin-right: 10px;text-align: center;}
+.sw-list dl>dt{width: 60px;margin-right: 10px;text-align: center;position: relative;}
 .sw-list dl>dt>img{width: 60px;height: 60px;}
 .sw-list dl>dd{width: calc(100% - 70px);}
 .sw-listr .sw-title{font-size: 14px;color: #333;height: 16px;line-height: 16px;}
@@ -271,20 +271,21 @@ input{color:#333;text-indent:5px;}
 .unauth{color: #000;line-height: 20px;width: 200px;margin-top: 10px;}
 .add-swshop{height: 66px;line-height: 66px;font-size: 14px;color: #999;text-align: center;display: block;}
 .add-swshop:hover{color: #999;}
-.sw-er-tip{padding: 15px 15px 30px 20px;border: 1px solid #ccc;position: absolute;background-color: #fff;z-index:55;}
-.er-text{color: #666;}
+.sw-er-tip{padding: 15px 15px 30px 20px;border: 1px solid #ccc;position: absolute;background-color: #fff;z-index:55;top:40px;left: 88px;}
+.er-text{color: #666;text-align: left;}
+.wrap-ipt{white-space: nowrap;}
 .wrap-ipt>input{margin-top: 10px;border: 1px solid #ccc;height: 30px;color: #666;line-height: 1;text-indent: 0;outline: none;}
 .sw-link-txt{background-color: #f9f9f9;width: 200px;padding-left: 8px;}
 .sw-link-copy{width:80px;text-align: center;background-color: #fff;margin-left: -4px;}
 .wrap-er{margin-top: 15px;position: relative;}
-.er-logo{position: absolute;width: 20px;height: 20px;background-color: #fff;border-radius: 4px;top: 30px;left: 122px;}
+.er-logo{position: absolute;width: 20px;height: 20px;background-color: #fff;border-radius: 4px;top: 30px;left: 120px;}
 .er-img{width: 80px;height: 80px;margin-left: 30px;}
 .lh80{line-height: 80px;}
 .left-arr{position: absolute;width: 0;height: 0;width: 28px;height: 26px;background-color: #fff;top: 20px;right: 100%;}
 .left-arr>span{width: 20px;height: 0;border-top: 1px solid #ccc;display: inline-block;position: absolute;right: -3px;}
 .left-arr .line1{-webkit-transform:rotate(-45deg);top: 6px;}
 .left-arr .line2{-webkit-transform:rotate(45deg);top: 20px;}
-.po-list{top: 18px;left: 200px;}
+.po-list{top: 18px;left: 216px;}
 /*提示框样式*/
 .zb-tip{min-width: 360px;max-width:500px;padding:15px 0;line-height: 28px;text-align: center;font-size: 14px;background-color: rgba(255,101,99,.8);border-radius: 6px;position: fixed;top: 100px;left: 50%;z-index: 999;color: #fff;-webkit-transform:translate(-50%,0);}
 /*animate*/

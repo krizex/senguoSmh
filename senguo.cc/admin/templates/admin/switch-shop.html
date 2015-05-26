@@ -60,8 +60,8 @@
 <main class="container mt80">
     <div class="s-container">
         <div class="sw-top">
-            <p>店铺列表 <a href="javascript:;" class="text-link">推广店铺列表</a></p>
-            <div class="sw-er-tip po-list">
+            <p>店铺列表 <a href="javascript:;" class="text-link" id="spread-list">推广店铺列表</a></p>
+            <div class="sw-er-tip po-list hidden">
                 <div class="left-arr">
                     <span class="line1"></span>
                     <span class="line2"></span>
@@ -74,7 +74,7 @@
                 <div class="wrap-er group">
                     <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
                     <div class="er-text lh80 fl">列表二维码</div>
-                    <div class="er-img fl" id="er-list-code">
+                    <div class="er-img fl er-code-img">
                     </div>
                 </div>
             </div>
@@ -91,8 +91,24 @@
                     <dl class="group">
                         <dt class="fl">
                             <img src="/static/images/TDSG.png" alt="店铺名"/>
-                            <a href="javascript:;" class="text-link">推广店铺</a>
-
+                            <a href="javascript:;" class="text-link spread-shop">推广店铺</a>
+                            <div class="sw-er-tip hidden">
+                                <div class="left-arr">
+                                    <span class="line1"></span>
+                                    <span class="line2"></span>
+                                </div>
+                                <p class="er-text">店铺列表链接</p>
+                                <div class="wrap-ipt">
+                                    <input type="text" class="sw-link-txt" value="http://senguo.cc/list" disabled/>
+                                    <input type="button" class="sw-link-copy" value="复制链接"/>
+                                </div>
+                                <div class="wrap-er group">
+                                    <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
+                                    <div class="er-text lh80 fl">列表二维码</div>
+                                    <div class="er-img fl er-code-img">
+                                    </div>
+                                </div>
+                            </div>
                         </dt>
                         <dd class="fl sw-listr">
                             <p class="sw-title">我的店铺我的 <span class="auth">个人认证</span></p>
@@ -115,6 +131,23 @@
                         <dt class="fl">
                             <img src="/static/images/TDSG.png" alt="店铺名"/>
                             <a href="javascript:;" class="text-link">推广店铺</a>
+                            <div class="sw-er-tip hidden">
+                                <div class="left-arr">
+                                    <span class="line1"></span>
+                                    <span class="line2"></span>
+                                </div>
+                                <p class="er-text">店铺列表链接</p>
+                                <div class="wrap-ipt">
+                                    <input type="text" class="sw-link-txt" value="http://senguo.cc/list" disabled/>
+                                    <input type="button" class="sw-link-copy" value="复制链接"/>
+                                </div>
+                                <div class="wrap-er group">
+                                    <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
+                                    <div class="er-text lh80 fl">列表二维码</div>
+                                    <div class="er-img fl er-code-img">
+                                    </div>
+                                </div>
+                            </div>
                         </dt>
                         <dd class="fl sw-listr">
                             <p class="sw-title">我的店铺我的 <span class="auth">个人认证</span></p>
@@ -195,6 +228,7 @@
 <script src="/static/js/jquery.min.js"></script>
 <script src="/static/js/bootstrap.min.js"></script>
 <script src="/static/js/template.js"></script>
+<script src="/static/js/third/jquery.zclip.min.js"></script>
 <script src="/static/js/third/qrcode.min.js"></script>
 <script src="{{static_url('js/global.js')}}"></script>
 <script src="{{static_url('js/admin-public.js')}}"></script>
