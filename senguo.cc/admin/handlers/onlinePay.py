@@ -270,16 +270,17 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.handle_onAlipay_callback()
 		elif self._action == "AliPay":
 			print("login in Alipay")
-			order_id = self.get_cookie("order_id",None)
+			order_id = int(self.get_cookie("order_id"))
+			print('order_id',order_id)
 			#self.order_num = order_num
 			#order_id = int(self.args['order_id'])
 			order = self.session.query(models.Order).filter_by(id = order_id).first()
 			if not order:
 				return self.send_fail('order not found')
 			totalPrice = order.totalPrice
-			alipayUrl =  self.handle_onAlipay()
+			alipayUrl =  self.handle_onAlipay(order.num)
 			self.order_num = order.num
-			print(alipayUrl,'alipayUrl')
+			print(alipayUrl,'alipayUrl',self.order_num)
 
 			charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
 			mcharge_types = self.session.query(models.MChargeType).filter(models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
@@ -330,14 +331,14 @@ class OnlineAliPay(CustomerBaseHandler):
 		#if not self.current_user:
 		#	return self.send_error(403)
 		if self._action == "AliPay":
-			return self.handle_onAlipay()
+			return self.handle_onAlipay(order_num)
 		else:
 			return self.send_error(404)
 
 	# @CustomerBaseHandler.check_arguments("order_id:str","price?:float")
-	def handle_onAlipay(self):
+	def handle_onAlipay(self,order_num):
 		print('login handle_onAlipay')
-		order_num = self.order_num if self.order_num else 'NULL'
+		# order_num = self.order_num if self.order_num else 'NULL'
 		print(order_num,'order_num')
 		# order = models.Order.get_by_id(self.session,int(self.args['order_id']))
 		order = self.session.query(models.Order).filter_by(num = str(order_num)).first()
@@ -368,7 +369,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			total_fee    = float(price),
 			#defaultbank  = CMB,
 			seller_account_name = ALIPAY_SELLER_ACCOUNT,
-			call_back_url = "%s%s"%(ALIPAY_HANDLE_HOST,self.reverse_url("onlineAlipayFishedCallback")),
+			call_back_url = "%s%s"%(ALIPAY_HANDLE_HOST,self.reverse_url("noticeSuccess")),
 			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("onlineAliNotify")),
 			)
 		print(authed_url,'authed_url')

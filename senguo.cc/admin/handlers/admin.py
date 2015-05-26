@@ -137,6 +137,7 @@ class Home(AdminBaseHandler):
 class SwitchShop(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		admin_id = self.current_user.id
 		
 		return self.render("admin/switch-shop.html", context=dict())
 #admin后台轮询

@@ -1,4 +1,4 @@
-from handlers.base import CustomerBaseHandler,WxOauth2
+from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth
 from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
 import dal.models as models
 import tornado.web
@@ -55,6 +55,12 @@ class Access(CustomerBaseHandler):
 			self.handle_oauth(next_url)
 		elif self._action == "weixin":
 			return self.redirect(self.get_weixin_login_url(next_url))
+		elif self._action == 'qq':
+			print('login in qq')
+			return self.redirect(self.get_qq_login_url(next_url))
+		elif self._action == 'qqoauth':
+			print('login qqoauth')
+			self.handle_qq_oauth(next_url)
 		else:
 			return self.send_error(404)
 
@@ -83,6 +89,19 @@ class Access(CustomerBaseHandler):
 		# next = self.args['next']
 		print("[手机登录]跳转URL：",next)
 		# return self.redirect('/woody')
+
+	@CustomerBaseHandler.check_arguments("code")
+	def handle_qq_oauth(self,next_url):
+		print('login in handle_qq_oauth')
+		code = self.args['code']
+		print(code,'handle_qq_oauth code')
+		userinfo = QqOauth.get_qqinfo(code)
+		if not userinfo:
+			return self.redirect(self.reverse_url("customerLogin"))
+		u = models.Customer.register_with_qq(self.session,userinfo)
+		self.set_current_user(u,domain = ROOT_HOST_NAME)
+		return self.redirect(next_url)
+
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self,next_url):
@@ -1575,7 +1594,7 @@ class Cart(CustomerBaseHandler):
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
 			online_type = self.args['online_type']
-			self.set_cookie('order_num',str(order.num))
+			self.set_cookie('order_id',str(order.id))
 			self.set_cookie('online_totalPrice',str(order.totalPrice))
 			order.online_type = online_type
 			self.session.commit()
