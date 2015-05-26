@@ -42,7 +42,7 @@ $(document).ready(function(){
         if(i<=9) i='0'+i;
         $('.minute-list').append('<li>'+i+'</li>');
     }
-    for(var i=0;i<=60;i=Int(i)+5)//截止时间
+    for(var i=0;i<=120;i=Int(i)+5)//截止时间
     {
         if(i<9) i='0'+i;
         $('.stop-minute-list').append('<li>'+i+'</li>');
@@ -126,7 +126,15 @@ $(document).ready(function(){
     });
     //按时达下单截止时间
     $(document).on('click','.stopRange',function(){
-        var range=$('#stopRange').text();
+        var range=$('#stopRange').val().trim();
+        var regNumber=/^([1-9]\d*|[0]{1,1})$/;
+        if(!regNumber.test(range)){
+            return Tip('截止时间只能输入整数');
+        }
+        range=parseInt(range);
+        if(range<0||range>360){
+             return Tip('截止时间范围为0~360分钟');
+        }
         stopRange($('#stopRange'),range);
     });
     //按时达配送费
