@@ -179,6 +179,8 @@ handlers = [
 	(r"/admin/realtime",handlers.admin.Realtime,{},""),
 	(r"/admin/marketing",handlers.admin.Marketing,{},"adminMarketing"),
 	(r"/admin/confession",handlers.admin.Confession,{},"adminConfession"),
+	(r"/admin/wxauth", handlers.admin.AdminAuth, {"action":"wxauth"}, "adminwxAuth"),
+	(r"/admin/wxcheck", handlers.admin.AdminAuth, {"action":"wxcheck"}, "adminwxCheck"),
 
 	# (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
 	# (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
