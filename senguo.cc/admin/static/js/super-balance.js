@@ -255,7 +255,7 @@ function history(action,page){
                }
                for(var i in history){
                 var item= '<tr class="con">'
-+                                       '<td class="pl20">店铺名：<a href="/{{shop_code}}" target="_blank">{{shop_name}}</a> {{title}}</td>'
++                                       '<td class="pl20">店铺名：<a href="/{{shop_code}}" target="_blank">{{shop_name}}</a> {{title}} {{record}}</td>'
 +                                       '<td class="c999">{{time}}</td>'
 +                                       '<td class="orange-txt txt-ar"><span class="f16">{{balance_value}}</span><span class="c999">元</span></td>'
 +                                       '<td class="green-txt txt-ar pr20"><span class="f16">{{balance}}</span><span class="c999">元</span></td>'
@@ -270,6 +270,7 @@ function history(action,page){
         var shop_code=history[i]['shop_code'];
         var title;
         var admin_id=history[i]['admin_id'];
+        var record=history[i]['record'];
         if(type==0){
             title='充值';
             value='+'+value;
@@ -288,7 +289,8 @@ function history(action,page){
             time:time,
             balance_value:value,
             balance:balance,
-            admin_id:admin_id
+            admin_id:admin_id,
+            record:record
         });
         $('.tb-account').append(list_item);
 

@@ -26,7 +26,7 @@
     <div class="w1200 header-box">
         <div class="logo-con height50 pull-left">
             <a href="{{reverse_url('adminHome')}}" class="navbar-brand logo height50 padding-none">
-                <img src="{{static_url('images/logo.gif')}}" class="height50"/>
+                <img src="{{static_url('images/logo.png')}}" class="height50"/>
             </a>
             <span class="title">后台管理系统</span>
             <span class="beta">Beta2.0</span>
@@ -99,6 +99,7 @@
 {% set user_static_active='' %}
 {% set order_static_active='' %}
 {% set shopBlance='' %}
+{% set marketing_active='' %}
 
 {% if subpage == 'goods' %}
     {% set goods_active = 'active' %}
@@ -118,6 +119,8 @@
     {% set order_static_active = 'active' %}
 {% elif subpage == 'shopBlance' %}
     {% set shopBlance = 'active' %}
+{% elif subpage == 'marketing' %}
+    {% set marketing_active = 'active' %}
 {% end %}
 <main class="container mt80">
     <div class="container-left pull-left">
@@ -155,6 +158,12 @@
                 <span class="set"><i></i>设置</span>
                 <a href="{{reverse_url('adminShopConfig')}}" class="{{shop_set_active}}" id="shopPage">店铺设置</a>
             </li>
+            {% if current_shop.shop_auth !=0 %}
+             <li>
+                <span class="set"><i></i>营销</span>
+                <a href="{{reverse_url('adminMarketing')}}?action=lovewall" class="{{marketing_active}}" id="shopPage">营销和玩法</a>
+            </li>
+            {% end %}
         </ul>
     </div>
     <div class="container-right pull-left">

@@ -10,11 +10,8 @@ $(document).ready(function(){
         });
     }
     //订单状态
-    $('.status').each(function(){
-        var $this=$(this);
-        var status=Int($this.attr('data-id'));
-        statusText($this,status);
-    });
+    statusText(parseInt($('#status-txt').attr('data-id')));
+
     //根据订单状态的一些提示
     if(status==1) $('.hint').show();
     else $('.phone-notice').show();
@@ -54,6 +51,12 @@ $(document).ready(function(){
     }
     $('#del-ok').attr({'disabled':true});
     changeComment(comment);
+}).on("click","#cancel-order",function(){
+    confirmBox('确认取消该订单吗？//(ㄒoㄒ)//','','',"sure-order");
+}).on("click","#sure-order",function(){
+    var order_id = $("#cancel-order").attr("data-id");
+    cancelOrder(order_id);
+    confirmRemove();
 });
 function removeDom(){
     $('.create_time').remove();
@@ -62,13 +65,50 @@ function removeDom(){
     $('.create_day').remove();
     $('.send_day').remove();
 }
-function statusText(target,n){
+function statusText(n){
     switch (n){
-        case 0:target.text('已取消');break; 
-        case 1:target.text('已下单');break;
-        case 4:target.text('配送中');break;
-        case 5:target.text('已送达');break;
-        case 6:target.text('已评价');break;
+        case 0:
+            $("#status-txt").text('已取消');
+            $(".order-wawa").css("left","0%");
+            $(".order-line-grade").css("width","0%");
+            $(".order-status-txt").css("left","0%");
+            $(".tel-btn").show();
+            break;
+        case 1:
+            $("#status-txt").text('已下单');
+            $(".order-wawa").css("left","0%");
+            $(".order-line-grade").css("width","0%");
+            $(".order-status-txt").css("left","0%");
+            $(".tel-btn").show();
+            break;
+        case 4:
+            $("#status-txt").text('配送中');
+            $(".order-wawa").css("left","50%");
+            $(".order-line-grade").css("width","50%");
+            $(".order-status-txt").css("left","50%");
+            $(".tel-btn").show();
+            break;
+        case 5:
+            $("#status-txt").text('已送达');
+            $(".order-wawa").css("left","100%");
+            $(".order-line-grade").css("width","100%");
+            $(".order-status-txt").css("left","100%");
+            $(".tel-btn").show();
+            break;
+        case 6:
+            $("#status-txt").text('已评价');
+            $(".order-wawa").css("left","100%");
+            $(".order-line-grade").css("width","100%");
+            $(".order-status-txt").css("left","100%");
+            $(".tel-btn").show();
+            break;
+        case -1:
+            $("#status-txt").text('未付款');
+            $(".order-wawa").css("left","0");
+            $(".order-line-grade").css("width","0");
+            $(".order-status-txt").css("left","0");
+            $(".tel-btn").hide();
+            break;
     }
 }
 
@@ -96,8 +136,28 @@ function changeComment(comment){
     }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
 )
 }
-
-
+function cancelOrder(id){
+    var order_id = parseInt(id);
+    var url='/customer/orders';
+    var action='cancel_order';
+    var data={
+        order_id:order_id
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,function(res){
+            if(res.success){
+                noticeBox("订单取消成功！");
+                setTimeout(function(){
+                    window.location.href="/customer/orders?action=all";
+                },2000);
+            }
+            else return noticeBox(res.error_text)
+        }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+    )
+}
 function delComment(target,id){
     var url='';
     var action='delete_comment';

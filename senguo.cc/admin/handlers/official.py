@@ -24,11 +24,9 @@ class ShopList(FruitzoneBaseHandler):
 		# print(self)
 		shop_count = self.get_shop_count()
 		shop_province = self.get_shop_group()
-		
-		#return self.send_success( shoplist = shoplist,shop_count = shop_count ,)
 		return self.render("official/shoplist.html",context=dict(shop_count = shop_count, shop_province = shop_province,\
 		 subpage="shop"))
-	   # return self.send_success(shop_count = shop_count)
+	 
 	@FruitzoneBaseHandler.check_arguments("action")	   
 	def post(self):
 		action = self.args['action']
@@ -53,19 +51,15 @@ class ShopList(FruitzoneBaseHandler):
 
 		for shop in q:
 			try:
-				# print(shop.id)
 				order_count = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
 			except:
 				print("[官网店铺列表]错误")
 				return self.send_fail('order_count error')
 			if order_count:
 				shop.order_count = order_count
-				# print('shop success',shop.order_count)
+				self.session.commit()
 			else:
 				shop.order_count = 0
-				# print('shop',order_count)
-			# print(order_count)
-			# print(shop.order_count)
 			shops.append(dict(shop_name=shop.shop_name,shop_code = shop.shop_code,\
 				shop_province = shop.shop_province ,shop_city = shop.shop_city ,\
 				shop_address_detail = shop.shop_address_detail,\
@@ -74,7 +68,6 @@ class ShopList(FruitzoneBaseHandler):
 		shops = sorted(shops,key = lambda x:x['order_count'],reverse = True)
 		# shops = shops.sort(key = lambda x:x['order_count'])
 		shoplist = shops[0:8]
-		#print(shoplist)
 		return self.send_success(shoplist = shoplist)
 
 

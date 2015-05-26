@@ -25,6 +25,7 @@
 {% set home_active = ""%}
 {% set cart_active = ""%}
 {% set center_active = ""%}
+{% set dis_active ="" %}
 
 {% if subpage == "shop" %}
 {% set shop_active = "active"%}
@@ -34,29 +35,38 @@
 {% set cart_active = "active"%}
 {% elif subpage == "center"%}
 {% set center_active = "active"%}
+{% elif subpage == "discover"%}
+{% set dis_active = "active"%}
 {% end %}
     <div class="bottom-nav navbar-fixed-bottom font12 bg-grey9">
         <ul class="row select-list">
-            <li class="w25 pull-left {{shop_active}}">
+            <li class="w20 pull-left {{shop_active}}">
                 <a href="{{reverse_url('customerShopProfile',handler.shop_code)}}" class="text-grey shop_href home">
                     <em class="bg_change"></em>
                     <p class="text-center">店铺</p>
                 </a>
             </li>
-            <li class="w25 pull-left {{home_active}}">
+            <li class="w20 pull-left {{home_active}}">
                 <a href="{{reverse_url('Market',handler.shop_code)}}" class="text-grey goods" >
                     <em class="bg_change"></em>
                     <p class="text-center">商品</p>
                 </a>
             </li>
-            <li class="w25 pull-left {{cart_active}} cart_item">
+             <li class="w20 pull-left {{dis_active}}">
+                <a href="{{reverse_url('customerDiscover',handler.shop_code)}}" class="text-grey discover" >
+                    <em class="bg_change"></em>
+                     <span class="discover-new circle bg-pink hidden"></span>
+                    <p class="text-center">发现</p>
+                </a>
+            </li>
+            <li class="w20 pull-left {{cart_active}} cart_item">
                 <a href="{{reverse_url('customerCart',handler.shop_code)}}" class="text-grey cart" >
                     <em class="bg_change"></em>
                     <span class="cart_num bg-pink text-white hidden">0</span>
                     <p class="text-center">购物篮</p>
                 </a>
             </li>
-            <li class="w25 pull-left {{center_active}}">
+            <li class="w20 pull-left {{center_active}}">
                 <a href="{{reverse_url('customerHome',handler.shop_code)}}" class="text-grey my">
                     <em class="bg_change"></em>
                     <p class="text-center">我的</p>

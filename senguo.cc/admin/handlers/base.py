@@ -19,20 +19,48 @@ import requests
 
 import threading
 
-# import time
-# import random
-# # import urllib2
-# import threading
-# from urllib import quote
-# import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial, wraps
 
+EXECUTOR = ThreadPoolExecutor(max_workers=4)
 
-# try:
-#     import pycurl
-#     from cStringIO import StringIO
-# except ImportError:
-#     pycurl = None
+def unblock(f):
 
+	@tornado.web.asynchronous
+	@wraps(f)
+	def wrapper(*args, **kwargs):
+		self = args[0]
+
+		def callback(future):
+			# pass
+			self.finish()
+
+		EXECUTOR.submit(
+			partial(f, *args, **kwargs)
+		).add_done_callback(
+			lambda future: tornado.ioloop.IOLoop.instance().add_callback(
+				partial(callback, future)))
+
+	return wrapper
+
+def get_unblock(f):
+
+	@tornado.web.asynchronous
+	@wraps(f)
+	def wrapper(*args, **kwargs):
+		self = args[0]
+
+		def callback(future):
+			pass
+			# self.finish()
+
+		EXECUTOR.submit(
+			partial(f, *args, **kwargs)
+		).add_done_callback(
+			lambda future: tornado.ioloop.IOLoop.instance().add_callback(
+				partial(callback, future)))
+
+	return wrapper
 # 4.14 woody
 class Pysettimer(threading.Thread):
 	def __init__(self,function,args = None ,timeout = 1 ,is_loop = False):
@@ -104,6 +132,14 @@ class GlobalBaseHandler(BaseHandler):
 			if "city" in dis_dict[int(code/10000)*10000].keys():
 				text += " " + dis_dict[int(code/10000)*10000]["city"][code]["name"]
 			return text
+		elif column_name == "city":
+			if "city" in dis_dict[int(code/10000)*10000].keys():
+				text = " " + dis_dict[int(code/10000)*10000]["city"][code]["name"]
+			return text
+
+		elif column_name == "province":
+			text = dis_dict[int(code)]["name"]
+			return text
 
 		elif column_name == "order_status":
 			text = ""
@@ -116,6 +152,76 @@ class GlobalBaseHandler(BaseHandler):
 			else:
 				text = "SYS_ORDER_STATUS: 此编码不存在"
 			return text
+
+	#获取订单详情
+	def get_order_detail(self,session,order_id):
+		data = {}
+		try:
+			order = session.query(models.Order).filter_by(id = order_id).first()
+		except NoResultFound:
+			order = None
+
+		goods = []
+		f_d = eval(order.fruits)
+		m_d = eval(order.mgoods)
+		for f in f_d:
+			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+		for m in m_d:
+			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+
+		staff_id = order.SH2_id
+		staff_info = session.query(models.Accountinfo).filter_by(id = staff_id).first()
+		if staff_info is not None:
+				sender_phone = staff_info.phone
+				sender_img = staff_info.headimgurl_small
+		else:
+				sender_phone =None
+				sender_img = None
+
+		data['totalPrice']    = order.totalPrice
+		data['charge_types']  = session.query(models.ChargeType).\
+		filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
+		data['mcharge_types'] = session.query(models.MChargeType).\
+		filter(models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
+		data['shop_name']     = order.shop.shop_name
+		data['create_date']   = order.create_date
+		data['receiver']      = order.receiver
+		data['phone']         = order.phone
+		data['address']       = order.address_text
+		data['send_time']     = order.send_time
+		data['remark']        = order.remark
+		data['pay_type']      = order.pay_type
+		data['online_type']   = order.online_type
+		data['status']        = order.status
+		data['freight']       = order.shop.config.freight_on_time if order.type == 2 else order.shop.config.freight_now
+		data['goods']         = goods
+		data['sender_phone']  = sender_phone
+		data['sender_img']    = sender_img
+
+		return data
+
+	#获去店铺信息
+	def get_shopInfo(self,shop):
+		data = {}
+		data['shop_name']     = shop.shop_name
+		data['shop_code']     = shop.shop_code
+		data['shop_province'] = shop.shop_province
+		data['shop_city']     = shop.shop_city
+		data['shop_address_detail'] = shop.shop_address_detail
+		data['shop_intro']    = shop.shop_intro
+		data['shop_trademark_url']  = shop.shop_trademark_url
+		data['shop_admin_name']= shop.admin.accountinfo.nickname
+		data['order_count']   = shop.order_count
+		data['shop_auth']     = shop.shop_auth
+		data['shop_status']   = shop.shop_status
+		data['auth_change']   = shop.auth_change
+		data['status']        = shop.status
+
+		return data
+ 
+
+
+
 
 class FrontBaseHandler(GlobalBaseHandler):
 	pass
@@ -225,8 +331,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		user_id = self.get_secure_cookie(self.__account_cookie_name__) or b'0'
 		user_id = int(user_id.decode())
 		print("[用户信息]当前用户ID：",user_id)
-        # print(type(self))
-        # print(self.__account_model__)
+		# print(type(self))
+		# print(self.__account_model__)
 
 		if not user_id:
 			self._user = None
@@ -279,7 +385,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		comments =self.session.query(models.Order.comment, models.Order.comment_create_date, models.Order.num,\
 			models.Order.comment_reply,models.Order.id,models.CommentApply.has_done,models.Accountinfo.headimgurl_small, \
 			models.Accountinfo.nickname,models.CommentApply.delete_reason,\
-			models.CommentApply.decline_reason,models.Order.comment_imgUrl,).\
+			models.CommentApply.decline_reason,models.Order.comment_imgUrl,models.Order.commodity_quality,models.Order.send_speed,models.Order.shop_service).\
 		outerjoin(models.CommentApply, models.Order.id == models.CommentApply.order_id).\
 		join(models.Accountinfo,models.Order.customer_id == models.Accountinfo.id).\
 		filter(models.Order.shop_id == shop_id, models.Order.status == 6).filter(or_(models.CommentApply.has_done !=1,models.CommentApply.has_done ==None )).\
@@ -299,8 +405,12 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				comments_new['comment_imgUrl'] = item[10].split(',')
 			else:
 				comments_new['comment_imgUrl'] = None
+			comments_new['commodity_quality'] = item[11]
+			comments_new['send_speed']        = item[12]
+			comments_new['shop_service']      = item[13]
 			comments_result.append(comments_new)
-			comments_array.append([item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],comments_new['comment_imgUrl']])
+			comments_array.append([item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],\
+				comments_new['comment_imgUrl'],item[11],item[12],item[13]])
 		#print(comments_result)
 		# return comments_result
 		return comments_array
@@ -660,7 +770,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 	def get_city_shop_count(self,shop_city):
 		try:
 			shop_count = self.session.query(models.Shop).filter_by(shop_city = shop_city).count()
-		except:
+		except:		
 			return self.send_fail('shop_city error')
 		return shop_count
 
@@ -683,7 +793,7 @@ access_token = {"access_token": '', "create_timestamp": 0}
 class WxOauth2:
 	token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}" \
 				"&secret={appsecret}&code={code}&grant_type=authorization_code"
-	userinfo_url = "https://api.weixin.qq.com/sns/userinfo?access_token={access_token}&openid={openid}"
+	userinfo_url = "https://api.weixin.qq.com/sns/userinfo?access_token={access_token}&openid={openid}&lang=zh_CN"
 	client_access_token_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential" \
 							  "&appid={appid}&secret={appsecret}".format(appid=MP_APPID, appsecret=MP_APPSECRET)
 	jsapi_ticket_url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={access_token}&type=jsapi"
@@ -862,16 +972,19 @@ class WxOauth2:
 	@classmethod
 	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,\
 		order_totalPrice,send_time,goods,phone,address):
-		remark = "订单总价：" + str(order_totalPrice) + '\n' + "送达时间：" + send_time + '\n' + "商品详情："  \
-		+ goods +'\n'  + "顾客电话："  + phone + '\n' + "送货地址：" + address +  '\n\n'  + \
-		'请及时登录森果后台处理订单。'
+		remark = "订单总价：" + str(order_totalPrice) + '\n'\
+			   + "送达时间：" + send_time + '\n'\
+			   + "客户电话：" + phone + '\n'\
+			   + "送货地址：" + address + '\n'\
+			   + "商品详情：" + goods + '\n\n'\
+			   + "请及时登录森果后台处理订单。"
 		postdata = {
 			'touser' : touser,
 			'template_id':"5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg",
 			"url":order_url,
 			"topcolor":"#FF0000",
 			"data":{
-				"first":{"value":"管理员{0}您好，店铺{1}收到了新的订单！".format(admin_name,shop_name),"color": "#173177"},
+				"first":{"value":"管理员 {0} 您好，店铺『{1}』收到了新的订单！".format(admin_name,shop_name),"color": "#173177"},
 				"tradeDateTime":{"value":str(create_date),"color":"#173177"},
 				"orderType":{"value":order_type,"color":"#173177"},
 				"customerInfo":{"value":customer_name,"color":"#173177"},
@@ -892,8 +1005,11 @@ class WxOauth2:
 	@classmethod
 	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
 		order_totalPrice,send_time,phone,address):
-		remark = "订单总价：" + str(order_totalPrice)+ '\n' + "送达时间：" + send_time + '\n'  + "顾客电话："  + \
-		phone + '\n' + "送货地址：" + address  +'\n\n' + '请及时处理订单。'
+		remark = "订单总价：" + str(order_totalPrice)+ '\n'\
+			   + "送达时间：" + send_time + '\n'\
+			   + "客户电话：" + phone + '\n'\
+			   + "送货地址：" + address  +'\n\n'\
+			   + "请及时配送订单。"
 		order_type_temp = int(order_type)
 		order_type = "即时送" if order_type_temp == 1 else "按时达"
 		postdata = {
@@ -901,7 +1017,7 @@ class WxOauth2:
 			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
 			'url':staff_order_url,
 			"data":{
-				"first":{"value":"{0}您好，店铺{1}收到了新的订单！".format(staff_name,shop_name),"color": "#173177"},
+				"first":{"value":"配送员 {0} 您好，店铺『{1}』有新的订单需要配送。".format(staff_name,shop_name),"color": "#173177"},
 				"tradeDateTime":{"value":str(create_date),"color":"#173177"},
 				"orderType":{"value":order_type,"color":"#173177"},
 				"customerInfo":{"value":customer_name,"color":"#173177"},
@@ -921,11 +1037,11 @@ class WxOauth2:
 
 
 	@classmethod
-	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice):
+	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice,order_realid):
 		postdata = {
 			'touser' : touser,
 			'template_id':'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0',
-			'url'    : '',
+			'url'    : 'http://i.senguo.cc/customer/orders/detail/' + str(order_realid),
 			'topcolor': "#FF0000",
 			"data":{
 				"first"    : {"value":"您的订单已提交成功","color":"#173177"},

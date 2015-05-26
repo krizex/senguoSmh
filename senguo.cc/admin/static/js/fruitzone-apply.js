@@ -338,7 +338,7 @@ function reApply(evt){
     if(!wx_Name){return noticeBox('请输入您的微信号！')}
     if(!code){return noticeBox('请输入验证码！')}
     if(!phone){return noticeBox('请输入您的手机号！')}
-    $('#submitReapply').addClass('text-grey6').val('提交成功').attr({'disabled':'true'});
+    $('#submitReapply').addClass('text-grey6').val('提交中...').attr({'disabled':'true'});
     var args={
         shop_name:shop_name,
         shop_province:shop_province,

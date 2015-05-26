@@ -38,8 +38,8 @@
 {% end %}
 
 <span class="right-title" id="order-title-manage">订单管理</span>
-<div class="orders-mode clearfix">
-    <ul class="right-nav pull-left order-type">
+<div class="subnav-box clearfix">
+    <ul class="subnav pull-left order-type">
         <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3">
             <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1&page=0" class="text-grey3">立即送</a>
             <span class="number" id="atonce">{{count[11]}}</span>
@@ -63,7 +63,7 @@
     </div>
 </div>
 <!--orders-mode-end-->
-<div class="orders-mode-lock bg-grey5 clearfix">
+<div class="mode-lock  clearfix">
     <div class="mode-content {{lock_mode}} pull-left">
         {% if order_type ==1 %}
         <p class="lock-unlock">已{{notice}}立即送模式(点击右方{{notice2}}按钮可{{notice2}}立即送订单模式。)</p>
@@ -92,8 +92,8 @@
         {% end %}
     </div>
 </div>
-<div class="orders-list-title right-title2">
-    <ul class="right-nav pull-left order-status">
+<div class="subnav-box">
+    <ul class="subnav pull-left order-status">
         <li>
             <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=1&page=0">未处理&nbsp;<span class="text-pink" id="not-deal">{{count1}}</span></a>
         </li>
@@ -114,12 +114,13 @@
 </div>
 <!--orders-mode-lock-end-->
 <div class="order-list set-width-float">
-   <!-- <div class="order-list-action set-width-float">
-        <input type="checkbox" class="select-box pull-left"/>
-        <span class="select-all pull-left">全选</span>
-        <a href="javascript:;" class="print-btn blak-set-btn">批量打印</a>
-        <a href="javascript:;" class="blak-set-btn">批量删除</a>
-    </div>-->
+    <div class="func-box set-width-float mt10">
+        <a href="javascript:;" class="check pull-left ml10" id="all-check"></a>
+        <span class="select-all pull-left ml5">全选</span>
+        <a href="javascript:;" class="func-btn blak-set-btn pull-left ml20" style="display:none">批量开始配送</a>
+        <a href="javascript:;" class="print-btn blak-set-btn pull-left ml20" id="batch-print">批量打印</a>
+        <!-- <a href="javascript:;" class="blak-set-btn">批量删除</a> -->
+    </div>
     <div class="new-order-box hidden" id="new-order-box">您还有新订单未处理，快来戳我，戳我！！</div>
     <ul class="order-list-content set-width-float mt10">
     </ul>

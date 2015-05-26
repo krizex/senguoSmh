@@ -30,6 +30,7 @@ $(document).ready(function(){
     //导航active样式
     if(user_type=='all') $('.all_user').addClass('active');
     else if(user_type=='old') $('.old_user').addClass('active');
+    else if(user_type=='charge') $('.charge_user').addClass('active');
 }).on('click','.history-order',function(){
     // var $this=$(this);
     // window.open($this.attr('href'));

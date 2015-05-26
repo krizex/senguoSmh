@@ -274,7 +274,7 @@ class ShopManage(SuperBaseHandler):
 
 			config = models.Config()
 			config.periods.extend([period1, period2, period3])
-
+			marketing = models.Marketing()
 
 
 			# 把临时表的内容复制到shop表
@@ -289,6 +289,7 @@ class ShopManage(SuperBaseHandler):
 										 have_offline_entity=shop_temp.have_offline_entity,
 										 shop_intro=shop_temp.shop_intro)
 			shop.config = config
+			shop.marketing = marketing
 			# shop.create_date_timestamp = time.time()
 			# woody
 			shop.shop_start_timestamp = time.time()
@@ -569,10 +570,10 @@ class DistributStatic(SuperBaseHandler):
 	@tornado.web.authenticated
 	def post(self):
 		total = self.session.query(models.Accountinfo).count()
-		sex = self.session.query(models.Accountinfo.sex, func.count()).group_by(models.Accountinfo.sex).all()
-		province = self.session.query(models.Accountinfo.wx_province, func.count()).\
+		sex = self.session.query(models.Accountinfo.sex, func.count()).order_by(func.count().desc()).group_by(models.Accountinfo.sex).all()
+		province = self.session.query(models.Accountinfo.wx_province, func.count()).order_by(func.count().desc()).\
 			group_by(models.Accountinfo.wx_province).all()
-		city = self.session.query(models.Accountinfo.wx_city, func.count()).\
+		city = self.session.query(models.Accountinfo.wx_city, func.count()).order_by(func.count().desc()).\
 			group_by(models.Accountinfo.wx_city).all()
 		return self.send_success(total=total, sex=sex, province=province, city=city)
 
@@ -889,7 +890,8 @@ class Balance(SuperBaseHandler):
 			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type =3).all()
 			persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type = 3).count()
 			if q[0][0]:
-				total =q[0][0]
+				total = q[0][0]
+			total = format(total,'.2f')
 			count = q[0][1]
 			times = count
 		elif action == 'cash_history':
@@ -914,8 +916,11 @@ class Balance(SuperBaseHandler):
 				if shop_totalBalance == None:
 					shop_totalBalance=0
 				shop_totalBalance = format(shop_totalBalance,'.2f')
+				record = ''
+				if temp.balance_type in [0,3]:
+					record = temp.balance_record[0:8]
 				history.append({'shop_name':shop_name,'shop_code':shop_code,'time':create_time,'balance':shop_totalBalance,\
-					'balance_value':temp.balance_value,'type':temp.balance_type,'admin_id':temp.superAdmin_id})
+					'balance_value':temp.balance_value,'type':temp.balance_type,'admin_id':temp.superAdmin_id,'record':record})
 		page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 		return self.send_success(history = history,page_sum=page_sum,total = total,times = times,persons=persons,pay=pay,left = left)
 

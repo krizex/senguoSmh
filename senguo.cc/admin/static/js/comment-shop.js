@@ -23,13 +23,14 @@ $(document).ready(function(){
     scrollLoading();
 });
 function initBar(point,$obj){
-    if(point<33){
-        $obj.addClass("bar1").css("width",point+"%");
+    $obj.css("width",point+"%");
+    /*if(point<33){
+        $obj.css("width",point+"%");
     }else if(point>=33 && point<66){
-        $obj.addClass("bar2").css("width",point+"%");
+        $obj.css("width",point+"%");
     }else{
-        $obj.addClass("bar3").css("width",point+"%");
-    }
+        $obj.css("width",point+"%");
+    }*/
 }
 function scrollLoading(){
     $(window).scroll(function(){
@@ -64,18 +65,6 @@ function commentList(page){
                     $('.loading').html("~没有更多了呢 ( > < )~").show();
                 }
                 for(var i in comment_list){
-                    var item1='<li class="comment-item bg-white set-w100-fle">'
-                        +                            '<div class="img-box pull-left">'
-                        +                                    '<img src="{{img}}" class="user-img">'
-                        +                               '</div>'
-                        +                               '<div class="info sty1 pull-left pr10">'
-                        +                                   '<span class="user-name pull-left">{{name}}</span>'
-                        +                                   '<span class="comment-time pull-right">{{time}}</span>'
-                        +                               '</div>'
-                        +                               '<div class="comment-text sty1 pull-left pr10">{{comment}}</div>'
-                        +                              '{{ if reply}}<div class="comment text-green sty1 pull-left pr10">商家回复：<span class="reply-text">{{reply}}</span>{{/if}}'
-                        +                             '</div>'
-                        +                       '</li>';
                     var item = '<li>'+
                                     '<dl class="ccom-item group">'+
                                     '<dd class="fl">'+
@@ -110,7 +99,7 @@ function commentList(page){
                         reply:reply,
                         imgurls:imgurls
                     });
-                    $("#commnent-list").append(list_item);
+                    $(".point-com-lst").append(list_item);
                 }
                 finished=true;
                 current_page++;

@@ -5,6 +5,8 @@ import handlers.superadmin
 import handlers.fruitzone
 import handlers.infowall
 import handlers.official
+import handlers.onlinePay
+import handlers.activity
 from dal import models
 #todo:handlers太大会不会影响性能？
 
@@ -17,6 +19,13 @@ from dal import models
 
 
 handlers = [
+	
+	#告白墙
+	(r"/lovewall/public/(\w+)", handlers.activity.ConfessionPublic, {}, "ConfessionPublic"),
+	(r"/lovewall/center/(\w+)", handlers.activity.ConfessionCenter, {}, "ConfessionCenter"),
+	(r"/lovewall/list/(\w+)", handlers.activity.ConfessionList, {}, "ConfessionList"),
+	(r"/lovewall/comment/(\w+)", handlers.activity.ConfessionComment, {}, "ConfessionComment"),
+	(r"/lovewall/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
 	
 	(r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
 	(r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
@@ -37,6 +46,8 @@ handlers = [
 	(r"/customer/wxauth", handlers.customer.WxBind, {"action":"wx_auth"}, "customerwxAuth"),
 	(r"/customer/wxBind", handlers.customer.WxBind, {"action":"wx_bind"}, "customerwxBind"),
 	(r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
+	(r"/customer/discover/(\w+)",handlers.customer.Discover,{},"customerDiscover"),
+	
 	# (r"/fruitzone/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
 	#微官网-----待删除
 	(r"/", handlers.superadmin.Official),
@@ -47,9 +58,17 @@ handlers = [
 	(r"/official/shoplist",handlers.official.ShopList,{},"OfficialShopList"),
 	(r"/official/about",handlers.official.About,{},"OfficialAbout"),
 
-
 	#to remove
 	(r"/m", handlers.superadmin.Official,{},"test"),
+
+	#支付宝在线支付
+	(r"/customer/online/aliPaycallback",handlers.onlinePay.OnlineAliPay,{'action':'AliPayCallback'},
+		"onlineAlipayFishedCallback"),
+	(r"/customer/online/alinotify",handlers.onlinePay.OnlineAliPay,{'action':'AliNotify'},
+		"onlineAliNotify"),
+	(r"/customer/online/alipay",handlers.onlinePay.OnlineAliPay,{'action':'AliPay'},
+		"onlineAliPay"),
+	(r"/customer/online/orderdetail",handlers.onlinePay.OrderDetail,{},'onlineOrderDetail'),
 
 	(r"/customer/cart/(\w+)", handlers.customer.Cart, {}, "customerCart"),
 	(r"/customer/orders", handlers.customer.Order, {}, "customerOrder"),
@@ -67,8 +86,12 @@ handlers = [
 	(r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
 	(r"/customer/phoneVerify", handlers.fruitzone.PhoneVerify, {
 		"action":"customer"}, "customerPhoneVerify"),
+	(r"/customer/onlinewxpay",handlers.onlinePay.OnlineWxPay,{},"onlineWxPay"),
 	(r"/customer/(\w+)", handlers.customer.Home, {}, "customerHome"),
-
+	#店铺地图
+	(r"/shoparea/(\w+)",handlers.customer.ShopArea,{},"shoparea"),
+	
+	
 	(r"/super/oauth", handlers.superadmin.Access,{
 		"action":"oauth"}, "superOauth"),
 	(r"/super/logout", handlers.superadmin.Access,{
@@ -154,6 +177,8 @@ handlers = [
 	(r"/admin/shopauth",handlers.admin.ShopAuthenticate,{},'adminShopAuth'),
 	(r"/admin/shopbalance",handlers.admin.ShopBalance,{},"adminShopBalance"),
 	(r"/admin/realtime",handlers.admin.Realtime,{},""),
+	(r"/admin/marketing",handlers.admin.Marketing,{},"adminMarketing"),
+	(r"/admin/confession",handlers.admin.Confession,{},"adminConfession"),
 
 	# (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
 	# (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),

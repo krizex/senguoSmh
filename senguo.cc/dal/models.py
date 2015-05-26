@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, func, ForeignKey, Column
-from sqlalchemy.types import String, Integer, Boolean, Float, Date, BigInteger, DateTime, Time, SMALLINT
+from sqlalchemy.types import String, Integer, Boolean, Float, Date, BigInteger, DateTime, Time, SMALLINT,REAL
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.dialects.mysql import TINYINT
@@ -15,6 +15,9 @@ class DistrictCodeError(Exception):
 
 class FruitTypeError(Exception):
 	pass
+
+class MyReal(REAL):
+	scale = 6
 
 # 常量
 
@@ -442,10 +445,11 @@ class Shop(MapBase, _CommonApi):
 	shop_auth =Column(Integer,default =0)#0:未认证 1:个人认证 2:企业认证 3:个人认证转企业认证 4:企业认证转个人认证 #yy4.29
 	auth_change=Column(Integer,default =0)#0未认证 1:认证一次 2:认证两次 #yy4.30
 	# on or off
-	status   = Column(Integer,default = 1) # 1:on ,0:off
+	status   = Column(Integer,default = 1) # 0:关闭  1:营业中 2:筹备中 3:休息中
 
 	admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
 	admin = relationship("ShopAdmin")
+	shop_admin_id = Column(String(20)) #could be add or delete
 
 	# 店铺标志
 	shop_trademark_url = Column(String(2048))
@@ -459,6 +463,8 @@ class Shop(MapBase, _CommonApi):
 	shop_city = Column(Integer)
 	shop_address_detail = Column(String(1024), nullable=False)
 	shop_sales_range = Column(String(128))
+	lat              = Column(MyReal)  #纬度
+	lon              = Column(MyReal)  #经度
 
 	# 是否做实体店
 	have_offline_entity = Column(Integer, default=False)
@@ -503,11 +509,14 @@ class Shop(MapBase, _CommonApi):
 
 	is_balance = Column(Integer,default = 0) # shop对应的余额是否有变动
 	old_msg = Column(Integer,default = 0) # 已经浏览过的店铺消息与评价数量
+	order_count = Column(Integer,default = 0) # 店铺已完成订单总数
 	orders = relationship("Order")
 	staffs = relationship("ShopStaff", secondary="hire_link")
 	fruits = relationship("Fruit", order_by="desc(Fruit.priority)")
 	menus = relationship("Menu", uselist=True)
 	config = relationship("Config", uselist=False)
+	marketing = relationship("Marketing", uselist=False)
+
 	def __repr__(self):
 		return "<Shop: {0} (id={1}, code={2})>".format(
 			self.shop_name, self.id, self.shop_code)
@@ -800,16 +809,6 @@ class ApplyCashHistory(MapBase,_CommonApi):
 	decline_reason = Column(String(200)) #当申请提现被拒绝后 给商家的理由
 	account_name = Column(String(32)) #账户真实姓名
 	# available_balance = Column(Float,default = 0)   # changed when the order complete and shop admin apply to cash
-	shop = relationship("Shop")
-
-class AvailableBalanceHistory(MapBase,_CommonApi):
-	__tablename__ = 'available_balance_history'
-	id = Column(Integer,primary_key = True ,nullable = False)
-	shop_id = Column(Integer,ForeignKey(Shop.id),nullable = False)
-	balance_record = Column(String(64))
-	balance_value = Column(Float)
-	available_balance = Column(Float)
-	create_time = Column(DateTime,default = func.now()) 
 	shop = relationship("Shop")
 
 ################################################################################
@@ -1137,13 +1136,13 @@ class Order(MapBase, _CommonApi):
 	status = Column(TINYINT, default=ORDER_STATUS.ORDERED)  # 订单状态:DELETED = 0,ORDERED = 1, JH = 2,SH1 = 3
 														   # #SH2 = 4,Received=5，FINISH = 6, AFTER_SALE = 10
 	type = Column(TINYINT) #订单类型 1:立即送 2：按时达
-	intime_period = Column(Integer,default = 0) #when type is 1,it's usefull
+	intime_period = Column(Integer,default = 30) #when type is 1,it's usefull
 	freight = Column(SMALLINT, default=0)  # 订单运费
 	tip = Column(SMALLINT, default=0)  # 小费（暂时只有立即送可提供运费）
 	remark = Column(String(100)) #商家备注
 	totalPrice = Column(Float)
 	money_paid = Column(Boolean, default=False)
-	pay_type = Column(TINYINT, default=1)#付款方式：1：货到付款，2：余额
+	pay_type = Column(TINYINT, default=1)#付款方式：1：货到付款，2：余额 3:在线支付
 	today = Column(TINYINT, default=1) #送货时间1:今天 2：明天
 	JH_id = Column(Integer, nullable=True) #捡货员id,(当员工被删除时可能会有问题)
 	SH1_id = Column(Integer, nullable=True) #一级送货员id
@@ -1170,6 +1169,8 @@ class Order(MapBase, _CommonApi):
 	commodity_quality = Column(Integer)
 	send_speed        = Column(Integer)
 	shop_service      = Column(Integer)
+
+	online_type       = Column(String(8))
 
 	def get_num(self,session,order_id):
 		try:
@@ -1369,6 +1370,15 @@ class Config(MapBase, _CommonApi):
 	balance_on_active = Column(Integer,default = 1) #0:余额支付关闭 1:余额支付开启 5.4
 	text_message_active = Column(Integer,default = 0) #首单短信验证 0:关闭 1:开启 5.7
 
+#店铺营销
+class Marketing(MapBase, _CommonApi):
+	__tablename__="marketing"
+	id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
+	confess_active = Column(Integer,default = 1) #1:告白墙开启 0:告白墙关闭
+	confess_notice = Column(String(500))
+	confess_type = Column(Integer,default = 1) #1:告白模式 0:非告白模式
+	confess_only = Column(Integer,default = 0) #1:单条发布开启  0:单条发布关闭
+
 #商城首页的公告
 class Notice(MapBase):
 	__tablename__ = "notice"
@@ -1438,6 +1448,42 @@ class ShopFavorComment(MapBase):
 	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
 	order_id = Column(Integer, ForeignKey(Order.id), primary_key=True, nullable=False)
 
+
+
+class ConfessionWall(MapBase, _CommonApi):
+	__tablename__ = 'confession_wall'
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	customer_id = Column(Integer, ForeignKey(Customer.id),nullable=False)
+	shop_id = Column(Integer, ForeignKey(Shop.id),nullable=False)
+	confession = Column(String(500))
+	create_time = Column(DateTime,default = func.now())
+	other_name = Column(String(64))
+	other_phone = Column(String(32))
+	other_address = Column(String(128))
+	confession_type = Column(Integer,default = 0) #0:匿名 1:实名
+	great = Column(Integer,default = 0)
+	comment = Column(Integer,default = 0)
+	floor = Column(Integer,default = 0)
+	status = Column(Integer,default = 1) #0:删除 1:正常
+	scan = Column(Integer,default = 1) #0:未浏览 1:已浏览 
+
+class ConfessionComment(MapBase, _CommonApi):
+	__tablename__ = 'confession_comment'
+	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
+	wall_id = Column(Integer,ForeignKey(ConfessionWall.id),nullable = False)
+	customer_id = Column(Integer, ForeignKey(Customer.id),nullable=False)
+	comment = Column(String(500))
+	create_time = Column(DateTime,default = func.now())
+	_type = Column(Integer,default = 0) #0: 评论  1:回复
+	comment_author_id = Column(Integer,default = 0)#评论作者id
+
+class ConfessionGreat(MapBase, _CommonApi):
+	__tablename__ = 'confession_great'
+	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
+	customer_id = Column(Integer, ForeignKey(Customer.id),nullable=False)
+	wall_id = Column(Integer,ForeignKey(ConfessionWall.id),nullable = False)
+	create_time = Column(DateTime,default = func.now())
+
 def init_db_data():
 	MapBase.metadata.create_all()
 	# add fruittypes to database
@@ -1463,5 +1509,6 @@ def init_db_data():
 	s.close()
 	print("init db success")
 	return True
+
 
 

@@ -1,25 +1,26 @@
 var isFull = false,oMove = null,drag = false;
 $(document).ready(function(){
     $("body").height($(window).height()-50);
-    var startX = 0,startY = 0,width = $(".wrap-point-box").width()-34,left = 0;
+    var startX = 0,startY = 0,width = $(".wrap-point-box").width()-40,left = 0,iLeft = $("#wrap-point-box").offset().left;
     var oBox = $(".wrap-point-box");
     for(var i=0; i<oBox.length; i++){
         initEvent(oBox[i]);
     }
     function initEvent(obj){
         obj.addEventListener('touchstart', function (ev) {
+            ev.preventDefault();
             startX = ev.touches[0].pageX;
             startY = ev.touches[0].pageY;
             oMove = $(this).find("img");
             left =  oMove.position().left;
         }, false);
         obj.addEventListener('touchmove', function (ev) {
-            var moveX,moveY,grade,percent,l;
+            ev.preventDefault();
+            var moveX,moveY,grade,percent;
             moveX = ev.touches[0].pageX;
             moveY = ev.touches[0].pageY;
-            l = $(this).offset().left;
             var direction = GetSlideDirection(startX, startY, moveX, moveY);
-            left = moveX-34-l;
+            left = moveX-40-iLeft;
             if(left<0){
                 left = 0;
             }
@@ -47,12 +48,14 @@ $(document).ready(function(){
             changeColor(oMove,grade);
             switch (direction) {
                 case 3:   //左
+
                     break;
                 case 4:   //右
                     break;
             }
         }, false);
         obj.addEventListener('touchend', function (ev) {
+            ev.preventDefault();
             if(isFull){
                 showAnimate($(this).closest("li").index());
             }
@@ -149,26 +152,34 @@ $(document).ready(function(){
     }
 });
 function changeColor($obj,grade){
-    switch(grade){
-        case 0:
-            $obj.attr("src","/static/images/goods_normal.png");
-            $obj.closest(".wrap-point-box").removeClass("shadow-zl shadow-sd shadow-fw");
-            $obj.closest(".point-box").removeClass("bg-zl bg-sd bg-fw");
-            break;
+    if(grade==0){
+        $obj.attr("src","/static/images/comment_normal.png");
+        $obj.closest(".wrap-point-box").removeClass("shadow-zl shadow-sd shadow-fw");
+        $obj.closest(".point-box").removeClass("bg-zl bg-sd bg-fw");
+        return false;
+    }else if(grade==1){
+        $obj.attr("src","/static/images/comment_bad.png");
+    }else if(grade==2){
+        $obj.attr("src","/static/images/comment_good.png");
+    }else if(grade==3){
+        $obj.attr("src","/static/images/comment_best.png");
+    }
+    var index = parseInt($obj.attr("data-id"));
+    switch(index){
         case 1:
-            $obj.attr("src","/static/images/goods_bad.png");
-            $obj.closest(".wrap-point-box").removeClass("shadow-zl shadow-sd shadow-fw").addClass("shadow-zl");
-            $obj.closest(".point-box").removeClass("bg-zl bg-sd bg-fw").addClass("bg-zl");
+            $obj.closest(".wrap-point-box").addClass("shadow-zl");
+            $obj.closest(".point-box").addClass("bg-zl");
+            $obj.addClass("zl-bg");
             break;
         case 2:
-            $obj.attr("src","/static/images/goods_good.png");
-            $obj.closest(".wrap-point-box").removeClass("shadow-zl shadow-sd shadow-fw").addClass("shadow-sd");
-            $obj.closest(".point-box").removeClass("bg-zl bg-sd bg-fw").addClass("bg-sd");
+            $obj.closest(".wrap-point-box").addClass("shadow-sd");
+            $obj.closest(".point-box").addClass("bg-sd");
+            $obj.addClass("sd-bg");
             break;
         case 3:
-            $obj.attr("src","/static/images/goods_best.png");
-            $obj.closest(".wrap-point-box").removeClass("shadow-zl shadow-sd shadow-fw").addClass("shadow-fw");
-            $obj.closest(".point-box").removeClass("bg-zl bg-sd bg-fw").addClass("bg-fw");
+            $obj.closest(".wrap-point-box").addClass("shadow-fw");
+            $obj.closest(".point-box").addClass("bg-fw");
+            $obj.addClass("fw-bg");
             break;
     }
 }

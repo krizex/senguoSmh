@@ -8,9 +8,6 @@ $(document).ready(function(){
     var $receiveName=$('#receiveName');
     var $receiveAddress=$('#receiveAddress');
     var $receivePhone=$('#receivePhone');
-    $('#charge').on('click',function(){
-        return noticeBox('该功能年后开放,敬请期待！');
-    });
     //运费默认值
     if(!window.dataObj.freigh_ontime) window.dataObj.freigh_ontime=0;
     if(!window.dataObj.freigh_now) window.dataObj.freigh_now=0;
@@ -146,7 +143,7 @@ $(document).ready(function(){
     var stop_range=Int($('.stop-range').val());
     var today=$('#sendDay').find('.active').data('id');
     if(today==1) {
-        $('.send_period .item').each(function(){
+        $('.send_period .list-group-item').each(function(){
             var $this=$(this);
             var intime_startHour=Int($this.find('.intime_startHour').val());
             var intime_startMin=Int($this.find('.intime_startMin').val());
@@ -221,7 +218,7 @@ $(document).ready(function(){
                 $('.intime-intro').hide();
                 $('.now-intro').show();
             }
-            else noticeBox('按时达模式已关闭，请选择立即送模式！',$this);
+            else noticeBox('按时达模式已关闭，请选择立即送模式！',$(this));
         })
     }
     else{
@@ -368,20 +365,20 @@ $(document).ready(function(){
     var index = $(this).index();
     var status = $(this).attr('data-status');
     var type=$(this).find('.title').text();
-    if(index == 1){
-        var statu = $(this).attr("data-auth");
-        if(statu == "False"){
-            noticeBox("当前店铺未认证，此功能暂不可用");
-            return false;
-        }
+    if(index != 2){
+        $(".wrap-online-lst").addClass("hidden");
     }
-    if(index == 2){
-        noticeBox("目前还不支持在线支付哦，我们会尽快开放此功能");
+    var statu = $(this).attr("data-auth");
+    if(statu == "False"){
+        noticeBox("当前店铺未认证，此功能暂不可用");
         return false;
     }
     if(status==0){
-         noticeBox("当前店铺已关闭"+type);
-         return false;
+        noticeBox("当前店铺已关闭"+type);
+        return false;
+    }
+    if(index == 2){
+        $(".wrap-online-lst").toggleClass("hidden");
     }
     $(".pay_type li").removeClass("active").eq(index).addClass("active");
 }).on('click','.a-cz',function(){
@@ -395,6 +392,10 @@ $(document).ready(function(){
          noticeBox("当前店铺已关闭余额支付，此功能暂不可用");
          return false;
     }
+}).on("click",".online-lst li",function(){   //选择在线支付方式
+    $(".online-lst").find(".checkbox-btn").removeClass("checkboxed");
+    $("#online-pay").attr("data-type",$(this).attr("data-type"));
+    $(this).children("a").addClass("checkboxed");
 });
 
 window.dataObj.price_list=[];
@@ -616,9 +617,10 @@ function orderSubmit(target){
     var url='';
     var fruits={};
     var mgoods={};
+    var online_type = "";
     var type=$('#sendType').find('.active').data('id');
     var today=$('#sendDay').find('.active').data('id');
-    var period_id=$('#sendPeriod').find('.active').data('id');
+    var period_id=$('#sendPerTime').find('.active').data('id');
     var address_id=$('#addressType').find('.active').data('id');
     var pay_type=$('#payType').find('.active').data('id');
     var message=$('#messageCon').val();
@@ -626,6 +628,9 @@ function orderSubmit(target){
     var mincharge_intime=Number($('.mincharge_intime .mincharge').text());
     var mincharge_now=Number($('.mincharge_now .mincharge').text());
     var tip=$('.tip-list').find('.active').data('id');
+    if(pay_type == 3){
+        online_type = $("#online-pay").attr("data-type");
+    }
     window.dataObj.total_price=Number($('#list_total_price').text());
     if(!pay_type){return noticeBox('请选择支付方式',target);}
     if(!today){today=1;}
@@ -654,7 +659,7 @@ function orderSubmit(target){
         if(window.dataObj.total_price<mincharge_now) return noticeBox('您的订单未达到立即送最低起送金额！',target);
     }
     if(!type){return noticeBox('请选择送货时段！',target)}
-    $('#submitOrder').addClass('bg-grey text-grey3').text('提交成功').attr({'disabled':'true'});
+    $('#submitOrder').addClass('bg-grey text-grey3').text('提交中...').attr({'disabled':'true'});
     var args={
         fruits:fruits,
         mgoods:mgoods,
@@ -664,7 +669,8 @@ function orderSubmit(target){
         address_id:address_id,
         pay_type:pay_type,
         message:message,
-        tip:tip
+        tip:tip,
+        online_type:online_type
     };
     $.postJson(url,args,function(res) {
         if (res.success) {
@@ -672,7 +678,12 @@ function orderSubmit(target){
                 noticeBox(res.notice);
             }
             SetCookie('cart_count',0);
-            window.location.href=window.dataObj.success_href;
+            if(pay_type==3){
+                window.location.href=res.success_url;
+                //window.location.href="/customer/orders/detail/"+res.order_id;
+            }else{
+               window.location.href=window.dataObj.success_href; 
+            }
         }
         else {
             noticeBox(res.error_text,target);

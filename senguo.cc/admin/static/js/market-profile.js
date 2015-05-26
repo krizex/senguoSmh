@@ -84,6 +84,9 @@ $(document).ready(function(){
     birth_box.modal('show');
 }).on("click","#birthSure",function(){
     birthEdit();
+}).on("click","#senguoID",function(){
+    var question_box=new Modal('questionBox');
+    question_box.modal('show');
 }).on('click','.bind_wx',function(){
     // bind_wx();
     if(isWeiXin()){
@@ -322,7 +325,7 @@ function TiePhone(target){
         function(res){
             if(res.success)
             {
-                $('.tiephone').text(phone).css({'color':'#a8a8a8'});
+                $('.phone').text(phone).css({'color':'#a8a8a8'});
                 var tie_box=new Modal('tieBox');
                 tie_box.modal('hide');
                 $('#tiePhone').removeClass('bg-greyc').removeAttr('disabled');

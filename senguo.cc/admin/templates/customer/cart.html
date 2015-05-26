@@ -90,7 +90,7 @@
             <p class="text-center text-pink mincharge_intime" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到“按时达”起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元</p>
             <p class="text-center text-pink mincharge_now" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到“立即送”起送价金额<span class="mincharge">{{config.min_charge_now}}</span>元</p>
             <div class="send-time-choose clearfix center-block bg-white box-style">
-                <p class="text-left text-grey3 font14 m-b5">收货时间</p>
+                <p class="text-left text-grey9 font14 m-b5 pl10">收货时间</p>
                 {% set active=''%}
                 {% set unactive=''%}
                 {% if periods %}
@@ -104,53 +104,56 @@
                     {% if config.ontime_on == True%}
                     <button data-id="2" class="{{active}} send-intime  list-group-item item height50" data-config="{{config.ontime_on}}">
                         <a href="javascript:;" class="bg-white text-grey" id="sendInTime">
-                            <p class="top line25">
-                                <span class="font16 m-r5 pull-left name">按时达</span>
-                                <span class="pull-left pr10">起送价：{{config.min_charge_on_time or 0}}元</span>
-                                <span class= "pull-left">配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元</span>
+                            <span class="pull-left title set-inl-blo font14 line50">按时达</span>
+                            <p class="text-grey9 title-right">
+                                <span class="text-grey3">起送价：{{config.min_charge_on_time or 0}}元&nbsp;&nbsp;&nbsp;配送费：<span class="freigh_ontime">{{config.freight_on_time or 0}}</span>元</span>
+                                <span class="mt3">根据选择的时间段送达</span>
                             </p>
-                            <p class="text-grey9">订单将根据您选择的时间段送达</p>
                         </a>
                     </button>
+                    {% end %}
+                    {% if config.ontime_on == True%}
+                    {% if periods %}
+                    <div id="sendPeriod" class="send_period list-group font14">
+                        <div class="arrow-top left70"></div>
+                        <ul id="sendDay" class="send_day nav-pills clearfix text-center type-choose m-b10 font14 mt10">
+                            <li data-id="1" class="active pull-left item" id="send_today"><a href="javascript:;" class="text-green">今天</a></li>
+                            <li data-id="2" id="send_tomorrow" class="pull-left item"><a href="javascript:;" class="text-green">明天</a></li>
+                        </ul>
+                        <div id="sendPerTime" class="">
+                        {% for period in periods%}
+                            <button data-id="{{period.id}}" class="list-group-item clearfix available line50 height50 item">
+                                <a href="javascript:;" class="text-grey clearfix">
+                                    <a href="javascript:;" class="pull-right checkbox-btn"></a>
+                                    <span class="text-grey3 pull-left set-inl-blo period_name text-left">{{period.name}}</span>
+                             <span class="pull-left ontime-txt">
+                                 <span class="check-time ontime-txt">{{period.start_time.hour}}</span> : <span class="check-time ontime-txt">{{period.start_time.minute}}</span> ~ <span class="intime_endtime ontime-txt"><span class="check-time ontime-txt">{{period.end_time.hour}}</span> : <span class="check-time ontime-txt">{{period.end_time.minute}}</span></span>
+                             </span>
+                                    <input type="hidden" class="intime_startHour" value="{{period.start_time.hour}}"/>
+                                    <input type="hidden" class="intime_startMin" value="{{period.start_time.minute}}"/>
+                                </a>
+                            </button>
+                        {% end %}
+                        </div>
+                    </div>
+                    <input type="hidden" class="stop-range" value="{{config.stop_range}}"/>
+                    {% end %}
                     {% end %}
                     {% if config.now_on == True%}
                     <button data-id="1" class="{{unactive}} send-now list-group-item item height50" data-config="{{config.now_on}}" >
                         <a href="javascript:;" class="bg-white text-grey" id="sendNow" data-period="{{config.intime_period or 0}}">
-                            <p class="top line25">
-                                <span class="font16 m-r5 pull-left name">立即送</span>
-                                <span class="pull-left pr10">起送价：{{config.min_charge_now or 0}}元</span>
-                                <span class="pull-left">配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元</span>
+                            <span class="pull-left title set-inl-blo font14 line50">立即送</span>
+                            <p class="text-grey9 title-right">
+                                <span class="text-grey3">起送价：{{config.min_charge_now or 0}}元&nbsp;&nbsp;&nbsp;配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元</span>
+                                <span class="mt3">{{config.intime_period or 0}}分钟内送到</span>
                             </p>
-                            <p class="text-grey9">订单将在{{config.intime_period or 0}}分钟内送到您的手上</p>
                         </a>
                     </button>
                     {% end %}
                 </div>
-                {% if config.ontime_on == True%}
-                {% if periods %}
-                <ul id="sendDay" class="send_day nav-pills clearfix text-center type-choose m-b10 font14 mt10 pl10">
-                    <li data-id="1" class="active pull-left item" id="send_today"><a href="javascript:;" class="bg-white text-green">今天</a></li>
-                    <li data-id="2" id="send_tomorrow" class="pull-left item"><a href="javascript:;" class="bg-white text-green">明天</a></li>
-                </ul>
-                <div id="sendPeriod" class="send_period list-group font14">
-                    {% for period in periods%}
-                    <button data-id="{{period.id}}" class="list-group-item clearfix available line50 height50 item">
-                        <a href="javascript:;" class="text-grey clearfix">
-                            <span class="text-grey3 pull-left set-inl-blo period_name text-left">{{period.name}}</span>
-                             <span class="pull-left">
-                                 <span class="check-time">{{period.start_time.hour}}</span> : <span class="check-time">{{period.start_time.minute}}</span> ~ <span class="intime_endtime"><span class="check-time">{{period.end_time.hour}}</span> : <span class="check-time">{{period.end_time.minute}}</span></span>
-                             </span>
-                            <input type="hidden" class="intime_startHour" value="{{period.start_time.hour}}"/>
-                            <input type="hidden" class="intime_startMin" value="{{period.start_time.minute}}"/>
-                        </a>
-                    </button>
-                    {% end %}
-                </div>
-                <input type="hidden" class="stop-range" value="{{config.stop_range}}"/>
-                {% end %}
-                {% end %}
                 {% if config.now_on == True%}
-                <ul class="send_now list-group mt10" style="display:none">
+                <ul class="send_now list-group" style="display:none">
+                    <div class="arrow-top left82"></div>
                     <!-- <li class="list-group-item clearfix bg-grey2">
                          <p class="text-center text-pink">送货员太辛苦，打赏点小费吧\(╯▼╰)/ </p>
                          <ul class="tip-list font14">
@@ -169,7 +172,7 @@
             </div>
             <div class="send-address-choose clearfix center-block bg-white box-style">
                 <p class="clearfix">
-                    <span class="pull-left text-grey3 font14 m-b5">收货人地址</span>
+                    <span class="pull-left text-grey9 font14 m-b5 pl10">收货人地址</span>
                     <a class="text-green pull-right to-add-address font12 m-r10" href="javascript:;">+添加</a>
                 </p>
                 <ul id="addressType" class="address_list list-group type-choose font12 m-b5 clearfix">
@@ -210,7 +213,7 @@
             </div>
             <div class="send-address-choose clearfix center-block bg-white box-style">
                 <p class="clearfix">
-                    <span class="pull-left text-grey3 font14 m-b5">支付方式</span>
+                    <span class="pull-left text-grey9 font14 m-b5 pl10">支付方式</span>
                     <span class="pull-right ">余额：{{balance_value}}元&nbsp;&nbsp;<a href="/customer/recharge" class="a-cz" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">+充值</a></span>
                 </p>
                 <ul id="payType" class="pay_type list-group font12">
@@ -226,7 +229,7 @@
                             <span class="pull-left text-grey9" style="max-width: 60%;">使用充值的余额极速下单</span>
                         </a>
                     </li>
-                    <li data-id="3" class="list-group-item clearfix line50 height50 item" id="online-pay" data-auth="" data-status="">
+                    <li data-id="3" class="list-group-item clearfix line50 height50 item" id="online-pay" data-type="wx" data-auth="{{show_balance}}" data-status="{{config.online_on_active}}">
                         <a href="javascript:;" class="text-grey">
                             <span class="text-grey3 pull-left title set-inl-blo font14">在线支付</span>
                             <span class="pull-left text-grey9" style="max-width: 60%;">下单的同时完成付款</span>
@@ -235,15 +238,16 @@
                 </ul>
                 <div class="group"></div>
                 <div class="wrap-online-lst hidden">
+                    <div class="arrow-top"></div>
                     <ul class="online-lst">
                         <li class="group" data-type="wx">
                             <a href="javascript:;" class="pull-right checkbox-btn checkboxed"></a>
-                            <span class="pull-left w90"><img src="/static/images/wx.png" class="third-img" alt="微信支付"/></span>
+                            <span class="pull-left w90"><img src="/static/images/wx_l.png" class="third-img" alt="微信支付"/></span>
                             <span class="pull-left text-grey9 third-txt">微信支付</span>
                         </li>
                         <li class="group" data-type="alipay">
                             <a href="javascript:;" class="pull-right checkbox-btn"></a>
-                            <span class="pull-left w90"><img src="/static/images/alipay.png" class="third-img" alt="支付宝支付"/></span>
+                            <span class="pull-left w90"><img src="/static/images/alipay_l.png" class="third-img" alt="支付宝支付"/></span>
                             <span class="pull-left text-grey9 third-txt">支付宝支付</span>
                         </li>
                     </ul>

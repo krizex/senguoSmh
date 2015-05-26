@@ -43,8 +43,6 @@ $(document).ready(function(){
         $('.cart_num').removeClass('hidden').text(window.dataObj.cart_count);
     }
     $('.lazy_img').lazyload({threshold:100});
-    //设置title
-    //document.title=$.base64Decode(shop_name)+'一家不错的水果O2O店铺，快来关注吧~';
     //置顶监听
     $(window).on('scroll',function(){
         var $this=$(this);
@@ -57,6 +55,17 @@ $(document).ready(function(){
                 $('.little_pear').css("display","none");
             }
     });
+    //confess wall has some new
+    var confess_new = parseInt(getCookie('confess_new'));
+    var confess_shop_id = getCookie('confess_shop_id');
+    if(confess_shop_id==window.dataObj.shop_id){
+        if(confess_new !=0){
+            $('.discover-new').removeClass('hidden');
+        }
+        else{
+            $('.discover-new').addClass('hidden');
+        }
+    }
 });
 
 function wexin(link,imgurl){
@@ -252,9 +261,10 @@ function stopPropagation(e) {
 }  
 //confirmbox
 getItem('/static/items/confirmBox.html?v=201503-29',function(data){window.dataObj.confirmBox=data});
-var confirmBox=function(text,index,type){
+var confirmBox=function(text,index,type,id){
         var $box=$(window.dataObj.confirmBox);
         $box.find('.message').text(text);
+        $box.find(".confriming").attr("id",id);
         if(typeof(index)!='undefined') $box.find('.message').attr({'data-index':index});
         if(typeof(type)!='undefined') $box.find('.message').attr({'data-type':type});
         var window_height=$(window).height();

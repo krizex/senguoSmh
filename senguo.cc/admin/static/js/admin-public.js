@@ -21,14 +21,14 @@ if(isWeiXin()){
     getRealData();
     setInterval(function(){
         getRealData();
-    },10000);
+    },30000);
     setInterval(function(){
         var title = document.title;
         if(notice){
             if(title.indexOf("】")==-1){
-                document.title = "【您有新订单】"+title;
+                document.title = "【新订单】"+title;
                 setTimeout(function(){
-                    document.title = "【　　　　　】"+title;
+                    document.title = "【　　　】"+title;
                 },500);
             }else{
                 switchTitle(title);
@@ -37,11 +37,11 @@ if(isWeiXin()){
                 },500);
             }
         }else{
-            if(title.indexOf("【　　　　　】")!=-1){
-                document.title = title.split("【　　　　　】")[1];
+            if(title.indexOf("【　　　】")!=-1){
+                document.title = title.split("【　　　】")[1];
             }
-            if(title.indexOf("【您有新订单】")!=-1){
-                document.title = title.split("【您有新订单】")[1];
+            if(title.indexOf("【新订单】")!=-1){
+                document.title = title.split("【新订单】")[1];
             }
         }
     },1000);
@@ -51,11 +51,11 @@ if(isWeiXin()){
 });
 
 function switchTitle(title){
-    if(title.indexOf("【　　　　　】")!=-1){
-        document.title = "【您有新订单】"+title.split("【　　　　　】")[1];
+    if(title.indexOf("【　　　】")!=-1){
+        document.title = "【新订单】"+title.split("【　　　】")[1];
     }
-    if(title.indexOf("【您有新订单】")!=-1){
-        document.title = "【　　　　　】"+title.split("【您有新订单】")[1];
+    if(title.indexOf("【新订单】")!=-1){
+        document.title = "【　　　】"+title.split("【新订单】")[1];
     }
 }
 
@@ -117,7 +117,7 @@ function getRealData(){
                     });
                 }else if(window.Notification && Notification.permission == "granted" && notify == null){
                     if(new_order_sum>0){
-                        notify = new Notification(new Date().toLocaleString(),{"body":"您有新订单未处理，请及时处理哦！","icon":"/static/images/sg.gif","tag":new Date().getTime()});
+                        notify = new Notification(new Date().toLocaleString(),{"body":"您收到了新的订单，请及时处理哦！","icon":"/static/images/sg.png","tag":new Date().getTime()});
                     }
                 }
             }

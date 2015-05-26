@@ -183,6 +183,8 @@ class Order(StaffBaseHandler):
 		try:order = self.session.query(models.Order).filter_by(id=self.args["order_id"]).one()
 		except:return self.send_fail("没找到该订单", 404)
 		if action == "finish":
+			if order.status in [5,6]:
+				return self.send_fail('订单已完成，不允许重复操作')
 			if self.current_user.work == 1:#JH
 				if order.status == 3:
 					return self.send_fail("已完成操作，请勿重复")
@@ -235,11 +237,13 @@ class Order(StaffBaseHandler):
 					if not shop:
 						return self.send_fail("shop not found!")
 					shop.is_balance = 1
+					shop.order_count += 1  #店铺订单数加1
 					#
 					customer_info = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
 					if not customer_info:
 						return self.send_fail('customer not found')
 					customer_info.is_new = 1
+					name = customer_info.nickname
 					self.session.commit()
 
 					#
@@ -304,12 +308,23 @@ class Order(StaffBaseHandler):
 						shop.available_balance += totalprice
 						print(shop.available_balance,'店铺可提现余额')
 						# available history
+
 						balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,\
-							balance_record = "可提现额度入账：订单"+order.num+"完成",name = self.current_user.accountinfo.nickname,balance_value = totalprice,shop_totalPrice=\
+							balance_record = "可提现额度入账：订单"+order.num+"完成",name = name,balance_value = totalprice,shop_totalPrice=\
 							shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,available_balance=\
 							shop.available_balance,balance_type = 6)
 						self.session.add(balance_history)
 						self.session.commit()
+
+					if order.pay_type == 3:
+						shop.available_balance += totalprice
+						balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,\
+							balance_record = "可提现额度入账：订单"+order.num+"完成",name = name,balance_value = totalprice,shop_totalPrice=\
+							shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,available_balance=\
+							shop.available_balance,balance_type = 7)
+						self.session.add(balance_history)
+						self.session.commit()
+
 					if shop_follow: 
 						if shop_follow.shop_point == None:
 							shop_follow.shop_point =0
