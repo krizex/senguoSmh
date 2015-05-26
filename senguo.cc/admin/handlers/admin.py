@@ -137,6 +137,7 @@ class Home(AdminBaseHandler):
 class SwitchShop(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+
 		shop_list = []
 		try:
 			shops = self.current_user.shops

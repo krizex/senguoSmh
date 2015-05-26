@@ -37,6 +37,8 @@ handlers = [
 
 	(r"/customer/login", handlers.customer.Access, {"action":"login"}, "customerLogin"),
 	(r"/customer/oauth", handlers.customer.Access, {"action":"oauth"}, "customerOauth"),
+	(r"/customer/qq",handlers.customer.Access,{'action':'qq'},"customerQq"),
+	(r"/customer/qqoauth",handlers.customer.Access,{"action":"qqoauth"},"customerQOauth"),
 	(r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
 	(r"/customer/weixin", handlers.customer.Third, {"action":"weixin"}, "customerWeixin"),
 	(r"/customer/register", handlers.customer.RegistByPhone, {}, "customerRegister"),

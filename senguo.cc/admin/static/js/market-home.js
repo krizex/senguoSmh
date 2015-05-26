@@ -1,5 +1,5 @@
 $(document).ready(function(){
-     var shop_logo=$('#shop_imgurl').attr('data-img');
+    var shop_logo=$('#shop_imgurl').attr('data-img');
     console.log();
     if(parseInt($("#shop_status").val())==3){
         noticeBox("店铺休息中，暂不接收新订单");
@@ -20,7 +20,6 @@ $(document).ready(function(){
                         bullets[i].className = ' ';
                     }
                     bullets[pos].className = 'on';
-
                 }
             });
         var bullets = document.getElementById('position').getElementsByTagName('li');
@@ -243,6 +242,7 @@ $(document).ready(function(){
                 if(window.dataObj.cart_count==0) {$('.cart_num').removeClass('hidden');}
                 if($this.hasClass('add_cart_num')){
                     window.dataObj.cart_count++;
+                    wobble($('.cart_num'));
                     $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
                     SetCookie('cart_count',window.dataObj.cart_count);
                     $this.removeClass('add_cart_num');
@@ -304,7 +304,7 @@ $(document).ready(function(){
                 parent.attr({'data-storage':storage_now});
             }
             if(num==0){
-                 parent.attr({'data-storage':storage_now});
+                parent.attr({'data-storage':storage_now});
                 change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
                 if(window.dataObj.cart_count==1) {
                     $('.cart_num').text(window.dataObj.cart_count);
@@ -312,6 +312,7 @@ $(document).ready(function(){
                 }
                 else {
                     window.dataObj.cart_count--;
+                    wobble($('.cart_num'));
                     $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
                     SetCookie('cart_count',window.dataObj.cart_count);
                 }
@@ -323,6 +324,7 @@ $(document).ready(function(){
                     }
                     else if(storage_now>0){
                         window.dataObj.cart_count++;
+                        wobble($('.cart_num'));
                         $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
                         SetCookie('cart_count',window.dataObj.cart_count);
                          $this.val(Int(storage_now));
@@ -658,6 +660,7 @@ function goodsNum(target,action){
                 }
                 else {
                     window.dataObj.cart_count--;
+                    wobble($('.cart_num'));
                     $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
                     SetCookie('cart_count',window.dataObj.cart_count);
                 }

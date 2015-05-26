@@ -6,7 +6,7 @@ import urllib
 import hashlib
 import traceback
 from settings import KF_APPID, KF_APPSECRET, APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
-# from settings import TEST_APPID,TEST_APPSECRET
+from settings import QQ_APPID,QQ_APPKEY
 import tornado.escape
 from dal.dis_dict import dis_dict
 import time
@@ -259,6 +259,33 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		else:
 			ua = ""
 		return not ("Mobile" in ua)
+
+	def get_qq_oauth_link(self,next_url=""):
+		client_id = QQ_APPID
+		client_secret = QQ_APPKEY
+		HOME_URL = 'http://zone.senguo.cc'
+		print(APP_OAUTH_CALLBACK_URL,'APP_OAUTH_CALLBACK_URL')
+		para_str = "?next="+tornado.escape.url_escape(next_url)
+		print(para_str,'para_str')
+
+		redirect_uri = tornado.escape.url_escape(
+			HOME_URL + self.reverse_url('customerQOauth'))
+		print(redirect_uri)
+		url = "https://graph.qq.com/oauth2.0/authorize"
+		url = url+"?grant_type=authorization_code&"+ \
+		"response_type=code"+\
+		"&client_id="+client_id+ \
+		"&client_secret="+client_secret+ \
+		"&redirect_uri="+redirect_uri+\
+		"&state=test"
+		print(url)
+		return url
+
+	def get_qq_login_url(self,next_url):
+		if next_url is '':
+			next_url = self.reverse_url('customerProfile')
+		print('login get_qq_login_url',next_url)
+		return self.get_qq_oauth_link(next_url = next_url)
 
 	def get_wexin_oauth_link(self, next_url=""):
 		if not self.__wexin_oauth_url_name__:
@@ -826,10 +853,69 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		return shop_count
 
 
+import urllib.request
+
+class QqOauth:
+	client_id = QQ_APPID
+	client_secret = QQ_APPKEY
+	redirect_uri = tornado.escape.url_escape('http://i.senguo.cc')
+	print(type(redirect_uri))
+	
+
+	@classmethod
+	def get_qqinfo(self,code):
+		print(code,'codecodecode')
+		url1 = "https://graph.qq.com/oauth2.0/token"
+		url1 = url1+"?grant_type=authorization_code&"+ \
+		"client_id="+self.client_id+ \
+		"&client_secret="+self.client_secret+ \
+		"&code=" + str(code) + \
+		"&redirect_uri="+self.redirect_uri
+		response1 = urllib.request.urlopen(url1).read().decode('utf8')
+		print(response1,'response1')
+		m = response1.split('&')[0]
+		access_token = m.split('=')[1]
+
+		# get openid
+		url2 = 'https://graph.qq.com/oauth2.0/me'
+		url2=url2+"?access_token="+access_token
+		response2 = urllib.request.urlopen(url2).read().decode('utf8')
+		dic = response2[10:-3]
+		ajson = json.loads(dic)
+		openid = ajson['openid']
+
+		# get qq_info
+		url3 = 'https://graph.qq.com/user/get_user_info?'+ \
+		"access_token="+access_token + \
+		"&oauth_consumer_key="+self.client_id+ \
+		"&openid="+openid
+
+		response3 = urllib.request.urlopen(url3).read().decode('utf8')
+		data = json.loads(response3)
+		qq_info = {}
+		qq_info['nickname'] = data['nickname']
+		qq_info['province'] = data['province']
+		qq_info['city']     = data['city']
+		qq_info['year']     = data['year']
+		qq_info['figureurl']= data['figureurl']
+		qq_info['qq_openid']= openid
+
+		return qq_info
+
+
+
+
+
+
+
+
+
+
 
 
 jsapi_ticket = {"jsapi_ticket": '', "create_timestamp": 0}  # 用全局变量存好，避免每次都要申请
 access_token = {"access_token": '', "create_timestamp": 0}
+
 
 class WxOauth2:
 	token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}" \
