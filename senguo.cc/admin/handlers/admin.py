@@ -96,6 +96,16 @@ class Home(AdminBaseHandler):
 						   show_balance = show_balance,new_sys_notices=new_sys_notices, \
 						   sys_notices=sys_notices, context=dict())
 	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("shop_id:int")
+	def post(self):  # 商家多个店铺之间的切换
+		shop_id = self.args["shop_id"]
+		try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
+		except:return self.send_error(404)
+		if shop.admin != self.current_user:
+			return self.send_error(403)#必须做权限检查：可能这个shop并不属于current_user
+		self.set_secure_cookie("shop_id", str(shop_id), domain=ROOT_HOST_NAME)
+		return self.send_success()
+
 	@AdminBaseHandler.check_arguments("action","data?")
 	def post(self):  # 商家 or 管理员多个店铺之间的切换
 		action = self.args["action"]
@@ -122,6 +132,13 @@ class Home(AdminBaseHandler):
 			return self.send_success(data=shoplist)
 		else:
 			return self.send_error(404)
+
+#admin 店铺切换
+class SwitchShop(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		
+		return self.render("admin/switch-shop.html", context=dict())
 #admin后台轮询
 class Realtime(AdminBaseHandler):
 	@tornado.web.authenticated

@@ -43,6 +43,9 @@ if(isWeiXin()){
             }
         }
     },1000);
+    $("#dropdownMenu1").on("click",function(){
+        $(this).children(".caret").toggleClass("rotate180");
+    })
 }).on("click",".has-red-tip",function(){
     var action = $(this).attr("data-action");
 
@@ -134,8 +137,9 @@ function isWeiXin(){
         if(ua.match(/MicroMessenger/i) == 'micromessenger'){ 
         return true; 
         }
-        else{ 
-    } 
+        else{
+            return false;
+        }
 } 
 
 function worMode(target){

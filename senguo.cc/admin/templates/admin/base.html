@@ -65,19 +65,30 @@
                          {% elif current_shop.shop_auth in [2,3] %}
                         <p class="job pull-left text-left">企业认证</p>
                         {% else %}
-                        <p class="job pull-left text-left"><a href="{{reverse_url('adminShopAuth')}}">未认证</a></p>
+                        <div class="noauth pull-left text-left"><a href="javascript:;" class="text-grey">未认证</a> <a href="{{reverse_url('adminShopAuth')}}" class="text-link">去认证</a></div>
                         {% end %}
                         <div class="dropdown  area pull-left">
-                            <button class="btn btn-default dropdown-toggle area height25 border-none" type="button" id="dropdownMenu1" data-toggle="dropdown">
+                            <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu1" data-toggle="dropdown">
                                 <em title="{{current_shop.shop_name}}" class="pull-left" id="shop_name">{{current_shop.shop_name}}</em>
-                                <span class="caret pull-right no-margin-left"></span>
+                                <span class="caret pull-right no-margin-left rotate0"></span>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1" id="currentShopChange">
+                            <!--<ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1" id="currentShopChange">
                                 {% for shop in current_user.shops%}
                                 <li role="presentation" data-id="{{shop.id}}">
                                     <a role="menuitem" tabindex="-1" href="javascript:;">{{shop.shop_name}}</a>
                                 </li>
                                 {% end %}
+                            </ul>-->
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1" id="currentShopChange">
+                                <li  role="presentation">
+                                    <a class="menu-icona sshop" href="{{reverse_url('switchshop')}}">切换店铺</a>
+                                </li>
+                                <li  role="presentation">
+                                    <a class="menu-icona swoon" href="/customer/profile">个人中心</a>
+                                </li>
+                                <li  role="presentation">
+                                    <a class="menu-icona squit" href="{{reverse_url('adminLogout')}}">退出</a>
+                                </li>
                             </ul>
                         </div>
                          

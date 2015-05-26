@@ -12,12 +12,16 @@
 
 <header class="herder bg-green text-white text-center">
         <a href="javascript:;" class="back" id="back"></a>
-        <span class="title font16">店铺搜索列表</span>
+        <input type="text" placeholder="请输入店铺名" class="search-linput pull-left" id="searchKey"/>
+        <a href="javascript:;" class="search-btn" id="searchSubmit"></a>
 </header>
-<div class="search-box" id="search-box">
-    <input type="text" placeholder="请输入店铺名" class="search-input pull-left" id="searchKey"/>
-    <input type="submit" value="搜索" class="btn pull-right text-center" id="searchSubmit"/>
+<div class="shoplist_box mt40">
+    <ul class="shoplist">
+
+    </ul>
 </div>
+<div class="loading text-center text-grey9 font12  text-green mt10 mb10" style="display:none">~努力加载中 ( > < )~</div>
+<div class="no_more text-center text-grey9 font12  text-green mt10 mb10" style="display:none">~没有更多了呢 ( > < )~</div>
 
 {% end %}
 {% block bottom %}

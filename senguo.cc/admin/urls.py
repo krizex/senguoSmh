@@ -179,6 +179,7 @@ handlers = [
 	(r"/admin/realtime",handlers.admin.Realtime,{},""),
 	(r"/admin/marketing",handlers.admin.Marketing,{},"adminMarketing"),
 	(r"/admin/confession",handlers.admin.Confession,{},"adminConfession"),
+	(r"/admin/switchshop",handlers.admin.SwitchShop,{},"switchshop"),
 	(r"/admin/wxauth", handlers.admin.AdminAuth, {"action":"wxauth"}, "adminwxAuth"),
 	(r"/admin/wxcheck", handlers.admin.AdminAuth, {"action":"wxcheck"}, "adminwxCheck"),
 
@@ -202,6 +203,7 @@ handlers = [
 	(r"/fruitzone/admin/home", handlers.fruitzone.AdminHome, {}, "fruitzoneAdminHome"),
 	(r"/fruitzone/admin/profile", handlers.fruitzone.AdminProfile, {}, "fruitzoneAdminProfile"),
 	(r"/fruitzone/paytest",handlers.customer.payTest,{},"fruitzonePayTest"),
+	(r"/fruitzone/searchlist",handlers.fruitzone.SearchList,{},"searchlist"),
 	#to remove  
 	#woody
 	(r"/apply/toweixin", handlers.fruitzone.ToWeixin, {}, "fruitzoneToWexin"),

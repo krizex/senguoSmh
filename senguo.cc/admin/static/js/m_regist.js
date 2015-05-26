@@ -28,7 +28,7 @@ $(document).ready(function(){
             $('.step'+i).show().siblings('.step-box').hide();
             $('.progress'+i).addClass('active').siblings('.progress').removeClass('active');
 }).on('click','.send',function(){
-        noticeBox('验证码已发送到您手机,稍等一下哟！')
+        noticeBox('验证码已发送到您手机，稍等一下哟！')
 });
 
 var wait=60;
