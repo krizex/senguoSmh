@@ -16,7 +16,7 @@
         </div>
         <div class="pull-right mt10">
             {% set super_temp_active = current_shop.super_temp_active %}
-            <a class="set-super-receive" href="javascript:;" data-status="{{super_temp_active}}">{% if super_temp_active == 1%}关闭{% else %}开启{% end %}订单提醒</a>
+            <a class="set-super-receive func-mode  font12 w150 text-white" href="javascript:;" data-status="{{super_temp_active}}"><i class="circle"></i><span class="text"></span></a>
         </div> 
     </li>
 {% for data in datalist %}
@@ -27,8 +27,8 @@
             <span>店铺管理员</span>
         </div>
         <div class="pull-right mt10">
-            <a class="set-receive pull-right ml10" href="javascript:;" data-status="{{data['temp_active']}}">{% if data['temp_active'] == 1%}关闭{% else %}开启{% end %}订单提醒</a>
-            <a class="delete-admin pull-right" href="javascript:;">删除</a>
+            <a class="set-receive pull-right ml20 func-mode font12 w150 text-white" href="javascript:;" data-status="{{data['temp_active']}}"><i class="circle"></i><span class="text"></span></a>
+            <a class="delete-admin pull-right mt10" href="javascript:;">删除</a>
         </div>
     </li>
     {% end %}

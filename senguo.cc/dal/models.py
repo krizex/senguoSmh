@@ -700,24 +700,6 @@ class HireForm(MapBase):
 	staff = relationship("ShopStaff", uselist=False, join_depth=2)
 	create_time = Column(DateTime, default=func.now()) #5.26
 
-class RelShopAdmin(MapBase, _AccountApi):
-	__tablename__ = "rel_shop_admin"
-	__relationship_props__ = ["accountinfo"]
-
-	id = Column(Integer, primary_key=True, nullable=False,autoincrement=True)
-	shop_id  = Column(Integer, ForeignKey(Shop.id), nullable=False)
-	account_id = Column(Integer, ForeignKey(Accountinfo.id), nullable=False)
-	status = Column(Integer,default = 1) #0:been deleted 1:normal
-	accountinfo = relationship(Accountinfo)
-	temp_active = Column(Integer,default = 0) #1:receive the message from wx 0:do not receive
-
-class RelAdminTemp(MapBase, _AccountApi):
-	__tablename__ = "rel_admin_temp"
-	id = Column(Integer, primary_key=True, nullable=False,autoincrement=True)
-	shop_id  = Column(Integer, ForeignKey(Shop.id), nullable=False)
-	account_id = Column(Integer, ForeignKey(Accountinfo.id),nullable=False)
-	create_time = Column(DateTime, default=func.now())
-
 
 # 角色：顾客
 class Customer(MapBase, _AccountApi):
