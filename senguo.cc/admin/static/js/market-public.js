@@ -360,3 +360,15 @@ Modal.prototype.modal=function(type){
         $target.addClass('fade').removeClass('in').css({'display':'none'});
     }
 }
+//点选动画
+function pulse(target){
+    target.removeClass('anim-pulse').addClass('anim-pulse').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function(){
+        target.removeClass('anim-pulse');
+    });
+}
+//购物篮数字动画
+function wobble(target){
+    target.removeClass('anim-wobble').addClass('anim-wobble').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function(){
+        target.removeClass('anim-wobble');
+    });
+}

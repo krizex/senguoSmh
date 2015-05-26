@@ -496,6 +496,7 @@ function goodsNum(target,action){
                         if(val==1){
                             var cart_n=Int($('.cart_num').text());
                             if(cart_n>1){
+                                wobble($('.cart_num'));
                                 $('.cart_num').text(cart_n-1);
                                 SetCookie('cart_count',cart_n-1);
                                 parent.remove();
@@ -521,7 +522,7 @@ function goodsNum(target,action){
             else return noticeBox(res.error_text);
         },
         function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-             function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')})
+        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')})
 }
 //判断起送价
 function mincharge(n,price){
@@ -570,9 +571,7 @@ function itemDelete(target,menu_type) {
             }
             else return noticeBox(res.error_text);
         },
-        function () {
-            return noticeBox('网络好像不给力呢~ ( >O< ) ~');
-        },
+        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
         function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
 //地址添加修改
@@ -784,10 +783,4 @@ function TiePhone(evt){
         function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
         function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
     );
-}
-//点选动画
-function pulse(target){
-    target.removeClass('anim-pulse').addClass('anim-pulse').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function(){
-        target.removeClass('anim-pulse');
-    });
 }
