@@ -56,10 +56,11 @@ class Access(CustomerBaseHandler):
 		elif self._action == "weixin":
 			return self.redirect(self.get_weixin_login_url(next_url))
 		elif self._action == 'qq':
-			return self.redirect(self.get_get_qq_login_link(next_url))
+			print('login in qq')
+			return self.redirect(self.get_qq_login_url(next_url))
 		elif self._action == 'qqoauth':
-			qq_account = self.get_cookie('qq_account')
-			self.handle_qq_oauth(next_url,qq_account)
+			print('login qqoauth')
+			self.handle_qq_oauth(next_url)
 		else:
 			return self.send_error(404)
 
@@ -90,12 +91,14 @@ class Access(CustomerBaseHandler):
 		# return self.redirect('/woody')
 
 	@CustomerBaseHandler.check_arguments("code")
-	def handle_qq_auth(self,next_url,qq_account):
+	def handle_qq_oauth(self,next_url):
+		print('login in handle_qq_oauth')
 		code = self.args['code']
-		userinfo = QqOauth.get_qqinfo(code,qq_account)
+		print(code,'handle_qq_oauth code')
+		userinfo = QqOauth.get_qqinfo(code)
 		if not userinfo:
 			return self.redirect(self.reverse_url("customerLogin"))
-		u = mode.Customer.register_with_qq(self.session,qq_account)
+		u = models.Customer.register_with_qq(self.session,userinfo)
 		self.set_current_user(u,domain = ROOT_HOST_NAME)
 		return self.redirect(next_url)
 

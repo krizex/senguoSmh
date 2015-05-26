@@ -199,11 +199,13 @@ class _AccountApi(_CommonApi):
 			u = None
 		return u
 	# qq login
-	def login_by_qq(cls,session,qq_account):
+	@classmethod
+	def login_by_qq(cls,session,qq_openid=''):
 		s = session
+		print(qq_openid,'qq_openid')
 		try:
 			u = s.query(cls).filter(
-				Accountinfo.qq_account == cls.qq_account,
+				Accountinfo.qq_account == qq_openid,
 				Accountinfo.id == cls.id).one()
 		except NoResultFound:
 			u = None
@@ -211,13 +213,15 @@ class _AccountApi(_CommonApi):
 
 	# qq注册
 	@classmethod
-	def register_with_qq(cls,session,qq_account):
-		u = cls.login_by_qq(session,qq_account)
+	def register_with_qq(cls,session,qq_info):
+		qq_openid = qq_info['qq_openid']
+		print(qq_openid,'register_with_qq qq_openid')
+		u = cls.login_by_qq(session,qq_openid)
 		if u:
 			return u
 		try:
-			account_info == self.session.query(Accountinfo).filter_by(qq_account\
-				=qq_account).first()
+			account_info = cls.session.query(Accountinfo).filter_by(qq_account=\
+				qq_info['qq_openid']).first()
 		except NoResultFound:
 			account_info = None
 		if account_info:
@@ -226,7 +230,7 @@ class _AccountApi(_CommonApi):
 			session.commit()
 			return u
 		else:
-			account_info = Accountinfo(qq_account = qq_account)
+			account_info = Accountinfo(qq_account = qq_info['qq_openid'])
 			u.accountinfo = account_info
 			session.add(u)
 			session.commit()
@@ -374,7 +378,7 @@ class Accountinfo(MapBase, _CommonApi):
 
 	# 账户访问信息 (phone/email, password)/(wx_unionid)用来登录
 	phone = Column(String(32), unique=True, default=None)
-	qq_account = Column(String(32))
+	qq_account = Column(String(64))
 	email = Column(String(64), default=None)
 	password = Column(String(128), default=None)
 	wx_unionid = Column(String(64), unique=True)

@@ -260,14 +260,17 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			ua = ""
 		return not ("Mobile" in ua)
 
-	def get_qq_oauth_link(self,next_url="http://i.senguo.cc"):
+	def get_qq_oauth_link(self,next_url=""):
 		client_id = QQ_APPID
 		client_secret = QQ_APPKEY
+		HOME_URL = 'http://zone.senguo.cc'
+		print(APP_OAUTH_CALLBACK_URL,'APP_OAUTH_CALLBACK_URL')
 		para_str = "?next="+tornado.escape.url_escape(next_url)
+		print(para_str,'para_str')
 
 		redirect_uri = tornado.escape.url_escape(
-			APP_OAUTH_CALLBACK_URL+\
-			self.reverse_url('customerQOauth')+para_str)
+			HOME_URL + self.reverse_url('customerQOauth'))
+		print(redirect_uri)
 		url = "https://graph.qq.com/oauth2.0/authorize"
 		url = url+"?grant_type=authorization_code&"+ \
 		"response_type=code"+\
@@ -275,13 +278,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		"&client_secret="+client_secret+ \
 		"&redirect_uri="+redirect_uri+\
 		"&state=test"
-		# print url
+		print(url)
 		return url
 
-	def get_qq_login_url(self):
-		next_url = self.get_cookie('next_url')
-		if next_url is None:
+	def get_qq_login_url(self,next_url):
+		if next_url is '':
 			next_url = self.reverse_url('customerProfile')
+		print('login get_qq_login_url',next_url)
 		return self.get_qq_oauth_link(next_url = next_url)
 
 	def get_wexin_oauth_link(self, next_url=""):
@@ -822,18 +825,21 @@ import urllib.request
 class QqOauth:
 	client_id = QQ_APPID
 	client_secret = QQ_APPKEY
-	redirect_uri = 'http://i.senguo.cc'
+	redirect_uri = tornado.escape.url_escape('http://i.senguo.cc')
+	print(type(redirect_uri))
 	
 
 	@classmethod
-	def get_qqinfo(cls,code,qq_account):
+	def get_qqinfo(self,code):
+		print(code,'codecodecode')
 		url1 = "https://graph.qq.com/oauth2.0/token"
 		url1 = url1+"?grant_type=authorization_code&"+ \
-		"client_id="+client_id+ \
-		"&client_secret="+client_secret+ \
-		"&code=" + code + \
-		"&redirect_uri="+redirect_uri
+		"client_id="+self.client_id+ \
+		"&client_secret="+self.client_secret+ \
+		"&code=" + str(code) + \
+		"&redirect_uri="+self.redirect_uri
 		response1 = urllib.request.urlopen(url1).read().decode('utf8')
+		print(response1,'response1')
 		m = response1.split('&')[0]
 		access_token = m.split('=')[1]
 
@@ -848,7 +854,7 @@ class QqOauth:
 		# get qq_info
 		url3 = 'https://graph.qq.com/user/get_user_info?'+ \
 		"access_token="+access_token + \
-		"&oauth_consumer_key="+client_id+ \
+		"&oauth_consumer_key="+self.client_id+ \
 		"&openid="+openid
 
 		response3 = urllib.request.urlopen(url3).read().decode('utf8')
@@ -859,7 +865,7 @@ class QqOauth:
 		qq_info['city']     = data['city']
 		qq_info['year']     = data['year']
 		qq_info['figureurl']= data['figureurl']
-		qq_info['qq_account']=qq_account
+		qq_info['qq_openid']= openid
 
 		return qq_info
 
