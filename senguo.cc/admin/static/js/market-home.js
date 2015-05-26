@@ -159,7 +159,6 @@ $(document).ready(function(){
         //分类选择
         var $this=$(this);
         var text=$this.text();
-        $.fx.off = true;
         $('#classify').text(text).siblings('.up').toggle().siblings('.down').toggle();
         $('.classify-title').addClass('hidden');
         $('.goods-list').empty();

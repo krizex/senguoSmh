@@ -294,7 +294,7 @@ var noticeBox=function(text,item){
     }
     clearTimeout(noticeTimer);
     if($("#noticeBox").size()==0){
-        var $box=$('<div class="notice_bg hidden" id="noticeBox"><div class="notice_box text-center center-block"><p class="notice text-white font14 text-center"></p></div></div>');
+        var $box=$('<div class="notice_bg hidden anim-buonceIn" id="noticeBox"><div class="notice_box text-center center-block"><p class="notice text-white font14 text-center"></p></div></div>');
         $('body').append($box);
     }
     $("#noticeBox").removeClass('hidden').find('.notice').text(text);
