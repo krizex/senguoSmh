@@ -736,7 +736,7 @@ function Vrify(phone){
             if(res.success)
             {
                 time($('#getVrify'));
-                noticeBox('验证码已发送到您的手机,请注意查收！');
+                noticeBox('验证码已发送到您的手机，请注意查收！');
                 $('#getVrify').removeAttr('disabled');
 
             }
