@@ -16,12 +16,14 @@ from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_N
 
 class OnlineWxPay(CustomerBaseHandler):
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments('code?:str','order_num?:str')
+	@CustomerBaseHandler.check_arguments('code?:str','order_id?:str')
 	def get(self):
 		print(self.request.full_url())
 		path_url = self.request.full_url()
-		order_num = self.get_cookie("order_num")
-		order = self.session.query(models.Order).filter_by(num = order_num).first()
+		order_id = self.get_cookie("order_id")
+		#order_id = int(self.args['order_id'])
+
+		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			return self.send_fail('order not found')
 		totalPrice = order.totalPrice
@@ -262,18 +264,21 @@ class OnlineAliPay(CustomerBaseHandler):
 		print(self._action,'action')
 
 	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("order_id?:str")
 	def get(self):
 		if self._action == 'AliPayCallback':
 			return self.handle_onAlipay_callback()
 		elif self._action == "AliPay":
 			print("login in Alipay")
-			order_num = self.get_cookie("order_num",None)
-			self.order_num = order_num
-			order = self.session.query(models.Order).filter_by(num = order_num).first()
+			order_id = self.get_cookie("order_id",None)
+			#self.order_num = order_num
+			#order_id = int(self.args['order_id'])
+			order = self.session.query(models.Order).filter_by(id = order_id).first()
 			if not order:
 				return self.send_fail('order not found')
 			totalPrice = order.totalPrice
 			alipayUrl =  self.handle_onAlipay()
+			self.order_num = order.num
 			print(alipayUrl,'alipayUrl')
 
 			charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
@@ -366,7 +371,6 @@ class OnlineAliPay(CustomerBaseHandler):
 			call_back_url = "%s%s"%(ALIPAY_HANDLE_HOST,self.reverse_url("onlineAlipayFishedCallback")),
 			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("onlineAliNotify")),
 			)
-		print('hhhhhahahahahahahahah')
 		print(authed_url,'authed_url')
 		return authed_url
 

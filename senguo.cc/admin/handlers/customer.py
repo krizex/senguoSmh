@@ -1585,7 +1585,7 @@ class Cart(CustomerBaseHandler):
 				success_url = self.reverse_url('onlineAliPay')
 			else:
 				print(online_type,'wx or alipay?')
-			return self.send_success(order_id = order.id,success_url=success_url)
+			return self.send_success(success_url=success_url,order_id = order.id)
 		return self.send_success()
 
 class Notice(CustomerBaseHandler):
@@ -1644,7 +1644,7 @@ class Order(CustomerBaseHandler):
 				'sender_phone':order.sender_phone,'sender_img':order.sender_img,'order_id':order.id,\
 				'message':order.message,'comment':order.comment,'create_date':create_date,\
 				'today':order.today,'type':order.type,'create_year':order.create_date.year,\
-				'create_month':order.create_date.month,'create_day':order.create_date.day,'pay_type':order.pay_type})
+				'create_month':order.create_date.month,'create_day':order.create_date.day,'pay_type':order.pay_type,'online_type':order.online_type})
 		return data
 
 	@tornado.web.authenticated
