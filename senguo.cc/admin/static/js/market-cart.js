@@ -47,8 +47,8 @@ $(document).ready(function(){
         var index=$item.attr('data-index');
         var type=$item.attr('data-type');
         if(result=='true'){
-            if(type==0) {$('.cart-list-item').eq(index).addClass('anim-slideOutLeft').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function(){itemDelete($('.cart-list-item').eq(index),0);})}
-            else if(type==1) {$('.cart-list-item').eq(index).addClass('anim-slideOutLeft').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function(){itemDelete($('.cart-list-item').eq(index),1);})}
+            if(type==0) {$('.cart-list-item').eq(index).addClass('anim-lightSpeedOut').setTimeout(function(){itemDelete($('.cart-list-item').eq(index),0);},300)}
+            else if(type==1) {$('.cart-list-item').eq(index).addClass('anim-lightSpeedOut').setTimeout(function(){itemDelete($('.cart-list-item').eq(index),1);},300)}
         }
         confirmRemove();
     });
