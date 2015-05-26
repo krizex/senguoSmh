@@ -397,17 +397,17 @@ class CustomerProfile(CustomerBaseHandler):
 			return self.send_success(birthday=birthday)
 		elif action == 'add_password':
 			self.current_user.accountinfo.update(session = self.session , password = data)
-			print("[设置密码]设置成功，密码：",data)
+			# print("[设置密码]设置成功，密码：",data)
 		elif action == 'modify_password':
 			old_password = self.args['old_password']
-			print("[更改密码]输入老密码：",old_password)
-			print("[更改密码]验证老密码：",self.current_user.accountinfo.password)
+			# print("[更改密码]输入老密码：",old_password)
+			# print("[更改密码]验证老密码：",self.current_user.accountinfo.password)
 			if old_password != self.current_user.accountinfo.password:
-				print("[更改密码]密码验证错误")
+				# print("[更改密码]密码验证错误")
 				return self.send_fail("密码错误")
 			else:
 				self.current_user.accountinfo.update(session = self.session ,password = data)
-				print("[更改密码]更改成功，新密码：",data)
+				# print("[更改密码]更改成功，新密码：",data)
 		elif action =='wx_bind':
 			wx_bind = False
 			if self.current_user.accountinfo.wx_unionid:
@@ -1480,7 +1480,6 @@ class Cart(CustomerBaseHandler):
 			online_type = self.args['online_type']
 		else:
 			order_status = 1
-		print(w_SH2_id,"i'm staff id")
 		order = models.Order(customer_id=self.current_user.id,
 							 shop_id=shop_id,
 							 num=num,
@@ -1504,7 +1503,6 @@ class Cart(CustomerBaseHandler):
 							 status  = order_status,
 							 online_type = online_type,
 							 )
-		print(order)
 
 		try:
 			self.session.add(order)
@@ -1523,6 +1521,13 @@ class Cart(CustomerBaseHandler):
 		order_id      = order.num
 		order_type    = order.type
 		phone         = order.phone
+		try:
+			other_admin = self.session.query(models.RelShopAdmin).filter_by(shop_id = shop_id,status=1,temp_active=1).first()
+		except:
+			other_admin = None
+		if other_admin:
+			other_touser = other_admin.accountinfo.wx_openid
+			other_name = other_admin.accountinfo.nickname
 		if order_type == 1:
 			order_type = '立即送'
 		else:
@@ -1552,8 +1557,12 @@ class Cart(CustomerBaseHandler):
 		order_realid = order.id
 		# print("[提交订单]订单详情：",goods)
 		if self.args['pay_type'] != 3:
-			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
-				customer_name,order_totalPrice,send_time,goods,phone,address)
+			if w_admin.admin.temp_active !=0:
+				WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
+					customer_name,order_totalPrice,send_time,goods,phone,address)
+			if other_admin:
+				WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,\
+					customer_name,order_totalPrice,send_time,goods,phone,address)
 			# send message to customer
 			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
 		####################################################
@@ -1595,7 +1604,7 @@ class Cart(CustomerBaseHandler):
 				success_url = self.reverse_url('onlineAliPay')
 			else:
 				print(online_type,'wx or alipay?')
-			return self.send_success(order_id = order.id,success_url=success_url)
+			return self.send_success(success_url=success_url,order_id = order.id)
 		return self.send_success()
 
 class Notice(CustomerBaseHandler):
@@ -1654,7 +1663,7 @@ class Order(CustomerBaseHandler):
 				'sender_phone':order.sender_phone,'sender_img':order.sender_img,'order_id':order.id,\
 				'message':order.message,'comment':order.comment,'create_date':create_date,\
 				'today':order.today,'type':order.type,'create_year':order.create_date.year,\
-				'create_month':order.create_date.month,'create_day':order.create_date.day,'pay_type':order.pay_type})
+				'create_month':order.create_date.month,'create_day':order.create_date.day,'pay_type':order.pay_type,'online_type':order.online_type})
 		return data
 
 	@tornado.web.authenticated

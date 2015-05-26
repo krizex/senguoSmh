@@ -5,10 +5,8 @@ if (window.screen.width=='600')
 else if (window.screen.width=='800') 
     document.write ('<body style="zoom: 75%">');
 
-$('#currentShopChange li').on('click',function(){
-    var shop_id=$(this).data('id');
-    shopChnage(shop_id);
-});
+otherShop();
+
 $('.developing').on('click',function(){
     Tip('此功能暂未开放！');
 });
@@ -45,9 +43,15 @@ if(isWeiXin()){
             }
         }
     },1000);
+    $("#dropdownMenu1").on("click",function(){
+        $(this).children(".caret").toggleClass("rotate180");
+    })
 }).on("click",".has-red-tip",function(){
     var action = $(this).attr("data-action");
 
+}).on('click','#currentShopChange li',function(){
+    var shop_id=$(this).data('id');
+    shopChnage(shop_id);
 });
 
 function switchTitle(title){
@@ -133,8 +137,9 @@ function isWeiXin(){
         if(ua.match(/MicroMessenger/i) == 'micromessenger'){ 
         return true; 
         }
-        else{ 
-    } 
+        else{
+            return false;
+        }
 } 
 
 function worMode(target){
@@ -143,10 +148,37 @@ function worMode(target){
 
 function shopChnage(shop_id){
     var url='/admin';
-    var args={shop_id:shop_id};
+    var data={shop_id:shop_id};
+    var args={action:'shop_change',data:data};
     $.postJson(url,args,function(res){
         if(res.success){
             window.location.reload();
+        }
+    });
+}
+
+function otherShop(){
+    var url='/admin';
+    var args={action:'other_shop'};
+    $.postJson(url,args,function(res){
+        if(res.success){
+            if(res.data.length!=0){
+                var data=res.data;
+                for (var i in data){
+                    console.log();
+                     var item='<li role="presentation" data-id="{{id}}">'+
+                                        '<a role="menuitem" tabindex="-1" href="javascript:;">{{shop_name}}</a>'+
+                                    '</li>';
+                    var render=template.compile(item);
+                    var id =data[i]['id'];
+                    var shop_name =data[i]['shop_name'];
+                    var content=render({
+                        id:id,
+                        shop_name:shop_name
+                    });
+                    $('#currentShopChange').append(content);
+                } 
+            }
         }
     });
 }

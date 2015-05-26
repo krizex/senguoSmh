@@ -7,7 +7,7 @@
 {% block content %}
     <span id="shop_imgurl" data-img="{{shop_logo}}" data-code="{{shop_code}}"></span>
     <div class="rainshed bg_change fix-title"></div>
-    <div class="anim-pulse bg-box">
+    <div class="bg-box">
         <ul class="cart-list set-w100-fle mt42 m-b0">
             {% for key in cart_f %}
             <li class="cart-list-item set-w100-fle fruit_item text-grey m-b5 {{cart_f[key]['code']}}">
@@ -269,7 +269,7 @@
 {% end %}
 {% block bottom %}
 <div class="modal fade tie-popbox" id="tieBox">
-    <div class="modal-dialog">
+    <div class="modal-dialog anim-bounceIn">
         <div class="modal-content">
             <div class="modal-top"><img src="/static/images/info_top.png"/></div>
             <div class="modal-header set-width-float">

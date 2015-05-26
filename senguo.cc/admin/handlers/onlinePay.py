@@ -16,12 +16,14 @@ from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_N
 
 class OnlineWxPay(CustomerBaseHandler):
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments('code?:str','order_num?:str')
+	@CustomerBaseHandler.check_arguments('code?:str','order_id?:str')
 	def get(self):
 		print(self.request.full_url())
 		path_url = self.request.full_url()
-		order_num = self.get_cookie("order_num")
-		order = self.session.query(models.Order).filter_by(num = order_num).first()
+		order_id = self.get_cookie("order_id")
+		#order_id = int(self.args['order_id'])
+
+		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			return self.send_fail('order not found')
 		totalPrice = order.totalPrice
@@ -197,7 +199,13 @@ class OnlineWxPay(CustomerBaseHandler):
 			customer_name = order.receiver
 			c_tourse      = customer.accountinfo.wx_openid
 			print("[提交订单]用户OpenID：",c_tourse)
-
+			try:
+				other_admin = self.session.query(models.RelShopAdmin).filter_by(shop_id = shop.id,status=1,temp_active=1).first()
+			except:
+				other_admin = None
+			if other_admin:
+				other_touser = other_admin.accountinfo.wx_openid
+				other_name = other_admin.accountinfo.nickname
 			#goods 
 			goods = []
 			f_d = eval(order.fruits)
@@ -214,8 +222,13 @@ class OnlineWxPay(CustomerBaseHandler):
 			send_time = order.send_time
 			address = order.address_text
 
-			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
+			if shop.admin.temp_active !=0:
+				WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
 				customer_name,order_totalPrice,send_time,goods,phone,address)
+			if other_admin:
+				WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
+				customer_name,order_totalPrice,send_time,goods,phone,address)
+			
 			# send message to customer
 			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 			return self.write('success')
@@ -226,7 +239,9 @@ class OrderDetail(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("alipayUrl?:str","order_id?:str")
 	def get(self):
 		alipayUrl = self.args['alipayUrl']
-		return self.render("customer/alipay-tip.html",alipayUrl = alipayUrl,order_id = order.id)
+		order_id = self.args['order_id']
+		print('[支付宝支付]order_id',order_id)
+		return self.render("customer/alipay-tip.html",alipayUrl = alipayUrl,order_id = order_id)
 
 class JustOrder(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("order_id?:str")
@@ -249,18 +264,21 @@ class OnlineAliPay(CustomerBaseHandler):
 		print(self._action,'action')
 
 	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("order_id?:str")
 	def get(self):
 		if self._action == 'AliPayCallback':
 			return self.handle_onAlipay_callback()
 		elif self._action == "AliPay":
 			print("login in Alipay")
-			order_num = self.get_cookie("order_num",None)
-			self.order_num = order_num
-			order = self.session.query(models.Order).filter_by(num = order_num).first()
+			order_id = self.get_cookie("order_id",None)
+			#self.order_num = order_num
+			#order_id = int(self.args['order_id'])
+			order = self.session.query(models.Order).filter_by(id = order_id).first()
 			if not order:
 				return self.send_fail('order not found')
 			totalPrice = order.totalPrice
 			alipayUrl =  self.handle_onAlipay()
+			self.order_num = order.num
 			print(alipayUrl,'alipayUrl')
 
 			charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
@@ -353,7 +371,6 @@ class OnlineAliPay(CustomerBaseHandler):
 			call_back_url = "%s%s"%(ALIPAY_HANDLE_HOST,self.reverse_url("onlineAlipayFishedCallback")),
 			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("onlineAliNotify")),
 			)
-		print('hhhhhahahahahahahahah')
 		print(authed_url,'authed_url')
 		return authed_url
 

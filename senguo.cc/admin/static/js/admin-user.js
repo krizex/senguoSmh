@@ -34,4 +34,47 @@ $(document).ready(function(){
 }).on('click','.history-order',function(){
     // var $this=$(this);
     // window.open($this.attr('href'));
+}).on('click','.remark-btn',function(){
+    var $this=$(this);
+    var id=$this.parents('li').attr('data-id');
+    var index=$this.parents('li').index();
+    $('.remark-box').modal('show').attr({'data-id':id,'data-index':index});
+}).on('click','.remark-sure',function(){
+    var $this=$(this);
+     if($this.attr("data-flag")=="off") {
+        return false;}
+     $this.attr("data-flag","off");
+    var id=$('.remark-box').attr('data-id');
+    var index=$('.remark-box').attr('data-index');
+    var remark=$('.remark-content').val().trim();
+    if(!remark){
+        $this.attr("data-flag","on");
+        return Tip('请输入备注');
+    }
+    var url='';
+    var action="remark";
+    var data={
+        id:id,
+        remark:remark
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                $this.attr("data-flag","on");
+               $('.users-list-item').eq(index).find('.remark').removeClass('hidden').text('备注：'+remark);
+               $('.remark-box').modal('hide');
+            }
+            else{
+                $this.attr("data-flag","on");
+                Tip(res.error_text);
+            }
+        },
+        function(){
+            $this.attr("data-flag","on");
+            Tip('网络好像不给力呢~ ( >O< ) ~');}
+        );
 });

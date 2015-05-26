@@ -1,4 +1,4 @@
-$(document).ready(function(){
+ $(document).ready(function(){
     window.dataObj.shop_href='/customer/shopProfile';
     window.dataObj.market_href='/shop/none';
     window.dataObj.home_href='/customer';
@@ -294,7 +294,7 @@ var noticeBox=function(text,item){
     }
     clearTimeout(noticeTimer);
     if($("#noticeBox").size()==0){
-        var $box=$('<div class="notice_bg hidden" id="noticeBox"><div class="notice_box text-center center-block"><p class="notice text-white font14 text-center"></p></div></div>');
+        var $box=$('<div class="notice_bg hidden anim-bounceIn" id="noticeBox"><div class="notice_box text-center center-block"><p class="notice text-white font14 text-center"></p></div></div>');
         $('body').append($box);
     }
     $("#noticeBox").removeClass('hidden').find('.notice').text(text);
@@ -359,4 +359,16 @@ Modal.prototype.modal=function(type){
         $('body').removeClass('modal_sty').css({'overflow':'auto'}).find('.modal_bg').remove();
         $target.addClass('fade').removeClass('in').css({'display':'none'});
     }
+}
+//点选动画
+function pulse(target){
+    target.removeClass('anim-pulse').addClass('anim-pulse').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function(){
+        target.removeClass('anim-pulse');
+    });
+}
+//购物篮数字动画
+function wobble(target){
+    target.removeClass('anim-wobble').addClass('anim-wobble').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function(){
+        target.removeClass('anim-wobble');
+    });
 }

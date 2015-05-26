@@ -314,12 +314,13 @@
                         <span class="pull-left tit">下单截止时间：</span>
                         <span class="show_item pull-left show_value tit">{{current_shop.config.stop_range or 0}}</span>
                         <div class="input-group-btn pull-left edit_item hidden">
-                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                <input type="text" id="stopRange"/>
+                           <!--  <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
                                 <span class="time timer" id="stopRange">{{current_shop.config.stop_range or 0}}</span>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu choose-list stop-minute-list stop-list" role="menu">
-                            </ul>
+                            </ul> -->
                         </div>
                         <span class="pull-left tit set-left10">分钟</span>
                         <a href="javascript:;" class="sure-btn pull-right edit_item hidden stopRange text-center text-white">✓</a>

@@ -14,22 +14,25 @@ $(document).ready(function(){
     $('.address_list .item').eq(0).addClass('active');
     window.dataObj.mincharge_now=Int($('.mincharge_now').find('.mincharge').text());
     window.dataObj.mincharge_intime=Int($('.mincharge_intime').find('.mincharge').text());
-    //price
+    //价格
     getPrice();
     //按时达最低起送金额提示
     if(window.dataObj.total_price<window.dataObj.mincharge_intime) $('.mincharge_intime').show();
     //商品数量操作
     $(document).on('click','.cart-list-item .number-minus',function(){
         var $this=$(this);
+        pulse($this);
         goodsNum($this,1);
     });
     $(document).on('click','.cart-list-item .number-plus',function(){
         var $this=$(this);
+        pulse($this);
         goodsNum($this,2);
     });
     //商品删除
     $(document).on('click','.cart-list-item .delete-item',function(){
         var $this=$(this);
+        pulse($this);
         var parent=$this.parents('.cart-list-item');
         var index=parent.index();
         var type;
@@ -44,14 +47,21 @@ $(document).ready(function(){
         var index=$item.attr('data-index');
         var type=$item.attr('data-type');
         if(result=='true'){
-            if(type==0) {itemDelete($('.cart-list-item').eq(index),0);}
-            else if(type==1) {itemDelete($('.cart-list-item').eq(index),1);}
+            if(type==0) {
+                $('.cart-list-item').eq(index).addClass('anim-lightSpeedOut');
+                setTimeout(function(){itemDelete($('.cart-list-item').eq(index),0);},300);
             }
+            else if(type==1) {
+                $('.cart-list-item').eq(index).addClass('anim-lightSpeedOut');
+                setTimeout(function(){itemDelete($('.cart-list-item').eq(index),1);},300);
+            }
+        }
         confirmRemove();
     });
     //类型切换增加active
     $(document).on('click','.type-choose .item',function(){
         var $this=$(this);
+        pulse($this);
         $this.addClass('active').siblings().removeClass('active');
     });
     //收货地址添加
@@ -106,7 +116,7 @@ $(document).ready(function(){
         var phone=$receivePhone.val();
         addressAddEdit('edit_address',name,address,phone,$this);
     });
-    //tie phone
+    //手机绑定验证
     $(document).on('click','.un_tie',function(){
         noticeBox('您还未绑定手机号，点击下方手机绑定按钮进行绑定');
     });
@@ -152,7 +162,8 @@ $(document).ready(function(){
                 time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
             }
             else{
-                time=checkTime(intime_startHour-1)+':'+checkTime(60-(stop_range-intime_startMin))+':00';
+                n = parseInt(stop_range/60)
+                time=checkTime(intime_startHour-n)+':'+checkTime(60-(stop_range-60*n-intime_startMin))+':00';
             }
             if (time < time_now) {
                 $this.removeClass('available').addClass('not_available').removeClass('active');
@@ -170,7 +181,10 @@ $(document).ready(function(){
         });}
         $('.send_period .item').on('click',function(){
             var $this=$(this);
-            if($this.hasClass('available')) {$this.addClass('active').siblings().removeClass('active')}
+            if($this.hasClass('available')) {
+                pulse($this);
+                $this.addClass('active').siblings().removeClass('active');
+            }
         });
     //按时达选择今天
     $('#send_today').on('click',function(){
@@ -182,8 +196,9 @@ $(document).ready(function(){
             if(stop_range<=intime_startMin){
                 time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
             }
-            else{
-                time=checkTime(intime_startHour-1)+':'+checkTime(60-(stop_range-intime_startMin))+':00';
+           else{
+                n = parseInt(stop_range/60)
+                time=checkTime(intime_startHour-n)+':'+checkTime(60-(stop_range-60*n-intime_startMin))+':00';
             }
             if (time < time_now) {$this.removeClass('available').addClass('not_available').removeClass('active');}
             $('.send_period .available').first().addClass('active').siblings().removeClass('active');
@@ -213,6 +228,7 @@ $(document).ready(function(){
         $('.send-intime').on('click',function(){
             $(this).removeClass('active');
             if(now_on=='True'){
+                pulse($(this));
                 $('.send-now').addClass('active');
                 $('.send_now').show();
                 $('.intime-intro').hide();
@@ -229,6 +245,7 @@ $(document).ready(function(){
         //按时达模式选择
         $('#sendInTime').on('click',function(){
             var $this=$(this);
+            pulse($this.parents('.item'));
             $this.parents('.item').addClass('active').siblings('.item').removeClass('active');
             $('.send_period').show();
             $('.send_day').show();
@@ -257,6 +274,7 @@ $(document).ready(function(){
         $('.send-now').on('click',function(){
             $(this).removeClass('active');
             if(intime_on=='True'){
+                pulse($(this));
                 $('.send-intime').addClass('active');
                 $('.send_day').show();
                 $('.send_period').show();
@@ -299,6 +317,7 @@ $(document).ready(function(){
             }
             if(stop_time<=end_time)
             {
+                pulse($this.parents('.item'));
                 $this.parents('.item').addClass('active').siblings('.item').removeClass('active');
                 $('.send_period').hide();
                 $('.send_day').hide();
@@ -347,13 +366,13 @@ $(document).ready(function(){
         if($this.hasClass('active')) $this.removeClass('active');
         else $this.addClass('active').siblings('.item').removeClass('active');
     });
-    //pay type active
+    //支付方式选择
     $('.pay_type li').each(function(){
         var $this=$(this);
         var index = $this.index();
         var status = $this.attr('data-status');
         var statu = $this.attr("data-auth");
-        var type= $this.find('.title').text();
+        var type = $this.find('.title').text();
         if(statu == "False"){
             $this.removeClass('active').addClass('not_available');
         }
@@ -380,6 +399,7 @@ $(document).ready(function(){
     if(index == 2){
         $(".wrap-online-lst").toggleClass("hidden");
     }
+    pulse($(".pay_type li").eq(index));
     $(".pay_type li").removeClass("active").eq(index).addClass("active");
 }).on('click','.a-cz',function(){
     var status = $(this).attr('data-status');
@@ -395,6 +415,7 @@ $(document).ready(function(){
 }).on("click",".online-lst li",function(){   //选择在线支付方式
     $(".online-lst").find(".checkbox-btn").removeClass("checkboxed");
     $("#online-pay").attr("data-type",$(this).attr("data-type"));
+    pulse($(this));
     $(this).children("a").addClass("checkboxed");
 });
 
@@ -475,6 +496,7 @@ function goodsNum(target,action){
                         if(val==1){
                             var cart_n=Int($('.cart_num').text());
                             if(cart_n>1){
+                                wobble($('.cart_num'));
                                 $('.cart_num').text(cart_n-1);
                                 SetCookie('cart_count',cart_n-1);
                                 parent.remove();
@@ -500,9 +522,9 @@ function goodsNum(target,action){
             else return noticeBox(res.error_text);
         },
         function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-             function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')})
+        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')})
 }
-
+//判断起送价
 function mincharge(n,price){
     if(n==2){
         if(price<window.dataObj.mincharge_intime){
@@ -519,7 +541,7 @@ function mincharge(n,price){
         else $('.mincharge_now').hide();
     }
 }
-
+//删除商品
 function itemDelete(target,menu_type) {
     var $list_total_price=$('#list_total_price');
     var url = '/cart';
@@ -542,6 +564,7 @@ function itemDelete(target,menu_type) {
                 mincharge(type,t_price);  
                 var cart_n=Int($('.cart_num').text());
                 if(cart_n>0){
+                    wobble($('.cart_num'));
                     $('.cart_num').text(cart_n-1);
                     SetCookie('cart_count',cart_n-1);
                 }
@@ -549,12 +572,10 @@ function itemDelete(target,menu_type) {
             }
             else return noticeBox(res.error_text);
         },
-        function () {
-            return noticeBox('网络好像不给力呢~ ( >O< ) ~');
-        },
+        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
         function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
-
+//地址添加修改
 function addressAddEdit(action,name,address,phone,target){
     var url='/customer/'+getCookie('market_shop_code');
     var action=action;
@@ -612,7 +633,7 @@ function addressAddEdit(action,name,address,phone,target){
     function(){noticeBox('网络好像不给力呢~ ( >O< ) ~')},
     function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
-
+//订单提交
 function orderSubmit(target){
     var url='';
     var fruits={};
@@ -693,7 +714,7 @@ function orderSubmit(target){
     function(){noticeBox('网络好像不给力呢~ ( >O< ) ~')},
     function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
-
+//获取手机验证码倒计时
 var wait=60;
 function time(evt) {
     if (wait == 0) {
@@ -711,6 +732,7 @@ function time(evt) {
             1000)
     }
 }
+//获取手机验证码
 function Vrify(phone){
     var action='gencode';
     var url="/customer/phoneVerify?action=customer";
@@ -723,17 +745,17 @@ function Vrify(phone){
             if(res.success)
             {
                 time($('#getVrify'));
-                noticeBox('验证码已发送到您的手机,请注意查收！');
+                noticeBox('验证码已发送到您的手机，请注意查收！');
                 $('#getVrify').removeAttr('disabled');
 
             }
             else return noticeBox(res.error_text);
         },
-         function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
         function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
     );
 }
-
+//手机绑定
 function TiePhone(evt){
     evt.preventDefault();
     var phone=$('#enterPhone').val();
