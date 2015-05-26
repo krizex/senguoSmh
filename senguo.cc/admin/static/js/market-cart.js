@@ -21,15 +21,18 @@ $(document).ready(function(){
     //商品数量操作
     $(document).on('click','.cart-list-item .number-minus',function(){
         var $this=$(this);
+        pulse($this);
         goodsNum($this,1);
     });
     $(document).on('click','.cart-list-item .number-plus',function(){
         var $this=$(this);
+        pulse($this);
         goodsNum($this,2);
     });
     //商品删除
     $(document).on('click','.cart-list-item .delete-item',function(){
         var $this=$(this);
+        pulse($this);
         var parent=$this.parents('.cart-list-item');
         var index=parent.index();
         var type;
@@ -44,9 +47,9 @@ $(document).ready(function(){
         var index=$item.attr('data-index');
         var type=$item.attr('data-type');
         if(result=='true'){
-            if(type==0) {itemDelete($('.cart-list-item').eq(index),0);}
-            else if(type==1) {itemDelete($('.cart-list-item').eq(index),1);}
-            }
+            if(type==0) {$('.cart-list-item').eq(index).addClass('anim-slideOutLeft').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function(){itemDelete($('.cart-list-item').eq(index),0);})}
+            else if(type==1) {$('.cart-list-item').eq(index).addClass('anim-slideOutLeft').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function(){itemDelete($('.cart-list-item').eq(index),1);})}
+        }
         confirmRemove();
     });
     //类型切换增加active
