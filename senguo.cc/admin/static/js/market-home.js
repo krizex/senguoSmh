@@ -1,5 +1,5 @@
 $(document).ready(function(){
-     var shop_logo=$('#shop_imgurl').attr('data-img');
+    var shop_logo=$('#shop_imgurl').attr('data-img');
     console.log();
     if(parseInt($("#shop_status").val())==3){
         noticeBox("店铺休息中，暂不接收新订单");
@@ -159,6 +159,7 @@ $(document).ready(function(){
         //分类选择
         var $this=$(this);
         var text=$this.text();
+        $.fx.off = true;
         $('#classify').text(text).siblings('.up').toggle().siblings('.down').toggle();
         $('.classify-title').addClass('hidden');
         $('.goods-list').empty();
