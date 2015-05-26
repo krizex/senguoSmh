@@ -228,7 +228,7 @@ var shopItem=function (shops){
                                 '</div>'+
                                 '<div class="pull-left info">'+
                                     '<p class="shop_name font14">{{shop_name}}<span class="shop_auth  {{hide}}">{{shop_auth}}</span></p>'+
-                                    '<p class="shop_attr">满意度 {{satisfy}} | 评价 {{comment_count}} | 商品数 {{goods_count}}</p>'+
+                                    '<p class="shop_attr">满意度 {{satisfy}}  评价 {{comment_count}}  商品数 {{goods_count}}</p>'+
                                     '<p class="text-grey9 adre-box"><span class="distance {{dishide}}">{{distance}}</span><i class="location"></i><span class="shop_code">{{address}}</span></p>'+
                                 '</div>'+
                             '</div>'+
@@ -244,7 +244,7 @@ var shopItem=function (shops){
                 var address=shops[key]['shop_address_detail'];
                 var intro=shops[key]['shop_intro'];
                 var shop_auth=shops[key]['shop_auth'];
-                var satisfy = shops[key]['satisfy'];
+                var satisfy = shops[key]['satisfy'].toFixed(2)*100+"%";
                 var comment_count = shops[key]['comment_count'];
                 var goods_count = shops[key]['goods_count'];
                 var status = shops[key]['status'];
