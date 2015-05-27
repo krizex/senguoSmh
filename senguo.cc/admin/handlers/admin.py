@@ -188,7 +188,7 @@ class SwitchShop(AdminBaseHandler):
 			shop.goods_count = fruit_count+mgoods_count	
 			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()	
 			shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
-			total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id ,status =6).all()[0][0]
+			total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id).filter( or_(models.Order.status ==5,models.Order.status ==6 )).all()[0][0]
 			if total_money:
 				shop.total_money = format(total_money,'.2f') 
 			else:
@@ -678,7 +678,7 @@ class Order(AdminBaseHandler):
 		delta = datetime.timedelta(1)
 		# print("[订单管理]当前店铺：",self.current_shop)
 		for order in orders:
-			order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
+			order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id',
 										 'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
@@ -1294,10 +1294,9 @@ class Follower(AdminBaseHandler):
 														models.Accountinfo.realname.like("%%%s%%" % wd))).all()
 		elif action =="filter":
 			wd = self.args["wd"]
-			d["customer_id"] = base64.b64decode(wd)
 			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).first()
+					join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).all()
 		else:
 			return self.send_error(404)
 		for x in range(0, len(customers)):  #
