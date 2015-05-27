@@ -35,7 +35,14 @@ class ShopList(FruitzoneBaseHandler):
 	def initialize(self):
 		self.remote_ip = self.request.headers.get('X-Forwarded_For',\
 			self.request.headers.get('X-Real-Ip',self.request.remote_ip))
+	@FruitzoneBaseHandler.check_arguments('action?:str')
+
 	def get(self):
+		shops = []
+		if 'action' in self.args:
+			if self.args['action'] == 'admin_shop':
+				shops = self.handle_admin_shop()
+				print('login admin_shop',shops)
 
 		remote_ip = self.remote_ip
 		# print(remote_ip)
@@ -60,7 +67,7 @@ class ShopList(FruitzoneBaseHandler):
 		#     fruit_types.append(f_t.safe_props())
 		# print(city_id+"===========")
 		return self.render("fruitzone/list.html", context=dict(province_count=province_count,\
-			city = city ,city_id = city_id, shop_count=shop_count,subpage="home"))
+			city = city ,city_id = city_id, shops = shops,shop_count=shop_count,subpage="home"))
 
 	
 	@FruitzoneBaseHandler.check_arguments("action")
@@ -74,6 +81,8 @@ class ShopList(FruitzoneBaseHandler):
 			return self.handle_qsearch()
 		elif action =="shop":
 			return self.handle_shop()
+		elif action == 'admin_shop':
+			return self.handle_admin_shop()
 		else:
 			return self.send_error(403)
 
@@ -206,6 +215,17 @@ class ShopList(FruitzoneBaseHandler):
 		if shops == [] or len(shops)<_page_count:
 			nomore =True
 		return self.send_success(shops=shops,nomore = nomore)
+
+	@FruitzoneBaseHandler.check_arguments('admin_id?:str')
+	def handle_admin_shop(self):
+		admin_id = int(self.args['admin_id'])
+		shop_admin = self.session.query(models.ShopAdmin).filter_by(id = admin_id).first()
+		if not shop_admin:
+			return self.send_fail('shop_admin not found!')
+		shop_list = shop_admin.shops
+		shops = self.get_data(shop_list)
+		return shops
+
 
 	@FruitzoneBaseHandler.check_arguments("q","page:int")
 	def handle_search(self):

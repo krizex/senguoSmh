@@ -50,16 +50,16 @@ class ShopList(FruitzoneBaseHandler):
 		shops = []
 
 		for shop in q:
-			try:
-				order_count = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
-			except:
-				print("[官网店铺列表]错误")
-				return self.send_fail('order_count error')
-			if order_count:
-				shop.order_count = order_count
-				self.session.commit()
-			else:
-				shop.order_count = 0
+			# try:
+			# 	order_count = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
+			# except:
+			# 	print("[官网店铺列表]错误")
+			# 	return self.send_fail('order_count error')
+			# if order_count:
+			# 	shop.order_count = order_count
+			# 	self.session.commit()
+			# else:
+			# 	shop.order_count = 0
 			shops.append(dict(shop_name=shop.shop_name,shop_code = shop.shop_code,\
 				shop_province = shop.shop_province ,shop_city = shop.shop_city ,\
 				shop_address_detail = shop.shop_address_detail,\
