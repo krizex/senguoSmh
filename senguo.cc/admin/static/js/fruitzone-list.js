@@ -159,12 +159,12 @@ function initLocation(){
             refuse_flag = true;
             ulat = position.coords.latitude;
             ulng = position.coords.longitude;
-            var point = new BMap.Point(ulat,ulng);
+            var point = new BMap.Point(ulng,ulat);
             var geoc = new BMap.Geocoder();
             geoc.getLocation(point, function(rs){
                 var addComp = rs.addressComponents;
                 initProviceAndCityCode(addComp.province, addComp.city);
-                $("#city-name").text(addComp.city);
+                $(".city_name").text(addComp.city);
                 filter($("#city_id").val());
             });
         },function(error){
@@ -251,6 +251,7 @@ var shopItem=function (shops){
                 var status = shops[key]['status'];
                 var lat = shops[key]['lon'];//经度
                 var lon = shops[key]['lat'];//纬度
+        console.log(lat+"==="+lon);
                 var area=window.dataObj.area;
                 var hide='';
                 var statu = '';
