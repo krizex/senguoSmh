@@ -257,7 +257,6 @@ $(document).ready(function(){
             goodsNum($this,1);
         }).on('click','.number-plus',function(){
             var $this=$(this);
-            pulse($this);
             var parent=$this.parents('.goods-list-item');
             var num=Int($this.siblings('.number-input').val().trim());
             var storage=parseFloat(parent.attr('data-storage'));
@@ -266,7 +265,7 @@ $(document).ready(function(){
                 $this.siblings('.number-input').val(storage);
                 return noticeBox('商品数量只能为整数！',$this);
             }
-            if(num<999) {goodsNum($this,2);}
+            if(num<999) {pulse($this);goodsNum($this,2);}
             else {
                 return noticeBox('最多只能添加999哦！',$this);
             }
