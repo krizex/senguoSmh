@@ -4,9 +4,6 @@ if (window.screen.width=='600')
     document.write ('<body style="zoom: 55%">');
 else if (window.screen.width=='800') 
     document.write ('<body style="zoom: 75%">');
-
-otherShop();
-
 $('.developing').on('click',function(){
     Tip('此功能暂未开放！');
 });
@@ -49,9 +46,6 @@ if(isWeiXin()){
 }).on("click",".has-red-tip",function(){
     var action = $(this).attr("data-action");
 
-}).on('click','#currentShopChange li',function(){
-    var shop_id=$(this).data('id');
-    shopChnage(shop_id);
 });
 
 function switchTitle(title){

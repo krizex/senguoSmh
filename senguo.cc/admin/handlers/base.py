@@ -615,7 +615,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 		shop_id = self.get_secure_cookie("shop_id") or b'0'
 		shop_id = int(shop_id.decode())
 		try:
-			admin = self.session.query(models.RelShopAdmin).filter_by(account_id=self.current_user.accountinfo.id,status=1).first()
+			admin = self.session.query(models.HireLink).filter_by(staff_id=self.current_user.accountinfo.id,active=1,work=9).first()
 		except:
 			admin = None
 
@@ -630,8 +630,9 @@ class AdminBaseHandler(_AccountBaseHandler):
 					self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
 				else:
 					try:
-						shop = self.session.query(models.Shop).join(models.RelShopAdmin,models.Shop.id == models.RelShopAdmin.shop_id)\
-						.filter(models.Shop.id == shop_id,models.RelShopAdmin.account_id == self.current_user.accountinfo.id,models.RelShopAdmin.status == 1).first()
+						shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
+						.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
+							models.HireLink.active == 1,models.HireLink.work == 9).first()
 					except:
 						shop = None
 					self.current_shop = shop
@@ -640,8 +641,9 @@ class AdminBaseHandler(_AccountBaseHandler):
 		else:
 			if admin:
 				shop = next((x for x in self.current_user.shops if x.id == shop_id), \
-					self.session.query(models.Shop).join(models.RelShopAdmin,models.Shop.id == models.RelShopAdmin.shop_id)\
-					.filter(models.Shop.id == shop_id,models.RelShopAdmin.account_id == self.current_user.accountinfo.id,models.RelShopAdmin.status == 1).first())
+					self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
+						.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
+							models.HireLink.active == 1,models.HireLink.work == 9).first())
 			else:
 				shop = next((x for x in self.current_user.shops if x.id == shop_id), None)
 			if not shop_id or not shop:#初次登陆，默认选择一个店铺

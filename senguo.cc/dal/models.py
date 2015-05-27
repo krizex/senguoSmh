@@ -557,6 +557,8 @@ class Shop(MapBase, _CommonApi):
 	config = relationship("Config", uselist=False)
 	marketing = relationship("Marketing", uselist=False)
 
+	super_temp_active = Column(Integer,default = 1) #1:receive the message from wx 0:do not receive#5.26
+
 	def __repr__(self):
 		return "<Shop: {0} (id={1}, code={2})>".format(
 			self.shop_name, self.id, self.shop_code)
@@ -589,23 +591,6 @@ class ShopAuthenticate(MapBase,_AccountApi):
 	create_time = Column(DateTime, default=func.now())
 	# code       = Column(Integer)
 
-class RelShopAdmin(MapBase, _AccountApi):
-	__tablename__ = "rel_shop_admin"
-	__relationship_props__ = ["accountinfo"]
-
-	id = Column(Integer, primary_key=True, nullable=False,autoincrement=True)
-	shop_id  = Column(Integer, ForeignKey(Shop.id), nullable=False)
-	account_id = Column(Integer, ForeignKey(Accountinfo.id), nullable=False)
-	status = Column(Integer,default = 1) #0:been deleted 1:normal
-	accountinfo = relationship(Accountinfo)
-	temp_active = Column(Integer,default = 0) #1:receive the message from wx 0:do not receive
-
-class RelAdminTemp(MapBase, _AccountApi):
-	__tablename__ = "rel_admin_temp"
-	id = Column(Integer, primary_key=True, nullable=False,autoincrement=True)
-	shop_id  = Column(Integer, ForeignKey(Shop.id), nullable=False)
-	account_id = Column(Integer, ForeignKey(Accountinfo.id),nullable=False)
-	create_time = Column(DateTime, default=func.now())
 
 # 角色：商家，即店铺的管理员
 class ShopAdmin(MapBase, _AccountApi):
@@ -639,7 +624,7 @@ class ShopAdmin(MapBase, _AccountApi):
 	info = relationship("Info")
 	info_collect = relationship("Info", secondary="info_collect")
 	comment = relationship("Comment")
-	temp_active  = Column(Integer,default = 1) #1:receive the message from wx 0:do not receive #5.25
+	temp_active  = Column(Integer,default = 1) #1:receive the message from wx 0:do not receive #5.25 drop
 
 	def success_orders(self, session):
 		if not hasattr(self, "_success_orders"):
@@ -734,13 +719,28 @@ class HireLink(MapBase, _CommonApi):
 
 	staff_id = Column(Integer, ForeignKey(ShopStaff.id), primary_key=True)
 	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True)
-	work = Column(TINYINT, default=3) #工作类型：1:JH,2:SH1,3:SH2
+	work = Column(TINYINT, default=3) #工作类型： 1:JH,2:SH1,3:SH2 9:admin
 	money = Column(Float, default=0)  # 已收货款
 	address1 = Column(String(100)) #责任区域一级地址（可多选，空格隔开）
 	address2 = Column(String(200)) #二级
 	remark = Column(String(500))
-	active = Column(TINYINT, default=1)#1:上班 2：下班
+	active = Column(TINYINT, default=1)#0:delete 1:上班 2：下班
 	default_staff = Column(Integer, default=0)#0: 非默认员工 1：默认员工 35.9
+	temp_active = Column(Integer,default = 0) #1:receive the message from wx 0:do not receive #5.26
+
+# 员工申请表
+class HireForm(MapBase):
+	__tablename__ = "hire_form"
+
+	staff_id = Column(Integer, ForeignKey(ShopStaff.id), primary_key=True, nullable=False)
+	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
+	work = Column(TINYINT, default=3)#默认为SH2
+	intro = Column(String(500))
+	advantage = Column(String(500))
+	status = Column(TINYINT, default=1)#1：申请中，2：通过，3：未通过
+	staff = relationship("ShopStaff", uselist=False, join_depth=2)
+	create_time = Column(DateTime, default=func.now()) #5.26
+
 
 # 角色：顾客
 class Customer(MapBase, _AccountApi):
@@ -1478,18 +1478,6 @@ class Address2(MapBase, _CommonApi):
 	name = Column(String(50))
 	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 
-# 员工申请表
-class HireForm(MapBase):
-	__tablename__ = "hire_form"
-
-	staff_id = Column(Integer, ForeignKey(ShopStaff.id), primary_key=True, nullable=False)
-	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
-	work = Column(TINYINT, default=3)#默认为SH2
-	intro = Column(String(500))
-	advantage = Column(String(500))
-	status = Column(TINYINT, default=1)#1：申请中，2：通过，3：未通过
-
-	staff = relationship("ShopStaff", uselist=False, join_depth=2)
 
 # 系统公告
 class SysNotice(MapBase):

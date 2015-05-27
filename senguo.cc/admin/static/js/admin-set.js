@@ -21,6 +21,15 @@ $(document).ready(function(){
              },2000);
         }
     }
+    $('.func-mode').each(function(){
+        var $this=$(this);
+        var status=parseInt($this.attr('data-status'));
+        if(status ==1){
+            $this.addClass('work-mode').find('.text').text('订单提醒已启用');
+        }else{
+            $this.addClass('stop-mode').find('.text').text('订单提醒未启用');
+        }
+    });
 }).on('click','.cash_active',function(){
     var $this=$(this);
     if($this.attr("data-flag")=="off") return false;
@@ -257,9 +266,9 @@ $(document).ready(function(){
             if(res.success){
                 $this.attr("data-flag","on");
                 if(status==1){
-                    $this.text('开启订单提醒').attr('data-status',0);
+                    $this.addClass('stop-mode').removeClass('work-mode').attr('data-status',0).find('.text').text('订单提醒未启用');
                 }else{
-                    $this.text('关闭订单提醒').attr('data-status',1);
+                     $this.addClass('work-mode').removeClass('stop-mode').attr('data-status',1).find('.text').text('订单提醒已启用');
                 }
             }else{
                     $this.attr("data-flag","on");
@@ -286,10 +295,10 @@ $(document).ready(function(){
             if(res.success){
                 $this.attr("data-flag","on");
                  if(status==1){
-                    $this.text('开启订单提醒').attr('data-status',0);
+                    $this.addClass('stop-mode').attr('data-status',0).find('.text').text('订单提醒未启用');
                 }else{
-                    $this.text('关闭订单提醒').attr('data-status',1);
-                    $this.parents('li').siblings('li').find('.set-receive').text('开启订单提醒').attr('data-status',0);
+                     $this.addClass('work-mode').removeClass('stop-mode').attr('data-status',1).find('.text').text('订单提醒已启用');
+                     $this.parents('li').siblings('li').find('.set-receive').addClass('stop-mode').removeClass('work-mode').attr('data-status',0).find('.text').text('订单提醒未启用');
                 }
             }
             else{

@@ -18,12 +18,6 @@
 </head>
 <body>
 {% set current_shop = handler.current_shop %}
-{% set num=0 %}
-{% for order in current_shop.orders %}
-    {% if order.type==1 and order.status==1 %}
-    {% set num=num+1%}
-    {% end %}
-{% end %}
 <header class="backstage-header header-fix">
     <div class="w1200 header-box">
         <div class="logo-con height50 pull-left">
@@ -35,19 +29,16 @@
         </div>
         <div class="header-nav height50 pull-right">
             <ul class="navbar">
-                <li class="active send-now line50">
-                    <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1&page=0">
-                        <i class="send-img height50 pull-left"></i>
-                        立即送
-                        <span class="on_sum" id="on_sum">{{num}}</span>
-                    </a>
-                </li>
                 <li class="area-info brnone">
-                    <img src="{{current_shop.shop_trademark_url or '/static/design_img/TDSG.png'}}?imageView/1/w/100/h/100" class="admin-img round height50 pull-left"/>
+                    <img src="{{current_user.accountinfo.headimgurl_small or '/static/design_img/TDSG.png'}}?imageView/1/w/100/h/100" class="admin-img round height50 pull-left"/>
                     <div class="admin-info area pull-right switch-area">
-                        <div class="job text-left mt5"><a href="/customer/profile" class="text-link">马大灰的店铺</a></div>
+                        <div class="job text-left mt5"><a href="/customer/profile" class="text-link">{{current_user.accountinfo.nickname}}</a></div>
                         <div class="switch-change-phone">
+                            {% if current_user.accountinfo.phone %}
+                            {{current_user.accountinfo.phone}}
+                            {% else %}
                             <span class="band-tel">未绑定手机号</span> <a href="/customer/profile" class="text-link">点击绑定</a>
+                            {% end %}
                         </div>
                     </div>
                 </li>
@@ -61,7 +52,7 @@
     <div class="s-container">
         <div class="sw-top">
             <p>店铺列表 <a href="javascript:;" class="text-link" id="spread-list">推广店铺列表</a></p>
-            <div class="sw-er-tip po-list">
+            <div class="sw-er-tip po-list invisible">
                 <div class="left-arr">
                     <span class="line1"></span>
                     <span class="line2"></span>
@@ -85,21 +76,23 @@
         </div>
         <div class="sw-bm">
             <ul class="sw-list group">
-                <li>
-                    <div class="sw-tip shopping"></div>
-                    <span class="sw-tip-txt">营业中</span>
+            {% for shop in  context['shop_list']%}
+                <li class="da" data-id="{{shop['id']}}">
+                    {% if shop['shop_code'] !=None and shop['shop_code'] !='not set' %}
+                    <div class="sw-tip shopping" data-status="{{shop['status']}}"></div>
+                    <span class="sw-tip-txt"></span>
                     <dl class="group">
                         <dt class="fl">
-                            <img src="/static/images/TDSG.png" alt="店铺名"/>
-                            <a href="javascript:;" class="text-link spread-shop">推广店铺</a>
-                            <div class="sw-er-tip hidden">
+                            <img src="{{shop['shop_trademark_url'] or '/static/images/TDSG.png'}}" alt="{{shop['shop_name']}}"/>
+                            <a href="javascript:;" class="text-link spread-shop forbid_click" data-url="{{reverse_url('Market',shop['shop_code'])}}">推广店铺</a>
+                            <div class="sw-er-tip invisible forbid_click">
                                 <div class="left-arr">
                                     <span class="line1"></span>
                                     <span class="line2"></span>
                                 </div>
                                 <p class="er-text">店铺列表链接</p>
                                 <div class="wrap-ipt">
-                                    <input type="text" class="sw-link-txt" value="http://senguo.cc/list" disabled/>
+                                    <input type="text" class="sw-link-txt" value="http://senguo.cc/{{shop['shop_code']}}" disabled/>
                                     <input type="button" class="sw-link-copy" value="复制链接"/>
                                 </div>
                                 <div class="wrap-er group">
@@ -111,113 +104,31 @@
                             </div>
                         </dt>
                         <dd class="fl sw-listr">
-                            <p class="sw-title">我的店铺我的 <span class="auth">个人认证</span></p>
+                            <p class="sw-title">{{shop['shop_name']}} <span class="auth hidden" data-auth="{{shop['shop_auth']}}"></span></p>
                             <ul class="sw-attr group">
-                                <li>商品 98件</li>
-                                <li>评价 33条</li>
-                                <li>满意度 98%</li>
-                                <li>粉丝 1000个</li>
-                                <li>订单 2000个</li>
-                                <li>营业额 30000元</li>
+                                <li>商品 {{shop['goods_count']}}件</li>
+                                <li>评价 {{shop['comment_count']}}条</li>
+                                <li>满意度 {{shop['satisfy']}}%</li>
+                                <li>粉丝 {{shop['fans_sum']}}个</li>
+                                <li>订单 {{shop['order_sum']}}个</li>
+                                <li>营业额 {{shop['total_money'] or 0}}元</li>
                             </ul>
-                            <p class="text-grey9 sw-addre">店铺地址：湖北省武汉市洪山区剑桥春天</p>
+                            <p class="text-grey9 sw-addre">店铺地址：{{shop['address']}}</p>
                         </dd>
                     </dl>
-                </li>
-                <li>
-                    <div class="sw-tip resting"></div>
-                    <span class="sw-tip-txt">休息中</span>
-                    <dl class="group">
+                    {% else %}
+                      <dl class="group">
                         <dt class="fl">
-                            <img src="/static/images/TDSG.png" alt="店铺名"/>
-                            <a href="javascript:;" class="text-link">推广店铺</a>
-                            <div class="sw-er-tip hidden">
-                                <div class="left-arr">
-                                    <span class="line1"></span>
-                                    <span class="line2"></span>
-                                </div>
-                                <p class="er-text">店铺列表链接</p>
-                                <div class="wrap-ipt">
-                                    <input type="text" class="sw-link-txt" value="http://senguo.cc/list" disabled/>
-                                    <input type="button" class="sw-link-copy" value="复制链接"/>
-                                </div>
-                                <div class="wrap-er group">
-                                    <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
-                                    <div class="er-text lh80 fl">列表二维码</div>
-                                    <div class="er-img fl er-code-img">
-                                    </div>
-                                </div>
-                            </div>
+                            <img src="{{shop['shop_trademark_url'] or '/static/images/TDSG.png'}}" alt="{{shop['shop_name']}}"/>
                         </dt>
                         <dd class="fl sw-listr">
-                            <p class="sw-title">我的店铺我的 <span class="auth">个人认证</span></p>
-                            <ul class="sw-attr group">
-                                <li>商品 98件</li>
-                                <li>评价 33条</li>
-                                <li>满意度 98%</li>
-                                <li>粉丝 1000个</li>
-                                <li>订单 2000个</li>
-                                <li>营业额 30000元</li>
-                            </ul>
-                            <p class="text-grey9 sw-addre">店铺地址：湖北省武汉市洪山区剑桥春天</p>
-                        </dd>
-                    </dl>
-                </li>
-                <li>
-                    <div class="sw-tip closed"></div>
-                    <span class="sw-tip-txt">已关闭</span>
-                    <dl class="group">
-                        <dt class="fl">
-                            <img src="/static/images/TDSG.png" alt="店铺名"/>
-                            <a href="javascript:;" class="text-link">推广店铺</a>
-                        </dt>
-                        <dd class="fl sw-listr">
-                            <p class="sw-title">我的店铺我的 <span class="auth">个人认证</span></p>
-                            <ul class="sw-attr group">
-                                <li>商品 98件</li>
-                                <li>评价 33条</li>
-                                <li>满意度 98%</li>
-                                <li>粉丝 1000个</li>
-                                <li>订单 2000个</li>
-                                <li>营业额 30000元</li>
-                            </ul>
-                            <p class="text-grey9 sw-addre">店铺地址：湖北省武汉市洪山区剑桥春天</p>
-                        </dd>
-                    </dl>
-                </li>
-                <li>
-                    <div class="sw-tip waiting"></div>
-                    <span class="sw-tip-txt">筹备中</span>
-                    <dl class="group">
-                        <dt class="fl">
-                            <img src="/static/images/TDSG.png" alt="店铺名"/>
-                            <a href="javascript:;" class="text-link">推广店铺</a>
-                        </dt>
-                        <dd class="fl sw-listr">
-                            <p class="sw-title">我的店铺我的 <span class="auth">个人认证</span></p>
-                            <ul class="sw-attr group">
-                                <li>商品 98件</li>
-                                <li>评价 33条</li>
-                                <li>满意度 98%</li>
-                                <li>粉丝 1000个</li>
-                                <li>订单 2000个</li>
-                                <li>营业额 30000元</li>
-                            </ul>
-                            <p class="text-grey9 sw-addre">店铺地址：湖北省武汉市洪山区剑桥春天</p>
-                        </dd>
-                    </dl>
-                </li>
-                <li>
-                    <dl class="group">
-                        <dt class="fl">
-                            <img src="/static/images/TDSG.png" alt="店铺名"/>
-                        </dt>
-                        <dd class="fl sw-listr">
-                            <p class="sw-title">我的店铺我的 马灰灰</p>
+                            <p class="sw-title">{{shop['shop_name']}}</p>
                             <p class="unauth">店铺预览暂时无法正常显示，<br>请进入<a href="/admin/config/shop" class="text-link">店铺设置</a>进行相关设置。</p>
                         </dd>
                     </dl>
+                    {% end %}
                 </li>
+                {% end %}
                 <li>
                     <a href="/apply" class="add-swshop">+ 创建店铺</a>
                 </li>
