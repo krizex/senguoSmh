@@ -11,7 +11,7 @@ $(document).ready(function(){
     }else{
         filter();
     }
-
+    initLocation();
     scrollLoading();
     //province and city
     var area=window.dataObj.area;
