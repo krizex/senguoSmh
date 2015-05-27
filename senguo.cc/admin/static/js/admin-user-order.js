@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var item_url='/static/items/admin/order-item.html?v=2015-05-22';
+    var item_url='/static/items/admin/order-item.html?v=2015-05-28';
     //订单数据
     if(orders.length==0) $('.order-list-content').append('<h3 class="text-center">无订单信息！</h3>');
     else getOrder(item_url);
@@ -158,6 +158,7 @@ function orderItem(item){
         var shop_new=item[i]['shop_new'];
         var del_reason=item[i]['del_reason'];
         var nickname=item[i]['nickname'];
+        var customer_id=item[i]['customer_id'];
               
         if(!message) {
             $item.find('.order-message').hide();
@@ -174,7 +175,7 @@ function orderItem(item){
         if(shop_new!=1) {
             $item.find('.new').show();
         }
-        $item.find('.name').text(nickname).attr('href','/admin/follower?action=search&&order_by=time&&page=0&&wd='+nickname);
+        $item.find('.name').text(nickname).attr('href','/admin/follower?action=filter&&order_by=time&&page=0&&wd='+customer_id);
         $item.find('.receiver').text(receiver);
         $item.attr({'data-id':id,'data-type':type});
         $item.find('.send-time').text(send_time);

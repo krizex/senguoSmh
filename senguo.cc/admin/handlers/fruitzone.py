@@ -392,6 +392,18 @@ class ShopApply(FruitzoneBaseHandler):
 		#* todo 检查合法性
 
 		if self._action == "apply":
+			account_id = self.current_user.accountinfo.id
+			try:
+				if_admin = self.session.query(models.HireLink).join(models.ShopStaff,models.HireLink.staff_id == models.ShopStaff.id)\
+				.filter(models.HireLink.active==1,models.HireLink.work ==9 ,models.ShopStaff.id == account_id).first()
+			except:
+				if_admin = None
+			try:
+				if_shop = self.session.query(models.Shop).filter_by(id = if_admin.shop_id).first()
+			except:
+				if_shop = None
+			if if_admin:
+				return self.send_fail('该账号已是'+if_shop.shop_name+'的管理员，不能使用该账号申请店铺，若要使用该账号，请退出'+if_shop.shop_name+'管理员身份更换或其它账号')
 			if not check_msg_token(phone=self.args['shop_phone'], code=self.args["code"]):
 				# print('check_msg_token' + self.current_user.accountinfo.wx_unionid)
 				return self.send_fail(error_text="验证码过期或者不正确")  #

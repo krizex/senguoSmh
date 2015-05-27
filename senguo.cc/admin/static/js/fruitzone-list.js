@@ -11,7 +11,7 @@ $(document).ready(function(){
     }else{
         filter();
     }
-
+    initLocation();
     scrollLoading();
     //province and city
     var area=window.dataObj.area;
@@ -159,12 +159,12 @@ function initLocation(){
             refuse_flag = true;
             ulat = position.coords.latitude;
             ulng = position.coords.longitude;
-            var point = new BMap.Point(ulat,ulng);
+            var point = new BMap.Point(ulng,ulat);
             var geoc = new BMap.Geocoder();
             geoc.getLocation(point, function(rs){
                 var addComp = rs.addressComponents;
                 initProviceAndCityCode(addComp.province, addComp.city);
-                $("#city_name").text(addComp.city);
+                $(".city_name").text(addComp.city);
                 filter($("#city_id").val());
             });
         },function(error){
@@ -198,6 +198,7 @@ function initProviceAndCityCode(p, c){
 function getDist(lat,lng){
     if(lat == 0) return false;
     var res = '';
+    var map = new BMap.Map("map");
     var pointA = new BMap.Point(ulat,ulng);  // 用户坐标
     var pointB = new BMap.Point(lat,lng);  // 店铺坐标
     var distance = map.getDistance(pointA,pointB);
@@ -250,6 +251,7 @@ var shopItem=function (shops){
                 var status = shops[key]['status'];
                 var lat = shops[key]['lon'];//经度
                 var lon = shops[key]['lat'];//纬度
+        console.log(lat+"==="+lon);
                 var area=window.dataObj.area;
                 var hide='';
                 var statu = '';

@@ -12,6 +12,11 @@
      var s = document.getElementsByTagName("script")[0]; 
      s.parentNode.insertBefore(hm, s);
    })();
+    if($("#order-success").size()>0){
+        if(location.href!=parent.location.href){
+            parent.location.href = location.href;
+        }
+    }
     //fastclick initialise
    FastClick.attach(document.body);
     //客户端为Android系统替换图片路径

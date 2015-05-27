@@ -1666,6 +1666,7 @@ class CartCallback(CustomerBaseHandler):
 				other_admin = self.session.query(models.HireLink).filter_by(shop_id = shop.id,active=1,work=9,temp_active=1).first()
 			except:
 				other_admin = None
+			print(other_admin,"i am other_admin or even i doesnt exist,i'm a ghost admin")
 			if other_admin:
 				info =self.session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id)\
 				.filter(models.ShopStaff.id == other_admin.staff_id).first()

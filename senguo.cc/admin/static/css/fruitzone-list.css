@@ -19,16 +19,16 @@
 .com-list>li{text-align: left;padding-left: 26px;}
 .c-list>li:hover{background-color: #dcede5;color: #88c393;}
 .c-list>li:last-child{border-bottom: none;}
-.adre-box{width: 100%;height: 18px;padding-right: 40px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;position: relative;}
-.distance{width: 40px;position: absolute;right: 0;top: 0;height: 18px;display: block;text-align: right;}
+.adre-box{width: 100%;height: 18px;padding-right: 60px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;position: relative;}
+.distance{width: 60px;position: absolute;right: 0;top: 0;height: 18px;display: block;text-align: right;}
 .pr{position: relative;}
 .shoplist_box{width:100%;clear:both;}
 .shoplist_box .item{width:100%;margin-top:8px;padding:5px 15px;float:left;position: relative;}
 .shop-status{position: absolute;width: 80px;height: 54px;right: 0;top: -4px;background-size: contain;background-repeat: no-repeat;}
 .shop-waiting{background-image: url('/static/images/shop_waiting.png');}
 .shop-rest{background-image: url('/static/images/shop_rest.png');}
-.shoplist_box .item .logo_box{position:absolute;top:0;left:0;width:56px;height:56px;border-top-left-radius:999px;border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px;background-clip: padding-box;border-radius: 999px;overflow:hidden;border:2px solid #aeddda;}
-.shoplist_box .item .shop_logo{width:52px;height:52px;border-top-left-radius:999px;border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px;border-radius: 999px;}
+.shoplist_box .item .logo_box{position:absolute;top:0;left:0;width:56px;height:56px;border-top-left-radius:999px;border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px;background-clip: padding-box;border-radius: 999px;overflow:hidden;border:3px solid #aeddda;}
+.shoplist_box .item .shop_logo{width:50px;height:50px;border-top-left-radius:999px;border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px;border-radius: 999px;}
 .shoplist_box .item .info{padding-left: 66px;width: 100%;}
 .shoplist_box .item .shop_name{margin-top:2px;}
 .shoplist_box .item .sty1{line-height:20px;}
