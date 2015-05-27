@@ -306,11 +306,11 @@ class OnlineAliPay(CustomerBaseHandler):
 			staff_id = order.SH2_id
 			staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id).first()
 			if staff_info is not None:
-					sender_phone = staff_info.phone
-					sender_img = staff_info.headimgurl_small
+					order.sender_phone = staff_info.phone
+					order.sender_img = staff_info.headimgurl_small
 			else:
-					sender_phone =None
-					sender_img = None
+					order.sender_phone =None
+					order.sender_img = None
 			goods = []
 			f_d = eval(order.fruits)
 			m_d = eval(order.mgoods)
@@ -321,9 +321,8 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.render("fruitzone/payali.html",totalPrice = totalPrice,shopName = shopName,\
 				alipayUrl = alipayUrl,create_date=create_date,receiver=receiver,phone=phone,\
 				address=address,send_time=send_time,remark=remark,pay_type=pay_type,online_type=\
-				online_type,status=status,freight=freight,sender_phone=sender_phone,sender_img=\
-				sender_img,goods = goods,order=order,charge_types=charge_types,mcharge_types\
-				=mcharge_types)
+				online_type,status=status,freight=freight,goods = goods,order=order,charge_types=\
+				charge_types,mcharge_types=mcharge_types)
 		else:
 			return self.send_fail('404')
 	# @tornado.web.authenticated
@@ -561,6 +560,17 @@ class OnlineAliPay(CustomerBaseHandler):
 		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 
 		return self.redirect(self.reverse_url("noticeSuccess"))
+
+
+
+
+
+
+
+
+
+
+
 
 
 

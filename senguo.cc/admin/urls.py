@@ -73,6 +73,7 @@ handlers = [
 	(r"/customer/online/orderdetail",handlers.onlinePay.OrderDetail,{},'onlineOrderDetail'),
 	(r"/customer/online/justorder",handlers.onlinePay.JustOrder,{},"justOrder"),
 	(r"/customer/cart/(\w+)", handlers.customer.Cart, {}, "customerCart"),
+	(r"/customer/cartback",handlers.customer.CartCallback,{},"customerCartCallback"),
 	(r"/customer/orders", handlers.customer.Order, {}, "customerOrder"),
 	(r"/customer/orders/detail/(\d+)", handlers.customer.OrderDetail, {}, "customerOrderDetail"),
 	(r"/customer/members", handlers.customer.Members, {}, "customerMembers"),
