@@ -2060,7 +2060,9 @@ class ShopConfig(AdminBaseHandler):
 		address = self.code_to_text("shop_city", self.current_shop.shop_city) +\
 				  " " + self.current_shop.shop_address_detail
 		service_area = self.code_to_text("service_area", self.current_shop.shop_service_area)
-		return self.render("admin/shop-info-set.html", city=city,province=province,address=address, service_area=service_area, context=dict(subpage='shop_set',shopSubPage='info_set'))
+		lat = self.current_shop.lon;
+		lon = self.current_shop.lat;
+		return self.render("admin/shop-info-set.html", lat=lat,lon=lon,city=city,province=province,address=address, service_area=service_area, context=dict(subpage='shop_set',shopSubPage='info_set'))
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "data")

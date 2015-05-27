@@ -20,13 +20,14 @@
         .back-area{height: 32px;color: #fff;margin-top: 50px; float:right;width: 100%;text-align: center;}
         .back-btn{width: 32px;height: 32px;background: url('/static/images/icon_back.png') no-repeat;display: inline-block;-webkit-transform:rotate(180deg);}
         .back-txt{font-size: 16px;vertical-align: 8px;}
+        iframe{width: 100%;height: 100%;border: 0;}
     </style>
 </head>
-<body>
+<body ontouchmove="event.preventDefault();">
 <div class="wrap-area-box">
     <input type="hidden" id="order_id" value="{{order_id}}"/>
     <input type="hidden" id="go-url" value="{{alipayUrl}}"/>
-    <div class="tip-area">
+    <!--div class="tip-area">
         <img src="/static/images/order_tip.png" alt="点击右上角选择浏览器中打开"/>
     </div>
     <p class="tip-txt">
@@ -35,7 +36,8 @@
     <div class="back-area" id="back-btn">
         <i class="back-btn"></i>
         <span class="back-txt">返回</span>
-    </div>
+    </div-->
+    <iframe src="{{alipayUrl}}" frameborder="0"></iframe>
 </div>
 <script src="/static/js/zepto.js"></script>
 <script>
@@ -43,7 +45,7 @@
         var ua = window.navigator.userAgent.toLowerCase();
         if(ua.match(/MicroMessenger/i) == 'micromessenger'){
         }else{
-            window.location.href=$("#go-url").val();
+            //window.location.href=$("#go-url").val();
         }
     }).on("click","#back-btn",function(){
         window.location.href="/customer/online/justorder?order_id="+$("#order_id").val();
