@@ -49,7 +49,8 @@ handlers = [
 	(r"/customer/wxBind", handlers.customer.WxBind, {"action":"wx_bind"}, "customerwxBind"),
 	(r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
 	(r"/customer/discover/(\w+)",handlers.customer.Discover,{},"customerDiscover"),
-	
+	#商品详情
+	(r"/customer/goods/(\w+)",handlers.customer.Goods,{},"customerGoods"),
 	# (r"/fruitzone/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
 	#微官网-----待删除
 	(r"/", handlers.superadmin.Official),
@@ -73,6 +74,7 @@ handlers = [
 	(r"/customer/online/orderdetail",handlers.onlinePay.OrderDetail,{},'onlineOrderDetail'),
 	(r"/customer/online/justorder",handlers.onlinePay.JustOrder,{},"justOrder"),
 	(r"/customer/cart/(\w+)", handlers.customer.Cart, {}, "customerCart"),
+	(r"/customer/cartback",handlers.customer.CartCallback,{},"customerCartCallback"),
 	(r"/customer/orders", handlers.customer.Order, {}, "customerOrder"),
 	(r"/customer/orders/detail/(\d+)", handlers.customer.OrderDetail, {}, "customerOrderDetail"),
 	(r"/customer/members", handlers.customer.Members, {}, "customerMembers"),

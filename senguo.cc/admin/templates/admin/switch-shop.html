@@ -51,7 +51,7 @@
 <main class="container mt80">
     <div class="s-container">
         <div class="sw-top">
-            <p>店铺列表 <a href="javascript:;" class="text-link" id="spread-list">推广店铺列表</a></p>
+            <p>店铺列表 {% if current_shop.admin_id == current_user.id %}<a href="javascript:;" class="text-link" id="spread-list">推广店铺列表</a>{% end %}</p>
             <div class="sw-er-tip po-list invisible">
                 <div class="left-arr">
                     <span class="line1"></span>
@@ -59,7 +59,7 @@
                 </div>
                 <p class="er-text">店铺列表链接</p>
                 <div class="wrap-ipt">
-                    <input type="text" class="sw-link-txt" value="http://senguo.cc/list" disabled/>
+                    <input type="text" class="sw-link-txt" value="http://senguo.cc/list?action=shop&&id={{current_shop.admin_id}}" disabled/>
                     <input type="button" class="sw-link-copy"  id="sw-link-copy" value="复制链接"/>
                 </div>
                 <div class="wrap-er group">
@@ -77,14 +77,14 @@
         <div class="sw-bm">
             <ul class="sw-list group">
             {% for shop in  context['shop_list']%}
-                <li class="da" data-id="{{shop['id']}}">
+                <li class="da" data-id="{{shop['id']}}" data-code="{{shop['shop_code']}}">
                     {% if shop['shop_code'] !=None and shop['shop_code'] !='not set' %}
                     <div class="sw-tip shopping" data-status="{{shop['status']}}"></div>
                     <span class="sw-tip-txt"></span>
                     <dl class="group">
                         <dt class="fl">
                             <img src="{{shop['shop_trademark_url'] or '/static/images/TDSG.png'}}" alt="{{shop['shop_name']}}"/>
-                            <a href="javascript:;" class="text-link spread-shop forbid_click" data-url="{{reverse_url('Market',shop['shop_code'])}}">推广店铺</a>
+                            <a href="javascript:;" class="text-link spread-shop" data-url="{{reverse_url('Market',shop['shop_code'])}}">推广店铺</a>
                             <div class="sw-er-tip invisible forbid_click">
                                 <div class="left-arr">
                                     <span class="line1"></span>
