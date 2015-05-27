@@ -164,7 +164,7 @@ function initLocation(){
             geoc.getLocation(point, function(rs){
                 var addComp = rs.addressComponents;
                 initProviceAndCityCode(addComp.province, addComp.city);
-                $("#city_name").text(addComp.city);
+                $("#city-name").text(addComp.city);
                 filter($("#city_id").val());
             });
         },function(error){
@@ -198,6 +198,7 @@ function initProviceAndCityCode(p, c){
 function getDist(lat,lng){
     if(lat == 0) return false;
     var res = '';
+    var map = new BMap.Map("map");
     var pointA = new BMap.Point(ulat,ulng);  // 用户坐标
     var pointB = new BMap.Point(lat,lng);  // 店铺坐标
     var distance = map.getDistance(pointA,pointB);
@@ -256,13 +257,11 @@ var shopItem=function (shops){
                 var dishide = '';
                 var distance = '';
                 var link = '/'+shop_code;
-                alert(lat+"==="+ulat);
                 if(lat == 0 || ulat == 0){
                     dishide = "hidden";
                 }else{
                     distance = getDist(lat,lon);
                 }
-        alert(distance);
                 if(province==city) {
                     city='';
                 }

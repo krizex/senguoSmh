@@ -12,15 +12,15 @@
     <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
     <style type="text/css">
         *{padding: 0;margin: 0;}
-        html,body{width: 100%;height: 100%;overflow: hidden;}
-        .wrap-area-box{position: relative;width: 100%;max-width: 800px;min-width: 320px;margin: 0 auto;overflow: hidden;height: 100%;background-color: rgba(0,0,0,.8);}
+        html,body{width: 100%;height: 100%;overflow-x: hidden;}
+        .wrap-area-box{position: relative;width: 100%;max-width: 800px;min-width: 320px;margin: 0 auto;overflow-x: hidden;height: 100%;background-color: rgba(0,0,0,.8);}
         .tip-area{float:right;width: 64%;top: 10px;right: 10px;}
         .tip-area>img{width: 100%;}
         .tip-txt{padding: 0 15%;text-align: center;color: #fff;font-size: 16px;line-height: 26px;float:right;width: 100%;-webkit-box-sizing: border-box;}
         .back-area{height: 32px;color: #fff;margin-top: 50px; float:right;width: 100%;text-align: center;}
         .back-btn{width: 32px;height: 32px;background: url('/static/images/icon_back.png') no-repeat;display: inline-block;-webkit-transform:rotate(180deg);}
         .back-txt{font-size: 16px;vertical-align: 8px;}
-        iframe{width: 100%;height: 100%;border: 0;}
+        iframe{width: 100%;height: 100%;border: 0;overflow: auto;}
     </style>
 </head>
 <body ontouchmove="event.preventDefault();">
@@ -37,7 +37,7 @@
         <i class="back-btn"></i>
         <span class="back-txt">返回</span>
     </div-->
-    <iframe src="{{alipayUrl}}" frameborder="0"></iframe>
+    <iframe src="{{alipayUrl}}" frameborder="0" scrolling="auto"></iframe>
 </div>
 <script src="/static/js/zepto.js"></script>
 <script>
