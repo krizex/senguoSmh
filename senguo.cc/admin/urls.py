@@ -37,6 +37,8 @@ handlers = [
 
 	(r"/customer/login", handlers.customer.Access, {"action":"login"}, "customerLogin"),
 	(r"/customer/oauth", handlers.customer.Access, {"action":"oauth"}, "customerOauth"),
+	(r"/customer/qq",handlers.customer.Access,{'action':'qq'},"customerQq"),
+	(r"/customer/qqoauth",handlers.customer.Access,{"action":"qqoauth"},"customerQOauth"),
 	(r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
 	(r"/customer/weixin", handlers.customer.Third, {"action":"weixin"}, "customerWeixin"),
 	(r"/customer/register", handlers.customer.RegistByPhone, {}, "customerRegister"),
@@ -179,6 +181,9 @@ handlers = [
 	(r"/admin/realtime",handlers.admin.Realtime,{},""),
 	(r"/admin/marketing",handlers.admin.Marketing,{},"adminMarketing"),
 	(r"/admin/confession",handlers.admin.Confession,{},"adminConfession"),
+	(r"/admin/switchshop",handlers.admin.SwitchShop,{},"switchshop"),
+	(r"/admin/wxauth", handlers.admin.AdminAuth, {"action":"wxauth"}, "adminwxAuth"),
+	(r"/admin/wxcheck", handlers.admin.AdminAuth, {"action":"wxcheck"}, "adminwxCheck"),
 
 	# (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
 	# (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
@@ -200,6 +205,7 @@ handlers = [
 	(r"/fruitzone/admin/home", handlers.fruitzone.AdminHome, {}, "fruitzoneAdminHome"),
 	(r"/fruitzone/admin/profile", handlers.fruitzone.AdminProfile, {}, "fruitzoneAdminProfile"),
 	(r"/fruitzone/paytest",handlers.customer.payTest,{},"fruitzonePayTest"),
+	(r"/fruitzone/searchlist",handlers.fruitzone.SearchList,{},"searchlist"),
 	#to remove  
 	#woody
 	(r"/apply/toweixin", handlers.fruitzone.ToWeixin, {}, "fruitzoneToWexin"),

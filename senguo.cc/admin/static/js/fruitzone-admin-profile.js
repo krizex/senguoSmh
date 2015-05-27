@@ -104,7 +104,7 @@ function Vrify(){
             if(res.success)
             {
                 time($('#getVrify'));
-                alert('验证码已发送到您的手机,请注意查收！');
+                alert('验证码已发送到您的手机，请注意查收！');
 
             }
             else alert(res.error_text);

@@ -1,4 +1,4 @@
-from handlers.base import CustomerBaseHandler,WxOauth2
+from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth
 from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
 import dal.models as models
 import tornado.web
@@ -55,6 +55,12 @@ class Access(CustomerBaseHandler):
 			self.handle_oauth(next_url)
 		elif self._action == "weixin":
 			return self.redirect(self.get_weixin_login_url(next_url))
+		elif self._action == 'qq':
+			print('login in qq')
+			return self.redirect(self.get_qq_login_url(next_url))
+		elif self._action == 'qqoauth':
+			print('login qqoauth')
+			self.handle_qq_oauth(next_url)
 		else:
 			return self.send_error(404)
 
@@ -83,6 +89,19 @@ class Access(CustomerBaseHandler):
 		# next = self.args['next']
 		print("[手机登录]跳转URL：",next)
 		# return self.redirect('/woody')
+
+	@CustomerBaseHandler.check_arguments("code")
+	def handle_qq_oauth(self,next_url):
+		print('login in handle_qq_oauth')
+		code = self.args['code']
+		print(code,'handle_qq_oauth code')
+		userinfo = QqOauth.get_qqinfo(code)
+		if not userinfo:
+			return self.redirect(self.reverse_url("customerLogin"))
+		u = models.Customer.register_with_qq(self.session,userinfo)
+		self.set_current_user(u,domain = ROOT_HOST_NAME)
+		return self.redirect(next_url)
+
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self,next_url):
@@ -378,17 +397,17 @@ class CustomerProfile(CustomerBaseHandler):
 			return self.send_success(birthday=birthday)
 		elif action == 'add_password':
 			self.current_user.accountinfo.update(session = self.session , password = data)
-			print("[设置密码]设置成功，密码：",data)
+			# print("[设置密码]设置成功，密码：",data)
 		elif action == 'modify_password':
 			old_password = self.args['old_password']
-			print("[更改密码]输入老密码：",old_password)
-			print("[更改密码]验证老密码：",self.current_user.accountinfo.password)
+			# print("[更改密码]输入老密码：",old_password)
+			# print("[更改密码]验证老密码：",self.current_user.accountinfo.password)
 			if old_password != self.current_user.accountinfo.password:
-				print("[更改密码]密码验证错误")
+				# print("[更改密码]密码验证错误")
 				return self.send_fail("密码错误")
 			else:
 				self.current_user.accountinfo.update(session = self.session ,password = data)
-				print("[更改密码]更改成功，新密码：",data)
+				# print("[更改密码]更改成功，新密码：",data)
 		elif action =='wx_bind':
 			wx_bind = False
 			if self.current_user.accountinfo.wx_unionid:
@@ -1461,7 +1480,6 @@ class Cart(CustomerBaseHandler):
 			online_type = self.args['online_type']
 		else:
 			order_status = 1
-		print(w_SH2_id,"i'm staff id")
 		order = models.Order(customer_id=self.current_user.id,
 							 shop_id=shop_id,
 							 num=num,
@@ -1485,7 +1503,6 @@ class Cart(CustomerBaseHandler):
 							 status  = order_status,
 							 online_type = online_type,
 							 )
-		print(order)
 
 		try:
 			self.session.add(order)
@@ -1533,8 +1550,20 @@ class Cart(CustomerBaseHandler):
 		order_realid = order.id
 		# print("[提交订单]订单详情：",goods)
 		if self.args['pay_type'] != 3:
-			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
-				customer_name,order_totalPrice,send_time,goods,phone,address)
+			if w_admin.super_temp_active !=0:
+				WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
+					customer_name,order_totalPrice,send_time,goods,phone,address)
+			try:
+				other_admin = self.session.query(models.HireLink).filter_by(shop_id = shop.id,active=1,work=9,temp_active=1).first()
+			except:
+				other_admin = None
+			if other_admin:
+				info =self.session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id)\
+				.filter(models.ShopStaff.id == other_admin.staff_id).first()
+				other_touser = info.wx_openid
+				other_name = info.nickname
+				WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,\
+					customer_name,order_totalPrice,send_time,goods,phone,address)
 			# send message to customer
 			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
 		####################################################
@@ -1566,7 +1595,7 @@ class Cart(CustomerBaseHandler):
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
 			online_type = self.args['online_type']
-			self.set_cookie('order_num',str(order.num))
+			self.set_cookie('order_id',str(order.id))
 			self.set_cookie('online_totalPrice',str(order.totalPrice))
 			order.online_type = online_type
 			self.session.commit()
@@ -1576,7 +1605,7 @@ class Cart(CustomerBaseHandler):
 				success_url = self.reverse_url('onlineAliPay')
 			else:
 				print(online_type,'wx or alipay?')
-			return self.send_success(order_id = order.id,success_url=success_url)
+			return self.send_success(success_url=success_url,order_id = order.id)
 		return self.send_success()
 
 class Notice(CustomerBaseHandler):
@@ -1635,7 +1664,7 @@ class Order(CustomerBaseHandler):
 				'sender_phone':order.sender_phone,'sender_img':order.sender_img,'order_id':order.id,\
 				'message':order.message,'comment':order.comment,'create_date':create_date,\
 				'today':order.today,'type':order.type,'create_year':order.create_date.year,\
-				'create_month':order.create_date.month,'create_day':order.create_date.day,'pay_type':order.pay_type})
+				'create_month':order.create_date.month,'create_day':order.create_date.day,'pay_type':order.pay_type,'online_type':order.online_type})
 		return data
 
 	@tornado.web.authenticated

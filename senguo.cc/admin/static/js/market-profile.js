@@ -272,7 +272,7 @@ function Vrify(phone,target){
         function(res){
             if(res.success)
             {
-                noticeBox('验证码已发送到您的手机,请注意查收！',target);
+                noticeBox('验证码已发送到您的手机，请注意查收！',target);
                 time($('#getVrify'));
                 //$('#getVrify').removeClass('bg-greyc').removeAttr('disabled');
 

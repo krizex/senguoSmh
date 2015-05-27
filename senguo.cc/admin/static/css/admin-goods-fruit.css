@@ -108,3 +108,6 @@
 .add-goods-item .limit_tag{right:4px;top:44px;}
 .add-goods-item .hot_tag{left:4px;top:4px;}
 .add-goods-item .new_tag{right:4px;top:44px;}
+
+.subnav li{position:relative;}
+.subnav li .edit-btn{position:absolute;top:0;right:0;}

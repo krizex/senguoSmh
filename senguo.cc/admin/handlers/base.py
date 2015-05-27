@@ -6,7 +6,7 @@ import urllib
 import hashlib
 import traceback
 from settings import KF_APPID, KF_APPSECRET, APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
-# from settings import TEST_APPID,TEST_APPSECRET
+from settings import QQ_APPID,QQ_APPKEY
 import tornado.escape
 from dal.dis_dict import dis_dict
 import time
@@ -242,7 +242,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	__account_cookie_name__ = "customer_id"
 	__login_url_name__ = ""
 	__wexin_oauth_url_name__ = ""
-	__wexin_bind_url_name__ = "customerwxBind"
+	__wexin_check_url_name__ = ""
 
 	_wx_oauth_pc = "https://open.weixin.qq.com/connect/qrconnect?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_login&state=ohfuck#wechat_redirect"
 	_wx_oauth_weixin = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_userinfo&state=onfuckweixin#wechat_redirect"
@@ -259,6 +259,33 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		else:
 			ua = ""
 		return not ("Mobile" in ua)
+
+	def get_qq_oauth_link(self,next_url=""):
+		client_id = QQ_APPID
+		client_secret = QQ_APPKEY
+		HOME_URL = 'http://zone.senguo.cc'
+		print(APP_OAUTH_CALLBACK_URL,'APP_OAUTH_CALLBACK_URL')
+		para_str = "?next="+tornado.escape.url_escape(next_url)
+		print(para_str,'para_str')
+
+		redirect_uri = tornado.escape.url_escape(
+			HOME_URL + self.reverse_url('customerQOauth'))
+		print(redirect_uri)
+		url = "https://graph.qq.com/oauth2.0/authorize"
+		url = url+"?grant_type=authorization_code&"+ \
+		"response_type=code"+\
+		"&client_id="+client_id+ \
+		"&client_secret="+client_secret+ \
+		"&redirect_uri="+redirect_uri+\
+		"&state=test"
+		print(url)
+		return url
+
+	def get_qq_login_url(self,next_url):
+		if next_url is '':
+			next_url = self.reverse_url('customerProfile')
+		print('login get_qq_login_url',next_url)
+		return self.get_qq_oauth_link(next_url = next_url)
 
 	def get_wexin_oauth_link(self, next_url=""):
 		if not self.__wexin_oauth_url_name__:
@@ -289,7 +316,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return link
 
 	def get_wexin_oauth_link2(self, next_url=""):
-		if not self.__wexin_bind_url_name__:
+		if not self.__wexin_check_url_name__:
 			raise Exception("you have to complete this wexin oauth config.")
 
 		if next_url:
@@ -303,7 +330,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			para_str += "mode=mp"
 			redirect_uri = tornado.escape.url_escape(
 				APP_OAUTH_CALLBACK_URL+\
-				self.reverse_url(self.__wexin_bind_url_name__) + para_str)
+				self.reverse_url(self.__wexin_check_url_name__) + para_str)
 			link =  self._wx_oauth_weixin.format(appid=MP_APPID, redirect_uri=redirect_uri)
 		else:
 			if para_str: para_str += "&"
@@ -311,7 +338,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			para_str += "mode=kf"
 			redirect_uri = tornado.escape.url_escape(
 				APP_OAUTH_CALLBACK_URL+\
-				self.reverse_url(self.__wexin_bind_url_name__) + para_str)
+				self.reverse_url(self.__wexin_check_url_name__) + para_str)
 			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
 		print("[微信授权]授权链接：",link)
 		return link
@@ -580,21 +607,53 @@ class AdminBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopAdmin
 	# __account_cookie_name__ = "admin_id"
 	__wexin_oauth_url_name__ = "adminOauth"
+	__wexin_check_url_name__ = "adminwxCheck"
 	current_shop = None
 	@tornado.web.authenticated
 	def prepare(self):
 		"""这个函数在get、post等函数运行前运行"""
 		shop_id = self.get_secure_cookie("shop_id") or b'0'
 		shop_id = int(shop_id.decode())
+		try:
+			admin = self.session.query(models.HireLink).filter_by(staff_id=self.current_user.accountinfo.id,active=1,work=9).first()
+		except:
+			admin = None
+
 		if not self.current_user.shops:
-			return self.finish("你还没有店铺，请先申请")
-		shop = next((x for x in self.current_user.shops if x.id == shop_id), None)
-		if not shop_id or not shop:#初次登陆，默认选择一个店铺
-			self.current_shop = self.current_user.shops[0]
-			self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
-			return
+			if admin:
+				try:
+					one_shop = self.session.query(models.Shop).filter_by(id = admin.shop_id).first()
+				except:
+					return self.finish("您还不是任何店铺的管理员，请先申请")
+				if not shop_id:
+					self.current_shop = one_shop
+					self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
+				else:
+					try:
+						shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
+						.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
+							models.HireLink.active == 1,models.HireLink.work == 9).first()
+					except:
+						shop = None
+					self.current_shop = shop
+			else:
+				return self.finish("你还没有店铺，请先申请")
 		else:
-			self.current_shop = shop
+			if admin:
+				shop = next((x for x in self.current_user.shops if x.id == shop_id), \
+					self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
+						.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
+							models.HireLink.active == 1,models.HireLink.work == 9).first())
+			else:
+				shop = next((x for x in self.current_user.shops if x.id == shop_id), None)
+			if not shop_id or not shop:#初次登陆，默认选择一个店铺
+				self.current_shop = self.current_user.shops[0]
+				self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
+				return
+			else:
+				self.current_shop = shop
+	
+		
 	def get_login_url(self):
 		# return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		return self.reverse_url('customerLogin')
@@ -634,6 +693,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.Customer
 	# __account_cookie_name__ = "customer_id"
 	__wexin_oauth_url_name__ = "customerOauth"
+	__wexin_check_url_name__ = "customerwxBind"
 	@tornado.web.authenticated
 	def save_cart(self, charge_type_id, shop_id, inc, menu_type):
 		"""
@@ -793,10 +853,69 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		return shop_count
 
 
+import urllib.request
+
+class QqOauth:
+	client_id = QQ_APPID
+	client_secret = QQ_APPKEY
+	redirect_uri = tornado.escape.url_escape('http://i.senguo.cc')
+	print(type(redirect_uri))
+	
+
+	@classmethod
+	def get_qqinfo(self,code):
+		print(code,'codecodecode')
+		url1 = "https://graph.qq.com/oauth2.0/token"
+		url1 = url1+"?grant_type=authorization_code&"+ \
+		"client_id="+self.client_id+ \
+		"&client_secret="+self.client_secret+ \
+		"&code=" + str(code) + \
+		"&redirect_uri="+self.redirect_uri
+		response1 = urllib.request.urlopen(url1).read().decode('utf8')
+		print(response1,'response1')
+		m = response1.split('&')[0]
+		access_token = m.split('=')[1]
+
+		# get openid
+		url2 = 'https://graph.qq.com/oauth2.0/me'
+		url2=url2+"?access_token="+access_token
+		response2 = urllib.request.urlopen(url2).read().decode('utf8')
+		dic = response2[10:-3]
+		ajson = json.loads(dic)
+		openid = ajson['openid']
+
+		# get qq_info
+		url3 = 'https://graph.qq.com/user/get_user_info?'+ \
+		"access_token="+access_token + \
+		"&oauth_consumer_key="+self.client_id+ \
+		"&openid="+openid
+
+		response3 = urllib.request.urlopen(url3).read().decode('utf8')
+		data = json.loads(response3)
+		qq_info = {}
+		qq_info['nickname'] = data['nickname']
+		qq_info['province'] = data['province']
+		qq_info['city']     = data['city']
+		qq_info['year']     = data['year']
+		qq_info['figureurl']= data['figureurl']
+		qq_info['qq_openid']= openid
+
+		return qq_info
+
+
+
+
+
+
+
+
+
+
 
 
 jsapi_ticket = {"jsapi_ticket": '', "create_timestamp": 0}  # 用全局变量存好，避免每次都要申请
 access_token = {"access_token": '', "create_timestamp": 0}
+
 
 class WxOauth2:
 	token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}" \
@@ -976,6 +1095,31 @@ class WxOauth2:
 			return False
 		return True
 
+	@classmethod
+	def post_add_msg(cls, touser, shop_name, name):
+		#print('####################')
+		#print(cls)
+		#print(touser)
+		time = datetime.datetime.now().strftime('%Y-%m-%d')
+		postdata = {
+			"touser": touser,
+			"template_id": "YDIcdYNMLKk3sDw_yJgpIvmcN5qz_2Uz83N7T9i5O3s",
+			"url": "http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&"
+				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
+			"topcolor": "#FF0000",
+			"data": {
+				"first": {"value": "您好，“%s”" % name, "color": "#173177"},
+				"keyword1": {"value": "您被 “%s”添加为管理员！" % shop_name, "color": "#173177"},
+				"keyword3": {"value": time, "color": "#173177"},
+				}
+		}
+		access_token = cls.get_client_access_token()
+		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
+		data = json.loads(res.content.decode("utf-8"))
+		if data["errcode"] != 0:
+			print("[模版消息]店铺审核消息发送失败：", data)
+			return False
+		return True
 
 	@classmethod
 	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,\

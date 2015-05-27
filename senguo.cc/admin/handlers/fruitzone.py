@@ -26,7 +26,11 @@ class Home(FruitzoneBaseHandler):
 	def get(self):
 	   shop_count = self.get_shop_count()
 	   return self.render("fruitzone/index.html",context=dict(shop_count = shop_count,subpage=""))
+#店铺搜索
+class SearchList(FruitzoneBaseHandler):
+	def get(self):
 
+	   return self.render("fruitzone/search-list.html")
 class ShopList(FruitzoneBaseHandler):
 	def initialize(self):
 		self.remote_ip = self.request.headers.get('X-Forwarded_For',\
@@ -58,7 +62,6 @@ class ShopList(FruitzoneBaseHandler):
 		return self.render("fruitzone/list.html", context=dict(province_count=province_count,\
 			city = city ,city_id = city_id, shop_count=shop_count,subpage="home"))
 
-
 	
 	@FruitzoneBaseHandler.check_arguments("action")
 	def post(self):
@@ -67,6 +70,8 @@ class ShopList(FruitzoneBaseHandler):
 			return self.handle_filter()
 		elif action == "search":
 			return self.handle_search()
+		elif action == "qsearch":
+			return self.handle_qsearch()
 		elif action =="shop":
 			return self.handle_shop()
 		else:
@@ -94,7 +99,7 @@ class ShopList(FruitzoneBaseHandler):
 					if q[0][2]:
 						shop_service = int(q[0][2])
 					if commodity_quality and send_speed and shop_service:
-						satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
+						satisfy = float((commodity_quality + send_speed + shop_service)/300)
 				comment_count = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).count()
 				fruit_count = self.session.query(models.Fruit).filter_by(shop_id = shop.id,active = 1).count()
 				mgoods_count =self.session.query(models.MGoods).join(models.Menu,models.MGoods.menu_id == models.Menu.id)\
@@ -127,7 +132,7 @@ class ShopList(FruitzoneBaseHandler):
 
 	@FruitzoneBaseHandler.check_arguments("skip?:int","limit?:int","province?:int",
 									  "city?:int", "service_area?:int", "live_month?:int",
-									  "onsalefruit_ids?:list","page:int","key_word?:int")
+									  "onsalefruit_ids?:list","page:int","key_word?:int",'lat?:str','lon?:str')
 	def handle_filter(self):
 		# 按什么排序？暂时采用id排序
 		_page_count = 15
@@ -219,6 +224,17 @@ class ShopList(FruitzoneBaseHandler):
 		if shops == [] or len(shops)<_page_count:
 			nomore =True
 		return self.send_success(shops=shops ,nomore = nomore)
+	##快速搜索	
+	@FruitzoneBaseHandler.check_arguments("q")
+	def handle_qsearch(self):
+		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
+			filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"])),
+				   models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
+				   models.Shop.shop_code !='not set',models.Shop.status !=0 )
+		shops = []
+		q = q.limit(5).all()
+		shops = self.get_data(q)
+		return self.send_success(shops=shops)
 
 class Community(FruitzoneBaseHandler):
 	def get(self):
