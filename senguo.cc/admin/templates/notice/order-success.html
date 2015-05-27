@@ -1,4 +1,5 @@
 {% extends '../customer/base.html'%}
+{% block title %}购物车{% end %}
 {% block head %}
 <style>
     .mt90{margin-top:80px;}
@@ -10,20 +11,11 @@
 {% end %}
 {% block content %}
 <div class="rainshed bg_change"></div>
-<div class="text-center mt90">
+<div class="text-center mt90" id="order-success">
     <img src="/static/svg/order_success@2x.png" class="w6 src_change"/>
 </div>
 <div class="w250 center-block mt40">
     <a class="btn center_href pull-left text-green bg-white" href="{{reverse_url('customerHome',handler.shop_code)}}">进入个人中心</a>
     <a class="btn home_href pull-right text-green bg-white" href="{{reverse_url('Market', handler.shop_code)}}">继续购物</a>
 </div>
-{% end %}
-{% block bottom %}
-<script>
-    $(document).ready(function(){
-        if(location.href!=parent.location.href){
-            parent.location.href = location.href;
-        }
-    });
-</script>
 {% end %}
