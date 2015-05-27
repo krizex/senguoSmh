@@ -256,11 +256,13 @@ var shopItem=function (shops){
                 var dishide = '';
                 var distance = '';
                 var link = '/'+shop_code;
+                alert(lat+"==="+ulat);
                 if(lat == 0 || ulat == 0){
                     dishide = "hidden";
                 }else{
                     distance = getDist(lat,lon);
                 }
+        alert(distance);
                 if(province==city) {
                     city='';
                 }
