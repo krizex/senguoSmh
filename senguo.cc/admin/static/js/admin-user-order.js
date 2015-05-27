@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    var item_url='/static/items/admin/order-item.html?v=2015-05-22';
+    var item_url='/static/items/admin/order-item.html?v=2015-05-25';
     //订单数据
     if(orders.length==0) $('.order-list-content').append('<h3 class="text-center">无订单信息！</h3>');
     else getOrder(item_url);
