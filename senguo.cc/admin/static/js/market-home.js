@@ -631,7 +631,7 @@ function goodsNum(target,action){
     var storage=parseFloat(parent.data('storage'));
     var type_list=target.parents('.goods-list');
     var id=target.parents('.num_box').attr('data-id');
-    if(action==1&&num<=0) {num=0;target.removeClass('anim-pulse');target.addClass('disable');}
+    if(action==1&&num<=0) {num=0;target.addClass('disable');}
     if(action==2)
     {
         if(storage<=0){
@@ -654,6 +654,7 @@ function goodsNum(target,action){
             storage++;
             parent.attr({'data-storage':storage});
             if(val==1){
+                target.removeClass('anim-pulse');
                 change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
                 if(window.dataObj.cart_count==1) {
                     window.dataObj.cart_count=0;
