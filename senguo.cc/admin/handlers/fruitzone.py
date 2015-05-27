@@ -21,6 +21,7 @@ import json
 import tornado.gen
 from tornado.concurrent import run_on_executor
 from concurrent.futures import ThreadPoolExecutor
+import decimal
 
 class Home(FruitzoneBaseHandler):
 	def get(self):
@@ -38,12 +39,6 @@ class ShopList(FruitzoneBaseHandler):
 	@FruitzoneBaseHandler.check_arguments('action?:str')
 
 	def get(self):
-		shops = []
-		if 'action' in self.args:
-			if self.args['action'] == 'admin_shop':
-				shops = self.handle_admin_shop()
-				print('login admin_shop',shops)
-
 		remote_ip = self.remote_ip
 		# print(remote_ip)
 		url = 'http://ip.taobao.com/service/getIpInfo.php?ip={0}'.format(remote_ip)
@@ -67,7 +62,7 @@ class ShopList(FruitzoneBaseHandler):
 		#     fruit_types.append(f_t.safe_props())
 		# print(city_id+"===========")
 		return self.render("fruitzone/list.html", context=dict(province_count=province_count,\
-			city = city ,city_id = city_id, shops = shops,shop_count=shop_count,subpage="home"))
+			city = city ,city_id = city_id,shop_count=shop_count,subpage="home"))
 
 	
 	@FruitzoneBaseHandler.check_arguments("action")
@@ -109,15 +104,17 @@ class ShopList(FruitzoneBaseHandler):
 						shop_service = int(q[0][2])
 					if commodity_quality and send_speed and shop_service:
 						satisfy = float((commodity_quality + send_speed + shop_service)/300)
+					else:
+						satisfy = 0
 				comment_count = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).count()
 				fruit_count = self.session.query(models.Fruit).filter_by(shop_id = shop.id,active = 1).count()
 				mgoods_count =self.session.query(models.MGoods).join(models.Menu,models.MGoods.menu_id == models.Menu.id)\
 				.filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
-				shop.satisfy = satisfy
+				shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100) 
 				shop.comment_count = comment_count
 				shop.goods_count = fruit_count+mgoods_count		
 				shops.append(shop.safe_props())
-		print(shops,'shops')
+		# print(shops,'shops')
 		return shops
 
 
@@ -216,15 +213,15 @@ class ShopList(FruitzoneBaseHandler):
 			nomore =True
 		return self.send_success(shops=shops,nomore = nomore)
 
-	@FruitzoneBaseHandler.check_arguments('admin_id?:str')
+	@FruitzoneBaseHandler.check_arguments('id:int')
 	def handle_admin_shop(self):
-		admin_id = int(self.args['admin_id'])
+		admin_id = int(self.args['id'])
 		shop_admin = self.session.query(models.ShopAdmin).filter_by(id = admin_id).first()
 		if not shop_admin:
 			return self.send_fail('shop_admin not found!')
 		shop_list = shop_admin.shops
 		shops = self.get_data(shop_list)
-		return shops
+		return self.send_success(shops=shops)
 
 
 	@FruitzoneBaseHandler.check_arguments("q","page:int")
