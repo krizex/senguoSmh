@@ -54,10 +54,10 @@
         var clientHeight= $(window).height();
         var scrollTop=$(window).scrollTop();
         if(scrollTop>=clientHeight/2){
-                $('.little_pear').css("display","block");
+                $('.little_pear').show(100);
             }
             else{
-                $('.little_pear').css("display","none");
+                $('.little_pear').hide(100);
             }
     });
     //confess wall has some new
