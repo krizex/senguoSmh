@@ -27,8 +27,8 @@
 .shop-status{position: absolute;width: 80px;height: 54px;right: 0;top: -4px;background-size: contain;background-repeat: no-repeat;}
 .shop-waiting{background-image: url('/static/images/shop_waiting.png');}
 .shop-rest{background-image: url('/static/images/shop_rest.png');}
-.shoplist_box .item .logo_box{position:absolute;top:0;left:0;width:56px;height:56px;border-top-left-radius:999px;border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px;background-clip: padding-box;border-radius: 999px;overflow:hidden;border:2px solid #aeddda;}
-.shoplist_box .item .shop_logo{width:52px;height:52px;border-top-left-radius:999px;border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px;border-radius: 999px;}
+.shoplist_box .item .logo_box{position:absolute;top:0;left:0;width:56px;height:56px;border-top-left-radius:999px;border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px;background-clip: padding-box;border-radius: 999px;overflow:hidden;border:3px solid #aeddda;}
+.shoplist_box .item .shop_logo{width:50px;height:50px;border-top-left-radius:999px;border-top-right-radius:999px;border-bottom-left-radius:999px;border-bottom-right-radius:999px;border-radius: 999px;}
 .shoplist_box .item .info{padding-left: 66px;width: 100%;}
 .shoplist_box .item .shop_name{margin-top:2px;}
 .shoplist_box .item .sty1{line-height:20px;}

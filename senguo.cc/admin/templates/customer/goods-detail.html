@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% block title %}【{{context['shop_name']}}】一家不错的O2O店铺，快来关注吧~{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/market-goods.css')}}"/>
+{% end %}
+{% block content %}
+{% set notices=context['notices']%}
+{% set menus=context['menus']%}
+{% import json%}
+<script>
+    window.dataObj.notices = {% raw json.dumps(context["notices"]) %}
+    window.dataObj.mgoods_page = {% raw json.dumps(context["mgoods_page"]) %}
+    window.dataObj.cart_fs = {% raw json.dumps(context["cart_fs"]) %}
+    window.dataObj.cart_ms = {% raw json.dumps(context["cart_ms"]) %}
+</script>
+<input type="hidden" id="shop_status" value="{{context['shop_status']}}"/>
+<input type="hidden" id="if_focus" value="{{context['w_follow']}}"/>
+<input type="hidden" id="page_count" value="{{context['page_count']}}"/>
+<input type="hidden" id="fruit_page" value="{{context['fruit_page']}}"/>
+<input type="hidden" id="dry_page" value="{{context['dry_page']}}"/>
+<input type="hidden" id="shop_name" value="{{context['shop_name']}}"/>
+<span id="shop_imgurl" data-img="{{context['shop_logo']}}"></span>
+<div class="wrap-notice-box">
+    <div class="notice-box">
+        <!--<img src="{{static_url('images/banner.png')}}" class="default-banner img"/>-->
+        <div class="notice-board">
+            {% if notices %}
+            <div id="slider" class="swipe" style="visibility: visible;">
+                <div class="swipe-wrap">
+                    {% for notice in notices%}
+                    <figure>
+                        <div class="wrap text-center text-white font16 notice-item">
+                            <label class="title">{{notice[0]}}</label>
+                            <img src="/static/images/banner.png" class="img"/>
+                            <input type="hidden" value="{{notice[1]}}" class="notice-detail"/>
+                        </div>
+                    </figure>
+                    {% end%}
+                </div>
+            </div>
+            <nav class="circle">
+                <ul id="position">
+                    {% for notice in notices%}
+                    <li></li>
+                    {% end%}
+                </ul>
+            </nav>
+            {% else %}
+            <img src="/static/images/banner.png" class="default-img img"/>
+            {% end %}
+        </div>
+    </div>
+    <div class="no-mar-btom top-title">
+        <div class="inner text-white rainshed_green  bg_change" id="fruitPosition">
+            <a href="javascript:;"  class="text-white tit choose-classify set-w100-fle text-center">
+                <!--<span>分类</span>
+                <em class="set-inl-blo pull-right"></em>-->
+                <span class="classify text-center set-inl-blo font18"><span id="classify">全部商品</span><em class="icon up font16" style="display:none;"></em><em class="icon down font16" ></em></span>
+            </a>
+        </div>
+        <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle anim-bounceIn" style="display:none">
+            {% if context['fruit_page'] %}
+            <li class="text-grey6 bg-white pull-left text-center fruit_cassify" id="fruit_goods">水果单品</li>
+            {% end %}
+            {% if context['dry_page'] %}
+            <li class="text-grey6 bg-white pull-left text-center dryfruit_classify" id="dryfruit_goods">干果单品</li>
+            {% end %}
+            {% if menus %}
+            {% for menu in menus  %}
+            <li class="text-grey6 bg-white pull-left text-center menu_goods menu_classify{{menu.id}}" data-id="{{menu.id}}">{{menu.name}}</li>
+            {% end %}
+            {% end %}
+            <li class="text-grey6 bg-white pull-left text-center" id="all_goods">全部商品</li>
+        </ul>
+    </div>
+</div>
+<div class="wrap-goods-box" id="wrap-goods-box">
+    <div class="goods-box">
+        <!--<p class="text-white no-mar-btom classify-title font18 text-center bg-green" id="fruitPosition">水果单品</p>-->
+        <ul class="goods-list  fruit-list fruit_goods_list">
+        </ul>
+        <p class="text-white no-mar-btom classify-title font18 text-center bg-green dryfruit_classify hidden" id="dryFruitPosition">干果单品</p>
+        <ul class="goods-list fruit-list dryfruit_goods_list" >
+        </ul>
+        {% if menus %}
+        {% for menu in menus  %}
+        <p class="text-white no-mar-btom classify-title font18 text-center bg-green menu_classify{{menu.id}} hidden menu_title" id="menu{{menu.id}}">{{menu.name}}</p>
+        <ul class="goods-list menu-list menu_goods_list{{menu.id}}" >
+        </ul>
+        {% end %}
+        {% end %}
+    </div>
+    <div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中 ( > < )~</div>
+</div>
+{% end %}
+{% block other %}
+<div class="modal fade large-img-box" id="large_imgbox">
+    <div class="modal-dialog anim-bounceIn">
+        <div class="modal-content bg-white">
+            <div class="modal-header bg_change rainshed_green">
+                <button type="button" class="close text-green2 dismiss">✕</button>
+                <h2 class="modal-title text-green2 text-center line36">是水果啊啊啊</h2>
+            </div>
+            <div class="modal-body set-width-float text-center">
+                <img src="" id="largeImg" class="mt42"/>
+                <p class="intro font14 text-center">哈哈哈哈哈哈</p>
+            </div>
+            <div class="modal-footer bg-white set-width-float">
+                <a href="javascript:;" class="click-great text-center font16 text-grey3 able_click"><em class="bg_change"></em>赞一个</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade detail-box" id="detail_box">
+    <div class="modal-dialog anim-bounceIn">
+        <div class="modal-content">
+            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
+            <div class="modal-header set-width-float">
+                <button type="button" class="close dismiss">✕</button>
+                <h2 class="modal-title  text-center line48">公告详情</h2>
+            </div>
+            <div class="modal-body set-width-float text-center">
+                <p class="detail font14 text-center"></p>
+            </div>
+            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
+        </div>
+    </div>
+</div>
+<div class="modal fade focus-box" id="focus_box">
+    <div class="modal-dialog anim-bounceIn">
+        <div class="modal-content">
+            <div class="modal-header set-width-float">
+                <button type="button" class="close text-green2 dismiss">✕</button>
+                <h2 class="modal-title text-green2 text-center"></h2>
+            </div>
+            <div class="modal-body set-width-float text-center pt-10">
+                <p class="font14 mt42 text-center">点击下方 “关注” 按钮后才可以添加商品呦!ヾ(●´▽`●)ノ</p>
+            </div>
+            <div class="modal-footer set-width-float">
+                <button  class="btn btn-default center-block focus-btn bg-green text-white">关注</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/market-home.js')}}"></script>
+{% end %}
+<script id="goodsItem" type="text/html">
+         <li class="goods-list-item font10 text-grey {{code}}" data-id="{{id}}" data-type="{{type}}" data-num="{{storage}}">
+            <div class="clearfix box bg">
+                <div class="set-width-float">
+                    <div class="goods-img pull-left">
+                        <a href="javascript:;" class="check-lg-img">
+                            <img src="/static/images/holder.png?v=20150330" class="img lazy_img" data-original="{{img_url}}">
+                            <span class="tag text-white text-center tagItem font8" data-id="{{tag}}"></span>
+                        </a>
+                    </div>
+                    <input type="hidden" class="fruit_intro" value="{{intro}}"/>
+                    <div class="goods-info pull-left">
+                        <div class="show-box">
+                            <p class="clearfix">
+                                <span class="pull-left color fruit-name font14"></span>
+                                <span class="pull-right text-grey sale font12">销量:<span class="color number"></span></span>
+                            </p>
+                            <p class="great-number font12">
+                                <em class="bg_change heart"></em>
+                                <span class="great"></span>
+                            </p>
+                            <div class="charge-first charge-style  font14 color">          
+                            </div>
+                        </div>
+                    </div>
+                    <span class="back-shape bg"></span>
+                    <span class="icon-bg toggle_icon"></span>
+                </div>
+                <ul class="charge-list charge-style color clearfix font14  color" style="display:none;">
+                </ul>
+            </div>
+        </li>
+    </script>

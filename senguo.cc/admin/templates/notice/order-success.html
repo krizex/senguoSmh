@@ -18,3 +18,12 @@
     <a class="btn home_href pull-right text-green bg-white" href="{{reverse_url('Market', handler.shop_code)}}">继续购物</a>
 </div>
 {% end %}
+{% block bottom %}
+<script>
+    $(document).ready(function(){
+        if(location.href!=parent.location.href){
+            parent.location.href = location.href;
+        }
+    });
+</script>
+{% end %}
