@@ -225,6 +225,7 @@ $(document).ready(function(){
         }).on('click','.to-add',function(){
             //首次添加商品
             var $this=$(this);
+            pulse($this);
             var parent=$this.parents('.goods-list-item');
             //是否关注店铺
             /*var if_focus=$('#if_focus').val();
@@ -252,9 +253,11 @@ $(document).ready(function(){
         }).on('click','.number-minus',function(){
             //商品数量操作
             var $this=$(this);
+            pulse($this);
             goodsNum($this,1);
         }).on('click','.number-plus',function(){
             var $this=$(this);
+            pulse($this);
             var parent=$this.parents('.goods-list-item');
             var num=Int($this.siblings('.number-input').val().trim());
             var storage=parseFloat(parent.attr('data-storage'));
