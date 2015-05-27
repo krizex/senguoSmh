@@ -49,7 +49,8 @@ handlers = [
 	(r"/customer/wxBind", handlers.customer.WxBind, {"action":"wx_bind"}, "customerwxBind"),
 	(r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
 	(r"/customer/discover/(\w+)",handlers.customer.Discover,{},"customerDiscover"),
-	
+	#商品详情
+	(r"/customer/goods/(\w+)",handlers.customer.Goods,{},"customerGoods"),
 	# (r"/fruitzone/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
 	#微官网-----待删除
 	(r"/", handlers.superadmin.Official),

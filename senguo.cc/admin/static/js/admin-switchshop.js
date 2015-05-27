@@ -34,11 +34,9 @@ $(document).ready(function(){
     $(".sw-link-copy").zclip({
         path: "/static/js/third/ZeroClipboard.swf",
         copy: function(){
-            console.log(222);
             return $(this).prev("input").val();
         },
         afterCopy:function(){/* 复制成功后的操作 */
-            console.log(333);
             Tip("链接已经复制到剪切板");
         }
     });
@@ -48,26 +46,39 @@ $(document).ready(function(){
             width : 80,//设置宽高
             height : 80
         }).makeCode(_this.closest(".sw-er-tip").find(".sw-link-txt").val());
-    })
+    });
+    $(document).on("click",function(e){
+        if($(e.target).closest('.sw-er-tip').size()==0){
+            $(".sw-er-tip").addClass("invisible");
+        }
+    });
 }).on("click","#spread-list",function(e){
     e.stopPropagation();
+    $(".sw-er-tip").addClass("invisible");
     $(this).closest("p").next(".po-list").toggleClass("invisible");
-}).on("click",".spread-shop",function(){
+}).on("click",".spread-shop",function(e){
+    e.stopPropagation();
     var $this=$(this);
     var link=$this.attr('data-url');
+    $(".sw-er-tip").addClass("invisible");
     $(this).next(".sw-er-tip").toggleClass("invisible");
 }).on('click','.sw-list li',function(e){
     var shop_id=$(this).data('id');
-    if(shop_id){
-        if($(e.target).closest('.forbid_click').length == 0){
-            var url='/admin';
-            var data={shop_id:shop_id};
-            var args={action:'shop_change',data:data};
-            $.postJson(url,args,function(res){
-                if(res.success){
-                    window.location.href='/admin';
-                }
-            });
-        }  
+    var shop_code = $(this).attr("data-code");
+    if(shop_code!="not set" || !!shop_code){
+        if(shop_id){
+            if(!$(e.target).hasClass('.forbid_click')){
+                var url='/admin';
+                var data={shop_id:shop_id};
+                var args={action:'shop_change',data:data};
+                $.postJson(url,args,function(res){
+                    if(res.success){
+                        window.location.href='/admin';
+                    }
+                });
+            }
+        }
+    }else{
+        window.location.href="/admin/config/shop";
     }
 });
