@@ -1249,6 +1249,21 @@ class Shelf(AdminBaseHandler):
 
 		return self.send_success()
 
+# 商品管理
+class Goods(AdminBaseHandler):
+	@tornado.web.authenticated
+	def initialize(self, action):
+		self._action = action
+	def get(self):
+		action = self._action
+		if action == "all":
+			return self.render("admin/goods-all.html",context=dict(subpage="goods"))
+		elif action == "classify":
+			return self.render("admin/goods-classify.html",context=dict(subpage="goods"))
+		elif action == "group":
+			return self.render("admin/goods-group.html",context=dict(subpage="goods"))
+		elif action == "delete":
+			return self.render("admin/goods-delete.html",context=dict(subpage="goods"))
 # 用户管理
 class Follower(AdminBaseHandler):
 	@tornado.web.authenticated

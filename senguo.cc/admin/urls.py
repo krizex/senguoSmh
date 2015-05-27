@@ -185,6 +185,11 @@ handlers = [
 	(r"/admin/wxauth", handlers.admin.AdminAuth, {"action":"wxauth"}, "adminwxAuth"),
 	(r"/admin/wxcheck", handlers.admin.AdminAuth, {"action":"wxcheck"}, "adminwxCheck"),
 
+	(r"/admin/goods/all", handlers.admin.Goods, {"action":"all"}, "adminGoods"),
+	(r"/admin/goods/classify", handlers.admin.Goods, {"action":"classify"}, "adminGoodsClassify"),
+	(r"/admin/goods/group", handlers.admin.Goods, {"action":"group"}, "adminGoodsGroup"),
+	(r"/admin/goods/delete", handlers.admin.Goods, {"action":"delete"}, "adminGoodsDelete"),
+	
 	# (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
 	# (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
 	# (r"/admin/finance", handlers.admin.Finance, {}, "adminFinance"),

@@ -1328,9 +1328,20 @@ class Fruit(MapBase, _CommonApi):
 	img_url = Column(String(500))
 	intro = Column(String(100))
 	priority = Column(SMALLINT, default=1)
+	limit =  Column(Integer, default=0) #限购数 #5.27
+
 	charge_types = relationship("ChargeType") #支持多种计价方式
 	fruit_type = relationship("FruitType", uselist=False)
 	shop = relationship("Shop", uselist=False)
+
+class FruitComment(MapBase, _CommonApi):
+	__tablename__ = "fruit_comment" #5.27
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
+	fruit_id = Column(Integer, ForeignKey(Fruit.id), nullable=False)
+	comment = Column(String(500))
+	create_time = Column(DateTime, default=func.now())
+
 
 # 用户自定义的商品类型
 class Menu(MapBase, _CommonApi):
