@@ -270,7 +270,7 @@ input{color:#333;text-indent:5px;}
 .closed{border-top-color: #999;border-right-color: #999;}
 .sw-tip-txt{position:absolute;top:14px;right:2px;display:inline-block;font-size: 12px;color: #fff;-webkit-transform:rotate(45deg);}
 .unauth{color: #000;line-height: 20px;width: 200px;margin-top: 10px;}
-.add-swshop{height: 66px;line-height: 66px;font-size: 14px;color: #999;text-align: center;display: block;}
+.add-swshop{height: 66px;line-height: 76px;font-size: 14px;color: #999;text-align: center;display: block;}
 .add-swshop:hover{color: #999;}
 .sw-er-tip{padding: 15px 15px 30px 20px;border: 1px solid #ccc;position: absolute;background-color: #fff;z-index:55;top:40px;left: 88px;}
 .er-text{color: #666;text-align: left;}

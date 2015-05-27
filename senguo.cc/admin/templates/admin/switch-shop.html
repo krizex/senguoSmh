@@ -77,14 +77,14 @@
         <div class="sw-bm">
             <ul class="sw-list group">
             {% for shop in  context['shop_list']%}
-                <li class="da" data-id="{{shop['id']}}">
+                <li class="da" data-id="{{shop['id']}}" data-code="{{shop['shop_code']}}">
                     {% if shop['shop_code'] !=None and shop['shop_code'] !='not set' %}
                     <div class="sw-tip shopping" data-status="{{shop['status']}}"></div>
                     <span class="sw-tip-txt"></span>
                     <dl class="group">
                         <dt class="fl">
                             <img src="{{shop['shop_trademark_url'] or '/static/images/TDSG.png'}}" alt="{{shop['shop_name']}}"/>
-                            <a href="javascript:;" class="text-link spread-shop forbid_click" data-url="{{reverse_url('Market',shop['shop_code'])}}">推广店铺</a>
+                            <a href="javascript:;" class="text-link spread-shop" data-url="{{reverse_url('Market',shop['shop_code'])}}">推广店铺</a>
                             <div class="sw-er-tip invisible forbid_click">
                                 <div class="left-arr">
                                     <span class="line1"></span>

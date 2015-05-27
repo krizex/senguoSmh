@@ -125,6 +125,14 @@ class Third(CustomerBaseHandler):
 		action =self._action
 		if self._action == "weixin":
 			return self.redirect(self.get_weixin_login_url())
+#商品详情
+class Goods(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self,goods_id):
+
+		return self.render('customer/goods-detail.html')
+		
+
 
 class RegistByPhone(CustomerBaseHandler):
 	def get(self):

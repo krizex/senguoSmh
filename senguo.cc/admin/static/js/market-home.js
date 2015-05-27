@@ -377,7 +377,7 @@ $(document).ready(function(){
             var $charge_list=$this.parents('.goods-list-item').find('.charge-list');
             if(target.closest('.forbid_click').length == 0){
                 $parent.find('.back-shape').toggleClass('hidden');
-                $charge_list.toggle();
+                $charge_list.toggle(100);
                 $parent.find('.toggle_icon').toggleClass('arrow');
                 $parent.toggleClass('pr35');
             };
@@ -654,6 +654,7 @@ function goodsNum(target,action){
             storage++;
             parent.attr({'data-storage':storage});
             if(val==1){
+                target.removeClass('anim-pulse');
                 change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
                 if(window.dataObj.cart_count==1) {
                     window.dataObj.cart_count=0;
