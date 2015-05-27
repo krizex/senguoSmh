@@ -200,14 +200,20 @@ $(document).ready(function(){
 function initBmap(){
     var address = $("#info_address").html();
     var map = new BMap.Map("bmap");          // 创建地图实例
-    var point = new BMap.Point(114.421659, 30.512769);  // 创建点坐标
+    var lat = parseFloat($("#lat").val());
+    var lon = parseFloat($("#lon").val());
     var marker = null;
     var isHand = false;
     map.enableScrollWheelZoom();
-    map.centerAndZoom(point, 19);
     var myGeo = new BMap.Geocoder();
-    // 将地址解析结果显示在地图上,并调整地图视野
-    getPointByName(map, myGeo, address);
+    if(lat == 0){
+        // 将地址解析结果显示在地图上,并调整地图视野
+        getPointByName(map, myGeo, address);
+    }else{
+        var point = new BMap.Point(lat, lon);  // 创建点坐标
+        map.centerAndZoom(point, 19);
+        initPoint(map,point,myGeo);
+    }
     $(document).on("keydown",function(ev){
         if(ev.keyCode==13){
             var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
@@ -233,30 +239,33 @@ function initBmap(){
             if (point) {
                 map.removeOverlay(marker);
                 map.centerAndZoom(point, 19);
-                marker = new BMap.Marker(point);
-                marker.addEventListener("dragend",attribute);
-                map.addOverlay(marker);
-                function attribute(){
-                    isHand = true;
-                    var p = marker.getPosition();  //获取marker的位置
-                    myGeo.getLocation(p, function(rs){
-                        marker.setAnimation();
-                        var addComp = rs.addressComponents;
-                        $("#provinceAddress").text(addComp.province);
-                        $("#cityAddress").text(addComp.city);
-                        $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
-                        $("#info_address").html(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
-                        initProviceAndCityCode(addComp.province,addComp.city);
-                        Tip("地理位置已经获取，不要忘记点击保存哦！");
-                    });
-                    $("#info_address").attr("data-lng",p.lng).attr("data-lat", p.lat);
-                }
+                initPoint(map,point,myGeo);
             }else{
                 if(flag){
                     Tip("根据您填写的地址未能找到正确位置，请重新填写哦！");
                 }
             }
         });
+    }
+    function initPoint(map,point,myGeo){
+        marker = new BMap.Marker(point);
+        marker.addEventListener("dragend",attribute);
+        map.addOverlay(marker);
+        function attribute(){
+            isHand = true;
+            var p = marker.getPosition();  //获取marker的位置
+            myGeo.getLocation(p, function(rs){
+                marker.setAnimation();
+                var addComp = rs.addressComponents;
+                $("#provinceAddress").text(addComp.province);
+                $("#cityAddress").text(addComp.city);
+                $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
+                $("#info_address").html(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
+                initProviceAndCityCode(addComp.province,addComp.city);
+                Tip("地理位置已经获取，不要忘记点击保存哦！");
+            });
+            $("#info_address").attr("data-lng",p.lng).attr("data-lat", p.lat);
+        }
     }
 }
 //根据省市名称获取code
@@ -417,10 +426,7 @@ function infoEdit(target){
                     $('.phone').text(shop_phone);
                 }
                 else if(action_name=='address'){
-                    $("#area-tip-box").html("店铺地图位置设置成功！").removeClass("hidden");
-                    setTimeout(function(){
-                        $("#area-tip-box").addClass("hidden");
-                    },2000);
+                    Tip("店铺地图位置设置成功");
                 }
                 else if(action_name=='area')
                 {
