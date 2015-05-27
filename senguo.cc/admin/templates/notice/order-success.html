@@ -1,5 +1,6 @@
 {% extends '../customer/base.html'%}
 {% block head %}
+{% block title %}购物车{% end %}
 <style>
     .mt90{margin-top:80px;}
     .mt40{margin-top:20px;}
@@ -17,9 +18,7 @@
     <a class="btn center_href pull-left text-green bg-white" href="{{reverse_url('customerHome',handler.shop_code)}}">进入个人中心</a>
     <a class="btn home_href pull-right text-green bg-white" href="{{reverse_url('Market', handler.shop_code)}}">继续购物</a>
 </div>
-{% end %}
-{% block bottom %}
-<script>
+<script type="javascript">
     $(document).ready(function(){
         if(location.href!=parent.location.href){
             parent.location.href = location.href;
