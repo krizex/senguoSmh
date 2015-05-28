@@ -326,7 +326,7 @@ var warnNotice=function(text,item){
 //time count 2 secends
 var noticeRemove=function (target,item) {
     noticeTimer = setTimeout(function() {
-        $('#'+target)removeClass('anim-bounceIn').addClass('anim-fadeOut');
+        $('#'+target).removeClass('anim-bounceIn').addClass('anim-fadeOut');
         if(item){
             item.removeAttr('disabled').removeClass('bg-greyc');
         }
