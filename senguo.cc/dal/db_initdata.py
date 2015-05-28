@@ -92,6 +92,10 @@ fruit_types = [{'id': 1, 'name': '梨子', 'code': 'Li'},
                {'id': 1018, 'name': '甜角','code':'tianjiao'},
                {'id': 1019, 'name': '干桂圆','code':'ganguiyuan'},
                {'id': 1020, 'name': '榛子','code':'zhenzi'},
+
+               #other
+               {'id': 2000, 'name': '其他','code':'TDSG'},
+               
 ]
 
 charge_types = [

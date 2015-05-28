@@ -1328,11 +1328,13 @@ class Fruit(MapBase, _CommonApi):
 	img_url = Column(String(500))
 	intro = Column(String(100))
 	priority = Column(SMALLINT, default=1)
-	limit =  Column(Integer, default=0) #max number could buy #5.27
+	limit_num =  Column(Integer, default=0) #max number could buy #5.27
 	add_time = Column(DateTime, default=func.now()) #5.27
 	delete_time = Column(DateTime) #5.27
-	group =  Column(Integer, default=0) #group name 0:default group 1000:record group GoodsGroup.id #5.27
+	group_name =  Column(Integer, default=0) #group name 0:default group 1000:record group GoodsGroup.id #5.27
 	clssify  = Column(Integer, default=0)  #:0:fruit 1:dry_fruit 3:other
+	temp_mgoods_id =  Column(Integer, default=0)  #to save mgoods_id for temp
+
 
 	charge_types = relationship("ChargeType") #支持多种计价方式
 	fruit_type = relationship("FruitType", uselist=False)
@@ -1410,7 +1412,6 @@ class MChargeType(MapBase, _CommonApi):
 	num = Column(Float)#计价数量
 	unit_num = Column(Float, default=1)#单位换算
 	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
-	market_price =  Column(Float)#市场价 #5.27
 
 	mgoods = relationship("MGoods", uselist=False)
 

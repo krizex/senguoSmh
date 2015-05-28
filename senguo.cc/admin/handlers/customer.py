@@ -2498,7 +2498,57 @@ class InsertData(CustomerBaseHandler):
 		# 		market = models.Marketing( id = shop_id )
 		# 		self.session.add(market)
 		# 		self.session.commit()
-		time.sleep(100)
+		# time.sleep(100)
+
+		#setp1
+		mgoods = self.session.query(models.MGoods).all()
+		for good in mgoods:
+			shop_id = good.menu.shop_id
+			fruit_type_id = 2000
+			name = good.name
+			active = good.active
+			current_saled = good.current_saled
+			saled = good.saled
+			storage = good.storage
+			favour = good.favour
+			unit = good.unit
+			tag = good.tag
+			img_url = good.img_url
+			intro = good.intro
+			priority = good.priority
+			info = models.Fruit(
+				shop_id	= shop_id,
+				fruit_type_id = fruit_type_id,
+				name = name,
+				active = active,
+				current_saled = current_saled,
+				saled = saled,
+				storage = storage,
+				favour = favour,
+				unit = unit,
+				tag = tag,
+				img_url = img_url,
+				intro = intro,
+				priority = priority,
+				temp_mgoods_id = good.id
+			)
+			self.session.add(info)
+			self.session.commit()
+
+		#step2
+		mcharge_types = self.session.query(models.MChargeType).all()
+		for charge in mcharge_types:
+			m_goods = self.session.query(models.Fruit).filter_by(temp_mgoods_id = charge.mgoods_id,fruit_type_id=2000).first()
+			charge_type = models.ChargeType(
+				fruit_id = m_goods.id,
+				price = charge.price,
+				unit = charge.unit,
+				num = charge.num,
+				unit_num = charge.unit_num,
+				active = charge.active,
+			)
+			self.session.add(charge_type)
+			self.session.commit()
 		return self.send_success()
 
 
