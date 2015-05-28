@@ -1,4 +1,4 @@
-var ulat = 0,ulng = 0,refuse_flag = true,loc_flag=false;
+var ulat = 0,ulng =0,refuse_flag = true,loc_flag=false;
 $(document).ready(function(){
     var link_action=$.getUrlParam('action');
     if(link_action){
@@ -164,11 +164,12 @@ $(document).ready(function(){
 
 //获取用户当前地理位置
 function initLocation(){
+
     if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(function(position){
             refuse_flag = true;
             ulat = position.coords.latitude;
-            ulng = position.coords.longitude;
+            ulng = position.coords.longitude;//经度
             var point = new BMap.Point(ulng,ulat);
             var geoc = new BMap.Geocoder();
             geoc.getLocation(point, function(rs){
@@ -209,7 +210,7 @@ function getDist(lat,lng){
     if(lat == 0) return false;
     var res = '';
     var map = new BMap.Map("map");
-    var pointA = new BMap.Point(ulat,ulng);  // 用户坐标
+    var pointA = new BMap.Point(ulng,ulat);  // 用户坐标
     var pointB = new BMap.Point(lat,lng);  // 店铺坐标
     var distance = map.getDistance(pointA,pointB);
     if(distance<1000){
