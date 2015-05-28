@@ -8,8 +8,8 @@
 {% block content %}
 <div class="wrap-goods-detail">
     <div class="img-list">
-        <div class="roll-bg back"><i></i></div>
-        <div class="roll-bg share"><i></i></div>
+        <a href="javascript:;" class="roll-bg back"><i></i></a>
+        <a href="javascript:;" class="roll-bg share"><i></i></a>
         <div class="swiper-container" id="swiper-container">
             <div class="swiper-wrapper">
                 <div class="swiper-slide item">
@@ -36,11 +36,76 @@
         <li>
             <span class="now-price">100元</span>
             <span class="old-price">99元/500克</span>
-            <div class="now-bug">立即购买</div>
+            <div class="want-num ">
+                <span class="minus minus-num">-</span>
+                <input type="text" pattern="\d*" novalidate autocorrect="off" value="1" disabled/>
+                <span class="add add-num">+</span>
+            </div>
+            <div class="now-buy">立即购买</div>
+        </li>
+        <li>
+            <span class="now-price">100元</span>
+            <span class="old-price">99元/500克</span>
+            <div class="want-num ">
+                <span class="minus minus-num">-</span>
+                <input type="text" pattern="\d*" novalidate autocorrect="off" value="1" disabled/>
+                <span class="add add-num">+</span>
+            </div>
+            <div class="now-buy">立即购买</div>
         </li>
     </ul>
+    <ul class="goods-choose-lst group">
+        <li class="active">商品详情</li>
+        <li>商品评价(20)</li>
+    </ul>
+    <ul class="goods-info-lst">
+        <li class="goods-intro active">
+            <p>南非西柚是我们公司自己在南非农场进口的，2015年的新
+                货已经到达中国了,我们从</p>
+            <img src="/static/images/anoa-7-md.gif" alt=""/>
+            <p>南非西柚是我们公司自己在南非农场进口的，2015年的新
+                货已经到达中国了</p>
+        </li>
+        <li class="goods-comment">
+            <ul class="comment-lst">
+                <li>
+                    <div class="com-top">
+                        <span class="time fr">2015-05-15 15:22:22</span>
+                        <img src="/static/images/alipay.png" alt=""/>
+                        <span class="name">马大灰</span>
+                    </div>
+                    <p class="com-txt">
+                        南非西柚是我们公司自己在南非农场进口的，2015年的新
+                        货已经到达中国了南非西柚是我们公司自己在南非农场进口的，2015年的新
+                        货已经到达中国了
+                    </p>
+                </li>
+                <li>
+                    <div class="com-top">
+                        <span class="time fr">2015-05-15 15:22:22</span>
+                        <img src="/static/images/alipay.png" alt=""/>
+                        <span class="name">马大灰</span>
+                    </div>
+                    <p class="com-txt">
+                        南非西柚是我们公司自己在南非农场进口的，2015年的新
+                        货已经到达中国了南非西柚是我们公司自己在南非农场进口的，2015年的新
+                        货已经到达中国了
+                    </p>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <a href="javascript:;" class="shop-area" id="shop-area">
+        <span class="roll-bg shop-in">
+            <i></i>
+        </span>
+        <span>店铺：水果先生</span>
+    </a>
+    <a href="javascript:;" class="roll-bg cart-bg" id="cart-bg">
+        <i></i>
+        <span class="move-cart" id="cart-now-num">1</span>
+    </a>
 </div>
-
 {% end %}
 {% block other %}
 
