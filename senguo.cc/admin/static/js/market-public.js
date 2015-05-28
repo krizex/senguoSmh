@@ -321,7 +321,7 @@ var warnNotice=function(text,item){
         if(item){
             item.removeAttr('disabled').removeClass('bg-greyc');
         }
-    },2000);
+    },1500);
 }
 //time count 2 secends
 var noticeRemove=function (target,item) {
@@ -330,7 +330,7 @@ var noticeRemove=function (target,item) {
         if(item){
             item.removeAttr('disabled').removeClass('bg-greyc');
         }
-    },2000);
+    },1500);
 }
 
 //modal box
