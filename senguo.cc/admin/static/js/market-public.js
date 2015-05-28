@@ -299,10 +299,10 @@ var noticeBox=function(text,item){
     }
     clearTimeout(noticeTimer);
     if($("#noticeBox").size()==0){
-        var $box=$('<div class="notice_bg hidden anim-bounceIn" id="noticeBox"><div class="notice_box text-center center-block"><p class="notice text-white font14 text-center"></p></div></div>');
+        var $box=$('<div class="notice_bg" id="noticeBox"><div class="notice_box text-center center-block"><p class="notice text-white font14 text-center"></p></div></div>');
         $('body').append($box);
     }
-    $("#noticeBox").removeClass('anim-fadeOut').find('.notice').text(text);
+    $("#noticeBox").removeClass('anim-fadeOut').addClass('anim-bounceIn').find('.notice').text(text);
     if(item) {
         tempObj = item;
         item.attr({'disabled':'true'});
@@ -326,7 +326,7 @@ var warnNotice=function(text,item){
 //time count 2 secends
 var noticeRemove=function (target,item) {
     noticeTimer = setTimeout(function() {
-        $('#'+target).addClass('anim-fadeOut');
+        $('#'+target)removeClass('anim-bounceIn').addClass('anim-fadeOut');
         if(item){
             item.removeAttr('disabled').removeClass('bg-greyc');
         }
