@@ -1665,6 +1665,9 @@ class Config(AdminBaseHandler):
 			if self.current_shop.admin.id !=self.current_user.id:
 				return self.send_fail('您没有添加管理员的权限')
 			_id = int(self.args["data"]["id"])
+			if_shop = self.session.query(models.Shop).filter_by(admin_id =_id).first()
+			if if_shop:
+				return self.send_fail('该用户已是其它店铺的超级管理员，不能添加其为管理员')
 			admin_count = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,active = 1,work=9).count()
 			if admin_count == 3:
 				return self.send_fail('至多可添加三个管理员')
