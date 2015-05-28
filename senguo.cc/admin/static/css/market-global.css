@@ -536,5 +536,5 @@ button:focus{outline:0;}
 .anim-fadeOut{
   visibility:hidden;
   opacity:0;
-  transition:visibility 0s linear 0.2s,opacity 0.2s linear;
+  transition:visibility 0s linear 0.5s,opacity 0.5s linear;
 }
