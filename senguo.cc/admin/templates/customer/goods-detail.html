@@ -1,0 +1,51 @@
+{% extends 'detail-base.html' %}
+{% block title %}商品详情{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/idangerous.swiper.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/market-goods.css')}}"/>
+{% end %}
+{% block header %}{% end %}
+{% block content %}
+<div class="wrap-goods-detail">
+    <div class="img-list">
+        <div class="roll-bg back"><i></i></div>
+        <div class="roll-bg share"><i></i></div>
+        <div class="swiper-container" id="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide item">
+                    <img src="/static/images/TDSG.png" alt=""/>
+                </div>
+                <div class="swiper-slide item">
+                    <img src="/static/images/anoa-7-md.gif" alt=""/>
+                </div>
+            </div>
+        </div>
+        <div class="pagination"></div>
+    </div>
+    <div class="wrap-goods-info">
+        <p class="goods-title">【新鲜的水果】 南非进口红心西瓜</p>
+        <p class="goods-info">南非西柚是我们公司自己在南非农场进口的，2015年的新
+            货已经到达中国了,我们从5月起开始大量发货了! 我们做
+            诚信的水果进口商和销售商,卖真正的南非西柚。</p>
+        <p class="goods-num">
+            <span class="zan">999</span>
+            <span>销量 999</span>
+        </p>
+    </div>
+    <ul class="wrap-choose-goods">
+        <li>
+            <span class="now-price">100元</span>
+            <span class="old-price">99元/500克</span>
+            <div class="now-bug">立即购买</div>
+        </li>
+    </ul>
+</div>
+
+{% end %}
+{% block other %}
+
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/third/idangerous.swiper.min.js')}}"></script>
+<script src="{{static_url('js/market-goods-detail.js')}}"></script>
+{% end %}

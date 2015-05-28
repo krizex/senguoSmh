@@ -251,10 +251,10 @@ function count(action,page){
                     page_sum=res.page_sum;
                 }
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
         function(){
-            return alert('网络好像不给力呢~ ( >O< ) ~！');
+            return Tip('网络好像不给力呢~ ( >O< ) ~！');
         });
 }
 

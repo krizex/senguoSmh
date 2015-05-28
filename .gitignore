@@ -9,3 +9,5 @@ nohup.out
 .nohup.out.swl
 .idea/
 senguo.cc/db_migrate/alembic/versions/
+senguo.cc/dal/db_configs.py
+

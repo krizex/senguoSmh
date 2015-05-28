@@ -19,6 +19,14 @@ $(document).ready(function(){
         localStorage.setItem("itemIndex",0);
         $(".shop-manage-nav li").removeClass("active").eq(0).addClass("active");
     }
+}).on('click',"#authPrePage",function(){
+    var page=Int($.getUrlParam('page'));
+    if(page>0) {
+        window.location.href='/super/shopauth?page='+(page-1);
+    }
+}).on('click',"#authNextPage",function(){
+    var page=Int($.getUrlParam('page'));
+    window.location.href='/super/shopauth?page='+(page+1);
 }).on("click",".shop-manage-nav li",function(){
     var index = $(this).index();
     localStorage.setItem("itemIndex",index);
@@ -47,11 +55,77 @@ $(document).ready(function(){
     var apply_id=$this.parents('.item').attr('data-id');
     var index=$this.parents('.item').index();
     $(".wrap-com-pop").attr({'data-id':apply_id,'data-index':index});
+}).on("click",".refuse",function(e){
+    var $this=$(this);
+    $(".wrap-com-pop").removeClass("hide");
+    var apply_id=$this.parents('.shop-list-item').attr('data-id');
+    var index=$this.parents('.shop-list-item').index();
+    var type=$this.parents('.shop-list-item').attr('data-type');
+    $(".wrap-com-pop").attr({'data-id':apply_id,'data-index':index,'data-type':type});
+}).on("click",".ok",function(e){
+     var $this=$(this);
+     var apply_id=$this.parents('.shop-list-item').attr('data-id');
+     var type=$this.parents('.shop-list-item').attr('data-type');
+     if(confirm('确认通过该申请?')){
+          passAuth(apply_id,$this,type);
+    }
+}).on('click','#submit-apply',function(){
+        rejectAuth();
+}).on("click","#concel-apply",function(e){
+    $(".wrap-com-pop").addClass("hide");
 });
 
 window.onbeforeunload = function(){
     localStorage.setItem("itemIndex",0);
 }
+function passAuth(apply_id,target,type){
+    var action="commit";
+    var url='';
+    var type=Int(type);
+    var args={
+        action:action,
+        apply_id:apply_id,
+        apply_type:type
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success)
+            {
+                target.closest('.shop-list-item').find('.box').empty().text('认证成功');
+            }
+        }
+    )
+}
+
+function rejectAuth(){
+     var action="decline";
+    var url='';
+    var apply_id=$(".wrap-com-pop").attr('data-id');
+    var index=$(".wrap-com-pop").attr('data-index');
+    var type=  Int($(".wrap-com-pop").attr('data-type'));
+    var decline_reason=$('#com-cont').val();
+    if(!decline_reason){
+        return alert(' 输入拒绝理由');
+    }
+    var args={
+        action:action,
+        apply_id:apply_id,
+        apply_type:type,
+        decline_reason:decline_reason
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success)
+            {
+                $(".wrap-com-pop").addClass("hide");
+                $('.shop-list-item').eq(index).find('.box').empty().text('认证拒绝:'+decline_reason);
+            }
+        }
+    )
+}
+
+
+
 function Pass(evt){
     var action="updateShopStatus";
     var shop_id=evt.parents('li').data('shopid');

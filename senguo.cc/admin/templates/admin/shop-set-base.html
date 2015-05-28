@@ -9,6 +9,9 @@
 {% set receipt_active = ''%}
 {% set info_active = ''%}
 {% set cert_active ='' %}
+{% set pay_active ='' %}
+{% set phone_active ='' %}
+{% set admin_active= ''%}
 
 {% if shopSubPage == 'delivery_set'  %}
     {% set delivery_active ='active' %}
@@ -18,29 +21,31 @@
     {% set info_active ='active' %}
 {% elif shopSubPage == 'cert_set' %}
     {% set cert_active ='active' %}
+{% elif shopSubPage =='pay_set' %}
+    {% set pay_active ='active' %}
+{% elif shopSubPage =='phone_set' %}
+    {% set phone_active ='active' %}
+{% elif shopSubPage =='admin_set' %}
+    {% set admin_active ='active' %}
 {% else %}
     {% set receipt_active ='active' %}
 {% end %}
 {% set shop_code =current_shop.shop_code %}
-<span class="right-title">店铺设置 {% if shop_code and  shop_code!='not set' %}<a class="shop-link" href="{{reverse_url('Market',shop_code)}}" target="_blank">店铺链接:<span>http://senguo.cc/{{shop_code}}</span></span></a>{% else %}请设置店铺号 {% end %}</span>
-<ul class="shop-set-nav right-nav">
-    <!--<li class="{{delivery_active}}" id="deliverySet"><a href="{{reverse_url('adminConfig')}}?action=delivery">配送设置</a></li>-->
-    <li class="{{info_active}}" id="infoSet"><a href="{{reverse_url('adminShopConfig')}}">店铺信息</a></li>
-    <li class="{{notice_active}}" id="noticeSet"><a href="{{reverse_url('adminConfig')}}?action=notice">公告设置</a></li>
-    <!--<li><a href="#">充值设置</a></li>-->
-    <li class="{{receipt_active}}" id="receiptSet"><a href="{{reverse_url('adminConfig')}}?action=receipt">小票设置</a></li>
-    <!--<li class="{{cert_active}}" id=""><a href="{{reverse_url('adminConfig')}}?action=cert">店铺认证</a></li>-->
-</ul>
-<div class="set-description">
-    {% if shopSubPage == 'delivery_set' %}
-    <p>通过编辑配送地址，确定前台商城用户以及员工责任区域的地址选择项</p>
-    <p>地址增加后将不能删除和修改。</p>
-    {% elif shopSubPage == 'notice_set' %}
-    <p>编辑和修改商城水果公告栏的内容</p>
-    <p>摘要为公告栏直接显示的内容，用户可点击查看详情。</p>
-    {% elif shopSubPage == 'receipt_set' %}
-    <p>修改小票附加信息</p>
-    {% end %}
+<span class="right-title">店铺设置{% if shop_code and shop_code!='not set' %}<span class="shop-link ml10">店铺链接：<a href="{{reverse_url('Market',shop_code)}}" target="_blank">http://senguo.cc/{{shop_code}}</a></span>{% else %}<span class="shop-link ml10">请设置店铺号</span>{% end %}</span>
+<div class="subnav-box">
+    <ul class="subnav group">
+        <!--<li class="{{delivery_active}}" id="deliverySet"><a href="{{reverse_url('adminConfig')}}?action=delivery">配送设置</a></li>-->
+        <li class="{{info_active}}" id="infoSet"><a href="{{reverse_url('adminShopConfig')}}">店铺信息</a></li>
+        <li class="{{notice_active}}" id="noticeSet"><a href="{{reverse_url('adminConfig')}}?action=notice">公告设置</a></li>
+        <!--<li><a href="#">充值设置</a></li>-->
+        <li class="{{receipt_active}}" id="receiptSet"><a href="{{reverse_url('adminConfig')}}?action=receipt">小票设置</a></li>
+        <li class="{{cert_active}}" id=""><a href="{{reverse_url('adminShopAuth')}}">店铺认证</a></li>
+         {% if current_shop.shop_auth !=0 %}
+        <li class="{{pay_active}}"><a href="{{reverse_url('adminConfig')}}?action=pay">支付方式</a></li>
+        <li class="{{phone_active}}"><a href="{{reverse_url('adminConfig')}}?action=phone">短信验证</a></li>
+        <li class="{{admin_active}}"><a href="{{reverse_url('adminConfig')}}?action=admin">管理员设置</a></li>
+        {% end %} 
+    </ul>
 </div>
 {% block setcontent %}{% end %}
 {% end %}

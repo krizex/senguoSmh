@@ -2,16 +2,17 @@
 .user-info{position:relative;}
 .user-info .bg{width:100%;}
 .user-info .user-img{position:absolute;width:100%;height:100%;z-index:10;left:0;top:0;}
-.user-info .img{max-width:100px;width:30%;border:2px solid #fff;margin-top:10%;}
+.user-info .wrap-img{width:30%;border: 2px solid #fff;border-radius: 50%;margin:10% auto 0 auto;font-size: 0;-webkit-box-sizing: content-box;}
+.user-info .img{width:100%;}
 .user-info .code{margin-top:6%;}
 .user-info .user-sex{display:inline-block;width:12px;height:16px;font-weight:bold;}
+.male{color:deepskyblue;}
+.female{color:hotpink;}
 
-.title{height:50px;line-height:50px;}
-.title2{height:30px;line-height:35px;margin:12px 0;}
+.title{height:45px;line-height:45px;}
+.title2{height:30px;line-height:30px;margin:10px 0;}
 
-.center-nav{width:100%;padding:15px 0;border-top:1px solid #ddd;}
-.center-nav li{border-left:1px solid #ddd;}
-.center-nav li:first-child{border-left:0px;}
+.center-nav{width:100%;padding:12px 0;border-top:1px solid #f2f2f2;}
  p{margin-bottom:0px !important;}
 
 .edit-btn{background:url("../images/container-icon.gif") no-repeat 10px -41px;display:inline-block;height:28px;line-height:28px;padding:0 15px;}
@@ -22,11 +23,17 @@
 .address-box .modal-body p{margin-bottom:5px;margin-top:5px;}
 .address-box .modal-body .w60{width:300px;}
 .address-box .modal-body .tit{width:70px;line-height:30px;}
-.address-box .modal-body input{background:#f2f2f2;height:30px;line-height:30px;text-indent:5px;}
+.address-box .modal-body input{background:#f2f2f2;height:30px;width:165px;line-height:30px;text-indent:5px;}
 
-.collect-icon{width:20px;height:15px;background:url('../svg/icon_list@2x.png') -99px -27px;margin-right:5px;background-size:120px;margin-top:17px;}
-.address-icon{width:20px;height:15px;background:url('../svg/icon_list@2x.png') -99px -46px;margin-right:5px;background-size:120px;margin-top:17px;}
-.order-icon{width:20px;height:18px;background:url('../svg/icon_list@2x.png') -99px -1px;margin-right:5px;background-size:120px;margin-top:16px;}
+.collect-icon{width:20px;height:15px;background:url('../svg/icon_list-2.png') -99px -27px;margin-right:5px;background-size:140px;margin-top:15px;}
+.address-icon{width:20px;height:20px;background:url('../svg/icon_list-2.png') -98px -24px;margin-right:10px;background-size:140px;margin-top:13px;}
+.order-icon{width:21px;height:20px;background:url('../svg/icon_list-2.png') -98px 0;margin-right:10px;background-size:140px;margin-top:13px;}
+
+.order-num{position:absolute;display:inline-block;min-width:16px;height:16px;line-height:17px;border-radius:8px;font-size:10px;margin:-4px -6px;padding:0 4px;}
+.order1-icon{width:22px;height:22px;background:url('../images/order_unhandled.png');background-size:22px 22px;}
+.order2-icon{width:22px;height:22px;background:url('../images/order_handling.png');background-size:22px 22px;}
+.order3-icon{width:22px;height:22px;background:url('../images/order_uncomment.png');background-size:22px 22px;}
+.order4-icon{width:22px;height:22px;background:url('../images/order_aftersale.png');background-size:22px 22px;}
 
 hr{margin-top:0px !important;;margin-bottom:0px !important;margin-left:24px;}
 .height20{height:20px;line-height:20px;}
@@ -34,3 +41,11 @@ hr{margin-top:0px !important;;margin-bottom:0px !important;margin-left:24px;}
 .address-manage:focus{outline:none;}
 .add-address{background:#fff;border:1px solid #fff;}
 .add-address:focus{outline:none;}
+
+.discover-list a{display:inline-block;width:100%;height:45px;}
+.discover-list  li{position:relative;}
+.discover-list .circle{position:absolute;display:inline-block;width:18px;height:18px;line-height:19px;border-radius:50%;top:14px;text-align:center;right:15px;}
+
+.confess i{display:inline-block;width:18px;height:18px;background:url('../svg/icon_list-2.png') -122px -48px;background-size:140px;margin:14px 15px 0 15px;}
+
+.arr-right{background-image: url('../images/arr-right.png');width:8px;display:block;margin-left:6px;height:14px;background-size:contain;background-repeat:no-repeat;position:relative;top:16px;}

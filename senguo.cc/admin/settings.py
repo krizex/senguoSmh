@@ -13,6 +13,11 @@ MYSQL_DRIVER = "mysqlconnector"
 MYSQL_USERNAME = "monk"
 MYSQL_PASSWORD = "test123"
 DB_NAME = "senguocc"
+DB_CHARSET = "utf8mb4"
+
+# QQ授权
+QQ_APPID = '101221864'
+QQ_APPKEY = '23060ad64493f81c2a2619f1c56c9c0e'
 
 #手机短信验证的设置
 content = "您的验证码是：【{code}】。请不要把验证码泄露给其他人。"
@@ -23,7 +28,7 @@ password = "sg201404"
 ALIPAY_PID = "2088511484939521"
 ALIPAY_KEY="oknunsvpq83x358worr6obs7zo2h1xxw"
 ALIPAY_SELLER_ACCOUNT = "senguo@senguo.cc"
-ALIPAY_HANDLE_HOST = "http://auth.senguo.cc"
+ALIPAY_HANDLE_HOST = "http://i.senguo.cc"
 
 #七牛云的参数
 ACCESS_KEY = "Pm0tzHLClI6iHqxdkCbwlSwHWZycbQoRFQwdqEI_"

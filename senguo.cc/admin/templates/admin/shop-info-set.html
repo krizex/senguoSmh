@@ -1,7 +1,7 @@
 {% extends 'shop-set-base.html' %}
 {% block title%}店铺信息设置{% end %}
 {% block setcontent %}
-<ul class="info-set-list">
+<ul class="info-set-list mt10">
     <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">店铺名称</span>
         <div class="w2 pull-left">
@@ -9,14 +9,36 @@
             <input class="info_hide shop_name" type="text" value="{{current_shop.shop_name}}" style="display:none"/>
         </div>
         <div class="pull-right">
-            <a class="info_edit text-green" href="javascript:;">修改</a>
+            <a class="info_edit" href="javascript:;">修改</a>
             <a class="info_sure" href="javascript:;" data-id="name" style="display:none">确定</a>
+        </div>
+    </li>
+    <li class="item clearfix">
+        <span class="w1 pull-left set-inl-blo">店铺状态</span>
+        <div class="w2 pull-left ">
+            <span class="info_show shop-status" data-id="{{current_shop.status}}"></span>
+            <div class="dropdown info_hide" style="display:none">
+                <button class="btn btn-default dropdown-toggle" type="button" id="statusMenu" data-toggle="dropdown">
+                    <span class="shop-status" id="shop_status" data-id="{{current_shop.status}}"></span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu shop_status-list" role="menu" aria-labelledby="statusMenu">
+                    <li role="presentation" data-id="2" class="text-center">筹备中</li>
+                    <li role="presentation" data-id="1" class="text-center">营业中</li>
+                    <li role="presentation" data-id="3" class="text-center">休息中</li>
+                    <li role="presentation" data-id="0" class="text-center">店铺关闭</li>
+                </ul>
+            </div>
+        </div>
+        <div class="pull-right">
+            <a class="info_edit" href="javascript:;">修改</a>
+            <a class="info_sure" href="javascript:;" data-id="status" style="display:none">确定</a>
         </div>
     </li>
     <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">店铺Logo</span>
         <div class="w2 pull-left logo-box">
-           <img src="{{current_shop.shop_trademark_url or static_url('design_img/TDSG.png')}}?imageView/1/w/80/h/80" id="logoImg">
+           <img src="{{current_shop.shop_trademark_url or static_url('design_img/TDSG.png')}}?imageView/1/w/100/h/100" id="logoImg">
             <div class="upload-img green-color">
                 <input id="file_upload" type="file" name="file_upload" class="uploadImg" />
                 <span class="title set-inl-blo text-white text-center">点击修改</span>
@@ -36,8 +58,8 @@
                 <a href="http://senguo.cc/{{current_shop.shop_code}}" class="shop_link text-pink" target="_blank">http://senguo.cc/<span class="code">{{current_shop.shop_code}}</span></a>
             </p>
             <p class="notice_word mb-0" style="display:none">用于生成您的商城店铺链接，如没有进行设置将无法进入您的商城。</p>
-            <p class="notice_word mb-0" style="display:none">请输入6位以上（含6位）的英文字母与数字组合（不区分大小写）,森果店铺号一经设置不允许更改，请谨慎填写。</p>
-            <p class="text-grey notice_word mb-0" style="display:none">商城链接示例：http://senguo.cc/senguo,senguo即为设置的店铺号。</p>
+            <p class="notice_word mb-0" style="display:none">请输入6位以上（含6位）的英文字母或数字组合（不区分大小写），森果店铺号一经设置不允许更改，请谨慎填写。</p>
+            <p class="text-grey notice_word mb-0" style="display:none">商城链接示例：http://senguo.cc/senguo，senguo即为设置的店铺号。</p>
 
         </div>
         <div class="pull-right code_set" style="display:none">
@@ -47,10 +69,10 @@
     </li>
     <li class="item clearfix qrcode_box link_notice" style="display:none">
         <div class="link_notice" >
-                <span class="pull-left w1">您的店铺二维码</span>
+                <span class="pull-left w1">店铺二维码</span>
                 <div class="pull-left w2" id="shop_link_img"></div>
             </div>
-           <a class="link_notice text-green download_img pull-right" style="display:none" href="javascript:;">二维码下载</a>
+           <a class="link_notice download_img pull-right" style="display:none" href="javascript:;">二维码下载</a>
     </li>
     <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">店铺简介</span>
@@ -59,45 +81,8 @@
             <textarea class="info_hide shop_intro" style="display:none">{{current_shop.shop_intro}}</textarea>
         </div>
         <div class="pull-right">
-            <a class="info_edit text-green" href="javascript:;">修改</a>
+            <a class="info_edit " href="javascript:;">修改</a>
             <a class="info_sure" href="javascript:;" data-id="intro" style="display:none">确定</a>
-        </div>
-    </li>
-    <li class="item clearfix">
-        <span class="w1 pull-left set-inl-blo">店铺地址</span>
-        <div class="w2 pull-left">
-            <p class="info_show address">{{address}}</p>
-            <div class="info_hide" style="display:none">
-                <div class="dropdown select-provience pull-left set-right10 province_select" data-toggle="modal" data-target="#provinceList">
-                    <button class="btn btn-default dropdown-toggle" type="button">
-                        <span  id="provinceAddress" data-code="{{current_shop.shop_province or ''}}" class="reProvince">选择省份</span>
-                        <span class="caret"></span>
-                    </button>
-                </div>
-                <div class="dropdown pull-left select-city set-right10 city_select" data-toggle="modal" data-target="#cityList">
-                    <button class="btn btn-default dropdown-toggle" type="button">
-                        <span id="cityAddress" data-code="{{current_shop.shop_city or ''}}" class="reCity">选择城市</span>
-                        <span class="caret"></span>
-                    </button>
-                </div>
-                <input type="text" class="input-box input1 pull-left" placeholder="请填写详细地址,至多50个字符" id="addressDetail" value="{{current_shop.shop_address_detail or ''}}"/>
-            </div>
-
-        </div>
-        <div class="pull-right">
-            <a class="info_edit text-green" href="javascript:;">修改</a>
-            <a class="info_sure" href="javascript:;" data-id="address" style="display:none">确定</a>
-        </div>
-    </li>
-    <li class="item clearfix">
-        <span class="w1 pull-left set-inl-blo">店铺联系电话</span>
-        <div class="w2 pull-left">
-            <span class="info_show phone">{{current_shop.shop_phone or '未设置' }}</span>
-            <input class="info_hide shop_phone" type="text" placeholder="" value="{{current_shop.shop_phone or '' }}" style="display:none"/>
-        </div>
-        <div class="pull-right">
-            <a class="info_edit text-green" href="javascript:;">修改</a>
-            <a class="info_sure" href="javascript:;" data-id="phone" style="display:none">确定</a>
         </div>
     </li>
     <li class="item clearfix">
@@ -107,7 +92,7 @@
             <input class="info_hide deliver-area" type="text" placeholder="请填写配送区域,至多50个字符" value="{{current_shop.deliver_area or ''}}" style="display:none"/>
         </div>
         <div class="pull-right">
-            <a class="info_edit text-green" href="javascript:;">修改</a>
+            <a class="info_edit" href="javascript:;">修改</a>
             <a class="info_sure" href="javascript:;" data-id="area" style="display:none">确定</a>
         </div>
     </li>
@@ -127,8 +112,53 @@
             </div>
         </div>
         <div class="pull-right">
-            <a class="info_edit text-green" href="javascript:;">修改</a>
+            <a class="info_edit" href="javascript:;">修改</a>
             <a class="info_sure" href="javascript:;" data-id="entity" style="display:none">确定</a>
+        </div>
+    </li>
+    <li class="item clearfix">
+        <span class="w1 pull-left set-inl-blo">店铺联系电话</span>
+        <div class="w2 pull-left">
+            <span class="info_show phone">{{current_shop.shop_phone or '未设置' }}</span>
+            <input class="info_hide shop_phone" type="text" placeholder="" value="{{current_shop.shop_phone or '' }}" style="display:none"/>
+        </div>
+        <div class="pull-right">
+            <a class="info_edit" href="javascript:;">修改</a>
+            <a class="info_sure" href="javascript:;" data-id="phone" style="display:none">确定</a>
+        </div>
+    </li>
+    <li class="item clearfix">
+        <span class="w1 pull-left set-inl-blo">店铺地址</span>
+        <div class="w2 pull-left">
+            <p class="info_show address hidden" id="info_address" data-lng="0" data-lat="0">{{address}}</p>
+            <div class="info_hide">
+                <div class="dropdown select-provience pull-left set-right10 province_select" data-toggle="modal" data-target="#provinceList">
+                    <button class="btn btn-default dropdown-toggle" type="button">
+                        <span  id="provinceAddress" data-code="{{current_shop.shop_province or ''}}" class="reProvince">{{province}}</span>
+                        <span class="caret"></span>
+                    </button>
+                </div>
+                <div class="dropdown pull-left select-city set-right10 city_select" data-toggle="modal" data-target="#cityList">
+                    <button class="btn btn-default dropdown-toggle" type="button">
+                        <span id="cityAddress" data-code="{{current_shop.shop_city or ''}}" class="reCity">{{city}}</span>
+                        <span class="caret"></span>
+                    </button>
+                </div>
+                <input type="text" class="input-box input1 pull-left" placeholder="请填写详细地址，至多50个字符" id="addressDetail" value="{{current_shop.shop_address_detail or ''}}"/>
+                <input type="button" class="pull-left search-lbs" id="search-lbs" value="地图搜索"/>
+            </div>
+        </div>
+        <div class="pull-right">
+            <input type="hidden" value="{{lat}}" id="lat"/>
+            <input type="hidden" value="{{lon}}" id="lon"/>
+            <a class="info_edit  hidden" href="javascript:;">修改</a>
+            <a class="info_sure address-sure" href="javascript:;" data-id="address" id="save-lbs">保存</a>
+        </div>
+        <span class="w1 pull-left set-inl-blo">&nbsp;</span>
+        <div class="w2 pull-left wrap-bmap-box">
+            <span class="hand-search" id="hand-search">手动标注位置</span>
+            <div class="wrap-bmap" id="bmap">
+            </div>
         </div>
     </li>
 </ul>
@@ -173,8 +203,12 @@
         </div>
     </div>
 </div>
+<!--div class="area-tip-box hidden" id="area-tip-box">
+    地理位置已经确认，不要忘记点击确定哦！
+</div-->
 {% end %}
 {% block bottom %}
+<script src="http://api.map.baidu.com/api?v=2.0&ak=2595684c343d6499bf469da8a9c18231"></script>
 <script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>
 <script src="{{static_url('js/jquery.qrcode.min.js')}}"></script>
 <script src="{{static_url('js/area.js')}}"></script>

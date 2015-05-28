@@ -8,14 +8,14 @@ $(document).ready(function(){
     classify($('.phone'),'phone');
     var pre=$('#PrePage');
     var next=$('#NextPage');
-    if(page==0)
-    {
-        pre.addClass('hidden');
-    }
-    if($('.item-list').find('li').length<20)
-    {
-        next.addClass('hidden');
-    }
+    // if(page==0)
+    // {
+    //     pre.addClass('hidden');
+    // }
+    // if($('.item-list').find('li').length<20)
+    // {
+    //     next.addClass('hidden');
+    // }
     pre.on('click',function(){
         if(page>0) {page--;getContent(action,page);}
     });

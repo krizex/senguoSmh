@@ -1,0 +1,27 @@
+<html>
+<head>
+</head>
+
+<body>
+
+
+<form method="POST" action="{{reverse_url('fruitzoneSystemPurchaseAlipayTest')}}">
+  
+
+  
+  <ul class="list-group theme-list-select">
+    <li class="list-group-item" class="active">
+      <input type="input"  name="price" value="" checked><span class="select-text"></span>
+    </li>    
+  </ul>
+  
+  {% module xsrf_form_html() %}
+
+  
+  <input type="submit" class="btn btn-green text-white form-control" value="提交并支付">
+</form>
+
+</body>
+
+
+</html>

@@ -21,12 +21,12 @@
 	{% else %}
 	<div class="count-box {{context['subscribe']}}">
 	    <div class="text-center mtp5">
-		<img src="{{static_url('images/logo2.png')}}" class="logo"/>
+		<img src="{{static_url('images/apply_logo.png')}}" class="logo"/>
 	    </div>
 	    <div class="count-list-box center-block">
 		<ul class="count-list" id="realShop">
 		    <li data-id="2" class="active">
-		        <img src="{{static_url('images/pear1.png')}}" class="pear_img"/>
+		        <img src="{{static_url('images/apply_pear1.png')}}" class="pear_img"/>
 		        <div class="word bg-green">
 		            <p class="text-yellow font16">没有卖过水果想尝试</p>
 		            <p class="text-white font14">我们为您提供从采购到配送全流程</p>
@@ -35,7 +35,7 @@
 		        <span class="check text-white">✓</span>
 		    </li>
 		    <li data-id="1">
-		        <img src="{{static_url('images/pear2.png')}}" class="pear_img"/>
+		        <img src="{{static_url('images/apply_pear2.png')}}" class="pear_img"/>
 		        <div class="word bg-green">
 		            <p class="text-yellow font16">已有实体店，并在经营中</p>
 		            <p class="text-white font14">我们满足您线上水果的一切技术需求</p>
@@ -43,7 +43,7 @@
 		        <span class="check text-white hidden">✓</span>
 		    </li>
 		    <li data-id="0">
-		        <img src="{{static_url('images/pear3.png')}}" class="pear_img"/>
+		        <img src="{{static_url('images/apply_pear3.png')}}" class="pear_img"/>
 		        <div class="word bg-green">
 		            <p class="text-yellow font16">没有实体店，水果o2o探索中</p>
 		            <p class="text-white font14">这里有来自天南地北的同行</p>
@@ -150,7 +150,7 @@
 	    </div>
 	    <div class="clearfix mt10">
 		<span class="title line40 pull-left font14">&nbsp;</span>
-		<button class="btn bg-green text-white able_get" id="getVrify">获取手机验证码</button>
+		<button class="btn bg-green bg-greyc text-white able_get" id="getVrify">获取手机验证码</button>
 	    </div>
 	    <div class="clearfix mt10">
 		<span class="title line40 pull-left font14">验证码*</span>
@@ -158,9 +158,9 @@
 	    </div>
 	    <p class="mt10 text-center">*您的个人信息仅用作店铺审核使用，我们将严格保密</p>
 	    {% if "reApply" in context and context["reApply"] %}
-	    <input type="submit" value="提交申请" class="btn text-white bg-green  center-block w80 font16 mt10" id="submitReapply"/>
+	    <input type="submit" value="提交申请" class="btn text-white bg-green  bg-greyc center-block w80 font16 mt10" id="submitReapply"/>
 	    {% else %}
-	    <input type="submit" value="提交申请" class="btn text-white bg-green  center-block w80 font16 mt10" id="submitApply"/>
+	    <input type="submit" value="提交申请" class="btn text-white bg-green  bg-greyc center-block w80 font16 mt10" id="submitApply"/>
 	    {% end %}
 	    <p class="text-center">
 		<a class="text-grey9 white-color mb10 mt10 center-block font14 forward" id="back" href="javascript:;">←返回上一步</a>
@@ -180,6 +180,7 @@
 		            </ul>
 		        </div>
 		    </div>
+		    <div class="modal-warn"></div>
 		</div>
 	    </div>
 	</div>
@@ -197,6 +198,7 @@
 		            </ul>
 		        </div>
 		    </div>
+		    <div class="modal-warn"></div>
 		</div>
 	    </div>
 	</div>

@@ -1,19 +1,19 @@
 {% extends 'base.html' %}
-{% block title %}首页{% end %}
+{% block title %}森果后台登录{% end %}
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-index.css')}}"/>{% end %}
 {% block content %}
 {% set shop = handler.current_shop %}
 <div class="index-title">
     <div class="pull-left title-style">
         <div class="pull-left title-style2 new-item">
-            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1">
-                <span class="new-order"><i></i>{{new_order_sum}}</span>
+            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1&page=0">
+                <span class="new-order"><i></i><b id="new_order_sum">{{new_order_sum}}</b></span>
                 <p>新增订单</p>
             </a>
         </div>
         <div class="pull-right title-style2  new-item">
             <a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0">
-                <span class="new-user"><i></i>{{new_follower_sum}}</span>
+                <span class="new-user"><i></i><b id="new_follower_sum">{{new_follower_sum}}</b></span>
                 <p>新增用户</p>
             </a>
         </div>
@@ -21,14 +21,14 @@
     </div>
     <div class="pull-right title-style">
         <div class="pull-left title-style2 item">
-            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1">
-                <span class="total-order"><i></i>{{order_sum}}</span>
+            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1&page=0">
+                <span class="total-order"><i></i><b id="order_sum">{{order_sum}}</b></span>
                 <p>总订单数</p>
             </a>
         </div>
         <div class="pull-right title-style2 item">
             <a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0">
-                <span class="total-user"><i></i>{{follower_sum}}</span>
+                <span class="total-user"><i></i><b id="follower_sum">{{follower_sum}}</b></span>
                 <p>总用户数</p>
             </a>
         </div>
@@ -53,4 +53,7 @@
         {% end %}
     </ul>
 </div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/admin-realtime.js')}}"></script>
 {% end %}

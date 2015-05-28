@@ -1,10 +1,12 @@
   {% extends 'base.html' %}
 {% block title %}消息与评价{% end %}
-{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-comment.css')}}"/>{% end %}
+{% block head %}
+  <link rel="stylesheet" href="{{static_url('css/baguetteBox.css')}}"/>
+  <link rel="stylesheet" href="{{static_url('css/admin-comment.css')}}"/>{% end %}
 {% block content %}
     <span class="right-title">消息与评价</span>
-    <div class="orders-list-title right-title2">
-        <ul class="right-nav pull-left">
+    <div class="subnav-box">
+        <ul class="subnav pull-left">
             <li class="active">
                 <a href="{{reverse_url('adminComment')}}?action=all&&page=0">所有评价</a>
             </li>
@@ -33,28 +35,44 @@
             {% end %}
             <li class="comment-list-item clearfix bg-grey2 p10 set-top10" data-id="{{comment[4]}}">
                 <div class="col-lg-1 col-md-1 col-xs-2 col-sm-2 p0">
-                    <img src="{{comment[6] or '/static/images/TDSG_l.png'}}" class="user-img"/>
+                    <img src="{{comment[6] or '/static/images/TDSG.png'}}" class="user-img"/>
                 </div>
                 <div class="col-lg-9 col-md-9 col-xs-9 col-sm-9">
                     <div class="row">
-                        <div class="col-md-4 p0 user_info">
-                            <p class="user-name line-30"><a href="javascript:;">{{comment[7]}}</a></p>
+                        <div class="col-md-2 p0 user_info">
+                            <p class="user-name "><a href="javascript:;">{{comment[7]}}</a></p>
                         </div>
-                        <div class="col-md-4">
-                            <p class="line-30">{{comment[1]}}</p>
+                        <div class="col-md-3">
+                            <p class="">{{comment[1]}}</p>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <p class="text-primary">
                                 <a href="{{reverse_url('adminSearchOrder')}}?action=order&&id={{comment[2]}}" target="_blank">订单号：<span class="order_id">{{comment[2]}}</span></a>
                             </p>
                         </div>
+                        <div class="col-md-4">
+                            <p class="shop-point">
+                                质量：<span class="zl">{{comment[11]}}</span> 速度：<span class="sd">{{comment[12]}}</span> 服务：<span class="fw">{{comment[13]}}</span>
+                            </p>
+                        </div>
                     </div>
                     <div class="row">
-                        <div class="wrap-text col-md-12">
+                        <div class="wrap-text col-md-7">
                             <p class="text-grey9">{{comment[0]}}</p>
                             <p class="saler_reply {{hidden}}">商家回复：<span class="reply_word">{{comment[3]}}</span></p>
                             <p class="del-box text-pink {{hidden1}}">申请删除理由：<span class="del-reason">{{comment[8]}}</span></p>
                             <p class="reject-box text-pink  {{hidden2}}">被拒理由:<span class="reject-reason">{{comment[9]}}</span></p>
+                        </div>
+                        <div class="wrap-imgs col-md-5">
+                            <div class="row">
+                                {% if comment[10]%}
+                                {% for img in comment[10] %}
+                                <div class="col-md-3">
+                                    <a href="{{img}}"><img src="{{img}}?imageView2/5/w/50/h/50" alt="评价图片"/></a>
+                                </div>
+                                {% end %}
+                                {% end %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -98,7 +116,7 @@
                 <div class="modal-content del-com-cont">
                     <h3>森果平台不主张店主私自删除用户评论过的行为，若该条评论对您的店铺经营产生影响，
                     您可通过一下两种方式消除影响：</h3>
-                    <p class="mt20">1.联系用户，提示用户<span class="red-txt">主动修改评论</span>，并发表新的评论；</p>
+                    <p class="mt20">1.联系用户，提示用户<span class="red-txt">主动修改评论</span>；</p>
                     <p>2.提交删除申请，通过审核后，森果团队会帮您删除评论。</p>
                     <div class="btn-group txt-ac">
                         <a href="javascript:;" class="bg-green ok-pop" id="contact-user">和用户联系</a>
@@ -107,7 +125,7 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade bs-apply-com" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal bs-apply-com" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content del-com-cont">
                     <p class="apply-title">请提交您需要删除此条评论的理由：</p>
@@ -122,4 +140,6 @@
     <h4 class="text-center">无用户评价！</h4>
     {% end %}
 {% end %}
-{% block bottom %}<script src="{{static_url('js/admin-comment.js')}}"></script>{% end %}
+{% block bottom %}
+  <script src="{{static_url('js/third/baguetteBox.min.js')}}"></script>
+  <script src="{{static_url('js/admin-comment.js')}}"></script>{% end %}

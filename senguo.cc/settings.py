@@ -8,11 +8,20 @@ APP_OAUTH_CALLBACK_URL = "http://auth.senguo.cc"
 MP_APPID = "wx0ed17cdc9020a96e"
 MP_APPSECRET = "6ecd60383b7e26a09d51a12e75649b3e"
 
+# QQ授权
+QQ_APPID = '101221864'
+QQ_APPKEY = '23060ad64493f81c2a2619f1c56c9c0e'
+
+#测试号平台
+TEST_APPID = 'wxda9a51b0a18c983a'
+TEST_APPSECRET = 'b4e6f4340b59d51f6b3c18ee2e024163'
+
 # mysql数据库相关
 MYSQL_DRIVER = "mysqlconnector"
 MYSQL_USERNAME = "monk"
 MYSQL_PASSWORD = "test123"
 DB_NAME = "senguocc"
+DB_CHARSET = "utf8mb4"
 
 #手机短信验证的设置
 content = "您的验证码是：【{code}】。请不要把验证码泄露给其他人。"

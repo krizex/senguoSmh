@@ -104,7 +104,7 @@ function Vrify(){
             if(res.success)
             {
                 time($('#getVrify'));
-                alert('验证码已发送到您的手机,请注意查收！');
+                alert('验证码已发送到您的手机，请注意查收！');
 
             }
             else alert(res.error_text);
@@ -125,9 +125,9 @@ function TiePhone(){
     if(!code){return alert('请输入验证码');}
     if(!password){return alert('请设置您的手机登录密码！');}
     if(!regNumber.test(code)){return alert('验证码只能为数字！');}
-    if(code>0&&phone.length<6){return alert('验证码为六位数字!');}
+    if(code>0&&phone.length<6){return alert('验证码为六位数字！');}
     if(password.length<6){return alert('密码至少为6位！')}
-    if(passwconf!=password){return alert('两次密码输入不一致!')}
+    if(passwconf!=password){return alert('两次密码输入不一致！')}
     password = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
     var action='checkcode';
     var url="/fruitzone/phoneVerify?action=admin";

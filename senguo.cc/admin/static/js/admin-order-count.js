@@ -353,10 +353,10 @@ function count(action,page,type){
                 data=res.data;
                 if(action=='order_table'){detail_page_sum=res.page_sum;}
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
         function(){
-            return alert('网络好像不给力呢~ ( >O< ) ~！');
+            return Tip('网络好像不给力呢~ ( >O< ) ~！');
         });
 }
 

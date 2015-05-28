@@ -1,4 +1,12 @@
 $(document).ready(function(){
+        //翻页
+    var page=Int($.getUrlParam('page'));
+    var order_type=$.getUrlParam('order_type');
+    var order_status=$.getUrlParam('order_status');
+    var total_page=Math.ceil($('.page-total').text());
+    $('.page-now').text(page+1);
+    $('.page-total').text(total_page);
+    getPage(page,'/admin/order?order_type='+order_type+'&order_status='+order_status+'&page=',total_page);
     $('body').on('mouseenter','.edit_item_box',function(){
         var $this=$(this);
         if($this.hasClass('to-edit-item')){
@@ -34,7 +42,7 @@ $(document).ready(function(){
         if(i<=9) i='0'+i;
         $('.minute-list').append('<li>'+i+'</li>');
     }
-    for(var i=0;i<=60;i=Int(i)+5)//截止时间
+    for(var i=0;i<=120;i=Int(i)+5)//截止时间
     {
         if(i<9) i='0'+i;
         $('.stop-minute-list').append('<li>'+i+'</li>');
@@ -48,7 +56,7 @@ $(document).ready(function(){
     $(document).on('click','.add-new-time',function(){//添加显示
         var max=$('.time-list').find('.time-list-item').length;
         if(max<20) {
-            $.getItem('/static/items/admin/add-period-item.html?v=2015-0211',function(data){
+            $.getItem('/static/items/admin/add-period-item.html?v=2015-0311',function(data){
                 var $item=$(data);
                 for(var i=0;i<=23;i++)
                 {
@@ -60,12 +68,12 @@ $(document).ready(function(){
                     if(i<=9) i='0'+i;
                     $item.find('.minute-list').append('<li>'+i+'</li>');
                 }
-                $('.add-period').append($item).show();
+                $('.add-period').empty().append($item).show();
             });
 
 
         }
-        else return alert('至多能添加20个时段！');
+        else return Tip('至多能添加20个时段！');
     });
     $(document).on('click','.add-time-period',function(){//添加确认
         var $this=$(this);
@@ -118,7 +126,15 @@ $(document).ready(function(){
     });
     //按时达下单截止时间
     $(document).on('click','.stopRange',function(){
-        var range=$('#stopRange').text();
+        var range=$('#stopRange').val().trim();
+        var regNumber=/^([1-9]\d*|[0]{1,1})$/;
+        if(!regNumber.test(range)){
+            return Tip('截止时间只能输入整数');
+        }
+        range=parseInt(range);
+        if(range<0||range>360){
+             return Tip('截止时间范围为0~360分钟');
+        }
         stopRange($('#stopRange'),range);
     });
     //按时达配送费
@@ -169,6 +185,27 @@ $(document).ready(function(){
 	     orderSearch();
 	}
     });
+    //实时请求未处理订单
+    setInterval(function(){
+        $.ajax({
+            url:"/admin/order?order_type=1&order_status=1&page=0&action=realtime",
+            type:"get",
+            success:function(res){
+                if(res.success){
+                    var index = $(".order-type").children(".active").index();
+                    $("#atonce").text(res.atonce);
+                    $("#ontime").text(res.ontime);
+                    /*if(res.new_order_sum>0){
+                        $("#new-order-box").removeClass("hidden");
+                    }else{
+                        $("#new-order-box").addClass("hidden");
+                    }*/
+                }
+            }
+        })
+    },10000);
+}).on("click","#new-order-box",function(){
+   window.location.reload(true);
 });
 var link='/admin/order';
 var orderType=$.getUrlParam('order_type');
@@ -211,7 +248,7 @@ function addEditPeriod(target,action){
     var end_hour=parent.find('.end-hour').text();
     var end_minute=parent.find('.end-minute').text();
     var name=parent.find('.period-name').val();
-    if(start_hour+':'+start_minute>=end_hour+':'+end_minute) return alert('起始时间必须小于截止时间！');
+    if(start_hour+':'+start_minute>=end_hour+':'+end_minute) return Tip('起始时间必须小于截止时间！');
     start_hour=Int(start_hour);
     start_minute=Int(start_minute);
     end_hour=Int(end_hour);
@@ -223,7 +260,7 @@ function addEditPeriod(target,action){
         end_minute:end_minute,
         name:name
     };
-    if(!name){return alert('请输入时段名称！')}
+    if(!name){return Tip('请输入时段名称！');}
     if(action=='edit_period') data.period_id=period_id;
     var args={
         action:action,
@@ -233,7 +270,7 @@ function addEditPeriod(target,action){
             if(res.success){
                 if(action=='add_period'){
                     parent.empty().hide();
-                    var item_url='/static/items/admin/send-period-item.html?v=2015-0119';
+                    var item_url='/static/items/admin/send-period-item.html?v=2015-0328';
                     $.getItem(item_url,function(data){
                         var $item=$(data);
                         $item.attr({'data-id':res.period_id});
@@ -267,9 +304,9 @@ function addEditPeriod(target,action){
 
                 }
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-    function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
+    function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }
 
@@ -289,9 +326,9 @@ function deletePeriod(target){
             if(res.success){
                 parent.remove();
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
+        function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }
 
@@ -318,9 +355,9 @@ function activePeriod(target,active){
                         target.attr({'data-id':1}).find('.work-mode').show().siblings('.stop-mode').hide();
                     }
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
+        function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }
 
@@ -335,9 +372,9 @@ function orderTypeActive(target,action){
             if(res.success){
               window.location.reload();
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
+        function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }
 
@@ -357,9 +394,9 @@ function sendMoney(target,money){
                 parent.find('.show_value').text(money);
                 parent.addClass('edit_item_box');
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
+        function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }
 
@@ -380,9 +417,9 @@ function stopRange(target,range){
                 parent.find('.show_value').text(range);
                 parent.addClass('edit_item_box');
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
+        function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }
 
@@ -403,9 +440,9 @@ function FreightOnTime(target,freight){
                 parent.find('.show_value').text(freight);
                 parent.addClass('edit_item_box');
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
+        function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }
 
@@ -427,16 +464,16 @@ function SendNowConfig(){
         freight_now=0;
     }
     if(min_charge_now>200){
-        return alert('最低起送价请不要超过200元!');
+        return Tip('最低起送价请不要超过200元！');
     }
     if(intime_period==null) {
         intime_period=30;
     }
     if(!regNum.test(intime_period)){
-        return alert('立即送时间段只能填写数字 ！')
+        return Tip('立即送时间段只能填写数字！')
     }
     if(intime_period<0||intime_period>120){
-        return alert('立即送时间段只能设置为0~120 ！')
+        return Tip('立即送时间段只能设置为0~120！')
     }
     var args={
         action:action,
@@ -454,8 +491,8 @@ function SendNowConfig(){
             if(res.success){
                 $('.sendNowBox').modal('hide');
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
+        function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }

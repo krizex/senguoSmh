@@ -17,7 +17,10 @@ $(document).ready(function(){
             $this.attr({'disabled':true}).text('申请拒绝');
         }
     });
-
+    //init baguetteBox
+    baguetteBox.run('.wrap-imgs',{
+        buttons: false
+    });
 }).on("click","#contact-user",function(){
     $(".bs-del-com").modal("toggle");
 }).on('click','.del-com',function(){
@@ -33,12 +36,11 @@ $(document).ready(function(){
     var $this=$(this);
      var delete_reason=$('#commit-cont').val();
     if(!delete_reason){
-        return alert('请输入您的理由!')
+        return Tip('请输入您的理由！')
     }
     if(delete_reason.length>300){
-         return alert('最多可输入300字!')
+         return Tip('最多可输入300字！')
     }
-   $('#commit-senguo').attr({'disabled':true});
     applyDel(delete_reason);
 }).on('click','.reply',function(){
        //回复
@@ -77,9 +79,9 @@ function replay(id,index){
                 $('.reply-box').modal('hide');
                 $('.comment-list-item').eq(index).find('.saler_reply').removeClass('hidden').find('.reply_word').text(reply);
             }
-            else alert(res.error_text);
+            else Tip(res.error_text);
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~')})
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~')})
 }
 
 function collect(target,id){
@@ -94,12 +96,13 @@ function collect(target,id){
             {
                 target.remove();
             }
-            else alert(res.error_text);
+            else Tip(res.error_text);
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~')})
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~')})
 }
 
 function applyDel(delete_reason){
+    $('#commit-senguo').attr({'disabled':true}).addClass('bg-greyc');
     var url='';
     var action='apply_delete_comment';
     var id=Int($(".bs-apply-com").attr('data-id'));
@@ -117,10 +120,15 @@ function applyDel(delete_reason){
             {
                 $(".bs-apply-com").modal('hide');
                 $('.del-com').eq(index).attr({'disabled':true}).text('申请中');
-                $('#commit-senguo').removeAttr('disabled');
-                $('.del-box').eq(index).removeClass('hidden').find('.del-reason').text(delete_reason);
+                $('.del-box').eq(index).removeClass('hidden').find('.del-reason').text(delete_reason);   
+                $('#commit-senguo').removeAttr('disabled').removeClass('bg-grey');
+            }else {
+                $('#commit-senguo').removeAttr('disabled').removeClass('bg-grey');
+                Tip(res.error_text);
             }
-            else alert(res.error_text);
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~')})
+        function(){
+            Tip('网络好像不给力呢~ ( >O< ) ~');
+            $('#commit-senguo').removeAttr('disabled').removeClass('bg-grey');
+        });
 }

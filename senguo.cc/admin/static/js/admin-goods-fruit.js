@@ -35,7 +35,7 @@ $(document).ready(function(){
             $box.find('.type_add').removeClass('hidden').siblings('.type_eidt').addClass('hidden');
             $box.find('#type-name').val('');
         }
-        else return alert('最多可添加5个商品分类！');
+        else return Tip('最多可添加5个商品分类！');
     });
     $('body').on('click','#add-goodsType',function(){addEditType($(this),'add_menu')});
     //商品分类名编辑
@@ -203,7 +203,7 @@ $(document).ready(function(){
                                 case 'svg':
                                     break;
                                 default:
-                                     alert("无效的文件格式！图片支持格式:png,jpg,jpeg,bmp,svg");
+                                    Tip("无效的文件格式！图片支持格式:png,jpg,jpeg,bmp,svg");
                                     $(this).uploadifive('cancel', file);
                                     break;
                             }
@@ -213,7 +213,7 @@ $(document).ready(function(){
                             'token':''
                         },
                         'onFallback':function(){
-                            return alert('您的浏览器不支持此插件！建议使用谷歌浏览器！');
+                            return Tip('您的浏览器不支持此插件！建议使用谷歌浏览器！');
                         },
                         'onUpload' :function(){
                             $.ajaxSetup({
@@ -228,7 +228,7 @@ $(document).ready(function(){
                                     token=res.token;
                                 },
                                 function(){
-                                    alert('网络好像不给力呢~ ( >O< ) ~！');}
+                                    Tip('网络好像不给力呢~ ( >O< ) ~！');}
                             );
                             $('#file_upload').data('uploadifive').settings.formData = {
                                 'key':key,
@@ -242,7 +242,7 @@ $(document).ready(function(){
                     });
             });
         }
-        else alert('该分类下最多可添加30种商品！如仍需添加请选择其他分类！');
+        else Tip('该分类下最多可添加30种商品！如仍需添加请选择其他分类！');
         defalutChangeUnit(storage_unit_id);
      });
     $('body').on('click','.add-goods-sure',function(){
@@ -306,7 +306,7 @@ $(document).ready(function(){
                     parent.find('.add-charge-list').append($item);
                 });
             }
-            else alert('最多只能添加20个计价方式！');
+            else Tip('最多只能添加20个计价方式！');
         });
 
     //商品添加-恢复默认图
@@ -360,7 +360,7 @@ $(document).ready(function(){
                         case 'svg':
                             break;
                         default:
-                            alert("无效的文件格式！图片支持格式:png,jpg,jpeg,bmp,svg");
+                            Tip("无效的文件格式！图片支持格式:png,jpg,jpeg,bmp,svg");
                             $(this).uploadifive('cancel', file);
                             break;
                     }
@@ -370,7 +370,7 @@ $(document).ready(function(){
                     'token':''
                 },
                 'onFallback':function(){
-                    return alert('您的浏览器不支持此插件！建议使用谷歌浏览器！');
+                    return Tip('您的浏览器不支持此插件！建议使用谷歌浏览器！');
                 },
                 'onUpload' :function(){
                     var action;
@@ -387,7 +387,7 @@ $(document).ready(function(){
                             token=res.token;
                         },
                         function(){
-                            alert('网络好像不给力呢~ ( >O< ) ~！');}
+                            Tip('网络好像不给力呢~ ( >O< ) ~！');}
                     );
                     $(this).data('uploadifive').settings.formData = {
                         'key':key,
@@ -395,7 +395,7 @@ $(document).ready(function(){
                     };
                 },
                 'onError' : function(file, fileType, data) {
-                    alert('The file ' + file.name + ' could not be uploaded: ' + data);
+                    Tip('The file ' + file.name + ' could not be uploaded: ' + data);
                 },
                 'onUploadComplete':function(){
                     $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/100/h/100','data-key':key});
@@ -434,7 +434,7 @@ $(document).ready(function(){
         storage_unit=parent.find('.storage-unit').text();
         var max_charge_num=parent.find('.add-charge-list').find('.edit-charge-list').length;
         if(max_charge_num<20)  add_charge_box.modal('show').load('/static/items/admin/add-new-chargetype.html');
-        else alert('最多只能添加20个计价方式！');
+        else Tip('最多只能添加20个计价方式！');
         add_charge_box.find('.charge-unit').attr({'data-id':storage_unit_id}).text(storage_unit);
         add_charge_box.find('.unit-change-show').text(storage_unit);
         item_fruit_id=$this.parents('.goods-list-item').data('id');
@@ -478,7 +478,7 @@ $(document).ready(function(){
     $('.delete-charge-type').on('click',function(){
         var $this=$(this);
         var max_num=$this.parents('.add-charge-list').find('li').length;
-        if(max_num<2){return alert('至少要有一种计价方式！')}
+        if(max_num<2){return Tip('至少要有一种计价方式！')}
         else deleteCharge($this,$this.parents('.edit-charge-list').data('id'));
     });
 
@@ -513,9 +513,9 @@ function addEditType(target,action){
     var box=target.parents('.add-goodsType-box');
     var name=box.find('#type-name').val();
     //var intro=add_box.find('#type-intro').val();
-    if(!name){return alert('请输入分类名称！')}
-    if(name.length>5){return alert('请输不要超过5个字！')}
-    //if(intro.length>60){return alert('请输不要超过60个字！')}
+    if(!name){return Tip('请输入分类名称！')}
+    if(name.length>5){return Tip('请输不要超过5个字！')}
+    //if(intro.length>60){return Tip('请输不要超过60个字！')}
     var args;
     var data;
     var id;
@@ -551,9 +551,9 @@ function addEditType(target,action){
                 box.modal('hide');
 
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~')});
 }
 
 function defalutChangeUnit(id){
@@ -629,13 +629,13 @@ function addEditFruit(target,action){
     if(!tag){tag=1}
     if(!priority){priority=5}
     if(!intro){intro='';}
-    if(!name){return alert('请输入商品名称！');}
-    if(saled!=0&&!regFloat.test(saled)){return alert('销量只能为数字，至多为小数点后两位！');}
-    if(storage!=0&&!regFloat.test(storage)){return alert('库存只能为数字，至多为小数点后两位！');}
-    if(!regNumber.test(priority)){return alert('优先级只能为整数！');}
-    if(priority<1||priority>5){return alert('优先级只能为1-5！');}
-    if(intro.length>100) {return alert('商品简介请不要超过100个字！');}
-    if(name.length>12) {return alert('商品名称请不要超过12个字！');}
+    if(!name){return Tip('请输入商品名称！');}
+    if(saled!=0&&!regFloat.test(saled)){return Tip('销量只能为数字，至多为小数点后两位！');}
+    if(storage!=0&&!regFloat.test(storage)){return Tip('库存只能为数字，至多为小数点后两位！');}
+    if(!regNumber.test(priority)){return Tip('优先级只能为整数！');}
+    if(priority<1||priority>10){return Tip('优先级只能为1-10！');}
+    if(intro.length>100) {return Tip('商品简介请不要超过100个字！');}
+    if(name.length>12) {return Tip('商品名称请不要超过12个字！');}
     var data={
         //fruit_type_id:parseInt(fruit_type_id),
         name:name,
@@ -655,11 +655,11 @@ function addEditFruit(target,action){
     }
     var args;
     if(action=='add_fruit'||action=='add_mgoods'){
-        if(!price||!num){return alert('请至少完整填写一种计价方式！');}
-        if(!regFloat.test(price)){return alert('价格只能为数字，至多为小数点后两位！');}
-        if(!regFloat.test(num)){return alert('数量只能为数字，至多为小数点后两位！');}
+        if(!price||!num){return Tip('请至少完整填写一种计价方式！');}
+        if(!regFloat.test(price)){return Tip('价格只能为数字，至多为小数点后两位！');}
+        if(!regFloat.test(num)){return Tip('数量只能为数字，至多为小数点后两位！');}
         if(!unit_num) unit_num=1;
-        if(!regFloat.test(unit_num)){return alert('计价方式换算单位只能为数字，至多为小数点后两位！');}
+        if(!regFloat.test(unit_num)){return Tip('计价方式换算单位只能为数字，至多为小数点后两位！');}
         if(!img_url){data.img_url=''}
         data.charge_types=charge_types;
         args={
@@ -680,9 +680,9 @@ function addEditFruit(target,action){
                 add_goods_box.modal('hide');
                 window.location.reload();
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~')});
 }
 
 function editActive(id,target){
@@ -708,9 +708,9 @@ function editActive(id,target){
             if(res.success){
 
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~')});
 }
 
 function addEditCharge(target,id,action,item){
@@ -721,11 +721,11 @@ function addEditCharge(target,id,action,item){
     var num=parseFloat(charge_item.find('.charge-num').val());
     var units=Int(charge_item.find('.charge-unit').attr('data-id'));
     var unit_num=parseFloat(charge_item.find('.charge-unit-num').val());
-    if(!price||!num) {return alert('请输入计价方式！')}
-    if(!regFloat.test(price)){return alert('价格只能为数字，至多为小数点后两位！');}
+    if(!price||!num) {return Tip('请输入计价方式！')}
+    if(!regFloat.test(price)){return Tip('价格只能为数字，至多为小数点后两位！');}
     if(!unit_num){unit_num=1}
-    if(!regFloat.test(num)){return alert('数量只能为数字，至多为小数点后两位！');}
-    if(!regFloat.test(unit_num)){return alert('单位换算数量只能为数字，至多为小数点后两位！');}
+    if(!regFloat.test(num)){return Tip('数量只能为数字，至多为小数点后两位！');}
+    if(!regFloat.test(unit_num)){return Tip('单位换算数量只能为数字，至多为小数点后两位！');}
     var data={
             price:price,
             unit:units,
@@ -757,9 +757,9 @@ function addEditCharge(target,id,action,item){
                 $('.edit-charge-box').modal('hide');
                 window.location.reload();
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~')});
 }
 
 function deleteCharge(target,id){
@@ -777,9 +777,9 @@ function deleteCharge(target,id){
             if(res.success){
                 target.parents('.edit-charge-list').remove();
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~')});
 }
 
 function defaultImg(target,id,code){
@@ -804,7 +804,7 @@ function defaultImg(target,id,code){
                 }
                 else target.parents('.upload-img').find('.imgPreview').attr({'src':'/static/design_img/'+code+'.png','data-key':''});
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~')});
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~')});
 }

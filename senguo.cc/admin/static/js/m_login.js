@@ -1,4 +1,9 @@
 $(document).ready(function(){
+    if(window.location.href.indexOf("?next")!=-1){
+	SetCookie("next_url",$("#phoneLogin").attr('data-next'),1);
+    }else{
+        
+    }
 
 }).on('click','#phoneLogin',function(){
 	var $this=$(this);
@@ -11,13 +16,28 @@ function login(target){
 	var phone=$('#phone').val().trim();
 	var password=$('#password').val().trim();
 	var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-    	if(!regPhone.test(phone)){return noticeBox("电话貌似有错o(╯□╰)o");}
-    	if(phone.length<11){return noticeBox("电话貌似有错o(╯□╰)o");}
-    	if(phone.length > 11){return noticeBox("电话貌似有错o(╯□╰)o");}
-    	if(!phone){return noticeBox("请输入您的手机号o(╯□╰)o");}
-    	if(!password){return noticeBox("请输入您的密码o(╯□╰)o");}
+	var next=target.attr('data-next');
+    	if(!regPhone.test(phone)){
+    		target.removeAttr('disabled');
+    		return noticeBox("手机号貌似有错o(╯□╰)o");
+    	}
+    	if(phone.length<11){
+    		target.removeAttr('disabled');
+    		return noticeBox("手机号貌似有错o(╯□╰)o");
+    	}
+    	if(phone.length > 11){
+    		target.removeAttr('disabled');
+    		return noticeBox("手机号貌似有错o(╯□╰)o");
+    	}
+    	if(!phone){
+    		target.removeAttr('disabled');
+    		return noticeBox("请输入您的手机号o(╯□╰)o");
+    	}
+    	if(!password){
+    		target.removeAttr('disabled');
+    		return noticeBox("请输入您的密码o(╯□╰)o");
+    	}
     	password=CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
-    	var next=target.attr('data-next');
 	var args={
 		phone: phone,
 		password:password,
@@ -26,12 +46,28 @@ function login(target){
 	};
 	$.postJson(url,args,function(res){
 		if(res.success){
-			window.location.href=next;
+
+			if(next==''||!next){
+				window.location.href='/list';
+			}
+			else{
+				window.location.href=next;	
+			}
+			target.removeAttr('disabled');
 		}
-		else return noticeBox(res.error_text);
+		else {
+			target.removeAttr('disabled');
+			return noticeBox(res.error_text);
+		}
 	}, 
-	function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-	function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+	function(){
+		target.removeAttr('disabled');
+		return noticeBox('网络好像不给力呢~ ( >O< ) ~');
+	},
+	function(){
+		target.removeAttr('disabled');
+		return noticeBox('服务器貌似出错了~ ( >O< ) ~');
+	}
 	);
-	target.removeAttr('disabled');
+	
 }

@@ -1,3 +1,16 @@
+var zb_timer = null;
+function Tip(text){
+    clearTimeout(zb_timer);
+    if($("#zb-tip").size()>0){
+        $("#zb-tip").html(text).removeClass("hidden");
+    }else{
+        var tip = '<div class="zb-tip" id="zb-tip">'+text+'</div>';
+        $("body").append(tip);
+    }
+    zb_timer = setTimeout(function(){
+        $("#zb-tip").addClass("hidden");
+    },3000);
+}
 (function ($) {
     $.getUrlParam = function (name, default_value) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");

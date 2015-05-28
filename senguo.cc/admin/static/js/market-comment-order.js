@@ -1,24 +1,76 @@
 /**
  * Created by Administrator on 2015/4/23.
  */
-var imgNameArr = [];
+var width = 0;
 $(document).ready(function(){
-
-}).on("click","#commit-order-point",function(){
+    width = parseInt($("#img-lst").width()/4)-15;
+    $("#img-lst").children("li").each(function(){
+        $(this).width(width).height(width);
+    });
+}).on("click","#commit-order-point",function(){  //完成评价
     var user_txt = $("#user-txt").val();
+    if($.trim(user_txt).length==0){
+        noticeBox("评论不能为空哦！")
+        return false;
+    }
+    if(user_txt.length>100){
+        noticeBox("评论要在100个字以内哦！")
+        return false;
+    }
+    if($(this).hasClass("grey-bg")){
+        noticeBox("别点我啦，马上就好！")
+        return false;
+    }
+    $(this).addClass("grey-bg");
+    var imglist = $("#img-lst").find(".image");
+    var imgUrl = [];
+    var order_id = $(this).attr("data-id");
+    var flag = true;
+    imglist.each(function(i){
+        var url = $(this).attr("url");
+        if(url){
+            imgUrl.push(url);
+            flag = false;
+        }
+    });
+    if(flag){
+        imgUrl = "";
+    }
+    var data = {
+        "comment":user_txt,
+        "order_id":order_id,
+        "imgUrl":imgUrl.toString()
+    };
+    $.ajax({
+        url:"/customer/orders",
+        contentType:"application/json; charset=UTF-8",
+        data:JSON.stringify({"data":data,"action":"comment",_xsrf:window.dataObj._xsrf}),
+        type:"post",
+        success:function(res){
+            if(res.success){
+                if(res.notice!=''){
+                    noticeBox(res.notice);
+                }
+                setTimeout(function(){
+                    window.location.href="/customer/comment?page=0";
+                },2000);
+            }else{
+                noticeBox(res.error_txt);
+                $(this).removeClass("grey-bg");
+            }
+        }
+    })
 
 }).on("click",".icon-del",function(){
-    var index = $(this).attr("data-index");
-    imgNameArr.splice(index,1);
     $(this).closest("li").remove();
-    if($("#add-product-image").closest("li").hasClass("hide")){
-        $("#add-product-image").closest("li").removeClass("hide");
+    if($("#add-img").closest("li").hasClass("hide")){
+        $("#add-img").closest("li").removeClass("hide");
         $(".moxie-shim").removeClass("hide");
     }
-    $(".moxie-shim").css({width:$("#add-img").width(),height:$("#add-img").height(),left:$("#add-img").closest("li").position().left,top:$("#add-img").closest("li").position().top});//调整按钮的位置
+    $(".moxie-shim").css({width:width+"px",height:width+"px",left:$("#add-img").closest("li").position().left,top:$("#add-img").closest("li").position().top});//调整按钮的位置
 });
 $(document).ready(function(){
-    var width = $("#add-img").width();
+
     var uploader = Qiniu.uploader({
         runtimes: 'html5,flash,html4',
         browse_button: 'add-img',
@@ -27,14 +79,14 @@ $(document).ready(function(){
         filters : {
             max_file_size : '4mb',//限制图片大小
             mime_types: [
-                {title : "image type", extensions : "jpg,jpeg,gif,png"}
+                {title : "image type", extensions : "jpg,jpeg,png"}
             ]
         },
         flash_swf_url: 'static/js/plupload/Moxie.swf',
         dragdrop: false,
         chunk_size: '4mb',
         domain: "http://shopimg.qiniudn.com/",
-        uptoken: getCookie("token"),
+        uptoken: $("#token").val(),
         unique_names: false,
         save_key: false,
         auto_start: true,
@@ -52,36 +104,56 @@ $(document).ready(function(){
                         }
                     }
                 });
+                var $item = $('<li style="width:'+width+'px;height:'+width+'px;"><div class="wrap-img"><div class="img-cover wrap-img-cover"><span class="loader loader-quart"></span></div><img id="'+file.id+'" src="" alt="晒单图片" class="image '+isOri+'"/><a href="javascript:;" class="icon-del hide"></a></div></li>');
+                $("#add-img").closest("li").before($item);
+                if ($("#img-lst").children("li").size() == 5) {
+                    $("#add-img").closest("li").addClass("hide");
+                    $(".moxie-shim").addClass("hide");
+                }
+                $(".moxie-shim").css({left:$("#add-img").closest("li").position().left,top:$("#add-img").closest("li").position().top});//调整按钮的位置
                 !function(){
                     previewImage(file,width,function(imgsrc){
-
+                        $("#"+file.id).attr("src",imgsrc);
                     })
                 }();
             },
             'UploadProgress': function (up, file) {
             },
             'FileUploaded': function (up, file, info) {
-                $("#person-img").attr("url","http://shopimg.qiniudn.com/"+$.parseJSON(info).key);
+                $("#" + file.id).prev(".img-cover").addClass("hide");
+                $("#" + file.id).next("a").removeClass("hide");
+                $("#"+file.id).attr("url","http://shopimg.qiniudn.com/"+file.id);
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
-                    alert("图片大小不能超过4M哦");
+                    noticeBox("图片大小不能超过4M哦");
                 } else if (err.code == -601) {
-                    alert("图片格式不对哦");
+                    noticeBox("图片格式不对哦，只能上传png、jpg格式图片");
                 } else if (err.code == -200) {
-                    alert("上传出错");
+                    noticeBox("当前页面过期，请刷新页面");
                 } else {
-                    alert(err.code + ": " + err.message);
+                    noticeBox(err.code + ": " + err.message);
                 }
                 up.removeFile(err.file.id);
-                $("#person-img").attr("src","").attr("url","").closest(".wrap-img").addClass("hide");
+                $("#"+err.file.id).closest("li").remove();
+                if($("#"+err.file.id).closest("li").index()==3){
+                    $("#add-img").closest("li").removeClass("hide");
+                    $(".moxie-shim").removeClass("hide");
+                }
+                $(".moxie-shim").css({left:$("#add-img").closest("li").position().left,top:$("#add-img").closest("li").position().top});//调整按钮的位置
             },
             'Key': function (up, file) {
-                var key = "Web_" + new Date().getTime() + "_" + file.id;
+                var key = file.id;
                 return key;
             }
         }
     });
+    /*var imgLink = Qiniu.imageMogr2({
+        auto-orient:true
+    });*/
+    setTimeout(function(){
+        $(".moxie-shim").children("input").attr("capture","camera").attr("accept","image/*").removeAttr("multiple");
+    },500);
 })
 //获取cookie
 function getCookie(key){
