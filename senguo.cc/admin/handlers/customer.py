@@ -700,6 +700,7 @@ class Members(CustomerBaseHandler):
 								"work":work(member[0].id,member[1]),
 								"phone":member[0].phone,
 								"wx_username":member[0].wx_username})
+		print(member_list)
 		return self.render("customer/shop-staff.html", member_list=member_list)
 
 class Comment(CustomerBaseHandler):
