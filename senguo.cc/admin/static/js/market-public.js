@@ -343,7 +343,7 @@ Modal.prototype.modal=function(type){
     {
         var window_height=$(window).height();
         var height=$('.container').height();
-        $target.children('modal-dialog').removeClass('anim-bounceIn');
+        $target.find('modal-dialog').removeClass('anim-bounceIn');
         $target.removeClass('anim-fadeOut').addClass('anim-fadeIn');//.css({'visibility':'visible'});
         $target.find('.warn').remove();
         $("body").css({'overflow':'hidden'});
@@ -351,14 +351,14 @@ Modal.prototype.modal=function(type){
             if($(e.target).closest('.dismiss').length != 0){
                 $('body').css({'overflow':'auto'});
                 $target.addClass('anim-fadeOut').removeClass('anim-fadeIn');//.css({'visibility':'hidden'});
-                $target.children('modal-dialog').addClass('anim-bounceIn');
+                $target.find('modal-dialog').addClass('anim-bounceIn');
             }
         });
         $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
                 $('body').css({'overflow':'auto'});
                 $target.addClass('anim-fadeOut').removeClass('anim-fadeIn');//.css({'visibility':'hidden'});
-                $target.children('modal-dialog').addClass('anim-bounceIn');
+                $target.find('modal-dialog').addClass('anim-bounceIn');
             }
         });
     }
@@ -366,7 +366,7 @@ Modal.prototype.modal=function(type){
     {
         $('body').removeClass('modal_sty').css({'overflow':'auto'}).find('.modal_bg').remove();
         $target.addClass('anim-fadeOut').removeClass('anim-fadeIn');//.css({'visibility':'hidden'});
-        $target.children('modal-dialog').removeClass('anim-bounceIn');
+        $target.find('modal-dialog').removeClass('anim-bounceIn');
     }
 }
 //点选动画
