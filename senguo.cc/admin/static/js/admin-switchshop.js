@@ -65,7 +65,7 @@ $(document).ready(function(){
 }).on('click','.sw-list li',function(e){
     var shop_id=$(this).data('id');
     var shop_code = $(this).attr("data-code");
-    if(shop_code!="not set" || !!shop_code){
+    if(shop_code!="not set" && typeof(shop_code) != undefined){
         if(shop_id){
             if(!$(e.target).hasClass('.forbid_click')){
                 var url='/admin';

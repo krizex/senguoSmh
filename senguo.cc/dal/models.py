@@ -45,11 +45,13 @@ class SHOPADMIN_ROLE_TYPE:
 	"""管理员角色"""
 	SHOP_OWNER = 1
 	SYSTEM_USER = 2
+	SHOP_NORMAL_ADMIN =3
 
 class SHOPADMIN_PRIVILEGE:
 	"""权限"""
 	NONE = -1
 	ALL = 0
+	NORMAL = 2
 
 class SHOPADMIN_CHARGE_TYPE:
 	"""付费类型"""
@@ -1340,6 +1342,19 @@ class Fruit(MapBase, _CommonApi):
 	fruit_type = relationship("FruitType", uselist=False)
 	shop = relationship("Shop", uselist=False)
 
+#水果单品的计价类型
+class ChargeType(MapBase, _CommonApi):
+	__tablename__ = "charge_type"
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	fruit_id = Column(Integer, ForeignKey(Fruit.id), nullable=False)
+	price = Column(Float)#售价 
+	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
+	num = Column(Float)#计价数量
+	unit_num = Column(Float, default=1)#单位换算
+	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
+	market_price =  Column(Float)#市场价 #5.27
+
+	fruit = relationship("Fruit", uselist=False)
 
 class FruitComment(MapBase, _CommonApi):
 	__tablename__ = "fruit_comment" #5.27
@@ -1388,19 +1403,6 @@ class MGoods(MapBase, _CommonApi):
 	mcharge_types = relationship("MChargeType") #支持多种计价方式
 	menu = relationship("Menu", uselist=False)
 
-#水果单品的计价类型
-class ChargeType(MapBase, _CommonApi):
-	__tablename__ = "charge_type"
-	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-	fruit_id = Column(Integer, ForeignKey(Fruit.id), nullable=False)
-	price = Column(Float)#售价 
-	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
-	num = Column(Float)#计价数量
-	unit_num = Column(Float, default=1)#单位换算
-	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
-	market_price =  Column(Float)#市场价 #5.27
-
-	fruit = relationship("Fruit", uselist=False)
 
 #用户自定义商品的计价类型
 class MChargeType(MapBase, _CommonApi):

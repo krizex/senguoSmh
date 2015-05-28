@@ -377,7 +377,7 @@ $(document).ready(function(){
             var $charge_list=$this.parents('.goods-list-item').find('.charge-list');
             if(target.closest('.forbid_click').length == 0){
                 $parent.find('.back-shape').toggleClass('hidden');
-                $charge_list.toggle(100);
+                $charge_list.toggle();
                 $parent.find('.toggle_icon').toggleClass('arrow');
                 $parent.toggleClass('pr35');
             };

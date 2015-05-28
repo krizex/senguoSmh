@@ -12,7 +12,6 @@ import requests
 import base64
 import decimal
 
-
 # 登陆处理
 class Access(AdminBaseHandler):
 	def initialize(self, action):
@@ -177,21 +176,21 @@ class SwitchShop(AdminBaseHandler):
 					shop_service = int(q[0][2])
 				if commodity_quality and send_speed and shop_service:
 					satisfy = float((commodity_quality + send_speed + shop_service)/300)
-				else:
-					satisfy = 0
 			comment_count = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).count()
 			fruit_count = self.session.query(models.Fruit).filter_by(shop_id = shop.id,active = 1).count()
 			mgoods_count =self.session.query(models.MGoods).join(models.Menu,models.MGoods.menu_id == models.Menu.id)\
 			.filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
-			shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100) 
+			shop.satisfy = satisfy
 			shop.comment_count = comment_count
 			shop.goods_count = fruit_count+mgoods_count	
-			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()	
+			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()
+			shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100)
 			shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
 			total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id).filter( or_(models.Order.status ==5,models.Order.status ==6 )).all()[0][0]
-			if total_money:
-				shop.total_money = format(total_money,'.2f') 
-			else:
+			shop.total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id ,status =6).all()[0][0]
+			if total_money:		
+				shop.total_money = format(total_money,'.2f')
+			else:		
 				shop.total_money=0
 			shop.address = self.code_to_text("shop_city", self.current_shop.shop_city) +" " + self.current_shop.shop_address_detail
 			shop_list.append(shop.safe_props())
@@ -678,7 +677,7 @@ class Order(AdminBaseHandler):
 		delta = datetime.timedelta(1)
 		# print("[订单管理]当前店铺：",self.current_shop)
 		for order in orders:
-			order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id',
+			order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
 										 'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
@@ -1067,7 +1066,7 @@ class Shelf(AdminBaseHandler):
 			fruits=[]
 			if action == "all":
 				for fruit in self.current_shop.fruits:  # 水果/干果 过滤
-					if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000 and fruit.fruit_type_id<2000) or\
+					if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000) or\
 						(self.args["id"] > 1000 and fruit.fruit_type_id < 1000) or fruit.fruit_type_id == 1000:
 						continue
 
@@ -1078,7 +1077,7 @@ class Shelf(AdminBaseHandler):
 				for fruit in self.current_shop.fruits:
 					if fruit.fruit_type_id == self.args["id"]:
 						fruits.append(fruit)
-					if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000 and fruit.fruit_type_id<2000) or\
+					if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000) or\
 						(self.args["id"] > 1000 and fruit.fruit_type_id < 1000) or fruit.fruit_type_id == 1000:
 						continue
 					if fruit.active == 1:
@@ -1261,16 +1260,183 @@ class Goods(AdminBaseHandler):
 	@tornado.web.authenticated
 	def initialize(self, action):
 		self._action = action
+	@AdminBaseHandler.check_arguments("type_id?","page?:int")
 	def get(self):
 		action = self._action
 		if action == "all":
-			return self.render("admin/goods-all.html",context=dict(subpage="goods"))
+			type_id = self.args["type_id"]
+			page = self.args["page"]
+			page_size = 10
+			offset = (page-1) * page_size
+			history     = []
+			data = []
+			nomore = False
+			try:
+				goods = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id).all()
+			except:
+				nomore=True
+
+			if goods:
+				for good in goods:
+					if good.add_time:
+						add_time = good.add_time.strftime('%Y-%m-%d %H:%M:%S')
+					if good.delete_time:
+						delete_time = good.delete_time.strftime('%Y-%m-%d %H:%M:%S')
+					data.append({})
+					fruit_type_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
+
+					name = Column(String(20))
+					active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
+					current_saled = Column(Integer, default=0) #售出：未处理的订单数
+					saled = Column(Integer) #销量
+					storage = Column(Float)
+					favour = Column(Integer, default=0)  # 赞
+					unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
+					tag = Column(TINYINT, default=TAG.NULL) #标签
+					img_url = Column(String(500))
+					intro = Column(String(100))
+					priority = Column(SMALLINT, default=1)
+					limit_num =  Column(Integer, default=0) #max number could buy #5.27
+					add_time = Column(DateTime, default=func.now()) #5.27
+					delete_time = Column(DateTime) #5.27
+					group_name =  Column(Integer, default=0) #group name 0:default group 1000:record group GoodsGroup.id #5.27
+					clssify  = Column(Integer, default=0) 
+			else:
+				nomore=True
+			count = len(goods)
+			goods = goods[::-1]
+			if page==1 and count<=page_size:
+				nomore=True
+			if offset + page_size <= count:
+				data = goods[offset:offset+page_size]
+			elif offset <= count and offset + page_size >=count:
+				data = goods[offset:]
+			else:
+				nomore=True
+			if data == []:
+				nomore = True
+			if page == 0:
+				if len(data)<page_size:
+					nomore = True
+				return self.render("admin/goods-all.html",context=dict(subpage="goods"),data=data,nomore=nomore,count=count)
+			return self.send_success(data=data,nomore=nomore)
+			
 		elif action == "classify":
 			return self.render("admin/goods-classify.html",context=dict(subpage="goods"))
 		elif action == "group":
 			return self.render("admin/goods-group.html",context=dict(subpage="goods"))
 		elif action == "delete":
 			return self.render("admin/goods-delete.html",context=dict(subpage="goods"))
+
+
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action", "data", "id?:int", "charge_type_id?:int")
+	def post(self):
+		action = self.args["action"]
+		data = self.args["data"]
+		if action == "add_goods":
+			if not (data["charge_types"] and data["charge_types"]):  # 如果没有计价方式、打开market时会有异常
+				return self.send_fail("请至少添加一种计价方式")
+			if len(data["intro"]) > 100:
+				return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
+			args={}
+			args["name"] = data["name"]
+			args["saled"] = data["saled"]
+			args["storage"] = data["storage"]
+			args["unit"] = data["unit"]
+			if data["tag"]:
+				args["tag"] = data["tag"]
+			if data["limit_num"]:
+				args["limit_num"] = data["limit_num"]
+			if data["group_name"]:
+				args["group_name"] = data["group_name"]
+			if data["clssify"]:
+				args["clssify"] = data["clssify"]
+			if data["img_url"]:  # 前端可能上传图片不成功，发来一个空的，所以要判断
+				args["img_url"] = SHOP_IMG_HOST + data["img_url"]
+			args["intro"] = data["intro"]
+			args["priority"] = data["priority"]
+			args["fruit_type_id"] = data["fruit_type_id"]
+			args["shop_id"] = self.current_shop.id
+			goods = models.Fruit(**args)
+			for charge_type in data["charge_types"]:
+				goods.charge_types.append(models.ChargeType(price=charge_type["price"],
+										unit=charge_type["unit"],
+										num=charge_type["num"],
+										unit_num=charge_type["unit_num"]))
+			self.session.add(goods)
+			self.session.commit()
+			return self.send_success()
+		elif action == "edit_goods_img":
+			return self.send_qiniu_token("fruit", self.args["id"])
+		elif action == "apply_cookie":
+			return self.send_qiniu_token("apply_cookie",self.args["id"])
+		elif action in ["add_charge_type", "edit_active", "edit_goods", "default_goods_img","delete_goods"]:  # fruit_id
+			try:fruit = self.session.query(models.Fruit).filter_by(id=self.args["id"]).one()
+			except:return self.send_error(404)
+			if fruit.shop != self.current_shop:
+				return self.send_error(403)
+
+			if action == "add_charge_type":
+				# print('num',data["num"],data["unit"],data["price"])
+				charge_type = models.ChargeType(fruit_id=fruit.id,
+								price=data["price"],
+								unit=data["unit"],
+								num=data["num"],
+								unit_num=data["unit_num"])
+				self.session.add(charge_type)
+				self.session.commit()
+				return self.send_success()
+			elif action == "edit_active":
+				if fruit.active == 1:
+					fruit.update(session=self.session, active = 2)
+				elif fruit.active == 2:
+					fruit.update(session=self.session, active = 1)
+			elif action == "edit_goods":
+				if len(data["intro"]) > 100:
+					return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
+				fruit.update(session=self.session,
+						name = data["name"],
+						saled = data["saled"],
+						storage = data["storage"],
+						unit=data["unit"],
+						tag = data["tag"],
+						img_url = data["img_url"],
+						intro=data["intro"],
+						priority=data["priority"],
+						limit_num=data["limit_num"],
+						group_name=data["group_name"],
+						clssify=data["clssify"]
+						)
+
+			elif action == "default_goods_img":  # 恢复默认图
+				fruit.img_url = ''
+				self.session.commit()
+			elif action == "delete_goods":
+				time_now = datetime.datetime.now()
+				fruit.update(session=self.session, active = 0,delete_time = time_now)
+
+		elif action in ["del_charge_type", "edit_charge_type"]:  # charge_type_id
+			charge_type_id = self.args["charge_type_id"]
+			try: q = self.session.query(models.ChargeType).filter_by(id=charge_type_id)
+			except:return self.send_error(404)
+			if action == "del_charge_type":
+				q.delete()
+			else:
+				q.one().update(session=self.session,price=data["price"],
+						 unit=data["unit"],
+						 num=data["num"],
+						 unit_num=data["unit_num"])
+			self.session.commit()
+		
+		elif action == "add_img":
+			return self.send_qiniu_token("add", 0)
+
+		else:
+			return self.send_error(404)
+
+		return self.send_success()
+
 # 用户管理
 class Follower(AdminBaseHandler):
 	@tornado.web.authenticated
@@ -1316,9 +1482,10 @@ class Follower(AdminBaseHandler):
 														models.Accountinfo.realname.like("%%%s%%" % wd))).all()
 		elif action =="filter":
 			wd = self.args["wd"]
+			d["customer_id"] = base64.b64decode(wd)
 			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).all()
+					join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).first()
 		else:
 			return self.send_error(404)
 		for x in range(0, len(customers)):  #
@@ -1808,8 +1975,10 @@ class AdminAuth(AdminBaseHandler):
 			message_name = account_info.nickname
 			mobile = account_info.phone
 			message_shop_name = self.current_shop.shop_name
-			print(mobile)
-			message_content ='尊敬的{0}，您好，被{1}添加为管理员!'.format(message_name,message_shop_name)
+			normal_admin = models.ShopAdmin(id = account_info.id,role=3,privileges = 2)
+			self.session.add(normal_admin)
+			self.session.commit()
+			message_content ='尊敬的{0}，您好，被{1}添加为管理员！'.format(message_name,message_shop_name)
 			postdata = dict(account='cf_senguocc',
 				password='sg201404',
 				mobile=mobile,
@@ -2081,9 +2250,10 @@ class ShopConfig(AdminBaseHandler):
 		address = self.code_to_text("shop_city", self.current_shop.shop_city) +\
 				  " " + self.current_shop.shop_address_detail
 		service_area = self.code_to_text("service_area", self.current_shop.shop_service_area)
-		lat = self.current_shop.lon;
-		lon = self.current_shop.lat;
-		return self.render("admin/shop-info-set.html", lat=lat,lon=lon,city=city,province=province,address=address, service_area=service_area, context=dict(subpage='shop_set',shopSubPage='info_set'))
+		lat = self.current_shop.lon
+		lon = self.current_shop.lat
+		return self.render("admin/shop-info-set.html", city=city,province=province,address=address,lat=lat,lon=lon, \
+			service_area=service_area, context=dict(subpage='shop_set',shopSubPage='info_set'))
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "data")

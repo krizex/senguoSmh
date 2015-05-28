@@ -6,7 +6,7 @@
 </div>
 <ul class="goods-list clearfix">
     {% for fruit in fruits%}
-    <li class="goods-list-item goods-item" data-id="{{fruit.id}}" data-type="fruit">
+    <li class="goods-list-item goods-item" data-id="{{fruit.id}}" data-type="fruit" data-typeid="{{fruit.fruit_type.id}}">
         <div class="goods-item-show">
             <div class="goods-edit-active shelve-action pull-left" data-active="{{fruit.active}}">
                 <span class="unshelve stop-mode">已下架</span>
