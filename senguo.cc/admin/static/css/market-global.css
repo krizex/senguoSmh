@@ -320,6 +320,8 @@ button:focus{outline:0;}
  }
 
 .anim-bounceDown {
+    -webkit-transform-origin: 50% 0;
+            transform-origin: 50% 0;
     -webkit-animation: bounceDown 0.5s ease 0s 1;
             animation: bounceDown 0.5s ease 0s 1;
 }
