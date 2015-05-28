@@ -23,11 +23,11 @@
         iframe{width: 100%;height: 100%;border: 0;overflow: auto;}
     </style>
 </head>
-<body ontouchmove="event.preventDefault();">
+<!--<body ontouchmove="event.preventDefault();">
 <div class="wrap-area-box">
     <input type="hidden" id="order_id" value="{{order_id}}"/>
     <input type="hidden" id="go-url" value="{{alipayUrl}}"/>
-    <!--div class="tip-area">
+    <div class="tip-area">
         <img src="/static/images/order_tip.png" alt="点击右上角选择浏览器中打开"/>
     </div>
     <p class="tip-txt">
@@ -36,10 +36,11 @@
     <div class="back-area" id="back-btn">
         <i class="back-btn"></i>
         <span class="back-txt">返回</span>
-    </div-->
-    <iframe src="{{alipayUrl}}" frameborder="0" scrolling="auto"></iframe>
-</div>
-<script src="/static/js/zepto.js"></script>
+    </div>
+</div>-->
+<body>
+    <iframe src="{{alipayUrl}}"></iframe>
+<script src="/static/js/zepto&&fastclick&&lazyload.min.js"></script>
 <script>
     $(document).ready(function(){
         var ua = window.navigator.userAgent.toLowerCase();
