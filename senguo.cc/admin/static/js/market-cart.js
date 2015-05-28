@@ -699,12 +699,19 @@ function orderSubmit(target){
                 noticeBox(res.notice);
             }
             SetCookie('cart_count',0);
-            if(pay_type==3){
-                window.location.href=res.success_url;
-                //window.location.href="/customer/orders/detail/"+res.order_id;
-            }else{
-               window.location.href=window.dataObj.success_href; 
-            }
+            var url='/customer/cartback';
+            var args={order_id:res.order_id};
+            $.postJson(url,args,function(data) {
+                 if (data.success) {
+                      if(pay_type==3){
+                        window.location.href=res.success_url;
+                        //window.location.href="/customer/orders/detail/"+res.order_id;
+                    }else{
+                       window.location.href=window.dataObj.success_href; 
+                    }
+                 }
+            });
+          
         }
         else {
             noticeBox(res.error_text,target);

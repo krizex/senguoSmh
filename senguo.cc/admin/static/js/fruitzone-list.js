@@ -1,18 +1,28 @@
 var ulat = 0,ulng = 0,refuse_flag = true,loc_flag=false;
 $(document).ready(function(){
+    var link_action=$.getUrlParam('action');
+    if(link_action){
+            if(link_action=='shop'){
+            var shops=$('.shoplist').attr('data-shop');
+            var id=$.getUrlParam('id');
+            shopsList(0,id,'admin_shop');
+        }
+    }
+    else{
+         initLocation();
+           var city_id = $("#city_id").val();
+        if(city_id){
+            window.dataObj.action='filter';
+            window.dataObj.type='city';
+            filter(city_id);
+        }else{
+            filter();
+        }
+    }
+    scrollLoading();
     //search
     $(document).on('click','#searchSubmit',function(evt){Search(evt);});
     //shop info
-    var city_id = $("#city_id").val();
-    if(city_id){
-        window.dataObj.action='filter';
-        window.dataObj.type='city';
-        filter(city_id);
-    }else{
-        filter();
-    }
-    initLocation();
-    scrollLoading();
     //province and city
     var area=window.dataObj.area;
     //province data
@@ -245,13 +255,12 @@ var shopItem=function (shops){
                 var address=shops[key]['shop_address_detail'];
                 var intro=shops[key]['shop_intro'];
                 var shop_auth=shops[key]['shop_auth'];
-                var satisfy = shops[key]['satisfy'].toFixed(2)*100+"%";
+                var satisfy = shops[key]['satisfy'];
                 var comment_count = shops[key]['comment_count'];
                 var goods_count = shops[key]['goods_count'];
                 var status = shops[key]['status'];
                 var lat = shops[key]['lon'];//经度
                 var lon = shops[key]['lat'];//纬度
-        console.log(lat+"==="+lon);
                 var area=window.dataObj.area;
                 var hide='';
                 var statu = '';
@@ -320,6 +329,7 @@ window.dataObj.action='shop';
 window.dataObj.type='city';
 var nomore = false;
 var shopsList=function(page,data,action){
+    $(".wrap-loading-box").removeClass("hidden");
     var url='';
     var action =action;
     var args={
@@ -339,14 +349,27 @@ var shopsList=function(page,data,action){
     else if(action=='search') {
         args.q=data
     }
+    else if(action=='admin_shop'){
+        args.id=data
+    }
     $.postJson(url,args,function(res){
             if(res.success)
             {
+                $(".wrap-loading-box").addClass("hidden");
                 initData(res);
                 nomore = res.nomore;
             }
-        else return noticeBox(res.error_text);
-        },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~');}
+        else {
+            $(".wrap-loading-box").addClass("hidden");
+            return noticeBox(res.error_text);
+        }
+        },function(){
+            $(".wrap-loading-box").addClass("hidden");
+            return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){
+            $(".wrap-loading-box").addClass("hidden");
+            return noticeBox('服务器貌似出错了~ ( >O< ) ~');
+        }
         );
     var initData=function(res){
         var shops=res.shops;

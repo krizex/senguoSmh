@@ -126,6 +126,14 @@ class Third(CustomerBaseHandler):
 		action =self._action
 		if self._action == "weixin":
 			return self.redirect(self.get_weixin_login_url())
+#商品详情
+class Goods(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self,goods_id):
+
+		return self.render('customer/goods-detail.html')
+		
+
 
 class RegistByPhone(CustomerBaseHandler):
 	def get(self):
@@ -1590,8 +1598,8 @@ class Cart(CustomerBaseHandler):
 		# 	self.session.add(balance_history)
 		# 	self.session.commit()
 
-		# cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
-		# cart.update(session=self.session, fruits='{}', mgoods='{}')#清空购物车
+		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
+		cart.update(session=self.session, fruits='{}', mgoods='{}')#清空购物车
 
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
@@ -1624,10 +1632,10 @@ class CartCallback(CustomerBaseHandler):
 		shop    =  self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop or not customer:
 			return self.send_fail('shop not found')
-		#送货地址处理
-		address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
-		if not address:
-			return self.send_fail("没找到地址", 404)
+		# #送货地址处理
+		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
+		# if not address:
+		# 	return self.send_fail("没找到地址", 404)
 
 		admin_name = shop.admin.accountinfo.nickname
 		touser     = shop.admin.accountinfo.wx_openid
@@ -1637,12 +1645,13 @@ class CartCallback(CustomerBaseHandler):
 		online_type= order.online_type
 		pay_type   = order.pay_type
 		phone      = order.phone
+		totalPrice = order.totalPrice
 		if order_type == 1:
 			order_type = '立即送'
 		else:
 			order_type = '按时达'
 		create_date= order.create_date
-		customer_name = address.receiver
+		customer_name = order.receiver
 		c_tourse   = customer.accountinfo.wx_openid
 		goods = []
 		f_d = eval(order.fruits)
@@ -1683,7 +1692,7 @@ class CartCallback(CustomerBaseHandler):
 		# woody 4.29
 		####################################################
 		# print(self.args['pay_type'],'好难过')
-		if self.args["pay_type"] == 2:
+		if order.pay_type == 2:
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
 				shop_id = shop_id).first()
 			if not shop_follow:
@@ -1694,11 +1703,11 @@ class CartCallback(CustomerBaseHandler):
 			balance_record = '余额支付：订单' + order.num
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
 				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
-				balance_record = balance_record,shop_totalPrice = current_shop.shop_balance,\
+				balance_record = balance_record,shop_totalPrice = shop.shop_balance,\
 				customer_totalPrice = shop_follow.shop_balance)
 			self.session.add(balance_history)
 			self.session.commit()
-			return self.send_success()
+		return self.send_success()
 
 
 
