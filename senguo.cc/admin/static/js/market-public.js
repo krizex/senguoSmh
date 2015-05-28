@@ -343,26 +343,26 @@ Modal.prototype.modal=function(type){
     {
         var window_height=$(window).height();
         var height=$('.container').height();
-        $target.removeClass('anim-fadeOut').addClass('anim-fadeIn').css({'visibility':'visible'});
+        $target.removeClass('anim-fadeOut').addClass('anim-fadeIn');//.css({'visibility':'visible'});
         $target.find('.warn').remove();
         $("body").css({'overflow':'hidden'});
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
                 $('body').css({'overflow':'auto'});
-                $target.addClass('anim-fadeOut').removeClass('anim-fadeIn').css({'visibility':'hidden'});
+                $target.addClass('anim-fadeOut').removeClass('anim-fadeIn');//.css({'visibility':'hidden'});
             }
         });
         $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
                 $('body').css({'overflow':'auto'});
-                $target.addClass('anim-fadeOut').removeClass('anim-fadeIn').css({'visibility':'hidden'});
+                $target.addClass('anim-fadeOut').removeClass('anim-fadeIn');//.css({'visibility':'hidden'});
             }
         });
     }
     else if(type=='hide')
     {
         $('body').removeClass('modal_sty').css({'overflow':'auto'}).find('.modal_bg').remove();
-        $target.addClass('anim-fadeOut').removeClass('anim-fadeIn').css({'visibility':'hidden'});
+        $target.addClass('anim-fadeOut').removeClass('anim-fadeIn');//.css({'visibility':'hidden'});
     }
 }
 //点选动画

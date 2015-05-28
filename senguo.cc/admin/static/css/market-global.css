@@ -528,7 +528,11 @@ button:focus{outline:0;}
  transform: translateX(0);
  }
  }
-
+.anim-fadeIn{
+  visibility:visible;
+  opacity:1;
+  transition:visibility 0s linear 0.2s,opacity 0.2s linear;
+}
 .anim-fadeOut{
   visibility:hidden;
   opacity:0;
