@@ -654,6 +654,7 @@ function goodsNum(target,action){
             storage++;
             parent.attr({'data-storage':storage});
             if(val==1){
+                target.removeClass('anim-pulse');
                 change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
                 if(window.dataObj.cart_count==1) {
                     window.dataObj.cart_count=0;

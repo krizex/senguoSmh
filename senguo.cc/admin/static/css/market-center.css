@@ -18,7 +18,7 @@
 .edit-btn{background:url("../images/container-icon.gif") no-repeat 10px -41px;display:inline-block;height:28px;line-height:28px;padding:0 15px;}
 .delete-btn{display:inline-block;background:url("../images/container-icon.gif") no-repeat 0 3px;height:26px;line-height:26px;padding:0 10px;}
 
-.address-item{padding:5px 10px;border:none;border-top:1px solid #ddd;}
+.address-item{padding:5px 10px;border:none;border-top:1px solid #f2f2f2;}
 .address-box .modal-body{padding:10px 20px 0 20px;}
 .address-box .modal-body p{margin-bottom:5px;margin-top:5px;}
 .address-box .modal-body .w60{width:300px;}
