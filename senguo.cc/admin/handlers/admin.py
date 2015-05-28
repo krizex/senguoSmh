@@ -10,7 +10,6 @@ from dal.dis_dict import dis_dict
 from libs.msgverify import gen_msg_token,check_msg_token
 import requests
 import base64
-import decimal
 
 
 # 登陆处理
@@ -177,22 +176,16 @@ class SwitchShop(AdminBaseHandler):
 					shop_service = int(q[0][2])
 				if commodity_quality and send_speed and shop_service:
 					satisfy = float((commodity_quality + send_speed + shop_service)/300)
-				else:
-					satisfy = 0
 			comment_count = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).count()
 			fruit_count = self.session.query(models.Fruit).filter_by(shop_id = shop.id,active = 1).count()
 			mgoods_count =self.session.query(models.MGoods).join(models.Menu,models.MGoods.menu_id == models.Menu.id)\
 			.filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
-			shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100) 
+			shop.satisfy = satisfy
 			shop.comment_count = comment_count
 			shop.goods_count = fruit_count+mgoods_count	
 			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()	
 			shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
-			total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id).filter( or_(models.Order.status ==5,models.Order.status ==6 )).all()[0][0]
-			if total_money:
-				shop.total_money = format(total_money,'.2f') 
-			else:
-				shop.total_money=0
+			shop.total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id ,status =6).all()[0][0]
 			shop.address = self.code_to_text("shop_city", self.current_shop.shop_city) +" " + self.current_shop.shop_address_detail
 			shop_list.append(shop.safe_props())
 		return shop_list
@@ -678,7 +671,7 @@ class Order(AdminBaseHandler):
 		delta = datetime.timedelta(1)
 		# print("[订单管理]当前店铺：",self.current_shop)
 		for order in orders:
-			order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id',
+			order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
 										 'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
@@ -1294,9 +1287,10 @@ class Follower(AdminBaseHandler):
 														models.Accountinfo.realname.like("%%%s%%" % wd))).all()
 		elif action =="filter":
 			wd = self.args["wd"]
+			d["customer_id"] = base64.b64decode(wd)
 			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).all()
+					join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).first()
 		else:
 			return self.send_error(404)
 		for x in range(0, len(customers)):  #
@@ -1671,9 +1665,6 @@ class Config(AdminBaseHandler):
 			if self.current_shop.admin.id !=self.current_user.id:
 				return self.send_fail('您没有添加管理员的权限')
 			_id = int(self.args["data"]["id"])
-			if_shop = self.session.query(models.Shop).filter_by(admin_id =_id).first()
-			if if_shop:
-				return self.send_fail('该用户已是其它店铺的超级管理员，不能添加其为管理员')
 			admin_count = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,active = 1,work=9).count()
 			if admin_count == 3:
 				return self.send_fail('至多可添加三个管理员')
@@ -1690,7 +1681,7 @@ class Config(AdminBaseHandler):
 						id = _id,
 						shop_id = self.current_shop.id
 						)
-					self.session.add(admin_temp)
+					self.session.add(staff_temp)
 				if hire_form:
 					hire_form.work = 9
 				else:
@@ -1787,7 +1778,10 @@ class AdminAuth(AdminBaseHandler):
 			mobile = account_info.phone
 			message_shop_name = self.current_shop.shop_name
 			print(mobile)
-			message_content ='尊敬的{0}，您好，被{1}添加为管理员!'.format(message_name,message_shop_name)
+			normal_admin = models.ShopAdmin(id = account_info.id,role=3,privileges = 2)
+			self.session.add(normal_admin)
+			self.session.commit()
+			message_content ='尊敬的{0}，您好，被{1}添加为管理员'.format(message_name,message_shop_name)
 			postdata = dict(account='cf_senguocc',
 				password='sg201404',
 				mobile=mobile,
@@ -2059,9 +2053,7 @@ class ShopConfig(AdminBaseHandler):
 		address = self.code_to_text("shop_city", self.current_shop.shop_city) +\
 				  " " + self.current_shop.shop_address_detail
 		service_area = self.code_to_text("service_area", self.current_shop.shop_service_area)
-		lat = self.current_shop.lon;
-		lon = self.current_shop.lat;
-		return self.render("admin/shop-info-set.html", lat=lat,lon=lon,city=city,province=province,address=address, service_area=service_area, context=dict(subpage='shop_set',shopSubPage='info_set'))
+		return self.render("admin/shop-info-set.html", city=city,province=province,address=address, service_area=service_area, context=dict(subpage='shop_set',shopSubPage='info_set'))
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "data")

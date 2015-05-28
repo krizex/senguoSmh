@@ -112,6 +112,7 @@ class Access(CustomerBaseHandler):
 			return self.send_error(400)
 
 		userinfo = self.get_wx_userinfo(code, mode)
+		print('login handle_oauth',code,mode,userinfo)
 		if not userinfo:
 			return self.redirect(self.reverse_url("customerLogin"))
 		u = models.Customer.register_with_wx(self.session, userinfo)
@@ -1666,7 +1667,6 @@ class CartCallback(CustomerBaseHandler):
 				other_admin = self.session.query(models.HireLink).filter_by(shop_id = shop.id,active=1,work=9,temp_active=1).first()
 			except:
 				other_admin = None
-			print(other_admin,"i am other_admin or even i doesnt exist,i'm a ghost admin")
 			if other_admin:
 				info =self.session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id)\
 				.filter(models.ShopStaff.id == other_admin.staff_id).first()
