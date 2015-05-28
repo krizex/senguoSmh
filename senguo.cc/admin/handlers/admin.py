@@ -12,7 +12,6 @@ import requests
 import base64
 import decimal
 
-
 # 登陆处理
 class Access(AdminBaseHandler):
 	def initialize(self, action):
@@ -177,21 +176,21 @@ class SwitchShop(AdminBaseHandler):
 					shop_service = int(q[0][2])
 				if commodity_quality and send_speed and shop_service:
 					satisfy = float((commodity_quality + send_speed + shop_service)/300)
-				else:
-					satisfy = 0
 			comment_count = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).count()
 			fruit_count = self.session.query(models.Fruit).filter_by(shop_id = shop.id,active = 1).count()
 			mgoods_count =self.session.query(models.MGoods).join(models.Menu,models.MGoods.menu_id == models.Menu.id)\
 			.filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
-			shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100) 
+			shop.satisfy = satisfy
 			shop.comment_count = comment_count
 			shop.goods_count = fruit_count+mgoods_count	
-			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()	
+			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()
+			shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100)
 			shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
 			total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id).filter( or_(models.Order.status ==5,models.Order.status ==6 )).all()[0][0]
-			if total_money:
-				shop.total_money = format(total_money,'.2f') 
-			else:
+			shop.total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id ,status =6).all()[0][0]
+			if total_money:		
+				shop.total_money = format(total_money,'.2f')
+			else:		
 				shop.total_money=0
 			shop.address = self.code_to_text("shop_city", self.current_shop.shop_city) +" " + self.current_shop.shop_address_detail
 			shop_list.append(shop.safe_props())
@@ -687,6 +686,7 @@ class Order(AdminBaseHandler):
 			d["sent_time"] = order.send_time
 			info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
 			d["nickname"] = info.accountinfo.nickname
+			d["customer_id"] = order.customer_id
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
 				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id,models.HireLink.active == 1)).all()
 			d["shop_new"] = 0
@@ -1487,13 +1487,14 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 		data = []
 		delta = datetime.timedelta(1)
 		for order in orders:
-			order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
+			order.__protected_props__ = [ 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
 										 'comment_create_date', 'start_time', 'end_time', 'create_date']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
 			d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["send_time"] = order.send_time
+			d["customer_id"] = order.customer_id
 
 			#yy
 			d["shop_new"] = 0
@@ -1690,7 +1691,7 @@ class Config(AdminBaseHandler):
 						id = _id,
 						shop_id = self.current_shop.id
 						)
-					self.session.add(admin_temp)
+					self.session.add(staff_temp)
 				if hire_form:
 					hire_form.work = 9
 				else:
@@ -1786,8 +1787,10 @@ class AdminAuth(AdminBaseHandler):
 			message_name = account_info.nickname
 			mobile = account_info.phone
 			message_shop_name = self.current_shop.shop_name
-			print(mobile)
-			message_content ='尊敬的{0}，您好，被{1}添加为管理员!'.format(message_name,message_shop_name)
+			normal_admin = models.ShopAdmin(id = account_info.id,role=3,privileges = 2)
+			self.session.add(normal_admin)
+			self.session.commit()
+			message_content ='尊敬的{0}，您好，被{1}添加为管理员！'.format(message_name,message_shop_name)
 			postdata = dict(account='cf_senguocc',
 				password='sg201404',
 				mobile=mobile,
@@ -2059,9 +2062,11 @@ class ShopConfig(AdminBaseHandler):
 		address = self.code_to_text("shop_city", self.current_shop.shop_city) +\
 				  " " + self.current_shop.shop_address_detail
 		service_area = self.code_to_text("service_area", self.current_shop.shop_service_area)
-		lat = self.current_shop.lon;
-		lon = self.current_shop.lat;
-		return self.render("admin/shop-info-set.html", lat=lat,lon=lon,city=city,province=province,address=address, service_area=service_area, context=dict(subpage='shop_set',shopSubPage='info_set'))
+		lat = self.current_shop.lon
+		lon = self.current_shop.lat
+
+		return self.render("admin/shop-info-set.html", city=city,province=province,address=address,lat=lat,lon=lon, \
+			service_area=service_area, context=dict(subpage='shop_set',shopSubPage='info_set'))
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "data")

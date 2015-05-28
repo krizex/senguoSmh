@@ -112,6 +112,7 @@ class Access(CustomerBaseHandler):
 			return self.send_error(400)
 
 		userinfo = self.get_wx_userinfo(code, mode)
+		print('login handle_oauth',code,mode,userinfo)
 		if not userinfo:
 			return self.redirect(self.reverse_url("customerLogin"))
 		u = models.Customer.register_with_wx(self.session, userinfo)
@@ -699,6 +700,7 @@ class Members(CustomerBaseHandler):
 								"work":work(member[0].id,member[1]),
 								"phone":member[0].phone,
 								"wx_username":member[0].wx_username})
+		print(member_list)
 		return self.render("customer/shop-staff.html", member_list=member_list)
 
 class Comment(CustomerBaseHandler):

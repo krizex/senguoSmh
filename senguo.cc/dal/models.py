@@ -45,11 +45,13 @@ class SHOPADMIN_ROLE_TYPE:
 	"""管理员角色"""
 	SHOP_OWNER = 1
 	SYSTEM_USER = 2
+	SHOP_NORMAL_ADMIN =3
 
 class SHOPADMIN_PRIVILEGE:
 	"""权限"""
 	NONE = -1
 	ALL = 0
+	NORMAL = 2
 
 class SHOPADMIN_CHARGE_TYPE:
 	"""付费类型"""
