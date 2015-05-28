@@ -1,2 +1,146 @@
 {% extends 'goods-set-base.html' %}
-{% block setcontent %}{% end %}
+{% block setcontent %}
+<div class="wrap-all-goods">
+    <ul class="category-list group">
+        <li>
+            <div class="cate-title">商品状态：</div>
+            <div class="dropdown slide-down-select pull-left w130">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
+                    <em title="{{current_shop.shop_name}}" class="pull-left" id="3">所有 (15)</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu3" id="currentShopChange3">
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">所有 (15)</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">已上架 (15)</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">已下架 (15)</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">已售完 (15)</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">待成交 (15)</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li>
+            <div class="cate-title">排列方式：</div>
+            <div class="dropdown slide-down-select pull-left w130">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu4" data-toggle="dropdown">
+                    <em title="{{current_shop.shop_name}}" class="pull-left" id="4">按商品分组</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu4" id="currentShopChange4">
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">按商品分组</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">按商品分类</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li>
+            <div class="cate-title">排序规则：</div>
+            <div class="dropdown slide-down-select pull-left w130">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu5" data-toggle="dropdown">
+                    <em title="{{current_shop.shop_name}}" class="pull-left" id="5">添加日期</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu5" id="currentShopChange5">
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">添加日期</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">商品名称</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">按销量</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">按库存</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">按待成交量</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li>
+            <div class="cate-title">分组筛选：</div>
+            <div class="dropdown slide-down-select pull-left w130">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu6" data-toggle="dropdown">
+                    <em title="{{current_shop.shop_name}}" class="pull-left" id="group_name">默认分组 (15)</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu16" id="currentShopChange6">
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">店铺推荐 (15)</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">进口水果 (15)</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+    </ul>
+    <ul class="list-operate group">
+        <li class="">
+            <span class="check-box checked-box" ></span>全选
+        </li>
+        <li class="borderc text-center pointer min80">批量上架</li>
+        <li class="borderc text-center pointer min80">批量下架</li>
+        <li>
+            <div class="cate-title mt2">批量分组：</div>
+            <div class="dropdown slide-down-select pull-left w130 mt2">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu7" data-toggle="dropdown">
+                    <em title="{{current_shop.shop_name}}" class="pull-left" id="9">默认分组 (15)</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu17" id="currentShopChange7">
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">国内水果 (15)</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">进口水果 (15)</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+    </ul>
+    <ul class="goods-all-list">
+        <li>
+            <p class="all-item-title">添加日期：2015-06-16 15:33:33</p>
+            <div class="all-item-top">
+                <span class="check-box checked-box item-checkbox" ></span>
+                <span class="item-name">马大会的店铺</span>
+                <div class="iblock">
+                    <div class="cate-title mt2">商品分组：</div>
+                    <div class="dropdown slide-down-select pull-left w130 mt2">
+                        <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu8" data-toggle="dropdown">
+                            <em title="{{current_shop.shop_name}}" class="pull-left" id="8">默认分组</em>
+                            <span class="caret pull-right no-margin-left rotate0"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu18" id="currentShopChange8">
+                            <li  role="presentation">
+                                <a class="item" href="javascript:;">国内水果</a>
+                            </li>
+                            <li  role="presentation">
+                                <a class="item" href="javascript:;">进口水果</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <span class="txt-box">库存：<span>723</span>个</span>
+                <span class="txt-box">待成交：<span>223</span>个</span>
+                <span class="switch-btn"><i></i>已<span class="up">上</span><span class="down">下</span>架</span>
+            </div>
+        </li>
+    </ul>
+</div>
+{% end %}
