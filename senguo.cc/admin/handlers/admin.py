@@ -10,7 +10,7 @@ from dal.dis_dict import dis_dict
 from libs.msgverify import gen_msg_token,check_msg_token
 import requests
 import base64
-
+import decimal
 
 # 登陆处理
 class Access(AdminBaseHandler):
@@ -183,9 +183,15 @@ class SwitchShop(AdminBaseHandler):
 			shop.satisfy = satisfy
 			shop.comment_count = comment_count
 			shop.goods_count = fruit_count+mgoods_count	
-			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()	
+			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()
+			shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100)
 			shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
+			total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id).filter( or_(models.Order.status ==5,models.Order.status ==6 )).all()[0][0]
 			shop.total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id ,status =6).all()[0][0]
+			if total_money:		
+				shop.total_money = format(total_money,'.2f')
+			else:		
+				shop.total_money=0
 			shop.address = self.code_to_text("shop_city", self.current_shop.shop_city) +" " + self.current_shop.shop_address_detail
 			shop_list.append(shop.safe_props())
 		return shop_list
