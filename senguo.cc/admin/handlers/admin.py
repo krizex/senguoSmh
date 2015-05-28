@@ -1268,15 +1268,14 @@ class Goods(AdminBaseHandler):
 			type_id = self.args["type_id"]
 			page = self.args["page"]
 			page_size = 10
-			goods = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id).all()
+			
 			history     = []
 			data = []
 			nomore = False
 			try:
-				shop_history = self.session.query(models.PointHistory).filter_by(customer_id =\
-					customer_id,shop_id = shop_id).all()
+				goods = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id).all()
 			except:
-				print("point history error 2222")
+				nomore=True
 
 			if shop_history:
 				for temp in shop_history:
