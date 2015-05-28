@@ -1267,7 +1267,7 @@ class Goods(AdminBaseHandler):
 			type_id = self.args["type_id"]
 			page = self.args["page"]
 			page_size = 10
-			
+			offset = (page-1) * page_size
 			history     = []
 			data = []
 			nomore = False
@@ -1279,28 +1279,46 @@ class Goods(AdminBaseHandler):
 			if goods:
 				for good in goods:
 					if good.add_time:
-						good.add_time = good.add_time.strftime('%Y-%m-%d %H:%M:%S')
+						add_time = good.add_time.strftime('%Y-%m-%d %H:%M:%S')
 					if good.delete_time:
-						good.delete_time = good.delete_time.strftime('%Y-%m-%d %H:%M:%S')
-					history.append([temp.point_type,temp.each_point,temp.create_time])
+						delete_time = good.delete_time.strftime('%Y-%m-%d %H:%M:%S')
+					data.append({})
+					fruit_type_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
+
+					name = Column(String(20))
+					active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
+					current_saled = Column(Integer, default=0) #售出：未处理的订单数
+					saled = Column(Integer) #销量
+					storage = Column(Float)
+					favour = Column(Integer, default=0)  # 赞
+					unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
+					tag = Column(TINYINT, default=TAG.NULL) #标签
+					img_url = Column(String(500))
+					intro = Column(String(100))
+					priority = Column(SMALLINT, default=1)
+					limit_num =  Column(Integer, default=0) #max number could buy #5.27
+					add_time = Column(DateTime, default=func.now()) #5.27
+					delete_time = Column(DateTime) #5.27
+					group_name =  Column(Integer, default=0) #group name 0:default group 1000:record group GoodsGroup.id #5.27
+					clssify  = Column(Integer, default=0) 
 			else:
 				nomore=True
-			count = len(history)
-			history = history[::-1]
+			count = len(goods)
+			goods = goods[::-1]
 			if page==1 and count<=page_size:
 				nomore=True
 			if offset + page_size <= count:
-				data = history[offset:offset+page_size]
+				data = goods[offset:offset+page_size]
 			elif offset <= count and offset + page_size >=count:
-				data = history[offset:]
+				data = goods[offset:]
 			else:
 				nomore=True
-			if date_list == []:
+			if data == []:
 				nomore = True
 			if page == 0:
-				if len(date_list)<page_size:
+				if len(data)<page_size:
 					nomore = True
-				return self.render("admin/goods-all.html",context=dict(subpage="goods"),data=data,nomore=nomore)
+				return self.render("admin/goods-all.html",context=dict(subpage="goods"),data=data,nomore=nomore,count=count)
 			return self.send_success(data=data,nomore=nomore)
 			
 		elif action == "classify":
