@@ -1277,8 +1277,8 @@ class Goods(AdminBaseHandler):
 			except:
 				nomore=True
 
-			if shop_history:
-				for temp in shop_history:
+			if goods:
+				for good in goods:
 					temp.create_time = temp.create_time.strftime('%Y-%m-%d %H:%M')
 					history.append([temp.point_type,temp.each_point,temp.create_time])
 				# print(history)
