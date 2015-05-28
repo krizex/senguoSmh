@@ -302,7 +302,7 @@ var noticeBox=function(text,item){
         var $box=$('<div class="notice_bg hidden anim-bounceIn" id="noticeBox"><div class="notice_box text-center center-block"><p class="notice text-white font14 text-center"></p></div></div>');
         $('body').append($box);
     }
-    $("#noticeBox").removeClass('hidden').find('.notice').text(text);
+    $("#noticeBox").removeClass('anim-fadeOut').find('.notice').text(text);
     if(item) {
         tempObj = item;
         item.attr({'disabled':'true'});
@@ -326,7 +326,7 @@ var warnNotice=function(text,item){
 //time count 2 secends
 var noticeRemove=function (target,item) {
     noticeTimer = setTimeout(function() {
-        $('#'+target).addClass('hidden');
+        $('#'+target).addClass('anim-fadeOut');
         if(item){
             item.removeAttr('disabled').removeClass('bg-greyc');
         }
