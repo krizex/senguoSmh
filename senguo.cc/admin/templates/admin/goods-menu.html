@@ -41,7 +41,7 @@
                     </p>
                     <div class="clearfix"></div>
                     <ul class="charge-list">
-                        {% for charge in goods.mcharge_types %}
+                        {% for charge in goods.charge_types %}
                         <li>计价方式1:
                             <label class="charge-type text-pink set-left10">
                                 {{charge.price}}元/{{charge.num}}
@@ -116,7 +116,7 @@
                             <a href="javascript:;" class="pull-right add-btn2 editNewCharge">+新增计价方式</a>
                         </p>
                         <ul class="add-charge-list add-goods-charge-list set-width-float">
-                            {% for charge in goods.mcharge_types %}
+                            {% for charge in goods.charge_types %}
                             <li class="set-width-float edit-charge-list" data-id="{{charge.id}}">
                                 <span class="pull-left set-line26 set-right10">
                                     价格：

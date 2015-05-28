@@ -1056,8 +1056,10 @@ class Shelf(AdminBaseHandler):
 		fruit_type_d = {}
 		if self.args["id"] < 1000:
 			fruit_types = self.session.query(models.FruitType).filter("id < 1000").all()
-		else:
+		elif 1000<self.args["id"] < 2000:
 			fruit_types = self.session.query(models.FruitType).filter("id > 1000").all()
+		else:
+			fruit_types = self.session.query(models.FruitType).filter_by( id=2000 ).all()
 		for fruit_type in fruit_types:
 			fruit_type_d[fruit_type.id] = {"code": fruit_type.code, "name": fruit_type.name, "sum": 0}
 
@@ -1065,7 +1067,7 @@ class Shelf(AdminBaseHandler):
 			fruits=[]
 			if action == "all":
 				for fruit in self.current_shop.fruits:  # 水果/干果 过滤
-					if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000) or\
+					if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000 and fruit.fruit_type_id<2000) or\
 						(self.args["id"] > 1000 and fruit.fruit_type_id < 1000) or fruit.fruit_type_id == 1000:
 						continue
 
@@ -1076,7 +1078,7 @@ class Shelf(AdminBaseHandler):
 				for fruit in self.current_shop.fruits:
 					if fruit.fruit_type_id == self.args["id"]:
 						fruits.append(fruit)
-					if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000) or\
+					if (self.args["id"] < 1000 and fruit.fruit_type_id > 1000 and fruit.fruit_type_id<2000) or\
 						(self.args["id"] > 1000 and fruit.fruit_type_id < 1000) or fruit.fruit_type_id == 1000:
 						continue
 					if fruit.active == 1:
@@ -1085,8 +1087,13 @@ class Shelf(AdminBaseHandler):
 							   menus=self.current_shop.menus,
 							   context=dict(subpage="goods", goodsSubpage="fruit"))
 		elif action == "menu":#todo 合法性检查
-			try:mgoodses = self.session.query(models.MGoods).filter_by(menu_id=self.args["id"]).all()
-			except:return self.send_error(404)
+			_id = int(self.args["id"]) 
+			if _id == 2000:
+				mgoodses = self.session.query(models.Fruit).filter_by(fruit_type_id=2000,shop_id=self.current_shop.id).all()
+
+			# try:mgoodses = self.session.query(models.MGoods).filter_by(menu_id=self.args["id"]).all()
+			# except:return self.send_error(404)
+
 			return self.render("admin/goods-menu.html", mgoodses=mgoodses, menus=self.current_shop.menus,
 							   context=dict(subpage="goods", goodsSubpage="menu"))
 
@@ -1705,7 +1712,7 @@ class Config(AdminBaseHandler):
 						id = _id,
 						shop_id = self.current_shop.id
 						)
-					self.session.add(admin_temp)
+					self.session.add(staff_temp)
 				if hire_form:
 					hire_form.work = 9
 				else:
