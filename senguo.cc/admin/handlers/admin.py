@@ -1787,9 +1787,11 @@ class AdminAuth(AdminBaseHandler):
 			message_name = account_info.nickname
 			mobile = account_info.phone
 			message_shop_name = self.current_shop.shop_name
-			normal_admin = models.ShopAdmin(id = account_info.id,role=3,privileges = 2)
-			self.session.add(normal_admin)
-			self.session.commit()
+			normal_admin = self.session.query(models.ShopAdmin).filter_by(id = account_info.id)
+			if not normal_admin:
+				normal_admin = models.ShopAdmin(id = account_info.id,role=3,privileges = 2)
+				self.session.add(normal_admin)
+				self.session.commit()
 			message_content ='尊敬的{0}，您好，被{1}添加为管理员！'.format(message_name,message_shop_name)
 			postdata = dict(account='cf_senguocc',
 				password='sg201404',
