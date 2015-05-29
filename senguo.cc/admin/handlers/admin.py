@@ -1617,6 +1617,8 @@ class Config(AdminBaseHandler):
 				active = 1
 			self.current_shop.config.update(session=self.session,receipt_img_active=active)
 		elif action == "cash_on":
+			if self.current_shop.shop_auth ==0:
+				return self.send_fail('您的店铺还未认证，不能使用该功能')
 			active = self.current_shop.config.cash_on_active
 			if active == 1:
 				active = 0
@@ -1624,6 +1626,8 @@ class Config(AdminBaseHandler):
 				active = 1
 			self.current_shop.config.update(session=self.session,cash_on_active=active)
 		elif action == "balance_on":
+			if self.current_shop.shop_auth ==0:
+				return self.send_fail('您的店铺还未认证，不能使用该功能')
 			active = self.current_shop.config.balance_on_active
 			balance_on_active =self.current_shop.config.balance_on_active
 			shop_balance = self.current_shop.shop_balance
@@ -1636,10 +1640,10 @@ class Config(AdminBaseHandler):
 				active = 0
 			else:
 				active = 1
-			self.current_shop.config.update(session=self.session,balance_on_active=active)
-			
-
+			self.current_shop.config.update(session=self.session,balance_on_active=active)	
 		elif action == "online_on":
+			if self.current_shop.shop_auth ==0:
+				return self.send_fail('您的店铺还未认证，不能使用该功能')
 			active = self.current_shop.config.online_on_active
 			if active == 1:
 				active = 0
@@ -1647,6 +1651,8 @@ class Config(AdminBaseHandler):
 				active = 1
 			self.current_shop.config.update(session=self.session,online_on_active=active)
 		elif action =="text_message_on":
+			if self.current_shop.shop_auth ==0:
+				return self.send_fail('您的店铺还未认证，不能使用该功能')
 			active = self.current_shop.config.text_message_active
 			if active == 1:
 				active = 0
@@ -1669,6 +1675,8 @@ class Config(AdminBaseHandler):
 				data.append({'imgurl':info.headimgurl_small,'nickname':info.nickname,'id':info.id})
 				return self.send_success(data=data)
 		elif action =="add_admin":
+			if self.current_shop.shop_auth ==0:
+				return self.send_fail('您的店铺还未认证，不能使用该功能')
 			if self.current_shop.admin.id !=self.current_user.id:
 				return self.send_fail('您没有添加管理员的权限')
 			_id = int(self.args["data"]["id"])
