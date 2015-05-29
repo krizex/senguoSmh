@@ -684,8 +684,9 @@ class Members(CustomerBaseHandler):
 		admin_id = admin_id[0]
 		members = self.session.query(models.Accountinfo, models.HireLink.work).filter(
 			models.HireLink.shop_id == shop_id,models.HireLink.active==1, or_(models.Accountinfo.id == models.HireLink.staff_id,
-													models.Accountinfo.id == admin_id)).all()
+				models.Accountinfo.id == admin_id)).all()
 		member_list = []
+		print(members)
 		def work(id, w):
 			if id == admin_id:
 				return "店长"
@@ -693,13 +694,17 @@ class Members(CustomerBaseHandler):
 				return "挑货"
 			else:
 				return "送货"
+		idlist =[]
 		for member in members:
-			member_list.append({"img":member[0].headimgurl_small,
-								"name":member[0].nickname,
-								"birthday":time.strftime("%Y-%m", time.localtime(member[0].birthday)),
-								"work":work(member[0].id,member[1]),
-								"phone":member[0].phone,
-								"wx_username":member[0].wx_username})
+			if member[0].id not in idlist:
+				idlist.append(member[0].id)
+				member_list.append({"img":member[0].headimgurl_small,
+									"name":member[0].nickname,
+									"birthday":time.strftime("%Y-%m", time.localtime(member[0].birthday)),
+									"work":work(member[0].id,member[1]),
+									"phone":member[0].phone,
+									"wx_username":member[0].wx_username})
+		print(member_list)
 		return self.render("customer/shop-staff.html", member_list=member_list)
 
 class Comment(CustomerBaseHandler):

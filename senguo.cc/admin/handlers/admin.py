@@ -677,7 +677,7 @@ class Order(AdminBaseHandler):
 		delta = datetime.timedelta(1)
 		# print("[订单管理]当前店铺：",self.current_shop)
 		for order in orders:
-			order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
+			order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id',
 										 'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
@@ -686,6 +686,7 @@ class Order(AdminBaseHandler):
 			d["sent_time"] = order.send_time
 			info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
 			d["nickname"] = info.accountinfo.nickname
+			d["customer_id"] = order.customer_id
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
 				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id,models.HireLink.active == 1)).all()
 			d["shop_new"] = 0
@@ -1482,10 +1483,9 @@ class Follower(AdminBaseHandler):
 														models.Accountinfo.realname.like("%%%s%%" % wd))).all()
 		elif action =="filter":
 			wd = self.args["wd"]
-			d["customer_id"] = base64.b64decode(wd)
 			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).first()
+					join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).all()
 		else:
 			return self.send_error(404)
 		for x in range(0, len(customers)):  #
@@ -1527,7 +1527,7 @@ class Staff(AdminBaseHandler):
 		action = self.args["action"]
 		staffs = self.current_shop.staffs
 		if action == "hire":
-			hire_forms = self.session.query(models.HireForm).filter_by(shop_id=self.current_shop.id).all()
+			hire_forms = self.session.query(models.HireForm).filter_by(shop_id=self.current_shop.id ).filter(models.HireForm.work!=9).all()
 			return self.render("admin/staff.html", hire_forms=hire_forms,
 							   context=dict(subpage='staff',staffSub='hire'))
 		query = self.session.query(models.ShopStaff, models.HireLink).join(models.HireLink).filter(
@@ -1676,13 +1676,14 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 		data = []
 		delta = datetime.timedelta(1)
 		for order in orders:
-			order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
+			order.__protected_props__ = [ 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
 										 'comment_create_date', 'start_time', 'end_time', 'create_date']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
 			d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["send_time"] = order.send_time
+			d["customer_id"] = order.customer_id
 
 			#yy
 			d["shop_new"] = 0
@@ -1882,6 +1883,8 @@ class Config(AdminBaseHandler):
 					self.session.add(staff_temp)
 				if hire_form:
 					hire_form.work = 9
+					hire_form.status = 2
+					hire_form.create_time = datetime.datetime.now()
 				else:
 					#生成一张临时管理员 申请表
 					admin_temp = models.HireForm(
@@ -1975,9 +1978,11 @@ class AdminAuth(AdminBaseHandler):
 			message_name = account_info.nickname
 			mobile = account_info.phone
 			message_shop_name = self.current_shop.shop_name
-			normal_admin = models.ShopAdmin(id = account_info.id,role=3,privileges = 2)
-			self.session.add(normal_admin)
-			self.session.commit()
+			normal_admin = self.session.query(models.ShopAdmin).filter_by(id = account_info.id)
+			if not normal_admin:
+				normal_admin = models.ShopAdmin(id = account_info.id,role=3,privileges = 2)
+				self.session.add(normal_admin)
+				self.session.commit()
 			message_content ='尊敬的{0}，您好，被{1}添加为管理员！'.format(message_name,message_shop_name)
 			postdata = dict(account='cf_senguocc',
 				password='sg201404',
