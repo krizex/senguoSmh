@@ -1,7 +1,7 @@
 
 /*-------------------------------admin-shops---------------------------------*/
 .shops-list{padding:1em 0;width:110%;float:left;}
-.shops-list li{float:left;border:1px solid #ddd;width:120px;height:160px;margin-left:20px;margin-right:15px;margin-bottom:3em;text-align:center;background:#fff;position:relative;overflow:hidden;}
+.shops-list li{float:left;border:1px solid #e7e7eb;width:120px;height:160px;margin-left:20px;margin-right:15px;margin-bottom:3em;text-align:center;background:#fff;position:relative;overflow:hidden;}
 .shops-list li a{display:block;padding:0.5em;overflow:hidden;}
 .shops-list li a img{width:100%;}
 .shops-list li a p{font-size:1.4em;color:#333;padding-top:0.5em;}
@@ -11,13 +11,13 @@
 .shop-list li em{font-style:normal;font-size:1em;}
 
 .collection-link{width:100%;float:left;padding:0 1em;}
-.collection-link ul{width:100%;float:left;border-bottom:1px solid #ddd;}
+.collection-link ul{width:100%;float:left;border-bottom:1px solid #e7e7eb;}
 .collection-link li{float:left;margin-right:2em;}
 .collection-link li a{display:inline-block;color:#333;font-size:1.6em;padding:0.5em 0;}
 .collection-link li.active a{color:#80e0a0;}
 
 .collect-info-list{width:100%;float:left;padding:0 1em;}
-.collect-info-list li{height:50px;line-height:50px;overflow:hidden;width:100%;float:left;border-bottom:1px solid #ddd;padding:0.5em 0;background:url('../images/next-black-2px.png') no-repeat 98% center;}
+.collect-info-list li{height:50px;line-height:50px;overflow:hidden;width:100%;float:left;border-bottom:1px solid #e7e7eb;padding:0.5em 0;background:url('../images/next-black-2px.png') no-repeat 98% center;}
 .collect-info-list li a{display:block;}
 .collect-info-list .head-img{width:40px;height:40px;}
 .collect-info-list li .info-content{display:inline-block;width:70%;color:#80e0a0;}

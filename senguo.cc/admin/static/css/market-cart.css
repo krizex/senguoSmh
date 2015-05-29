@@ -98,7 +98,7 @@
 .w118{width:118px;}
 .w90{width: 90px;}
 .tie-popbox .tie-info{width:100%;}
-.tie-popbox .tie-info .input1{width:100%;border:1px solid #ddd;border-radius:2px;background:#F9F9F9;padding:0.5em 0;text-indent:0.5em;margin-bottom:0.5em;}
+.tie-popbox .tie-info .input1{width:100%;border:1px solid #e7e7eb;border-radius:2px;background:#F9F9F9;padding:0.5em 0;text-indent:0.5em;margin-bottom:0.5em;}
 .tie-popbox .tie-info .input1:focus{border-color:#00D681;}
 .tie-popbox .tie-info .phone-number{width:100%;float:left;}
 .tie-popbox .tie-info .phone-number .phone{width:65% !important;}

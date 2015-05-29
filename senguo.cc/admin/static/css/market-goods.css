@@ -77,7 +77,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .old-price{font-size: 12px;color: #989898;}
 .now-buy{width: 90px;height: 30px;line-height: 30px;cursor:pointer;background-color:#7ebf91;padding-left: 10px;text-align: center;color: #fff;font-size: 14px;border-top-left-radius: 30px;border-bottom-left-radius: 30px;position: absolute;right: 0;top: 0;-webkit-transition:all .6s ease-in-out;}
 .want-num{width: 30px;height: 30px;position: absolute;right: 100px;top: 0;overflow: hidden;-webkit-transition:all .6s ease-in-out;display: none;}
-.want-num>span{width: 30px;height: 30px;display: inline-block;background-color:#fff;position: absolute;line-height: 26px;font-size: 22px;color: #91d95c;text-align: center;cursor: pointer;border-radius: 50%;border: 1px solid #ddd;}
+.want-num>span{width: 30px;height: 30px;display: inline-block;background-color:#fff;position: absolute;line-height: 26px;font-size: 22px;color: #91d95c;text-align: center;cursor: pointer;border-radius: 50%;border: 1px solid #e7e7eb;}
 .want-num>input{border-top: 1px solid #cecece;border-bottom: 1px solid #cecece;height: 30px;text-align: center;color: #91d95c;border-radius: 30px;background-color: #fff;}
 .want-num>input:focus{border-top: 1px solid #cecece;border-bottom: 1px solid #cecece;}
 .want-num .minus{left: 0;top: 0;}

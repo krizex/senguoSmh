@@ -45,7 +45,7 @@ input{border:none;}
 
 .text-center{text-align:center;}
 
-.bottom-nav{max-width:640px;margin:0 auto;font-size:1.4em;border-top:1px solid #ddd;padding:15px 10px;}
+.bottom-nav{max-width:640px;margin:0 auto;font-size:1.4em;border-top:1px solid #e7e7eb;padding:15px 10px;}
 .bottom-nav ul{padding-left:0px !important;margin-bottom:0px;}
 .bottom-nav li{text-align:center;padding:0 5px;}
 .bottom-nav li a{color:#333;display:block;}

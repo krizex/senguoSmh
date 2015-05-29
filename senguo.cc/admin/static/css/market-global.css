@@ -70,7 +70,7 @@ figure{margin:0;}
 div{margin:0;}
 div:after{display:table;content:"";}
 .list-group{padding-left:0;}
-.list-group-item{position:relative;display:block;padding:0 15px;margin-bottom:-1px;background-color:#fff;border:1px solid #ddd;display:inline-block;width:100%;float:left;cursor: pointer;}
+.list-group-item{position:relative;display:block;padding:0 15px;margin-bottom:-1px;background-color:#fff;border:1px solid #e7e7eb;display:inline-block;width:100%;float:left;cursor: pointer;}
 .list-group-item:first-child{border-top-left-radius:4px;border-top-right-radius:4px}
 .list-group-item:last-child{margin-bottom:0;border-bottom-right-radius:4px;border-bottom-left-radius:4px}a.list-group-item{color:#555}a.list-group-item .list-group-item-heading{color:#333}a.list-group-item:hover,a.list-group-item:focus{color:#555;text-decoration:none;background-color:#f5f5f5}.list-group-item.disabled,.list-group-item.disabled:hover,.list-group-item.disabled:focus{color:#777;background-color:#eee}.list-group-item.disabled .list-group-item-heading,.list-group-item.disabled:hover .list-group-item.active,.list-group-item.active:hover,.list-group-item.active:focus{z-index:2;color:#fff;}
 .img-circle{border-radius:50%;}
@@ -123,7 +123,7 @@ button:focus{outline:0;}
 .padding-right-none{padding-right:0px;}
 .phone-box{width:100%;min-width:320px;max-width:800px;margin:0 auto;padding-bottom:100px;background-color: #F0F4F0;min-height: 100%;overflow-x: hidden;}
 
-.bottom-nav{max-width:800px;margin:0 auto;height:50px;overflow:hidden;border-top:1px solid #ddd;background:rgba(252,252,252,0.9)}
+.bottom-nav{max-width:800px;margin:0 auto;height:50px;overflow:hidden;border-top:1px solid #e7e7eb;background:rgba(252,252,252,0.9)}
 .bottom-nav ul{margin-bottom:0;}
 .bottom-nav li{text-align:center;position:relative;height:46px;}
 .bottom-nav li a{display:block;background-size:2em !important;padding-top:7px;}
@@ -230,8 +230,8 @@ button:focus{outline:0;}
 .desaturate{filter:grayscale(100%);-webkit-filter:grayscale(100%);-moz-filter:grayscale(100%);-ms-filter:grayscale(100%);-o-filter:grayscale(100%);filter: url('../svg/saturate.svg#greyscale');filter: grayscale(100%);filter:gray;filter: grayscale(1)}
 
 .border-ca{border:1px solid #eee !important;}
-.border-bd{border-bottom:1px solid #ddd;}
-.border-td{border-top:1px solid #ddd;}
+.border-bd{border-bottom:1px solid #e7e7eb;}
+.border-td{border-top:1px solid #e7e7eb;}
 .border-rd{border-right:1px solid #f2f2f2;}
 .w49{width:49%;}
 .w50{width:50%;}
