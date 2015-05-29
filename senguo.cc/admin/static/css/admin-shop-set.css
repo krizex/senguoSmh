@@ -21,7 +21,7 @@
 
 .info-set-list{border:1px solid #eee;border-bottom:none;}
 .info-set-list .item{border-bottom:1px solid #eee;padding:15px;}
-.info-set-list .w1{width:20%;}
+.info-set-list .w1{width:20%; color:#999;}
 .info-set-list p{max-width:610px;}
 .logo-box{width:80px;height:80px;display:inline-block;text-align:center;position:relative;overflow:hidden;}
 .logo-box #logoImg{width:100%;margin-bottom:5px;}
