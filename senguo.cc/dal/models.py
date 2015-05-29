@@ -1334,7 +1334,7 @@ class Fruit(MapBase, _CommonApi):
 	add_time = Column(DateTime, default=func.now()) #5.27
 	delete_time = Column(DateTime) #5.27
 	group_name =  Column(Integer, default=0) #group name 0:default group 1000:record group GoodsGroup.id #5.27
-	clssify  = Column(Integer, default=0)  #:0:fruit 1:dry_fruit 3:other
+	classify  = Column(Integer, default=0)  #:0:fruit 1:dry_fruit 3:other
 	temp_mgoods_id =  Column(Integer, default=0)  #to save mgoods_id for temp
 
 
