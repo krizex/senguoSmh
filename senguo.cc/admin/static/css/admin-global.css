@@ -322,9 +322,9 @@ input{color:#333;text-indent:5px;}
 
 .func-mode{display:inline-block;border-radius:30px;width:120px;height:32px;position:relative;line-height:30px;font-size:14px;top:8px;}
 .func-mode .circle{display:inline-block;width:28px;height:28px;background:#fff;border-radius:50%;position:absolute;top:2px;}
-.func-mode.work-mode{text-indent:28px;}
+.func-mode.work-mode{text-indent:20px;}
 .func-mode.work-mode .circle{right:2px;}
-.func-mode.stop-mode{text-indent:44px;}
+.func-mode.stop-mode{text-indent:42px;}
 .func-mode.stop-mode .circle{left:2px;}
 .w150{width:150px;}
 .invisible{visibility:hidden;}
