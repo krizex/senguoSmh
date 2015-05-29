@@ -42,7 +42,7 @@ img{border:none;}
 .backstage-header .height50{height:45px;}
 .backstage-header .height25{height:20px;}
 .backstage-header .line25{line-height:25px;}
-.backstage-header{padding-top:10px;padding-bottom:10px;background:#fff;box-shadow:1px 1px 5px #d9dadc;width:100%;margin-bottom:10px;height:65px;border-bottom:1px solid #d9dadc;border-top:4px solid #44b549;}
+.backstage-header{padding-top:7px;padding-bottom:10px;background:#fff;box-shadow:1px 1px 5px #d9dadc;width:100%;margin-bottom:10px;height:65px;border-bottom:1px solid #d9dadc;border-top:4px solid #44b549;}
 .header-fix{position:fixed;top:0;z-index:999;}
 .backstage-header .logo-con{overflow:hidden;}
 .backstage-header .logo-con .logo{margin-right:20px;margin-left:10px;}
