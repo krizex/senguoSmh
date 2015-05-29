@@ -47,7 +47,7 @@
     if(window.dataObj.cart_count!=0){
         $('.cart_num').removeClass('hidden').text(window.dataObj.cart_count);
     }
-    $('.lazy_img').lazyload({threshold:100});
+    $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
     //置顶监听
     $(window).on('scroll',function(){
         var $this=$(this);
