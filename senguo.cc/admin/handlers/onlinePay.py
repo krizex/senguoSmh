@@ -44,6 +44,7 @@ class OnlineWxPay(CustomerBaseHandler):
 		pay_type    = order.pay_type
 		online_type = order.online_type
 		status      = order.status
+		order_num	= order.num
 
 		charge_types = self.session.query(models.ChargeType).filter(
 			models.ChargeType.id.in_(eval(order.fruits).keys())).all()
