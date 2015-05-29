@@ -1,11 +1,10 @@
 {% extends 'market-base.html' %}
 {% block title%}营销设置{% end %}
-
 {% block setcontent %}
 {% if shop_code and shop_code!='not set' %}
 <div class="clearfix top-box">
     <p>任意用户都能在您的告白墙留言，用户之间也能参与互动。能有效增加商城用户粘度。 </p>
-    <p>开启后，在商城 -发现-告白墙界面可以看到。</p>
+    <p>开启后，在商城-发现-告白墙界面可以看到。</p>
     <button class="btn text-white  action-btn confess-active" data-status="{{current_shop.marketing.confess_active}}" data-flag="on">停用</button>
 </div>
 <table class="clearfix set-box">
@@ -40,18 +39,18 @@
             <p>关闭后，告白墙功能与【微社区】功能类似，方便商城用户交流反馈。</p>
         </td>
         <td>
-                <a class="mode pull-right mt10 confess-type" data-flag="on" title="点击切换状态" data-status="{{current_shop.marketing.confess_type}}" ><span class="tit">已启用</span><span class="circle"></span></a>
+            <a class="mode pull-right mt10 confess-type" data-flag="on" title="点击切换状态" data-status="{{current_shop.marketing.confess_type}}" ><span class="tit">已启用</span><span class="circle"></span></a>
         </td>
     </tr>
     <tr>
         <td class="text-grey9">单条发布限定</td>
         <td>开启后，限定每个用户一天只能发布一个告白，适合在各大节日里做告白有奖的活动。</td>
         <td>
-             <a class="mode  pull-right mt10 confess-only" data-flag="on" title="点击切换状态" data-status="{{current_shop.marketing.confess_only}}"><span class="tit">已启用</span><span class="circle"></span></a>
+            <a class="mode  pull-right mt10 confess-only" data-flag="on" title="点击切换状态" data-status="{{current_shop.marketing.confess_only}}"><span class="tit">已启用</span><span class="circle"></span></a>
         </td>
     </tr>
 </table>
 {% else %}
- <h4 class="mt20">您还未设置店铺号，不能进行营销设置，<a href="{{reverse_url('adminShopConfig')}}">点击设置店铺号</a></h4>
- {% end %}
+<h4 class="mt20">您还未设置店铺号，不能进行营销设置，<a href="{{reverse_url('adminShopConfig')}}">点击设置店铺号</a></h4>
+{% end %}
 {% end %}
