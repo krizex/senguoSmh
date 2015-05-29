@@ -47,7 +47,7 @@ img{border:none;}
 .backstage-header .logo-con{overflow:hidden;}
 .backstage-header .logo-con .logo{margin-right:20px;margin-left:10px;}
 .backstage-header .logo-con span{display:inline-block;float:left;}
-.backstage-header .logo-con .title{border-left:1px solid #9a9a9a;height:46px;line-height:46px;font-size:22px;padding:0 8px;margin-top:2px;}
+.backstage-header .logo-con .title{border-left:1px solid #d9dadc;height:46px;line-height:46px;font-size:22px;padding:0 8px 0 20px;margin-top:2px;color:#666}
 .backstage-header .logo-con .beta{width:54px;height:24px;color:#999;line-height:24px;text-align:center;}
 .backstage-header .header-nav{}
 .backstage-header .header-nav li{float:left;padding:0 15px;}
@@ -104,7 +104,7 @@ img{border:none;}
 .on_sum{color: #fff !important;font-size:12px !important;font-weight:normal !important;display:inline-block;background-color: #ff6666;padding: 0 7px;border-radius: 20px;right: 20px;line-height: 20px;height: 20px;}
 .red-toll{position: absolute;width: 6px;height: 6px;border-radius: 6px;background-color: #ff6666;right: 34px;top:18px;}
 /*右侧公共样式*/
-.container-right{width:80%;max-width:990px;padding:20px;border-left:1px solid #e7e7eb;min-height:700px;}
+.container-right{width:80%;max-width:990px;padding:26px 20px 20px;border-left:1px solid #e7e7eb;min-height:700px;}
 .container-right .right-title{font-size:16px;display:block;margin-bottom:10px;}
 .mode-lock{background:#f4f5f9;width:100%;float:left;padding:10px 0;}
 
