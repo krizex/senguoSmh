@@ -596,35 +596,6 @@ button:focus{outline:0;}
  }
  }
 
-.anim-fadeIn {
-    -webkit-animation: fadeIn 0.5s ease 0s 1;
-            animation: fadeIn 0.5s ease 0s 1;
-}
-
- @-webkit-keyframes fadeIn {
- 0% {
- opacity: 0;
- filter: alpha(opacity=0);
- }
-
- 100% {
- opacity: 1;
- filter: alpha(opacity=100);
- }
- }
-
- @keyframes fadeIn {
- 0% {
- opacity: 0;
- filter: alpha(opacity=0);
- }
-
- 100% {
- opacity: 1;
- filter: alpha(opacity=100);
- }
- }
-
 .anim-fadeOut{
   visibility:hidden;
   opacity:0;
