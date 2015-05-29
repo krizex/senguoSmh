@@ -6,16 +6,16 @@ b{font-weight:normal;}
 .index-title .new-item:hover{background:#7cb9e5;}
 .index-title .item{background:#49d785;}
 .index-title .item:hover{background:#60d296;}
-.index-title .line{width:1px;height:50px;background:#fff;position:absolute;left:50%;top:25px;}
+.index-title .line{width:1px;height:64px;background:#fff;position:absolute;left:50%;top:25px;}
 .index-title a{color:#fff;text-align:center;}
 .index-title a:hover{text-decoration:none;}
-.index-title a span{font-size:20px;display:inline-block;width:100%;}
-.index-title a span i{display:inline-block;width:36px;height:25px;background:url("../images/notice-icon.gif") no-repeat;}
+.index-title a span{font-size:30px;display:inline-block;width:100%;}
+.index-title a span i{display:inline-block;width:36px;height:25px;background:url("../images/notice-icon.png") no-repeat;}
 .index-title a .new-order i{background-position:0px 0px;}
 .index-title a .new-user i{background-position:-49px 0px;}
 .index-title a .total-order i{background-position:-102px 0px;}
 .index-title a .total-user i{background-position:-155px 0px;}
-.index-title a p{font-size:14px;margin:0;}
+.index-title a p{font-size:16px;margin:0;}
 
 .index-notice-list{width:100%;float:left;border:1px solid #e7e7eb;margin-top:20px;}
 .index-notice-list .title{display:inline-block;width:100%;float:left;background:#f4f5f9;padding:15px;font-size:14px;}
