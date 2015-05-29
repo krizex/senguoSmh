@@ -1264,62 +1264,62 @@ class Goods(AdminBaseHandler):
 	def get(self):
 		action = self._action
 		if action == "all":
-			type_id = self.args["type_id"]
-			page = self.args["page"]
-			page_size = 10
-			offset = (page-1) * page_size
-			history     = []
-			data = []
-			nomore = False
-			try:
-				goods = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id).all()
-			except:
-				nomore=True
+			# type_id = self.args["type_id"]
+			# page = self.args["page"]
+			# page_size = 10
+			# offset = (page-1) * page_size
+			# history     = []
+			# data = []
+			# nomore = False
+			# try:
+			# 	goods = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id).all()
+			# except:
+			# 	nomore=True
 
-			if goods:
-				for good in goods:
-					if good.add_time:
-						add_time = good.add_time.strftime('%Y-%m-%d %H:%M:%S')
-					if good.delete_time:
-						delete_time = good.delete_time.strftime('%Y-%m-%d %H:%M:%S')
-					data.append({})
-					fruit_type_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
+			# if goods:
+			# 	for good in goods:
+			# 		if good.add_time:
+			# 			add_time = good.add_time.strftime('%Y-%m-%d %H:%M:%S')
+			# 		if good.delete_time:
+			# 			delete_time = good.delete_time.strftime('%Y-%m-%d %H:%M:%S')
+			# 		data.append({})
+			# 		fruit_type_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
 
-					name = Column(String(20))
-					active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
-					current_saled = Column(Integer, default=0) #售出：未处理的订单数
-					saled = Column(Integer) #销量
-					storage = Column(Float)
-					favour = Column(Integer, default=0)  # 赞
-					unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
-					tag = Column(TINYINT, default=TAG.NULL) #标签
-					img_url = Column(String(500))
-					intro = Column(String(100))
-					priority = Column(SMALLINT, default=1)
-					limit_num =  Column(Integer, default=0) #max number could buy #5.27
-					add_time = Column(DateTime, default=func.now()) #5.27
-					delete_time = Column(DateTime) #5.27
-					group_name =  Column(Integer, default=0) #group name 0:default group 1000:record group GoodsGroup.id #5.27
-					clssify  = Column(Integer, default=0) 
-			else:
-				nomore=True
-			count = len(goods)
-			goods = goods[::-1]
-			if page==1 and count<=page_size:
-				nomore=True
-			if offset + page_size <= count:
-				data = goods[offset:offset+page_size]
-			elif offset <= count and offset + page_size >=count:
-				data = goods[offset:]
-			else:
-				nomore=True
-			if data == []:
-				nomore = True
-			if page == 0:
-				if len(data)<page_size:
-					nomore = True
-				return self.render("admin/goods-all.html",context=dict(subpage="goods"),data=data,nomore=nomore,count=count)
-			return self.send_success(data=data,nomore=nomore)
+			# 		name = Column(String(20))
+			# 		active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
+			# 		current_saled = Column(Integer, default=0) #售出：未处理的订单数
+			# 		saled = Column(Integer) #销量
+			# 		storage = Column(Float)
+			# 		favour = Column(Integer, default=0)  # 赞
+			# 		unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
+			# 		tag = Column(TINYINT, default=TAG.NULL) #标签
+			# 		img_url = Column(String(500))
+			# 		intro = Column(String(100))
+			# 		priority = Column(SMALLINT, default=1)
+			# 		limit_num =  Column(Integer, default=0) #max number could buy #5.27
+			# 		add_time = Column(DateTime, default=func.now()) #5.27
+			# 		delete_time = Column(DateTime) #5.27
+			# 		group_name =  Column(Integer, default=0) #group name 0:default group 1000:record group GoodsGroup.id #5.27
+			# 		clssify  = Column(Integer, default=0) 
+			# else:
+			# 	nomore=True
+			# count = len(goods)
+			# goods = goods[::-1]
+			# if page==1 and count<=page_size:
+			# 	nomore=True
+			# if offset + page_size <= count:
+			# 	data = goods[offset:offset+page_size]
+			# elif offset <= count and offset + page_size >=count:
+			# 	data = goods[offset:]
+			# else:
+			# 	nomore=True
+			# if data == []:
+			# 	nomore = True
+			# if page == 0:
+			# 	if len(data)<page_size:
+			# 		nomore = True
+				return self.render("admin/goods-all.html",context=dict(subpage="goods"))
+			# return self.send_success(data=data,nomore=nomore)
 			
 		elif action == "classify":
 			return self.render("admin/goods-classify.html",context=dict(subpage="goods"))
