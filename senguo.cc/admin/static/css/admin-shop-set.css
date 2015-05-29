@@ -51,7 +51,7 @@
 .address-list>ul>li:last-child{border-bottom: 1px solid #f0f4f0;}
 .address-list>ul>li:hover{background-color: #efefef;}
 .address-list>ul>li:hover span{color: #666;}
-.wrap-bmap{width: 700px;height: 500px;border: 1px solid #e7e7eb;}
+.wrap-bmap{width: 732px;height: 500px;border: 1px solid #e7e7eb;}
 .search-lbs{width: 80px;height: 30px;text-align: center;color: #666;margin-left: 10px;text-indent: 0;}
 .area-tip-box{width: 360px;height: 50px;line-height: 50px;text-align: center;font-size: 14px;background-color: rgba(255,101,99,.8);border-radius: 6px;position: fixed;top: 100px;left: 50%;margin-left: -180px;z-index: 999;color: #fff;}
 .wrap-bmap-box{position: relative;padding-top: 15px;}
