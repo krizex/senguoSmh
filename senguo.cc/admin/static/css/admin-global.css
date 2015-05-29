@@ -105,7 +105,7 @@ img{border:none;}
 .on_sum{color: #fff !important;font-size:12px !important;font-weight:normal !important;display:inline-block;background-color: #ff6666;padding: 0 6px;border-radius: 20px;right: 20px;line-height: 20px;height: 20px;min-width: 20px;}
 .red-toll{position: absolute;width: 6px;height: 6px;border-radius: 6px;background-color: #ff6666;right: 34px;top:18px;}
 /*右侧公共样式*/
-.container-right{width:82.5%;max-width:990px;padding:26px 20px 20px;border-left:1px solid #e7e7eb;min-height:700px;}
+.container-right{width:82.5%;max-width:990px;padding:26px 20px 20px;border-left:1px solid #e7e7eb;min-height:1000px;}
 .container-right .right-title{font-size:16px;display:block;margin-bottom:10px;}
 .mode-lock{background:#f4f5f9;width:100%;float:left;padding:10px 0;height:77px;}
 
@@ -328,3 +328,8 @@ input{color:#333;text-indent:5px;}
 .func-mode.stop-mode .circle{left:2px;}
 .w150{width:150px;}
 .invisible{visibility:hidden;}
+
+.foot {padding: 24px 0;color: #f1f1f1;text-align: center;background-color: #b8b9b9;}
+.links_item {display: inline-block;vertical-align: middle;padding: 0 1em;line-height: 1em;border-left: 1px solid #d9dadc;}
+.links_item:first-child {border-left-width: 0;}
+.ft .links_item a {color: #f1f1f1;}
