@@ -6,7 +6,7 @@ small, strike, strong, tt, var,
 b, i, dl, dt, dd, ol, ul, li,
 form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td {margin: 0; padding: 0; list-style:none;border: none; outline: none; vertical-align: baseline;}
-body{font-family:"Microsoft YaHei","arial black",sans-serif;color:#333;font-size:12px;background:#e7e8eb;-webkit-font-smoothing:antialiased;}
+body{font-family:"Helvetica Neue","Hiragino Sans GB","Microsoft YaHei","\9ED1\4F53",Arial,sans-serif;color:#333;font-size:12px;background:#e7e8eb;-webkit-font-smoothing:antialiased;}
 .w1200{width:1200px;height:auto;margin:0 auto;}
 .w1200_m{width:100%;max-width:1200px;}
 .w1165{width:1165px;height:auto;overflow:hidden;margin:0 auto;}
@@ -89,7 +89,7 @@ img{border:none;}
 .container-left{width:17.5%;max-width:208px;overflow:hidden;height:auto;}
 .container-left .nav{margin-top:-1px;}
 .container-left .nav li{border-top:1px solid #e7e7eb;margin-bottom:6px;}
-.container-left .nav li span{font-size:16px;color:#8d8d8d;padding:12px 0 6px 0;display:block;text-indent:30px;}
+.container-left .nav li span{font-size:14px;color:#8d8d8d;padding:12px 0 6px 0;display:block;text-indent:30px;}
 .container-left .nav li span i{display:inline-block;width:18px;height:18px;background:url("../images/left-nav-icon.png") no-repeat;margin-right:10px;vertical-align: -3px;}
 .container-left .nav li .count{padding-top:26px;}
 .container-left .nav li .count i{background-position:0 0}
@@ -102,7 +102,7 @@ img{border:none;}
 .container-left .nav li a:focus{background:#44b549;color:#fff;}
 .container-left .nav .active{background:#44b549;color:#fff;}
 .red-tip{color: #fff;font-weight:normal;font-size: 12px;background-color: #ff6666;padding: 0 6px;border-radius: 20px;position: absolute;right: 38px;line-height: 20px;height: 20px;text-indent: 0;-webkit-transform:translate(55%,0);}
-.on_sum{color: #fff !important;font-size:12px !important;font-weight:normal !important;display:inline-block;background-color: #ff6666;padding: 0 6px;border-radius: 20px;right: 20px;line-height: 20px;height: 20px;}
+.on_sum{color: #fff !important;font-size:12px !important;font-weight:normal !important;display:inline-block;background-color: #ff6666;padding: 0 6px;border-radius: 20px;right: 20px;line-height: 20px;height: 20px;min-width: 20px;}
 .red-toll{position: absolute;width: 6px;height: 6px;border-radius: 6px;background-color: #ff6666;right: 34px;top:18px;}
 /*右侧公共样式*/
 .container-right{width:82.5%;max-width:990px;padding:26px 20px 20px;border-left:1px solid #e7e7eb;min-height:700px;}
