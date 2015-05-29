@@ -170,7 +170,7 @@ $(document).ready(function(){
                     $item.find('.modal-title').text('新增一种商品'); 
                 }
                 else {
-                   $item.find('.modal-title').text('新增一种'+'"'+current_clssify+'"'); 
+                   $item.find('.modal-title').text('新增一种'+'“'+current_clssify+'”'); 
                 }
                 if(typeof(default_code)=='undefined') $item.find('.imgPreview').attr({'src':'/static/design_img/TDSG.png'});
                 else $item.find('.imgPreview').attr({'src':'/static/design_img/'+default_code+'.png'});

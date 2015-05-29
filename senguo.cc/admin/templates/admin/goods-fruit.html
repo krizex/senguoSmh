@@ -2,7 +2,7 @@
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-goods-fruit.css')}}"/>{% end %}
 {% block goodsLeft %}
 <div class="fruit-left-title">
-    已选择：<span class="fruit-type set-right10 text-pink"></span>已建立{{len(fruits)}}种类别的"<span class="fruit-type text-pink"></span>"，在售<span class="fruit-shelve-num text-pink"></span>种
+    已选择：<span class="fruit-type set-right10 text-pink"></span>已建立{{len(fruits)}}种类别的“<span class="fruit-type text-pink"></span>”，在售<span class="fruit-shelve-num text-pink"></span>种
 </div>
 <ul class="goods-list clearfix">
     {% for fruit in fruits%}
