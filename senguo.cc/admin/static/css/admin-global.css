@@ -254,9 +254,9 @@ input{color:#333;text-indent:5px;}
 .sw-top{padding: 40px 0 10px 30px;position: relative;}
 .sw-top>p{font-size: 16px;}
 .sw-top>p>a{font-size: 14px;margin-left: 5px;}
-.sw-head{padding: 15px 0 15px 30px;background-color: #e7e7eb;}
+.sw-head{padding: 15px 0 15px 30px;background-color: #f4f5f9;}
 .sw-bm{padding: 50px;}
-.sw-list>li{float: left;margin-right: 30px;margin-bottom:20px;border: 1px solid #ccc;position: relative;width: 500px;padding: 10px;height:100px;}
+.sw-list>li{float: left;margin-right: 30px;margin-bottom:20px;border: 1px solid #ccc;position: relative;width: 518px;padding: 10px;height:100px;}
 .sw-list dl>dt{width: 60px;margin-right: 10px;text-align: center;position: relative;}
 .sw-list dl>dt>img{width: 60px;height: 60px;}
 .sw-list dl>dd{width: calc(100% - 70px);}
