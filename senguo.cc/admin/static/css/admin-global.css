@@ -101,7 +101,7 @@ img{border:none;}
 .container-left .nav li a{color:#333;text-indent:59px;font-size:14px;padding:8px 0;position: relative;}
 .container-left .nav li a:focus{background:#44b549;color:#fff;}
 .container-left .nav .active{background:#44b549;color:#fff;}
-.red-tip{color: #fff;font-weight:normal;font-size: 12px;background-color: #ff6666;padding: 0 6px;border-radius: 20px;position: absolute;right: 38px;line-height: 20px;height: 20px;text-indent: 0;-webkit-transform:translate(55%,0);}
+.red-tip{color: #fff;font-weight:normal;font-size: 12px;background-color: #ff6666;padding: 0 6px;border-radius: 20px;position: absolute;right: 38px;line-height: 20px;height: 20px;text-indent: 0;-webkit-transform:translate(55%,0);min-width: 20px;}
 .on_sum{color: #fff !important;font-size:12px !important;font-weight:normal !important;display:inline-block;background-color: #ff6666;padding: 0 6px;border-radius: 20px;right: 20px;line-height: 20px;height: 20px;min-width: 20px;}
 .red-toll{position: absolute;width: 6px;height: 6px;border-radius: 6px;background-color: #ff6666;right: 34px;top:18px;}
 /*右侧公共样式*/
@@ -223,7 +223,8 @@ img{border:none;}
 .mb-15{margin-bottom:15px;}
 .mr-10{margin-right:10px;}
 .ml10{margin-left:10px;}
-.mt5{margin-top: 5px;}
+.mt5{margin-top:5px;}
+.mt40{margin-top:40px;}
 
 .p0{padding:0px !important;}
 .p10{padding:10px !important;}

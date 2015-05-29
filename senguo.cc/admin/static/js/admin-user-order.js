@@ -1,7 +1,7 @@
 $(document).ready(function(){
     var item_url='/static/items/admin/order-item.html?v=2015-05-28';
     //订单数据
-    if(orders.length==0) $('.order-list-content').append('<h4 class="text-center mt20">当前分类暂无订单信息</h3>');
+    if(orders.length==0) $('.order-list-content').append('<h4 class="text-center mt40">当前分类暂无订单信息</h3>');
     else getOrder(item_url);
     //隐藏信息显示
     toggle('.order-content','.list-item-body');
