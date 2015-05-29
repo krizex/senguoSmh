@@ -26,7 +26,7 @@
 /* GUTTER */
 
 .CodeMirror-gutters {
-  border-right: 1px solid #ddd;
+  border-right: 1px solid #e7e7eb;
   background-color: #f7f7f7;
 }
 .CodeMirror-linenumbers {}

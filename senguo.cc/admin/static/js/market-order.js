@@ -276,6 +276,7 @@ function orderConcel(target,id){
         if(res.success){
             target.find('.status-bar-box').hide();
             target.find('.cancel').text('订单已取消').addClass('text-grey').removeClass('order-concel');
+            target.find('.pay-link').hide();
         }
         else return noticeBox(res.error_text)
     }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}

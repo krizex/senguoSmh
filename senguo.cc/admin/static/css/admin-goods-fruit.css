@@ -53,7 +53,7 @@
 .upload-box .uploadImg{position:absolute;z-index:999;width:100%;opacity:0;}
 .upload-box p{position:absolute;top:0;}
 
-.add-new-goods{width:50%;margin:0 auto;background:#fbfbfb;height:50px;line-height:50px;text-align:center;font-size:16px;margin-top:10px;}
+.add-new-goods{width:50%;margin:0 auto;background:#f4f5f9;height:50px;line-height:50px;text-align:center;font-size:16px;margin-top:10px;}
 .add-new-goods strong{}
 
 .dropdown-toggle{padding:3px 12px;}

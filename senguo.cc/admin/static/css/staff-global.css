@@ -1,4 +1,4 @@
-body{font-size: 1em;font-family:"microsoft yahei";background:#f2f2f2;}
+body{font-size: 1em;font-family:"microsoft yahei";background:#f2f2f2;-webkit-font-smoothing:antialiased;}
 p{clear: both;width: 100%}
 ol,ul,li{list-style:none;}
 ul{padding-left:0;}
