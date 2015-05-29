@@ -1338,7 +1338,7 @@ class Staff(AdminBaseHandler):
 		action = self.args["action"]
 		staffs = self.current_shop.staffs
 		if action == "hire":
-			hire_forms = self.session.query(models.HireForm).filter_by(shop_id=self.current_shop.id).all()
+			hire_forms = self.session.query(models.HireForm).filter_by(shop_id=self.current_shop.id ).filter(models.HireForm.work!=9).all()
 			return self.render("admin/staff.html", hire_forms=hire_forms,
 							   context=dict(subpage='staff',staffSub='hire'))
 		query = self.session.query(models.ShopStaff, models.HireLink).join(models.HireLink).filter(
@@ -1694,6 +1694,8 @@ class Config(AdminBaseHandler):
 					self.session.add(staff_temp)
 				if hire_form:
 					hire_form.work = 9
+					hire_form.status = 2
+					hire_form.create_time = datetime.datetime.now()
 				else:
 					#生成一张临时管理员 申请表
 					admin_temp = models.HireForm(
