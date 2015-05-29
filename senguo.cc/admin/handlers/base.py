@@ -375,7 +375,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		if not user_id:
 			self._user = None
 		else:
-			print(user_id,'get_current_user: user_id')
+			# print(user_id,'get_current_user: user_id')
 			self._user = self.__account_model__.get_by_id(self.session, user_id)
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:

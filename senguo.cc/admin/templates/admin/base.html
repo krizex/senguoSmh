@@ -49,7 +49,7 @@
                         <span class="on_sum" id="on_sum">{{num}}</span>
                     </a>
                 </li>
-               <!--<li class="line50">
+                <!--<li class="line50">
                     <a href="javascript:;" class="developing">
                         <i class="message-img height50 pull-left"></i>
                         留言
@@ -91,7 +91,6 @@
                                 </li>
                             </ul>
                         </div>
-                         
                     </div>
                 </li>
             </ul>
@@ -147,14 +146,12 @@
                 <span class="server"><i></i>客服</span>
                 <a href="{{reverse_url('adminComment')}}?action=all&&page=0" class="{{comment_active}} has-red-tip" data-action="msg">消息与评价<b class="red-tip hidden" id="comment_num">10</b></a>
             </li>
-
             {% if current_shop.shop_auth !=0 %}
-           <li>
+            <li>
                 <span class="account"><i></i>账户</span>
                 <a href="{{reverse_url('adminShopBalance')}}" class="{{shopBlance}} has-red-tip" data-action="account">账户余额<b class="red-toll hidden" id="is_balance"></b></a>
             </li>
             {% end %}
-            
             <li>
                 <span class="manage"><i></i>管理</span>
                 <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1&page=0" class="{{order_active}} has-red-tip" data-action="order">订单管理<b class="red-tip hidden" id="order_ordernum">200</b></a>
@@ -180,7 +177,28 @@
     {% block content %}{% end %}
     </div>
 </main>
-<div class="foot" id="footer"><ul class="links ft"><li class="links_item no_extra"><a href="" target="_blank">关于森果</a></li><li class="links_item"><a href="" target="_blank">服务协议</a></li><li class="links_item"><a href="" target="_blank">运营规范</a></li><li class="links_item"><a href="" target="_blank">客服中心</a></li>                        <li class="links_item"><a href="" target="_blank">联系邮箱</a></li>            <li class="links_item"><p class="copyright">Copyright © 2012-2015 Senguo. All Rights Reserved.</p> </li></ul>    </div>
+<div class="foot" id="footer">
+    <ul class="links ft">
+        <li class="links_item no_extra">
+            <a href="" target="_blank">关于森果</a>
+        </li>
+        <li class="links_item">
+            <a href="" target="_blank">服务协议</a>
+        </li>
+        <li class="links_item">
+            <a href="" target="_blank">运营规范</a>
+        </li>
+        <li class="links_item">
+            <a href="" target="_blank">客服中心</a>
+        </li>
+        <li class="links_item">
+            <a href="" target="_blank">联系邮箱</a>
+        </li>
+        <li class="links_item">
+            <p class="copyright">Copyright © 2014-2015 Senguo.cc. All Rights Reserved.</p>
+        </li>
+    </ul>
+</div>
 <script src="/static/js/jquery.min.js"></script>
 <script src="/static/js/bootstrap.min.js"></script>
 <script src="/static/js/template.js"></script>
