@@ -6,7 +6,7 @@ b{font-weight:normal;}
 .index-title .new-item:hover{background:#7cb9e5;}
 .index-title .item{background:#49d785;}
 .index-title .item:hover{background:#60d296;}
-.index-title .line{width:1px;height:50px;background:#fff;position:absolute;left:230px;top:25px;}
+.index-title .line{width:1px;height:50px;background:#fff;position:absolute;left:50%;top:25px;}
 .index-title a{color:#fff;text-align:center;}
 .index-title a:hover{text-decoration:none;}
 .index-title a span{font-size:20px;display:inline-block;width:100%;}
