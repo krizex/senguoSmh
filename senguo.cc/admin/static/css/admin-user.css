@@ -5,7 +5,7 @@
 .groups{margin-top:10px;margin-right:20px;}
 .users-list-action{padding:8px 0 12px;border:1px solid #eee;border-bottom:none;}
 .users-list-action .check-all{float:left;margin:9px 3px 0 15px;}
-.users-list-action .move{display:inline-block;margin-top:7px;margin-left:5px;}
+.users-list-action .move{display:inline-block;margin-top:7px;margin-left:10px;}
 
 .users-list{height:auto;border:1px solid #eee;border-top:none;}
 .users-list .users-list-item{height:auto;border-top:1px solid #eee;}
