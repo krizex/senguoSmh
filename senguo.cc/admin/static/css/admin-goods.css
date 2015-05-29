@@ -27,8 +27,8 @@ div,ul,li,span{-webkit-user-select:none;}
 .item-name{color: #953b39;}
 .iblock{display: inline-block;position: absolute;top: 4px;left: 300px;}
 .txt-box{display: inline-block;margin-top: 6px;}
-.switch-btn{position: absolute;right: 20px;top: 5px;height: 25px;width: 90px;text-align: center;padding-left: 30px;background-color: #ccc;border-radius: 25px;}
-.switch-btn-active{}
+.switch-btn{position: absolute;right: 20px;top: 5px;height: 25px;width: 90px;text-align: center;padding-left: 30px;padding-right:0;background-color: #ccc;border-radius: 25px;}
+.switch-btn-active{background-color: #33CC66;padding-left: 0;padding-right:30px;}
 
 
 
