@@ -367,7 +367,7 @@ $(document).ready(function(){
         else $this.addClass('active').siblings('.item').removeClass('active');
     });
     //支付方式选择
-    $('.pay_type li').each(function(){
+    $('.pay_type .item').each(function(){
         var $this=$(this);
         var index = $this.index();
         var status = $this.attr('data-status');
@@ -377,15 +377,24 @@ $(document).ready(function(){
             $this.removeClass('active').addClass('not_available');
         }
         if(status==0){
-            $this.removeClass('active').addClass('not_available').next('li').addClass('active');
+            $this.removeClass('active').addClass('not_available');
+            $('.pay_type .available').first().addClass('active').siblings('li').removeClass('active');
+            if(index==0){
+                $(".wrap-online-lst").addClass("hidden");
+            }
+        }else{
+            $this.addClass('available');
         }
     });
-}).on("click",".pay_type li",function(){
+    $('.pay_type .available').first().addClass('active').siblings('li').removeClass('active');
+}).on("click",".pay_type .item",function(){
     var index = $(this).index();
     var status = $(this).attr('data-status');
     var type=$(this).find('.title').text();
-    if(index != 2){
+    if(index != 0){
         $(".wrap-online-lst").addClass("hidden");
+    }else{
+         $(".wrap-online-lst").toggleClass("hidden");
     }
     var statu = $(this).attr("data-auth");
     if(statu == "False"){
@@ -394,13 +403,14 @@ $(document).ready(function(){
     }
     if(status==0){
         noticeBox("当前店铺已关闭"+type);
+        if($('#online-pay').hasClass('available')){
+             $(".wrap-online-lst").removeClass("hidden");
+        }
         return false;
     }
-    if(index == 2){
-        $(".wrap-online-lst").toggleClass("hidden");
-    }
-    pulse($(".pay_type li").eq(index));
-    $(".pay_type li").removeClass("active").eq(index).addClass("active");
+    pulse($(this));
+    $(".pay_type li").removeClass("active");
+    $(this).addClass("active");
 }).on('click','.a-cz',function(){
     var status = $(this).attr('data-status');
     var statu = $(this).attr("data-auth");

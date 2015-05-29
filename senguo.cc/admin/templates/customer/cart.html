@@ -217,41 +217,43 @@
                     <span class="pull-right ">余额：{{balance_value}}元&nbsp;&nbsp;<a href="/customer/recharge" class="a-cz" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">+充值</a></span>
                 </p>
                 <ul id="payType" class="pay_type list-group font12">
-                    <li data-id="1" class="active list-group-item clearfix line50 height50 item" data-status="{{config.cash_on_active}}">
-                        <a href="javascript:;" class="text-grey">
-                            <span class="text-grey3 pull-left title set-inl-blo font14">货到付款</span>
-                            <span class="pull-left text-grey9">先下单，收到商品时付款</span>
-                        </a>
-                    </li>
-                   <li data-id="2" class="list-group-item clearfix line50 height50 item" id="balance-pay" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">
-	                    <a href="javascript:;" class="text-grey">
-                            <span class="text-grey3 pull-left title set-inl-blo font14">余额支付</span>
-                            <span class="pull-left text-grey9" style="max-width: 60%;">使用充值的余额极速下单</span>
-                        </a>
-                    </li>
-                    <li data-id="3" class="list-group-item clearfix line50 height50 item" id="online-pay" data-type="wx" data-auth="{{show_balance}}" data-status="{{config.online_on_active}}">
+                   <li data-id="3" class="list-group-item clearfix line50 height50 item" id="online-pay" data-type="wx" data-auth="{{show_balance}}" data-status="{{config.online_on_active}}">
                         <a href="javascript:;" class="text-grey">
                             <span class="text-grey3 pull-left title set-inl-blo font14">在线支付</span>
                             <span class="pull-left text-grey9" style="max-width: 60%;">下单的同时完成付款</span>
                         </a>
                     </li>
+                    <li>
+                         <div class="group"></div>
+                        <div class="wrap-online-lst">
+                            <div class="arrow-top"></div>
+                            <ul class="online-lst">
+                                <li class="group" data-type="wx">
+                                    <a href="javascript:;" class="pull-right checkbox-btn checkboxed"></a>
+                                    <span class="pull-left w90"><img src="/static/images/wx_l.png" class="third-img" alt="微信支付"/></span>
+                                    <span class="pull-left text-grey9 third-txt">微信支付</span>
+                                </li>
+                                <li class="group" data-type="alipay">
+                                    <a href="javascript:;" class="pull-right checkbox-btn"></a>
+                                    <span class="pull-left w90"><img src="/static/images/alipay_l.png" class="third-img" alt="支付宝支付"/></span>
+                                    <span class="pull-left text-grey9 third-txt">支付宝支付</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                   <li data-id="2" class="list-group-item clearfix line50 height50 item" id="balance-pay" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">
+	           <a href="javascript:;" class="text-grey">
+                            <span class="text-grey3 pull-left title set-inl-blo font14">余额支付</span>
+                            <span class="pull-left text-grey9" style="max-width: 60%;">使用充值的余额极速下单</span>
+                        </a>
+                    </li>
+                     <li data-id="1" class="list-group-item clearfix line50 height50 item" data-status="{{config.cash_on_active}}">
+                        <a href="javascript:;" class="text-grey">
+                            <span class="text-grey3 pull-left title set-inl-blo font14">货到付款</span>
+                            <span class="pull-left text-grey9">先下单，收到商品时付款</span>
+                        </a>
+                    </li>
                 </ul>
-                <div class="group"></div>
-                <div class="wrap-online-lst hidden">
-                    <div class="arrow-top"></div>
-                    <ul class="online-lst">
-                        <li class="group" data-type="wx">
-                            <a href="javascript:;" class="pull-right checkbox-btn checkboxed"></a>
-                            <span class="pull-left w90"><img src="/static/images/wx_l.png" class="third-img" alt="微信支付"/></span>
-                            <span class="pull-left text-grey9 third-txt">微信支付</span>
-                        </li>
-                        <li class="group" data-type="alipay">
-                            <a href="javascript:;" class="pull-right checkbox-btn"></a>
-                            <span class="pull-left w90"><img src="/static/images/alipay_l.png" class="third-img" alt="支付宝支付"/></span>
-                            <span class="pull-left text-grey9 third-txt">支付宝支付</span>
-                        </li>
-                    </ul>
-                </div>
             </div>
             <input id="messageCon" class="message-input input-sty box-style center-block font14 bg-white bg-grey" type="text" value="" placeholder="留个言调戏下客服吧？(⊙_⊙)">
             {% if config.text_message_active  == 1 and shop_new !=1 and current_user.accountinfo.phone == None %}
