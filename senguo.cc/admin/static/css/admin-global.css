@@ -6,7 +6,7 @@ small, strike, strong, tt, var,
 b, i, dl, dt, dd, ol, ul, li,
 form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td {margin: 0; padding: 0; list-style:none;border: none; outline: none; vertical-align: baseline;}
-body{font-family:"Microsoft YaHei","arial black",sans-serif;color:#333;font-size:12px;background:#e7e8eb;}
+body{font-family:"Microsoft YaHei","arial black",sans-serif;color:#333;font-size:12px;background:#e7e8eb;-webkit-font-smoothing:antialiased;}
 .w1200{width:1200px;height:auto;margin:0 auto;}
 .w1200_m{width:100%;max-width:1200px;}
 .w1165{width:1165px;height:auto;overflow:hidden;margin:0 auto;}
@@ -89,14 +89,14 @@ img{border:none;}
 /*左侧导航栏样式*/
 .container-left{width:19.5%;max-width:210px;overflow:hidden;height:auto;}
 .container-left .nav{margin-top:-1px;}
-.container-left .nav li{border-top:1px solid #e7e7eb;}
-.container-left .nav li span{font-size:16px;color:#666;padding-top:20px;display:block;text-indent:40px;}
+.container-left .nav li{border-top:1px solid #e7e7eb;margin-bottom:6px;}
+.container-left .nav li span{font-size:16px;color:#666;padding:12px 0 6px 0;display:block;text-indent:40px;}
 .container-left .nav li span i{display:inline-block;width:18px;height:17px;background:url("../images/left-nav-icon.gif") no-repeat;margin-right:10px;vertical-align: -2px;}
 .container-left .nav li .count i{background-position:0px 0px}
 .container-left .nav li .server i{background-position:-43px 1px}
 .container-left .nav li .manage i{background-position:-84px 1px}
 .container-left .nav li .set i{background-position:-127px 1px}
-.container-left .nav li a{color:#333;text-indent:70px;font-size:14px;padding:10px 0;position: relative;}
+.container-left .nav li a{color:#333;text-indent:70px;font-size:14px;padding:8px 0;position: relative;}
 .container-left .nav li a:focus{background:#44b549;color:#fff;}
 .container-left .nav .active{background:#44b549;color:#fff;}
 .red-tip{color: #fff;font-weight:normal;font-size: 12px;background-color: #ff6666;padding: 0 6px;border-radius: 20px;position: absolute;right: 38px;line-height: 20px;height: 20px;text-indent: 0;-webkit-transform:translate(55%,0);}
