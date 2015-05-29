@@ -23,10 +23,10 @@
 .acc-con-lst{margin-top: 20px;}
 .acc-con-lst>li{display: none;}
 .acc-con-lst .active{display: block;}
-.tb-account{width: 100%;table-layout: fixed;border:1px solid #eee;}
+.tb-account{width: 100%;table-layout: fixed;border:1px solid #e7e7eb;}
 .tb-account th{height: 30px;line-height: 30px;color: #33;font-size: 14px;}
 .tb-account td{height: 30px;line-height: 30px;color: #666;font-size: 14px;border-bottom:1px solid #eee;}
-.tb-account tr:first-child{background-color:#f6f6f6;}
+.tb-account tr:first-child{background-color:#f4f5f9;}
 /*.tb-account tr:nth-child(2n){background-color: #f1f1f1;}*/
 .tb-account tr:hover{background-color:#f6f6f6;}
 .account-num{display: inline-block;font-size: 14px;margin-right:20px;}
