@@ -101,7 +101,7 @@
 .edit-box .stop-mode .circle{left:2px;}
 .pay-type-txt{color: #111;font-size: 14px;line-height: 20px;}
 .green-txt{color: #53b540;}
-.wrap-pay-tpye{border-top:none;padding: 20px;}
+.wrap-pay-type{border: 1px solid #FBFBFB;padding: 20px;}
 .f14{font-size: 14px;}
 .f12{font-size: 12px;}
 /*loading*/
