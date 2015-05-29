@@ -1,4 +1,4 @@
-body{font-size: 1em;font-family:"microsoft yahei";background:#f2f2f2;}
+body{font-size: 1em;font-family:"microsoft yahei";background:#f2f2f2;-webkit-font-smoothing:antialiased;}
 p{clear: both;width: 100%}
 ol,ul,li{list-style:none;}
 .phone-box{width:100%;min-width:320px;max-width:640px;margin:0 auto;overflow:hidden;background:#F2F2F2;padding-bottom:50px;}
