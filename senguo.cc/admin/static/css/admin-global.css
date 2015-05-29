@@ -90,7 +90,7 @@ img{border:none;}
 .container-left .nav{margin-top:-1px;}
 .container-left .nav li{border-top:1px solid #e7e7eb;margin-bottom:6px;}
 .container-left .nav li span{font-size:16px;color:#8d8d8d;padding:12px 0 6px 0;display:block;text-indent:30px;}
-.container-left .nav li span i{display:inline-block;width:18px;height:17px;background:url("../images/left-nav-icon.gif") no-repeat;margin-right:10px;vertical-align: -2px;}
+.container-left .nav li span i{display:inline-block;width:18px;height:17px;background:url("../images/left-nav-icon.png") no-repeat;margin-right:10px;vertical-align: -2px;}
 .container-left .nav li .count{padding-top:26px;}
 .container-left .nav li .count i{background-position:0px 0px}
 .container-left .nav li .server i{background-position:-43px 1px}
