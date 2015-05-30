@@ -80,7 +80,7 @@ $(document).ready(function(){
     //图片速选框
     $('#preview_choose').on('click',function(){
 	$('.preview-shelve-list').empty();
-        $.getItem('/static/items/admin/preview-item.html?v=2015-01-21',function(data){
+        $.getItem('/static/items/admin/preview-item.html?v=20150530',function(data){
            var fruit_type=$('#fruit_type').val();
            fruit_type=eval("("+fruit_type+")");
            for(var key in fruit_type )
@@ -164,7 +164,7 @@ $(document).ready(function(){
         var token='';
         add_goods_box.empty();
         if(max_goods_num<=30){
-            $.getItem('/static/items/admin/add-new-goods.html?v=20150405',function(data){
+            $.getItem('/static/items/admin/add-new-goods.html?v=20150530',function(data){
                 var $item=$(data);
                 if(!current_clssify) {
                     $item.find('.modal-title').text('新增一种商品'); 
