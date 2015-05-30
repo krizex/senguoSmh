@@ -1,6 +1,6 @@
 /*div,p,ul,li,span{-webkit-user-select: none; }*/
 .subnav li{width:100px;}
-.subnav .number{display:inline-block;width:20px;height:20px;border-radius:50%;line-height:20px;position:absolute;top:5px;right:3px;font-size:10px;background:#ff6666;color:#fff;}
+.subnav .number{display:inline-block;width:20px;height:20px;border-radius:50%;line-height:20px;position:absolute;top:5px;right:3px;background:#ff6666;color:#fff;}
 
 
 .orders-mode-lock{width:100%;height:auto;}
