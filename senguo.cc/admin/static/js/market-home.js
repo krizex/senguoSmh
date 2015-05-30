@@ -611,11 +611,11 @@ function cartNum(cart_ms,list){
                     change.removeClass('hidden');
                     input.val(cart_ms[key][1]);
                     $parent.attr({'data-storage':storage-cart_ms[key][1]});
-                    if(charge.hasClass('more_charge')) {
-                        $parent.find('.charge-list').show();
-                        $parent.find('.back-shape').toggleClass('hidden');
-                        $parent.find('.toggle_icon').removeClass('arrow');
-                        $parent.removeClass('pr35');
+                    //if(charge.hasClass('more_charge')) {
+                    //    $parent.find('.charge-list').show();
+                    //    $parent.find('.back-shape').toggleClass('hidden');
+                    //    $parent.find('.toggle_icon').removeClass('arrow');
+                    //    $parent.removeClass('pr35');
                     }
                 }
             }
