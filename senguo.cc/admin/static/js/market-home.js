@@ -540,13 +540,13 @@ var fruitItem=function(box,fruits,type){
             //AndroidImg('bg_change');
         }
         //if there isn't only one type of charge_type
-        if(charge_types.length>1){
-            $item.find('.show-box').addClass('toggle');
-            $item.find('.charge-list').addClass('toggle');
+        //if(charge_types.length>1){
+        //    $item.find('.show-box').addClass('toggle');
+        //    $item.find('.charge-list').addClass('toggle');
         //    $item.find('.toggle_icon').addClass('arrow');
         //    $item.addClass('pr35');
         //    $item.find('.back-shape').addClass('shape');
-        }
+        //}
         //charge_type info
         for(var key in charge_types ){
             var $charge_item=$(charge_item);
@@ -616,7 +616,7 @@ function cartNum(cart_ms,list){
                     //    $parent.find('.back-shape').toggleClass('hidden');
                     //    $parent.find('.toggle_icon').removeClass('arrow');
                     //    $parent.removeClass('pr35');
-                    }
+                    //}
                 }
             }
         }
