@@ -346,6 +346,8 @@ Modal.prototype.modal=function(type){
         $target.removeClass('fade').addClass('in').css({'display':'block'});
         $target.find('.warn').remove();
         $("body").css({'overflow':'hidden'});
+        $(".body-container").css({'-webkit-filter':'blur(4px)'})
+        $(".bottom-nav").css({'-webkit-filter':'blur(4px)'})
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
                 $('body').css({'overflow':'auto'});
@@ -355,6 +357,8 @@ Modal.prototype.modal=function(type){
         $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
                 $('body').css({'overflow':'auto'});
+                $(".body-container").css({'-webkit-filter':'none'})
+                $(".bottom-nav").css({'-webkit-filter':'none'})
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
