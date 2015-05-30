@@ -61,7 +61,7 @@ class OnlineWxPay(CustomerBaseHandler):
 				sender_phone = staff_info.phone
 				sender_img = staff_info.headimgurl_small
 		else:
-				sender_phone =None
+				sender_phone = None
 				sender_img = None
 		goods = []
 		f_d = eval(order.fruits)
@@ -73,29 +73,29 @@ class OnlineWxPay(CustomerBaseHandler):
 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('onlineWxPay')
 		print("[微信支付]redirect_uri：",path)
-		print("[微信支付]code：",self.args['code'])
+		print("[微信支付]当前code：",self.args['code'])
 		code = self.args.get('code',None)
 		if len(code) is 2:
 			url = jsApi.createOauthUrlForCode(path)
-			print("[微信支付]获取code：",url)
+			print("[微信支付]获取code的url：",url)
 			return self.redirect(url)
 		else:
 			jsApi.setCode(code)
 			openid = jsApi.getOpenid()
-			print("[微信支付]获取code：",code)
+			print("[微信支付]当前code：",code)
 			if not openid:
 				print("[微信支付]OpenID未获取到")	
 			unifiedOrder =   UnifiedOrder_pub()
 			# totalPrice = self.args['totalPrice'] 
 			#totalPrice =float( self.get_cookie('money'))
-			print("[微信支付]金额：",totalPrice)
+			print("[微信支付]totalPrice：",totalPrice)
 			unifiedOrder.setParameter("body",'charge')
 			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
 			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",order_num)
 			#orderPriceSplite = (order.price) * 100
 			wxPrice =int(totalPrice * 100)
-			print("[微信支付]金额：",wxPrice,'sure')
+			print("[微信支付]wxPrice：",wxPrice)
 			unifiedOrder.setParameter('total_fee',wxPrice)
 			unifiedOrder.setParameter('trade_type',"JSAPI")
 			prepay_id = unifiedOrder.getPrepayId()
@@ -167,7 +167,6 @@ class OnlineWxPay(CustomerBaseHandler):
 				return self.send_fail('shop_follow not found')
 			
 			# 修改店铺总余额
-
 			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 			if not shop:
 				return self.send_fail('shop not found')
@@ -185,7 +184,7 @@ class OnlineWxPay(CustomerBaseHandler):
 				balance_value = totalPrice,balance_record = '在线支付(微信)：订单'+ order.num, name = name , balance_type = 3,\
 				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id)
 			self.session.add(balance_history)
-			print("[支付宝支付]支付后，生成balance_history：",balance_history)
+			print("[微信支付]支付后，生成balance_history：",balance_history)
 			self.session.commit()
 
 			# send weixin message
@@ -271,7 +270,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		if self._action == 'AliPayCallback':
 			return self.handle_onAlipay_callback()
 		elif self._action == "AliPay":
-			print("[支付宝支付]login in Alipay")
+			print("[支付宝支付]进入AliPay")
 			order_id = int(self.get_cookie("order_id"))
 			print("[支付宝支付]order_id：",order_id)
 			#self.order_num = order_num
@@ -339,7 +338,7 @@ class OnlineAliPay(CustomerBaseHandler):
 
 	# @CustomerBaseHandler.check_arguments("order_id:str","price?:float")
 	def handle_onAlipay(self,order_num):
-		print("[支付宝支付]login handle_onAlipay")
+		print("[支付宝支付]进入handle_onAlipay")
 		# order_num = self.order_num if self.order_num else 'NULL'
 		print("[支付宝支付]order_num：",order_num)
 		# order = models.Order.get_by_id(self.session,int(self.args['order_id']))
@@ -364,7 +363,7 @@ class OnlineAliPay(CustomerBaseHandler):
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 
 	def create_alipay_url(self,price,order_id):
-		print("[支付宝支付]login create_alipay_url：",price,order_id)
+		print("[支付宝支付]进入create_alipay_url：",price,order_id)
 		authed_url = self._alipay.create_direct_pay_by_user_url(
 			out_trade_no = str(order_id),
 			subject      = 'alipay',
@@ -418,7 +417,6 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.send_fail('shop_follow not found')
 		
 		# 修改店铺总余额
-
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
 			return self.send_fail('shop not found')
@@ -507,7 +505,6 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.send_fail('shop_follow not found')
 		
 		# 修改店铺总余额
-
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
 			return self.send_fail('shop not found')

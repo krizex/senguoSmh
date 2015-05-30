@@ -13,7 +13,7 @@
     {% block head %}{% end %}
     <script>
         window.dataObj = {
-                _xsrf: "{{handler.xsrf_token}}"};
+            _xsrf: "{{handler.xsrf_token}}"};
     </script>
 </head>
 <body>
@@ -35,7 +35,7 @@
         </div>
         <div class="header-nav height50 pull-right">
             <ul class="navbar">
-               <!--<li class="line50">
+                <!--<li class="line50">
                     <a href="javascript:;" class="developing">
                         <i class="notice-img height50 pull-left"></i>
                         实时消息
@@ -62,7 +62,7 @@
                         <!-- <p class="job pull-left text-left">{{current_user.accountinfo.nickname}}</p> -->
                         {% if current_shop.shop_auth in [1,4] %}
                         <p class="job pull-left text-left">个人认证</p>
-                         {% elif current_shop.shop_auth in [2,3] %}
+                        {% elif current_shop.shop_auth in [2,3] %}
                         <p class="job pull-left text-left">企业认证</p>
                         {% else %}
                         <div class="noauth pull-left text-left"><a href="javascript:;" class="text-grey">未认证</a> <a href="{{reverse_url('adminShopAuth')}}" class="text-link">去认证</a></div>
@@ -80,13 +80,13 @@
                                 {% end %}
                             </ul>-->
                             <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1" id="currentShopChange">
-                                <li  role="presentation">
+                                <li role="presentation">
                                     <a class="menu-icona sshop" href="{{reverse_url('switchshop')}}">切换店铺</a>
                                 </li>
-                                <li  role="presentation">
+                                <li role="presentation">
                                     <a class="menu-icona swoon" href="/customer/profile">个人中心</a>
                                 </li>
-                                <li  role="presentation">
+                                <li role="presentation">
                                     <a class="menu-icona squit" href="{{reverse_url('adminLogout')}}">退出</a>
                                 </li>
                             </ul>
