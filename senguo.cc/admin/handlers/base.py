@@ -295,7 +295,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			para_str = "?next="+tornado.escape.url_escape(next_url)
 		else:
 			para_str = ""
-		print('login in get_weixin_oauth_url',self,next_url)
+		# print("[微信授权]跳转链接：",next_url)
 
 		if self.is_wexin_browser():
 			if para_str: para_str += "&"

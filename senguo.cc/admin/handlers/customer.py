@@ -112,7 +112,7 @@ class Access(CustomerBaseHandler):
 			return self.send_error(400)
 
 		userinfo = self.get_wx_userinfo(code, mode)
-		print('login handle_oauth',code,mode,userinfo)
+		# print('login handle_oauth',code,mode,userinfo)
 		if not userinfo:
 			return self.redirect(self.reverse_url("customerLogin"))
 		u = models.Customer.register_with_wx(self.session, userinfo)
@@ -159,7 +159,7 @@ class RegistByPhone(CustomerBaseHandler):
 		print("[手机注册]发送验证码到手机：",self.args["phone"])
 		resault = gen_msg_token(phone=self.args["phone"])
 		if resault == True:
-			#print("[手机注册]向手机号",phone,"发送短信验证",resault,"成功")
+			# print("[手机注册]向手机号",phone,"发送短信验证",resault,"成功")
 			return self.send_success()
 		else:
 			return self.send_fail(resault)
@@ -495,7 +495,7 @@ class ShopProfile(CustomerBaseHandler):
 			return self.send_error(404)
 		shop_id = shop.id
 		shop_name = shop.shop_name
-		shop_logo   = shop.shop_trademark_url
+		shop_logo = shop.shop_trademark_url
 
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
@@ -541,7 +541,7 @@ class ShopProfile(CustomerBaseHandler):
 		staffs = self.session.query(models.HireLink).filter_by(shop_id=shop_id,active=1).all()
 		shop_members_id = [shop.admin_id]+[x.staff_id for x in staffs]
 		headimgurls = self.session.query(models.Accountinfo.headimgurl_small).\
-			filter(models.Accountinfo.id.in_(shop_members_id)).all()
+					filter(models.Accountinfo.id.in_(shop_members_id)).all()
 		comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
 		session = self.session
 		w_id = self.current_user.id
@@ -583,7 +583,7 @@ class ShopProfile(CustomerBaseHandler):
 				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id\
 					,shop_id = shop_id).first()
 			except:
-				print("店铺关注出错")
+				# print("[访问店铺]店铺关注出错")
 				self.send_fail("shop_follow error")
 			if signin:
 
@@ -598,7 +598,7 @@ class ShopProfile(CustomerBaseHandler):
 					#     print("before sign:",point.signIn_count)
 					#     point.signIn_count += 1
 					#     print("after sign:",point.signIn_count)
-						# point.count += 1
+					#	  point.count += 1
 					point_history = models.PointHistory(customer_id = self.current_user.id,shop_id = shop_id)
 					if point_history:
 						point_history.each_point = 1
@@ -686,7 +686,7 @@ class Members(CustomerBaseHandler):
 			models.HireLink.shop_id == shop_id,models.HireLink.active==1, or_(models.Accountinfo.id == models.HireLink.staff_id,
 				models.Accountinfo.id == admin_id)).all()
 		member_list = []
-		print(members)
+		# print(members)
 		def work(id, w):
 			if id == admin_id:
 				return "店长"
@@ -704,7 +704,7 @@ class Members(CustomerBaseHandler):
 									"work":work(member[0].id,member[1]),
 									"phone":member[0].phone,
 									"wx_username":member[0].wx_username})
-		print(member_list)
+		# print(member_list)
 		return self.render("customer/shop-staff.html", member_list=member_list)
 
 class Comment(CustomerBaseHandler):

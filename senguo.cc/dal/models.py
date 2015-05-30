@@ -244,7 +244,7 @@ class _AccountApi(_CommonApi):
 	def register_with_wx(cls, session, wx_userinfo):
 		# 判断是否在本账户里存在该用户
 		u = cls.login_by_unionid(session, wx_userinfo["unionid"])
-		print("[微信登录]用户登录")
+		print("[微信登录]用户登录，昵称：",wx_userinfo["nickname"])
 		if u:
 			# 已存在用户，则更新微信信息
 			print("[微信登录]用户存在，更新用户资料")
@@ -253,7 +253,7 @@ class _AccountApi(_CommonApi):
 			u.accountinfo.wx_city=wx_userinfo["city"]
 			u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
 			u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
-			#u.accountinfo.nickname = wx_userinfo["nickname"]
+			u.accountinfo.nickname = wx_userinfo["nickname"]
 
 			#####################################################################################
 			# update wx_openid
