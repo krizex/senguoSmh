@@ -145,15 +145,15 @@ $(document).ready(function(){
             else {large_box.find('.click-great').removeClass('clicked').addClass('able_click');}
     }).on('click','.clicked',function(){
         noticeBox('亲，你今天已经为该商品点过赞了，一天只能对一个商品赞一次哦');
-        //  var check_large=new Modal('large_imgbox');
+        // var check_large=new Modal('large_imgbox');
         // check_large.modal('show');
     }).on('click','.add_cart a',function(e){
         //添加到购物车
-         stopDefault(e);
+        stopDefault(e);
         var link=$(this).attr('href');
         addCart(link);
     }).on('click','.focus-btn',function(){
-      //关注店铺
+        //关注店铺
         focus();
     }).on('click','.goods-class-choose li',function(){
         //分类选择
@@ -182,7 +182,7 @@ $(document).ready(function(){
         window.dataObj.action=5;
         goodsList(1,5);
      }).on('click','#fruit_goods',function(){
-          //get all fruit
+        //get all fruit
         var fruit_pages=Int($('#fruit_page').val());
         window.dataObj.page_count=fruit_pages;
         window.dataObj.page=1;
@@ -230,8 +230,8 @@ $(document).ready(function(){
             /*var if_focus=$('#if_focus').val();
             if(if_focus=='False')  $('.focus-box').modal('show');
             else{
-                  goodsNum($this.siblings('.number-change').find('.number-plus'),2);
-                 $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
+                goodsNum($this.siblings('.number-change').find('.number-plus'),2);
+                $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
             }*/
             var storage=parseFloat(parent.attr('data-storage'));
             $this.siblings('.number-change').find('.number-input').val(0);
@@ -352,7 +352,7 @@ $(document).ready(function(){
                     //console.log(24444444);
                 }
             }
-         else if(num>=999) {
+        else if(num>=999) {
                 if(result>0) {parent.attr({'data-storage':result});}
                 else parent.attr({'data-storage':0});
                 if(storage<999) {
@@ -368,19 +368,19 @@ $(document).ready(function(){
                      return noticeBox('最多只能添加999哦！┑(￣▽ ￣)┍',$this);
                 }
             }
-        }).on('click','.toggle',function(e){
+        //}).on('click','.toggle',function(e){
             //计价方式折叠/显示
-            stopPropagation(e);
-            var target  = $(e.target);
-            var $this=$(this);
-            var $parent=$this.parents('.goods-list-item');
-            var $charge_list=$this.parents('.goods-list-item').find('.charge-list');
-            if(target.closest('.forbid_click').length == 0){
-                $parent.find('.back-shape').toggleClass('hidden');
-                $charge_list.toggle();
-                $parent.find('.toggle_icon').toggleClass('arrow');
-                $parent.toggleClass('pr35');
-            };
+            //stopPropagation(e);
+            //var target  = $(e.target);
+            //var $this=$(this);
+            //var $parent=$this.parents('.goods-list-item');
+            //var $charge_list=$this.parents('.goods-list-item').find('.charge-list');
+            //if(target.closest('.forbid_click').length == 0){
+            //    $parent.find('.back-shape').toggleClass('hidden');
+            //    $charge_list.toggle();
+            //    $parent.find('.toggle_icon').toggleClass('arrow');
+            //    $parent.toggleClass('pr35');
+            //};
         });
 window.dataObj.page=1;
 window.dataObj.count=1;
