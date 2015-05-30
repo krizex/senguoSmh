@@ -1,6 +1,6 @@
 {% extends 'base.html'%}
 {% block head %}
-<script src="{{static_url('js/admin-login..js')}}"></script>
+<script src="{{static_url('js/admin-login.js')}}"></script>
 {% end %}
 {% block content%}
 
@@ -12,7 +12,7 @@
     <a class="btn btn-primary" href="{% raw handler.get_wexin_oauth_link(next_url=context['next_url'])%}">微信登录</a>
     <!--<a class="btn btn-default" href="{{reverse_url('adminLogin')}}" id="PhoneLogin">手机号登录</a>-->
   </div>
- <!-- <div class="phone-login-box">
+  <!--<div class="phone-login-box">
         <div class="info">
             <label class="w1">用户名:</label><input type="text" value=""/>
         </div>
