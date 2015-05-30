@@ -1645,7 +1645,7 @@ class CartCallback(CustomerBaseHandler):
 		admin_name = shop.admin.accountinfo.nickname
 		touser     = shop.admin.accountinfo.wx_openid
 		shop_name  = shop.shop_name
-		order_id   = shop.shop_name
+		order_id   = order.num
 		order_type = order.type
 		online_type= order.online_type
 		pay_type   = order.pay_type
