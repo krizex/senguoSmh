@@ -357,8 +357,8 @@ Modal.prototype.modal=function(type){
         $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
                 $('body').css({'overflow':'auto'});
-                $(".body-container").css({'-webkit-filter':'none'})
-                $(".bottom-nav").css({'-webkit-filter':'none'})
+                $(".body-container").removeAttr("style");
+                $(".bottom-nav").removeAttr("style");
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
@@ -366,6 +366,8 @@ Modal.prototype.modal=function(type){
     else if(type=='hide')
     {
         $('body').removeClass('modal_sty').css({'overflow':'auto'}).find('.modal_bg').remove();
+        $(".body-container").removeAttr("style");
+        $(".bottom-nav").removeAttr("style");
         $target.addClass('fade').removeClass('in').css({'display':'none'});
     }
 }
