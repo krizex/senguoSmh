@@ -293,6 +293,7 @@
 .xingzi .bg-color{background-color:#FBAB2D}
 .xingzi .icon-bg{border-color:transparent #FBAB2D transparent transparent;}
 
+
 .GANGUO{}
 .yaoguo .color{color:#B87D31}
 .yaoguo .bg{background-color:#FEFAF4}
@@ -335,7 +336,6 @@
 .hongzao .bg-color{background-color:#BD2408}
 .hongzao .icon-bg{border-color:transparent #BD2408 transparent transparent;}
 
-
 .putaogan .color{color:#9C4547}
 .putaogan .bg{background-color:#FFF7F7}
 .putaogan .bg-color{background-color:#BD2408}
@@ -377,3 +377,16 @@
 .tianjiao .bg{background-color:#FFF7EA}
 .tianjiao .bg-color{background-color:#FFF7EA}
 .tianjiao .icon-bg{border-color:transparent #AC4B2A transparent transparent;}
+
+.gouqi .color{color:#BD2408}
+.gouqi .bg{background-color:#FFF8F3}
+.gouqi .bg-color{background-color:#F07D06}
+.gouqi .icon-bg{border-color:transparent #BD2408 transparent transparent;}
+.xinggan .color{color:#FBAB2D}
+.xinggan .bg{background-color:#FFFCF2}
+.xinggan .bg-color{background-color:#FBAB2D}
+.xinggan .icon-bg{border-color:transparent #FBAB2D transparent transparent;}
+.wuhuaguogan .color{color:#9A536C}
+.wuhuaguogan .bg{background-color:#FBF5F7}
+.wuhuaguogan .bg-color{background-color:#9A536C}
+.wuhuaguogan .icon-bg{border-color:transparent #9A536C transparent transparent;}
