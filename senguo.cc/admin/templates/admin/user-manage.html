@@ -53,7 +53,6 @@
             </div>
             <a href="javascript:;" class="remark-btn pull-right forbid_click ml10 history-order">添加备注</a>
             <a href="{{reverse_url('adminSearchOrder')}}?action=customer_order&&id={{customer.id}}" class="history-order pull-right forbid_click ml10" target="_blank" >查看历史订单</a>
-             
         </div>
         <div class="hide-info set-w100-fle bg-white" style="display:none;">
             <div class="personal-info pull-left">
@@ -111,7 +110,7 @@
     </ul>
 </div>
 {% else %}
- <h4 class="text-center">无用户信息！</h4>
+<h4 class="text-center mt40">没有找到用户信息</h4>
 {% end %}
 {% end %}
 {% block bottom %}<script src="{{static_url('js/admin-user.js')}}"></script>{% end %}
