@@ -274,21 +274,25 @@ var confirmBox=function(text,index,type,id){
         if(typeof(type)!='undefined') $box.find('.message').attr({'data-type':type});
         var window_height=$(window).height();
         var height=$('.container').height();
+        $(".body-container,.bottom-nav").css({'-webkit-filter':'blur(3px)'})
         $('body').append($box);
         $(document).on('click','.dismiss',function(){
             $('#confirmBox').remove();
             $('.modal_bg').remove();
+            $(".body-container,.bottom-nav").removeAttr("style");
         });
          $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
                 $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
                 $('#confirmBox').remove();
+                $(".body-container,.bottom-nav").removeAttr("style");
             }
         });
 }
 var confirmRemove=function(){
     $('#confirmBox').remove();
     $('.modal_bg').remove();
+    $(".body-container,.bottom-nav").removeAttr("style");
 }
 //word notice
 var noticeTimer = null;
@@ -343,10 +347,10 @@ Modal.prototype.modal=function(type){
     {
         var window_height=$(window).height();
         var height=$('.container').height();
+        $(".body-container,.bottom-nav").css({'-webkit-filter':'blur(3px)'})
         $target.removeClass('fade').addClass('in').css({'display':'block'});
         $target.find('.warn').remove();
         $("body").css({'overflow':'hidden'});
-        $(".body-container,.bottom-nav").css({'-webkit-filter':'blur(3px)'})
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
                 $('body').css({'overflow':'auto'});

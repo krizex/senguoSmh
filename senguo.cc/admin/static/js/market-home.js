@@ -744,8 +744,8 @@ function great(type,id){
                         $this.find('.great').text(Int(num)+1).siblings('em').addClass('red-heart');
                     }
                 });
-                //var check_large=new Modal('large_imgbox');
-                //check_large.modal('hide');
+                var check_large=new Modal('large_imgbox');
+                check_large.modal('hide');
                 if(res.notice)
                 {
                     noticeBox(res.notice);
