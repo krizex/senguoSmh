@@ -377,7 +377,7 @@ class UnifiedOrder_pub(Wxpay_client_pub):
         """获取prepay_id"""
         self.postXml()
         self.result = self.xmlToArray(self.response)
-        print("[微信支付]获取到prepay_id了吗？"self.result,'self.result**************')
+        print("[微信支付]获取到prepay_id了吗？",self.result,'self.result**************')
         prepay_id = self.result["prepay_id"]
         return prepay_id
 
