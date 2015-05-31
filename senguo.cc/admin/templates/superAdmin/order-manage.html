@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block title%}商家管理{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/superadmin-order-manage.css')}}"/>
+{% end %}
+
+{% block content %}
+{% import dal.models as models %}
+{% set subpage=context['subpage'] %}
+
+{% set all_active = ""%}
+{% set process_active = ""%}
+{% set new_active = ""%}
+{% set aborted_active = ""%}
+
+{% if subpage == "all" %}
+    {% set all_active="active"%}
+{% elif subpage == "processed" %}
+    {% set process_active="active"%}
+{% elif subpage == "new" %}
+    {% set new_active="active"%}
+{% else %}
+    {% set aborted_active='active'%}
+{% end %}
+
+{% set count =context['count']%}
+<div class="row">
+    <div class="admin-manage-left admin-left col-lg-3 col-md-4">
+        <ul class="nav  nav-stacked" role="tablist">
+            <li class="{{all_active}}"><a href="{{reverse_url('superOrderManageAll')}}">全部订单<span class="badge count-badge">{{count["all"]}}</span></a></li>
+            <li class="{{new_active}}"><a href="{{reverse_url('superOrderManageNew')}}">新订单<span class="badge count-badge">{{count["new"]}}</span></a></li>
+            <li class="{{process_active}}"><a href="{{reverse_url('superOrderManageProcessed')}}">已处理订单<span class="badge count-badge">{{count["processed"]}}</span></a></li>
+            <li class="{{aborted_active}}"><a href="{{reverse_url('superOrderManageAborted')}}">未支付订单<span class="badge count-badge">{{count["aborted"]}}</span></a></li>
+        </ul>
+    </div>
+    <div class="admin-manage-right col-lg-9 col-md-8">
+        <div class="orders-list">
+            <ul class="list-group item-list">
+                {% for orders in context['orders']%}
+                <li class="list-group-item row" data-id="{{orders.order_id}}">
+                    <div class="col-lg-6">
+                        <p>
+                            <span class="title"><strong>姓名：</strong>
+                                {{orders.admin.accountinfo.nickname}}
+                            </span>
+                        </p>
+                        <p>
+                            <span class="title">
+                                <strong>头像：</strong>
+                                <img src="{{orders.admin.accountinfo.headimgurl}}" class="wx_img"/>
+                            </span>
+                        </p>
+                        <p>
+                            <span class="title ">
+                                <strong>邮箱：</strong>
+                                {{orders.admin.accountinfo.email}}
+                            </span>
+                        </p>
+                        <p>
+                            <span class="title">
+                                <strong>电话：</strong>
+                                {{orders.admin.accountinfo.phone}}
+                            </span>
+                        </p>
+                        <p>
+                            <span class="title">
+                                <strong>微信：</strong>
+                                {{orders.admin.accountinfo.wx_username}}
+                            </span>
+                        </p>
+                        <p>
+                             <span class="title">
+                                <strong>到期时间：</strong>
+                                {{handler.timestamp_to_str(orders.admin.expire_time)}}
+                            </span>
+                        </p>
+                        <p>
+                            <a href="{{reverse_url('superShopAdminProfile',orders.admin.id)}}">查看详情&rarr;</a>
+                        </p>
+                    </div>
+                    <div class="col-lg-6">
+                        <p>
+                            <span class="title">
+                                <strong>下单时间：</strong>
+                                {{handler.timestamp_to_str(orders.create_date_timestamp)}}
+                            </span>
+                        </p>
+                        <p>
+                            <span class="title">
+                                <strong>套餐名称：</strong>
+                                {{orders.charge_good_name}}
+                            </span>
+                        </p>
+                        <p>
+                            <span class="title">
+                                <strong>付款金额：</strong>
+                                {{orders.charge_price}}
+                            </span>
+                        </p>
+                        <p>
+                            {% if orders.order_status==models.SYS_ORDER_STATUS.SUCCESS and orders.have_read==False%}
+                            <button type="button" class="btn-green set-btn setAccount">设置商城后台账户</button>
+                            {% end %}
+                        </p>
+                    </div>
+                    <div class="modal fade set-box-item" tabindex="-1" role="dialog"  aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">请输入该商户的后台系统账户信息</div>
+                                <div class="modal-body">
+                                    <p><span class="w1">管理员登录名：</span><input type="text" class="loginName"/></p>
+                                    <p><span class="w1">管理员密码：</span><input type="text" class="loginPass"/></p>
+                                    <p><span class="w1">商城系统代号：</span><input type="text" class="marketCode"/></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="btn-box">
+                                        <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
+                                        <button type="button" class="btn  sure-btn accountSet">确定</button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% end %}
+            </ul>
+        </div>
+        <nav>
+            <ul class="pager">
+                <li><a href="" id="PrePage">&larr; 上一页</a></li>
+                <li><a href="" id="NextPage">下一页&rarr;</a></li>
+            </ul>
+        </nav>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/superamin-order-manage.js')}}"></script>
+{% end %}

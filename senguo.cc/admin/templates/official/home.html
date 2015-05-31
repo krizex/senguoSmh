@@ -1,0 +1,87 @@
+{% extends 'base.html'%}
+
+{% block head-css%}<link href="{{static_url('css/official_home.css')}}" rel="stylesheet">{% end %}
+{% block content%}
+<div class="slide_box" id="slideBox">
+	<img src="{{static_url('official_img//slide_bg.jpg')}}" class="bg"/>
+	<ul id="slide" class="slide-ul group">
+		<li class="item pull-left">
+			<div class="item_box">
+				<img src="{{static_url('official_img//slide1.png')}}" class="img img1 animate0"/>
+				<div class="word text-white word1 animate1">
+					<p>再小的水果店,也要有自己的O2O平台</p>
+					<p>全新的水果零售模式,线上下单、线下配送</p>
+					<p>再不加入就晚了</p>
+					<a href="{{reverse_url('fruitzoneShopApply')}}" class="btn text-white mt10">申请接入</a>
+				</div>
+			</div>
+		</li>
+		<li class="item pull-left">
+			<div class="item_box">
+				<img src="{{static_url('official_img//slide2.png')}}" class="img img2 animate0"/>
+				<div class="word text-white word2 animate1">
+					<p>全平台的水果商城</p>
+					<p>微信、客户端、pc网站、全方位覆盖</p>
+					<a href="{{reverse_url('fruitzoneShopApply')}}" class="btn text-white mt10">申请接入</a>
+				</div>
+			</div>	
+		</li>
+		<li class="item pull-left">
+			<div class="item_box">
+				<img src="{{static_url('official_img//slide3.png')}}" class="img img3 animate0"/>
+				<div class="word text-white word3 animate1">
+					<p>最专业的水果O2O平台</p>
+					<p>最好用的后台管理系统</p>
+					<p class="font12 small-txt mt10">全方位数据统计、免注册微信登陆、卡片式订单管理、最简易商品管理</p>
+					<p class="font12 small-txt">自助式员工招募、方便的员工结算(想要的、好用的功能应有尽有)</p>
+					<a href="{{reverse_url('fruitzoneShopApply')}}" class="btn text-white mt10">申请接入</a>
+				</div>
+			</div>
+		</li>
+	</ul>
+	<ul class="num" >
+	        <li class="on"></li>
+	        <li></li>
+	        <li></li>
+    	</ul>
+</div>
+<div class="w1000 center-block">
+	<div class="announcement text-center">
+		<ul class="box font16">
+			<li class="item"><span class="con mr10 pull-left">公告:森果推出新功能</span><span class="date text-grey pull-right">2015-03-11</span></li>
+		</ul>
+	</div>
+	<div class="intro_list">
+        <div class="intro-top">水果O2O应用场景</div>
+		<ul>
+			<li class="item pull-left text-center">
+				<img src="{{static_url('official_img//intro1.png')}}" class="img"/>
+				<div class="intro mt10">
+					<p class="text-center font18">高校</p>
+					<p class="text-center font14">水果O2O领跑之域</p>
+					<p class="text-grey text-center mt-3">学生越来越懒、社交平台传播快、寝室楼栋集中</p>
+				</div>		
+			</li>
+			<li class="item pull-left text-center">
+				<img src="{{static_url('official_img//intro2.png')}}" class="img"/>
+				<div class="intro mt10">
+					<p class="text-center font18">商圈</p>
+					<p class="text-center font14">水果O2O盈利之所</p>
+					<p class="text-grey text-center mt-3">配送方便、写字楼与上班族、对果切等水果加工品需求高</p>
+				</div>		
+			</li>
+			<li class="item pull-left text-center">
+				<img src="{{static_url('official_img//intro3.png')}}" class="img"/>
+				<div class="intro mt10">
+					<p class="text-center font18">社区</p>
+					<p class="text-center font14">水果O2O必争之地</p>
+					<p class="text-grey text-center mt-3">小区人口集中、消费水平高、水果消费意识好、客单价高</p>
+				</div>		
+			</li>
+		</ul>
+	</div>
+</div>
+{% end %}
+{% block bottom-js%}
+<script src="{{static_url('js/official_home.js')}}"></script>
+{% end %}

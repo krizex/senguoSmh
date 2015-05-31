@@ -1,0 +1,63 @@
+{% extends 'base.html'%}
+{% block title %}{{shop_name}}-告白墙-我要告白{% end %}
+{% block content %}
+ <header class="detail-header text-white center-block">
+    <a href="{{reverse_url('ConfessionHome',shop_code)}}" class="return-btn bg_change">&nbsp;</a>
+    <span class="title font16">我要告白</span>
+</header>
+<div class="pub-box box mt50" data-code="{{shop_code}}" data-type="{{_type}}">
+             {% if _type==1 %}
+	<p class="font14 mb10">对方信息：</p>
+	<div class="p-box1 bg-white mb20">
+		<div class="group line1">
+			<span class="fl tit">姓名</span>
+			<input type="text" placeholder="想对谁告白呢？写出TA的姓名" class="sty1 fl" id="other-name"/>
+		</div>
+		<div class="group line1">
+			<span class="fl tit">手机号</span>
+			<input type="text" placeholder="写上TA的手机号，方便我们礼品派送哦" class="sty1 fl" id="other-phone"/>
+		</div>
+		<div class="group">
+			<span class="fl tit">地址</span>
+			<input type="text" placeholder="写上TA的地址，方便我们礼品派送哦" class="sty1 fl" id="other-address"/>
+		</div>
+		
+	</div>
+	{% end %}
+	<p class="font14 mb10">你的信息：</p>
+	<div class="p-box2 group bg-white mb10">
+		<div class="left fl txt-ac">
+			<img src="{{current_user.accountinfo.headimgurl_small}}" class="img">
+		</div>
+		<div class="right fl">
+			<span>{{current_user.accountinfo.nickname}}</span>
+		</div>
+		<span class="people"></span>
+	</div>
+	<p class="font14">你的手机号：{% if current_user.accountinfo.phone %}
+		{{current_user.accountinfo.phone}}
+		{% else %}
+		未绑定 <a href="{{reverse_url('customerProfile')}}" class="text-grey6">点击绑定</a></p>
+		{% end %}</td>
+	<p class="text-grey6 mb20">绑定自己手机号后，通过与告白人填写的手机号配对，你能看到所有给你的告白哦～	</p>
+	<table class="table">
+		<colgroup width="30%"></colgroup>
+		<colgroup width="70%"></colgroup>
+		<tr>
+			<td colspan="2">
+				<textarea placeholder="在这里写上告白的内容吧～" class="sty2" id="confession"></textarea>
+			</td>
+		</tr>
+		<tr class="font14"> 
+			<td>发布方式:</td>
+			<td>
+				<button type="button" class="btn text-white btn-small type-btn active" data-id="0">匿名</button>
+				<button type="button" class="btn text-white btn-small type-btn ml10" data-id="1">实名</button>	
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2"><button class="btn text-white pub-btn font16">发布</button></td>
+		</tr>
+	</table>
+</div>
+{% end %}{% block bottom %}<script src="/static/js/confession/public.js"></script>{% end %}

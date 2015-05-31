@@ -1,0 +1,211 @@
+{% extends 'base.html'%}
+{% block title%}水果商城免费接入申请{% end %}
+{% block head%}
+<link rel="stylesheet" href="{{static_url('css/fruitzone-apply.css')}}"/>
+{% end %}
+{% block content %}
+	{% if context["subscribe"] == 0 %}
+	<div class="foucus_bg">
+		<h4 class="text-center text-white font16 mt10">请先关注森果公众平台 ，以便您能及时收到审核结果</h4>
+		<a href="weixin://profile/sen-guo" class="text-white bg-green space focus_senguo center-block btn"
+         data-src="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200521182&idx=1&sn=a3d7731e0233aef218eb91346d581b02#rd">+关注森果公众平台</a>
+	</div>
+	{% end %}
+	{% if "reApply" in context and context["reApply"] %}
+	    {% set shop = context['shop']%}
+	{% end %}
+	{% if "need_complete_accountinfo" in context and context["need_complete_accountinfo"]%}
+	<div class="container apply-box phone-box">
+	  <h5 class="proper-padding bg-warning">你的个人信息不完善，为了方便大家交流，请先完善：<a href="{{reverse_url('fruitzoneAdminProfile')}}">个人信息</a></h5>
+	</div>
+	{% else %}
+	<div class="count-box {{context['subscribe']}}">
+	    <div class="text-center mtp5">
+		<img src="{{static_url('images/apply_logo.png')}}" class="logo"/>
+	    </div>
+	    <div class="count-list-box center-block">
+		<ul class="count-list" id="realShop">
+		    <li data-id="2" class="active">
+		        <img src="{{static_url('images/apply_pear1.png')}}" class="pear_img"/>
+		        <div class="word bg-green">
+		            <p class="text-yellow font16">没有卖过水果想尝试</p>
+		            <p class="text-white font14">我们为您提供从采购到配送全流程</p>
+		            <p class="text-white font14">的帮助指导</p>
+		        </div>
+		        <span class="check text-white">✓</span>
+		    </li>
+		    <li data-id="1">
+		        <img src="{{static_url('images/apply_pear2.png')}}" class="pear_img"/>
+		        <div class="word bg-green">
+		            <p class="text-yellow font16">已有实体店，并在经营中</p>
+		            <p class="text-white font14">我们满足您线上水果的一切技术需求</p>
+		        </div>
+		        <span class="check text-white hidden">✓</span>
+		    </li>
+		    <li data-id="0">
+		        <img src="{{static_url('images/apply_pear3.png')}}" class="pear_img"/>
+		        <div class="word bg-green">
+		            <p class="text-yellow font16">没有实体店，水果o2o探索中</p>
+		            <p class="text-white font14">这里有来自天南地北的同行</p>
+		            <p class="text-white font14">一起交流探讨</p>
+		        </div>
+		        <span class="check text-white hidden">✓</span>
+		    </li>
+		</ul>
+	    </div>
+	    <a class="text-grey9 white-color mb10 mt10 center-block font14 to_next" href="javascript:;">下一步→</a>
+	</div>
+	<div class="top bg-green text-white text-center hidden apply-info">
+	    <img src="{{handler.current_user.accountinfo.headimgurl}}"/>
+	    <p class="font14 mt5 text-center">昵称：{{handler.current_user.accountinfo.nickname}}</p>
+	</div>
+	<div class="apply-box center-block hidden apply-info">
+	    <p class="font16 mb0 line40">店铺信息</p>
+	    <hr/>
+	    <div class="clearfix mt10">
+		<span class="title line40 pull-left font14 shop_name pull-left">店铺名称*</span>
+		<div class="name_con pull-left">
+		    {% if "reApply" in context and context["reApply"] %}
+		    <input type="text" class="input-box pull-left" id="shopName" value="{{shop.shop_name or ''}}"/>
+		    {% else %}
+		    <input type="text" class="input-box pull-left" id="shopName" placeholder="请不要超过15个字"/>
+		    {% end %}
+		</div>
+	    </div>
+	    <!--<p class="title">店铺logo<small class="text-red">(部分手机浏览器会出现图像无法上传，建议申请成功后进入个人中心的店铺管理页面再进行图片上传！)</small>：</p>
+	    {% if "reApply" in context and context["reApply"] %}
+	    <img src="{{shop.shop_trademark_url}}" id="logoImg"/>
+	    {% else %}
+	    <img src="" id="logoImg" style="display:none;"/>
+	    {% end %}
+	    <div class="upload-img green-color">
+		<input id="file_upload" type="file" name="file_upload" class="uploadImg" />
+		<p>点击上传图片</p>
+	    </div>-->
+	    <div class="clearfix mt10">
+		<span class="title line40 font14 pull-left">省份城市*</span>
+		<div class="better-address pull-left">
+		    <div class="dropdown select-provience pull-left mr5">
+		        <button class="btn btn-default dropdown-toggle bg-grey5 province_select" type="button">
+		            {% if "reApply" in context and context["reApply"] %}
+		            <span  id="provinceAddress" data-code="{{shop.shop_province or ''}}" class="reProvince">选择省份</span>
+		            {% else %}
+		            <span  id="provinceAddress" data-code="">选择省份</span>
+		            {% end %}
+		            <span class="caret"></span>
+		        </button>
+		    </div>
+		    <div class="dropdown select-provience pull-left city_select">
+		        <button class="btn btn-default dropdown-toggle bg-grey5 " type="button">
+		            {% if "reApply" in context and context["reApply"] %}
+		            <span id="cityAddress" data-code="{{shop.shop_city or ''}}" class="reCity">选择城市</span>
+		            {% else %}
+		            <span id="cityAddress" data-code="">选择城市</span>
+		            {% end %}
+		            <span class="caret"></span>
+		        </button>
+		    </div>
+		</div>
+	    </div>
+	    <p class="title font14 pull-left mb0 mt10">详细地址*</p>
+	    {% if "reApply" in context and context["reApply"] %}
+	    <input type="text" class="input-box input1 mt5 w100" placeholder="{{shop.shop_address_detail or '输入您的详细地址，请不要超过50个字'}}" id="addressDetail" value="{{shop.shop_address_detail or ''}}"/>
+	    {% else %}
+	    <input type="text" class="input-box input1 mt5 w100" placeholder="输入您的详细地址，请不要超过50个字" id="addressDetail"/>
+	    {% end %}
+	    <p class="title font14 pull-left mb0 mt10">店铺简介*</p>
+	    {% if "reApply" in context and context["reApply"] %}
+	    <textarea class="shop-intro mt5" id="shopIntro" placeholder="输入您的店铺简介，请不要超过300个字">{{shop.shop_intro or ''}}</textarea>
+	    {% else %}
+	    <textarea class="shop-intro mt5" id="shopIntro" placeholder="输入您的店铺简介，请不要超过300个字"></textarea>
+	    {% end %}
+	    <p class="font14 mt10 mb0">服务区域(多选)*</p>
+	    <ul class="area-select area-choose-list row font14 mt5" id="serverArea">
+		<li class="bg-grey5 active" data-id="1"><a href="javascript:;" class="text-grey3">高校</a></li>
+		<li class="bg-grey5" data-id="2"><a href="javascript:;" class="text-grey3">社区</a></li>
+		<li class="bg-grey5" data-id="4"><a href="javascript:;" class="text-grey3">商圈</a></li>
+		<li class="bg-grey5" data-id="8"><a href="javascript:;" class="text-grey3">其他</a></li>
+	    </ul>
+	    <p class="font16 mb0 pt10 line40 clearfix">个人信息</p>
+	    <hr/>
+	    <div class="clearfix mt10">
+		<span class="title line40 pull-left font14">真实姓名*</span>
+		{% if "reApply" in context and context["reApply"] %}
+		<input type="text" class="input-box pull-left" id="realName" value="{{handler.current_user.accountinfo.realname}}"/>
+		{% else %}
+		<input type="text" class="input-box pull-left" id="realName" placeholder="输入您的真实姓名"/>
+		{% end %}
+	    </div>
+	    <div class="clearfix mt10">
+		<span class="title line40 pull-left font14">微信号*</span>
+		{% if "reApply" in context and context["reApply"] %}
+		<input type="text" class="input-box pull-left" id="wx_Name" value="{{handler.current_user.accountinfo.wx_username}}"/>
+		{% else %}
+		<input type="text" class="input-box pull-left" id="wx_Name" placeholder="输入您的微信号码"/>
+		{% end %}
+	    </div>
+	    <div class="clearfix mt10">
+		<span class="title line40 pull-left font14">手机号*</span>
+		<input type="text" class="input-box pull-left" id="phone" value="" placeholder="输入您的手机号码"/>
+	    </div>
+	    <div class="clearfix mt10">
+		<span class="title line40 pull-left font14">&nbsp;</span>
+		<button class="btn bg-green bg-greyc text-white able_get" id="getVrify">获取短信验证码</button>
+	    </div>
+	    <div class="clearfix mt10">
+		<span class="title line40 pull-left font14">验证码*</span>
+		<input type="text" class="input-box pull-left" id="verify_code" value="" placeholder="输入验证码"/>
+	    </div>
+	    <p class="mt10 text-center">*您的个人信息仅用作店铺审核使用，我们将严格保密</p>
+	    {% if "reApply" in context and context["reApply"] %}
+	    <input type="submit" value="提交申请" class="btn text-white bg-green  bg-greyc center-block w80 font16 mt10" id="submitReapply"/>
+	    {% else %}
+	    <input type="submit" value="提交申请" class="btn text-white bg-green  bg-greyc center-block w80 font16 mt10" id="submitApply"/>
+	    {% end %}
+	    <p class="text-center">
+		<a class="text-grey9 white-color mb10 mt10 center-block font14 forward" id="back" href="javascript:;">←返回上一步</a>
+	    </p>
+	</div>
+	    <!--<p class="title">是否接入森果后台系统：<a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200343770&idx=1&sn=1230c48bb781da7d7e63d5dc804cbf10#rd" class="to-know">了解一下</a></p>-->
+	<div class="modal fade select-popbox" id="provinceList">
+	    <div class="modal-dialog">
+		<div class="modal-content">
+		    <div class="modal-header">
+		        <button type="button" class="close dismiss">x</button>
+		        <h4 class="modal-title">省份选择</h4>
+		    </div>
+		    <div class="modal-body">
+		        <div class="address-list province-list select-list mt10">
+		            <ul class="provinceList">
+		            </ul>
+		        </div>
+		    </div>
+		    <div class="modal-warn"></div>
+		</div>
+	    </div>
+	</div>
+	<div class="modal fade select-popbox" id="cityList">
+	    <div class="modal-dialog">
+		<div class="modal-content">
+		    <div class="modal-header">
+		        <button type="button" class="close dismiss">x</button>
+		        <h4 class="modal-title">城市选择</h4>
+		    </div>
+		    <div class="modal-body">
+		        <div class="address-list city-list select-list">
+		            <ul class="cityList">
+		                <li>请先选择省份</li>
+		            </ul>
+		        </div>
+		    </div>
+		    <div class="modal-warn"></div>
+		</div>
+	    </div>
+	</div>
+	{% end %}
+{% end %}
+{% block bottom %}
+<!--<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>-->
+<script src="{{static_url('js/area.js')}}"></script>
+<script src="{{static_url('js/fruitzone-apply.js')}}"></script>
+{% end %}

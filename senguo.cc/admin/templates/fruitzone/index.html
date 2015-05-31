@@ -1,0 +1,25 @@
+{% extends 'base.html'%}
+{% block title%}水果商城免费接入申请{% end %}
+{% block head%}
+<link rel="stylesheet" href="{{static_url('css/fruitzone-index.css')}}"/>
+{% end %}
+{% block content %}
+<div class="box text-center">
+	<input type="hidden" id="total_count" value="{{context['shop_count']}}" />
+	<img src="{{static_url('images/apply_index.png')}}" class="shop"/>
+	<div class="province text-center"><img src="{{static_url('images/apply_word.png')}}" class="province_img"/></div>
+	<div class="count ">
+		 已入驻
+		 <span class="ml10 mr10">
+			 <span class="num1 text-pink num">0</span>
+			 <span class="num2 text-pink num">0</span>
+			 <span class="num3 text-pink num">0</span>
+			 <span class="num4 text-pink num">0</span>
+		 </span>
+		 家
+	</div>
+	<a href="{{reverse_url('fruitzoneShopApply')}}" class="font16  btn bg-green text-white center-block mb10 mt10">免费入驻</a>
+	<a href="{{reverse_url('fruitzoneShopList')}}" class="font16 btn bg-green text-white center-block">商家列表</a>
+</div>
+{% end %}
+{% block bottom %}<script src="{{static_url('js/fruitzone-index.js')}}"></script>{% end %}

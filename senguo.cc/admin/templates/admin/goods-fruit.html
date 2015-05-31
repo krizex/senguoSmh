@@ -1,0 +1,239 @@
+{% extends 'goods-base.html' %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-goods-fruit.css')}}"/>{% end %}
+{% block goodsLeft %}
+<div class="fruit-left-title">
+    已选择：<span class="fruit-type set-right10 text-pink"></span>已建立{{len(fruits)}}种类别的“<span class="fruit-type text-pink"></span>”，在售<span class="fruit-shelve-num text-pink"></span>种
+</div>
+<ul class="goods-list clearfix">
+    {% for fruit in fruits%}
+    <li class="goods-list-item goods-item" data-id="{{fruit.id}}" data-type="fruit">
+        <div class="goods-item-show">
+            <div class="goods-edit-active shelve-action pull-left" data-active="{{fruit.active}}">
+                <span class="unshelve stop-mode">已下架</span>
+                <span class="shelve work-mode" style="display:none">已上架</span>
+            </div>
+            <div class="goods-info pull-left">
+                <div class="goods-img pull-left">
+                    <span class="goods-tag" data-id="{{fruit.tag}}"></span>
+                    {% if fruit.img_url%}
+                    <img src="{{fruit.img_url}}?imageView/1/w/100/h/100"/>
+                    {% else %}
+                    <img src="/static/design_img/{{fruit.fruit_type.code}}.png?v=20150316"/>
+                    {% end %}
+                </div>
+                <div class="info-box pull-right">
+                    <p class="clearfix">
+                        <label class="name pull-left text-pink set-right10">{{fruit.name}}</label>
+                        <span class="priority pull-left">排序优先级：{{fruit.priority}}</span>
+                        <span class="sale pull-right">
+                            销量：{{fruit.saled}}
+                            <span data-id="{{fruit.unit}}" class="good-unit"></span>
+                        </span>
+                    </p>
+                    <p class="clearfix">
+                        <span class="praise pull-left set-right20">点赞：{{fruit.favour}}</span>
+                        <span class="comment pull-left">评论：0</span>
+                        <span class="on-sale pull-right">
+                            在售：{{fruit.current_saled}}
+                            <span data-id="{{fruit.unit}}" class="good-unit"></span>
+                        </span>
+                        <span class="storage pull-right set-right20">
+                            库存：{{fruit.storage}}
+                            <span data-id="{{fruit.unit}}" class="good-unit"></span>
+                        </span>
+                    </p>
+                    <div class="clearfix"></div>
+                    <ul class="charge-list">
+                        {% for charge in fruit.charge_types %}
+                        <li>计价方式：
+                            <label class="charge-type text-pink set-left10">
+                                {{charge.price}}元/{{charge.num}}
+                                <span class="good-unit" data-id="{{charge.unit}}"></span>
+                            </label>
+                        </li>
+                        {% end %}
+                    </ul>
+                    <a href="javascript:;" class="edit-btn2 pull-right bg-white edit-goods-info">编辑</a>
+                </div>
+            </div>
+        </div>
+        <!--商品信息编辑start-->
+        <div class="goods-item-edit add-edit-item hidden">
+            <div class="goods-edit-active shelve-action pull-left" data-active="{{fruit.active}}">
+                <span class="unshelve stop-mode">已下架</span>
+                <span class="shelve work-mode" style="display:none">已上架</span>
+            </div>
+            <div class="goods-info pull-left">
+                <div class="upload-img goods-left pull-left">
+                    <span class="goods-tag" data-id="{{fruit.tag}}"></span>
+                    {% if fruit.img_url%}
+                    <img src="{{fruit.img_url}}?imageView/1/w/100/h/100" class="imgPreview" data-key="{{fruit.img_url}}" data-code="{{fruit.fruit_type.code}}"/>
+                    {% else %}
+                    <img src="/static/design_img/{{fruit.fruit_type.code}}.png?v=20150316" class="imgPreview" data-key="{{fruit.img_url}}" data-code="{{fruit.fruit_type.code}}"/>
+                    {% end %}
+                    <div class="upload-box btn-style2 green-color">
+
+                    </div>
+                    <a href="javascript:;" class="btn-style2 text-grey2 edit-recover-img">恢复默认图</a>
+                </div>
+                <div class="goods-right pull-right">
+                    <p class="clearfix">
+                        <span class="pull-left">名称：<input type="text" class="w2 goodsName" value="{{fruit.name}}"/></span>
+                        <span class="pull-right">销量：<input type="text" class="w1 goodsSale" value="{{fruit.saled}}"/></span>
+                    </p>
+                    <div class="clearfix set-bottom10">
+                        <span class="pull-left set-line26">
+                            库存单位：
+                            <span data-id="{{fruit.unit}}" class="good-unit goodsUnit unitContent storage-unit set-right5"></span>
+                        </span>
+                        <span class="pull-left">库存：<input type="text" class="w1 goodsStorage" value="{{fruit.storage}}"/></span>
+                        <span class="pull-right">
+                            在售：{{fruit.current_saled}}
+                            <span data-id="{{fruit.unit}}" class="good-unit"></span>
+                        </span>
+                    </div>
+                    <p>
+                        <span class="pull-left">简介:</span>
+                        <textarea class="pull-right w3 goodsIntro">{{fruit.intro}}</textarea>
+                    </p>
+                </div>
+                <div class="clearfix"></div>
+                <hr/>
+                <div class="goods-left tag-list pull-left" data-id="{{fruit.tag}}">
+                    <p class="text-center">商品标签</p>
+                    <a href="javascript:;" class="btn-style3 text-white bg-grey" data-id="1">无</a>
+                    <a href="javascript:;" class="btn-style3 text-white bg-grey" data-id="2">限时折扣</a>
+                    <a href="javascript:;" class="btn-style3 text-white bg-grey" data-id="3">热卖中</a>
+                    <a href="javascript:;" class="btn-style3 text-white bg-grey" data-id="4">今日特价</a>
+                    <a href="javascript:;" class="btn-style3 text-white bg-grey" data-id="5">新品</a>
+                </div>
+                <div class=" goods-right pull-right">
+                    <p>
+                        排序优先级：
+                        <input type="text" class="w4 set-right10 goodsPriority" value="{{fruit.priority}}"/>
+                        <small>(输入1-5的数字，数字越高，商品越靠前排布)</small>
+                    </p>
+                    <div class="add-charge-box bg-white set-width-float">
+                        <p class="clearfix">
+                            <span class="pull-left">计价方式</span>
+                            <a href="javascript:;" class="pull-right add-btn2 editNewCharge">+新增计价方式</a>
+                        </p>
+                        <ul class="add-charge-list add-goods-charge-list set-width-float">
+                            {% for charge in fruit.charge_types %}
+                            <li class="set-width-float edit-charge-list" data-id="{{charge.id}}">
+                                <span class="pull-left set-line26 set-right10">
+                                    价格：
+                                    <span class="w4 set-inline-block edit_price">{{charge.price}}</span>
+                                </span>
+                                <span class="pull-left set-line26 set-right10">
+                                    数量：
+                                    <span class="w4 set-inline-block edit_num">{{charge.num}}</span>
+                                </span>
+                                <span class="pull-left set-line26 set-right5 item-unit">
+                                    单位：
+                                    <span  data-id="{{charge.unit}}" class="good-unit charge-unit unitContent edit_unit"></span>
+                                </span>
+                                <div class="pull-left unit-change hidden set-line26">
+                                    =
+                                    <span class="set-right5 set-left5 set-inline-block edit_unit_num">{{charge.unit_num}}</span>
+                                    <span data-id="{{fruit.unit}}" class="good-unit"></span>
+                                </div>
+                                <a href="javascript:;" class="delete-btn2 pull-right delete-charge-type" title="删除计价方式"></a>
+                                <a href="javascript:;" class="edit-btn3 pull-right set-right10 edit-charge-show" title="编辑计价方式"></a>
+                            </li>
+                            {% end %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <hr/>
+                <div class="set-width-float">
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <a href="javascript:;" class="modal-sure-btn pull-right edit-goods-sure">确定</a>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <a href="javascript:;" class="modal-concel-btn edit-goods-concel">取消</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--商品信息编辑end-->
+    </li>
+    {% end %}
+</ul>
+<a href="javascript:;" class="add-new-goods text-green center-block"><strong>+</strong>添加新商品</a>
+<!--新增商品start-->
+<div class="modal fade add-new-goods-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+<!--新增商品end-->
+
+<!--新增计价方式start-->
+<div class="modal fade add-new-charge-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+<!--新增计价方式end-->
+
+<!--编辑计价方式start-->
+<div class="modal fade edit-charge-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+</div>
+<!--编辑计价方式end-->
+{% end %}
+{% block goodsRight %}
+<div class="shelve-list pull-left">
+    <div class="fruit-right-title clearfix">
+        <span class="tit font14">水果速选框</span>
+        <button class="btn bg-green text-white font12 pull-right" id="preview_choose">图片速选</button>
+    </div>
+    <span class="title set-inl-blo set-width-float bg-grey2">已上架(<span class="shelve-num"></span>)</span>
+    <div class="shelveList shelve-list type-class">
+        {% for key in fruit_type_d %}
+        {% if fruit_type_d[key]['sum'] !=0 %}
+        <a href="{{reverse_url('adminShelf')}}?action=fruit&id={{key}}" data-id="{{key}}" data-class="fruit" class="text-white" data-code="{{fruit_type_d[key]['code']}}">
+           <span class="name">{{fruit_type_d[key]['name']}}</span>
+           (<span class="num">{{fruit_type_d[key]['sum']}}</span>)
+        </a>
+        {% end %}
+        {% end %}
+    </div>
+    <span class="title set-inl-blo set-width-float bg-grey2">未上架(<span class="unshelve-num"></span>)</span>
+    <div class="unshelveList shelve-list type-class">
+        {% for key in fruit_type_d %}
+        {% if fruit_type_d[key]['sum'] == 0 %}
+        <a href="{{reverse_url('adminShelf')}}?action=fruit&id={{key}}" data-id="{{key}}" data-class="fruit" class="text-white" data-code="{{fruit_type_d[key]['code']}}">
+            <span class="name">{{fruit_type_d[key]['name']}}</span>
+            <span style="display:none">(<span class="num">{{fruit_type_d[key]['sum']}}</span>)</span>
+        </a>
+        {% end %}
+        {% end %}
+    </div>
+    <hr/>
+    <p class="text-center mb-15">如没有您需要上架的水果种类，请关注“森果”公众号，将您需要的水果种类反馈到森果公众平台上。</p>
+</div>
+<div class="modal fade "  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" id="preview_box">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body set-width-float">
+                <h4 class="text-center text-white">图片速选框</h4>
+                <hr/>
+                <div class="preview-box">
+                    <ul class="preview-shelve-list preview-list clearfix">
+                    </ul>
+                </div>
+                <input type="hidden" id="fruit_type" value="{{fruit_type_d}}"/>
+                <p class="clearfix">
+                    <button class="btn pull-right bg-white preview-prepage" style="display:none">上一页</button>
+                    <button class="btn pull-right bg-white preview-nextpage">下一页</button>
+                </p>
+                <hr/>
+                <p class="clearfix"><button class="btn pull-right" data-dismiss="modal">返回文字速选框</button></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>
+<script src="{{static_url('js/admin-goods-fruit.js')}}"></script>
+{% end %}

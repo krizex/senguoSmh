@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% block title %}员工管理{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-staff.css')}}"/>{% end %}
+{% block content %}
+{% set page=context.get('staffSub')%}
+{% set jh_active=''%}
+{% set sh1_active=''%}
+{% set sh2_active=''%}
+{% set hire_active=''%}
+{% if page=='jh' %}
+    {% set jh_active='active'%}
+{% elif page=='th1' %}
+    {% set sh1_active='active'%}
+{% elif page=='sh2' %}
+    {% set sh2_active='active'%}
+{% elif page=='hire' %}
+    {% set hire_active='active'%}
+{% end %}
+{% set current_shop=handler.current_shop %}
+<span class="right-title">员工管理</span>
+<div class="subnav-box">
+    <ul class="subnav pull-left">
+        <!--<li class="{{jh_active}}"><a href="{{reverse_url('adminStaffJH')}}?action=JH">仓库拣货</a></li>
+        <li class="{{sh1_active}}"><a href="{{reverse_url('adminStaffJH')}}?action=SH1">一级配送</a></li>-->
+        <li class="{{sh2_active}}"><a href="{{reverse_url('adminStaffJH')}}?action=SH2">配送员</a></li>
+        <li class="{{hire_active}}"><a href="{{reverse_url('adminStaffJH')}}?action=hire">招募员工</a></li>
+    </ul>
+    <div class="search-input input-group pull-right">
+        <form method="post" action="" id="post">
+            <input type="text" value="" placeholder="输入员工编号或姓名进行搜索" class="search-con form-control pull-left"/>
+            <input type="submit" value="员工搜索" class="search-btn form-control pull-left"/>
+        </form>
+    </div>
+    <!--<a href="#" class="group-send-btn pull-right" data-toggle="modal" data-target="#messageBox">群发功能</a>-->
+</div>
+<div class="mode-lock">
+    {% if page=='sh2' %}
+        <div class="mode-content unlock-mode pull-left">
+            <p class="lock-unlock">已开启仓库配送环节</p>
+            <p class="mode-introduce">适用于有独立仓库配送环节的商铺。此种模式下仓库拣货员选择框将在地址适配时出现。</p>
+            <!--<p class="set-introduce">点击右方停用，仓库配送员将全部下班！</p>-->
+
+            <p class="mode-introduce">员工后台管理系统：<a href="http://senguo.cc/staff" target="_blank">http://senguo.cc/staff</a></p>
+
+        </div>
+        <!--<div class="mode-set pull-right">
+            <a href="javascript:;" class="stop-btn btn-style lock-mode">停用</a>
+        </div>-->
+    {% elif page=='hire' %}
+        {% set hire_on=current_shop.config.hire_on%}
+        <div class="mode-content {% if current_shop.config.hire_on==False %} lock-mode {% else %} unlock-mode {% end %} pull-left">
+            <p class="lock-unlock">已{% if hire_on==False %}<span class="lock">关闭</span>{%else%}<span class="lock">开启</span>{% end %}员工招募环节</p>
+            <p class="set-introduce">点击右方设置，生成员工招募令！</p>
+
+            <p class="mode-introduce">招募令：<a href="http://senguo.cc/staff/hire/{{handler.current_shop.id}}" target="_blank">http://senguo.cc/staff/hire/{{handler.current_shop.id}}</a></p>
+
+        </div>
+        <div class="mode-set pull-right">
+
+            <a href="javascript:;" class="stop-btn btn-style bg-green lock-mode" data-toggle="modal" data-target="#hireBox">设置</a>
+            {% if hire_on==False %}
+            <a href="javascript:;" class="stop-btn btn-style lock-mode" id="hire_config_off" style="display:none">停止</a>
+            <a href="javascript:;" class="stop-btn btn-style lock-mode bg-green" id="hire_config_on">启用</a>
+            {% else %}
+            <a href="javascript:;" class="stop-btn btn-style lock-mode" id="hire_config_off">停止</a>
+            <a href="javascript:;" class="stop-btn btn-style lock-mode bg-green" id="hire_config_on" style="display:none">启用</a>
+            {% end %}
+        </div>
+    {% end %}
+</div>
+<!--staff-mode-lock-end-->
+{% if page=='sh2' %}
+<div class="staff-list-content">
+    <div class="title">
+        <span class="pull-left title-name">仓库配送员(<span class="staff-number">{{len(staffs)}}</span>)</span>
+        <!--<a href="#" class="pull-right add-staff">+ 添加新员工</a>-->
+    </div>
+    <ul class="staff-list">
+        {% for staff in staffs %}
+        <li class="staff-list-item" data-id="{{staff.id}}">
+            <div class="staff-info">
+                <div class="staff-work-mode action-mode pull-left forbid_click" data-id="{{staff.hirelink.active}}">
+                    <a class="work-mode hidden" href="javascript:;">已上班</a>
+                    <a class="stop-mode hidden" href="javascript:;">未上班</a>
+                </div>
+                <a class="default-staff stop-mode pull-left ml20 forbid_click" href="javascript:;" data-id="{{staff.hirelink.default_staff}}"> 默认员工</a>
+                <div class="staff-personal pull-left">
+                    <img src="{{staff.accountinfo.headimgurl_small}}" class="staff-img pull-left"/>
+                    <div class="info pull-right">
+                        <p>
+                            <span>{{staff.accountinfo.realname or '无名氏'}}</span>
+                            (<span>仓库</span>)
+                            ||
+                            <span>{{staff.accountinfo.phone}}</span>
+                        </p>
+                        <p>
+                            编号：SH-{{staff.id or 0}}
+                        </p>
+                        {% if staff.hirelink.remark %}
+                        <p class="remark_con">
+                            备注：{{staff.hirelink.remark}}
+                        </p>
+                        {% end %}
+                    </div>
+                </div>
+                <!--<a href="#" class="send-message-btn pull-left">发消息</a>-->
+                <a href="javascript:;" class="staff-edit-btn edit-btn2 pull-right">备注</a>
+                <!--<a href="admin-staff-sale.html" class="check-sale pull-right">查看销售记录</a>-->
+                <a href="{{reverse_url('adminSearchOrder')}}?action=SH2_order&&id={{staff.id}}" target="_blank"  class="check-order pull-right forbid_click">查看任务订单</a>
+            </div>
+            <div class="staff-info-edit" style="display:none;" >
+                <div class="edit-detail">
+                    <div class="staff-img pull-left">
+                        <img src="{{staff.accountinfo.headimgurl_small}}"/>
+                    </div>
+                    <ul class="staff-info-detail pull-right">
+                        <li class="set-width-float">
+                            <label class="info-title">邮箱：</label>
+                            <span>{{staff.accountinfo.email}}</span>
+                        </li>
+                        <li class="set-width-float">
+                            <label class="info-title">地址：</label>
+                            <span>{{staff.address}}</span>
+                        </li>
+                        <li class="set-width-float">
+                            <label class="info-title">姓名：</label>
+                            <span  class="pull-left">{{staff.accountinfo.nickname}}</span>
+                            <label class="info-title">电话：</label>
+                            <span  class="pull-left">{{staff.accountinfo.phone}}</span>
+                        </li>
+                        <li class="set-width-float">
+                            <label class="info-title">备注：</label>
+                            <textarea class="comment staff-remark"></textarea>
+                        </li>
+                    </ul>
+                </div>
+                <div class="action-btn">
+                    <a href="javascript:;" class="sure-btn btn pull-left staffEdit" data-id="{{staff.id}}">确认</a>
+                    <a href="javascript:;" class="concel-btn btn pull-right">取消</a>
+                </div>
+            </div>
+        <li>
+            {% end %}
+    </ul>
+</div>
+{% elif page=='hire' %}
+<div class="staff-list-content">
+    <div class="title">
+        <span class="pull-left title-name">申请人(<span class="staff-number">{{len(hire_forms)}}</span>)</span>
+    </div>
+    <ul class="staff-list">
+        {% for form in hire_forms %}
+        <li class="staff-list-item">
+            <div class="staff-info">
+                {% if form.status == 1%}
+                <span class="text-white hire-status btn-style pull-left bg-pink">申请中</span>
+                {% elif form.status == 2%}
+                <span class="text-white hire-status btn-style pull-left bg-green">通过</span>
+                {% else %}
+                <span class="text-white hire-status btn-style pull-left bg-grey">未通过</span>
+                {% end %}
+                <div class="staff-personal pull-left">
+                    <img src="{{form.staff.accountinfo.headimgurl_small}}" class="staff-img pull-left"/>
+                    <div class="info pull-right">
+                        <p>{{form.staff.accountinfo.realname}}</p>
+                        <p>{{form.staff.accountinfo.phone}}</p>
+                    </div>
+                </div>
+                <!--<a href="#" class="send-message-btn pull-left">发消息</a>
+                <a href="javascript:;" class="staff-edit-btn edit-btn2 pull-right">编辑</a>-->
+                <a href="javascript:;" class="check-order pull-right">查看申请表详情</a>
+            </div>
+            <div class="staff-info-edit hire-form" style="display:none;" data-id="{{form.staff_id}}">
+                <div class="edit-detail">
+                    <div class="staff-img pull-left">
+                        <img src="{{form.staff.accountinfo.headimgurl_small}}"/>
+                    </div>
+                    <ul class="staff-info-detail pull-right">
+                        <li class="set-width-float">
+                            <label class="info-title">邮箱：</label>
+                            <span>{{form.staff.accountinfo.email}}"</span>
+                        </li>
+                        <li class="set-width-float">
+                            <label class="info-title">地址：</label>
+                            <span>{{form.staff.address}}"</span>
+                        </li>
+                        <li class="set-width-float">
+                            <label class="info-title">姓名：</label>
+                            <span  class="pull-left">{{form.staff.accountinfo.nickname}}</span>
+                            <label class="info-title">电话：</label>
+                            <span  class="pull-left">{{form.staff.accountinfo.phone}}</span>
+                        </li>
+                        <li class="set-width-float">
+                            <label class="info-title">自我介绍：</label>
+                            <span>{{form.intro}}</span>
+                        </li>
+                        <li class="set-width-float">
+                            <label class="info-title">竞争优势：</label>
+                            <span>{{form.advantage}}</span>
+                        </li>
+                    </ul>
+                </div>
+                {% if form.status ==1%}
+                <div class="action-btn">
+                    <a href="javascript:;" class="sure-btn btn pull-left accept-hire">通过</a>
+                    <a href="javascript:;" class="concel-btn btn pull-right reject-hire">拒绝</a>
+                </div>
+                {% end %}
+            </div>
+        <li>
+            {% end %}
+    </ul>
+</div>
+{% end %}
+<div class="modal fade" id="hireBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content recruit-apply-edit">
+            <div class="modal-body">
+                <p class="title">森果员工招募令：</p>
+                <textarea class="recruit-content" placeholder="商家填写招募信息。可填写需要招募的人数，招募岗位，需要需求及工资等信息。"></textarea>
+
+            </div>
+            <div class="modal-footer">
+                <div class="action-btn">
+                    <input type="submit" class="sure-btn btn pull-left hire-form-submit" value="提交">
+                    <a href="#" class="concel-btn btn pull-right" data-dismiss="modal">取消</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}<script src="{{static_url('js/admin-staff.js')}}"></script>{% end %}
