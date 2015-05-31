@@ -275,22 +275,22 @@ var confirmBox=function(text,index,type,id){
         var window_height=$(window).height();
         var height=$('.container').height();
         $('body').append($box);
-        $("#container,#nav").css({'-webkit-filter':'blur(3px)'})
+        //$("#container,#nav").css({'-webkit-filter':'blur(3px)'})
         $(document).on('click','.dismiss',function(){
-            $("#container,#nav").removeAttr("style");
+            //$("#container,#nav").removeAttr("style");
             $('#confirmBox').remove();
             //$('.modal_bg').remove();
         });
          $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
-                $("#container,#nav").removeAttr("style");
+                //$("#container,#nav").removeAttr("style");
                 //$('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
                 $('#confirmBox').remove();
             }
         });
 }
 var confirmRemove=function(){
-    $("#container,#nav").removeAttr("style");
+    //$("#container,#nav").removeAttr("style");
     $('#confirmBox').remove();
     //$('.modal_bg').remove();
 }
