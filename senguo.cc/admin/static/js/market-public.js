@@ -275,20 +275,24 @@ var confirmBox=function(text,index,type,id){
         var window_height=$(window).height();
         var height=$('.container').height();
         $('body').append($box);
+        $("#container,#nav").css({'-webkit-filter':'blur(3px)'})
         $(document).on('click','.dismiss',function(){
+            $("#container,#nav").removeAttr("style");
             $('#confirmBox').remove();
-            $('.modal_bg').remove();
+            //$('.modal_bg').remove();
         });
          $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
-                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
+                $("#container,#nav").removeAttr("style");
+                //$('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
                 $('#confirmBox').remove();
             }
         });
 }
 var confirmRemove=function(){
+    $("#container,#nav").removeAttr("style");
     $('#confirmBox').remove();
-    $('.modal_bg').remove();
+    //$('.modal_bg').remove();
 }
 //word notice
 var noticeTimer = null;
@@ -346,15 +350,18 @@ Modal.prototype.modal=function(type){
         $target.removeClass('fade').addClass('in').css({'display':'block'});
         $target.find('.warn').remove();
         $("body").css({'overflow':'hidden'});
+        $("#container,#nav").css({'-webkit-filter':'blur(3px)'})
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
                 $('body').css({'overflow':'auto'});
+                $("#container,#nav").removeAttr("style");
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
         $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
                 $('body').css({'overflow':'auto'});
+                $("#container,#nav").removeAttr("style");
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
@@ -362,6 +369,7 @@ Modal.prototype.modal=function(type){
     else if(type=='hide')
     {
         $('body').removeClass('modal_sty').css({'overflow':'auto'}).find('.modal_bg').remove();
+        $("#container,#nav").removeAttr("style");
         $target.addClass('fade').removeClass('in').css({'display':'none'});
     }
 }

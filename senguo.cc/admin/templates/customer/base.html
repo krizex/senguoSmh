@@ -40,7 +40,7 @@
 {% elif subpage == "discover"%}
 {% set dis_active = "active"%}
 {% end %}
-    <div class="bottom-nav navbar-fixed-bottom font12 bg-grey9">
+    <div class="bottom-nav navbar-fixed-bottom font12 bg-grey9" id="nav">
         <ul class="row select-list">
             <li class="w20 pull-left {{shop_active}}">
                 <a href="{{reverse_url('customerShopProfile',handler.shop_code)}}" class="text-grey shop_href home">
@@ -76,7 +76,7 @@
             </li>
         </ul>
     </div>
-    <div class="body-container">
+    <div class="body-container" id="container">
         <div class="container phone-box">
             {% block content %}{% end %}
         </div>

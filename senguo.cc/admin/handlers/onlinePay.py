@@ -132,7 +132,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			##############################################################
 			print("[微信支付]回调成功")
 			data = self.request.body
-			print("[微信支付]回调请求数据：",self.request.body,'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+			print("[微信支付]回调request.body：",self.request.body)
 			xml = data.decode('utf-8')
 			UnifiedOrder = UnifiedOrder_pub()
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
