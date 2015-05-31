@@ -346,21 +346,18 @@ Modal.prototype.modal=function(type){
         $target.removeClass('fade').addClass('in').css({'display':'block'});
         $target.find('.warn').remove();
         $("body").css({'overflow':'hidden'});
-        $(".body-container,.bottom-nav").css({'-webkit-filter':'blur(3px) contrast(0.4) brightness(1)'})
-        //$("").css({'-webkit-filter':'blur(3px) contrast(0.4) brightness(1.4)'})
+        $(".body-container,.bottom-nav").css({'-webkit-filter':'blur(3px) contrast(1) brightness(0.8)'})
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
                 $('body').css({'overflow':'auto'});
                 $(".body-container,.bottom-nav").removeAttr("style");
-                //$("").removeAttr("style");
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
         $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
                 $('body').css({'overflow':'auto'});
-                $(".body-container").removeAttr("style");
-                $(".bottom-nav").removeAttr("style");
+                $(".body-container,.bottom-nav").removeAttr("style");
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
