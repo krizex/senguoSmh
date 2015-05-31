@@ -21,6 +21,7 @@
     {% block head %}{% end %}
 </head>
 <body>
+<div class="blur">
 {% set subpage = context.get("subpage", "home")%}
 
 {% set shop_active = ""%}
@@ -88,6 +89,7 @@
     <script src="{{static_url('js/market-public.js')}}"></script>
     {% block bottom %}{% end %}
     <a id="backTop" class="little_pear anim-slideInRight"><img src="/static/svg/half@2x.png" class="src_change"/></a>
+</div>
 </body>
 </html>
 

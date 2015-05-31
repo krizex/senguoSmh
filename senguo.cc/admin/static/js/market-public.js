@@ -346,18 +346,21 @@ Modal.prototype.modal=function(type){
         $target.removeClass('fade').addClass('in').css({'display':'block'});
         $target.find('.warn').remove();
         $("body").css({'overflow':'hidden'});
-        $(".body-container,.bottom-nav").css({'-webkit-filter':'blur(3px) contrast(1) brightness(0.6)'})
+        $(".blur").css({'-webkit-filter':'blur(3px) contrast(1) brightness(0.6)'})
+        //$(".body-container,.bottom-nav").css({'-webkit-filter':'blur(3px) contrast(1) brightness(0.6)'})
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
                 $('body').css({'overflow':'auto'});
-                $(".body-container,.bottom-nav").removeAttr("style");
+                $(".blur").removeAttr("style");
+                //$(".body-container,.bottom-nav").removeAttr("style");
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
         $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
                 $('body').css({'overflow':'auto'});
-                $(".body-container,.bottom-nav").removeAttr("style");
+                $(".blur").removeAttr("style");
+                //$(".body-container,.bottom-nav").removeAttr("style");
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
@@ -365,8 +368,8 @@ Modal.prototype.modal=function(type){
     else if(type=='hide')
     {
         $('body').removeClass('modal_sty').css({'overflow':'auto'}).find('.modal_bg').remove();
-        $(".body-container").removeAttr("style");
-        $(".bottom-nav").removeAttr("style");
+        $(".blur").removeAttr("style");
+        //$(".body-container,.bottom-nav").removeAttr("style");
         $target.addClass('fade').removeClass('in').css({'display':'none'});
     }
 }
