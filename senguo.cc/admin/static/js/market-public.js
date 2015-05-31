@@ -346,11 +346,13 @@ Modal.prototype.modal=function(type){
         $target.removeClass('fade').addClass('in').css({'display':'block'});
         $target.find('.warn').remove();
         $("body").css({'overflow':'hidden'});
-        $(".body-container").css({'-webkit-filter':'blur(4px)'})
-        $(".bottom-nav").css({'-webkit-filter':'blur(4px)'})
+        $(".body-container").css({'-webkit-filter':'blur(8px) contrast(0.4) brightness(1.4)'})
+        $(".bottom-nav").css({'-webkit-filter':'blur(8px) contrast(0.4) brightness(1.4)'})
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
                 $('body').css({'overflow':'auto'});
+                $(".body-container").removeAttr("style");
+                $(".bottom-nav").removeAttr("style");
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
