@@ -233,7 +233,7 @@ class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
 		# shop_id = self.shop_id
-		print("[访问店铺]店铺号：",shop_code)
+		print("[个人中心]店铺号：",shop_code)
 		# 用于标识 是否现实 用户余额 ，当 店铺 认证 通过之后 为 True ，否则为False
 		show_balance = False
 		try:
@@ -250,7 +250,7 @@ class Home(CustomerBaseHandler):
 				show_balance = True
 			# print(shop,shop.shop_auth)
 		else:
-			print("[访问店铺]店铺不存在：",shop_code)
+			print("[个人中心]店铺不存在：",shop_code)
 			return self.send_fail('shop not found')
 		customer_id = self.current_user.id
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
@@ -366,7 +366,7 @@ class CustomerProfile(CustomerBaseHandler):
 		try:
 				follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id).order_by(models.CustomerShopFollow.create_time.desc()).limit(3).all()
 		except:
-				print('该用户未关注任何店铺')
+				print('[个人中心]该用户未关注任何店铺')
 		for shopfollow in follow:
 				shop=self.session.query(models.Shop).filter_by(id = shopfollow.shop_id).first()
 				shop_info.append({'logo':shop.shop_trademark_url,'shop_code':shop.shop_code})
