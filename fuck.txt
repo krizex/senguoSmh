@@ -1,0 +1,4 @@
+Fix them up in the work tree, and then use 'git add/rm <file>'
+提示：as appropriate to mark resolution and make a commit, or use
+提示：'git commit -a'.
+
