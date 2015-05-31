@@ -1,0 +1,42 @@
+{% extends 'systempurchase-base.html'%}
+
+{% block head-title %} 支付订单 {% end %}
+
+{% block page-detail%}
+{% set charge_type = context["charge_type"] %}
+
+<form method="POST" action="{{reverse_url('fruitzoneSystemPurchaseChargeDetail')}}">
+  <h4>订单详情</h4>
+  <ul class="list-group">
+    <li class="list-group-item">
+      <label class="pull-left">商品名称</label>
+      <span class="pull-right">{{charge_type.good_name}}</span>
+      <div style="clear:both"></div>
+    </li>
+    <li class="list-group-item">
+      <label class="pull-left">使用期限</label>
+      <span class="pull-right">{{charge_type.month}} 个月</span>
+      <div style="clear:both"></div>
+    </li>
+    <li class="list-group-item">
+      <label class="pull-left">总价</label>
+      <span class="pull-right">{{charge_type.price}} 元</span>
+      <div style="clear:both"></div>
+    </li>
+  </ul>
+
+  <h4>选择支付方式</h4>
+  <ul class="list-group theme-list-select">
+    <li class="list-group-item" class="active">
+      <input type="radio" name="pay_type" value="alipay" checked><span class="select-text">支付宝支付</span>
+    </li>    
+  </ul>
+  <input type="number" name="charge_type" value="{{charge_type.id}}" hidden>
+  {% module xsrf_form_html() %}
+
+  <p class="help-block">订单提交支付完成后，我们将在1个工作日内为您新建账号，并将账号信息发送到您的邮箱。</p>
+  <input type="submit" class="btn btn-green text-white form-control" value="提交并支付">
+</form>
+
+
+{% end %}

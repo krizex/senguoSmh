@@ -1,0 +1,110 @@
+<li class="order-list-item list-item set-width-float bg-greya font14" data-id="" data-type="">
+    <a href="javascript:;" class="check order-check"></a>
+    <div class="list-title">
+        <span class="code pull-left">
+            <span class="text-grey9">订单编号：</span><span class="order-code"></span>
+        </span>
+        <span class="send pull-left">
+            <span class="text-grey9">配送时间：</span><span class="send-time"></span>
+        </span>       
+        <span class="money pull-left">
+            <span class="text-grey9">金额：</span><span><span class="order-price goods-total-charge"></span>元</span>
+            <!--<span class="tips">（其中小费<span class="tip"></span>元）</span>-->
+        </span>
+	<span class="pay-status pull-left pay-btn" data-pay="">支付方式</span>
+        <a class="print-order pull-right forbid_click" href="javascript:;" data-id="">打印</a>
+    </div>
+    <!--list-title-end-->
+    <div class="order-content set-width-float">
+        <div class="order-info set-width-float">
+            <span class="text-grey9">地址：</span><span class="address address_show"></span>
+            <span class="text-grey9"><span class="new" style="display:none;">新</span>用户：</span><a href="#" class="name forbid_click" target="_blank"></a>
+        </div>
+        <!--order-info-end-->
+        <div class="order-message set-width-float text-pink">
+            <span>留言：</span>
+            <span class="message-content"></span>
+        </div>
+        <div class="staff-replay text-pink">员工回复：<span class="staff-remark"></span></div>
+	<div class="saler-remark text-pink">商家备注：<span class="order_remark"></span></div>
+        <!--order-message-end-->
+        <div class="order-status set-width-float edit_item edit_avilible avilible_item" data-id="">
+            <div class="status-bar bg-greyd pull-left forbid_click">
+                <div class="status-inner bg-greyd status_order hidden" style="width:0%;"></div>
+                <div class="status-inner bg-green status_send hidden" style="width:50%;"></div>
+                <div class="status-inner bg-green status_finish hidden" style="width:100%;"></div>
+                <div class="status-circle status_order status-item status-order bg-green hidden" style="left:0%;"></div>
+                <div class="status-info status_order status-item text-green hidden" style="left:0%;">
+                    <span class="status">未处理</span>
+                </div>
+                <div class="status-circle status_send status-item status-send bg-green hidden" style="left:50%;"></div>
+                <div class="status-info status_send status-item text-green hidden" style="left:50%;">
+                    <span class="status">配送中</span>
+                </div>
+                <div class="status-circle status_finish status-item status-finish bg-green hidden" style="left:100%;"></div>
+                <div class="status-info status_finish status-item text-green hidden" style="left:100%;">
+                    <span class="status">已确认收货</span>
+                </div>
+            </div>
+            <div class="pull-right font14 forbid_click status-change able_edit">
+                  <button class="status-send to-send btn btn-default"  style="display:none;">开始配送</button>
+                  <button class="status-finish to-finish btn btn-default" style="display:none;">完成订单</button>
+            </div>
+	  <!--   <div class="btn-group pull-right font14 forbid_click status-change able_edit" style="display:none;">
+		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+		    <span class="status_word">未处理</span>
+		</button>
+		<ul class="dropdown-menu" role="menu">
+		    <li class="status-order">未处理</li>
+		    <li class="status-send">配送中</li>
+		    <li class="status-finish">已完成</li>
+		</ul>
+	   </div> -->
+	   <span class="font12 pull-right set-inl-blo w100 text-center bg-white height30 unable_edit" style="display:none;">已评价</span>
+        </div>
+        <!--order-status-end-->
+    </div>
+    <!--order-content-end-->
+    <div class="custom-order list-item-body set-width-float" style="display:none">
+	<div class="address-adapt mb-15">
+           <p class="text-grey9">配送员选择</p>
+	   <div class="current_sender unable_edit clearfix" style="display:none">
+		#<span class="sender-code w50 set-inl-blo"></span>||
+                <span class="sender-name w120 set-inl-blo set-left10"></span>||
+                <span class="sender-phone w120 set-inl-blo set-left10"></span>
+	   </div>
+	   <div class="btn-group font14 forbid_click send_change able_edit clearfix"  style="display:none">
+		<button type="button" class="btn btn-default dropdown-toggle send_person order-sender" data-toggle="dropdown" aria-expanded="false">
+		    <span>
+			#<span class="sender-code w50 set-inl-blo"></span>||
+		        <span class="sender-name w120 set-inl-blo set-left10"></span>||
+		        <span class="sender-phone w120 set-inl-blo set-left10"></span>
+		    </span>
+		    <span class="caret pull-right"></span>
+		</button>
+		<ul class="dropdown-menu send_person_list" role="menu">
+                       
+		</ul>
+	   </div>
+	</div>
+        <p class="con-title mb-0 clearfix">订单详情:</p>
+        <div class="custom-order-title clearfix mb-15">
+           <span class="text-grey9">收货人：</span><span class="w200 receiver"></span>
+	   <span class="text-grey9">电话：</span><span class="w200 phone"></span>
+           <span class="text-grey9">下单时间：</span><span class="w200 order-time"></span>
+        </div>
+        <p class="clearfix mb-0 con-title"><span class="goods-total-number"></span>件商品:</p>
+        <div class="custom-order-list clearfix">
+            <ul class="goods-list">
+
+            </ul>
+        </div>
+        <div class="edit_box able_edit" style="display:none">
+	    <a class="order_mark pull-right" href="javascript:;">备注</a>
+	    <a class="price_edit pull-right set-right20" href="javascript:;">修改价格</a>
+	    <a class="delete-order pull-right set-right20" href="javascript:;">删除订单</a>
+	</div>
+    </div>
+    <input type="hidden" value="" class="saler-remark"/>
+    <!--custom-order-end-->
+</li>
