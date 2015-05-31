@@ -2345,13 +2345,13 @@ class payTest(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?:str')
 	def post(self):
-			print(self.args,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+			# print(self.args,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
 
 		# 微信 余额 支付
 	#	if action == 'wx_pay':
-			print('回调成功')
+			print("[微信充值]回调成功")
 			data = self.request.body
-			print(self.request.body,'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+			print("[微信充值]回调request.body：",self.request.body)
 			xml = data.decode('utf-8')
 			UnifiedOrder = UnifiedOrder_pub()
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
