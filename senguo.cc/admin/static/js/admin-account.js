@@ -27,7 +27,7 @@ $(document).ready(function(){
       history('available',1);
 }).on('click','.pre-page',function(){
 	if(num==1){
-		return alert('没有上一页啦！');
+		return Tip('没有上一页啦！');
 	}
 	else{
 		num--;
@@ -36,7 +36,7 @@ $(document).ready(function(){
 	}
 }).on('click','.next-page',function(){
 	if(num==page_sum){
-		return alert('没有下一页啦！');
+		return Tip('没有下一页啦！');
 	}
 	else{
 		num++;
@@ -48,7 +48,7 @@ $(document).ready(function(){
 	var action=$('.list-pagination').attr('data-action');
 	num=page;
 	if(page<1||page>page_sum){
-		return alert('没有该页的数据！');
+		return Tip('没有该页的数据！');
 	}
 	else{
 		history(action,page);
@@ -64,7 +64,7 @@ $(document).ready(function(){
     $this.addClass("bg85").attr("data-statu", "1");
     var phone = $("#perCode").text();
     if(!phone){
-      return alert('管理员还未绑定手机号')
+      return Tip('管理员还未绑定手机号')
     }
     var args={
         action:'get_code',
@@ -81,7 +81,7 @@ $(document).ready(function(){
                 getCertCode($this);
             }else{
                 $this.removeClass("bg85").removeAttr("data-statu").html("获取验证码");
-                alert(res.error_text);
+                Tip(res.error_text);
             }
         }
     });
@@ -216,10 +216,10 @@ function history(action,page){
                }
             }
             else{
-                    alert(res.error_text);
+                    Tip(res.error_text);
             }
         },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~');}
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~');}
         );
 }
 
@@ -235,31 +235,31 @@ function cash(){
     var availible_value=parseFloat($('.available-balance').text());
     if(!apply_value){
     	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
-    	return alert('请填写提现金额');
+    	return Tip('请填写提现金额');
     }
     if(!alipay_account){
     	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
-    	return alert('请填写提现支付宝账号');
+    	return Tip('请填写提现支付宝账号');
     }
     if(!account_name){
     	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
-    	return alert('请填写支付宝认证姓名');
+    	return Tip('请填写支付宝认证姓名');
     }
      if(!regFloat.test(apply_value)){
     	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
-    	return alert('请填写数字，至多为小数点后两位');
+    	return Tip('请填写数字，至多为小数点后两位');
     }
     if(!code){
     	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
-    	return alert('请填写短信验证码');
+    	return Tip('请填写短信验证码');
     }
     if(availible_value<100){
       $('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
-      return alert('您的可提现额度不足100元，无法进行提现操作');
+      return Tip('您的可提现额度不足100元，无法进行提现操作');
     }
     if(apply_value>availible_value){
       $('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
-      return alert('您没有这么多的可提现金额');
+      return Tip('您没有这么多的可提现金额');
     }
     var args={
         action:action,
@@ -278,12 +278,12 @@ function cash(){
                }
             else{
             	      $('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
-                    alert(res.error_text);
+                Tip(res.error_text);
             }
         },
         function(){
         	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
-        	alert('网络好像不给力呢~ ( >O< ) ~');
+            Tip('网络好像不给力呢~ ( >O< ) ~');
         }
-        );
+    );
 }

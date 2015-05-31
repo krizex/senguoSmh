@@ -21,18 +21,27 @@ import json
 import tornado.gen
 from tornado.concurrent import run_on_executor
 from concurrent.futures import ThreadPoolExecutor
+<<<<<<< HEAD
+=======
+import decimal
+>>>>>>> senguo-2.1-build150530
 
 class Home(FruitzoneBaseHandler):
 	def get(self):
 	   shop_count = self.get_shop_count()
 	   return self.render("fruitzone/index.html",context=dict(shop_count = shop_count,subpage=""))
+#店铺搜索
+class SearchList(FruitzoneBaseHandler):
+	def get(self):
 
+	   return self.render("fruitzone/search-list.html")
 class ShopList(FruitzoneBaseHandler):
 	def initialize(self):
 		self.remote_ip = self.request.headers.get('X-Forwarded_For',\
 			self.request.headers.get('X-Real-Ip',self.request.remote_ip))
-	def get(self):
+	@FruitzoneBaseHandler.check_arguments('action?:str')
 
+	def get(self):
 		remote_ip = self.remote_ip
 		# print(remote_ip)
 		url = 'http://ip.taobao.com/service/getIpInfo.php?ip={0}'.format(remote_ip)
@@ -56,8 +65,7 @@ class ShopList(FruitzoneBaseHandler):
 		#     fruit_types.append(f_t.safe_props())
 		# print(city_id+"===========")
 		return self.render("fruitzone/list.html", context=dict(province_count=province_count,\
-			city = city ,city_id = city_id, shop_count=shop_count,subpage="home"))
-
+			city = city ,city_id = city_id,shop_count=shop_count,subpage="home"))
 
 	
 	@FruitzoneBaseHandler.check_arguments("action")
@@ -67,14 +75,19 @@ class ShopList(FruitzoneBaseHandler):
 			return self.handle_filter()
 		elif action == "search":
 			return self.handle_search()
+		elif action == "qsearch":
+			return self.handle_qsearch()
 		elif action =="shop":
 			return self.handle_shop()
+		elif action == 'admin_shop':
+			return self.handle_admin_shop()
 		else:
 			return self.send_error(403)
 
 	def get_data(self,q):
 		shops = []
 		for shop in q:
+<<<<<<< HEAD
 				satisfy = 0
 				shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname','auth_change',
 											 'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
@@ -104,6 +117,44 @@ class ShopList(FruitzoneBaseHandler):
 				shops.append(shop.safe_props())
 		return shops
 
+=======
+				if shop.shop_code !='not set':
+					satisfy = 0
+					shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname','auth_change',
+												 'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
+												 'alipay_account','alipay_account_name','available_balance',\
+												 'new_follower_sum','new_order_sum']
+					orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).first()
+					if orders:
+						commodity_quality = 0
+						send_speed = 0
+						shop_service = 0
+						q = self.session.query(func.avg(models.Order.commodity_quality),\
+							func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop.id).all()
+						if q[0][0]:
+							commodity_quality = int(q[0][0])
+						if q[0][1]:
+							send_speed = int(q[0][1])
+						if q[0][2]:
+							shop_service = int(q[0][2])
+						if commodity_quality and send_speed and shop_service:
+							satisfy = float((commodity_quality + send_speed + shop_service)/300)
+						else:
+							satisfy = 0
+					comment_count = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).count()
+					fruit_count = self.session.query(models.Fruit).filter_by(shop_id = shop.id,active = 1).count()
+					mgoods_count =self.session.query(models.MGoods).join(models.Menu,models.MGoods.menu_id == models.Menu.id)\
+					.filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
+					shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100) 
+					shop.comment_count = comment_count
+					shop.goods_count = fruit_count+mgoods_count		
+					shops.append(shop.safe_props())
+		# print(shops,'shops')
+		return shops
+
+
+
+>>>>>>> senguo-2.1-build150530
 	@FruitzoneBaseHandler.check_arguments("page:int")
 	def handle_shop(self):
 
@@ -122,7 +173,8 @@ class ShopList(FruitzoneBaseHandler):
 		return self.send_success(shops=shops,nomore = nomore)
 
 	@FruitzoneBaseHandler.check_arguments("skip?:int","limit?:int","province?:int",
-									  "city?:int", "service_area?:int", "live_month?:int", "onsalefruit_ids?:list","page:int")
+									  "city?:int", "service_area?:int", "live_month?:int",
+									  "onsalefruit_ids?:list","page:int","key_word?:int",'lat?:str','lon?:str')
 	def handle_filter(self):
 		# 按什么排序？暂时采用id排序
 		_page_count = 15
@@ -132,6 +184,14 @@ class ShopList(FruitzoneBaseHandler):
 			filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 				models.Shop.shop_code !='not set',models.Shop.status !=0 )
 		shops = []
+<<<<<<< HEAD
+=======
+
+		if "service_area" in self.args:
+			service_area = int(self.args['service_area'])
+			q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
+			# q = q.filter_by(shop_service_area = service_area)
+>>>>>>> senguo-2.1-build150530
 		
 		if "city" in self.args:
 			q = q.filter_by(shop_city=self.args["city"])
@@ -150,10 +210,15 @@ class ShopList(FruitzoneBaseHandler):
 		else:
 			print("[店铺列表]城市不存在")
 
+<<<<<<< HEAD
 		if "service_area" in self.args:
 			q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
+=======
+		
+>>>>>>> senguo-2.1-build150530
 		# if "live_month" in self.args:
 		#     q = q.filter(models.Shop.shop_start_timestamp < time.time()-self.args["live_month"]*(30*24*60*60))
+
 
 		# if "onsalefruit_ids" in self.args and self.args["onsalefruit_ids"]:
 		#     q = q.filter(models.Shop.id.in_(
@@ -170,9 +235,44 @@ class ShopList(FruitzoneBaseHandler):
 		# else:
 		#     q = q.limit(self._page_count)
 		shops = self.get_data(q)
+<<<<<<< HEAD
 		if shops == [] or len(shops)<_page_count:
 			nomore =True
 		return self.send_success(shops=shops,nomore = nomore)
+=======
+		if "key_word" in self.args:
+			key_word = int(self.args['key_word'])
+			if key_word == 1: #商品最多
+				shops.sort(key = lambda shop:shop['goods_count'],reverse = True)
+			elif key_word == 2: #距离最近
+				lat1 = float(self.args['lat'])
+				lon1 = float(self.args['lon'])
+				for shop in shops:
+					lat2 = shop['lat']
+					lon2 = shop['lon']
+					shop['distance'] = self.get_distance(lat1,lon1,lat2,lon2)
+				shops.sort(key = lambda shop:shop['distance'] , reverse = True)
+			elif key_word == 3: #满意度最高
+				shops.sort(key = lambda shop:shop['satisfy'],reverse = True)
+			elif key_word == 4: #评价最多
+				shops.sort(key = lambda shop:shop['comment_count'] , reverse = True)
+			else:
+				return self.send_fail(error_text = 'key_word error')
+		if shops == [] or len(shops)<_page_count:
+			nomore =True
+		return self.send_success(shops=shops,nomore = nomore)
+
+	@FruitzoneBaseHandler.check_arguments('id:int')
+	def handle_admin_shop(self):
+		admin_id = int(self.args['id'])
+		shop_admin = self.session.query(models.ShopAdmin).filter_by(id = admin_id).first()
+		if not shop_admin:
+			return self.send_fail('shop_admin not found!')
+		shop_list = shop_admin.shops
+		shops = self.get_data(shop_list)
+		return self.send_success(shops=shops)
+
+>>>>>>> senguo-2.1-build150530
 
 	@FruitzoneBaseHandler.check_arguments("q","page:int")
 	def handle_search(self):
@@ -191,6 +291,20 @@ class ShopList(FruitzoneBaseHandler):
 		if shops == [] or len(shops)<_page_count:
 			nomore =True
 		return self.send_success(shops=shops ,nomore = nomore)
+<<<<<<< HEAD
+=======
+	##快速搜索	
+	@FruitzoneBaseHandler.check_arguments("q")
+	def handle_qsearch(self):
+		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
+			filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"])),
+				   models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
+				   models.Shop.shop_code !='not set',models.Shop.status !=0 )
+		shops = []
+		q = q.limit(5).all()
+		shops = self.get_data(q)
+		return self.send_success(shops=shops)
+>>>>>>> senguo-2.1-build150530
 
 class Community(FruitzoneBaseHandler):
 	def get(self):
@@ -328,6 +442,18 @@ class ShopApply(FruitzoneBaseHandler):
 		#* todo 检查合法性
 
 		if self._action == "apply":
+			account_id = self.current_user.accountinfo.id
+			try:
+				if_admin = self.session.query(models.HireLink).join(models.ShopStaff,models.HireLink.staff_id == models.ShopStaff.id)\
+				.filter(models.HireLink.active==1,models.HireLink.work ==9 ,models.ShopStaff.id == account_id).first()
+			except:
+				if_admin = None
+			try:
+				if_shop = self.session.query(models.Shop).filter_by(id = if_admin.shop_id).first()
+			except:
+				if_shop = None
+			if if_admin:
+				return self.send_fail('该账号已是'+if_shop.shop_name+'的管理员，不能使用该账号申请店铺，若要使用该账号，请退出'+if_shop.shop_name+'管理员身份更换或其它账号')
 			if not check_msg_token(phone=self.args['shop_phone'], code=self.args["code"]):
 				# print('check_msg_token' + self.current_user.accountinfo.wx_unionid)
 				return self.send_fail(error_text="验证码过期或者不正确")  #

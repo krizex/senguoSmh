@@ -28,11 +28,19 @@ $(document).ready(function(){
                 }
                 else {
                     $this.removeAttr('disabled').removeClass('bg-grey');
+<<<<<<< HEAD
                     alert(res.error_text);
                 }
             },
             function(){
                 alert('网络好像不给力呢~ ( >O< ) ~');
+=======
+                    Tip(res.error_text);
+                }
+            },
+            function(){
+                Tip('网络好像不给力呢~ ( >O< ) ~');
+>>>>>>> senguo-2.1-build150530
                 $this.removeAttr('disabled').removeClass('bg-grey');
             });
         }

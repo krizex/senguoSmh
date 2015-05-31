@@ -1,4 +1,4 @@
-$(document).ready(function(){
+ $(document).ready(function(){
     window.dataObj.shop_href='/customer/shopProfile';
     window.dataObj.market_href='/shop/none';
     window.dataObj.home_href='/customer';
@@ -12,6 +12,11 @@ $(document).ready(function(){
      var s = document.getElementsByTagName("script")[0]; 
      s.parentNode.insertBefore(hm, s);
    })();
+    if($("#order-success").size()>0){
+        if(location.href!=parent.location.href){
+            parent.location.href = location.href;
+        }
+    }
     //fastclick initialise
    FastClick.attach(document.body);
     //客户端为Android系统替换图片路径
@@ -42,7 +47,11 @@ $(document).ready(function(){
     if(window.dataObj.cart_count!=0){
         $('.cart_num').removeClass('hidden').text(window.dataObj.cart_count);
     }
+<<<<<<< HEAD
     $('.lazy_img').lazyload({threshold:100});
+=======
+    $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
+>>>>>>> senguo-2.1-build150530
     //置顶监听
     $(window).on('scroll',function(){
         var $this=$(this);
@@ -260,7 +269,11 @@ function stopPropagation(e) {
     }  
 }  
 //confirmbox
+<<<<<<< HEAD
 getItem('/static/items/confirmBox.html?v=201503-29',function(data){window.dataObj.confirmBox=data});
+=======
+getItem('/static/items/confirmBox.html?v=20150530',function(data){window.dataObj.confirmBox=data});
+>>>>>>> senguo-2.1-build150530
 var confirmBox=function(text,index,type,id){
         var $box=$(window.dataObj.confirmBox);
         $box.find('.message').text(text);
@@ -270,20 +283,24 @@ var confirmBox=function(text,index,type,id){
         var window_height=$(window).height();
         var height=$('.container').height();
         $('body').append($box);
+        $("#container,#nav").css({'-webkit-filter':'blur(3px)'})
         $(document).on('click','.dismiss',function(){
+            $("#container,#nav").removeAttr("style");
             $('#confirmBox').remove();
-            $('.modal_bg').remove();
+            //$('.modal_bg').remove();
         });
          $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
-                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
+                $("#container,#nav").removeAttr("style");
+                //$('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
                 $('#confirmBox').remove();
             }
         });
 }
 var confirmRemove=function(){
+    $("#container,#nav").removeAttr("style");
     $('#confirmBox').remove();
-    $('.modal_bg').remove();
+    //$('.modal_bg').remove();
 }
 //word notice
 var noticeTimer = null;
@@ -294,10 +311,10 @@ var noticeBox=function(text,item){
     }
     clearTimeout(noticeTimer);
     if($("#noticeBox").size()==0){
-        var $box=$('<div class="notice_bg hidden" id="noticeBox"><div class="notice_box text-center center-block"><p class="notice text-white font14 text-center"></p></div></div>');
+        var $box=$('<div class="notice_bg" id="noticeBox"><div class="notice_box text-center center-block"><p class="notice text-white font14 text-center"></p></div></div>');
         $('body').append($box);
     }
-    $("#noticeBox").removeClass('hidden').find('.notice').text(text);
+    $("#noticeBox").removeClass('anim-fadeOut').addClass('anim-bounceIn').find('.notice').text(text);
     if(item) {
         tempObj = item;
         item.attr({'disabled':'true'});
@@ -316,16 +333,16 @@ var warnNotice=function(text,item){
         if(item){
             item.removeAttr('disabled').removeClass('bg-greyc');
         }
-    },2000);
+    },1500);
 }
 //time count 2 secends
 var noticeRemove=function (target,item) {
     noticeTimer = setTimeout(function() {
-        $('#'+target).addClass('hidden');
+        $('#'+target).removeClass('anim-bounceIn').addClass('anim-fadeOut');
         if(item){
             item.removeAttr('disabled').removeClass('bg-greyc');
         }
-    },2000);
+    },1500);
 }
 
 //modal box
@@ -341,15 +358,18 @@ Modal.prototype.modal=function(type){
         $target.removeClass('fade').addClass('in').css({'display':'block'});
         $target.find('.warn').remove();
         $("body").css({'overflow':'hidden'});
+        $("#container,#nav").css({'-webkit-filter':'blur(3px)'})
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
                 $('body').css({'overflow':'auto'});
+                $("#container,#nav").removeAttr("style");
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
         $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
                 $('body').css({'overflow':'auto'});
+                $("#container,#nav").removeAttr("style");
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
@@ -357,6 +377,19 @@ Modal.prototype.modal=function(type){
     else if(type=='hide')
     {
         $('body').removeClass('modal_sty').css({'overflow':'auto'}).find('.modal_bg').remove();
+        $("#container,#nav").removeAttr("style");
         $target.addClass('fade').removeClass('in').css({'display':'none'});
     }
+}
+//点选动画
+function pulse(target){
+    target.removeClass('anim-pulse').addClass('anim-pulse').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function(){
+        target.removeClass('anim-pulse');
+    });
+}
+//购物篮数字动画
+function wobble(target){
+    target.removeClass('anim-wobble').addClass('anim-wobble').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function(){
+        target.removeClass('anim-wobble');
+    });
 }

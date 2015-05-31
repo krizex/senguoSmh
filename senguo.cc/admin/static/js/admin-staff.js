@@ -46,11 +46,11 @@ $(document).ready(function(){
         var default_staff=Int($this.siblings('.default-staff').attr('data-id'));
         if(staff_active == 1){
             if($this.parents('.staff-list-item').index()==0){
-                alert('管理员不可设置为下班状态');
+                Tip('管理员不可设置为下班状态');
                 return false;
             }
             if(default_staff==1){
-                alert('请先取消该员工的默认员工状态，再让设置该员工为下班');
+                Tip('请先取消该员工的默认员工状态，再让设置该员工为下班');
                 return false;
             }
         }
@@ -83,7 +83,7 @@ $(document).ready(function(){
         var default_staff = Int($this.attr('data-id'));
         var staff_active=Int($this.siblings('.staff-work-mode').attr('data-id'));
         if(default_staff==0&&staff_active == 2){
-            alert('请先设置该员工为上班，才能设置该员工为默认员工');
+            Tip('请先设置该员工为上班，才能设置该员工为默认员工');
             return false;
         }
         defaultStaff($this,default_staff);
@@ -133,8 +133,8 @@ function hireConfig(target,action,val){
             }
             
         }
-        else return alert(res.error_text)
-    },function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
+        else return Tip(res.error_text)
+    },function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
     )
 }
 
@@ -159,8 +159,8 @@ function staffEdit(target){
             parent.parents('.staff-list-item').find('.remark_con').remove();
             parent.parents('.staff-list-item').find('.info').append('<p class="remark_con">备注：'+remark+'</p>');
         }
-        else return alert(res.error_text)
-    },function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
+        else return Tip(res.error_text)
+    },function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
     );
 
 }
@@ -188,8 +188,8 @@ function staffActive(target,active){
                 target.find('.work-mode').toggleClass('hidden');
                 target.find('.stop-mode').toggleClass('hidden');
             }
-            else return alert(res.error_text)
-        },function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
+            else return Tip(res.error_text)
+        },function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
     );
 
 }
@@ -217,8 +217,8 @@ function defaultStaff(target,active){
                 target.toggleClass('stop-mode').toggleClass('work-mode'); 
                 target.parents('.staff-list-item').siblings('.staff-list-item').find('.default-staff').addClass('stop-mode').removeClass('work-mode'); 
             }
-            else return alert(res.error_text)
-        },function(){return alert('网络好像不给力呢~ ( >O< ) ~！')}
+            else return Tip(res.error_text)
+        },function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
     );
 
 }

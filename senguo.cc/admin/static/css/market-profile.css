@@ -1,4 +1,4 @@
-.user-info-detail{border-bottom:1px solid #ddd;border-top:1px solid #ddd;}
+.user-info-detail{border-bottom:1px solid #e7e7eb;border-top:1px solid #e7e7eb;}
 .user-info-detail .img-title{line-height:42px;}
 .user-info-detail .user-img{width:42px;height:42px;border-radius: 50%;}
 .user-info-detail .shop-img{width:34px;height:34px;border-radius: 50%;}
@@ -10,7 +10,11 @@
 .user-info-detail .s1{color:#999;}
 .user-info-detail .info-con{width:100%;float:left;}
 .user-info-detail .info-edit{width:100%;float:left;margin-top:0.5em;}
+<<<<<<< HEAD
 .user-info-detail .info-edit .edit-box{width:100%;border:1px solid #ddd;border-radius:2px;background:#f2f2f2;font-size:1em;padding:0.3em 0;text-indent:5px;}
+=======
+.user-info-detail .info-edit .edit-box{width:100%;border:1px solid #e7e7eb;border-radius:2px;background:#f2f2f2;font-size:1em;padding:0.3em 0;text-indent:5px;}
+>>>>>>> senguo-2.1-build150530
 .bm-line{border-bottom:1px solid #f2f2f2;}
 .profile-lst{float:left;padding-left: 8px;background-color:#fff;width: 100%;}
 .tie-popbox .tie-info{width:100%;}
@@ -24,7 +28,7 @@
 .btn-box{margin-top:10px;}
 .height40{height:40px;line-height:40px;}
 
-.input1{width:100%;border:1px solid #ddd;border-radius:2px;background:#F9F9F9;padding:0.5em 0;text-indent:0.5em;margin-bottom:0.5em;}
+.input1{width:100%;border:1px solid #e7e7eb;border-radius:2px;background:#F9F9F9;padding:0.5em 0;text-indent:0.5em;margin-bottom:0.5em;}
 .input1:focus{border-color:#00D681;}
 .ml6{margin-left: 6px;}
 .pt2{padding-top: 2px;}

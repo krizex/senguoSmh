@@ -5,7 +5,11 @@
 .stop-mode{text-indent:44px;}
 .stop-mode .circle{left:2px;}
 
+<<<<<<< HEAD
 .top-box{line-height:20px;margin-bottom:20px;position:relative;padding:15px;background:#FBFBFB;}
+=======
+.top-box{line-height:20px;margin-bottom:20px;position:relative;padding:15px;background:#f4f5f9;}
+>>>>>>> senguo-2.1-build150530
 .top-box .action-btn{position:absolute;right:10px;top:18px;}
 
 

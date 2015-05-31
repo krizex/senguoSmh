@@ -37,6 +37,8 @@ handlers = [
 
 	(r"/customer/login", handlers.customer.Access, {"action":"login"}, "customerLogin"),
 	(r"/customer/oauth", handlers.customer.Access, {"action":"oauth"}, "customerOauth"),
+	(r"/customer/qq",handlers.customer.Access,{'action':'qq'},"customerQq"),
+	(r"/customer/qqoauth",handlers.customer.Access,{"action":"qqoauth"},"customerQOauth"),
 	(r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
 	(r"/customer/weixin", handlers.customer.Third, {"action":"weixin"}, "customerWeixin"),
 	(r"/customer/register", handlers.customer.RegistByPhone, {}, "customerRegister"),
@@ -47,7 +49,12 @@ handlers = [
 	(r"/customer/wxBind", handlers.customer.WxBind, {"action":"wx_bind"}, "customerwxBind"),
 	(r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
 	(r"/customer/discover/(\w+)",handlers.customer.Discover,{},"customerDiscover"),
+<<<<<<< HEAD
 	
+=======
+	#商品详情
+	(r"/customer/goods/(\w+)",handlers.customer.Goods,{},"customerGoods"),
+>>>>>>> senguo-2.1-build150530
 	# (r"/fruitzone/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
 	#微官网-----待删除
 	(r"/", handlers.superadmin.Official),
@@ -69,8 +76,13 @@ handlers = [
 	(r"/customer/online/alipay",handlers.onlinePay.OnlineAliPay,{'action':'AliPay'},
 		"onlineAliPay"),
 	(r"/customer/online/orderdetail",handlers.onlinePay.OrderDetail,{},'onlineOrderDetail'),
+<<<<<<< HEAD
 
+=======
+	(r"/customer/online/justorder",handlers.onlinePay.JustOrder,{},"justOrder"),
+>>>>>>> senguo-2.1-build150530
 	(r"/customer/cart/(\w+)", handlers.customer.Cart, {}, "customerCart"),
+	(r"/customer/cartback",handlers.customer.CartCallback,{},"customerCartCallback"),
 	(r"/customer/orders", handlers.customer.Order, {}, "customerOrder"),
 	(r"/customer/orders/detail/(\d+)", handlers.customer.OrderDetail, {}, "customerOrderDetail"),
 	(r"/customer/members", handlers.customer.Members, {}, "customerMembers"),
@@ -179,6 +191,12 @@ handlers = [
 	(r"/admin/realtime",handlers.admin.Realtime,{},""),
 	(r"/admin/marketing",handlers.admin.Marketing,{},"adminMarketing"),
 	(r"/admin/confession",handlers.admin.Confession,{},"adminConfession"),
+<<<<<<< HEAD
+=======
+	(r"/admin/switchshop",handlers.admin.SwitchShop,{},"switchshop"),
+	(r"/admin/wxauth", handlers.admin.AdminAuth, {"action":"wxauth"}, "adminwxAuth"),
+	(r"/admin/wxcheck", handlers.admin.AdminAuth, {"action":"wxcheck"}, "adminwxCheck"),
+>>>>>>> senguo-2.1-build150530
 
 	# (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
 	# (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
@@ -200,6 +218,7 @@ handlers = [
 	(r"/fruitzone/admin/home", handlers.fruitzone.AdminHome, {}, "fruitzoneAdminHome"),
 	(r"/fruitzone/admin/profile", handlers.fruitzone.AdminProfile, {}, "fruitzoneAdminProfile"),
 	(r"/fruitzone/paytest",handlers.customer.payTest,{},"fruitzonePayTest"),
+	(r"/fruitzone/searchlist",handlers.fruitzone.SearchList,{},"searchlist"),
 	#to remove  
 	#woody
 	(r"/apply/toweixin", handlers.fruitzone.ToWeixin, {}, "fruitzoneToWexin"),

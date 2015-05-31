@@ -16,12 +16,23 @@ from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_N
 
 class OnlineWxPay(CustomerBaseHandler):
 	@tornado.web.authenticated
+<<<<<<< HEAD
 	@CustomerBaseHandler.check_arguments('code?:str','order_num?:str')
 	def get(self):
 		print(self.request.full_url())
 		path_url = self.request.full_url()
 		order_num = self.get_cookie("order_num")
 		order = self.session.query(models.Order).filter_by(num = order_num).first()
+=======
+	@CustomerBaseHandler.check_arguments('code?:str','order_id?:str')
+	def get(self):
+		print("[微信支付]full_url：",self.request.full_url())
+		path_url = self.request.full_url()
+		order_id = self.get_cookie("order_id")
+		#order_id = int(self.args['order_id'])
+
+		order = self.session.query(models.Order).filter_by(id = order_id).first()
+>>>>>>> senguo-2.1-build150530
 		if not order:
 			return self.send_fail('order not found')
 		totalPrice = order.totalPrice
@@ -42,6 +53,10 @@ class OnlineWxPay(CustomerBaseHandler):
 		pay_type    = order.pay_type
 		online_type = order.online_type
 		status      = order.status
+<<<<<<< HEAD
+=======
+		order_num	= order.num
+>>>>>>> senguo-2.1-build150530
 
 		charge_types = self.session.query(models.ChargeType).filter(
 			models.ChargeType.id.in_(eval(order.fruits).keys())).all()
@@ -58,7 +73,11 @@ class OnlineWxPay(CustomerBaseHandler):
 				sender_phone = staff_info.phone
 				sender_img = staff_info.headimgurl_small
 		else:
+<<<<<<< HEAD
 				sender_phone =None
+=======
+				sender_phone = None
+>>>>>>> senguo-2.1-build150530
 				sender_img = None
 		goods = []
 		f_d = eval(order.fruits)
@@ -69,6 +88,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('onlineWxPay')
+<<<<<<< HEAD
 		print(path , 'redirect_uri is Ture?')
 		print(self.args['code'],'sorry  i dont know')
 		code = self.args.get('code',None)
@@ -76,10 +96,19 @@ class OnlineWxPay(CustomerBaseHandler):
 		if len(code) is 2:
 			url = jsApi.createOauthUrlForCode(path)
 			print(url,'code?')
+=======
+		print("[微信支付]redirect_uri：",path)
+		print("[微信支付]当前code：",self.args['code'])
+		code = self.args.get('code',None)
+		if len(code) is 2:
+			url = jsApi.createOauthUrlForCode(path)
+			print("[微信支付]获取code的url：",url)
+>>>>>>> senguo-2.1-build150530
 			return self.redirect(url)
 		else:
 			jsApi.setCode(code)
 			openid = jsApi.getOpenid()
+<<<<<<< HEAD
 			print(openid,code,'hope is not []')
 			if not openid:
 				print('openid not exit')	
@@ -87,12 +116,22 @@ class OnlineWxPay(CustomerBaseHandler):
 			# totalPrice = self.args['totalPrice'] 
 			#totalPrice =float( self.get_cookie('money'))
 			print(totalPrice,'long time no see!')
+=======
+			print("[微信支付]当前code：",code)
+			if not openid:
+				print("[微信支付]OpenID未获取到")	
+			unifiedOrder =   UnifiedOrder_pub()
+			# totalPrice = self.args['totalPrice'] 
+			#totalPrice =float( self.get_cookie('money'))
+			print("[微信支付]totalPrice：",totalPrice)
+>>>>>>> senguo-2.1-build150530
 			unifiedOrder.setParameter("body",'charge')
 			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
 			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",order_num)
 			#orderPriceSplite = (order.price) * 100
 			wxPrice =int(totalPrice * 100)
+<<<<<<< HEAD
 			print(wxPrice,'sure')
 			unifiedOrder.setParameter('total_fee',wxPrice)
 			unifiedOrder.setParameter('trade_type',"JSAPI")
@@ -101,6 +140,16 @@ class OnlineWxPay(CustomerBaseHandler):
 			jsApi.setPrepayId(prepay_id)
 			renderPayParams = jsApi.getParameters()
 			print(renderPayParams)
+=======
+			print("[微信支付]wxPrice：",wxPrice)
+			unifiedOrder.setParameter('total_fee',wxPrice)
+			unifiedOrder.setParameter('trade_type',"JSAPI")
+			prepay_id = unifiedOrder.getPrepayId()
+			print("[微信支付]prepay_id：",prepay_id)
+			jsApi.setPrepayId(prepay_id)
+			renderPayParams = jsApi.getParameters()
+			print("[微信支付]renderPayParams：",renderPayParams)
+>>>>>>> senguo-2.1-build150530
 			noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
 			timestamp = datetime.datetime.now().timestamp()
 			wxappid = 'wx0ed17cdc9020a96e'
@@ -120,7 +169,11 @@ class OnlineWxPay(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?:str')
 	def post(self):
+<<<<<<< HEAD
 			print(self.args,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+=======
+			# print(self.args,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+>>>>>>> senguo-2.1-build150530
 			##############################################################
 			# 微信在线支付成功回调
 			# 修改订单状态 :支付订单刚生成时 状态为-1.完成支付后状态变为1
@@ -128,9 +181,15 @@ class OnlineWxPay(CustomerBaseHandler):
 			# 生成一条余额记录
 			# 给店铺管理员 和 顾客 发送微信消息
 			##############################################################
+<<<<<<< HEAD
 			print('微信在线支付回调成功')
 			data = self.request.body
 			print(self.request.body,'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+=======
+			print("[微信支付]回调成功")
+			data = self.request.body
+			print("[微信支付]回调request.body：",self.request.body)
+>>>>>>> senguo-2.1-build150530
 			xml = data.decode('utf-8')
 			UnifiedOrder = UnifiedOrder_pub()
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
@@ -165,13 +224,20 @@ class OnlineWxPay(CustomerBaseHandler):
 				return self.send_fail('shop_follow not found')
 			
 			# 修改店铺总余额
+<<<<<<< HEAD
 
+=======
+>>>>>>> senguo-2.1-build150530
 			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 			if not shop:
 				return self.send_fail('shop not found')
 			shop.shop_balance += totalPrice
 			self.session.commit()
+<<<<<<< HEAD
 			print(shop.shop_balance ,'支付后 商店总额')
+=======
+			print("[微信支付]支付后，商店总额：",shop.shop_balance)
+>>>>>>> senguo-2.1-build150530
 
 			# 支付成功后  生成一条余额支付记录
 			customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
@@ -183,7 +249,11 @@ class OnlineWxPay(CustomerBaseHandler):
 				balance_value = totalPrice,balance_record = '在线支付(微信)：订单'+ order.num, name = name , balance_type = 3,\
 				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id)
 			self.session.add(balance_history)
+<<<<<<< HEAD
 			print(balance_history , '钱没有白充吧？！')
+=======
+			print("[微信支付]支付后，生成balance_history：",balance_history)
+>>>>>>> senguo-2.1-build150530
 			self.session.commit()
 
 			# send weixin message
@@ -196,8 +266,12 @@ class OnlineWxPay(CustomerBaseHandler):
 			create_date= order.create_date
 			customer_name = order.receiver
 			c_tourse      = customer.accountinfo.wx_openid
+<<<<<<< HEAD
 			print("[提交订单]用户OpenID：",c_tourse)
 
+=======
+			print("[提交订单]用户OpenID：",c_tourse)	
+>>>>>>> senguo-2.1-build150530
 			#goods 
 			goods = []
 			f_d = eval(order.fruits)
@@ -207,15 +281,38 @@ class OnlineWxPay(CustomerBaseHandler):
 			for m in m_d:
 				goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 			goods = str(goods)[1:-1]
+<<<<<<< HEAD
 			print(goods,'goods到底装的什么')
+=======
+			print("[提交订单]订单详情：",goods)
+>>>>>>> senguo-2.1-build150530
 			order_totalPrice = float('%.2f'% totalPrice)
 			print("[提交订单]订单总价：",order_totalPrice)
 			# send_time     = order.get_sendtime(session,order.id)
 			send_time = order.send_time
 			address = order.address_text
 
+<<<<<<< HEAD
 			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
 				customer_name,order_totalPrice,send_time,goods,phone,address)
+=======
+			if shop.super_temp_active !=0:
+				WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
+				customer_name,order_totalPrice,send_time,goods,phone,address)
+
+			try:
+				other_admin = self.session.query(models.HireLink).filter_by(shop_id = shop.id,active=1,work=9,temp_active=1).first()
+			except:
+				other_admin = None
+			if other_admin:
+				info =self.session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id)\
+				.filter(models.ShopStaff.id == other_admin.staff_id).first()
+				other_touser = info.wx_openid
+				other_name = info.nickname
+				WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,\
+				customer_name,order_totalPrice,send_time,goods,phone,address)
+			
+>>>>>>> senguo-2.1-build150530
 			# send message to customer
 			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 			return self.write('success')
@@ -223,6 +320,7 @@ class OnlineWxPay(CustomerBaseHandler):
 
 class OrderDetail(CustomerBaseHandler):
 	#@tornado.web.authenticated
+<<<<<<< HEAD
 	@CustomerBaseHandler.check_arguments("alipayUrl?:str")
 	def get(self):
 		alipayUrl = self.args['alipayUrl']
@@ -231,6 +329,18 @@ class OrderDetail(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments("order_id?:str")
 	def post(self):
+=======
+	@CustomerBaseHandler.check_arguments("alipayUrl?:str","order_id?:str")
+	def get(self):
+		alipayUrl = self.args['alipayUrl']
+		order_id = self.args['order_id']
+		print("[支付宝支付]order_id：",order_id)
+		return self.render("customer/alipay-tip.html",alipayUrl = alipayUrl,order_id = order_id)
+
+class JustOrder(CustomerBaseHandler):
+	@CustomerBaseHandler.check_arguments("order_id?:str")
+	def get(self):
+>>>>>>> senguo-2.1-build150530
 		order_id = int(self.args['order_id'])
 		order = models.Order.get_by_id(self.session,order_id)
 		if not order:
@@ -246,13 +356,21 @@ class OnlineAliPay(CustomerBaseHandler):
 	def initialize(self,action):
 		self._action = action
 		self.order_num = None
+<<<<<<< HEAD
 		print(self._action,'action')
 
 	@tornado.web.authenticated
+=======
+		print("[支付宝支付]action：",self._action)
+
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("order_id?:str")
+>>>>>>> senguo-2.1-build150530
 	def get(self):
 		if self._action == 'AliPayCallback':
 			return self.handle_onAlipay_callback()
 		elif self._action == "AliPay":
+<<<<<<< HEAD
 			print("login in Alipay")
 			order_num = self.get_cookie("order_num",None)
 			self.order_num = order_num
@@ -262,6 +380,21 @@ class OnlineAliPay(CustomerBaseHandler):
 			totalPrice = order.totalPrice
 			alipayUrl =  self.handle_onAlipay()
 			print(alipayUrl,'alipayUrl')
+=======
+			print("[支付宝支付]进入AliPay")
+			order_id = int(self.get_cookie("order_id"))
+			print("[支付宝支付]order_id：",order_id)
+			#self.order_num = order_num
+			#order_id = int(self.args['order_id'])
+			order = self.session.query(models.Order).filter_by(id = order_id).first()
+			if not order:
+				return self.send_fail('order not found')
+			totalPrice = order.totalPrice
+			alipayUrl =  self.handle_onAlipay(order.num)
+			self.order_num = order.num
+			print("[支付宝支付]alipayUrl：",alipayUrl)
+			print("[支付宝支付]order_num：",self.order_num)
+>>>>>>> senguo-2.1-build150530
 
 			charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
 			mcharge_types = self.session.query(models.MChargeType).filter(models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
@@ -285,11 +418,19 @@ class OnlineAliPay(CustomerBaseHandler):
 			staff_id = order.SH2_id
 			staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id).first()
 			if staff_info is not None:
+<<<<<<< HEAD
 					sender_phone = staff_info.phone
 					sender_img = staff_info.headimgurl_small
 			else:
 					sender_phone =None
 					sender_img = None
+=======
+					order.sender_phone = staff_info.phone
+					order.sender_img = staff_info.headimgurl_small
+			else:
+					order.sender_phone =None
+					order.sender_img = None
+>>>>>>> senguo-2.1-build150530
 			goods = []
 			f_d = eval(order.fruits)
 			m_d = eval(order.mgoods)
@@ -300,9 +441,14 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.render("fruitzone/payali.html",totalPrice = totalPrice,shopName = shopName,\
 				alipayUrl = alipayUrl,create_date=create_date,receiver=receiver,phone=phone,\
 				address=address,send_time=send_time,remark=remark,pay_type=pay_type,online_type=\
+<<<<<<< HEAD
 				online_type,status=status,freight=freight,sender_phone=sender_phone,sender_img=\
 				sender_img,goods = goods,order=order,charge_types=charge_types,mcharge_types\
 				=mcharge_types)
+=======
+				online_type,status=status,freight=freight,goods = goods,order=order,charge_types=\
+				charge_types,mcharge_types=mcharge_types)
+>>>>>>> senguo-2.1-build150530
 		else:
 			return self.send_fail('404')
 	# @tornado.web.authenticated
@@ -312,11 +458,16 @@ class OnlineAliPay(CustomerBaseHandler):
 		#if not self.current_user:
 		#	return self.send_error(403)
 		if self._action == "AliPay":
+<<<<<<< HEAD
 			return self.handle_onAlipay()
+=======
+			return self.handle_onAlipay(order_num)
+>>>>>>> senguo-2.1-build150530
 		else:
 			return self.send_error(404)
 
 	# @CustomerBaseHandler.check_arguments("order_id:str","price?:float")
+<<<<<<< HEAD
 	def handle_onAlipay(self):
 		print('login handle_onAlipay')
 		order_num = self.order_num if self.order_num else 'NULL'
@@ -329,32 +480,63 @@ class OnlineAliPay(CustomerBaseHandler):
 		#跳转到支付页
 		else:
 			print(order)
+=======
+	def handle_onAlipay(self,order_num):
+		print("[支付宝支付]进入handle_onAlipay")
+		# order_num = self.order_num if self.order_num else 'NULL'
+		print("[支付宝支付]order_num：",order_num)
+		# order = models.Order.get_by_id(self.session,int(self.args['order_id']))
+		order = self.session.query(models.Order).filter_by(num = str(order_num)).first()
+		if not order:
+			print("[支付宝支付]订单不存在")
+			return self.send_fail(error_text="抱歉，此订单不存在")
+		#跳转到支付页
+		else:
+			print("[支付宝支付]order：",order)
+>>>>>>> senguo-2.1-build150530
 		order_id = order.id
 		price    = order.totalPrice
 
 		try:
 			url = self.create_alipay_url(price,order_id)
 		except Exception as e:
+<<<<<<< HEAD
 			return self.send_fail(error_text = '系统繁忙 ，请稍后再试')
 		# return self.redirect(url)
 		print(url,'urlurlurl')
+=======
+			return self.send_fail(error_text = '系统繁忙，请稍后再试')
+		# return self.redirect(url)
+		print("[支付宝支付]跳转url：",url)
+>>>>>>> senguo-2.1-build150530
 		return url
 
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 
 	def create_alipay_url(self,price,order_id):
+<<<<<<< HEAD
 		print('login create_alipay_url',price,order_id)
+=======
+		print("[支付宝支付]进入create_alipay_url：",price,order_id)
+>>>>>>> senguo-2.1-build150530
 		authed_url = self._alipay.create_direct_pay_by_user_url(
 			out_trade_no = str(order_id),
 			subject      = 'alipay',
 			total_fee    = float(price),
 			#defaultbank  = CMB,
 			seller_account_name = ALIPAY_SELLER_ACCOUNT,
+<<<<<<< HEAD
 			call_back_url = "%s%s"%(ALIPAY_HANDLE_HOST,self.reverse_url("onlineAlipayFishedCallback")),
 			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("onlineAliNotify")),
 			)
 		print('hhhhhahahahahahahahah')
 		print(authed_url,'authed_url')
+=======
+			call_back_url = "%s%s"%(ALIPAY_HANDLE_HOST,self.reverse_url("noticeSuccess")),
+			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("onlineAliNotify")),
+			)
+		print("[支付宝支付]authed_url：",authed_url)
+>>>>>>> senguo-2.1-build150530
 		return authed_url
 
 	def check_xsrf_cookie(self):
@@ -366,6 +548,7 @@ class OnlineAliPay(CustomerBaseHandler):
 	def handle_onAlipay_notify(self):
 		sign = self.args.pop('sign')
 		signmethod = self._alipay.getSignMethod(**self.args)
+<<<<<<< HEAD
 		if signmethod(self.args) != sign:
 			return self.send_error(403)
 		print(self.args['notify_data'])
@@ -373,6 +556,16 @@ class OnlineAliPay(CustomerBaseHandler):
 		orderId = notify_data["out_trade_no"]
 		ali_trade_no=notify_data["trade_no"]
 		print(ali_trade_no,'hehehehehe')
+=======
+		print("[支付宝支付]回调成功")
+		if signmethod(self.args) != sign:
+			return self.send_error(403)
+		print("[支付宝支付]回调请求数据：",self.args['notify_data'])
+		notify_data = xmltodict.parse(self.args['notify_data'])['notify']
+		orderId = notify_data["out_trade_no"]
+		ali_trade_no=notify_data["trade_no"]
+		print("[支付宝支付]ali_trade_no：",ali_trade_no)
+>>>>>>> senguo-2.1-build150530
 		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
 		if old_balance_history:
 			return self.send_success()
@@ -397,13 +590,20 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.send_fail('shop_follow not found')
 		
 		# 修改店铺总余额
+<<<<<<< HEAD
 
+=======
+>>>>>>> senguo-2.1-build150530
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
 			return self.send_fail('shop not found')
 		shop.shop_balance += totalPrice
 		self.session.commit()
+<<<<<<< HEAD
 		print(shop.shop_balance ,'支付后 商店总额')
+=======
+		print("[支付宝支付]支付后，商店总额：",shop.shop_balance)
+>>>>>>> senguo-2.1-build150530
 
 		# 支付成功后  生成一条余额支付记录
 		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
@@ -415,7 +615,11 @@ class OnlineAliPay(CustomerBaseHandler):
 			balance_value = totalPrice,balance_record = '在线支付(支付宝)：订单'+ order.num, name = name , balance_type = 3,\
 			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id= ali_trade_no)
 		self.session.add(balance_history)
+<<<<<<< HEAD
 		print(balance_history , '钱没有白充吧？！')
+=======
+		print("[支付宝支付]支付后，生成balance_history：",balance_history)
+>>>>>>> senguo-2.1-build150530
 		self.session.commit()
 
 		# send weixin message
@@ -439,7 +643,11 @@ class OnlineAliPay(CustomerBaseHandler):
 		for m in m_d:
 			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		goods = str(goods)[1:-1]
+<<<<<<< HEAD
 		print(goods,'goods到底装的什么')
+=======
+		print("[提交订单]订单详情：",goods)
+>>>>>>> senguo-2.1-build150530
 		order_totalPrice = float('%.2f'% totalPrice)
 		print("[提交订单]订单总价：",order_totalPrice)
 		# send_time     = order.get_sendtime(session,order.id)
@@ -486,13 +694,20 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.send_fail('shop_follow not found')
 		
 		# 修改店铺总余额
+<<<<<<< HEAD
 
+=======
+>>>>>>> senguo-2.1-build150530
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
 			return self.send_fail('shop not found')
 		shop.shop_balance += totalPrice
 		self.session.commit()
+<<<<<<< HEAD
 		print(shop.shop_balance ,'支付后 商店总额')
+=======
+		print("[支付宝支付]支付后，商店总额：",shop.shop_balance)
+>>>>>>> senguo-2.1-build150530
 
 		# 支付成功后  生成一条余额支付记录
 		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
@@ -504,7 +719,11 @@ class OnlineAliPay(CustomerBaseHandler):
 			balance_value = totalPrice,balance_record = '在线支付(支付宝)：订单'+ order.num, name = name , balance_type = 3,\
 			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=ali_trade_no)
 		self.session.add(balance_history)
+<<<<<<< HEAD
 		print(balance_history , '钱没有白充吧？！')
+=======
+		print("[支付宝支付]支付后，生成balance_history：",balance_history)
+>>>>>>> senguo-2.1-build150530
 		self.session.commit()
 
 		# send weixin message
@@ -528,7 +747,11 @@ class OnlineAliPay(CustomerBaseHandler):
 		for m in m_d:
 			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		goods = str(goods)[1:-1]
+<<<<<<< HEAD
 		print(goods,'goods到底装的什么')
+=======
+		print("[提交订单]订单详情：",goods)
+>>>>>>> senguo-2.1-build150530
 		order_totalPrice = float('%.2f'% totalPrice)
 		print("[提交订单]订单总价：",order_totalPrice)
 		# send_time     = order.get_sendtime(session,order.id)
@@ -561,3 +784,17 @@ class OnlineAliPay(CustomerBaseHandler):
 
 
 
+<<<<<<< HEAD
+=======
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> senguo-2.1-build150530

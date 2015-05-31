@@ -1,9 +1,15 @@
 /*----------------------------------admin-goods----------------------------------------*/
 
 .admin-goods-list{width:100%;float:left;border:1px solid #eee;margin-top:10px;}
+<<<<<<< HEAD
 .admin-goods-list .goods-list-con{width:700px;font-size:14px;border-right:1px solid #eee;margin-top:-1px;padding:10px 0;}
 
 .goods-list-item .goods-info{padding:10px;background:#fff;margin-left:10px;width:90%;border:1px solid #eee;background:#f9f9f9;}
+=======
+.admin-goods-list .goods-list-con{width:736px;font-size:14px;border-right:1px solid #eee;margin-top:-1px;padding:10px 0;}
+
+.goods-list-item .goods-info{padding:10px;background:#fff;margin-left:10px;width:91.5%;border:1px solid #eee;background:#f9f9f9;}
+>>>>>>> senguo-2.1-build150530
 .goods-list-item .goods-info .info-box{width:80%;}
 .goods-list-item hr{border-color:#ccc;margin-top:10px;margin-bottom:10px;}
 .admin-goods-list .goods-list-con .goods-list-item{width:100%;float:left;padding:10px 10px 0;position:relative;}
@@ -53,7 +59,11 @@
 .upload-box .uploadImg{position:absolute;z-index:999;width:100%;opacity:0;}
 .upload-box p{position:absolute;top:0;}
 
+<<<<<<< HEAD
 .add-new-goods{width:50%;margin:0 auto;background:#fbfbfb;height:50px;line-height:50px;text-align:center;font-size:16px;margin-top:10px;}
+=======
+.add-new-goods{width:50%;margin:0 auto;background:#f4f5f9;height:50px;line-height:50px;text-align:center;font-size:16px;margin-top:10px;}
+>>>>>>> senguo-2.1-build150530
 .add-new-goods strong{}
 
 .dropdown-toggle{padding:3px 12px;}
@@ -108,3 +118,6 @@
 .add-goods-item .limit_tag{right:4px;top:44px;}
 .add-goods-item .hot_tag{left:4px;top:4px;}
 .add-goods-item .new_tag{right:4px;top:44px;}
+
+.subnav li{position:relative;}
+.subnav li .edit-btn{position:absolute;top:0;right:0;}

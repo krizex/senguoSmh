@@ -22,7 +22,7 @@
 <body>
     <main class="container phone-box">
         {% block header %}
-        <header class="detail-header text-white center-block">
+        <header class="detail-header text-white center-block" id="nav">
             <a href="{%block back%}javascript:history.back(-1){% end %}" class="return-btn bg_change"></a>
             <span class="title font16">{% block top %}{% end %}</span>
         </header>
@@ -34,6 +34,6 @@
 <script src="/static/js/jweixin-1.0.js"></script>
 <script src="{{static_url('js/market-public.js')}}"></script>
 {% block bottom %}{% end %}
-<a id="backTop" class="little_pear"><img src="/static/svg/half@2x.png" class="src_change"/></a>
+<a id="backTop" class="little_pear anim-slideInRight"><img src="/static/svg/half@2x.png" class="src_change"/></a>
 </body>
 </html>

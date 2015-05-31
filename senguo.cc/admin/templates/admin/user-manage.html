@@ -37,7 +37,7 @@
 </div>
 <ul class="users-list clearfix">
     {% for customer in customers %}
-    <li class="users-list-item  clearfix">
+    <li class="users-list-item  clearfix" data-id="{{customer.accountinfo.id}}">
         <div class="show-info set-w100-fle">
             <img class="user-img pull-left" src="{{customer.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}"/>
             <div class="user-info pull-left">
@@ -47,9 +47,12 @@
                     <!--<span class="user-level text-white text-center">Lv3</span>
                     <span class="level-price text-grey2">566</span>-->
                     <span class="user-account text-grey2 ml10">{{customer.shop_balance}}元</span>
+                    <spna class="ml10">用户ID：{{customer.accountinfo.id}}</spna>
                 </div>
+                <span class="remark text-pink mt10 {% if customer.remark ==None %}hidden{% end %}">备注：{{customer.remark}}</span>
             </div>
-            <a href="{{reverse_url('adminSearchOrder')}}?action=customer_order&&id={{customer.id}}" class="history-order pull-right forbid_click" target="_blank" >查看历史订单</a>
+            <a href="javascript:;" class="remark-btn pull-right forbid_click ml10 history-order">添加备注</a>
+            <a href="{{reverse_url('adminSearchOrder')}}?action=customer_order&&id={{customer.id}}" class="history-order pull-right forbid_click ml10" target="_blank" >查看历史订单</a>
         </div>
         <div class="hide-info set-w100-fle bg-white" style="display:none;">
             <div class="personal-info pull-left">
@@ -79,6 +82,22 @@
     </li>
     {% end %}
 </ul>
+<div class="modal fade remark-box" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content bg-white">
+                    <div class="modal-header clearfix">
+                        <span class="title pull-left" id="myModalLabel">添加用户备注：</span>
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea class="remark-content center-block"></textarea>
+                    </div>
+                    <div class="modal-footer text-center">
+                         <button class="btn bg-green remark-sure text-white">确定</button>
+                    </div>
+                </div>
+            </div>
+         </div>
 <div class="users-pagination list-pagination">
     <ul>
         <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
@@ -91,7 +110,7 @@
     </ul>
 </div>
 {% else %}
- <h4 class="text-center">无用户信息！</h4>
+<h4 class="text-center mt40">没有找到用户信息</h4>
 {% end %}
 {% end %}
 {% block bottom %}<script src="{{static_url('js/admin-user.js')}}"></script>{% end %}

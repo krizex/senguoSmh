@@ -8,8 +8,8 @@ a:hover{text-decoration:none;}
 a:focus{text-decoration: none}
 a:focus{outline:none;}
 div:after {content: '\20'; display: block; height: 0; clear: both; visibility: hidden;}
-body{font-size:1em;font-family:'Microsoft YaHei',\5b8b\4f53,Arial,sans-serif;}
-
+body{font-size:1em;font-family:'Microsoft YaHei',\5b8b\4f53,Arial,sans-serif;-webkit-font-smoothing:antialiased;}
+div,span,ul,li,p{-webkit-user-select:none;}
 .bg-green{background:#80E07F;}
 .bg-red{background:#FA6254;}
 .bg-pink{background:#FF99E3;}
@@ -58,9 +58,14 @@ body{font-size:1em;font-family:'Microsoft YaHei',\5b8b\4f53,Arial,sans-serif;}
 .arrow-box img{width:24px;}
 .box{position:relative;}
 .word-bottom{width:100%;position:absolute;bottom:20px;}
-.container{}
 .container-box{height:auto;}
 .mb{margin-bottom:10px;}
 .center-block{margin:0 auto;}
 .arrow_bottom{background:url('../m-official/arrow.png') repeat-x;background-size:16px;height:20px;margin-top:-1px;}
-.notice{position:absolute;left:48%;bottom:100px;width:20px !important;z-index:10;filter:Alpha(opacity=60);-moz-opacity:.6;opacity:0.6;}
+.notice{position:absolute;left:50%;-webkit-transform:translate(-50%,0);bottom:100px;width:27px !important;height:27px;z-index:999;}
+.link{color: #fff;font-size: 16px;}
+
+@-webkit-keyframes top{0%{-webkit-transform:translateY(0);opacity: 0;} 100%{-webkit-transform:translateY(-27px);opacity: 1;}}
+.top{
+    -webkit-animation: top 1.2s ease-in-out infinite;
+}

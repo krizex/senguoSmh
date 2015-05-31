@@ -4,13 +4,8 @@ if (window.screen.width=='600')
     document.write ('<body style="zoom: 55%">');
 else if (window.screen.width=='800') 
     document.write ('<body style="zoom: 75%">');
-
-$('#currentShopChange li').on('click',function(){
-    var shop_id=$(this).data('id');
-    shopChnage(shop_id);
-});
 $('.developing').on('click',function(){
-    alert('此功能暂未开放！');
+    Tip('此功能暂未开放！');
 });
 //if weixin
 if(isWeiXin()){
@@ -45,6 +40,9 @@ if(isWeiXin()){
             }
         }
     },1000);
+    $("#dropdownMenu1").on("click",function(){
+        $(this).children(".caret").toggleClass("rotate180");
+    })
 }).on("click",".has-red-tip",function(){
     var action = $(this).attr("data-action");
 
@@ -133,8 +131,9 @@ function isWeiXin(){
         if(ua.match(/MicroMessenger/i) == 'micromessenger'){ 
         return true; 
         }
-        else{ 
-    } 
+        else{
+            return false;
+        }
 } 
 
 function worMode(target){
@@ -143,10 +142,37 @@ function worMode(target){
 
 function shopChnage(shop_id){
     var url='/admin';
-    var args={shop_id:shop_id};
+    var data={shop_id:shop_id};
+    var args={action:'shop_change',data:data};
     $.postJson(url,args,function(res){
         if(res.success){
             window.location.reload();
+        }
+    });
+}
+
+function otherShop(){
+    var url='/admin';
+    var args={action:'other_shop'};
+    $.postJson(url,args,function(res){
+        if(res.success){
+            if(res.data.length!=0){
+                var data=res.data;
+                for (var i in data){
+                    console.log();
+                     var item='<li role="presentation" data-id="{{id}}">'+
+                                        '<a role="menuitem" tabindex="-1" href="javascript:;">{{shop_name}}</a>'+
+                                    '</li>';
+                    var render=template.compile(item);
+                    var id =data[i]['id'];
+                    var shop_name =data[i]['shop_name'];
+                    var content=render({
+                        id:id,
+                        shop_name:shop_name
+                    });
+                    $('#currentShopChange').append(content);
+                } 
+            }
         }
     });
 }
@@ -195,14 +221,14 @@ function getPage(page,url,total){
             var $this=$(this);
             var num=Int($('.input-page').val());
             if(!num){
-                return alert('请输入页码');
+                return Tip('请输入页码');
             }
             if(0<num&&num<=total)
             {
                 $this.attr({'href':url+(num-1)});
             }
             else {
-                return alert('没有该页的数据');
+                return Tip('没有该页的数据');
             }
         });
         $(document).on('keydown','.input-page',function(){
@@ -211,14 +237,14 @@ function getPage(page,url,total){
             {
                     var num=$this.val();
                     if(!num){
-                        return alert('请输入页码');
+                        return Tip('请输入页码');
                     }
                     if(0<num&&num<=total)
                     {
                         window.location.href=url+(num-1);
                     }
                     else {
-                        return alert('没有该页的数据');
+                        return Tip('没有该页的数据');
                     }
             }
         });

@@ -66,11 +66,11 @@
 <div class="mode-lock  clearfix">
     <div class="mode-content {{lock_mode}} pull-left">
         {% if order_type ==1 %}
-        <p class="lock-unlock">已{{notice}}立即送模式(点击右方{{notice2}}按钮可{{notice2}}立即送订单模式。)</p>
+        <p class="lock-unlock">已{{notice}}立即送模式 (点击右方{{notice2}}按钮可{{notice2}}立即送订单模式。)</p>
         <p class="mode-introduce">用户下单完成，商家即要对订单打包并进行配送。满足用户对于商品的及时送达需求。</p>
         <p class="set-introduce">点击右方设置，可以设置立即送的送达时间范围和起送金额。</p>
         {% else %}
-        <p class="lock-unlock">已{{notice}}按时达模式(点击右方{{notice2}}按钮可{{notice2}}按时达订单模式。)</p>
+        <p class="lock-unlock">已{{notice}}按时达模式 (点击右方{{notice2}}按钮可{{notice2}}按时达订单模式。)</p>
         <p class="mode-introduce">根据商家设置的送货时间段进行配送。订单集中处理，节省配送成本。</p>
         <p class="set-introduce">点击右方设置，可以设置按时达的送达时间范围和起送金额。</p>
         {% end %}
@@ -314,12 +314,13 @@
                         <span class="pull-left tit">下单截止时间：</span>
                         <span class="show_item pull-left show_value tit">{{current_shop.config.stop_range or 0}}</span>
                         <div class="input-group-btn pull-left edit_item hidden">
-                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                <input type="text" id="stopRange"/>
+                           <!--  <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
                                 <span class="time timer" id="stopRange">{{current_shop.config.stop_range or 0}}</span>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu choose-list stop-minute-list stop-list" role="menu">
-                            </ul>
+                            </ul> -->
                         </div>
                         <span class="pull-left tit set-left10">分钟</span>
                         <a href="javascript:;" class="sure-btn pull-right edit_item hidden stopRange text-center text-white">✓</a>

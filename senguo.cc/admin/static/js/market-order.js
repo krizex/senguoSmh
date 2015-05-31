@@ -48,6 +48,31 @@ $(document).ready(function(){
         $('.comment_submit').attr({'disabled':true}).addClass('bg-greyc');
         orderComment(index,comment_order_id,comment);
     });*/
+    $(document).on("click",'.detail-link',function(){
+        var id = $(this).closest("li").attr("data-id");
+        var order_status = $(this).closest("li").attr("data-status");
+        var online_type = $(this).closest("li").attr("data-type");
+        SetCookie("order_id",id);
+        if(parseInt(order_status) != -1){
+            window.location.href = '/customer/orders/detail/'+id;
+        }else{
+            if(online_type == "wx"){
+                window.location.href="/customer/onlinewxpay";
+            }else if(online_type == "alipay"){
+                window.location.href="/customer/online/alipay";
+            }
+        }
+    })
+    $(document).on("click",'.pay-link',function(){
+        var id = $(this).closest("li").attr("data-id");
+        var online_type = $(this).closest("li").attr("data-type");
+        SetCookie("order_id",id);
+        if(online_type == "wx"){
+            window.location.href="/customer/onlinewxpay";
+        }else if(online_type == "alipay"){
+            window.location.href="/customer/online/alipay";
+        }
+    })
 });
 window.dataObj.page=1;
 window.dataObj.count=1;
@@ -125,6 +150,7 @@ var goodsList=function(page,action){
                     var create_month=orders[i]['create_month'];
                     var create_day=orders[i]['create_day'];
                     var pay_type = orders[i]['pay_type'];
+                    var online_type = orders[i]['online_type'];
                     var date=new Date();
                     var year=date.getFullYear();
                     var month=date.getMonth()+1;
@@ -137,8 +163,8 @@ var goodsList=function(page,action){
                     }else{
                         pay_txt = "在线支付";
                     }
-                    $item.attr({'data-id':id,'data-status':order_status});
-                    $item.find('.detail-link').attr({'href':'/customer/orders/detail/'+id});
+                    $item.attr({'data-id':id,'data-status':order_status,'data-type':online_type});
+                    /*$item.find('.detail-link').attr({'href':'/customer/orders/detail/'+id});*/
                     $item.find('.order_num').text(order_num);
                     $item.find('.shop_name').text(shop_name);
                     $item.find('.order_num').text(order_num);
@@ -177,6 +203,17 @@ var goodsList=function(page,action){
                      if(order_status==-1){
                          $item.find('.order-concel').show();
                          $item.find('.status-bar-box').show();
+<<<<<<< HEAD
+=======
+                         /*if(online_type=="wx"){
+                             $item.find('.pay-box').children('a').attr("href","/customer/onlinewxpay");
+                             $item.find('.detail-link').attr({'href':'/customer/onlinewxpay'});
+                         }else if(online_type=="alipay"){
+                             $item.find('.pay-box').children('a').attr("href","/customer/online/alipay");
+                             $item.find('.detail-link').attr({'href':'/customer/online/alipay'});
+                         }*/
+                         $item.find('.pay-box').show();
+>>>>>>> senguo-2.1-build150530
                          $item.find('.word').text('未支付');
                      }
                      if(order_status==0){
@@ -242,6 +279,7 @@ function orderConcel(target,id){
         if(res.success){
             target.find('.status-bar-box').hide();
             target.find('.cancel').text('订单已取消').addClass('text-grey').removeClass('order-concel');
+            target.find('.pay-link').hide();
         }
         else return noticeBox(res.error_text)
     }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}

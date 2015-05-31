@@ -3,6 +3,7 @@ from sqlalchemy.types import String, Integer, Boolean, Float, Date, BigInteger, 
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.dialects.mysql import TINYINT
+from settings import QQ_APPID,QQ_APPKEY
 
 from dal.db_configs import MapBase, DBSession
 from dal.dis_dict import dis_dict
@@ -44,11 +45,13 @@ class SHOPADMIN_ROLE_TYPE:
 	"""管理员角色"""
 	SHOP_OWNER = 1
 	SYSTEM_USER = 2
+	SHOP_NORMAL_ADMIN =3
 
 class SHOPADMIN_PRIVILEGE:
 	"""权限"""
 	NONE = -1
 	ALL = 0
+	NORMAL = 2
 
 class SHOPADMIN_CHARGE_TYPE:
 	"""付费类型"""
@@ -197,12 +200,51 @@ class _AccountApi(_CommonApi):
 		except NoResultFound:
 			u = None
 		return u
+	# qq login
+	@classmethod
+	def login_by_qq(cls,session,qq_openid=''):
+		s = session
+		print(qq_openid,'qq_openid')
+		try:
+			u = s.query(cls).filter(
+				Accountinfo.qq_account == qq_openid,
+				Accountinfo.id == cls.id).one()
+		except NoResultFound:
+			u = None
+		return u
+
+	# qq注册
+	@classmethod
+	def register_with_qq(cls,session,qq_info):
+		qq_openid = qq_info['qq_openid']
+		print(qq_openid,'register_with_qq qq_openid')
+		u = cls.login_by_qq(session,qq_openid)
+		if u:
+			return u
+		try:
+			account_info = cls.session.query(Accountinfo).filter_by(qq_account=\
+				qq_info['qq_openid']).first()
+		except NoResultFound:
+			account_info = None
+		if account_info:
+			u = cls(id = account_info.id)
+			session.add(u)
+			session.commit()
+			return u
+		else:
+			account_info = Accountinfo(qq_account = qq_info['qq_openid'])
+			u.accountinfo = account_info
+			session.add(u)
+			session.commit()
+			return u
+
+
 	# 微信注册API（注意）
 	@classmethod
 	def register_with_wx(cls, session, wx_userinfo):
 		# 判断是否在本账户里存在该用户
 		u = cls.login_by_unionid(session, wx_userinfo["unionid"])
-		print("[微信登录]用户登录")
+		print("[微信登录]用户登录，昵称：",wx_userinfo["nickname"])
 		if u:
 			# 已存在用户，则更新微信信息
 			print("[微信登录]用户存在，更新用户资料")
@@ -211,7 +253,7 @@ class _AccountApi(_CommonApi):
 			u.accountinfo.wx_city=wx_userinfo["city"]
 			u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
 			u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
-			#u.accountinfo.nickname = wx_userinfo["nickname"]
+			u.accountinfo.nickname = wx_userinfo["nickname"]
 
 			#####################################################################################
 			# update wx_openid
@@ -338,6 +380,7 @@ class Accountinfo(MapBase, _CommonApi):
 
 	# 账户访问信息 (phone/email, password)/(wx_unionid)用来登录
 	phone = Column(String(32), unique=True, default=None)
+	qq_account = Column(String(64))
 	email = Column(String(64), default=None)
 	password = Column(String(128), default=None)
 	wx_unionid = Column(String(64), unique=True)
@@ -517,6 +560,11 @@ class Shop(MapBase, _CommonApi):
 	config = relationship("Config", uselist=False)
 	marketing = relationship("Marketing", uselist=False)
 
+<<<<<<< HEAD
+=======
+	super_temp_active = Column(Integer,default = 1) #1:receive the message from wx 0:do not receive#5.26
+
+>>>>>>> senguo-2.1-build150530
 	def __repr__(self):
 		return "<Shop: {0} (id={1}, code={2})>".format(
 			self.shop_name, self.id, self.shop_code)
@@ -559,7 +607,6 @@ class ShopAdmin(MapBase, _AccountApi):
 
 	id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
 	accountinfo = relationship(Accountinfo)
-	
 	# 角色类型，SHOPADMIN_ROLE_TYPE: [SHOP_OWNER, SYSTEM_USER]
 	role = Column(Integer, nullable=False, default=SHOPADMIN_ROLE_TYPE.SHOP_OWNER)
 	# 权限类型，SHOPADMIN_PRIVILEGE: [ALL, ]
@@ -583,6 +630,7 @@ class ShopAdmin(MapBase, _AccountApi):
 	info = relationship("Info")
 	info_collect = relationship("Info", secondary="info_collect")
 	comment = relationship("Comment")
+	temp_active  = Column(Integer,default = 1) #1:receive the message from wx 0:do not receive #5.25 drop
 
 	def success_orders(self, session):
 		if not hasattr(self, "_success_orders"):
@@ -677,13 +725,28 @@ class HireLink(MapBase, _CommonApi):
 
 	staff_id = Column(Integer, ForeignKey(ShopStaff.id), primary_key=True)
 	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True)
-	work = Column(TINYINT, default=3) #工作类型：1:JH,2:SH1,3:SH2
+	work = Column(TINYINT, default=3) #工作类型： 1:JH,2:SH1,3:SH2 9:admin
 	money = Column(Float, default=0)  # 已收货款
 	address1 = Column(String(100)) #责任区域一级地址（可多选，空格隔开）
 	address2 = Column(String(200)) #二级
 	remark = Column(String(500))
-	active = Column(TINYINT, default=1)#1:上班 2：下班
+	active = Column(TINYINT, default=1)#0:delete 1:上班 2：下班
 	default_staff = Column(Integer, default=0)#0: 非默认员工 1：默认员工 35.9
+	temp_active = Column(Integer,default = 0) #1:receive the message from wx 0:do not receive #5.26
+
+# 员工申请表
+class HireForm(MapBase):
+	__tablename__ = "hire_form"
+
+	staff_id = Column(Integer, ForeignKey(ShopStaff.id), primary_key=True, nullable=False)
+	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
+	work = Column(TINYINT, default=3)#默认为SH2
+	intro = Column(String(500))
+	advantage = Column(String(500))
+	status = Column(TINYINT, default=1)#1：申请中，2：通过，3：未通过
+	staff = relationship("ShopStaff", uselist=False, join_depth=2)
+	create_time = Column(DateTime, default=func.now()) #5.26
+
 
 # 角色：顾客
 class Customer(MapBase, _AccountApi):
@@ -791,6 +854,7 @@ class CustomerShopFollow(MapBase, _CommonApi):
 	commodity_quality = Column(Integer)
 	send_speed        = Column(Integer)
 	shop_service      = Column(Integer)
+	remark = Column(String(200))#5.25 customer_remark
 
 
 #商家申请 提现
@@ -1171,7 +1235,12 @@ class Order(MapBase, _CommonApi):
 	shop_service      = Column(Integer)
 
 	online_type       = Column(String(8))
+<<<<<<< HEAD
 
+=======
+	send_admin_id =Column(Integer,default=0) #record admin_id when to send the order #5.25
+	finish_admin_id =Column(Integer,default=0) #record admin_id when to finish the order#5.25
+>>>>>>> senguo-2.1-build150530
 	def get_num(self,session,order_id):
 		try:
 			order = session.query(Order).filter_by(id = order_id).first()
@@ -1419,18 +1488,6 @@ class Address2(MapBase, _CommonApi):
 	name = Column(String(50))
 	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 
-# 员工申请表
-class HireForm(MapBase):
-	__tablename__ = "hire_form"
-
-	staff_id = Column(Integer, ForeignKey(ShopStaff.id), primary_key=True, nullable=False)
-	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
-	work = Column(TINYINT, default=3)#默认为SH2
-	intro = Column(String(500))
-	advantage = Column(String(500))
-	status = Column(TINYINT, default=1)#1：申请中，2：通过，3：未通过
-
-	staff = relationship("ShopStaff", uselist=False, join_depth=2)
 
 # 系统公告
 class SysNotice(MapBase):

@@ -1,7 +1,7 @@
 $(document).ready(function(){
-    var item_url='/static/items/admin/order-item.html?v=2015-03-25';
+    var item_url='/static/items/admin/order-item.html?v=20150530';
     //订单数据
-    if(orders.length==0) $('.order-list-content').append('<h3 class="text-center">无订单信息！</h3>');
+    if(orders.length==0) $('.order-list-content').append('<h4 class="text-center mt40">当前分类暂无订单信息</h3>');
     else getOrder(item_url);
     //隐藏信息显示
     toggle('.order-content','.list-item-body');
@@ -104,9 +104,15 @@ function getOrder(url){
     $.getItem(url,function(data){
             $list_item=data;
             //商品列表item
+<<<<<<< HEAD
     	    getGoodsItem('/static/items/admin/order-goods-item.html?v=2015-05-20');
     	    //员工列表item
     	    getStaffItem('/static/items/admin/order-staff-item.html?v=2015-03-20');
+=======
+    	    getGoodsItem('/static/items/admin/order-goods-item.html?v=20150530');
+    	    //员工列表item
+    	    getStaffItem('/static/items/admin/order-staff-item.html?v=20150530');
+>>>>>>> senguo-2.1-build150530
             orderItem(orders);
         }
     );
@@ -158,6 +164,10 @@ function orderItem(item){
         var shop_new=item[i]['shop_new'];
         var del_reason=item[i]['del_reason'];
         var nickname=item[i]['nickname'];
+<<<<<<< HEAD
+=======
+        var customer_id=item[i]['customer_id'];
+>>>>>>> senguo-2.1-build150530
               
         if(!message) {
             $item.find('.order-message').hide();
@@ -174,7 +184,11 @@ function orderItem(item){
         if(shop_new!=1) {
             $item.find('.new').show();
         }
+<<<<<<< HEAD
         $item.find('.name').text(nickname).attr('href','/admin/follower?action=search&&order_by=time&&page=0&&wd='+nickname);
+=======
+        $item.find('.name').text(nickname).attr('href','/admin/follower?action=filter&&order_by=time&&page=0&&wd='+customer_id);
+>>>>>>> senguo-2.1-build150530
         $item.find('.receiver').text(receiver);
         $item.attr({'data-id':id,'data-type':type});
         $item.find('.send-time').text(send_time);
@@ -324,7 +338,11 @@ function orderPrint(target,action){
             list.push(order_id);
         });
         if(list.length==0){
+<<<<<<< HEAD
             return alert('您还未选择任何订单！');  
+=======
+            return Tip('您还未选择任何订单！');
+>>>>>>> senguo-2.1-build150530
         }
         data.order_list_id=list;
     }
@@ -346,9 +364,13 @@ function orderPrint(target,action){
                     window.print();
                     window.document.body.innerHTML=inner;
                 }
-                else return alert(res.error_text);
+                else return Tip(res.error_text);
             },
+<<<<<<< HEAD
             function(){return alert('网络错误！')}
+=======
+            function(){return Tip('网络错误！')}
+>>>>>>> senguo-2.1-build150530
         );
         function getData(target){
             var parent=target.parents('.order-list-item');
@@ -370,7 +392,11 @@ function orderPrint(target,action){
             var saler_remark=parent.find('.order_remark').text(); 
             var user_remark=parent.find('.message-content').text();
 
+<<<<<<< HEAD
             $.getItem('/static/items/admin/order-print-page.html?v=2015-04-14',function(data){
+=======
+            $.getItem('/static/items/admin/order-print-page.html?v=20150530',function(data){
+>>>>>>> senguo-2.1-build150530
                 var $item=$(data);
                 $item.find('.notes-head').text(shop_name);
                 $item.find('.orderId').text(order_num);
@@ -408,10 +434,10 @@ function orderDelete(target){
     var index=$box.attr('data-target');
     var del_reason=$('#order_ser_val').val();
     if(!del_reason){
-        return alert('请输入订单删除的原因！');
+        return Tip('请输入订单删除的原因！');
     }
     if(del_reason.length>300){
-        return alert('删除原因最多可输入300字！');
+        return Tip('删除原因最多可输入300字！');
     }
     var data={
         order_id:order_id,
@@ -426,9 +452,9 @@ function orderDelete(target){
                 $('.order_set_box').modal('hide');
                 $('.order-list-item').eq(index).remove();
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
-        function(){return alert('网络错误！')}
+        function(){return Tip('网络错误！')}
     )
 }
 
@@ -451,7 +477,7 @@ function orderEdit(target,action,content){
     }
     if(action=='edit_remark')
     {
-	if(content.length>100) return alert('订单备注请不要超过100个字！');        
+	if(content.length>100) return Tip('订单备注请不要超过100个字！');
 	data.remark=content;
 	var index=parent.attr('data-target');
     }
@@ -465,7 +491,11 @@ function orderEdit(target,action,content){
     }
     else if(action=='edit_totalPrice')
     {
+<<<<<<< HEAD
        if(!regFloat.test(content)) return alert('订单总价只能为数字！');
+=======
+       if(!regFloat.test(content)) return Tip('订单总价只能为数字！');
+>>>>>>> senguo-2.1-build150530
         data.totalPrice=content;
         var index=parent.attr('data-target');
     }
@@ -477,7 +507,11 @@ function orderEdit(target,action,content){
             list.push(id);
         });
         if(list.length==0){
+<<<<<<< HEAD
             return alert('您还未选择任何订单！');  
+=======
+            return Tip('您还未选择任何订单！');
+>>>>>>> senguo-2.1-build150530
         }
         data.status=Int(content);
         data.order_list_id=list;
@@ -488,15 +522,12 @@ function orderEdit(target,action,content){
     };
     $.postJson(url,args,function(res){
             if(res.success){
-                if(action=='edit_remark')
-                {
+                if(action=='edit_remark'){
                     parent.modal('hide');
 	       var $remark_box=$('.order-list-item').eq(index).find('.saler-remark');
              	       $remark_box.show().find('.order_remark').text(content);
                     $('.order-list-item').eq(index).find('.saler-remark').val(content);
-                }
-                else if(action=='edit_SH2')
-                {
+                }else if(action=='edit_SH2'){
                    var code=target.find('.sender-code').text();
 	      var name=target.find('.sender-name').text();
 	      var phone=target.find('.sender-phone').text();
@@ -513,9 +544,7 @@ function orderEdit(target,action,content){
                    parent.find('.status_finish').addClass('hidden');
                    parent.find('.status_word').text('配送中');
                    parent.find('.status-send').addClass('bg-blue').siblings().removeClass('bg-blue');
-                }
-                else if(action=='edit_status')
-                {
+                }else if(action=='edit_status'){
 		target.addClass('bg-blue').siblings().removeClass('bg-blue');
 		var status=target.text();
 		parent.find('.status_word').text(status);
@@ -529,15 +558,21 @@ function orderEdit(target,action,content){
   	                           parent.find('.status_order').addClass('hidden');
 			parent.find('.status_finish').addClass('hidden');
                                         target.attr({'disabled':true}).text('配送中');
+                                        parent.find('.check').removeClass('order-check');
 		  }
             	               else if(content==5) {
             			parent.find('.status_finish').removeClass('hidden');
               	             parent.find('.status_order').addClass('hidden');
             			parent.find('.status_send').addClass('hidden');
                                         target.attr({'disabled':true}).text('已完成');
+                                        parent.find('.check').removeClass('order-check');
             		  }
+<<<<<<< HEAD
                 }
                 else if(action=='batch_edit_status'){
+=======
+                }else if(action=='batch_edit_status'){
+>>>>>>> senguo-2.1-build150530
                         if(content==4) {
                             $('.order-checked').each(function(){
                                 var $this=$(this);
@@ -558,16 +593,22 @@ function orderEdit(target,action,content){
                                 $item.find('.to-finish').attr({'disabled':true}).text('已完成');
                              });
                         }
+<<<<<<< HEAD
                 }
                 else if(action=='edit_totalPrice')
                 {
 		   parent.modal('hide');
+=======
+                }else if(action=='edit_totalPrice'){
+	      parent.modal('hide');
+>>>>>>> senguo-2.1-build150530
                    $('.order-list-item').eq(index).find('.order-price').text(content);
                 }
             }
-            else return alert(res.error_text);
+            else {
+                return Tip(res.error_text);}
         },
-        function(){return alert('网络错误！')}
+        function(){return Tip('网络错误！')}
     )
 }
 

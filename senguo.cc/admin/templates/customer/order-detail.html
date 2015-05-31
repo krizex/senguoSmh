@@ -9,7 +9,11 @@
 {% block content %}
 {% set fruits=eval(order.fruits)%}
 {% set mgoods=eval(order.mgoods)%}
+<<<<<<< HEAD
 <div class="container mb50">
+=======
+<div class="container mb50" id="container">
+>>>>>>> senguo-2.1-build150530
     <div class="order-grade">
         <div class="order-line">
             <div class="order-line-grade"></div>
@@ -37,7 +41,7 @@
                         {% if charge_type.fruit.img_url %}
                         <img src="{{charge_type.fruit.img_url}}?imageView/1/w/170/h/170" alt="商品图片"/>
                         {% else %}
-                          <img src="/static/design_img/TDSG.png" alt="商品图片"/>
+                        <img src="/static/design_img/TDSG.png" alt="商品图片"/>
                         {% end %}
                     </dd>
                     <dt class="bg">
@@ -101,7 +105,10 @@
         {% end %}
     </div>
     {% else %}
+<<<<<<< HEAD
     {% end %}
+=======
+>>>>>>> senguo-2.1-build150530
     {% end %}
 </div>
 {% if order.comment%}
@@ -117,9 +124,15 @@
 </div>
 {% end %}
 {% if order.status == -1 or order.status == 1%}
+<<<<<<< HEAD
 <div class="wrap-bm-btn">
     {% if order.status == -1 %}
     <a class="fr add-comment red-btn" href="{% if online_type=='wx'%}/customer/onlinewxpay{% elif online_type=='alipay'%}/customer/online/alipay{% end %}">去支付</a>
+=======
+<div class="wrap-bm-btn" id="nav">
+    {% if order.status == -1 %}
+    <a class="fr add-comment red-btn" href="{% if online_type=='wx'%}/customer/onlinewxpay{% elif online_type=='alipay'%}/customer/online/alipay{% end %}?order_id={{order.id}}">去支付</a>
+>>>>>>> senguo-2.1-build150530
     {% end %}
     <a class="fr white-btn" href="javascript:;" data-id="{{order.id}}" id="cancel-order">取消订单</a>
 </div>

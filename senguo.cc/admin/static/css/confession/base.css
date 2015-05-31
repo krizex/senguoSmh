@@ -5,7 +5,11 @@ small, strike, strong, tt, var,
 b, i, dl, dt, dd, ol, ul, li,
 form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td {margin: 0; padding: 0; list-style:none;border: none; outline: none; vertical-align: baseline;}
+<<<<<<< HEAD
 html,body,div,p,textarea,input,select,button,h1,h2,h3,h4,h5,h6{font-size:12px;line-height: 1.25;font-family: 'Microsoft Yahei','Arial','宋体';}
+=======
+html,body,div,p,textarea,input,select,button,h1,h2,h3,h4,h5,h6{font-size:12px;line-height: 1.25;font-family: 'Microsoft Yahei','Arial','宋体';-webkit-font-smoothing:antialiased;}
+>>>>>>> senguo-2.1-build150530
 a,a:link,a:visited,a:hover,a:active{text-decoration: none;}
 img,input,button,select{vertical-align: middle;border:none;width: 100%;}
 div,p,h1,h2,h3,h4,h5,h6{word-break:break-all;}
@@ -124,7 +128,11 @@ h1{font-size:18px;}
 .p-box1{padding:5px;}
 .p-box1 .tit{display:inline-block;line-height:30px;width:50px;overflow:hidden;}
 .p-box1 input{display:inline-block;width:80%;}
+<<<<<<< HEAD
 .p-box1 .line1{border-bottom:1px solid #ddd;}
+=======
+.p-box1 .line1{border-bottom:1px solid #e7e7eb;}
+>>>>>>> senguo-2.1-build150530
 .p-box2{height:60px;border:1px solid #E17163;border-radius:2px;position:relative;}
 .p-box2 .left{width:30%;background:#eee;height:100%;}
 .p-box2 .img{margin-top:12px;}
@@ -189,9 +197,15 @@ h1{font-size:18px;}
 .some-btn{line-height:20px;padding-right:10px;}
 .great-btn i{display:inline-block;width:18px;height:18px;background:url('/static/confess/great.png') no-repeat;background-size:18px;margin-right:5px;}
 .comment-btn i{display:inline-block;width:18px;height:18px;background:url('/static/confess/comment.png') no-repeat;background-size:18px;margin-right:5px;}
+<<<<<<< HEAD
 .comment-box{margin:0 auto;padding:5px;position:fixed;bottom:0;width:100%;max-width:800px;min-width:320px;overflow:hidden;border:1px solid #ddd;background:#f9f9f9;}
 .comment-text{border:1px solid #ddd;height:30px;text-indent:5px;width:78%;}
 .sub-comment{width:20%;height:30px;padding:8px;border:1px solid #ddd;border-radius:2px;color:#666;}
+=======
+.comment-box{margin:0 auto;padding:5px;position:fixed;bottom:0;width:100%;max-width:800px;min-width:320px;overflow:hidden;border:1px solid #e7e7eb;background:#f9f9f9;}
+.comment-text{border:1px solid #e7e7eb;height:30px;text-indent:5px;width:78%;}
+.sub-comment{width:20%;height:30px;padding:8px;border:1px solid #e7e7eb;border-radius:2px;color:#666;}
+>>>>>>> senguo-2.1-build150530
 .comment-list{padding:10px;}
 .comment-list .time{word-break:break-word;}
 .comment-list li{margin-top:5px;}
@@ -199,5 +213,9 @@ h1{font-size:18px;}
 #replay_box .modal-header{top:-45px;}
 #replay_box .modal-body{top:-40px;z-index:9999;padding:10px 0;}
 #replay_box #warn{position:absolute;padding:0;font-size:14px;width:100%;}
+<<<<<<< HEAD
 .replay-text{border:1px solid #ddd;height:35px;padding:5px;}
+=======
+.replay-text{border:1px solid #e7e7eb;height:35px;padding:5px;}
+>>>>>>> senguo-2.1-build150530
 .sub-replay{width:80px;padding:8px;margin-left:85px;}

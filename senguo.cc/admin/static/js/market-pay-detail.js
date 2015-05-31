@@ -39,13 +39,21 @@ $(document).ready(function(){
     removeDom();
 }).on("click","#cancel-order",function(){
     confirmBox('确认取消该订单吗？//(ㄒoㄒ)//',"sure-order");
+<<<<<<< HEAD
+=======
+    $('.confriming').attr('id','sure-order');
+>>>>>>> senguo-2.1-build150530
 }).on("click","#sure-order",function(){
     var order_id = $("#cancel-order").attr("data-id");
     cancelOrder(order_id);
     confirmRemove();
 }).on("click","#go-alipay",function(){
     if(isWeiXin()){
+<<<<<<< HEAD
         window.location.href="/customer/online/orderdetail?alipayUrl="+encodeURIComponent($(this).attr("data-url"));
+=======
+        window.location.href="/customer/online/orderdetail?alipayUrl="+encodeURIComponent($(this).attr("data-url"))+"&order_id="+$("#cancel-order").attr("data-id");
+>>>>>>> senguo-2.1-build150530
     }else{
         window.location.href=$(this).attr("data-url");
     }
@@ -114,7 +122,11 @@ function statusText(n){
 }
 function cancelOrder(id){
     var order_id = id;
+<<<<<<< HEAD
     var url='';
+=======
+    var url='/customer/orders';
+>>>>>>> senguo-2.1-build150530
     var action='cancel_order';
     var data={
         order_id:order_id

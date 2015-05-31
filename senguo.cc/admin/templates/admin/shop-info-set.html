@@ -1,7 +1,11 @@
 {% extends 'shop-set-base.html' %}
 {% block title%}店铺信息设置{% end %}
 {% block setcontent %}
+<<<<<<< HEAD
 <ul class="info-set-list mt10">
+=======
+<ul class="info-set-list mt20 font14">
+>>>>>>> senguo-2.1-build150530
     <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">店铺名称</span>
         <div class="w2 pull-left">
@@ -149,6 +153,11 @@
             </div>
         </div>
         <div class="pull-right">
+<<<<<<< HEAD
+=======
+            <input type="hidden" value="{{lat}}" id="lat"/>
+            <input type="hidden" value="{{lon}}" id="lon"/>
+>>>>>>> senguo-2.1-build150530
             <a class="info_edit  hidden" href="javascript:;">修改</a>
             <a class="info_sure address-sure" href="javascript:;" data-id="address" id="save-lbs">保存</a>
         </div>
@@ -201,9 +210,15 @@
         </div>
     </div>
 </div>
+<<<<<<< HEAD
 <div class="area-tip-box hidden" id="area-tip-box">
     地理位置已经确认，不要忘记点击确定哦！
 </div>
+=======
+<!--div class="area-tip-box hidden" id="area-tip-box">
+    地理位置已经确认，不要忘记点击确定哦！
+</div-->
+>>>>>>> senguo-2.1-build150530
 {% end %}
 {% block bottom %}
 <script src="http://api.map.baidu.com/api?v=2.0&ak=2595684c343d6499bf469da8a9c18231"></script>

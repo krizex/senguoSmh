@@ -10,7 +10,11 @@ p{margin-bottom:0px;}
 .shop-logo{width:85px;height:85px;overflow:hidden;}
 .shop-logo img{width:100%;}
 .shop-box{padding:10px;margin:10px 0;}
+<<<<<<< HEAD
 .shop-box .title{border-bottom:1px solid #ddd;padding-bottom:5px;}
+=======
+.shop-box .title{border-bottom:1px solid #e7e7eb;padding-bottom:5px;}
+>>>>>>> senguo-2.1-build150530
 .shop-info{padding-left:10px;}
 .shop-info li{border-top:1px solid #f2f2f2;padding:12px 10px 12px 0;line-height:18px;}
 .staff-img{margin:10px;}

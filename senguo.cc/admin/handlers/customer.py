@@ -1,4 +1,4 @@
-from handlers.base import CustomerBaseHandler,WxOauth2
+from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth
 from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
 import dal.models as models
 import tornado.web
@@ -55,6 +55,12 @@ class Access(CustomerBaseHandler):
 			self.handle_oauth(next_url)
 		elif self._action == "weixin":
 			return self.redirect(self.get_weixin_login_url(next_url))
+		elif self._action == 'qq':
+			print('login in qq')
+			return self.redirect(self.get_qq_login_url(next_url))
+		elif self._action == 'qqoauth':
+			print('login qqoauth')
+			self.handle_qq_oauth(next_url)
 		else:
 			return self.send_error(404)
 
@@ -84,6 +90,19 @@ class Access(CustomerBaseHandler):
 		print("[手机登录]跳转URL：",next)
 		# return self.redirect('/woody')
 
+	@CustomerBaseHandler.check_arguments("code")
+	def handle_qq_oauth(self,next_url):
+		print('login in handle_qq_oauth')
+		code = self.args['code']
+		print(code,'handle_qq_oauth code')
+		userinfo = QqOauth.get_qqinfo(code)
+		if not userinfo:
+			return self.redirect(self.reverse_url("customerLogin"))
+		u = models.Customer.register_with_qq(self.session,userinfo)
+		self.set_current_user(u,domain = ROOT_HOST_NAME)
+		return self.redirect(next_url)
+
+
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self,next_url):
 		# todo: handle state
@@ -93,6 +112,7 @@ class Access(CustomerBaseHandler):
 			return self.send_error(400)
 
 		userinfo = self.get_wx_userinfo(code, mode)
+		# print('login handle_oauth',code,mode,userinfo)
 		if not userinfo:
 			return self.redirect(self.reverse_url("customerLogin"))
 		u = models.Customer.register_with_wx(self.session, userinfo)
@@ -106,6 +126,14 @@ class Third(CustomerBaseHandler):
 		action =self._action
 		if self._action == "weixin":
 			return self.redirect(self.get_weixin_login_url())
+#商品详情
+class Goods(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self,goods_id):
+
+		return self.render('customer/goods-detail.html')
+		
+
 
 class RegistByPhone(CustomerBaseHandler):
 	def get(self):
@@ -131,7 +159,7 @@ class RegistByPhone(CustomerBaseHandler):
 		print("[手机注册]发送验证码到手机：",self.args["phone"])
 		resault = gen_msg_token(phone=self.args["phone"])
 		if resault == True:
-			#print("[手机注册]向手机号",phone,"发送短信验证",resault,"成功")
+			# print("[手机注册]向手机号",phone,"发送短信验证",resault,"成功")
 			return self.send_success()
 		else:
 			return self.send_fail(resault)
@@ -205,7 +233,7 @@ class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
 		# shop_id = self.shop_id
-		print("[访问店铺]店铺号：",shop_code)
+		print("[个人中心]店铺号：",shop_code)
 		# 用于标识 是否现实 用户余额 ，当 店铺 认证 通过之后 为 True ，否则为False
 		show_balance = False
 		try:
@@ -222,7 +250,7 @@ class Home(CustomerBaseHandler):
 				show_balance = True
 			# print(shop,shop.shop_auth)
 		else:
-			print("[访问店铺]店铺不存在：",shop_code)
+			print("[个人中心]店铺不存在：",shop_code)
 			return self.send_fail('shop not found')
 		customer_id = self.current_user.id
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
@@ -338,7 +366,7 @@ class CustomerProfile(CustomerBaseHandler):
 		try:
 				follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id).order_by(models.CustomerShopFollow.create_time.desc()).limit(3).all()
 		except:
-				print('该用户未关注任何店铺')
+				print('[个人中心]该用户未关注任何店铺')
 		for shopfollow in follow:
 				shop=self.session.query(models.Shop).filter_by(id = shopfollow.shop_id).first()
 				shop_info.append({'logo':shop.shop_trademark_url,'shop_code':shop.shop_code})
@@ -378,17 +406,17 @@ class CustomerProfile(CustomerBaseHandler):
 			return self.send_success(birthday=birthday)
 		elif action == 'add_password':
 			self.current_user.accountinfo.update(session = self.session , password = data)
-			print("[设置密码]设置成功，密码：",data)
+			# print("[设置密码]设置成功，密码：",data)
 		elif action == 'modify_password':
 			old_password = self.args['old_password']
-			print("[更改密码]输入老密码：",old_password)
-			print("[更改密码]验证老密码：",self.current_user.accountinfo.password)
+			# print("[更改密码]输入老密码：",old_password)
+			# print("[更改密码]验证老密码：",self.current_user.accountinfo.password)
 			if old_password != self.current_user.accountinfo.password:
-				print("[更改密码]密码验证错误")
+				# print("[更改密码]密码验证错误")
 				return self.send_fail("密码错误")
 			else:
 				self.current_user.accountinfo.update(session = self.session ,password = data)
-				print("[更改密码]更改成功，新密码：",data)
+				# print("[更改密码]更改成功，新密码：",data)
 		elif action =='wx_bind':
 			wx_bind = False
 			if self.current_user.accountinfo.wx_unionid:
@@ -467,7 +495,7 @@ class ShopProfile(CustomerBaseHandler):
 			return self.send_error(404)
 		shop_id = shop.id
 		shop_name = shop.shop_name
-		shop_logo   = shop.shop_trademark_url
+		shop_logo = shop.shop_trademark_url
 
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
@@ -513,7 +541,7 @@ class ShopProfile(CustomerBaseHandler):
 		staffs = self.session.query(models.HireLink).filter_by(shop_id=shop_id,active=1).all()
 		shop_members_id = [shop.admin_id]+[x.staff_id for x in staffs]
 		headimgurls = self.session.query(models.Accountinfo.headimgurl_small).\
-			filter(models.Accountinfo.id.in_(shop_members_id)).all()
+					filter(models.Accountinfo.id.in_(shop_members_id)).all()
 		comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
 		session = self.session
 		w_id = self.current_user.id
@@ -555,7 +583,7 @@ class ShopProfile(CustomerBaseHandler):
 				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id\
 					,shop_id = shop_id).first()
 			except:
-				print("店铺关注出错")
+				# print("[访问店铺]店铺关注出错")
 				self.send_fail("shop_follow error")
 			if signin:
 
@@ -570,7 +598,7 @@ class ShopProfile(CustomerBaseHandler):
 					#     print("before sign:",point.signIn_count)
 					#     point.signIn_count += 1
 					#     print("after sign:",point.signIn_count)
-						# point.count += 1
+					#	  point.count += 1
 					point_history = models.PointHistory(customer_id = self.current_user.id,shop_id = shop_id)
 					if point_history:
 						point_history.each_point = 1
@@ -656,8 +684,9 @@ class Members(CustomerBaseHandler):
 		admin_id = admin_id[0]
 		members = self.session.query(models.Accountinfo, models.HireLink.work).filter(
 			models.HireLink.shop_id == shop_id,models.HireLink.active==1, or_(models.Accountinfo.id == models.HireLink.staff_id,
-													models.Accountinfo.id == admin_id)).all()
+				models.Accountinfo.id == admin_id)).all()
 		member_list = []
+		# print(members)
 		def work(id, w):
 			if id == admin_id:
 				return "店长"
@@ -665,13 +694,17 @@ class Members(CustomerBaseHandler):
 				return "挑货"
 			else:
 				return "送货"
+		idlist =[]
 		for member in members:
-			member_list.append({"img":member[0].headimgurl_small,
-								"name":member[0].nickname,
-								"birthday":time.strftime("%Y-%m", time.localtime(member[0].birthday)),
-								"work":work(member[0].id,member[1]),
-								"phone":member[0].phone,
-								"wx_username":member[0].wx_username})
+			if member[0].id not in idlist:
+				idlist.append(member[0].id)
+				member_list.append({"img":member[0].headimgurl_small,
+									"name":member[0].nickname,
+									"birthday":time.strftime("%Y-%m", time.localtime(member[0].birthday)),
+									"work":work(member[0].id,member[1]),
+									"phone":member[0].phone,
+									"wx_username":member[0].wx_username})
+		# print(member_list)
 		return self.render("customer/shop-staff.html", member_list=member_list)
 
 class Comment(CustomerBaseHandler):
@@ -734,6 +767,7 @@ class Market(CustomerBaseHandler):
 		# self.current_shop = shop
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
+		shop_status = shop.status
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		# self.set_cookie("market_shop_name",str(shop.shop_name))
@@ -807,7 +841,7 @@ class Market(CustomerBaseHandler):
 						   context=dict(cart_count=cart_count, subpage='home', menus=shop.menus,notices=notices,\
 							shop_name=shop.shop_name,w_follow = w_follow,page_count = page_count,fruit_page = fruit_page,\
 							dry_page = dry_page ,mgoods_page = mgoods_page,cart_fs=cart_fs,cart_ms=cart_ms,\
-							shop_logo = shop_logo))
+							shop_logo = shop_logo,shop_status=shop_status))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:int","page?:int","menu_id?:int")
@@ -1460,7 +1494,10 @@ class Cart(CustomerBaseHandler):
 			online_type = self.args['online_type']
 		else:
 			order_status = 1
+<<<<<<< HEAD
 		print(w_SH2_id,"i'm staff id")
+=======
+>>>>>>> senguo-2.1-build150530
 		order = models.Order(customer_id=self.current_user.id,
 							 shop_id=shop_id,
 							 num=num,
@@ -1492,21 +1529,138 @@ class Cart(CustomerBaseHandler):
 		except:
 			return self.send_fail("订单提交失败")
 
-		#####################################################################################
-		# where the order sueessed , send a message to the admin of shop
-		# woody
-		#####################################################################################
-		admin_name    = w_admin.admin.accountinfo.nickname
-		touser        = w_admin.admin.accountinfo.wx_openid
-		shop          = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		shop_name     = shop.shop_name
-		order_id      = order.num
-		order_type    = order.type
-		phone         = order.phone
+		# #####################################################################################
+		# # where the order sueessed , send a message to the admin of shop
+		# # woody
+		# #####################################################################################
+		# admin_name    = w_admin.admin.accountinfo.nickname
+		# touser        = w_admin.admin.accountinfo.wx_openid
+		# shop          = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		# shop_name     = shop.shop_name
+		# order_id      = order.num
+		# order_type    = order.type
+		# phone         = order.phone
+		# if order_type == 1:
+		# 	order_type = '立即送'
+		# else:
+		# 	order_type = '按时达'
+		# create_date   = order.create_date
+		# customer_info = self.session.query(models.Accountinfo).filter_by(id = self.current_user.id).first()
+		# customer_name = address.receiver
+		# c_tourse      = customer_info.wx_openid
+		# # print("[提交订单]用户OpenID：",c_tourse)
+
+		# ##################################################
+		# #goods
+		# goods = []
+		# # print("[提交订单]订单详情：",f_d,m_d)
+		# session = self.session
+		# for f in f_d:
+		# 	goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+		# for m in m_d:
+		# 	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+			
+		# goods = str(goods)[1:-1]
+		# order_totalPrice = float('%.2f'% totalPrice)
+		# # print("[提交订单]订单总价：",order_totalPrice)
+		# # send_time     = order.get_sendtime(session,order.id)
+		# send_time = order.send_time
+		# address = order.address_text
+		# order_realid = order.id
+		# # print("[提交订单]订单详情：",goods)
+		# if self.args['pay_type'] != 3:
+		# 	if w_admin.super_temp_active !=0:
+		# 		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
+		# 			customer_name,order_totalPrice,send_time,goods,phone,address)
+		# 	try:
+		# 		other_admin = self.session.query(models.HireLink).filter_by(shop_id = shop.id,active=1,work=9,temp_active=1).first()
+		# 	except:
+		# 		other_admin = None
+		# 	if other_admin:
+		# 		info =self.session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id)\
+		# 		.filter(models.ShopStaff.id == other_admin.staff_id).first()
+		# 		other_touser = info.wx_openid
+		# 		other_name = info.nickname
+		# 		WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,\
+		# 			customer_name,order_totalPrice,send_time,goods,phone,address)
+		# 	# send message to customer
+		# 	WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
+		# ####################################################
+		# # 订单提交成功后 ，用户余额减少，
+		# # 同时生成余额变动记录,
+		# # 订单完成后 店铺冻结资产相应转入 店铺可提现余额
+		# # woody 4.29
+		# ####################################################
+		# # print(self.args['pay_type'],'好难过')
+		# if self.args["pay_type"] == 2:
+		# 	shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
+		# 		shop_id = shop_id).first()
+		# 	if not shop_follow:
+		# 		return self.send_fail('shop_follow not found')
+		# 	shop_follow.shop_balance -= totalPrice   #用户对应 店铺余额减少 ，单位：元
+		# 	self.session.commit()
+		# 	#生成一条余额交易记录
+		# 	balance_record = '余额支付：订单' + order.num
+		# 	balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
+		# 		shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
+		# 		balance_record = balance_record,shop_totalPrice = current_shop.shop_balance,\
+		# 		customer_totalPrice = shop_follow.shop_balance)
+		# 	self.session.add(balance_history)
+		# 	self.session.commit()
+
+		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
+		cart.update(session=self.session, fruits='{}', mgoods='{}')#清空购物车
+
+		#如果提交订单是在线支付 ，则 将订单号存入 cookie
+		if self.args['pay_type'] == 3:
+			online_type = self.args['online_type']
+			self.set_cookie('order_id',str(order.id))
+			self.set_cookie('online_totalPrice',str(order.totalPrice))
+			order.online_type = online_type
+			self.session.commit()
+			if online_type == 'wx':
+				success_url = self.reverse_url('onlineWxPay')
+			elif online_type == 'alipay':
+				success_url = self.reverse_url('onlineAliPay')
+			else:
+				print(online_type,'wx or alipay?')
+			return self.send_success(success_url=success_url,order_id = order.id)
+		return self.send_success(order_id = order.id)
+
+class CartCallback(CustomerBaseHandler):
+
+	@CustomerBaseHandler.check_arguments('order_id')
+	@tornado.web.authenticated
+	def post(self):
+		order_id = int(self.args['order_id'])
+		order    = self.session.query(models.Order).filter_by(id = order_id).first()
+		if not order:
+			return self.send_fail("cart_callback:order not found!")
+		shop_id = order.shop_id
+		customer_id = order.customer_id
+		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
+		shop    =  self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if not shop or not customer:
+			return self.send_fail('shop not found')
+		# #送货地址处理
+		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
+		# if not address:
+		# 	return self.send_fail("没找到地址", 404)
+
+		admin_name = shop.admin.accountinfo.nickname
+		touser     = shop.admin.accountinfo.wx_openid
+		shop_name  = shop.shop_name
+		order_id   = order.num
+		order_type = order.type
+		online_type= order.online_type
+		pay_type   = order.pay_type
+		phone      = order.phone
+		totalPrice = order.totalPrice
 		if order_type == 1:
 			order_type = '立即送'
 		else:
 			order_type = '按时达'
+<<<<<<< HEAD
 		create_date   = order.create_date
 		customer_info = self.session.query(models.Accountinfo).filter_by(id = self.current_user.id).first()
 		customer_name = address.receiver
@@ -1518,24 +1672,57 @@ class Cart(CustomerBaseHandler):
 		goods = []
 		# print("[提交订单]订单详情：",f_d,m_d)
 		session = self.session
+=======
+		create_date= order.create_date
+		customer_name = order.receiver
+		c_tourse   = customer.accountinfo.wx_openid
+		goods = []
+		f_d = eval(order.fruits)
+		m_d = eval(order.mgoods)
+>>>>>>> senguo-2.1-build150530
 		for f in f_d:
 			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
 		for m in m_d:
 			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
-			
 		goods = str(goods)[1:-1]
+<<<<<<< HEAD
 		order_totalPrice = float('%.2f'% totalPrice)
 		# print("[提交订单]订单总价：",order_totalPrice)
+=======
+		print("[提交订单]订单详情：",goods)
+		order_totalPrice = float('%.2f'% totalPrice)
+		print("[提交订单]订单总价：",order_totalPrice)
+>>>>>>> senguo-2.1-build150530
 		# send_time     = order.get_sendtime(session,order.id)
 		send_time = order.send_time
 		address = order.address_text
 		order_realid = order.id
+<<<<<<< HEAD
 		# print("[提交订单]订单详情：",goods)
 		if self.args['pay_type'] != 3:
 			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
 				customer_name,order_totalPrice,send_time,goods,phone,address)
 			# send message to customer
 			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
+=======
+		if pay_type != 3:
+			if shop.super_temp_active != 0:
+				WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
+						customer_name,order_totalPrice,send_time,goods,phone,address)
+			try:
+				other_admin = self.session.query(models.HireLink).filter_by(shop_id = shop.id,active=1,work=9,temp_active=1).first()
+			except:
+				other_admin = None
+			if other_admin:
+				info =self.session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id)\
+				.filter(models.ShopStaff.id == other_admin.staff_id).first()
+				other_touser = info.wx_openid
+				other_name = info.nickname
+				WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,\
+					customer_name,order_totalPrice,send_time,goods,phone,address)
+
+
+>>>>>>> senguo-2.1-build150530
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
 		# 同时生成余额变动记录,
@@ -1543,7 +1730,7 @@ class Cart(CustomerBaseHandler):
 		# woody 4.29
 		####################################################
 		# print(self.args['pay_type'],'好难过')
-		if self.args["pay_type"] == 2:
+		if order.pay_type == 2:
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
 				shop_id = shop_id).first()
 			if not shop_follow:
@@ -1554,10 +1741,11 @@ class Cart(CustomerBaseHandler):
 			balance_record = '余额支付：订单' + order.num
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
 				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
-				balance_record = balance_record,shop_totalPrice = current_shop.shop_balance,\
+				balance_record = balance_record,shop_totalPrice = shop.shop_balance,\
 				customer_totalPrice = shop_follow.shop_balance)
 			self.session.add(balance_history)
 			self.session.commit()
+<<<<<<< HEAD
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}', mgoods='{}')#清空购物车
@@ -1576,7 +1764,11 @@ class Cart(CustomerBaseHandler):
 			else:
 				print(online_type,'wx or alipay?')
 			return self.send_success(order_id = order.id,success_url=success_url)
+=======
+>>>>>>> senguo-2.1-build150530
 		return self.send_success()
+
+
 
 class Notice(CustomerBaseHandler):
 	def get(self):
@@ -1634,7 +1826,7 @@ class Order(CustomerBaseHandler):
 				'sender_phone':order.sender_phone,'sender_img':order.sender_img,'order_id':order.id,\
 				'message':order.message,'comment':order.comment,'create_date':create_date,\
 				'today':order.today,'type':order.type,'create_year':order.create_date.year,\
-				'create_month':order.create_date.month,'create_day':order.create_date.day,'pay_type':order.pay_type})
+				'create_month':order.create_date.month,'create_day':order.create_date.day,'pay_type':order.pay_type,'online_type':order.online_type})
 		return data
 
 	@tornado.web.authenticated
@@ -2207,13 +2399,13 @@ class payTest(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?:str')
 	def post(self):
-			print(self.args,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+			# print(self.args,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
 
 		# 微信 余额 支付
 	#	if action == 'wx_pay':
-			print('回调成功')
+			print("[微信充值]回调成功")
 			data = self.request.body
-			print(self.request.body,'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+			print("[微信充值]回调request.body：",self.request.body)
 			xml = data.decode('utf-8')
 			UnifiedOrder = UnifiedOrder_pub()
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
