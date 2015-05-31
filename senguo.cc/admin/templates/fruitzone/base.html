@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <meta name="viewport" content="width=device-width,maximum-scale=1,minimum-scale=1,initial-scale=1,user-scalable=no">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta name="format-detection" content="telephone=no">
+    <meta charset="UTF-8"/>
+    <title>{% block title%} {% end %}</title>
+    <link rel="stylesheet" href="{{static_url('css/fruitzone-global.css')}}"/>
+    <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    {% block head %}{% end %}
+    <script>
+        window.dataObj = {
+                _xsrf: "{{handler.xsrf_token}}"};
+    </script>
+</head>
+<body>
+{% block header%}{% end%}
+<main class="container">
+    {% block content %}{% end %}
+</main>
+<script src="/static/js/zepto&&fastclick&&lazyload.min.js"></script>
+<script src="/static/js/template.js"></script>
+<script src="{{static_url('js/fruitzone-public.js')}}"></script>
+{% block bottom %}{% end %}
+</body>
+</html>

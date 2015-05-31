@@ -1,0 +1,22 @@
+.box{border:1px solid #ccc;padding:10px 0;}
+.box .tit{text-indent:30px;line-height:30px;}
+.month-change{width:180px;margin-top:10px;margin-bottom:10px;}
+.table-count{width:100%;margin-bottom:20px;}
+.table-count .title{border-top:1px solid #ccc;height:40px;line-height:40px;}
+.table-count td{height:30px;line-height:30px;border-bottom:1px solid #ddd;}
+
+.change-list{margin-left:60px;}
+.change-list li{border-left:2px solid #fff;padding-left:14px;}
+.change-list li.active{border-color:#44b549;}
+.change-list li.active a{color:#44b549;}
+
+.w3{width:33.3333333333333333%;}
+.sub-nav{border:1px solid #ddd;margin-bottom:30px;}
+.sub-nav .header{width:100px;height:40px;line-height:40px;}
+.sub-nav li{width:80px;height:40px;line-height:40px;border-left:1px solid #eee;}
+.sub-nav li a{display:block;color:#333;}
+.sub-nav li a:hover{text-decoration:none;}
+.sub-nav li:hover{background:#44b549;}
+.sub-nav li:hover a{color:#fff;}
+.sub-nav li.active{background:#44b549;}
+.sub-nav li.active a{color:#fff;}

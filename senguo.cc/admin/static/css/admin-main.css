@@ -1,0 +1,49 @@
+.pl20{padding-left: 20px !important;}
+.pl50{padding-left: 50px !important;}
+.pr20{padding-right: 20px !important;}
+.txt-ar{text-align: right !important;}
+.orange-txt{color: #f37651 !important;}
+.green-txt{color: #52b43f !important;}
+.c999{color: #999 !important;}
+.f16{font-size: 16px !important;}
+.f18{font-size: 18px !important;}
+.mt20{margin-top: 20px !important;}
+.mb10{margin-bottom: 10px !important;}
+/*账户余额*/
+.account-top>span{display: inline-block!important;}
+.small-txt{font-size: 14px;color: #666;}
+.acc-money{font-size: 18px;color: #52b43f;margin-left: 40px;}
+.get-money{font-size: 14px;margin-left: 20px;}
+.acc-report{padding:10px;background:#fbfbfb;}
+.acc-report>li{line-height: 20px;font-size: 14px;color: #9d9b9c;}
+.wrap-bm{padding-bottom: 20px;}
+.tab-lst{border-bottom: 2px solid #f6f6f6;-webkit-box-sizing: border-box;height:28px;}
+.tab-lst>li{font-size: 14px;color: #666;line-height: 28px;float:left;height:28px;width:85px;text-align:center;margin-right: 20px;cursor: pointer;}
+.tab-lst .active{border-bottom: 2px solid #52b43f;color: #52b43f;}
+.acc-con-lst{margin-top: 20px;}
+.acc-con-lst>li{display: none;}
+.acc-con-lst .active{display: block;}
+.tb-account{width: 100%;table-layout: fixed;border:1px solid #eee;}
+.tb-account th{height: 30px;line-height: 30px;color: #33;font-size: 14px;}
+.tb-account td{height: 30px;line-height: 30px;color: #666;font-size: 14px;border-bottom:1px solid #eee;}
+.tb-account tr:first-child{background-color:#f6f6f6;}
+/*.tb-account tr:nth-child(2n){background-color: #f1f1f1;}*/
+.tb-account tr:hover{background-color:#f6f6f6;}
+.account-num{display: inline-block;font-size: 14px;margin-right:20px;}
+.available-balance{margin-left: 8px;}
+.money-ipt{width: 200px;height: 30px;font-size: 14px;color: #333;border-radius: 2px;border: 1px solid #cecece;}
+.w200{width:200px;}
+.w500{width:500px;}
+.apply-title{line-height:42px;}
+.w50{width:50%;}
+.tit{display:inline-block;overflow:hidden;}
+.bg85{background-color: #858585 !important;}
+
+.apply-cash-box .per-tb{width: 100%;table-layout: fixed;}
+.apply-cash-box .per-tb td{padding: 5px 0;}
+.apply-cash-box .per-tb .left{font-weight: bold;text-align: right;font-size: 14px;}
+.apply-cash-box .per-tb input{width:220px;border: none;background-color: #fff;margin-left: 8px;height: 30px;font-size:12px;line-height:30px;color:#222;border:1px solid #eee;}
+.apply-cash-box .per-tip{font-size: 12px;color: #858585;line-height: 14px;margin-left: 8px;}
+.apply-cash-box .per-btn{height: 28px;line-height: 28px;width: 160px;margin-left: 48px;text-align: center;color: #fff;border-radius: 3px;background-color: #52b43f;display: block;}
+.apply-cash-box .get-code{width: 130px;display: inline-block;margin-left: 15px;}
+

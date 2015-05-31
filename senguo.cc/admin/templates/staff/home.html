@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/staff-home.css')}}" type="text/css" />
+{% end %}
+{% block content %}
+<section class="content-wrapper bg-white" >
+	<p class="notice-msg" style="display:none;" ></p>
+    <div class="user-img center-block">
+        <img src="{{current_user.accountinfo.headimgurl}}" class="img-circle"/>
+    </div>
+	<h3 class="name">{{current_user.accountinfo.nickname}}</h3>
+	<h5 class="username">{{current_user.accountinfo.realname}}</h5>
+ 	<h5 >职务：-<span class="job" data-id="{{current_user.work}}">
+        {% if current_user.work == 1%}
+        捡货员
+        {% elif current_user.work == 2%}
+        送货员
+        {% else %}
+        送货员
+        {% end %}
+ 	</span></h5>
+    <h5>员工编号：{{current_user.id}}</h5>
+    <a href="{{reverse_url('staffOrder')}}?order_type=now" class="btn btn-large text-white bg-green2">当前订单</a>
+	<hr />
+	<div class="charge-money-box" data-id="charge-money-box">
+		<h4><strong >已收货款：<span data-id="current-charge-money" >{{handler.hirelink.money}}</span>元</strong></h4>
+		<p>货款需要交给管理员，并由管理员在系统中标记为已经结算</p>
+	</div>
+    <hr />
+	<div class="sales-wage-box" data-id="sales-wage-box" >
+		<h4><strong >当前提成工资：<span data-id="sales-current-wage" >0</span>元</strong></h4>
+		<p>当前提成工资为已完成订单销售额的<span data-id="sales-wage" ></span>%</p>
+		<p>工资在结清后会由管理员进行更改</p>
+	</div>
+</section>
+{% end %}

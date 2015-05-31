@@ -1,0 +1,27 @@
+body{background-color:#f5f5f7;}
+.map_box{background:url('/static/official_img/slide_bg.jpg') no-repeat;height:882px;background-size:130%;padding-top:60px;}
+.map_box .box{width:800px;margin:0 auto;}
+.map{width:100%;height:700px;}
+.sty1{width:100%;line-height:18px;overflow:hidden;word-break: break-all;}
+.list_box{width:100%;}
+.list_box ul{width:120%;}
+.list_box ul .item{width:205px;height:350px;float:left;margin-right:60px;position:relative;margin-bottom:50px;}
+.list_box ul .item .img{width:100%;height:235px;overflow:hidden;padding:10px;}
+.list_box ul .item .img img{width:100%;}
+.list_box ul .item .con{width:100%;height:160px;padding:20px;background:rgba(255,102,102,0.6);position:absolute;top:200px;}
+.list_box ul .item .intro{max-height:50px;overflow:hidden;line-height:16px;}
+.number_box{width:620px;height:108px;line-height:108px;margin:0 auto;}
+.number_box .num{width:60px;height:108px;margin-left:10px;margin-right:10px;background:url('/static/official_img/n_bg.png');font-size:80px;position:relative;}
+.number_box .n{position:absolute;z-index:5;left:12px;display:inline-block;width:30px;height:108px;line-height:108px;}
+.number_box .line{position:absolute;z-index:10;background:url('/static/official_img/n_line.png');display:inline-block;width:61px;height:4px;top:52px;left:0;}
+.province_name{height:30px;line-height:40px;}
+.page_box a:hover{text-decoration:none;}
+.page_box .item{float:left;display:inline-block;border:1px solid #ddd;margin-right:10px;width:36px;height:36px;text-align:center;line-height:36px;}
+.page_box .next_pre{width:80px;display:inline-block;border:1px solid #ddd;color:#666;margin-right:10px;height:36px;text-align:center;line-height:36px;}
+.page_box .item a{display:block;color:#666;}
+.page_box .active a{background:#ddd;}
+.page_box a:hover{background:#ddd;}
+.page_box a:focus{background:#ddd;}
+.page_box a:acitve{background:#ddd;}
+.loading{margin-top:40%;}
+.loading2{width:1000px;margin:0 auto;margin-left:-20px;}

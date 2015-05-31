@@ -1,0 +1,61 @@
+{% extends 'shop-set-base.html' %}
+{% block title%}公告设置{% end %}
+
+{% block setcontent %}
+<div class="set-description">
+    <p>编辑和修改商城水果公告栏的内容</p>
+    <p>摘要为公告栏直接显示的内容，用户可点击查看详情。</p>
+</div>
+    <table class="set-list table table-bordered">
+        <tr class="bg-grey2">
+            <td colspan="2">摘要</td>
+            <td colspan="2">详情</td>
+        </tr>
+        {% for notice in notices %}
+        <tr class="set-list-item" data-id="{{notice.id}}">
+            <td>
+                <div class="mode action-mode notice_active" data-status="{{notice.active}}">
+                    <a class="work-mode" href="javascript:;" style="display:none;">已启用</a>
+                    <a class="stop-mode" href="javascript:;" style="display:none;">未启用</a>
+                </div>
+            </td>
+            <td class="col-lg-4 address-show summary">{{notice.summary}}</td>
+            <td class="col-lg-4 address-edit"  style="display:none;"><textarea class="notice_summary">{{notice.summary}}</textarea></td>
+            <td class="col-lg-6 address-show detail">{{notice.detail}}</td>
+            <td class="col-lg-6 address-edit" style="display:none;"> <textarea class="notice_detail">{{notice.detail}}</textarea></td>
+            <td class="address-show">
+                <a href="javascript:;" class="edit-btn2 info-edit">编辑</a>
+            </td>
+            <td class="address-edit" style="display:none;">
+                <a href="javascript:;" class="edit-btn2 info-sure notice_edit">确定</a>
+            </td>
+        </tr>
+        {% end %}
+    </table>
+    <a href="javascript:;" class="add-new-address1  add-btn-sty" data-toggle="modal" data-target="#noticeBox">+ 新建公告消息</a>
+    <div class="modal fade text-grey3" id="noticeBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel">新建公告消息</h4>
+                </div>
+                <div class="modal-body ">
+                    <p class="clearfix">
+                        <span class="pull-left set-right10">摘要</span>
+                        <input type="text" class="new-notice-title pull-left"/>
+                    </p>
+                    <div class="clearfix">
+                        <span class="pull-left set-right10">详情</span>
+                        <textarea class="new-notice-detail pull-left"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer text-center">
+                    <button class="btn bg-green text-white add-new-notice">确定</button>
+                    <button class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% end %}
+{% block setbottom %}<script src="{{static_url('js/admin-notice-set.js')}}"></script>{% end %}

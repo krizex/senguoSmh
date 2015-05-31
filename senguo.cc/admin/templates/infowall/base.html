@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta charset="UTF-8"/>
+    <title>{% block title%} {% end %}</title>
+    <link rel="stylesheet" href="{{static_url('css/bootstrap.min.css')}}"/>
+    <link rel="stylesheet" href="{{static_url('css/infowall-global.css')}}"/>
+    <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    {% block head %}{% end %}
+    <script>
+        window.dataObj = {
+                _xsrf: "{{handler.xsrf_token}}"};
+    </script>
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
+          var s = document.getElementsByTagName("script")[0]; 
+          s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+</head>
+<body>
+<div class="phone-box">
+    {% block content %}{% end %}
+</div>
+<script src="{{static_url('js/jquery.min.js')}}"></script>
+<script src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script src="{{static_url('js/global.js')}}"></script>
+<script src="{{static_url('js/infowall-public.js')}}"></script>
+{% block bottom %}{% end %}
+</body>
+</html>

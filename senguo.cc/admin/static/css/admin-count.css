@@ -1,0 +1,10 @@
+.box{border:1px solid #eee;padding:10px 0;}
+.box .tit{text-indent:30px;line-height:30px;}
+.month-change{width:180px;margin-top:10px;margin-bottom:10px;}
+.table-count{width:100%;}
+.table-count td{height:30px;line-height:30px;border-bottom:1px solid #eee;}
+
+.change-list{margin-left:60px;}
+.change-list li{border-left:2px solid #fff;padding-left:14px;}
+.change-list li.active{border-color:#44b549;}
+.change-list li.active a{color:#44b549;}

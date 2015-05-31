@@ -1,0 +1,306 @@
+{% extends 'base.html'%}
+{% block title %}店铺详情{% end %}
+{% block head%}
+<link rel="stylesheet" href="{{static_url('css/fruitzone-shop.css')}}"/>
+{% end %}
+
+{% block content %}
+{% import time%}
+{% import dal.models as models %}
+{% if "fruit_types" in context%}
+{% import json%}
+<script>
+    window.dataObj.fruit_types = {% raw json.dumps(context["fruit_types"]) %}
+</script>
+{% end %}
+
+{% set shop=context['shop']%}
+
+{% if "edit" in context and context["edit"] %}
+   {% set bt_edit_show = "show"%}
+   {% set bt_edit_hide = "hidden"%}
+    {% set dis_sty="hidden" %}
+{% else %}
+    {% set bt_edit_show = "hidden"%}
+    {% set bt_edit_hide = "show"%}
+    {% set dis_sty="dis-style" %}
+{% end %}
+
+<header class="title-box2" data-shop="{{shop.id}}" id="headerId">
+    <a href="javascript:history.back(-1)" class="return-btn pull-left"></a>
+    <span class="title pull-left">店铺详情</span>
+    <a href="" class="to-some" id="shareTo">分享</a>
+</header>
+{% if shop.shop_status==models.SHOP_STATUS.DECLINED %}
+    <div class="decline-box">
+        <span class="title">店铺认证未通过：</span>{{shop.declined_reason}}
+        <a href="{{reverse_url('fruitzoneShopReApply')}}?shop_id={{shop.id}}" class="reapply-btn green-color">重新申请</a>
+    </div>
+{% end %}
+<div class="detail-box">
+    <p class="info-title">店铺信息</p>
+    <div class="info-box1">
+        <div class="shop-info-detail row">
+            <div class="logo col-xs-5 col-sm-3 {{bt_edit_show}}">
+                <div id="shopLogoUpload">
+                    <p class="text-change text-notice">点击修改</p>
+                    <img src="{{shop.shop_trademark_url or static_url('images/anoa-2-lg.gif')}}?imageView2/1/w/130/h/130" id="logoImg"/>
+                    <input id="file_upload" type="file" name="file_upload" class="uploadImg" />
+                </div>
+            </div>
+            <div class="logo col-xs-5 col-sm-3 {{bt_edit_hide}}">
+                  <img src="{{shop.shop_trademark_url or static_url('images/anoa-2-lg.gif')}}?imageView2/1/w/130/h/130"/>
+            </div>
+            <div class="info col-xs-7 col-sm-9">
+                <p class="shop-name">{{shop.shop_name}}</p>
+                <p>{{handler.code_to_text("shop_city",shop.shop_city)}}</p>
+                <p>服务区域：{{handler.code_to_text("service_area",shop.shop_service_area)}}</p>
+                <p>店面：<span data-real="{{shop.have_offline_entity}}" id="detailsReal"></span></spanb></p>
+                <small class="text-red {{bt_edit_show}}">部分手机浏览器会出现图像上传失败，建议更换浏览器或使用电脑上传！</small>
+            </div>
+           <div class="collect-box">
+               {% if current_user %}
+                    {% if shop in current_user.shops_collect %}
+                    <button type="button" class="action-mode">已收藏</button>
+                    {% else %}
+                    <button type="button" class="collect-btn" id="collectBox">收藏</button>
+                    <button type="button" class="action-mode" style="display:none;">已收藏</button>
+                    {% end %}
+               {% else %}
+                    <button type="button" class="uncollect-btn">收藏</button>
+                    <p><small class="text-red">*登录后即可收藏店铺*</small></p>
+               {% end %}
+            </div>
+        </div>
+        <div class="{{bt_edit_show}} edit-link editBox">
+            <a href="javascript:;" class="focus-btn" id="linkEdit"  data-toggle="modal" data-target="#linkBox">编辑店铺链接</a>
+            <a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200574697&idx=1&sn=cc6a43fcc99b5bad6cf963dc92f4babd#rd" class="check-course text-red">查看填写教程</a>
+            <div class="modal fade" id="linkBox" tabindex="-1" role="dialog"  aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body shop-edit-info">
+                            <input type="text" class="input-style2 editBox" id="shopLink" placeholder="{{shop.shop_url or '请输入店铺链接'}}"/>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="btn-box">
+                                <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
+                                <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_shop_url">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="{{shop.shop_url}}" class="focus-btn {{dis_sty}}" id="focusLink">关注我的微信店铺</a>
+    </div>
+    <div class="info-box1">
+        <ul class="shop-info-detail2 ">
+            <li class="left-none editBox">
+                <p>运营时间</p>
+                <p><span class="shopShow" id="liveTime">
+                    {% if shop.shop_start_timestamp%}
+                        {{int((time.time() - (shop.shop_start_timestamp))/(30*24*3600)) }}
+                    {% else %}
+                        0
+                    {% end %}
+                </span>个月</p>
+                <a href="javascript:;" class="{{bt_edit_show}}  text-red" id="timeEdit"  data-toggle="modal" data-target="#timeBox">点击设置</a>
+                <div class="modal fade" id="timeBox" tabindex="-1" role="dialog"  aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body shop-edit-info">
+                                <input type="text" class="input-style3 editBox pull-left"  id="startYear" placeholder="请输入运营起始年份 例如：2014"/>
+                                <input type="text" class="input-style3 editBox pull-right"  id="startMonth" placeholder="请输入运营起始年份 例如：05"/>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="btn-box">
+                                    <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
+                                    <button type="button" class="btn  sure-btn" data-action="edit_live_month" id="liveTimeEdit">确定</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="editBox">
+                <p>总用户数</p>
+                <p><span class="shopShow">{{shop.total_users or '0'}}</span></p>
+                <a href="javascript:;" class="{{bt_edit_show}}  text-red" id="usersEdit" data-toggle="modal" data-target="#userBox">点击设置</a>
+                <div class="modal fade" id="userBox" tabindex="-1" role="dialog"  aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body shop-edit-info">
+                                <input type="text" class="input-style2 editBox" id="shopUser" placeholder="请输入总用户数"/>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="btn-box">
+                                    <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
+                                    <button type="button" class="btn  sure-btn shop-edit-btn"  data-action="edit_total_users">确定</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="editBox">
+                <p>平均日销量</p>
+                <p><span class="shopShow">{{shop.daily_sales or '0'}}</span>元</p>
+                <a href="javascript:;" class="{{bt_edit_show}}  text-red" id="sellEdit"  data-toggle="modal" data-target="#sellBox">点击设置</a>
+                <div class="modal fade" id="sellBox" tabindex="-1" role="dialog"  aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body shop-edit-info">
+                                <input type="text" class="input-style editBox"  id="shopSell" placeholder="请输入平均日销量"/>元
+                            </div>
+                            <div class="modal-footer">
+                                <div class="btn-box">
+                                    <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
+                                    <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_daily_sales">确定</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="editBox">
+                <p>单次采购量</p>
+                <p><span class="shopShow">{{shop.single_stock_size or '0'}}</span>元</p>
+                <a href="javascript:;" class="{{bt_edit_show}}  text-red" id="buyEdit"  data-toggle="modal" data-target="#buyBox">点击设置</a>
+                <div class="modal fade" id="buyBox" tabindex="-1" role="dialog"  aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body shop-edit-info">
+                                <input type="text" class="input-style editBox"  id="shopBuy" placeholder="请输入单次采购量"/>元
+                            </div>
+                            <div class="modal-footer">
+                                <div class="btn-box">
+                                    <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
+                                    <button type="button" class="btn  sure-btn shop-edit-btn"   data-action="edit_single_stock_size">确定</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="info-box1 editBox">
+        <p class="title2">店铺简介：</p>
+        <p class="shop-intro shopShow">
+            {{shop.shop_intro or '无'}}
+        </p>
+        <a href="javascript:;" class="{{bt_edit_show}} text-red"  data-toggle="modal" data-target="#introBox">点击设置</a>
+        <div class="modal fade" id="introBox" tabindex="-1" role="dialog"  aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body shop-edit-info">
+                        <textarea placeholder="填写店铺简介" class="textstyle editBox"  id="shopIntro"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="btn-box">
+                            <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_shop_intro" >确定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="info-box1">
+        <p class="title2">在售水果：</p>
+        <ul class="sell-fruit-list edit-fruit-list">
+            {% for fruit in context['shop'].onsale_fruits%}
+            <li class="fruitsty" data-code="{{fruit.id}}">{{fruit.name}}</li>
+           {% end %}
+            <span class="{{bt_edit_show}} fruitsty" data-toggle="modal" data-target="#fruitSellBox">点击编辑</span>
+        </ul>
+        <div class="modal fade fruitBox" id="fruitSellBox" tabindex="-1" role="dialog"  aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <ul class="fruit-list" id="sellFruit">
+
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="btn-box">
+                            <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_onsale_fruits">确定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="title2">求购水果：</p>
+        <ul class="buy-fruit-list edit-fruit-list">
+            {% for fruit in context['shop'].demand_fruits%}
+            <li  class="fruitsty" data-code="{{fruit.id}}">{{fruit.name}}</li>
+            {% end %}
+            <span class="{{bt_edit_show}} fruitsty" data-toggle="modal" data-target="#fruitBuyBox">点击编辑</span>
+        </ul>
+        <div class="modal fade fruitBox" id="fruitBuyBox" tabindex="-1" role="dialog"  aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <ul class="fruit-list" id="buyFruit">
+
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="btn-box">
+                            <button type="button" class="btn  concel-btn" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn  sure-btn shop-edit-btn" data-action="edit_demand_fruits">确定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p class="info-title {{bt_edit_hide}}">负责人信息</p>
+    <div class="info-box1 {{bt_edit_hide}}">
+        <div class="pricipal-info">
+            <img src="{{shop.admin.accountinfo.headimgurl}}" class="pull-left"/>
+            <div class="show-info pull-left">
+                <p class="info1">{{shop.admin.accountinfo.realname or '无'}}<span>性别：<i data-sex="{{shop.admin.accountinfo.sex}}" id="adminSex" class="showSex"></i></span></p>
+                <p>出生年月：{{context['birthday']}}</p>
+            </div>
+        </div>
+        <div class="pricipal-info2">
+            <div class="pull-left">
+                <p class="pricipal-phone">手机号：
+                    {% if current_user and current_user.shops%}
+                         <span>{{shop.admin.accountinfo.phone or '无'}}</span>
+                    {% else %}
+                         <span>*******</span>
+                    {% end %}
+                </p>
+                <p class="pricipal-wechat">微信号：
+                    {% if current_user and current_user.shops%}
+                         <span>{{shop.admin.accountinfo.wx_username or '无'}}</span>
+                    {% else %}
+                         <span>*******</span>
+                    {% end %}
+                </p>
+            </div>
+            {% if  current_user and  current_user.shops%}
+            {% else %}
+            <div class="pull-right how-to">
+                <p>店铺入驻后</p>
+                <p>才能查看同行信息</p>
+            </div>
+            {% end %}
+        </div>
+    </div>
+    <div class="info-box1 {{bt_edit_hide}}">
+        <p class="title2">个人说明：</p>
+        <p class="shop-intro">
+            {{shop.admin.briefintro or '无'}}
+        </p>
+    </div>
+    <a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200521182&idx=1&sn=a3d7731e0233aef218eb91346d581b02#rd" class="focus-senguo {{bt_edit_hide}}">点击关注<strong>森果</strong>，获取更多行业资源</a>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>
+<script src="{{static_url('js/fruitzone-admin-shop.js')}}"></script>
+{% end %}

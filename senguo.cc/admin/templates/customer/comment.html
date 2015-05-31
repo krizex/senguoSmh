@@ -1,0 +1,78 @@
+{% extends 'detail-base.html' %}
+{% block title %}评价详情{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/baguetteBox.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/mobile-main.css')}}"/>
+{% end %}
+{% block top %}评价详情{% end %}
+{%block back%}/shopProfile/{{shop_code}}{% end %}
+{% block content %}
+<div class="contain">
+    <div class="point-show group">
+        <div class="point-left fl pt5">
+            <p class="nor-txt mt12">满意度</p>
+            <p class="percent-txt">{{satisfy}}</p>
+        </div>
+        <div class="point-name fl pt5">
+            <span class="line"></span>
+            <p class="nor-txt">质量</p>
+            <p class="nor-txt">速度</p>
+            <p class="nor-txt">服务</p>
+        </div>
+        <div class="point-cen fl">
+            <div class="percent-bar">
+                <span class="bar1" id="quality_bar"></span>
+            </div>
+            <div class="percent-bar">
+                <span class="bar2" id="speed_bar"></span>
+            </div>
+            <div class="percent-bar">
+                <span class="bar3" id="service_bar"></span>
+            </div>
+        </div>
+        <div class="point-left fr pt5">
+            <p class="nor-txt txt-ar" id="quality">{{commodity_quality}}分</p>
+            <p class="nor-txt txt-ar" id="speed">{{send_speed}}分</p>
+            <p class="nor-txt txt-ar" id="service">{{shop_service}}分</p>
+        </div>
+    </div>
+    <ul class="point-com-lst">
+        {% for list in date_list %}
+        <li>
+            <dl class="ccom-item group">
+                <dd class="fl">
+                    <div class="wrap-o-img">
+                        <img src="{{list['img'] or '/static/images/TDSG.png'}}" width="50" height="50" alt="头像"/>
+                    </div>
+                </dd>
+                <dt class="fl" class="right-com">
+                <p class="mt2"><span class="nor-txt">{{list['name']}}</span><span class="time-txt ml20">{{list['time']}}</span></p>
+                <p class="com-txt">{{list['comment']}}</p>
+                {% if list['imgurls'] %}
+                <ul class="group com-goods-lst">
+                    {% for img in list['imgurls'] %}
+                        <li>
+                            <a href="{{img}}" title=""><img src="{{img}}?imageView2/5/w/200/h/200" alt="晒单图片"/></a>
+                        </li>
+                    {% end %}
+                </ul>
+                {% end %}
+                {% if list['reply'] %}
+                    <p class="reply-txt">商家回复：{{list['reply']}}</p>
+                {% end %}
+                </dt>
+            </dl>
+        </li>
+        {% end %}
+    </ul>
+    {% if len(date_list) <20 %}
+    <div class="btn text-grey9 set-w100-fle font12 loading">~没有更多了呢 ( > < )~</div>
+    {% else %}
+    <div class="btn text-grey9 set-w100-fle font12 loading" style="display:none;">更多评价</div>
+    {% end %}
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/third/baguetteBox.min.js')}}"></script>
+<script src="{{static_url('js/comment-shop.js')}}"></script>
+{% end %}

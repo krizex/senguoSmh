@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta charset="UTF-8"/>
+    <title>员工招募令</title>
+    <link rel="stylesheet" href="{{static_url('css/bootstrap.min.css')}}"/>
+    <link rel="stylesheet" href="{{static_url('css/staff-global.css')}}"/>
+    <link rel="stylesheet" href="{{static_url('css/staff-hire.css')}}"/>
+    <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    <script>
+        window.dataObj = {
+            _xsrf: "{{handler.xsrf_token}}"};
+    </script>
+</head>
+<body>
+    <main class="container recruit-apply-list">
+        <p class="title">{{shop_name}} 员工招募令</p>
+        <p class="recruit-content">{{config.hire_text or '无'}}</p>
+        <p class="title tit2">申请表</p>
+        <div class="apply-list">
+            <div class="staff-img pull-left">
+                <img src="{{current_user.accountinfo.headimgurl}}" data-id="" class="hire-img"/>
+                <!--<div class="upload-box change-photo">
+                    <input id="edit_file_upload" type="file" name="file_upload" class="uploadImg" />
+                    <p>上传头像</p>
+                </div>-->
+            </div>
+            <div class="info-detail pull-left">
+                <ul>
+                    <li class="pull-left">
+                        <span class="info-title pull-left">姓名：</span>
+                        <input class="hire-name pull-left" value="{{current_user.accountinfo.nickname or ''}}">
+                        <span class="notice pull-left">用于后台登陆（不可更改）</span>
+                    </li>
+                    <li>
+                        <span class="info-title pull-left">电话：</span>
+                        <input class="hire-phone pull-left" value="{{current_user.accountinfo.phone or ''}}">
+                        <span class="notice pull-left">用于后台登陆</span>
+                    </li>
+                    <li>
+                        <span class="info-title pull-left">邮箱：</span>
+                        <input class="hire-email pull-left" value="{{current_user.accountinfo.email or ''}}">
+                        <span class="notice pull-left">用来接收公司信息，便于及时获取公司信息</span>
+                    </li>
+                    <li>
+                        <span class="info-title pull-left">住址：</span>
+                        <input class="hire-address pull-left" placeholder="">
+                        <span class="notice pull-left">用于合理安排工作</span>
+                    </li>
+                    <!--<li>
+                        <span class="info-title">职务：</span>
+                        <div class="input-group-btn job-select pull-left">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                <span class="hire-job">请选择</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">仓库拣货(JH)</a></li>
+                                <li><a href="#">一级配送(S1)</a></li>
+                                <li><a href="#">二级配送(S2)</a></li>
+                            </ul>
+                        </div>
+                        <span class="notice">若选择仓库拣货，责任区域默认为仓库，且无法修改</span>
+                    </li>
+                    <li>
+                        <span class="info-title">工作区域：</span>
+                        <div class="input-group-btn job-select pull-left">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                <span>请选择</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">仓库拣货(JH)</a></li>
+                                <li><a href="#">一级配送(S1)</a></li>
+                                <li><a href="#">二级配送(S2)</a></li>
+                            </ul>
+                        </div>
+                        <div class="input-group-btn area-select pull-left">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                <span>请选择</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#">仓库拣货(JH)</a></li>
+                                <li><a href="#">一级配送(S1)</a></li>
+                                <li><a href="#">二级配送(S2)</a></li>
+                            </ul>
+                        </div>
+                        <span class="notice">选择一级配送区域后可选二级配送区域</span>
+                    </li>-->
+                    <li>
+                        <span class="info-title pull-left">自我介绍：</span>
+                        <textarea class="hire-introduce introduce pull-left"></textarea>
+                    </li>
+                    <li>
+                        <span class="info-title pull-left">竞争优势：</span>
+                        <textarea class="hire-advantage advantage pull-left"></textarea>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="clearfix action-btn">
+            <input type="submit" class="sure-btn btn pull-left hire-apply-submit" value="提交" id="submit">
+            <a href="javascript:history.back(-1);" class="concel-btn btn pull-right">返回</a>
+        </div>
+    </main>
+<script src="{{static_url('js/zepto.min.js')}}"></script>
+<!--<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>-->
+<script src="{{static_url('js/staff-public.js')}}"></script>
+<script src="{{static_url('js/staff-hire.js')}}"></script>
+</body>
+</html>
