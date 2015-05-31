@@ -277,7 +277,7 @@ var confirmBox=function(text,index,type,id){
         $('body').append($box);
         $("#container,#nav").css({'-webkit-filter':'blur(3px)'})
         $(document).on('click','.dismiss',function(){
-            //$("#container,#nav").removeAttr("style");
+            $("#container,#nav").removeAttr("style");
             $('#confirmBox').remove();
             //$('.modal_bg').remove();
         });
