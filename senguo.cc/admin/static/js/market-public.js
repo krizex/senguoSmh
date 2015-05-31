@@ -346,7 +346,7 @@ Modal.prototype.modal=function(type){
         $target.removeClass('fade').addClass('in').css({'display':'block'});
         $target.find('.warn').remove();
         $("body").css({'overflow':'hidden'});
-        $(".body-container,.bottom-nav").css({'-webkit-filter':'blur(3px) contrast(1) brightness(0.8)'})
+        $(".body-container,.bottom-nav").css({'-webkit-filter':'blur(3px) contrast(1) brightness(0.6)'})
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
                 $('body').css({'overflow':'auto'});
