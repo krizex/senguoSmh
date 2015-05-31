@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}用户管理{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-user.css')}}"/>{% end %}
+{% block content %}
+<span class="right-title">用户管理</span>
+<div class="subnav-box clearfix">
+    <ul class="subnav pull-left">
+        <li class="all_user">
+            <a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0">所有用户</a>
+        </li>
+        <li class="old_user">
+            <a href="{{reverse_url('adminStaffFollower')}}?action=old&&order_by=time&&page=0">老用户</a>
+        </li>
+        <li class="charge_user">
+            <a href="{{reverse_url('adminStaffFollower')}}?action=charge&&order_by=time&&page=0">充值用户</a>
+        </li>
+    </ul>
+    <div class="search-input input-group pull-right">
+        <input type="text" value="" placeholder="输入用户手机号、昵称或姓名" class="search-con form-control"/>
+        <input type="submit" value="用户搜索" class="search-btn form-control"/>
+    </div>
+</div>
+{% if len(customers) != 0%}
+<div class="users-list-action clearfix bg-grey2 mt10">
+    <span class="pull-left move font14">用户数({{count}})</span>
+    <div class="input-group-btn group-select move-to pull-right set-right10">
+        <button type="button" class="btn dropdown-toggle font12" data-toggle="dropdown">
+            <span>排序规则</span>
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu font12" role="menu">
+            <li class="text-center"><a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0">关注时间</a></li>
+            <!--<li class="text-center"><a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=credits&&page=0">商城积分</a></li>
+            <li class="text-center"><a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=balance&&page=0">账户余额</a></li>-->
+        </ul>
+    </div>
+</div>
+<ul class="users-list clearfix">
+    {% for customer in customers %}
+    <li class="users-list-item  clearfix" data-id="{{customer.accountinfo.id}}">
+        <div class="show-info set-w100-fle">
+            <img class="user-img pull-left" src="{{customer.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}"/>
+            <div class="user-info pull-left">
+                <span class="user-name set-inl-blo">{{customer.accountinfo.nickname}}<i class="user-sex pull-right set-inl-blo" data-id="{{customer.accountinfo.sex}}"></i></span>
+                <div class="user-info-con">
+                    <span>用户积分：{{customer.shop_point}}</span>
+                    <!--<span class="user-level text-white text-center">Lv3</span>
+                    <span class="level-price text-grey2">566</span>-->
+                    <span class="user-account text-grey2 ml10">{{customer.shop_balance}}元</span>
+                    <spna class="ml10">用户ID：{{customer.accountinfo.id}}</spna>
+                </div>
+                <span class="remark text-pink mt10 {% if customer.remark ==None %}hidden{% end %}">备注：{{customer.remark}}</span>
+            </div>
+            <a href="javascript:;" class="remark-btn pull-right forbid_click ml10 history-order">添加备注</a>
+            <a href="{{reverse_url('adminSearchOrder')}}?action=customer_order&&id={{customer.id}}" class="history-order pull-right forbid_click ml10" target="_blank" >查看历史订单</a>
+             
+        </div>
+        <div class="hide-info set-w100-fle bg-white" style="display:none;">
+            <div class="personal-info pull-left">
+                <p class="text-grey9">个人信息</p>
+                <p>姓名：{{customer.accountinfo.realname or '无'}}</p>
+                <p>手机：{{customer.accountinfo.phone or '无'}}</p>
+                <p>生日：{{customer.accountinfo.birthday or '无'}}</p>
+            </div>
+            <div class="focus-shop pull-left">
+                <p class="text-grey9">关注的店铺</p>
+                <ul class="focus-shop-list">
+                    {% for name in customer.shop_names %}
+                    <li class="text-center bg-grey3 pull-left">{{name}}</li>
+                    {% end %}
+                </ul>
+                <span class="send-address bg-grey2 text-grey2">送货地址</span>
+                <ul class="address-list">
+                    {% for address in customer.addresses %}
+                    <li class="set-w100-fle">
+                        <p class="address">{{address.address_text}}-{{address.receiver}}</p>
+                        <p class="phone">电话：{{address.phone}}</p>
+                    </li>
+                   {% end %}
+                </ul>
+            </div>
+        </div>
+    </li>
+    {% end %}
+</ul>
+<div class="modal fade remark-box" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content bg-white">
+                    <div class="modal-header clearfix">
+                        <span class="title pull-left" id="myModalLabel">添加用户备注：</span>
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea class="remark-content center-block"></textarea>
+                    </div>
+                    <div class="modal-footer text-center">
+                         <button class="btn bg-green remark-sure text-white">确定</button>
+                    </div>
+                </div>
+            </div>
+         </div>
+<div class="users-pagination list-pagination">
+    <ul>
+        <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+        <li>
+            <span class="page-now"></span>/<span class="page-total">{{page_sum}}</span>
+        </li>
+        <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+        <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+        <li><a href="javascript:;" class="jump-to">跳转</a></li>
+    </ul>
+</div>
+{% else %}
+ <h4 class="text-center">无用户信息！</h4>
+{% end %}
+{% end %}
+{% block bottom %}<script src="{{static_url('js/admin-user.js')}}"></script>{% end %}

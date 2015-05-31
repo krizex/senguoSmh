@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title%}微信支付{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/mobile-main.css')}}"/>
+{% end %}
+{% block content%}
+     <p class="pay-title">余额充值</p>
+     <p class="pay-money">¥<span>{{totalPrice}}</span></p>
+    <div class="wrap-pay">
+        <p><span class="left c999">所在店铺：</span><span class="left txt-ar" id="shopName"></span></p>
+        <p><span class="left c999">支付方式：</span><span class="left txt-ar">微信支付</span></p>
+    </div>
+    <a href="javascript:;" class="pay-btn" id="getBrandWCPayRequest">现在支付</a>
+    <div class="copy-right">powered by senguo.cc</div>
+{% end %}
+
+{% block bottom %}
+<script src="{{static_url('js/jweixin-1.0.js')}}"></script>
+<script type="text/javascript">
+    function getCookie(key){
+        var aCookie = document.cookie.split("; ");
+        for (var i=0; i < aCookie.length; i++){
+            var aCrumb = aCookie[i].split("=");
+            if (key == aCrumb[0]){
+                return unescape(aCrumb[1]);
+            }
+        }
+    }
+    $(".container").height($(window).height()).css({background:"#f5f5f5"});
+    $("#shopName").html(getCookie("shopName"));
+   wx.config({
+            debug: false,
+            appId: "{{wxappid}}",
+            timestamp: {{timestamp}},
+            nonceStr: "{{noncestr}}",
+            signature: "{{signature}}",
+            jsApiList: ['onMenuShareTimeline','chooseWXPay','hideMenuItems']
+    });
+    wx.ready(function(){
+        document.querySelector('#getBrandWCPayRequest').onclick = function () {
+            wx.chooseWXPay({
+                timestamp: {{renderPayParams['timeStamp']}},
+                nonceStr: '{{renderPayParams['nonceStr']}}',
+                package: '{{renderPayParams['package']}}',
+                signType: '{{renderPayParams['signType']}}',
+                paySign: '{{renderPayParams['paySign']}}',
+                success: function (res) {
+                // 支付成功后的回调函数
+                $.ajax({
+                    url:"/fruitzone/paytest",
+                    type:"post",
+                    data:{action:"wx_pay",_xsrf:window.dataObj._xsrf},
+                    success:function(res){
+                        if(res.success){
+                            window.location.href = '/customer/balance';
+                        }
+                    }
+                });
+            }
+        });
+    }
+})
+</script>
+{% end %}

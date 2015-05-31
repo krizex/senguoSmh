@@ -1,0 +1,121 @@
+{% extends '../customer/detail-base.html' %}
+{% block title %}我的订单{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/market-order-detail.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
+{% end %}
+{% block top %}订单详情{% end %}
+{% block content %}
+{% set fruits=eval(order.fruits)%}
+{% set mgoods=eval(order.mgoods)%}
+<div class="container mb50">
+    <div class="order-grade">
+        <div class="order-line">
+            <div class="order-line-grade"></div>
+            <div class="order-wawa">
+                <a href="tel:{{order.phone}}">
+                    {% if order.status == -1%}
+                    <img src="/static/images/TDSG.png" alt="配送员头像"/>
+                    {% else %}
+                    <img src="{{order.sender_img}} or '/static/images/TDSG.png'" alt="配送员头像"/>
+                    {% end %}
+                </a>
+            </div>
+            <div class="order-status-txt">
+                <span id="status-txt" data-id="{{order.status}}">配送中</span><a class="tel-btn" href="tel:{{order.phone}}">拨号</a>
+            </div>
+        </div>
+    </div>
+    <div class="order-item">
+        <h4 class="top-title"><span class="black-txt">{{shop_name}}</span><span class="arr-right"></span><a href="tel:{{order.phone}}" class="contact-us fr tel-btn"><i class="i-contact"></i>联系客服</a></h4>
+        <ul class="goods-lst">
+            {% for charge_type in  charge_types%}
+            <li class="group {{charge_type.fruit.fruit_type.code}}">
+                <dl class="goods-item group">
+                    <dd>
+                        {% if charge_type.fruit.img_url%}
+                        <img src="{{charge_type.fruit.img_url}}?imageView/1/w/170/h/170" alt="商品图片"/>
+                        {% else %}
+                        <img src="/static/design_img/TDSG.png" alt="商品图片"/>
+                        {% end %}
+                    </dd>
+                    <dt class="bg">
+                    <p class="color">{{fruits[charge_type.id]['fruit_name']}}</p>
+                    <p class="color txt-ar"><span class="big">{{fruits[charge_type.id]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{round(charge_type.price*fruits[charge_type.id]['num'], 2)}}</span>元</p>
+                    <p class="color">{{fruits[charge_type.id]['charge']}}</p>
+                    </dt>
+                </dl>
+            </li>
+            {% end %}
+            {% for mcharge_type in  mcharge_types %}
+            <li class="group TDSG">
+                <dl class="goods-item group">
+                    <dd>
+                        {% if mcharge_type.mgoods.img_url %}
+                        <img src="{{mcharge_type.mgoods.img_url}}?imageView/1/w/170/h/170" alt="商品图片"/>
+                        {% else %}
+                        <img src="/static/design_img/TDSG.png" alt="商品图片"/>
+                        {% end %}
+                    </dd>
+                    <dt class="bg">
+                    <p class="color">{{mgoods[mcharge_type.id]['mgoods_name']}}</p>
+                    <p class="color txt-ar"><span class="big">{{mgoods[mcharge_type.id]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{mcharge_type.price}}</span>元</p>
+                    <p class="color">{{mgoods[mcharge_type.id]['charge']}}</p>
+                    </dt>
+                </dl>
+            </li>
+            {% end %}
+        </ul>
+        <p>商品总价<span class="fr"><span class="text-red3">{{order.totalPrice-order.freight}}元</span></span></p>
+        <p>配送费<span class="fr"><span class="text-red3">{{order.freight}}元</span></span></p>
+        <p class="dash-bt group"><span class="fr black-txt">应付款：<span class="text-red3">{{order.totalPrice}}元</span></span></p>
+    </div>
+    <div class="order-item pt10">
+        <p class="text-black">订单编号：<span class="order-id" data-id="{{order.id}}">{{order.num}}</span></p>
+        <p>下单时间：<span>{{order.create_date}}</span></p>
+        <p>收货人：<span>{{order.receiver}}</span></p>
+        <p>联系电话：<span>{{order.phone}}</span></p>
+        <p>收货地址：<span>{{order.address_text}}</span></p>
+        <p>配送时间：<span class="send_date m-r10">今天</span><span>{{order.send_time}}</span></p>
+        <p>订单备注：<span>{{order.message or '无'}}</span></p>
+        <p class="text-black">支付方式：<span class="">{% if order.pay_type==1 %}货到付款{% elif order.pay_type==2 %}余额支付{% elif order.pay_type==3 %}在线支付{% if online_type=='wx'%}-微信支付{% elif online_type=='alipay'%}-支付宝支付{% end %}{% end %}</span></p>
+    </div>
+</div>
+<div class="wrap-bm-btn">
+    <a class="fr add-comment red-btn" href="javascript:;" id="getBrandWCPayRequest">去支付</a>
+    <a class="fr white-btn" href="javascript:;" data-id="{{order.id}}" id="cancel-order">取消订单</a>
+</div>
+<input type="hidden" value="{{order.create_date}}" class="create_time"/>
+<input type="hidden" value="{{order.create_date.year}}" class="create_year"/>
+<input type="hidden" value="{{order.create_date.month}}" class="create_month"/>
+<input type="hidden" value="{{order.create_date.day}}" class="create_day"/>
+<input type="hidden" value="{{order.today}}" class="send_day"/>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/market-pay-detail.js')}}"></script>
+<script type="text/javascript">
+    wx.config({
+        debug: false,
+        appId: "{{wxappid}}",
+        timestamp: {{timestamp}},
+        nonceStr: "{{noncestr}}",
+            signature: "{{signature}}",
+            jsApiList: ['onMenuShareTimeline','chooseWXPay','hideMenuItems']
+        });
+    wx.ready(function(){
+        document.querySelector('#getBrandWCPayRequest').onclick = function () {
+            wx.chooseWXPay({
+                timestamp: '{{renderPayParams['timeStamp']}}',
+                nonceStr: '{{renderPayParams['nonceStr']}}',
+                package: '{{renderPayParams['package']}}',
+                signType: '{{renderPayParams['signType']}}',
+                paySign: '{{renderPayParams['paySign']}}',
+                success: function (res) {
+                // 支付成功后的回调函数
+                window.location.href = '/notice/success';
+            }
+        });
+    }
+});
+</script>
+{% end %}

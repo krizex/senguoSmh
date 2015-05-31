@@ -1,0 +1,56 @@
+{% extends 'market-base.html' %}
+{% block title%}营销设置{% end %}
+{% block setcontent %}
+{% if shop_code and shop_code!='not set' %}
+<div class="clearfix top-box">
+    <p>任意用户都能在您的告白墙留言，用户之间也能参与互动。能有效增加商城用户粘度。 </p>
+    <p>开启后，在商城-发现-告白墙界面可以看到。</p>
+    <button class="btn text-white  action-btn confess-active" data-status="{{current_shop.marketing.confess_active}}" data-flag="on">停用</button>
+</div>
+<table class="clearfix set-box font14">
+    <colgroup width="15%"></colgroup>
+    <colgroup width="75%"></colgroup>
+    <colgroup width="10%"></colgroup>
+    <tr>
+        <td class="text-grey9">告白墙地址</td>
+        <td><a href="{{reverse_url('ConfessionHome',shop_code)}}">http://senguo.cc/lovewall/{{shop_code}}</a></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="text-grey9">告白墙管理</td>
+        <td><a href="{{reverse_url('adminConfession')}}?action=all&&page=0">http://senguo.cc/{{reverse_url('adminConfession')}}?action=all&&page=0</a></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="text-grey9">告白墙公告</td>
+        <td>
+            <p class="wall-content">{{current_shop.marketing.confess_notice or '无'}}</p>
+            <textarea class="wall-notice" style="display:none;">{{current_shop.marketing.confess_notice or ''}}</textarea>
+        </td>
+        <td class="font14 text-right">
+            <a href="javascript:;" class="notice-edit">修改</a>
+            <a href="javascript:;" class="notice-sure" style="display:none">确定</a>
+        </td>
+    </tr>
+    <tr>
+        <td class="text-grey9">告白模式</td>
+        <td>
+            <p>告白模式开启后，发布告白需输入【对方】，信息展示卡片上能显示告白人和告白对象。</p>
+            <p>关闭后，告白墙功能与【微社区】功能类似，方便商城用户交流反馈。</p>
+        </td>
+        <td>
+            <a class="mode pull-right mt10 confess-type" data-flag="on" title="点击切换状态" data-status="{{current_shop.marketing.confess_type}}" ><span class="tit">已启用</span><span class="circle"></span></a>
+        </td>
+    </tr>
+    <tr>
+        <td class="text-grey9">单条发布限定</td>
+        <td>开启后，限定每个用户一天只能发布一个告白，适合在各大节日里做告白有奖的活动。</td>
+        <td>
+            <a class="mode  pull-right mt10 confess-only" data-flag="on" title="点击切换状态" data-status="{{current_shop.marketing.confess_only}}"><span class="tit">已启用</span><span class="circle"></span></a>
+        </td>
+    </tr>
+</table>
+{% else %}
+<h4 class="mt20">您还未设置店铺号，不能进行营销设置，<a href="{{reverse_url('adminShopConfig')}}">点击设置店铺号</a></h4>
+{% end %}
+{% end %}

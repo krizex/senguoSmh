@@ -1,0 +1,31 @@
+{% extends 'base.html'%}
+
+{% block content%}
+{% set subpage = context.get("subpage", "home")%}
+
+{% set home_active = ""%}
+{% set community_active = ""%}
+{% set info_active = ""%}
+{% set adminHome_active = ""%}
+
+{% if subpage == "home"%}
+{% set home_active = "active"%}
+{% elif subpage == "cummunity"%}
+{% set community_active = "active"%}
+{% elif subpage == "infowall"%}
+{% set info_active = "active"%}
+{% else %}
+{% set adminHome_active = "active"%}
+{% end %}
+
+<nav class="bottom-nav white-color navbar-fixed-bottom">
+    <ul class="row select-list">
+        <li class="col-xs-6 col-sm-6 {{home_active}}"><a href="{{reverse_url('fruitzoneHome')}}">店铺列表</a></li>
+        <!--<li class="col-xs-3 col-sm-3 {{community_active}}"><a href="{{reverse_url('fruitzoneCommunity')}}">社区</a></li>
+        <li class="col-xs-3 col-sm-3"><a href="{{reverse_url('infowallHomeSupply')}}">信息墙</a></li>-->
+        <li class="col-xs-6 col-sm-6 {{adminHome_active}}"><a href="{{reverse_url('fruitzoneAdminHome')}}">个人中心</a></li>
+    </ul>
+</nav>
+{% block mainpage%}{% end %}
+
+{% end %}

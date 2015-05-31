@@ -1,0 +1,44 @@
+{% extends 'count-base.html' %}
+{% block title%}用户属性{% end %}
+{% block count %}
+<div class="admin-right pull-right">
+    <ul class="sub-nav clearfix">
+        <span class="set-inl-blo header pull-left text-center">属性分布</span>
+        <li class="pull-left text-center active"><a href="javascript:;">性别</a></li>
+        <li class="pull-left text-center"><a href="javascript:;">省份</a></li>
+        <li class="pull-left text-center"><a href="javascript:;">城市</a></li>
+        <li class="pull-left text-center"><a href="javascript:;">终端</a></li>
+    </ul>
+    <p class="tit font16">详细数据</p>
+    <table class="detail-sex text-center table-count">
+        <tr class="bg-grey2 title">
+            <td class="w3">性别</td>
+            <td class="w3">用户数</td>
+            <td class="w3">占比</td>
+        </tr>
+    </table>
+    <table class="detail-province text-center table-count">
+        <tr class="bg-grey2 title">
+            <td class="w3">省份</td>
+            <td class="w3">用户数</td>
+            <td class="w3">占比</td>
+        </tr>
+    </table>
+    <table class="detail-city text-center table-count">
+        <tr class="bg-grey2 title">
+            <td class="w3">城市</td>
+            <td class="w3">用户数</td>
+            <td class="w3">占比</td>
+        </tr>
+    </table>
+    <!--<table class="detail-equipment text-center table-count">
+        <tr class="bg-grey2 title">
+            <td>终端</td>
+            <td>用户数</td>
+            <td>占比</td>
+        </tr>
+    </table>-->
+</div>
+{% end %}
+{% block bottom %}<script src="{{static_url('js/superadmin-count_attribute.js')}}"></script>{% end %}
+
