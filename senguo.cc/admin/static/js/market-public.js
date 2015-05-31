@@ -279,12 +279,12 @@ var confirmBox=function(text,index,type,id){
         $(document).on('click','.dismiss',function(){
             $("#container,#nav").removeAttr("style");
             $('#confirmBox').remove();
-            $('.modal_bg').remove();
+            //$('.modal_bg').remove();
         });
          $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
                 $("#container,#nav").removeAttr("style");
-                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
+                //$('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
                 $('#confirmBox').remove();
             }
         });
@@ -292,7 +292,7 @@ var confirmBox=function(text,index,type,id){
 var confirmRemove=function(){
     $("#container,#nav").removeAttr("style");
     $('#confirmBox').remove();
-    $('.modal_bg').remove();
+    //$('.modal_bg').remove();
 }
 //word notice
 var noticeTimer = null;
