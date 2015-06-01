@@ -1296,6 +1296,14 @@ class Follower(AdminBaseHandler):
 				customers += self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
 					join(models.Address).filter(models.Address.receiver.like("%%%s%%" % wd)).all()
+				customer_list=[]
+				idlist =[]
+				for customer in customers:
+					if customer[0].id not in idlist:
+						idlist.append(customer[0].id)
+						customer_list.append(customer)
+				customers = customer_list
+
 					
 		elif action =="filter":
 			wd = self.args["wd"]
