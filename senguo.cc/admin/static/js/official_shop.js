@@ -216,7 +216,7 @@ var getData=function(action,page,type,data){
 	$.postJson(url,args,function(res){
 	if(res.success){
         if(window.dataObj.shop_item==undefined){
-            $.getItem('/static/items/official/shop_item.html?v=2015-0320',function(data){
+            $.getItem('/static/items/official/shop_item.html?v=20150530',function(data){
                 window.dataObj.shop_item=data;
                 initShop(res);
             });

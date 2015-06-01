@@ -23,7 +23,7 @@
 .address-box .modal-body p{margin-bottom:5px;margin-top:5px;}
 .address-box .modal-body .w60{width:300px;}
 .address-box .modal-body .tit{width:70px;line-height:30px;}
-.address-box .modal-body input{background:#f2f2f2;height:30px;width:165px;line-height:30px;text-indent:5px;}
+.address-box .modal-body input{background:#f2f2f2;height:30px;width:165px;line-height:30px;text-indent:5px;border-radius:2px;}
 
 .collect-icon{width:20px;height:15px;background:url('../svg/icon_list-2.png') -99px -27px;margin-right:5px;background-size:140px;margin-top:15px;}
 .address-icon{width:20px;height:20px;background:url('../svg/icon_list-2.png') -98px -24px;margin-right:10px;background-size:140px;margin-top:13px;}

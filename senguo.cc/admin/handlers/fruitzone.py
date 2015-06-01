@@ -84,7 +84,7 @@ class ShopList(FruitzoneBaseHandler):
 	def get_data(self,q):
 		shops = []
 		for shop in q:
-				if shop.shop_code !='not set':
+				if shop.shop_code !='not set' and shop.status !=0:
 					satisfy = 0
 					shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname','auth_change',
 												 'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\

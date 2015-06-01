@@ -92,11 +92,14 @@ class GlobalBaseHandler(BaseHandler):
 		if hasattr(self, "_session"):
 			return self._session
 		self._session = models.DBSession()
+		print("DB session open !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		return self._session
 
 	def on_finish(self):
 		# release db connection
+		print("DB session on_finish =========================================================")
 		if hasattr(self, "_session"):
+			print("DB session close!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			self._session.close()
 
 	def timestamp_to_str(self, timestamp):
@@ -295,7 +298,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			para_str = "?next="+tornado.escape.url_escape(next_url)
 		else:
 			para_str = ""
-		print('login in get_weixin_oauth_url',self,next_url)
+		# print("[微信授权]跳转链接：",next_url)
 
 		if self.is_wexin_browser():
 			if para_str: para_str += "&"
@@ -375,7 +378,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		if not user_id:
 			self._user = None
 		else:
-			print(user_id,'get_current_user: user_id')
+			# print(user_id,'get_current_user: user_id')
 			self._user = self.__account_model__.get_by_id(self.session, user_id)
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:

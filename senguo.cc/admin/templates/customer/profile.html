@@ -5,51 +5,51 @@
 <link rel="stylesheet" href="{{static_url('css/market-profile.css')}}"/>
 {% end %}
 {% block content %}
-<div class="user-info-detail pt36 clea bm-none">
+<div class="user-info-detail pt36 clea bm-none" id="container">
     <div class="item-title">基本信息</div>
     <ul class="pt2 profile-lst bm-line">
+        <a href="javascript:;">
         <li class="item bt-none">
             <div class="info-con">
-                <span class="title img-title pull-left">头像</span>
-                <a href="javascript:;">
-                    <i class="arr-right pull-right mt12"></i>
-                    <img src="{{current_user.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}" class="user-img pull-right"/>
-                </a>
+                <span class="title img-title pull-left text-grey3">头像</span>
+                <i class="arr-right pull-right mt12"></i>
+                <img src="{{current_user.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}" class="user-img pull-right"/>
             </div>
         </li>
+        </a>
         <!--<li class="item">
             <div class="info-con">
                 <span class="title pull-left">昵称</span>
                 <a href="javascript:;" class="nickname pull-right s1 editInfo">{{current_user.accountinfo.nickname or '无'}}</a>
             </div>
         </li>-->
+        <a href="javascript:;" class="box" id="userRealname">
         <li class="item">
             <div class="info-con h19">
-                <a href="javascript:;" class="box" id="userRealname">
-                    <span class="title pull-left text-grey3">姓名</span>
-                    <i class="arr-right pull-right"></i>
-                    <span class="nickname pull-right s1" id="userName">{{current_user.accountinfo.realname or '无'}}</span>
-                </a>
+                <span class="title pull-left text-grey3">姓名</span>
+                <i class="arr-right pull-right"></i>
+                <span class="nickname pull-right s1" id="userName">{{current_user.accountinfo.realname or '无'}}</span>
             </div>
         </li>
+        </a>
+        <a href="javascript:;" id="userSex" class="box">
         <li class="item">
             <div class="info-con h19">
-                <a href="javascript:;" id="userSex" class="box">
-                    <span class="title pull-left text-grey3">性别</span>
-                    <i class="arr-right pull-right"></i>
-                    <span class="pull-right s1 user_sex" data-id="{{current_user.accountinfo.sex}}"></span>
-                </a>
+                <span class="title pull-left text-grey3">性别</span>
+                <i class="arr-right pull-right"></i>
+                <span class="pull-right s1 user_sex" data-id="{{current_user.accountinfo.sex}}"></span>    
             </div>
         </li>
+        </a>
+        <a href="javascript:;" class="box" id="userBirthday">
         <li class="item">
             <div class="info-con h19">
-                <a href="javascript:;" class="box" id="userBirthday">
-                    <span class="title pull-left text-grey3">出生日期</span>
-                    <i class="arr-right pull-right"></i>
-                    <span class="pull-right s1" id="birthDay">{{context['birthday'] or '请设置'}}</span>
-                </a>
+                <span class="title pull-left text-grey3">出生日期</span>
+                <i class="arr-right pull-right"></i>
+                <span class="pull-right s1" id="birthDay">{{context['birthday'] or '请设置'}}</span>
             </div>
         </li>
+        </a>
     </ul>
     <ul class="profile-lst">
         <li class="item bt-none">
@@ -69,59 +69,59 @@
                 </a>
             </div>
         </li>
+        <a href="/admin" id="1" class="box">
         <li class="item">
             <div class="info-con h19">
-                <a href="/admin" id="1" class="box">
-                    <span class="title pull-left text-grey3">我是卖家</span>
-                    <i class="arr-right pull-right"></i>
-                    <span class="pull-right">管理我的店铺</span>
-                </a>
+                <span class="title pull-left text-grey3">我是卖家</span>
+                <i class="arr-right pull-right"></i>
+                <span class="pull-right text-grey9">管理我的店铺</span>
             </div>
         </li>
+        </a>
+        <a href="/staff" id="2" class="box">
         <li class="item">
             <div class="info-con h19">
-                <a href="/staff" id="2" class="box">
-                    <span class="title pull-left text-grey3">我是店铺成员</span>
-                    <i class="arr-right pull-right"></i>
-                    <span class="pull-right">进入员工后台</span>
-                </a>
+                <span class="title pull-left text-grey3">我是店铺成员</span>
+                <i class="arr-right pull-right"></i>
+                <span class="pull-right text-grey9">进入员工后台</span>
             </div>
         </li>
+        </a>
     </ul>
     <div class="item-title">帐号与安全</div>
     <ul class="m-b20 profile-lst">
+        <a href="javascript:;" id="senguoID" class="box">
         <li class="item bt-none">
             <div class="info-con h19">
-                <a href="javascript:;" id="senguoID" class="box">
-                    <span class="title pull-left text-grey3">我的用户ID&nbsp;&nbsp;<span class="c999">{{current_user.accountinfo.id}}</span></span>
-                    <i class="arr-right pull-right"></i>
-                    <span class="pull-right question-icon g-txt"></span>
-                </a>
+                <span class="title pull-left text-grey3">我的用户ID&nbsp;&nbsp;<span class="c999">{{current_user.accountinfo.id}}</span></span>
+                <i class="arr-right pull-right"></i>
+                <span class="pull-right question-icon g-txt"></span>
             </div>
         </li>
+        </a>
+        <a href="javascript:;" id="phoneNumber" class="box">
         <li class="item">
             <div class="info-con h19">
-                <a href="javascript:;" id="phoneNumber" class="box">
-                    <span class="title pull-left text-grey3">手机号绑定&nbsp;&nbsp;<span class="c999 phone">{{current_user.accountinfo.phone or '未绑定'}}</span></span>
-                    <i class="arr-right pull-right"></i>
-                    <span class="pull-right tiephone g-txt">更换</span>
-                </a>
+                <span class="title pull-left text-grey3">手机号绑定&nbsp;&nbsp;<span class="c999 phone">{{current_user.accountinfo.phone or '未绑定'}}</span></span>
+                <i class="arr-right pull-right"></i>
+                <span class="pull-right tiephone g-txt">更换</span>    
             </div>
         </li>
+        </a>
+        <a href="{{reverse_url('customerPassword')}}" class="box">
         <li class="item">
             <div class="info-con h19">
-                <a href="{{reverse_url('customerPassword')}}" class="box">
-                    <span class="title pull-left text-grey3">密码管理</span>
-                    <i class="arr-right pull-right"></i>
-                     <span class="pull-right g-txt">重置</span>
-                </a>
-              <!--    <a href="javascript:;" id="setPwd" class="box">
+                <span class="title pull-left text-grey3">密码管理</span>
+                <i class="arr-right pull-right"></i>
+                <span class="pull-right g-txt">重置</span>
+                <!--<a href="javascript:;" id="setPwd" class="box">
                     <span class="title pull-left text-grey3">密码管理</span>
                      <i class="arr-right pull-right"></i>
                     <span class="pull-right setPwd g-txt">设置密码</span>
-                </a> -->
+                </a>-->
             </div>
         </li>
+        </a>
         <li class="item">
             <div class="info-con">
                 <span class="title img-title pull-left lh50">第三方帐号绑定</span>

@@ -9,7 +9,7 @@
 {% block content %}
 {% set fruits=eval(order.fruits)%}
 {% set mgoods=eval(order.mgoods)%}
-<div class="container mb50">
+<div class="container mb50" id="container">
     <div class="order-grade">
         <div class="order-line">
             <div class="order-line-grade"></div>
@@ -116,7 +116,7 @@
 </div>
 {% end %}
 {% if order.status == -1 or order.status == 1%}
-<div class="wrap-bm-btn">
+<div class="wrap-bm-btn" id="nav">
     {% if order.status == -1 %}
     <a class="fr add-comment red-btn" href="{% if online_type=='wx'%}/customer/onlinewxpay{% elif online_type=='alipay'%}/customer/online/alipay{% end %}?order_id={{order.id}}">去支付</a>
     {% end %}

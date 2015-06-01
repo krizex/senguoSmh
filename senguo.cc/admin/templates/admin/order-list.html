@@ -6,7 +6,7 @@
 <script>
     window.dataObj.order={% raw json.dumps(data) %}
 </script>
-<h4 class="result_title"></h4>
+<h4 class="right-title"></h4>
 <ul class="order-list-content set-width-float">
 </ul>
 <input type="hidden" value="{{current_shop.config.receipt_msg}}" class="shop-receipt-info" data-img="{{current_shop.config.receipt_img}}"  data-active="{{current_shop.config.receipt_img_active}}"/>
@@ -35,9 +35,9 @@
 {% block bottom %}
 <script>
 var action=$.getUrlParam('action');
-if(action=='order') $('.result_title').text('订单搜索结果');
-else if(action=='customer_order') $('.result_title').text('用户订单'); 
-else if(action=='SH2_order') $('.result_title').text('员工订单');  
+if(action=='order') $('.right-title').text('订单搜索结果');
+else if(action=='customer_order') $('.right-title').text('用户订单'); 
+else if(action=='SH2_order') $('.right-title').text('员工订单');  
 </script>
 <script src="{{static_url('js/admin-user-order.js')}}"></script>
 {% end %}
