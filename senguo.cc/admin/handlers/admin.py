@@ -1612,6 +1612,18 @@ class Goods(AdminBaseHandler):
 
 		return self.send_success()
 
+class editorTest(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action?:str")
+	def get(self):
+		if "action" in self.args:
+			if self.args["action"] == "editor" :
+				shop_id = self.current_shop.id
+				token = self.get_qiniu_token("editor",shop_id)
+				data={'token1':token}
+				return self.send_success(data=data)
+		return self.render("admin/test-editor.html",context=dict(subpage="goods"),)
+ 
 # 用户管理
 class Follower(AdminBaseHandler):
 	@tornado.web.authenticated
