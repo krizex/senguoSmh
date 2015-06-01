@@ -1281,7 +1281,10 @@ class Follower(AdminBaseHandler):
 			count = q.count()
 			customers = q.offset(page*page_size).limit(page_size).all()
 
-		elif action == "search":  # 用户搜索，支持根据手机号/真名/昵称搜索
+		# Modify by Sky - 2015.6.1
+		# 用户搜索，支持根据手机号/真名/昵称搜索，支持关键字模糊搜索，支持收件人搜索
+		# TODO:搜索性能需改进
+		elif action == "search":  
 			wd = self.args["wd"]
 
 			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
