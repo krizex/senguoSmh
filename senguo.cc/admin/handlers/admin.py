@@ -1286,8 +1286,8 @@ class Follower(AdminBaseHandler):
 			#if wd.isdigit():  # 判断是否为纯数字，纯数字就按照手机号搜索
 			customers = or_(self.session.query(models.Customer).join(models.CustomerShopFollow).\
 				filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-				join(models.Accountinfo).filter(or_(models.Accountinfo.phone == int(wd),
-													models.Accountinfo.id == int(wd))).all(),\
+				join(models.Accountinfo).filter(or_(models.Accountinfo.phone.like("%%%s%%" % wd),
+													models.Accountinfo.id.like("%%%s%%" % wd))).all(),\
 				self.session.query(models.Customer).join(models.CustomerShopFollow).\
 				filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
 				join(models.Accountinfo).filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),
