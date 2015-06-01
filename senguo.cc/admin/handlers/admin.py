@@ -1292,7 +1292,7 @@ class Follower(AdminBaseHandler):
 
 				customers = self.session.query(models.Customer,models.Accountinfo,models.Address,models.CustomerShopFollow)
 				customers = customers.filter(models.CustomerShopFollow.shop_id == self.current_shop.id)
-				customers = customers.filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),models.Accountinfo.realname.like("%%%s%%" % wd),models.Address.receiver.like("%%%s%%" % wd)).all()
+				customers = customers.filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),models.Accountinfo.realname.like("%%%s%%" % wd),models.Address.receiver.like("%%%s%%" % wd))).all()
 
 
 
