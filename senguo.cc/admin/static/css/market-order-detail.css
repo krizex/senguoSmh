@@ -40,6 +40,6 @@
 .order-wawa img{width: 40px;height: 40px;border-radius: 50%;}
 .order-status-txt{position: absolute;display: inline-block;line-height: 20px;font-size: 12px;-webkit-transform:translate(-50%,0);top:28px;color:#999;width: 100px;text-align: center;}
 .order-status-txt>a{color: #52b43f;font-size: 12px;margin-left:5px;}
-.contact-us{border: 1px solid #f0f4f0;font-size: 14px;height: 28px;line-height: 28px;color:#999;width: 86px;text-align: center;border-radius: 4px;;-webkit-box-sizing: content-box;margin-top: 6px;}
-.i-contact{width: 17px;height: 20px;background: url('../svg/icon_list-2.png') no-repeat -14px -36px;background-size: 114px 146px;display: inline-block;position: relative;top: 4px;}
+.contact-us{border: 1px solid #f0f4f0;font-size: 14px;height: 28px;line-height: 28px;color:#fff;width: 86px;text-align: center;border-radius: 4px;;-webkit-box-sizing: content-box;margin-top: 6px;background-color:#33CC66}
+.i-contact{width: 15px;height: 15px;background: url('../images/icon_phone.png');background-size: 15px 15px;display: inline-block;position: relative;top: 3px;}
 .arr-right{display: inline-block;width: 8px;height:14px;background-image: url("../images/arr-right.png");background-size: contain;background-repeat: no-repeat;position: relative;top: 2px;left: 10px;}
