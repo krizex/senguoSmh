@@ -201,7 +201,7 @@ handlers = [
 
 	# 主页
 	(r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次
-	(r"/fruitzone", handlers.fruitzone.Home, {}, "fruitzoneHome"),  # 匹配'\' 0~1次
+	# (r"/fruitzone", handlers.fruitzone.Home, {}, "fruitzoneHome"),  # 匹配'\' 0~1次
 	(r"/intro", handlers.fruitzone.Home, {}, "fruitzoneHome"),
 	(r"/list", handlers.fruitzone.ShopList, {}, "fruitzoneShopList"),
 	(r"/fruitzone/admin/home", handlers.fruitzone.AdminHome, {}, "fruitzoneAdminHome"),
@@ -226,7 +226,7 @@ handlers = [
 
 	#to remove
 	#woody
-	(r"/fruitzone/shop/(\d+)", handlers.fruitzone.Shop, {}, "fruitzoneShop"),
+	#(r"/fruitzone/shop/(\d+)", handlers.fruitzone.Shop, {}, "fruitzoneShop"),
 	(r"/fruitzone/(\d+)", handlers.fruitzone.Shop, {}, "fruitzoneShop"),
 
 	(r"/fruitzone/admin/shops", handlers.fruitzone.AdminShops, {}, "fuirzoneAdminShops"),
@@ -248,8 +248,8 @@ handlers = [
 	(r"/infowall/infoCollect", handlers.infowall.InfoCollect, {}, "infowallInfoCollect"),
 	(r"/infowall/infoIssue", handlers.infowall.InfoIssue, {}, "infowallInfoIssue"),
 
-	#ti remove
-	(r"/shop/(\w+)", handlers.customer.Market, {}, "Market"),
+	#to remove
+	#(r"/shop/(\w+)", handlers.customer.Market, {}, "Market"),
 	#remove shop
 	(r"/(\w+)", handlers.customer.Market, {}, "Market"),
 
