@@ -1284,21 +1284,21 @@ class Follower(AdminBaseHandler):
 		elif action == "search":  # 用户搜索，支持根据手机号/真名/昵称搜索
 			wd = self.args["wd"]
 			#if wd.isdigit():  # 判断是否为纯数字，纯数字就按照手机号搜索
-				customers = or_(self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(or_(models.Accountinfo.phone == int(wd),
-														models.Accountinfo.id == int(wd))).all(),\
-					self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),
-														models.Accountinfo.realname.like("%%%s%%" % wd))).all(),\
-					self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),
-														models.Accountinfo.realname.like("%%%s%%" % wd))).all(),\
-					self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Address).filter(models.Address.receiver.like("%%%s%%" % wd)).all())
+			customers = or_(self.session.query(models.Customer).join(models.CustomerShopFollow).\
+				filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+				join(models.Accountinfo).filter(or_(models.Accountinfo.phone == int(wd),
+													models.Accountinfo.id == int(wd))).all(),\
+				self.session.query(models.Customer).join(models.CustomerShopFollow).\
+				filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+				join(models.Accountinfo).filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),
+													models.Accountinfo.realname.like("%%%s%%" % wd))).all(),\
+				self.session.query(models.Customer).join(models.CustomerShopFollow).\
+				filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+				join(models.Accountinfo).filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),
+													models.Accountinfo.realname.like("%%%s%%" % wd))).all(),\
+				self.session.query(models.Customer).join(models.CustomerShopFollow).\
+				filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+				join(models.Address).filter(models.Address.receiver.like("%%%s%%" % wd)).all())
 			#else:  # 按照名字搜索
 			#	customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 			#		filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
