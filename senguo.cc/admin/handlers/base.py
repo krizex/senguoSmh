@@ -96,7 +96,9 @@ class GlobalBaseHandler(BaseHandler):
 
 	def on_finish(self):
 		# release db connection
+		print("DB session on_finish =========================================================")
 		if hasattr(self, "_session"):
+			print("DB session close!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			self._session.close()
 
 	def timestamp_to_str(self, timestamp):
