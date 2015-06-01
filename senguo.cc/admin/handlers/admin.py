@@ -1297,10 +1297,8 @@ class Follower(AdminBaseHandler):
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
 					join(models.Address).filter(models.Address.receiver.like("%%%s%%" % wd)).all()
 				customer_list=[]
-				idlist =[]
 				for customer in customers:
-					if customer[0].id not in idlist:
-						idlist.append(customer[0].id)
+					if customer not in customer_list:
 						customer_list.append(customer)
 				customers = customer_list
 
