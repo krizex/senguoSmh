@@ -1458,7 +1458,8 @@ class Cart(CustomerBaseHandler):
 		####################################################
 		pay_type = self.args['pay_type']
 		if pay_type == 2:
-			print(self.args['pay_type'])
+			if current_shop.shop_auth == 0:
+				return self.send_fail('当前店铺未认证，此功能暂不可用')
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
 				shop_id = shop_id).first()
 			if not shop_follow:
@@ -1608,6 +1609,8 @@ class Cart(CustomerBaseHandler):
 
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
+			if current_shop.shop_auth == 0:
+				return self.send_fail('当前店铺未认证，此功能暂不可用')
 			online_type = self.args['online_type']
 			self.set_cookie('order_id',str(order.id))
 			self.set_cookie('online_totalPrice',str(order.totalPrice))

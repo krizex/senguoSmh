@@ -385,3 +385,27 @@ function wobble(target){
         target.removeClass('anim-wobble');
     });
 }
+
+function modalNotice(notice){
+    var item='<div class="modal in" id="notice-box" style="display:block">'+
+                        '<div class="modal-dialog anim-bounceIn">'+
+                            '<div class="modal-content bg-white">'+
+                                '<div class="modal-top"><img src="/static/images/info_top.png"/></div>'+
+                                '<div class="modal-header set-width-float">'+
+                                    '<button type="button" class="close dismiss-notice">✕</button>'+
+                                    '<h2 class="modal-title  text-center line48">TIPS</h2>'+
+                                '</div>'+
+                                '<div class="modal-body set-width-float text-center">'+
+                                    '<p class="detail font14 text-center">{{notice}}</p>'+
+                                '</div>'+
+                                '<div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>'+
+                            '</div>'+
+                        '</div>'+
+                    '</div>';
+    var render = template.compile(item);
+    var content = render({notice:notice});
+    $('body').append(content);
+    $(document).on('click','.dismiss-notice',function(){
+        $('#notice-box').remove();
+    });
+}

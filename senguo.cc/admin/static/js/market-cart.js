@@ -373,40 +373,41 @@ $(document).ready(function(){
         var status = $this.attr('data-status');
         var statu = $this.attr("data-auth");
         var type = $this.find('.title').text();
-        if(statu == "False"){
-            $this.removeClass('active').addClass('not_available');
-        }
+        console.log(statu);
         if(status==0){
             $this.removeClass('active').addClass('not_available');
-            $('.pay_type .available').first().addClass('active').siblings('li').removeClass('active');
+            $('.pay_type .available').first().addClass('active').siblings('.item').removeClass('active');
             if(index==0){
                 $(".wrap-online-lst").addClass("hidden");
             }
         }else{
             $this.addClass('available');
         }
+        if(statu == "False"){
+            $this.removeClass('active').addClass('not_available').removeClass('available');
+            if(index==0){
+                $(".wrap-online-lst").addClass("hidden");
+            }
+        }
     });
-    $('.pay_type .available').first().addClass('active').siblings('li').removeClass('active');
+    $('.pay_type .available').first().addClass('active').siblings('.item').removeClass('active');
 }).on("click",".pay_type .item",function(){
     var index = $(this).index();
     var status = $(this).attr('data-status');
     var type=$(this).find('.title').text();
+    var statu = $(this).attr("data-auth");
+    if(statu == "False"){
+        modalNotice("当前店铺未认证，此功能暂不可用");
+        return false;
+    }
+    if(status==0){
+        modalNotice("当前店铺已关闭"+type);
+        return false;
+    }
     if(index != 0){
         $(".wrap-online-lst").addClass("hidden");
     }else{
          $(".wrap-online-lst").toggleClass("hidden");
-    }
-    var statu = $(this).attr("data-auth");
-    if(statu == "False"){
-        noticeBox("当前店铺未认证，此功能暂不可用");
-        return false;
-    }
-    if(status==0){
-        noticeBox("当前店铺已关闭"+type);
-        if($('#online-pay').hasClass('available')){
-             $(".wrap-online-lst").removeClass("hidden");
-        }
-        return false;
     }
     pulse($(this));
     $(".pay_type li").removeClass("active");
@@ -415,11 +416,11 @@ $(document).ready(function(){
     var status = $(this).attr('data-status');
     var statu = $(this).attr("data-auth");
     if(statu == "False"){
-        noticeBox("当前店铺未认证，此功能暂不可用");
+        modalNotice("当前店铺未认证，此功能暂不可用");
         return false;
     }
     if(status==0){
-         noticeBox("当前店铺已关闭余额支付，此功能暂不可用");
+         modalNotice("当前店铺已关闭余额支付，此功能暂不可用");
          return false;
     }
 }).on("click",".online-lst li",function(){   //选择在线支付方式
