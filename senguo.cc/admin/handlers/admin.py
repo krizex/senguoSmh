@@ -1267,14 +1267,35 @@ class Goods(AdminBaseHandler):
 		for d in datalist:
 			add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else None
 			delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else None
+			if d.img_url:
+				img_url= d.img_url.split(',')
+			else:
+				img_url = None
 			data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
-				'saled':d.saled,'storage':d.storage,'unit':d.unit,'tag':d.tag,'imgurl':d.img_url,'info':d.intro,'priority':d.priority,\
-				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_name':d.group_name,'classify':d.classify})
+				'saled':d.saled,'storage':d.storage,'unit':d.unit,'tag':d.tag,'imgurl':img_url,'info':d.intro,'priority':d.priority,\
+				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_name':d.group_name,'classify':d.classify,\
+				'detail_describe':d.detail_describe})
+		return data
+
+	def getOneData(self,d):
+		data = []
+		add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else None
+		delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else None
+		if d.img_url:
+			img_url= d.img_url.split(',')
+		else:
+			img_url = None
+		data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
+			'saled':d.saled,'storage':d.storage,'unit':d.unit,'tag':d.tag,'imgurl':img_url,'info':d.intro,'priority':d.priority,\
+			'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_name':d.group_name,'classify':d.classify,\
+			'detail_describe':d.detail_describe})
 		return data
 
 	@AdminBaseHandler.check_arguments("type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?")
 	def get(self):
 		action = self._action
+		_id = str(time.time())
+		qiniuToken = self.get_qiniu_token('goods',_id)
 		if action == "all":
 			if "type" in self.args:
 				_type = self.args["type"]
@@ -1398,14 +1419,20 @@ class Goods(AdminBaseHandler):
 					else:
 						data = self.getData(datalist)
 					return self.send_success(data=data,nomore=nomore,count=count)
-			return self.render("admin/goods-all.html",context=dict(subpage="goods"))
+			return self.render("admin/goods-all.html",context=dict(subpage="goods"),qiniuToken=qiniuToken)
 						
 		elif action == "classify":
 			return self.render("admin/goods-classify.html",context=dict(subpage="goods"))
 		elif action == "group":
-			return self.render("admin/goods-group.html",context=dict(subpage="goods"))
+			_group = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1).all()
+			data = []
+			for g in _group:
+				data.append({'id':g.id,'name':g.name,'intro':g.intro})
+			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data)
 		elif action == "delete":
-			return self.render("admin/goods-delete.html",context=dict(subpage="goods"))
+			goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,active = 0).all()
+			data = self.getData(goods)
+			return self.render("admin/goods-delete.html",context=dict(subpage="goods"),data=data)
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "data", "charge_type_id?:int")
@@ -1418,17 +1445,24 @@ class Goods(AdminBaseHandler):
 			if len(data["intro"]) > 100:
 				return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
 			args={}
-			args["fruit_type_id"] = data["type_id"]
+			args["fruit_type_id"] = int(data["type_id"])
 			args["name"] = data["name"]
 			args["saled"] = data["saled"]
 			args["storage"] = data["storage"]
 			args["unit"] = data["unit"]
+			if data["detail_describe"]:
+				args["detail_describe"] = data["detail_describe"]
 			if data["tag"]:
 				args["tag"] = data["tag"]
 			if data["limit_num"]:
 				args["limit_num"] = data["limit_num"]
-			if data["group_name"]:
-				args["group_name"] = data["group_name"]
+			if data["group_id"]:
+				group_id = int(data["group_id"])
+				_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = self.current_shop.id,status = 1).first()
+				if _group:
+					args["group_id"] = group_id
+				else:
+					return self.send_fail('该商品分组不存在或已被删除')
 			if data["img_url"]:  # 前端可能上传图片不成功，发来一个空的，所以要判断
 				args["img_url"] = SHOP_IMG_HOST + data["img_url"]
 			args["intro"] = data["intro"]
@@ -1443,7 +1477,9 @@ class Goods(AdminBaseHandler):
 										unit_num=charge_type["unit_num"]))
 			self.session.add(goods)
 			self.session.commit()
-			return self.send_success()
+			_goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,status = 1,fruit_type_id=int(data["type_id"])).order_by(models.Fruit.add_time.desc()).first()
+			goods_new = self.getOneData(_goods)
+			return self.send_success(goods_new=goods_new)
 		elif action == "edit_goods_img":
 			return self.send_qiniu_token("fruit", int(data["goods_id"]))
 		elif action == "apply_cookie":
@@ -1511,8 +1547,6 @@ class Goods(AdminBaseHandler):
 
 		elif action in ["batch_on",'batch_off',"batch_group"]:
 			for _id in data:
-				print(_id)
-				print(data[_id],'233333')
 				try:
 					goods = self.session.query(models.Fruit).filter_by( id = _id ).first()
 				except:
@@ -1529,7 +1563,50 @@ class Goods(AdminBaseHandler):
 			goods_name = data["goods_name"]
 			goods = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id).filter(models.Fruit.name.like("%%%s%%" % goods_name)).all()
 			return self.send_success(data=goods)
-
+		elif action =="add_group":
+			args={}
+			args["shop_id"] = self.current_shop.id
+			name = data["name"]
+			intro = data["intro"]
+			_group = models.GoodsGroup(**args)
+			self.session.add(_group)
+			self.session.commit()
+			_group_id = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1).order_by(models.GoodsGroup.create_time.desc()).first().id
+			return self.send_success(_group_id =_group_id)
+		elif action in["delete_group","group_priority","edit_group"]:
+			_id = data["id"]
+			_group = self.session.query(models.GoodsGroup).filter_by(id = _id,shop_id = self.current_shop.id,status = 1).first()
+			if _group:
+				if action == "delete_group":
+					_group.status = 0
+					goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,group_id =_id).all()
+					for good in goods :
+						good.group_id = 0 
+				elif action == "group_priority":
+					_group.priority = int(data["priority"])
+				elif action =="edit_group":
+					_group.name = data["name"]
+					_group.intro = data["intro"]
+				self.session.commit()
+			else:
+				return self.send_fail('该商品分组不存在或已被删除')
+		elif action == "batch_reset_delete":
+			for _id in data["goods_id"]:
+				try:
+					goods = self.session.query(models.Fruit).filter_by( id = _id ).first()
+				except:
+					return self.send_error(404)
+				if goods:
+					goods.active = 1
+				self.session.commit()
+		elif action == "reset_delete":
+			try:
+				goods = self.session.query(models.Fruit).filter_by( id = data["id"] ).first()
+			except:
+				return self.send_error(404)
+			if goods:
+				goods.active = 1
+			self.session.commit()
 		else:
 			return self.send_error(404)
 
