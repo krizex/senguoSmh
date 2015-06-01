@@ -1297,7 +1297,7 @@ class Follower(AdminBaseHandler):
 
 			customer_list=[]
 			for customer in customers:
-				if customer not in customer_list
+				if customer not in customer_list:
 					customer_list.append(customer)
 			customers = customer_list
 
