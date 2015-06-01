@@ -92,6 +92,7 @@ class GlobalBaseHandler(BaseHandler):
 		if hasattr(self, "_session"):
 			return self._session
 		self._session = models.DBSession()
+		print("DB session open !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		return self._session
 
 	def on_finish(self):
