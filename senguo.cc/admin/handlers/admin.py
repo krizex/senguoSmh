@@ -1291,9 +1291,9 @@ class Follower(AdminBaseHandler):
 			else:  # 按照名字搜索
 				customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),
+					filter(or_(join(models.Accountinfo).filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),
 														models.Accountinfo.realname.like("%%%s%%" % wd))).\
-					join(models.Address).filter(models.Address.receiver.like("%%%s%%" % wd)).all()
+					join(models.Address).filter(models.Address.receiver.like("%%%s%%" % wd)))).all()
 				#customers += self.session.query(models.Customer).join(models.CustomerShopFollow).\
 				#	filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
 				#	join(models.Address).filter(models.Address.receiver.like("%%%s%%" % wd)).all()
