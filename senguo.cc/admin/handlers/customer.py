@@ -1290,6 +1290,7 @@ class Cart(CustomerBaseHandler):
 		shop_name = shop.shop_name
 		shop_id = shop.id
 		shop_logo = shop.shop_trademark_url
+		shop_status = shop.status
 		try:
 			customer_follow =self.session.query(models.CustomerShopFollow).\
 			filter_by(customer_id = customer_id,shop_id =shop_id ).first()
@@ -1329,7 +1330,7 @@ class Cart(CustomerBaseHandler):
 		return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name  = shop_name ,shop_code=shop_code,shop_logo = shop_logo,balance_value=balance_value,\
-						  shop_new=shop_new,context=dict(subpage='cart'))
+						  shop_new=shop_new,shop_status=shop_status,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
@@ -1459,7 +1460,7 @@ class Cart(CustomerBaseHandler):
 		pay_type = self.args['pay_type']
 		if pay_type == 2:
 			if current_shop.shop_auth == 0:
-				return self.send_fail('当前店铺未认证，此功能暂不可用')
+				return self.send_fail('当前店铺未认证，余额支付不可用')
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
 				shop_id = shop_id).first()
 			if not shop_follow:
@@ -1491,6 +1492,8 @@ class Cart(CustomerBaseHandler):
 		# print(f_d)
 		# print(mgoods)
 		if self.args['pay_type'] == 3:
+			if current_shop.shop_auth == 0:
+				return self.send_fail('当前店铺未认证，在线支付不可用')
 			order_status = -1
 			online_type = self.args['online_type']
 		else:
@@ -1609,8 +1612,6 @@ class Cart(CustomerBaseHandler):
 
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
-			if current_shop.shop_auth == 0:
-				return self.send_fail('当前店铺未认证，此功能暂不可用')
 			online_type = self.args['online_type']
 			self.set_cookie('order_id',str(order.id))
 			self.set_cookie('online_totalPrice',str(order.totalPrice))

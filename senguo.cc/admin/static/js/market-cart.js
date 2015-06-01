@@ -373,7 +373,6 @@ $(document).ready(function(){
         var status = $this.attr('data-status');
         var statu = $this.attr("data-auth");
         var type = $this.find('.title').text();
-        console.log(statu);
         if(status==0){
             $this.removeClass('active').addClass('not_available');
             $('.pay_type .available').first().addClass('active').siblings('.item').removeClass('active');
@@ -391,6 +390,25 @@ $(document).ready(function(){
         }
     });
     $('.pay_type .available').first().addClass('active').siblings('.item').removeClass('active');
+    var shop_status=parseInt($('.pay_type').attr('data-shop'));
+    if(shop_status != 1){
+        $('.pay_type .item').removeClass('active').removeClass('item').addClass('not_available').removeClass('available');
+        $('#submitOrder').attr('disabled',true).removeClass('bg-green').text('暂不可下单');
+        $(".wrap-online-lst").addClass("hidden");
+        $('#sendPerTime').addClass("hidden");
+        $('.send_period').addClass('hidden').removeClass('type-choose');
+        $('.send_type button').attr('disabled',true).removeClass('item').removeClass('active').find('a').attr('id','');
+        $('.send_now').addClass("hidden");
+        $('.mincharge').addClass("hidden");
+        $('.address_list').removeClass('type-choose').find('li').removeClass('active');
+    }
+     if(shop_status==2){
+        $('#submitOrder').text('店铺正在筹备中');
+     }else if(shop_status==3){
+        $('#submitOrder').text('店铺正在休息');
+     }else if(shop_status==0){
+        $('#submitOrder').text('店铺已关闭');
+     }
 }).on("click",".pay_type .item",function(){
     var index = $(this).index();
     var status = $(this).attr('data-status');

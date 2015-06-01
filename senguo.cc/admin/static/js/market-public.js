@@ -393,7 +393,7 @@ function modalNotice(notice){
                                 '<div class="modal-top"><img src="/static/images/info_top.png"/></div>'+
                                 '<div class="modal-header set-width-float">'+
                                     '<button type="button" class="close dismiss-notice">✕</button>'+
-                                    '<h2 class="modal-title  text-center line48">TIPS</h2>'+
+                                    '<h2 class="modal-title  text-center line48">温馨提示</h2>'+
                                 '</div>'+
                                 '<div class="modal-body set-width-float text-center">'+
                                     '<p class="detail font14 text-center">{{notice}}</p>'+
