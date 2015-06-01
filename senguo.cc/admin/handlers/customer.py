@@ -1884,9 +1884,9 @@ class Order(CustomerBaseHandler):
 				return self.send_fail("订单已经取消，不能重复操作")
 			if order.pay_type == 3 and order.status!=-1:
 				return self.send_fail("在线支付『已付款』的订单暂时不能取消，如有疑问请直接与店家联系")
-			print(order.status,"==================================")
+			print("[订单管理]取消订单，订单原状态：",order.status)
 			order.status = 0
-			print(order.status,"----------------------------------------")
+			print("[订单管理]取消订单，订单现状态：",order.status)
 			# recover the sale and storage
 			# woody
 			# 3.27

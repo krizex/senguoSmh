@@ -1261,7 +1261,7 @@ class Follower(AdminBaseHandler):
 		count = 0
 		page_sum = 0
 		shop_id = self.current_shop.id
-		if action in ("all", "old","charge"):
+		if action in ("all","old","charge"):
 			if action == "all":  # 所有用户
 				q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id)
@@ -1286,12 +1286,17 @@ class Follower(AdminBaseHandler):
 			if wd.isdigit():  # 判断是否为纯数字，纯数字就按照手机号搜索
 				customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(models.Accountinfo.phone == int(wd)).all()
+					join(models.Accountinfo).filter(or_(models.Accountinfo.phone == int(wd),
+														models.Accountinfo.id == int(wd))).all()
 			else:  # 按照名字搜索
 				customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
 					join(models.Accountinfo).filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),
 														models.Accountinfo.realname.like("%%%s%%" % wd))).all()
+				customers += self.session.query(models.Customer).join(models.CustomerShopFollow).\
+					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+					join(models.Address).filter(models.Address.receiver.like("%%%s%%" % wd)).all()
+					
 		elif action =="filter":
 			wd = self.args["wd"]
 			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
