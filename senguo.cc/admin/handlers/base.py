@@ -362,7 +362,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return self.get_wexin_oauth_link(next_url = next_url)
 
 	def get_current_user(self):
-		print(self.__account_model__,'到底是什么？',self.__account_cookie_name__)
+		# print(self.__account_model__,'到底是什么？',self.__account_cookie_name__)
 		if not self.__account_model__ or not self.__account_cookie_name__:
 			raise Exception("overwrite model to support authenticate.")
 
@@ -371,16 +371,16 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 		user_id = self.get_secure_cookie(self.__account_cookie_name__) or b'0'
 		user_id = int(user_id.decode())
-		print("[用户信息]当前用户ID：",user_id)
-		print(type(self))
-		print(self.__account_model__)
+		# print("[用户信息]当前用户ID：",user_id)
+		# print(type(self))
+		# print(self.__account_model__)
 
 		if not user_id:
 			self._user = None
 		else:
-			print(user_id,'get_current_user: user_id')
+			# print(user_id,'get_current_user: user_id')
 			self._user = self.__account_model__.get_by_id(self.session, user_id)
-			print(self._user,"self._user")
+			# print(self._user,"self._user")
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:
 				Logger.warn("Suspicious Access", "may be trying to fuck you")
