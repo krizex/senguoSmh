@@ -1,5 +1,4 @@
 {% extends 'goods-set-base.html' %}
-{% block css %}<link rel="stylesheet" href="{{static_url('')}}"/>{% end %}
 {% block setcontent %}
 <form>
 	<textarea name="content" class="keditor" style="width:800px;height:400px;visibility:hidden;">KindEditor</textarea>
@@ -11,19 +10,21 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$.ajax({url: '/admin/editorTest?action=editor', async: false, success: function(data){
-		var token1 = data.token1;
+		var token1 = data.token;
+		var token = data.res
 		console.log(token1);
 		var editor = KindEditor.create('.keditor', {
 			uploadJson : 'http://upload.qiniu.com/',
 			filePostName : 'file',
 			allowFileManager : true,
-			fileManagerJson : '/admin/editorTest',
-			extraFileUploadParams : {},
-			token : token1,
+			fileManagerJson : '/admin/editorFileManage',
+			extraFileUploadParams : {'token':token1},
+			token : token,
 			resizeType : 1,
 			afterCreate: function(){this.sync();},
 			afterBlur: function(){this.sync();},
 			afterUpload : function(url) {
+				console.log(url)
         			}
 		});
 			
