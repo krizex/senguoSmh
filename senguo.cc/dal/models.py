@@ -1330,9 +1330,51 @@ class Fruit(MapBase, _CommonApi):
 	img_url = Column(String(500))
 	intro = Column(String(100))
 	priority = Column(SMALLINT, default=1)
+	limit_num =  Column(Integer, default=0) #max number could buy #5.27
+	add_time = Column(DateTime, default=func.now()) #5.27
+	delete_time = Column(DateTime) #5.27
+	group_id =  Column(Integer, default=0) #0:default group 1000:record group GoodsGroup.id #5.27
+	classify  = Column(Integer, default=0)  #:0:fruit 1:dry_fruit 3:other
+	temp_mgoods_id =  Column(Integer, default=0)  #to save mgoods_id for temp
+	detail_describe = Column(String(2000)) #goods detail
+
+
 	charge_types = relationship("ChargeType") #支持多种计价方式
 	fruit_type = relationship("FruitType", uselist=False)
 	shop = relationship("Shop", uselist=False)
+
+#水果单品的计价类型
+class ChargeType(MapBase, _CommonApi):
+	__tablename__ = "charge_type"
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	fruit_id = Column(Integer, ForeignKey(Fruit.id), nullable=False)
+	price = Column(Float)#售价 
+	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
+	num = Column(Float)#计价数量
+	unit_num = Column(Float, default=1)#单位换算
+	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
+	market_price =  Column(Float)#市场价 #5.27
+
+	fruit = relationship("Fruit", uselist=False)
+
+class FruitComment(MapBase, _CommonApi):
+	__tablename__ = "fruit_comment" #5.27
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
+	fruit_id = Column(Integer, ForeignKey(Fruit.id), nullable=False)
+	comment = Column(String(500))
+	create_time = Column(DateTime, default=func.now())
+
+class GoodsGroup(MapBase, _CommonApi):
+	__tablename__ = "goods_group" #5.27 self define
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
+	name =  Column(String(50))
+	priority =  Column(Integer)
+	status = Column(Integer,default = 1) #0:been deleted 1:normal
+	intro = Column(String(100))
+	create_time = Column(DateTime, default=func.now())
+
 
 # 用户自定义的商品类型
 class Menu(MapBase, _CommonApi):
@@ -1366,18 +1408,6 @@ class MGoods(MapBase, _CommonApi):
 	mcharge_types = relationship("MChargeType") #支持多种计价方式
 	menu = relationship("Menu", uselist=False)
 
-#水果单品的计价类型
-class ChargeType(MapBase, _CommonApi):
-	__tablename__ = "charge_type"
-	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-	fruit_id = Column(Integer, ForeignKey(Fruit.id), nullable=False)
-	price = Column(Float)#单价
-	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
-	num = Column(Float)#计价数量
-	unit_num = Column(Float, default=1)#单位换算
-	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
-
-	fruit = relationship("Fruit", uselist=False)
 
 #用户自定义商品的计价类型
 class MChargeType(MapBase, _CommonApi):

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-goods.css')}}"/>{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-goods.css')}}"/>{% block css %}{% end %}{% end %}
 {% block content %}
 <span class="right-title">商品管理</span>
 <div class="subnav-box clearfix">
@@ -18,4 +18,5 @@
 {% end %}
 {% block bottom %}
 <script src="{{static_url('js/admin-goods.js')}}"></script>
+{% block js %}{% end %}
 {% end %}
