@@ -197,7 +197,7 @@ class Order(StaffBaseHandler):
 				if order.status == 5:
 					return self.send_fail("已完成操作，请勿重复")
 				status = 5
-				if not order.money_paid:  # 订单未付款
+				if order.pay_type == 1:  # 货到付款订单，员工需收款
 					self.hirelink.money += order.totalPrice
 
 				# 更新fruit 的 current_saled
