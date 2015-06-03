@@ -10,8 +10,4 @@ $(document).ready(function(){
 	}else if(link.match('delete')){
 		$('.adelete').addClass('active');
 	}
-}).on("click",".furit-type li",function(){
-    var index = $(this).index();
-    $(".furit-type li").removeClass("active").eq(index).addClass("active");
-    $(".fruit-content>ul").addClass("hidden").eq(index).removeClass("hidden");
 });
