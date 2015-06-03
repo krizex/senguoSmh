@@ -65,7 +65,6 @@ img{border:none;}
 .backstage-header .header-nav .active span{color:#ff6666;}
 .backstage-header .header-nav .admin-img{width:45px;margin-right:10px;}
 .backstage-header .header-nav .admin-info{width:104px;text-align:center;}
-.backstage-header .header-nav .switch-info{width:104px;text-align:center;border-right:1px solid #d9dadc}
 .backstage-header .header-nav .admin-info .area{display:inline-block;width:100%;background:#fff;color:#000;border:1px solid #e7e7eb;margin-left:0px;}
 .backstage-header .header-nav .admin-info .slide-btn{height: 24px;line-height: 24px;display: block;border: none;outline: none;}
 .backstage-header .header-nav .admin-info .area em{font-style:normal;display:inline-block;width:84px;font-size:12px;overflow:hidden;}
@@ -82,7 +81,7 @@ img{border:none;}
 .noauth>a{display: inline-block!important;}
 .switch-change-phone{text-align: left !important;margin-top:2px;}
 .switch-change-phone .band-tel{font-size: 12px !important;margin-left: 0!important;font-weight:normal !important;float: left;margin-right: 5px;}
-/*.switch-area{width: 140px !important;}*/
+.switch-area{width: 140px !important;}
 /*底部样式*/
 .backstage-footer{position:fixed;bottom:0;height:60px;z-index:999;background:#999;width:100%;margin-top:20px;}
 
@@ -334,5 +333,3 @@ input{color:#333;text-indent:5px;}
 .links_item {display: inline-block;vertical-align: middle;padding: 0 1em;line-height: 1em;border-left: 1px solid #d9dadc;}
 .links_item:first-child {border-left-width: 0;}
 .ft .links_item a {color: #f1f1f1;}
-
-.logout{padding: 14px 15px 0 0;color: #6ba4ef;}

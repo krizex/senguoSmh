@@ -1338,7 +1338,7 @@ class Cart(CustomerBaseHandler):
 										 "today:int",'online_type?:str')
 	def post(self,shop_code):#提交订单
 		# print(self)
-		print("[提交订单]支付类型：",self.args['pay_type'])
+		print(self.args['pay_type'],'login?????')
 		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
