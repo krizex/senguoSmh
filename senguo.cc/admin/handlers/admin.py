@@ -1021,6 +1021,7 @@ class Order(AdminBaseHandler):
 				self.edit_status(order,data['status'],False)
 				count += 1
 			if count > 0:
+				staff_info = []
 				try:
 					staff_info = self.session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id )\
 					.filter(models.HireLink.shop_id == shop_id,models.HireLink.default_staff == 1).first()
