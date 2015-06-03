@@ -632,7 +632,7 @@ class QiniuCallback(FruitzoneBaseHandler):
 			return self.send_success()
 		elif action == "shopAuth_cookie":
 			return self.send_success()
-		elif action =="editor"
+		elif action =="editor":
 			return self.send_success()
 		return self.send_error(404)
 
