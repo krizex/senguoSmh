@@ -1618,18 +1618,11 @@ class editorTest(AdminBaseHandler):
 	def get(self):
 		if "action" in self.args:
 			if self.args["action"] == "editor" :
-				import json
 				shop_id = self.current_shop.id
-				token = self.get_editor_token("editor",shop_id)
+				token = self.send_qiniu_token("editor", shop_id)
 				print(token)
-				return self.send_success(token=token)
+				return token
 		return self.render("admin/test-editor.html",context=dict(subpage="goods"))
-
-class editorCallback(AdminBaseHandler):
-	def post(self):
-		key = self.get_argument("key")
-		imgurl=SHOP_IMG_HOST+key
-		return self.send_success(imgurl=imgurl)
 		
 
 class editorFileManage(AdminBaseHandler):
