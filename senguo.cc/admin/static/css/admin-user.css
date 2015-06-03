@@ -26,10 +26,10 @@
 
 .users-list li .hide-info{height:auto;border-top:1px solid #eee;}
 .users-list li .hide-info .personal-info{padding:0 50px;margin-top:10px;width:210px;}
-.users-list li .hide-info .focus-shop{border-left:1px solid #eee;min-height:140px;padding:10px 0 10px 50px;max-width:780px;}
+.users-list li .hide-info .focus-shop{border-left:1px solid #eee;min-height:140px;padding:10px 0 10px 50px;max-width:735px;}
 .users-list li .hide-info .focus-shop .focus-shop-list li{border:1px solid #e7e7eb;width:142px;height:28px;line-height:28px;margin-right:28px;border-radius:1px;margin-bottom:10px;overflow:hidden;}
-.users-list li .hide-info .focus-shop .send-address{display:inline-block;width:388px;height:26px;line-height:26px;text-indent:10px;border:1px solid #ccc;}
-.users-list li .hide-info .focus-shop .address-list{width:388px;border:1px solid #ccc;border-top:none;overflow:hidden;padding:5px 15px 10px 15px;}
+.users-list li .hide-info .focus-shop .send-address{display:inline-block;width:650px;height:26px;line-height:26px;text-indent:10px;border:1px solid #ccc;}
+.users-list li .hide-info .focus-shop .address-list{width:650px;border:1px solid #ccc;border-top:none;overflow:hidden;padding:5px 15px 10px 15px;}
 .users-list li .hide-info .focus-shop .address-list li{border-bottom:1px solid #ccc;padding:5px 0;}
 
  .remark-content{width:80%;height:60px;}
