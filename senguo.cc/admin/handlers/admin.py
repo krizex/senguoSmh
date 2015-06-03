@@ -1291,7 +1291,7 @@ class Goods(AdminBaseHandler):
 			'detail_describe':d.detail_describe})
 		return data
 
-	@AdminBaseHandler.check_arguments("type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?")
+	@AdminBaseHandler.check_arguments("type?","sub_type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?")
 	def get(self):
 		action = self._action
 		_id = str(time.time())
@@ -1421,8 +1421,95 @@ class Goods(AdminBaseHandler):
 					return self.send_success(data=data,nomore=nomore,count=count)
 			return self.render("admin/goods-all.html",context=dict(subpage="goods"),qiniuToken=qiniuToken)
 						
-		elif action == "classify":
-			return self.render("admin/goods-classify.html",context=dict(subpage="goods"))
+		elif action == "classify":	
+			if "type" in self.args:
+				_type = self.args["type"]
+				sub_type = self.args["sub_type"]
+				try:
+					fruit_types = self.session.query(models.FruitType)
+				except:
+					fruit_types = []
+				if _type == "fruit":
+					fruit_types = fruit_types.filter(models.FruitType.id<1000)
+				elif _type == "ganguo":
+					fruit_types = fruit_types.filter(and_(models.FruitType.id<2000,models.FruitType.id>1000))
+				elif _type == "other":
+					fruit_types = fruit_types.filter_by(id=2000)
+				datalist = []
+				if sub_type == "color":
+					for i in range(7):
+						if i == 0:
+							color = "unknow"
+							name = '其它'
+						elif i ==1:
+							color = "red"
+							name = '红色'
+						elif i == 2:
+							color = "yellow"
+							name = '黄色'
+						elif i == 3:
+							color = "green"
+							name = '绿色'
+						elif i == 4:
+							color = "purple"
+							name = '紫色'
+						elif i == 5:
+							color = "white"
+							name = '白色'
+						elif i == 6:
+							color = "blue"
+							name = '蓝色'
+						print(i)
+						types = fruit_types.filter_by(color=i).all()
+						types = self.getClass(types)
+						datalist.append({'name':name,'property':color,'data':types})
+				elif sub_type == "length":
+					for i in range(5):
+						if i >0:
+							types = fruit_types.filter_by(length=i).all()
+							types = self.getClass(types)
+							datalist.append({'name':i,'property':i,'data':types})
+				elif sub_type == "garden":
+					for i in range(8):
+						if i == 0:
+							garden = "unknow"
+							name = "其它"
+						elif i ==1:
+							garden = "renguo"
+							name = "仁果类"
+						elif i == 2:
+							garden = "heguo"
+							name = "核果类"
+						elif i == 3:
+							garden = "jiangguo"
+							name = "浆果类"
+						elif i == 4:
+							garden = "ganju"
+							name = "柑橘类"
+						elif i == 5:
+							garden = "redai"
+							name = "热带及亚热带类"
+						elif i == 6:
+							garden = "shiguo"
+							name = "什果类"
+						elif i == 6:
+							garden = "jianguo"
+							name = "坚果类"
+						print(i)
+						types = fruit_types.filter_by(garden=i).all()
+						types = self.getClass(types)
+						datalist.append({'name':name,'property':garden,'data':types})
+				elif sub_type == "nature":
+					for i in range(4):
+						if i >0:
+							types = fruit_types.filter_by(nature=i).all()
+							types = self.getClass(types)
+							datalist.append({'name':i,'property':i,'data':types})
+				else:
+					return self.send_fail(404)
+				return self.send_success(data=datalist)
+			else:
+				return self.render("admin/goods-classify.html",context=dict(subpage="goods"))
 		elif action == "group":
 			_group = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1).all()
 			data = []
@@ -1433,6 +1520,12 @@ class Goods(AdminBaseHandler):
 			goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,active = 0).all()
 			data = self.getData(goods)
 			return self.render("admin/goods-delete.html",context=dict(subpage="goods"),data=data)
+
+	def getClass(self,con):
+		data = []
+		for c in con:
+			data.append({'id':c.id,'code':c.code,'name':c.name})
+		return data
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "data", "charge_type_id?:int")

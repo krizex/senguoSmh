@@ -1,2 +1,12 @@
 {% extends 'goods-set-base.html' %}
-{% block setcontent %}{% end %}
+{% block setcontent %}
+{% for key in datalist %}
+<p>{{key['property']}}</p>
+<div class="mt10">
+{% for i in key['data']%}
+{{i.code}}
+{% end %}
+</div>
+
+{% end %}
+{% end %}
