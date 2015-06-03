@@ -1366,7 +1366,7 @@ class Cart(CustomerBaseHandler):
 				filter(models.ChargeType.id.in_(fruits.keys())).all()
 			for charge_type in charge_types:
 
-				if fruits[str(charge_type.id)] == 0:  # 有可能num为0，直接忽略掉
+				if fruits[str(charge_type.id)] in [0,None]:  # 有可能num为0，直接忽略掉
 					continue
 				totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
 				num = fruits[str(charge_type.id)]*charge_type.unit_num*charge_type.num
@@ -2238,20 +2238,20 @@ class Recharge(CustomerBaseHandler):
 		url=''
 		action = self.args['action']
 		next_url = self.get_argument('next', '')
-		print(next_url,'wo 233333333333')
+		print("[微信充值]next_url：",next_url)
 		if action == 'get_code':
 			print(self.request.full_url())
 			path_url = self.request.full_url()
 			jsApi  = JsApi_pub()
 			#path = 'http://auth.senguo.cc/fruitzone/paytest'
 			path = APP_OAUTH_CALLBACK_URL + self.reverse_url('customerRecharge')
-			print(path , 'redirect_uri is Ture?')
+			print("[微信充值]redirect_uri：",path)
 			#print(self.args['code'],'sorry  i dont know')
 			code = self.args.get('code',None)
-			print(code,'how old are you',len(code))
+			print("[微信充值]当前code：",code)
 			if len(code) is 2:
 				url = jsApi.createOauthUrlForCode(path)
-				print(url,'code?')
+				print("[微信充值]获取code的url：",url)
 				#return self.redirect(url)
 			return self.send_success(url = url)
 		return self.render("customer/recharge.html",code = code,url=url )
