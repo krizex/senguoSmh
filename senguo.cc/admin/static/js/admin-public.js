@@ -40,9 +40,9 @@ if(isWeiXin()){
             }
         }
     },1000);
-    $(".dropdown-toggle").on("click",function(){
+    $(".dropdown-toggle").on("click",function(e){
         var _this = $(this);
-        _this.children(".caret").addClass("rotate180");
+        _this.children(".caret").toggleClass("rotate180");
         $(document).on("click",function(e){
             if($(e.target).closest("dropdown-toggle").size()==0){
                 _this.children(".caret").removeClass("rotate180");

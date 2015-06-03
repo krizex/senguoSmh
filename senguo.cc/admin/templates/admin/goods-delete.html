@@ -1,2 +1,84 @@
 {% extends 'goods-set-base.html' %}
-{% block setcontent %}{% end %}
+{% block setcontent %}
+<div class="wrap-goods-del">
+    <ul class="list-operate group">
+        <li class="">
+            <span class="check-box checked-box ml10" ></span>全选
+        </li>
+        <li class="borderc text-center pointer min80">批量撤销</li>
+    </ul>
+    <ul class="goods-all-list">
+        <li class="goods-all-item">
+            <p class="all-item-title">添加日期：2015-06-16 15:33:33</p>
+            <div class="all-item-top">
+                <span class="check-box item-checkbox ml10" ></span>
+                <span class="item-name">马大会的店铺</span>
+                <div class="iblock goods-group">
+                    <div class="cate-title mt2">商品分组：</div>
+                    <div class="dropdown slide-down-select pull-left w130 mt2">
+                        <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu8" data-toggle="dropdown">
+                            <em title="{{current_shop.shop_name}}" class="pull-left c333" id="8">默认分组</em>
+                            <span class="caret pull-right no-margin-left rotate0"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu18" id="currentShopChange8">
+                            <li  role="presentation">
+                                <a class="item" href="javascript:;">国内水果</a>
+                            </li>
+                            <li  role="presentation">
+                                <a class="item" href="javascript:;">进口水果</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <span class="txt-box mls">库存：<span class="c333">723个</span></span>
+                <span class="txt-box">待成交：<span class="c333">223个</span></span>
+                <a href="javascript:;" class="add-btn cancel-del-goods">撤销删除</a>
+            </div>
+            <div class="all-item-cont group">
+                <div class="all-item-left fl">
+                    <dl class="item-dl group">
+                        <dt class="fl">
+                            <img src="/static/images/TDSG.png" alt=""/>
+                            <a href="javascript:;">查看图文详情</a>
+                        </dt>
+                        <dd class="fl">
+                            <p>
+                                <span class="mr10">商品分类:<span class="c333">苹果</span></span>
+                                <span class="mr10">排序优先级:<span class="c333">5</span></span>
+                                <span class="mr10">商品限购:<span class="c333">苹果</span></span>
+                            </p>
+                            <div class="item-goods-detail mt10 group">
+                                <span class="item-goods-title fl">商品介绍:</span>
+                                <p class="item-goods-txt c333 fl">
+                                    撒旦法对所发生的撒旦法对所发生的撒旦法对所发生的
+                                    所发生的辅导书斯蒂芬斯蒂芬斯蒂芬森的森的辅导书发生的辅导书
+                                    双方的首发事发当时的
+                                </p>
+                            </div>
+                        </dd>
+                    </dl>
+                </div>
+                <div class="all-item-right fl">
+                    <p>
+                        <span class="mr10">商品点赞:<span class="c333">2233</span></span>
+                        <a class="mr10" href="javascript:;">商品评论:22条</a>
+                        <span class="mr10">销量:<span class="c333">2233个</span></span>
+                    </p>
+                    <p class="mt10">
+                        <span class="mr10">售价1:<span class="red-txt">2233</span></span>
+                        <span class="mr10">市场价:<span class="">55.0元</span></span>
+                    </p>
+                    <p class="mt8">
+                        <span class="mr10">售价2:<span class="red-txt">2233</span></span>
+                        <span class="mr10">市场价:<span class="">55.0元</span></span>
+                    </p>
+                </div>
+                <div class="group"></div>
+            </div>
+        </li>
+    </ul>
+</div>
+{% end %}
+{% block js %}
+<script src="{{static_url('js/admin-goods-del.js')}}"></script>
+{% end %}

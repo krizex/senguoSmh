@@ -1,2 +1,120 @@
 {% extends 'goods-set-base.html' %}
-{% block setcontent %}{% end %}
+{% block setcontent %}
+<div class="wrap-classify">
+    <p class="c333 mt10 choose-text">添加新商品/选择商品分类</p>
+    <div class="subnav-box clearfix">
+        <ul class="subnav pull-left furit-type">
+            <li class="text-center s-fruit active"><a href="javascript:;">水果</a></li>
+            <li class="text-center s-dryfruit"><a href="javascript:;">干果</a></li>
+            <li class="text-center s-other"><a href="javascript:;">其它</a></li>
+        </ul>
+        <div class="search-input input-group pull-right classify-input">
+            <input type="text" value="" placeholder="搜索商品分类" class="search-con form-control"/>
+            <input type="submit" value="" class="search-btn form-control fruit-search"/>
+        </div>
+    </div>
+    <div class="wrap-fruit-select">
+        <div class="fruit-select">
+            <div class="cate-title mt2">水果分类排列方式 : </div>
+            <div class="dropdown slide-down-select pull-left w130 mt2 ml5">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu7" data-toggle="dropdown">
+                    <em title="{{current_shop.shop_name}}" class="pull-left" id="9">颜色</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu17" id="currentShopChange7">
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">颜色</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">味性</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">名称字数</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">地理位置</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;">生物学分类</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="fruit-content">
+        <ul class="fruit-list">
+            <li>
+                <p class="title red-bg">红色大军</p>
+                <ul class="fruit-item-list group">
+                    <li>苹果</li>
+                    <li>梨子</li>
+                    <li>红心火龙果</li>
+                    <li>水蜜桃</li>
+                    <li>苹果</li>
+                    <li>梨子</li>
+                    <li>红心火龙果</li>
+                    <li>水蜜桃</li>
+                    <li>苹果</li>
+                    <li>梨子</li>
+                    <li>红心火龙果</li>
+                    <li>水蜜桃</li>
+                </ul>
+            </li>
+            <li>
+                <p class="title yellow-bg">黄色天团</p>
+                <ul class="fruit-item-list group">
+                    <li>苹果</li>
+                    <li>梨子</li>
+                    <li>红心火龙果</li>
+                    <li>水蜜桃</li>
+                    <li>苹果</li>
+                    <li>梨子</li>
+                    <li>红心火龙果</li>
+                    <li>水蜜桃</li>
+                    <li>苹果</li>
+                    <li>梨子</li>
+                    <li>红心火龙果</li>
+                    <li>水蜜桃</li>
+                </ul>
+            </li>
+        </ul>
+        <ul class="dry-list hidden">
+            <li>
+                <p class="title">仁果类</p>
+                <ul class="fruit-item-list group">
+                    <li>苹果</li>
+                    <li>梨子</li>
+                    <li>红心火龙果</li>
+                    <li>水蜜桃</li>
+                    <li>苹果</li>
+                    <li>梨子</li>
+                    <li>红心火龙果</li>
+                    <li>水蜜桃</li>
+                    <li>苹果</li>
+                    <li>梨子</li>
+                    <li>红心火龙果</li>
+                    <li>水蜜桃</li>
+                </ul>
+            </li>
+            <li>
+                <p class="title">核果类</p>
+                <ul class="fruit-item-list group">
+                    <li>苹果</li>
+                    <li>梨子</li>
+                    <li>红心火龙果</li>
+                    <li>水蜜桃</li>
+                    <li>苹果</li>
+                </ul>
+            </li>
+        </ul>
+        <ul class="other-list hidden">
+            <li>
+                <p class="title">其它</p>
+                <ul class="fruit-item-list group">
+                    <li>其它</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+{% end %}
