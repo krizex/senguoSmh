@@ -708,7 +708,7 @@ class Order(AdminBaseHandler):
 						   count=self._count(),page_sum=page_sum, context=dict(subpage='order'))
 
 
-	def edit_status(self,order,order_status):
+	def edit_status(self,order,order_status,send_message=True):
 		if order_status == 4:
 			order.update(self.session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
 		elif order_status == 5:
@@ -741,8 +741,8 @@ class Order(AdminBaseHandler):
 			phone = order.phone
 			address = order.address_text
 			# print("ready to send message")
-
-			WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone,address) 
+			if send_message:
+				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone,address) 
 		if order_status == 5:
 			now = datetime.datetime.now()
 			order.arrival_day = now.strftime("%Y-%m-%d")
@@ -1005,18 +1005,18 @@ class Order(AdminBaseHandler):
 			for key in order_list_id:	
 				order = next((x for x in self.current_shop.orders if x.id==int(key)), None)
 				if order.status == 4 and data['status'] ==4:
-					notice = "订单"+str(order.num)+"订单已在配送中,请不要重复操作"
+					notice = "订单"+str(order.num)+"订单已在配送中，请不要重复操作"
 					return self.send_fail(notice)
 				if order.status == 5 and data['status'] ==5:
-					notice = "订单"+str(order.num)+"已完成,请不要重复操作"
+					notice = "订单"+str(order.num)+"已完成，请不要重复操作"
 					return self.send_fail(notice)
 				if order.status in[5,6,10]:
-					notice = "订单"+str(order.num)+"已完成,请不要重复操作"
+					notice = "订单"+str(order.num)+"已完成，请不要重复操作"
 					return self.send_fail(notice)
 				if not order:
 					notice = "没找到订单",order.onum
 					return self.send_fail(notice)
-				self.edit_status(order,data['status'])
+				self.edit_status(order,data['status'],False)
 		elif action == "batch_print":
 			order_list_id = data["order_list_id"]
 			for key in order_list_id:	
@@ -1166,7 +1166,7 @@ class Shelf(AdminBaseHandler):
 					fruit.update(session=self.session, active = 1)
 			elif action == "edit_fruit":
 				if len(data["intro"]) > 100:
-					return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
+					return self.send_fail("商品简介不能超过100字噢亲，再精简些吧！")
 				fruit.update(session=self.session,
 												name = data["name"],
 												saled = data["saled"],
@@ -1215,7 +1215,7 @@ class Shelf(AdminBaseHandler):
 					mgoods.update(session=self.session, active = 1)
 			elif action == "edit_mgoods":
 				if len(data["intro"]) > 100:
-					return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
+					return self.send_fail("商品简介不能超过100字噢亲，再精简些吧！")
 				mgoods.update(session=self.session,
 												name = data["name"],
 												saled = data["saled"],
@@ -2115,7 +2115,7 @@ class ShopConfig(AdminBaseHandler):
 			shop.shop_code = data["shop_code"]
 		elif action == "edit_shop_intro":
 			shop.shop_intro = data["shop_intro"]
-# woody 2015.3.5
+		# woody 2015.3.5
 		elif action == "edit_phone":
 			shop.shop_phone = data["shop_phone"]
 		elif action == "edit_address":
