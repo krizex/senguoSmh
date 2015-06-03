@@ -633,7 +633,12 @@ class QiniuCallback(FruitzoneBaseHandler):
 		elif action == "shopAuth_cookie":
 			return self.send_success()
 		elif action =="editor":
-			return self.send_success()
+			import json
+			import base64
+			upload_ret = self.get_argument("upload_ret")
+			if upload_ret:
+				s = json.loads(base64.b64decode(upload_ret).replace('-','_').replace('+','/'))
+			return self.write('{"error":0, "url": "'+s['url']+'"}')
 		return self.send_error(404)
 
 

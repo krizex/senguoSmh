@@ -1,5 +1,6 @@
 {% extends 'goods-set-base.html' %}
 {% block setcontent %}
+
 <form>
 	<textarea name="content" class="keditor" style="width:800px;height:400px;visibility:hidden;">KindEditor</textarea>
 </form>
@@ -25,6 +26,9 @@ $(document).ready(function(){
 			afterBlur: function(){this.sync();},
 			afterUpload : function(url) {
 				console.log(url)
+        			},
+        			uploadError:function(file, errorCode, message){
+        				console.log(message)
         			}
 		});
 			
