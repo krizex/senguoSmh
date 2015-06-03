@@ -1203,11 +1203,11 @@ class WxOauth2:
 			'url':staff_order_url,
 			"data":{
 				"first":{"value":"配送员 {0} 您好，店铺『{1}』有 {2} 个新的订单需要配送。".format(staff_name,shop_name,count),"color": "#173177"},
-				"tradeDateTime":{"value":"批量订单","color":"#173177"},
-				"orderType":{"value":"批量订单","color":"#173177"},
-				"customerInfo":{"value":"批量订单","color":"#173177"},
+				"tradeDateTime":{"value":"批量信息","color":"#173177"},
+				"orderType":{"value":"批量信息","color":"#173177"},
+				"customerInfo":{"value":"批量信息","color":"#173177"},
 				"orderItemName":{"value":"订单编号","color":"#173177"},
-				"orderItemData":{"value":"批量订单","color":"#173177"},
+				"orderItemData":{"value":"批量信息","color":"#173177"},
 				"remark":{"value":"\n有多个订单需要配送，具体信息请点击详情进入查看。","color":"#173177"},
 			}
 		}
