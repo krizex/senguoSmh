@@ -1195,6 +1195,31 @@ class WxOauth2:
 		# print("[模版消息]发送给配送员成功")
 		return True
 
+	@classmethod
+	def post_batch_msg(cls,touser,staff_name,shop_name,count):
+		postdata = {
+			'touser':touser,
+			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
+			'url':staff_order_url,
+			"data":{
+				"first":{"value":"配送员 {0} 您好，店铺『{1}』有 {2} 个新的订单需要配送。".format(staff_name,shop_name,count),"color": "#173177"},
+				"tradeDateTime":{"value":"test1","color":"#173177"},
+				"orderType":{"value":"test2","color":"#173177"},
+				"customerInfo":{"value":"test3","color":"#173177"},
+				"orderItemName":{"value":"订单编号","color":"#173177"},
+				"orderItemData":{"value":"test4","color":"#173177"},
+				"remark":{"value":"请及时配送","color":"#173177"},
+			}
+		}
+		access_token = cls.get_client_access_token()
+		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
+		data = json.loads(res.content.decode("utf-8"))
+		if data["errcode"] != 0:
+			print("[模版消息]发送给配送员失败：",data)
+			return False
+		# print("[模版消息]发送给配送员成功")
+		return True
+
 
 	@classmethod
 	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice,order_realid):

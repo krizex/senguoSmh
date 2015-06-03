@@ -742,7 +742,7 @@ class Order(AdminBaseHandler):
 			address = order.address_text
 			# print("ready to send message")
 			if send_message:
-				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone,address) 
+				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone,address)
 		if order_status == 5:
 			now = datetime.datetime.now()
 			order.arrival_day = now.strftime("%Y-%m-%d")
@@ -1003,7 +1003,8 @@ class Order(AdminBaseHandler):
 		elif action == "batch_edit_status":
 			order_list_id = data["order_list_id"]
 			notice = ''
-			for key in order_list_id:	
+			count=0
+			for key in order_list_id:
 				order = next((x for x in self.current_shop.orders if x.id==int(key)), None)
 				if order.status == 4 and data['status'] ==4:
 					notice = "订单"+str(order.num)+"订单已在配送中，请不要重复操作"
@@ -1018,6 +1019,22 @@ class Order(AdminBaseHandler):
 					notice = "没找到订单",order.onum
 					return self.send_fail(notice)
 				self.edit_status(order,data['status'],False)
+				count += 1
+			if count > 0:
+				try:
+					staff_info = self.session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id )\
+					.filter(models.HireLink.shop_id == shop_id,models.HireLink.default_staff == 1).first()
+				except:
+					print("didn't find default staff")
+				if staff_info:
+					openid = staff_info.wx_openid
+					staff_name = staff_info.nickname
+				else:
+					openid = self.current_shop.admin.accountinfo.wx_openid
+					staff_name = self.current_shop.admin.accountinfo.nickname
+				shop_name = self.current_shop.shop_name
+				WxOauth2.post_batch_msg(openid,staff_name,shop_name,count) 
+
 		elif action == "batch_print":
 			order_list_id = data["order_list_id"]
 			for key in order_list_id:
