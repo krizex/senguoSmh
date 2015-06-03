@@ -409,7 +409,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*10,
 
-							  policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
+							  policy={"callbackUrl": "http://test123.senguo.cc/fruitzone/imgcallback",
 									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 #        token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
 		print("[七牛授权]发送Token：",token)
