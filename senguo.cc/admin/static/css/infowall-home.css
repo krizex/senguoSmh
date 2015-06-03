@@ -13,7 +13,7 @@
 .infowall-list{width:100%;float:left;padding-left:0px;}
 .infowall-list-item{margin-bottom:0.5em;width:100%;float:left;padding:0.5em 1em;}
 .infowall-list-item .head-img{width:40px;height:40px;}
-.infowall-list-item .info-text{padding:0.5em 0;margin-bottom:0.5em;border-bottom:1px solid #ddd;}
+.infowall-list-item .info-text{padding:0.5em 0;margin-bottom:0.5em;border-bottom:1px solid #e7e7eb;}
 
 .infowall-list-item .info-box{position:relative;}
 .infowall-list-item .info-box .address{position:absolute;bottom:0;left:70px;display:inline-block;width:80%;font-size:0.9em;}
@@ -26,5 +26,5 @@
 .infowall-list-item .img-list img{width:60px;height:60px;margin-right:1em;float:left;margin-bottom:5px;}
 .infowall-list-item .img-list .img-count{position:absolute;right:0;top:0;}
 
-.infowall-list-item .funciont-btn-box li{display:inline-block;border:1px solid #ddd;}
+.infowall-list-item .funciont-btn-box li{display:inline-block;border:1px solid #e7e7eb;}
 .infowall-list-item .funciont-btn-box li a{color:#666;padding:0 0.5em;}

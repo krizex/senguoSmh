@@ -1,7 +1,7 @@
 {% extends 'goods-set-base.html' %}
 {% block setcontent %}
 <div class="wrap-all-goods">
-<input type="hidden" id="token" value=""/>
+<input type="hidden" id="token" value="{{token}}"/>
     <ul class="category-list group">
         <li>
             <div class="cate-title">商品状态：</div>
@@ -336,51 +336,53 @@
         </ul>
     </div>
 </div>
-
-<div class="pop-up-img pop-window" data-index="">
-    <div class="pop-img-top">
-        <p><span class="c333">本地图片 : </span>最多上传5张</p>
-        <ul class="item-img-lst group" id="item-img-lst">
-            <!--<li class="img-bo">
-                <div class="img-cover wrap-img-cover hidden">
-                    <span class="loader loader-quart"></span>
-                </div>
-                <img src="/static/images/anoa-1-md.gif" alt="晒单图片" class="image"/>
-                <a class="del-img hide" href="javascript:;">x</a>
-            </li>-->
-            <li class="add-img-box">
-                <a href="javascript:;" class="add-item-list" id="add-img-btn">+</a>
-            </li>
-        </ul>
-        <p><span class="c333">森果图片库 : </span><span class="red-txt">苹果</span></p>
-        <ul class="item-img-lst group sg-img-list">
-            <li class="img-bo img-box1">
-                <div class="img-selected">已选</div>
-                <img src="/static/images/anoa-1-md.gif" alt="商品图片"/>
-                <a class="show-bigimg" data-src="/static/images/anoa-1-md.gif" href="javascript:;">预览大图</a>
-            </li>
-            <li class="img-bo img-box2">
-                <div class="img-selected">已选</div>
-                <img src="/static/images/anoa-1-md.gif" alt="商品图片"/>
-                <a class="show-bigimg" data-src="/static/images/anoa-1-md.gif" href="javascript:;">预览大图</a>
-            </li>
-            <li class="img-bo img-box3">
-                <div class="img-selected">已选</div>
-                <img src="/static/images/anoa-1-md.gif" alt="商品图片"/>
-                <a class="show-bigimg" href="javascript:;">预览大图</a>
-            </li>
-            <li class="img-bo img-box4">
-                <div class="img-selected">已选</div>
-                <img src="/static/images/anoa-1-md.gif" alt="商品图片"/>
-                <a class="show-bigimg" href="javascript:;">预览大图</a>
-            </li>
-        </ul>
-    </div>
-    <div class="wrap-pop-btn">
-        <a href="javascript:;" class="ok-btn">确认上传</a>
-        <a href="javascript:;" class="cancel-btn">取消</a>
+<div class="pop-win pop-img-win">
+    <div class="pop-up-img" data-index="">
+        <div class="pop-img-top">
+            <p><span class="c333">本地图片 : </span>最多上传5张</p>
+            <ul class="item-img-lst group" id="item-img-lst">
+                <!--<li class="img-bo">
+                    <div class="img-cover wrap-img-cover hidden">
+                        <span class="loader loader-quart"></span>
+                    </div>
+                    <img src="/static/images/anoa-1-md.gif" alt="晒单图片" class="image"/>
+                    <a class="del-img hide" href="javascript:;">x</a>
+                </li>-->
+                <li class="add-img-box" id="add-img-box">
+                    <a href="javascript:;" class="add-item-list" id="add-img-btn">+</a>
+                </li>
+            </ul>
+            <p><span class="c333">森果图片库 : </span><span class="red-txt">苹果</span></p>
+            <ul class="item-img-lst group sg-img-list">
+                <li class="img-bo img-box1">
+                    <div class="img-selected">已选</div>
+                    <img src="/static/images/anoa-1-md.gif" alt="商品图片"/>
+                    <a class="show-bigimg" data-src="/static/images/anoa-1-md.gif" href="javascript:;">预览大图</a>
+                </li>
+                <li class="img-bo img-box2">
+                    <div class="img-selected">已选</div>
+                    <img src="/static/images/anoa-1-md.gif" alt="商品图片"/>
+                    <a class="show-bigimg" data-src="/static/images/anoa-1-md.gif" href="javascript:;">预览大图</a>
+                </li>
+                <li class="img-bo img-box3">
+                    <div class="img-selected">已选</div>
+                    <img src="/static/images/anoa-1-md.gif" alt="商品图片"/>
+                    <a class="show-bigimg" href="javascript:;">预览大图</a>
+                </li>
+                <li class="img-bo img-box4">
+                    <div class="img-selected">已选</div>
+                    <img src="/static/images/anoa-1-md.gif" alt="商品图片"/>
+                    <a class="show-bigimg" href="javascript:;">预览大图</a>
+                </li>
+            </ul>
+        </div>
+        <div class="wrap-pop-btn">
+            <a href="javascript:;" class="ok-btn" id="upload-img">确认上传</a>
+            <a href="javascript:;" class="cancel-btn">取消</a>
+        </div>
     </div>
 </div>
+
 <div class="wrap-unit pop-window">
     <div class="unit-box">
         <p><span class="c333 mr10">单位换算</span>需要经过换算，让单位统一，保证库存与销量的统计保持一致</p>

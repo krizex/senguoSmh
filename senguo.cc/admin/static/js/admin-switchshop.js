@@ -67,7 +67,7 @@ $(document).ready(function(){
 }).on('click','.sw-list li',function(e){
     var shop_id=$(this).data('id');
     var shop_code = $(this).attr("data-code");
-    if(shop_code!="not set" && typeof(shop_code) != undefined){
+   
         if(shop_id){
             if(!$(e.target).hasClass('.forbid_click')){
                 var url='/admin';
@@ -75,12 +75,14 @@ $(document).ready(function(){
                 var args={action:'shop_change',data:data};
                 $.postJson(url,args,function(res){
                     if(res.success){
-                        window.location.href='/admin';
+                         if(shop_code!="not set" && typeof(shop_code) != undefined){
+                                window.location.href='/admin';
+                            }else{
+                            window.location.href="/admin/config/shop";
+                            }
                     }
                 });
             }
         }
-    }else{
-        window.location.href="/admin/config/shop";
-    }
+   
 });

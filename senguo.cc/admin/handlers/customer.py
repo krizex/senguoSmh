@@ -112,7 +112,7 @@ class Access(CustomerBaseHandler):
 			return self.send_error(400)
 
 		userinfo = self.get_wx_userinfo(code, mode)
-		print('login handle_oauth',code,mode,userinfo)
+		# print('login handle_oauth',code,mode,userinfo)
 		if not userinfo:
 			return self.redirect(self.reverse_url("customerLogin"))
 		u = models.Customer.register_with_wx(self.session, userinfo)
@@ -159,7 +159,7 @@ class RegistByPhone(CustomerBaseHandler):
 		print("[手机注册]发送验证码到手机：",self.args["phone"])
 		resault = gen_msg_token(phone=self.args["phone"])
 		if resault == True:
-			#print("[手机注册]向手机号",phone,"发送短信验证",resault,"成功")
+			# print("[手机注册]向手机号",phone,"发送短信验证",resault,"成功")
 			return self.send_success()
 		else:
 			return self.send_fail(resault)
@@ -233,7 +233,7 @@ class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
 		# shop_id = self.shop_id
-		print("[访问店铺]店铺号：",shop_code)
+		print("[个人中心]店铺号：",shop_code)
 		# 用于标识 是否现实 用户余额 ，当 店铺 认证 通过之后 为 True ，否则为False
 		show_balance = False
 		try:
@@ -250,7 +250,7 @@ class Home(CustomerBaseHandler):
 				show_balance = True
 			# print(shop,shop.shop_auth)
 		else:
-			print("[访问店铺]店铺不存在：",shop_code)
+			print("[个人中心]店铺不存在：",shop_code)
 			return self.send_fail('shop not found')
 		customer_id = self.current_user.id
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
@@ -366,7 +366,7 @@ class CustomerProfile(CustomerBaseHandler):
 		try:
 				follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id).order_by(models.CustomerShopFollow.create_time.desc()).limit(3).all()
 		except:
-				print('该用户未关注任何店铺')
+				print('[个人中心]该用户未关注任何店铺')
 		for shopfollow in follow:
 				shop=self.session.query(models.Shop).filter_by(id = shopfollow.shop_id).first()
 				shop_info.append({'logo':shop.shop_trademark_url,'shop_code':shop.shop_code})
@@ -495,7 +495,7 @@ class ShopProfile(CustomerBaseHandler):
 			return self.send_error(404)
 		shop_id = shop.id
 		shop_name = shop.shop_name
-		shop_logo   = shop.shop_trademark_url
+		shop_logo = shop.shop_trademark_url
 
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
@@ -541,7 +541,7 @@ class ShopProfile(CustomerBaseHandler):
 		staffs = self.session.query(models.HireLink).filter_by(shop_id=shop_id,active=1).all()
 		shop_members_id = [shop.admin_id]+[x.staff_id for x in staffs]
 		headimgurls = self.session.query(models.Accountinfo.headimgurl_small).\
-			filter(models.Accountinfo.id.in_(shop_members_id)).all()
+					filter(models.Accountinfo.id.in_(shop_members_id)).all()
 		comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
 		session = self.session
 		w_id = self.current_user.id
@@ -583,7 +583,7 @@ class ShopProfile(CustomerBaseHandler):
 				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id\
 					,shop_id = shop_id).first()
 			except:
-				print("店铺关注出错")
+				# print("[访问店铺]店铺关注出错")
 				self.send_fail("shop_follow error")
 			if signin:
 
@@ -598,7 +598,7 @@ class ShopProfile(CustomerBaseHandler):
 					#     print("before sign:",point.signIn_count)
 					#     point.signIn_count += 1
 					#     print("after sign:",point.signIn_count)
-						# point.count += 1
+					#	  point.count += 1
 					point_history = models.PointHistory(customer_id = self.current_user.id,shop_id = shop_id)
 					if point_history:
 						point_history.each_point = 1
@@ -684,8 +684,9 @@ class Members(CustomerBaseHandler):
 		admin_id = admin_id[0]
 		members = self.session.query(models.Accountinfo, models.HireLink.work).filter(
 			models.HireLink.shop_id == shop_id,models.HireLink.active==1, or_(models.Accountinfo.id == models.HireLink.staff_id,
-													models.Accountinfo.id == admin_id)).all()
+				models.Accountinfo.id == admin_id)).all()
 		member_list = []
+		# print(members)
 		def work(id, w):
 			if id == admin_id:
 				return "店长"
@@ -693,13 +694,17 @@ class Members(CustomerBaseHandler):
 				return "挑货"
 			else:
 				return "送货"
+		idlist =[]
 		for member in members:
-			member_list.append({"img":member[0].headimgurl_small,
-								"name":member[0].nickname,
-								"birthday":time.strftime("%Y-%m", time.localtime(member[0].birthday)),
-								"work":work(member[0].id,member[1]),
-								"phone":member[0].phone,
-								"wx_username":member[0].wx_username})
+			if member[0].id not in idlist:
+				idlist.append(member[0].id)
+				member_list.append({"img":member[0].headimgurl_small,
+									"name":member[0].nickname,
+									"birthday":time.strftime("%Y-%m", time.localtime(member[0].birthday)),
+									"work":work(member[0].id,member[1]),
+									"phone":member[0].phone,
+									"wx_username":member[0].wx_username})
+		# print(member_list)
 		return self.render("customer/shop-staff.html", member_list=member_list)
 
 class Comment(CustomerBaseHandler):
@@ -1453,7 +1458,8 @@ class Cart(CustomerBaseHandler):
 		####################################################
 		pay_type = self.args['pay_type']
 		if pay_type == 2:
-			print(self.args['pay_type'])
+			if current_shop.shop_auth == 0:
+				return self.send_fail('当前店铺未认证，此功能暂不可用')
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
 				shop_id = shop_id).first()
 			if not shop_follow:
@@ -1603,6 +1609,8 @@ class Cart(CustomerBaseHandler):
 
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
+			if current_shop.shop_auth == 0:
+				return self.send_fail('当前店铺未认证，此功能暂不可用')
 			online_type = self.args['online_type']
 			self.set_cookie('order_id',str(order.id))
 			self.set_cookie('online_totalPrice',str(order.totalPrice))
@@ -1640,7 +1648,7 @@ class CartCallback(CustomerBaseHandler):
 		admin_name = shop.admin.accountinfo.nickname
 		touser     = shop.admin.accountinfo.wx_openid
 		shop_name  = shop.shop_name
-		order_id   = shop.shop_name
+		order_id   = order.num
 		order_type = order.type
 		online_type= order.online_type
 		pay_type   = order.pay_type
@@ -1661,7 +1669,7 @@ class CartCallback(CustomerBaseHandler):
 		for m in m_d:
 			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		goods = str(goods)[1:-1]
-		print(goods,'goods到底装的什么')
+		print("[提交订单]订单详情：",goods)
 		order_totalPrice = float('%.2f'% totalPrice)
 		print("[提交订单]订单总价：",order_totalPrice)
 		# send_time     = order.get_sendtime(session,order.id)
@@ -1879,9 +1887,9 @@ class Order(CustomerBaseHandler):
 				return self.send_fail("订单已经取消，不能重复操作")
 			if order.pay_type == 3 and order.status!=-1:
 				return self.send_fail("在线支付『已付款』的订单暂时不能取消，如有疑问请直接与店家联系")
-			print(order.status,"==================================")
+			print("[订单管理]取消订单，订单原状态：",order.status)
 			order.status = 0
-			print(order.status,"----------------------------------------")
+			print("[订单管理]取消订单，订单现状态：",order.status)
 			# recover the sale and storage
 			# woody
 			# 3.27
@@ -2340,13 +2348,13 @@ class payTest(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?:str')
 	def post(self):
-			print(self.args,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+			# print(self.args,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
 
 		# 微信 余额 支付
 	#	if action == 'wx_pay':
-			print('回调成功')
+			print("[微信充值]回调成功")
 			data = self.request.body
-			print(self.request.body,'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+			print("[微信充值]回调request.body：",self.request.body)
 			xml = data.decode('utf-8')
 			UnifiedOrder = UnifiedOrder_pub()
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
@@ -2501,55 +2509,66 @@ class InsertData(CustomerBaseHandler):
 		# 		self.session.commit()
 		# time.sleep(100)
 
+		###data from m_goods to fruit and mcharge_type to charge_type###
 		#setp1
-		mgoods = self.session.query(models.MGoods).all()
-		for good in mgoods:
-			shop_id = good.menu.shop_id
-			fruit_type_id = 2000
-			name = good.name
-			active = good.active
-			current_saled = good.current_saled
-			saled = good.saled
-			storage = good.storage
-			favour = good.favour
-			unit = good.unit
-			tag = good.tag
-			img_url = good.img_url
-			intro = good.intro
-			priority = good.priority
-			info = models.Fruit(
-				shop_id	= shop_id,
-				fruit_type_id = fruit_type_id,
-				name = name,
-				active = active,
-				current_saled = current_saled,
-				saled = saled,
-				storage = storage,
-				favour = favour,
-				unit = unit,
-				tag = tag,
-				img_url = img_url,
-				intro = intro,
-				priority = priority,
-				temp_mgoods_id = good.id
-			)
-			self.session.add(info)
-			self.session.commit()
+		# dry_fruits = self.session.query(models.Fruit).filter(models.Fruit.fruit_type_id>1000).filter(models.Fruit.fruit_type_id<2000).all()
+		# for dry in dry_fruits:
+		# 	dry.clssify = 2
+		# 	self.session.commit()
 
-		#step2
-		mcharge_types = self.session.query(models.MChargeType).all()
-		for charge in mcharge_types:
-			m_goods = self.session.query(models.Fruit).filter_by(temp_mgoods_id = charge.mgoods_id,fruit_type_id=2000).first()
-			charge_type = models.ChargeType(
-				fruit_id = m_goods.id,
-				price = charge.price,
-				unit = charge.unit,
-				num = charge.num,
-				unit_num = charge.unit_num,
-				active = charge.active,
-			)
-			self.session.add(charge_type)
-			self.session.commit()
+		# setp2
+		# mgoods = self.session.query(models.MGoods).all()
+		# for good in mgoods:
+		# 	shop_id = good.menu.shop_id
+		# 	fruit_type_id = 2000
+		# 	name = good.name
+		# 	active = good.active
+		# 	current_saled = good.current_saled
+		# 	saled = good.saled
+		# 	storage = good.storage
+		# 	favour = good.favour
+		# 	unit = good.unit
+		# 	tag = good.tag
+		# 	img_url = good.img_url
+		# 	intro = good.intro
+		# 	priority = good.priority
+		# 	info = models.Fruit(
+		# 		shop_id	= shop_id,
+		# 		fruit_type_id = fruit_type_id,
+		# 		name = name,
+		# 		active = active,
+		# 		current_saled = current_saled,
+		# 		saled = saled,
+		# 		storage = storage,
+		# 		favour = favour,
+		# 		unit = unit,
+		# 		tag = tag,
+		# 		img_url = img_url,
+		# 		intro = intro,
+		# 		priority = priority,
+		# 		temp_mgoods_id = good.id,
+		# 		clssify = 3
+		# 	)
+		# 	self.session.add(info)
+		# 	self.session.commit()
+
+		# #step3
+		# mcharge_types = self.session.query(models.MChargeType).all()
+		# for charge in mcharge_types:
+		# 	m_goods = self.session.query(models.Fruit).filter_by(temp_mgoods_id = charge.mgoods_id,fruit_type_id=2000).first()
+		# 	charge_type = models.ChargeType(
+		# 		fruit_id = m_goods.id,
+		# 		price = charge.price,
+		# 		unit = charge.unit,
+		# 		num = charge.num,
+		# 		unit_num = charge.unit_num,
+		# 		active = charge.active,
+		# 	)
+		# 	self.session.add(charge_type)
+		# 	self.session.commit()
+
+		
+
 		return self.send_success()
 
 

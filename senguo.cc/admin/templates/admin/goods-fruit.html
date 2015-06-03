@@ -2,7 +2,7 @@
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-goods-fruit.css')}}"/>{% end %}
 {% block goodsLeft %}
 <div class="fruit-left-title">
-    已选择：<span class="fruit-type set-right10 text-pink"></span>已建立{{len(fruits)}}种类别的"<span class="fruit-type text-pink"></span>"，在售<span class="fruit-shelve-num text-pink"></span>种
+    已选择：<span class="fruit-type set-right10 text-pink"></span>已建立{{len(fruits)}}种类别的“<span class="fruit-type text-pink"></span>”，在售<span class="fruit-shelve-num text-pink"></span>种
 </div>
 <ul class="goods-list clearfix">
     {% for fruit in fruits%}
@@ -209,7 +209,7 @@
         {% end %}
     </div>
     <hr/>
-    <p class="text-center">如没有您需要上架的水果种类，请关注“森果”公众号，将您需要的水果种类反馈到森果公众平台上。</p>
+    <p class="text-center mb-15">如没有您需要上架的水果种类，请关注“森果”公众号，将您需要的水果种类反馈到森果公众平台上。</p>
 </div>
 <div class="modal fade "  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" id="preview_box">
     <div class="modal-dialog">

@@ -48,7 +48,7 @@
 </header>
 <!--backstage-header-end-->
 
-<main class="container mt80">
+<main class="container mt100">
     <div class="s-container">
         <div class="sw-top">
             <p>店铺列表 {% if current_shop.admin_id == current_user.id %}<a href="javascript:;" class="text-link" id="spread-list">推广店铺列表</a>{% end %}</p>
@@ -83,7 +83,7 @@
                     <span class="sw-tip-txt"></span>
                     <dl class="group">
                         <dt class="fl">
-                            <img src="{{shop['shop_trademark_url'] or '/static/images/TDSG.png'}}" alt="{{shop['shop_name']}}"/>
+                            <img src="{{shop['shop_trademark_url'] or '/static/images/TDSG.png'}}?imageView/1/w/100/h/100" alt="{{shop['shop_name']}}"/>
                             <a href="javascript:;" class="text-link spread-shop" data-url="{{reverse_url('Market',shop['shop_code'])}}">推广店铺</a>
                             <div class="sw-er-tip invisible forbid_click">
                                 <div class="left-arr">
@@ -119,7 +119,7 @@
                     {% else %}
                       <dl class="group">
                         <dt class="fl">
-                            <img src="{{shop['shop_trademark_url'] or '/static/images/TDSG.png'}}" alt="{{shop['shop_name']}}"/>
+                            <img src="{{shop['shop_trademark_url'] or '/static/images/TDSG.png'}}?imageView/1/w/100/h/100" alt="{{shop['shop_name']}}"/>
                         </dt>
                         <dd class="fl sw-listr">
                             <p class="sw-title">{{shop['shop_name']}}</p>

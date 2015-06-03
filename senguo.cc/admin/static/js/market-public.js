@@ -47,7 +47,7 @@
     if(window.dataObj.cart_count!=0){
         $('.cart_num').removeClass('hidden').text(window.dataObj.cart_count);
     }
-    $('.lazy_img').lazyload({threshold:100});
+    $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
     //置顶监听
     $(window).on('scroll',function(){
         var $this=$(this);
@@ -265,7 +265,7 @@ function stopPropagation(e) {
     }  
 }  
 //confirmbox
-getItem('/static/items/confirmBox.html?v=201503-29',function(data){window.dataObj.confirmBox=data});
+getItem('/static/items/confirmBox.html?v=20150530',function(data){window.dataObj.confirmBox=data});
 var confirmBox=function(text,index,type,id){
         var $box=$(window.dataObj.confirmBox);
         $box.find('.message').text(text);
@@ -275,20 +275,24 @@ var confirmBox=function(text,index,type,id){
         var window_height=$(window).height();
         var height=$('.container').height();
         $('body').append($box);
+        $("#container,#nav").css({'-webkit-filter':'blur(3px)'})
         $(document).on('click','.dismiss',function(){
+            $("#container,#nav").removeAttr("style");
             $('#confirmBox').remove();
-            $('.modal_bg').remove();
+            //$('.modal_bg').remove();
         });
          $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
-                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
+                $("#container,#nav").removeAttr("style");
+                //$('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
                 $('#confirmBox').remove();
             }
         });
 }
 var confirmRemove=function(){
+    $("#container,#nav").removeAttr("style");
     $('#confirmBox').remove();
-    $('.modal_bg').remove();
+    //$('.modal_bg').remove();
 }
 //word notice
 var noticeTimer = null;
@@ -321,7 +325,7 @@ var warnNotice=function(text,item){
         if(item){
             item.removeAttr('disabled').removeClass('bg-greyc');
         }
-    },2000);
+    },1500);
 }
 //time count 2 secends
 var noticeRemove=function (target,item) {
@@ -330,7 +334,7 @@ var noticeRemove=function (target,item) {
         if(item){
             item.removeAttr('disabled').removeClass('bg-greyc');
         }
-    },2000);
+    },1500);
 }
 
 //modal box
@@ -346,15 +350,18 @@ Modal.prototype.modal=function(type){
         $target.removeClass('fade').addClass('in').css({'display':'block'});
         $target.find('.warn').remove();
         $("body").css({'overflow':'hidden'});
+        $("#container,#nav").css({'-webkit-filter':'blur(3px)'})
         $target.on('click',function(e){
             if($(e.target).closest('.dismiss').length != 0){
                 $('body').css({'overflow':'auto'});
+                $("#container,#nav").removeAttr("style");
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
         $(document).on('click','.modal',function(e){
              if($(e.target).closest('.modal-content').length == 0){
                 $('body').css({'overflow':'auto'});
+                $("#container,#nav").removeAttr("style");
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
             }
         });
@@ -362,6 +369,7 @@ Modal.prototype.modal=function(type){
     else if(type=='hide')
     {
         $('body').removeClass('modal_sty').css({'overflow':'auto'}).find('.modal_bg').remove();
+        $("#container,#nav").removeAttr("style");
         $target.addClass('fade').removeClass('in').css({'display':'none'});
     }
 }
@@ -375,5 +383,29 @@ function pulse(target){
 function wobble(target){
     target.removeClass('anim-wobble').addClass('anim-wobble').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function(){
         target.removeClass('anim-wobble');
+    });
+}
+
+function modalNotice(notice){
+    var item='<div class="modal in" id="notice-box" style="display:block">'+
+                        '<div class="modal-dialog anim-bounceIn">'+
+                            '<div class="modal-content bg-white">'+
+                                '<div class="modal-top"><img src="/static/images/info_top.png"/></div>'+
+                                '<div class="modal-header set-width-float">'+
+                                    '<button type="button" class="close dismiss-notice">✕</button>'+
+                                    '<h2 class="modal-title  text-center line48">TIPS</h2>'+
+                                '</div>'+
+                                '<div class="modal-body set-width-float text-center">'+
+                                    '<p class="detail font14 text-center">{{notice}}</p>'+
+                                '</div>'+
+                                '<div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>'+
+                            '</div>'+
+                        '</div>'+
+                    '</div>';
+    var render = template.compile(item);
+    var content = render({notice:notice});
+    $('body').append(content);
+    $(document).on('click','.dismiss-notice',function(){
+        $('#notice-box').remove();
     });
 }

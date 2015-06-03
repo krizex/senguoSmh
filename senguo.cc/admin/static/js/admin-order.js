@@ -56,7 +56,7 @@ $(document).ready(function(){
     $(document).on('click','.add-new-time',function(){//添加显示
         var max=$('.time-list').find('.time-list-item').length;
         if(max<20) {
-            $.getItem('/static/items/admin/add-period-item.html?v=2015-0311',function(data){
+            $.getItem('/static/items/admin/add-period-item.html?v=20150530',function(data){
                 var $item=$(data);
                 for(var i=0;i<=23;i++)
                 {
@@ -270,7 +270,7 @@ function addEditPeriod(target,action){
             if(res.success){
                 if(action=='add_period'){
                     parent.empty().hide();
-                    var item_url='/static/items/admin/send-period-item.html?v=2015-0328';
+                    var item_url='/static/items/admin/send-period-item.html?v=20150530';
                     $.getItem(item_url,function(data){
                         var $item=$(data);
                         $item.attr({'data-id':res.period_id});

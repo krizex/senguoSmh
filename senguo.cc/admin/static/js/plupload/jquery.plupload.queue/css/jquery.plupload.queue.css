@@ -49,7 +49,7 @@
 }
 
 .plupload_container input {
-	border: 1px solid #DDD;
+	border: 1px solid #e7e7eb;
 	font: normal 11px Verdana,sans-serif;
 	width: 98%;
 }
@@ -84,7 +84,7 @@
 .plupload_filelist li {
 	padding: 10px 8px;
 	background: #F5F5F5 url('../img/backgrounds.gif') repeat-x 0 -156px;
-	border-bottom: 1px solid #DDD;
+	border-bottom: 1px solid #e7e7eb;
 }
 
 .plupload_filelist_header, .plupload_filelist_footer {

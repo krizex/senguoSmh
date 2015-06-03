@@ -13,7 +13,7 @@
     {% block head %}{% end %}
     <script>
         window.dataObj = {
-                _xsrf: "{{handler.xsrf_token}}"};
+            _xsrf: "{{handler.xsrf_token}}"};
     </script>
 </head>
 <body>
@@ -35,7 +35,7 @@
         </div>
         <div class="header-nav height50 pull-right">
             <ul class="navbar">
-               <!--<li class="line50">
+                <!--<li class="line50">
                     <a href="javascript:;" class="developing">
                         <i class="notice-img height50 pull-left"></i>
                         实时消息
@@ -49,7 +49,7 @@
                         <span class="on_sum" id="on_sum">{{num}}</span>
                     </a>
                 </li>
-               <!--<li class="line50">
+                <!--<li class="line50">
                     <a href="javascript:;" class="developing">
                         <i class="message-img height50 pull-left"></i>
                         留言
@@ -62,7 +62,7 @@
                         <!-- <p class="job pull-left text-left">{{current_user.accountinfo.nickname}}</p> -->
                         {% if current_shop.shop_auth in [1,4] %}
                         <p class="job pull-left text-left">个人认证</p>
-                         {% elif current_shop.shop_auth in [2,3] %}
+                        {% elif current_shop.shop_auth in [2,3] %}
                         <p class="job pull-left text-left">企业认证</p>
                         {% else %}
                         <div class="noauth pull-left text-left"><a href="javascript:;" class="text-grey">未认证</a> <a href="{{reverse_url('adminShopAuth')}}" class="text-link">去认证</a></div>
@@ -80,18 +80,17 @@
                                 {% end %}
                             </ul>-->
                             <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1" id="currentShopChange">
-                                <li  role="presentation">
+                                <li role="presentation">
                                     <a class="menu-icona sshop" href="{{reverse_url('switchshop')}}">切换店铺</a>
                                 </li>
-                                <li  role="presentation">
+                                <li role="presentation">
                                     <a class="menu-icona swoon" href="/customer/profile">个人中心</a>
                                 </li>
-                                <li  role="presentation">
+                                <li role="presentation">
                                     <a class="menu-icona squit" href="{{reverse_url('adminLogout')}}">退出</a>
                                 </li>
                             </ul>
                         </div>
-                         
                     </div>
                 </li>
             </ul>
@@ -132,7 +131,7 @@
 {% elif subpage == 'marketing' %}
     {% set marketing_active = 'active' %}
 {% end %}
-<main class="container mt80">
+<main class="container mt100">
     <div class="container-left pull-left">
         <ul class="nav common-left-nav">
             <li>
@@ -147,14 +146,12 @@
                 <span class="server"><i></i>客服</span>
                 <a href="{{reverse_url('adminComment')}}?action=all&&page=0" class="{{comment_active}} has-red-tip" data-action="msg">消息与评价<b class="red-tip hidden" id="comment_num">10</b></a>
             </li>
-
             {% if current_shop.shop_auth !=0 %}
-           <li>
+            <li>
                 <span class="account"><i></i>账户</span>
                 <a href="{{reverse_url('adminShopBalance')}}" class="{{shopBlance}} has-red-tip" data-action="account">账户余额<b class="red-toll hidden" id="is_balance"></b></a>
             </li>
             {% end %}
-            
             <li>
                 <span class="manage"><i></i>管理</span>
                 <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1&page=0" class="{{order_active}} has-red-tip" data-action="order">订单管理<b class="red-tip hidden" id="order_ordernum">200</b></a>
@@ -170,7 +167,7 @@
             </li>
             {% if current_shop.shop_auth !=0 %}
              <li>
-                <span class="set"><i></i>营销</span>
+                <span class="market"><i></i>营销</span>
                 <a href="{{reverse_url('adminMarketing')}}?action=lovewall" class="{{marketing_active}}" id="shopPage">营销和玩法</a>
             </li>
             {% end %}
@@ -180,6 +177,28 @@
     {% block content %}{% end %}
     </div>
 </main>
+<div class="foot" id="footer">
+    <ul class="links ft">
+        <li class="links_item no_extra">
+            <a href="/official" target="_blank">森果官网</a>
+        </li>
+        <li class="links_item">
+            <a href="/official/about" target="_blank">关于森果</a>
+        </li>
+        <li class="links_item">
+            <a href="#">服务协议</a>
+        </li>
+        <li class="links_item">
+            <a href="/official/about" target="_blank">客服中心</a>
+        </li>
+        <li class="links_item">
+            <a href="mailto:wolf@senguo.cc">联系邮箱</a>
+        </li>
+        <li class="links_item">
+            <p class="copyright">Copyright © 2014-2015 Senguo.cc. All Rights Reserved.</p>
+        </li>
+    </ul>
+</div>
 <script src="/static/js/jquery.min.js"></script>
 <script src="/static/js/bootstrap.min.js"></script>
 <script src="/static/js/template.js"></script>

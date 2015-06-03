@@ -36,7 +36,6 @@ $(document).ready(function(){
         aLis.push(obj);
         drag(obj);
     }
-
     $(".group-lst").children("li").each(function(){
          $(this).css("position","absolute");
     });

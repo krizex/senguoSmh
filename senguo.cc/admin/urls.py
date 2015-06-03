@@ -191,6 +191,10 @@ handlers = [
 	(r"/admin/goods/classify", handlers.admin.Goods, {"action":"classify"}, "adminGoodsClassify"),
 	(r"/admin/goods/group", handlers.admin.Goods, {"action":"group"}, "adminGoodsGroup"),
 	(r"/admin/goods/delete", handlers.admin.Goods, {"action":"delete"}, "adminGoodsDelete"),
+
+	(r"/admin/editorTest", handlers.admin.editorTest, {}, "admineditorTest"),
+	(r"/admin/editorFileManage", handlers.admin.editorFileManage, {}, "admineditorFileManage"),
+	(r"/admin/editorCallback", handlers.admin.editorCallback, {}, "admineditorCallback"),
 	
 	# (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
 	# (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),

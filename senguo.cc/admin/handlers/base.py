@@ -92,11 +92,14 @@ class GlobalBaseHandler(BaseHandler):
 		if hasattr(self, "_session"):
 			return self._session
 		self._session = models.DBSession()
+		# print("DB session open !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		return self._session
 
 	def on_finish(self):
 		# release db connection
+		# print("DB session on_finish =========================================================")
 		if hasattr(self, "_session"):
+			# print("DB session close!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			self._session.close()
 
 	def timestamp_to_str(self, timestamp):
@@ -295,7 +298,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			para_str = "?next="+tornado.escape.url_escape(next_url)
 		else:
 			para_str = ""
-		print('login in get_weixin_oauth_url',self,next_url)
+		# print("[微信授权]跳转链接：",next_url)
 
 		if self.is_wexin_browser():
 			if para_str: para_str += "&"
@@ -368,15 +371,16 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 		user_id = self.get_secure_cookie(self.__account_cookie_name__) or b'0'
 		user_id = int(user_id.decode())
-		print("[用户信息]当前用户ID：",user_id)
+		# print("[用户信息]当前用户ID：",user_id)
 		# print(type(self))
 		# print(self.__account_model__)
 
 		if not user_id:
 			self._user = None
 		else:
-			print(user_id,'get_current_user: user_id')
+			# print(user_id,'get_current_user: user_id')
 			self._user = self.__account_model__.get_by_id(self.session, user_id)
+			# print(self._user,"self._user")
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:
 				Logger.warn("Suspicious Access", "may be trying to fuck you")
@@ -403,7 +407,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
 
 
-		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*10,
+		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*100,
 
 							  policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
 									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
@@ -411,9 +415,21 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		print("[七牛授权]发送Token：",token)
 		return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 
+
+	def get_editor_token(self, action, id):
+		q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
+
+
+		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*100,
+
+							  policy={"callbackUrl": "http://localhost:8080/admin/editorCallback",
+									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
+		print("[七牛授权]发送Token：",token)
+		return token
+
 	def get_qiniu_token(self,action,id):
 		q = qiniu.Auth(ACCESS_KEY,SECRET_KEY)
-		token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
+		token = q.upload_token(BUCKET_SHOP_IMG,expires = 60*30*100)
 		print("[七牛授权]获得Token：",token)
 		return token
 

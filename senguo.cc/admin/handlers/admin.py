@@ -677,7 +677,7 @@ class Order(AdminBaseHandler):
 		delta = datetime.timedelta(1)
 		# print("[订单管理]当前店铺：",self.current_shop)
 		for order in orders:
-			order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
+			order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id',
 										 'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
@@ -686,6 +686,7 @@ class Order(AdminBaseHandler):
 			d["sent_time"] = order.send_time
 			info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
 			d["nickname"] = info.accountinfo.nickname
+			d["customer_id"] = order.customer_id
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
 				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id,models.HireLink.active == 1)).all()
 			d["shop_new"] = 0
@@ -1260,77 +1261,181 @@ class Goods(AdminBaseHandler):
 	@tornado.web.authenticated
 	def initialize(self, action):
 		self._action = action
-	@AdminBaseHandler.check_arguments("type_id?","page?:int")
+
+	def getData(self,datalist):
+		data = []
+		for d in datalist:
+			add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else None
+			delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else None
+			if d.img_url:
+				img_url= d.img_url.split(',')
+			else:
+				img_url = None
+			data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
+				'saled':d.saled,'storage':d.storage,'unit':d.unit,'tag':d.tag,'imgurl':img_url,'info':d.intro,'priority':d.priority,\
+				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_name':d.group_name,'classify':d.classify,\
+				'detail_describe':d.detail_describe})
+		return data
+
+	def getOneData(self,d):
+		data = []
+		add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else None
+		delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else None
+		if d.img_url:
+			img_url= d.img_url.split(',')
+		else:
+			img_url = None
+		data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
+			'saled':d.saled,'storage':d.storage,'unit':d.unit,'tag':d.tag,'imgurl':img_url,'info':d.intro,'priority':d.priority,\
+			'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_name':d.group_name,'classify':d.classify,\
+			'detail_describe':d.detail_describe})
+		return data
+
+	@AdminBaseHandler.check_arguments("type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?")
 	def get(self):
 		action = self._action
+		_id = str(time.time())
+		qiniuToken = self.get_qiniu_token('goods',_id)
 		if action == "all":
-			# type_id = self.args["type_id"]
-			# page = self.args["page"]
-			# page_size = 10
-			# offset = (page-1) * page_size
-			# history     = []
-			# data = []
-			# nomore = False
-			# try:
-			# 	goods = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id).all()
-			# except:
-			# 	nomore=True
+			if "type" in self.args:
+				_type = self.args["type"]
+				if _type == "all":
+					data = []
+					datalist = []
+					nomore = False
+					page = int(self.args["page"])
+					page_size = 10
+					offset = page * page_size				
+					try:
+						goods = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id).all()
+					except:
+						nomore=True
+					count = len(goods)
+					goods = goods[::-1]
+					if page==1 and count<=page_size:
+						nomore=True
+					if offset + page_size <= count:
+						datalist = goods[offset:offset+page_size]
+					elif offset <= count and offset + page_size >=count:
+						datalist = goods[offset:]
+					else:
+						nomore=True
+					if datalist == []:
+						nomore = True
+					else:
+						data = self.getData(datalist)
+					if page == 0:
+						if len(data)<page_size:
+							nomore = True
+					return self.send_success(data=data,nomore=nomore,count=count)
 
-			# if goods:
-			# 	for good in goods:
-			# 		if good.add_time:
-			# 			add_time = good.add_time.strftime('%Y-%m-%d %H:%M:%S')
-			# 		if good.delete_time:
-			# 			delete_time = good.delete_time.strftime('%Y-%m-%d %H:%M:%S')
-			# 		data.append({})
-			# 		fruit_type_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
+				if _type == "classify":
+					data = []
+					datalist = []
+					type_id = int(self.args["type_id"])
+					datalist = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id,fruit_type_id=type_id).all()
+					data = self.getData(datalist)
+					return self.send_success(data=data)
 
-			# 		name = Column(String(20))
-			# 		active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
-			# 		current_saled = Column(Integer, default=0) #售出：未处理的订单数
-			# 		saled = Column(Integer) #销量
-			# 		storage = Column(Float)
-			# 		favour = Column(Integer, default=0)  # 赞
-			# 		unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
-			# 		tag = Column(TINYINT, default=TAG.NULL) #标签
-			# 		img_url = Column(String(500))
-			# 		intro = Column(String(100))
-			# 		priority = Column(SMALLINT, default=1)
-			# 		limit_num =  Column(Integer, default=0) #max number could buy #5.27
-			# 		add_time = Column(DateTime, default=func.now()) #5.27
-			# 		delete_time = Column(DateTime) #5.27
-			# 		group_name =  Column(Integer, default=0) #group name 0:default group 1000:record group GoodsGroup.id #5.27
-			# 		clssify  = Column(Integer, default=0) 
-			# else:
-			# 	nomore=True
-			# count = len(goods)
-			# goods = goods[::-1]
-			# if page==1 and count<=page_size:
-			# 	nomore=True
-			# if offset + page_size <= count:
-			# 	data = goods[offset:offset+page_size]
-			# elif offset <= count and offset + page_size >=count:
-			# 	data = goods[offset:]
-			# else:
-			# 	nomore=True
-			# if data == []:
-			# 	nomore = True
-			# if page == 0:
-			# 	if len(data)<page_size:
-			# 		nomore = True
-				return self.render("admin/goods-all.html",context=dict(subpage="goods"))
-			# return self.send_success(data=data,nomore=nomore)
-			
+				elif _type == "filter":
+					data = []
+					datalist = []
+					nomore = False
+					page_size = 10
+					filter_status = self.args["filter_status"]
+					if filter_status == []:
+						filter_status = "all"
+					order_status1 = self.args["order_status1"]
+					order_status2 = self.args["order_status2"]
+					filter_status2 = self.args["filter_status2"]
+					if "page" in self.args:
+						page = int(self.args["page"])
+						offset = page * page_size
+
+					if 'type_id' in self.args:
+						try:
+							goods  = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id,fruit_type_id=data['type_id'])
+						except:
+							return self.send_fail('矮油，没有你要找的～')
+					else:
+						try:
+							goods  = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id)
+						except:
+							return self.send_fail('矮油，没有你要找的～')
+
+					if filter_status == "all":
+						good_list = goods
+					elif filter_status =="on":
+						good_list = goods.filter_by(active = 1)
+					elif filter_status =="off":
+						good_list = goods.filter_by(active = 0)
+					elif filter_status =="sold_out":
+						good_list = goods.filter_by(storage = 0)
+					elif filter_status =="current_sell":
+						good_list = goods.filter_by(current_saled !=0 )
+
+					if order_status1 =="group_name":
+						good_list = good_list.order_by(models.Fruit.group_name)
+					elif order_status1 =="classify":
+						good_list = good_list.order_by(models.Fruit.classify)	
+
+					if order_status2 == "add_time":
+						good_list = good_list.order_by(models.Fruit.add_time)
+					elif order_status2 == "name":
+						good_list = good_list.order_by(models.Fruit.name)
+					elif order_status2 == "saled":
+						good_list = good_list.order_by(models.Fruit.saled)
+					elif order_status2 == "storage":
+						good_list = good_list.order_by(models.Fruit.storage)
+					elif order_status2 == "current_saled":
+						good_list = good_list.order_by(models.Fruit.current_saled)
+
+					if filter_status2 != []:
+						order_status3 = int(filter_status2)
+						good_list = good_list.filter_by(group_name = filter_status2)
+
+
+					good_list =good_list.all()
+					count = len(good_list)
+
+					if page:
+						good_list = good_list[::-1]
+						if page==1 and count<=page_size:
+							nomore=True
+						if offset + page_size <= count:
+							datalist = good_list[offset:offset+page_size]
+						elif offset <= count and offset + page_size >=count:
+							datalist = good_list[offset:]
+						else:
+							nomore=True
+						if page == 0:
+							if len(data)<page_size:
+								nomore = True
+					else:
+						datalist = good_list
+
+					if datalist == []:
+						nomore = True
+					else:
+						data = self.getData(datalist)
+					return self.send_success(data=data,nomore=nomore,count=count)
+			return self.render("admin/goods-all.html",context=dict(subpage="goods"),token=qiniuToken)
+						
 		elif action == "classify":
 			return self.render("admin/goods-classify.html",context=dict(subpage="goods"))
 		elif action == "group":
-			return self.render("admin/goods-group.html",context=dict(subpage="goods"))
+			_group = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1).all()
+			data = []
+			for g in _group:
+				data.append({'id':g.id,'name':g.name,'intro':g.intro})
+			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data)
 		elif action == "delete":
-			return self.render("admin/goods-delete.html",context=dict(subpage="goods"))
-
+			goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,active = 0).all()
+			data = self.getData(goods)
+			return self.render("admin/goods-delete.html",context=dict(subpage="goods"),data=data)
 
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action", "data", "id?:int", "charge_type_id?:int")
+	@AdminBaseHandler.check_arguments("action", "data", "charge_type_id?:int")
 	def post(self):
 		action = self.args["action"]
 		data = self.args["data"]
@@ -1340,18 +1445,24 @@ class Goods(AdminBaseHandler):
 			if len(data["intro"]) > 100:
 				return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
 			args={}
+			args["fruit_type_id"] = int(data["type_id"])
 			args["name"] = data["name"]
 			args["saled"] = data["saled"]
 			args["storage"] = data["storage"]
 			args["unit"] = data["unit"]
+			if data["detail_describe"]:
+				args["detail_describe"] = data["detail_describe"]
 			if data["tag"]:
 				args["tag"] = data["tag"]
 			if data["limit_num"]:
 				args["limit_num"] = data["limit_num"]
-			if data["group_name"]:
-				args["group_name"] = data["group_name"]
-			if data["clssify"]:
-				args["clssify"] = data["clssify"]
+			if data["group_id"]:
+				group_id = int(data["group_id"])
+				_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = self.current_shop.id,status = 1).first()
+				if _group:
+					args["group_id"] = group_id
+				else:
+					return self.send_fail('该商品分组不存在或已被删除')
 			if data["img_url"]:  # 前端可能上传图片不成功，发来一个空的，所以要判断
 				args["img_url"] = SHOP_IMG_HOST + data["img_url"]
 			args["intro"] = data["intro"]
@@ -1366,15 +1477,17 @@ class Goods(AdminBaseHandler):
 										unit_num=charge_type["unit_num"]))
 			self.session.add(goods)
 			self.session.commit()
-			return self.send_success()
+			_goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,status = 1,fruit_type_id=int(data["type_id"])).order_by(models.Fruit.add_time.desc()).first()
+			goods_new = self.getOneData(_goods)
+			return self.send_success(goods_new=goods_new)
 		elif action == "edit_goods_img":
-			return self.send_qiniu_token("fruit", self.args["id"])
+			return self.send_qiniu_token("fruit", int(data["goods_id"]))
 		elif action == "apply_cookie":
-			return self.send_qiniu_token("apply_cookie",self.args["id"])
+			return self.send_qiniu_token("apply_cookie",int(data["goods_id"]))
 		elif action in ["add_charge_type", "edit_active", "edit_goods", "default_goods_img","delete_goods"]:  # fruit_id
-			try:fruit = self.session.query(models.Fruit).filter_by(id=self.args["id"]).one()
+			try:goods = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).one()
 			except:return self.send_error(404)
-			if fruit.shop != self.current_shop:
+			if goods.shop != self.current_shop:
 				return self.send_error(403)
 
 			if action == "add_charge_type":
@@ -1388,14 +1501,14 @@ class Goods(AdminBaseHandler):
 				self.session.commit()
 				return self.send_success()
 			elif action == "edit_active":
-				if fruit.active == 1:
+				if goods.active == 1:
 					fruit.update(session=self.session, active = 2)
-				elif fruit.active == 2:
+				elif goods.active == 2:
 					fruit.update(session=self.session, active = 1)
 			elif action == "edit_goods":
 				if len(data["intro"]) > 100:
 					return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
-				fruit.update(session=self.session,
+				goods.update(session=self.session,
 						name = data["name"],
 						saled = data["saled"],
 						storage = data["storage"],
@@ -1410,11 +1523,11 @@ class Goods(AdminBaseHandler):
 						)
 
 			elif action == "default_goods_img":  # 恢复默认图
-				fruit.img_url = ''
+				goods.img_url = ''
 				self.session.commit()
 			elif action == "delete_goods":
 				time_now = datetime.datetime.now()
-				fruit.update(session=self.session, active = 0,delete_time = time_now)
+				goods.update(session=self.session, active = 0,delete_time = time_now)
 
 		elif action in ["del_charge_type", "edit_charge_type"]:  # charge_type_id
 			charge_type_id = self.args["charge_type_id"]
@@ -1432,10 +1545,159 @@ class Goods(AdminBaseHandler):
 		elif action == "add_img":
 			return self.send_qiniu_token("add", 0)
 
+		elif action in ["batch_on",'batch_off',"batch_group"]:
+			for _id in data:
+				try:
+					goods = self.session.query(models.Fruit).filter_by( id = _id ).first()
+				except:
+					return self.send_error(404)
+				if action == 'batch_on':
+					goods.active = 1
+				elif action == 'batch_off':
+					goods.active = 0
+				elif action == 'batch_group':
+					goods.group_name = data["group"]
+				self.session.commit()
+
+		elif action =="goods_search":
+			goods_name = data["goods_name"]
+			goods = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id).filter(models.Fruit.name.like("%%%s%%" % goods_name)).all()
+			return self.send_success(data=goods)
+		elif action =="add_group":
+			args={}
+			args["shop_id"] = self.current_shop.id
+			name = data["name"]
+			intro = data["intro"]
+			_group = models.GoodsGroup(**args)
+			self.session.add(_group)
+			self.session.commit()
+			_group_id = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1).order_by(models.GoodsGroup.create_time.desc()).first().id
+			return self.send_success(_group_id =_group_id)
+		elif action in["delete_group","group_priority","edit_group"]:
+			_id = data["id"]
+			_group = self.session.query(models.GoodsGroup).filter_by(id = _id,shop_id = self.current_shop.id,status = 1).first()
+			if _group:
+				if action == "delete_group":
+					_group.status = 0
+					goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,group_id =_id).all()
+					for good in goods :
+						good.group_id = 0 
+				elif action == "group_priority":
+					_group.priority = int(data["priority"])
+				elif action =="edit_group":
+					_group.name = data["name"]
+					_group.intro = data["intro"]
+				self.session.commit()
+			else:
+				return self.send_fail('该商品分组不存在或已被删除')
+		elif action == "batch_reset_delete":
+			for _id in data["goods_id"]:
+				try:
+					goods = self.session.query(models.Fruit).filter_by( id = _id ).first()
+				except:
+					return self.send_error(404)
+				if goods:
+					goods.active = 1
+				self.session.commit()
+		elif action == "reset_delete":
+			try:
+				goods = self.session.query(models.Fruit).filter_by( id = data["id"] ).first()
+			except:
+				return self.send_error(404)
+			if goods:
+				goods.active = 1
+			self.session.commit()
 		else:
 			return self.send_error(404)
 
 		return self.send_success()
+
+class editorTest(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action?:str")
+	def get(self):
+		if "action" in self.args:
+			if self.args["action"] == "editor" :
+				import json
+				shop_id = self.current_shop.id
+				token = self.get_editor_token("editor",shop_id)
+				print(token)
+				return self.send_success(token=token)
+		return self.render("admin/test-editor.html",context=dict(subpage="goods"))
+
+class editorCallback(AdminBaseHandler):
+	def post(self):
+		key = self.get_argument("key")
+		imgurl=SHOP_IMG_HOST+key
+		return self.send_success(imgurl=imgurl)
+		
+
+class editorFileManage(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		import hmac
+		import pycurl
+		import os.path
+		import urllib
+		import hashlib
+		import io
+		from io import BytesIO
+		link = self.get_argument("path")
+		path = "123_"+link if link else 123
+		url = "/list?"+'bucket='+BUCKET_SHOP_IMG+'&delimiter=_&prefix='+path+'_'
+		print(url)
+		# sign = urllib.parse.quote(
+		# 	base64.b64encode(
+		# 		hmac.new(SECRET_KEY.encode('ascii'),(url+"\n").encode('ascii'), digestmod=hashlib.sha1).hexdigest().encode('ascii')
+		# 	))
+		# token = ACCESS_KEY+':'+str(base64.b64encode(sign.encode('ascii'))).replace('+','-').replace('/','_')
+		# print(token,'1111111111')
+		shop_id = self.current_shop.id
+		accesstoken = self.get_qiniu_token("editor",shop_id)
+		print(accesstoken,'222222')
+		header =  ['Host:rsf.qbox.me','Content-Type:application/x-www-form-urlencoded','Authorization: QBox '+accesstoken]
+		print(header,'333333')
+		head_url =("http://rsf.qbox.me"+url).strip()
+		print(head_url,'444444')
+		curl = pycurl.Curl()
+		f = io.BytesIO()
+		curl.setopt(pycurl.URL, head_url)
+		curl.setopt(pycurl.HTTPHEADER,header)
+		curl.setopt(pycurl.WRITEFUNCTION, f.write)
+		curl.setopt(pycurl.FOLLOWLOCATION, 1)
+		curl.setopt(pycurl.MAXREDIRS, 5)
+		curl.setopt(pycurl.POSTFIELDS,"")
+		curl.perform()
+		backinfo = ''
+		print(curl.getinfo(pycurl.RESPONSE_CODE))
+		if curl.getinfo(pycurl.RESPONSE_CODE) == 200:
+			backinfo = f.getvalue()
+			print(backinfo,'233333')
+		curl.close()
+		f.close()
+
+		file_list = []
+		ext_arr = ['gif','jpg','jpeg','png','bmp']
+		for info in backinfo["items"]:
+			absolute_path = os.path.abspath(info['key'])
+			extension  = os.path.splitext(absolute_path)[-1] 
+			file_ext = extension.lower()
+			filename = info['key'].replace(path+'_','')
+			time = datetime.datetime.fromtimestamp(info['putTime']).strftime('%m-%d-%Y %H:%M:%S')
+			is_photo = next(file_ext,ext_arr)
+			file_ist.append({'is_dir':False,'has_file':False,'filesize':info['size'],'is_photo':is_photo,'filename':filename,'datetime':time})
+
+		for info in backinfo["commonPrefixes"]:
+			name =  info.split('_')
+			file_ist.append({'is_dir':True,'has_file':True,'filename':name[1]})
+
+		backinfo["moveup_dir_path"] = ''
+		backinfo["current_dir_path"] = self.get_argument("path")
+		backinfo["current_url"] = SHOP_IMG_HOST+'/'+path+'_'
+		backinfo["file_list"] = file_list
+
+		print('Content-Type:application/json; charset=utf-8')
+		return self.send_success(json_encode(backinfo))
 
 # 用户管理
 class Follower(AdminBaseHandler):
@@ -1449,7 +1711,7 @@ class Follower(AdminBaseHandler):
 		count = 0
 		page_sum = 0
 		shop_id = self.current_shop.id
-		if action in ("all", "old","charge"):
+		if action in ("all","old","charge"):
 			if action == "all":  # 所有用户
 				q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id)
@@ -1474,18 +1736,22 @@ class Follower(AdminBaseHandler):
 			if wd.isdigit():  # 判断是否为纯数字，纯数字就按照手机号搜索
 				customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(models.Accountinfo.phone == int(wd)).all()
+					join(models.Accountinfo).filter(or_(models.Accountinfo.phone == int(wd),
+														models.Accountinfo.id == int(wd))).all()
 			else:  # 按照名字搜索
 				customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
 					join(models.Accountinfo).filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),
 														models.Accountinfo.realname.like("%%%s%%" % wd))).all()
+				customers += self.session.query(models.Customer).join(models.CustomerShopFollow).\
+					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+					join(models.Address).filter(models.Address.receiver.like("%%%s%%" % wd)).all()
+					
 		elif action =="filter":
 			wd = self.args["wd"]
-			d["customer_id"] = base64.b64decode(wd)
 			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).first()
+					join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).all()
 		else:
 			return self.send_error(404)
 		for x in range(0, len(customers)):  #
@@ -1527,7 +1793,7 @@ class Staff(AdminBaseHandler):
 		action = self.args["action"]
 		staffs = self.current_shop.staffs
 		if action == "hire":
-			hire_forms = self.session.query(models.HireForm).filter_by(shop_id=self.current_shop.id).all()
+			hire_forms = self.session.query(models.HireForm).filter_by(shop_id=self.current_shop.id ).filter(models.HireForm.work!=9).all()
 			return self.render("admin/staff.html", hire_forms=hire_forms,
 							   context=dict(subpage='staff',staffSub='hire'))
 		query = self.session.query(models.ShopStaff, models.HireLink).join(models.HireLink).filter(
@@ -1676,13 +1942,14 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 		data = []
 		delta = datetime.timedelta(1)
 		for order in orders:
-			order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
+			order.__protected_props__ = [ 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
 										 'comment_create_date', 'start_time', 'end_time', 'create_date']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
 			d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["send_time"] = order.send_time
+			d["customer_id"] = order.customer_id
 
 			#yy
 			d["shop_new"] = 0
@@ -1805,6 +2072,8 @@ class Config(AdminBaseHandler):
 				active = 1
 			self.current_shop.config.update(session=self.session,receipt_img_active=active)
 		elif action == "cash_on":
+			if self.current_shop.shop_auth ==0:
+				return self.send_fail('您的店铺还未认证，不能使用该功能')
 			active = self.current_shop.config.cash_on_active
 			if active == 1:
 				active = 0
@@ -1812,6 +2081,8 @@ class Config(AdminBaseHandler):
 				active = 1
 			self.current_shop.config.update(session=self.session,cash_on_active=active)
 		elif action == "balance_on":
+			if self.current_shop.shop_auth ==0:
+				return self.send_fail('您的店铺还未认证，不能使用该功能')
 			active = self.current_shop.config.balance_on_active
 			balance_on_active =self.current_shop.config.balance_on_active
 			shop_balance = self.current_shop.shop_balance
@@ -1824,10 +2095,10 @@ class Config(AdminBaseHandler):
 				active = 0
 			else:
 				active = 1
-			self.current_shop.config.update(session=self.session,balance_on_active=active)
-			
-
+			self.current_shop.config.update(session=self.session,balance_on_active=active)	
 		elif action == "online_on":
+			if self.current_shop.shop_auth ==0:
+				return self.send_fail('您的店铺还未认证，不能使用该功能')
 			active = self.current_shop.config.online_on_active
 			if active == 1:
 				active = 0
@@ -1835,6 +2106,8 @@ class Config(AdminBaseHandler):
 				active = 1
 			self.current_shop.config.update(session=self.session,online_on_active=active)
 		elif action =="text_message_on":
+			if self.current_shop.shop_auth ==0:
+				return self.send_fail('您的店铺还未认证，不能使用该功能')
 			active = self.current_shop.config.text_message_active
 			if active == 1:
 				active = 0
@@ -1857,6 +2130,8 @@ class Config(AdminBaseHandler):
 				data.append({'imgurl':info.headimgurl_small,'nickname':info.nickname,'id':info.id})
 				return self.send_success(data=data)
 		elif action =="add_admin":
+			if self.current_shop.shop_auth ==0:
+				return self.send_fail('您的店铺还未认证，不能使用该功能')
 			if self.current_shop.admin.id !=self.current_user.id:
 				return self.send_fail('您没有添加管理员的权限')
 			_id = int(self.args["data"]["id"])
@@ -1882,6 +2157,8 @@ class Config(AdminBaseHandler):
 					self.session.add(staff_temp)
 				if hire_form:
 					hire_form.work = 9
+					hire_form.status = 2
+					hire_form.create_time = datetime.datetime.now()
 				else:
 					#生成一张临时管理员 申请表
 					admin_temp = models.HireForm(
@@ -1975,9 +2252,11 @@ class AdminAuth(AdminBaseHandler):
 			message_name = account_info.nickname
 			mobile = account_info.phone
 			message_shop_name = self.current_shop.shop_name
-			normal_admin = models.ShopAdmin(id = account_info.id,role=3,privileges = 2)
-			self.session.add(normal_admin)
-			self.session.commit()
+			normal_admin = self.session.query(models.ShopAdmin).filter_by(id = account_info.id).first()
+			if not normal_admin:
+				normal_admin = models.ShopAdmin(id = account_info.id,role=3,privileges = 2)
+				self.session.add(normal_admin)
+				self.session.commit()
 			message_content ='尊敬的{0}，您好，被{1}添加为管理员！'.format(message_name,message_shop_name)
 			postdata = dict(account='cf_senguocc',
 				password='sg201404',

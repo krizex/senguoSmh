@@ -244,7 +244,7 @@ class _AccountApi(_CommonApi):
 	def register_with_wx(cls, session, wx_userinfo):
 		# 判断是否在本账户里存在该用户
 		u = cls.login_by_unionid(session, wx_userinfo["unionid"])
-		print("[微信登录]用户登录")
+		print("[微信登录]用户登录，昵称：",wx_userinfo["nickname"])
 		if u:
 			# 已存在用户，则更新微信信息
 			print("[微信登录]用户存在，更新用户资料")
@@ -253,7 +253,7 @@ class _AccountApi(_CommonApi):
 			u.accountinfo.wx_city=wx_userinfo["city"]
 			u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
 			u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
-			#u.accountinfo.nickname = wx_userinfo["nickname"]
+			u.accountinfo.nickname = wx_userinfo["nickname"]
 
 			#####################################################################################
 			# update wx_openid
@@ -1333,9 +1333,10 @@ class Fruit(MapBase, _CommonApi):
 	limit_num =  Column(Integer, default=0) #max number could buy #5.27
 	add_time = Column(DateTime, default=func.now()) #5.27
 	delete_time = Column(DateTime) #5.27
-	group_name =  Column(Integer, default=0) #group name 0:default group 1000:record group GoodsGroup.id #5.27
-	clssify  = Column(Integer, default=0)  #:0:fruit 1:dry_fruit 3:other
+	group_id =  Column(Integer, default=0) #0:default group 1000:record group GoodsGroup.id #5.27
+	classify  = Column(Integer, default=0)  #:0:fruit 1:dry_fruit 3:other
 	temp_mgoods_id =  Column(Integer, default=0)  #to save mgoods_id for temp
+	detail_describe = Column(String(2000)) #goods detail
 
 
 	charge_types = relationship("ChargeType") #支持多种计价方式
@@ -1369,6 +1370,10 @@ class GoodsGroup(MapBase, _CommonApi):
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
 	name =  Column(String(50))
+	priority =  Column(Integer)
+	status = Column(Integer,default = 1) #0:been deleted 1:normal
+	intro = Column(String(100))
+	create_time = Column(DateTime, default=func.now())
 
 
 # 用户自定义的商品类型
