@@ -1265,17 +1265,38 @@ class Goods(AdminBaseHandler):
 	def getData(self,datalist):
 		data = []
 		for d in datalist:
-			add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else None
-			delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else None
+			add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else ''
+			delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
 			if d.img_url:
 				img_url= d.img_url.split(',')
 			else:
-				img_url = None
+				img_url = ''
+			intro = '' if not d.intro else d.intro
+			detail_describe = '' if not d.detail_describe else d.detail_describe
+			charge_types = []
+			for charge in d.charge_types:
+				charge_types.append({'id':charge.id,'price':charge.price,'unit':charge.unit,'unit_name':self.unit(charge.unit)\
+					,'num':charge.num,'unit_num':charge.unit_num,'market_price':charge.market_price})
+
 			data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
-				'saled':d.saled,'storage':d.storage,'unit':d.unit,'tag':d.tag,'imgurl':img_url,'info':d.intro,'priority':d.priority,\
+				'saled':d.saled,'storage':d.storage,'unit':d.unit,'unit_name':self.unit(charge.unit),'tag':d.tag,'imgurl':img_url,'info':intro,'priority':d.priority,\
 				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':d.group_id,'classify':d.classify,\
-				'detail_describe':d.detail_describe})
+				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name})
 		return data
+
+	def unit(self,unit):
+		name ='个' if unit == 1 else ''
+		name ='斤' if unit == 2 else ''
+		name ='份' if unit == 3 else ''
+		name ='kg' if unit == 4 else ''
+		name ='克' if unit == 5 else ''
+		name ='升' if unit == 6 else ''
+		name ='箱' if unit == 7 else ''
+		name ='盒' if unit == 8 else ''
+		name ='件' if unit == 9 else ''
+		name ='框' if unit == 10 else ''
+		name ='包' if unit == 11 else ''
+		return name
 
 	def getOneData(self,d):
 		data = []
@@ -1290,11 +1311,14 @@ class Goods(AdminBaseHandler):
 			'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_name':d.group_name,'classify':d.classify,\
 			'detail_describe':d.detail_describe})
 		return data
+	def token(self,token):
+		editorToken = self.get_editor_token("editor", _id)
 
 	@AdminBaseHandler.check_arguments("type?","sub_type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?")
 	def get(self):
 		action = self._action
 		_id = str(time.time())
+		shop_id = self.current_shop.id
 		qiniuToken = self.get_qiniu_token('goods',_id)
 		if action == "all":
 			if self.args["type"] !=[]:
@@ -1374,8 +1398,8 @@ class Goods(AdminBaseHandler):
 					elif filter_status =="current_sell":
 						good_list = goods.filter_by(current_saled !=0 )
 
-					if order_status1 =="group_name":
-						good_list = good_list.order_by(models.Fruit.group_name)
+					if order_status1 =="group_id":
+						good_list = good_list.order_by(models.Fruit.group_id)
 					elif order_status1 =="classify":
 						good_list = good_list.order_by(models.Fruit.classify)	
 
@@ -1465,9 +1489,17 @@ class Goods(AdminBaseHandler):
 				elif sub_type == "length":
 					for i in range(5):
 						if i >0:
+							if i == 1:
+								name ='一个字'
+							elif i == 2:
+								name ='两个字'
+							elif i == 3:
+								name ='三个字'
+							elif i == 4:
+								name ='四个字'
 							types = fruit_types.filter_by(length=i).all()
 							types = self.getClass(types)
-							datalist.append({'name':i,'property':i,'data':types})
+							datalist.append({'name':name,'property':i,'data':types})
 				elif sub_type == "garden":
 					for i in range(8):
 						if i == 0:
@@ -1494,7 +1526,6 @@ class Goods(AdminBaseHandler):
 						elif i == 6:
 							garden = "jianguo"
 							name = "坚果类"
-						print(i)
 						types = fruit_types.filter_by(garden=i).all()
 						types = self.getClass(types)
 						datalist.append({'name':name,'property':garden,'data':types})
@@ -1530,7 +1561,11 @@ class Goods(AdminBaseHandler):
 	def getClass(self,con):
 		data = []
 		for c in con:
-			data.append({'id':c.id,'code':c.code,'name':c.name})
+			try:
+				num = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id,fruit_type_id=c.id).count()
+			except:
+				num = 0
+			data.append({'id':c.id,'code':c.code,'name':c.name,'num':num})
 		return data
 
 	@tornado.web.authenticated
@@ -1689,6 +1724,7 @@ class Goods(AdminBaseHandler):
 				self.session.commit()
 			else:
 				return self.send_fail('该商品分组不存在或已被删除')
+
 		elif action == "batch_reset_delete":
 			for _id in data["goods_id"]:
 				try:
@@ -1698,6 +1734,7 @@ class Goods(AdminBaseHandler):
 				if goods:
 					goods.active = 1
 				self.session.commit()
+
 		elif action == "reset_delete":
 			try:
 				goods = self.session.query(models.Fruit).filter_by( id = data["id"] ).first()
@@ -1706,6 +1743,17 @@ class Goods(AdminBaseHandler):
 			if goods:
 				goods.active = 1
 			self.session.commit()
+
+		elif action =="classify_search":
+			classify = data["classify"]
+			try:
+				fruit_types = self.session.query(models.FruitType).filter(models.FruitType.name.like("%%%s%%" % classify)).all()
+			except:
+				return self.send_fail('没有该商品分类')
+			if fruit_types == []:
+				return self.send_fail('没有该商品分类')
+			types = self.getClass(fruit_types)
+			return self.send_success(data=types)
 		else:
 			return self.send_error(404)
 
@@ -1719,7 +1767,6 @@ class editorTest(AdminBaseHandler):
 			if self.args["action"] == "editor" :
 				shop_id = self.current_shop.id
 				token = self.get_editor_token("editor", shop_id)
-				print(token)
 				return token
 		return self.render("admin/test-editor.html",context=dict(subpage="goods"))
 
