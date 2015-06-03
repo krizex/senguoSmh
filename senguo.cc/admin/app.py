@@ -50,7 +50,7 @@ def functest(args):
 def delete(args):
     session =  DBSession()
     session.query(models.AccessToken).delete()
-    print("[AccessToken] update ",session.query(models.AccessToken).count())
+    print("[AccessToken]更新，期望打印0：",session.query(models.AccessToken).count())
     session.commit()
 
 def timer_main():
