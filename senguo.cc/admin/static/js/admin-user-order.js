@@ -82,7 +82,7 @@ $(document).ready(function(){
     $this.toggleClass('checked').toggleClass('order-checked');
 }).on('click','#batch-send',function(){
     var $this=$(this);
-    if(confirm('提示：批量配送订单将不会发送模版消息提醒给配送员，您可以在批量配送后再到“配送中”的订单中单独指定配送员。\n是否批量开始配送该订单？')){
+    if(confirm('提示：批量配送订单将全部分配给默认配送员，您可以在批量配送后再到“配送中”的订单中单独指定配送员。\n是否批量开始配送该订单？')){
         orderEdit($this,'batch_edit_status',4);
     }
 }).on('click','#batch-finish',function(){
