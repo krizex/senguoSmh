@@ -1281,21 +1281,29 @@ class Follower(AdminBaseHandler):
 			count = q.count()
 			customers = q.offset(page*page_size).limit(page_size).all()
 
-		elif action == "search":  # 用户搜索，支持根据手机号/真名/昵称搜索
+		# Modify by Sky - 2015.6.1
+		# 用户搜索，支持根据手机号/真名/昵称搜索，支持关键字模糊搜索，支持收件人搜索
+		# TODO:搜索性能需改进
+		elif action == "search":  
 			wd = self.args["wd"]
-			if wd.isdigit():  # 判断是否为纯数字，纯数字就按照手机号搜索
-				customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(or_(models.Accountinfo.phone == int(wd),
-														models.Accountinfo.id == int(wd))).all()
-			else:  # 按照名字搜索
-				customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),
-														models.Accountinfo.realname.like("%%%s%%" % wd))).all()
-				customers += self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Address).filter(models.Address.receiver.like("%%%s%%" % wd)).all()
+
+			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+				filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+				join(models.Accountinfo).filter(or_(models.Accountinfo.phone.like("%%%s%%" % wd),
+													models.Accountinfo.id.like("%%%s%%" % wd),
+													models.Accountinfo.nickname.like("%%%s%%" % wd),
+													models.Accountinfo.realname.like("%%%s%%" % wd))).all()
+			customers += self.session.query(models.Customer).join(models.CustomerShopFollow).\
+				filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+				join(models.Address).filter(or_(models.Address.phone.like("%%%s%%" % wd),
+												models.Address.receiver.like("%%%s%%" % wd))).all()
+
+			customer_list=[]
+			for customer in customers:
+				if customer not in customer_list:
+					customer_list.append(customer)
+			customers = customer_list
+
 					
 		elif action =="filter":
 			wd = self.args["wd"]
