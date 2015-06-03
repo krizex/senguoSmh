@@ -407,7 +407,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
 
 
-		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*10,
+		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*100,
 
 							  policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
 									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
@@ -420,8 +420,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
 
 
-		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*10,
-
+		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*100,
 							  policy={"returnUrl": "http://zone.senguo.cc/admin/editorCallback",
 									  "returnBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 		print("[七牛授权]发送Token：",token)
@@ -429,7 +428,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 	def get_qiniu_token(self,action,id):
 		q = qiniu.Auth(ACCESS_KEY,SECRET_KEY)
-		token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
+		token = q.upload_token(BUCKET_SHOP_IMG,expires = 60*30*100)
 		print("[七牛授权]获得Token：",token)
 		return token
 

@@ -279,20 +279,26 @@ input{color:#333;text-indent:5px;}
 .er-text{color: #666;text-align: left;}
 .wrap-ipt{white-space: nowrap;}
 .wrap-ipt>input{margin-top: 10px;border: 1px solid #ccc;height: 30px;color: #666;line-height: 1;text-indent: 0;outline: none;}
-.sw-link-txt{background-color: #f9f9f9;width: 200px;padding-left: 8px;}
+.sw-link-txt{background-color: #f9f9f9;width: 200px;padding-left: 8px;text-align: left;}
 .sw-link-copy{width:80px;text-align: center;background-color: #fff;margin-left: -4px;}
 .wrap-er{margin-top: 15px;position: relative;}
 .er-logo{position: absolute;width: 20px;height: 20px;background-color: #fff;border-radius: 4px;top: 30px;left: 120px;}
 .er-img{width: 80px;height: 80px;margin-left: 30px;}
 .lh80{line-height: 80px;}
-.left-arr{position: absolute;width: 0;height: 0;width: 28px;height: 26px;background-color: #fff;top: 20px;right: 100%;}
+.left-arr{position: absolute;width: 28px;height: 26px;background-color: #fff;top: 20px;right: 100%;}
 .left-arr>span{width: 20px;height: 0;border-top: 1px solid #ccc;display: inline-block;position: absolute;right: -3px;}
 .left-arr .line1{-webkit-transform:rotate(-45deg);top: 6px;}
 .left-arr .line2{-webkit-transform:rotate(45deg);top: 20px;}
 .po-list{top: 18px;left: 216px;}
+.top-arr{position: absolute;width: 28px;height: 26px;background-color: #fff;top: -26px;right: 30%;}
+.top-arr>span{width: 20px;height: 0;border-top: 1px solid #eee;display: inline-block;position: absolute;right: -3px;}
+.top-arr .line1{-webkit-transform:rotate(-45deg);top: auto;left: -2px;right: auto;bottom: 7px;}
+.top-arr .line2{-webkit-transform:rotate(45deg);top: 18px;}
 /*提示框样式*/
 .zb-tip{min-width: 360px;max-width:500px;padding:15px 0;line-height: 28px;text-align: center;font-size: 14px;background-color: rgba(255,101,99,.8);border-radius: 6px;position: fixed;top: 100px;left: 50%;z-index: 9999;color: #fff;-webkit-transform:translate(-50%,0);}
 /*animate*/
+@-webkit-keyframes spin {0% {-webkit-transform: rotate(0deg);tranform: rotate(0deg);}100% {-webkit-transform: rotate(360deg);tranform: rotate(360deg);}}
+@keyframes spin {0% { -webkit-transform: rotate(0deg);tranform: rotate(0deg);}100% {-webkit-transform: rotate(360deg);tranform: rotate(360deg);}}
 @-webkit-keyframes bounce1 {
     0%, 20%, 53%, 80%, 100% {
         -webkit-transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);

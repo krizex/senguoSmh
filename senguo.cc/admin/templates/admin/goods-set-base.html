@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-goods.css')}}"/>{% block css %}{% end %}{% end %}
 {% block content %}
-<span class="right-title">商品管理</span>
+<span class="right-title">商品管理<a href="javascript:;" class="add-goods add-btn hidden" id="add-goods">+添加新商品</a></span>
 <div class="subnav-box clearfix">
     <ul class="subnav pull-left order-type">
-        <li class="text-center all"><a href="{{reverse_url('adminGoods')}}">所有商品</a></li>
-        <li class="text-center classify"><a href="{{reverse_url('adminGoodsClassify')}}">商品分类</a></li>
-         <li class="text-center group"><a href="{{reverse_url('adminGoodsGroup')}}">商品分组</a></li>
-         <li class="text-center delete"><a href="{{reverse_url('adminGoodsDelete')}}">已删除商品</a></li>
+        <li class="text-center aall"><a href="{{reverse_url('adminGoods')}}">所有商品</a></li>
+        <li class="text-center aclassify"><a href="{{reverse_url('adminGoodsClassify')}}">商品分类</a></li>
+         <li class="text-center agroup"><a href="{{reverse_url('adminGoodsGroup')}}">商品分组</a></li>
+         <li class="text-center adelete"><a href="{{reverse_url('adminGoodsDelete')}}">已删除商品</a></li>
     </ul>
     <div class="search-input input-group pull-right">
          <input type="text" value="" placeholder="输入商品名称进行搜索" class="search-con form-control"/>
@@ -16,7 +16,9 @@
 </div>
 {% block setcontent %}{% end %}
 {% end %}
+
 {% block bottom %}
 <script src="{{static_url('js/admin-goods.js')}}"></script>
-{% block js %}{% end %}
+{% block js %}
+{% end %}
 {% end %}

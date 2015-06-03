@@ -1273,7 +1273,7 @@ class Goods(AdminBaseHandler):
 				img_url = None
 			data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
 				'saled':d.saled,'storage':d.storage,'unit':d.unit,'tag':d.tag,'imgurl':img_url,'info':d.intro,'priority':d.priority,\
-				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_name':d.group_name,'classify':d.classify,\
+				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':d.group_id,'classify':d.classify,\
 				'detail_describe':d.detail_describe})
 		return data
 
@@ -1297,7 +1297,7 @@ class Goods(AdminBaseHandler):
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('goods',_id)
 		if action == "all":
-			if "type" in self.args:
+			if self.args["type"] !=[]:
 				_type = self.args["type"]
 				if _type == "all":
 					data = []
@@ -1419,10 +1419,10 @@ class Goods(AdminBaseHandler):
 					else:
 						data = self.getData(datalist)
 					return self.send_success(data=data,nomore=nomore,count=count)
-			return self.render("admin/goods-all.html",context=dict(subpage="goods"),qiniuToken=qiniuToken)
+			return self.render("admin/goods-all.html",context=dict(subpage="goods"),token=qiniuToken)
 						
 		elif action == "classify":	
-			if "type" in self.args:
+			if self.args["type"] != [] :
 				_type = self.args["type"]
 				sub_type = self.args["sub_type"]
 				try:
@@ -1459,7 +1459,6 @@ class Goods(AdminBaseHandler):
 						elif i == 6:
 							color = "blue"
 							name = '蓝色'
-						print(i)
 						types = fruit_types.filter_by(color=i).all()
 						types = self.getClass(types)
 						datalist.append({'name':name,'property':color,'data':types})
@@ -1501,10 +1500,17 @@ class Goods(AdminBaseHandler):
 						datalist.append({'name':name,'property':garden,'data':types})
 				elif sub_type == "nature":
 					for i in range(4):
-						if i >0:
+							if i == 0:
+								name ='其它'
+							elif i == 1:
+								name = '凉性'
+							elif i == 2:
+								name = '热性'
+							elif i == 3:
+								name = '中性'
 							types = fruit_types.filter_by(nature=i).all()
 							types = self.getClass(types)
-							datalist.append({'name':i,'property':i,'data':types})
+							datalist.append({'name':name,'property':i,'data':types})
 				else:
 					return self.send_fail(404)
 				return self.send_success(data=datalist)
