@@ -999,6 +999,7 @@ class Order(AdminBaseHandler):
 
 			elif action == "print":
 				order.update(session=self.session, isprint=1)
+
 		elif action == "batch_edit_status":
 			order_list_id = data["order_list_id"]
 			notice = ''
@@ -1019,7 +1020,7 @@ class Order(AdminBaseHandler):
 				self.edit_status(order,data['status'],False)
 		elif action == "batch_print":
 			order_list_id = data["order_list_id"]
-			for key in order_list_id:	
+			for key in order_list_id:
 				order = next((x for x in self.current_shop.orders if x.id==int(key)), None)
 				if not order:
 					return self.send_fail("没找到订单",order.onum)
