@@ -17,6 +17,7 @@ $(document).ready(function(){
     getPage(page,'/admin/follower?action=all&&order_by=time&&page=',total_page);
     $('.search-btn').on('click',function(){
         var search=$('.search-con').val().trim();
+        if(!search){return Tip('搜索内容不能为空');
         window.location.href='follower?action=search&&order_by=time&&page=0&&wd='+search;
     });
     $('.search-con').on('keydown',function(){
@@ -24,6 +25,7 @@ $(document).ready(function(){
     	if(window.event.keyCode == 13)
         {
             var con=$('.search-con').val().trim();
+            if(!con){return Tip('搜索内容不能为空');
             window.location.href='follower?action=search&&order_by=time&&page=0&&wd='+con;
         }
     });

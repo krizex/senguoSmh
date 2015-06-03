@@ -81,14 +81,14 @@ $(document).ready(function(){
     var $this=$(this);
     $this.toggleClass('checked').toggleClass('order-checked');
 }).on('click','#batch-send',function(){
-     var $this=$(this);
+    var $this=$(this);
     if(confirm('是否批量开始配送该订单?')){
         orderEdit($this,'batch_edit_status',4);
     }
 }).on('click','#batch-finish',function(){
-     var $this=$(this);
-      if(confirm('是否批量完成订单?')){
-       orderEdit($this,'batch_edit_status',5); 
+    var $this=$(this);
+    if(confirm('是否批量完成订单?')){
+    orderEdit($this,'batch_edit_status',5); 
     }
 }).on('click','#batch-print',function(){
     orderPrint($(this),'batch_print'); //订单打印
@@ -441,7 +441,7 @@ function orderEdit(target,action,content){
     var data;
     var args;
     if(action=='edit_status'||action=='edit_SH2'){
-       parent=target.parents('.order-list-item');	
+        parent=target.parents('.order-list-item');	
     }
     else {
         parent=target.parents('.order_set_box');
@@ -466,7 +466,7 @@ function orderEdit(target,action,content){
     }
     else if(action=='edit_totalPrice')
     {
-       if(!regFloat.test(content)) return Tip('订单总价只能为数字！');
+        if(!regFloat.test(content)) return Tip('订单总价只能为数字！');
         data.totalPrice=content;
         var index=parent.attr('data-target');
     }
@@ -526,7 +526,7 @@ function orderEdit(target,action,content){
 			parent.find('.status_finish').addClass('hidden');
                                         target.attr({'disabled':true}).text('配送中');
                                         parent.find('.check').removeClass('order-check');
-		  }
+		}
             	               else if(content==5) {
             			parent.find('.status_finish').removeClass('hidden');
               	             parent.find('.status_order').addClass('hidden');

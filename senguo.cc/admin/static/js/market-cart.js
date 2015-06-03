@@ -731,16 +731,15 @@ function orderSubmit(target){
             var url='/customer/cartback';
             var args={order_id:res.order_id};
             $.postJson(url,args,function(data) {
-                 if (data.success) {
-                      if(pay_type==3){
+                if (data.success) {
+                    if(pay_type==3){
                         window.location.href=res.success_url;
                         //window.location.href="/customer/orders/detail/"+res.order_id;
                     }else{
-                       window.location.href=window.dataObj.success_href; 
+                        window.location.href=window.dataObj.success_href; 
                     }
-                 }
+                }
             });
-          
         }
         else {
             noticeBox(res.error_text,target);
