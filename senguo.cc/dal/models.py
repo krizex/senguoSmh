@@ -1098,6 +1098,10 @@ class FruitType(MapBase,  _CommonApi):
 	code = Column(String(128), default="", unique=True)
 	
 	name = Column(String(64))
+	color = Column(Integer,default=0)
+	length = Column(Integer,default=0)
+	garden = Column(Integer,default=0)
+	nature = Column(Integer,default=0)
 
 class ShopOnsalefruitLink(MapBase):
 	"""

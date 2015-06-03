@@ -1618,86 +1618,88 @@ class editorTest(AdminBaseHandler):
 	def get(self):
 		if "action" in self.args:
 			if self.args["action"] == "editor" :
-				import json
 				shop_id = self.current_shop.id
-				token = self.get_editor_token("editor",shop_id)
+				token = self.get_editor_token("editor", shop_id)
 				print(token)
-				return self.send_success(token=token)
+				return token
 		return self.render("admin/test-editor.html",context=dict(subpage="goods"))
 
 class editorCallback(AdminBaseHandler):
-	def post(self):
-		key = self.get_argument("key")
-		imgurl=SHOP_IMG_HOST+key
-		return self.send_success(imgurl=imgurl)
-		
+	def get(self):
+		import json
+		import base64
+		upload_ret = self.get_argument("upload_ret")
+		if upload_ret:
+			info = bytes.decode(base64.b64decode(upload_ret))
+			data = []
+			for value in info.split("&"):
+				data.append(value.split("="))
+			key = data[0][1].replace('"','').strip()
+			imgurl = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/'+str(key)
+		return self.write('{"error":0, "url": "'+imgurl+'"}')
 
 class editorFileManage(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		import hmac
-		import pycurl
-		import os.path
-		import urllib
-		import hashlib
-		import io
-		from io import BytesIO
-		link = self.get_argument("path")
-		path = "123_"+link if link else 123
-		url = "/list?"+'bucket='+BUCKET_SHOP_IMG+'&delimiter=_&prefix='+path+'_'
-		print(url)
-		# sign = urllib.parse.quote(
-		# 	base64.b64encode(
-		# 		hmac.new(SECRET_KEY.encode('ascii'),(url+"\n").encode('ascii'), digestmod=hashlib.sha1).hexdigest().encode('ascii')
-		# 	))
-		# token = ACCESS_KEY+':'+str(base64.b64encode(sign.encode('ascii'))).replace('+','-').replace('/','_')
-		# print(token,'1111111111')
-		shop_id = self.current_shop.id
-		accesstoken = self.get_qiniu_token("editor",shop_id)
-		print(accesstoken,'222222')
-		header =  ['Host:rsf.qbox.me','Content-Type:application/x-www-form-urlencoded','Authorization: QBox '+accesstoken]
-		print(header,'333333')
-		head_url =("http://rsf.qbox.me"+url).strip()
-		print(head_url,'444444')
-		curl = pycurl.Curl()
-		f = io.BytesIO()
-		curl.setopt(pycurl.URL, head_url)
-		curl.setopt(pycurl.HTTPHEADER,header)
-		curl.setopt(pycurl.WRITEFUNCTION, f.write)
-		curl.setopt(pycurl.FOLLOWLOCATION, 1)
-		curl.setopt(pycurl.MAXREDIRS, 5)
-		curl.setopt(pycurl.POSTFIELDS,"")
-		curl.perform()
-		backinfo = ''
-		print(curl.getinfo(pycurl.RESPONSE_CODE))
-		if curl.getinfo(pycurl.RESPONSE_CODE) == 200:
-			backinfo = f.getvalue()
-			print(backinfo,'233333')
-		curl.close()
-		f.close()
+		# import hmac
+		# import pycurl
+		# import os.path
+		# import urllib
+		# import hashlib
+		# import io
+		# from io import BytesIO
+		# link = self.get_argument("path")
+		# path = "123_"+link if link else 123
+		# url = "/list?"+'bucket='+BUCKET_SHOP_IMG+'&delimiter=_&prefix='+path+'_'
+		# # sign = urllib.parse.quote(
+		# # 	base64.b64encode(
+		# # 		hmac.new(SECRET_KEY.encode('ascii'),(url+"\n").encode('ascii'), digestmod=hashlib.sha1).hexdigest().encode('ascii')
+		# # 	))
+		# # token = ACCESS_KEY+':'+str(base64.b64encode(sign.encode('ascii'))).replace('+','-').replace('/','_')
+		# # print(token,'1111111111')
+		# shop_id = self.current_shop.id
+		# accesstoken = self.get_qiniu_token("editor",shop_id)
+		# header =  ['Host:rsf.qbox.me','Content-Type:application/x-www-form-urlencoded','Authorization: QBox '+accesstoken]
+		# head_url =("http://rsf.qbox.me"+url).strip()
+		# curl = pycurl.Curl()
+		# f = io.BytesIO()
+		# curl.setopt(pycurl.URL, head_url)
+		# curl.setopt(pycurl.HTTPHEADER,header)
+		# curl.setopt(pycurl.WRITEFUNCTION, f.write)
+		# curl.setopt(pycurl.FOLLOWLOCATION, 1)
+		# curl.setopt(pycurl.MAXREDIRS, 5)
+		# curl.setopt(pycurl.POSTFIELDS,"")
+		# curl.perform()
+		# backinfo = ''
+		# print(curl.getinfo(pycurl.RESPONSE_CODE))
+		# if curl.getinfo(pycurl.RESPONSE_CODE) == 200:
+		# 	backinfo = f.getvalue()
+		# curl.close()
+		# f.close()
 
-		file_list = []
-		ext_arr = ['gif','jpg','jpeg','png','bmp']
-		for info in backinfo["items"]:
-			absolute_path = os.path.abspath(info['key'])
-			extension  = os.path.splitext(absolute_path)[-1] 
-			file_ext = extension.lower()
-			filename = info['key'].replace(path+'_','')
-			time = datetime.datetime.fromtimestamp(info['putTime']).strftime('%m-%d-%Y %H:%M:%S')
-			is_photo = next(file_ext,ext_arr)
-			file_ist.append({'is_dir':False,'has_file':False,'filesize':info['size'],'is_photo':is_photo,'filename':filename,'datetime':time})
+		# file_list = []
+		# ext_arr = ['gif','jpg','jpeg','png','bmp']
+		# for info in backinfo["items"]:
+		# 	absolute_path = os.path.abspath(info['key'])
+		# 	extension  = os.path.splitext(absolute_path)[-1] 
+		# 	file_ext = extension.lower()
+		# 	filename = info['key'].replace(path+'_','')
+		# 	time = datetime.datetime.fromtimestamp(info['putTime']).strftime('%m-%d-%Y %H:%M:%S')
+		# 	is_photo = next(file_ext,ext_arr)
+		# 	file_ist.append({'is_dir':False,'has_file':False,'filesize':info['size'],'is_photo':is_photo,'filename':filename,'datetime':time})
 
-		for info in backinfo["commonPrefixes"]:
-			name =  info.split('_')
-			file_ist.append({'is_dir':True,'has_file':True,'filename':name[1]})
+		# for info in backinfo["commonPrefixes"]:
+		# 	name =  info.split('_')
+		# 	file_ist.append({'is_dir':True,'has_file':True,'filename':name[1]})
 
-		backinfo["moveup_dir_path"] = ''
-		backinfo["current_dir_path"] = self.get_argument("path")
-		backinfo["current_url"] = SHOP_IMG_HOST+'/'+path+'_'
-		backinfo["file_list"] = file_list
+		# backinfo["moveup_dir_path"] = ''
+		# backinfo["current_dir_path"] = self.get_argument("path")
+		# backinfo["current_url"] = SHOP_IMG_HOST+'/'+path+'_'
+		# backinfo["file_list"] = file_list
 
-		print('Content-Type:application/json; charset=utf-8')
-		return self.send_success(json_encode(backinfo))
+		# print('Content-Type:application/json; charset=utf-8')
+		# return self.send_success(json_encode(backinfo))
+		return self.send_success()
 
 # 用户管理
 class Follower(AdminBaseHandler):

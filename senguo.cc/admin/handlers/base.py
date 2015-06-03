@@ -421,11 +421,10 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 
 		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*100,
-
-							  policy={"callbackUrl": "http://localhost:8080/admin/editorCallback",
-									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
+							  policy={"returnUrl": "http://zone.senguo.cc/admin/editorCallback",
+									  "returnBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 		print("[七牛授权]发送Token：",token)
-		return token
+		return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 
 	def get_qiniu_token(self,action,id):
 		q = qiniu.Auth(ACCESS_KEY,SECRET_KEY)
