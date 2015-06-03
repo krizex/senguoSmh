@@ -2492,11 +2492,7 @@ class InsertData(CustomerBaseHandler):
 	# @CustomerBaseHandler.check_arguments("code?:str")
 	def get(self):
 		from sqlalchemy import create_engine, func, ForeignKey, Column
-		session = self.session
-		
-		
-
-	
+		session = self.session	
 		# try:
 		# 	shop_list = self.session.query(models.Shop).all()
 		# except:
@@ -2509,66 +2505,95 @@ class InsertData(CustomerBaseHandler):
 		# 		self.session.commit()
 		# time.sleep(100)
 
-		###data from m_goods to fruit and mcharge_type to charge_type###
-		#setp1
-		# dry_fruits = self.session.query(models.Fruit).filter(models.Fruit.fruit_type_id>1000).filter(models.Fruit.fruit_type_id<2000).all()
-		# for dry in dry_fruits:
-		# 	dry.clssify = 2
-		# 	self.session.commit()
-
-		# setp2
-		# mgoods = self.session.query(models.MGoods).all()
-		# for good in mgoods:
-		# 	shop_id = good.menu.shop_id
-		# 	fruit_type_id = 2000
-		# 	name = good.name
-		# 	active = good.active
-		# 	current_saled = good.current_saled
-		# 	saled = good.saled
-		# 	storage = good.storage
-		# 	favour = good.favour
-		# 	unit = good.unit
-		# 	tag = good.tag
-		# 	img_url = good.img_url
-		# 	intro = good.intro
-		# 	priority = good.priority
-		# 	info = models.Fruit(
-		# 		shop_id	= shop_id,
-		# 		fruit_type_id = fruit_type_id,
-		# 		name = name,
-		# 		active = active,
-		# 		current_saled = current_saled,
-		# 		saled = saled,
-		# 		storage = storage,
-		# 		favour = favour,
-		# 		unit = unit,
-		# 		tag = tag,
-		# 		img_url = img_url,
-		# 		intro = intro,
-		# 		priority = priority,
-		# 		temp_mgoods_id = good.id,
-		# 		clssify = 3
-		# 	)
-		# 	self.session.add(info)
-		# 	self.session.commit()
-
-		# #step3
-		# mcharge_types = self.session.query(models.MChargeType).all()
-		# for charge in mcharge_types:
-		# 	m_goods = self.session.query(models.Fruit).filter_by(temp_mgoods_id = charge.mgoods_id,fruit_type_id=2000).first()
-		# 	charge_type = models.ChargeType(
-		# 		fruit_id = m_goods.id,
-		# 		price = charge.price,
-		# 		unit = charge.unit,
-		# 		num = charge.num,
-		# 		unit_num = charge.unit_num,
-		# 		active = charge.active,
-		# 	)
-		# 	self.session.add(charge_type)
-		# 	self.session.commit()
-
 		
+		return self.send_success()
 
+class InsertData1(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		###data from m_goods to fruit and mcharge_type to charge_type###
+		from sqlalchemy import create_engine, func, ForeignKey, Column
+		# setp1
+		dry_fruits = self.session.query(models.Fruit).filter(models.Fruit.fruit_type_id>1000).filter(models.Fruit.fruit_type_id<2000).all()
+		for dry in dry_fruits:
+			dry.clssify = 2
+			self.session.commit()
 		return self.send_success()
 
 
+class InsertData2(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		from sqlalchemy import create_engine, func, ForeignKey, Column
+		# setp2
+		mgoods = self.session.query(models.MGoods).all()
+		for good in mgoods:
+			shop_id = good.menu.shop_id
+			fruit_type_id = 2000
+			name = good.name
+			active = good.active
+			current_saled = good.current_saled
+			saled = good.saled
+			storage = good.storage
+			favour = good.favour
+			unit = good.unit
+			tag = good.tag
+			img_url = good.img_url
+			intro = good.intro
+			priority = good.priority
+			info = models.Fruit(
+				shop_id	= shop_id,
+				fruit_type_id = fruit_type_id,
+				name = name,
+				active = active,
+				current_saled = current_saled,
+				saled = saled,
+				storage = storage,
+				favour = favour,
+				unit = unit,
+				tag = tag,
+				img_url = img_url,
+				intro = intro,
+				priority = priority,
+				temp_mgoods_id = good.id,
+				clssify = 3
+			)
+			self.session.add(info)
+			self.session.commit()
+		return self.send_success()
+
+class InsertData3(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		from sqlalchemy import create_engine, func, ForeignKey, Column	
+		# #step3
+		mcharge_types = self.session.query(models.MChargeType).all()
+		for charge in mcharge_types:
+			m_goods = self.session.query(models.Fruit).filter_by(temp_mgoods_id = charge.mgoods_id,fruit_type_id=2000).first()
+			charge_type = models.ChargeType(
+				fruit_id = m_goods.id,
+				price = charge.price,
+				unit = charge.unit,
+				num = charge.num,
+				unit_num = charge.unit_num,
+				active = charge.active,
+			)
+			self.session.add(charge_type)
+			self.session.commit()
+		return self.send_success()
+
+class InsertData4(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		import dal.db_initdata as db_initdata
+		for types in db_initdata.fruit_types:
+			try:
+				fruit_types = self.session.query(models.FruitType).filter_by(id = types['id']).one()
+			except:
+				print('some thing must be wrong here')
+			fruit_types.color = types['color']
+			fruit_types.length = types['length']
+			fruit_types.garden = types['garden']
+			fruit_types.nature = types['nature']
+			self.session.commit()
+		return self.send_success()
