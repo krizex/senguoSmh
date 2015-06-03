@@ -1,4 +1,4 @@
-var goodsItem = "",curItem=null,goodsEdit = false,aLis=[],aPos=[],zIndex=1;
+var goodsItem = "",curItem=null,goodsEdit = false,aLis=[],aPos=[],zIndex= 1,pn=0;
 $(document).ready(function(){
     $(".sw-link-copy").zclip({
         path: "/static/js/third/ZeroClipboard.swf",
@@ -28,9 +28,13 @@ $(document).ready(function(){
 }).on("click",".cancel-btn",function(){
     $(this).closest(".pop-win").hide();
 }).on("click",".show-add-img",function(){   //上传图片
-    if($(this).closest(".item-img-lst").size()>1){
-        $(this).closest(".item-img-lst").css("position","static");
-        $("#add-img-btn").closest("li").before($(this).closest(".item-img-lst").children(".img-bo"));
+    var $item = $(this).closest(".item-img-lst").children(".img-bo").clone();;
+    if($item.size()>0){
+        $item.css({position:"relative",left:"0",top:"0"});
+        $("#add-img-btn").closest("li").before($item);
+        if($item.size()==5){
+            $("#add-img-btn").closest("li").removeClass("hidden");
+        }
     }else{
         $("#add-img-btn").closest("li").prevAll("li").remove();
     }
@@ -53,10 +57,15 @@ $(document).ready(function(){
 }).on("click",".dropdown-menu .item",function(){
     $(this).closest("ul").prev("button").children("em").html($(this).html());
 }).on("click",".del-img",function(){//删除图片
-    $(this).closest(".item-img-lst").children(".add-img-box").removeClass("hide");
+    var index = $(this).closest(".img-bo").attr("data-rel");
     if(!$(this).closest(".item-img-lst").hasClass("drag-img-list")){
         $(".moxie-shim").css({left:$("#add-img-btn").closest("li").position().left,top:$("#add-img-btn").closest("li").position().top});
+    }else{
+        aLis.splice(index,1);
+        aPos.splice(index,1);
+        $(this).closest(".item-img-lst").children(".add-img-box").css("marginLeft",aLis.length*75+"px");
     }
+    $(this).closest(".item-img-lst").children(".add-img-box").removeClass("hidden");
     $(this).closest("li").remove();
 }).on("click",".item-set-more",function(){
     $(this).closest(".all-item-cont").next(".wrap-more-set").slideToggle(200);
@@ -83,6 +92,7 @@ $(document).ready(function(){
     var _this = $(this);
     _this.closest(".goods-all-item").prev(".goods-all-item").show();
     _this.closest(".goods-all-item").remove();
+    $("#add-img-btn").closest("li").prevAll("li").remove();
     curItem = null;
     goodsEdit = false;
 }).on("click","#add-goods",function(){  //添加新商品
@@ -104,15 +114,28 @@ $(document).ready(function(){
     var $list = $("#item-img-lst").children(".img-bo");
     var $item = curItem;
     if($list.size()>5){Tip("只能上传5张图片哦！"); return false;}
-    console.log($list);
-    console.log(curItem);
+    $item.find(".drag-img-list").children(".add-img-box").prevAll("li").remove();
     $item.find(".drag-img-list").children(".add-img-box").before($list);
     if($list.length==5){
         $item.find(".drag-img-list").children(".add-img-box").addClass("hidden");
+    }else{
+        $item.find(".drag-img-list").children(".add-img-box").css("marginLeft",$list.length*75+"px");
     }
     initImgList($item.find(".drag-img-list").children(".img-bo"));
     $(".pop-img-win").hide();
 });
+
+function getGoodsItem(){
+    $.ajax({
+        url:"",
+        type:"get",
+        success:function(res){
+            if(res.success){
+                
+            }
+        }
+    })
+}
 
 $(document).ready(function(){
     var uploader = Qiniu.uploader({
@@ -138,11 +161,11 @@ $(document).ready(function(){
             'FilesAdded': function (up, files) {
                 var file = files[0];
                 var length = $("#item-img-lst").children(".img-bo").size();
-                var $item = $('<li class="img-bo" data-index="'+length+'" data-rel="'+length+'"><div class="img-cover wrap-img-cover hidden"><span class="loader loader-quart"></span></div><img id="'+file.id+'" src="" alt="晒单图片" class="image"/><a class="del-img hide" href="javascript:;">x</a></li>');
+                var $item = $('<li class="img-bo" data-index="'+length+'" data-rel="'+length+'"><div class="img-cover wrap-img-cover hidden"><span class="loader loader-quart"></span></div><img id="'+file.id+'" src="" alt="晒单图片" class="image"/><a class="del-img hidden" href="javascript:;">x</a></li>');
                 $("#add-img-btn").closest("li").before($item);
                 if ($("#item-img-lst").children("li").size() == 6) {
-                    $("#add-img-btn").closest("li").addClass("hide");
-                    $(".moxie-shim").addClass("hide");
+                    $("#add-img-btn").closest("li").addClass("hidden");
+                    $(".moxie-shim").addClass("hidden");
                 }
                 $(".moxie-shim").css({left:$("#add-img-btn").closest("li").position().left,top:$("#add-img-btn").closest("li").position().top});//调整按钮的位置
                 !function(){
@@ -155,7 +178,7 @@ $(document).ready(function(){
             },
             'FileUploaded': function (up, file, info) {
                 $("#" + file.id).prev(".img-cover").remove();
-                $("#" + file.id).next("a").removeClass("hide");
+                $("#" + file.id).next("a").removeClass("hidden");
                 $("#"+file.id).attr("url","http://shopimg.qiniudn.com/"+file.id);
             },
             'Error': function (up, err, errTip) {
@@ -171,8 +194,8 @@ $(document).ready(function(){
                 up.removeFile(err.file.id);
                 $("#"+err.file.id).closest("li").remove();
                 if($("#"+err.file.id).closest("li").index()<5){
-                    $("#add-img-btn").closest("li").removeClass("hide");
-                    $(".moxie-shim").removeClass("hide");
+                    $("#add-img-btn").closest("li").removeClass("hidden");
+                    $(".moxie-shim").removeClass("hidden");
                 }
                 $(".moxie-shim").css({left:$("#add-img-btn").closest("li").position().left,top:$("#add-img-btn").closest("li").position().top});//调整按钮的位置
             },
@@ -221,6 +244,7 @@ function previewImage(file,callback){//file为plupload事件监听函数参数�
 }
 //初始化图片列表
 function initImgList($list){
+    aLis = [],aPos = [];
     for(var i=0; i<$list.size(); i++){
         var obj = $list[i];
         obj.zIndex = 1;
@@ -256,7 +280,7 @@ function drag(obj){
             if(top>cHeight-$this.height()){top=cHeight-$this.height();}
             $this.css({left:left,top:top});
             oNear = getNearst($this);
-            $(".group-lst>li").removeClass("hig");
+            $this.closest("ul").children("li").removeClass("hig");
             oNear && oNear.addClass("hig");
             return false;
         };
