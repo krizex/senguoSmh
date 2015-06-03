@@ -1159,7 +1159,7 @@ class WxOauth2:
 		if data["errcode"] != 0:
 			print("[模版消息]发送给管理员失败：",data)
 			return False
-		print("[模版消息]发送给管理员成功")
+		# print("[模版消息]发送给管理员成功")
 		return True
 
 	@classmethod
@@ -1192,7 +1192,7 @@ class WxOauth2:
 		if data["errcode"] != 0:
 			print("[模版消息]发送给配送员失败：",data)
 			return False
-		print("[模版消息]发送给配送员成功")
+		# print("[模版消息]发送给配送员成功")
 		return True
 
 
@@ -1219,8 +1219,7 @@ class WxOauth2:
 		if data["errcode"] != 0:
 			print("[模版消息]发送给客户失败：",data)
 			return False
-		print("[模版消息]发送给客户成功")
-		# print('order send SUCCESS')
+		# print("[模版消息]发送给客户成功")
 		return True
 
 	@classmethod

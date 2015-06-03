@@ -1863,7 +1863,7 @@ class ShopBalance(AdminBaseHandler):
 				apply_value = format(0,'.2f')
 
 		except:
-			print('apply_cash error')
+			print("[提现申请]提现申请错误")
 			
 		if shop_auth in [1,2,3,4]:
 			show_balance = True
