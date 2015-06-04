@@ -1701,9 +1701,9 @@ class Goods(AdminBaseHandler):
 				return self.send_success()
 			elif action == "edit_active":
 				if goods.active == 1:
-					fruit.update(session=self.session, active = 2)
+					goods.update(session=self.session, active = 2)
 				elif goods.active == 2:
-					fruit.update(session=self.session, active = 1)
+					goods.update(session=self.session, active = 1)
 			elif action == "edit_goods":
 				if len(data["intro"]) > 100:
 					return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
@@ -1796,11 +1796,8 @@ class Goods(AdminBaseHandler):
 				return self.send_fail('该商品分组不存在或已被删除')
 
 		elif action == "group_priority":
-			groups=self.session.query(models.GoodsGroup).filter_by(shop_id=shop_id,status=1)
-			for d in data:
-				group=groups.filter_by(id=d["id"]).first()
-				group.priority=d["priority"]
-				self.session.commit()
+			current_shop.group_priority=data["group_list"]
+			self.session.commit()
 
 		elif action == "batch_reset_delete":
 			for _id in data["goods_id"]:
