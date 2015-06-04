@@ -1244,7 +1244,8 @@ class Market(CustomerBaseHandler):
 	def cart_list(self):
 		fruits = self.args["fruits"]
 		mgoods = self.args["mgoods"]
-
+		if len(fruits)+len(mgoods) > 20:
+			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
 		cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=self.shop_id).one()
 		fruits2 = {}
 		mgoods2 = {}
@@ -1252,8 +1253,6 @@ class Market(CustomerBaseHandler):
 			fruits2[int(key)] = fruits[key]
 		for key in mgoods:
 			mgoods2[int(key)] = mgoods[key]
-		if len(fruits2)+len(mgoods2) > 20:
-			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
 		cart.fruits = str(fruits2)
 		cart.mgoods = str(mgoods2)
 
