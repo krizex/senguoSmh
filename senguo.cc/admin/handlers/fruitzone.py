@@ -203,7 +203,7 @@ class ShopList(FruitzoneBaseHandler):
 					lat2 = shop['lat']
 					lon2 = shop['lon']
 					shop['distance'] = self.get_distance(lat1,lon1,lat2,lon2)
-				shops.sort(key = lambda shop:shop['distance'] , reverse = True)
+				shops.sort(key = lambda shop:shop['distance'])
 			elif key_word == 3: #满意度最高
 				shops.sort(key = lambda shop:shop['satisfy'],reverse = True)
 			elif key_word == 4: #评价最多
