@@ -198,7 +198,7 @@ img{border:none;}
 .bg-red{background:#E01445;}
 .bg-orange{background:#E07D14;}
 .bg-grey{background:#ccc !important;}
-.bg-grey2{background:#f4f5f9;}
+.bg-grey2{background:#f4f5f9 !important;}
 .bg-grey3{background:#f3f3f3;}
 .bg-grey5{background:#f5f5f5;}
 .bg-grey9{background:#999;}

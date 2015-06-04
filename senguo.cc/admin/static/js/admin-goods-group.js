@@ -25,7 +25,7 @@ $(document).ready(function(){
         }
     });
     //初始化组
-    var groupList = $(".group-lst").children("li");
+    var groupList = $(".group-lst").children(".item");
     for(var i=0; i<groupList.size(); i++){
         var obj = groupList[i];
         obj.zIndex = 1;
@@ -39,6 +39,12 @@ $(document).ready(function(){
     $(".group-lst").children("li").each(function(){
          $(this).css("position","absolute");
     });
+    //group index
+    $('.self-group').each(function(){
+        var $this=$(this);
+        var index=$this.index();
+        $this.attr({"data-index":index,"data-rel":index});
+    });
 }).on("click",".spread-group",function(e){
     e.stopPropagation();
     $(this).closest(".right-link").children(".sw-er-tip").toggleClass("invisible");
@@ -46,50 +52,89 @@ $(document).ready(function(){
     curGroup = $(this).closest("li");
     $("#del-win").modal('show');
 }).on("click",".ok-del-group",function(){
-    $("#del-win").modal('hide');
-    curGroup.remove();
+        var $this = $(this);
+        if ($this.attr("data-flag") == "off") return false;
+        $this.attr("data-flag", "off");
+        var id = curGroup.attr('data-id');
+        var url = '';
+        var action = "delete_group";
+        var data={
+            id:id
+        };
+        var args = {
+            action:action,
+            data:data
+        };
+        $.postJson(url, args,
+            function (res) {
+                if (res.success) {
+                    $this.attr("data-flag", "on");
+                     $("#del-win").modal('hide');
+                     curGroup.remove();
+                     window.location.reload();
+                }
+                else {
+                     $this.attr("data-flag", "on");
+                    Tip(res.error_text);
+                }
+            },
+            function () {
+                 $this.attr("data-flag", "on");
+                Tip('网络好像不给力呢~ ( >O< ) ~');
+            }
+        ); 
 }).on("click",".add-groups",function(e){
     e.stopPropagation();
     $("#group-name").val("");
     $("#group-info").val("");
-    $("#new-win").modal('show');
-}).on("click",".ok-add-group",function(){
+    $("#new-win").modal('show').find('title').text('新建分组');
+     $('.ok-add-group').attr('data-action','add');
+}).on("click",".ok-add-group",function(){  
     var $this = $(this);
     if ($this.attr("data-flag") == "off") return false;
     $this.attr("data-flag", "off");
     var group_name = $("#group-name").val();
     var group_info = $("#group-info").val();
+    var _action =$this.attr('data-action');
     if($('.gropu-list li').length==7){
-          $this.attr("data-flag", "on");
+        $this.attr("data-flag", "on");
         Tip("至多可添加五中自定义分组！");
         return false;
     }
     if($.trim(group_name)==""){
-         $this.attr("data-flag", "on");
+        $this.attr("data-flag", "on");
         Tip("分组名字不能为空！");
         return false;
     }
     if($.trim(group_info)==""){
-         $this.attr("data-flag", "on");
+        $this.attr("data-flag", "on");
         Tip("分组介绍不能为空！");
         return false;
     }
     if(group_name.length>10){
-         $this.attr("data-flag", "on");
-        Tip("分组名称请不要超过十个字！");
+        $this.attr("data-flag", "on");
+        Tip("分组名称请不要超过10个字！");
         return false;
     }
-     if(group_info.length>100){
-         $this.attr("data-flag", "on");
-        Tip("分组介绍请不要超过100个字！");
+     if(group_info.length>50){
+        $this.attr("data-flag", "on");
+        Tip("分组介绍请不要超过50个字！");
         return false;
     }
     var url = '';
-    var action = "add_group";
+    var action;
     var data={
         name:group_name,
         intro:group_info
     };
+    if(_action=='edit'){
+        action="edit_group";
+        data.id=curGroup.attr('data-id');
+    }
+    else if(_action=="add"){
+        action="add_group";
+    }
+   
     var args = {
         action:action,
         data:data
@@ -98,7 +143,14 @@ $(document).ready(function(){
         function (res) {
             if (res.success) {
                 $this.attr("data-flag", "on");
-               window.location.reload();
+                  if(_action=='edit'){
+                        curGroup.find('.group-name').text(group_name);
+                         curGroup.find('.group-intro').text(group_info);
+                         $("#new-win").modal('hide');
+                    }
+                    else if(_action=="add"){
+                        window.location.reload();
+                    }        
             }
             else {
                  $this.attr("data-flag", "on");
@@ -113,9 +165,11 @@ $(document).ready(function(){
   
 }).on("click",".edit-group",function(e){//编辑
     e.stopPropagation();
-    $("#group-name").val($(this).closest("li").find(".edit-group-name").html());
-    $("#group-info").val($(this).closest("li").find(".edit-group-info").html());
-    $("#new-win").modal('show');
+    curGroup = $(this).closest("li");
+    $("#group-name").val($(this).closest("li").find(".group-name").html());
+    $("#group-info").val($(this).closest("li").find(".group-intro").html());
+    $("#new-win").modal('show').find('.title').text('编辑分组');
+    $('.ok-add-group').attr('data-action','edit');
 });
 //drag
 function drag(obj){
