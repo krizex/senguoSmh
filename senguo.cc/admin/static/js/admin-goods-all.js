@@ -1,4 +1,4 @@
-var goodsItem = "",curItem=null,goodsEdit = false,aLis=[],aPos=[],zIndex= 1,pn= 0,editor=null;
+var curItem=null,goodsEdit = false,aLis=[],aPos=[],zIndex= 1,pn= 0,editor=null,_type,_sub_type;
 $(document).ready(function(){
     $(".sw-link-copy").zclip({
         path: "/static/js/third/ZeroClipboard.swf",
@@ -22,12 +22,22 @@ $(document).ready(function(){
         }
     });
     getGoodsItem();
+    getData('fruit','color');
+    _type = 'fruit';
+    _sub_type = 'color';
 }).on("click",".all-select-box",function(){
     $(this).toggleClass("checked-box");
-}).on("click",".check-box",function(){
+    if($(this).hasClass("checked-box")){
+        $(".check-box").addClass("checked-box");
+    }else{
+        $(".check-box").removeClass("checked-box");
+    }
+}).on("click",".goods-all-list .check-box",function(){
     $(this).toggleClass("checked-box");
-}).on("click",".switch-btn",function(){
-    $(this).toggleClass("switch-btn-active");
+}).on("click",".switch-btn",function(){ //上架下架
+    var $this = $(this);
+    var id = $(this).attr("data-id");
+    switchGoodsRack(id,$this);
 }).on("click",".cancel-btn",function(){
     $(this).closest(".pop-win").hide();
 }).on("click",".show-add-img",function(){   //上传图片
@@ -94,8 +104,9 @@ $(document).ready(function(){
     curItem = $(this).closest(".goods-all-item");
     var _this = $(this);
     $.getItem("/static/items/admin/goods-item.html?33",function(data){
-        goodsItem = data;
-        _this.closest(".goods-all-item").hide().after(goodsItem);
+        var goodsItem = data;
+        var $item = $(goodsItem).clone();
+        _this.closest(".goods-all-item").hide().after($item);
         curItem = _this.closest(".goods-all-item").next(".goods-all-item");
         goodsEdit = true;
     });
@@ -108,23 +119,32 @@ $(document).ready(function(){
     var _this = $(this);
     _this.closest(".goods-all-item").prev(".goods-all-item").show();
     _this.closest(".goods-all-item").remove();
-    $("#add-img-btn").closest("li").prevAll("li").remove();
+
+    $("#add-img-btn").closest("li").prevAll("li").remove();//清除添加的图片
     curItem = null;
     goodsEdit = false;
 }).on("click","#add-goods",function(){  //添加新商品
-   // $(".wrap-all-goods,.subnav-box,.right-title").addClass("hidden");
+    if(goodsEdit){
+        Tip("请先完成正在编辑的商品");
+        return false;
+    }
     $(".wrap-classify").prevAll().addClass("hidden");
     $(".wrap-classify").removeClass("hidden");
 }).on("click",".fruit-item-list li",function(){//选择分类
-    $(".wrap-classify").addClass("hidden");
-    $(".wrap-classify").prevAll().removeClass("hidden");
     var classify = $(this).html();
+    var class_id = $(this).attr("data-id");
     $.getItem("/static/items/admin/goods-item.html?123",function(data){
-        goodsItem = data;
-        var $item = $(goodsItem);
-        var item = $item.find(".goods-classify").html(classify);
-        $(".goods-all-list").append($item);
+        var goodsItem = data;
+        var $item = $(goodsItem).clone();
+        $item.find(".goods-classify").html(classify).attr("data-id",class_id);
+        if($(".goods-all-list").children().size()>0){
+            $(".goods-all-list").children(".goods-all-item").first().before($item);
+        }else{
+            $(".goods-all-list").append($item);
+        }
         goodsEdit = true;
+        $(".wrap-classify").addClass("hidden");
+        $(".wrap-classify").prevAll().removeClass("hidden");
     });
 }).on("click","#upload-img",function(){ //保存上传后的图片
     var $list = $("#item-img-lst").children(".img-bo");
@@ -145,10 +165,79 @@ $(document).ready(function(){
     if($(e.target).closest(".wrap-kindeditor").size()==0){
         $(".pop-editor").hide();
     }
-}).on("click",".add-price-type",function(){ //新增售价方式
-
+}).on("click",".add-price-type",function(){//新增售价方式
+    var $item = $(".wrap-price-item").children(".wrap-add-price").clone();
+    var index = $(this).closest(".edit-item-right").children(".wrap-add-price").size();
+    $item.find(".price-index").html(index+1);
+    $(this).closest("p").before($item);
+}).on("click",".del-price-type",function(){//删除售价方式
+    $(this).closest(".wrap-add-price").remove();
+}).on('click','.furit-type li',function(){/*水果分类*/
+    var $this=$(this);
+    $this.addClass('active').siblings('li').removeClass('active');
+    var type = $this.attr('data-type');
+    _type=type;
+    getData(type,_sub_type);
+}).on('click','.pro-list li',function(){
+    var $this=$(this);
+    var pro = $this.attr('data-pro');
+    var text =$this.text();
+    _sub_type = pro;
+    $('.select-now').text(text);
+    getData(_type,pro);
+}).on('click','.fruit-search',function(){
+    var con=$('#search-classify').val();
+    getData2(con);
+}).on("click",".del-all-item",function(){//删除商品
+    var $obj = $(this).closest(".goods-all-item");
+    var id = $obj.attr("data-id");
+    delGoods(id);
 });
-
+//添加商品
+function addGoods($item){
+    var url="";
+    var data={'classify':con};
+    var args={
+        action:'classify_search',
+        data:data
+    };
+    $.postJson(url,args,function(res) {
+        if (res.success) {
+            Tip("新商品添加成功！");
+        }
+    });
+}
+//删除商品
+function delGoods(id){
+    var url="";
+    var args={
+        action:'delete_goods',
+        data:{
+            goods_id:id
+        }
+    };
+    $.postJson(url,args,function(res) {
+        if (res.success) {
+            window.location.reload(true);
+        }
+    });
+}
+//上下架商品
+function switchGoodsRack(id,$obj){
+    var url="";
+    var args={
+        action:'edit_active',
+        data:{
+            goods_id:id
+        }
+    };
+    $.postJson(url,args,function(res) {
+        if (res.success) {
+            $obj.toggleClass("switch-btn-active");
+            Tip("商品状态操作成功！");
+        }
+    });
+}
 function initEditor(){
     $.ajax({url: '/admin/editorTest?action=editor', async: false, success: function(data){
         var token1 = data.token;
@@ -186,6 +275,7 @@ function initEditor(){
 }
 
 function getGoodsItem(){
+    $(".wrap-loading-box").removeClass("hidden");
     $.ajax({
         url:"/admin/goods/all?type=all&page="+pn,
         type:"get",
@@ -200,6 +290,9 @@ function getGoodsItem(){
                     $(".page-now").html(pn+1);
                     insertGoods(data);
                 }
+                $(".wrap-loading-box").addClass("hidden");
+            }else{
+                $(".wrap-loading-box").addClass("hidden");
             }
         }
     })
@@ -214,14 +307,15 @@ function insertGoods(data){
         if(goods.imgurl){
             $item.find(".cur-goods-img").attr("src",goods.imgurl);
         }
-        $item.find(".current-group").html("默认分组").attr("data-id",goods.group_id);
+        $item.find(".current-group").html(goods.group_name).attr("data-id",goods.group_id);
         $item.find(".stock-num").html(goods.storage);
         $item.find(".stay-num").html(goods.current_saled);
         if(goods.active==1){  //上架
             $item.find(".switch-btn").addClass("switch-btn-active");
         }
+        $item.find(".switch-btn").attr("data-id",goods.id);
         $item.find(".show-txtimg").attr("data-text",goods.detail_describe);
-        $item.find(".goods-classify").html("苹果");
+        $item.find(".goods-classify").html(goods.fruit_type_name);
         $item.find(".goods-priority").html(goods.priority);
         $item.find(".limit-num").html(goods.limit_num);
         $item.find(".item-goods-txt").html(goods.info);
@@ -229,13 +323,15 @@ function insertGoods(data){
         if(goods.charge_types.length>0){
             for(var j=0; j<goods.charge_types.length; j++){
                 var good = goods.charge_types[j];
-                var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+'个</span></span><span class="mr10">市场价 : <span class="">'+good.market_price+'元</span></span></p>';
+                var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+good.unit_name+'</span></span><span class="mr10">市场价 : <span class="">'+good.market_price+'元</span></span></p>';
                 $item.find(".goods-price-list").append(item);
             }
         }
         /*$item.find(".goods-comment-num").html("2222");*/
         $item.find(".goods-vol").html(goods.saled);
         $item.find(".sw-link-txt").html("/customer/goods/"+goods.id);
+        $item.find(".group-goods-lst").html($("#group-goods-lst").children("li").clone());
+        $item.find(".group-goods-lst").find(".group-counts").hide();
         $(".goods-all-list").append($item);
     }
 }
@@ -468,4 +564,75 @@ function move($obj, iTarget){
             $obj.css("top",iCurT + iSpeedT + "px");
         }
     }, 30);
+}
+/*水果分类*/
+function getData(type,sub_type){
+    $.ajax({
+        url:'/admin/goods/classify?type='+type+'&sub_type='+sub_type,
+        type:"get",
+        success:function(res){
+            if(res.success){
+                var data = res.data;
+                $('.fruit-list').empty();
+                var item='<li>'+
+                    '<p class="title {{property}}">{{name}}</p>'+
+                    '<ul class="fruit-item-list group">'+
+                    '{{each types as type}}'+
+                    '<li data-id="{{type.id}}">{{type.name}} ({{type.num}})</li>'+
+                    '{{/each}}'+
+                    '</ul>'+
+                    '</li>';
+                for(var d in data){
+                    if(data[d]['data'].length!=0){
+                        var render = template.compile(item);
+                        var html = render({
+                            property:data[d]['property'],
+                            name:data[d]['name'],
+                            types:data[d]['data']
+                        });
+                        $('.fruit-list').append(html);
+                    }
+
+                }
+            }
+        }
+    });
+}
+
+function getData2(con){
+    if(!con){
+        return Tip('请输入分类名称');
+    }
+    var url="";
+    var data={'classify':con};
+    var args={
+        action:'classify_search',
+        data:data
+    };
+    $.postJson(url,args,function(res){
+            if(res.success){
+                var data = res.data;
+                $('.fruit-list').empty();
+                var item='<ul class="fruit-item-list group">'+
+                    '<li data-id="{{id}}">{{name}} ({{num}})</li>'+
+                    '</ul>';
+                for(var d in data){
+                    if(data[d].length!=0){
+                        console.log(d);
+                        var render = template.compile(item);
+                        var html = render({
+                            id:data[d]['id'],
+                            name:data[d]['name'],
+                            num:data[d]['num']
+                        });
+                        $('.fruit-list').append(html);
+                    }
+
+                }
+
+            }
+            else return Tip(res.error_text);
+        },
+        function(){return Tip('网络错误！')}
+    );
 }

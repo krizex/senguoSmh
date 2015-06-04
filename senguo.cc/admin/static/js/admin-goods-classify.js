@@ -43,17 +43,15 @@ function getData(type,sub_type){
 					var html = render({
 						property:data[d]['property'],
 						name:data[d]['name'],
-						types:data[d]['data'],
+						types:data[d]['data']
 					});
 					$('.fruit-list').append(html);
 				}
 				
 			}
-
 	            }
 	        }
 	 });
-	
 }
 
 function getData2(con){
@@ -68,11 +66,11 @@ function getData2(con){
 	};
 	$.postJson(url,args,function(res){
 		  if(res.success){
-	            		var data = res.data;
-	            		$('.fruit-list').empty();
-	            		var item='<ul class="fruit-item-list group">'+
-	            				'<li><a href="/admin/goods/all?type=classify&type_id={{id}}">{{name}} ({{num}})</a></li>'+
-	            			'</ul>';
+            var data = res.data;
+            $('.fruit-list').empty();
+            var item='<ul class="fruit-item-list group">'+
+                    '<li><a href="/admin/goods/all?type=classify&type_id={{id}}">{{name}} ({{num}})</a></li>'+
+                '</ul>';
 			for(var d in data){
 				if(data[d].length!=0){
 					console.log(d);
@@ -92,5 +90,4 @@ function getData2(con){
 	},
 	function(){return Tip('网络错误！')}
 	);
-	
 }

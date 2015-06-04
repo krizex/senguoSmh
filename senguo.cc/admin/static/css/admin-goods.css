@@ -21,6 +21,7 @@ textarea{border-color:#eee;}
 .mr10{margin-right: 10px;}
 .pl68{padding-left: 68px;}
 .c333{color: #333 !important;}
+.c999{color: #999 !important;}
 .red-txt{color: #ff6666 !important;}
 .del-img{position: absolute;z-index:100;right: -8px;top:-8px;width: 20px;height: 20px;background-color: rgba(0,0,0,.6);font-size: 14px;color: #fff;line-height: 18px;text-align: center;border-radius: 50%;}
 .del-img:hover,.del-img:visited,.del-img:link{color: #fff;}
@@ -120,6 +121,7 @@ textarea{border-color:#eee;}
 .item-set-mactive .up{display: inline;}
 .item-set-mactive .down{display: none;}
 .drag-img-list>li{cursor:move;}
+.del-price-type{margin-right: 28px;}
 
 .wrap-unit{position: fixed;background: #fff;border: 1px solid #eee;left: 50%;top: 50%;-webkit-transform:translate(-50%,-50%);z-index:992;display: none;}
 .unit-box{padding:10px 30px;}
