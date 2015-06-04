@@ -54,6 +54,15 @@ dict(
      headimgurl="http://wx.qlogo.cn/mmopen/XiaNUE39hM3WeU66LCia2QVBmiaLucl4hYKTaSbq5wepalu7gdgpEIG3cThwcia3B8tb0UZXoicLiaWVjZ3PgSibRoccRYsicvx0pUwB/0",
      nickname="喵七七",
      sex=2),
+dict(
+    unionid = "oxkR_jgG6YuVSOUlolJ1OpCPxkAk",
+    openid  = "o5SQ5tzZi_MCZLOTq1av4163bIrM",
+    country = "CN",
+    province= "Jiangxi",
+    city    = "Nanchang",
+    headimgurl = "http://wx.qlogo.cn/mmopen/XiaNUE39hM3U4wTdKibz3icnYURFa7ia3W5h9j0yiaXWUyx3jxmjib3w2ibiaMTem7mRCia9G6uOvKmY6LWKvujMW9vWHxVItVM94xD2N/0",
+    nickname = "沿路看风景~",
+    sex      = 2),
       ]
 
 if __name__ == "__main__":
