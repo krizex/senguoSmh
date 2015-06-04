@@ -29,7 +29,7 @@ textarea{border-color:#eee;}
 .img-cover .loader-quart {border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.4);}
 .loader-quart:after {content: '';position: absolute;top: -4px;right: -4px;bottom: -4px;left: -4px;border-radius: 50%;border: 4px solid transparent; border-top-color: #fff;-webkit-animation: spin .8s linear infinite;animation: spin .8s linear infinite;}
 .category-list>li{float: left;width: 25%;}
-.cate-title{font-size: 14px;color: #999;height: 28px;line-height: 28px;float: left;}
+.cate-title{font-size: 14px;color: #999;height: 28px;line-height: 28px;float: left;margin-right: 5px;}
 .slide-down-select{display:inline-block;width:100%;background:#fff;color:#000;border:1px solid #ddd;margin-left:0px;}
 .slide-down-select .slide-btn{height: 24px;line-height: 24px;display: block;border: none;outline: none;width: 100%;}
 .slide-down-select em{font-style:normal;display:inline-block;width:110px;font-size:14px;overflow:hidden;padding-left: 10px;text-align: left;}
@@ -45,6 +45,7 @@ textarea{border-color:#eee;}
 .txt-center{text-align: center !important;}
 .txt-left{text-align: left !important;}
 .hig{border: 1px dashed #ff6666 !important;}
+.no-title{font-size: 20px;text-align: center;margin-top: 40px;color: #333;}
 /*弹窗统一样式*/
 .pop-win{position: fixed;width: 100%;height: 100%;background-color: rgba(0,0,0,.4);z-index: 999;top: 0;left:0;display: none;}
 /*.pop-win .content{border: 1px solid #eee;min-width: 400px;min-height: 300px;position: absolute;left: 50%;top: 50%;-webkit-transform:translate(-50%,-50%);}
@@ -128,6 +129,11 @@ textarea{border-color:#eee;}
 .img-selected{position: absolute;left: 0;top: 0;width: 60px;height: 60px;background-color: rgba(0,0,0,.6);color: #fff;text-align: center;line-height: 60px;font-size: 12px;display: none;}
 .wrap-big-img{position: fixed;background-color: rgba(0,0,0,.6);z-index:999;width: 100%;height:100%;top: 0;left: 0;cursor: pointer;display: none;}
 .wrap-big-img>img{position: absolute;left: 50%;top: 50%;width: auto;height: auto;-webkit-transform:translate(-50%,-50%);}
+.wrap-kindeditor{position: absolute;background: #fff;width: 800px;height: 400px;left: 50%;top: 50%;-webkit-transform:translate(-50%,-50%);z-index:990;}
+.kindeditor{width: 800px;height: 400px;}
+.ke-dialog-content input{text-indent: 0;text-align: left;width: auto;}
+.ke-dialog-content .ke-input-number{width: 50px;}
+.ke-dialog-content input[type=radio]{width: auto;}
 /*分类*/
 .wrap-fruit-select{position: relative;height: 30px;margin: 10px 0;}
 .fruit-select{position: absolute;right: 0;top: 0;}

@@ -1,11 +1,13 @@
 {% extends 'goods-set-base.html' %}
+{% block css %}
+<link rel="stylesheet" href="{{static_url('js/editor/themes/default/default.css')}}"/>
+{% end %}
 {% block setcontent %}
 <div class="wrap-all-goods">
 <input type="hidden" id="token" value="{{token}}"/>
     <ul class="category-list group">
-
         <li>
-            <div class="cate-title">商品状态：</div>
+            <div class="cate-title">商品状态 : </div>
             <div class="dropdown slide-down-select pull-left w130">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
                     <em title="{{current_shop.shop_name}}" class="pull-left" id="3">所有 (15)</em>
@@ -31,7 +33,7 @@
             </div>
         </li>
         <li>
-            <div class="cate-title">排列方式：</div>
+            <div class="cate-title">排列方式 : </div>
             <div class="dropdown slide-down-select pull-left w130">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu4" data-toggle="dropdown">
                     <em title="{{current_shop.shop_name}}" class="pull-left" id="4">按商品分组</em>
@@ -48,7 +50,7 @@
             </div>
         </li>
         <li>
-            <div class="cate-title">排序规则：</div>
+            <div class="cate-title">排序规则 : </div>
             <div class="dropdown slide-down-select pull-left w130">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu5" data-toggle="dropdown">
                     <em title="{{current_shop.shop_name}}" class="pull-left" id="5">添加日期</em>
@@ -74,7 +76,7 @@
             </div>
         </li>
         <li>
-            <div class="cate-title">分组筛选：</div>
+            <div class="cate-title">分组筛选 : </div>
             <div class="dropdown slide-down-select pull-left w130">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu6" data-toggle="dropdown">
                     <em title="{{current_shop.shop_name}}" class="pull-left" id="group_name">默认分组 (15)</em>
@@ -98,7 +100,7 @@
         <li class="borderc text-center pointer min80">批量上架</li>
         <li class="borderc text-center pointer min80">批量下架</li>
         <li>
-            <div class="cate-title mt2">批量分组：</div>
+            <div class="cate-title mt2">批量分组 : </div>
             <div class="dropdown slide-down-select pull-left w130 mt2">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu7" data-toggle="dropdown">
                     <em title="{{current_shop.shop_name}}" class="pull-left" id="9">默认分组 (15)</em>
@@ -116,102 +118,13 @@
         </li>
     </ul>
     <ul class="goods-all-list">
-        <li class="goods-all-item">
-            <p class="all-item-title">添加日期：2015-06-16 15:33:33</p>
-            <div class="all-item-top">
-                <span class="check-box item-checkbox ml10" ></span>
-                <span class="item-name">马大会的店铺</span>
-                <div class="iblock goods-group">
-                    <div class="cate-title mt2">商品分组：</div>
-                    <div class="dropdown slide-down-select pull-left w130 mt2">
-                        <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu8" data-toggle="dropdown">
-                            <em title="{{current_shop.shop_name}}" class="pull-left c333" id="8">默认分组</em>
-                            <span class="caret pull-right no-margin-left rotate0"></span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu18" id="currentShopChange8">
-                            <li  role="presentation">
-                                <a class="item" href="javascript:;">国内水果</a>
-                            </li>
-                            <li  role="presentation">
-                                <a class="item" href="javascript:;">进口水果</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <span class="txt-box mls">库存：<span class="c333">723个</span></span>
-                <span class="txt-box">待成交：<span class="c333">223个</span></span>
-                <span class="switch-btn"><i></i>已<span class="up">上</span><span class="down">下</span>架</span>
-            </div>
-            <div class="all-item-cont group">
-                <div class="all-item-left fl">
-                    <dl class="item-dl group">
-                        <dt class="fl">
-                            <img src="/static/images/TDSG.png" alt=""/>
-                            <a href="javascript:;">查看图文详情</a>
-                        </dt>
-                        <dd class="fl">
-                            <p>
-                                <span class="mr10">商品分类:<span class="c333">苹果</span></span>
-                                <span class="mr10">排序优先级:<span class="c333">5</span></span>
-                                <span class="mr10">商品限购:<span class="c333">苹果</span></span>
-                            </p>
-                            <div class="item-goods-detail mt10 group">
-                                <span class="item-goods-title fl">商品介绍:</span>
-                                <p class="item-goods-txt c333 fl">
-                                    撒旦法对所发生的撒旦法对所发生的撒旦法对所发生的
-                                    所发生的辅导书斯蒂芬斯蒂芬斯蒂芬森的森的辅导书发生的辅导书
-                                    双方的首发事发当时的
-                                </p>
-                            </div>
-                        </dd>
-                    </dl>
-                </div>
-                <div class="all-item-right fl">
-                    <p>
-                        <span class="mr10">商品点赞:<span class="c333">2233</span></span>
-                        <a class="mr10" href="javascript:;">商品评论:22条</a>
-                        <span class="mr10">销量:<span class="c333">2233个</span></span>
-                    </p>
-                    <p class="mt10">
-                        <span class="mr10">售价1:<span class="red-txt">2233</span></span>
-                        <span class="mr10">市场价:<span class="">55.0元</span></span>
-                    </p>
-                    <p class="mt8">
-                        <span class="mr10">售价2:<span class="red-txt">2233</span></span>
-                        <span class="mr10">市场价:<span class="">55.0元</span></span>
-                    </p>
-                </div>
-                <div class="group"></div>
-                <p class="all-bm-group">
-                    <a href="javascript:;" class="del-all-item">删除</a>
-                    <a href="javascript:;" class="spread-all-item">推广商品</a>
-                    <a href="javascript:;" class="eidt-all-item">编辑</a>
-                </p>
-                <div class="sw-er-tip all-position invisible">
-                    <div class="top-arr">
-                        <span class="line1"></span>
-                        <span class="line2"></span>
-                    </div>
-                    <p class="er-text">商品链接</p>
-                    <div class="wrap-ipt">
-                        <input type="text" class="sw-link-txt" value="http://senguo.cc/list" disabled/>
-                        <input type="button" class="sw-link-copy"  id="sw-link-copy" value="复制链接"/>
-                    </div>
-                    <div class="wrap-er group">
-                        <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
-                        <div class="er-text lh80 fl">列表二维码</div>
-                        <div class="er-img fl er-code-img">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </li>
+
     </ul>
     <div class="users-pagination list-pagination group">
         <ul>
             <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
             <li>
-                <span class="page-now">2</span>/<span class="page-total">7</span>
+                <span class="page-now">1</span>/<span class="page-total">7</span>
             </li>
             <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
             <li><input class="input-page form-control" type="text" placeholder="输入页码"></li>
@@ -219,6 +132,101 @@
         </ul>
     </div>
 </div>
+<ul class="clone-goods hidden">
+    <li class="goods-all-item">
+        <p class="all-item-title">添加日期 : <span class="goods-add-time"></span></p>
+        <div class="all-item-top">
+            <span class="check-box item-checkbox ml10" ></span>
+            <span class="item-name goods-goods-name"></span>
+            <div class="iblock goods-group">
+                <div class="cate-title mt2">商品分组：</div>
+                <div class="dropdown slide-down-select pull-left w130 mt2">
+                    <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu8" data-toggle="dropdown">
+                        <em title="{{current_shop.shop_name}}" class="pull-left c333 current-group" data-id="">默认分组</em>
+                        <span class="caret pull-right no-margin-left rotate0"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu18" id="currentShopChange8">
+                        <li  role="presentation">
+                            <a class="item" href="javascript:;">国内水果</a>
+                        </li>
+                        <li  role="presentation">
+                            <a class="item" href="javascript:;">进口水果</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <span class="txt-box mls">库存 : <span class="c333"><span class="stock-num">723</span>个</span></span>
+            <span class="txt-box">待成交 : <span class="c333"><span class="stay-num">223</span>个</span></span>
+            <span class="switch-btn"><i></i>已<span class="up">上</span><span class="down">下</span>架</span>
+        </div>
+        <div class="all-item-cont group">
+            <div class="all-item-left fl">
+                <dl class="item-dl group">
+                    <dt class="fl">
+                        <img class="cur-goods-img" src="/static/images/TDSG.png" alt=""/>
+                        <a href="javascript:;" class="show-txtimg" data-text="">查看图文详情</a>
+                    </dt>
+                    <dd class="fl">
+                        <p>
+                            <span class="mr10">商品分类 : <span class="c333 goods-classify"></span></span>
+                            <span class="mr10">排序优先级 : <span class="c333 goods-priority"></span></span>
+                            <span class="mr10">商品限购 : <span class="c333 limit-num"></span></span>
+                        </p>
+                        <div class="item-goods-detail mt10 group">
+                            <span class="item-goods-title fl">商品介绍:</span>
+                            <p class="item-goods-txt c333 fl">
+                                撒旦法对所发生的撒旦法对所发生的撒旦法对所发生的
+                                所发生的辅导书斯蒂芬斯蒂芬斯蒂芬森的森的辅导书发生的辅导书
+                                双方的首发事发当时的
+                            </p>
+                        </div>
+                    </dd>
+                </dl>
+            </div>
+            <div class="all-item-right fl">
+                <p>
+                    <span class="mr10">商品点赞 : <span class="c333 dianzan">2233</span></span>
+                    <a class="mr10 hidden" href="javascript:;">商品评论 : <span class="goods-comment-num">22</span>条</a>
+                    <span class="mr10">销量 : <span class="c333"><span class="goods-vol">2233</span>个</span></span>
+                </p>
+                <div class="goods-price-list">
+                    <p class="mt10">
+                        <span class="mr10">售价1 : <span class="red-txt">2233</span></span>
+                        <span class="mr10">市场价 : <span class="">55.0元</span></span>
+                    </p>
+                    <p class="mt10">
+                        <span class="mr10">售价2 : <span class="red-txt">2233</span></span>
+                        <span class="mr10">市场价 : <span class="">55.0元</span></span>
+                    </p>
+                </div>
+
+            </div>
+            <div class="group"></div>
+            <p class="all-bm-group">
+                <a href="javascript:;" class="del-all-item">删除</a>
+                <a href="javascript:;" class="spread-all-item">推广商品</a>
+                <a href="javascript:;" class="eidt-all-item">编辑</a>
+            </p>
+            <div class="sw-er-tip all-position invisible">
+                <div class="top-arr">
+                    <span class="line1"></span>
+                    <span class="line2"></span>
+                </div>
+                <p class="er-text">商品链接</p>
+                <div class="wrap-ipt">
+                    <input type="text" class="sw-link-txt" value="http://senguo.cc/list" disabled/>
+                    <input type="button" class="sw-link-copy" value="复制链接"/>
+                </div>
+                <div class="wrap-er group">
+                    <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
+                    <div class="er-text lh80 fl">列表二维码</div>
+                    <div class="er-img fl er-code-img">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+</ul>
 
 <div class="wrap-classify hidden">
     <p class="c333 mt10 choose-text">添加新商品/选择商品分类</p>
@@ -376,7 +384,11 @@
         </div>
     </div>
 </div>
-
+<div class="pop-win pop-editor">
+    <div class="wrap-kindeditor">
+        <textarea id="kindEditor" class="kindeditor"></textarea>
+    </div>
+</div>
 <div class="wrap-unit pop-window">
     <div class="unit-box">
         <p><span class="c333 mr10">单位换算</span>需要经过换算，让单位统一，保证库存与销量的统计保持一致</p>
@@ -398,6 +410,8 @@
 <script src="/static/js/third/qrcode.min.js"></script>
 <script src="{{static_url('js/plupload/plupload.full.min.js')}}"></script>
 <script src="{{static_url('js/plupload/i18n/zh_CN.js')}}"></script>
+<script src="{{static_url('js/editor/kindeditor-min.js')}}"></script>
+<script src="{{static_url('js/editor/zh_CN.js')}}"></script>
 <script src="{{static_url('js/qiniu.min.js')}}"></script>
 <script src="{{static_url('js/admin-goods-all.js')}}"></script>
 {% end %}

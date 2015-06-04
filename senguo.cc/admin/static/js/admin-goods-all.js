@@ -1,4 +1,4 @@
-var goodsItem = "",curItem=null,goodsEdit = false,aLis=[],aPos=[],zIndex= 1,pn=0;
+var goodsItem = "",curItem=null,goodsEdit = false,aLis=[],aPos=[],zIndex= 1,pn= 0,editor=null;
 $(document).ready(function(){
     $(".sw-link-copy").zclip({
         path: "/static/js/third/ZeroClipboard.swf",
@@ -20,7 +20,8 @@ $(document).ready(function(){
         if($(e.target).closest(".sw-er-tip").size()==0){
             $(".sw-er-tip").addClass("invisible");
         }
-    })
+    });
+    getGoodsItem();
 }).on("click",".check-box",function(){
     $(this).toggleClass("checked-box");
 }).on("click",".switch-btn",function(){
@@ -123,18 +124,96 @@ $(document).ready(function(){
     }
     initImgList($item.find(".drag-img-list").children(".img-bo"));
     $(".pop-img-win").hide();
+}).on("click",".show-txtimg",function(){
+    initEditor();
+}).on("click",".pop-editor",function(e){
+    if($(e.target).closest(".wrap-kindeditor").size()==0){
+        $(".pop-editor").hide();
+    }
 });
+
+function initEditor(){
+    $.ajax({url: '/admin/editorTest?action=editor', async: false, success: function(data){
+        var token1 = data.token;
+        var token = data.res;
+        $(".pop-editor").show();
+        editor = KindEditor.create('#kindEditor', {
+            uploadJson : 'http://upload.qiniu.com/',
+            filePostName : 'file',
+            allowFileManager : true,
+            fileManagerJson : '/admin/editorFileManage',
+            extraFileUploadParams : {'token':token1},
+            token : token,
+            resizeType : 0,
+            uploadJson:"picture",
+            items:[
+                'source', '|', 'undo', 'redo', '|', 'preview', 'print', 'template', 'cut', 'copy', 'paste',
+                'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
+                'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+                'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+                'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+                'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image',
+                'table', 'hr'
+            ],
+            afterCreate: function(){this.sync();},
+            afterBlur: function(){this.sync();},
+            afterUpload : function(url) {
+                console.log(url)
+            },
+            uploadError:function(file, errorCode, message){
+                console.log(message)
+            }
+        });
+
+    }});
+}
 
 function getGoodsItem(){
     $.ajax({
-        url:"",
+        url:"/admin/goods/all?type=all&page="+pn,
         type:"get",
         success:function(res){
             if(res.success){
-                
+                var data = res.data;
+                $(".goods-all-list").empty();
+                if(data.length==0){
+                    $(".goods-all-list").append("<p>没有查询到任何商品！</p>");
+                }else{
+                    $(".page-total").html(res.count);
+                    $(".page-now").html(pn+1);
+                    insertGoods(data);
+                }
             }
         }
     })
+}
+function insertGoods(data){
+    for(var i=0; i<data.length; i++){
+        var goods = data[i];
+        var $item = $(".clone-goods").children().clone();
+        $item.attr("data-id",goods.id);
+        $item.find(".goods-add-time").html(goods.add_time);
+        $item.find(".goods-goods-name").html(goods.name);
+        if(goods.imgurl){
+            $item.find(".cur-goods-img").attr("src",goods.imgurl);
+        }
+        $item.find(".current-group").html("商品分组").attr("data-id",goods.group_id);
+        $item.find(".stock-num").html(goods.storage);
+        $item.find(".stay-num").html(goods.current_saled);
+        if(goods.active==1){  //上架
+            $item.find(".switch-btn").addClass("switch-btn-active");
+        }
+        $item.find(".show-txtimg").attr("data-text",goods.detail_describe);
+        $item.find(".goods-classify").html("苹果");
+        $item.find(".goods-priority").html(goods.priority);
+        $item.find(".limit-num").html(goods.limit_num);
+        $item.find(".item-goods-txt").html(goods.info);
+        $item.find(".dianzan").html("5");
+        /*$item.find(".goods-comment-num").html("2222");*/
+        $item.find(".goods-vol").html(goods.saled);
+        $item.find(".sw-link-txt").html("http://senguo.cc/list");
+        $(".goods-all-list").append($item);
+    }
 }
 
 $(document).ready(function(){
