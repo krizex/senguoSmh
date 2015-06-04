@@ -561,7 +561,7 @@ class Shop(MapBase, _CommonApi):
 
 	super_temp_active = Column(Integer,default = 1) #1:receive the message from wx 0:do not receive#5.26
 
-	group_priority = Column(String(50))
+	group_priority = Column(String(50)) #[group.id,group index]
 
 	def __repr__(self):
 		return "<Shop: {0} (id={1}, code={2})>".format(
@@ -1360,6 +1360,7 @@ class ChargeType(MapBase, _CommonApi):
 	unit_num = Column(Float, default=1)#单位换算
 	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 	market_price =  Column(Float)#市场价 #5.27
+	select_num = Column(Integer, default=1) #6.4
 
 	fruit = relationship("Fruit", uselist=False)
 

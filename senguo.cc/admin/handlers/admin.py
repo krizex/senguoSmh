@@ -1300,7 +1300,6 @@ class Goods(AdminBaseHandler):
 		return data
 
 	def getUnit(self,unit):
-		print(unit)
 		if unit == 1:
 			name ='个' 
 		elif unit == 2 :
@@ -1325,7 +1324,6 @@ class Goods(AdminBaseHandler):
 			name ='包'
 		else:
 			name =''
-		print(name)
 		return name
 
 	def getOneData(self,d):
@@ -1365,7 +1363,8 @@ class Goods(AdminBaseHandler):
 	def get(self):
 		action = self._action
 		_id = str(time.time())
-		shop_id = self.current_shop.id
+		current_shop = self.current_shop
+		shop_id = current_shop.id
 		qiniuToken = self.get_qiniu_token('goods',_id)
 		if action == "all":
 			if self.args["type"] !=[]:
@@ -1378,7 +1377,7 @@ class Goods(AdminBaseHandler):
 					page_size = 10
 					offset = page * page_size				
 					try:
-						goods = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id).all()
+						goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).all()
 					except:
 						nomore=True
 					count = len(goods)
@@ -1404,7 +1403,7 @@ class Goods(AdminBaseHandler):
 					data = []
 					datalist = []
 					type_id = int(self.args["type_id"])
-					datalist = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id,fruit_type_id=type_id).all()
+					datalist = self.session.query(models.Fruit).filter_by(shop_id=shop_id,fruit_type_id=type_id).all()
 					data = self.getData(datalist)
 					return self.send_success(data=data)
 
@@ -1425,12 +1424,12 @@ class Goods(AdminBaseHandler):
 
 					if 'type_id' in self.args:
 						try:
-							goods  = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id,fruit_type_id=data['type_id'])
+							goods  = self.session.query(models.Fruit).filter_by(shop_id=shop_id,fruit_type_id=data['type_id'])
 						except:
 							return self.send_fail('矮油，没有你要找的～')
 					else:
 						try:
-							goods  = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id)
+							goods  = self.session.query(models.Fruit).filter_by(shop_id=shop_id)
 						except:
 							return self.send_fail('矮油，没有你要找的～')
 
@@ -1492,7 +1491,7 @@ class Goods(AdminBaseHandler):
 					return self.send_success(data=data,nomore=nomore,count=count)
 
 			group_list = []
-			groups = self.session.query(models.GoodsGroup).filter_by(shop_id=self.current_shop.id,status=1).all()
+			groups = self.session.query(models.GoodsGroup).filter_by(shop_id=shop_id,status=1).all()
 			group_list.append({"id":0,"name":"默认分组"})
 			group_list.append({"id":1000,"name":"店铺推荐"})
 			for g in groups:
@@ -1603,16 +1602,27 @@ class Goods(AdminBaseHandler):
 				return self.render("admin/goods-classify.html",context=dict(subpage="goods"))
 		elif action == "group":
 			data = []
-			goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id)
-			_group = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1).all()
+			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id)
 			defatult_count = goods.filter_by(group_id=0).count()
 			record_count = goods.filter_by(group_id=1000).count()
-			for g in _group:
-				goods_count = goods.filter_by( group_id = g.id ).count()
-				data.append({'id':g.id,'name':g.name,'intro':g.intro,'num':goods_count})
-			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,defatult_count=defatult_count,record_count=record_count)
+			group_priority = current_shop.group_priority.split('"')
+			d = group_priority[0].replace("'","").replace("'","")
+			print(d)
+			print(type(d))
+			i=0
+			for n in range(len(data)):
+				for g in data:
+					print(g,'2333')		
+					if g[1] == i:
+						if i == 0:
+							data.append({'id':0,'':g.name,'intro':'','num':record_count})
+						else:
+							_group = self.session.query(models.GoodsGroup).filter_by(id=int(g[0]),shop_id = shop_id,status = 1).first()
+							goods_count = goods.filter_by( group_id = _group.id ).count()
+							data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count})
+			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,defatult_count=defatult_count)
 		elif action == "delete":
-			goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,active = 0).all()
+			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active = 0).all()
 			data = self.getData(goods)
 			return self.render("admin/goods-delete.html",context=dict(subpage="goods"),data=data)
 
@@ -1659,17 +1669,21 @@ class Goods(AdminBaseHandler):
 					return self.send_fail('该商品分组不存在或已被删除')
 			if data["img_url"]:  # 前端可能上传图片不成功，发来一个空的，所以要判断
 				args["img_url"] = SHOP_IMG_HOST + data["img_url"]
+			priority = data["priority"] if data["priority"] else 0
 			args["intro"] = data["intro"]
-			args["priority"] = data["priority"]
+			args["priority"] = priority
 			args["fruit_type_id"] = data["fruit_type_id"]
 			args["shop_id"] = shop_id
 			goods = models.Fruit(**args)
 			for charge_type in data["charge_types"]:
+				unit_num = charge_type["unit_num"] if charge_type["unit_num"] else 1
+				select_num = charge_type["select_num"] if charge_type["select_num"] else 1
 				goods.charge_types.append(models.ChargeType(price=charge_type["price"],
 										unit=charge_type["unit"],
 										num=charge_type["num"],
-										unit_num=charge_type["unit_num"]),
-										market_price=data["market_price"])
+										unit_num=unit_num),
+										market_price=data["market_price"],
+										select_num=select_num)
 			self.session.add(goods)
 			self.session.commit()
 			_goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,status = 1,fruit_type_id=int(data["type_id"])).order_by(models.Fruit.add_time.desc()).first()
@@ -1796,7 +1810,16 @@ class Goods(AdminBaseHandler):
 				return self.send_fail('该商品分组不存在或已被删除')
 
 		elif action == "group_priority":
-			current_shop.group_priority=data["group_list"]
+			import json
+			_list = []
+			groups = self.session.query(models.GoodsGroup).filter_by(shop_id=shop_id,status=1).all()
+			for d in data["group_list"]:
+				_list.append(str(d))
+				current_shop.group_priority= ''.join(_list)
+				for group in groups:
+						if group.id == int(d[0]):
+							group.priority=int(d[1])
+							self.session.commit()
 			self.session.commit()
 
 		elif action == "batch_reset_delete":
