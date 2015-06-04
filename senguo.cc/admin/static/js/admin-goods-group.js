@@ -210,6 +210,7 @@ function drag(obj){
                 move($this, aPos[$this[0].index]);
                 move(oNear, aPos[oNear[0].index]);
                 oNear.removeClass("hig");
+                priority();
             }else{
                 move($this, aPos[$this[0].index]);
             }
@@ -277,4 +278,36 @@ function move($obj, iTarget){
             $obj.css("top",iCurT + iSpeedT + "px");
         }
     }, 30);
+}
+
+function priority(){
+    var group_list=[];
+    for(var i=0;i<$('.item').length;i++){
+        var $this=$('.item').eq(i);
+        var id=$this.attr("data-id");
+        var index=$this.attr("data-index");
+        var list=[]
+        list.push(id);
+        list.push(index);
+        group_list.push(list);
+    }
+    var url="";
+    var data={group_list:group_list};
+    var args = {
+        action:'group_priority',
+        data:data
+    };
+    $.postJson(url, args,
+        function (res) {
+            if (res.success) {
+                     
+            }
+            else {
+                Tip(res.error_text);
+            }
+        },
+        function () {
+            Tip('网络好像不给力呢~ ( >O< ) ~');
+        }
+    );
 }
