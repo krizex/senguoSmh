@@ -54,20 +54,63 @@ $(document).ready(function(){
     $("#group-info").val("");
     $("#new-win").modal('show');
 }).on("click",".ok-add-group",function(){
+    var $this = $(this);
+    if ($this.attr("data-flag") == "off") return false;
+    $this.attr("data-flag", "off");
     var group_name = $("#group-name").val();
     var group_info = $("#group-info").val();
+    if($('.gropu-list li').length==7){
+          $this.attr("data-flag", "on");
+        Tip("至多可添加五中自定义分组！");
+        return false;
+    }
     if($.trim(group_name)==""){
+         $this.attr("data-flag", "on");
         Tip("分组名字不能为空！");
         return false;
     }
     if($.trim(group_info)==""){
+         $this.attr("data-flag", "on");
         Tip("分组介绍不能为空！");
         return false;
     }
-    //刷新加载当前页
-    $("#group-name").val("");
-    $("#group-info").val("");
-    $("#new-win").modal('hide');
+    if(group_name.length>10){
+         $this.attr("data-flag", "on");
+        Tip("分组名称请不要超过十个字！");
+        return false;
+    }
+     if(group_info.length>100){
+         $this.attr("data-flag", "on");
+        Tip("分组介绍请不要超过100个字！");
+        return false;
+    }
+    var url = '';
+    var action = "add_group";
+    var data={
+        name:group_name,
+        intro:group_info
+    };
+    var args = {
+        action:action,
+        data:data
+    };
+    $.postJson(url, args,
+        function (res) {
+            if (res.success) {
+                $this.attr("data-flag", "on");
+               window.location.reload();
+            }
+            else {
+                 $this.attr("data-flag", "on");
+                Tip(res.error_text);
+            }
+        },
+        function () {
+             $this.attr("data-flag", "on");
+            Tip('网络好像不给力呢~ ( >O< ) ~');
+        }
+    );
+  
 }).on("click",".edit-group",function(e){//编辑
     e.stopPropagation();
     $("#group-name").val($(this).closest("li").find(".edit-group-name").html());

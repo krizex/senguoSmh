@@ -1264,6 +1264,7 @@ class Goods(AdminBaseHandler):
 
 	def getData(self,datalist):
 		data = []
+		shop_id = self.current_shop.id
 		for d in datalist:
 			add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else ''
 			delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
@@ -1273,43 +1274,89 @@ class Goods(AdminBaseHandler):
 				img_url = ''
 			intro = '' if not d.intro else d.intro
 			detail_describe = '' if not d.detail_describe else d.detail_describe
+
+			group_id = d.group_id
+			if  group_id == 0:
+				group_name = "默认分组"
+			elif group_id == 1000:
+				group_name = "店铺推荐"
+			else:
+				group_name = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id=shop_id,status=1).first().name
+
 			charge_types = []
 			for charge in d.charge_types:
-				charge_types.append({'id':charge.id,'price':charge.price,'unit':charge.unit,'unit_name':self.unit(charge.unit)\
-					,'num':charge.num,'unit_num':charge.unit_num,'market_price':charge.market_price})
+				market_price ="" if not charge.market_price else charge.market_price
+				unit = charge.unit
+				unit_name = self.getUnit(unit)
+				charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
+					'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price})
 
-			data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
-				'saled':d.saled,'storage':d.storage,'unit':d.unit,'unit_name':self.unit(charge.unit),'tag':d.tag,'imgurl':img_url,'info':intro,'priority':d.priority,\
-				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':d.group_id,'classify':d.classify,\
+			_unit = d.unit
+			_unit_name = self.getUnit(_unit)
+			data.append({'id':d.id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
+				'saled':d.saled,'storage':d.storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'info':intro,'priority':d.priority,\
+				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_name':group_name,\
 				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name})
 		return data
 
-	def unit(self,unit):
-		name ='个' if unit == 1 else ''
-		name ='斤' if unit == 2 else ''
-		name ='份' if unit == 3 else ''
-		name ='kg' if unit == 4 else ''
-		name ='克' if unit == 5 else ''
-		name ='升' if unit == 6 else ''
-		name ='箱' if unit == 7 else ''
-		name ='盒' if unit == 8 else ''
-		name ='件' if unit == 9 else ''
-		name ='框' if unit == 10 else ''
-		name ='包' if unit == 11 else ''
+	def getUnit(self,unit):
+		print(unit)
+		if unit == 1:
+			name ='个' 
+		elif unit == 2 :
+			name ='斤'
+		elif unit == 3 :
+			name ='份'
+		elif unit == 4 :
+		 	name ='kg'
+		elif unit == 5 :
+			name ='克'
+		elif unit == 6 :
+			name ='升'
+		elif unit == 7 :
+		 	name ='箱'
+		elif unit == 8 :
+			name ='盒'
+		elif unit == 9 :
+			name ='件'
+		elif unit == 10 :
+		 	name ='框'
+		elif unit == 11 :
+			name ='包'
+		else:
+			name =''
+		print(name)
 		return name
 
 	def getOneData(self,d):
 		data = []
-		add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else None
-		delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else None
+		add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else ''
+		delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
 		if d.img_url:
 			img_url= d.img_url.split(',')
 		else:
-			img_url = None
-		data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
-			'saled':d.saled,'storage':d.storage,'unit':d.unit,'tag':d.tag,'imgurl':img_url,'info':d.intro,'priority':d.priority,\
-			'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_name':d.group_name,'classify':d.classify,\
-			'detail_describe':d.detail_describe})
+			img_url = ''
+		intro = '' if not d.intro else d.intro
+		detail_describe = '' if not d.detail_describe else d.detail_describe
+
+		group_id = d.group_id
+		if  group_id == 0:
+			group_name = "默认分组"
+		elif group_id == 1000:
+			group_name = "店铺推荐"
+		else:
+			group_name = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id=shop_id,status=1).first().name
+
+		charge_types = []
+		for charge in d.charge_types:
+			market_price ="" if not charge.market_price else charge.market_price
+			charge_types.append({'id':charge.id,'price':charge.price,'unit':charge.unit,'unit_name':self.unit(charge.unit)\
+				,'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price})
+
+		data.append({'id':d.id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
+			'saled':d.saled,'storage':d.storage,'unit':d.unit,'unit_name':self.unit(charge.unit),'tag':d.tag,'imgurl':img_url,'info':intro,'priority':d.priority,\
+			'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_name':group_name,\
+			'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name})
 		return data
 	def token(self,token):
 		editorToken = self.get_editor_token("editor", _id)
@@ -1443,7 +1490,14 @@ class Goods(AdminBaseHandler):
 					else:
 						data = self.getData(datalist)
 					return self.send_success(data=data,nomore=nomore,count=count)
-			return self.render("admin/goods-all.html",context=dict(subpage="goods"),token=qiniuToken)
+
+			group_list = []
+			groups = self.session.query(models.GoodsGroup).filter_by(shop_id=self.current_shop.id,status=1).all()
+			group_list.append({"id":0,"name":"默认分组"})
+			group_list.append({"id":1000,"name":"店铺推荐"})
+			for g in groups:
+				group_list.append({"id":g.id,"name":g.name})
+			return self.render("admin/goods-all.html",context=dict(subpage="goods"),token=qiniuToken,group_list=group_list)
 						
 		elif action == "classify":	
 			if self.args["type"] != [] :
@@ -1700,13 +1754,18 @@ class Goods(AdminBaseHandler):
 		elif action =="add_group":
 			args={}
 			args["shop_id"] = self.current_shop.id
-			name = data["name"]
-			intro = data["intro"]
+			args["name"] = data["name"]
+			args["intro"] = data["intro"]
+			groups = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1)
+			group_count = groups.count
+			if group_count == 5:
+				return self.send_fail('至多可添加五中自定义分组！')
+			if not args["name"] or not args["intro"]:
+				return self.send_fail('请填写相应分组信息')			
 			_group = models.GoodsGroup(**args)
 			self.session.add(_group)
 			self.session.commit()
-			_group_id = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1).order_by(models.GoodsGroup.create_time.desc()).first().id
-			return self.send_success(_group_id =_group_id)
+			return self.send_success()
 		elif action in["delete_group","group_priority","edit_group"]:
 			_id = data["id"]
 			_group = self.session.query(models.GoodsGroup).filter_by(id = _id,shop_id = self.current_shop.id,status = 1).first()
