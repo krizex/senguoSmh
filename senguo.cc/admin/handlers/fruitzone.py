@@ -200,13 +200,13 @@ class ShopList(FruitzoneBaseHandler):
 				lat1 = float(self.args['lat'])
 				lon1 = float(self.args['lon'])
 				for shop in shops:
-					print(lat1,lon1,lon2,lat2)
 					lat2 = shop['lat']
 					lon2 = shop['lon']
 					if lat1 and lon1 and lat2 and lon2:
 						shop['distance'] = self.get_distance(lat1,lon1,lon2,lat2)
 					else:
 						shop['distance'] = 999999999
+					print(lat1,lon1,lon2,lat2)
 					print(shop['shop_code'],shop['distance']);
 				shops.sort(key = lambda shop:shop['distance'])
 			elif key_word == 3: #满意度最高
