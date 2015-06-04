@@ -79,7 +79,7 @@ function is_weixin(){
 }
 
 //confirmbox
-$.getItem('/static/items/confirmBox.html?v=201503-29',function(data){window.dataObj.confirmBox=data});
+$.getItem('/static/items/confirmBox.html?v=20150530',function(data){window.dataObj.confirmBox=data});
 $.confirmBox=function(text,index,type){
         var $box=$(window.dataObj.confirmBox);
         $box.find('.message').text(text);
@@ -107,7 +107,7 @@ $.confirmRemove=function(){
     $('.modal_bg').remove();
 }
 //word notice
-$.getItem('/static/items/noticeBox.html?v=2015-03-25',function(data){
+$.getItem('/static/items/noticeBox.html?v=20150530',function(data){
     window.dataObj.noticeBox=data;
      var $box=$(window.dataObj.noticeBox);   
     $('body').append($box);

@@ -34,7 +34,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .img-devide{display: inline-block;height: 100%;width: 0;vertical-align: middle;*zoom: 1;*display:inline;}
 
 .admin-shop-right .shop-list{padding-left:20px;}
-.list-group-item{border:1px solid #ddd;margin-left:0;margin-right:0;margin-bottom:20px;padding:10px;}
+.list-group-item{border:1px solid #e7e7eb;margin-left:0;margin-right:0;margin-bottom:20px;padding:10px;}
 .admin-shop-right .shop-list li .shop-img{display:inine-block;}
 .admin-shop-right .shop-list li .shop-img img{width:60px;height:60px;}
 .admin-shop-right .shop-list li a{color:#333;}
@@ -48,8 +48,8 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .tit2{display:inline-block;width:200px;}
 .tit1{display:inline-block;width:250px;}
 .tit3{display:inline-block;width:330px;}
-.bottom-d{border-bottom:1px solid #ddd;}
-.boder-rd{border-right:1px solid #ddd;}
+.bottom-d{border-bottom:1px solid #e7e7eb;}
+.boder-rd{border-right:1px solid #e7e7eb;}
 .show-info{width:100%;padding-bottom:10px;}
 .action-box{width:400px;height:40px;}
 .action-box .btn{height:30px;line-height:30px;width:40%;padding:0px;}

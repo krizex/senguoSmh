@@ -92,6 +92,9 @@ fruit_types = [{'id': 1, 'name': '梨子', 'code': 'Li'},
                {'id': 1018, 'name': '甜角','code':'tianjiao'},
                {'id': 1019, 'name': '干桂圆','code':'ganguiyuan'},
                {'id': 1020, 'name': '榛子','code':'zhenzi'},
+               {'id': 1021, 'name': '枸杞','code':'gouqi'},
+               {'id': 1022, 'name': '杏干','code':'xinggan'},
+               {'id': 1023, 'name': '无花果干','code':'wuhuaguogan'},
 ]
 
 charge_types = [

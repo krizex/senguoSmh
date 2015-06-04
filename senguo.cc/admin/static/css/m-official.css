@@ -8,7 +8,7 @@ a:hover{text-decoration:none;}
 a:focus{text-decoration: none}
 a:focus{outline:none;}
 div:after {content: '\20'; display: block; height: 0; clear: both; visibility: hidden;}
-body{font-size:1em;font-family:'Microsoft YaHei',\5b8b\4f53,Arial,sans-serif;}
+body{font-size:1em;font-family:'Microsoft YaHei',\5b8b\4f53,Arial,sans-serif;-webkit-font-smoothing:antialiased;}
 div,span,ul,li,p{-webkit-user-select:none;}
 .bg-green{background:#80E07F;}
 .bg-red{background:#FA6254;}

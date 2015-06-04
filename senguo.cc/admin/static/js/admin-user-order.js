@@ -1,7 +1,7 @@
 $(document).ready(function(){
-    var item_url='/static/items/admin/order-item.html?v=2015-05-28';
+    var item_url='/static/items/admin/order-item.html?v=20150530';
     //订单数据
-    if(orders.length==0) $('.order-list-content').append('<h3 class="text-center">无订单信息！</h3>');
+    if(orders.length==0) $('.order-list-content').append('<h4 class="text-center mt40">当前分类暂无订单信息</h3>');
     else getOrder(item_url);
     //隐藏信息显示
     toggle('.order-content','.list-item-body');
@@ -81,14 +81,14 @@ $(document).ready(function(){
     var $this=$(this);
     $this.toggleClass('checked').toggleClass('order-checked');
 }).on('click','#batch-send',function(){
-     var $this=$(this);
-    if(confirm('是否批量开始配送该订单?')){
+    var $this=$(this);
+    if(confirm('提示：批量配送订单将全部分配给默认配送员，您可以在批量配送后再到“配送中”的订单中单独指定配送员。\n是否批量开始配送该订单？')){
         orderEdit($this,'batch_edit_status',4);
     }
 }).on('click','#batch-finish',function(){
-     var $this=$(this);
-      if(confirm('是否批量完成订单?')){
-       orderEdit($this,'batch_edit_status',5); 
+    var $this=$(this);
+    if(confirm('是否批量完成订单?')){
+    orderEdit($this,'batch_edit_status',5); 
     }
 }).on('click','#batch-print',function(){
     orderPrint($(this),'batch_print'); //订单打印
@@ -104,9 +104,9 @@ function getOrder(url){
     $.getItem(url,function(data){
             $list_item=data;
             //商品列表item
-    	    getGoodsItem('/static/items/admin/order-goods-item.html?v=2015-05-22');
+    	    getGoodsItem('/static/items/admin/order-goods-item.html?v=20150530');
     	    //员工列表item
-    	    getStaffItem('/static/items/admin/order-staff-item.html?v=2015-03-22');
+    	    getStaffItem('/static/items/admin/order-staff-item.html?v=20150530');
             orderItem(orders);
         }
     );
@@ -371,7 +371,7 @@ function orderPrint(target,action){
             var saler_remark=parent.find('.order_remark').text(); 
             var user_remark=parent.find('.message-content').text();
 
-            $.getItem('/static/items/admin/order-print-page.html?v=2015-05-14',function(data){
+            $.getItem('/static/items/admin/order-print-page.html?v=20150530',function(data){
                 var $item=$(data);
                 $item.find('.notes-head').text(shop_name);
                 $item.find('.orderId').text(order_num);
@@ -441,7 +441,7 @@ function orderEdit(target,action,content){
     var data;
     var args;
     if(action=='edit_status'||action=='edit_SH2'){
-       parent=target.parents('.order-list-item');	
+        parent=target.parents('.order-list-item');	
     }
     else {
         parent=target.parents('.order_set_box');
@@ -466,7 +466,7 @@ function orderEdit(target,action,content){
     }
     else if(action=='edit_totalPrice')
     {
-       if(!regFloat.test(content)) return Tip('订单总价只能为数字！');
+        if(!regFloat.test(content)) return Tip('订单总价只能为数字！');
         data.totalPrice=content;
         var index=parent.attr('data-target');
     }
@@ -526,7 +526,7 @@ function orderEdit(target,action,content){
 			parent.find('.status_finish').addClass('hidden');
                                         target.attr({'disabled':true}).text('配送中');
                                         parent.find('.check').removeClass('order-check');
-		  }
+		}
             	               else if(content==5) {
             			parent.find('.status_finish').removeClass('hidden');
               	             parent.find('.status_order').addClass('hidden');

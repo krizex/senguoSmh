@@ -10,7 +10,7 @@ from dal.dis_dict import dis_dict
 from libs.msgverify import gen_msg_token,check_msg_token
 import requests
 import base64
-
+import decimal
 
 # 登陆处理
 class Access(AdminBaseHandler):
@@ -183,9 +183,15 @@ class SwitchShop(AdminBaseHandler):
 			shop.satisfy = satisfy
 			shop.comment_count = comment_count
 			shop.goods_count = fruit_count+mgoods_count	
-			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()	
+			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()
+			shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100)
 			shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
+			total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id).filter( or_(models.Order.status ==5,models.Order.status ==6 )).all()[0][0]
 			shop.total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id ,status =6).all()[0][0]
+			if total_money:		
+				shop.total_money = format(total_money,'.2f')
+			else:		
+				shop.total_money=0
 			shop.address = self.code_to_text("shop_city", self.current_shop.shop_city) +" " + self.current_shop.shop_address_detail
 			shop_list.append(shop.safe_props())
 		return shop_list
@@ -671,7 +677,7 @@ class Order(AdminBaseHandler):
 		delta = datetime.timedelta(1)
 		# print("[订单管理]当前店铺：",self.current_shop)
 		for order in orders:
-			order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
+			order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id',
 										 'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
@@ -680,6 +686,7 @@ class Order(AdminBaseHandler):
 			d["sent_time"] = order.send_time
 			info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
 			d["nickname"] = info.accountinfo.nickname
+			d["customer_id"] = order.customer_id
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
 				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id,models.HireLink.active == 1)).all()
 			d["shop_new"] = 0
@@ -701,7 +708,7 @@ class Order(AdminBaseHandler):
 						   count=self._count(),page_sum=page_sum, context=dict(subpage='order'))
 
 
-	def edit_status(self,order,order_status):
+	def edit_status(self,order,order_status,send_message=True):
 		if order_status == 4:
 			order.update(self.session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
 		elif order_status == 5:
@@ -734,8 +741,8 @@ class Order(AdminBaseHandler):
 			phone = order.phone
 			address = order.address_text
 			# print("ready to send message")
-
-			WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone,address) 
+			if send_message:
+				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone,address)
 		if order_status == 5:
 			now = datetime.datetime.now()
 			order.arrival_day = now.strftime("%Y-%m-%d")
@@ -992,27 +999,47 @@ class Order(AdminBaseHandler):
 
 			elif action == "print":
 				order.update(session=self.session, isprint=1)
+
 		elif action == "batch_edit_status":
 			order_list_id = data["order_list_id"]
 			notice = ''
-			for key in order_list_id:	
+			count=0
+			for key in order_list_id:
 				order = next((x for x in self.current_shop.orders if x.id==int(key)), None)
 				if order.status == 4 and data['status'] ==4:
-					notice = "订单"+str(order.num)+"订单已在配送中,请不要重复操作"
+					notice = "订单"+str(order.num)+"订单已在配送中，请不要重复操作"
 					return self.send_fail(notice)
 				if order.status == 5 and data['status'] ==5:
-					notice = "订单"+str(order.num)+"已完成,请不要重复操作"
+					notice = "订单"+str(order.num)+"已完成，请不要重复操作"
 					return self.send_fail(notice)
 				if order.status in[5,6,10]:
-					notice = "订单"+str(order.num)+"已完成,请不要重复操作"
+					notice = "订单"+str(order.num)+"已完成，请不要重复操作"
 					return self.send_fail(notice)
 				if not order:
 					notice = "没找到订单",order.onum
 					return self.send_fail(notice)
-				self.edit_status(order,data['status'])
+				self.edit_status(order,data['status'],False)
+				count += 1
+			if count > 0:
+				shop_id = self.current_shop.id
+				staff_info = []
+				try:
+					staff_info = self.session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id)\
+					.filter(models.HireLink.shop_id == shop_id,models.HireLink.default_staff == 1).first()
+				except:
+					print("didn't find default staff")
+				if staff_info:
+					openid = staff_info.wx_openid
+					staff_name = staff_info.nickname
+				else:
+					openid = self.current_shop.admin.accountinfo.wx_openid
+					staff_name = self.current_shop.admin.accountinfo.nickname
+				shop_name = self.current_shop.shop_name
+				WxOauth2.post_batch_msg(openid,staff_name,shop_name,count)
+
 		elif action == "batch_print":
 			order_list_id = data["order_list_id"]
-			for key in order_list_id:	
+			for key in order_list_id:
 				order = next((x for x in self.current_shop.orders if x.id==int(key)), None)
 				if not order:
 					return self.send_fail("没找到订单",order.onum)
@@ -1159,7 +1186,7 @@ class Shelf(AdminBaseHandler):
 					fruit.update(session=self.session, active = 1)
 			elif action == "edit_fruit":
 				if len(data["intro"]) > 100:
-					return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
+					return self.send_fail("商品简介不能超过100字噢亲，再精简些吧！")
 				fruit.update(session=self.session,
 												name = data["name"],
 												saled = data["saled"],
@@ -1208,7 +1235,7 @@ class Shelf(AdminBaseHandler):
 					mgoods.update(session=self.session, active = 1)
 			elif action == "edit_mgoods":
 				if len(data["intro"]) > 100:
-					return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
+					return self.send_fail("商品简介不能超过100字噢亲，再精简些吧！")
 				mgoods.update(session=self.session,
 												name = data["name"],
 												saled = data["saled"],
@@ -1254,7 +1281,7 @@ class Follower(AdminBaseHandler):
 		count = 0
 		page_sum = 0
 		shop_id = self.current_shop.id
-		if action in ("all", "old","charge"):
+		if action in ("all","old","charge"):
 			if action == "all":  # 所有用户
 				q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id)
@@ -1274,23 +1301,35 @@ class Follower(AdminBaseHandler):
 			count = q.count()
 			customers = q.offset(page*page_size).limit(page_size).all()
 
-		elif action == "search":  # 用户搜索，支持根据手机号/真名/昵称搜索
+		# Modify by Sky - 2015.6.1
+		# 用户搜索，支持根据手机号/真名/昵称搜索，支持关键字模糊搜索，支持收件人搜索
+		# TODO:搜索性能需改进
+		elif action == "search":  
 			wd = self.args["wd"]
-			if wd.isdigit():  # 判断是否为纯数字，纯数字就按照手机号搜索
-				customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(models.Accountinfo.phone == int(wd)).all()
-			else:  # 按照名字搜索
-				customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),
-														models.Accountinfo.realname.like("%%%s%%" % wd))).all()
+
+			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+				filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+				join(models.Accountinfo).filter(or_(models.Accountinfo.phone.like("%%%s%%" % wd),
+													models.Accountinfo.id.like("%%%s%%" % wd),
+													models.Accountinfo.nickname.like("%%%s%%" % wd),
+													models.Accountinfo.realname.like("%%%s%%" % wd))).all()
+			customers += self.session.query(models.Customer).join(models.CustomerShopFollow).\
+				filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+				join(models.Address).filter(or_(models.Address.phone.like("%%%s%%" % wd),
+												models.Address.receiver.like("%%%s%%" % wd))).all()
+
+			customer_list=[]
+			for customer in customers:
+				if customer not in customer_list:
+					customer_list.append(customer)
+			customers = customer_list
+
+					
 		elif action =="filter":
 			wd = self.args["wd"]
-			d["customer_id"] = base64.b64decode(wd)
 			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).first()
+					join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).all()
 		else:
 			return self.send_error(404)
 		for x in range(0, len(customers)):  #
@@ -1332,7 +1371,7 @@ class Staff(AdminBaseHandler):
 		action = self.args["action"]
 		staffs = self.current_shop.staffs
 		if action == "hire":
-			hire_forms = self.session.query(models.HireForm).filter_by(shop_id=self.current_shop.id).all()
+			hire_forms = self.session.query(models.HireForm).filter_by(shop_id=self.current_shop.id ).filter(models.HireForm.work!=9).all()
 			return self.render("admin/staff.html", hire_forms=hire_forms,
 							   context=dict(subpage='staff',staffSub='hire'))
 		query = self.session.query(models.ShopStaff, models.HireLink).join(models.HireLink).filter(
@@ -1481,13 +1520,14 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 		data = []
 		delta = datetime.timedelta(1)
 		for order in orders:
-			order.__protected_props__ = ['customer_id', 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
+			order.__protected_props__ = [ 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
 										 'comment_create_date', 'start_time', 'end_time', 'create_date']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
 			d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["send_time"] = order.send_time
+			d["customer_id"] = order.customer_id
 
 			#yy
 			d["shop_new"] = 0
@@ -1610,6 +1650,8 @@ class Config(AdminBaseHandler):
 				active = 1
 			self.current_shop.config.update(session=self.session,receipt_img_active=active)
 		elif action == "cash_on":
+			if self.current_shop.shop_auth ==0:
+				return self.send_fail('您的店铺还未认证，不能使用该功能')
 			active = self.current_shop.config.cash_on_active
 			if active == 1:
 				active = 0
@@ -1617,6 +1659,8 @@ class Config(AdminBaseHandler):
 				active = 1
 			self.current_shop.config.update(session=self.session,cash_on_active=active)
 		elif action == "balance_on":
+			if self.current_shop.shop_auth ==0:
+				return self.send_fail('您的店铺还未认证，不能使用该功能')
 			active = self.current_shop.config.balance_on_active
 			balance_on_active =self.current_shop.config.balance_on_active
 			shop_balance = self.current_shop.shop_balance
@@ -1629,10 +1673,10 @@ class Config(AdminBaseHandler):
 				active = 0
 			else:
 				active = 1
-			self.current_shop.config.update(session=self.session,balance_on_active=active)
-			
-
+			self.current_shop.config.update(session=self.session,balance_on_active=active)	
 		elif action == "online_on":
+			if self.current_shop.shop_auth ==0:
+				return self.send_fail('您的店铺还未认证，不能使用该功能')
 			active = self.current_shop.config.online_on_active
 			if active == 1:
 				active = 0
@@ -1640,6 +1684,8 @@ class Config(AdminBaseHandler):
 				active = 1
 			self.current_shop.config.update(session=self.session,online_on_active=active)
 		elif action =="text_message_on":
+			if self.current_shop.shop_auth ==0:
+				return self.send_fail('您的店铺还未认证，不能使用该功能')
 			active = self.current_shop.config.text_message_active
 			if active == 1:
 				active = 0
@@ -1662,9 +1708,14 @@ class Config(AdminBaseHandler):
 				data.append({'imgurl':info.headimgurl_small,'nickname':info.nickname,'id':info.id})
 				return self.send_success(data=data)
 		elif action =="add_admin":
+			if self.current_shop.shop_auth ==0:
+				return self.send_fail('您的店铺还未认证，不能使用该功能')
 			if self.current_shop.admin.id !=self.current_user.id:
 				return self.send_fail('您没有添加管理员的权限')
 			_id = int(self.args["data"]["id"])
+			if_shop = self.session.query(models.Shop).filter_by(admin_id =_id).first()
+			if if_shop:
+				return self.send_fail('该用户已是其它店铺的超级管理员，不能添加其为管理员')
 			admin_count = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,active = 1,work=9).count()
 			if admin_count == 3:
 				return self.send_fail('至多可添加三个管理员')
@@ -1684,6 +1735,8 @@ class Config(AdminBaseHandler):
 					self.session.add(staff_temp)
 				if hire_form:
 					hire_form.work = 9
+					hire_form.status = 2
+					hire_form.create_time = datetime.datetime.now()
 				else:
 					#生成一张临时管理员 申请表
 					admin_temp = models.HireForm(
@@ -1777,11 +1830,12 @@ class AdminAuth(AdminBaseHandler):
 			message_name = account_info.nickname
 			mobile = account_info.phone
 			message_shop_name = self.current_shop.shop_name
-			print(mobile)
-			normal_admin = models.ShopAdmin(id = account_info.id,role=3,privileges = 2)
-			self.session.add(normal_admin)
-			self.session.commit()
-			message_content ='尊敬的{0}，您好，被{1}添加为管理员'.format(message_name,message_shop_name)
+			normal_admin = self.session.query(models.ShopAdmin).filter_by(id = account_info.id).first()
+			if not normal_admin:
+				normal_admin = models.ShopAdmin(id = account_info.id,role=3,privileges = 2)
+				self.session.add(normal_admin)
+				self.session.commit()
+			message_content ='尊敬的{0}，您好，被{1}添加为管理员！'.format(message_name,message_shop_name)
 			postdata = dict(account='cf_senguocc',
 				password='sg201404',
 				mobile=mobile,
@@ -1829,7 +1883,7 @@ class ShopBalance(AdminBaseHandler):
 				apply_value = format(0,'.2f')
 
 		except:
-			print('apply_cash error')
+			print("[提现申请]提现申请错误")
 			
 		if shop_auth in [1,2,3,4]:
 			show_balance = True
@@ -2081,7 +2135,7 @@ class ShopConfig(AdminBaseHandler):
 			shop.shop_code = data["shop_code"]
 		elif action == "edit_shop_intro":
 			shop.shop_intro = data["shop_intro"]
-# woody 2015.3.5
+		# woody 2015.3.5
 		elif action == "edit_phone":
 			shop.shop_phone = data["shop_phone"]
 		elif action == "edit_address":

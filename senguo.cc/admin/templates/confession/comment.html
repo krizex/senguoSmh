@@ -13,7 +13,7 @@
 <div class="bg-white confess-info" data-code="{{shop_code}}" data-id="{{confess[0]['id']}}">
 	<div class="mt50 group info">
 		<div class="fl img">
-			<img src="{{confess[0]['imgurl']}}">
+			<img src="{{confess[0]['imgurl'] or '/static/images/TDSG.png'}}">
 		</div>
 		<div class="fl other ml10">
 			<p class="font14 text-pink">{{confess[0]['user']}}</p>

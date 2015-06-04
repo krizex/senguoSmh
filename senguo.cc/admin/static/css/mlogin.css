@@ -19,7 +19,7 @@
 .progress_box li{}
 .progress_box .active{color:#80de9e;}
 .rule_box{line-height:14px;}
-.rule_box .check_btn{display:inline-block;width:15px;height:15px;background-size:15px !important;margin-right:5px;border:1px solid #ddd;background:#fff;}
+.rule_box .check_btn{display:inline-block;width:15px;height:15px;background-size:15px !important;margin-right:5px;border:1px solid #e7e7eb;background:#fff;}
 .rule_box .checked{background:url('/static/images/check_checked.png') no-repeat;}
 
 .regist_bottom{padding:20px;position:fixed;bottom:20px;width:100%;min-width:320px;max-width:800px;}

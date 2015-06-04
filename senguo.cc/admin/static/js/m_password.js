@@ -142,7 +142,7 @@ function pwdRest(target){
             if(res.success)
             {
                 noticeBox('密码重置成功',target);
-                window.location.href=window.history.go(-1);
+                window.location.href='/customer/profile';
                 $('#passwordRest').removeAttr('disabled').removeClass('bg-grey');
             }
             else {

@@ -244,16 +244,20 @@ class _AccountApi(_CommonApi):
 	def register_with_wx(cls, session, wx_userinfo):
 		# 判断是否在本账户里存在该用户
 		u = cls.login_by_unionid(session, wx_userinfo["unionid"])
-		print("[微信登录]用户登录")
+		print("[微信登录]用户登录，昵称：",wx_userinfo["nickname"])
 		if u:
 			# 已存在用户，则更新微信信息
 			print("[微信登录]用户存在，更新用户资料")
 			u.accountinfo.wx_country=wx_userinfo["country"]
 			u.accountinfo.wx_province=wx_userinfo["province"]
 			u.accountinfo.wx_city=wx_userinfo["city"]
-			u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
-			u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
-			#u.accountinfo.nickname = wx_userinfo["nickname"]
+			if wx_userinfo["headimgurl"] not in [None,'']:
+				u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
+				u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+			else:
+				u.accountinfo.headimgurl=None
+				u.accountinfo.headimgurl_small = None
+			u.accountinfo.nickname = wx_userinfo["nickname"]
 
 			#####################################################################################
 			# update wx_openid
@@ -287,14 +291,19 @@ class _AccountApi(_CommonApi):
 		
 		# 基本账户中不存在，先创建基本信息，再添加到该用户账户中去
 		print("[微信登录]用户不存在，注册为新用户")
-		headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+		if wx_userinfo["headimgurl"] not in [None,'']:
+			headimgurl = wx_userinfo["headimgurl"]
+			headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+		else:
+			headimgurl = None
+			headimgurl_small = None
 		account_info = Accountinfo(
 			wx_unionid=wx_userinfo["unionid"],
 			wx_openid=wx_userinfo["openid"],
 			wx_country=wx_userinfo["country"],
 			wx_province=wx_userinfo["province"],
 			wx_city=wx_userinfo["city"],
-			headimgurl=wx_userinfo["headimgurl"],
+			headimgurl=headimgurl,
 			headimgurl_small = headimgurl_small,
 			nickname=wx_userinfo["nickname"],
 			sex = wx_userinfo["sex"])

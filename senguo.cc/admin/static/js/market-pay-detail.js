@@ -39,6 +39,7 @@ $(document).ready(function(){
     removeDom();
 }).on("click","#cancel-order",function(){
     confirmBox('确认取消该订单吗？//(ㄒoㄒ)//',"sure-order");
+    $('.confriming').attr('id','sure-order');
 }).on("click","#sure-order",function(){
     var order_id = $("#cancel-order").attr("data-id");
     cancelOrder(order_id);
@@ -114,7 +115,7 @@ function statusText(n){
 }
 function cancelOrder(id){
     var order_id = id;
-    var url='';
+    var url='/customer/orders';
     var action='cancel_order';
     var data={
         order_id:order_id

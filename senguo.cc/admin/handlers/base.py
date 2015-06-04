@@ -92,11 +92,14 @@ class GlobalBaseHandler(BaseHandler):
 		if hasattr(self, "_session"):
 			return self._session
 		self._session = models.DBSession()
+		# print("DB session open !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		return self._session
 
 	def on_finish(self):
 		# release db connection
+		# print("DB session on_finish =========================================================")
 		if hasattr(self, "_session"):
+			# print("DB session close!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			self._session.close()
 
 	def timestamp_to_str(self, timestamp):
@@ -295,7 +298,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			para_str = "?next="+tornado.escape.url_escape(next_url)
 		else:
 			para_str = ""
-		print('login in get_weixin_oauth_url',self,next_url)
+		# print("[微信授权]跳转链接：",next_url)
 
 		if self.is_wexin_browser():
 			if para_str: para_str += "&"
@@ -368,15 +371,16 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 		user_id = self.get_secure_cookie(self.__account_cookie_name__) or b'0'
 		user_id = int(user_id.decode())
-		print("[用户信息]当前用户ID：",user_id)
+		# print("[用户信息]当前用户ID：",user_id)
 		# print(type(self))
 		# print(self.__account_model__)
 
 		if not user_id:
 			self._user = None
 		else:
-			print(user_id,'get_current_user: user_id')
+			# print(user_id,'get_current_user: user_id')
 			self._user = self.__account_model__.get_by_id(self.session, user_id)
+			# print(self._user,"self._user")
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:
 				Logger.warn("Suspicious Access", "may be trying to fuck you")
@@ -1061,11 +1065,11 @@ class WxOauth2:
 				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
 			"topcolor": "#FF0000",
 			"data": {
-				"first": {"value": "您好，您所申请的店铺“%s”已经通过审核！" % shop_name, "color": "#173177"},
+				"first": {"value": "您好，您所申请的店铺『%s』已经通过审核！" % shop_name, "color": "#173177"},
 				"keyword1": {"value": name, "color": "#173177"},
 				"keyword2": {"value": phone, "color": "#173177"},
 				"keyword3": {"value": time, "color": "#173177"},
-				"remark": {"value": "务必点击详情，查看使用教程！", "color": "#FF4040"}}
+				"remark": {"value": "请务必点击详情，查看使用教程！", "color": "#FF4040"}}
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
@@ -1085,7 +1089,7 @@ class WxOauth2:
 				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
 			"topcolor": "#FF0000",
 			"data": {
-				"first": {"value": "您好，您所申请的店铺“%s”未通过审核！" % shop_name, "color": "#173177"},
+				"first": {"value": "您好，您所申请的店铺『%s』未通过审核。" % shop_name, "color": "#173177"},
 				"keyword1": {"value": name, "color": "#173177"},
 				"keyword2": {"value": phone, "color": "#173177"},
 				"keyword3": {"value": time, "color": "#173177"},
@@ -1112,8 +1116,8 @@ class WxOauth2:
 				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
 			"topcolor": "#FF0000",
 			"data": {
-				"first": {"value": "您好，“%s”" % name, "color": "#173177"},
-				"keyword1": {"value": "您被 “%s”添加为管理员！" % shop_name, "color": "#173177"},
+				"first": {"value": "您好，%s" % name, "color": "#173177"},
+				"keyword1": {"value": "您被『%s』添加为管理员！" % shop_name, "color": "#173177"},
 				"keyword3": {"value": time, "color": "#173177"},
 				}
 		}
@@ -1155,7 +1159,7 @@ class WxOauth2:
 		if data["errcode"] != 0:
 			print("[模版消息]发送给管理员失败：",data)
 			return False
-		print("[模版消息]发送给管理员成功")
+		# print("[模版消息]发送给管理员成功")
 		return True
 
 	@classmethod
@@ -1167,7 +1171,7 @@ class WxOauth2:
 			   + "送货地址：" + address  +'\n\n'\
 			   + "请及时配送订单。"
 		order_type_temp = int(order_type)
-		order_type = "即时送" if order_type_temp == 1 else "按时达"
+		order_type = "立即送" if order_type_temp == 1 else "按时达"
 		postdata = {
 			'touser':touser,
 			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
@@ -1188,7 +1192,32 @@ class WxOauth2:
 		if data["errcode"] != 0:
 			print("[模版消息]发送给配送员失败：",data)
 			return False
-		print("[模版消息]发送给配送员成功")
+		# print("[模版消息]发送给配送员成功")
+		return True
+
+	@classmethod
+	def post_batch_msg(cls,touser,staff_name,shop_name,count):
+		postdata = {
+			'touser':touser,
+			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
+			'url':staff_order_url,
+			"data":{
+				"first":{"value":"配送员 {0} 您好，店铺『{1}』有 {2} 个新的订单需要配送。".format(staff_name,shop_name,count),"color": "#173177"},
+				"tradeDateTime":{"value":"批量信息","color":"#173177"},
+				"orderType":{"value":"批量信息","color":"#173177"},
+				"customerInfo":{"value":"批量信息","color":"#173177"},
+				"orderItemName":{"value":"订单编号","color":"#173177"},
+				"orderItemData":{"value":"批量信息","color":"#173177"},
+				"remark":{"value":"\n有多个订单需要配送，具体信息请点击详情进入查看。","color":"#173177"},
+			}
+		}
+		access_token = cls.get_client_access_token()
+		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
+		data = json.loads(res.content.decode("utf-8"))
+		if data["errcode"] != 0:
+			print("[模版消息]发送给配送员失败：",data)
+			return False
+		# print("[模版消息]发送给配送员成功")
 		return True
 
 
@@ -1215,8 +1244,7 @@ class WxOauth2:
 		if data["errcode"] != 0:
 			print("[模版消息]发送给客户失败：",data)
 			return False
-		print("[模版消息]发送给客户成功")
-		# print('order send SUCCESS')
+		# print("[模版消息]发送给客户成功")
 		return True
 
 	@classmethod

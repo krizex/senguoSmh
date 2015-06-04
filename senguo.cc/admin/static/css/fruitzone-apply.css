@@ -32,8 +32,8 @@
 .apply-box  .area-select a:hover{color:#333;}
 .apply-box  .area-select a:focus{color:#333;}
 
-.apply-box  .use-limit{width:100%;float:left;margin-top:10px;border:1px solid #ddd;}
-.apply-box  .use-limit li{width:100%;float:left;border-bottom:1px solid #ddd;border-left:4px solid #fff;}
+.apply-box  .use-limit{width:100%;float:left;margin-top:10px;border:1px solid #e7e7eb;}
+.apply-box  .use-limit li{width:100%;float:left;border-bottom:1px solid #e7e7eb;border-left:4px solid #fff;}
 .apply-box  .use-limit li a{display:block;color:#666;height:3em;text-indent:1em;line-height:3em;}
 .apply-box  .use-limit .active{border-left:4px solid #80e0a0;}
 .apply-box  .use-limit .active a{color:#80e0a0;}
