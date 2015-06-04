@@ -1606,9 +1606,8 @@ class Goods(AdminBaseHandler):
 			defatult_count = goods.filter_by(group_id=0).count()
 			record_count = goods.filter_by(group_id=1000).count()
 			group_priority = current_shop.group_priority.split('"')
-			d = group_priority[0].replace("'","").replace("'","")
-			print(d)
-			print(type(d))
+			print(current_shop.group_priority)
+			print(eval(current_shop.group_priority))
 			i=0
 			for n in range(len(data)):
 				for g in data:
