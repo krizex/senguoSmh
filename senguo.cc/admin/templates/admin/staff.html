@@ -85,7 +85,7 @@
                 </div>
                 <a class="default-staff stop-mode pull-left ml20 forbid_click" href="javascript:;" data-id="{{staff.hirelink.default_staff}}"> 默认员工</a>
                 <div class="staff-personal pull-left">
-                    <img src="{{staff.accountinfo.headimgurl_small}}" class="staff-img pull-left"/>
+                    <img src="{{staff.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}" class="staff-img pull-left"/>
                     <div class="info pull-right">
                         <p>
                             <span>{{staff.accountinfo.realname or '无名氏'}}</span>
@@ -160,7 +160,7 @@
                 <span class="text-white hire-status btn-style pull-left bg-grey">未通过</span>
                 {% end %}
                 <div class="staff-personal pull-left">
-                    <img src="{{form.staff.accountinfo.headimgurl_small}}" class="staff-img pull-left"/>
+                    <img src="{{form.staff.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}" class="staff-img pull-left"/>
                     <div class="info pull-right">
                         <p>{{form.staff.accountinfo.realname}}</p>
                         <p>{{form.staff.accountinfo.phone}}</p>
