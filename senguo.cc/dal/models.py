@@ -1329,7 +1329,7 @@ class Fruit(MapBase, _CommonApi):
 	saled = Column(Integer) #销量
 	storage = Column(Float)
 	favour = Column(Integer, default=0)  # 赞
-	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
+	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份 4:kg 5:克 6:升 7:箱 8:盒 9:件 10:框 11:包
 	tag = Column(TINYINT, default=TAG.NULL) #标签
 	img_url = Column(String(500))
 	intro = Column(String(100))
