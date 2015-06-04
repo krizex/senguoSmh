@@ -57,9 +57,9 @@ dict(
 dict(
     unionid = "oxkR_jgG6YuVSOUlolJ1OpCPxkAk",
     openid  = "o5SQ5tzZi_MCZLOTq1av4163bIrM",
-    country = "CN",
-    province= "Jiangxi",
-    city    = "Nanchang",
+    country = "中国",
+    province= "江西",
+    city    = "南昌",
     headimgurl = "http://wx.qlogo.cn/mmopen/XiaNUE39hM3U4wTdKibz3icnYURFa7ia3W5h9j0yiaXWUyx3jxmjib3w2ibiaMTem7mRCia9G6uOvKmY6LWKvujMW9vWHxVItVM94xD2N/0",
     nickname = "沿路看风景~",
     sex      = 2),
