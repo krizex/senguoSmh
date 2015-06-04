@@ -27,7 +27,7 @@
 	<p class="font14 mb10">你的信息：</p>
 	<div class="p-box2 group bg-white mb10">
 		<div class="left fl txt-ac">
-			<img src="{{current_user.accountinfo.headimgurl_small}}" class="img">
+			<img src="{{current_user.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}" class="img">
 		</div>
 		<div class="right fl">
 			<span>{{current_user.accountinfo.nickname}}</span>

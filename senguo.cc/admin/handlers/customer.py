@@ -472,8 +472,12 @@ class WxBind(CustomerBaseHandler):
 			u.accountinfo.wx_province=wx_userinfo["province"]
 			u.accountinfo.wx_city=wx_userinfo["city"]
 			u.accountinfo.sex=wx_userinfo["sex"]
-			u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
-			u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+			if wx_userinfo["headimgurl"] not in [None,'']:
+				u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
+				u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+			else:
+				u.accountinfo.headimgurl=None
+				u.accountinfo.headimgurl_small = None
 			u.accountinfo.wx_username = wx_userinfo["nickname"]
 			u.accountinfo.nickname = wx_userinfo["nickname"]
 			u.accountinfo.wx_openid = wx_userinfo["openid"]

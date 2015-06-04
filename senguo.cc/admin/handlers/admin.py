@@ -1035,7 +1035,7 @@ class Order(AdminBaseHandler):
 					openid = self.current_shop.admin.accountinfo.wx_openid
 					staff_name = self.current_shop.admin.accountinfo.nickname
 				shop_name = self.current_shop.shop_name
-				WxOauth2.post_batch_msg(openid,staff_name,shop_name,count) 
+				WxOauth2.post_batch_msg(openid,staff_name,shop_name,count)
 
 		elif action == "batch_print":
 			order_list_id = data["order_list_id"]
