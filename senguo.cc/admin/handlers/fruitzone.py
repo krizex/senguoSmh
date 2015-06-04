@@ -207,13 +207,13 @@ class ShopList(FruitzoneBaseHandler):
 					else:
 						shop['distance'] = 9999999
 				shops.sort(key = lambda shop:shop['distance'])
-			print(shops)
 			elif key_word == 3: #满意度最高
 				shops.sort(key = lambda shop:shop['satisfy'],reverse = True)
 			elif key_word == 4: #评价最多
 				shops.sort(key = lambda shop:shop['comment_count'],reverse = True)
 			else:
 				return self.send_fail(error_text = 'key_word error')
+		print(shops)
 		if shops == [] or len(shops)<_page_count:
 			nomore =True
 		return self.send_success(shops=shops,nomore = nomore)
