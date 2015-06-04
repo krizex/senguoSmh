@@ -25,7 +25,6 @@ $(document).ready(function(){
     getData('fruit','color');
     _type = 'fruit';
     _sub_type = 'color';
-    initEditor();
 }).on("click",".all-select-box",function(){
     $(this).toggleClass("checked-box");
     if($(this).hasClass("checked-box")){
@@ -165,7 +164,7 @@ $(document).ready(function(){
     initImgList($item.find(".drag-img-list").children(".img-bo"));
     $(".pop-img-win").hide();
 }).on("click",".show-txtimg",function(){
-    $(".pop-editor").show();
+    initEditor();
 }).on("click",".pop-editor",function(e){
     if($(e.target).closest(".wrap-kindeditor").size()==0){
         $(".pop-editor").hide();
@@ -260,7 +259,7 @@ function dealGoods($item,type){
         imgurl:imgList,
         priority: priority,//排序优先级 没有传0,
         storage: storage,//库存,
-        info: info,//商品简介,
+        intro: info,//商品简介,
         name: name//商品名称,
     };
     if(type == "edit"){
@@ -298,16 +297,13 @@ function initEditGoods($item,index){
     var imgUrls = goods.imgurl;
     if(imgUrls.length==0){
     }else{
+        if(imgUrls.length == 5){
+            $item.find(".show-add-img").addClass("hidden");
+        }
         for(var i=0; i<imgUrls.length; i++){
             var $li = $('<li class="img-bo" data-index="'+i+'" data-rel="'+i+'"><img src="'+imgUrls[i]+'?imageView2/5/w/100/h/100" alt="商品图片" class="image"/><a class="del-img hidden" href="javascript:;">x</a></li>');
             $item.find(".drag-img-list").append($li);
         }
-        imgUrls.each(function(){
-            var index = "img"+$(this).closest("li").attr("data-index");
-            var src = $(this).attr("url");
-            var url = {index:src};
-            imgList.push(url);
-        });
     }
     var price_type = $item.find(".edit-item-right").children(".wrap-add-price");
     var price_list = [];
@@ -379,6 +375,7 @@ function initEditor(){
     $.ajax({url: '/admin/editorTest?action=editor', async: false, success: function(data){
         var token1 = data.token;
         var token = data.res;
+        $(".pop-editor").show();
         editor = KindEditor.create('#kindEditor', {
             uploadJson : 'http://upload.qiniu.com/',
             filePostName : 'file',
