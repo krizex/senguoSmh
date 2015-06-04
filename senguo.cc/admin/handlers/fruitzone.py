@@ -204,6 +204,8 @@ class ShopList(FruitzoneBaseHandler):
 					lon2 = shop['lon']
 					if lat1 and lon1 and lat2 and lon2:
 						shop['distance'] = self.get_distance(lat1,lon1,lat2,lon2)
+					else:
+						shop['distance'] = 0
 				shops.sort(key = lambda shop:shop['distance'])
 			elif key_word == 3: #满意度最高
 				shops.sort(key = lambda shop:shop['satisfy'],reverse = True)
