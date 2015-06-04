@@ -1293,9 +1293,9 @@ class Goods(AdminBaseHandler):
 
 			_unit = d.unit
 			_unit_name = self.getUnit(_unit)
-			data.append({'id':d.id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
+			data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
 				'saled':d.saled,'storage':d.storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'info':intro,'priority':d.priority,\
-				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_name':group_name,\
+				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
 				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name})
 		return data
 
@@ -1353,9 +1353,9 @@ class Goods(AdminBaseHandler):
 			charge_types.append({'id':charge.id,'price':charge.price,'unit':charge.unit,'unit_name':self.unit(charge.unit)\
 				,'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price})
 
-		data.append({'id':d.id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
+		data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
 			'saled':d.saled,'storage':d.storage,'unit':d.unit,'unit_name':self.unit(charge.unit),'tag':d.tag,'imgurl':img_url,'info':intro,'priority':d.priority,\
-			'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_name':group_name,\
+			'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
 			'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name})
 		return data
 	def token(self,token):
@@ -1602,11 +1602,15 @@ class Goods(AdminBaseHandler):
 			else:
 				return self.render("admin/goods-classify.html",context=dict(subpage="goods"))
 		elif action == "group":
-			_group = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1).all()
 			data = []
+			goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id)
+			_group = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1).all()
+			defatult_count = goods.filter_by(group_id=0).count()
+			record_count = goods.filter_by(group_id=1000).count()
 			for g in _group:
-				data.append({'id':g.id,'name':g.name,'intro':g.intro})
-			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data)
+				goods_count = goods.filter_by( group_id = g.id ).count()
+				data.append({'id':g.id,'name':g.name,'intro':g.intro,'num':goods_count})
+			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,defatult_count=defatult_count,record_count=record_count)
 		elif action == "delete":
 			goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,active = 0).all()
 			data = self.getData(goods)
@@ -1627,6 +1631,8 @@ class Goods(AdminBaseHandler):
 	def post(self):
 		action = self.args["action"]
 		data = self.args["data"]
+		current_shop = self.current_shop
+		shop_id = current_shop.id
 		if action == "add_goods":
 			if not (data["charge_types"] and data["charge_types"]):  # 如果没有计价方式、打开market时会有异常
 				return self.send_fail("请至少添加一种计价方式")
@@ -1646,7 +1652,7 @@ class Goods(AdminBaseHandler):
 				args["limit_num"] = data["limit_num"]
 			if data["group_id"]:
 				group_id = int(data["group_id"])
-				_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = self.current_shop.id,status = 1).first()
+				_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = shop_id,status = 1).first()
 				if _group:
 					args["group_id"] = group_id
 				else:
@@ -1656,22 +1662,26 @@ class Goods(AdminBaseHandler):
 			args["intro"] = data["intro"]
 			args["priority"] = data["priority"]
 			args["fruit_type_id"] = data["fruit_type_id"]
-			args["shop_id"] = self.current_shop.id
+			args["shop_id"] = shop_id
 			goods = models.Fruit(**args)
 			for charge_type in data["charge_types"]:
 				goods.charge_types.append(models.ChargeType(price=charge_type["price"],
 										unit=charge_type["unit"],
 										num=charge_type["num"],
-										unit_num=charge_type["unit_num"]))
+										unit_num=charge_type["unit_num"]),
+										market_price=data["market_price"])
 			self.session.add(goods)
 			self.session.commit()
-			_goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,status = 1,fruit_type_id=int(data["type_id"])).order_by(models.Fruit.add_time.desc()).first()
+			_goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,status = 1,fruit_type_id=int(data["type_id"])).order_by(models.Fruit.add_time.desc()).first()
 			goods_new = self.getOneData(_goods)
 			return self.send_success(goods_new=goods_new)
+
 		elif action == "edit_goods_img":
 			return self.send_qiniu_token("fruit", int(data["goods_id"]))
+
 		elif action == "apply_cookie":
 			return self.send_qiniu_token("apply_cookie",int(data["goods_id"]))
+
 		elif action in ["add_charge_type", "edit_active", "edit_goods", "default_goods_img","delete_goods"]:  # fruit_id
 			try:goods = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).one()
 			except:return self.send_error(404)
@@ -1680,11 +1690,12 @@ class Goods(AdminBaseHandler):
 
 			if action == "add_charge_type":
 				# print('num',data["num"],data["unit"],data["price"])
-				charge_type = models.ChargeType(fruit_id=fruit.id,
+				charge_type = models.ChargeType(fruit_id=goods.id,
 								price=data["price"],
 								unit=data["unit"],
 								num=data["num"],
-								unit_num=data["unit_num"])
+								unit_num=data["unit_num"],
+								market_price=data["market_price"],)
 				self.session.add(charge_type)
 				self.session.commit()
 				return self.send_success()
@@ -1742,21 +1753,22 @@ class Goods(AdminBaseHandler):
 				if action == 'batch_on':
 					goods.active = 1
 				elif action == 'batch_off':
-					goods.active = 0
+					goods.active = 2
 				elif action == 'batch_group':
 					goods.group_name = data["group"]
 				self.session.commit()
 
 		elif action =="goods_search":
 			goods_name = data["goods_name"]
-			goods = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id).filter(models.Fruit.name.like("%%%s%%" % goods_name)).all()
+			goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.name.like("%%%s%%" % goods_name)).all()
 			return self.send_success(data=goods)
+
 		elif action =="add_group":
 			args={}
-			args["shop_id"] = self.current_shop.id
+			args["shop_id"] = shop_id
 			args["name"] = data["name"]
 			args["intro"] = data["intro"]
-			groups = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1)
+			groups = self.session.query(models.GoodsGroup).filter_by(shop_id = shop_id,status = 1)
 			group_count = groups.count
 			if group_count == 5:
 				return self.send_fail('至多可添加五中自定义分组！')
@@ -1766,23 +1778,29 @@ class Goods(AdminBaseHandler):
 			self.session.add(_group)
 			self.session.commit()
 			return self.send_success()
-		elif action in["delete_group","group_priority","edit_group"]:
+
+		elif action in["delete_group","edit_group"]:
 			_id = data["id"]
-			_group = self.session.query(models.GoodsGroup).filter_by(id = _id,shop_id = self.current_shop.id,status = 1).first()
+			_group = self.session.query(models.GoodsGroup).filter_by(id=_id,shop_id=shop_id,status=1).first()
 			if _group:
 				if action == "delete_group":
 					_group.status = 0
-					goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,group_id =_id).all()
+					goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=_id).all()
 					for good in goods :
 						good.group_id = 0 
-				elif action == "group_priority":
-					_group.priority = int(data["priority"])
 				elif action =="edit_group":
 					_group.name = data["name"]
 					_group.intro = data["intro"]
 				self.session.commit()
 			else:
 				return self.send_fail('该商品分组不存在或已被删除')
+
+		elif action == "group_priority":
+			groups=self.session.query(models.GoodsGroup).filter_by(shop_id=shop_id,status=1)
+			for d in data:
+				group=groups.filter_by(id=d["id"]).first()
+				group.priority=d["priority"]
+				self.session.commit()
 
 		elif action == "batch_reset_delete":
 			for _id in data["goods_id"]:

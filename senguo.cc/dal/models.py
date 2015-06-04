@@ -561,6 +561,8 @@ class Shop(MapBase, _CommonApi):
 
 	super_temp_active = Column(Integer,default = 1) #1:receive the message from wx 0:do not receive#5.26
 
+	group_priority = Column(String(50))
+
 	def __repr__(self):
 		return "<Shop: {0} (id={1}, code={2})>".format(
 			self.shop_name, self.id, self.shop_code)
