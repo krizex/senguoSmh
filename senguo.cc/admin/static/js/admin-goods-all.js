@@ -196,7 +196,34 @@ $(document).ready(function(){
 //添加商品
 function addGoods($item){
     var url="";
-    var data={'classify':con};
+    var data={
+        group_id: "",//分组id
+        fruit_type_id:"",//类型id
+        charge_types: [
+            {
+                unit_num: "",//换算个数,
+                unit: "",//单位id,
+                num: "",//个数,
+                price: ""//价格,
+            },
+            {
+                unit_num: 1,
+                unit: 3,
+                num: 2,
+                price: 2
+            }
+        ],
+        limit_num: "",//限购数 没有传0,
+        detail_describe: "",//没有传”“,
+        unit: "",//库存单位id,
+        imgurl:[
+                '图片地址1','图片地址2'
+            ],
+        priority: "",//排序优先级 没有传0,
+        storage: "",//库存,
+        info: "",//商品简介,
+        name: ""//商品名称,
+    };
     var args={
         action:'classify_search',
         data:data
