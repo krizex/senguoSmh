@@ -1601,8 +1601,12 @@ class Cart(CustomerBaseHandler):
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}', mgoods='{}')#清空购物车
 
+		
+
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
+			from threading import Timer
+			Timer(10,self.order_cancel_auto,(self.session,order.id,)).start()
 			online_type = self.args['online_type']
 			self.set_cookie('order_id',str(order.id))
 			self.set_cookie('online_totalPrice',str(order.totalPrice))
@@ -1614,8 +1618,19 @@ class Cart(CustomerBaseHandler):
 				success_url = self.reverse_url('onlineAliPay')
 			else:
 				print(online_type,'wx or alipay?')
+			
 			return self.send_success(success_url=success_url,order_id = order.id)
 		return self.send_success(order_id = order.id)
+
+	def order_cancel_auto(self,session,order_id):
+		print("十五分钟之后未支付，订单自动取消",order_id,self)
+		order = session.query(models.Order).filter_by(id = order_id).first()
+		if not order:
+			return self.send_fail('order_cancel_auto:order not found!')
+		if order.status == -1:
+			order.status = 0
+		else:
+			print('order has payed!')
 
 class CartCallback(CustomerBaseHandler):
 
