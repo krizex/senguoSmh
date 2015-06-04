@@ -1,31 +1,25 @@
 <li class="goods-all-item">
-    <p class="all-item-title">添加日期：2015-06-16 15:33:33</p>
+    <p class="all-item-title">添加日期 : <span class="goods-add-time"></span></p>
     <div class="all-item-top edit-item-top">
         <span class="check-box item-checkbox ml10" ></span>
-        <input class="w160" type="text" value="马大会的店铺马大会的店铺"/>
+        <input class="w160 goods-goods-name" type="text" value=""/>
         <div class="iblock goods-group">
             <div class="cate-title mt2">商品分组：</div>
             <div class="dropdown slide-down-select pull-left w130 mt2">
-                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu9" data-toggle="dropdown">
-                    <em title="" class="pull-left">默认分组</em>
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                    <em title="" class="pull-left current-group" data-id="0">默认分组</em>
                     <span class="caret pull-right no-margin-left rotate0"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu19" id="currentShopChange9">
-                    <li  role="presentation">
-                        <a class="item" href="javascript:;">国内水果</a>
-                    </li>
-                    <li  role="presentation">
-                        <a class="item" href="javascript:;">进口水果</a>
-                    </li>
+                <ul class="dropdown-menu dropdown-menu-right w130 group-goods-lst" role="menu" aria-labelledby="dropdownMenu19">
                 </ul>
             </div>
         </div>
-        <span class="txt-box mls c333">库存 : <input type="text" value="3333"/></span>
+        <span class="txt-box mls c333">库存 : <input type="text" class="stock-num" value="0"/></span>
         <div class="iblock short-slide short-title-slide">
             <div class="cate-title mt2 c333">库存单位：</div>
             <div class="dropdown slide-down-select pull-left mt2">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                    <em title="" class="pull-left" id="">kg</em>
+                    <em title="" class="pull-left current-unit"  data-id="4">kg</em>
                     <span class="caret pull-right no-margin-left rotate0"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdown">
@@ -65,11 +59,11 @@
                 </ul>
             </div>
         </div>
-        <span class="switch-btn"><i></i>已<span class="up">上</span><span class="down">下</span>架</span>
+        <span class="switch-btn switch-btn-active"><i></i>已<span class="up">上</span><span class="down">下</span>架</span>
     </div>
     <div class="all-item-cont group">
         <div class="edit-item-left fl">
-            <p class="c333">商品分类:<span class="c333 goods-classify">苹果</span></p>
+            <p class="c333">商品分类:<span class="c333 goods-classify"></span></p>
             <p class="mt10 must c333">商品图片:<span class="c999">第一张为商品封面,可拖拽调整顺序</span></p>
             <ul class="item-img-lst group drag-img-list">
                 <li class="add-img-box">
@@ -78,7 +72,7 @@
             </ul>
             <p class="mt10 c333">商品简介 : </p>
             <div class="wrap-textarea">
-                <textarea></textarea>
+                <textarea class="goods-info"></textarea>
             </div>
             <p>
                 <a class="show-txtimg" href="javascript:;">+商品图文详情</a>
@@ -94,8 +88,8 @@
         </p>
     </div>
     <div class="wrap-more-set">
-        <p><span class="title">商品限购</span> <input type="text" value="9"/> 输入商品限购数量，0为默认不限购</p>
-        <p class="mt8"><span class="title">排序优先级</span> <input type="text" value="9"/> 输入0-9的数字，数字越大，商品排序越靠前</p>
+        <p><span class="title">商品限购</span> <input type="text" class="limit_num" value="0"/> 输入商品限购数量，0为默认不限购</p>
+        <p class="mt8"><span class="title">排序优先级</span> <input type="text" class="goods-priority" value="0"/> 输入0-9的数字，数字越大，商品排序越靠前</p>
     </div>
     <div class="wrap-pop-btn wrap-edit-item">
         <a href="javascript:;" class="ok-btn ok-edit-goods">确定</a>

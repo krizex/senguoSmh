@@ -185,7 +185,7 @@
                 <div class="cate-title mt2 c333">售出单位：</div>
                 <div class="dropdown slide-down-select pull-left mt2">
                     <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                        <em title="" class="pull-left price-unit">kg</em>
+                        <em title="" class="pull-left price-unit" data-id="4">kg</em>
                         <span class="caret pull-right no-margin-left rotate0"></span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu110">
@@ -241,7 +241,7 @@
                 <div class="cate-title mt2">商品分组：</div>
                 <div class="dropdown slide-down-select pull-left w130 mt2">
                     <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                        <em title="{{current_shop.shop_name}}" class="pull-left c333 current-group" data-id="">默认分组</em>
+                        <em class="pull-left c333 current-group" data-id="">默认分组</em>
                         <span class="caret pull-right no-margin-left rotate0"></span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right w130 group-goods-lst" role="menu" aria-labelledby="dropdownMenu18">
@@ -268,9 +268,6 @@
                         <div class="item-goods-detail mt10 group">
                             <span class="item-goods-title fl">商品介绍:</span>
                             <p class="item-goods-txt c333 fl">
-                                撒旦法对所发生的撒旦法对所发生的撒旦法对所发生的
-                                所发生的辅导书斯蒂芬斯蒂芬斯蒂芬森的森的辅导书发生的辅导书
-                                双方的首发事发当时的
                             </p>
                         </div>
                     </dd>
@@ -356,16 +353,18 @@
         <textarea id="kindEditor" class="kindeditor"></textarea>
     </div>
 </div>
-<div class="wrap-unit pop-window">
-    <div class="unit-box">
-        <p><span class="c333 mr10">单位换算</span>需要经过换算，让单位统一，保证库存与销量的统计保持一致</p>
-        <p class="mt10"><input type="text" class="w60 mr10"  placeholder="填整数"/><span id="now-unit" class="c333 mr10">斤</span>=<input type="text" class="ml10 w60 mr10" placeholder="填整数"/> <span id="stock-unit" class="c333">个</span></p>
-        <p class="mt10">换算案例 : 5个苹果，重2斤，则填写 2斤=5个</p>
-        <p class="pl68">1份苹果有3个，则填写1份=3个</p>
-    </div>
-    <div class="wrap-pop-btn">
-        <a href="javascript:;" class="ok-btn">确定</a>
-        <a href="javascript:;" class="cancel-btn">取消</a>
+<div class="pop-win pop-unit">
+    <div class="wrap-unit">
+        <div class="unit-box">
+            <p><span class="c333 mr10">单位换算</span>需要经过换算，让单位统一，保证库存与销量的统计保持一致</p>
+            <p class="mt10"><input type="text" class="w60 mr10" id="first_num" placeholder="填整数"/><span id="now-unit" class="c333 mr10">斤</span>=<input type="text" class="ml10 w60 mr10" id="second_num" placeholder="填整数"/> <span id="stock-unit" class="c333">个</span></p>
+            <p class="mt10">换算案例 : 5个苹果，重2斤，则填写 2斤=5个</p>
+            <p class="pl68">1份苹果有3个，则填写1份=3个</p>
+        </div>
+        <div class="wrap-pop-btn">
+            <a href="javascript:;" class="ok-btn">确定</a>
+            <a href="javascript:;" class="cancel-btn">取消</a>
+        </div>
     </div>
 </div>
 <div class="wrap-big-img">
