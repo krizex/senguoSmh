@@ -8,7 +8,7 @@
     </div>
     <div class="wrap-group-list">
         <ul class="group-lst">
-            <li data-index="0" data-rel="0">
+            <li data-index="0" data-rel="0" data-id="0">
                 <div class="right-link">
                     <a href="javascript:;" class="spread-group">推广分组</a>
                     <div class="sw-er-tip all-position invisible">
@@ -32,7 +32,7 @@
                 <p class="c333"><span class="edit-group-name">默认分组</span>（5）</p>
                 <p class="edit-group-info">若不设置分组，商品会默认进入该分组中</p>
             </li>
-            <li data-index="1" data-rel="1">
+            <li data-index="1" data-rel="1" data-id="1000">
                 <div class="right-link">
                     <a href="javascript:;" class="spread-group">推广分组</a>
                     <div class="sw-er-tip all-position invisible">
@@ -56,9 +56,12 @@
                 <p class="c333">店铺推荐（5）</p>
                 <p>该分组最多加入6个商品，分组排序优先级最高</p>
             </li>
-            <li data-index="2" data-rel="2">
+            {% for d in data %}
+            <li data-index="2" data-rel="2" data-id="{{d['id']}}">
                 <div class="right-link">
+                    <a href="javascript:;" class="del-group">删除分组</a>
                     <a href="javascript:;" class="spread-group">推广分组</a>
+                    <a href="javascript:;" class="edit-group">编辑</a>
                     <div class="sw-er-tip all-position invisible">
                         <div class="top-arr">
                             <span class="line1"></span>
@@ -77,33 +80,10 @@
                         </div>
                     </div>
                 </div>
-                <p class="c333">进口水果（5）</p>
-                <p>该分组全部是进口水果，欢迎选购</p>
+                <p class="c333">{{d['name']}}（5）</p>
+                <p>{{d['intro']}}</p>
             </li>
-            <li data-index="3" data-rel="3">
-                <div class="right-link">
-                    <a href="javascript:;" class="spread-group">推广分组</a>
-                    <div class="sw-er-tip all-position invisible">
-                        <div class="top-arr">
-                            <span class="line1"></span>
-                            <span class="line2"></span>
-                        </div>
-                        <p class="er-text">商品链接</p>
-                        <div class="wrap-ipt">
-                            <input type="text" class="sw-link-txt" value="http://senguo.cc/list" disabled/>
-                            <input type="button" class="sw-link-copy"  id="" value="复制链接"/>
-                        </div>
-                        <div class="wrap-er group">
-                            <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
-                            <div class="er-text lh80 fl">列表二维码</div>
-                            <div class="er-img fl er-code-img">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <p class="c333">本地水果（5）</p>
-                <p>该分组全部是本地水果，欢迎选购</p>
-            </li>
+            {% end %}
         </ul>
     </div>
 </div>
