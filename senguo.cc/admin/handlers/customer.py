@@ -2518,6 +2518,8 @@ class InsertData1(CustomerBaseHandler):
 		for dry in dry_fruits:
 			dry.clssify = 2
 			self.session.commit()
+		shops = self
+		GoodsGroup = models.GoodsGroup()
 		return self.send_success()
 
 
