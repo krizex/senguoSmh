@@ -116,7 +116,7 @@ class GlobalBaseHandler(BaseHandler):
 		"""to弧度
 		"""
 		return d * math.pi / 180.0
-	def get_distance(lat1, lon1, lat2, lon2):
+	def get_distance(self,lat1,lon1,lat2,lon2):
 		"""通过经纬度计算距离
 		"""
 		EARTH_RADIUS = 6378.137
