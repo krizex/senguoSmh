@@ -339,3 +339,40 @@ input{color:#333;text-indent:5px;}
 .links_item {display: inline-block;vertical-align: middle;padding: 0 1em;line-height: 1em;border-left: 1px solid #d9dadc;}
 .links_item:first-child {border-left-width: 0;}
 .ft .links_item a {color: #f1f1f1;}
+/*加载中*/
+.wrap-loading-box{width: 100%;height: 100%;position: fixed;width: 100%;background-color: rgba(0,0,0,.4);top: 0;left: 0;z-index:9999;}
+.loading-box{position: fixed;z-index:9999;top: 50%;left:50%;-webkit-transform:translate(-50%, -50%);display: -webkit-flex;display: flex;-webkit-justify-content: center;justify-content: center;}
+.loading-box .loader {-webkit-align-self: center;align-self: center;width: 99px; text-indent: -9999em;}
+.loading-box .ball {border-radius: 50%;background-color: #fe6a7c;width: 10px; height: 10px;position: absolute;top: 0;left: 0;-webkit-animation: loading 1.2s linear infinite; animation: loading 1.2s linear infinite;}
+.loading-box .ball:nth-of-type(2) {-webkit-animation-delay: 0.4s;animation-delay: 0.4s;}
+.loading-box .ball:nth-of-type(3) {-webkit-animation-delay: 0.8s;animation-delay: 0.8s;}
+@-webkit-keyframes loading {
+    0% {
+        opacity: 0;
+        -webkit-transform: scale(0.5);
+        transform: scale(0.5);
+    }
+    20% {
+        opacity: 1;
+        -webkit-transform: scale(1);
+        transform: scale(1);
+    }
+    40% {
+        -webkit-transform: translate3d(33px, 0, 0);
+        transform: translate3d(33px, 0, 0);
+    }
+    60% {
+        -webkit-transform: translate3d(66px, 0, 0);
+        transform: translate3d(66px, 0, 0);
+    }
+    80% {
+        -webkit-transform: translate3d(99px, 0, 0);
+        transform: translate3d(99px, 0, 0);
+        opacity: 1;
+    }
+    100% {
+        -webkit-transform: translate3d(99px, 0, 0) scale(0.5);
+        transform: translate3d(99px, 0, 0) scale(0.5);
+        opacity: 0;
+    }
+}

@@ -1648,25 +1648,26 @@ class Goods(AdminBaseHandler):
 			if len(data["intro"]) > 100:
 				return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
 			args={}
-			args["fruit_type_id"] = int(data["type_id"])
+			args["fruit_type_id"] = int(data["fruit_type_id"])
 			args["name"] = data["name"]
-			args["saled"] = data["saled"]
 			args["storage"] = data["storage"]
 			args["unit"] = data["unit"]
 			if data["detail_describe"]:
 				args["detail_describe"] = data["detail_describe"]
-			if data["tag"]:
-				args["tag"] = data["tag"]
-			if data["limit_num"]:
+			#if data["tag"]:
+				#args["tag"] = data["tag"]
+			if "limit_num" in data:
 				args["limit_num"] = data["limit_num"]
-			if data["group_id"]:
+			if "group_id" in data:
 				group_id = int(data["group_id"])
-				_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = shop_id,status = 1).first()
-				if _group:
-					args["group_id"] = group_id
-				else:
-					return self.send_fail('该商品分组不存在或已被删除')
-			if data["img_url"]:  # 前端可能上传图片不成功，发来一个空的，所以要判断
+				print(group_id)
+				if group_id !=0 and group_id !=1000:
+					_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = shop_id,status = 1).first()
+					if _group:
+						args["group_id"] = group_id
+					else:
+						return self.send_fail('该商品分组不存在或已被删除')
+			if "img_url" in data:  # 前端可能上传图片不成功，发来一个空的，所以要判断
 				args["img_url"] = SHOP_IMG_HOST + data["img_url"]
 			priority = data["priority"] if data["priority"] else 0
 			args["intro"] = data["intro"]
@@ -1675,19 +1676,19 @@ class Goods(AdminBaseHandler):
 			args["shop_id"] = shop_id
 			goods = models.Fruit(**args)
 			for charge_type in data["charge_types"]:
-				unit_num = charge_type["unit_num"] if charge_type["unit_num"] else 1
-				select_num = charge_type["select_num"] if charge_type["select_num"] else 1
+				unit_num = int(charge_type["unit_num"]) if charge_type["unit_num"] else 1
+				select_num = int(charge_type["select_num"]) if charge_type["select_num"] else 1
+				market_price = charge_type["market_price"] if charge_type["market_price"] else 0
 				goods.charge_types.append(models.ChargeType(price=charge_type["price"],
-										unit=charge_type["unit"],
+										unit=int(charge_type["unit"]),
 										num=charge_type["num"],
-										unit_num=unit_num),
-										market_price=data["market_price"],
-										select_num=select_num)
+										unit_num=unit_num,
+										market_price=market_price,
+										select_num=select_num))
+
 			self.session.add(goods)
 			self.session.commit()
-			_goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,status = 1,fruit_type_id=int(data["type_id"])).order_by(models.Fruit.add_time.desc()).first()
-			goods_new = self.getOneData(_goods)
-			return self.send_success(goods_new=goods_new)
+			return self.send_success()
 
 		elif action == "edit_goods_img":
 			return self.send_qiniu_token("fruit", int(data["goods_id"]))
