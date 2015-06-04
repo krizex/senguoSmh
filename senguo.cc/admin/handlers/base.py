@@ -118,11 +118,11 @@ class GlobalBaseHandler(BaseHandler):
 		#将服务区域的编码转换为文字显示
 		if column_name == "service_area":
 			if code & models.SHOP_SERVICE_AREA.HIGH_SCHOOL:
-				text += "高校 "
+				text += "高校"
 			if code & models.SHOP_SERVICE_AREA.COMMUNITY:
-				text += "社区 "
+				text += "社区"
 			if code & models.SHOP_SERVICE_AREA.TRADE_CIRCLE:
-				text += "商圈 "
+				text += "商圈"
 			if code & models.SHOP_SERVICE_AREA.OTHERS:
 				text += "其他"
 			return text

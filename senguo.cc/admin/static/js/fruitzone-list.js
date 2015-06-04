@@ -207,7 +207,7 @@ function initProviceAndCityCode(p, c){
 }
 /*根据经纬度获取距离*/
 function getDist(lat,lng){
-    if(lat == 0) return false;
+    if(!lat || lat == 0) return false;
     var res = '';
     var map = new BMap.Map("map");
     var pointA = new BMap.Point(ulng,ulat);  // 用户坐标

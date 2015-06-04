@@ -232,7 +232,7 @@ function initProviceAndCityCode(p, c){
 }
 /*根据经纬度获取距离*/
 function getDist(lat,lng){
-    if(lat == 0) return false;
+    if(!lat || lat == 0) return false;
     var res = '';
     var pointA = new BMap.Point(ulat,ulng);  // 用户坐标
     var pointB = new BMap.Point(lat,lng);  // 店铺坐标
