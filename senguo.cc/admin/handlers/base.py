@@ -112,7 +112,7 @@ class GlobalBaseHandler(BaseHandler):
 	#	return 2 * math.atan2(math.sqrt(h), math.sqrt(1 - h)) * 6367000
 
 
-	def rad(d):
+	def rad(self,d):
 		"""to弧度
 		"""
 		return d * math.pi / 180.0
