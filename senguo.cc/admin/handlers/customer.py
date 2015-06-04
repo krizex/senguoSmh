@@ -1252,8 +1252,8 @@ class Market(CustomerBaseHandler):
 			fruits2[int(key)] = fruits[key]
 		for key in mgoods:
 			mgoods2[int(key)] = mgoods[key]
-		if len(fruits2)>3 or len(mgoods2)>3:
-			return self.send_fail("请不要选择太多物品")
+		if len(fruits2)+len(mgoods2) > 20:
+			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
 		cart.fruits = str(fruits2)
 		cart.mgoods = str(mgoods2)
 
@@ -1361,6 +1361,8 @@ class Cart(CustomerBaseHandler):
 
 		if not (fruits or mgoods):
 			return self.send_fail('请至少选择一种商品')
+		if len(fruits)+len(mgoods) > 20:
+			return self.send_fail("你的购物篮太满啦！请不要一次性下单超过20种物品")
 		unit = {1:"个", 2:"斤", 3:"份"}
 		f_d={}
 		m_d={}
@@ -1402,8 +1404,7 @@ class Cart(CustomerBaseHandler):
 				# print(mcharge_type.price)
 				m_d[mcharge_type.id]={"mgoods_name":mcharge_type.mgoods.name, "num":mgoods[str(mcharge_type.id)],
 									  "charge":"%.2f元/%.1f%s" % (float(mcharge_type.price), mcharge_type.num, unit[mcharge_type.unit])}
-		if len(f_d)>3 or len(m_d)>3:
-			return self.send_fail("请不要选cartting太多物品")
+		
 
 		#按时达/立即送 的时间段处理
 		start_time = 0
