@@ -195,6 +195,7 @@ $(document).ready(function(){
 });
 //添加商品
 function addGoods($item){
+    
     var url="";
     var data={
         group_id: "",//分组id
