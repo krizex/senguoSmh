@@ -1252,6 +1252,8 @@ class Market(CustomerBaseHandler):
 			fruits2[int(key)] = fruits[key]
 		for key in mgoods:
 			mgoods2[int(key)] = mgoods[key]
+		if len(fruits2)>3 or len(mgoods2)>3:
+			return self.send_fail("请不要选择太多物品")
 		cart.fruits = str(fruits2)
 		cart.mgoods = str(mgoods2)
 
@@ -1400,6 +1402,8 @@ class Cart(CustomerBaseHandler):
 				# print(mcharge_type.price)
 				m_d[mcharge_type.id]={"mgoods_name":mcharge_type.mgoods.name, "num":mgoods[str(mcharge_type.id)],
 									  "charge":"%.2f元/%.1f%s" % (float(mcharge_type.price), mcharge_type.num, unit[mcharge_type.unit])}
+		if len(f_d)>3 or len(m_d)>3:
+			return self.send_fail("请不要选cartting太多物品")
 
 		#按时达/立即送 的时间段处理
 		start_time = 0
@@ -1482,13 +1486,13 @@ class Cart(CustomerBaseHandler):
 		# woody
 		########################################################################
 		w_admin = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		default_statff=[]
+		default_staff=[]
 		try:
-			default_statff = self.session.query(models.HireLink).filter_by( shop_id =shop_id,default_staff=1).first()
+			default_staff = self.session.query(models.HireLink).filter_by( shop_id =shop_id,default_staff=1).first()
 		except:
 			print('this shop has no default staff')
-		if default_statff:
-			w_SH2_id =default_statff.staff_id
+		if default_staff:
+			w_SH2_id =default_staff.staff_id
 		else:
 			if w_admin is not None:
 					w_SH2_id = w_admin.admin.id
