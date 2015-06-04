@@ -22,6 +22,8 @@ $(document).ready(function(){
         }
     });
     getGoodsItem();
+}).on("click",".all-select-box",function(){
+    $(this).toggleClass("checked-box");
 }).on("click",".check-box",function(){
     $(this).toggleClass("checked-box");
 }).on("click",".switch-btn",function(){
@@ -41,8 +43,21 @@ $(document).ready(function(){
     }
     $(".pop-img-win").show();
 }).on("click",".sg-img-list img",function(){
-    $(this).prev(".img-selected").toggle();
-    $(this).toggleClass("selected-img");
+    if($(this).hasClass("selected-img")){
+        $(this).prev(".img-selected").toggle();
+        $(this).toggleClass("selected-img");
+    }else{
+        if($("#item-img-lst").children(".img-bo").size()<=5){
+            var src = $(this).attr("src");
+            var index = $("#item-img-lst").children(".img-bo").size()-1;
+            var item = '<li class="img-bo" data-index="'+index+'" data-rel="'+index+'"><img src="'+src+'" class="img"><a class="del-img" href="javascript:;">x</a></li>';
+            $("#add-img-box").before(item);
+            $(this).prev(".img-selected").show();
+            $(this).addClass("selected-img");
+        }else{
+            Tip("只能添加5张照片哦！")
+        }
+    }
 }).on("click",".sg-img-list .img-selected",function(){
     $(this).toggle();
     $(this).next("img").toggleClass("selected-img");
@@ -130,6 +145,8 @@ $(document).ready(function(){
     if($(e.target).closest(".wrap-kindeditor").size()==0){
         $(".pop-editor").hide();
     }
+}).on("click",".add-price-type",function(){ //新增售价方式
+
 });
 
 function initEditor(){
@@ -208,7 +225,14 @@ function insertGoods(data){
         $item.find(".goods-priority").html(goods.priority);
         $item.find(".limit-num").html(goods.limit_num);
         $item.find(".item-goods-txt").html(goods.info);
-        $item.find(".dianzan").html("favour");
+        $item.find(".dianzan").html(goods.favour);
+        if(goods.charge_types.length>0){
+            for(var j=0; j<goods.charge_types.length; j++){
+                var good = goods.charge_types[j];
+                var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+'个</span></span><span class="mr10">市场价 : <span class="">'+good.market_price+'元</span></span></p>';
+                $item.find(".goods-price-list").append(item);
+            }
+        }
         /*$item.find(".goods-comment-num").html("2222");*/
         $item.find(".goods-vol").html(goods.saled);
         $item.find(".sw-link-txt").html("/customer/goods/"+goods.id);

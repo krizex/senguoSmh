@@ -81,64 +81,12 @@
                 <textarea></textarea>
             </div>
             <p>
-                <a href="javascript:;">+商品图文详情</a>
+                <a class="show-txtimg" href="javascript:;">+商品图文详情</a>
                 <span>展示在信息详情页，可不添加</span>
             </p>
         </div>
         <div class="edit-item-right fl">
-            <div class="wrap-add-price">
-                <p>售价1 : </p>
-                <div class="mt10 group wrap-price">
-                    <div class="iblock must short-slide">
-                        <div class="cate-title mt2 c333">售出单位：</div>
-                        <div class="dropdown slide-down-select pull-left mt2">
-                            <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                                <em title="" class="pull-left">kg</em>
-                                <span class="caret pull-right no-margin-left rotate0"></span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdown">
-                                <li  role="presentation">
-                                    <a class="item" href="javascript:;">个</a>
-                                </li>
-                                <li  role="presentation">
-                                    <a class="item" href="javascript:;">kg</a>
-                                </li>
-                                <li  role="presentation">
-                                    <a class="item" href="javascript:;">斤</a>
-                                </li>
-                                <li  role="presentation">
-                                    <a class="item" href="javascript:;">克</a>
-                                </li>
-                                <li  role="presentation">
-                                    <a class="item" href="javascript:;">升</a>
-                                </li>
-                                <li  role="presentation">
-                                    <a class="item" href="javascript:;">份</a>
-                                </li>
-                                <li  role="presentation">
-                                    <a class="item" href="javascript:;">箱</a>
-                                </li>
-                                <li  role="presentation">
-                                    <a class="item" href="javascript:;">盒</a>
-                                </li>
-                                <li  role="presentation">
-                                    <a class="item" href="javascript:;">件</a>
-                                </li>
-                                <li  role="presentation">
-                                    <a class="item" href="javascript:;">框</a>
-                                </li>
-                                <li  role="presentation">
-                                    <a class="item" href="javascript:;">包</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <span class="c333 must">数量 : <input type="text" value="333"></span>
-                    <span class=" must"><span class="c333">售价 : </span><input type="text" value="333">元</span>
-                    <span class=""><span class="c333">市场价 : </span><input type="text" value="333">元</span>
-                </div>
-            </div>
-            <div class="wrap-add-price mt10">
+            <div class="wrap-add-price mt10 hidden">
                 <p>售价1 : </p>
                 <div class="mt10 group wrap-price">
                     <div class="iblock must short-slide">
@@ -150,7 +98,7 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu110" id="currentShopChange10">
                                 <li  role="presentation">
-                                    <a class="item" href="javascript:;">个</a>
+                                    <a class="item" href="javascript:;" data-id="">个</a>
                                 </li>
                                 <li  role="presentation">
                                     <a class="item" href="javascript:;">kg</a>
@@ -185,12 +133,12 @@
                             </ul>
                         </div>
                     </div>
-                    <span class="c333 must">数量 : <input type="text" value="333"></span>
-                    <span class=" must"><span class="c333">售价 : </span><input type="text" value="333">元</span>
-                    <span class=""><span class="c333">市场价 : </span><input type="text" value="333">元</span>
+                    <span class="c333 must">数量 : <input type="text" value="0"></span>
+                    <span class=" must"><span class="c333">售价 : </span><input type="text" value="0">元</span>
+                    <span class=""><span class="c333">市场价 : </span><input type="text" value="0">元</span>
                 </div>
             </div>
-            <p class="mt10"><a href="javascript:;">+新增售价方式</a></p>
+            <p class="mt10"><a href="javascript:;" class="add-price-type">+新增售价方式</a></p>
         </div>
         <div class="group"></div>
         <p class="all-bm-group">
