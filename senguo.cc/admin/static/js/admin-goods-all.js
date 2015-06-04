@@ -197,7 +197,7 @@ function insertGoods(data){
         if(goods.imgurl){
             $item.find(".cur-goods-img").attr("src",goods.imgurl);
         }
-        $item.find(".current-group").html("商品分组").attr("data-id",goods.group_id);
+        $item.find(".current-group").html("默认分组").attr("data-id",goods.group_id);
         $item.find(".stock-num").html(goods.storage);
         $item.find(".stay-num").html(goods.current_saled);
         if(goods.active==1){  //上架
@@ -208,10 +208,10 @@ function insertGoods(data){
         $item.find(".goods-priority").html(goods.priority);
         $item.find(".limit-num").html(goods.limit_num);
         $item.find(".item-goods-txt").html(goods.info);
-        $item.find(".dianzan").html("5");
+        $item.find(".dianzan").html("favour");
         /*$item.find(".goods-comment-num").html("2222");*/
         $item.find(".goods-vol").html(goods.saled);
-        $item.find(".sw-link-txt").html("http://senguo.cc/list");
+        $item.find(".sw-link-txt").html("/customer/goods/"+goods.id);
         $(".goods-all-list").append($item);
     }
 }
