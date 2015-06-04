@@ -105,16 +105,8 @@ class GlobalBaseHandler(BaseHandler):
 	def timestamp_to_str(self, timestamp):
 		return time.strftime("%Y-%m-%d %H:%M", time.gmtime(timestamp))
 
-	#def get_distance(self,lat1,lon1,lat2,lon2):
-	#	hsinX = math.sin((lon1 - lon2) * 0.5)
-	#	hsinY = math.sin((lat1 - lat2) * 0.5)
-	#	h = hsinY * hsinY + (math.cos(lat1) * math.cos(lat2) * hsinX * hsinX)
-	#	return 2 * math.atan2(math.sqrt(h), math.sqrt(1 - h)) * 6367000
-
-
+	#通过经纬度计算距离
 	def get_distance(self,lat1,lon1,lat2,lon2):
-		"""通过经纬度计算距离
-		"""
 		EARTH_RADIUS = 6378.137
 		radLat1 = lat1 * math.pi / 180.0
 		radLat2 = lat2 * math.pi / 180.0
@@ -122,8 +114,7 @@ class GlobalBaseHandler(BaseHandler):
 		b = lon1 * math.pi / 180.0 - lon2 * math.pi / 180.0
 		s = 2 * math.asin(math.sqrt(math.pow(math.sin(a / 2), 2) + math.cos(radLat1) * math.cos(radLat2) * math.pow(math.sin(b / 2), 2)))
 		s = s * EARTH_RADIUS
-		s*=1000
-		#s = math.round(s * 10000) / 10000;
+		s*= 1000
 		return s;
 
 
