@@ -112,18 +112,14 @@ class GlobalBaseHandler(BaseHandler):
 	#	return 2 * math.atan2(math.sqrt(h), math.sqrt(1 - h)) * 6367000
 
 
-	def rad(self,d):
-		"""to弧度
-		"""
-		return d * math.pi / 180.0
 	def get_distance(self,lat1,lon1,lat2,lon2):
 		"""通过经纬度计算距离
 		"""
 		EARTH_RADIUS = 6378.137
-		radLat1 = rad(lat1)
-		radLat2 = rad(lat2)
+		radLat1 = lat1 * math.pi / 180.0
+		radLat2 = lat2 * math.pi / 180.0
 		a = radLat1 - radLat2
-		b = rad(lon1) - rad(lon2)
+		b = lon1 * math.pi / 180.0 - lon2 * math.pi / 180.0
 		s = 2 * math.asin(math.sqrt(math.pow(math.sin(a / 2), 2) + math.cos(radLat1) * math.cos(radLat2) * math.pow(math.sin(b / 2), 2)))
 		s = s * EARTH_RADIUS
 		s*=1000
