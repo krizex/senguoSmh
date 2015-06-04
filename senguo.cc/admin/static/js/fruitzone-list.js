@@ -268,7 +268,7 @@ var shopItem=function (shops){
                 var dishide = '';
                 var distance = '';
                 var link = '/'+shop_code;
-                if(lat == 0 || ulat == 0){
+                if(!lat || lat == 0 || !ulat || ulat == 0){
                     dishide = "hidden";
                 }else{
                     distance = getDist(lat,lon);
