@@ -3,8 +3,13 @@
  */
 $(document).ready(function(){
 
-}).on("click",".check-box",function(){
+}).on("click",".all-select-box",function(){
     $(this).toggleClass("checked-box");
-}).on("click",".dropdown-menu .item",function(){
-    $(this).closest("ul").prev("button").children("em").html($(this).html());
+    if($(this).hasClass("checked-box")){
+        $(".check-box").addClass("checked-box");
+    }else{
+        $(".check-box").removeClass("checked-box");
+    }
+}).on("click",".goods-all-list .check-box",function(){
+    $(this).toggleClass("checked-box");
 });

@@ -14,21 +14,7 @@
                 <span class="check-box item-checkbox ml10" ></span>
                 <span class="item-name">马大会的店铺</span>
                 <div class="iblock goods-group">
-                    <div class="cate-title mt2">商品分组：</div>
-                    <div class="dropdown slide-down-select pull-left w130 mt2">
-                        <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu8" data-toggle="dropdown">
-                            <em title="{{current_shop.shop_name}}" class="pull-left c333" id="8">默认分组</em>
-                            <span class="caret pull-right no-margin-left rotate0"></span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu18" id="currentShopChange8">
-                            <li  role="presentation">
-                                <a class="item" href="javascript:;">国内水果</a>
-                            </li>
-                            <li  role="presentation">
-                                <a class="item" href="javascript:;">进口水果</a>
-                            </li>
-                        </ul>
-                    </div>
+                    <div class="cate-title mt2">商品分组：<span class="group-goods c333">默认分组</span></div>
                 </div>
                 <span class="txt-box mls">库存：<span class="c333">723个</span></span>
                 <span class="txt-box">待成交：<span class="c333">223个</span></span>
@@ -80,5 +66,7 @@
 </div>
 {% end %}
 {% block js %}
+<script src="{{static_url('js/editor/kindeditor-min.js')}}"></script>
+<script src="{{static_url('js/editor/zh_CN.js')}}"></script>
 <script src="{{static_url('js/admin-goods-del.js')}}"></script>
 {% end %}
