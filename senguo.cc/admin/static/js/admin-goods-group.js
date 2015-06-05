@@ -149,39 +149,7 @@ $(document).ready(function(){
                          $("#new-win").modal('hide');
                     }
                     else if(_action=="add"){
-                        var data={};
-                        var _id=[];
-                        var _index=[];
-                        for(var i=0;i<$('.item').length;i++){
-                            var item=$('.item').eq(i);
-                            var id=item.attr("data-id");
-                            var index=item.attr("data-index");
-                            _id.push(id);
-                            _index.push(index);
-                        }
-                        _id.push(res.id);
-                        _index.push($('.item').length);
-                        data.id=_id;
-                        data.index=_index;
-                        var url="";
-                        var args = {
-                            action:'group_priority',
-                            data:data
-                        };
-                        $.postJson(url, args,
-                            function (res) {
-                                if (res.success) {
-                                        window.location.reload();
-                                }
-                                else {
-                                    Tip(res.error_text);
-                                }
-                            },
-                            function () {
-                                Tip('网络好像不给力呢~ ( >O< ) ~');
-                            }
-                        );
-                       
+                       priority("add",res.id);
                     }        
             }
             else {
@@ -312,7 +280,7 @@ function move($obj, iTarget){
     }, 30);
 }
 
-function priority(){
+function priority(type,item_id){
     var data={};
     var _id=[];
     var _index=[];
@@ -322,6 +290,10 @@ function priority(){
         var index=item.attr("data-index");
         _id.push(id);
         _index.push(index);
+    }
+    if(type=="add"){
+         _id.push(item_id);
+        _index.push($('.item').length);
     }
     data.id=_id;
     data.index=_index;
@@ -333,7 +305,10 @@ function priority(){
     $.postJson(url, args,
         function (res) {
             if (res.success) {
-                     
+                 if(type=="add"){
+                         // window.location.reload();
+                       
+                    }    
             }
             else {
                 Tip(res.error_text);

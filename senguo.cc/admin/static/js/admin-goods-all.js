@@ -332,6 +332,7 @@ function dealGoods($item,type){
                 },2000);
             }else{
                 Tip("商品编辑成功！");
+                data.img_first = res.img_first;
                 finishEditGoods($item.prev(".goods-all-item"),data);
                 $item.prev(".goods-all-item").show();
                 var index = $item.prev(".goods-all-item").index();
@@ -406,8 +407,8 @@ function initEditGoods($item,index){
 function finishEditGoods($item,data){
     var goods = data;
     $item.find(".goods-goods-name").html(goods.name);
-    if(goods.imgurl){
-        $item.find(".cur-goods-img").attr("src",goods.imgurl[0]+"?imageView2/5/w/100/h/100");
+    if(goods.img_first){
+        $item.find(".cur-goods-img").attr("src",goods.img_first+"?imageView2/5/w/100/h/100");
     }
     $item.find(".current-group").html(goods.group_name).attr("data-id",goods.group_id);
     $item.find(".stock-num").html(goods.storage);
