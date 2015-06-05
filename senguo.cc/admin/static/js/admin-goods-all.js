@@ -41,15 +41,14 @@ $(document).ready(function(){
 }).on("click",".cancel-btn",function(){
     $(this).closest(".pop-win").hide();
 }).on("click",".show-add-img",function(){   //上传图片
-    var $item = $(this).closest(".item-img-lst").children(".img-bo").clone();;
+    var $item = $(this).closest(".item-img-lst").children(".img-bo").clone();
+    $("#add-img-btn").closest("li").prevAll("li").remove();
     if($item.size()>0){
         $item.css({position:"relative",left:"0",top:"0"});
         $("#add-img-btn").closest("li").before($item);
         if($item.size()==5){
-            $("#add-img-btn").closest("li").removeClass("hidden");
+            $("#add-img-btn").closest("li").addClass("hidden");
         }
-    }else{
-        $("#add-img-btn").closest("li").prevAll("li").remove();
     }
     $(".pop-img-win").show();
 }).on("click",".sg-img-list img",function(){
@@ -340,7 +339,7 @@ function initEditGoods($item,index){
     if(imgUrls.length==0){
     }else{
         if(imgUrls.length == 5){
-            $item.find(".show-add-img").addClass("hidden");
+            $item.find(".add-img-box").addClass("hidden");
         }
         for(var i=0; i<imgUrls.length; i++){
             var $li = $('<li class="img-bo" data-index="'+i+'" data-rel="'+i+'"><img src="'+imgUrls[i]+'?imageView2/5/w/100/h/100" url="'+imgUrls[i]+'" alt="商品图片" class="image"/><a class="del-img" href="javascript:;">x</a></li>');
