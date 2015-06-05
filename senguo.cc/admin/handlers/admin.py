@@ -1577,21 +1577,27 @@ class Goods(AdminBaseHandler):
 			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id)
 			default_count = goods.filter_by(group_id=0).count()
 			record_count = goods.filter_by(group_id=-1).count()
-			group_priority = self.session.query(models.GroupPriority).join(models.GoodsGroup,models.GoodsGroup.id==models.GroupPriority.group_id).\
-			filter(models.GroupPriority.shop_id == shop_id,models.GoodsGroup.status==1).all()
-			goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id)
-			_group = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1).all()
-			for g in _group:
-				goods_count = goods.filter_by( group_id = g.id ).count()
-				data.append({'id':g.id,'name':g.name,'intro':g.intro,'num':goods_count})
-			# for _id in group_priority:
-			# 	_id = int(_id)
-			# 	if _id == 0:
-			# 		data.append({'id':0,'name':'','intro':'','num':default_count})
-			# 	else:
-			# 		_group = self.session.query(models.GoodsGroup).filter_by(id=_id,shop_id = shop_id,status = 1).first()
-			# 		goods_count = goods.filter_by( group_id = _group.id ).count()
-			# 		data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count})
+			group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id).order_by(models.GroupPriority.priority).all()
+			goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,active=1)
+			# _group = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1).all()
+			# for g in _group:
+			# 	goods_count = goods.filter_by( group_id = g.id ).count()
+			# 	data.append({'id':g.id,'name':g.name,'intro':g.intro,'num':goods_count})
+			if group_priority:
+				for g in group_priority:
+					group_id = g.group_id
+					print(group_id)
+					print(g.priority)
+					if group_id != -1:
+						if group_id == 0:
+							data.append({'id':0,'name':'','intro':'','num':default_count})
+						else:
+							_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop_id,status = 1).first()
+							if _group:
+								goods_count = goods.filter_by( group_id = _group.id ).count()
+								data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count})
+			else:
+				data.append({'id':0,'name':'','intro':'','num':default_count})
 			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,record_count=record_count)
 		elif action == "delete":
 			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active = 0).all()
@@ -1820,7 +1826,8 @@ class Goods(AdminBaseHandler):
 			_group = models.GoodsGroup(**args)
 			self.session.add(_group)
 			self.session.commit()
-			return self.send_success()
+			_id=groups.filter_by(status = 1).order_by(models.GoodsGroup.create_time.desc()).first().id
+			return self.send_success(id=_id)
 
 		elif action in["delete_group","edit_group"]:
 			_id = data["id"]
@@ -1843,6 +1850,7 @@ class Goods(AdminBaseHandler):
 			id_list = data["id"]
 			index_list = data["index"]
 			data = []
+			self.session.query(models.GroupPriority).filter_by(shop_id=shop_id).delete()
 			for index,val in enumerate(index_list):
 				_id = id_list[index]
 				if _id !=0:
@@ -1850,7 +1858,7 @@ class Goods(AdminBaseHandler):
 						group = groups.filter_by(id=_id).first()
 					except:
 						return self.send_fail('该分组不存在')
-					group_priority = models.GroupPriority(shop_id=shop_id,group_id=_id,priority=index)
+					group_priority = models.GroupPriority(shop_id=shop_id,group_id=_id,priority=val)
 					self.session.add(group_priority)
 			self.session.commit()
 
