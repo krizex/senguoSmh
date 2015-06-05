@@ -84,6 +84,7 @@ $(document).ready(function(){
     $(this).closest("ul").prev("button").children("em").html($(this).html()).attr("data-id",$(this).attr("data-id"));
     if($(this).closest("ul").hasClass("price-unit-list")){
         var $item = $(this).closest(".goods-all-item");
+        curPrice = $(this).closest(".wrap-add-price");
         var cur_unit = $item.find(".current-unit").html();
         var price_unit = $item.find(".price-unit").html();
         if(cur_unit!=price_unit){
@@ -185,7 +186,6 @@ $(document).ready(function(){
     }
 }).on("click",".add-price-type",function(){//新增售价方式
     var $item = $(".wrap-price-item").children(".wrap-add-price").clone();
-    curPrice = $item;
     var index = $(this).closest(".edit-item-right").children(".wrap-add-price").size();
     $item.find(".price-index").html(index+1);
     $(this).closest("p").before($item);
@@ -221,6 +221,10 @@ $(document).ready(function(){
         curPrice.attr("data-first",firstNum).attr("data-second",secondNum);
         $(".pop-unit").hide();
     }
+}).on("click","#batch-up",function(){//批量上架&下架
+    batchGoods("up");
+}).on("click","#batch-down",function(){
+    batchGoods("down");
 });
 //添加&编辑商品
 function dealGoods($item,type){
@@ -273,7 +277,7 @@ function dealGoods($item,type){
     var storage = $item.find(".stock-num").val();
     var unit = $item.find(".current-unit").attr("data-id");
     var fruit_type_id = $item.find(".goods-classify").attr("data-id");
-    var limit_num = $item.find(".limit-num").val();
+    var limit_num = $item.find(".limit_num").val();
     var priority = $item.find(".goods-priority").val();
     var detail_describe = "";
     if(editor){
@@ -293,6 +297,7 @@ function dealGoods($item,type){
         intro: info,//商品简介,
         name: name//商品名称,
     };
+    console.log(data);
     if(type == "edit"){
         data.goods_id=$item.attr("data-id");
     }
@@ -341,6 +346,8 @@ function initEditGoods($item,index){
             var $li = $('<li class="img-bo" data-index="'+i+'" data-rel="'+i+'"><img src="'+imgUrls[i]+'?imageView2/5/w/100/h/100" url="'+imgUrls[i]+'" alt="商品图片" class="image"/><a class="del-img" href="javascript:;">x</a></li>');
             $item.find(".drag-img-list").children(".add-img-box").before($li);
         }
+        $item.find(".drag-img-list").children(".add-img-box").css("marginLeft",imgUrls.length*75+"px");
+        initImgList($item.find(".drag-img-list").children(".img-bo"));
     }
     var price_list = goods.charge_types;
     if(price_list.length==0){
@@ -350,7 +357,7 @@ function initEditGoods($item,index){
             var item = $(".wrap-price-item").children(".wrap-add-price").clone();
             item.attr("data-id",price.id);
             item.attr("data-first",price.unit_num);
-            item.attr("data-senond",price.select_num);
+            item.attr("data-second",price.select_num);
             item.find(".price-index").html(j+1);
             item.find(".price-unit").html(price.unit_name).attr("data-id",price.unit);
             item.find(".price-num").val(price.num);
@@ -401,6 +408,48 @@ function finishEditGoods($item,data){
             $item.find(".goods-price-list").append(item);
         }
     }
+}
+//批量上架&下架商品
+function batchGoods(type){
+    if(goodsEdit){
+        return Tip("请先完成正在编辑的商品");
+    }
+    if($(".checked-box").size()==0){
+        return Tip("您没有选中任何商品哦");
+    }
+    var aIds = [];
+    var batchList = $(".goods-all-list").find(".checked-box");
+    batchList.each(function(){
+        var id = $(this).closest(".goods-all-item").attr("data-id");
+        aIds.push(id);
+    });
+    var url="";
+    var args={
+        data:{
+            goods_id:aIds
+        }
+    };
+    if(type=="up"){
+        args.action='batch_on';
+    }else{
+        args.action='batch_off';
+    }
+    $.postJson(url,args,function(res) {
+        if (res.success) {
+            Tip("批量操作成功！");
+            if(type=="up"){
+                batchList.each(function(){
+                    $(this).closest(".goods-all-item").find(".switch-btn").addClass("switch-btn-active");
+                });
+            }else{
+                batchList.each(function(){
+                    $(this).closest(".goods-all-item").find(".switch-btn").removeClass("switch-btn-active");
+                });
+            }
+        }else{
+            Tip("批量操作失败");
+        }
+    });
 }
 //删除商品
 function delGoods(id){
