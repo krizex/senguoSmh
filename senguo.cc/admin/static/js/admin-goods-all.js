@@ -282,7 +282,6 @@ function dealGoods($item,type){
     var url="";
     var data={
         group_id: group_id,//分组id
-        group_name:group_name,
         fruit_type_id:fruit_type_id,//类型id
         charge_types:price_list,
         limit_num: limit_num,//限购数 没有传0,
@@ -320,6 +319,9 @@ function dealGoods($item,type){
                 curPrice = null;
                 goodsEdit = false;
             }
+        }
+        else{
+            Tip(res.error_text);
         }
     });
 }
