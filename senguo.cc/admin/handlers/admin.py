@@ -1740,9 +1740,10 @@ class Goods(AdminBaseHandler):
 							if val == i:
 								imgurl = img_list[index]
 								img_urls.append(imgurl)
-							if val == 0:
-								img_first = imgurl
+								if i == 0:
+									img_first = img_list[index]
 							_img_urls = ";".join(img_urls)
+
 				if "charge_types" in data:
 					charge_old = self.session.query(models.ChargeType).filter_by(fruit_id=int(data["goods_id"]))
 					charge_old.delete()
