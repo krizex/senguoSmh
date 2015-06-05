@@ -1329,7 +1329,7 @@ class Goods(AdminBaseHandler):
 	def token(self,token):
 		editorToken = self.get_editor_token("editor", _id)
 
-	@AdminBaseHandler.check_arguments("link_action?","type?","sub_type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?")
+	@AdminBaseHandler.check_arguments("type?","sub_type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?")
 	def get(self):
 		action = self._action
 		_id = str(time.time())
@@ -1373,10 +1373,16 @@ class Goods(AdminBaseHandler):
 				if _type == "classify":
 					data = []
 					datalist = []
-					type_id = int(self.args["type_id"])
-					datalist = self.session.query(models.Fruit).filter_by(shop_id=shop_id,fruit_type_id=type_id).all()
-					data = self.getData(datalist)
-					return self.send_success(data=data)
+					page = int(self.args["page"])
+					page_size = 10
+					print(self.args["sub_type"])
+					if self.args["sub_type"] != []:
+						type_id = int(self.args["sub_type"])
+						datalist = self.session.query(models.Fruit).filter_by(shop_id=shop_id,fruit_type_id=type_id).all()
+						count = len(datalist)
+						count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
+						data = self.getData(datalist)
+						return self.send_success(data=data,count=count)
 
 				elif _type == "filter":
 					data = []
