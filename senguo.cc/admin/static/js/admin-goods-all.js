@@ -1,4 +1,4 @@
-var goods_list=null,curItem=null,goodsEdit = false,aLis=[],aPos=[],zIndex= 1,pn= 0,editor=null,_type,_sub_type;
+var goods_list=null,curItem=null,curPrice=null,goodsEdit = false,aLis=[],aPos=[],zIndex= 1,pn= 0,editor=null,_type,_sub_type;
 $(document).ready(function(){
     $(".sw-link-copy").zclip({
         path: "/static/js/third/ZeroClipboard.swf",
@@ -84,9 +84,11 @@ $(document).ready(function(){
     $(this).closest("ul").prev("button").children("em").html($(this).html()).attr("data-id",$(this).attr("data-id"));
     if($(this).closest("ul").hasClass("price-unit-list")){
         var $item = $(this).closest(".goods-all-item");
-        var cur_unit = $item.find(".current-unit").attr("data-id");
-        var price_unit = $item.find(".price-unit").attr("data-id");
+        var cur_unit = $item.find(".current-unit").html();
+        var price_unit = $item.find(".price-unit").html();
         if(cur_unit!=price_unit){
+            $("#now-unit").html(price_unit);
+            $("#stock-unit").html(cur_unit);
             $(".pop-unit").show();
         }
     }
@@ -183,6 +185,7 @@ $(document).ready(function(){
     }
 }).on("click",".add-price-type",function(){//新增售价方式
     var $item = $(".wrap-price-item").children(".wrap-add-price").clone();
+    curPrice = $item;
     var index = $(this).closest(".edit-item-right").children(".wrap-add-price").size();
     $item.find(".price-index").html(index+1);
     $(this).closest("p").before($item);
@@ -208,6 +211,16 @@ $(document).ready(function(){
     var $obj = $(this).closest(".goods-all-item");
     var id = $obj.attr("data-id");
     delGoods(id);
+}).on("click",".ok-unit-box",function(){//确认单位换算
+    var firstNum = $("#first_num").val();
+    var secondNum = $("#second_num").val();
+    if(isNaN(firstNum) || isNaN(secondNum)){
+        Tip("请填入整数，不能含有小数点");
+        return false;
+    }else{
+        curPrice.attr("data-first",firstNum).attr("data-second",secondNum);
+        $(".pop-unit").hide();
+    }
 });
 //添加&编辑商品
 function dealGoods($item,type){
@@ -235,11 +248,11 @@ function dealGoods($item,type){
         return Tip("请至少添加一种售价方式");
     }else{
         price_type.each(function(){
-            var unit_num = $("#first_num").val();
+            var unit_num = $(this).attr("data-first");
             var unit = $(this).find(".price-unit").attr("data-id");
             var unit_name = $(this).find(".price-unit").html();
             var num = $(this).find(".price-num").val();
-            var select_num = $("#second_num").val();
+            var select_num = $(this).attr("data-second");
             var price = $(this).find(".current-price").val();
             var markey_price = $(this).find(".market-price").val();
             var item = {
@@ -294,9 +307,9 @@ function dealGoods($item,type){
         if (res.success) {
             if(type == "add"){
                 Tip("新商品添加成功！");
-                // setTimeout(function(){
-                //     window.location.reload(true);
-                // },2000);
+                setTimeout(function(){
+                    window.location.reload(true);
+                },2000);
             }else{
                 Tip("商品编辑成功！");
                 finishEditGoods($item.prev(".goods-all-item"),data);
@@ -304,6 +317,7 @@ function dealGoods($item,type){
                 $item.remove();
                 $("#add-img-btn").closest("li").prevAll("li").remove();//清除添加的图片
                 curItem = null;
+                curPrice = null;
                 goodsEdit = false;
             }
         }
@@ -312,6 +326,8 @@ function dealGoods($item,type){
 //初始化编辑商品
 function initEditGoods($item,index){
     var goods = goods_list[index];
+    $item.attr("data-id",goods.id);
+    $item.find(".goods-add-time").html(goods.add_time);
     $item.find(".goods-goods-name").val(goods.name);
     var imgUrls = goods.imgurl;
     if(imgUrls.length==0){
@@ -320,8 +336,8 @@ function initEditGoods($item,index){
             $item.find(".show-add-img").addClass("hidden");
         }
         for(var i=0; i<imgUrls.length; i++){
-            var $li = $('<li class="img-bo" data-index="'+i+'" data-rel="'+i+'"><img src="'+imgUrls[i]+'?imageView2/5/w/100/h/100" alt="商品图片" class="image"/><a class="del-img hidden" href="javascript:;">x</a></li>');
-            $item.find(".drag-img-list").append($li);
+            var $li = $('<li class="img-bo" data-index="'+i+'" data-rel="'+i+'"><img src="'+imgUrls[i]+'?imageView2/5/w/100/h/100" url="'+imgUrls[i]+'" alt="商品图片" class="image"/><a class="del-img" href="javascript:;">x</a></li>');
+            $item.find(".drag-img-list").children(".add-img-box").before($li);
         }
     }
     var price_list = goods.charge_types;
@@ -331,12 +347,14 @@ function initEditGoods($item,index){
             var price = price_list[j];
             var item = $(".wrap-price-item").children(".wrap-add-price").clone();
             item.attr("data-id",price.id);
+            item.attr("data-first",price.unit_num);
+            item.attr("data-senond",price.select_num);
             item.find(".price-index").html(j+1);
             item.find(".price-unit").html(price.unit_name).attr("data-id",price.unit);
             item.find(".price-num").val(price.num);
             item.find(".current-price").val(price.price);
             item.find(".market-price").val(price.market_price);
-            $item.find(".edit-item-right").children(".add-price-type").before(item);
+            $item.find(".edit-item-right").children("p").before(item);
         }
     }
     $item.find(".current-group").html(goods.group_name).attr("data-id",goods.group_id);
@@ -351,6 +369,8 @@ function initEditGoods($item,index){
     $item.find(".show-txtimg").attr("data-text",goods.detail_describe);
     $item.find(".limit-num").html(goods.limit_num);
     $item.find(".goods-priority").html(goods.priority);
+    $item.find(".group-goods-lst").html($("#group-goods-lst").children("li").clone());
+    $item.find(".group-goods-lst").find(".group-counts").hide();
 }
 //编辑完成
 function finishEditGoods($item,data){
