@@ -396,8 +396,7 @@ function dealGoods($item,type){
                 curPrice = null;
                 goodsEdit = false;
             }
-        }
-        else{
+        }else{
             Tip(res.error_text);
         }
     });

@@ -12,4 +12,8 @@ $(document).ready(function(){
     }
 }).on("click",".goods-all-list .check-box",function(){
     $(this).toggleClass("checked-box");
+}).on("click",".cancel-del-goods",function(){//撤销删除
+
+}).on("click","#batch-cancel",function(){//批量取消删除
+
 });
