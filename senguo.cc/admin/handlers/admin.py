@@ -1735,10 +1735,9 @@ class Goods(AdminBaseHandler):
 								img_urls.append(imgurl)
 							_img_urls = ";".join(img_urls)
 				if "charge_types" in data:
-					charge_old = self.session.query(models.ChargeType).filter_by(fruit_id=int(data["goods_id"])).all()
-					for c in charge_old:
-						c.active = 0
-						self.session.commit()
+					charge_old = self.session.query(models.ChargeType).filter_by(fruit_id=int(data["goods_id"]))
+					charge_old.delete()
+					self.session.commit()
 					for charge_type in data["charge_types"]:
 						unit_num = int(charge_type["unit_num"]) if charge_type["unit_num"] else 1
 						select_num = int(charge_type["select_num"]) if charge_type["select_num"] else 1
@@ -1752,7 +1751,7 @@ class Goods(AdminBaseHandler):
 												market_price=market_price,
 												select_num=select_num)
 						self.session.add(charge_types)
-						
+
 				goods.update(session=self.session,
 						name = data["name"],
 						storage = data["storage"],
