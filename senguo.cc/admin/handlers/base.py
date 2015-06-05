@@ -368,7 +368,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return self.get_wexin_oauth_link(next_url = next_url)
 
 	def get_current_user(self):
-		# print(self.__account_model__,'到底是什么？',self.__account_cookie_name__)
+		print(self.__account_model__,'到底是什么？',self.__account_cookie_name__)
 		if not self.__account_model__ or not self.__account_cookie_name__:
 			raise Exception("overwrite model to support authenticate.")
 
@@ -378,8 +378,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		user_id = self.get_secure_cookie(self.__account_cookie_name__) or b'0'
 		user_id = int(user_id.decode())
 		# print("[用户信息]当前用户ID：",user_id)
-		# print(type(self))
-		# print(self.__account_model__)
+		print(type(self))
+		print(self.__account_model__)
 
 		if not user_id:
 			self._user = None
