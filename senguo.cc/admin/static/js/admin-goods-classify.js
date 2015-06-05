@@ -33,7 +33,7 @@ function getData(type,sub_type){
 			'<p class="title {{property}}">{{name}}</p>'+
 			'<ul class="fruit-item-list group">'+
 			 	'{{each types as type}}'+
-				'<li><a href="/admin/goods/all?type=classify&type_id={{type.id}}">{{type.name}} ({{type.num}})</a></li>'+
+				'<li><a href="/admin/goods/all?type=classify&type_id={{type.id}}&page=0">{{type.name}} ({{type.num}})</a></li>'+
 				'{{/each}}'+
 			'</ul>'+
 			'</li>';
@@ -69,7 +69,7 @@ function getData2(con){
             var data = res.data;
             $('.fruit-list').empty();
             var item='<ul class="fruit-item-list group">'+
-                    '<li><a href="/admin/goods/all?type=classify&type_id={{id}}">{{name}} ({{num}})</a></li>'+
+                    '<li><a href="/admin/goods/all?type=classify&type_id={{id}}&page=0">{{name}} ({{num}})</a></li>'+
                 '</ul>';
 			for(var d in data){
 				if(data[d].length!=0){

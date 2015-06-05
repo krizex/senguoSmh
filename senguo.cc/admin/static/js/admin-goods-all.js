@@ -21,7 +21,14 @@ $(document).ready(function(){
             $(".sw-er-tip").addClass("invisible");
         }
     });
-    getGoodsItem();
+    var link_type=$.getUrlParam("type");
+    var sub_type=parseInt($.getUrlParam("type_id"));
+    if(link_type=="classify"){
+        getGoodsItem(link_type,0,sub_type);
+    }else{
+        getGoodsItem("all",0);
+       
+    }
     getData('fruit','color');
     _type = 'fruit';
     _sub_type = 'color';
@@ -559,10 +566,17 @@ function initEditor(text){
     }});
 }
 
-function getGoodsItem(){
+function getGoodsItem(action,page,type_id){
     $(".wrap-loading-box").removeClass("hidden");
+    var url;
+    if(action=="classify"){
+        url = "/admin/goods/all?type=classify&sub_type="+type_id+"&page="+pn;
+    }
+    else{
+        url="/admin/goods/all?type=all&page="+pn;
+    }
     $.ajax({
-        url:"/admin/goods/all?type=all&page="+pn,
+        url:url,
         type:"get",
         success:function(res){
             if(res.success){
