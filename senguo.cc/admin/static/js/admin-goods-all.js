@@ -41,15 +41,14 @@ $(document).ready(function(){
 }).on("click",".cancel-btn",function(){
     $(this).closest(".pop-win").hide();
 }).on("click",".show-add-img",function(){   //上传图片
-    var $item = $(this).closest(".item-img-lst").children(".img-bo").clone();;
+    var $item = $(this).closest(".item-img-lst").children(".img-bo").clone();
+    $("#add-img-btn").closest("li").prevAll("li").remove();
     if($item.size()>0){
         $item.css({position:"relative",left:"0",top:"0"});
         $("#add-img-btn").closest("li").before($item);
         if($item.size()==5){
-            $("#add-img-btn").closest("li").removeClass("hidden");
+            $("#add-img-btn").closest("li").addClass("hidden");
         }
-    }else{
-        $("#add-img-btn").closest("li").prevAll("li").remove();
     }
     $(".pop-img-win").show();
 }).on("click",".sg-img-list img",function(){
@@ -81,12 +80,12 @@ $(document).ready(function(){
     e.stopPropagation();
     $(this).closest(".all-bm-group").next(".sw-er-tip").toggleClass("invisible");
 }).on("click",".dropdown-menu .item",function(){
-    $(this).closest("ul").prev("button").children("em").html($(this).html()).attr("data-id",$(this).attr("data-id"));
+    var price_unit = $(this).html();
+    $(this).closest("ul").prev("button").children("em").html(price_unit).attr("data-id",$(this).attr("data-id"));
     if($(this).closest("ul").hasClass("price-unit-list")){
         var $item = $(this).closest(".goods-all-item");
         curPrice = $(this).closest(".wrap-add-price");
         var cur_unit = $item.find(".current-unit").html();
-        var price_unit = $item.find(".price-unit").html();
         if(cur_unit!=price_unit){
             $("#now-unit").html(price_unit);
             $("#stock-unit").html(cur_unit);
@@ -175,7 +174,12 @@ $(document).ready(function(){
     initImgList($item.find(".drag-img-list").children(".img-bo"));
     $(".pop-img-win").hide();
 }).on("click",".show-txtimg",function(){
-    initEditor();
+    if(editor){
+        editor.html($(this).attr("data-text"));
+    }else{
+        initEditor($(this).attr("data-text"));
+    }
+
 }).on("click",".pop-editor",function(e){
     if($(e.target).closest(".wrap-kindeditor").size()==0){
         $(".pop-editor").hide();
@@ -225,10 +229,20 @@ $(document).ready(function(){
     batchGoods("up");
 }).on("click","#batch-down",function(){
     batchGoods("down");
+}).on("click",".ok-editor",function(){
+
+    $(".pop-editor").hide();
 });
 //添加&编辑商品
 function dealGoods($item,type){
-    var name = $item.find(".goods-goods-name").val();
+    var limit_num = $item.find(".limit_num").val();
+    var priority = $item.find(".goods-priority").val();
+    if(isNaN(limit_num) || parseInt(limit_num)<0){
+        return Tip("商品限购必须为数字");
+    }
+    if(isNaN(priority) || parseInt(priority)>9 || parseInt(priority)<0){
+        return Tip("优先级必须为0-9的数字");
+    }
     var imgUrls = $item.find(".drag-img-list").find("img");
     var imgList = {};
     if(imgUrls.size()==0){
@@ -271,6 +285,7 @@ function dealGoods($item,type){
             price_list.push(item);
         });
     }
+    var name = $item.find(".goods-goods-name").val();
     var group_name = $item.find(".current-group").html();
     var group_id = $item.find(".current-group").attr("data-id");
     var info = $item.find(".goods-info").val();
@@ -286,6 +301,7 @@ function dealGoods($item,type){
     var url="";
     var data={
         group_id: group_id,//分组id
+        group_name:group_name,
         fruit_type_id:fruit_type_id,//类型id
         charge_types:price_list,
         limit_num: limit_num,//限购数 没有传0,
@@ -297,7 +313,6 @@ function dealGoods($item,type){
         intro: info,//商品简介,
         name: name//商品名称,
     };
-    console.log(data);
     if(type == "edit"){
         data.goods_id=$item.attr("data-id");
     }
@@ -340,14 +355,16 @@ function initEditGoods($item,index){
     if(imgUrls.length==0){
     }else{
         if(imgUrls.length == 5){
-            $item.find(".show-add-img").addClass("hidden");
+            $item.find(".add-img-box").addClass("hidden");
         }
         for(var i=0; i<imgUrls.length; i++){
             var $li = $('<li class="img-bo" data-index="'+i+'" data-rel="'+i+'"><img src="'+imgUrls[i]+'?imageView2/5/w/100/h/100" url="'+imgUrls[i]+'" alt="商品图片" class="image"/><a class="del-img" href="javascript:;">x</a></li>');
             $item.find(".drag-img-list").children(".add-img-box").before($li);
         }
-        $item.find(".drag-img-list").children(".add-img-box").css("marginLeft",imgUrls.length*75+"px");
-        initImgList($item.find(".drag-img-list").children(".img-bo"));
+        setTimeout(function(){
+            $item.find(".drag-img-list").children(".add-img-box").css("marginLeft",imgUrls.length*75+"px");
+            initImgList($item.find(".drag-img-list").children(".img-bo"));
+        },1000);
     }
     var price_list = goods.charge_types;
     if(price_list.length==0){
@@ -482,7 +499,7 @@ function switchGoodsRack(id,$obj){
         }
     });
 }
-function initEditor(){
+function initEditor(text){
     $.ajax({url: '/admin/editorTest?action=editor', async: false, success: function(data){
         var token1 = data.token;
         var token = data.res;
@@ -495,7 +512,6 @@ function initEditor(){
             extraFileUploadParams : {'token':token1},
             token : token,
             resizeType : 0,
-            uploadJson:"picture",
             items:[
                 'source', '|', 'undo', 'redo', '|', 'preview', 'print', 'template', 'cut', 'copy', 'paste',
                 'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
@@ -505,7 +521,7 @@ function initEditor(){
                 'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image',
                 'table', 'hr'
             ],
-            afterCreate: function(){this.sync();},
+            afterCreate: function(){this.sync();editor.html(text);},
             afterBlur: function(){this.sync();},
             afterUpload : function(url) {
             },
@@ -686,6 +702,7 @@ function previewImage(file,callback){//file为plupload事件监听函数参数�
 //初始化图片列表
 function initImgList($list){
     aLis = [],aPos = [];
+    console.log($list);
     for(var i=0; i<$list.size(); i++){
         var obj = $list[i];
         obj.zIndex = 1;
