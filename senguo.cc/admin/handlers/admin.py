@@ -1733,9 +1733,19 @@ class Goods(AdminBaseHandler):
 								imgurl = img_list[index]
 								img_urls.append(imgurl)
 							_img_urls = ";".join(img_urls)
+				if "charge_types" in data:
+					for charge_type in data["charge_types"]:
+						unit_num = int(charge_type["unit_num"]) if charge_type["unit_num"] else 1
+						select_num = int(charge_type["select_num"]) if charge_type["select_num"] else 1
+						market_price = charge_type["market_price"] if charge_type["market_price"] else 0
+						charge_types = (models.ChargeType(price=charge_type["price"],
+												unit=int(charge_type["unit"]),
+												num=charge_type["num"],
+												unit_num=unit_num,
+												market_price=market_price,
+												select_num=select_num))
 				goods.update(session=self.session,
 						name = data["name"],
-						saled = data["saled"],
 						storage = data["storage"],
 						unit= data["unit"],
 						img_url = _img_urls,
@@ -1743,7 +1753,8 @@ class Goods(AdminBaseHandler):
 						priority = data["priority"],
 						limit_num = data["limit_num"],
 						group_id = group_id,
-						detail_describe = data["detail_describe"]
+						detail_describe = data["detail_describe"],
+						charge_types = charge_types
 						)
 
 			elif action == "default_goods_img":  # 恢复默认图

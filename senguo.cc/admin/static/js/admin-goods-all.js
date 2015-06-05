@@ -306,6 +306,9 @@ function dealGoods($item,type){
                 goodsEdit = false;
             }
         }
+        else{
+            Tip(res.error_text);
+        }
     });
 }
 //初始化编辑商品
