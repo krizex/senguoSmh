@@ -15,6 +15,8 @@ from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_N
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial, wraps
 
+from threading import Timer
+
 EXECUTOR = ThreadPoolExecutor(max_workers=4)
 
 def unblock(f):
@@ -319,7 +321,10 @@ class Discover(CustomerBaseHandler):
 		except:
 			return self.send_fail('shop error')
 		if shop:
-			confess_active = shop.marketing.confess_active
+			if shop.marketing:
+				confess_active = shop.marketing.confess_active
+			else:
+				confess_active = 0
 			shop_auth = shop.shop_auth
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self.set_cookie("market_shop_code",str(shop.shop_code))
@@ -1532,94 +1537,15 @@ class Cart(CustomerBaseHandler):
 		except:
 			return self.send_fail("订单提交失败")
 
-		# #####################################################################################
-		# # where the order sueessed , send a message to the admin of shop
-		# # woody
-		# #####################################################################################
-		# admin_name    = w_admin.admin.accountinfo.nickname
-		# touser        = w_admin.admin.accountinfo.wx_openid
-		# shop          = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		# shop_name     = shop.shop_name
-		# order_id      = order.num
-		# order_type    = order.type
-		# phone         = order.phone
-		# if order_type == 1:
-		# 	order_type = '立即送'
-		# else:
-		# 	order_type = '按时达'
-		# create_date   = order.create_date
-		# customer_info = self.session.query(models.Accountinfo).filter_by(id = self.current_user.id).first()
-		# customer_name = address.receiver
-		# c_tourse      = customer_info.wx_openid
-		# # print("[提交订单]用户OpenID：",c_tourse)
-
-		# ##################################################
-		# #goods
-		# goods = []
-		# # print("[提交订单]订单详情：",f_d,m_d)
-		# session = self.session
-		# for f in f_d:
-		# 	goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-		# for m in m_d:
-		# 	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
-			
-		# goods = str(goods)[1:-1]
-		# order_totalPrice = float('%.2f'% totalPrice)
-		# # print("[提交订单]订单总价：",order_totalPrice)
-		# # send_time     = order.get_sendtime(session,order.id)
-		# send_time = order.send_time
-		# address = order.address_text
-		# order_realid = order.id
-		# # print("[提交订单]订单详情：",goods)
-		# if self.args['pay_type'] != 3:
-		# 	if w_admin.super_temp_active !=0:
-		# 		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
-		# 			customer_name,order_totalPrice,send_time,goods,phone,address)
-		# 	try:
-		# 		other_admin = self.session.query(models.HireLink).filter_by(shop_id = shop.id,active=1,work=9,temp_active=1).first()
-		# 	except:
-		# 		other_admin = None
-		# 	if other_admin:
-		# 		info =self.session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id)\
-		# 		.filter(models.ShopStaff.id == other_admin.staff_id).first()
-		# 		other_touser = info.wx_openid
-		# 		other_name = info.nickname
-		# 		WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,\
-		# 			customer_name,order_totalPrice,send_time,goods,phone,address)
-		# 	# send message to customer
-		# 	WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
-		# ####################################################
-		# # 订单提交成功后 ，用户余额减少，
-		# # 同时生成余额变动记录,
-		# # 订单完成后 店铺冻结资产相应转入 店铺可提现余额
-		# # woody 4.29
-		# ####################################################
-		# # print(self.args['pay_type'],'好难过')
-		# if self.args["pay_type"] == 2:
-		# 	shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
-		# 		shop_id = shop_id).first()
-		# 	if not shop_follow:
-		# 		return self.send_fail('shop_follow not found')
-		# 	shop_follow.shop_balance -= totalPrice   #用户对应 店铺余额减少 ，单位：元
-		# 	self.session.commit()
-		# 	#生成一条余额交易记录
-		# 	balance_record = '余额支付：订单' + order.num
-		# 	balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
-		# 		shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
-		# 		balance_record = balance_record,shop_totalPrice = current_shop.shop_balance,\
-		# 		customer_totalPrice = shop_follow.shop_balance)
-		# 	self.session.add(balance_history)
-		# 	self.session.commit()
-
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}', mgoods='{}')#清空购物车
 
-		
+		from threading import Timer
+		Timer(60*1,self.order_cancel_auto,(self.session,order.id,)).start()
 
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
-			from threading import Timer
-			Timer(10,self.order_cancel_auto,(self.session,order.id,)).start()
+			Timer(60*15,self.order_cancel_auto,(self.session,order.id,)).start()
 			online_type = self.args['online_type']
 			self.set_cookie('order_id',str(order.id))
 			self.set_cookie('online_totalPrice',str(order.totalPrice))

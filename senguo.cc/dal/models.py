@@ -1235,9 +1235,9 @@ class Order(MapBase, _CommonApi):
 	send_time=Column(String(45))
 	del_reason = Column(String(300))
 
-	commodity_quality = Column(Integer)
-	send_speed        = Column(Integer)
-	shop_service      = Column(Integer)
+	commodity_quality = Column(Integer,default = 100)
+	send_speed        = Column(Integer,default = 100)
+	shop_service      = Column(Integer,default = 100)
 
 	online_type       = Column(String(8))
 	send_admin_id =Column(Integer,default=0) #record admin_id when to send the order #5.25
