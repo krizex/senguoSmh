@@ -384,13 +384,12 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		if not user_id:
 			self._user = None
 		else:
-			# print(user_id,'get_current_user: user_id')
+			Logger.info("_AccountBaseHandler get_current_user: user_id: ",user_id)
 			self._user = self.__account_model__.get_by_id(self.session, user_id)
-			# print(self._user,"self._user")
+			Logger.info("_AccountBaseHandler get_current_user: self._user: ",self._user)
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:
-				Logger.warn("Suspicious Access", "may be trying to fuck you")
-				
+				Logger.warn("_AccountBaseHandler get_current_user: self._user not found")
 		return self._user
 
 	_ARG_DEFAULT = []

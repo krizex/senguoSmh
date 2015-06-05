@@ -686,7 +686,7 @@ class Members(CustomerBaseHandler):
 		try:
 			shop_id = int(self.get_cookie("market_shop_id"))
 		except:
-			return self.send_fail("您访问的店铺有错，请返回重新访问")
+			return self.send_fail("您访问的店铺有错，请返回后刷新重新访问")
 		# print("[店铺成员]当前店铺ID：",shop_id)
 		admin_id = self.session.query(models.Shop.admin_id).filter_by(id=shop_id).first()
 		if not admin_id:
@@ -694,7 +694,7 @@ class Members(CustomerBaseHandler):
 		admin_id = admin_id[0]
 		members = self.session.query(models.Accountinfo, models.HireLink.work).filter(
 			models.HireLink.shop_id == shop_id,models.HireLink.active==1, or_(models.Accountinfo.id == models.HireLink.staff_id,
-				models.Accountinfo.id == admin_id)).all()
+			models.Accountinfo.id == admin_id)).all()
 		member_list = []
 		# print(members)
 		def work(id, w):
@@ -1645,16 +1645,22 @@ class CartCallback(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments('order_id')
 	@tornado.web.authenticated
 	def post(self):
-		order_id = int(self.args['order_id'])
+		try:
+			order_id = int(self.args['order_id'])
+		except:
+			Logger.error("CartCallback: get order_id error")
+			return self.send_fail("CartCallback: get order_id error")
 		order    = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
-			return self.send_fail("cart_callback:order not found!")
+			Logger.warn("CartCallback: order not found")
+			return self.send_fail("CartCallback: order not found")
 		shop_id = order.shop_id
 		customer_id = order.customer_id
 		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
 		shop    =  self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop or not customer:
-			return self.send_fail('shop not found')
+			Logger.warn("CartCallback: shop/customer not found")
+			return self.send_fail('CartCallback: shop/customer not found')
 		# #送货地址处理
 		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		# if not address:
