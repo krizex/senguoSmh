@@ -201,18 +201,21 @@ $(document).ready(function(){
 function dealGoods($item,type){
     var name = $item.find(".goods-goods-name").val();
     var imgUrls = $item.find(".drag-img-list").find("img");
-    var imgList = [];
+    var imgList = {};
     if(imgUrls.size()==0){
         return Tip("必须上传至少一张商品图片");
     }else if(imgUrls.size()>5){
         return Tip("图片不能超过5张");
     }else{
+        var arr1 = [];
+        var arr2 = [];
         imgUrls.each(function(){
-            var index = "img"+$(this).closest("li").attr("data-index");
-            var src = $(this).attr("url");
-            var url = {index:src};
-            imgList.push(url);
+            var $this = $(this);
+            arr1.push($this.closest("li").attr("data-index"));
+            arr2.push($this.attr("url"));
         });
+        imgList.index = arr1;
+        imgList.src = arr2;
     }
     var price_type = $item.find(".edit-item-right").children(".wrap-add-price");
     var price_list = [];
@@ -305,11 +308,21 @@ function initEditGoods($item,index){
             $item.find(".drag-img-list").append($li);
         }
     }
-    var price_type = $item.find(".edit-item-right").children(".wrap-add-price");
-    var price_list = [];
-    if(price_type.size()==0){
-        return Tip("请至少添加一种售价方式");
+    var price_list = goods.charge_types;
+
+    if(price_list.length==0){
     }else{
+        for(var j=0; j<price_list.length; j++){
+            var price = price_list[j];
+            var item = $(".wrap-price-item").children(".wrap-add-price").clone();
+            item.attr("data-id",price.id);
+            item.find(".price-index").html(j+1);
+            item.find(".price-unit").html(price.unit_name).attr("data-id",price.unit);
+            item.find(".price-num").val(price.num);
+            item.find(".current-price").val(price.price);
+            item.find(".market-price").val(price.market_price);
+            $item.find(".edit-item-right").children(".add-price-type").before(item);
+        }
         price_type.each(function(){
             var unit_num = $("#first_num").val();
             var unit = $(this).find(".price-unit").attr("data-id");
