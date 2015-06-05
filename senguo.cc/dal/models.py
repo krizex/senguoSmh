@@ -561,7 +561,7 @@ class Shop(MapBase, _CommonApi):
 
 	super_temp_active = Column(Integer,default = 1) #1:receive the message from wx 0:do not receive#5.26
 
-	group_priority = Column(String(50)) #[group.id,group index]
+	# group_priority = Column(String(50)) #[group.id,group index]
 
 	def __repr__(self):
 		return "<Shop: {0} (id={1}, code={2})>".format(
@@ -1377,11 +1377,16 @@ class GoodsGroup(MapBase, _CommonApi):
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
 	name =  Column(String(50))
-	priority =  Column(Integer)
 	status = Column(Integer,default = 1) #0:been deleted 1:normal
 	intro = Column(String(100))
 	create_time = Column(DateTime, default=func.now())
 
+class GroupPriority(MapBase, _CommonApi):
+	__tablename__ = "group_priority"
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
+	group_id = Column(Integer)
+	priority = Column(Integer)
 
 # 用户自定义的商品类型
 class Menu(MapBase, _CommonApi):
