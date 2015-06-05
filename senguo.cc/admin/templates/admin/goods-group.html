@@ -29,39 +29,19 @@
                         </div>
                     </div>
                 </div>
-                <p class="c333">店铺推荐（）</p>
+                <p class="c333">店铺推荐（{{record_count}}）</p>
                 <p>该分组最多加入6个商品，分组排序优先级最高</p>
             </li>
-            <li data-index="1" data-rel="1" data-id="0" class="item">
-                <div class="right-link">
-                    <a href="javascript:;" class="spread-group">推广分组</a>
-                    <div class="sw-er-tip all-position invisible">
-                        <div class="top-arr">
-                            <span class="line1"></span>
-                            <span class="line2"></span>
-                        </div>
-                        <p class="er-text">商品链接</p>
-                        <div class="wrap-ipt">
-                            <input type="text" class="sw-link-txt" value="http://senguo.cc/{{current_shop.shop_code}}/0" disabled/>
-                            <input type="button" class="sw-link-copy"  value="复制链接"/>
-                        </div>
-                        <div class="wrap-er group">
-                            <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
-                            <div class="er-text lh80 fl">列表二维码</div>
-                            <div class="er-img fl er-code-img">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <p class="c333"><span class="edit-group-name">默认分组</span>（{{default_count}}）</p>
-                <p class="edit-group-info">若不设置分组，商品会默认进入该分组中</p>
-            </li>
-            {% for d in data %}
+           {% for d in data %}
             <li data-index="" data-rel="" data-id="{{d['id']}}" class="self-group item">
                 <div class="right-link">
+                    {% if d['id']==0 %}
+                    <a href="javascript:;" class="spread-group">推广分组</a>
+                    {% else %}
                     <a href="javascript:;" class="del-group">删除分组</a>
                     <a href="javascript:;" class="spread-group">推广分组</a>
                     <a href="javascript:;" class="edit-group">编辑</a>
+                    {% end %}
                     <div class="sw-er-tip all-position invisible">
                         <div class="top-arr">
                             <span class="line1"></span>
@@ -80,8 +60,8 @@
                         </div>
                     </div>
                 </div>
-                <p class="c333"><span class="group-name">{{d['name']}}</span>（{{d['num']}}）</p>
-                <p class="group-intro">{{d['intro']}}</p>
+                <p class="c333"><span class="group-name">{% if d['id']==0 %}默认分组{% else %}{{d['name']}}{% end %}</span>（{{d['num']}}）</p>
+                <p class="group-intro">{% if d['id']==0 %}若不设置分组，商品会默认进入该分组中{% else %}{{d['intro']}}{% end %}</p>
             </li>
             {% end %}
         </ul>

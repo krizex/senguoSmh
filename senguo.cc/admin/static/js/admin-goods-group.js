@@ -282,15 +282,17 @@ function move($obj, iTarget){
 
 function priority(){
     var data={};
+    var _id=[];
+    var _index=[];
     for(var i=0;i<$('.item').length;i++){
-        var $this=$('.item').eq(i);
-        var id=$this.attr("data-id");
-        var index=$this.attr("data-index");
-        var list=[]
-        list.push(id);
-        list.push(index);
-        data.item=list;
+        var item=$('.item').eq(i);
+        var id=item.attr("data-id");
+        var index=item.attr("data-index");
+        _id.push(id);
+        _index.push(index);
     }
+    data.id=_id;
+    data.index=_index;
     var url="";
     var args = {
         action:'group_priority',

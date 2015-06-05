@@ -1269,7 +1269,7 @@ class Goods(AdminBaseHandler):
 			add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else ''
 			delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
 			if d.img_url:
-				img_url= d.img_url.split(',')
+				img_url= d.img_url.split(";")
 			else:
 				img_url = ''
 			intro = '' if not d.intro else d.intro
@@ -1326,36 +1326,6 @@ class Goods(AdminBaseHandler):
 			name =''
 		return name
 
-	def getOneData(self,d):
-		data = []
-		add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else ''
-		delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
-		if d.img_url:
-			img_url= d.img_url.split(',')
-		else:
-			img_url = ''
-		intro = '' if not d.intro else d.intro
-		detail_describe = '' if not d.detail_describe else d.detail_describe
-
-		group_id = d.group_id
-		if  group_id == 0:
-			group_name = "默认分组"
-		elif group_id == 1000:
-			group_name = "店铺推荐"
-		else:
-			group_name = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id=shop_id,status=1).first().name
-
-		charge_types = []
-		for charge in d.charge_types:
-			market_price ="" if not charge.market_price else charge.market_price
-			charge_types.append({'id':charge.id,'price':charge.price,'unit':charge.unit,'unit_name':self.unit(charge.unit)\
-				,'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price})
-
-		data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
-			'saled':d.saled,'storage':d.storage,'unit':d.unit,'unit_name':self.unit(charge.unit),'tag':d.tag,'imgurl':img_url,'info':intro,'priority':d.priority,\
-			'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
-			'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name})
-		return data
 	def token(self,token):
 		editorToken = self.get_editor_token("editor", _id)
 
@@ -1607,24 +1577,21 @@ class Goods(AdminBaseHandler):
 			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id)
 			default_count = goods.filter_by(group_id=0).count()
 			record_count = goods.filter_by(group_id=1000).count()
-			group_priority = current_shop.group_priority.split('"')
-			print(current_shop.group_priority)
-			# i=0
-			# for n in range(len(data)):
-			# 	for g in data:
-			# 		print(g,'2333')		
-			# 		if g[1] == i:
-			# 			if i == 0:
-			# 				data.append({'id':0,'':g.name,'intro':'','num':record_count})
-			# 			else:
-			# _group = self.session.query(models.GoodsGroup).filter_by(id=int(g[0]),shop_id = shop_id,status = 1).first()
-			# goods_count = goods.filter_by( group_id = _group.id ).count()
-			# data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count})
-			_group = self.session.query(models.GoodsGroup).filter_by(shop_id = shop_id,status = 1).all()
-			for g in _group:
-				goods_count = goods.filter_by( group_id = g.id ).count()
-				data.append({'id':g.id,'name':g.name,'intro':g.intro,'num':goods_count})
-			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,default_count=default_count)
+			group_priority = current_shop.group_priority.split(";")
+			goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id)
+			# _group = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1).all()
+			# for g in _group:
+			# 	goods_count = goods.filter_by( group_id = g.id ).count()
+			# 	data.append({'id':g.id,'name':g.name,'intro':g.intro,'num':goods_count})
+			for _id in group_priority:
+				_id = int(_id)
+				if _id == 0:
+					data.append({'id':0,'name':'','intro':'','num':default_count})
+				else:
+					_group = self.session.query(models.GoodsGroup).filter_by(id=_id,shop_id = shop_id,status = 1).first()
+					goods_count = goods.filter_by( group_id = _group.id ).count()
+					data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count})
+			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,record_count=record_count)
 		elif action == "delete":
 			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active = 0).all()
 			data = self.getData(goods)
@@ -1673,9 +1640,26 @@ class Goods(AdminBaseHandler):
 					else:
 						return self.send_fail('该商品分组不存在或已被删除')
 			if "img_url" in data:  # 前端可能上传图片不成功，发来一个空的，所以要判断
-				args["img_url"] = SHOP_IMG_HOST + data["img_url"]
-			priority = data["priority"] if data["priority"] else 0
-			args["intro"] = data["intro"]
+				index_list = data["img_url"]["index"]
+				img_list = data["img_url"]["src"]
+				img_urls= []
+				for i in range(len(index_list)):
+					for index,val in enumerate(index_list):
+						val= int(val)
+						if val == i:
+							imgurl = img_list[index]
+							img_urls.append(imgurl)
+						args["img_url"] = ";".join(img_urls)
+
+			if "priority" in data:
+				priority = data["priority"]
+			else:
+				priority = 0
+
+			if "intro" in data:
+				intro = data["intro"]
+
+			args["intro"] = intro
 			args["priority"] = priority
 			args["fruit_type_id"] = data["fruit_type_id"]
 			args["shop_id"] = shop_id
@@ -1726,18 +1710,36 @@ class Goods(AdminBaseHandler):
 			elif action == "edit_goods":
 				if len(data["intro"]) > 100:
 					return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
+				if "group_id" in data:
+					group_id = int(data["group_id"])
+					if group_id !=0 and group_id !=1000:
+						_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = shop_id,status = 1).first()
+						if _group:
+							group_id = group_id
+						else:
+							return self.send_fail('该商品分组不存在或已被删除')
+				if "img_url" in data:  # 前端可能上传图片不成功，发来一个空的，所以要判断
+					index_list = data["img_url"]["index"]
+					img_list = data["img_url"]["src"]
+					img_urls= []
+					for i in range(len(index_list)):
+						for index,val in enumerate(index_list):
+							val= int(val)
+							if val == i:
+								imgurl = img_list[index]
+								img_urls.append(imgurl)
+							_img_urls = ";".join(img_urls)
 				goods.update(session=self.session,
 						name = data["name"],
 						saled = data["saled"],
 						storage = data["storage"],
-						unit=data["unit"],
-						tag = data["tag"],
-						img_url = data["img_url"],
-						intro=data["intro"],
-						priority=data["priority"],
-						limit_num=data["limit_num"],
-						group_name=data["group_name"],
-						clssify=data["clssify"]
+						unit= data["unit"],
+						img_url = _img_urls,
+						intro = data["intro"],
+						priority = data["priority"],
+						limit_num = data["limit_num"],
+						group_id = group_id,
+						detail_describe = data["detail_describe"]
 						)
 
 			elif action == "default_goods_img":  # 恢复默认图
@@ -1815,16 +1817,25 @@ class Goods(AdminBaseHandler):
 				return self.send_fail('该商品分组不存在或已被删除')
 
 		elif action == "group_priority":
-			import json
-			_list = []
-			groups = self.session.query(models.GoodsGroup).filter_by(shop_id=shop_id,status=1).all()
-			for d in data["group_list"]:
-				_list.append(str(d))
-				current_shop.group_priority= ''.join(_list)
-				for group in groups:
-						if group.id == int(d[0]):
-							group.priority=int(d[1])
-							self.session.commit()
+			groups = self.session.query(models.GoodsGroup).filter_by(shop_id=shop_id,status=1)
+			id_list = data["id"]
+			index_list = data["index"]
+			data = []
+			for i in range(len(id_list)+1):
+				for index,val in enumerate(index_list):
+					val= int(val)
+					if val == i:
+						_id = id_list[index]
+						data.append(_id)
+						if _id !=0:
+							try:
+								group = groups.filter_by(id=_id).first()
+							except:
+								return self.send_fail('该分组不存在')
+							if group:
+								group.priority = val
+								self.session.commit()
+			current_shop.group_priority = ";".join(data)
 			self.session.commit()
 
 		elif action == "batch_reset_delete":

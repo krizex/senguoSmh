@@ -259,7 +259,7 @@ function dealGoods($item,type){
         limit_num: limit_num,//限购数 没有传0,
         detail_describe: detail_describe,//没有传"",
         unit: unit,//库存单位id,
-        imgurl:imgList,
+        img_url:imgList,
         priority: priority,//排序优先级 没有传0,
         storage: storage,//库存,
         intro: info,//商品简介,
