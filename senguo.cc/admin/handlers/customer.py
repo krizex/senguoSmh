@@ -683,7 +683,10 @@ class ShopProfile(CustomerBaseHandler):
 class Members(CustomerBaseHandler):
 	def get(self):
 		# shop_id = self.shop_id
-		shop_id = int(self.get_cookie("market_shop_id"))
+		try:
+			shop_id = int(self.get_cookie("market_shop_id"))
+		except:
+			self.send_fail("您访问的店铺有错，请返回重新访问")
 		# print("[店铺成员]当前店铺ID：",shop_id)
 		admin_id = self.session.query(models.Shop.admin_id).filter_by(id=shop_id).first()
 		if not admin_id:
