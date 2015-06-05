@@ -1,4 +1,4 @@
-var goods_list=null,curItem=null,curPrice=null,goodsEdit = false,aLis=[],aPos=[],zIndex= 1,pn= 0,editor=null,_type,_sub_type;
+var goods_list=null,curItem=null,curPrice=null,curEditor="",goodsEdit = false,aLis=[],aPos=[],zIndex= 1,pn= 0,editor=null,_type,_sub_type;
 $(document).ready(function(){
     $(".sw-link-copy").zclip({
         path: "/static/js/third/ZeroClipboard.swf",
@@ -176,10 +176,11 @@ $(document).ready(function(){
 }).on("click",".show-txtimg",function(){
     if(editor){
         editor.html($(this).attr("data-text"));
+        $(".pop-editor").show();
     }else{
         initEditor($(this).attr("data-text"));
     }
-
+    curEditor = $(this);
 }).on("click",".pop-editor",function(e){
     if($(e.target).closest(".wrap-kindeditor").size()==0){
         $(".pop-editor").hide();
@@ -230,7 +231,7 @@ $(document).ready(function(){
 }).on("click","#batch-down",function(){
     batchGoods("down");
 }).on("click",".ok-editor",function(){
-
+    curEditor.attr("data-text",editor.html());
     $(".pop-editor").hide();
 });
 //添加&编辑商品
@@ -333,6 +334,9 @@ function dealGoods($item,type){
                 Tip("商品编辑成功！");
                 finishEditGoods($item.prev(".goods-all-item"),data);
                 $item.prev(".goods-all-item").show();
+                var index = $item.prev(".goods-all-item").index();
+                var nData = $.extend(goods_list[index],data);
+                goods_list[index] = nData;
                 $item.remove();
                 $("#add-img-btn").closest("li").prevAll("li").remove();//清除添加的图片
                 curItem = null;
@@ -393,8 +397,8 @@ function initEditGoods($item,index){
     $item.find(".goods-classify").html(goods.fruit_type_name).attr("data-id",goods.fruit_type_id);
     $item.find(".goods-info").val(goods.info);
     $item.find(".show-txtimg").attr("data-text",goods.detail_describe);
-    $item.find(".limit-num").html(goods.limit_num);
-    $item.find(".goods-priority").html(goods.priority);
+    $item.find(".limit_num").val(goods.limit_num);
+    $item.find(".goods-priority").val(goods.priority);
     $item.find(".group-goods-lst").html($("#group-goods-lst").children("li").clone());
     $item.find(".group-goods-lst").find(".group-counts").hide();
 }
@@ -513,21 +517,16 @@ function initEditor(text){
             token : token,
             resizeType : 0,
             items:[
-                'source', '|', 'undo', 'redo', '|', 'preview', 'print', 'template', 'cut', 'copy', 'paste',
-                'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
-                'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
-                'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
-                'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
-                'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image',
-                'table', 'hr'
+                 'preview', 'image'
             ],
-            afterCreate: function(){this.sync();editor.html(text);},
+            afterCreate: function(){this.sync();},
             afterBlur: function(){this.sync();},
             afterUpload : function(url) {
             },
             uploadError:function(file, errorCode, message){
             }
         });
+        editor.html(text);
     }});
 }
 
@@ -702,7 +701,6 @@ function previewImage(file,callback){//file为plupload事件监听函数参数�
 //初始化图片列表
 function initImgList($list){
     aLis = [],aPos = [];
-    console.log($list);
     for(var i=0; i<$list.size(); i++){
         var obj = $list[i];
         obj.zIndex = 1;
@@ -877,7 +875,6 @@ function getData2(con){
                     '</ul>';
                 for(var d in data){
                     if(data[d].length!=0){
-                        console.log(d);
                         var render = template.compile(item);
                         var html = render({
                             id:data[d]['id'],
