@@ -27,7 +27,6 @@ $(document).ready(function(){
         getGoodsItem(link_type,0,sub_type);
     }else{
         getGoodsItem("all",0);
-       
     }
     getData('fruit','color');
     _type = 'fruit';
@@ -98,6 +97,8 @@ $(document).ready(function(){
             $("#stock-unit").html(cur_unit);
             $(".pop-unit").show();
         }
+    }else if($(this).closest("ul").hasClass("condition-list")){
+        getGoodsItem("all",pn);
     }
 }).on("click",".del-img",function(){//删除图片
     var index = $(this).closest(".img-bo").attr("data-rel");
@@ -157,6 +158,7 @@ $(document).ready(function(){
         $item.find(".goods-classify").html(classify).attr("data-id",class_id);
         $item.find(".group-goods-lst").html($("#group-goods-lst").children("li").clone());
         $item.find(".group-goods-lst").find(".group-counts").hide();
+        $item.find(".all-item-title").remove();
         if($(".goods-all-list").children().size()>0){
             $(".goods-all-list").children(".goods-all-item").first().before($item);
         }else{
@@ -244,25 +246,40 @@ $(document).ready(function(){
     if(pn==0){
         return Tip("当前已经是第一页");
     }
-
+    getGoodsItem("all",pn--);
 }).on("click",".next-page",function(){//下一页
     var total = $(".page-total").html();
     if(pn==parseInt(total)){
         return Tip("当前已经是最后一页");
     }
+    getGoodsItem("all",pn++);
 }).on("click",".jump-to",function(){
     var num = $(".input-page").val();
     var total = $(".page-total").html();
     if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>(parseInt(total)-1)){
         return Tip("页码格式不对或者数字超出页码范围");
     }
-
+    getGoodsItem("all",num-1);
 }).on("keyup",".input-page",function(e){
     if(e.keyCode==13){
         var num = $(".input-page").val();
         var total = $(".page-total").html();
         if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>(parseInt(total)-1)){
             return Tip("页码格式不对或者数字超出页码范围");
+        }
+        getGoodsItem("all",num-1);
+    }
+}).on("click","#goods-all-search",function(){//商品搜索
+    var value = $("#goods-all-ipt").val();
+    if($.trim(value)==""){
+        return Tip("搜索条件不能为空！");
+    }
+    searchGoods(value);
+}).on("keyup","#goods-all-ipt",function(e){//商品搜索框
+    var value = $(this).val();
+    if(e.keyCode==13){
+        if($.trim(value)!=""){
+            searchGoods(value);
         }
     }
 });
@@ -363,7 +380,7 @@ function dealGoods($item,type){
             if(type == "add"){
                 Tip("新商品添加成功！");
                 setTimeout(function(){
-                    window.location.reload(true);
+                    window.location.href="/admin/goods/all?filter_status=all&order_status1=group&order_status2=add_time&filter_status2=0&page=0";
                 },2000);
             }else{
                 Tip("商品编辑成功！");
@@ -466,6 +483,34 @@ function finishEditGoods($item,data){
         }
     }
 }
+//商品搜索
+function searchGoods(value){
+    var url="";
+    var args={
+        action:'goods_search',
+        data:{
+            goods_name:value
+        }
+    };
+    $.postJson(url,args,function(res) {
+        if(res.success){
+            goods_list = res.data;
+            var data = res.data;
+            $(".goods-all-list").empty();
+            if(data.length==0){
+                $(".goods-all-list").append("<p>没有查询到任何商品！</p>");
+            }else{
+                $(".page-total").html(res.count);
+                $(".page-now").html(pn+1);
+                insertGoods(data);
+            }
+            $(".wrap-loading-box").addClass("hidden");
+        }else{
+            $(".wrap-loading-box").addClass("hidden");
+            Tip(res.error_txt);
+        }
+    });
+}
 //批量上架&下架商品
 function batchGoods(type){
     if(goodsEdit){
@@ -519,7 +564,7 @@ function delGoods(id){
     };
     $.postJson(url,args,function(res) {
         if (res.success) {
-            window.location.reload(true);
+            window.location.href="/admin/goods/all?filter_status=all&order_status1=group&order_status2=add_time&filter_status2=0&page=0";
         }
     });
 }
@@ -569,11 +614,14 @@ function initEditor(text){
 function getGoodsItem(action,page,type_id){
     $(".wrap-loading-box").removeClass("hidden");
     var url;
+    var filter_status = $(".filter_status").attr("data-id");
+    var order_status1 = $(".order_status1").attr("data-id");
+    var order_status2 = $(".order_status2").attr("data-id");
+    var filter_status2 = $(".filter_status2").attr("data-id");
     if(action=="classify"){
-        url = "/admin/goods/all?type=classify&sub_type="+type_id+"&page="+pn;
-    }
-    else{
-        url="/admin/goods/all?type=all&page="+pn;
+        url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&type=classify&sub_type="+type_id+"&page="+pn;
+    }else{
+        url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&page="+pn;
     }
     $.ajax({
         url:url,
@@ -593,6 +641,7 @@ function getGoodsItem(action,page,type_id){
                 $(".wrap-loading-box").addClass("hidden");
             }else{
                 $(".wrap-loading-box").addClass("hidden");
+                Tip(res.error_txt);
             }
         }
     })
