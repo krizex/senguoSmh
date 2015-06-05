@@ -1262,70 +1262,6 @@ class Goods(AdminBaseHandler):
 	def initialize(self, action):
 		self._action = action
 
-	def getData(self,datalist):
-		data = []
-		shop_id = self.current_shop.id
-		for d in datalist:
-			add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else ''
-			delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
-			if d.img_url:
-				img_url= d.img_url.split(";")
-			else:
-				img_url = ''
-			intro = '' if not d.intro else d.intro
-			detail_describe = '' if not d.detail_describe else d.detail_describe
-
-			group_id = d.group_id
-			if  group_id == 0:
-				group_name = "默认分组"
-			elif group_id == -1:
-				group_name = "店铺推荐"
-			else:
-				group_name = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id=shop_id,status=1).first().name
-
-			charge_types = []
-			for charge in d.charge_types:
-				market_price ="" if not charge.market_price else charge.market_price
-				unit = charge.unit
-				unit_name = self.getUnit(unit)
-				charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
-					'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price,'select_num':charge.select_num})
-
-			_unit = d.unit
-			_unit_name = self.getUnit(_unit)
-			data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
-				'saled':d.saled,'storage':d.storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'info':intro,'priority':d.priority,\
-				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
-				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name})
-		return data
-
-	def getUnit(self,unit):
-		if unit == 1:
-			name ='个' 
-		elif unit == 2 :
-			name ='斤'
-		elif unit == 3 :
-			name ='份'
-		elif unit == 4 :
-		 	name ='kg'
-		elif unit == 5 :
-			name ='克'
-		elif unit == 6 :
-			name ='升'
-		elif unit == 7 :
-		 	name ='箱'
-		elif unit == 8 :
-			name ='盒'
-		elif unit == 9 :
-			name ='件'
-		elif unit == 10 :
-		 	name ='框'
-		elif unit == 11 :
-			name ='包'
-		else:
-			name =''
-		return name
-
 	def token(self,token):
 		editorToken = self.get_editor_token("editor", _id)
 
@@ -1339,76 +1275,43 @@ class Goods(AdminBaseHandler):
 		if action == "all":
 			if self.args["type"] !=[]:
 				_type = self.args["type"]
-				if _type == "all":
-					data = []
-					datalist = []
-					nomore = False
-					page = int(self.args["page"])
-					page_size = 10
-					offset = page * page_size				
-					try:
-						goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.active!=0).all()
-					except:
-						nomore=True
-					count = len(goods)
-					count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-					goods = goods[::-1]
-					if page==1 and count<=page_size:
-						nomore=True
-					if offset + page_size <= count:
-						datalist = goods[offset:offset+page_size]
-					elif offset <= count and offset + page_size >=count:
-						datalist = goods[offset:]
-					else:
-						nomore=True
-					if datalist == []:
-						nomore = True
-					else:
-						data = self.getData(datalist)
-					if page == 0:
-						if len(data)<page_size:
-							nomore = True
-					return self.send_success(data=data,nomore=nomore,count=count)
-
 				if _type == "classify":
 					data = []
 					datalist = []
 					page = int(self.args["page"])
 					page_size = 10
-					print(self.args["sub_type"])
+					offset = page * page_size
 					if self.args["sub_type"] != []:
 						type_id = int(self.args["sub_type"])
-						datalist = self.session.query(models.Fruit).filter_by(shop_id=shop_id,fruit_type_id=type_id).all()
-						count = len(datalist)
+						goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id,fruit_type_id=type_id).order_by(models.Fruit.add_time.desc())
+						count = goods.count()
 						count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-						data = self.getData(datalist)
+						datalist = goods.offset(offset).limit(10).all()
+						data = self.getGoodsData(datalist)
 						return self.send_success(data=data,count=count)
 
-				elif _type == "filter":
+				else:
 					data = []
 					datalist = []
-					nomore = False
+					page = int(self.args["page"])
 					page_size = 10
+					offset = page * page_size				
+					try:
+						goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.active!=0).order_by(models.Fruit.add_time.desc())
+					except:
+						goods = []
 					filter_status = self.args["filter_status"]
 					if filter_status == []:
 						filter_status = "all"
 					order_status1 = self.args["order_status1"]
 					order_status2 = self.args["order_status2"]
 					filter_status2 = self.args["filter_status2"]
-					if "page" in self.args:
-						page = int(self.args["page"])
-						offset = page * page_size
 
-					if 'type_id' in self.args:
-						try:
-							goods  = self.session.query(models.Fruit).filter_by(shop_id=shop_id,fruit_type_id=data['type_id'])
-						except:
-							return self.send_fail('矮油，没有你要找的～')
-					else:
-						try:
-							goods  = self.session.query(models.Fruit).filter_by(shop_id=shop_id)
-						except:
-							return self.send_fail('矮油，没有你要找的～')
+					# if 'type_id' in self.args:
+					# 	try:
+					# 		goods  = goods.filter_by(shop_id=shop_id,fruit_type_id=data['type_id'])
+					# 	except:
+					# 		return self.send_fail('矮油，没有你要找的～')
 
 					if filter_status == "all":
 						good_list = goods
@@ -1421,7 +1324,7 @@ class Goods(AdminBaseHandler):
 					elif filter_status =="current_sell":
 						good_list = goods.filter_by(current_saled !=0 )
 
-					if order_status1 =="group_id":
+					if order_status1 =="group":
 						good_list = good_list.order_by(models.Fruit.group_id)
 					elif order_status1 =="classify":
 						good_list = good_list.order_by(models.Fruit.classify)	
@@ -1441,32 +1344,11 @@ class Goods(AdminBaseHandler):
 						order_status3 = int(filter_status2)
 						good_list = good_list.filter_by(group_name = filter_status2)
 
-
-					good_list =good_list.all()
-					count = len(good_list)
+					count = good_list.count()
 					count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-
-					if page:
-						good_list = good_list[::-1]
-						if page==1 and count<=page_size:
-							nomore=True
-						if offset + page_size <= count:
-							datalist = good_list[offset:offset+page_size]
-						elif offset <= count and offset + page_size >=count:
-							datalist = good_list[offset:]
-						else:
-							nomore=True
-						if page == 0:
-							if len(data)<page_size:
-								nomore = True
-					else:
-						datalist = good_list
-
-					if datalist == []:
-						nomore = True
-					else:
-						data = self.getData(datalist)
-					return self.send_success(data=data,nomore=nomore,count=count)
+					datalist = good_list.offset(offset).limit(10).all()
+					data = self.getGoodsData(datalist)
+					return self.send_success(data=data,count=count)
 
 			group_list = []
 			groups = self.session.query(models.GoodsGroup).filter_by(shop_id=shop_id,status=1).all()
@@ -1607,7 +1489,7 @@ class Goods(AdminBaseHandler):
 			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,record_count=record_count)
 		elif action == "delete":
 			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active = 0).all()
-			data = self.getData(goods)
+			data = self.getGoodsData(goods)
 			return self.render("admin/goods-delete.html",context=dict(subpage="goods"),data=data)
 
 	def getClass(self,con):
