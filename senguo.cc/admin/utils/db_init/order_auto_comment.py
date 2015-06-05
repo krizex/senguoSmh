@@ -22,7 +22,7 @@ def order_comment(args):
 		for order in orders:
 			create_date = order.create_date
 			if  order.status == 5 and create_date < last_day:
-				order.status = 6
+				order.status = 7
 				order.commodity_quality = 100
 				order.send_speed = 100
 				order.shop_service = 100
