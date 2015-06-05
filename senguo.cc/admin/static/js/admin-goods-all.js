@@ -233,16 +233,45 @@ $(document).ready(function(){
 }).on("click",".ok-editor",function(){
     curEditor.attr("data-text",editor.html());
     $(".pop-editor").hide();
+}).on("click",".pre-page",function(){//上页
+    if(pn==0){
+        return Tip("当前已经是第一页");
+    }
+
+}).on("click",".next-page",function(){//下一页
+    var total = $(".page-total").html();
+    if(pn==parseInt(total)){
+        return Tip("当前已经是最后一页");
+    }
+}).on("click",".jump-to",function(){
+    var num = $(".input-page").val();
+    var total = $(".page-total").html();
+    if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>(parseInt(total)-1)){
+        return Tip("页码格式不对或者数字超出页码范围");
+    }
+
+}).on("keyup",".input-page",function(e){
+    if(e.keyCode==13){
+        var num = $(".input-page").val();
+        var total = $(".page-total").html();
+        if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>(parseInt(total)-1)){
+            return Tip("页码格式不对或者数字超出页码范围");
+        }
+    }
 });
 //添加&编辑商品
 function dealGoods($item,type){
     var limit_num = $item.find(".limit_num").val();
     var priority = $item.find(".goods-priority").val();
+    var name = $item.find(".goods-goods-name").val();
     if(isNaN(limit_num) || parseInt(limit_num)<0){
         return Tip("商品限购必须为数字");
     }
     if(isNaN(priority) || parseInt(priority)>9 || parseInt(priority)<0){
         return Tip("优先级必须为0-9的数字");
+    }
+    if(name.length>10 || $.trim(name)==""){
+        return Tip("商品名字不能为空且不能超过10个字");
     }
     var imgUrls = $item.find(".drag-img-list").find("img");
     var imgList = {};
@@ -286,7 +315,6 @@ function dealGoods($item,type){
             price_list.push(item);
         });
     }
-    var name = $item.find(".goods-goods-name").val();
     var group_name = $item.find(".current-group").html();
     var group_id = $item.find(".current-group").attr("data-id");
     var info = $item.find(".goods-info").val();
@@ -587,7 +615,7 @@ function insertGoods(data){
         }
         /*$item.find(".goods-comment-num").html("2222");*/
         $item.find(".goods-vol").html(goods.saled);
-        $item.find(".sw-link-txt").html("/customer/goods/"+goods.id);
+        $item.find(".sw-link-txt").val("http://senguo.cc/customer/goods/"+goods.id);
         $item.find(".group-goods-lst").html($("#group-goods-lst").children("li").clone());
         $item.find(".group-goods-lst").find(".group-counts").hide();
         $(".goods-all-list").append($item);
