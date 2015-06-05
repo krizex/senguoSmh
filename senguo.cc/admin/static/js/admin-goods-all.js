@@ -306,11 +306,11 @@ function dealGoods($item,type){
     }else{
         var arr1 = [];
         var arr2 = [];
-        imgUrls.each(function(){
-            var $this = $(this);
+        for(var m=0; m<imgUrls.size(); m++){
+            var $this = imgUrls.eq(m);
             arr1.push($this.closest("li").attr("data-index"));
             arr2.push($this.attr("url"));
-        });
+        }
         imgList.index = arr1;
         imgList.src = arr2;
     }
