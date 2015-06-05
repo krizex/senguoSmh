@@ -202,12 +202,15 @@ class ShopList(FruitzoneBaseHandler):
 				for shop in shops:
 					lat2 = shop['lat']
 					lon2 = shop['lon']
-					shop['distance'] = self.get_distance(lat1,lon1,lat2,lon2)
-				shops.sort(key = lambda shop:shop['distance'] , reverse = True)
+					if lat1 and lon1 and lat2 and lon2:
+						shop['distance'] = int(self.get_distance(lat1,lon1,lat2,lon2))
+					else:
+						shop['distance'] = 9999999
+				shops.sort(key = lambda shop:shop['distance'])
 			elif key_word == 3: #满意度最高
 				shops.sort(key = lambda shop:shop['satisfy'],reverse = True)
 			elif key_word == 4: #评价最多
-				shops.sort(key = lambda shop:shop['comment_count'] , reverse = True)
+				shops.sort(key = lambda shop:shop['comment_count'],reverse = True)
 			else:
 				return self.send_fail(error_text = 'key_word error')
 		if shops == [] or len(shops)<_page_count:

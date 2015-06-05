@@ -328,6 +328,9 @@ class Discover(CustomerBaseHandler):
 			shop_auth = shop.shop_auth
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self.set_cookie("market_shop_code",str(shop.shop_code))
+		else:
+			shop_auth = 0
+			confess_active = 0
 		try:
 			confess_count =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id,scan=0).count()
 		except:
@@ -685,7 +688,10 @@ class ShopProfile(CustomerBaseHandler):
 class Members(CustomerBaseHandler):
 	def get(self):
 		# shop_id = self.shop_id
-		shop_id = int(self.get_cookie("market_shop_id"))
+		try:
+			shop_id = int(self.get_cookie("market_shop_id"))
+		except:
+			return self.send_fail("您访问的店铺有错，请返回后刷新重新访问")
 		# print("[店铺成员]当前店铺ID：",shop_id)
 		admin_id = self.session.query(models.Shop.admin_id).filter_by(id=shop_id).first()
 		if not admin_id:
@@ -693,7 +699,7 @@ class Members(CustomerBaseHandler):
 		admin_id = admin_id[0]
 		members = self.session.query(models.Accountinfo, models.HireLink.work).filter(
 			models.HireLink.shop_id == shop_id,models.HireLink.active==1, or_(models.Accountinfo.id == models.HireLink.staff_id,
-				models.Accountinfo.id == admin_id)).all()
+			models.Accountinfo.id == admin_id)).all()
 		member_list = []
 		# print(members)
 		def work(id, w):
@@ -1249,7 +1255,8 @@ class Market(CustomerBaseHandler):
 	def cart_list(self):
 		fruits = self.args["fruits"]
 		mgoods = self.args["mgoods"]
-
+		if len(fruits)+len(mgoods) > 20:
+			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
 		cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=self.shop_id).one()
 		fruits2 = {}
 		mgoods2 = {}
@@ -1364,6 +1371,8 @@ class Cart(CustomerBaseHandler):
 
 		if not (fruits or mgoods):
 			return self.send_fail('请至少选择一种商品')
+		if len(fruits)+len(mgoods) > 20:
+			return self.send_fail("你的购物篮太满啦！请不要一次性下单超过20种物品")
 		unit = {1:"个", 2:"斤", 3:"份"}
 		f_d={}
 		m_d={}
@@ -1405,6 +1414,7 @@ class Cart(CustomerBaseHandler):
 				# print(mcharge_type.price)
 				m_d[mcharge_type.id]={"mgoods_name":mcharge_type.mgoods.name, "num":mgoods[str(mcharge_type.id)],
 									  "charge":"%.2f元/%.1f%s" % (float(mcharge_type.price), mcharge_type.num, unit[mcharge_type.unit])}
+		
 
 		#按时达/立即送 的时间段处理
 		start_time = 0
@@ -1487,13 +1497,13 @@ class Cart(CustomerBaseHandler):
 		# woody
 		########################################################################
 		w_admin = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		default_statff=[]
+		default_staff=[]
 		try:
-			default_statff = self.session.query(models.HireLink).filter_by( shop_id =shop_id,default_staff=1).first()
+			default_staff = self.session.query(models.HireLink).filter_by( shop_id =shop_id,default_staff=1).first()
 		except:
 			print('this shop has no default staff')
-		if default_statff:
-			w_SH2_id =default_statff.staff_id
+		if default_staff:
+			w_SH2_id =default_staff.staff_id
 		else:
 			if w_admin is not None:
 					w_SH2_id = w_admin.admin.id
@@ -1576,16 +1586,22 @@ class CartCallback(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments('order_id')
 	@tornado.web.authenticated
 	def post(self):
-		order_id = int(self.args['order_id'])
+		try:
+			order_id = int(self.args['order_id'])
+		except:
+			Logger.error("CartCallback: get order_id error")
+			return self.send_fail("CartCallback: get order_id error")
 		order    = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
-			return self.send_fail("cart_callback:order not found!")
+			Logger.warn("CartCallback: order not found")
+			return self.send_fail("CartCallback: order not found")
 		shop_id = order.shop_id
 		customer_id = order.customer_id
 		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
 		shop    =  self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop or not customer:
-			return self.send_fail('shop not found')
+			Logger.warn("CartCallback: shop/customer not found")
+			return self.send_fail('CartCallback: shop/customer not found')
 		# #送货地址处理
 		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		# if not address:

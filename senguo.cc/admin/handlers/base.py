@@ -105,11 +105,17 @@ class GlobalBaseHandler(BaseHandler):
 	def timestamp_to_str(self, timestamp):
 		return time.strftime("%Y-%m-%d %H:%M", time.gmtime(timestamp))
 
+	#通过经纬度计算距离
 	def get_distance(self,lat1,lon1,lat2,lon2):
-		hsinX = math.sin((lon1 - lon2) * 0.5)
-		hsinY = math.sin((lat1 - lat2) * 0.5)
-		h = hsinY * hsinY + (math.cos(lat1) * math.cos(lat2) * hsinX * hsinX)
-		return 2 * math.atan2(math.sqrt(h), math.sqrt(1 - h)) * 6367000
+		EARTH_RADIUS = 6378.137
+		radLat1 = lat1 * math.pi / 180.0
+		radLat2 = lat2 * math.pi / 180.0
+		a = radLat1 - radLat2
+		b = lon1 * math.pi / 180.0 - lon2 * math.pi / 180.0
+		s = 2 * math.asin(math.sqrt(math.pow(math.sin(a / 2), 2) + math.cos(radLat1) * math.cos(radLat2) * math.pow(math.sin(b / 2), 2)))
+		s = s * EARTH_RADIUS
+		s*= 1000
+		return s;
 
 
 	def code_to_text(self, column_name, code):
@@ -118,11 +124,11 @@ class GlobalBaseHandler(BaseHandler):
 		#将服务区域的编码转换为文字显示
 		if column_name == "service_area":
 			if code & models.SHOP_SERVICE_AREA.HIGH_SCHOOL:
-				text += "高校 "
+				text += "高校"
 			if code & models.SHOP_SERVICE_AREA.COMMUNITY:
-				text += "社区 "
+				text += "社区"
 			if code & models.SHOP_SERVICE_AREA.TRADE_CIRCLE:
-				text += "商圈 "
+				text += "商圈"
 			if code & models.SHOP_SERVICE_AREA.OTHERS:
 				text += "其他"
 			return text
@@ -362,7 +368,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return self.get_wexin_oauth_link(next_url = next_url)
 
 	def get_current_user(self):
-		# print(self.__account_model__,'到底是什么？',self.__account_cookie_name__)
+		print(self.__account_model__,'到底是什么？',self.__account_cookie_name__)
 		if not self.__account_model__ or not self.__account_cookie_name__:
 			raise Exception("overwrite model to support authenticate.")
 
@@ -372,19 +378,18 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		user_id = self.get_secure_cookie(self.__account_cookie_name__) or b'0'
 		user_id = int(user_id.decode())
 		# print("[用户信息]当前用户ID：",user_id)
-		# print(type(self))
-		# print(self.__account_model__)
+		print(type(self))
+		print(self.__account_model__)
 
 		if not user_id:
 			self._user = None
 		else:
-			# print(user_id,'get_current_user: user_id')
+			Logger.info("_AccountBaseHandler get_current_user: user_id: ",user_id)
 			self._user = self.__account_model__.get_by_id(self.session, user_id)
-			# print(self._user,"self._user")
+			Logger.info("_AccountBaseHandler get_current_user: self._user: ",self._user)
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:
-				Logger.warn("Suspicious Access", "may be trying to fuck you")
-				
+				Logger.warn("_AccountBaseHandler get_current_user: self._user not found")
 		return self._user
 
 	_ARG_DEFAULT = []
