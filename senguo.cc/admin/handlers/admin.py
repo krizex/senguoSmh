@@ -1329,7 +1329,7 @@ class Goods(AdminBaseHandler):
 	def token(self,token):
 		editorToken = self.get_editor_token("editor", _id)
 
-	@AdminBaseHandler.check_arguments("type?","sub_type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?")
+	@AdminBaseHandler.check_arguments("link_action?","type?","sub_type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?")
 	def get(self):
 		action = self._action
 		_id = str(time.time())
@@ -1577,20 +1577,21 @@ class Goods(AdminBaseHandler):
 			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id)
 			default_count = goods.filter_by(group_id=0).count()
 			record_count = goods.filter_by(group_id=-1).count()
-			group_priority = current_shop.group_priority.split(";")
+			group_priority = self.session.query(models.GroupPriority).join(models.GoodsGroup,models.GoodsGroup.id==models.GroupPriority.group_id).\
+			filter(models.GroupPriority.shop_id == shop_id,models.GoodsGroup.status==1).all()
 			goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id)
-			# _group = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1).all()
-			# for g in _group:
-			# 	goods_count = goods.filter_by( group_id = g.id ).count()
-			# 	data.append({'id':g.id,'name':g.name,'intro':g.intro,'num':goods_count})
-			for _id in group_priority:
-				_id = int(_id)
-				if _id == 0:
-					data.append({'id':0,'name':'','intro':'','num':default_count})
-				else:
-					_group = self.session.query(models.GoodsGroup).filter_by(id=_id,shop_id = shop_id,status = 1).first()
-					goods_count = goods.filter_by( group_id = _group.id ).count()
-					data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count})
+			_group = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1).all()
+			for g in _group:
+				goods_count = goods.filter_by( group_id = g.id ).count()
+				data.append({'id':g.id,'name':g.name,'intro':g.intro,'num':goods_count})
+			# for _id in group_priority:
+			# 	_id = int(_id)
+			# 	if _id == 0:
+			# 		data.append({'id':0,'name':'','intro':'','num':default_count})
+			# 	else:
+			# 		_group = self.session.query(models.GoodsGroup).filter_by(id=_id,shop_id = shop_id,status = 1).first()
+			# 		goods_count = goods.filter_by( group_id = _group.id ).count()
+			# 		data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count})
 			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,record_count=record_count)
 		elif action == "delete":
 			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active = 0).all()
@@ -1734,16 +1735,24 @@ class Goods(AdminBaseHandler):
 								img_urls.append(imgurl)
 							_img_urls = ";".join(img_urls)
 				if "charge_types" in data:
+					charge_old = self.session.query(models.ChargeType).filter_by(fruit_id=int(data["goods_id"])).all()
+					for c in charge_old:
+						c.active = 0
+						self.session.commit()
 					for charge_type in data["charge_types"]:
 						unit_num = int(charge_type["unit_num"]) if charge_type["unit_num"] else 1
 						select_num = int(charge_type["select_num"]) if charge_type["select_num"] else 1
 						market_price = charge_type["market_price"] if charge_type["market_price"] else 0
-						charge_types = (models.ChargeType(price=charge_type["price"],
+						charge_types = models.ChargeType(
+												fruit_id=int(data["goods_id"]),
+												price=charge_type["price"],
 												unit=int(charge_type["unit"]),
 												num=charge_type["num"],
 												unit_num=unit_num,
 												market_price=market_price,
-												select_num=select_num))
+												select_num=select_num)
+						self.session.add(charge_types)
+						
 				goods.update(session=self.session,
 						name = data["name"],
 						storage = data["storage"],
@@ -1753,8 +1762,7 @@ class Goods(AdminBaseHandler):
 						priority = data["priority"],
 						limit_num = data["limit_num"],
 						group_id = group_id,
-						detail_describe = data["detail_describe"],
-						charge_types = charge_types
+						detail_describe = data["detail_describe"]
 						)
 
 			elif action == "default_goods_img":  # 恢复默认图
@@ -1781,7 +1789,7 @@ class Goods(AdminBaseHandler):
 			return self.send_qiniu_token("add", 0)
 
 		elif action in ["batch_on",'batch_off',"batch_group"]:
-			for _id in data:
+			for _id in data["goods_id"]:
 				try:
 					goods = self.session.query(models.Fruit).filter_by( id = _id ).first()
 				except:
@@ -1836,21 +1844,15 @@ class Goods(AdminBaseHandler):
 			id_list = data["id"]
 			index_list = data["index"]
 			data = []
-			for i in range(len(id_list)+1):
-				for index,val in enumerate(index_list):
-					val= int(val)
-					if val == i:
-						_id = id_list[index]
-						data.append(_id)
-						if _id !=0:
-							try:
-								group = groups.filter_by(id=_id).first()
-							except:
-								return self.send_fail('该分组不存在')
-							if group:
-								group.priority = val
-								self.session.commit()
-			current_shop.group_priority = ";".join(data)
+			for index,val in enumerate(index_list):
+				_id = id_list[index]
+				if _id !=0:
+					try:
+						group = groups.filter_by(id=_id).first()
+					except:
+						return self.send_fail('该分组不存在')
+					group_priority = models.GroupPriority(shop_id=shop_id,group_id=_id,priority=index)
+					self.session.add(group_priority)
 			self.session.commit()
 
 		elif action == "batch_reset_delete":
