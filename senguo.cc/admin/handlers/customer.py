@@ -733,7 +733,7 @@ class Comment(CustomerBaseHandler):
 		commodity_quality = 0
 		send_speed = 0
 		shop_service = 0
-		orders = self.session.query(models.Order).filter(models.Order.shop_id = shop_id ,models.Order.status =6,models.Order.comment).first()
+		orders = self.session.query(models.Order).filter(models.Order.shop_id == shop_id ,models.Order.status ==6,models.Order.comment).first()
 		if orders:
 			q = self.session.query(func.avg(models.Order.commodity_quality),\
 				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
