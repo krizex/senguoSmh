@@ -1289,7 +1289,7 @@ class Goods(AdminBaseHandler):
 				unit = charge.unit
 				unit_name = self.getUnit(unit)
 				charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
-					'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price})
+					'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price,'select_num':charge.select_num})
 
 			_unit = d.unit
 			_unit_name = self.getUnit(_unit)
@@ -1377,10 +1377,11 @@ class Goods(AdminBaseHandler):
 					page_size = 10
 					offset = page * page_size				
 					try:
-						goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).all()
+						goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.active!=0).all()
 					except:
 						nomore=True
 					count = len(goods)
+					count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 					goods = goods[::-1]
 					if page==1 and count<=page_size:
 						nomore=True
@@ -1467,6 +1468,7 @@ class Goods(AdminBaseHandler):
 
 					good_list =good_list.all()
 					count = len(good_list)
+					count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 
 					if page:
 						good_list = good_list[::-1]
@@ -1603,23 +1605,26 @@ class Goods(AdminBaseHandler):
 		elif action == "group":
 			data = []
 			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id)
-			defatult_count = goods.filter_by(group_id=0).count()
+			default_count = goods.filter_by(group_id=0).count()
 			record_count = goods.filter_by(group_id=1000).count()
 			group_priority = current_shop.group_priority.split('"')
 			print(current_shop.group_priority)
-			print(eval(current_shop.group_priority))
-			i=0
-			for n in range(len(data)):
-				for g in data:
-					print(g,'2333')		
-					if g[1] == i:
-						if i == 0:
-							data.append({'id':0,'':g.name,'intro':'','num':record_count})
-						else:
-							_group = self.session.query(models.GoodsGroup).filter_by(id=int(g[0]),shop_id = shop_id,status = 1).first()
-							goods_count = goods.filter_by( group_id = _group.id ).count()
-							data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count})
-			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,defatult_count=defatult_count)
+			# i=0
+			# for n in range(len(data)):
+			# 	for g in data:
+			# 		print(g,'2333')		
+			# 		if g[1] == i:
+			# 			if i == 0:
+			# 				data.append({'id':0,'':g.name,'intro':'','num':record_count})
+			# 			else:
+			# _group = self.session.query(models.GoodsGroup).filter_by(id=int(g[0]),shop_id = shop_id,status = 1).first()
+			# goods_count = goods.filter_by( group_id = _group.id ).count()
+			# data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count})
+			_group = self.session.query(models.GoodsGroup).filter_by(shop_id = shop_id,status = 1).all()
+			for g in _group:
+				goods_count = goods.filter_by( group_id = g.id ).count()
+				data.append({'id':g.id,'name':g.name,'intro':g.intro,'num':goods_count})
+			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,default_count=default_count)
 		elif action == "delete":
 			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active = 0).all()
 			data = self.getData(goods)

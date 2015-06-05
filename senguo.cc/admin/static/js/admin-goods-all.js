@@ -275,9 +275,9 @@ function dealGoods($item,type){
         if (res.success) {
             if(type == "add"){
                 Tip("新商品添加成功！");
-                setTimeout(function(){
-                    window.location.reload(true);
-                },2000);
+                // setTimeout(function(){
+                //     window.location.reload(true);
+                // },2000);
             }else{
                 Tip("商品编辑成功！");
                 $item.prev(".goods-all-item").show();

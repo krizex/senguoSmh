@@ -281,7 +281,7 @@ function move($obj, iTarget){
 }
 
 function priority(){
-    var group_list=[];
+    var data={};
     for(var i=0;i<$('.item').length;i++){
         var $this=$('.item').eq(i);
         var id=$this.attr("data-id");
@@ -289,10 +289,9 @@ function priority(){
         var list=[]
         list.push(id);
         list.push(index);
-        group_list.push(list);
+        data.item=list;
     }
     var url="";
-    var data={group_list:group_list};
     var args = {
         action:'group_priority',
         data:data
