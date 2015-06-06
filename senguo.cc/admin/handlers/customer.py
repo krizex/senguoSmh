@@ -1098,7 +1098,7 @@ class Cart(CustomerBaseHandler):
 
 		if not fruits:
 			return self.send_fail('请至少选择一种商品')
-		unit = {1:"个", 2:"斤", 3:"份"}
+		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"框",11:"包",12:""}
 		f_d={}
 		totalPrice=0
 
