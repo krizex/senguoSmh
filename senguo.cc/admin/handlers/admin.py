@@ -1581,7 +1581,7 @@ class Goods(AdminBaseHandler):
 						if val == i:
 							imgurl = img_list[index]
 							img_urls.append(imgurl)
-						args["imgurl"] = ";".join(img_urls)
+						args["img_url"] = ";".join(img_urls)
 
 			if "priority" in data:
 				priority = data["priority"]
