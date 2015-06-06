@@ -1579,7 +1579,7 @@ class Cart(CustomerBaseHandler):
 			order.get_num(session,order.id)
 			print("[定时任务]订单取消成功：",order.num)
 		else:
-			print("[定时任务]订单取消错误，该订单已完成支付",order_num)
+			print("[定时任务]订单取消错误，该订单已完成支付",order.num)
 
 class CartCallback(CustomerBaseHandler):
 
