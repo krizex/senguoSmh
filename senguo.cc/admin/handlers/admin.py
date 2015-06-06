@@ -660,7 +660,6 @@ class Order(AdminBaseHandler):
 			# orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in (5, 6)]
 			orders = [x for x in orderlist if x.type == order_type and x.status in (5, 6, 7)]
 			count = len(orders)
-			print(count)
 		elif order_status == 4:
 			pass
 		else:
@@ -1061,7 +1060,7 @@ class Order(AdminBaseHandler):
 				count[order.type*10+1] += 1
 			elif order.status in (2, 3, 4):
 				count[order.type*10+2] += 1
-			elif order.status in (5, 6):
+			elif order.status in (5, 6, 7):
 				count[order.type*10+3] += 1
 			elif order.status == 10:
 				count[order.type*10+4] += 1
