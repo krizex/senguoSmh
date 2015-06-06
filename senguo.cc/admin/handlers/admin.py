@@ -158,10 +158,10 @@ class SwitchShop(AdminBaseHandler):
 		for shop in shops:
 			satisfy = 0
 			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id',  'wx_accountname','auth_change',
-										 'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
-										 'alipay_account','alipay_account_name','available_balance',\
-										 'new_follower_sum','new_order_sum']
-			orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).first()
+										'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
+										'alipay_account','alipay_account_name','available_balance',\
+										'new_follower_sum','new_order_sum']
+			orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,status.in_([6,7])).first()
 			if orders:
 				commodity_quality = 0
 				send_speed = 0
@@ -635,7 +635,7 @@ class Order(AdminBaseHandler):
 			orders.sort(key = lambda order:order.send_time,reverse = False)
 			session.commit()
 		elif order_status == 5:#all
-			orders = [x for x in self.current_shop.orders if x.type == order_type ]
+			orders = [x for x in self.current_shop.orders if x.type == order_type]
 			count = len(orders)
 			session = self.session
 			# for order in orders:
@@ -658,7 +658,7 @@ class Order(AdminBaseHandler):
 			except:
 				return self.send_fail("orderlist error")
 			# orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in (5, 6)]
-			orders = [x for x in orderlist if x.type == order_type and x.status in (5, 6)]
+			orders = [x for x in orderlist if x.type == order_type and x.status in (5, 6, 7)]
 			count = len(orders)
 		elif order_status == 4:
 			pass
@@ -772,8 +772,9 @@ class Order(AdminBaseHandler):
 				shop_id = shop_id).first()
 			if not customer:
 				return self.send_fail('customer error')
-			customer.shop_new = 1
-			# print("[订单管理]用户",customer_id,"完成订单，新用户标识置为：",customer.shop_new)
+			if customer.shop_new == 0:
+				customer.shop_new = 1
+				# print("[订单管理]用户",customer_id,"完成订单，新用户标识置为：",customer.shop_new)
 			self.session.commit()
 
 			try:

@@ -1202,8 +1202,8 @@ class Order(MapBase, _CommonApi):
 	receiver = Column(String(64), nullable=False)
 	address_text = Column(String(1024), nullable=False)
 	message = Column(String(100)) #用户留言
-	status = Column(TINYINT, default=ORDER_STATUS.ORDERED)  # 订单状态:DELETED = 0,ORDERED = 1, JH = 2,SH1 = 3
-														   # #SH2 = 4,Received=5，FINISH = 6, AFTER_SALE = 10
+	status = Column(TINYINT, default=ORDER_STATUS.ORDERED)  # 订单状态:未付款 = －1, 已删除 = 0, 未处理 = 1, JH = 2, SH1 = 3
+														    # SH2 = 4, 已收货 = 5, 用户评价 = 6, 自动评价 = 7, AFTER_SALE = 10
 	type = Column(TINYINT) #订单类型 1:立即送 2：按时达
 	intime_period = Column(Integer,default = 30) #when type is 1,it's usefull
 	freight = Column(SMALLINT, default=0)  # 订单运费
@@ -1235,9 +1235,9 @@ class Order(MapBase, _CommonApi):
 	send_time=Column(String(45))
 	del_reason = Column(String(300))
 
-	commodity_quality = Column(Integer,default = 100)
-	send_speed        = Column(Integer,default = 100)
-	shop_service      = Column(Integer,default = 100)
+	commodity_quality = Column(Integer)
+	send_speed        = Column(Integer)
+	shop_service      = Column(Integer)
 
 	online_type       = Column(String(8))
 	send_admin_id =Column(Integer,default=0) #record admin_id when to send the order #5.25

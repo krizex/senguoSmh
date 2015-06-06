@@ -1578,6 +1578,8 @@ class Cart(CustomerBaseHandler):
 			return self.send_fail('order_cancel_auto:order not found!')
 		if order.status == -1:
 			order.status = 0
+			order.del_reason = "timeout"
+			order.get_num(session,order.id)
 		else:
 			print('order has payed!')
 
@@ -1799,8 +1801,10 @@ class Order(CustomerBaseHandler):
 			except:
 				return self.send_fail("orderlist error")
 
+			# Modify by Sky - 2015.6.5
+			# 当前“已完成”只展示“未评价”订单，前台“已完成”改为了“未评价”，但action还未改，仍为finish
 			order5 = []
-			order6 = []
+			#order6 = []
 			for x in orderlist:
 				if x.status == 5:
 					order5.append(x)
@@ -1846,8 +1850,12 @@ class Order(CustomerBaseHandler):
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
 			if not order:return self.send_error(404)
 			if order.status == 0:
-				return self.send_fail("订单已经取消，不能重复操作")
-			if order.pay_type == 3 and order.status!=-1:
+				return self.send_fail("该订单已经取消，不能重复操作")
+			elif order.status in [2,3,4]:
+				return self.send_fail("该订单已在配送中，无法取消")
+			elif order.status in [5,6,7]:
+				return self.send_fail("该订单已经送达，无法取消")
+			if order.pay_type == 3 and order.status != -1:
 				return self.send_fail("在线支付『已付款』的订单暂时不能取消，如有疑问请直接与店家联系")
 			print("[订单管理]取消订单，订单原状态：",order.status)
 			order.status = 0
@@ -1928,6 +1936,8 @@ class Order(CustomerBaseHandler):
 			# print(order,'i am order')
 			if not order:return self.send_error(404)
 			# print(order.id,'i am ')
+			if order.status != 5:
+				self.send_fail("只有已送达并且没有评价过的订单才能评价哦！")
 			comment = order.comment
 			order.status = 6
 			order.comment_create_date = datetime.datetime.now()

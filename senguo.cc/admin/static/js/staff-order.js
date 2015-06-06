@@ -77,6 +77,7 @@ $(document).ready(function(){
         var status=$this.data('status');
         // $this.find('.send_time').text(start_hour+':'+start_minute+'-'+end_hour+':'+end_minute);
         if(status==5) $this.addClass('text-grey bg-grey').find('.toggle').addClass('text-grey').find('.finish_btn').removeClass('order_finish').addClass('arrive').text('已完成');
+        if(status==6 || status==7) $this.addClass('text-grey bg-grey').find('.toggle').addClass('text-grey').find('.finish_btn').removeClass('order_finish').addClass('arrive').text('已评价');
         // if(type==1){
         //     $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
         // }
@@ -91,8 +92,9 @@ $(document).ready(function(){
 function statusText(target,n){
     switch (n){
         case 1:target.text('未处理').addClass('text-green');break;
-        case 4:target.text('配送中').addClass('text-green');break;
+        case 2:case 3:case 4:target.text('配送中').addClass('text-green');break;
         case 5:target.text('已送达').addClass('text-grey');break;
+        case 6:case 7:target.text('已评价').addClass('text-grey');break;
     }
 }
 

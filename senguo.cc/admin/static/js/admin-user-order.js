@@ -213,13 +213,20 @@ function orderItem(item){
         } 
         //订单状态
         if(status==0) {
-            if(del_reason!=null){
-                $item.find('.order-status').empty().text('该订单已删除（删除原因：'+del_reason+'）');
-            }
-            else{
+            if(del_reason=null){
                 $item.find('.order-status').empty().text('该订单已被用户取消');
             }
+            else if(del_reason='timeout'){
+                $item.find('.order-status').empty().text('该订单15分钟未支付，已自动取消');
+            }
+            else{
+                $item.find('.order-status').empty().text('该订单已删除（原因：'+del_reason+'）');
+            }
             $item.find('.unable_edit').show();
+        }
+        else if(status==-1) {
+            $item.find('.status_unpaid').removeClass('hidden');
+            $item.find('.able_edit').show();
         }
         else if(status==1) {
         	$item.find('.status_order').removeClass('hidden');
@@ -234,12 +241,16 @@ function orderItem(item){
         else if(status==5) {
         	$item.find('.status_finish').removeClass('hidden');
         	$item.find('.able_edit').show();
-             $item.find('.current_sender').show();
-             $item.find('.send_change').hide();
+            $item.find('.current_sender').show();
+            $item.find('.send_change').hide();
         }
         else if(status==6) {
         	$item.find('.status_finish').removeClass('hidden');
         	$item.find('.unable_edit').show();
+        }
+        else if(status==7) {
+            $item.find('.status_finish').removeClass('hidden');
+            $item.find('.auto_comment').show();
         }
         //商品数据
         var goods_num=0;

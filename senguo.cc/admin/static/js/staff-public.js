@@ -142,7 +142,7 @@ var confirmRemove=function(){
     $('#confirmBox').remove();
     $('.modal_bg').remove();
 }
-//word notice
+
 //word notice
 var noticeTimer = null;
 var tempObj = null;

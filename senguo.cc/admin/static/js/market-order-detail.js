@@ -67,6 +67,13 @@ function removeDom(){
 }
 function statusText(n){
     switch (n){
+        case -1:
+            $("#status-txt").text('未付款');
+            $(".order-wawa").css("left","0");
+            $(".order-line-grade").css("width","0");
+            $(".order-status-txt").css("left","0");
+            $(".tel-btn").hide();
+            break;
         case 0:
             $("#status-txt").text('已取消');
             $(".order-wawa").css("left","0%");
@@ -81,6 +88,8 @@ function statusText(n){
             $(".order-status-txt").css("left","0%");
             $(".tel-btn").show();
             break;
+        case 2:
+        case 3:
         case 4:
             $("#status-txt").text('配送中');
             $(".order-wawa").css("left","50%");
@@ -96,18 +105,12 @@ function statusText(n){
             $(".tel-btn").show();
             break;
         case 6:
+        case 7:
             $("#status-txt").text('已评价');
             $(".order-wawa").css("left","100%");
             $(".order-line-grade").css("width","100%");
             $(".order-status-txt").css("left","100%");
             $(".tel-btn").show();
-            break;
-        case -1:
-            $("#status-txt").text('未付款');
-            $(".order-wawa").css("left","0");
-            $(".order-line-grade").css("width","0");
-            $(".order-status-txt").css("left","0");
-            $(".tel-btn").hide();
             break;
     }
 }
