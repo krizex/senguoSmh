@@ -20,8 +20,8 @@ def order_comment(args):
 		print("没有需要处理的订单！")
 	else:
 		for order in orders:
-			create_date = order.create_date
-			if  order.status == 5 and create_date < last_day:
+			arrival_date = time.strptime(order.arrival_day, '%Y-%m-%d)
+			if  order.status == 5 and arrival_date < last_day:
 				order.status = 7
 				order.commodity_quality = 100
 				order.send_speed = 100
@@ -29,13 +29,13 @@ def order_comment(args):
 				print('自动好评',order.id)
 			#else:
 			#	print("无需处理")
-		print(time.time())
+		#print(time.time())
 		session.commit()
 
 def delete(args):
 	session = models.DBSession()
 	session.query(models.AccessToken).delete()
-	print("[AccessToken] update ",session.query(models.AccessToken).count())
+	# print("[AccessToken] update ",session.query(models.AccessToken).count())
 	session.commit()
 
 
