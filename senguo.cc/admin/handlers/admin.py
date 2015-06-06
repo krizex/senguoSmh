@@ -1648,8 +1648,6 @@ class Goods(AdminBaseHandler):
 							if val == i:
 								imgurl = img_list[index]
 								img_urls.append(imgurl)
-								if i == 0:
-									img_first = img_list[index]
 							_img_urls = ";".join(img_urls)
 
 				if "charge_types" in data:
@@ -1681,7 +1679,7 @@ class Goods(AdminBaseHandler):
 						group_id = group_id,
 						detail_describe = data["detail_describe"]
 						)
-				return self.send_success(img_first=img_first)
+				return self.send_success(img_url=img_urls)
 
 			elif action == "default_goods_img":  # 恢复默认图
 				goods.img_url = ''
