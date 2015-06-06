@@ -845,6 +845,8 @@ class Market(CustomerBaseHandler):
 					if _group:
 						goods_count = goods.filter_by( group_id = _group.id ).count()
 						group_list.append({'id':_group.id,'name':_group.name})
+		else:
+			data.append({'id':0,'name':'默认分组'})
 
 		return self.render("customer/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,\

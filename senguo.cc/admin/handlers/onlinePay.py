@@ -48,8 +48,8 @@ class OnlineWxPay(CustomerBaseHandler):
 
 		charge_types = self.session.query(models.ChargeType).filter(
 			models.ChargeType.id.in_(eval(order.fruits).keys())).all()
-		mcharge_types = self.session.query(models.MChargeType).filter(
-			models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
+		# mcharge_types = self.session.query(models.MChargeType).filter(
+		# 	models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
 
 		if order.type == 2:
 			freight = order.shop.config.freight_on_time
@@ -65,11 +65,11 @@ class OnlineWxPay(CustomerBaseHandler):
 				sender_img = None
 		goods = []
 		f_d = eval(order.fruits)
-		m_d = eval(order.mgoods)
+		# m_d = eval(order.mgoods)
 		for f in f_d:
 			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-		for m in m_d:
-			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+		# for m in m_d:
+		# 	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('onlineWxPay')
 		print("[微信支付]redirect_uri：",path)
