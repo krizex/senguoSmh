@@ -877,14 +877,19 @@ class Market(CustomerBaseHandler):
 
 				charge_types= []
 				for charge_type in fruit.charge_types:
-					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
-				if fruit.fruit_type_id >= 1000:
+					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit,'market_price':charge_type.market_price})
+				if fruit.fruit_type_id < 1000:
+					w_tag = "fruit"
+				elif fruit.fruit_type_id in[1000,2000]:
 					w_tag = "dry_fruit"
 				else:
-					w_tag = "fruit"
-				data.append([w_tag,{'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
-				'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour,\
-				'group_id':fruit.group_id,'favour_today':favour_today}])
+					w_tag = "other"
+
+				img_url = fruit.img_url.split(";")[0]
+
+				data.append({'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
+				'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour,\
+				'group_id':fruit.group_id,'favour_today':favour_today,'classify':w_tag})
 			return data
 
 	@CustomerBaseHandler.check_arguments("page?:int","group_id?:int")
@@ -899,7 +904,7 @@ class Market(CustomerBaseHandler):
 		if not shop:
 			return self.send_error(404)
 		
-		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1).offset(offset).limit(page_size).all()
+		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1).order_by(models.Fruit.add_time.desc()).offset(offset).limit(page_size).all()
 		if not fruits:
 			return self.send_fail('fruit_list:fruits not found')
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
@@ -918,11 +923,11 @@ class Market(CustomerBaseHandler):
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
 			return self,send_error(404)
-		fruits = self.session.query(models.Fruit).join(models.Shop).join(models.GroupPriority).order_by(models.GroupPriority.priority)
+		fruits = self.session.query(models.Fruit).join(models.Shop).join(models.GroupPriority).order_by(models.GroupPriority.priority,models.Fruit.add_time.desc())
 		print(fruits)
 		fruits = fruits.filter(models.Fruit.active == 1).offset(offset).limit(page_size).all()
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
-		return self.send_success(fruits_data = fruits_data)
+		return self.send_success(data = fruits_data)
 
 	@CustomerBaseHandler.check_arguments("charge_type_id:int")  # menu_type(0：fruit，1：menu)
 	def favour(self):
@@ -1084,7 +1089,7 @@ class Cart(CustomerBaseHandler):
 
 		if not fruits:
 			return self.send_fail('请至少选择一种商品')
-		unit = {1:"个", 2:"斤", 3:"份"}
+		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"框",11:"包",12:""}
 		f_d={}
 		totalPrice=0
 
@@ -1100,7 +1105,10 @@ class Cart(CustomerBaseHandler):
 				num = fruits[str(charge_type.id)]*charge_type.unit_num*charge_type.num
 
 				charge_type.fruit.storage -= num  # 更新库存
-				charge_type.fruit.saled += num  # 更新销量
+				if charge_type.fruit.saled:
+					charge_type.fruit.saled += num  # 更新销量
+				else:
+					charge_type.fruit.saled = num
 				charge_type.fruit.current_saled += num  # 更新售出
 				if charge_type.fruit.storage < 0:
 					return self.send_fail('“%s”库存不足' % charge_type.fruit.name)

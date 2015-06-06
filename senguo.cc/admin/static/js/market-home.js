@@ -411,14 +411,13 @@ var goodsList=function(page,action){
     var action = action;
     var args={
         action:action,
-        page:page,
-        menu_id:window.dataObj.menu_id
+        page:page
     };
     // alert('i am here');
     $.postJson(url,args,function(res){
         if(res.success)
         {
-            if(action==5&&page== 1&&res.fruits_data.length<10){
+            if(action==5&&page== 1&&res.data.length<10){
                     $('.loading').html("~没有更多商品了呢 ( > < )~").show();
             }
             //get item dom
@@ -429,7 +428,7 @@ var goodsList=function(page,action){
                         window.dataObj.charge_item=data;
                         getItem('/static/items/customer/classify_item.html?v=20150530',function(data){
                             window.dataObj.classify_item=data;
-                            initData(res);
+                            initData(res.data);
                         });
                     });
                 });
@@ -444,143 +443,114 @@ var goodsList=function(page,action){
         },
         function(){noticeBox('网络好像不给力呢~ ( >O< ) ~');},
         function(){noticeBox('服务器貌似出错了~ ( >O< ) ~');});
-        var initData=function(res){
-            var w_orders=res.w_orders;
-            if(w_orders&&w_orders.length==0){
+        var initData=function(data){
+            var data=data;
+            console.log(data);
+            if(data&&data.length==0){
                  $('.loading').html("~没有更多商品了呢 ( > < )~").show();
                  return;          
             }
-                    var fruit_list=res.fruit_list;
-                    var dry_fruit_list=res.dry_fruit_list;
-                    var mgood_list=res.mgood_list;
-                    var mgoods_item=window.dataObj.mgoods_item;
-                    var classify_item=window.dataObj.classify_item;
-                    var goods_info;
-                    if(w_orders){ goods_info=w_orders;}
-                    else if(fruit_list){ goods_info=fruit_list;}
-                    else if(dry_fruit_list){ goods_info=dry_fruit_list;}
-                    else if(mgood_list){ goods_info=mgood_list;}
-                    for(var goods in goods_info){
-                        var goods_list=goods_info[goods];
-                        var type=goods_list[0];
-                        var good=goods_list[1];
-                        var menu_id;
-                        if(goods_list[2]) {menu_id=goods_list[2];}
-                        if(type=='fruit'){
-                            fruitItem($('.fruit_goods_list'),good,'fruit');//fruits information
-                            if(action==5) {$('.fruit_cassify').removeClass('hidden');}
-                        }
-                        else if(type=='dry_fruit'){
-                            fruitItem($('.dryfruit_goods_list'),good,'fruit');//fruits information
-                            if(action==5) {$('.dryfruit_classify').removeClass('hidden')}
-                        }
-                        else if(type=='mgoods'){
-                            fruitItem($('.menu_goods_list'+menu_id),good,'menu');
-                            if(action==5) {$('.menu_classify'+menu_id).removeClass('hidden')}
-                        }
-                    }
-                    var fruits=window.dataObj.fruits;
-                    var mgoods=window.dataObj.mgoods;
-                    var c_fs=[];
-                    var c_ms=[];
-                    for(var key in fruits){
-                        c_fs.push([key,fruits[key]]);
-                    };
-                    for(var key in mgoods){
-                        c_ms.push([key,mgoods[key]]);
-                    };
-                    cartNum(c_fs,'.fruit-list');
-                    cartNum(c_ms,'.menu-list');
-                    window.dataObj.count++;
-                    window.dataObj.finished=true;
+            for(var key in data){
+                fruitItem($('.fruit_goods_list'),data[key]);//fruits information
+                if(action==5) {$('.fruit_cassify').removeClass('hidden');}
+            }
+            var fruits=window.dataObj.fruits;
+            var c_fs=[];
+            for(var key in fruits){
+                c_fs.push([key,fruits[key]]);
+            };
+            cartNum(c_fs,'.fruit-list');
+            window.dataObj.count++;
+            window.dataObj.finished=true;
         }
 };
 
 var fruitItem=function(box,fruits,type){
+    console.log(fruits)
     var goods_item=window.dataObj.goods_item;
     var charge_item=window.dataObj.charge_item;
-        var $item=$(goods_item);
-        var id=fruits['id'];
-        var storage=fruits['storage'];
-        var code=fruits['code'];
-        var tag=fruits['tag'];
-        var img_url=fruits['img_url'];
-        var intro=fruits['intro'];
-        var name=fruits['name'];
-        var saled=fruits['saled'];
-        var favour=fruits['favour'];
-        var charge_types=fruits['charge_types'];
-        var favour_today=fruits['favour_today'];
-        if(!code) code='TDSG';
-        $item.attr({'data-id':id,'data-type':type,'data-storage':storage,'data-num':storage,'data-favour':favour_today}).addClass(code);
-        $item.find('.fruit_intro').val(intro);
-        $item.find('.fruit-name').text(name);
-        if(saled>9999) $item.find('.number').text('9999+');
-        else $item.find('.number').text(saled);
-        $item.find('.great').text(favour).siblings('em').attr({'data-id':favour}); //if favour is not correct,should been replaced
-        if(favour_today) $item.find('.heart').addClass('red-heart');
-        else $item.find('.heart').addClass('gray-heart');
-        //商品标签转换
-        tagText($item.find('.tagItem'),tag);
-        //售完状态
-        if(storage<=0){
-            $item.append('<div class="sold-out bg_change"><div class="out"></div></div>').find('.box').addClass('desaturate').find('.arrow').css({'border-color':'transparent #B6B6B6 transparent transparent'});
-            $item.find('.sold-out').css({'background-color':'rgba(0,0,0,0.1)'});
-            $item.find('.bg').css({'background':'#FCFCFC'});
-            $item.find('.color').css({'color':'#757575'});
-            //AndroidImg('bg_change');
+    var $item=$(goods_item);
+    var id=fruits['id'];
+    var storage=fruits['storage'];
+    var code=fruits['code'];
+    var tag=fruits['tag'];
+    var img_url=fruits['img_url'];
+    var intro=fruits['intro'];
+    var name=fruits['name'];
+    var saled=fruits['saled'];
+    var favour=fruits['favour'];
+    var charge_types=fruits['charge_types'];
+    var favour_today=fruits['favour_today'];
+    if(!code) code='TDSG';
+    $item.attr({'data-id':id,'data-type':type,'data-storage':storage,'data-num':storage,'data-favour':favour_today}).addClass(code);
+    $item.find('.fruit_intro').val(intro);
+    $item.find('.fruit-name').text(name);
+    if(saled>9999) $item.find('.number').text('9999+');
+    else $item.find('.number').text(saled);
+    $item.find('.great').text(favour).siblings('em').attr({'data-id':favour}); //if favour is not correct,should been replaced
+    if(favour_today) $item.find('.heart').addClass('red-heart');
+    else $item.find('.heart').addClass('gray-heart');
+    //商品标签转换
+    tagText($item.find('.tagItem'),tag);
+    //售完状态
+    if(storage<=0){
+        $item.append('<div class="sold-out bg_change"><div class="out"></div></div>').find('.box').addClass('desaturate').find('.arrow').css({'border-color':'transparent #B6B6B6 transparent transparent'});
+        $item.find('.sold-out').css({'background-color':'rgba(0,0,0,0.1)'});
+        $item.find('.bg').css({'background':'#FCFCFC'});
+        $item.find('.color').css({'color':'#757575'});
+        //AndroidImg('bg_change');
+    }
+    //if there isn't only one type of charge_type
+    //if(charge_types.length>1){
+    //    $item.find('.show-box').addClass('toggle');
+    //    $item.find('.charge-list').addClass('toggle');
+    //    $item.find('.toggle_icon').addClass('arrow');
+    //    $item.addClass('pr35');
+    //    $item.find('.back-shape').addClass('shape');
+    //}
+    //charge_type info
+    for(var key in charge_types ){
+        var $charge_item=$(charge_item);
+        if(key==0){
+            var id=charge_types[0]['id'];
+            var price=charge_types[0]['price'];
+            var num=charge_types[0]['num'];
+            var unit=charge_types[0]['unit'];
+            if(unit==1) unit='个';
+            else  if(unit==2) unit='斤';
+            else  if(unit==3) unit='份';
+            $charge_item.attr({'data-id':id});
+            $charge_item.find('.price').text(price);
+            $charge_item.find('.num').text(num);
+            $charge_item.find('.chargeUnit').text(unit);
+            $item.find('.charge-first').append($charge_item);
         }
-        //if there isn't only one type of charge_type
-        //if(charge_types.length>1){
-        //    $item.find('.show-box').addClass('toggle');
-        //    $item.find('.charge-list').addClass('toggle');
-        //    $item.find('.toggle_icon').addClass('arrow');
-        //    $item.addClass('pr35');
-        //    $item.find('.back-shape').addClass('shape');
-        //}
-        //charge_type info
-        for(var key in charge_types ){
-            var $charge_item=$(charge_item);
-            if(key==0){
-                var id=charge_types[0]['id'];
-                var price=charge_types[0]['price'];
-                var num=charge_types[0]['num'];
-                var unit=charge_types[0]['unit'];
-                if(unit==1) unit='个';
-                else  if(unit==2) unit='斤';
-                else  if(unit==3) unit='份';
-                $charge_item.attr({'data-id':id});
-                $charge_item.find('.price').text(price);
-                $charge_item.find('.num').text(num);
-                $charge_item.find('.chargeUnit').text(unit);
-                $item.find('.charge-first').append($charge_item);
-            }
-            else{
-                var id=charge_types[key]['id'];
-                var price=charge_types[key]['price'];
-                var num=charge_types[key]['num'];
-                var unit=charge_types[key]['unit'];
-                if(unit==1) unit='个 ';
-                else  if(unit==2) unit='斤';
-                else  if(unit==3) unit='份';
-                $charge_item.attr({'data-id':id}).addClass('more_charge');
-                $charge_item.find('.price').text(price);
-                $charge_item.find('.num').text(num);
-                $charge_item.find('.chargeUnit').text(unit);
-                var $li=$('<li class="border-color set-w100-fle"></li>');
-                $li.append($charge_item);
-                $item.find('.charge-list').append($li);
-            }
-            //goods img
-            if(!img_url){
-                $item.find('.img').attr({'data-original':'/static/design_img/'+code+'.png'});
-            }else{
-                $item.find('.img').attr({'data-original':img_url+'?imageView/1/w/170/h/170'});
-            }
+        else{
+            var id=charge_types[key]['id'];
+            var price=charge_types[key]['price'];
+            var num=charge_types[key]['num'];
+            var unit=charge_types[key]['unit'];
+            if(unit==1) unit='个 ';
+            else  if(unit==2) unit='斤';
+            else  if(unit==3) unit='份';
+            $charge_item.attr({'data-id':id}).addClass('more_charge');
+            $charge_item.find('.price').text(price);
+            $charge_item.find('.num').text(num);
+            $charge_item.find('.chargeUnit').text(unit);
+            var $li=$('<li class="border-color set-w100-fle"></li>');
+            $li.append($charge_item);
+            $item.find('.charge-list').append($li);
         }
-        box.append($item);
-        //$('.lazy_img').lazyload({container: $("#wrap-goods-box"),threshold:10});
-        $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
+        //goods img
+        if(!img_url){
+            $item.find('.img').attr({'data-original':'/static/design_img/'+code+'.png'});
+        }else{
+            $item.find('.img').attr({'data-original':img_url+'?imageView/1/w/170/h/170'});
+        }
+    }
+    box.append($item);
+    //$('.lazy_img').lazyload({container: $("#wrap-goods-box"),threshold:10});
+    $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
 };
 window.dataObj.fruits={};
 window.dataObj.mgoods={};
