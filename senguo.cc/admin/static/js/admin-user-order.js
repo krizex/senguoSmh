@@ -245,11 +245,11 @@ function orderItem(item){
             $item.find('.send_change').hide();
         }
         else if(status==6) {
-        	$item.find('.status_finish').removeClass('hidden');
+        	$item.find('.status_comment').removeClass('hidden');
         	$item.find('.unable_edit').show();
         }
         else if(status==7) {
-            $item.find('.status_finish').removeClass('hidden');
+            $item.find('.status_comment').removeClass('hidden');
             $item.find('.auto_comment').show();
         }
         //商品数据
