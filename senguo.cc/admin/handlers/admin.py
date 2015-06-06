@@ -746,7 +746,7 @@ class Order(AdminBaseHandler):
 		if order_status == 5:
 			now = datetime.datetime.now()
 			order.arrival_day = now.strftime("%Y-%m-%d")
-			order.arrival_time= now.strftime("%H:%M:%S")
+			order.arrival_time= now.strftime("%H:%M")
 			self.session.commit()
 			customer_id = order.customer_id
 			shop_id = order.shop_id
@@ -1350,7 +1350,7 @@ class Goods(AdminBaseHandler):
 					goods = goods.order_by(models.Fruit.saled.desc())
 				elif order_status2 == "storage":
 					print('i am storage')
-					goods = goods.order_by(models.Fruit.storage)
+					goods = goods.order_by(models.Fruit.storage.desc())
 				elif order_status2 == "current_saled":
 					print('i am current_saled')
 					goods = goods.order_by(models.Fruit.current_saled.desc())
@@ -1689,7 +1689,9 @@ class Goods(AdminBaseHandler):
 						group_id = group_id,
 						detail_describe = data["detail_describe"]
 						)
-				return self.send_success(imgurl=img_urls)
+				_data = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).one()
+				data = self.getGoodsOne(_data)
+				return self.send_success(data=data)
 
 			elif action == "default_goods_img":  # 恢复默认图
 				goods.img_url = ''

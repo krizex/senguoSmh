@@ -295,6 +295,42 @@ class GlobalBaseHandler(BaseHandler):
 				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name})
 		return data
 
+	def getGoodsOne(self,d):
+		data = []
+		shop_id = self.current_shop.id
+		add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else ''
+		delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
+		if d.img_url:
+			img_url= d.img_url.split(";")
+		else:
+			img_url = ''
+		intro = '' if not d.intro else d.intro
+		detail_describe = '' if not d.detail_describe else d.detail_describe
+
+		group_id = d.group_id
+		if  group_id == 0:
+			group_name = "默认分组"
+		elif group_id == -1:
+			group_name = "店铺推荐"
+		else:
+			group_name = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id=shop_id,status=1).first().name
+
+		charge_types = []
+		for charge in d.charge_types:
+			market_price ="" if not charge.market_price else charge.market_price
+			unit = charge.unit
+			unit_name = self.getUnit(unit)
+			charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
+				'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price,'select_num':charge.select_num})
+
+		_unit = d.unit
+		_unit_name = self.getUnit(_unit)
+		data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
+			'saled':d.saled,'storage':d.storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
+			'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
+			'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name})
+		return data
+
 
 class FrontBaseHandler(GlobalBaseHandler):
 	pass

@@ -79,23 +79,23 @@ $(document).ready(function(){
     });
 
     //all numer of page
-    var fruit_pages=Int($('#fruit_page').val());
-    var dry_pages=Int($('#dry_page').val());
-    var pages_count=Int($('#page_count').val());
-    //if type of mgoods doesn't exit then hide the mgoods button
-    var m_pages=window.dataObj.mgoods_page;
-    for(var i=0;i<m_pages.length;i++){
-        var page=m_pages[i][0];
-        var menu_id=m_pages[i][1];
-        if(!page) $('.menu_classify'+menu_id).hide();
-    }
-    //if fruit or dry_fruit doesn't exit
-    if(!fruit_pages) {
-        $('#dryFruitPosition').hide();
-        if(!dry_pages) {
-            $('.menu_title').first().hide();
-        }
-    }
+    // var fruit_pages=Int($('#fruit_page').val());
+    // var dry_pages=Int($('#dry_page').val());
+    // var pages_count=Int($('#page_count').val());
+    // //if type of mgoods doesn't exit then hide the mgoods button
+    // var m_pages=window.dataObj.mgoods_page;
+    // for(var i=0;i<m_pages.length;i++){
+    //     var page=m_pages[i][0];
+    //     var menu_id=m_pages[i][1];
+    //     if(!page) $('.menu_classify'+menu_id).hide();
+    // }
+    // //if fruit or dry_fruit doesn't exit
+    // if(!fruit_pages) {
+    //     $('#dryFruitPosition').hide();
+    //     if(!dry_pages) {
+    //         $('.menu_title').first().hide();
+    //     }
+    // }
     //分类显示
     var top_title=$('.top-title');
     //get infomations of goods and push into html
@@ -418,16 +418,7 @@ var goodsList=function(page,action){
     $.postJson(url,args,function(res){
         if(res.success)
         {
-            if(action==5&&page== 1&&res.w_orders.length<10){
-                    $('.loading').html("~没有更多商品了呢 ( > < )~").show();
-            }
-            if(action==6&&page== 1&&res.fruit_list.length<10){
-                    $('.loading').html("~没有更多商品了呢 ( > < )~").show();
-            }
-            if(action==7&&page== 1&&res.dry_fruit_list.length<10){
-                    $('.loading').html("~没有更多商品了呢 ( > < )~").show();
-            }
-            if(action==8&&page== 1&&res.mgood_list.length<10){
+            if(action==5&&page== 1&&res.fruits_data.length<10){
                     $('.loading').html("~没有更多商品了呢 ( > < )~").show();
             }
             //get item dom
