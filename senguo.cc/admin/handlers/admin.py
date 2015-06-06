@@ -1338,8 +1338,12 @@ class Goods(AdminBaseHandler):
 
 				if filter_status2 != []:
 					filter_status2 = int(filter_status2)
-					if filter_status != -2:
+					print(filter_status2)
+					if filter_status2 == -2:
+						goods = goods	
+					else:
 						goods = goods.filter_by(group_id = filter_status2)
+						
 
 				if order_status1 =="group":
 					case_one = 'models.Fruit.group_id'
