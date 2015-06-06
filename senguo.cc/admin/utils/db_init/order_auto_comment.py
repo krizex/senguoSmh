@@ -38,7 +38,7 @@ def order_comment(args):
 def delete(args):
 	session = models.DBSession()
 	session.query(models.AccessToken).delete()
-	#print("[定时任务]AccessToken更新：",session.query(models.AccessToken).count())
+	print("[定时任务]AccessToken更新：",session.query(models.AccessToken).count())
 	session.commit()
 
 
@@ -46,11 +46,11 @@ def main():
 	mytime = Pysettimer(order_comment,(),60,True)
 	mytime.start()
 
-	shopTime = Pysettimer(SuperBaseHandler.shop_close,(),60,True)
-	shopTime.start()
+	#shopTime = Pysettimer(SuperBaseHandler.shop_close,(),60,True)
+	#shopTime.start()
 
-	deletToken = Pysettimer(delete,(),60,True)
-	deletToken.start()
+	#deletToken = Pysettimer(delete,(),60,True)
+	#deletToken.start()
 
 
 if __name__ == '__main__':
