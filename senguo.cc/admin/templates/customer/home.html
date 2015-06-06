@@ -57,9 +57,9 @@
             </a>
         </div>
         <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle anim-bounceDown" style="display:none">  
-            <li class="text-grey6 bg-white pull-left text-center" id="all_goods">全部商品</li>
+            <li class="text-grey6 bg-white pull-left text-center" data-id="-2">全部商品</li>
             {% for group in context['group_list'] %}
-            <li class="text-grey6 bg-white pull-left text-center" id="all_goods" data-id="{{group['id']}}">{{group['name']}}</li>
+            <li class="text-grey6 bg-white pull-left text-center" data-id="{{group['id']}}">{{group['name']}}</li>
             {% end %}
         </ul>
     </div>
@@ -72,6 +72,11 @@
         <p class="text-white no-mar-btom classify-title font18 text-center bg-green dryfruit_classify hidden" id="dryFruitPosition">干果单品</p>
         <ul class="goods-list fruit-list dryfruit_goods_list" >
         </ul>
+         {% for group in context['group_list'] %}
+         <p class="text-white no-mar-btom classify-title font18 text-center bg-green dryfruit_classify hidden" id="dryFruitPosition">{{group['name']}}</p>
+        <ul class="goods-list fruit-list dryfruit_goods_list" >
+        </ul>
+        {% end %}
     </div>
     <div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中 ( > < )~</div>
 </div>

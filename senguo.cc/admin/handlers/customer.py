@@ -835,18 +835,20 @@ class Market(CustomerBaseHandler):
 		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop.id).order_by(models.GroupPriority.priority).all()
 		if group_priority:
 			for g in group_priority:
+				print(g.group_id)
 				group_id = g.group_id
-				if group_id != -1:
+				if group_id == -1:
 					group_list.append({'id':-1,'name':'店铺推荐'})
 				elif group_id == 0:
 					group_list.append({'id':0,'name':' 默认分组'})
 				else:
 					_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop.id,status = 1).first()
 					if _group:
-						goods_count = goods.filter_by( group_id = _group.id ).count()
 						group_list.append({'id':_group.id,'name':_group.name})
 		else:
 			data.append({'id':0,'name':'默认分组'})
+
+		print(group_list)
 
 		return self.render("customer/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,\
@@ -872,7 +874,7 @@ class Market(CustomerBaseHandler):
 			return self.dry_list()
 		elif action == 8:
 			return self.mgood_list()
-	@classmethod
+	# @classmethod
 	def w_getdata(self,session,m,customer_id):
 			data = []
 			w_tag = ''
@@ -894,7 +896,9 @@ class Market(CustomerBaseHandler):
 
 				charge_types= []
 				for charge_type in fruit.charge_types:
-					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit,'market_price':charge_type.market_price})
+					unit  = charge_type.unit
+					unit =self.getUnit(unit)
+					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,'market_price':charge_type.market_price})
 				
 
 				img_url = fruit.img_url.split(";")[0]
@@ -945,7 +949,7 @@ class Market(CustomerBaseHandler):
 		fruit_id = int(self.args["charge_type_id"])
 		shop_id = int(self.get_cookie("market_shop_id"))
 		favour = self.session.query(models.FruitFavour).\
-			filter_by(customer_id=self.current_user.id,f_m_id=fruit_id, type=menu_type).first()
+			filter_by(customer_id=self.current_user.id,f_m_id=fruit_id).first()
 		try:
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id \
 				,shop_id = shop_id).first()
