@@ -1349,6 +1349,13 @@ class Fruit(MapBase, _CommonApi):
 	fruit_type = relationship("FruitType", uselist=False)
 	shop = relationship("Shop", uselist=False)
 
+class GroupPriority(MapBase, _CommonApi):
+	__tablename__ = "group_priority"
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
+	group_id = Column(Integer)
+	priority = Column(Integer)
+
 #水果单品的计价类型
 class ChargeType(MapBase, _CommonApi):
 	__tablename__ = "charge_type"
@@ -1383,6 +1390,7 @@ class GoodsGroup(MapBase, _CommonApi):
 
 class GroupPriority(MapBase, _CommonApi):
 	__tablename__ = "group_priority"
+	__table_args__ = {"extend_existing": True}
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
 	group_id = Column(Integer)

@@ -746,7 +746,7 @@ class Order(AdminBaseHandler):
 		if order_status == 5:
 			now = datetime.datetime.now()
 			order.arrival_day = now.strftime("%Y-%m-%d")
-			order.arrival_time= now.strftime("%H:%M")
+			order.arrival_time= now.strftime("%H:%M:%S")
 			self.session.commit()
 			customer_id = order.customer_id
 			shop_id = order.shop_id
