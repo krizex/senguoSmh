@@ -1325,6 +1325,13 @@ class Goods(AdminBaseHandler):
 					print('i am current_sell')
 					goods = goods.filter(models.Fruit.current_saled !=0 )
 
+				
+
+				if filter_status2 != []:
+					filter_status2 = int(filter_status2)
+					print(filter_status2)
+					goods = goods.filter_by(group_id = filter_status2)
+
 				if order_status1 =="group":
 					print('i am group')
 					goods = goods.order_by(models.Fruit.group_id)
@@ -1347,11 +1354,6 @@ class Goods(AdminBaseHandler):
 				elif order_status2 == "current_saled":
 					print('i am current_saled')
 					goods = goods.order_by(models.Fruit.current_saled.desc())
-
-				if filter_status2 != []:
-					filter_status2 = int(filter_status2)
-					print(filter_status2)
-					goods = goods.filter_by(group_id = filter_status2)
 
 				count = goods.count()
 				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
@@ -1612,7 +1614,7 @@ class Goods(AdminBaseHandler):
 		elif action == "apply_cookie":
 			return self.send_qiniu_token("apply_cookie",int(data["goods_id"]))
 
-		elif action in ["add_charge_type", "edit_active", "edit_goods", "default_goods_img","delete_goods"]:  # fruit_id
+		elif action in ["add_charge_type", "edit_active", "edit_goods", "default_goods_img","delete_goods","change_group"]:  # fruit_id
 			try:goods = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).one()
 			except:return self.send_error(404)
 			if goods.shop != self.current_shop:
@@ -1629,11 +1631,21 @@ class Goods(AdminBaseHandler):
 				self.session.add(charge_type)
 				self.session.commit()
 				return self.send_success()
+
 			elif action == "edit_active":
 				if goods.active == 1:
 					goods.update(session=self.session, active = 2)
 				elif goods.active == 2:
 					goods.update(session=self.session, active = 1)
+
+			elif action =="change_group":
+				if group_id !=0 and group_id !=-1:
+						_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = shop_id,status = 1).first()
+						if _group:
+							goods.update(session=self.session, group_id = int(data["group_id"]))
+						else:
+							return self.send_fail('该商品分组不存在或已被删除')				
+
 			elif action == "edit_goods":
 				if len(data["intro"]) > 100:
 					return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
@@ -1687,7 +1699,9 @@ class Goods(AdminBaseHandler):
 						group_id = group_id,
 						detail_describe = data["detail_describe"]
 						)
-				return self.send_success(imgurl=img_urls)
+				_data = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).one()
+				data = self.getGoodsOne(_data)
+				return self.send_success(data=data)
 
 			elif action == "default_goods_img":  # 恢复默认图
 				goods.img_url = ''
@@ -1723,13 +1737,14 @@ class Goods(AdminBaseHandler):
 				elif action == 'batch_off':
 					goods.active = 2
 				elif action == 'batch_group':
-					goods.group_name = data["group"]
+					goods.group_id= data["group_id"]
 				self.session.commit()
 
 		elif action =="goods_search":
-			goods_name = data["goods_name"]
-			print(goods_name)
-			goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.name.like("%%%s%%" % goods_name)).all()
+			name = data["goods_name"]
+			print(name)
+			print(shop_id)
+			a
 			print(goods)
 			data = self.getGoodsData(goods)
 			return self.send_success(data=data)

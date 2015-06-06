@@ -776,7 +776,6 @@ class Market(CustomerBaseHandler):
 		# print(self.request.remote_ip,'ip?')
 		w_follow = True
 		fruits=''
-		dry_fruits=''
 		page_size = 10
 		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		if not shop:
@@ -787,12 +786,9 @@ class Market(CustomerBaseHandler):
 		shop_status = shop.status
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
-		# self.set_cookie("market_shop_name",str(shop.shop_name))
-		#woody
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		if not self.session.query(models.CustomerShopFollow).filter_by(
 				customer_id=self.current_user.id, shop_id=shop.id).first():
-			# return self.redirect("/customer/shopProfile")  # 还没关注的话就重定向到店铺信息页
 			w_follow = False
 			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0)
 			if shop_follow:
@@ -826,38 +822,18 @@ class Market(CustomerBaseHandler):
 		if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
 			self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
 			self.session.commit()
-		cart_f, cart_m = self.read_cart(shop.id)
-		cart_count = len(cart_f) + len(cart_m)
+		cart_f = self.read_cart(shop.id)
+		cart_count = len(cart_f) 
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
-		cart_ms = [(key, cart_m[key]['num']) for key in cart_m]
-		fruits = [x for x in shop.fruits if x.fruit_type_id < 1000 and x.active == 1]
-		dry_fruits = [x for x in shop.fruits if x.fruit_type_id > 1000 and x.active == 1]
-		mgoods={}
-		count_mgoods = []
-		mgoods_page = []
-		mgoods_len = 0
-
-		for menu in shop.menus:
-			mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
-			count_mgoods .append([menu.id,len(mgoods[menu.id])])
-			mgoods_len += len(mgoods[menu.id])
-
-		mgoods_page = [[int(x[1]/page_size) if x[1] % page_size == 0 else int(x[1]/page_size)+1,x[0]] for x in count_mgoods]
+		fruits = [x for x in shop.fruits if x.active == 1]
+		
 		notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
-		total_count = len(fruits) + len(dry_fruits)  + mgoods_len
-		if total_count % page_size is 0 :
-			page_count = total_count /page_size
-		else:
-			page_count = int( total_count / page_size) + 1
-		# print('page_count' , page_count)
 		fruit_page = int(len(fruits)/page_size) if len(fruits)% page_size == 0 else int(len(fruits)/page_size) +1
-		dry_page   = int(len(dry_fruits)/page_size) if len(dry_fruits)% page_size == 0 else int(len(dry_fruits)/page_size) +1
-		# mgoods_page = int(count_mgoods/10) if count_mgoods % 10 == 0 else int(count_mgoods/10) + 1
 		self.set_cookie("cart_count", str(cart_count))
 		return self.render("customer/home.html",
-						   context=dict(cart_count=cart_count, subpage='home', menus=shop.menus,notices=notices,\
-							shop_name=shop.shop_name,w_follow = w_follow,page_count = page_count,fruit_page = fruit_page,\
-							dry_page = dry_page ,mgoods_page = mgoods_page,cart_fs=cart_fs,cart_ms=cart_ms,\
+						   context=dict(cart_count=cart_count, subpage='home',notices=notices,\
+							shop_name=shop.shop_name,w_follow = w_follow,fruit_page = fruit_page,\
+							cart_fs=cart_fs,\
 							shop_logo = shop_logo,shop_status=shop_status))
 
 	@tornado.web.authenticated
@@ -906,94 +882,15 @@ class Market(CustomerBaseHandler):
 					w_tag = "dry_fruit"
 				else:
 					w_tag = "fruit"
-				data.append([w_tag,{'id':fruit.id,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
-				'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour,'favour_today':favour_today}])
+				data.append([w_tag,{'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
+				'img_url':fruit.img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour,\
+				'group_id':fruit.group_id,'favour_today':favour_today}])
 			return data
 
-	def mgood_list(self):
-		page = self.args["page"]
-		menu_id = self.args["menu_id"]
-		page_size = 10
-		offset = (page - 1) * page_size
-		shop_id = int(self.get_cookie("market_shop_id"))
-		shop  = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		if not shop:
-			return self.send_error(404)
-		try:
-			menu = self.session.query(models.Menu).filter_by(id = menu_id).first()
-		except:
-			return self.send_fail("menu error")
-
-		mgoods = {}
-		w_mgoods = []
-		# for menu in shop.menus:
-		mgoods[menu_id] = [x for x in menu.mgoods if x.active == 1]
-		temp_goods = []
-		if menu:
-			for mgood in menu.mgoods:
-				# print(mgood.id,mgood.unit)
-				charge_types = []
-				for charge_type in mgood.mcharge_types:
-					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
-				if mgood.active == 1:
-					try:
-						# print('mgood id',mgood.id)
-						favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,\
-							f_m_id = mgood.id , type = 1).first()
-
-					except:
-						# print(' favour_today error mgood')
-						favour = None
-					if favour is None:
-						favour_today = False
-					else:
-						favour_today = favour.create_date == datetime.date.today()
-					# print('favour_today',favour_today,'mgood')
-					w_mgoods.append(["mgoods",{'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,\
-						'favour_today':favour_today ,'current_saled':mgood.current_saled,'saled':mgood.saled,\
-						'storage':mgood.storage,'favour':mgood.favour,'tag':mgood.tag,'img_url':mgood.img_url,\
-						'intro':mgood.intro,'charge_types':charge_types,'favour_today' : favour_today},menu.id])
-		count_mgoods = len(w_mgoods)
-		if offset + page_size <=count_mgoods:
-			mgood_list = w_mgoods[offset:offset+page_size]
-		elif offset < count_mgoods and offset + page_size > count_mgoods:
-			mgood_list = w_mgoods[offset:]
-		else:
-			self.send_fail("mgood_list page error")
-		return self.send_success(mgood_list = mgood_list , page = page)
-
-
-
-	@CustomerBaseHandler.check_arguments("page?:int")
-	def dry_list(self):
-		page = self.args["page"]
-		page_size = 10
-		offset = (page - 1) * page_size
-		shop_id = int(self.get_cookie("market_shop_id"))
-		customer_id = self.current_user.id
-		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		if not shop:
-			return self.send_error(404)
-		dry_fruits =[]
-		dry_fruits = [x for x in shop.fruits if x.fruit_type_id >=1000 and x.active ==1]
-		w_dry_fruits = []
-		session = self.session
-		w_dry_fruits = self.w_getdata(session,dry_fruits,customer_id)
-		count_dry = len(w_dry_fruits)
-		page = int(count_dry/page_size) if count_dry % page_size ==0 else int(count_dry/page_size) +1
-		# print(page)
-		if offset + page_size <= count_dry:
-			dry_fruit_list = w_dry_fruits[offset:offset+page_size]
-		elif offset < count_dry and offset + page_size > count_dry:
-			dry_fruit_list = w_dry_fruits[offset:]
-		else:
-			self.send_fail("dry_fruit_list page error")
-		return self.send_success(dry_fruit_list = dry_fruit_list ,page =page)
-
-
-	@CustomerBaseHandler.check_arguments("page?:int")
+	@CustomerBaseHandler.check_arguments("page?:int","group_id?:int")
 	def fruit_list(self):
-		page = self.args["page"]
+		page = int(self.args["page"])
+		group_id = int(self.args['group_id'])
 		page_size = 10
 		offset = (page-1) * page_size
 		shop_id = int(self.get_cookie("market_shop_id"))
@@ -1001,190 +898,47 @@ class Market(CustomerBaseHandler):
 		shop   = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
 			return self.send_error(404)
-		fruits = []
-		fruits = [x for x in shop.fruits if x.fruit_type_id < 1000 and x.active ==1]
-		w_fruits = []
-		session = self.session
-		w_fruits = self.w_getdata(session,fruits,customer_id)
-		count_fruit = len(w_fruits)
+		
+		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1).offset(offset).limit(page_size).all()
+		if not fruits:
+			return self.send_fail('fruit_list:fruits not found')
+		fruit_list = self.w_getdata(self.session,fruits,customer_id)
+		count_fruit = len(fruit_list)
 		page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		# page = (count_fruit % 10 == 0)?int(count_fruit/10):int(count_fruit/10)+1
-		# print(page)
-		if offset + page_size <= count_fruit:
-			fruit_list = w_fruits[offset:offset+page_size]
-		elif offset < count_fruit and offset +page_size > count_fruit:
-			fruit_list = w_fruits[offset:]
-		else:
-			self.send_fail("fruit_list page error")
 		return self.send_success(fruit_list = fruit_list ,page = page)
 
 	@CustomerBaseHandler.check_arguments("page?:int")
 	def commodity_list(self):
-		#
-		# page = 2 
-		# print('login  commodity_list')
 		page = self.args["page"]
 		page_size = 10
 		offset = (page -1) * page_size
 		customer_id = self.current_user.id
 		shop_id = int(self.get_cookie('market_shop_id'))
+		print(shop_id,'shop_id')
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		cart_f,cart_m = self.read_cart(shop.id)
-		cart_fs = {}
-		cart_ms = {}
-		cart_fs = [(key,cart_f[key]['num']) for key in cart_f]
-		cart_ms = [(key,cart_m[key]['num']) for key in cart_m]
-		#
-		count = 0
-		count_mgoods = 0
-		count_fruit =0
-		count_dry = 0
-		w_orders = []
-
 		if not shop:
 			return self,send_error(404)
-		fruits = []
-		dry_fruits = []
-		fruits = [x for x in shop.fruits if x.fruit_type_id < 1000 and x.active ==1]
-		dry_fruits = [x for x in shop.fruits if x.fruit_type_id >= 1000 and x.active == 1]
+		fruits = self.session.query(models.Fruit).join(models.Shop).join(models.GroupPriority).order_by(models.GroupPriority.priority)
+		print(fruits)
+		fruits = fruits.filter(models.Fruit.active == 1).offset(offset).limit(page_size).all()
+		fruits_data = self.w_getdata(self.session,fruits,customer_id)
+		return self.send_success(fruits_data = fruits_data)
 
-		mgoods = {}
-		w_mgoods = []
-		for menu in shop.menus:
-			mgoods[menu.id] = [x for x in menu.mgoods if x.active == 1]
-			temp_goods = []
-			for mgood in menu.mgoods:
-				# print(mgood.id,mgood.unit)
-				try:
-
-					# print('mgood id',mgood.id)
-					favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,\
-						f_m_id = mgood.id , type = 1).first()
-
-				except:
-					print('favour_today error mgood')
-
-					favour = None
-				if favour is None:
-					favour_today = False
-				else:
-					favour_today = favour.create_date == datetime.date.today()
-
-				# print('favour_today',favour_today,'mgood')
-
-				charge_types = []
-				for charge_type in mgood.mcharge_types:
-					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit})
-				if mgood.active == 1:
-					w_mgoods.append(["mgoods",{'id':mgood.id,'name':mgood.name,'unit':mgood.unit,'active':mgood.active,\
-						'current_saled':mgood.current_saled,'saled':mgood.saled,'storage':mgood.storage,'favour':mgood.favour,\
-						'tag':mgood.tag,'img_url':mgood.img_url,'intro':mgood.intro,'charge_types':charge_types,\
-						'favour_today':favour_today},menu.id])
-				count_mgoods += 1
-
-		w_fruits = []
-		w_dry_fruits = []
-		# pages
-		# woody
-		session = self.session
-		w_fruits = self.w_getdata(session,fruits,customer_id)
-		count_fruit = len(w_fruits)
-
-		w_dry_fruits = self.w_getdata(session, dry_fruits,customer_id)
-		count_dry   = len(w_dry_fruits)
-
-		if offset +page_size <= count_fruit:
-			w_orders = w_fruits[offset:offset+page_size]
-
-		elif offset >= count_fruit and offset + page_size <= count_fruit + count_dry:
-			w_orders = w_dry_fruits[offset - count_fruit:offset+page_size - count_fruit ]
-
-		elif offset >= count_dry +count_fruit and offset +page_size <= count_fruit + count_dry + count_mgoods:
-			w_orders = w_mgoods[offset-(count_dry+count_fruit):offset + page_size-(count_dry+count_fruit)]
-
-		elif offset >= count_dry + count_fruit:
-			w_orders = w_mgoods[offset-(count_fruit+count_dry):]
-
-		elif offset < count_fruit and offset + page_size <= count_fruit +count_dry:
-			w_orders =w_fruits[offset:] + w_dry_fruits[0:offset + page_size - count_fruit ]
-
-		elif offset >= count_fruit and offset < count_fruit + count_dry and offset + page_size <= count_dry + count_fruit + count_mgoods:
-			w_orders = w_dry_fruits[offset - count_fruit:] + w_mgoods[0:offset + page_size - (count_dry + count_fruit)]
-
-		elif offset >=  count_fruit and offset < count_fruit + count_dry and offset +page_size >= count_fruit + count_dry + count_mgoods:
-			w_orders = w_dry_fruits[offset - count_fruit:] + w_mgoods
-
-		elif offset < count_fruit and offset + page_size >= count_fruit + count_dry and offset + page_size <= count_fruit +count_dry + count_mgoods:
-			w_orders = w_fruits[offset:] + w_dry_fruits + w_mgoods[0:offset + page_size - (count_fruit+ count_dry)]
-
-		elif offset < count_fruit and offset + page_size >= count_fruit + count_dry + count_mgoods:
-			w_orders = w_fruits[offset:] + w_dry_fruits + w_mgoods
-
-		else:
-			self.send_error("pages error")
-
-		total_count = count_dry + count_fruit + count_mgoods
-		# print(w_orders,'yi bu zhi yao')
-
-		# print('w_orders ',w_orders)
-		# print('w_mgoods',w_mgoods)
-		# for m in w_mgoods:
-		#     print(m)
-		# print("total_count",total_count ,"count_fruit",count_fruit,"count_dry",count_dry,'count_mgoods',count_mgoods)
-
-		return self.send_success(w_orders = w_orders)
-
-	@CustomerBaseHandler.check_arguments("charge_type_id:int", "menu_type:int")  # menu_type(0：fruit，1：menu)
+	@CustomerBaseHandler.check_arguments("charge_type_id:int")  # menu_type(0：fruit，1：menu)
 	def favour(self):
-		charge_type_id = self.args["charge_type_id"]
-		# print('charge_type_id',charge_type_id)
-		# print(self.args)
-		# print('use id',self.current_user.id)
-		menu_type = self.args["menu_type"]
+		fruit_id = int(self.args["charge_type_id"])
 		shop_id = int(self.get_cookie("market_shop_id"))
 		favour = self.session.query(models.FruitFavour).\
-			filter_by(customer_id=self.current_user.id,f_m_id=charge_type_id, type=menu_type).first()
-
-		#woody
-		# #???
-		# try:
-		#     point = self.session.query(models.Points).filter_by(id = self.current_user.id).first()
-		#     if point is None:
-		#         print("start ,point is None ")
-		# except:
-		#     self.send_fail("point find error")
-
-		# shop_point add by one
-		# woody
-
+			filter_by(customer_id=self.current_user.id,f_m_id=fruit_id, type=menu_type).first()
 		try:
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id \
 				,shop_id = shop_id).first()
 		except:
 			self.send_fail("shop_point error")
-
-		# if point is None:
-		#     point = models.Points(id = self.current_user.id)
-		#     self.session.add(point)
-		#     self.session.commit()
-		# if point is None:
-		#     print("point make fail")
-		# print("success?",point)
-
-		# if point:
-		#     print(" before favour:" , point.favour_count)
 		if favour:
-			# print("login favour")
 			if favour.create_date == datetime.date.today():
 				return self.send_fail("亲，你今天已经为该商品点过赞了，一天只能对一个商品赞一次哦")
 			else:  # 今天没点过赞，更新时间
-				#favour_count add by one
-				#woody
-				# print("true favour")
-				# if point:
-				#     point.favour_count += 1
-				#     # point.totalCount +=1
-				#     print("after favour:")
 				try:
 					point_history = models.PointHistory(customer_id = self.current_user.id ,shop_id =shop_id)
 				except:
@@ -1196,9 +950,6 @@ class Market(CustomerBaseHandler):
 					self.session.commit()
 				else:
 					print("point_history None")
-				# else:
-				#     print("point is None...")
-
 				if shop_follow:
 					shop_follow.shop_point += 1
 					now = datetime.datetime.now()
@@ -1207,11 +958,8 @@ class Market(CustomerBaseHandler):
 				favour.create_date = datetime.date.today()
 		else:  # 没找到点赞记录，插入一条
 			self.session.add(models.FruitFavour(customer_id=self.current_user.id,
-					  f_m_id=charge_type_id, type=menu_type))
+					  f_m_id=fruit_id, type=0))
 			self.session.commit()
-
-			#add favour point history
-			# print('add favour')
 
 			try:
 				point_history = models.PointHistory(customer_id = self.current_user.id ,shop_id =shop_id)
@@ -1228,56 +976,36 @@ class Market(CustomerBaseHandler):
 			if shop_follow:
 					shop_follow.shop_point += 1
 					now = datetime.datetime.now()
-					# print(now,shop_follow.shop_point,'favour')
 			else:
 				print('customer_shop_follow not fount')
-
-			# if point:
-			#     point.favour_count += 1
-				# print("new favour",point.favour_count)
 		# 商品赞+1
-		if menu_type == 0:
-			try:
-				f = self.session.query(models.Fruit).filter_by(id=charge_type_id).one()
-			except:
-				return self.send_error(404)
-		elif menu_type == 1:
-			try:
-				f = self.session.query(models.MGoods).filter_by(id=charge_type_id).one()
-			except:
-				return self.send_error(404)
-		else:
+	
+		try:
+			f = self.session.query(models.Fruit).filter_by(id=fruit_id).one()
+		except:
 			return self.send_error(404)
+		
 		f.favour += 1
 		self.session.commit()
 		return self.send_success(notice='点赞成功，积分+1')
 
 
-	@CustomerBaseHandler.check_arguments("fruits", "mgoods")
+	@CustomerBaseHandler.check_arguments("fruits")
 	def cart_list(self):
 		fruits = self.args["fruits"]
-		mgoods = self.args["mgoods"]
-
 		cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=self.shop_id).one()
 		fruits2 = {}
-		mgoods2 = {}
 		for key in fruits:
 			fruits2[int(key)] = fruits[key]
-		for key in mgoods:
-			mgoods2[int(key)] = mgoods[key]
 		cart.fruits = str(fruits2)
-		cart.mgoods = str(mgoods2)
-
 		self.session.commit()
 		return self.send_success()
 
-	@CustomerBaseHandler.check_arguments("charge_type_id:int", "menu_type:int")
+	@CustomerBaseHandler.check_arguments("charge_type_id:int")
 	def cart(self, action):
 		charge_type_id = self.args["charge_type_id"]
-		menu_type = self.args["menu_type"]
-		self.save_cart(charge_type_id, self.shop_id, action, menu_type)
+		self.save_cart(charge_type_id, self.shop_id, action)
 		return self.send_success()
-
 
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -1317,39 +1045,25 @@ class Cart(CustomerBaseHandler):
 				balance_value = format(customer_follow.shop_balance,'.2f')
 			shop_new = customer_follow.shop_new
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
-		# print(self.get_cookie('market_shop_id'),'没有报错啊')
 		self._shop_code = shop.shop_code
-
-
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits) or eval(cart.mgoods))): #购物车为空
 			return self.render("notice/cart-empty.html",context=dict(subpage='cart'))
-		cart_f, cart_m = self.read_cart(shop_id)
-		# print(cart_f)
-		# print(cart_m)
+		cart_f = self.read_cart(shop_id)
 		for item in cart_f:
 			fruit = cart_f[item].get('charge_type').fruit
 			fruit_id = fruit.id
 			fruit_storage = fruit.storage
 			if fruit_id not in storages:
 				storages[fruit_id] = fruit_storage
-		for item in cart_m:
-			mgood = cart_m[item].get('mcharge_type').mgoods
-			mgood_id = mgood.id
-			mgood_storage = mgood.storage
-			if mgood_id not in storages:
-				storages[mgood_id] = mgood_storage
-		# periods = [x for x in shop.config.periods if x.active == 1]
 		periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1).all()
-		#for period in periods:
-		#	print("[购物篮]读取按时达时段，Shop ID：",period.config_id,"，时间段：",period.start_time,"~",period.end_time)
-		return self.render("customer/cart.html", cart_f=cart_f, cart_m=cart_m, config=shop.config,
+		return self.render("customer/cart.html", cart_f=cart_f,config=shop.config,
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name  = shop_name ,shop_code=shop_code,shop_logo = shop_logo,balance_value=balance_value,\
 						  shop_new=shop_new,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("fruits", "mgoods", "pay_type:int", "period_id:int",
+	@CustomerBaseHandler.check_arguments("fruits", "pay_type:int", "period_id:int",
 										 "address_id:int", "message:str", "type:int", "tip?:int",
 										 "today:int",'online_type?:str')
 	def post(self,shop_code):#提交订单
@@ -1358,7 +1072,6 @@ class Cart(CustomerBaseHandler):
 		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
-		mgoods = self.args["mgoods"]
 		current_shop = self.session.query(models.Shop).filter_by( id = shop_id).first()
 		online_type = ''
 		shop_status = current_shop.status
@@ -1369,11 +1082,10 @@ class Cart(CustomerBaseHandler):
 		elif shop_status == 3:
 			return self.send_fail('该店铺正在休息中，暂不能下单(っ´▽`)っ')
 
-		if not (fruits or mgoods):
+		if not fruits:
 			return self.send_fail('请至少选择一种商品')
 		unit = {1:"个", 2:"斤", 3:"份"}
 		f_d={}
-		m_d={}
 		totalPrice=0
 
 		if fruits:
@@ -1395,23 +1107,6 @@ class Cart(CustomerBaseHandler):
 				# print(charge_type.price)
 				f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
 									 "charge":"%.2f元/%.1f %s" % (float(charge_type.price), charge_type.num, unit[charge_type.unit])}
-		if mgoods:
-			# print("login mgoods")
-			mcharge_types = self.session.query(models.MChargeType).\
-				filter(models.MChargeType.id.in_(mgoods.keys())).all()
-			for mcharge_type in mcharge_types:
-				if mgoods[str(mcharge_type.id)] == 0:    # 有可能num为0，直接忽略掉
-					continue
-				totalPrice += mcharge_type.price*mgoods[str(mcharge_type.id)]
-				num = mgoods[str(mcharge_type.id)]*mcharge_type.unit_num*mcharge_type.num
-				mcharge_type.mgoods.storage -= num  # 更新库存
-				mcharge_type.mgoods.saled += num  # 更新销量
-				mcharge_type.mgoods.current_saled += num  # 更新售出
-				if mcharge_type.mgoods.storage < 0:
-					return self.send_fail('“%s”库存不足' % mcharge_type.mgoods.name)
-				# print(mcharge_type.price)
-				m_d[mcharge_type.id]={"mgoods_name":mcharge_type.mgoods.name, "num":mgoods[str(mcharge_type.id)],
-									  "charge":"%.2f元/%.1f%s" % (float(mcharge_type.price), mcharge_type.num, unit[mcharge_type.unit])}
 
 		#按时达/立即送 的时间段处理
 		start_time = 0
@@ -1464,7 +1159,6 @@ class Cart(CustomerBaseHandler):
 		address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		if not address:
 			return self.send_fail("没找到地址", 404)
-		# print("[提交订单]送货地址：",address.receiver)
 
 		# 已支付、付款类型、余额、积分处理
 		money_paid = False
@@ -1504,9 +1198,6 @@ class Cart(CustomerBaseHandler):
 		else:
 			if w_admin is not None:
 					w_SH2_id = w_admin.admin.id
-		# print("*****************************************************************")
-		# print(f_d)
-		# print(mgoods)
 		if self.args['pay_type'] == 3:
 			order_status = -1
 			online_type = self.args['online_type']
@@ -1530,7 +1221,6 @@ class Cart(CustomerBaseHandler):
 							 start_time=start_time,
 							 end_time=end_time,
 							 fruits=str(f_d),
-							 mgoods=str(m_d),
 							 send_time=send_time,
 							 status  = order_status,
 							 online_type = online_type,
@@ -1541,85 +1231,6 @@ class Cart(CustomerBaseHandler):
 			self.session.commit()
 		except:
 			return self.send_fail("订单提交失败")
-
-		# #####################################################################################
-		# # where the order sueessed , send a message to the admin of shop
-		# # woody
-		# #####################################################################################
-		# admin_name    = w_admin.admin.accountinfo.nickname
-		# touser        = w_admin.admin.accountinfo.wx_openid
-		# shop          = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		# shop_name     = shop.shop_name
-		# order_id      = order.num
-		# order_type    = order.type
-		# phone         = order.phone
-		# if order_type == 1:
-		# 	order_type = '立即送'
-		# else:
-		# 	order_type = '按时达'
-		# create_date   = order.create_date
-		# customer_info = self.session.query(models.Accountinfo).filter_by(id = self.current_user.id).first()
-		# customer_name = address.receiver
-		# c_tourse      = customer_info.wx_openid
-		# # print("[提交订单]用户OpenID：",c_tourse)
-
-		# ##################################################
-		# #goods
-		# goods = []
-		# # print("[提交订单]订单详情：",f_d,m_d)
-		# session = self.session
-		# for f in f_d:
-		# 	goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-		# for m in m_d:
-		# 	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
-			
-		# goods = str(goods)[1:-1]
-		# order_totalPrice = float('%.2f'% totalPrice)
-		# # print("[提交订单]订单总价：",order_totalPrice)
-		# # send_time     = order.get_sendtime(session,order.id)
-		# send_time = order.send_time
-		# address = order.address_text
-		# order_realid = order.id
-		# # print("[提交订单]订单详情：",goods)
-		# if self.args['pay_type'] != 3:
-		# 	if w_admin.super_temp_active !=0:
-		# 		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
-		# 			customer_name,order_totalPrice,send_time,goods,phone,address)
-		# 	try:
-		# 		other_admin = self.session.query(models.HireLink).filter_by(shop_id = shop.id,active=1,work=9,temp_active=1).first()
-		# 	except:
-		# 		other_admin = None
-		# 	if other_admin:
-		# 		info =self.session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id)\
-		# 		.filter(models.ShopStaff.id == other_admin.staff_id).first()
-		# 		other_touser = info.wx_openid
-		# 		other_name = info.nickname
-		# 		WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,\
-		# 			customer_name,order_totalPrice,send_time,goods,phone,address)
-		# 	# send message to customer
-		# 	WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
-		# ####################################################
-		# # 订单提交成功后 ，用户余额减少，
-		# # 同时生成余额变动记录,
-		# # 订单完成后 店铺冻结资产相应转入 店铺可提现余额
-		# # woody 4.29
-		# ####################################################
-		# # print(self.args['pay_type'],'好难过')
-		# if self.args["pay_type"] == 2:
-		# 	shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
-		# 		shop_id = shop_id).first()
-		# 	if not shop_follow:
-		# 		return self.send_fail('shop_follow not found')
-		# 	shop_follow.shop_balance -= totalPrice   #用户对应 店铺余额减少 ，单位：元
-		# 	self.session.commit()
-		# 	#生成一条余额交易记录
-		# 	balance_record = '余额支付：订单' + order.num
-		# 	balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
-		# 		shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
-		# 		balance_record = balance_record,shop_totalPrice = current_shop.shop_balance,\
-		# 		customer_totalPrice = shop_follow.shop_balance)
-		# 	self.session.add(balance_history)
-		# 	self.session.commit()
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}', mgoods='{}')#清空购物车
@@ -1680,11 +1291,8 @@ class CartCallback(CustomerBaseHandler):
 		c_tourse   = customer.accountinfo.wx_openid
 		goods = []
 		f_d = eval(order.fruits)
-		m_d = eval(order.mgoods)
 		for f in f_d:
 			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-		for m in m_d:
-			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		goods = str(goods)[1:-1]
 		print("[提交订单]订单详情：",goods)
 		order_totalPrice = float('%.2f'% totalPrice)

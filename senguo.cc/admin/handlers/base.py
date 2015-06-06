@@ -295,6 +295,42 @@ class GlobalBaseHandler(BaseHandler):
 				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name})
 		return data
 
+	def getGoodsOne(self,d):
+		data = []
+		shop_id = self.current_shop.id
+		add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else ''
+		delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
+		if d.img_url:
+			img_url= d.img_url.split(";")
+		else:
+			img_url = ''
+		intro = '' if not d.intro else d.intro
+		detail_describe = '' if not d.detail_describe else d.detail_describe
+
+		group_id = d.group_id
+		if  group_id == 0:
+			group_name = "默认分组"
+		elif group_id == -1:
+			group_name = "店铺推荐"
+		else:
+			group_name = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id=shop_id,status=1).first().name
+
+		charge_types = []
+		for charge in d.charge_types:
+			market_price ="" if not charge.market_price else charge.market_price
+			unit = charge.unit
+			unit_name = self.getUnit(unit)
+			charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
+				'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price,'select_num':charge.select_num})
+
+		_unit = d.unit
+		_unit_name = self.getUnit(_unit)
+		data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
+			'saled':d.saled,'storage':d.storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
+			'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
+			'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name})
+		return data
+
 
 class FrontBaseHandler(GlobalBaseHandler):
 	pass
@@ -776,21 +812,20 @@ class CustomerBaseHandler(_AccountBaseHandler):
 	__wexin_oauth_url_name__ = "customerOauth"
 	__wexin_check_url_name__ = "customerwxBind"
 	@tornado.web.authenticated
-	def save_cart(self, charge_type_id, shop_id, inc, menu_type):
+	def save_cart(self, charge_type_id, shop_id, inc):
 		"""
 		用户购物车操作函数，对购物车进行修改或者删除商品：
 		charge_type_id：要删除的商品的计价类型
 		shop_id：用户在每个店铺都有一个购物车
 		inc：购物车操作类型
-		menu_type：商品类型（fruit：系统内置，menu：商家自定义）
+		# menu_type：商品类型（fruit：系统内置，menu：商家自定义）
 		#inc==0 删,inc==1:减，inc==2：增；type==0：fruit，type==1：menu
 		"""
 		cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
-		if menu_type == 0:
-			self._f(cart, "fruits", charge_type_id, inc)
-		else:
-			self._f(cart, "mgoods", charge_type_id, inc)
-		if not (eval(cart.fruits) or eval(cart.mgoods)):#购物车空了
+
+		self._f(cart, "fruits", charge_type_id, inc)
+		
+		if not eval(cart.fruits):#购物车空了
 			return True
 		return False
 	def get_login_url(self):
@@ -827,10 +862,9 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		"""
 		try:cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
 		except:cart = None
-		if not cart or (cart.fruits == "" and cart.mgoods == ""): #购物车为空
+		if not cart or (cart.fruits == ""): #购物车为空
 			return None, None
 		fruits={}
-		mgoodses={}
 		if cart.fruits:
 			d = eval(cart.fruits)
 			charge_types=self.session.query(models.ChargeType).\
@@ -845,20 +879,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 			for charge_type in charge_types:
 				fruits[charge_type.id] = {"charge_type": charge_type, "num": d[charge_type.id],
 										  "code": charge_type.fruit.fruit_type.code}
-		if cart.mgoods:
-			d = eval(cart.mgoods)
-			mcharge_types=self.session.query(models.MChargeType).\
-				filter(models.MChargeType.id.in_(d.keys())).all()
-			mcharge_types = [x for x in mcharge_types if x.mgoods.active == 1]#过滤掉下架商品
-			l = [x.id for x in mcharge_types]
-			keys = list(d.keys())
-			for key in keys:
-				if key not in l:
-					del d[key]
-			cart.update(session=self.session, mgoods=str(d))
-			for mcharge_type in mcharge_types:
-				mgoodses[mcharge_type.id]={"mcharge_type": mcharge_type, "num": d[mcharge_type.id]}
-		return fruits, mgoodses
+		return fruits
 
 
 	@property
