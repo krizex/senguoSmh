@@ -1296,7 +1296,6 @@ class Goods(AdminBaseHandler):
 
 			elif self.args["filter_status"] !=[]:
 				data = []
-				datalist = []
 				if "page" in self.args:
 					page = int(self.args["page"])
 				else:
@@ -1311,42 +1310,52 @@ class Goods(AdminBaseHandler):
 				filter_status2 = self.args["filter_status2"]
 
 				if filter_status == "all":
-					good_list = goods
+					print('i am all')
+					goods = goods
 				elif filter_status =="on":
-					good_list = goods.filter_by(active = 1)
+					print('i am on')
+					goods = goods.filter_by(active = 1)
 				elif filter_status =="off":
-					good_list = goods.filter_by(active = 2)
+					print('i am off')
+					goods = goods.filter_by(active = 2)
 				elif filter_status =="sold_out":
-					good_list = goods.filter_by(storage = 0)
+					print('i am sold_out')
+					goods = goods.filter_by(storage = 0)
 				elif filter_status =="current_sell":
-					good_list = goods.filter(models.Fruit.current_saled !=0 )
+					print('i am current_sell')
+					goods = goods.filter(models.Fruit.current_saled !=0 )
 
 				if order_status1 =="group":
 					print('i am group')
-					good_list = good_list.order_by(models.Fruit.group_id.desc())
+					goods = goods.order_by(models.Fruit.group_id)
 				elif order_status1 =="classify":
 					print('i am classify')
-					good_list = good_list.order_by(models.Fruit.fruit_type_id)	
+					goods = goods.order_by(models.Fruit.fruit_type_id)	
 
 				if order_status2 == "add_time":
-					good_list = good_list.order_by(models.Fruit.add_time.desc())
+					print('i am add_time')
+					goods = goods.order_by(models.Fruit.add_time.desc())
 				elif order_status2 == "name":
-					good_list = good_list.order_by(models.Fruit.name.desc())
+					print('i am name')
+					goods = goods.order_by(models.Fruit.name.desc())
 				elif order_status2 == "saled":
-					good_list = good_list.order_by(models.Fruit.saled.desc())
+					print('i am saled')
+					goods = goods.order_by(models.Fruit.saled.desc())
 				elif order_status2 == "storage":
 					print('i am storage')
-					good_list = good_list.order_by(models.Fruit.storage.desc())
+					goods = goods.order_by(models.Fruit.storage.desc())
 				elif order_status2 == "current_saled":
-					good_list = good_list.order_by(models.Fruit.current_saled.desc())
+					print('i am current_saled')
+					goods = goods.order_by(models.Fruit.current_saled.desc())
 
 				if filter_status2 != []:
-					order_status3 = int(filter_status2)
-					good_list = good_list.filter_by(group_id = filter_status2)
+					filter_status2 = int(filter_status2)
+					print(filter_status2)
+					goods = goods.filter_by(group_id = filter_status2)
 
-				count = good_list.count()
+				count = goods.count()
 				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-				datalist = good_list.offset(offset).limit(page_size).all()
+				datalist = goods.offset(offset).limit(page_size).all()
 				data = self.getGoodsData(datalist)
 				return self.send_success(data=data,count=count)
 
@@ -1567,7 +1576,7 @@ class Goods(AdminBaseHandler):
 						if val == i:
 							imgurl = img_list[index]
 							img_urls.append(imgurl)
-						args["img_url"] = ";".join(img_urls)
+						args["imgurl"] = ";".join(img_urls)
 
 			if "priority" in data:
 				priority = data["priority"]
@@ -1595,7 +1604,6 @@ class Goods(AdminBaseHandler):
 
 			self.session.add(goods)
 			self.session.commit()
-			print(goods)
 			return self.send_success()
 
 		elif action == "edit_goods_img":
@@ -1679,7 +1687,7 @@ class Goods(AdminBaseHandler):
 						group_id = group_id,
 						detail_describe = data["detail_describe"]
 						)
-				return self.send_success(img_url=img_urls)
+				return self.send_success(imgurl=img_urls)
 
 			elif action == "default_goods_img":  # 恢复默认图
 				goods.img_url = ''
@@ -1720,8 +1728,11 @@ class Goods(AdminBaseHandler):
 
 		elif action =="goods_search":
 			goods_name = data["goods_name"]
+			print(goods_name)
 			goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.name.like("%%%s%%" % goods_name)).all()
-			return self.send_success(data=goods)
+			print(goods)
+			data = self.getGoodsData(goods)
+			return self.send_success(data=data)
 
 		elif action =="add_group":
 			args={}

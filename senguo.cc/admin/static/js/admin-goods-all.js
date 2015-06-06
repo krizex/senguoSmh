@@ -311,6 +311,7 @@ function dealGoods($item,type){
         imgUrls.each(function(){
             var $this = $(this);
             arr1.push($this.closest("li").attr("data-index"));
+            console.log($this);
             console.log($this.attr("url"));
             arr2.push($this.attr("url"));
         });
