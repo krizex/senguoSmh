@@ -102,16 +102,15 @@
             <div class="cate-title mt2">批量分组 : </div>
             <div class="dropdown slide-down-select pull-left w130 mt2">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                    <em title="{{current_shop.shop_name}}" class="pull-left" id="9">默认分组 (15)</em>
+                    <em class="pull-left batch-group" data-id="0">默认分组 ({{group_list[0]["num"]}})</em>
                     <span class="caret pull-right no-margin-left rotate0"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu17">
-                    <li  role="presentation">
-                        <a class="item" href="javascript:;">国内水果 (15)</a>
+                <ul class="dropdown-menu dropdown-menu-right w130 batch-group-list" role="menu" aria-labelledby="dropdownMenu17">
+                    {% for group in group_list %}
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="{{group['id']}}">{{group["name"]}} <span class="group-counts">({{group["num"]}})</span></a>
                     </li>
-                    <li  role="presentation">
-                        <a class="item" href="javascript:;">进口水果 (15)</a>
-                    </li>
+                    {% end %}
                 </ul>
             </div>
         </li>
