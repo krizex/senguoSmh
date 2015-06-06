@@ -306,11 +306,12 @@ function dealGoods($item,type){
     }else{
         var arr1 = [];
         var arr2 = [];
-        for(var m=0; m<imgUrls.size(); m++){
-            var $this = imgUrls.eq(m);
+        imgUrls.each(function(){
+            var $this = $(this);
             arr1.push($this.closest("li").attr("data-index"));
+            console.log($this.attr("url"));
             arr2.push($this.attr("url"));
-        }
+        });
         imgList.index = arr1;
         imgList.src = arr2;
     }
@@ -361,6 +362,7 @@ function dealGoods($item,type){
         detail_describe: detail_describe,//没有传"",
         unit: unit,//库存单位id,
         img_url:imgList,
+        imgurl:imgList.src,
         priority: priority,//排序优先级 没有传0,
         storage: storage,//库存,
         intro: info,//商品简介,
@@ -447,7 +449,7 @@ function initEditGoods($item,index){
     }
     $item.find(".switch-btn").attr("data-id",goods.id);
     $item.find(".goods-classify").html(goods.fruit_type_name).attr("data-id",goods.fruit_type_id);
-    $item.find(".goods-info").val(goods.info);
+    $item.find(".goods-info").val(goods.intro);
     $item.find(".show-txtimg").attr("data-text",goods.detail_describe);
     $item.find(".limit_num").val(goods.limit_num);
     $item.find(".goods-priority").val(goods.priority);
@@ -472,7 +474,7 @@ function finishEditGoods($item,data){
     $item.find(".show-txtimg").attr("data-text",goods.detail_describe);
     $item.find(".goods-priority").html(goods.priority);
     $item.find(".limit-num").html(goods.limit_num);
-    $item.find(".item-goods-txt").html(goods.info);
+    $item.find(".item-goods-txt").html(goods.intro);
     $item.find(".goods-price-list").empty();
     if(goods.charge_types.length>0){
         for(var j=0; j<goods.charge_types.length; j++){
@@ -666,7 +668,7 @@ function insertGoods(data){
         $item.find(".goods-classify").html(goods.fruit_type_name).attr("data-id",goods.fruit_type_id);
         $item.find(".goods-priority").html(goods.priority);
         $item.find(".limit-num").html(goods.limit_num);
-        $item.find(".item-goods-txt").html(goods.info);
+        $item.find(".item-goods-txt").html(goods.intro);
         $item.find(".dianzan").html(goods.favour);
         if(goods.charge_types.length>0){
             for(var j=0; j<goods.charge_types.length; j++){

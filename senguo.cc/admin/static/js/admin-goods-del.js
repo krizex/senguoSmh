@@ -14,9 +14,10 @@ $(document).ready(function(){
 }).on("click",".goods-all-list .check-box",function(){
     $(this).toggleClass("checked-box");
 }).on("click",".cancel-del-goods",function(){//撤销删除
-
+    var id = $(this).closest(".goods-all-item").attr("data-id");
+    cancelDel(id);
 }).on("click","#batch-cancel",function(){//批量取消删除
-
+    cancelBatchDel();
 }).on("click",".pre-page",function(){//上页
     if(pn==0){
         return Tip("当前已经是第一页");
@@ -71,6 +72,51 @@ $(document).ready(function(){
 }).on("click",".cancel-btn",function(){
     $(this).closest(".pop-win").hide();
 });
+//取消删除
+function cancelDel(id){
+    var url="";
+    var args={
+        action:'reset_delete',
+        data:{
+            id:id
+        }
+    };
+    $.postJson(url,args,function(res) {
+        if (res.success) {
+            Tip("撤销删除成功");
+            setTimeout(function(){
+                window.location.reload(true);
+            },2000);
+        }
+    });
+}
+//取消批量删除
+function cancelBatchDel(){
+    if($(".checked-box").size()==0){
+        return Tip("您没有选中任何商品");
+    }
+    var ids = [];
+    var batchList = $(".goods-all-list").find(".checked-box");
+    batchList.each(function(){
+        var id = $(this).closest(".goods-all-item").attr("data-id");
+        ids.push(id);
+    });
+    var url="";
+    var args={
+        action:'batch_reset_delete',
+        data:{
+            goods_id:ids
+        }
+    };
+    $.postJson(url,args,function(res) {
+        if (res.success) {
+            Tip("批量撤销删除成功");
+            setTimeout(function(){
+                window.location.reload(true);
+            },2000);
+        }
+    });
+}
 function getGoodsItem(action,page,type_id){
     $(".wrap-loading-box").removeClass("hidden");
     var url;
