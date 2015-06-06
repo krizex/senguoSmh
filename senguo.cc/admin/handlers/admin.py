@@ -1273,6 +1273,10 @@ class Goods(AdminBaseHandler):
 		shop_id = current_shop.id
 		qiniuToken = self.get_qiniu_token('goods',_id)
 		if action == "all":
+			try:
+				goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.active!=0).order_by(models.Fruit.add_time.desc())
+			except:
+				goods = []
 			if self.args["type"] !=[]:
 				_type = self.args["type"]
 				if _type == "classify":
@@ -1283,7 +1287,7 @@ class Goods(AdminBaseHandler):
 					offset = page * page_size
 					if self.args["sub_type"] != []:
 						type_id = int(self.args["sub_type"])
-						goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id,fruit_type_id=type_id).order_by(models.Fruit.add_time.desc())
+						goods = goods.filter_by(fruit_type_id=type_id)
 						count = goods.count()
 						count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 						datalist = goods.offset(offset).limit(10).all()
@@ -1299,22 +1303,12 @@ class Goods(AdminBaseHandler):
 					page = 0
 				page_size = 10
 				offset = page * page_size				
-				try:
-					goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.active!=0).order_by(models.Fruit.add_time.desc())
-				except:
-					goods = []
 				filter_status = self.args["filter_status"]
 				if filter_status == []:
 					filter_status = "all"
 				order_status1 = self.args["order_status1"]
 				order_status2 = self.args["order_status2"]
 				filter_status2 = self.args["filter_status2"]
-
-				# if 'type_id' in self.args:
-				# 	try:
-				# 		goods  = goods.filter_by(shop_id=shop_id,fruit_type_id=data['type_id'])
-				# 	except:
-				# 		return self.send_fail('矮油，没有你要找的～')
 
 				if filter_status == "all":
 					good_list = goods
@@ -1335,9 +1329,9 @@ class Goods(AdminBaseHandler):
 					good_list = good_list.order_by(models.Fruit.fruit_type_id)	
 
 				if order_status2 == "add_time":
-					good_list = good_list.order_by(models.Fruit.add_time)
+					good_list = good_list.order_by(models.Fruit.add_time.desc())
 				elif order_status2 == "name":
-					good_list = good_list.order_by(models.Fruit.name)
+					good_list = good_list.order_by(models.Fruit.name.desc())
 				elif order_status2 == "saled":
 					good_list = good_list.order_by(models.Fruit.saled.desc())
 				elif order_status2 == "storage":
@@ -1358,10 +1352,13 @@ class Goods(AdminBaseHandler):
 
 			group_list = []
 			groups = self.session.query(models.GoodsGroup).filter_by(shop_id=shop_id,status=1).all()
-			group_list.append({"id":0,"name":"默认分组"})
-			group_list.append({"id":-1,"name":"店铺推荐"})
+			default_count = goods.filter_by(group_id=0).count()
+			record_count = goods.filter_by(group_id=-1).count()
+			group_list.append({"id":0,"name":"默认分组","num":default_count})
+			group_list.append({"id":-1,"name":"店铺推荐","num":record_count})
 			for g in groups:
-				group_list.append({"id":g.id,"name":g.name})
+				goods_count = goods.filter_by( group_id = g.id ).count()
+				group_list.append({"id":g.id,"name":g.name,"num":goods_count})
 			return self.render("admin/goods-all.html",context=dict(subpage="goods"),token=qiniuToken,group_list=group_list)
 						
 		elif action == "classify":	
@@ -1480,8 +1477,6 @@ class Goods(AdminBaseHandler):
 			if group_priority:
 				for g in group_priority:
 					group_id = g.group_id
-					print(group_id)
-					print(g.priority)
 					if group_id != -1:
 						if group_id == 0:
 							data.append({'id':0,'name':'','intro':'','num':default_count})
