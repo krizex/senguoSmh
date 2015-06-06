@@ -1274,7 +1274,7 @@ class Goods(AdminBaseHandler):
 		qiniuToken = self.get_qiniu_token('goods',_id)
 		if action == "all":
 			try:
-				goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.active!=0).order_by(models.Fruit.add_time.desc())
+				goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.active!=0)
 			except:
 				goods = []
 			if self.args["type"] !=[]:
@@ -1334,32 +1334,39 @@ class Goods(AdminBaseHandler):
 
 				if order_status1 =="group":
 					print('i am group')
-					goods = goods.order_by(models.Fruit.group_id)
+					# goods = goods.order_by(models.Fruit.group_id)
+					case_one = 'models.Fruit.group_id'
 				elif order_status1 =="classify":
 					print('i am classify')
-					goods = goods.order_by(models.Fruit.fruit_type_id)	
+					# goods = goods.order_by(models.Fruit.fruit_type_id)
+					case_one = 'models.Fruit.fruit_type_id'	
+
 
 				if order_status2 == "add_time":
 					print('i am add_time')
-					goods = goods.order_by(models.Fruit.add_time.desc())
+					goods = goods.order_by(models.Fruit.add_time.desc(),eval(case_one))
 				elif order_status2 == "name":
 					print('i am name')
-					goods = goods.order_by(models.Fruit.name.desc())
+					goods = goods.order_by(models.Fruit.name.desc(),eval(case_one))
 				elif order_status2 == "saled":
 					print('i am saled')
-					goods = goods.order_by(models.Fruit.saled.desc())
+					goods = goods.order_by(models.Fruit.saled.desc(),eval(case_one))
 				elif order_status2 == "storage":
-					print('i am storage')
-					goods = goods.order_by(models.Fruit.storage.desc())
+					print('i am storage',case_one)
+					goods = goods.order_by(models.Fruit.storage.desc(),eval(case_one))
+					# goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id).order_by(models.Fruit.storage)
+					for good in goods:
+						print(good.storage)
 				elif order_status2 == "current_saled":
 					print('i am current_saled')
-					goods = goods.order_by(models.Fruit.current_saled.desc())
+					goods = goods.order_by(models.Fruit.current_saled.desc(),eval(case_one))
 
 				count = goods.count()
 				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 				datalist = goods.offset(offset).limit(page_size).all()
 				data = self.getGoodsData(datalist)
 				return self.send_success(data=data,count=count)
+				# return self.send_success()
 
 			group_list = []
 			groups = self.session.query(models.GoodsGroup).filter_by(shop_id=shop_id,status=1).all()
