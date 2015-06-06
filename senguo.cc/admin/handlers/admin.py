@@ -1614,7 +1614,7 @@ class Goods(AdminBaseHandler):
 		elif action == "apply_cookie":
 			return self.send_qiniu_token("apply_cookie",int(data["goods_id"]))
 
-		elif action in ["add_charge_type", "edit_active", "edit_goods", "default_goods_img","delete_goods"]:  # fruit_id
+		elif action in ["add_charge_type", "edit_active", "edit_goods", "default_goods_img","delete_goods","change_group"]:  # fruit_id
 			try:goods = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).one()
 			except:return self.send_error(404)
 			if goods.shop != self.current_shop:
@@ -1631,11 +1631,21 @@ class Goods(AdminBaseHandler):
 				self.session.add(charge_type)
 				self.session.commit()
 				return self.send_success()
+
 			elif action == "edit_active":
 				if goods.active == 1:
 					goods.update(session=self.session, active = 2)
 				elif goods.active == 2:
 					goods.update(session=self.session, active = 1)
+
+			elif action =="change_group":
+				if group_id !=0 and group_id !=-1:
+						_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = shop_id,status = 1).first()
+						if _group:
+							goods.update(session=self.session, group_id = int(data["group_id"]))
+						else:
+							return self.send_fail('该商品分组不存在或已被删除')				
+
 			elif action == "edit_goods":
 				if len(data["intro"]) > 100:
 					return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
