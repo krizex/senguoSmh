@@ -681,7 +681,7 @@ class Order(AdminBaseHandler):
 										 'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
-			d['mgoods'] = eval(d['mgoods'])
+			# d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["sent_time"] = order.send_time
 			info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
@@ -1287,7 +1287,7 @@ class Goods(AdminBaseHandler):
 					offset = page * page_size
 					if self.args["sub_type"] != []:
 						type_id = int(self.args["sub_type"])
-						goods = goods.filter_by(fruit_type_id=type_id)
+						goods = goods.filter_by(fruit_type_id=type_id).order_by(models.Fruit.add_time.desc())
 						count = goods.count()
 						count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 						datalist = goods.offset(offset).limit(page_size).all()
@@ -1336,11 +1336,10 @@ class Goods(AdminBaseHandler):
 				elif filter_status =="current_sell":
 					goods = goods.filter(models.Fruit.current_saled !=0 )
 
-				
-
 				if filter_status2 != []:
 					filter_status2 = int(filter_status2)
-					goods = goods.filter_by(group_id = filter_status2)
+					if filter_status != -2:
+						goods = goods.filter_by(group_id = filter_status2)
 
 				if order_status1 =="group":
 					case_one = 'models.Fruit.group_id'
@@ -1643,18 +1642,19 @@ class Goods(AdminBaseHandler):
 					goods.update(session=self.session, active = 1)
 
 			elif action =="change_group":
-				re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
-				if re_count >= 6:
-					return self.send_fail("推荐分组至多只能添加六个商品")
 				group_id = int(data["group_id"])
-				if group_id != 0 and group_id != -1:
-					_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = shop_id,status = 1).first()
-					if _group:
-						group_id = group_id
-					else:
-						return self.send_fail('该商品分组不存在或已被删除')
-				print(group_id)
-				goods.update(session=self.session, group_id = group_id)
+				if group_id == -1:
+					re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
+					if re_count >= 6:
+						return self.send_fail("推荐分组至多只能添加六个商品")
+				
+				if group_id !=0 and group_id !=-1:
+						_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = shop_id,status = 1).first()
+						if _group:
+							group_id = _group.id
+						else:
+							return self.send_fail('该商品分组不存在或已被删除')
+				goods.update(session=self.session, group_id = int(data["group_id"]))			
 
 			elif action == "edit_goods":
 				if len(data["intro"]) > 100:
@@ -1737,11 +1737,6 @@ class Goods(AdminBaseHandler):
 			return self.send_qiniu_token("add", 0)
 
 		elif action in ["batch_on",'batch_off',"batch_group"]:
-			if action == 'batch_group':
-				re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
-				if re_count +len(data["goods_id"]) > 6:
-					return self.send_fail("推荐分组至多只能添加六个商品")
-
 			for _id in data["goods_id"]:
 				try:
 					goods = self.session.query(models.Fruit).filter_by( id = _id ).first()
@@ -1752,7 +1747,10 @@ class Goods(AdminBaseHandler):
 				elif action == 'batch_off':
 					goods.active = 2
 				elif action == 'batch_group':
-					goods.group_id= data["group_id"]
+					re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
+					if re_count >= 6:
+						return self.send_fail("推荐分组至多只能添加六个商品")
+					goods.group_id= data["group"]
 				self.session.commit()
 
 		elif action =="add_group":

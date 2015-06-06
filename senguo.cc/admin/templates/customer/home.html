@@ -56,12 +56,11 @@
                 <span class="classify text-center set-inl-blo font18"><span id="classify">全部商品</span><em class="icon up font16" style="display:none;"></em><em class="icon down font16" ></em></span>
             </a>
         </div>
-        <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle anim-bounceDown" style="display:none">
-            {% if context['fruit_page'] %}
-            <li class="text-grey6 bg-white pull-left text-center fruit_cassify" id="fruit_goods">水果单品</li>
-            {% end %}
-          
+        <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle anim-bounceDown" style="display:none">  
             <li class="text-grey6 bg-white pull-left text-center" id="all_goods">全部商品</li>
+            {% for group in context['group_list'] %}
+            <li class="text-grey6 bg-white pull-left text-center" id="all_goods" data-id="{{group['id']}}">{{group['name']}}</li>
+            {% end %}
         </ul>
     </div>
 </div>
