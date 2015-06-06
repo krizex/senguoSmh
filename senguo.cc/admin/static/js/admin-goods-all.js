@@ -99,8 +99,10 @@ $(document).ready(function(){
             $("#stock-unit").html(cur_unit);
             $(".pop-unit").show();
         }
-    }else if($(this).closest("ul").hasClass("condition-list")){
+    }else if($(this).closest("ul").hasClass("condition-list")){//条件查询
         getGoodsItem("all",pn);
+    }else if($(this).closest("ul").hasClass("batch-group-list")){//批量分组
+
     }
 }).on("click",".del-img",function(){//删除图片
     var $list = $(this).closest(".item-img-lst");
@@ -311,7 +313,6 @@ function dealGoods($item,type){
         imgUrls.each(function(){
             var $this = $(this);
             arr1.push($this.closest("li").attr("data-index"));
-            console.log($this);
             console.log($this.attr("url"));
             arr2.push($this.attr("url"));
         });
