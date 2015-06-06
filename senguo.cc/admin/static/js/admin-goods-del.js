@@ -124,11 +124,7 @@ function getGoodsItem(action,page,type_id){
     var order_status1 = $(".order_status1").attr("data-id");
     var order_status2 = $(".order_status2").attr("data-id");
     var filter_status2 = $(".filter_status2").attr("data-id");
-    if(action=="classify"){
-        url = "/admin/goods/all?&type=classify&sub_type="+type_id+"&page="+pn;
-    }else{
-        url = "/admin/goods/all?&page="+pn;
-    }
+    url = "/admin/goods/delete?&page="+pn;
     $.ajax({
         url:url,
         type:"get",

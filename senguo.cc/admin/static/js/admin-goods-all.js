@@ -532,7 +532,7 @@ function singleGroup(goods_id,group_id){
         if (res.success) {
             Tip("分组设置成功！");
         }else{
-            Tip("分组设置失败");
+            Tip(res.error_txt);
         }
     });
 }
@@ -565,7 +565,7 @@ function batchGroup(name,group_id){
                 $(this).closest(".goods-all-item").find(".batch-group").html(name.split("(")[0]).attr("data-id",group_id);
             });
         }else{
-            Tip("批量分组失败");
+            Tip(res.error_txt);
         }
     });
 }
@@ -607,7 +607,7 @@ function batchGoods(type){
                 });
             }
         }else{
-            Tip("批量操作失败");
+            Tip(res.error_txt);
         }
     });
 }
@@ -639,6 +639,8 @@ function switchGoodsRack(id,$obj){
         if (res.success) {
             $obj.toggleClass("switch-btn-active");
             Tip("商品状态操作成功！");
+        }else{
+            Tip(res.error_txt);
         }
     });
 }
