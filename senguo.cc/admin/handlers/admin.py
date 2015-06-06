@@ -1325,6 +1325,13 @@ class Goods(AdminBaseHandler):
 					print('i am current_sell')
 					goods = goods.filter(models.Fruit.current_saled !=0 )
 
+				
+
+				if filter_status2 != []:
+					filter_status2 = int(filter_status2)
+					print(filter_status2)
+					goods = goods.filter_by(group_id = filter_status2)
+
 				if order_status1 =="group":
 					print('i am group')
 					goods = goods.order_by(models.Fruit.group_id)
@@ -1343,15 +1350,10 @@ class Goods(AdminBaseHandler):
 					goods = goods.order_by(models.Fruit.saled.desc())
 				elif order_status2 == "storage":
 					print('i am storage')
-					goods = goods.order_by(models.Fruit.storage.desc())
+					goods = goods.order_by(models.Fruit.storage)
 				elif order_status2 == "current_saled":
 					print('i am current_saled')
 					goods = goods.order_by(models.Fruit.current_saled.desc())
-
-				if filter_status2 != []:
-					filter_status2 = int(filter_status2)
-					print(filter_status2)
-					goods = goods.filter_by(group_id = filter_status2)
 
 				count = goods.count()
 				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
@@ -1727,9 +1729,10 @@ class Goods(AdminBaseHandler):
 				self.session.commit()
 
 		elif action =="goods_search":
-			goods_name = data["goods_name"]
-			print(goods_name)
-			goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.name.like("%%%s%%" % goods_name)).all()
+			name = data["goods_name"]
+			print(name)
+			print(shop_id)
+			a
 			print(goods)
 			data = self.getGoodsData(goods)
 			return self.send_success(data=data)
