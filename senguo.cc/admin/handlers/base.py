@@ -522,6 +522,7 @@ class SuperBaseHandler(_AccountBaseHandler):
 			shops = None
 			print("[定时任务]关闭店铺错误")
 		if shops:
+			print("有店铺！！！！！！")
 			for shop in shops:
 				shop_code = shop.shop_code
 				shop_id = shop.id
@@ -534,13 +535,18 @@ class SuperBaseHandler(_AccountBaseHandler):
 				now = datetime.datetime.now()
 				days = (now -x).days
 				if days > 14:
-					try:
-						follower_count = session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
-					except:
-						return self.send_fail('follower_count error')
-					if (shop_code == 'not set') or (len(fruits)+len(menus) == 0) or (follower_count < 2):
+					if (shop_code == 'not set') or (len(fruits)+len(menus) == 0):
 						shop.status = 0
-						print("[定时任务]店铺关闭成功：",shop_id)
+						print("[定时任务]店铺关闭成功：",shop_id,"未设置店铺号/无商品")
+					else:
+						try:
+							follower_count = session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
+						except:
+							return self.send_fail('follower_count error')
+						if follower_count < 2:
+							shop.status = 0
+							print("[定时任务]店铺关闭成功：",shop_id,"关注数小于2")							
+
 			session.commit()
 			print("[定时任务]关闭店铺完成")
 			# return self.send_success(close_shop_list = close_shop_list)
