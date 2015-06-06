@@ -1359,7 +1359,16 @@ class Goods(AdminBaseHandler):
 			for g in groups:
 				goods_count = goods.filter_by( group_id = g.id ).count()
 				group_list.append({"id":g.id,"name":g.name,"num":goods_count})
-			return self.render("admin/goods-all.html",context=dict(subpage="goods"),token=qiniuToken,group_list=group_list)
+
+			c_list = []
+			all_count = goods.count()
+			on_count = goods.filter_by(active=1).count()
+			off_count = goods.filter_by(active=2).count()
+			sold_count =goods.filter_by(storage=0).count()
+			dealing_count =goods.filter(models.Fruit.current_saled!=0).count()
+			c_list.append({"all_count":all_count,"on_count":on_count,"off_count":off_count,"sold_count":sold_count,"dealing_count":dealing_count})
+
+			return self.render("admin/goods-all.html",context=dict(subpage="goods"),token=qiniuToken,group_list=group_list,c_list=c_list)
 						
 		elif action == "classify":	
 			if self.args["type"] != [] :
@@ -1492,10 +1501,7 @@ class Goods(AdminBaseHandler):
 			if "page" in self.args:
 				data = []
 				datalist = []
-				if "page" in self.args:
-					page = int(self.args["page"])
-				else:
-					page = 0
+				page = int(self.args["page"])
 				page_size = 10
 				offset = page * page_size
 				goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active = 0)
