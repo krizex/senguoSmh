@@ -1737,7 +1737,7 @@ class Goods(AdminBaseHandler):
 				elif action == 'batch_off':
 					goods.active = 2
 				elif action == 'batch_group':
-					goods.group_name = data["group"]
+					goods.group_id= data["group_id"]
 				self.session.commit()
 
 		elif action =="goods_search":
