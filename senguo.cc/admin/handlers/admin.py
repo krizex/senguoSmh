@@ -660,6 +660,7 @@ class Order(AdminBaseHandler):
 			# orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in (5, 6)]
 			orders = [x for x in orderlist if x.type == order_type and x.status in (5, 6, 7)]
 			count = len(orders)
+			print(count)
 		elif order_status == 4:
 			pass
 		else:
