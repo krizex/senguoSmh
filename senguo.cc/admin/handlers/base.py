@@ -522,7 +522,6 @@ class SuperBaseHandler(_AccountBaseHandler):
 			shops = None
 			print("[定时任务]关闭店铺错误")
 		if shops:
-			print("有店铺！！！！！！")
 			for shop in shops:
 				shop_code = shop.shop_code
 				shop_id = shop.id
