@@ -1550,12 +1550,9 @@ class Cart(CustomerBaseHandler):
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}', mgoods='{}')#清空购物车
 
-		from threading import Timer
-		Timer(60*1,self.order_cancel_auto,(self.session,order.id,)).start()
-
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
-			Timer(60*15,self.order_cancel_auto,(self.session,order.id,)).start()
+			Timer(60*1,self.order_cancel_auto,(self.session,order.id,)).start()
 			online_type = self.args['online_type']
 			self.set_cookie('order_id',str(order.id))
 			self.set_cookie('online_totalPrice',str(order.totalPrice))
