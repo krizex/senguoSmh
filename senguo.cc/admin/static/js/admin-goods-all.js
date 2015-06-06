@@ -166,7 +166,7 @@ $(document).ready(function(){
         var goodsItem = data;
         var $item = $(goodsItem).clone();
         $item.find(".goods-classify").html(classify).attr("data-id",class_id);
-        $item.find(".group-goods-lst").html($("#group-goods-lst").children("li").clone());
+        $item.find(".group-goods-lst").html($("#group-goods-lst").children(".presentation").clone());
         $item.find(".group-goods-lst").find(".group-counts").hide();
         $item.find(".all-item-title").remove();
         if($(".goods-all-list").children().size()>0){
@@ -479,7 +479,7 @@ function initEditGoods($item,index){
     $item.find(".show-txtimg").attr("data-text",goods.detail_describe);
     $item.find(".limit_num").val(goods.limit_num);
     $item.find(".goods-priority").val(goods.priority);
-    $item.find(".group-goods-lst").html($("#group-goods-lst").children("li").clone());
+    $item.find(".group-goods-lst").html($("#group-goods-lst").children(".presentation").clone());
     $item.find(".group-goods-lst").find(".group-counts").hide();
 }
 //编辑完成
@@ -738,7 +738,7 @@ function insertGoods(data){
         /*$item.find(".goods-comment-num").html("2222");*/
         $item.find(".goods-vol").html(goods.saled);
         $item.find(".sw-link-txt").val("http://senguo.cc/customer/goods/"+goods.id);
-        $item.find(".group-goods-lst").html($("#group-goods-lst").children("li").clone());
+        $item.find(".group-goods-lst").html($("#group-goods-lst").children(".presentation").clone());
         $item.find(".group-goods-lst").find(".group-counts").hide();
         $(".goods-all-list").append($item);
     }
