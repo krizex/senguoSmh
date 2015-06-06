@@ -55,6 +55,8 @@ $(document).ready(function(){
         if($item.size()==5){
             $("#add-img-btn").closest("li").addClass("hidden");
         }
+    }else{
+        $("#add-img-btn").closest("li").removeClass("hidden");
     }
     $(".pop-img-win").show();
 }).on("click",".sg-img-list img",function(){
