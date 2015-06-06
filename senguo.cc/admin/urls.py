@@ -53,8 +53,7 @@ handlers = [
 	(r"/customer/insertData3",handlers.customer.InsertData3,{},"InsertData3"),
 	(r"/customer/insertData4",handlers.customer.InsertData4,{},"InsertData4"),
 	(r"/customer/discover/(\w+)",handlers.customer.Discover,{},"customerDiscover"),
-	#商品详情
-	(r"/customer/goods/(\w+)",handlers.customer.Goods,{},"customerGoods"),
+	
 	# (r"/fruitzone/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
 	#微官网-----待删除
 	(r"/", handlers.superadmin.Official),
@@ -264,7 +263,8 @@ handlers = [
 	(r"/shop/(\w+)", handlers.customer.Market, {}, "Market"),
 	#remove shop
 	(r"/(\w+)", handlers.customer.Market, {}, "Market"),
-
+	#商品详情
+	(r"/(\w+)/goods/(\w+)",handlers.customer.customerGoods,{},"customerGoods"),
 
 
 	(r"/fruitzone/systemPurchase/", handlers.fruitzone.SystemPurchase, {

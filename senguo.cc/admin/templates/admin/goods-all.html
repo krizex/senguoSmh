@@ -10,24 +10,24 @@
             <div class="cate-title">商品状态 : </div>
             <div class="dropdown slide-down-select pull-left w130">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
-                    <em title="{{current_shop.shop_name}}" class="pull-left" id="3">所有 (15)</em>
+                    <em title="{{current_shop.shop_name}}" class="pull-left filter_status" data-id="all">所有 ({{c_list[0]["all_count"]}})</em>
                     <span class="caret pull-right no-margin-left rotate0"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu3" id="currentShopChange3">
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentShopChange3">
                     <li  role="presentation">
-                        <a class="item" href="javascript:;">所有 (15)</a>
+                        <a class="item" href="javascript:;" data-id="all">所有 ({{c_list[0]["all_count"]}})</a>
                     </li>
                     <li  role="presentation">
-                        <a class="item" href="javascript:;">已上架 (15)</a>
+                        <a class="item" href="javascript:;" data-id="on">已上架 ({{c_list[0]["on_count"]}})</a>
                     </li>
                     <li  role="presentation">
-                        <a class="item" href="javascript:;">已下架 (15)</a>
+                        <a class="item" href="javascript:;" data-id="off">已下架 ({{c_list[0]["off_count"]}})</a>
                     </li>
                     <li  role="presentation">
-                        <a class="item" href="javascript:;">已售完 (15)</a>
+                        <a class="item" href="javascript:;" data-id="sold_out">已售完 ({{c_list[0]["sold_count"]}})</a>
                     </li>
                     <li  role="presentation">
-                        <a class="item" href="javascript:;">待成交 (15)</a>
+                        <a class="item" href="javascript:;" data-id="current_sell">待成交 ({{c_list[0]["dealing_count"]}})</a>
                     </li>
                 </ul>
             </div>
@@ -36,15 +36,15 @@
             <div class="cate-title">排列方式 : </div>
             <div class="dropdown slide-down-select pull-left w130">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu4" data-toggle="dropdown">
-                    <em title="{{current_shop.shop_name}}" class="pull-left" id="4">按商品分组</em>
+                    <em title="{{current_shop.shop_name}}" class="pull-left order_status1" data-id="group">按商品分组</em>
                     <span class="caret pull-right no-margin-left rotate0"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu4" id="currentShopChange4">
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu4" id="currentShopChange4">
                     <li  role="presentation">
-                        <a class="item" href="javascript:;">按商品分组</a>
+                        <a class="item" href="javascript:;" data-id="group">按商品分组</a>
                     </li>
                     <li  role="presentation">
-                        <a class="item" href="javascript:;">按商品分类</a>
+                        <a class="item" href="javascript:;" data-id="classify">按商品分类</a>
                     </li>
                 </ul>
             </div>
@@ -53,24 +53,24 @@
             <div class="cate-title">排序规则 : </div>
             <div class="dropdown slide-down-select pull-left w130">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu5" data-toggle="dropdown">
-                    <em title="{{current_shop.shop_name}}" class="pull-left" id="5">添加日期</em>
+                    <em title="{{current_shop.shop_name}}" class="pull-left order_status2" data-id="add_time">添加日期</em>
                     <span class="caret pull-right no-margin-left rotate0"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu5" id="currentShopChange5">
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu5" id="currentShopChange5">
                     <li  role="presentation">
-                        <a class="item" href="javascript:;">添加日期</a>
+                        <a class="item" href="javascript:;" data-id="add_time">添加日期</a>
                     </li>
                     <li  role="presentation">
-                        <a class="item" href="javascript:;">商品名称</a>
+                        <a class="item" href="javascript:;" data-id="name">商品名称</a>
                     </li>
                     <li  role="presentation">
-                        <a class="item" href="javascript:;">按销量</a>
+                        <a class="item" href="javascript:;" data-id="saled">按销量</a>
                     </li>
                     <li  role="presentation">
-                        <a class="item" href="javascript:;">按库存</a>
+                        <a class="item" href="javascript:;" data-id="storage">按库存</a>
                     </li>
                     <li  role="presentation">
-                        <a class="item" href="javascript:;">按待成交量</a>
+                        <a class="item" href="javascript:;" data-id="current_saled">按待成交量</a>
                     </li>
                 </ul>
             </div>
@@ -79,13 +79,13 @@
             <div class="cate-title">分组筛选 : </div>
             <div class="dropdown slide-down-select pull-left w130">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                    <em title="" class="pull-left">默认分组 (15)</em>
+                    <em title="" class="pull-left filter_status2" data-id="0">默认分组 ({{group_list[0]["num"]}})</em>
                     <span class="caret pull-right no-margin-left rotate0"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu16" id="group-goods-lst">
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu16" id="group-goods-lst">
                     {% for group in group_list %}
                     <li role="presentation">
-                        <a class="item" href="javascript:;" data-id="{{group['id']}}">{{group["name"]}} <span class="group-counts">(15)</span></a>
+                        <a class="item" href="javascript:;" data-id="{{group['id']}}">{{group["name"]}} <span class="group-counts">({{group["num"]}})</span></a>
                     </li>
                     {% end %}
                 </ul>
@@ -102,16 +102,15 @@
             <div class="cate-title mt2">批量分组 : </div>
             <div class="dropdown slide-down-select pull-left w130 mt2">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                    <em title="{{current_shop.shop_name}}" class="pull-left" id="9">默认分组 (15)</em>
+                    <em class="pull-left batch-group" data-id="0">默认分组 ({{group_list[0]["num"]}})</em>
                     <span class="caret pull-right no-margin-left rotate0"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right w130" role="menu" aria-labelledby="dropdownMenu17">
-                    <li  role="presentation">
-                        <a class="item" href="javascript:;">国内水果 (15)</a>
+                <ul class="dropdown-menu dropdown-menu-right w130 batch-group-list" role="menu" aria-labelledby="dropdownMenu17">
+                    {% for group in group_list %}
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="{{group['id']}}">{{group["name"]}} <span class="group-counts">({{group["num"]}})</span></a>
                     </li>
-                    <li  role="presentation">
-                        <a class="item" href="javascript:;">进口水果 (15)</a>
-                    </li>
+                    {% end %}
                 </ul>
             </div>
         </li>

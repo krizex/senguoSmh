@@ -127,11 +127,28 @@ class Third(CustomerBaseHandler):
 		if self._action == "weixin":
 			return self.redirect(self.get_weixin_login_url())
 #商品详情
-class Goods(CustomerBaseHandler):
+class customerGoods(CustomerBaseHandler):
 	@tornado.web.authenticated
-	def get(self,goods_id):
-
-		return self.render('customer/goods-detail.html')
+	def get(self,shop_code,goods_id):
+		try:
+			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
+		except:
+			return self.send_error(404)
+		if shop:
+			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
+			self._shop_code = shop.shop_code
+			self.set_cookie("market_shop_code",str(shop.shop_code))
+			shop_name = shop.shop_name
+		else:
+			shop_name =''
+		good = self.session.query(models.Fruit).filter_by(id=goods_id).first()
+		if good:
+			if good.img_url:
+					img_url= good.img_url.split(";")
+		else:
+			good = []
+			img_url = ''
+		return self.render('customer/goods-detail.html',good=good,shop_name=shop_name,img_url=img_url)
 		
 
 
