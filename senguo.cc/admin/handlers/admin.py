@@ -161,7 +161,7 @@ class SwitchShop(AdminBaseHandler):
 										'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
 										'alipay_account','alipay_account_name','available_balance',\
 										'new_follower_sum','new_order_sum']
-			orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,or_(status=6,status=7)).first()
+			orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,status = 6).first()
 			if orders:
 				commodity_quality = 0
 				send_speed = 0
