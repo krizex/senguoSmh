@@ -20,7 +20,7 @@ def order_comment(args):
 		print("没有需要处理的订单！")
 	else:
 		for order in orders:
-			arrival_date = time.strptime(order.arrival_day, '%Y-%m-%d)
+			arrival_date = time.strptime(order.arrival_day, '%Y-%m-%d')
 			if  order.status == 5 and arrival_date < last_day:
 				order.status = 7
 				order.commodity_quality = 100
