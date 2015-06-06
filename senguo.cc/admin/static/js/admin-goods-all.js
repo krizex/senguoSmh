@@ -532,7 +532,7 @@ function singleGroup(goods_id,group_id){
         if (res.success) {
             Tip("分组设置成功！");
         }else{
-            Tip(res.error_txt);
+            Tip(res.error_text);
         }
     });
 }
@@ -565,7 +565,7 @@ function batchGroup(name,group_id){
                 $(this).closest(".goods-all-item").find(".batch-group").html(name.split("(")[0]).attr("data-id",group_id);
             });
         }else{
-            Tip(res.error_txt);
+            Tip(res.error_text);
         }
     });
 }

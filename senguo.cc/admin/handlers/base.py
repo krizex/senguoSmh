@@ -877,8 +877,9 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					del d[key]
 			cart.update(session=self.session, fruits=str(d)) #更新购物车
 			for charge_type in charge_types:
+				img_url=charge_type.fruit.img_url.split(";")[0]
 				fruits[charge_type.id] = {"charge_type": charge_type, "num": d[charge_type.id],
-										  "code": charge_type.fruit.fruit_type.code}
+										  "code": charge_type.fruit.fruit_type.code,"img_url":img_url}
 		return fruits
 
 
