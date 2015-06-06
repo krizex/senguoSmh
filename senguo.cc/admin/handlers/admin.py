@@ -1290,7 +1290,7 @@ class Goods(AdminBaseHandler):
 						goods = goods.filter_by(fruit_type_id=type_id)
 						count = goods.count()
 						count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-						datalist = goods.offset(offset).limit(10).all()
+						datalist = goods.offset(offset).limit(page_size).all()
 						data = self.getGoodsData(datalist)
 						return self.send_success(data=data,count=count)
 
@@ -1346,7 +1346,7 @@ class Goods(AdminBaseHandler):
 
 				count = good_list.count()
 				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-				datalist = good_list.offset(offset).limit(10).all()
+				datalist = good_list.offset(offset).limit(page_size).all()
 				data = self.getGoodsData(datalist)
 				return self.send_success(data=data,count=count)
 
@@ -1489,9 +1489,22 @@ class Goods(AdminBaseHandler):
 				data.append({'id':0,'name':'','intro':'','num':default_count})
 			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,record_count=record_count)
 		elif action == "delete":
-			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active = 0).all()
-			data = self.getGoodsData(goods)
-			return self.render("admin/goods-delete.html",context=dict(subpage="goods"),data=data)
+			if "page" in self.args:
+				data = []
+				datalist = []
+				if "page" in self.args:
+					page = int(self.args["page"])
+				else:
+					page = 0
+				page_size = 10
+				offset = page * page_size
+				goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active = 0)
+				count = goods.count()
+				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
+				datalist = goods.offset(offset).limit(page_size).all()
+				data = self.getGoodsData(datalist)
+				return self.send_success(data=data,count=count)
+			return self.render("admin/goods-delete.html",context=dict(subpage="goods"))
 
 	def getClass(self,con):
 		data = []
