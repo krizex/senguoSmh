@@ -38,11 +38,11 @@ def delete(args):
 
 
 def main():
-	mytime = Pysettimer(order_comment,(),60,True)
-	mytime.start()
+	#mytime = Pysettimer(order_comment,(),60,True)
+	#mytime.start()
 
-	#shopTime = Pysettimer(SuperBaseHandler.shop_close,(),60,True)
-	#shopTime.start()
+	shopTime = Pysettimer(SuperBaseHandler.shop_close,(),60,True)
+	shopTime.start()
 
 	#deletToken = Pysettimer(delete,(),60,True)
 	#deletToken.start()
