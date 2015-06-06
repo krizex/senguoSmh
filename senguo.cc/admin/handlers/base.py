@@ -516,10 +516,10 @@ class SuperBaseHandler(_AccountBaseHandler):
 		# print(self)
 		print("[定时任务]关闭店铺")
 		session = models.DBSession()
-		close_shop_list = []
 		try:
 			shops = session.query(models.Shop).filter_by(status = 1).all()
 		except:
+			shops = None
 			print("[定时任务]关闭店铺错误")
 		if shops:
 			for shop in shops:
@@ -533,23 +533,18 @@ class SuperBaseHandler(_AccountBaseHandler):
 				# print(x)
 				now = datetime.datetime.now()
 				days = (now -x).days
-				if days >14:
-					if shop_code =='not set':
-						shop.status = 0
-						close_shop_list.append(shop_code)
-					if len(fruits) == 0 and len(menus) == 0:
-						shop.status = 0
-						close_shop_list.append(shop_code)
+				if days > 14:
 					try:
 						follower_count = session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
 					except:
 						return self.send_fail('follower_count error')
-					if follower_count <2:
-						shop.status =0
-						close_shop_list.append(shop_code)
-				session.commit()
-			print("[定时任务]关闭店铺成功：",close_shop_list)
+					if (shop_code == 'not set') or (len(fruits)+len(menus) == 0) or (follower_count < 2):
+						shop.status = 0
+						print("[定时任务]店铺关闭成功：",shop_id)
+			session.commit()
+			print("[定时任务]关闭店铺完成")
 			# return self.send_success(close_shop_list = close_shop_list)
+			
 	def get_login_url(self):
 		return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		# return self.reverse_url('customerLogin')
@@ -689,7 +684,7 @@ class StaffBaseHandler(_AccountBaseHandler):
 			shop_id = self.current_user.shops[0].id
 			self.set_secure_cookie("staff_shop_id", str(shop_id), domain=ROOT_HOST_NAME)
 		elif not next((x for x in self.current_user.shops if x.id == shop_id), None):
-			return self.finish('你不是这个店铺的员工,可能已经被解雇了')
+			return self.finish('你不是这个店铺的员工，可能已经被解雇了')
 		self.shop_id = shop_id
 		self.shop_name = next(x for x in self.current_user.shops if x.id == shop_id).shop_name
 		self.hirelink = self.session.query(models.HireLink).filter_by(

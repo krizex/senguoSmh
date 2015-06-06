@@ -14,29 +14,21 @@ def order_comment(args):
 	print("[定时任务]自动好评")
 	try:
 		orders = session.query(models.Order).filter_by(status=5).all()
-		print("orders??????????????????????")
 	except:
-		print("orders = None!!!!!!!!!!!!!!!!!!!")
 		orders = None
-	if orders is None:
-		print("[定时任务]自动好评：没有需要处理的订单")
-	else:
-		print("else???????????????????????")
+		print("[定时任务]自动好评错误")
+	if orders:
 		for order in orders:
 			if order.arrival_day:
 				arrival_date = datetime.datetime.strptime(order.arrival_day, '%Y-%m-%d')
-			else:
-				continue
-			if  arrival_date < last_day:
-				order.status = 7
-				order.commodity_quality = 100
-				order.send_speed = 100
-				order.shop_service = 100
-				print("[定时任务]自动好评成功：",order.id)
-			#else:
-			#	print("无需处理")
-		# print(time.time())
+				if arrival_date < last_day:
+					order.status = 7
+					order.commodity_quality = 100
+					order.send_speed = 100
+					order.shop_service = 100
+					print("[定时任务]自动好评成功：",order.id)
 		session.commit()
+		print("[定时任务]自动好评完成")
 
 def delete(args):
 	session = models.DBSession()
