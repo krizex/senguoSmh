@@ -104,8 +104,9 @@ $(document).ready(function(){
     }else if($(this).closest("ul").hasClass("batch-group-list")){//批量分组
         batchGroup(price_unit,$(this).attr("data-id"));
     }else if($(this).closest("ul").hasClass("group-goods-lst")){//切换单个商品分组
-        var id = $(this).attr("data-id");
-        singleGroup(id);
+        var group_id = $(this).attr("data-id");
+        var goods_id = $(this).closest(".goods-all-item").attr("data-id");
+        singleGroup(goods_id,group_id);
     }
 }).on("click",".del-img",function(){//删除图片
     var $list = $(this).closest(".item-img-lst");
@@ -518,11 +519,13 @@ function searchGoods(value){
     });
 }
 //单个分组
-function singleGroup(id){
+function singleGroup(goods_id,group_id){
     var url="";
     var args={
+        action:"change_group",
         data:{
-            goods_id:id
+            goods_id:goods_id,
+            group_id:group_id
         }
     };
     $.postJson(url,args,function(res) {
@@ -534,7 +537,7 @@ function singleGroup(id){
     });
 }
 //批量分组
-function batchGroup(name,id){
+function batchGroup(name,group_id){
     if(goodsEdit){
         return Tip("请先完成正在编辑的商品");
     }
@@ -549,15 +552,17 @@ function batchGroup(name,id){
     });
     var url="";
     var args={
+        action:"batch_group",
         data:{
-            goods_id:aIds
+            goods_id:aIds,
+            group_id:group_id
         }
     };
     $.postJson(url,args,function(res) {
         if (res.success) {
             Tip("批量分组成功！");
             batchList.each(function(){
-                $(this).closest(".goods-all-item").find(".batch-group").html(name.split("(")[0]).attr("data-id",id);
+                $(this).closest(".goods-all-item").find(".batch-group").html(name.split("(")[0]).attr("data-id",group_id);
             });
         }else{
             Tip("批量分组失败");
