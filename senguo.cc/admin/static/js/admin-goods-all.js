@@ -103,16 +103,16 @@ $(document).ready(function(){
         getGoodsItem("all",pn);
     }
 }).on("click",".del-img",function(){//删除图片
-    var index = $(this).closest(".img-bo").attr("data-rel");
-    if(!$(this).closest(".item-img-lst").hasClass("drag-img-list")){
-        $(".moxie-shim").css({left:$("#add-img-btn").closest("li").position().left,top:$("#add-img-btn").closest("li").position().top});
-    }else{
-        aLis.splice(index,1);
-        aPos.splice(index,1);
-        $(this).closest(".item-img-lst").children(".add-img-box").css("marginLeft",aLis.length*75+"px");
-    }
-    $(this).closest(".item-img-lst").children(".add-img-box").removeClass("hidden");
+    var $list = $(this).closest(".item-img-lst");
     $(this).closest("li").remove();
+    if($list.hasClass("drag-img-list")){
+        $list.children(".img-bo").css({position:"relative",left:0,top:0});
+        initImgList($list.children(".img-bo"));
+        $list.children(".add-img-box").css("marginLeft",$list.children(".img-bo").size()*75+"px");
+    }else{
+        $(".moxie-shim").css({left:$("#add-img-btn").closest("li").position().left,top:$("#add-img-btn").closest("li").position().top});
+    }
+    $list.children(".add-img-box").removeClass("hidden");
 }).on("click",".item-set-more",function(){
     $(this).closest(".all-item-cont").next(".wrap-more-set").slideToggle(200);
     $(this).toggleClass("item-set-mactive");
@@ -388,7 +388,7 @@ function dealGoods($item,type){
                 },2000);
             }else{
                 Tip("商品编辑成功！");
-                data.img_first = res.img_first;
+                data.imgurl = res.imgurl;
                 finishEditGoods($item.prev(".goods-all-item"),data);
                 $item.prev(".goods-all-item").show();
                 var index = $item.prev(".goods-all-item").index();
@@ -462,8 +462,8 @@ function initEditGoods($item,index){
 function finishEditGoods($item,data){
     var goods = data;
     $item.find(".goods-goods-name").html(goods.name);
-    if(goods.img_first){
-        $item.find(".cur-goods-img").attr("src",goods.img_first+"?imageView2/5/w/100/h/100");
+    if(goods.imgurl){
+        $item.find(".cur-goods-img").attr("src",goods.imgurl[0]+"?imageView2/5/w/100/h/100");
     }
     $item.find(".current-group").html(goods.group_name).attr("data-id",goods.group_id);
     $item.find(".stock-num").html(goods.storage);
@@ -800,6 +800,7 @@ function initImgList($list){
         var obj = $list[i];
         obj.zIndex = 1;
         obj.index = i;
+        $(obj).attr("data-index",i).attr("data-rel",i);
         var pos = getPos($(obj));
         $(obj).css({left:pos.left+"px",top:pos.top+"px",zIndex:"1"});
         aPos.push(pos);
