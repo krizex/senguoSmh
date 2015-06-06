@@ -1572,16 +1572,17 @@ class Cart(CustomerBaseHandler):
 		return self.send_success(order_id = order.id)
 
 	def order_cancel_auto(self,session,order_id):
-		print("十五分钟之后未支付，订单自动取消",order_id,self)
+		print("[定时任务]订单取消：",order_id,self)
 		order = session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
-			return self.send_fail('order_cancel_auto:order not found!')
+			return self.send_fail('order_cancel_auto: order not found!')
 		if order.status == -1:
 			order.status = 0
 			order.del_reason = "timeout"
 			order.get_num(session,order.id)
+			print("[定时任务]订单取消成功：",order.num)
 		else:
-			print('order has payed!')
+			print("[定时任务]订单取消错误，该订单已完成支付",order_num)
 
 class CartCallback(CustomerBaseHandler):
 
