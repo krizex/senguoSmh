@@ -1679,7 +1679,7 @@ class Goods(AdminBaseHandler):
 						group_id = group_id,
 						detail_describe = data["detail_describe"]
 						)
-				return self.send_success(img_urls=img_urls)
+				return self.send_success(img_url=img_urls)
 
 			elif action == "default_goods_img":  # 恢复默认图
 				goods.img_url = ''
