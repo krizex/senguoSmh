@@ -55,6 +55,7 @@ textarea{border-color:#eee;}
 .list-operate{margin-top: 20px;}
 .list-operate>li{float: left;margin-right: 20px;height: 28px;line-height: 28px;font-size: 14px;color: #333;}
 .goods-all-list>li{margin-top: 10px;}
+.goods-all-list>p{text-align: center;}
 .all-item-title{font-size: 14px;text-indent: 10px;}
 .all-item-top{background-color: #f3f3f3;height: 35px;line-height:24px;font-size: 14px;position: relative;}
 .item-checkbox{vertical-align: -3px;}

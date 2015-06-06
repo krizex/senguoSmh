@@ -681,7 +681,7 @@ class Order(AdminBaseHandler):
 										 'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
-			d['mgoods'] = eval(d['mgoods'])
+			# d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["sent_time"] = order.send_time
 			info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
@@ -1265,7 +1265,7 @@ class Goods(AdminBaseHandler):
 	def token(self,token):
 		editorToken = self.get_editor_token("editor", _id)
 
-	@AdminBaseHandler.check_arguments("type?","sub_type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?")
+	@AdminBaseHandler.check_arguments("type?","sub_type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?","content?")
 	def get(self):
 		action = self._action
 		_id = str(time.time())
@@ -1294,6 +1294,22 @@ class Goods(AdminBaseHandler):
 						data = self.getGoodsData(datalist)
 						return self.send_success(data=data,count=count)
 
+				elif _type =="goods_search":
+					name = self.args["content"]
+					data = []
+					if "page" in self.args:
+						page = int(self.args["page"])
+					else:
+						page = 0
+					page_size = 10
+					offset = page * page_size
+					goods = self.session.query(models.Fruit).filter(models.Fruit.name.like("%%%s%%" % name))
+					count = goods.count()
+					count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
+					datalist = goods.offset(offset).limit(page_size).all()
+					data = self.getGoodsData(goods)
+					return self.send_success(data=data,count=count)
+
 			elif self.args["filter_status"] !=[]:
 				data = []
 				if "page" in self.args:
@@ -1318,11 +1334,12 @@ class Goods(AdminBaseHandler):
 				elif filter_status =="sold_out":
 					goods = goods.filter_by(storage = 0)
 				elif filter_status =="current_sell":
-					goods = goods.filter(models.Fruit.current_saled !=0 )			
+					goods = goods.filter(models.Fruit.current_saled !=0 )
 
 				if filter_status2 != []:
 					filter_status2 = int(filter_status2)
-					goods = goods.filter_by(group_id = filter_status2)
+					if filter_status != -2:
+						goods = goods.filter_by(group_id = filter_status2)
 
 				if order_status1 =="group":
 					case_one = 'models.Fruit.group_id'
@@ -1735,12 +1752,6 @@ class Goods(AdminBaseHandler):
 						return self.send_fail("推荐分组至多只能添加六个商品")
 					goods.group_id= data["group"]
 				self.session.commit()
-
-		elif action =="goods_search":
-			name = data["goods_name"]
-
-			data = self.getGoodsData(goods)
-			return self.send_success(data=data)
 
 		elif action =="add_group":
 			args={}

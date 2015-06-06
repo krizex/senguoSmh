@@ -3,7 +3,7 @@
  */
 var editor = null,goods_list=null,pn=0;
 $(document).ready(function(){
-
+    getGoodsItem();
 }).on("click",".all-select-box",function(){
     $(this).toggleClass("checked-box");
     if($(this).hasClass("checked-box")){
@@ -22,20 +22,20 @@ $(document).ready(function(){
     if(pn==0){
         return Tip("当前已经是第一页");
     }
-    getGoodsItem("all",pn--);
+    getGoodsItem(pn--);
 }).on("click",".next-page",function(){//下一页
     var total = $(".page-total").html();
     if(pn==parseInt(total)){
         return Tip("当前已经是最后一页");
     }
-    getGoodsItem("all",pn++);
+    getGoodsItem(pn++);
 }).on("click",".jump-to",function(){
     var num = $(".input-page").val();
     var total = $(".page-total").html();
     if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>(parseInt(total)-1)){
         return Tip("页码格式不对或者数字超出页码范围");
     }
-    getGoodsItem("all",num-1);
+    getGoodsItem(num-1);
 }).on("keyup",".input-page",function(e){
     if(e.keyCode==13){
         var num = $(".input-page").val();
@@ -43,7 +43,7 @@ $(document).ready(function(){
         if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>(parseInt(total)-1)){
             return Tip("页码格式不对或者数字超出页码范围");
         }
-        getGoodsItem("all",num-1);
+        getGoodsItem(num-1);
     }
 }).on("click","#goods-all-search",function(){//商品搜索
     var value = $("#goods-all-ipt").val();
@@ -117,7 +117,7 @@ function cancelBatchDel(){
         }
     });
 }
-function getGoodsItem(action,page,type_id){
+function getGoodsItem(){
     $(".wrap-loading-box").removeClass("hidden");
     var url;
     var filter_status = $(".filter_status").attr("data-id");
