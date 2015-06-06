@@ -257,7 +257,7 @@ $(document).ready(function(){
     getGoodsItem("all",pn--);
 }).on("click",".next-page",function(){//下一页
     var total = $(".page-total").html();
-    if(pn==parseInt(total)){
+    if(pn==parseInt(total)-1){
         return Tip("当前已经是最后一页");
     }
     getGoodsItem("all",pn++);
