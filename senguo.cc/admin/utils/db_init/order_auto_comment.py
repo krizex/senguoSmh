@@ -27,8 +27,8 @@ def order_comment(args):
 				order.send_speed = 100
 				order.shop_service = 100
 				print('自动好评',order.id)
-			else:
-				#print("无需处理")
+			#else:
+			#	print("无需处理")
 		print(time.time())
 		session.commit()
 
