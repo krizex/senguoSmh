@@ -13,7 +13,7 @@ def order_comment(args):
 	last_day = today - datetime.timedelta(days = 7)
 	print("[定时任务]自动好评")
 	try:
-		orders = session.query(models.Order).all()
+		orders = session.query(models.Order).filter_by(status=5).all()
 		print("orders??????????????????????")
 	except:
 		print("orders = None!!!!!!!!!!!!!!!!!!!")
@@ -23,8 +23,11 @@ def order_comment(args):
 	else:
 		print("else???????????????????????")
 		for order in orders:
-			arrival_date = datetime.datetime.strptime(order.arrival_day, '%Y-%m-%d')
-			if  order.status == 5 and arrival_date < last_day:
+			if order.arrival_day:
+				arrival_date = datetime.datetime.strptime(order.arrival_day, '%Y-%m-%d')
+			else:
+				continue
+			if  arrival_date < last_day:
 				order.status = 7
 				order.commodity_quality = 100
 				order.send_speed = 100
