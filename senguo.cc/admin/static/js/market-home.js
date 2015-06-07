@@ -181,39 +181,6 @@ $(document).ready(function(){
         window.dataObj.page=1;
         window.dataObj.action=5;
         goodsList(1,5);
-     }).on('click','#fruit_goods',function(){
-        //get all fruit
-        var fruit_pages=Int($('#fruit_page').val());
-        window.dataObj.page_count=fruit_pages;
-        window.dataObj.page=1;
-        window.dataObj.action=6;
-        goodsList(1,6);
-     }).on('click','#dryfruit_goods',function(){
-        //get all dry_fruit
-        //var dry_pages=Int($('#dry_page').val());
-        var dry_pages=parseInt($('#dry_page').val());
-        window.dataObj.page_count=dry_pages;
-        window.dataObj.page=1;
-        window.dataObj.action=7;
-        goodsList(1,7);
-     }).on('click','.menu_goods',function(){
-        //get all mgoods
-        var $this=$(this);
-        var id=$this.data('id');
-        var pages=window.dataObj.mgoods_page;
-        for(var i=0;i<pages.length;i++){
-            var page=pages[i][0];
-            var menu_id=pages[i][1];
-            if(menu_id==id){
-                window.dataObj.page_count=page;
-            }
-        }
-        $('.classify-title').addClass('hidden');
-        $('.goods-list').empty();
-        window.dataObj.page=1;
-        window.dataObj.action=8;
-        window.dataObj.menu_id=id;
-        goodsList(1,8);
      }).on('click','.able_click',function(e){
             //点赞
             var $this=$(this);

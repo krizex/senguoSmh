@@ -830,11 +830,30 @@ class Market(CustomerBaseHandler):
 		notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
 		fruit_page = int(len(fruits)/page_size) if len(fruits)% page_size == 0 else int(len(fruits)/page_size) +1
 		self.set_cookie("cart_count", str(cart_count))
+
+		group_list=[]
+		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop.id).order_by(models.GroupPriority.priority).all()
+		if group_priority:
+			for g in group_priority:
+				print(g.group_id)
+				group_id = g.group_id
+				if group_id == -1:
+					group_list.append({'id':-1,'name':'店铺推荐'})
+				elif group_id == 0:
+					group_list.append({'id':0,'name':' 默认分组'})
+				else:
+					_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop.id,status = 1).first()
+					if _group:
+						group_list.append({'id':_group.id,'name':_group.name})
+		else:
+			data.append({'id':0,'name':'默认分组'})
+
+		print(group_list)
+
 		return self.render("customer/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,\
 							shop_name=shop.shop_name,w_follow = w_follow,fruit_page = fruit_page,\
-							cart_fs=cart_fs,\
-							shop_logo = shop_logo,shop_status=shop_status))
+							cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:int","page?:int","menu_id?:int")
@@ -855,7 +874,7 @@ class Market(CustomerBaseHandler):
 			return self.dry_list()
 		elif action == 8:
 			return self.mgood_list()
-	@classmethod
+	# @classmethod
 	def w_getdata(self,session,m,customer_id):
 			data = []
 			w_tag = ''
@@ -877,19 +896,16 @@ class Market(CustomerBaseHandler):
 
 				charge_types= []
 				for charge_type in fruit.charge_types:
-					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit,'market_price':charge_type.market_price})
-				if fruit.fruit_type_id < 1000:
-					w_tag = "fruit"
-				elif fruit.fruit_type_id in[1000,2000]:
-					w_tag = "dry_fruit"
-				else:
-					w_tag = "other"
+					unit  = charge_type.unit
+					unit =self.getUnit(unit)
+					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,'market_price':charge_type.market_price})
+				
 
 				img_url = fruit.img_url.split(";")[0]
 
 				data.append({'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
 				'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour,\
-				'group_id':fruit.group_id,'favour_today':favour_today,'classify':w_tag})
+				'group_id':fruit.group_id,'favour_today':favour_today,'group_id':fruit.group_id})
 			return data
 
 	@CustomerBaseHandler.check_arguments("page?:int","group_id?:int")
@@ -924,7 +940,6 @@ class Market(CustomerBaseHandler):
 		if not shop:
 			return self,send_error(404)
 		fruits = self.session.query(models.Fruit).join(models.Shop).join(models.GroupPriority).order_by(models.GroupPriority.priority,models.Fruit.add_time.desc())
-		print(fruits)
 		fruits = fruits.filter(models.Fruit.active == 1).offset(offset).limit(page_size).all()
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruits_data)
@@ -934,7 +949,7 @@ class Market(CustomerBaseHandler):
 		fruit_id = int(self.args["charge_type_id"])
 		shop_id = int(self.get_cookie("market_shop_id"))
 		favour = self.session.query(models.FruitFavour).\
-			filter_by(customer_id=self.current_user.id,f_m_id=fruit_id, type=menu_type).first()
+			filter_by(customer_id=self.current_user.id,f_m_id=fruit_id).first()
 		try:
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id \
 				,shop_id = shop_id).first()
@@ -1113,6 +1128,7 @@ class Cart(CustomerBaseHandler):
 				if charge_type.fruit.storage < 0:
 					return self.send_fail('“%s”库存不足' % charge_type.fruit.name)
 				# print(charge_type.price)
+				print(charge_type.num , unit[charge_type.unit])
 				f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
 									 "charge":"%.2f元/%.1f %s" % (float(charge_type.price), charge_type.num, unit[charge_type.unit])}
 
