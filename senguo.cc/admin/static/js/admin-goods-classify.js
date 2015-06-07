@@ -19,6 +19,21 @@ $(document).ready(function(){
 }).on('click','.fruit-search',function(){
 	var con=$('#search-classify').val();
 	getData2(con);
+}).on("click","#goods-all-search",function(){//商品搜索
+    var value = $("#goods-all-ipt").val();
+    if($.trim(value)==""){
+        return Tip("搜索条件不能为空！");
+    }
+    var key = encodeURIComponent(encodeURIComponent(value));
+    window.location.href="/admin/goods/all?type=goodsearch&content="+key+"&page=0";
+}).on("keyup","#goods-all-ipt",function(e){//商品搜索框
+    var value = $(this).val();
+    if(e.keyCode==13){
+        if($.trim(value)!=""){
+            var key = encodeURIComponent(encodeURIComponent(value));
+            window.location.href="/admin/goods/all?type=goodsearch&content="+key+"&page=0";
+        }
+    }
 });
 
 function getData(type,sub_type){

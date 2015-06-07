@@ -55,7 +55,7 @@ textarea{border-color:#eee;}
 .list-operate{margin-top: 20px;}
 .list-operate>li{float: left;margin-right: 20px;height: 28px;line-height: 28px;font-size: 14px;color: #333;}
 .goods-all-list>li{margin-top: 10px;}
-.goods-all-list>p{text-align: center;}
+.goods-all-list>p{text-align: center;margin-top: 20px;}
 .all-item-title{font-size: 14px;text-indent: 10px;}
 .all-item-top{background-color: #f3f3f3;height: 35px;line-height:24px;font-size: 14px;position: relative;}
 .item-checkbox{vertical-align: -3px;}
@@ -167,6 +167,7 @@ textarea{border-color:#eee;}
 .groups-top>p{color: #333;line-height: 26px;}
 .add-groups{position: absolute;right: 15px;top: 20px;}
 .wrap-group-list{padding: 15px 20px;}
+.group-lst>li:first-child{cursor: auto;}
 .group-lst>li{width:877px;border: 1px solid #eee;padding: 8px 10px;position: relative;cursor: move;-webkit-box-sizing: border-box;background-color: #fff;}
 .group-lst>li:last-child{border-bottom: 1px solid #eee;}
 .right-link{position: absolute;right: 0;top: 0;height: 56px;text-align: center;width: 220px;}
