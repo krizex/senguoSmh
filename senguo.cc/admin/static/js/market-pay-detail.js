@@ -24,7 +24,7 @@ $(document).ready(function(){
     if(send_day==1){
         if(create_year==year&&create_month==month&&create_day==day) $('.send_date').text('今天');
         else $('.send_date').hide();
-        if(status==5||status==6){
+        if(status==5||status==6||status=7){
             $('.send_date').text('');
         }
     }
@@ -32,7 +32,7 @@ $(document).ready(function(){
         if(create_year==year&&create_month==month&&create_day+1==day) $('.send_date').text('今天');
         else if(create_year==year&&create_month==month&&create_day==day) $('.send_date').text('明天');//下单模式选择了“明天”，但是日期到了“明天”的情况
         else $('.send_date').hide();
-        if(status==5||status==6){
+        if(status==5||status==6||status=7){
             $('.send_date').text('');
         }
     }
@@ -107,6 +107,8 @@ function statusText(n){
             $(".order-status-txt").css("left","0%");
             $(".tel-btn").show();
             break;
+        case 2:
+        case 3:
         case 4:
             $("#status-txt").text('配送中');
             $(".order-wawa").css("left","50%");
@@ -122,6 +124,7 @@ function statusText(n){
             $(".tel-btn").show();
             break;
         case 6:
+        case 7:
             $("#status-txt").text('已评价');
             $(".order-wawa").css("left","100%");
             $(".order-line-grade").css("width","100%");

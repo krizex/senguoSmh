@@ -2484,7 +2484,10 @@ class  Overtime(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("order_id?:str")
 	def get(self):
-		order_id = int(self.args['order_id'])
+		try:
+			order_id = int(self.args['order_id'])
+		except:
+			return self.send_fail("overtime : can not get order_id")
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			return self.send_fail("overtime : order not found")
