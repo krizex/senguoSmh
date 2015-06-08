@@ -55,7 +55,6 @@ animate {-webkit-transition: 0.2s linear;-o-transition: 0.2s linear;-ms-transiti
 .main-container .main-header {position: fixed;z-index: 9999;top: 0;left: 0;width: 100%;}
 .main-container .main-header .user-icon {position: absolute;right: 5px;margin-left: -1000px;}
 .main-container .navbar-inner {padding: 0 5px;border-radius: 0;}
-.main-container .content-wrapper {margin-left: 10px;}
 
 .mb-0{margin-bottom:0px !important;}
 .mb-10{margin-bottom:10px !important;}
