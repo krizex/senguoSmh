@@ -77,7 +77,8 @@ $(document).ready(function(){
         var status=$this.data('status');
         // $this.find('.send_time').text(start_hour+':'+start_minute+'-'+end_hour+':'+end_minute);
         if(status==5) $this.addClass('text-grey bg-grey').find('.toggle').addClass('text-grey').find('.finish_btn').removeClass('order_finish').addClass('arrive').text('已完成');
-        if(status==6 || status==7) $this.addClass('text-grey bg-grey').find('.toggle').addClass('text-grey').find('.finish_btn').removeClass('order_finish').addClass('arrive').text('已评价');
+        if(status==6) $this.addClass('text-grey bg-grey').find('.toggle').addClass('text-grey').find('.finish_btn').removeClass('order_finish').addClass('arrive').text('已评价');
+        if(status==7) $this.addClass('text-grey bg-grey').find('.toggle').addClass('text-grey').find('.finish_btn').removeClass('order_finish').addClass('arrive').text('已自动好评');
         // if(type==1){
         //     $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
         // }
