@@ -75,16 +75,17 @@ $(document).ready(function(){
     });
 }).on("click","#dianzan",function(){
     var $this = $(this);
-    if($this.attr("data-flag")=="ture"){
+    if($this.attr("data-flag")=="True"){
         return noticeBox("您今天已经点过赞了，明天再来吧");
     }else{
         var id = $this.attr("data-id");
-        //great(id,$this);
+        great(id,$this);
     }
 });
 //点赞
 function great(id,$this){
-    var url='';
+    var shop_code = $("#shop_code").val();
+    var url='/'+shop_code;
     var action=3;
     var args={
         action:action,
@@ -92,7 +93,7 @@ function great(id,$this){
     };
     $.postJson(url,args,function(res){
             if(res.success){
-                $this.attr("data-flag","true").addClass("zaned").html(parseInt($this.html())+1);
+                $this.attr("data-flag","True").addClass("zaned").html(parseInt($this.html())+1);
             }
             else noticeBox(res.error_text);
         },

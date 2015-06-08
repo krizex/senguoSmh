@@ -139,6 +139,7 @@ class customerGoods(CustomerBaseHandler):
 			self._shop_code = shop.shop_code
 			self.set_cookie("market_shop_code",str(shop.shop_code))
 			shop_name = shop.shop_name
+			shop_code = shop.shop_code
 		else:
 			shop_name =''
 		good = self.session.query(models.Fruit).filter_by(id=goods_id).first()
@@ -161,7 +162,7 @@ class customerGoods(CustomerBaseHandler):
 		else:
 			good = []
 			img_url = ''
-		return self.render('customer/goods-detail.html',good=good,shop_name=shop_name,img_url=img_url)
+		return self.render('customer/goods-detail.html',good=good,shop_name=shop_name,img_url=img_url,shop_code=shop_code)
 		
 
 
