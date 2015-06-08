@@ -206,11 +206,11 @@ function orderItem(item){
         else if(pay_type == 3){
             $item.find('.pay-status').text('在线支付'); 
             $item.find('.price_edit').hide();
-            $item.find('.delete-order').hide();
+            if(status!=-1){$item.find('.delete-order').hide();}
         }
         else { 
             $item.find('.pay-status').text('货到付款'); 
-        } 
+        }
         //根据订单状态显示/隐藏
         if(status==0) {
             if(del_reason=null){
