@@ -923,8 +923,6 @@ class Market(CustomerBaseHandler):
 		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1).order_by(models.Fruit.add_time.desc())
 		count_fruit = fruits.count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		print(total_page)
-		print(page+1)
 		if total_page == page:
 			nomore = True
 		fruits = fruits.offset(offset).limit(page_size).all()
@@ -951,9 +949,7 @@ class Market(CustomerBaseHandler):
 		# 	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
 		count_fruit = fruits.count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		# print(total_page)
-		# print(page+1)
-		if total_page == page+1:
+		if total_page == page:
 			nomore = True
 		fruits = fruits.offset(offset).limit(page_size).all()
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
