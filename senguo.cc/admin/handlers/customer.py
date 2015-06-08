@@ -1103,7 +1103,7 @@ class Cart(CustomerBaseHandler):
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
-		if not cart or (not (eval(cart.fruits) or eval(cart.mgoods))): #购物车为空
+		if not cart or (not (eval(cart.fruits))): #购物车为空
 			return self.render("notice/cart-empty.html",context=dict(subpage='cart'))
 		cart_f = self.read_cart(shop_id)
 		for item in cart_f:
@@ -1296,7 +1296,7 @@ class Cart(CustomerBaseHandler):
 			return self.send_fail("订单提交失败")
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
-		cart.update(session=self.session, fruits='{}', mgoods='{}')#清空购物车
+		cart.update(session=self.session, fruits='{}')#清空购物车
 
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
@@ -1727,8 +1727,8 @@ class OrderDetail(CustomerBaseHandler):
 		if not order:return self.send_error(404)
 		charge_types = self.session.query(models.ChargeType).filter(
 			models.ChargeType.id.in_(eval(order.fruits).keys())).all()
-		mcharge_types = self.session.query(models.MChargeType).filter(
-			models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
+		# mcharge_types = self.session.query(models.MChargeType).filter(
+		# 	models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
 		if order.pay_type == 3:
 			online_type = order.online_type
 		else:
