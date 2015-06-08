@@ -144,7 +144,10 @@ class customerGoods(CustomerBaseHandler):
 		good = self.session.query(models.Fruit).filter_by(id=goods_id).first()
 		if good:
 			if good.img_url:
-					img_url= good.img_url.split(";")
+				img_url= good.img_url.split(";")
+			else:
+				img_url= ''
+
 		else:
 			good = []
 			img_url = ''
