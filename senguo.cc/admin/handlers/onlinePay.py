@@ -242,6 +242,9 @@ class OrderDetail(CustomerBaseHandler):
 		alipayUrl = self.args['alipayUrl']
 		order_id = self.args['order_id']
 		print("[支付宝支付]order_id：",order_id)
+		order = self.session.query(models.Order).filter_by(id = order_id).first()
+		if not order:
+			return self.send_fail('order not found')
 		return self.render("customer/alipay-tip.html",alipayUrl = alipayUrl,order_id = order_id)
 
 class JustOrder(CustomerBaseHandler):
@@ -269,6 +272,7 @@ class OnlineAliPay(CustomerBaseHandler):
 	def get(self):
 		if self._action == 'AliPayCallback':
 			return self.handle_onAlipay_callback()
+		# 在线支付提交订单
 		elif self._action == "AliPay":
 			print("[支付宝支付]进入AliPay")
 			order_id = int(self.get_cookie("order_id"))

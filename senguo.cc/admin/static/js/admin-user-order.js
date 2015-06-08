@@ -22,7 +22,7 @@ $(document).ready(function(){
     var id=parent.data('id');
     var index=parent.index();
     var $box=$('.order_set_box');
-    $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('delete_check').removeClass('price_check','mark_check');
+    $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('delete_check').removeClass('price_check mark_check');
     $box.find('.title').text('订单删除');
     $('#order_ser_val').val('').attr({'placeholder':'为防止误删除操作，请输入订单删除原因'});
 }).on('click','.delete_check',function(){
@@ -33,18 +33,18 @@ $(document).ready(function(){
         orderEdit($this,'edit_status',1);
 }).on('click','.to-send',function(){
     var $this=$(this);
-    if(confirm('是否开始配送该订单?')){
+    if(confirm('是否开始配送该订单？')){
         orderEdit($this,'edit_status',4);
     }
 }).on('click','.to-finish',function(){
     var $this=$(this);
-    if(confirm('是否完成该订单?')){
+    if(confirm('是否完成该订单？')){
        orderEdit($this,'edit_status',5); 
     }
 }).on('click','.send_person_list li',function(){
     var $this=$(this);
     var val=$this.data('id');
-    if(confirm('是否选择该员工进行配送?')){
+    if(confirm('是否选择该员工进行配送？')){
         orderEdit($this,'edit_SH2',val);
     }//员工修改
 }).on('click','.order_mark',function(){
@@ -53,7 +53,7 @@ $(document).ready(function(){
     var id=parent.data('id');
     var index=parent.index();
     var $box=$('.order_set_box');
-    $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('mark_check').removeClass('price_check','delete_check');
+    $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('mark_check').removeClass('price_check delete_check');
     $box.find('.title').text('订单备注');
     $('#order_ser_val').val('').attr({'placeholder':'请输入订单备注'});
 }).on('click','.mark_check',function(){
@@ -66,7 +66,7 @@ $(document).ready(function(){
     var id=parent.data('id');
     var index=parent.index();
     var $box=$('.order_set_box');
-    $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('price_check').removeClass('mark_check','delete_check');
+    $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('price_check').removeClass('mark_check delete_check');
     $box.find('.title').text('修改订单总价');
     $('#order_ser_val').val('').attr({'placeholder':'请输入要修改成的价格（总价）'});
 }).on('click','.price_check',function(){
@@ -81,14 +81,14 @@ $(document).ready(function(){
     var $this=$(this);
     $this.toggleClass('checked').toggleClass('order-checked');
 }).on('click','#batch-send',function(){
-     var $this=$(this);
-    if(confirm('是否批量开始配送该订单?')){
+    var $this=$(this);
+    if(confirm('提示：批量配送订单将全部分配给默认配送员，您可以在批量配送后再到“配送中”的订单中单独指定配送员。\n是否批量开始配送该订单？')){
         orderEdit($this,'batch_edit_status',4);
     }
 }).on('click','#batch-finish',function(){
-     var $this=$(this);
-      if(confirm('是否批量完成订单?')){
-       orderEdit($this,'batch_edit_status',5); 
+    var $this=$(this);
+    if(confirm('是否批量完成订单？')){
+    orderEdit($this,'batch_edit_status',5); 
     }
 }).on('click','#batch-print',function(){
     orderPrint($(this),'batch_print'); //订单打印
@@ -191,14 +191,14 @@ function orderItem(item){
         $item.find('.order-status').attr({'data-id':status});
         $item.find('.order-time').text(create_date);
         $item.find('.saler-remark').val(remark);
-        //立即送消费显示
+        //立即送小费显示/隐藏
         if(type==1){
             $item.find('.tip').text(tip);
         }
         else {
             $item.find('.tips').hide();
         }
-        //支付状态
+        //根据支付方式显示/隐藏
         if(pay_type==2){ 
             $item.find('.pay-status').text('余额支付'); 
             $item.find('.price_edit').hide();
@@ -206,40 +206,58 @@ function orderItem(item){
         else if(pay_type == 3){
             $item.find('.pay-status').text('在线支付'); 
             $item.find('.price_edit').hide();
-
+            if(status!=-1){$item.find('.delete-order').hide();}
         }
         else { 
             $item.find('.pay-status').text('货到付款'); 
-        } 
-        //订单状态
+        }
+        //根据订单状态显示/隐藏
         if(status==0) {
-            if(del_reason!=null){
-                $item.find('.order-status').empty().text('该订单已删除（删除原因：'+del_reason+'）');
+            if(del_reason=null){
+                $item.find('.order-status').empty().text('该订单已被用户取消').css({'line-height':'50px','color':'#44b549'});
+            }
+            else if(del_reason='timeout'){
+                $item.find('.order-status').empty().text('该订单15分钟未支付，已自动取消').css({'line-height':'50px','color':'#44b549'});
             }
             else{
-                $item.find('.order-status').empty().text('该订单已被用户取消');
+                $item.find('.order-status').empty().text('该订单已删除（原因：'+del_reason+'）').css({'line-height':'50px','color':'#44b549'});
             }
-            $item.find('.unable_edit').show();
+            $item.find('.unable_edit_order').show();
+            $item.find('.address-adapt').hide();
+        }
+        else if(status==-1) {
+            $item.find('.status_unpaid').removeClass('hidden');
+            $item.find('.able_edit_order').show();
+            $item.find('.address-adapt').hide();
         }
         else if(status==1) {
         	$item.find('.status_order').removeClass('hidden');
-        	$item.find('.able_edit').show();
+        	$item.find('.able_edit_order').show();
+            $item.find('.able_edit_sender').show();
         	$item.find('.status-send').show();
         }
         else if(status==4) {
         	$item.find('.status_send').removeClass('hidden');
-        	$item.find('.able_edit').show();
+        	$item.find('.able_edit_order').show();
+            $item.find('.able_edit_sender').show();
         	$item.find('.status-finish').show();
         }
         else if(status==5) {
         	$item.find('.status_finish').removeClass('hidden');
-        	$item.find('.able_edit').show();
-             $item.find('.current_sender').show();
-             $item.find('.send_change').hide();
+        	$item.find('.unable_edit_order').show();
+            $item.find('.unable_edit_sender').show();
         }
         else if(status==6) {
-        	$item.find('.status_finish').removeClass('hidden');
-        	$item.find('.unable_edit').show();
+        	$item.find('.status_comment').removeClass('hidden');
+            $item.find('.status-comment').show();
+            $item.find('.unable_edit_order').show();
+            $item.find('.unable_edit_sender').show();
+        }
+        else if(status==7) {
+            $item.find('.status_comment').removeClass('hidden');
+            $item.find('.status-autocomment').show();
+            $item.find('.unable_edit_order').show();
+            $item.find('.unable_edit_sender').show();
         }
         //商品数据
         var goods_num=0;
@@ -325,7 +343,7 @@ function orderPrint(target,action){
             list.push(order_id);
         });
         if(list.length==0){
-            return Tip('您还未选择任何订单！');
+            return Tip('您还未选择任何订单');
         }
         data.order_list_id=list;
     }
@@ -349,7 +367,7 @@ function orderPrint(target,action){
                 }
                 else return Tip(res.error_text);
             },
-            function(){return Tip('网络错误！')}
+            function(){return Tip('网络错误')}
         );
         function getData(target){
             var parent=target.parents('.order-list-item');
@@ -409,10 +427,10 @@ function orderDelete(target){
     var index=$box.attr('data-target');
     var del_reason=$('#order_ser_val').val();
     if(!del_reason){
-        return Tip('请输入订单删除的原因！');
+        return Tip('请输入订单删除的原因');
     }
     if(del_reason.length>300){
-        return Tip('删除原因最多可输入300字！');
+        return Tip('删除原因最多可输入300字');
     }
     var data={
         order_id:order_id,
@@ -429,7 +447,7 @@ function orderDelete(target){
             }
             else return Tip(res.error_text);
         },
-        function(){return Tip('网络错误！')}
+        function(){return Tip('网络错误')}
     )
 }
 
@@ -441,7 +459,7 @@ function orderEdit(target,action,content){
     var data;
     var args;
     if(action=='edit_status'||action=='edit_SH2'){
-       parent=target.parents('.order-list-item');	
+        parent=target.parents('.order-list-item');	
     }
     else {
         parent=target.parents('.order_set_box');
@@ -452,7 +470,7 @@ function orderEdit(target,action,content){
     }
     if(action=='edit_remark')
     {
-	if(content.length>100) return Tip('订单备注请不要超过100个字！');
+	if(content.length>100) return Tip('订单备注请不要超过100个字');
 	data.remark=content;
 	var index=parent.attr('data-target');
     }
@@ -466,7 +484,7 @@ function orderEdit(target,action,content){
     }
     else if(action=='edit_totalPrice')
     {
-       if(!regFloat.test(content)) return Tip('订单总价只能为数字！');
+        if(!regFloat.test(content)) return Tip('订单总价只能为数字');
         data.totalPrice=content;
         var index=parent.attr('data-target');
     }
@@ -478,7 +496,7 @@ function orderEdit(target,action,content){
             list.push(id);
         });
         if(list.length==0){
-            return Tip('您还未选择任何订单！');
+            return Tip('您还未选择任何订单');
         }
         data.status=Int(content);
         data.order_list_id=list;
@@ -526,7 +544,7 @@ function orderEdit(target,action,content){
 			parent.find('.status_finish').addClass('hidden');
                                         target.attr({'disabled':true}).text('配送中');
                                         parent.find('.check').removeClass('order-check');
-		  }
+		}
             	               else if(content==5) {
             			parent.find('.status_finish').removeClass('hidden');
               	             parent.find('.status_order').addClass('hidden');
@@ -563,10 +581,6 @@ function orderEdit(target,action,content){
             else {
                 return Tip(res.error_text);}
         },
-        function(){return Tip('网络错误！')}
+        function(){return Tip('网络错误')}
     )
 }
-
-
-
-

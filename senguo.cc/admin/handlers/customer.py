@@ -15,6 +15,8 @@ from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_N
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial, wraps
 
+from threading import Timer
+
 EXECUTOR = ThreadPoolExecutor(max_workers=4)
 
 def unblock(f):
@@ -154,7 +156,10 @@ class customerGoods(CustomerBaseHandler):
 			unit =self.getUnit(unit)
 			charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
 				'market_price':charge_type.market_price,'relate':charge_type.relate})
-		return self.render('customer/goods-detail.html',good=good,shop_name=shop_name,img_url=img_url,shop_code=shop_code,charge_types=charge_types)
+		cart_f = self.read_cart(shop.id)
+		cart_count = len(cart_f) 
+		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
+		return self.render('customer/goods-detail.html',good=good,shop_name=shop_name,img_url=img_url,shop_code=shop_code,charge_types=charge_types,cart_fs=cart_fs)
 		
 
 
@@ -342,10 +347,16 @@ class Discover(CustomerBaseHandler):
 		except:
 			return self.send_fail('shop error')
 		if shop:
-			confess_active = shop.marketing.confess_active
+			if shop.marketing:
+				confess_active = shop.marketing.confess_active
+			else:
+				confess_active = 0
 			shop_auth = shop.shop_auth
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self.set_cookie("market_shop_code",str(shop.shop_code))
+		else:
+			shop_auth = 0
+			confess_active = 0
 		try:
 			confess_count =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id,scan=0).count()
 		except:
@@ -495,8 +506,12 @@ class WxBind(CustomerBaseHandler):
 			u.accountinfo.wx_province=wx_userinfo["province"]
 			u.accountinfo.wx_city=wx_userinfo["city"]
 			u.accountinfo.sex=wx_userinfo["sex"]
-			u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
-			u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+			if wx_userinfo["headimgurl"] not in [None,'']:
+				u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
+				u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+			else:
+				u.accountinfo.headimgurl=None
+				u.accountinfo.headimgurl_small = None
 			u.accountinfo.wx_username = wx_userinfo["nickname"]
 			u.accountinfo.nickname = wx_userinfo["nickname"]
 			u.accountinfo.wx_openid = wx_userinfo["openid"]
@@ -699,7 +714,10 @@ class ShopProfile(CustomerBaseHandler):
 class Members(CustomerBaseHandler):
 	def get(self):
 		# shop_id = self.shop_id
-		shop_id = int(self.get_cookie("market_shop_id"))
+		try:
+			shop_id = int(self.get_cookie("market_shop_id"))
+		except:
+			return self.send_fail("您访问的店铺有错，请返回后刷新重新访问")
 		# print("[店铺成员]当前店铺ID：",shop_id)
 		admin_id = self.session.query(models.Shop.admin_id).filter_by(id=shop_id).first()
 		if not admin_id:
@@ -707,7 +725,7 @@ class Members(CustomerBaseHandler):
 		admin_id = admin_id[0]
 		members = self.session.query(models.Accountinfo, models.HireLink.work).filter(
 			models.HireLink.shop_id == shop_id,models.HireLink.active==1, or_(models.Accountinfo.id == models.HireLink.staff_id,
-				models.Accountinfo.id == admin_id)).all()
+			models.Accountinfo.id == admin_id)).all()
 		member_list = []
 		# print(members)
 		def work(id, w):
@@ -1027,6 +1045,9 @@ class Market(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("fruits")
 	def cart_list(self):
 		fruits = self.args["fruits"]
+		mgoods = self.args["mgoods"]
+		if len(fruits)+len(mgoods) > 20:
+			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
 		cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=self.shop_id).one()
 		fruits2 = {}
 		for key in fruits:
@@ -1070,6 +1091,7 @@ class Cart(CustomerBaseHandler):
 		shop_name = shop.shop_name
 		shop_id = shop.id
 		shop_logo = shop.shop_trademark_url
+		shop_status = shop.status
 		try:
 			customer_follow =self.session.query(models.CustomerShopFollow).\
 			filter_by(customer_id = customer_id,shop_id =shop_id ).first()
@@ -1095,16 +1117,14 @@ class Cart(CustomerBaseHandler):
 		return self.render("customer/cart.html", cart_f=cart_f,config=shop.config,
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name  = shop_name ,shop_code=shop_code,shop_logo = shop_logo,balance_value=balance_value,\
-						  shop_new=shop_new,context=dict(subpage='cart'))
+						  shop_new=shop_new,shop_status=shop_status,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "pay_type:int", "period_id:int",
 										 "address_id:int", "message:str", "type:int", "tip?:int",
 										 "today:int",'online_type?:str')
 	def post(self,shop_code):#提交订单
-		# print(self)
-		# print(self.args['pay_type'],'login?????')
-		# time.sleep(20)
+		# print("[提交订单]支付类型：",self.args['pay_type'])
 		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
@@ -1121,6 +1141,8 @@ class Cart(CustomerBaseHandler):
 		if not fruits:
 			return self.send_fail('请至少选择一种商品')
 		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"框",11:"包",12:""}
+		if len(fruits)+len(mgoods) > 20:
+			return self.send_fail("你的购物篮太满啦！请不要一次性下单超过20种物品")
 		f_d={}
 		totalPrice=0
 
@@ -1130,7 +1152,7 @@ class Cart(CustomerBaseHandler):
 				filter(models.ChargeType.id.in_(fruits.keys())).all()
 			for charge_type in charge_types:
 
-				if fruits[str(charge_type.id)] == 0:  # 有可能num为0，直接忽略掉
+				if fruits[str(charge_type.id)] in [0,None]:  # 有可能num为0，直接忽略掉
 					continue
 				totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
 				num = int(fruits[str(charge_type.id)]*charge_type.relate*charge_type.num)
@@ -1210,7 +1232,7 @@ class Cart(CustomerBaseHandler):
 		pay_type = self.args['pay_type']
 		if pay_type == 2:
 			if current_shop.shop_auth == 0:
-				return self.send_fail('当前店铺未认证，此功能暂不可用')
+				return self.send_fail('当前店铺未认证，余额支付不可用')
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
 				shop_id = shop_id).first()
 			if not shop_follow:
@@ -1228,17 +1250,19 @@ class Cart(CustomerBaseHandler):
 		# woody
 		########################################################################
 		w_admin = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		default_statff=[]
+		default_staff=[]
 		try:
-			default_statff = self.session.query(models.HireLink).filter_by( shop_id =shop_id,default_staff=1).first()
+			default_staff = self.session.query(models.HireLink).filter_by( shop_id =shop_id,default_staff=1).first()
 		except:
 			print('this shop has no default staff')
-		if default_statff:
-			w_SH2_id =default_statff.staff_id
+		if default_staff:
+			w_SH2_id =default_staff.staff_id
 		else:
 			if w_admin is not None:
 					w_SH2_id = w_admin.admin.id
 		if self.args['pay_type'] == 3:
+			if current_shop.shop_auth == 0:
+				return self.send_fail('当前店铺未认证，在线支付不可用')
 			order_status = -1
 			online_type = self.args['online_type']
 		else:
@@ -1277,8 +1301,7 @@ class Cart(CustomerBaseHandler):
 
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
-			if current_shop.shop_auth == 0:
-				return self.send_fail('当前店铺未认证，此功能暂不可用')
+			Timer(60*15,self.order_cancel_auto,(self.session,order.id,)).start()
 			online_type = self.args['online_type']
 			self.set_cookie('order_id',str(order.id))
 			self.set_cookie('online_totalPrice',str(order.totalPrice))
@@ -1290,24 +1313,44 @@ class Cart(CustomerBaseHandler):
 				success_url = self.reverse_url('onlineAliPay')
 			else:
 				print(online_type,'wx or alipay?')
+			
 			return self.send_success(success_url=success_url,order_id = order.id)
 		return self.send_success(order_id = order.id)
+
+	def order_cancel_auto(self,session,order_id):
+		print("[定时任务]订单取消：",order_id,self)
+		order = session.query(models.Order).filter_by(id = order_id).first()
+		if not order:
+			return self.send_fail('order_cancel_auto: order not found!')
+		if order.status == -1:
+			order.status = 0
+			order.del_reason = "timeout"
+			order.get_num(session,order.id)
+			print("[定时任务]订单取消成功：",order.num)
+		else:
+			print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除",order.num)
 
 class CartCallback(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments('order_id')
 	@tornado.web.authenticated
 	def post(self):
-		order_id = int(self.args['order_id'])
+		try:
+			order_id = int(self.args['order_id'])
+		except:
+			Logger.error("CartCallback: get order_id error")
+			return self.send_fail("CartCallback: get order_id error")
 		order    = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
-			return self.send_fail("cart_callback:order not found!")
+			Logger.warn("CartCallback: order not found")
+			return self.send_fail("CartCallback: order not found")
 		shop_id = order.shop_id
 		customer_id = order.customer_id
 		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
 		shop    =  self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop or not customer:
-			return self.send_fail('shop not found')
+			Logger.warn("CartCallback: shop/customer not found")
+			return self.send_fail('CartCallback: shop/customer not found')
 		# #送货地址处理
 		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		# if not address:
@@ -1502,6 +1545,8 @@ class Order(CustomerBaseHandler):
 			except:
 				return self.send_fail("orderlist error")
 
+			# Modify by Sky - 2015.6.5
+			# 当前“已完成”只展示“未评价”订单，前台“已完成”改为了“未评价”，但action还未改，仍为finish
 			order5 = []
 			order6 = []
 			for x in orderlist:
@@ -1549,8 +1594,12 @@ class Order(CustomerBaseHandler):
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
 			if not order:return self.send_error(404)
 			if order.status == 0:
-				return self.send_fail("订单已经取消，不能重复操作")
-			if order.pay_type == 3 and order.status!=-1:
+				return self.send_fail("该订单已经取消，不能重复操作")
+			elif order.status in [2,3,4]:
+				return self.send_fail("该订单已在配送中，无法取消")
+			elif order.status in [5,6,7]:
+				return self.send_fail("该订单已经送达，无法取消")
+			if order.pay_type == 3 and order.status != -1:
 				return self.send_fail("在线支付『已付款』的订单暂时不能取消，如有疑问请直接与店家联系")
 			print("[订单管理]取消订单，订单原状态：",order.status)
 			order.status = 0
@@ -1631,6 +1680,8 @@ class Order(CustomerBaseHandler):
 			# print(order,'i am order')
 			if not order:return self.send_error(404)
 			# print(order.id,'i am ')
+			if order.status != 5:
+				self.send_fail("只有已送达并且没有评价过的订单才能评价哦！")
 			comment = order.comment
 			order.status = 6
 			order.comment_create_date = datetime.datetime.now()
@@ -1902,20 +1953,20 @@ class Recharge(CustomerBaseHandler):
 		url=''
 		action = self.args['action']
 		next_url = self.get_argument('next', '')
-		print(next_url,'wo 233333333333')
+		print("[微信充值]next_url：",next_url)
 		if action == 'get_code':
 			print(self.request.full_url())
 			path_url = self.request.full_url()
 			jsApi  = JsApi_pub()
 			#path = 'http://auth.senguo.cc/fruitzone/paytest'
 			path = APP_OAUTH_CALLBACK_URL + self.reverse_url('customerRecharge')
-			print(path , 'redirect_uri is Ture?')
+			print("[微信充值]redirect_uri：",path)
 			#print(self.args['code'],'sorry  i dont know')
 			code = self.args.get('code',None)
-			print(code,'how old are you',len(code))
+			print("[微信充值]当前code：",code)
 			if len(code) is 2:
 				url = jsApi.createOauthUrlForCode(path)
-				print(url,'code?')
+				print("[微信充值]获取code的url：",url)
 				#return self.redirect(url)
 			return self.send_success(url = url)
 		return self.render("customer/recharge.html",code = code,url=url )
@@ -2187,7 +2238,6 @@ class InsertData1(CustomerBaseHandler):
 		GoodsGroup = models.GoodsGroup()
 		return self.send_success()
 
-
 class InsertData2(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -2264,3 +2314,21 @@ class InsertData4(CustomerBaseHandler):
 			fruit_types.nature = types['nature']
 			self.session.commit()
 		return self.send_success()
+
+class  Overtime(CustomerBaseHandler):
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("order_id?:str")
+	def get(self):
+		try:
+			order_id = int(self.args['order_id'])
+		except:
+			return self.send_fail("overtime : can not get order_id")
+		order = self.session.query(models.Order).filter_by(id = order_id).first()
+		if not order:
+			return self.send_fail("overtime : order not found")
+		shop = self.session.query(models.Shop).filter_by(id = order.shop_id).first()
+		if order.status == 0:
+			return self.send_success(overtime = 1,shop_code = shop.shop_code)
+		else:
+			return self.send_success(overtime = 0,shop_code = shop.shop_code)
+

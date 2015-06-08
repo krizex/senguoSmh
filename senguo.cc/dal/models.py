@@ -251,8 +251,12 @@ class _AccountApi(_CommonApi):
 			u.accountinfo.wx_country=wx_userinfo["country"]
 			u.accountinfo.wx_province=wx_userinfo["province"]
 			u.accountinfo.wx_city=wx_userinfo["city"]
-			u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
-			u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+			if wx_userinfo["headimgurl"] not in [None,'']:
+				u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
+				u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+			else:
+				u.accountinfo.headimgurl=None
+				u.accountinfo.headimgurl_small = None
 			u.accountinfo.nickname = wx_userinfo["nickname"]
 
 			#####################################################################################
@@ -287,14 +291,19 @@ class _AccountApi(_CommonApi):
 		
 		# 基本账户中不存在，先创建基本信息，再添加到该用户账户中去
 		print("[微信登录]用户不存在，注册为新用户")
-		headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+		if wx_userinfo["headimgurl"] not in [None,'']:
+			headimgurl = wx_userinfo["headimgurl"]
+			headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+		else:
+			headimgurl = None
+			headimgurl_small = None
 		account_info = Accountinfo(
 			wx_unionid=wx_userinfo["unionid"],
 			wx_openid=wx_userinfo["openid"],
 			wx_country=wx_userinfo["country"],
 			wx_province=wx_userinfo["province"],
 			wx_city=wx_userinfo["city"],
-			headimgurl=wx_userinfo["headimgurl"],
+			headimgurl=headimgurl,
 			headimgurl_small = headimgurl_small,
 			nickname=wx_userinfo["nickname"],
 			sex = wx_userinfo["sex"])
@@ -1199,8 +1208,8 @@ class Order(MapBase, _CommonApi):
 	receiver = Column(String(64), nullable=False)
 	address_text = Column(String(1024), nullable=False)
 	message = Column(String(100)) #用户留言
-	status = Column(TINYINT, default=ORDER_STATUS.ORDERED)  # 订单状态:DELETED = 0,ORDERED = 1, JH = 2,SH1 = 3
-														   # #SH2 = 4,Received=5，FINISH = 6, AFTER_SALE = 10
+	status = Column(TINYINT, default=ORDER_STATUS.ORDERED)  # 订单状态:未付款 = －1, 已删除 = 0, 未处理 = 1, JH = 2, SH1 = 3
+														    # SH2 = 4, 已收货 = 5, 用户评价 = 6, 自动评价 = 7, AFTER_SALE = 10
 	type = Column(TINYINT) #订单类型 1:立即送 2：按时达
 	intime_period = Column(Integer,default = 30) #when type is 1,it's usefull
 	freight = Column(SMALLINT, default=0)  # 订单运费

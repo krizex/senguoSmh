@@ -53,7 +53,11 @@ handlers = [
 	(r"/customer/insertData3",handlers.customer.InsertData3,{},"InsertData3"),
 	(r"/customer/insertData4",handlers.customer.InsertData4,{},"InsertData4"),
 	(r"/customer/discover/(\w+)",handlers.customer.Discover,{},"customerDiscover"),
-	
+
+	#商品详情
+	(r"/customer/goods/(\w+)",handlers.customer.customerGoods,{},"customerGoods"),
+	(r"/customer/overtime",handlers.customer.Overtime,{},"customerOverTime"),
+
 	# (r"/fruitzone/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
 	#微官网-----待删除
 	(r"/", handlers.superadmin.Official),
@@ -212,7 +216,7 @@ handlers = [
 
 	# 主页
 	(r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次
-	(r"/fruitzone", handlers.fruitzone.Home, {}, "fruitzoneHome"),  # 匹配'\' 0~1次
+	# (r"/fruitzone", handlers.fruitzone.Home, {}, "fruitzoneHome"),  # 匹配'\' 0~1次
 	(r"/intro", handlers.fruitzone.Home, {}, "fruitzoneHome"),
 	(r"/list", handlers.fruitzone.ShopList, {}, "fruitzoneShopList"),
 	(r"/fruitzone/admin/home", handlers.fruitzone.AdminHome, {}, "fruitzoneAdminHome"),
@@ -237,7 +241,7 @@ handlers = [
 
 	#to remove
 	#woody
-	(r"/fruitzone/shop/(\d+)", handlers.fruitzone.Shop, {}, "fruitzoneShop"),
+	#(r"/fruitzone/shop/(\d+)", handlers.fruitzone.Shop, {}, "fruitzoneShop"),
 	(r"/fruitzone/(\d+)", handlers.fruitzone.Shop, {}, "fruitzoneShop"),
 
 	(r"/fruitzone/admin/shops", handlers.fruitzone.AdminShops, {}, "fuirzoneAdminShops"),
@@ -259,8 +263,8 @@ handlers = [
 	(r"/infowall/infoCollect", handlers.infowall.InfoCollect, {}, "infowallInfoCollect"),
 	(r"/infowall/infoIssue", handlers.infowall.InfoIssue, {}, "infowallInfoIssue"),
 
-	#ti remove
-	(r"/shop/(\w+)", handlers.customer.Market, {}, "Market"),
+	#to remove
+	#(r"/shop/(\w+)", handlers.customer.Market, {}, "Market"),
 	#remove shop
 	(r"/(\w+)", handlers.customer.Market, {}, "Market"),
 	#商品详情

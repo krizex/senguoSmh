@@ -1,7 +1,7 @@
 $(document).ready(function(){
     var shop_logo=$('#shop_imgurl').attr('data-img');
     if(parseInt($("#shop_status").val())==3){
-        noticeBox("店铺休息中，暂不接收新订单");
+        modalNotice("店铺休息中，暂不接收新订单");
     }
     if(isWeiXin()){
         wexin('',shop_logo);
@@ -112,24 +112,24 @@ $(document).ready(function(){
     //     mgoods_num();
     // }
 }).on('click','.notice-item',function(){
-    //公告详情
-    var $this=$(this);
-    var detail=$this.find('.notice-detail').val();
-    var detail_box=new Modal('detail_box');
-    detail_box.modal('show');
-    $('.detail-box').find('.detail').text(detail);
-}).on('click','.goods-list-item',function(e){
-    var $this=$(this);
-    var storage=parseInt($this.attr('data-storage'));
-    var id=$this.attr('data-id');
-    var shop_code=$('#shop_code').val();
-    if (storage != 0) {
-        if($(e.target).closest(".forbid_click").size()==0){
-            window.location.href = "/" + shop_code + "/goods/" + id;
+        //公告详情
+        var $this=$(this);
+        var detail=$this.find('.notice-detail').val();
+        var detail_box=new Modal('detail_box');
+        detail_box.modal('show');
+        $('.detail-box').find('.detail').text(detail);
+    }).on('click','.goods-list-item',function(e){
+        var $this=$(this);
+        var storage=parseInt($this.attr('data-storage'));
+        var id=$this.attr('data-id');
+        var shop_code=$('#shop_code').val();
+        if (storage != 0) {
+            if($(e.target).closest(".forbid_click").size()==0){
+                addCart("/"+shop_code+"/goods/"+id);
+            }
+        }else{
+            return noticeBox("当前商品已经卖完啦");
         }
-    }else{
-        return noticeBox("当前商品已经卖完啦");
-    }
 }).on('click','.check-lg-img',function(){
     //查看大图
     var $this=$(this);

@@ -29,7 +29,7 @@
     <div class="order-item">
         <h4 class="top-title"><span class="black-txt">{{shopName}}</span><span class="arr-right"></span><a href="tel:{{order.phone}}" class="contact-us fr tel-btn"><i class="i-contact"></i>联系客服</a></h4>
         <ul class="goods-lst">
-            {% for charge_type in  charge_types%}
+            {% for charge_type in charge_types%}
             <li class="group {{charge_type.fruit.fruit_type.code}}">
                 <dl class="goods-item group">
                     <dd>
@@ -47,7 +47,7 @@
                 </dl>
             </li>
             {% end %}
-            {% for mcharge_type in  mcharge_types %}
+            {% for mcharge_type in mcharge_types %}
             <li class="group TDSG">
                 <dl class="goods-item group">
                     <dd>
@@ -90,6 +90,7 @@
 <input type="hidden" value="{{order.create_date.month}}" class="create_month"/>
 <input type="hidden" value="{{order.create_date.day}}" class="create_day"/>
 <input type="hidden" value="{{order.today}}" class="send_day"/>
+<input type="hidden" value="{{order.id}}" id="order-id"/>
 {% end %}
 {% block bottom %}
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>

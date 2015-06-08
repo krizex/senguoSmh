@@ -22,21 +22,21 @@ $(document).ready(function(){
     //hidden info toggle
         var u = navigator.userAgent, app = navigator.appVersion;
         var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
-         if(isiOS){
+        if(isiOS){
             $(document).on('tap','.toggle',function(e){
-                    var $this=$(this);
-                    if($(e.target).closest('.forbid_click').length == 0){
-                        $this.parents('.order-list-item').find('.goods_info').toggle();
-                    }
-                });
+                var $this=$(this);
+                if($(e.target).closest('.forbid_click').length == 0){
+                    $this.parents('.order-list-item').find('.goods_info').toggle();
+                }
+            });
         }
         else{
-                 $(document).on('click','.toggle',function(e){
-                    var $this=$(this);
-                    if($(e.target).closest('.forbid_click').length == 0){
-                        $this.parents('.order-list-item').find('.goods_info').toggle();
-                    }
-                });
+            $(document).on('click','.toggle',function(e){
+                var $this=$(this);
+                if($(e.target).closest('.forbid_click').length == 0){
+                    $this.parents('.order-list-item').find('.goods_info').toggle();
+                }
+            });
         }
 
     //if staff remark exist
@@ -77,6 +77,8 @@ $(document).ready(function(){
         var status=$this.data('status');
         // $this.find('.send_time').text(start_hour+':'+start_minute+'-'+end_hour+':'+end_minute);
         if(status==5) $this.addClass('text-grey bg-grey').find('.toggle').addClass('text-grey').find('.finish_btn').removeClass('order_finish').addClass('arrive').text('已完成');
+        if(status==6) $this.addClass('text-grey bg-grey').find('.toggle').addClass('text-grey').find('.finish_btn').removeClass('order_finish').addClass('arrive').text('已评价');
+        if(status==7) $this.addClass('text-grey bg-grey').find('.toggle').addClass('text-grey').find('.finish_btn').removeClass('order_finish').addClass('arrive').text('已自动好评');
         // if(type==1){
         //     $this.find('.send_date').text(create_year+'-'+create_month+'-'+create_day);
         // }
@@ -91,8 +93,10 @@ $(document).ready(function(){
 function statusText(target,n){
     switch (n){
         case 1:target.text('未处理').addClass('text-green');break;
-        case 4:target.text('配送中').addClass('text-green');break;
+        case 2:case 3:case 4:target.text('配送中').addClass('text-green');break;
         case 5:target.text('已送达').addClass('text-grey');break;
+        case 6:target.text('已评价').addClass('text-grey');break;
+        case 7:target.text('已自动好评').addClass('text-grey');break;
     }
 }
 
@@ -121,8 +125,7 @@ function finishOrder(target,id){
             //target.parents('.order-list-item').remove();
         }
         else return noticeBox(res.error_text);
-    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
-);
+    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
 
 function remarkSub(id,index){
@@ -131,9 +134,10 @@ function remarkSub(id,index){
     var remark=$('.remark-input').val();
     var data=remark;
     if(remark=='') {
-        return warnNotice('请输入备注内容!');}
+        return warnNotice('请输入备注内容');
+    }
     if(remark.length>100){
-        return warnNotice('备注不得超过100字!');
+        return warnNotice('备注不得超过100字');
     }
     var args={
         action:action,
@@ -147,6 +151,5 @@ function remarkSub(id,index){
             remark_box.modal('hide');
         }
         else return noticeBox(res.error_text);
-    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
-    );
+    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }

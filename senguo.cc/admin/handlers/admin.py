@@ -158,10 +158,10 @@ class SwitchShop(AdminBaseHandler):
 		for shop in shops:
 			satisfy = 0
 			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id',  'wx_accountname','auth_change',
-										 'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
-										 'alipay_account','alipay_account_name','available_balance',\
-										 'new_follower_sum','new_order_sum']
-			orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).first()
+										'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
+										'alipay_account','alipay_account_name','available_balance',\
+										'new_follower_sum','new_order_sum']
+			orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,status = 6).first()
 			if orders:
 				commodity_quality = 0
 				send_speed = 0
@@ -635,7 +635,7 @@ class Order(AdminBaseHandler):
 			orders.sort(key = lambda order:order.send_time,reverse = False)
 			session.commit()
 		elif order_status == 5:#all
-			orders = [x for x in self.current_shop.orders if x.type == order_type ]
+			orders = [x for x in self.current_shop.orders if x.type == order_type]
 			count = len(orders)
 			session = self.session
 			# for order in orders:
@@ -658,7 +658,7 @@ class Order(AdminBaseHandler):
 			except:
 				return self.send_fail("orderlist error")
 			# orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in (5, 6)]
-			orders = [x for x in orderlist if x.type == order_type and x.status in (5, 6)]
+			orders = [x for x in orderlist if x.type == order_type and x.status in (5, 6, 7)]
 			count = len(orders)
 		elif order_status == 4:
 			pass
@@ -708,7 +708,7 @@ class Order(AdminBaseHandler):
 						   count=self._count(),page_sum=page_sum, context=dict(subpage='order'))
 
 
-	def edit_status(self,order,order_status):
+	def edit_status(self,order,order_status,send_message=True):
 		if order_status == 4:
 			order.update(self.session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
 		elif order_status == 5:
@@ -741,8 +741,8 @@ class Order(AdminBaseHandler):
 			phone = order.phone
 			address = order.address_text
 			# print("ready to send message")
-
-			WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone,address) 
+			if send_message:
+				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone,address)
 		if order_status == 5:
 			now = datetime.datetime.now()
 			order.arrival_day = now.strftime("%Y-%m-%d")
@@ -772,8 +772,9 @@ class Order(AdminBaseHandler):
 				shop_id = shop_id).first()
 			if not customer:
 				return self.send_fail('customer error')
-			customer.shop_new = 1
-			# print("[订单管理]用户",customer_id,"完成订单，新用户标识置为：",customer.shop_new)
+			if customer.shop_new == 0:
+				customer.shop_new = 1
+				# print("[订单管理]用户",customer_id,"完成订单，新用户标识置为：",customer.shop_new)
 			self.session.commit()
 
 			try:
@@ -921,8 +922,12 @@ class Order(AdminBaseHandler):
 			if action == "edit_remark":
 				order.update(session=self.session, remark=data["remark"])
 			elif action == "edit_SH2":
-				if order.status in [5,6,10]:
-					return self.send_fail('订单已完成，不允许操作该订单')
+				if order.status == -1:
+					return self.send_fail("订单未支付，不能操作该订单")
+				elif order.status == 0:
+					return self.send_fail("订单已被取消或删除，不能操作该订单")
+				elif order.status > 4:
+					return self.send_fail("订单已经完成，不能操作该订单")
 				SH2 = next((x for x in self.current_shop.staffs if x.id == int(data["staff_id"])), None)
 				if not SH2:
 					return self.send_fail("没找到该送货员")
@@ -954,19 +959,28 @@ class Order(AdminBaseHandler):
 				# print("success?")
 
 			elif action == "edit_status":
-				if order.status in[5,6,10]:
-					return self.send_fail("订单已完成。不能修改状态")
+				if order.status == -1:
+					return self.send_fail("订单未支付，不能修改状态")
+				elif order.status == 0:
+					return self.send_fail("订单已被取消或删除，不能修改状态")
+				elif order.status > 4:
+					return self.send_fail("订单已经完成，不能修改状态")
 				self.edit_status(order,data['status'])
-
 			elif action == "edit_totalPrice":
-				if order.pay_type == 2:
-					return self.send_fail("余额支付，不能修改价格")
+				if order.pay_type != 1:
+					return self.send_fail("订单非货到付款订单，不能修改价格")
+				elif order.status == 0:
+					return self.send_fail("订单已被取消或删除，不能修改价格")
+				elif order.status > 4:
+					return self.send_fail("订单已经完成，不能修改价格")
 				order.update(session=self.session, totalPrice=data["totalPrice"])
 			elif action == "del_order":
 				if order.status == 0:
-					return self.send_fail('订单已经被删除，不能重复操作')
-				if order.pay_type == 3:
-					return self.send_fail("在线支付订单 不允许删除")
+					return self.send_fail("订单已被取消或删除")
+				elif order.status > 4:
+					return self.send_fail("订单已经完成，不能删除")
+				if order.pay_type == 3 and order.status != -1:
+					return self.send_fail("在线支付『已付款』的订单暂时不能删除")
 				session = self.session
 				del_reason = data["del_reason"]
 				order.update(session=session, status=0,del_reason = del_reason)
@@ -999,27 +1013,44 @@ class Order(AdminBaseHandler):
 
 			elif action == "print":
 				order.update(session=self.session, isprint=1)
+
 		elif action == "batch_edit_status":
 			order_list_id = data["order_list_id"]
 			notice = ''
-			for key in order_list_id:	
+			count=0
+			for key in order_list_id:
 				order = next((x for x in self.current_shop.orders if x.id==int(key)), None)
-				if order.status == 4 and data['status'] ==4:
-					notice = "订单"+str(order.num)+"订单已在配送中,请不要重复操作"
-					return self.send_fail(notice)
-				if order.status == 5 and data['status'] ==5:
-					notice = "订单"+str(order.num)+"已完成,请不要重复操作"
-					return self.send_fail(notice)
-				if order.status in[5,6,10]:
-					notice = "订单"+str(order.num)+"已完成,请不要重复操作"
-					return self.send_fail(notice)
 				if not order:
 					notice = "没找到订单",order.onum
 					return self.send_fail(notice)
-				self.edit_status(order,data['status'])
+				elif order.status == 4 and data['status'] == 4:
+					notice = "订单"+str(order.num)+"已在配送中，请不要重复操作"
+					return self.send_fail(notice)
+				elif order.status > 4:
+					notice = "订单"+str(order.num)+"已完成，请不要重复操作"
+					return self.send_fail(notice)
+				self.edit_status(order,data['status'],False)
+				count += 1
+			if count > 0:
+				shop_id = self.current_shop.id
+				staff_info = []
+				try:
+					staff_info = self.session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id)\
+					.filter(models.HireLink.shop_id == shop_id,models.HireLink.default_staff == 1).first()
+				except:
+					print("didn't find default staff")
+				if staff_info:
+					openid = staff_info.wx_openid
+					staff_name = staff_info.nickname
+				else:
+					openid = self.current_shop.admin.accountinfo.wx_openid
+					staff_name = self.current_shop.admin.accountinfo.nickname
+				shop_name = self.current_shop.shop_name
+				WxOauth2.post_batch_msg(openid,staff_name,shop_name,count)
+
 		elif action == "batch_print":
 			order_list_id = data["order_list_id"]
-			for key in order_list_id:	
+			for key in order_list_id:
 				order = next((x for x in self.current_shop.orders if x.id==int(key)), None)
 				if not order:
 					return self.send_fail("没找到订单",order.onum)
@@ -1039,7 +1070,7 @@ class Order(AdminBaseHandler):
 				count[order.type*10+1] += 1
 			elif order.status in (2, 3, 4):
 				count[order.type*10+2] += 1
-			elif order.status in (5, 6):
+			elif order.status in (5, 6, 7):
 				count[order.type*10+3] += 1
 			elif order.status == 10:
 				count[order.type*10+4] += 1
@@ -1173,7 +1204,7 @@ class Shelf(AdminBaseHandler):
 					fruit.update(session=self.session, active = 1)
 			elif action == "edit_fruit":
 				if len(data["intro"]) > 100:
-					return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
+					return self.send_fail("商品简介不能超过100字噢亲，再精简些吧！")
 				fruit.update(session=self.session,
 												name = data["name"],
 												saled = data["saled"],
@@ -1222,7 +1253,7 @@ class Shelf(AdminBaseHandler):
 					mgoods.update(session=self.session, active = 1)
 			elif action == "edit_mgoods":
 				if len(data["intro"]) > 100:
-					return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
+					return self.send_fail("商品简介不能超过100字噢亲，再精简些吧！")
 				mgoods.update(session=self.session,
 												name = data["name"],
 												saled = data["saled"],
@@ -1338,7 +1369,7 @@ class Goods(AdminBaseHandler):
 
 				if filter_status2 != []:
 					filter_status2 = int(filter_status2)
-					print(filter_status2)
+					# print(filter_status2)
 					if filter_status2 == -2:
 						goods = goods	
 					else:
@@ -1977,21 +2008,29 @@ class Follower(AdminBaseHandler):
 			count = q.count()
 			customers = q.offset(page*page_size).limit(page_size).all()
 
-		elif action == "search":  # 用户搜索，支持根据手机号/真名/昵称搜索
+		# Modify by Sky - 2015.6.1
+		# 用户搜索，支持根据手机号/真名/昵称搜索，支持关键字模糊搜索，支持收件人搜索
+		# TODO:搜索性能需改进
+		elif action == "search":  
 			wd = self.args["wd"]
-			if wd.isdigit():  # 判断是否为纯数字，纯数字就按照手机号搜索
-				customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(or_(models.Accountinfo.phone == int(wd),
-														models.Accountinfo.id == int(wd))).all()
-			else:  # 按照名字搜索
-				customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(or_(models.Accountinfo.nickname.like("%%%s%%" % wd),
-														models.Accountinfo.realname.like("%%%s%%" % wd))).all()
-				customers += self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Address).filter(models.Address.receiver.like("%%%s%%" % wd)).all()
+
+			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+				filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+				join(models.Accountinfo).filter(or_(models.Accountinfo.phone.like("%%%s%%" % wd),
+													models.Accountinfo.id.like("%%%s%%" % wd),
+													models.Accountinfo.nickname.like("%%%s%%" % wd),
+													models.Accountinfo.realname.like("%%%s%%" % wd))).all()
+			customers += self.session.query(models.Customer).join(models.CustomerShopFollow).\
+				filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+				join(models.Address).filter(or_(models.Address.phone.like("%%%s%%" % wd),
+												models.Address.receiver.like("%%%s%%" % wd))).all()
+
+			customer_list=[]
+			for customer in customers:
+				if customer not in customer_list:
+					customer_list.append(customer)
+			customers = customer_list
+
 					
 		elif action =="filter":
 			wd = self.args["wd"]
@@ -2551,7 +2590,7 @@ class ShopBalance(AdminBaseHandler):
 				apply_value = format(0,'.2f')
 
 		except:
-			print('apply_cash error')
+			print("[提现申请]提现申请错误")
 			
 		if shop_auth in [1,2,3,4]:
 			show_balance = True
@@ -2802,7 +2841,7 @@ class ShopConfig(AdminBaseHandler):
 			shop.shop_code = data["shop_code"]
 		elif action == "edit_shop_intro":
 			shop.shop_intro = data["shop_intro"]
-# woody 2015.3.5
+		# woody 2015.3.5
 		elif action == "edit_phone":
 			shop.shop_phone = data["shop_phone"]
 		elif action == "edit_address":

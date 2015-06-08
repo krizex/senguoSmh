@@ -84,7 +84,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .want-num .minus{left: 0;top: 0;}
 .want-num .add{top: 0;right: 0;}
 .goods-choose-lst{margin-top: 12px;}
-.goods-choose-lst>li{width: 49.9%;float:left;-webkit-box-sizing: border-box;border: 1px solid #e4e4e4;height: 36px;line-height: 36px;text-align: center;color: #989898;font-size: 14px;cursor: pointer;}
+.goods-choose-lst>li{width:100%;float:left;-webkit-box-sizing: border-box;border: 1px solid #e4e4e4;height: 36px;line-height: 36px;text-align: center;color: #989898;font-size: 14px;cursor: pointer;}
 .goods-choose-lst>li:last-child{border-left:none;}
 .goods-choose-lst .active{border-top:2px solid #7ebf91;color: #80c092;}
 .goods-info-lst>li{display: none;line-height:26px;padding:0 10px;}

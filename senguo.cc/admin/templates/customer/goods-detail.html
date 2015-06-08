@@ -6,11 +6,15 @@
 {% end %}
 {% block header %}{% end %}
 {% block content %}
+{% import json%}
+<script>
+    window.dataObj.cart_fs = {% raw json.dumps(cart_fs) %}
+</script>
 {% if good %}
 <input type="hidden" value="{{shop_code}}" id="shop_code"/>
 <div class="wrap-goods-detail" data-id="{{good.id}}">
     <div class="img-list">
-        <a href="javascript:;" class="roll-bg back"><i></i></a>
+        <a href="{{reverse_url('Market',shop_code)}}" class="roll-bg back add-cart"><i></i></a>
         <!--a href="javascript:;" class="roll-bg share"><i></i></a-->
         <div class="swiper-container" id="swiper-container">
             <div class="swiper-wrapper">
@@ -41,19 +45,19 @@
         {% for charge in charge_types %}
         <li>
             <span class="now-price">{{charge['price']}}元</span>
-            <span class="old-price">{{charge['market_price']}}元/{{charge['num']}}{{charge['unit']}}</span>
-            <div class="want-num ">
+            <span class="old-price">{{charge['market_price']}}元/<span class="number">{{charge['num']}}</span>{{charge['unit']}}</span>
+            <div class="want-num" data-id="{{charge['id']}}" data-relate="{{charge['relate']}}">
                 <span class="minus minus-num">-</span>
                 <input type="text" pattern="\d*" novalidate autocorrect="off" value="1" disabled/>
                 <span class="add add-num">+</span>
             </div>
-            <div class="now-buy" data-storage="0">立即购买</div>
+            <div class="now-buy" data-storage="{{good.storage}}">立即购买</div>
         </li>
         {% end %}
     </ul>
     <ul class="goods-choose-lst group">
         <li class="active">商品详情</li>
-        <li>商品评价(20)</li>
+        <!-- <li>商品评价(20)</li> -->
     </ul>
     <ul class="goods-info-lst">
         <li class="goods-intro active">
@@ -92,15 +96,15 @@
             </ul>
         </li>
     </ul>
-    <a href="javascript:;" class="shop-area" id="shop-area">
+    <a href="{{reverse_url('customerShopProfile',shop_code)}}" class="shop-area add-cart" id="shop-area">
         <span class="roll-bg shop-in">
             <i></i>
         </span>
         <span>店铺：{{shop_name}}</span>
     </a>
-    <a href="javascript:;" class="roll-bg cart-bg" id="cart-bg">
+    <a href="{{reverse_url('customerCart',shop_code)}}" class="roll-bg cart-bg add-cart" id="cart-bg">
         <i></i>
-        <span class="move-cart" id="cart-now-num">1</span>
+        <span class="move-cart" id="cart-now-num">0</span>
     </a>
 </div>
 {% else %}
