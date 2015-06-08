@@ -939,15 +939,19 @@ class Market(CustomerBaseHandler):
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
 			return self,send_error(404)
-		fruits = self.session.query(models.Fruit).join(models.Shop).join(models.GroupPrioritymodels.Fruit.group_id == models.GroupPriority.group_id\
-			).order_by(models.GroupPriority.priority,models.Fruit.add_time.desc())
+		fruits = self.session.query(models.Fruit).join(models.Shop).join(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id,\
+			).order_by(models.GroupPriority.priority,models.Fruit.priority.desc(),models.Fruit.add_time.desc())
+		
+		fruits = fruits.filter(models.Fruit.active == 1,models.Fruit.shop_id == shop_id)
+		# for fruit in fruits:
+		# 	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
 		count_fruit = fruits.count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		print(total_page)
-		print(page+1)
+		# print(total_page)
+		# print(page+1)
 		if total_page == page+1:
 			nomore = True
-		fruits = fruits.filter(models.Fruit.active == 1).offset(offset).limit(page_size).all()
+		fruits = fruits.offset(offset).limit(page_size).all()
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruits_data,nomore=nomore)
 
