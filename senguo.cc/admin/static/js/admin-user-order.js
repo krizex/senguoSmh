@@ -22,7 +22,7 @@ $(document).ready(function(){
     var id=parent.data('id');
     var index=parent.index();
     var $box=$('.order_set_box');
-    $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('delete_check').removeClass('price_check','mark_check');
+    $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('delete_check').removeClass('price_check mark_check');
     $box.find('.title').text('订单删除');
     $('#order_ser_val').val('').attr({'placeholder':'为防止误删除操作，请输入订单删除原因'});
 }).on('click','.delete_check',function(){
@@ -33,18 +33,18 @@ $(document).ready(function(){
         orderEdit($this,'edit_status',1);
 }).on('click','.to-send',function(){
     var $this=$(this);
-    if(confirm('是否开始配送该订单?')){
+    if(confirm('是否开始配送该订单？')){
         orderEdit($this,'edit_status',4);
     }
 }).on('click','.to-finish',function(){
     var $this=$(this);
-    if(confirm('是否完成该订单?')){
+    if(confirm('是否完成该订单？')){
        orderEdit($this,'edit_status',5); 
     }
 }).on('click','.send_person_list li',function(){
     var $this=$(this);
     var val=$this.data('id');
-    if(confirm('是否选择该员工进行配送?')){
+    if(confirm('是否选择该员工进行配送？')){
         orderEdit($this,'edit_SH2',val);
     }//员工修改
 }).on('click','.order_mark',function(){
@@ -53,7 +53,7 @@ $(document).ready(function(){
     var id=parent.data('id');
     var index=parent.index();
     var $box=$('.order_set_box');
-    $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('mark_check').removeClass('price_check','delete_check');
+    $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('mark_check').removeClass('price_check delete_check');
     $box.find('.title').text('订单备注');
     $('#order_ser_val').val('').attr({'placeholder':'请输入订单备注'});
 }).on('click','.mark_check',function(){
@@ -66,7 +66,7 @@ $(document).ready(function(){
     var id=parent.data('id');
     var index=parent.index();
     var $box=$('.order_set_box');
-    $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('price_check').removeClass('mark_check','delete_check');
+    $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('price_check').removeClass('mark_check delete_check');
     $box.find('.title').text('修改订单总价');
     $('#order_ser_val').val('').attr({'placeholder':'请输入要修改成的价格（总价）'});
 }).on('click','.price_check',function(){
@@ -87,7 +87,7 @@ $(document).ready(function(){
     }
 }).on('click','#batch-finish',function(){
     var $this=$(this);
-    if(confirm('是否批量完成订单?')){
+    if(confirm('是否批量完成订单？')){
     orderEdit($this,'batch_edit_status',5); 
     }
 }).on('click','#batch-print',function(){
