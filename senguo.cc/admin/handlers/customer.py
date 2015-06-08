@@ -156,11 +156,15 @@ class customerGoods(CustomerBaseHandler):
 				img_url= good.img_url.split(";")
 			else:
 				img_url= ''
-
 		else:
 			good = []
 			img_url = ''
-		return self.render('customer/goods-detail.html',good=good,shop_name=shop_name,img_url=img_url,shop_code=shop_code)
+		charge_types= []
+		for charge_type in good.charge_types:
+			unit  = charge_type.unit
+			unit =self.getUnit(unit)
+			charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,'market_price':charge_type.market_price})
+		return self.render('customer/goods-detail.html',good=good,shop_name=shop_name,img_url=img_url,shop_code=shop_code,charge_types=charge_types)
 		
 
 
@@ -911,8 +915,9 @@ class Market(CustomerBaseHandler):
 
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 
-				data.append({'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
-				'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour,'favour_today':favour_today,'group_id':fruit.group_id})
+				data.append({'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,\
+					'storage':fruit.storage,'tag':fruit.tag,'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour,\
+					'favour_today':favour_today,'group_id':fruit.group_id,'limit_num':fruit.limit_num})
 			return data
 
 	@CustomerBaseHandler.check_arguments("page?:int","group_id?:int")

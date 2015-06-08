@@ -411,7 +411,7 @@ var goodsList=function(page,action){
             }
             //get item dom
             if(window.dataObj.goods_item==undefined){
-                getItem('/static/items/customer/market-goods-item.html?v=20150531',function(data){
+                getItem('/static/items/customer/market-goods-item.html?v=20150532',function(data){
                     window.dataObj.goods_item=data;
                     getItem('/static/items/customer/charge-item.html?v=20150530',function(data){
                         window.dataObj.charge_item=data;
@@ -467,6 +467,7 @@ var fruitItem=function(box,fruits,type){
     var favour=fruits['favour'];
     var charge_types=fruits['charge_types'];
     var favour_today=fruits['favour_today'];
+    var limit_num=fruits['limit_num'];
     if(!code) code='TDSG';
     $item.attr({'data-id':id,'data-type':type,'data-storage':storage,'data-num':storage,'data-favour':favour_today}).addClass(code);
     $item.find('.fruit_intro').val(intro);
