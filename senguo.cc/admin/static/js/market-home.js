@@ -162,6 +162,11 @@ $(document).ready(function(){
         $('#classify').text(text).siblings('.up').toggle().siblings('.down').toggle();
         $('.classify-title').addClass('hidden');
         $('.goods-list').empty();
+        var group_id=$this.attr('data-id');
+        window.dataObj.page_count=pages_count;
+        window.dataObj.page=1;
+        window.dataObj.action=6;
+        goodsList(1,6);
         // var top=$('#'+g_class+'').offset().top;
         // $('.choose-classify .icon').toggle();
         // var w_height=$('#'+g_class+'').height();
@@ -353,6 +358,7 @@ window.dataObj.page=1;
 window.dataObj.count=1;
 window.dataObj.action=5;
 window.dataObj.finished=true;
+var nomore=false;
 $('.loading').html("~努力加载中 ( > < )~").show();
 var scrollLoading=function(){  
     $(window).scroll(function(){
@@ -361,14 +367,13 @@ var scrollLoading=function(){
         var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
         var totalheight = 0;
         var main = $(".container");                  //主体元素
-        if(!maxnum) maxnum=Int($('#page_count').val());
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
-        if(window.dataObj.finished&&(main.height()-range) <= totalheight  && window.dataObj.page < maxnum) {
+        if(window.dataObj.finished&&(main.height()-range) <= totalheight  && nomore==false) {
             window.dataObj.finished=false;
             window.dataObj.page++;
             goodsList(window.dataObj.page,window.dataObj.action);
         }
-        else if(window.dataObj.page == maxnum){
+        else if(nomore==true){
               $('.loading').html("~没有更多商品了呢 ( > < )~").show();
         }
     });
@@ -384,7 +389,8 @@ var goodsList=function(page,action){
     $.postJson(url,args,function(res){
         if(res.success)
         {
-            if(action==5&&page== 1&&res.data.length<10){
+            nomore = res.nomore
+            if(nomore == true){
                     $('.loading').html("~没有更多商品了呢 ( > < )~").show();
             }
             //get item dom
@@ -401,7 +407,7 @@ var goodsList=function(page,action){
                 });
             }
             else {
-                initData(res);
+                initData(res.data);
             }
         }
         else {
@@ -412,13 +418,8 @@ var goodsList=function(page,action){
         function(){noticeBox('服务器貌似出错了~ ( >O< ) ~');});
         var initData=function(data){
             var data=data;
-            console.log(data);
-            if(data&&data.length==0){
-                 $('.loading').html("~没有更多商品了呢 ( > < )~").show();
-                 return;          
-            }
             for(var key in data){
-                fruitItem($('.fruit_goods_list'),data[key]);//fruits information
+                fruitItem($('.goods-list-'+data[key]['group_id']),data[key]);//fruits information
                 if(action==5) {$('.fruit_cassify').removeClass('hidden');}
             }
             var fruits=window.dataObj.fruits;
@@ -433,7 +434,6 @@ var goodsList=function(page,action){
 };
 
 var fruitItem=function(box,fruits,type){
-    console.log(fruits)
     var goods_item=window.dataObj.goods_item;
     var charge_item=window.dataObj.charge_item;
     var $item=$(goods_item);
@@ -483,9 +483,6 @@ var fruitItem=function(box,fruits,type){
             var price=charge_types[0]['price'];
             var num=charge_types[0]['num'];
             var unit=charge_types[0]['unit'];
-            if(unit==1) unit='个';
-            else  if(unit==2) unit='斤';
-            else  if(unit==3) unit='份';
             $charge_item.attr({'data-id':id});
             $charge_item.find('.price').text(price);
             $charge_item.find('.num').text(num);
@@ -497,9 +494,6 @@ var fruitItem=function(box,fruits,type){
             var price=charge_types[key]['price'];
             var num=charge_types[key]['num'];
             var unit=charge_types[key]['unit'];
-            if(unit==1) unit='个 ';
-            else  if(unit==2) unit='斤';
-            else  if(unit==3) unit='份';
             $charge_item.attr({'data-id':id}).addClass('more_charge');
             $charge_item.find('.price').text(price);
             $charge_item.find('.num').text(num);
