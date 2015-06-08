@@ -861,7 +861,7 @@ class Market(CustomerBaseHandler):
 
 		return self.render("customer/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,\
-							shop_name=shop.shop_name,w_follow = w_follow,\
+							shop_name=shop.shop_name,shop_code=shop.shop_code,w_follow = w_follow,\
 							cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
 
 	@tornado.web.authenticated

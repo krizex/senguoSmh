@@ -14,6 +14,7 @@
 <input type="hidden" id="shop_status" value="{{context['shop_status']}}"/>
 <input type="hidden" id="if_focus" value="{{context['w_follow']}}"/>
 <input type="hidden" id="shop_name" value="{{context['shop_name']}}"/>
+<input type="hidden" id="shop_code" value="{{context['shop_code']}}"/>
 <span id="shop_imgurl" data-img="{{context['shop_logo']}}"></span>
 <div class="wrap-notice-box">
     <div class="notice-box">
@@ -64,9 +65,11 @@
 <div class="wrap-goods-box" id="wrap-goods-box">
     <div class="goods-box">
          {% for group in context['group_list'] %}
+         {% if group['id'] != -1 %}
          <p class="text-white no-mar-btom classify-title font18 text-center bg-green">{{group['name']}}</p>
-        <ul class="goods-list-{{group['id']}} fruit-list" >
-        </ul>
+         {% end %}
+        <ul class="goods-list-{{group['id']}} fruit-list goods-list" >
+        </ul> 
         {% end %}
     </div>
     <div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中 ( > < )~</div>
@@ -82,7 +85,8 @@
             </div>
             <div class="modal-body set-width-float text-center">
                 <img src="" id="largeImg" class="mt42"/>
-                <p class="intro font14 text-center">哈哈哈哈哈哈</p>
+                <p class="intro font14 text-center">哈哈哈哈哈哈<a href="javascript:;" class="pull-right mr10 mt10 text-grey3">商品详情>></a></p>
+
             </div>
             <div class="modal-footer bg-white set-width-float">
                 <a href="javascript:;" class="click-great text-center font16 text-grey3 able_click"><em class="bg_change"></em>赞一个</a>
