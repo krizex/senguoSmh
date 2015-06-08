@@ -171,7 +171,7 @@ img{border:none;}
 .list-pagination .next-page{background-position:-58px -214px;}
 .list-pagination .next-page:hover{background-color:#f4f5f9;}
 .list-pagination .next-page:focus{background-color:#f4f5f9;}
-.list-pagination .input-page{;width:60px;height:26px;border:1px solid #ccc;border-radius:1px;color:#999;text-align:center;}
+.list-pagination .input-page{;width:60px;height:26px;border:1px solid #ccc;border-radius:1px;color:#999;text-align:center;text-indent:0;}
 .list-pagination .jump-to{display:inline-block;width:60px;height:26px;border:1px solid #ccc;border-radius:1px;text-align:center;color:#666;line-height:26px;}
 
 /*弹出框公共样式*/
