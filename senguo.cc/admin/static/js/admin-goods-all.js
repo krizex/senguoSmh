@@ -294,7 +294,7 @@ $(document).ready(function(){
 }).on("click",".jump-to",function(){
     var num = $(".input-page").val();
     var total = $(".page-total").html();
-    if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>(parseInt(total)-1)){
+    if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>parseInt(total)){
         return Tip("页码格式不对或者数字超出页码范围");
     }
     if(isSearch){
@@ -306,7 +306,7 @@ $(document).ready(function(){
     if(e.keyCode==13){
         var num = $(".input-page").val();
         var total = $(".page-total").html();
-        if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>(parseInt(total)-1)){
+        if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>parseInt(total)){
             return Tip("页码格式不对或者数字超出页码范围");
         }
         if(isSearch){
