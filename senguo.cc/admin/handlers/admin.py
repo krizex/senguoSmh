@@ -1515,6 +1515,7 @@ class Goods(AdminBaseHandler):
 			else:
 				data.append({'id':0,'name':'','intro':'','num':default_count})
 			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,record_count=record_count)
+
 		elif action == "delete":
 			if "page" in self.args:
 				data = []
@@ -1523,6 +1524,11 @@ class Goods(AdminBaseHandler):
 				page_size = 10
 				offset = page * page_size
 				goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active = 0)
+
+				if self.args["type"] == "goods_search":
+					name = self.args["content"]
+					goods = goods.filter(models.Fruit.name.like("%%%s%%" % name))
+					
 				count = goods.count()
 				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 				datalist = goods.offset(offset).limit(page_size).all()
