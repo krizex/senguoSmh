@@ -1760,7 +1760,7 @@ class Goods(AdminBaseHandler):
 					re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
 					if re_count >= 6:
 						return self.send_fail("推荐分组至多只能添加六个商品")
-					goods.group_id= data["group"]
+					goods.group_id= data["group_id"]
 				self.session.commit()
 
 		elif action =="add_group":
