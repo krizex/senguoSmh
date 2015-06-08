@@ -621,7 +621,10 @@ function delGoods(id){
     };
     $.postJson(url,args,function(res) {
         if (res.success) {
-            window.location.reload(true);
+            Tip("商品删除成功！");
+            setTimeout(function(){
+                window.location.reload(true);
+            },2000);
         }
     });
 }

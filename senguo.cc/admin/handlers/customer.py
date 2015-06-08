@@ -144,7 +144,10 @@ class customerGoods(CustomerBaseHandler):
 		good = self.session.query(models.Fruit).filter_by(id=goods_id).first()
 		if good:
 			if good.img_url:
-					img_url= good.img_url.split(";")
+				img_url= good.img_url.split(";")
+			else:
+				img_url= ''
+
 		else:
 			good = []
 			img_url = ''
@@ -1030,6 +1033,7 @@ class Market(CustomerBaseHandler):
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
+		# time.sleep(20)
 		customer_id = self.current_user.id
 		phone = self.get_phone(customer_id)
 
@@ -1117,7 +1121,7 @@ class Cart(CustomerBaseHandler):
 				if fruits[str(charge_type.id)] == 0:  # 有可能num为0，直接忽略掉
 					continue
 				totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
-				num = fruits[str(charge_type.id)]*charge_type.unit_num*charge_type.num
+				num = int(fruits[str(charge_type.id)]*(charge_type.select_num/charge_type.unit_num) *charge_type.num)
 
 				charge_type.fruit.storage -= num  # 更新库存
 				if charge_type.fruit.saled:

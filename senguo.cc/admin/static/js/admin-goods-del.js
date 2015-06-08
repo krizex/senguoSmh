@@ -22,20 +22,23 @@ $(document).ready(function(){
     if(pn==0){
         return Tip("当前已经是第一页");
     }
-    getGoodsItem(pn--);
+    pn--;
+    getGoodsItem();
 }).on("click",".next-page",function(){//下一页
     var total = $(".page-total").html();
     if(pn==parseInt(total)){
         return Tip("当前已经是最后一页");
     }
-    getGoodsItem(pn++);
+    pn++;
+    getGoodsItem();
 }).on("click",".jump-to",function(){
     var num = $(".input-page").val();
     var total = $(".page-total").html();
     if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>(parseInt(total)-1)){
         return Tip("页码格式不对或者数字超出页码范围");
     }
-    getGoodsItem(num-1);
+    pn = num-1;
+    getGoodsItem();
 }).on("keyup",".input-page",function(e){
     if(e.keyCode==13){
         var num = $(".input-page").val();
@@ -43,19 +46,22 @@ $(document).ready(function(){
         if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>(parseInt(total)-1)){
             return Tip("页码格式不对或者数字超出页码范围");
         }
-        getGoodsItem(num-1);
+        pn = num-1;
+        getGoodsItem();
     }
 }).on("click","#goods-all-search",function(){//商品搜索
     var value = $("#goods-all-ipt").val();
     if($.trim(value)==""){
         return Tip("搜索条件不能为空！");
     }
-    searchDelGoods(value);
+    getGoodsItem(value);
 }).on("keyup","#goods-all-ipt",function(e){//商品搜索框
     var value = $(this).val();
     if(e.keyCode==13){
         if($.trim(value)!=""){
-            searchDelGoods(value);
+            getGoodsItem(value);
+        }else{
+            return Tip("搜索条件不能为空！");
         }
     }
 }).on("click",".show-txtimg",function(){ //查看图文详情
@@ -72,10 +78,6 @@ $(document).ready(function(){
 }).on("click",".cancel-btn",function(){
     $(this).closest(".pop-win").hide();
 });
-//已删除商品搜索
-function searchDelGoods(value){
-
-}
 //取消删除
 function cancelDel(id){
     var url="";
@@ -121,14 +123,14 @@ function cancelBatchDel(){
         }
     });
 }
-function getGoodsItem(){
+function getGoodsItem(value){
     $(".wrap-loading-box").removeClass("hidden");
     var url;
-    var filter_status = $(".filter_status").attr("data-id");
-    var order_status1 = $(".order_status1").attr("data-id");
-    var order_status2 = $(".order_status2").attr("data-id");
-    var filter_status2 = $(".filter_status2").attr("data-id");
-    url = "/admin/goods/delete?&page="+pn;
+    if(value){
+        url = "/admin/goods/delete?type=goods_search&content="+value+"&page="+pn;
+    }else{
+        url = "/admin/goods/delete?&page="+pn;
+    }
     $.ajax({
         url:url,
         type:"get",
