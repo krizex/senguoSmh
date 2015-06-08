@@ -1045,8 +1045,7 @@ class Market(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("fruits")
 	def cart_list(self):
 		fruits = self.args["fruits"]
-		mgoods = self.args["mgoods"]
-		if len(fruits)+len(mgoods) > 20:
+		if len(fruits) > 20:
 			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
 		cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=self.shop_id).one()
 		fruits2 = {}
@@ -1141,7 +1140,7 @@ class Cart(CustomerBaseHandler):
 		if not fruits:
 			return self.send_fail('请至少选择一种商品')
 		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"框",11:"包",12:""}
-		if len(fruits)+len(mgoods) > 20:
+		if len(fruits) > 20:
 			return self.send_fail("你的购物篮太满啦！请不要一次性下单超过20种物品")
 		f_d={}
 		totalPrice=0
