@@ -245,8 +245,6 @@ class OrderDetail(CustomerBaseHandler):
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			return self.send_fail('order not found')
-		if order.status == 0:
-			return self.send_fail("支付超时，请重新下单")
 		return self.render("customer/alipay-tip.html",alipayUrl = alipayUrl,order_id = order_id)
 
 class JustOrder(CustomerBaseHandler):
