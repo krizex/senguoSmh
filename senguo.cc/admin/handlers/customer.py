@@ -144,7 +144,10 @@ class customerGoods(CustomerBaseHandler):
 		good = self.session.query(models.Fruit).filter_by(id=goods_id).first()
 		if good:
 			if good.img_url:
-					img_url= good.img_url.split(";")
+				img_url= good.img_url.split(";")
+			else:
+				img_url= ''
+
 		else:
 			good = []
 			img_url = ''
@@ -846,7 +849,7 @@ class Market(CustomerBaseHandler):
 					if _group:
 						group_list.append({'id':_group.id,'name':_group.name})
 		else:
-			data.append({'id':0,'name':'默认分组'})
+			group_list.append({'id':0,'name':'默认分组'})
 
 		print(group_list)
 
@@ -901,7 +904,7 @@ class Market(CustomerBaseHandler):
 					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,'market_price':charge_type.market_price})
 				
 
-				img_url = fruit.img_url.split(";")[0]
+				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 
 				data.append({'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,'storage':fruit.storage,'tag':fruit.tag,\
 				'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour,\

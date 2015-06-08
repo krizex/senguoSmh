@@ -13,9 +13,15 @@
         <!--a href="javascript:;" class="roll-bg share"><i></i></a-->
         <div class="swiper-container" id="swiper-container">
             <div class="swiper-wrapper">
-                {% for img in img_url%}
+                {% if img_url %}
+                    {% for img in img_url%}
+                    <div class="swiper-slide item">
+                        <img src="{{img}}" alt=""/>
+                    </div>
+                    {% end %}
+                {% else %}
                 <div class="swiper-slide item">
-                    <img src="{{img}}" alt=""/>
+                    <img src="/static/images/furit.jpg" alt="图片详情"/>
                 </div>
                 {% end %}
             </div>
@@ -23,7 +29,7 @@
         <div class="pagination"></div>
     </div>
     <div class="wrap-goods-info">
-        <p class="goods-title">{{good.name}}</p>
+        <p class="goods-title">{{good.name or ''}}</p>
         <p class="goods-info">{{good.intro or ''}}</p>
         <p class="goods-num">
             <span class="zan">{{good.favour or 0}}</span>
