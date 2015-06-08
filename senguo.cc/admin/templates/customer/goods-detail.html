@@ -38,10 +38,10 @@
         </p>
     </div>
     <ul class="wrap-choose-goods">
-        {% for charge in good.charge_types %}
+        {% for charge in charge_types %}
         <li>
-            <span class="now-price">{{charge.price}}元</span>
-            <span class="old-price">{{charge.market_price}}元/{{charge.num}}{{charge.unit}}</span>
+            <span class="now-price">{{charge['price']}}元</span>
+            <span class="old-price">{{charge['market_price']}}元/{{charge['num']}}{{charge['unit']}}</span>
             <div class="want-num ">
                 <span class="minus minus-num">-</span>
                 <input type="text" pattern="\d*" novalidate autocorrect="off" value="1" disabled/>

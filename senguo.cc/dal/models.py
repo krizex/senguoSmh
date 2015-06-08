@@ -1368,6 +1368,7 @@ class ChargeType(MapBase, _CommonApi):
 	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 	market_price =  Column(Float)#市场价 #5.27
 	select_num = Column(Integer, default=1) #6.4
+	relate = Column(Float, default=1) # 库存换算关系
 
 	fruit = relationship("Fruit", uselist=False)
 

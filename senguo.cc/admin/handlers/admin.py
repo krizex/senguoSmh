@@ -1613,12 +1613,14 @@ class Goods(AdminBaseHandler):
 				unit_num = int(charge_type["unit_num"]) if charge_type["unit_num"] else 1
 				select_num = int(charge_type["select_num"]) if charge_type["select_num"] else 1
 				market_price = charge_type["market_price"] if charge_type["market_price"] else 0
+				relate = int(charge_type["select_num"])/int(charge_type["unit_num"])
 				goods.charge_types.append(models.ChargeType(price=charge_type["price"],
 										unit=int(charge_type["unit"]),
 										num=charge_type["num"],
 										unit_num=unit_num,
 										market_price=market_price,
-										select_num=select_num))
+										select_num=select_num,
+										relate=relate))
 
 			self.session.add(goods)
 			self.session.commit()
@@ -1700,6 +1702,7 @@ class Goods(AdminBaseHandler):
 						unit_num = int(charge_type["unit_num"]) if charge_type["unit_num"] else 1
 						select_num = int(charge_type["select_num"]) if charge_type["select_num"] else 1
 						market_price = charge_type["market_price"] if charge_type["market_price"] else 0
+						relate = int(charge_type["select_num"])/int(charge_type["unit_num"])
 						charge_types = models.ChargeType(
 												fruit_id=int(data["goods_id"]),
 												price=charge_type["price"],
@@ -1707,7 +1710,8 @@ class Goods(AdminBaseHandler):
 												num=charge_type["num"],
 												unit_num=unit_num,
 												market_price=market_price,
-												select_num=select_num)
+												select_num=select_num,
+												relate=relate)
 						self.session.add(charge_types)
 
 				detail_describe = data["detail_describe"].replace("script","'/script/'")
