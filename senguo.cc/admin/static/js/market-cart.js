@@ -128,7 +128,7 @@ $(document).ready(function(){
     $(document).on('click','#getVrify',function(evt){
         evt.preventDefault();
         var phone=$('#enterPhone').val();
-        var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+        var regPhone=/^(1)\d{10}$/;
         if(phone.length > 11|| phone.length<11 || !regPhone.test(phone)){return warnNotice("手机号貌似有错o(╯□╰)o");}
         if(!phone){return warnNotice('手机号不能为空');}
         $('#getVrify').attr({'disabled':true});
@@ -590,7 +590,7 @@ function itemDelete(target,menu_type) {
 function addressAddEdit(action,name,address,phone,target){
     var url='/customer/'+getCookie('market_shop_code');
     var action=action;
-    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    var regPhone=/^(1)\d{10}$/;
     var address_id=$('.address-box').attr('data-id');
     if(name == null){return noticeBox('请输入收货人姓名！',target)}
     if(name.length > 10){return noticeBox('姓名请不要超过10个字！',target)}
@@ -783,7 +783,7 @@ function TiePhone(evt){
     var phone=$('#enterPhone').val();
     var code=$('#enterVrify').val();
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
-    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    var regPhone=/^(1)\d{10}$/;
     if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){return warnNotice("手机号貌似有错o(╯□╰)o");}
     if(!phone){return warnNotice('请输入手机号');}
     if(!code){return warnNotice('请输入验证码');}
