@@ -102,15 +102,15 @@ $(document).ready(function(){
      scrollLoading();
      //已在购物车里的商品
     var cart_fs=window.dataObj.cart_fs;
-    var cart_ms=window.dataObj.cart_ms;
+    // var cart_ms=window.dataObj.cart_ms;
     for(var key in cart_fs) {
         window.dataObj.fruits[cart_fs[key][0]]=cart_fs[key][1];
         fruits_num();
     }
-    for(var key in cart_ms) {
-        window.dataObj.mgoods[cart_ms[key][0]]=cart_ms[key][1];
-        mgoods_num();
-    }
+    // for(var key in cart_ms) {
+    //     window.dataObj.mgoods[cart_ms[key][0]]=cart_ms[key][1];
+    //     mgoods_num();
+    // }
 }).on('click','.notice-item',function(){
         //公告详情
         var $this=$(this);
@@ -124,7 +124,7 @@ $(document).ready(function(){
         var id=$this.attr('data-id');
         var shop_code=$('#shop_code').val();
         if(storage!=0&&$(e.target).closest('.forbid_click').length == 0){
-            window.location.href="/"+shop_code+"/goods/"+id;
+            addCart("/"+shop_code+"/goods/"+id);
         }
     }).on('click','.check-lg-img',function(){
         //查看大图

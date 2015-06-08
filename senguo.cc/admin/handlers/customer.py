@@ -154,7 +154,10 @@ class customerGoods(CustomerBaseHandler):
 			unit =self.getUnit(unit)
 			charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
 				'market_price':charge_type.market_price,'relate':charge_type.relate})
-		return self.render('customer/goods-detail.html',good=good,shop_name=shop_name,img_url=img_url,shop_code=shop_code,charge_types=charge_types)
+		cart_f = self.read_cart(shop.id)
+		cart_count = len(cart_f) 
+		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
+		return self.render('customer/goods-detail.html',good=good,shop_name=shop_name,img_url=img_url,shop_code=shop_code,charge_types=charge_types,cart_fs=cart_fs)
 		
 
 
