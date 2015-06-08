@@ -76,17 +76,17 @@ class Home(StaffBaseHandler):
 			orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
 				JH_id=self.current_user.id, status=models.ORDER_STATUS.JH)
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
-											 models.Order.JH_id==self.current_user.id, models.Order.status.in_([3,4,5,6]))
+											 models.Order.JH_id==self.current_user.id, models.Order.status.in_([3,4,5,6,7]))
 		elif work ==2: #SH1
 			orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
 				SH1_id=self.current_user.id, status=models.ORDER_STATUS.SH1)
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
-								  models.Order.SH1_id==self.current_user.id,models.Order.status.in_([4,5,6]))
+								  models.Order.SH1_id==self.current_user.id,models.Order.status.in_([4,5,6,7]))
 		elif work ==3: #SH2
 			orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
 				models.Order.SH2_id==self.current_user.id, models.Order.status.in_([4]))
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
-								  models.Order.SH2_id==self.current_user.id, models.Order.status.in_([5,6]))
+								  models.Order.SH2_id==self.current_user.id, models.Order.status.in_([5,6,7]))
 		else:
 			return self.send_error(404)
 		orders_intime = orders.filter_by(type=1).order_by(models.Order.create_date).all()
