@@ -25,7 +25,7 @@ def unblock(f):
         self = args[0]
 
         def callback(future):
-            self.write(future.result())
+            # self.write(future.result())
             self.finish()
 
         EXECUTOR.submit(
@@ -78,17 +78,7 @@ class Access(CustomerBaseHandler):
 		if not u:
 			return self.send_fail(error_text = '用户不存在或密码不正确 ')
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
-		# if hasattr(self, "_user"):
-		# 	print(self._user)
-		# else:
-		# 	print('nooooooooooooooooooooooooooo')
-		# return self.redirect( self.reverse_url("test"))
-		# print('before redirect')
-		# return self.redirect('http://www.baidu.com')
 		return self.send_success()
-		# next = self.args['next']
-		print("[手机登录]跳转URL：",next)
-		# return self.redirect('/woody')
 
 	@CustomerBaseHandler.check_arguments("code")
 	def handle_qq_oauth(self,next_url):
@@ -112,7 +102,6 @@ class Access(CustomerBaseHandler):
 			return self.send_error(400)
 
 		userinfo = self.get_wx_userinfo(code, mode)
-		# print('login handle_oauth',code,mode,userinfo)
 		if not userinfo:
 			return self.redirect(self.reverse_url("customerLogin"))
 		u = models.Customer.register_with_wx(self.session, userinfo)
@@ -775,8 +764,6 @@ class ShopComment(CustomerBaseHandler):
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self, shop_code):
-		# print('self',self)
-		# print(self.request.remote_ip,'ip?')
 		w_follow = True
 		fruits=''
 		page_size = 10
@@ -942,9 +929,18 @@ class Market(CustomerBaseHandler):
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
 			return self,send_error(404)
-		fruits = self.session.query(models.Fruit).join(models.Shop).join(models.GroupPriority).order_by(models.GroupPriority.priority,models.Fruit.add_time.desc())
-		fruits = fruits.filter(models.Fruit.active == 1).offset(offset).limit(page_size).all()
+		fruits = self.session.query(models.Fruit).join(models.Shop).join(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id\
+			).order_by(models.GroupPriority.priority,models.Fruit.add_time.desc())
+		
+		fruits = fruits.filter(models.Fruit.active == 1,models.Fruit.shop_id == shop_id).offset(offset).limit(page_size).all()
+		for fruit in fruits:
+			print(fruit.id)
+
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
+		for fruit in fruits_data:
+			# print(fruits_data,len(fruits_data))
+			print(fruit)
+
 		return self.send_success(data = fruits_data)
 
 	@CustomerBaseHandler.check_arguments("charge_type_id:int")  # menu_type(0：fruit，1：menu)
@@ -1033,7 +1029,7 @@ class Market(CustomerBaseHandler):
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
-		# time.sleep(20)
+		
 		customer_id = self.current_user.id
 		phone = self.get_phone(customer_id)
 
@@ -1093,6 +1089,7 @@ class Cart(CustomerBaseHandler):
 	def post(self,shop_code):#提交订单
 		# print(self)
 		print(self.args['pay_type'],'login?????')
+		time.sleep(20)
 		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
