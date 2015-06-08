@@ -7,6 +7,7 @@
 {% block header %}{% end %}
 {% block content %}
 {% if good %}
+<input type="hidden" value="{{shop_code}}" id="shop_code"/>
 <div class="wrap-goods-detail" data-id="{{good.id}}">
     <div class="img-list">
         <a href="javascript:;" class="roll-bg back"><i></i></a>
@@ -32,7 +33,7 @@
         <p class="goods-title">{{good.name or ''}}</p>
         <p class="goods-info">{{good.intro or ''}}</p>
         <p class="goods-num">
-            <span class="zan">{{good.favour or 0}}</span>
+            <span class="zan {% if good.favour_today %}zaned{% end %}" id="dianzan" data-flag="{{good.favour_today}}" data-id="{{good.id}}">{{good.favour or 0}}</span>
             <span>销量 {{good.saled or 0}}</span>
         </p>
     </div>
@@ -46,7 +47,7 @@
                 <input type="text" pattern="\d*" novalidate autocorrect="off" value="1" disabled/>
                 <span class="add add-num">+</span>
             </div>
-            <div class="now-buy">立即购买</div>
+            <div class="now-buy" data-storage="0">立即购买</div>
         </li>
         {% end %}
     </ul>
@@ -98,6 +99,8 @@
         <span class="move-cart" id="cart-now-num">1</span>
     </a>
 </div>
+{% else %}
+<p class="no-title">当前商品不存在！</p>
 {% end %}
 {% end %}
 {% block other %}

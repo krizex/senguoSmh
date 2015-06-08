@@ -119,6 +119,14 @@ $(document).ready(function(){
         var detail_box=new Modal('detail_box');
         detail_box.modal('show');
         $('.detail-box').find('.detail').text(detail);
+    }).on('click','.goods-list-item',function(e){
+        var $this=$(this);
+        var storage=parseInt($this.attr('data-storage'));
+        var id=$this.attr('data-id');
+        var shop_code=$('#shop_code').val();
+        if(storage!=0&&$(e.target).closest('.forbid_click').length == 0){
+            window.location.href="/"+shop_code+"/goods/"+id;
+        }
     }).on('click','.check-lg-img',function(){
         //查看大图
             var $this=$(this);
@@ -163,10 +171,17 @@ $(document).ready(function(){
         $('.classify-title').addClass('hidden');
         $('.goods-list').empty();
         var group_id=$this.attr('data-id');
-        window.dataObj.page=1;
-        window.dataObj.action=6;
-        _group_id = group_id;
-        goodsList(1,6);
+        if(group_id!=-2){
+            window.dataObj.page=1;
+            window.dataObj.action=6;
+            _group_id = group_id;
+            goodsList(1,6);
+        }
+        else{
+             window.dataObj.page=1;
+             window.dataObj.action=5;
+             goodsList(1,5);
+        }
         // var top=$('#'+g_class+'').offset().top;
         // $('.choose-classify .icon').toggle();
         // var w_height=$('#'+g_class+'').height();
@@ -396,7 +411,7 @@ var goodsList=function(page,action){
             }
             //get item dom
             if(window.dataObj.goods_item==undefined){
-                getItem('/static/items/customer/market-goods-item.html?v=20150530',function(data){
+                getItem('/static/items/customer/market-goods-item.html?v=20150531',function(data){
                     window.dataObj.goods_item=data;
                     getItem('/static/items/customer/charge-item.html?v=20150530',function(data){
                         window.dataObj.charge_item=data;
@@ -421,9 +436,10 @@ var goodsList=function(page,action){
         var initData=function(data){
             var data=data;
             for(var key in data){
-                console.log(3222222);
+                if(action==5){
+                    $('.classify-title').removeClass('hidden');
+                }           
                 fruitItem($('.goods-list-'+data[key]['group_id']),data[key]);//fruits information
-                if(action==5) {$('.fruit_cassify').removeClass('hidden');}
             }
             var fruits=window.dataObj.fruits;
             var c_fs=[];
@@ -513,6 +529,7 @@ var fruitItem=function(box,fruits,type){
         }
     }
     box.append($item);
+    console.log('heheheheheh');
     //$('.lazy_img').lazyload({container: $("#wrap-goods-box"),threshold:10});
     $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
 };

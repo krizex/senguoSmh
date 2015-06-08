@@ -128,13 +128,12 @@ class customerGoods(CustomerBaseHandler):
 			self._shop_code = shop.shop_code
 			self.set_cookie("market_shop_code",str(shop.shop_code))
 			shop_name = shop.shop_name
+			shop_code = shop.shop_code
 		else:
 			shop_name =''
 		good = self.session.query(models.Fruit).filter_by(id=goods_id).first()
 		try:
-			favour = session.query(models.FruitFavour).filter_by(customer_id = customer_id,\
-				f_m_id = fruit.id , type = 0).first()
-
+			favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,f_m_id = goods_id,type = 0).first()
 		except:
 			favour = None
 		if favour is None:
@@ -150,7 +149,7 @@ class customerGoods(CustomerBaseHandler):
 		else:
 			good = []
 			img_url = ''
-		return self.render('customer/goods-detail.html',good=good,shop_name=shop_name,img_url=img_url)
+		return self.render('customer/goods-detail.html',good=good,shop_name=shop_name,img_url=img_url,shop_code=shop_code)
 		
 
 
@@ -848,7 +847,7 @@ class Market(CustomerBaseHandler):
 
 		return self.render("customer/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,\
-							shop_name=shop.shop_name,w_follow = w_follow,\
+							shop_name=shop.shop_name,shop_code=shop.shop_code,w_follow = w_follow,\
 							cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
 
 	@tornado.web.authenticated
