@@ -314,7 +314,7 @@ function infoEdit(target){
     var action,shop_name,shop_intro,shop_city,shop_address_detail,have_offline_entity,address,entity_text,shop_code,shop_phone;
     var regNum=/^[1-9]*[1-9][0-9]*$/;
     var regPhone=/\d{3}-\d{8}|\d{4}-\d{7}/;
-    var regPhone2=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    var regPhone2=/^(1)\d{10}$/;
     if(action_name=='name')
         {
             action='edit_shop_name';

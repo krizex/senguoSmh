@@ -104,7 +104,7 @@ function addressEdit(target,action){
     var name=$('#address_name').val();
     var phone=$('#address_phone').val();
     var address=$('#address_address').val();
-    //var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    var regPhone=/^(1)\d{10}$/;
     if(!name) {return warnNotice('请填写收货人姓名');}
     if(!phone) {return warnNotice('请填写收货人电话');}
     //if(!regPhone.test(phone)){return warnNotice('请填写正确的手机号');}
