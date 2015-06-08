@@ -2480,4 +2480,16 @@ class InsertData(CustomerBaseHandler):
 		time.sleep(100)
 		return self.send_success()
 
-
+class  Overtime(CustomerBaseHandler):
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("order_id?:str")
+	def get(self):
+		order_id = int(self.args['order_id'])
+		order = self.session.query(models.Order).filter_by(id = order_id).first()
+		if not order:
+			return self.send_fail("overtime : order not found")
+		shop = self.session.query(models.Shop).filter_by(id = order.shop_id).first()
+		if order.status == 0:
+			return self.send_success(overtime = 1,shop_code = shop.shop_code)
+		else:
+			return self.send_success(overtime = 0,shop_code = shop.shop_code)

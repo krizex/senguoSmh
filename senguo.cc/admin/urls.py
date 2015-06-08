@@ -51,6 +51,8 @@ handlers = [
 	(r"/customer/discover/(\w+)",handlers.customer.Discover,{},"customerDiscover"),
 	#商品详情
 	(r"/customer/goods/(\w+)",handlers.customer.Goods,{},"customerGoods"),
+	(r"/customer/overtime",handlers.customer.Overtime,{},"customerOverTime"),
+
 	# (r"/fruitzone/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
 	#微官网-----待删除
 	(r"/", handlers.superadmin.Official),

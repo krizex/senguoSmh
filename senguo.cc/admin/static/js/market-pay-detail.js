@@ -45,11 +45,28 @@ $(document).ready(function(){
     cancelOrder(order_id);
     confirmRemove();
 }).on("click","#go-alipay",function(){
-    if(isWeiXin()){
-        window.location.href="/customer/online/orderdetail?alipayUrl="+encodeURIComponent($(this).attr("data-url"))+"&order_id="+$("#cancel-order").attr("data-id");
-    }else{
-        window.location.href=$(this).attr("data-url");
-    }
+    $.ajax({
+                url:"/customer/overtime?order_id="+$("#order-id").val(),
+                type:"get",
+                success:function(res){
+                    if(res.success){
+                        var data = res.data;
+                        if(data.overtime == 1){
+                            noticeBox("当前订单超时已经超时，请重新下单");
+                            setTimeout(function(){
+                                window.location.href="/customer/"+data.shop_code;
+                            },2000);
+                        }
+                        else{
+                            if(isWeiXin()){
+                                window.location.href="/customer/online/orderdetail?alipayUrl="+encodeURIComponent($(this).attr("data-url"))+"&order_id="+$("#cancel-order").attr("data-id");
+                            }else{
+                                window.location.href=$(this).attr("data-url");
+                            }
+                        }
+                    }
+                });
+            });
 });
 function isWeiXin(){
     var ua = window.navigator.userAgent.toLowerCase();
@@ -69,6 +86,13 @@ function removeDom(){
 }
 function statusText(n){
     switch (n){
+        case -1:
+            $("#status-txt").text('未付款');
+            $(".order-wawa").css("left","0");
+            $(".order-line-grade").css("width","0");
+            $(".order-status-txt").css("left","0");
+            $(".tel-btn").hide();
+            break;
         case 0:
             $("#status-txt").text('已取消');
             $(".order-wawa").css("left","0%");
@@ -103,13 +127,6 @@ function statusText(n){
             $(".order-line-grade").css("width","100%");
             $(".order-status-txt").css("left","100%");
             $(".tel-btn").show();
-            break;
-        case -1:
-            $("#status-txt").text('未付款');
-            $(".order-wawa").css("left","0");
-            $(".order-line-grade").css("width","0");
-            $(".order-status-txt").css("left","0");
-            $(".tel-btn").hide();
             break;
     }
 }
