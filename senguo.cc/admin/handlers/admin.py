@@ -922,7 +922,7 @@ class Order(AdminBaseHandler):
 			if action == "edit_remark":
 				order.update(session=self.session, remark=data["remark"])
 			elif action == "edit_SH2":
-				if order.status in [5,6,10]:
+				if order.status in [5,6,7,10]:
 					return self.send_fail('订单已完成，不允许操作该订单')
 				SH2 = next((x for x in self.current_shop.staffs if x.id == int(data["staff_id"])), None)
 				if not SH2:
@@ -955,8 +955,8 @@ class Order(AdminBaseHandler):
 				# print("success?")
 
 			elif action == "edit_status":
-				if order.status in[5,6,10]:
-					return self.send_fail("订单已完成。不能修改状态")
+				if order.status in[5,6,7,10]:
+					return self.send_fail("订单已完成，不能修改状态")
 				self.edit_status(order,data['status'])
 
 			elif action == "edit_totalPrice":
