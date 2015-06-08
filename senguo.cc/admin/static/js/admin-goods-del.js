@@ -50,12 +50,12 @@ $(document).ready(function(){
     if($.trim(value)==""){
         return Tip("搜索条件不能为空！");
     }
-    searchGoods(value);
+    searchDelGoods(value);
 }).on("keyup","#goods-all-ipt",function(e){//商品搜索框
     var value = $(this).val();
     if(e.keyCode==13){
         if($.trim(value)!=""){
-            searchGoods(value);
+            searchDelGoods(value);
         }
     }
 }).on("click",".show-txtimg",function(){ //查看图文详情
@@ -72,6 +72,10 @@ $(document).ready(function(){
 }).on("click",".cancel-btn",function(){
     $(this).closest(".pop-win").hide();
 });
+//已删除商品搜索
+function searchDelGoods(value){
+
+}
 //取消删除
 function cancelDel(id){
     var url="";

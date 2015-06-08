@@ -25,7 +25,7 @@ $(document).ready(function(){
         }
     });
     //初始化组
-    var groupList = $(".group-lst").children(".item");
+    var groupList = $(".group-lst").children(".self-group");
     for(var i=0; i<groupList.size(); i++){
         var obj = groupList[i];
         obj.zIndex = 1;
@@ -145,11 +145,11 @@ $(document).ready(function(){
                 $this.attr("data-flag", "on");
                   if(_action=='edit'){
                         curGroup.find('.group-name').text(group_name);
-                         curGroup.find('.group-intro').text(group_info);
-                         $("#new-win").modal('hide');
+                        curGroup.find('.group-intro').text(group_info);
+                        $("#new-win").modal('hide');
                     }
                     else if(_action=="add"){
-                       priority("add",res.id);
+                        priority("add",res.id);
                     }        
             }
             else {
@@ -170,6 +170,21 @@ $(document).ready(function(){
     $("#group-info").val($(this).closest("li").find(".group-intro").html());
     $("#new-win").modal('show').find('.title').text('编辑分组');
     $('.ok-add-group').attr('data-action','edit');
+}).on("click","#goods-all-search",function(){//商品搜索
+    var value = $("#goods-all-ipt").val();
+    if($.trim(value)==""){
+        return Tip("搜索条件不能为空！");
+    }
+    var key = encodeURIComponent(encodeURIComponent(value));
+    window.location.href="/admin/goods/all?type=goodsearch&content="+key+"&page=0";
+}).on("keyup","#goods-all-ipt",function(e){//商品搜索框
+    var value = $(this).val();
+    if(e.keyCode==13){
+        if($.trim(value)!=""){
+            var key = encodeURIComponent(encodeURIComponent(value));
+            window.location.href="/admin/goods/all?type=goodsearch&content="+key+"&page=0";
+        }
+    }
 });
 //drag
 function drag(obj){
@@ -306,9 +321,8 @@ function priority(type,item_id){
         function (res) {
             if (res.success) {
                  if(type=="add"){
-                         // window.location.reload();
-                       
-                    }    
+                     window.location.reload(true);
+                 }
             }
             else {
                 Tip(res.error_text);
