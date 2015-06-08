@@ -1528,7 +1528,7 @@ class Goods(AdminBaseHandler):
 				if self.args["type"] == "goods_search":
 					name = self.args["content"]
 					goods = goods.filter(models.Fruit.name.like("%%%s%%" % name))
-					
+
 				count = goods.count()
 				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 				datalist = goods.offset(offset).limit(page_size).all()
@@ -1571,7 +1571,10 @@ class Goods(AdminBaseHandler):
 				args["limit_num"] = data["limit_num"]
 			if "group_id" in data:
 				group_id = int(data["group_id"])
-				print(group_id)
+				if group_id == -1:
+					re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
+					if re_count >= 6:
+						return self.send_fail("推荐分组至多只能添加六个商品")
 				if group_id !=0 and group_id !=-1:
 					_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = shop_id,status = 1).first()
 					if _group:
@@ -1757,10 +1760,12 @@ class Goods(AdminBaseHandler):
 				elif action == 'batch_off':
 					goods.active = 2
 				elif action == 'batch_group':
-					re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
-					if re_count >= 6:
-						return self.send_fail("推荐分组至多只能添加六个商品")
-					goods.group_id= data["group_id"]
+					group_id = int(data["group_id"])
+					if group_id == -1:
+						re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
+						if re_count >= 6:
+							return self.send_fail("推荐分组至多只能添加六个商品")
+					goods.group_id= group_id
 				self.session.commit()
 
 		elif action =="add_group":
