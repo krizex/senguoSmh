@@ -125,8 +125,7 @@ function finishOrder(target,id){
             //target.parents('.order-list-item').remove();
         }
         else return noticeBox(res.error_text);
-    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
-);
+    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
 
 function remarkSub(id,index){
@@ -135,9 +134,10 @@ function remarkSub(id,index){
     var remark=$('.remark-input').val();
     var data=remark;
     if(remark=='') {
-        return warnNotice('请输入备注内容!');}
+        return warnNotice('请输入备注内容');
+    }
     if(remark.length>100){
-        return warnNotice('备注不得超过100字!');
+        return warnNotice('备注不得超过100字');
     }
     var args={
         action:action,
@@ -151,6 +151,5 @@ function remarkSub(id,index){
             remark_box.modal('hide');
         }
         else return noticeBox(res.error_text);
-    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
-    );
+    }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }

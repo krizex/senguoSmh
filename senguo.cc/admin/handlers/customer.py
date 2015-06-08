@@ -1802,7 +1802,7 @@ class Order(CustomerBaseHandler):
 			# Modify by Sky - 2015.6.5
 			# 当前“已完成”只展示“未评价”订单，前台“已完成”改为了“未评价”，但action还未改，仍为finish
 			order5 = []
-			#order6 = []
+			order6 = []
 			for x in orderlist:
 				if x.status == 5:
 					order5.append(x)
