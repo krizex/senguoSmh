@@ -721,6 +721,10 @@ function orderSubmit(target){
                        window.location.href=window.dataObj.success_href; 
                     }
                  }
+                 else{
+                    $('#submitOrder').removeClass('bg-grey text-grey3').text('提交订单').removeAttr('disabled'); 
+                    return noticeBox(res.error_text);
+                 }
             });
           
         }

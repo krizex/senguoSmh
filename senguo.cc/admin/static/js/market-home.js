@@ -1,6 +1,5 @@
 $(document).ready(function(){
     var shop_logo=$('#shop_imgurl').attr('data-img');
-    console.log();
     if(parseInt($("#shop_status").val())==3){
         noticeBox("店铺休息中，暂不接收新订单");
     }
@@ -219,6 +218,13 @@ $(document).ready(function(){
                 $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
             }*/
             var storage=parseFloat(parent.attr('data-storage'));
+            var relate=parseFloat($this.parents('.num_box').siblings('.charge-type').attr('data-relate'));
+            var unit_num=parseFloat($this.parents('.num_box').siblings('.charge-type').find('.num').text());
+            var change_num=relate*unit_num*1;
+            if(storage-change_num<0){
+                return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
+            }
+            parent.attr({'data-storage':storage-change_num});
             $this.siblings('.number-change').find('.number-input').val(0);
             if(storage>0) {
                 pulse($this.siblings('.number-change').find('.number-plus'));
@@ -437,7 +443,7 @@ var goodsList=function(page,action){
             var data=data;
             for(var key in data){
                 if(action==5){
-                    $('.classify-title').removeClass('hidden');
+                    $('.classify-'+data[key]['group_id']).removeClass('hidden');
                 }           
                 fruitItem($('.goods-list-'+data[key]['group_id']),data[key]);//fruits information
             }
@@ -503,7 +509,8 @@ var fruitItem=function(box,fruits,type){
             var price=charge_types[0]['price'];
             var num=charge_types[0]['num'];
             var unit=charge_types[0]['unit'];
-            $charge_item.attr({'data-id':id});
+            var relate=charge_types[0]['relate'];
+            $charge_item.attr({'data-id':id,'data-relate':relate});
             $charge_item.find('.price').text(price);
             $charge_item.find('.num').text(num);
             $charge_item.find('.chargeUnit').text(unit);
@@ -514,7 +521,8 @@ var fruitItem=function(box,fruits,type){
             var price=charge_types[key]['price'];
             var num=charge_types[key]['num'];
             var unit=charge_types[key]['unit'];
-            $charge_item.attr({'data-id':id}).addClass('more_charge');
+            var relate=charge_types[key]['relate'];
+            $charge_item.attr({'data-id':id,'data-relate':relate}).addClass('more_charge');
             $charge_item.find('.price').text(price);
             $charge_item.find('.num').text(num);
             $charge_item.find('.chargeUnit').text(unit);
@@ -530,7 +538,6 @@ var fruitItem=function(box,fruits,type){
         }
     }
     box.append($item);
-    console.log('heheheheheh');
     //$('.lazy_img').lazyload({container: $("#wrap-goods-box"),threshold:10});
     $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
 };
@@ -569,11 +576,14 @@ function cartNum(cart_ms,list){
 function goodsNum(target,action){
     var item=target.siblings('.number-input');
     var change=target.parents('.number-change');
-    var num=item.val();
+    var num=parseInt(item.val());
     var parent=target.parents('.goods-list-item');
     var storage=parseFloat(parent.data('storage'));
     var type_list=target.parents('.goods-list');
     var id=target.parents('.num_box').attr('data-id');
+    var relate=parseFloat(target.parents('.num_box').siblings('.charge-type').attr('data-relate'));
+    var unit_num=parseFloat(target.parents('.num_box').siblings('.charge-type').find('.num').text());
+    var change_num=relate*unit_num*num;
     if(action==1&&num<=0) {num=0;target.addClass('disable');}
     if(action==2)
     {
@@ -581,9 +591,12 @@ function goodsNum(target,action){
             noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',target);
         }
         else if(storage>0){
+            if(storage-change_num<0){
+                return  noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',target);
+            }
             num++;
             item.val(num);
-            storage--;
+            storage=storage-change_num;
             parent.attr({'data-storage':storage});
         }
     }
@@ -594,7 +607,7 @@ function goodsNum(target,action){
         {
             num--;
             item.val(num);
-            storage++;
+            storage=storage+change_num;
             parent.attr({'data-storage':storage});
             if(val==1){
                 target.removeClass('anim-pulse');
@@ -614,7 +627,6 @@ function goodsNum(target,action){
         }
     }
     if(type_list.hasClass('fruit-list')) {window.dataObj.fruits[id]=num; fruits_num();}
-    if(type_list.hasClass('menu-list')) { window.dataObj.mgoods[id]=num;mgoods_num();}
 }
 
 function fruits_num(){
@@ -641,16 +653,12 @@ function addCart(link){
     var url='';
     var action = 4;
     fruits_num();
-    mgoods_num();
     var fruits=window.dataObj.fruits;
-    var mgoods=window.dataObj.mgoods;
     var args={
         action:action,
-        fruits:fruits,
-        mgoods:mgoods
+        fruits:fruits
     };
     if(!isEmptyObj(fruits)){fruits={}}
-    if(!isEmptyObj(mgoods)){mgoods={}}
     $.postJson(url,args,function(res){
             if(res.success)
             {

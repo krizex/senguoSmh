@@ -152,7 +152,8 @@ class customerGoods(CustomerBaseHandler):
 		for charge_type in good.charge_types:
 			unit  = charge_type.unit
 			unit =self.getUnit(unit)
-			charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,'market_price':charge_type.market_price})
+			charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
+				'market_price':charge_type.market_price,'relate':charge_type.relate})
 		return self.render('customer/goods-detail.html',good=good,shop_name=shop_name,img_url=img_url,shop_code=shop_code,charge_types=charge_types)
 		
 
@@ -897,7 +898,8 @@ class Market(CustomerBaseHandler):
 				for charge_type in fruit.charge_types:
 					unit  = charge_type.unit
 					unit =self.getUnit(unit)
-					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,'market_price':charge_type.market_price})
+					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
+						'market_price':charge_type.market_price,'relate':charge_type.relate})
 				
 
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
@@ -1101,8 +1103,8 @@ class Cart(CustomerBaseHandler):
 										 "today:int",'online_type?:str')
 	def post(self,shop_code):#提交订单
 		# print(self)
-		print(self.args['pay_type'],'login?????')
-		time.sleep(20)
+		# print(self.args['pay_type'],'login?????')
+		# time.sleep(20)
 		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
@@ -1131,7 +1133,7 @@ class Cart(CustomerBaseHandler):
 				if fruits[str(charge_type.id)] == 0:  # 有可能num为0，直接忽略掉
 					continue
 				totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
-				num = int(fruits[str(charge_type.id)]*(charge_type.select_num/charge_type.unit_num) *charge_type.num)
+				num = int(fruits[str(charge_type.id)]*charge_type.relate*charge_type.num)
 
 				charge_type.fruit.storage -= num  # 更新库存
 				if charge_type.fruit.saled:
