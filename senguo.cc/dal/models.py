@@ -1255,9 +1255,6 @@ class Order(MapBase, _CommonApi):
 			return None
 		if order:
 			fruits = eval(order.fruits)
-			mgoods = eval(order.mgoods)
-			# print(fruits)
-			# print(type(fruits))
 		if fruits:
 			charge_types = session.query(ChargeType).filter(ChargeType.id.in_\
 				(fruits.keys())).all()
@@ -1274,18 +1271,6 @@ class Order(MapBase, _CommonApi):
 				charge_type.fruit.current_saled -=num
 				charge_type.fruit.saled -= num
 				print("[订单管理]取消订单，恢复库存数量(水果)：",num)
-		# if mgoods:
-		# 	#print("print mark 6:",mgoods,'**********************************')
-		# 	charge_types = session.query(MChargeType).filter(MChargeType.id.in_(mgoods.keys())).all()
-		# 	for charge_type in charge_types:
-		# 		# print("before",charge_type.mgoods.storage,charge_type.mgoods.current_saled)
-		# 		if mgoods[int(charge_type.id)]==0:
-		# 			continue 
-		# 		num =mgoods[int(charge_type.id)]['num'] *charge_type.unit_num * charge_type.num
-		# 		charge_type.mgoods.storage += num
-		# 		charge_type.mgoods.current_saled -= num
-		# 		charge_type.mgoods.saled -= num
-		# 		print("[订单管理]取消订单，恢复库存数量(其他)：",num)
 		session.commit()
 		return True
 

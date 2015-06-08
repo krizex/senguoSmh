@@ -209,14 +209,7 @@ class Order(StaffBaseHandler):
 						num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
 						s[0].current_saled -= num
 
-				# 更新mgood 的 current_saled
-				mgoods = eval(order.mgoods)
-				if mgoods:
-					ss = self.session.query(models.MGoods, models.MChargeType).join(models.MChargeType).\
-						filter(models.MChargeType.id.in_(mgoods.keys())).all()
-					for s in ss:
-						num = mgoods[s[1].id]["num"]*s[1].unit_num*s[1].num
-						s[0].current_saled -= num
+			
 				#yy
 				if status == 5:
 				##############################################################################################
