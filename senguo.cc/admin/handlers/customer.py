@@ -2272,8 +2272,7 @@ class InsertData2(CustomerBaseHandler):
 				img_url = img_url,
 				intro = intro,
 				priority = priority,
-				temp_mgoods_id = good.id,
-				clssify = 3
+				temp_mgoods_id = good.id
 			)
 			self.session.add(info)
 			self.session.commit()
