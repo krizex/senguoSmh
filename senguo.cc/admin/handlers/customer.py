@@ -144,9 +144,7 @@ class customerGoods(CustomerBaseHandler):
 			shop_name =''
 		good = self.session.query(models.Fruit).filter_by(id=goods_id).first()
 		try:
-			favour = session.query(models.FruitFavour).filter_by(customer_id = customer_id,\
-				f_m_id = fruit.id , type = 0).first()
-
+			favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,f_m_id = goods_id,type = 0).first()
 		except:
 			favour = None
 		if favour is None:

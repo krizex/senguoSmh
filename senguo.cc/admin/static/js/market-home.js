@@ -119,12 +119,12 @@ $(document).ready(function(){
         var detail_box=new Modal('detail_box');
         detail_box.modal('show');
         $('.detail-box').find('.detail').text(detail);
-    }).on('click','.goods-list-item',function(){
+    }).on('click','.goods-list-item',function(e){
         var $this=$(this);
         var storage=parseInt($this.attr('data-storage'));
         var id=$this.attr('data-id');
         var shop_code=$('#shop_code').val();
-        if(storage!=0){
+        if(storage!=0&&$(e.target).closest('.forbid_click').length == 0){
             window.location.href="/"+shop_code+"/goods/"+id;
         }
     }).on('click','.check-lg-img',function(){
@@ -411,7 +411,7 @@ var goodsList=function(page,action){
             }
             //get item dom
             if(window.dataObj.goods_item==undefined){
-                getItem('/static/items/customer/market-goods-item.html?v=20150530',function(data){
+                getItem('/static/items/customer/market-goods-item.html?v=20150531',function(data){
                     window.dataObj.goods_item=data;
                     getItem('/static/items/customer/charge-item.html?v=20150530',function(data){
                         window.dataObj.charge_item=data;
