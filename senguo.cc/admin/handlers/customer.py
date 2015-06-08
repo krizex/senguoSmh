@@ -2489,9 +2489,11 @@ class  Overtime(CustomerBaseHandler):
 		except:
 			return self.send_fail("overtime : can not get order_id")
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
+		print("order:::::",order)
 		if not order:
 			return self.send_fail("overtime : order not found")
 		shop = self.session.query(models.Shop).filter_by(id = order.shop_id).first()
+		print("order status:::::",order.status)
 		if order.status == 0:
 			return self.send_success(overtime = 1,shop_code = shop.shop_code)
 		else:
