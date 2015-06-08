@@ -22,21 +22,21 @@ $(document).ready(function(){
     //hidden info toggle
         var u = navigator.userAgent, app = navigator.appVersion;
         var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
-         if(isiOS){
+        if(isiOS){
             $(document).on('tap','.toggle',function(e){
-                    var $this=$(this);
-                    if($(e.target).closest('.forbid_click').length == 0){
-                        $this.parents('.order-list-item').find('.goods_info').toggle();
-                    }
-                });
+                var $this=$(this);
+                if($(e.target).closest('.forbid_click').length == 0){
+                    $this.parents('.order-list-item').find('.goods_info').toggle();
+                }
+            });
         }
         else{
-                 $(document).on('click','.toggle',function(e){
-                    var $this=$(this);
-                    if($(e.target).closest('.forbid_click').length == 0){
-                        $this.parents('.order-list-item').find('.goods_info').toggle();
-                    }
-                });
+            $(document).on('click','.toggle',function(e){
+                var $this=$(this);
+                if($(e.target).closest('.forbid_click').length == 0){
+                    $this.parents('.order-list-item').find('.goods_info').toggle();
+                }
+            });
         }
 
     //if staff remark exist
@@ -94,7 +94,8 @@ function statusText(target,n){
         case 1:target.text('未处理').addClass('text-green');break;
         case 2:case 3:case 4:target.text('配送中').addClass('text-green');break;
         case 5:target.text('已送达').addClass('text-grey');break;
-        case 6:case 7:target.text('已评价').addClass('text-grey');break;
+        case 6:target.text('已评价').addClass('text-grey');break;
+        case 7:target.text('已自动好评').addClass('text-grey');break;
     }
 }
 
