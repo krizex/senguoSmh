@@ -191,14 +191,14 @@ function orderItem(item){
         $item.find('.order-status').attr({'data-id':status});
         $item.find('.order-time').text(create_date);
         $item.find('.saler-remark').val(remark);
-        //立即送消费显示
+        //立即送小费显示/隐藏
         if(type==1){
             $item.find('.tip').text(tip);
         }
         else {
             $item.find('.tips').hide();
         }
-        //支付状态
+        //根据支付方式显示/隐藏
         if(pay_type==2){ 
             $item.find('.pay-status').text('余额支付'); 
             $item.find('.price_edit').hide();
@@ -206,12 +206,12 @@ function orderItem(item){
         else if(pay_type == 3){
             $item.find('.pay-status').text('在线支付'); 
             $item.find('.price_edit').hide();
-
+            $item.find('.delete-order').hide();
         }
         else { 
             $item.find('.pay-status').text('货到付款'); 
         } 
-        //订单状态
+        //根据订单状态显示/隐藏
         if(status==0) {
             if(del_reason=null){
                 $item.find('.order-status').empty().text('该订单已被用户取消').css({'line-height':'50px','color':'#44b549'});
@@ -226,31 +226,37 @@ function orderItem(item){
         }
         else if(status==-1) {
             $item.find('.status_unpaid').removeClass('hidden');
-            $item.find('.able_edit').show();
+            $item.find('.able_edit_order').show();
+            $item.find('.address-adapt').hide();
         }
         else if(status==1) {
         	$item.find('.status_order').removeClass('hidden');
-        	$item.find('.able_edit').show();
+        	$item.find('.able_edit_order').show();
+            $item.find('.able_edit_sender').show();
         	$item.find('.status-send').show();
         }
         else if(status==4) {
         	$item.find('.status_send').removeClass('hidden');
-        	$item.find('.able_edit').show();
+        	$item.find('.able_edit_order').show();
+            $item.find('.able_edit_sender').show();
         	$item.find('.status-finish').show();
         }
         else if(status==5) {
         	$item.find('.status_finish').removeClass('hidden');
-        	$item.find('.able_edit').show();
-            $item.find('.current_sender').show();
-            $item.find('.send_change').hide();
+        	$item.find('.unable_edit_order').show();
+            $item.find('.unable_edit_sender').show();
         }
         else if(status==6) {
         	$item.find('.status_comment').removeClass('hidden');
-        	$item.find('.unable_edit').show();
+            $item.find('.status-comment').show();
+            $item.find('.unable_edit_order').show();
+            $item.find('.unable_edit_sender').show();
         }
         else if(status==7) {
             $item.find('.status_comment').removeClass('hidden');
-            $item.find('.auto_comment').show();
+            $item.find('.status-autocomment').show();
+            $item.find('.unable_edit_order').show();
+            $item.find('.unable_edit_sender').show();
         }
         //商品数据
         var goods_num=0;

@@ -922,8 +922,12 @@ class Order(AdminBaseHandler):
 			if action == "edit_remark":
 				order.update(session=self.session, remark=data["remark"])
 			elif action == "edit_SH2":
-				if order.status in [5,6,7,10]:
-					return self.send_fail('订单已完成，不允许操作该订单')
+				if order.status == -1:
+					return self.send_fail("订单未支付，不能操作该订单")
+				elif order.status == 0:
+					return self.send_fail("订单已被取消或删除，不能操作该订单")
+				elif order.status > 4:
+					return self.send_fail("订单已经完成，不能操作该订单")
 				SH2 = next((x for x in self.current_shop.staffs if x.id == int(data["staff_id"])), None)
 				if not SH2:
 					return self.send_fail("没找到该送货员")
@@ -955,19 +959,26 @@ class Order(AdminBaseHandler):
 				# print("success?")
 
 			elif action == "edit_status":
-				if order.status in[5,6,7,10]:
-					return self.send_fail("订单已完成，不能修改状态")
+				if order.status == -1:
+					return self.send_fail("订单未支付，不能修改状态")
+				elif order.status == 0:
+					return self.send_fail("订单已被取消或删除，不能修改状态")
+				elif order.status > 4:
+					return self.send_fail("订单已经完成，不能修改状态")
 				self.edit_status(order,data['status'])
-
 			elif action == "edit_totalPrice":
-				if order.pay_type == 2:
-					return self.send_fail("余额支付，不能修改价格")
+				if order.pay_type != 1:
+					return self.send_fail("订单非货到付款订单，不能修改价格")
+				elif order.status == 0:
+					return self.send_fail("订单已被取消或删除，不能修改价格")
+				elif order.status > 4:
+					return self.send_fail("订单已经完成，不能修改价格")
 				order.update(session=self.session, totalPrice=data["totalPrice"])
 			elif action == "del_order":
 				if order.status == 0:
-					return self.send_fail("该订单已经删除，不能重复操作")
-				elif order.status in [5,6,7]:
-					return self.send_fail("该订单已经送达，无法删除")
+					return self.send_fail("订单已被取消或删除")
+				elif order.status > 4:
+					return self.send_fail("订单已经完成，不能删除")
 				if order.pay_type == 3 and order.status != -1:
 					return self.send_fail("在线支付『已付款』的订单暂时不能删除")
 				session = self.session
@@ -1009,17 +1020,14 @@ class Order(AdminBaseHandler):
 			count=0
 			for key in order_list_id:
 				order = next((x for x in self.current_shop.orders if x.id==int(key)), None)
-				if order.status == 4 and data['status'] ==4:
-					notice = "订单"+str(order.num)+"订单已在配送中，请不要重复操作"
-					return self.send_fail(notice)
-				if order.status == 5 and data['status'] ==5:
-					notice = "订单"+str(order.num)+"已完成，请不要重复操作"
-					return self.send_fail(notice)
-				if order.status in[5,6,10]:
-					notice = "订单"+str(order.num)+"已完成，请不要重复操作"
-					return self.send_fail(notice)
 				if not order:
 					notice = "没找到订单",order.onum
+					return self.send_fail(notice)
+				elif order.status == 4 and data['status'] == 4:
+					notice = "订单"+str(order.num)+"已在配送中，请不要重复操作"
+					return self.send_fail(notice)
+				elif order.status > 4:
+					notice = "订单"+str(order.num)+"已完成，请不要重复操作"
 					return self.send_fail(notice)
 				self.edit_status(order,data['status'],False)
 				count += 1
