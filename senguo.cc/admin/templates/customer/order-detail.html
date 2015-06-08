@@ -8,7 +8,6 @@
 {% block top %}订单详情{% end %}
 {% block content %}
 {% set fruits=eval(order.fruits)%}
-{% set mgoods=eval(order.mgoods)%}
 <div class="container mb50" id="container">
     <div class="order-grade">
         <div class="order-line">
@@ -48,24 +47,7 @@
                 </dl>
             </li>
             {% end %}
-            {% for mcharge_type in  mcharge_types %}
-            <li class="group TDSG">
-                <dl class="goods-item group">
-                    <dd>
-                        {% if mcharge_type.mgoods.img_url %}
-                        <img src="{{mcharge_type.mgoods.img_url}}?imageView/1/w/170/h/170" alt="商品图片"/>
-                        {% else %}
-                          <img src="/static/design_img/TDSG.png" alt="商品图片"/>
-                        {% end %}
-                    </dd>
-                    <dt class="bg">
-                        <p class="color">{{mgoods[mcharge_type.id]['mgoods_name']}}</p>
-                        <p class="color txt-ar"><span class="big">{{mgoods[mcharge_type.id]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{mcharge_type.price}}</span>元</p>
-                        <p class="color">{{mgoods[mcharge_type.id]['charge']}}</p>
-                    </dt>
-                </dl>
-            </li>
-            {% end %}
+            
         </ul>
         <p>商品总价<span class="fr"><span class="text-red3">{{order.totalPrice-order.freight}}元</span></span></p>
         <p>配送费<span class="fr"><span class="text-red3">{{order.freight}}元</span></span></p>
