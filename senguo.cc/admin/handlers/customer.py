@@ -1033,7 +1033,7 @@ class Market(CustomerBaseHandler):
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
-		time.sleep(20)
+		# time.sleep(20)
 		customer_id = self.current_user.id
 		phone = self.get_phone(customer_id)
 
