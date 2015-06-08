@@ -53,7 +53,7 @@ $(document).ready(function(){
                         if(res.overtime == 1){
                             noticeBox("当前订单超时已经超时，请重新下单");
                             setTimeout(function(){
-                                window.location.href="/customer/"+data.shop_code;
+                                window.location.href="/customer/"+res.shop_code;
                             },2000);
                         }
                         else{
