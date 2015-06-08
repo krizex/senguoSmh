@@ -1564,7 +1564,7 @@ class Goods(AdminBaseHandler):
 			args["storage"] = data["storage"]
 			args["unit"] = data["unit"]
 			if data["detail_describe"]:
-				args["detail_describe"] = data["detail_describe"]
+				args["detail_describe"] = data["detail_describe"].replace("script","'/script/'")
 			#if data["tag"]:
 				#args["tag"] = data["tag"]
 			if "limit_num" in data:
@@ -1710,6 +1710,8 @@ class Goods(AdminBaseHandler):
 												select_num=select_num)
 						self.session.add(charge_types)
 
+				detail_describe = data["detail_describe"].replace("script","'/script/'")
+
 				goods.update(session=self.session,
 						name = data["name"],
 						storage = data["storage"],
@@ -1719,7 +1721,7 @@ class Goods(AdminBaseHandler):
 						priority = data["priority"],
 						limit_num = data["limit_num"],
 						group_id = group_id,
-						detail_describe = data["detail_describe"]
+						detail_describe = detail_describe
 						)
 				_data = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).one()
 				data = self.getGoodsOne(_data)
