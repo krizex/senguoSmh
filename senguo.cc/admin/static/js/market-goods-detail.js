@@ -20,6 +20,11 @@ $(document).ready(function(){
         autoplay:"3000",
         autoplayDisableOnInteraction:false
     });
+    //初始化购物车数量
+    if(getCookie("cart_count")!=''){
+        $("#cart-now-num").html(getCookie("cart_count")).removeClass("move-cart");
+    }
+
     $(".goods-choose-lst li").on("click",function(){
         var index = $(this).index();
         $(".goods-choose-lst li").removeClass("active").eq(index).addClass("active");
@@ -27,6 +32,7 @@ $(document).ready(function(){
     });
     $(".now-buy").on("click",function(){
         var $this=$(this);
+        var id=parseInt($this.siblings(".want-num").attr('data-id'));
         var relate=parseFloat($this.parents("li").find(".want-num").attr('data-relate'));
         var unit_num=parseFloat($this.parents("li").find('.number').text());
         var storage=parseFloat($this.attr("data-storage"))
@@ -38,11 +44,18 @@ $(document).ready(function(){
         if(_this.hasClass("r70")) return false;
         $(this).addClass("r70");
         $(this).prev(".want-num").show().addClass("w90");
-        if(parseInt($("#cart-now-num").html())==0){
+        var cart_now=parseInt($("#cart-now-num").html());
+        if(cart_now==0){
             $("#cart-now-num").html(1);
             $("#cart-now-num").removeClass("move-cart");
+            SetCookie("cart_count",1);
+        }else{
+            $("#cart-now-num").html(cart_now+1);
+            $("#cart-now-num").removeClass("move-cart");
+            SetCookie("cart_count",cart_now+1);
         }
-        
+        num_list[id]=1;
+        fruits_num();
     });
     $(".add-num").on("click",function(){
         var $this=$(this);
@@ -58,13 +71,13 @@ $(document).ready(function(){
         $this.parents("li").find('.now-buy').attr({"data-storage":storage-change_num})
         if(isNaN(num)){
             noticeBox("别调戏我哦，请输入数字类型");
-        }else{
+        }else{           
             num++;
             $(this).prev("input").val(num);
-
+            num_list[id]=num;
+            fruits_num();
         }
-        num_list[id]=num;
-        fruits_num();
+       
     });
     $(".minus-num").on("click",function(){
         var $this=$(this);
@@ -89,15 +102,19 @@ $(document).ready(function(){
                 setTimeout(function(){
                     _this.closest(".want-num").hide();
                 },600);
-                    //$("#cart-now-num").addClass("move-cart");
+                // $("#cart-now-num").addClass("move-cart");
+                var cart_now=parseInt($("#cart-now-num").html());
+                $("#cart-now-num").html(cart_now-1);
+                SetCookie("cart_count",cart_now-1);
+                num_list[id]=num;
+                fruits_num();
                 return false;
             }
             num--;
             $(this).next("input").val(num);
         }
-        console.log(num);
-         num_list[id]=num;
-         fruits_num();
+        num_list[id]=num;
+        fruits_num();
     });
 
     var cart_fs=window.dataObj.cart_fs;
@@ -116,6 +133,8 @@ $(document).ready(function(){
 }).on('click','.add-cart',function(){
     var link=$(this).attr('href');
     addCart(link);
+}).on("click",".back",function(){
+    window.history.go(-1);
 });
 //点赞
 function great(id,$this){

@@ -172,6 +172,7 @@ function getCookie(key){
             return unescape(aCrumb[1]);
         }
     }
+    return '';
 }
 
 function SetCookie(name,value,days){
