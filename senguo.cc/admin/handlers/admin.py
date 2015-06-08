@@ -965,9 +965,11 @@ class Order(AdminBaseHandler):
 				order.update(session=self.session, totalPrice=data["totalPrice"])
 			elif action == "del_order":
 				if order.status == 0:
-					return self.send_fail('订单已经被删除，不能重复操作')
-				if order.pay_type == 3:
-					return self.send_fail("在线支付订单 不允许删除")
+					return self.send_fail("该订单已经删除，不能重复操作")
+				elif order.status in [5,6,7]:
+					return self.send_fail("该订单已经送达，无法删除")
+				if order.pay_type == 3 and order.status != -1:
+					return self.send_fail("在线支付『已付款』的订单暂时不能删除")
 				session = self.session
 				del_reason = data["del_reason"]
 				order.update(session=session, status=0,del_reason = del_reason)
