@@ -142,6 +142,16 @@ class customerGoods(CustomerBaseHandler):
 		else:
 			shop_name =''
 		good = self.session.query(models.Fruit).filter_by(id=goods_id).first()
+		try:
+			favour = session.query(models.FruitFavour).filter_by(customer_id = customer_id,\
+				f_m_id = fruit.id , type = 0).first()
+
+		except:
+			favour = None
+		if favour is None:
+			good.favour_today = False
+		else:
+			good.favour_today = favour.create_date == datetime.date.today()
 		if good:
 			if good.img_url:
 				img_url= good.img_url.split(";")
@@ -911,6 +921,7 @@ class Market(CustomerBaseHandler):
 		page = int(self.args["page"])
 		group_id = int(self.args['group_id'])
 		page_size = 10
+		nomore = False
 		offset = (page-1) * page_size
 		shop_id = int(self.get_cookie("market_shop_id"))
 		customer_id = self.current_user.id
@@ -918,13 +929,16 @@ class Market(CustomerBaseHandler):
 		if not shop:
 			return self.send_error(404)
 		
-		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1).order_by(models.Fruit.add_time.desc()).offset(offset).limit(page_size).all()
-		if not fruits:
-			return self.send_fail('fruit_list:fruits not found')
+		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1).order_by(models.Fruit.add_time.desc())
+		count_fruit = fruits.count()
+		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
+		print(total_page)
+		print(page+1)
+		if total_page == page:
+			nomore = True
+		fruits = fruits.offset(offset).limit(page_size).all()
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
-		count_fruit = len(fruit_list)
-		page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		return self.send_success(fruit_list = fruit_list ,page = page)
+		return self.send_success(data = fruit_list ,nomore = nomore)
 
 	@CustomerBaseHandler.check_arguments("page?:int")
 	def commodity_list(self):
@@ -941,6 +955,8 @@ class Market(CustomerBaseHandler):
 		fruits = self.session.query(models.Fruit).join(models.Shop).join(models.GroupPriority).order_by(models.GroupPriority.priority,models.Fruit.add_time.desc())
 		count_fruit = fruits.count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
+		print(total_page)
+		print(page+1)
 		if total_page == page+1:
 			nomore = True
 		fruits = fruits.filter(models.Fruit.active == 1).offset(offset).limit(page_size).all()

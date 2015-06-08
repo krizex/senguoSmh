@@ -163,9 +163,9 @@ $(document).ready(function(){
         $('.classify-title').addClass('hidden');
         $('.goods-list').empty();
         var group_id=$this.attr('data-id');
-        window.dataObj.page_count=pages_count;
         window.dataObj.page=1;
         window.dataObj.action=6;
+        _group_id = group_id;
         goodsList(1,6);
         // var top=$('#'+g_class+'').offset().top;
         // $('.choose-classify .icon').toggle();
@@ -181,8 +181,6 @@ $(document).ready(function(){
     }).on('click','#all_goods',function(){
         //get all goods
         $('.goods-list').empty();
-        var pages_count=Int($('#page_count').val());
-        window.dataObj.page_count=pages_count;
         window.dataObj.page=1;
         window.dataObj.action=5;
         goodsList(1,5);
@@ -385,6 +383,9 @@ var goodsList=function(page,action){
         action:action,
         page:page
     };
+    if(action==6){
+        args.group_id = _group_id;
+    }
     // alert('i am here');
     $.postJson(url,args,function(res){
         if(res.success)
@@ -402,6 +403,7 @@ var goodsList=function(page,action){
                         getItem('/static/items/customer/classify_item.html?v=20150530',function(data){
                             window.dataObj.classify_item=data;
                             initData(res.data);
+
                         });
                     });
                 });
@@ -419,6 +421,7 @@ var goodsList=function(page,action){
         var initData=function(data){
             var data=data;
             for(var key in data){
+                console.log(3222222);
                 fruitItem($('.goods-list-'+data[key]['group_id']),data[key]);//fruits information
                 if(action==5) {$('.fruit_cassify').removeClass('hidden');}
             }
