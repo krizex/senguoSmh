@@ -20,6 +20,11 @@ $(document).ready(function(){
         autoplay:"3000",
         autoplayDisableOnInteraction:false
     });
+    //初始化购物车数量
+    if(getCookie("cart_count")!=''){
+        $("#cart-now-num").html(getCookie("cart_count")).removeClass("move-cart");;
+    }
+
     $(".goods-choose-lst li").on("click",function(){
         var index = $(this).index();
         $(".goods-choose-lst li").removeClass("active").eq(index).addClass("active");
@@ -81,6 +86,8 @@ $(document).ready(function(){
         var id = $this.attr("data-id");
         great(id,$this);
     }
+}).on("click",".back",function(){
+    window.history.go(-1);
 });
 //点赞
 function great(id,$this){
