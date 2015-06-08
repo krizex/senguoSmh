@@ -45,13 +45,14 @@ $(document).ready(function(){
     cancelOrder(order_id);
     confirmRemove();
 }).on("click","#go-alipay",function(){
+    var $this = $(this);
     $.ajax({
                 url:"/customer/overtime?order_id="+$("#order-id").val(),
                 type:"get",
                 success:function(res){
                     if(res.success){
                         if(res.overtime == 1){
-                            noticeBox("当前订单超时已经超时，请重新下单");
+                            noticeBox("当前订单超时未支付，已经取消，请重新下单");
                             setTimeout(function(){
                                 window.location.href="/"+res.shop_code;
                             },2000);
@@ -60,7 +61,7 @@ $(document).ready(function(){
                             if(isWeiXin()){
                                 window.location.href="/customer/online/orderdetail?alipayUrl="+encodeURIComponent($(this).attr("data-url"))+"&order_id="+$("#cancel-order").attr("data-id");
                             }else{
-                                window.location.href=$(this).attr("data-url");
+                                window.location.href=$this.attr("data-url");
                             }
                         }
                     }

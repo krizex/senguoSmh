@@ -111,7 +111,7 @@
                 success:function(res){
                     if(res.success){
                         if(res.overtime == 1){
-                            noticeBox("当前订单超时已经超时，请重新下单");
+                            noticeBox("当前订单超时未支付，已经取消，请重新下单");
                             setTimeout(function(){
                                 window.location.href="/"+res.shop_code;
                             },2000);
