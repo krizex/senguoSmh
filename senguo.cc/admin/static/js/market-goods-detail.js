@@ -26,6 +26,7 @@ $(document).ready(function(){
         $(".goods-info-lst li").removeClass("active").eq(index).addClass("active");
     });
     $(".now-buy").on("click",function(){
+        var $this=$(this);
         var relate=parseFloat($this.parents("li").find(".want-num").attr('data-relate'));
         var unit_num=parseFloat($this.parents("li").find('.number').text());
         var storage=parseFloat($this.attr("data-storage"))
@@ -73,10 +74,10 @@ $(document).ready(function(){
         var unit_num=parseFloat($this.parents("li").find('.number').text());
         var storage=parseFloat($this.parents("li").find('.now-buy').attr("data-storage"))
         var change_num=relate*unit_num*num;
-        if(storage<change_num){
-            return noticeBox("库存不足啦~~");
-        }
-        $this.parents("li").find('.now-buy').attr({"data-storage":storage-change_num})
+        // if(storage<change_num){
+        //     return noticeBox("库存不足啦~~");
+        // }
+        $this.parents("li").find('.now-buy').attr({"data-storage":storage+change_num})
         if(isNaN(num)){
             noticeBox("别调戏我哦，请输入数字类型");
         }else{
@@ -84,6 +85,7 @@ $(document).ready(function(){
                 var _this = $(this);
                 _this.closest(".want-num").removeClass("w90");
                 _this.closest(".want-num").next(".now-buy").removeClass("r70");
+                num=0;
                 setTimeout(function(){
                     _this.closest(".want-num").hide();
                 },600);
@@ -93,6 +95,7 @@ $(document).ready(function(){
             num--;
             $(this).next("input").val(num);
         }
+        console.log(num);
          num_list[id]=num;
          fruits_num();
     });

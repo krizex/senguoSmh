@@ -14,7 +14,7 @@
 <input type="hidden" value="{{shop_code}}" id="shop_code"/>
 <div class="wrap-goods-detail" data-id="{{good.id}}">
     <div class="img-list">
-        <a href="javascript:;" class="roll-bg back"><i></i></a>
+        <a href="{{reverse_url('Market',shop_code)}}" class="roll-bg back add-cart"><i></i></a>
         <!--a href="javascript:;" class="roll-bg share"><i></i></a-->
         <div class="swiper-container" id="swiper-container">
             <div class="swiper-wrapper">
@@ -57,11 +57,11 @@
     </ul>
     <ul class="goods-choose-lst group">
         <li class="active">商品详情</li>
-        <li>商品评价(20)</li>
+        <!-- <li>商品评价(20)</li> -->
     </ul>
     <ul class="goods-info-lst">
         <li class="goods-intro active">
-        {% raw good.detail_describe%}
+        {% raw good.detail_describe %}
         </li>
         <li class="goods-comment">
             <ul class="comment-lst">
@@ -92,13 +92,13 @@
             </ul>
         </li>
     </ul>
-    <a href="/shopProfile/{{shop_code}}" class="shop-area add-cart" id="shop-area">
+    <a href="{{reverse_url('customerShopProfile',shop_code)}}" class="shop-area add-cart" id="shop-area">
         <span class="roll-bg shop-in">
             <i></i>
         </span>
         <span>店铺：{{shop_name}}</span>
     </a>
-    <a href="/customer/cart/{{shop_code}}" class="roll-bg cart-bg add-cart" id="cart-bg">
+    <a href="{{reverse_url('customerCart',shop_code)}}" class="roll-bg cart-bg add-cart" id="cart-bg">
         <i></i>
         <span class="move-cart" id="cart-now-num">0</span>
     </a>
