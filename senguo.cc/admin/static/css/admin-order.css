@@ -40,7 +40,7 @@
 
 .order-list-item .btn{width:82px;}
 
-.order-list-item .order-message{margin-bottom:5px;}
+.order-list-item .order-message{height:28px;line-height:28px;}
 .order-list-item .order-message .message-img{width:17px;height:15px;background:url("../images/container-icon.gif") no-repeat 0 -199px;}
 
 .order-list-item .order-status{display:inline-block;min-height:50px;}

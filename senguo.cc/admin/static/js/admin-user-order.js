@@ -214,13 +214,13 @@ function orderItem(item){
         //订单状态
         if(status==0) {
             if(del_reason=null){
-                $item.find('.order-status').empty().text('该订单已被用户取消');
+                $item.find('.order-status').empty().text('该订单已被用户取消').css({'line-height':'50px','color':'#44b549'});
             }
             else if(del_reason='timeout'){
-                $item.find('.order-status').empty().text('该订单15分钟未支付，已自动取消');
+                $item.find('.order-status').empty().text('该订单15分钟未支付，已自动取消').css({'line-height':'50px','color':'#44b549'});
             }
             else{
-                $item.find('.order-status').empty().text('该订单已删除（原因：'+del_reason+'）');
+                $item.find('.order-status').empty().text('该订单已删除（原因：'+del_reason+'）').css({'line-height':'50px','color':'#44b549'});
             }
             $item.find('.unable_edit').show();
         }
