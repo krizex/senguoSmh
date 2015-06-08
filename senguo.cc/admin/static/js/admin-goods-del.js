@@ -199,6 +199,7 @@ function initEditor(text){
             token : token,
             resizeType : 0,
             items:[
+                'preview'
             ],
             afterCreate: function(){this.sync();},
             afterBlur: function(){this.sync();},

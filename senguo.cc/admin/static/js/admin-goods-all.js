@@ -149,7 +149,7 @@ $(document).ready(function(){
     var index = goods_item.index();
     var group = {id:goods_item.find(".current-group").attr("data-id"),text:goods_item.find(".current-group").html()};
     var switch_btn = {id:goods_item.find(".switch-btn").attr("data-id"),text:goods_item.find(".switch-btn").attr("class")};
-    $.getItem("/static/items/admin/goods-item.html?1629",function(data){
+    $.getItem("/static/items/admin/goods-item.html?2059",function(data){
         var goodsItem = data;
         var $item = $(goodsItem).clone();
         $item.find(".current-group").attr("data-id",group.id).html(group.text);
@@ -182,7 +182,7 @@ $(document).ready(function(){
 }).on("click",".fruit-item-list li",function(){//选择分类并添加商品
     var classify = $(this).html();
     var class_id = $(this).attr("data-id");
-    $.getItem("/static/items/admin/goods-item.html?1629",function(data){
+    $.getItem("/static/items/admin/goods-item.html?2059",function(data){
         var goodsItem = data;
         var $item = $(goodsItem).clone();
         $item.find(".goods-classify").html(classify).attr("data-id",class_id);
@@ -213,11 +213,17 @@ $(document).ready(function(){
     initImgList($item.find(".drag-img-list").children(".img-bo"));
     $(".pop-img-win").hide();
 }).on("click",".show-txtimg",function(){
+    var isEditor = $(this).attr("data-flag");
     if(editor){
         editor.html($(this).attr("data-text"));
+        if(isEditor=="true"){
+            $(".ke-icon-image").removeClass("hidden");
+        }else{
+            $(".ke-icon-image").addClass("hidden");
+        }
         $(".pop-editor").show();
     }else{
-        initEditor($(this).attr("data-text"));
+        initEditor($(this));
     }
     curEditor = $(this);
 }).on("click",".pop-editor",function(e){
@@ -664,7 +670,7 @@ function switchGoodsRack(id,$obj){
         }
     });
 }
-function initEditor(text){
+function initEditor($obj){
     $.ajax({url: '/admin/editorTest?action=editor', async: false, success: function(data){
         var token1 = data.token;
         var token = data.res;
@@ -680,14 +686,19 @@ function initEditor(text){
             items:[
                  'preview', 'image'
             ],
-            afterCreate: function(){this.sync();},
+            afterCreate: function(){
+                this.sync();
+                if($obj){
+                    $(".ke-icon-image").addClass("hidden");
+                }
+            },
             afterBlur: function(){this.sync();},
             afterUpload : function(url) {
             },
             uploadError:function(file, errorCode, message){
             }
         });
-        editor.html(text);
+        editor.html($obj.attr("data-text"));
     }});
 }
 
