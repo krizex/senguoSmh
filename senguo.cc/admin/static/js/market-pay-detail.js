@@ -94,16 +94,16 @@ function statusText(n){
             break;
         case 0:
             $("#status-txt").text('已取消');
-            $(".order-wawa").css("left","0%");
-            $(".order-line-grade").css("width","0%");
-            $(".order-status-txt").css("left","0%");
+            $(".order-wawa").css("left","0");
+            $(".order-line-grade").css("width","0");
+            $(".order-status-txt").css("left","0");
             $(".tel-btn").show();
             break;
         case 1:
             $("#status-txt").text('已下单');
-            $(".order-wawa").css("left","0%");
-            $(".order-line-grade").css("width","0%");
-            $(".order-status-txt").css("left","0%");
+            $(".order-wawa").css("left","0");
+            $(".order-line-grade").css("width","0");
+            $(".order-status-txt").css("left","0");
             $(".tel-btn").show();
             break;
         case 2:
