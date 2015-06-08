@@ -85,7 +85,7 @@
                 </div>
                 <a class="default-staff stop-mode pull-left ml20 forbid_click" href="javascript:;" data-id="{{staff.hirelink.default_staff}}"> 默认员工</a>
                 <div class="staff-personal pull-left">
-                    <img src="{{staff.accountinfo.headimgurl_small}}" class="staff-img pull-left"/>
+                    <img src="{{staff.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}" class="staff-img pull-left"/>
                     <div class="info pull-right">
                         <p>
                             <span>{{staff.accountinfo.realname or '无名氏'}}</span>
@@ -160,7 +160,7 @@
                 <span class="text-white hire-status btn-style pull-left bg-grey">未通过</span>
                 {% end %}
                 <div class="staff-personal pull-left">
-                    <img src="{{form.staff.accountinfo.headimgurl_small}}" class="staff-img pull-left"/>
+                    <img src="{{form.staff.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}" class="staff-img pull-left"/>
                     <div class="info pull-right">
                         <p>{{form.staff.accountinfo.realname}}</p>
                         <p>{{form.staff.accountinfo.phone}}</p>
@@ -178,11 +178,11 @@
                     <ul class="staff-info-detail pull-right">
                         <li class="set-width-float">
                             <label class="info-title">邮箱：</label>
-                            <span>{{form.staff.accountinfo.email}}"</span>
+                            <span>{{form.staff.accountinfo.email}}</span>
                         </li>
                         <li class="set-width-float">
                             <label class="info-title">地址：</label>
-                            <span>{{form.staff.address}}"</span>
+                            <span>{{form.staff.address}}</span>
                         </li>
                         <li class="set-width-float">
                             <label class="info-title">姓名：</label>
@@ -200,7 +200,7 @@
                         </li>
                     </ul>
                 </div>
-                {% if form.status ==1%}
+                {% if form.status == 1 %}
                 <div class="action-btn">
                     <a href="javascript:;" class="sure-btn btn pull-left accept-hire">通过</a>
                     <a href="javascript:;" class="concel-btn btn pull-right reject-hire">拒绝</a>

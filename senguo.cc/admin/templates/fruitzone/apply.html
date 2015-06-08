@@ -56,7 +56,7 @@
 	    <a class="text-grey9 white-color mb10 mt10 center-block font14 to_next" href="javascript:;">下一步→</a>
 	</div>
 	<div class="top bg-green text-white text-center hidden apply-info">
-	    <img src="{{handler.current_user.accountinfo.headimgurl}}"/>
+	    <img src="{{handler.current_user.accountinfo.headimgurl or '/static/images/TDSG.png'}}"/>
 	    <p class="font14 mt5 text-center">昵称：{{handler.current_user.accountinfo.nickname}}</p>
 	</div>
 	<div class="apply-box center-block hidden apply-info">

@@ -105,11 +105,17 @@ class GlobalBaseHandler(BaseHandler):
 	def timestamp_to_str(self, timestamp):
 		return time.strftime("%Y-%m-%d %H:%M", time.gmtime(timestamp))
 
+	#通过经纬度计算距离
 	def get_distance(self,lat1,lon1,lat2,lon2):
-		hsinX = math.sin((lon1 - lon2) * 0.5)
-		hsinY = math.sin((lat1 - lat2) * 0.5)
-		h = hsinY * hsinY + (math.cos(lat1) * math.cos(lat2) * hsinX * hsinX)
-		return 2 * math.atan2(math.sqrt(h), math.sqrt(1 - h)) * 6367000
+		EARTH_RADIUS = 6378.137
+		radLat1 = lat1 * math.pi / 180.0
+		radLat2 = lat2 * math.pi / 180.0
+		a = radLat1 - radLat2
+		b = lon1 * math.pi / 180.0 - lon2 * math.pi / 180.0
+		s = 2 * math.asin(math.sqrt(math.pow(math.sin(a / 2), 2) + math.cos(radLat1) * math.cos(radLat2) * math.pow(math.sin(b / 2), 2)))
+		s = s * EARTH_RADIUS
+		s*= 1000
+		return s;
 
 
 	def code_to_text(self, column_name, code):
@@ -118,11 +124,11 @@ class GlobalBaseHandler(BaseHandler):
 		#将服务区域的编码转换为文字显示
 		if column_name == "service_area":
 			if code & models.SHOP_SERVICE_AREA.HIGH_SCHOOL:
-				text += "高校 "
+				text += "高校"
 			if code & models.SHOP_SERVICE_AREA.COMMUNITY:
-				text += "社区 "
+				text += "社区"
 			if code & models.SHOP_SERVICE_AREA.TRADE_CIRCLE:
-				text += "商圈 "
+				text += "商圈"
 			if code & models.SHOP_SERVICE_AREA.OTHERS:
 				text += "其他"
 			return text
@@ -476,13 +482,12 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		if not user_id:
 			self._user = None
 		else:
-			# print(user_id,'get_current_user: user_id')
+			# Logger.info("_AccountBaseHandler get_current_user: user_id: ",user_id)
 			self._user = self.__account_model__.get_by_id(self.session, user_id)
-			# print(self._user,"self._user")
+			# Logger.info("_AccountBaseHandler get_current_user: self._user: ",self._user)
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:
-				Logger.warn("Suspicious Access", "may be trying to fuck you")
-				
+				Logger.warn("_AccountBaseHandler get_current_user: self._user not found")
 		return self._user
 
 	_ARG_DEFAULT = []
@@ -509,7 +514,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 							  policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
 									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
-#        token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
+		# token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
 		print("[七牛授权]发送Token：",token)
 		return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 
@@ -618,13 +623,13 @@ class SuperBaseHandler(_AccountBaseHandler):
 
 	def shop_close(self):
 		# print(self)
-		print('close shop')
+		print("[定时任务]关闭店铺")
 		session = models.DBSession()
-		close_shop_list = []
 		try:
 			shops = session.query(models.Shop).filter_by(status = 1).all()
 		except:
-			print("[超级管理员]shops error")
+			shops = None
+			print("[定时任务]关闭店铺错误")
 		if shops:
 			for shop in shops:
 				shop_code = shop.shop_code
@@ -637,23 +642,23 @@ class SuperBaseHandler(_AccountBaseHandler):
 				# print(x)
 				now = datetime.datetime.now()
 				days = (now -x).days
-				if days >14:
-					if shop_code =='not set':
+				if days > 14:
+					if (shop_code == 'not set') or (len(fruits)+len(menus) == 0):
 						shop.status = 0
-						close_shop_list.append(shop_code)
-					if len(fruits) == 0 and len(menus) == 0:
-						shop.status = 0
-						close_shop_list.append(shop_code)
-					try:
-						follower_count = session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
-					except:
-						return self.send_fail('follower_count error')
-					if follower_count <2:
-						shop.status =0
-						close_shop_list.append(shop_code)
-				session.commit()
-			print("[超级管理员]关闭店铺：",close_shop_list)
+						print("[定时任务]店铺关闭成功：",shop_id,"未设置店铺号/无商品")
+					else:
+						try:
+							follower_count = session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
+						except:
+							return self.send_fail('follower_count error')
+						if follower_count < 2:
+							shop.status = 0
+							print("[定时任务]店铺关闭成功：",shop_id,"关注数小于2")							
+
+			session.commit()
+			print("[定时任务]关闭店铺完成")
 			# return self.send_success(close_shop_list = close_shop_list)
+			
 	def get_login_url(self):
 		return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		# return self.reverse_url('customerLogin')
@@ -793,7 +798,7 @@ class StaffBaseHandler(_AccountBaseHandler):
 			shop_id = self.current_user.shops[0].id
 			self.set_secure_cookie("staff_shop_id", str(shop_id), domain=ROOT_HOST_NAME)
 		elif not next((x for x in self.current_user.shops if x.id == shop_id), None):
-			return self.finish('你不是这个店铺的员工,可能已经被解雇了')
+			return self.finish('你不是这个店铺的员工，可能已经被解雇了')
 		self.shop_id = shop_id
 		self.shop_name = next(x for x in self.current_user.shops if x.id == shop_id).shop_name
 		self.hirelink = self.session.query(models.HireLink).filter_by(
@@ -1163,11 +1168,11 @@ class WxOauth2:
 				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
 			"topcolor": "#FF0000",
 			"data": {
-				"first": {"value": "您好，您所申请的店铺“%s”已经通过审核！" % shop_name, "color": "#173177"},
+				"first": {"value": "您好，您所申请的店铺『%s』已经通过审核！" % shop_name, "color": "#173177"},
 				"keyword1": {"value": name, "color": "#173177"},
 				"keyword2": {"value": phone, "color": "#173177"},
 				"keyword3": {"value": time, "color": "#173177"},
-				"remark": {"value": "务必点击详情，查看使用教程！", "color": "#FF4040"}}
+				"remark": {"value": "请务必点击详情，查看使用教程！", "color": "#FF4040"}}
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
@@ -1187,7 +1192,7 @@ class WxOauth2:
 				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
 			"topcolor": "#FF0000",
 			"data": {
-				"first": {"value": "您好，您所申请的店铺“%s”未通过审核！" % shop_name, "color": "#173177"},
+				"first": {"value": "您好，您所申请的店铺『%s』未通过审核。" % shop_name, "color": "#173177"},
 				"keyword1": {"value": name, "color": "#173177"},
 				"keyword2": {"value": phone, "color": "#173177"},
 				"keyword3": {"value": time, "color": "#173177"},
@@ -1214,8 +1219,8 @@ class WxOauth2:
 				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
 			"topcolor": "#FF0000",
 			"data": {
-				"first": {"value": "您好，“%s”" % name, "color": "#173177"},
-				"keyword1": {"value": "您被 “%s”添加为管理员！" % shop_name, "color": "#173177"},
+				"first": {"value": "您好，%s" % name, "color": "#173177"},
+				"keyword1": {"value": "您被『%s』添加为管理员！" % shop_name, "color": "#173177"},
 				"keyword3": {"value": time, "color": "#173177"},
 				}
 		}
@@ -1257,7 +1262,7 @@ class WxOauth2:
 		if data["errcode"] != 0:
 			print("[模版消息]发送给管理员失败：",data)
 			return False
-		print("[模版消息]发送给管理员成功")
+		# print("[模版消息]发送给管理员成功")
 		return True
 
 	@classmethod
@@ -1269,7 +1274,7 @@ class WxOauth2:
 			   + "送货地址：" + address  +'\n\n'\
 			   + "请及时配送订单。"
 		order_type_temp = int(order_type)
-		order_type = "即时送" if order_type_temp == 1 else "按时达"
+		order_type = "立即送" if order_type_temp == 1 else "按时达"
 		postdata = {
 			'touser':touser,
 			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
@@ -1290,7 +1295,32 @@ class WxOauth2:
 		if data["errcode"] != 0:
 			print("[模版消息]发送给配送员失败：",data)
 			return False
-		print("[模版消息]发送给配送员成功")
+		# print("[模版消息]发送给配送员成功")
+		return True
+
+	@classmethod
+	def post_batch_msg(cls,touser,staff_name,shop_name,count):
+		postdata = {
+			'touser':touser,
+			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
+			'url':staff_order_url,
+			"data":{
+				"first":{"value":"配送员 {0} 您好，店铺『{1}』有 {2} 个新的订单需要配送。".format(staff_name,shop_name,count),"color": "#173177"},
+				"tradeDateTime":{"value":"批量信息","color":"#173177"},
+				"orderType":{"value":"批量信息","color":"#173177"},
+				"customerInfo":{"value":"批量信息","color":"#173177"},
+				"orderItemName":{"value":"订单编号","color":"#173177"},
+				"orderItemData":{"value":"批量信息","color":"#173177"},
+				"remark":{"value":"\n有多个订单需要配送，具体信息请点击详情进入查看。","color":"#173177"},
+			}
+		}
+		access_token = cls.get_client_access_token()
+		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
+		data = json.loads(res.content.decode("utf-8"))
+		if data["errcode"] != 0:
+			print("[模版消息]发送给配送员失败：",data)
+			return False
+		# print("[模版消息]发送给配送员成功")
 		return True
 
 
@@ -1317,8 +1347,7 @@ class WxOauth2:
 		if data["errcode"] != 0:
 			print("[模版消息]发送给客户失败：",data)
 			return False
-		print("[模版消息]发送给客户成功")
-		# print('order send SUCCESS')
+		# print("[模版消息]发送给客户成功")
 		return True
 
 	@classmethod

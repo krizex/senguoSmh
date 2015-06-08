@@ -10,7 +10,7 @@
     </div>
 	<h3 class="name">{{current_user.accountinfo.nickname}}</h3>
 	<h5 class="username">{{current_user.accountinfo.realname}}</h5>
- 	<h5 >职务：-<span class="job" data-id="{{current_user.work}}">
+ 	<h5 >职务：<span class="job" data-id="{{current_user.work}}">
         {% if current_user.work == 1%}
         捡货员
         {% elif current_user.work == 2%}

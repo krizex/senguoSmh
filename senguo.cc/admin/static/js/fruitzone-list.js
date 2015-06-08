@@ -207,7 +207,7 @@ function initProviceAndCityCode(p, c){
 }
 /*根据经纬度获取距离*/
 function getDist(lat,lng){
-    if(lat == 0) return false;
+    if(!lat || lat == 0) return false;
     var res = '';
     var map = new BMap.Map("map");
     var pointA = new BMap.Point(ulng,ulat);  // 用户坐标
@@ -240,7 +240,7 @@ var shopItem=function (shops){
                                 '</div>'+
                                 '<div class="pull-left info">'+
                                     '<p class="shop_name font14">{{shop_name}}<span class="shop_auth  {{hide}}">{{shop_auth}}</span></p>'+
-                                    '<p class="shop_attr">满意度 {{satisfy}}  评价 {{comment_count}}  商品数 {{goods_count}}</p>'+
+                                    '<p class="shop_attr">满意度 {{satisfy}}&nbsp;&nbsp;评价 {{comment_count}}&nbsp;&nbsp;商品数 {{goods_count}}</p>'+
                                     '<p class="text-grey9 adre-box"><span class="distance {{dishide}}">{{distance}}</span><i class="location"></i><span class="shop_code">{{address}}</span></p>'+
                                 '</div>'+
                             '</div>'+
@@ -268,7 +268,7 @@ var shopItem=function (shops){
                 var dishide = '';
                 var distance = '';
                 var link = '/'+shop_code;
-                if(lat == 0 || ulat == 0){
+                if(!lat || lat == 0 || !ulat || ulat == 0){
                     dishide = "hidden";
                 }else{
                     distance = getDist(lat,lon);

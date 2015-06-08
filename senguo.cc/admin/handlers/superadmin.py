@@ -838,7 +838,7 @@ class Balance(SuperBaseHandler):
 
 		cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1).all()
 		person_num = self.session.query(models.ApplyCashHistory).distinct(models.ApplyCashHistory.shop_id).count()
-		print(person_num,'haaha')
+		# print(person_num,'haaha')
 
 		for item in cash_list:
 			cash_on = cash_on+item.value

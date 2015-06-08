@@ -129,7 +129,7 @@ $(document).ready(function(){
         evt.preventDefault();
         var phone=$('#enterPhone').val();
         var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-        if(phone.length > 11|| phone.length<11 || !regPhone.test(phone)){return warnNotice("手机号貌似有错o(╯□╰)o");}
+        if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){return warnNotice("手机号貌似有错o(╯□╰)o");}
         if(!phone){return warnNotice('手机号不能为空');}
         $('#getVrify').attr({'disabled':true});
         Vrify(phone);
@@ -373,7 +373,6 @@ $(document).ready(function(){
         var status = $this.attr('data-status');
         var statu = $this.attr("data-auth");
         var type = $this.find('.title').text();
-        console.log(statu);
         if(status==0){
             $this.removeClass('active').addClass('not_available');
             $('.pay_type .available').first().addClass('active').siblings('.item').removeClass('active');
@@ -391,17 +390,36 @@ $(document).ready(function(){
         }
     });
     $('.pay_type .available').first().addClass('active').siblings('.item').removeClass('active');
+    var shop_status=parseInt($('.pay_type').attr('data-shop'));
+    if(shop_status != 1){
+        $('.pay_type .item').removeClass('active').removeClass('item').addClass('not_available').removeClass('available');
+        $('#submitOrder').attr('disabled',true).removeClass('bg-green').text('暂不可下单');
+        $(".wrap-online-lst").addClass("hidden");
+        $('#sendPerTime').addClass("hidden");
+        $('.send_period').addClass('hidden').removeClass('type-choose');
+        $('.send_type button').attr('disabled',true).removeClass('item').removeClass('active').find('a').attr('id','');
+        $('.send_now').addClass("hidden");
+        $('.mincharge').addClass("hidden");
+        $('.address_list').removeClass('type-choose').find('li').removeClass('active');
+    }
+     if(shop_status==2){
+        $('#submitOrder').text('店铺正在筹备中');
+     }else if(shop_status==3){
+        $('#submitOrder').text('店铺正在休息');
+     }else if(shop_status==0){
+        $('#submitOrder').text('店铺已关闭');
+     }
 }).on("click",".pay_type .item",function(){
     var index = $(this).index();
     var status = $(this).attr('data-status');
     var type=$(this).find('.title').text();
     var statu = $(this).attr("data-auth");
     if(statu == "False"){
-        modalNotice("当前店铺未认证，此功能暂不可用");
+        noticeBox("当前店铺未认证，此功能暂不可用");
         return false;
     }
     if(status==0){
-        modalNotice("当前店铺已关闭"+type);
+        noticeBox("当前店铺已关闭"+type);
         return false;
     }
     if(index != 0){
@@ -416,12 +434,12 @@ $(document).ready(function(){
     var status = $(this).attr('data-status');
     var statu = $(this).attr("data-auth");
     if(statu == "False"){
-        modalNotice("当前店铺未认证，此功能暂不可用");
+        noticeBox("当前店铺未认证，此功能暂不可用");
         return false;
     }
     if(status==0){
-         modalNotice("当前店铺已关闭余额支付，此功能暂不可用");
-         return false;
+        noticeBox("当前店铺已关闭余额支付，此功能暂不可用");
+        return false;
     }
 }).on("click",".online-lst li",function(){   //选择在线支付方式
     $(".online-lst").find(".checkbox-btn").removeClass("checkboxed");
@@ -590,14 +608,14 @@ function itemDelete(target,menu_type) {
 function addressAddEdit(action,name,address,phone,target){
     var url='/customer/'+getCookie('market_shop_code');
     var action=action;
-    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    //var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
     var address_id=$('.address-box').attr('data-id');
     if(name == null){return noticeBox('请输入收货人姓名！',target)}
     if(name.length > 10){return noticeBox('姓名请不要超过10个字！',target)}
     if(address == null){return noticeBox('请输入收货人地址！',target)}
     if(address.length > 50){return noticeBox('地址请不要超过50个字！',target)}
     if(!phone){return noticeBox('请输入收货人电话！',target)}
-    if(!regPhone.test(phone)){return noticeBox('请输入有效的手机号码！',target)}
+    //if(!regPhone.test(phone)){return noticeBox('请输入有效的手机号码！',target)}
     var data={
         phone:phone,
         receiver:name,
@@ -713,12 +731,12 @@ function orderSubmit(target){
             var url='/customer/cartback';
             var args={order_id:res.order_id};
             $.postJson(url,args,function(data) {
-                 if (data.success) {
-                      if(pay_type==3){
+                if (data.success) {
+                    if(pay_type==3){
                         window.location.href=res.success_url;
                         //window.location.href="/customer/orders/detail/"+res.order_id;
                     }else{
-                       window.location.href=window.dataObj.success_href; 
+                        window.location.href=window.dataObj.success_href; 
                     }
                  }
                  else{
@@ -726,7 +744,6 @@ function orderSubmit(target){
                     return noticeBox(res.error_text);
                  }
             });
-          
         }
         else {
             noticeBox(res.error_text,target);

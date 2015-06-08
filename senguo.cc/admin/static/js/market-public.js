@@ -1,33 +1,33 @@
- $(document).ready(function(){
+$(document).ready(function(){
     window.dataObj.shop_href='/customer/shopProfile';
     window.dataObj.market_href='/shop/none';
     window.dataObj.home_href='/customer';
     window.dataObj.success_href='/notice/success';
     window.dataObj.staff_href='/staff/hire/';
     window.dataObj.current_link=window.location.href;
-   var _hmt = _hmt || [];
-   (function() {
-     var hm = document.createElement("script");
-     hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
-     var s = document.getElementsByTagName("script")[0]; 
-     s.parentNode.insertBefore(hm, s);
-   })();
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+    })();
     if($("#order-success").size()>0){
         if(location.href!=parent.location.href){
             parent.location.href = location.href;
         }
     }
     //fastclick initialise
-   FastClick.attach(document.body);
+    FastClick.attach(document.body);
     //客户端为Android系统替换图片路径
     //AndroidImg('bg_change');
     //AndroidImg('src_change');   
     //图片延迟加载
- //     $('.lazy_img').each(function(){
-	// var $this=$(this);
-	// var src=$this.data('src');
-	// $this.attr({'src':src});
- //    });
+    //$('.lazy_img').each(function(){
+    // var $this=$(this);
+    // var src=$this.data('src');
+    // $this.attr({'src':src});
+    //});
     //商品单位转换
     $('.chargeUnit').each(function(){
         var $this=$(this);
@@ -80,7 +80,7 @@ function wexin(link,imgurl){
     if(!link){
         link='';
     }
-     if(!imgurl){
+    if(!imgurl){
         imgurl='/static/design_img/TDSG.png';
     }
     $.postJson(url,args,function(res){
@@ -90,38 +90,38 @@ function wexin(link,imgurl){
             var signature_val=res.signature;
             var logo_Item=$('#shop_imgurl');
             wx.config({
-             debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-             appId: 'wx0ed17cdc9020a96e', // 必填，公众号的唯一标识
-             timestamp:timestamp_val, // 必填，生成签名的时间戳
-             nonceStr:noncestr_val, // 必填，生成签名的随机串
-             signature:signature_val,// 必填，签名，见附录1
-             jsApiList: ['onMenuShareTimeline','onMenuShareAppMessage','hideMenuItems','hideOptionMenu','showOptionMenu']// 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-         });
-         wx.ready(function(){
-             if(logo_Item.length==0){
-                wx.hideMenuItems({
-                    menuList: ['menuItem:share:appMessage','menuItem:share:timeline'] 
+                debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                appId: 'wx0ed17cdc9020a96e', // 必填，公众号的唯一标识
+                timestamp:timestamp_val, // 必填，生成签名的时间戳
+                nonceStr:noncestr_val, // 必填，生成签名的随机串
+                signature:signature_val,// 必填，签名，见附录1
+                jsApiList: ['onMenuShareTimeline','onMenuShareAppMessage','hideMenuItems','hideOptionMenu','showOptionMenu']// 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+            });
+            wx.ready(function(){
+                if(logo_Item.length==0){
+                    wx.hideMenuItems({
+                        menuList: ['menuItem:share:appMessage','menuItem:share:timeline'] 
+                    });
+                }
+                wx.onMenuShareTimeline({
+                    title: '', // 分享标题
+                    link:link, // 分享链接
+                    imgUrl:imgurl, // 分享图标
+                    success: function () {
+                    // 用户确认分享后执行的回调函数
+                    },
+                    cancel: function () {
+                    // 用户取消分享后执行的回调函数
+                    }
                 });
-             }
-            wx.onMenuShareTimeline({
-             title: '', // 分享标题
-             link:link, // 分享链接
-             imgUrl:imgurl, // 分享图标
-             success: function () {
-             // 用户确认分享后执行的回调函数
-             },
-             cancel: function () {
-             // 用户取消分享后执行的回调函数
-             }
-         });
-         wx.onMenuShareAppMessage({
-             title: '', // 分享标题
-             desc: "一家不错的店铺，快来关注吧~ ", // 分享描述
-             link:link,
-             imgUrl:imgurl, // 分享图标
-             type: '' // 分享类型,music、video或link，不填默认为link
-         });
- });
+                wx.onMenuShareAppMessage({
+                    title: '', // 分享标题
+                    desc: "一家不错的店铺，快来关注吧~ ", // 分享描述
+                    link:link,
+                    imgUrl:imgurl, // 分享图标
+                    type: '' // 分享类型,music、video或link，不填默认为link
+                });
+            });
         }
         else return alert(res.error_text);
     })
@@ -129,40 +129,41 @@ function wexin(link,imgurl){
 function isWeiXin(){ 
     var ua = window.navigator.userAgent.toLowerCase(); 
         if(ua.match(/MicroMessenger/i) == 'micromessenger'){ 
-        return true;
+            return true;
         }
         else{
     }
 } 
 
-/*function AndroidImg(target){
+/*
+function AndroidImg(target){
     //判断客户端是否是iOS或者Android
     var u = navigator.userAgent, app = navigator.appVersion;
     var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
     //var isAndroid = u.indexOf('Android') > -1;
     var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
-     if(isAndroid){
+    if(isAndroid){
      	$(document).find('.'+target).each(function(){
-     	var $this=$(this);
-               var dpi=window.devicePixelRatio;
-	if(target=='bg_change')
-	{
-	     var src=$this.css('background');
-                   var src_android
-                    if(dpi>1)  src_android=src.replace('.svg','@2x.png?v=2015-03-13');
-                    else    src_android=src.replace('.svg','.png?v=2015-03-13');
-     	     $this.css({'background':src_android});
-               }
-     	else {
-     	   var src=$this.attr('src');
-     	   var src_android
+            var $this=$(this);
+            var dpi=window.devicePixelRatio;
+            if(target=='bg_change'){
+                var src=$this.css('background');
+                var src_android
                 if(dpi>1)  src_android=src.replace('.svg','@2x.png?v=2015-03-13');
                 else    src_android=src.replace('.svg','.png?v=2015-03-13');
-     	   $this.attr({'src':src_android});
-     	}   	
-      });
-     }
-}*/
+                $this.css({'background':src_android});
+            }
+            else {
+                var src=$this.attr('src');
+                var src_android
+                if(dpi>1)  src_android=src.replace('.svg','@2x.png?v=2015-03-13');
+                else    src_android=src.replace('.svg','.png?v=2015-03-13');
+                $this.attr({'src':src_android});
+            }   	
+        });
+    }
+}
+*/
 
 function getCookie(key){
     var aCookie = document.cookie.split(";");
@@ -268,34 +269,31 @@ function stopPropagation(e) {
 //confirmbox
 getItem('/static/items/confirmBox.html?v=20150530',function(data){window.dataObj.confirmBox=data});
 var confirmBox=function(text,index,type,id){
-        var $box=$(window.dataObj.confirmBox);
-        $box.find('.message').text(text);
-        $box.find(".confriming").attr("id",id);
-        if(typeof(index)!='undefined') $box.find('.message').attr({'data-index':index});
-        if(typeof(type)!='undefined') $box.find('.message').attr({'data-type':type});
-        var window_height=$(window).height();
-        var height=$('.container').height();
-        $('body').append($box);
-        $("#container,#nav").css({'-webkit-filter':'blur(3px)'})
-        $(document).on('click','.dismiss',function(){
+    var $box=$(window.dataObj.confirmBox);
+    $box.find('.message').text(text);
+    $box.find(".confriming").attr("id",id);
+    if(typeof(index)!='undefined') $box.find('.message').attr({'data-index':index});
+    if(typeof(type)!='undefined') $box.find('.message').attr({'data-type':type});
+    var window_height=$(window).height();
+    var height=$('.container').height();
+    $('body').append($box);
+    $("#container,#nav").css({'-webkit-filter':'blur(3px)'})
+    $(document).on('click','.dismiss',function(){
+        $("#container,#nav").removeAttr("style");
+        $('#confirmBox').remove();
+    });
+    $(document).on('click','.modal',function(e){
+        if($(e.target).closest('.modal-content').length == 0){
             $("#container,#nav").removeAttr("style");
             $('#confirmBox').remove();
-            //$('.modal_bg').remove();
-        });
-         $(document).on('click','.modal',function(e){
-             if($(e.target).closest('.modal-content').length == 0){
-                $("#container,#nav").removeAttr("style");
-                //$('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
-                $('#confirmBox').remove();
-            }
-        });
+        }
+    });
 }
 var confirmRemove=function(){
     $("#container,#nav").removeAttr("style");
     $('#confirmBox').remove();
-    //$('.modal_bg').remove();
 }
-//word notice
+//toast word notice
 var noticeTimer = null;
 var tempObj = null;
 var noticeBox=function(text,item){
@@ -314,7 +312,7 @@ var noticeBox=function(text,item){
     }
     noticeRemove('noticeBox',item);
 }
-//modal notice word
+//insidemodal word notice
 var warnNotice=function(text,item){
     clearTimeout(noticeTimer);
     $(".warn").remove();
@@ -328,7 +326,7 @@ var warnNotice=function(text,item){
         }
     },1500);
 }
-//time count 2 secends
+//1.5秒后移除notice
 var noticeRemove=function (target,item) {
     noticeTimer = setTimeout(function() {
         $('#'+target).removeClass('anim-bounceIn').addClass('anim-fadeOut');
@@ -360,7 +358,7 @@ Modal.prototype.modal=function(type){
             }
         });
         $(document).on('click','.modal',function(e){
-             if($(e.target).closest('.modal-content').length == 0){
+            if($(e.target).closest('.modal-content').length == 0){
                 $('body').css({'overflow':'auto'});
                 $("#container,#nav").removeAttr("style");
                 $target.addClass('fade').removeClass('in').css({'display':'none'});
@@ -386,7 +384,7 @@ function wobble(target){
         target.removeClass('anim-wobble');
     });
 }
-
+//modal notice
 function modalNotice(notice){
     var item='<div class="modal in" id="notice-box" style="display:block">'+
                         '<div class="modal-dialog anim-bounceIn">'+
@@ -394,7 +392,7 @@ function modalNotice(notice){
                                 '<div class="modal-top"><img src="/static/images/info_top.png"/></div>'+
                                 '<div class="modal-header set-width-float">'+
                                     '<button type="button" class="close dismiss-notice">✕</button>'+
-                                    '<h2 class="modal-title  text-center line48">TIPS</h2>'+
+                                    '<h2 class="modal-title  text-center line48">温馨提示</h2>'+
                                 '</div>'+
                                 '<div class="modal-body set-width-float text-center">'+
                                     '<p class="detail font14 text-center">{{notice}}</p>'+
@@ -406,7 +404,9 @@ function modalNotice(notice){
     var render = template.compile(item);
     var content = render({notice:notice});
     $('body').append(content);
+    $("#container,#nav").css({'-webkit-filter':'blur(3px)'});
     $(document).on('click','.dismiss-notice',function(){
+        $("#container,#nav").removeAttr("style");
         $('#notice-box').remove();
     });
 }

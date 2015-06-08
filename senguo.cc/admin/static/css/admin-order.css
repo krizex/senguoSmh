@@ -27,7 +27,7 @@
 
 .order-list-item .order-content{padding:0 24px;padding-left:30px;}
 .order-list-item .order-warning{background:url("../images/warning-img.jpg") no-repeat 8px 20px;}
-.order-list-item .order-content .order-info{height:auto;overflow:hidden;}
+.order-list-item .order-content .order-info{height:auto;overflow:hidden;margin-bottom:4px;}
 .order-list-item .order-content .order-info .input-group{margin-right:25px;}
 .order-list-item .order-content .order-info label{font-weight:bold;}
 .order-list-item .order-content .order-info input{border:1px solid #ccc;height:20px;text-indent:5px;}
@@ -40,7 +40,9 @@
 
 .order-list-item .btn{width:82px;}
 
-.order-list-item .order-message{margin-bottom:5px;}
+.order-list-item .order-message{margin-bottom:4px;}
+.order-list-item .staff-replay{margin-bottom:4px;}
+.order-list-item .saler-remark{margin-bottom:4px;} 
 .order-list-item .order-message .message-img{width:17px;height:15px;background:url("../images/container-icon.gif") no-repeat 0 -199px;}
 
 .order-list-item .order-status{display:inline-block;min-height:50px;}
