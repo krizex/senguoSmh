@@ -26,6 +26,9 @@ $(document).ready(function(){
         $(".goods-info-lst li").removeClass("active").eq(index).addClass("active");
     });
     $(".now-buy").on("click",function(){
+        if($(this).attr("data-storage")==0){
+            return noticeBox("当前商品已经卖完了~~");
+        }
         var _this = $(this);
         if(_this.hasClass("r70")) return false;
         $(this).addClass("r70");
@@ -70,4 +73,30 @@ $(document).ready(function(){
             $(this).next("input").val(num);
         }
     });
+}).on("click","#dianzan",function(){
+    var $this = $(this);
+    if($this.attr("data-flag")=="ture"){
+        return noticeBox("您今天已经点过赞了，明天再来吧");
+    }else{
+        var id = $this.attr("data-id");
+        //great(id,$this);
+    }
 });
+//点赞
+function great(id,$this){
+    var url='';
+    var action=3;
+    var args={
+        action:action,
+        charge_type_id:id
+    };
+    $.postJson(url,args,function(res){
+            if(res.success){
+                $this.attr("data-flag","true").addClass("zaned").html(parseInt($this.html())+1);
+            }
+            else noticeBox(res.error_text);
+        },
+        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+    );
+}

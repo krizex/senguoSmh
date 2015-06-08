@@ -32,7 +32,7 @@
         <p class="goods-title">{{good.name or ''}}</p>
         <p class="goods-info">{{good.intro or ''}}</p>
         <p class="goods-num">
-            <span class="zan">{{good.favour or 0}}</span>
+            <span class="zan {% if good.favour_today %}zaned{% end %}" id="dianzan" data-flag="{{good.favour_today}}" data-id="{{good.id}}">{{good.favour or 0}}</span>
             <span>销量 {{good.saled or 0}}</span>
         </p>
     </div>
@@ -46,7 +46,7 @@
                 <input type="text" pattern="\d*" novalidate autocorrect="off" value="1" disabled/>
                 <span class="add add-num">+</span>
             </div>
-            <div class="now-buy">立即购买</div>
+            <div class="now-buy" data-storage="0">立即购买</div>
         </li>
         {% end %}
     </ul>
