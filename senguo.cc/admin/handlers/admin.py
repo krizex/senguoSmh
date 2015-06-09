@@ -1303,6 +1303,7 @@ class Goods(AdminBaseHandler):
 		current_shop = self.current_shop
 		shop_id = current_shop.id
 		qiniuToken = self.get_qiniu_token('goods',_id)
+		shop_code = current_shop.shop_code
 		if action == "all":
 			try:
 				goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.active!=0)
@@ -1417,7 +1418,7 @@ class Goods(AdminBaseHandler):
 			dealing_count =goods.filter(models.Fruit.current_saled!=0).count()
 			c_list.append({"all_count":all_count,"on_count":on_count,"off_count":off_count,"sold_count":sold_count,"dealing_count":dealing_count})
 
-			return self.render("admin/goods-all.html",context=dict(subpage="goods"),token=qiniuToken,group_list=group_list,c_list=c_list)
+			return self.render("admin/goods-all.html",context=dict(subpage="goods"),token=qiniuToken,group_list=group_list,c_list=c_list,shop_code=shop_code)
 						
 		elif action == "classify":	
 			if self.args["type"] != [] :

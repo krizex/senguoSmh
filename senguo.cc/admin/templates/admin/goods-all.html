@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="{{static_url('js/editor/themes/default/default.css')}}"/>
 {% end %}
 {% block setcontent %}
+<input type="hidden" value="{{shop_code}}" id="shop-code"/>
 <div class="wrap-all-goods">
 <input type="hidden" id="token" value="{{token}}"/>
     <ul class="category-list group">

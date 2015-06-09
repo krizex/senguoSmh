@@ -839,7 +839,7 @@ function insertGoods(data){
         }
         /*$item.find(".goods-comment-num").html("2222");*/
         $item.find(".goods-vol").html(goods.saled);
-        $item.find(".sw-link-txt").val("http://senguo.cc/customer/goods/"+goods.id);
+        $item.find(".sw-link-txt").val("http://senguo.cc/"+$('#shop-code').val()+"/goods/"+goods.id);
         $item.find(".group-goods-lst").html($("#group-goods-lst").children(".presentation").clone());
         $item.find(".group-goods-lst").find(".group-counts").hide();
         $(".goods-all-list").append($item);
