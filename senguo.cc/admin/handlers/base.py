@@ -105,7 +105,7 @@ class GlobalBaseHandler(BaseHandler):
 	def timestamp_to_str(self, timestamp):
 		return time.strftime("%Y-%m-%d %H:%M", time.gmtime(timestamp))
 
-	#通过经纬度计算距离
+	#通过两点经纬度计算距离
 	def get_distance(self,lat1,lon1,lat2,lon2):
 		EARTH_RADIUS = 6378.137
 		radLat1 = lat1 * math.pi / 180.0
@@ -189,11 +189,11 @@ class GlobalBaseHandler(BaseHandler):
 		staff_id = order.SH2_id
 		staff_info = session.query(models.Accountinfo).filter_by(id = staff_id).first()
 		if staff_info is not None:
-				sender_phone = staff_info.phone
-				sender_img = staff_info.headimgurl_small
+			sender_phone = staff_info.phone
+			sender_img = staff_info.headimgurl_small
 		else:
-				sender_phone =None
-				sender_img = None
+			sender_phone =None
+			sender_img = None
 
 		data['totalPrice']    = order.totalPrice
 		data['charge_types']  = session.query(models.ChargeType).\
@@ -217,7 +217,7 @@ class GlobalBaseHandler(BaseHandler):
 
 		return data
 
-	#获去店铺信息
+	#获取店铺信息
 	def get_shopInfo(self,shop):
 		data = {}
 		data['shop_name']     = shop.shop_name
@@ -1168,7 +1168,7 @@ class WxOauth2:
 				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
 			"topcolor": "#FF0000",
 			"data": {
-				"first": {"value": "您好，您所申请的店铺『%s』已经通过审核！" % shop_name, "color": "#173177"},
+				"first": {"value": "您好，您所申请的店铺『%s』已经通过审核！" % shop_name, "color": "#44b549"},
 				"keyword1": {"value": name, "color": "#173177"},
 				"keyword2": {"value": phone, "color": "#173177"},
 				"keyword3": {"value": time, "color": "#173177"},
@@ -1192,7 +1192,7 @@ class WxOauth2:
 				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
 			"topcolor": "#FF0000",
 			"data": {
-				"first": {"value": "您好，您所申请的店铺『%s』未通过审核。" % shop_name, "color": "#173177"},
+				"first": {"value": "您好，您所申请的店铺『%s』未通过审核。" % shop_name, "color": "#44b549"},
 				"keyword1": {"value": name, "color": "#173177"},
 				"keyword2": {"value": phone, "color": "#173177"},
 				"keyword3": {"value": time, "color": "#173177"},
@@ -1247,7 +1247,7 @@ class WxOauth2:
 			"url":order_url,
 			"topcolor":"#FF0000",
 			"data":{
-				"first":{"value":"管理员 {0} 您好，店铺『{1}』收到了新的订单！".format(admin_name,shop_name),"color": "#173177"},
+				"first":{"value":"管理员 {0} 您好，店铺『{1}』收到了新的订单！".format(admin_name,shop_name),"color": "#44b549"},
 				"tradeDateTime":{"value":str(create_date),"color":"#173177"},
 				"orderType":{"value":order_type,"color":"#173177"},
 				"customerInfo":{"value":customer_name,"color":"#173177"},
@@ -1280,7 +1280,7 @@ class WxOauth2:
 			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
 			'url':staff_order_url,
 			"data":{
-				"first":{"value":"配送员 {0} 您好，店铺『{1}』有新的订单需要配送。".format(staff_name,shop_name),"color": "#173177"},
+				"first":{"value":"配送员 {0} 您好，店铺『{1}』有新的订单需要配送。".format(staff_name,shop_name),"color": "#44b549"},
 				"tradeDateTime":{"value":str(create_date),"color":"#173177"},
 				"orderType":{"value":order_type,"color":"#173177"},
 				"customerInfo":{"value":customer_name,"color":"#173177"},
@@ -1305,7 +1305,7 @@ class WxOauth2:
 			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
 			'url':staff_order_url,
 			"data":{
-				"first":{"value":"配送员 {0} 您好，店铺『{1}』有 {2} 个新的订单需要配送。".format(staff_name,shop_name,count),"color": "#173177"},
+				"first":{"value":"配送员 {0} 您好，店铺『{1}』有 {2} 个新的订单需要配送。".format(staff_name,shop_name,count),"color": "#44b549"},
 				"tradeDateTime":{"value":"批量信息","color":"#173177"},
 				"orderType":{"value":"批量信息","color":"#173177"},
 				"customerInfo":{"value":"批量信息","color":"#173177"},
@@ -1332,12 +1332,12 @@ class WxOauth2:
 			'url'    : 'http://i.senguo.cc/customer/orders/detail/' + str(order_realid),
 			'topcolor': "#FF0000",
 			"data":{
-				"first"    : {"value":"您的订单已提交成功","color":"#173177"},
+				"first"    : {"value":"您的订单已提交成功\n","color":"#44b549"},
 				"keyword1" : {"value":shop_name,"color":"#173177"},
 				"keyword2" : {"value":str(order_create),"color":"#173177"},
 				"keyword3" : {"value":goods,"color":"#173177"},
 				"keyword4" : {"value":str(order_totalPrice),"color":"#173177"},
-				"remark"   : {"value":"您的订单我们已经收到，配货后将尽快配送~","color":"#173177"},
+				"remark"   : {"value":"\n您的订单我们已经收到，配货后将尽快配送~","color":"#173177"},
 			}
 		}
 		access_token = cls.get_client_access_token()

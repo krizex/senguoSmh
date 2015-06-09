@@ -265,7 +265,7 @@ class ShopManage(SuperBaseHandler):
 
 		else:
 			if shop_temp.shop_status == 2:
-				return self.send_error("店铺已经申请成功")
+				return self.send_fail("店铺已经申请成功")
 
 			# 添加系统默认的时间段
 			period1 = models.Period(name="中午", start_time="12:00", end_time="12:30")
@@ -436,7 +436,7 @@ class OrderManage(SuperBaseHandler):
 			o = self.session.query(models.SystemOrder).\
 				filter_by(order_id=self.args["order_id"]).one()
 			if not o:
-				return self.send_fail(error_text="订单不存在！")
+				return self.send_fail(error_text="订单不存在")
 			o.set_read(self.session)
 			u = models.ShopAdmin.set_system_info(
 				self.session, 
@@ -841,10 +841,11 @@ class Balance(SuperBaseHandler):
 		# print(person_num,'haaha')
 
 		for item in cash_list:
-			cash_on = cash_on+item.value
+			cash_on += item.value
 		for item in shop_list:
-			total_balance = total_balance + item.shop_balance
+			total_balance += item.shop_balance
 
+		cash_on = format(cash_on,'.2f')
 		total_balance = format(total_balance,'.2f')
 		return self.render('superAdmin/balance-detail.html',cash_times=cash_times,cash_success=cash_success,\
 			total_balance=total_balance,cash_on=cash_on,context=dict(page="detail"))
@@ -1034,16 +1035,3 @@ class ApplyCash(SuperBaseHandler):
 		return self.send_success(history = history)
 
 		
-
-
-
-
-
-
-
-
-
-
-
-
-
