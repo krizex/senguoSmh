@@ -480,7 +480,7 @@ var fruitItem=function(box,fruits,type){
     var favour_today=fruits['favour_today'];
     var limit_num=fruits['limit_num'];
     if(!code) code='TDSG';
-    $item.attr({'data-id':id,'data-type':type,'data-storage':storage,'data-num':storage,'data-favour':favour_today}).addClass(code);
+    $item.attr({'data-id':id,'data-type':type,'data-storage':storage,'data-num':storage,'data-favour':favour_today,'data-limit':limit_num}).addClass(code);
     $item.find('.fruit_intro').val(intro);
     $item.find('.fruit-name').text(name);
     if(saled>9999) $item.find('.number').text('9999+');
@@ -589,6 +589,7 @@ function goodsNum(target,action){
     var relate=parseFloat(target.parents('.num_box').siblings('.charge-type').attr('data-relate'));
     var unit_num=parseFloat(target.parents('.num_box').siblings('.charge-type').find('.num').text());
     var change_num=relate*unit_num*num;
+    var limit_num=parseInt(parent.attr('data-limit'));
     if(action==1&&num<=0) {num=0;target.addClass('disable');}
     if(action==2)
     {
@@ -598,6 +599,9 @@ function goodsNum(target,action){
         else if(storage>0){
             if(storage-change_num<0){
                 return  noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',target);
+            }
+            if(limit_num>0&&num==limit_num){
+                return  noticeBox('商品限购数量'+limit_num);
             }
             num++;
             item.val(num);

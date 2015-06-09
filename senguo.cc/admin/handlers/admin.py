@@ -1731,10 +1731,19 @@ class Goods(AdminBaseHandler):
 					charge_old.delete()
 					self.session.commit()
 					for charge_type in data["charge_types"]:
-						unit_num = int(charge_type["unit_num"]) if charge_type["unit_num"] else 1
-						select_num = int(charge_type["select_num"]) if charge_type["select_num"] else 1
-						market_price = charge_type["market_price"] if charge_type["market_price"] else 0
-						relate = int(charge_type["select_num"])/int(charge_type["unit_num"])
+						if charge_type["unit_num"] and charge_type["unit_num"] !='':
+							unit_num = int(charge_type["unit_num"])
+						else:
+							unit_num = 1
+						if charge_type["select_num"] and charge_type["select_num"] !='':
+							select_num = int(charge_type["select_num"])
+						else:
+							select_num = 1
+						if charge_type["market_price"] and charge_type["market_price"] !='':
+							market_price = int(charge_type["market_price"])
+						else:
+							market_price = 0
+						relate = select_num/unit_num
 						charge_types = models.ChargeType(
 												fruit_id=int(data["goods_id"]),
 												price=charge_type["price"],

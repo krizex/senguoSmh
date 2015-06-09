@@ -492,22 +492,26 @@ function goodsNum(target,action){
     var price=parent.find('.item_price').text();
     var item_price=target.parents('.cart-list').find('.item_total_price');
     var item=target.siblings('.number-input');
-    var num=item.val();
+    var num=parseInt(item.val());
+    var limit_num=parseInt(parent.attr('data-limit'));
     var total;
     var $list_total_price=$('#list_total_price');
-    if(parent.hasClass('fruit_item')){menu_type=0}
-    else if(parent.hasClass('menu_item')){menu_type=1}
     if(action==1&&num<=0) {num=0;target.addClass('disable');}
     var args={
         action:action,
-        charge_type_id:charge_type_id,
-        menu_type:menu_type
+        charge_type_id:charge_type_id
     };
+    if(action==2){
+         if(limit_num>0&&num==limit_num){
+            return  noticeBox('商品限购数量'+limit_num);
+        }
+    }
     $.postJson(url,args,function(res){
             if(res.success)
             {
                 if(action==2)
                 {
+                   
                     num++;
                     item.val(num);
                     total=mathFloat(num*price);
