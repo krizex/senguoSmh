@@ -991,14 +991,23 @@ class Market(CustomerBaseHandler):
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
 			return self,send_error(404)
-		fruits = self.session.query(models.Fruit).join(models.Shop).join(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id,\
-			).order_by(models.GroupPriority.priority,models.Fruit.priority.desc(),models.Fruit.add_time.desc())
+		# fruits = self.session.query(models.Fruit).join(models.Shop).join(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id,\
+		# 	).order_by(models.GroupPriority.priority,models.Fruit.priority.desc(),models.Fruit.add_time.desc())
+
+		# fruits = self.session.query(models.Fruit).outerjoin(models.GroupPriority,models.Fruit.shop_id == models.GroupPriority.shop_id\
+		# 	).filter(models.Fruit.shop_id == shop_id,models.Fruit.active == 1).order_by(models.GroupPriority.priority)
+
+		fruits = self.session.query(models.Fruit).outerjoin(models.Shop,models.Fruit.shop_id == models.Shop.id,\
+			).outerjoin(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id).filter(models.Fruit.shop_id == shop_id,\
+			models.Fruit.active == 1)
+
+		print(fruits.distinct(models.Fruit.id).count(),'dddddddddddddddddd')
 		
-		fruits = fruits.filter(models.Fruit.active == 1,models.Fruit.shop_id == shop_id).distinct()
-		# for fruit in fruits:
-		# 	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
+		for fruit in fruits:
+			print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
 		count_fruit =fruits.distinct().count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
+		print(count_fruit , total_page)
 		if total_page <= page:
 			nomore = True
 		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
