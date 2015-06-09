@@ -36,8 +36,13 @@ def delete(args):
 	print("[定时任务]AccessToken更新：",session.query(models.AccessToken).count())
 	session.commit()
 
-def print_time(args):
-	print(time.strftime('%H:%M:%S'))
+global count
+count = 1
+
+def print_time():
+	global count
+	print(count,'-',time.strftime('%H:%M'))
+	count += 1
 
 def main():
 
