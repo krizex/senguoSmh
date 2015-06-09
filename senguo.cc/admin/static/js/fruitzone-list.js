@@ -456,13 +456,15 @@ function filter(data){
         args.lat = ulat;
         args.lon = ulng;
     }
-    if(type=='city') {
-        args.city=Int(data);
-        window.dataObj.type=='city'
-    }
-    else if(type=='province') {
-        args.province=Int(data);
-        window.dataObj.type=='province'
+    if(data){
+        if(type=='city') {
+            args.city=Int(data);
+            window.dataObj.type=='city'
+        }
+        else if(type=='province') {
+            args.province=Int(data);
+            window.dataObj.type=='province'
+        }
     }
     /*if(!data){return noticeBox('选择城市！')}*/
     $.postJson(url,args,

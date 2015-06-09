@@ -1,12 +1,5 @@
 var goods_list=null,curItem=null,curPrice=null,curEditor="",goodsEdit = false,aLis=[],aPos=[],zIndex= 1,pn= 0,editor=null,_type,_sub_type,isSearch=false;
 $(document).ready(function(){
-    $(".er-code-img").each(function(){
-        var _this = $(this);
-        new QRCode(this, {
-            width : 80,//设置宽高
-            height : 80
-        }).makeCode(_this.closest(".sw-er-tip").find(".sw-link-txt").val());
-    });
     $(document).on("click",function(e){
         if($(e.target).closest(".sw-er-tip").size()==0){
             $(".sw-er-tip").addClass("invisible");
@@ -106,6 +99,7 @@ $(document).ready(function(){
     $(".wrap-big-img").show();
 }).on("click",".spread-all-item",function(e){
     e.stopPropagation();
+    $(".sw-er-tip").addClass("invisible");
     $(this).closest(".all-bm-group").next(".sw-er-tip").toggleClass("invisible");
 }).on("click",".dropdown-menu .item",function(){//下拉切换
     var price_unit = $(this).html();
@@ -877,6 +871,14 @@ function insertGoods(data){
         afterCopy:function(){/* 复制成功后的操作 */
             Tip("链接已经复制到剪切板");
         }
+    });
+    $(".er-code-img").each(function(){
+        var _this = $(this);
+        $(this).empty();
+        new QRCode(this, {
+            width : 80,//设置宽高
+            height : 80
+        }).makeCode(_this.closest(".sw-er-tip").find(".sw-link-txt").val());
     });
 }
 
