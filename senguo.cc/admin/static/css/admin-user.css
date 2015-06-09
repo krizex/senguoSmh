@@ -3,9 +3,9 @@
 
 .group-select{width:74px;height:26px;color:#666;}
 .groups{margin-top:10px;margin-right:20px;}
-.users-list-action{padding:8px 0 12px;border:1px solid #eee;border-bottom:none;}
+.users-list-action{padding:10px 0 10px;border:1px solid #eee;border-bottom:none;}
 .users-list-action .check-all{float:left;margin:9px 3px 0 15px;}
-.users-list-action .move{display:inline-block;margin-top:7px;margin-left:10px;}
+.users-list-action .move{display:inline-block;margin-top:3px;margin-left:10px;}
 
 .users-list{height:auto;border:1px solid #eee;border-top:none;}
 .users-list .users-list-item{height:auto;border-top:1px solid #eee;}
@@ -22,14 +22,14 @@
 .users-list li .show-info .user-info .user-info-con .user-level{width:24px;height:14px;background:#f7c468;}
 .users-list li .show-info .user-info .user-info-con .level-price{font-weight:bold;}
 .users-list li .show-info .user-info  .user-info-con .user-account{background:url("../images/container-icon2.png") no-repeat;margin-left:10px;padding-left:20px;font-weight:bold;}
-.users-list li .show-info .history-order{text-decoration:underline;line-height:50px;}
+.users-list li .show-info .history-order{line-height:50px;}
 
-.users-list li .hide-info{height:auto;border-top:1px solid #ccc;}
-.users-list li .hide-info .personal-info{padding:0 50px;margin-top:10px;}
-.users-list li .hide-info .focus-shop{border-left:1px solid #ccc;min-height:140px;padding:10px 0 10px 50px;}
-.users-list li .hide-info .focus-shop .focus-shop-list li{border:1px solid #e7e7eb;width:144px;height:28px;line-height:28px;margin-right:30px;border-radius:1px;margin-bottom:10px;overflow:hidden;}
-.users-list li .hide-info .focus-shop .send-address{display:inline-block;width:388px;height:26px;line-height:26px;text-indent:10px;border:1px solid #ccc;}
-.users-list li .hide-info .focus-shop .address-list{width:388px;border:1px solid #ccc;border-top:none;overflow:hidden;padding:5px 15px 10px 15px;}
+.users-list li .hide-info{height:auto;border-top:1px solid #eee;}
+.users-list li .hide-info .personal-info{padding:0 50px;margin-top:10px;width:210px;}
+.users-list li .hide-info .focus-shop{border-left:1px solid #eee;min-height:140px;padding:10px 0 10px 50px;max-width:735px;}
+.users-list li .hide-info .focus-shop .focus-shop-list li{border:1px solid #e7e7eb;width:142px;height:28px;line-height:28px;margin-right:28px;border-radius:1px;margin-bottom:10px;overflow:hidden;}
+.users-list li .hide-info .focus-shop .send-address{display:inline-block;width:650px;height:26px;line-height:26px;text-indent:10px;border:1px solid #ccc;}
+.users-list li .hide-info .focus-shop .address-list{width:650px;border:1px solid #ccc;border-top:none;overflow:hidden;padding:5px 15px 10px 15px;}
 .users-list li .hide-info .focus-shop .address-list li{border-bottom:1px solid #ccc;padding:5px 0;}
 
  .remark-content{width:80%;height:60px;}

@@ -244,7 +244,7 @@ var goodsList=function(page,action){
                         $item.find('.un-arrive').text('已送达');
                         $item.find('.status_notice').text('已送达').addClass('text-green');
                     }
-                    else if(order_status==6) {
+                    else if(order_status==6 || order_status==7) {
                         $item.find('.word').text('已评价');
                         $item.find('.status-bar-box').hide();
                         $item.find('.send_date').hide();

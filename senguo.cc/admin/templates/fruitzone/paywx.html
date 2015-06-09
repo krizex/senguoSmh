@@ -7,7 +7,6 @@
 {% block top %}订单详情{% end %}
 {% block content %}
 {% set fruits=eval(order.fruits)%}
-{% set mgoods=eval(order.mgoods)%}
 <div class="container mb50" id="container">
     <div class="order-grade">
         <div class="order-line">
@@ -29,7 +28,7 @@
     <div class="order-item">
         <h4 class="top-title"><span class="black-txt">{{shop_name}}</span><span class="arr-right"></span><a href="tel:{{order.phone}}" class="contact-us fr tel-btn"><i class="i-contact"></i>联系客服</a></h4>
         <ul class="goods-lst">
-            {% for charge_type in  charge_types%}
+            {% for charge_type in charge_types%}
             <li class="group {{charge_type.fruit.fruit_type.code}}">
                 <dl class="goods-item group">
                     <dd>
@@ -47,24 +46,7 @@
                 </dl>
             </li>
             {% end %}
-            {% for mcharge_type in  mcharge_types %}
-            <li class="group TDSG">
-                <dl class="goods-item group">
-                    <dd>
-                        {% if mcharge_type.mgoods.img_url %}
-                        <img src="{{mcharge_type.mgoods.img_url}}?imageView/1/w/170/h/170" alt="商品图片"/>
-                        {% else %}
-                        <img src="/static/design_img/TDSG.png" alt="商品图片"/>
-                        {% end %}
-                    </dd>
-                    <dt class="bg">
-                    <p class="color">{{mgoods[mcharge_type.id]['mgoods_name']}}</p>
-                    <p class="color txt-ar"><span class="big">{{mgoods[mcharge_type.id]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{mcharge_type.price}}</span>元</p>
-                    <p class="color">{{mgoods[mcharge_type.id]['charge']}}</p>
-                    </dt>
-                </dl>
-            </li>
-            {% end %}
+          
         </ul>
         <p>商品总价<span class="fr"><span class="text-red3">{{order.totalPrice-order.freight}}元</span></span></p>
         <p>配送费<span class="fr"><span class="text-red3">{{order.freight}}元</span></span></p>
@@ -90,6 +72,7 @@
 <input type="hidden" value="{{order.create_date.month}}" class="create_month"/>
 <input type="hidden" value="{{order.create_date.day}}" class="create_day"/>
 <input type="hidden" value="{{order.today}}" class="send_day"/>
+<input type="hidden" value="{{order.id}}" id="order-id"/>
 {% end %}
 {% block bottom %}
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
@@ -104,18 +87,34 @@
         });
     wx.ready(function(){
         document.querySelector('#getBrandWCPayRequest').onclick = function () {
-            wx.chooseWXPay({
-                timestamp: '{{renderPayParams['timeStamp']}}',
-                nonceStr: '{{renderPayParams['nonceStr']}}',
-                package: '{{renderPayParams['package']}}',
-                signType: '{{renderPayParams['signType']}}',
-                paySign: '{{renderPayParams['paySign']}}',
-                success: function (res) {
-                // 支付成功后的回调函数
-                window.location.href = '/notice/success';
-            }
-        });
-    }
-});
+            $.ajax({
+                url:"/customer/overtime?order_id="+$("#order-id").val(),
+                type:"get",
+                success:function(res){
+                    if(res.success){
+                        if(res.overtime == 1){
+                            noticeBox("当前订单15分钟未支付，已自动取消，请重新下单");
+                            setTimeout(function(){
+                                window.location.href="/"+res.shop_code;
+                            },2000);
+                        }
+                        else{
+                            wx.chooseWXPay({
+                                timestamp: '{{renderPayParams['timeStamp']}}',
+                                nonceStr: '{{renderPayParams['nonceStr']}}',
+                                package: '{{renderPayParams['package']}}',
+                                signType: '{{renderPayParams['signType']}}',
+                                paySign: '{{renderPayParams['paySign']}}',
+                                success: function (res) {
+                                    // 支付成功后的回调函数
+                                    window.location.href = '/notice/success';
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        }
+    });
 </script>
 {% end %}

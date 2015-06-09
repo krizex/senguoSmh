@@ -15,7 +15,7 @@ function login(target){
 	var url='/customer/login';
 	var phone=$('#phone').val().trim();
 	var password=$('#password').val().trim();
-	var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+	var regPhone=/^(1)\d{10}$/;
 	var next=target.attr('data-next');
     	if(!regPhone.test(phone)){
     		target.removeAttr('disabled');

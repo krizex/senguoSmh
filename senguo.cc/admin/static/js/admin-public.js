@@ -40,9 +40,16 @@ if(isWeiXin()){
             }
         }
     },1000);
-    $("#dropdownMenu1").on("click",function(){
-        $(this).children(".caret").toggleClass("rotate180");
-    })
+    $(".dropdown-toggle").on("click",function(e){
+        var _this = $(this);
+        _this.children(".caret").toggleClass("rotate180");
+        $(document).on("click",function(e){
+            if($(e.target).closest("dropdown-toggle").size()==0){
+                _this.children(".caret").removeClass("rotate180");
+            }
+        });
+    });
+
 }).on("click",".has-red-tip",function(){
     var action = $(this).attr("data-action");
 

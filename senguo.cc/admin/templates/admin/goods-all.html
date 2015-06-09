@@ -1,4 +1,399 @@
 {% extends 'goods-set-base.html' %}
+{% block css %}
+<link rel="stylesheet" href="{{static_url('js/editor/themes/default/default.css')}}"/>
+{% end %}
 {% block setcontent %}
+<div class="wrap-all-goods">
+<input type="hidden" id="token" value="{{token}}"/>
+    <ul class="category-list group">
+        <li>
+            <div class="cate-title">商品状态 : </div>
+            <div class="dropdown slide-down-select pull-left w130">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
+                    <em title="{{current_shop.shop_name}}" class="pull-left filter_status" data-id="all">所有 ({{c_list[0]["all_count"]}})</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentShopChange3">
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;" data-id="all">所有 ({{c_list[0]["all_count"]}})</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;" data-id="on">已上架 ({{c_list[0]["on_count"]}})</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;" data-id="off">已下架 ({{c_list[0]["off_count"]}})</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;" data-id="sold_out">已售完 ({{c_list[0]["sold_count"]}})</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;" data-id="current_sell">待成交 ({{c_list[0]["dealing_count"]}})</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li>
+            <div class="cate-title">排列方式 : </div>
+            <div class="dropdown slide-down-select pull-left w130">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu4" data-toggle="dropdown">
+                    <em title="{{current_shop.shop_name}}" class="pull-left order_status1" data-id="group">按商品分组</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu4" id="currentShopChange4">
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;" data-id="group">按商品分组</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;" data-id="classify">按商品分类</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li>
+            <div class="cate-title">排序规则 : </div>
+            <div class="dropdown slide-down-select pull-left w130">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu5" data-toggle="dropdown">
+                    <em title="{{current_shop.shop_name}}" class="pull-left order_status2" data-id="add_time">添加日期</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu5" id="currentShopChange5">
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;" data-id="add_time">添加日期</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;" data-id="name">商品名称</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;" data-id="saled">按销量</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;" data-id="storage">按库存</a>
+                    </li>
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;" data-id="current_saled">按待成交量</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li>
+            <div class="cate-title">分组筛选 : </div>
+            <div class="dropdown slide-down-select pull-left w130">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                    <em title="" class="pull-left filter_status2" data-id="-2">所有分组 ({{c_list[0]["all_count"]}})</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu16" id="group-goods-lst">
+                    <li  role="presentation">
+                        <a class="item" href="javascript:;" data-id="-2">所有分组 <span class="group-counts">({{c_list[0]["all_count"]}})</span></a>
+                    </li>
+                    {% for group in group_list %}
+                    <li class="presentation" role="presentation">
+                        <a class="item" href="javascript:;" data-id="{{group['id']}}">{{group["name"]}} <span class="group-counts">({{group["num"]}})</span></a>
+                    </li>
+                    {% end %}
+                </ul>
+            </div>
+        </li>
+    </ul>
+    <ul class="list-operate group">
+        <li class="">
+            <span class="check-box ml10 all-select-box" ></span>全选
+        </li>
+        <li class="borderc text-center pointer min80" id="batch-up">批量上架</li>
+        <li class="borderc text-center pointer min80" id="batch-down">批量下架</li>
+        <li>
+            <div class="cate-title mt2">批量分组 : </div>
+            <div class="dropdown slide-down-select pull-left w130 mt2">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                    <em class="pull-left batch-group" data-id="0">默认分组 ({{group_list[0]["num"]}})</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 batch-group-list" role="menu" aria-labelledby="dropdownMenu17">
+                    {% for group in group_list %}
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="{{group['id']}}">{{group["name"]}} <span class="group-counts">({{group["num"]}})</span></a>
+                    </li>
+                    {% end %}
+                </ul>
+            </div>
+        </li>
+    </ul>
+    <ul class="goods-all-list">
 
+    </ul>
+    <div class="users-pagination list-pagination group">
+        <ul>
+            <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+            <li>
+                <span class="page-now">1</span>/<span class="page-total">1</span>
+            </li>
+            <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+            <li><input class="input-page form-control" type="text" placeholder="输入页码"></li>
+            <li><a href="javascript:;" class="jump-to">跳转</a></li>
+        </ul>
+    </div>
+</div>
+<div class="wrap-classify hidden">
+    <p class="c333 mt10 choose-text">添加新商品/选择商品分类</p>
+    <div class="subnav-box clearfix">
+        <ul class="subnav pull-left furit-type">
+            <li class="text-center s-fruit active" data-type="fruit"><a href="javascript:;">水果</a></li>
+            <li class="text-center s-dryfruit" data-type="ganguo"><a href="javascript:;">干果</a></li>
+            <li class="text-center s-other" data-type="other"><a href="javascript:;">其它</a></li>
+        </ul>
+        <div class="search-input input-group pull-right classify-input">
+            <input type="text" value="" placeholder="搜索商品分类" class="search-con form-control" id="search-classify"/>
+            <input type="submit" value="" class="search-btn form-control fruit-search"/>
+        </div>
+    </div>
+    <div class="wrap-fruit-select">
+        <div class="fruit-select">
+            <div class="cate-title mt2">水果分类排列方式 : </div>
+            <div class="dropdown slide-down-select pull-left w130 mt2 ml5">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                    <em title="{{current_shop.shop_name}}" class="pull-left select-now" id="9">颜色</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 pro-list" role="menu">
+                    <li  role="presentation" data-pro="color">
+                        <a class="item" href="javascript:;">颜色</a>
+                    </li>
+                    <li  role="presentation"  data-pro="nature">
+                        <a class="item" href="javascript:;">味性</a>
+                    </li>
+                    <li  role="presentation"  data-pro="length">
+                        <a class="item" href="javascript:;">名称字数</a>
+                    </li>
+                    <!--     <li  role="presentation"  data-pro="color">
+                            <a class="item" href="javascript:;">地理位置</a>
+                        </li> -->
+                    <li  role="presentation"  data-pro="garden">
+                        <a class="item" href="javascript:;">生物学分类</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="fruit-content">
+        <ul class="fruit-list">
+        </ul>
+    </div>
+</div>
+<div class="wrap-price-item hidden">
+    <div class="wrap-add-price mt10" data-first="" data-second="">
+        <p><a href="javascript:;" class="pull-right del-price-type">删除</a>售价<span class="price-index"></span> : </p>
+        <div class="mt10 group wrap-price">
+            <div class="iblock must short-slide">
+                <div class="cate-title mt2 c333">售出单位：</div>
+                <div class="dropdown slide-down-select pull-left mt2">
+                    <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                        <em title="" class="pull-left price-unit" data-id="4">kg</em>
+                        <span class="caret pull-right no-margin-left rotate0"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right price-unit-list" role="menu" aria-labelledby="dropdownMenu110">
+                        <li  role="presentation">
+                            <a class="item" href="javascript:;" data-id="1">个</a>
+                        </li>
+                        <li  role="presentation">
+                            <a class="item" href="javascript:;" data-id="2">斤</a>
+                        </li>
+                        <li  role="presentation">
+                            <a class="item" href="javascript:;" data-id="3">份</a>
+                        </li>
+                        <li  role="presentation">
+                            <a class="item" href="javascript:;" data-id="4">kg</a>
+                        </li>
+                        <li  role="presentation">
+                            <a class="item" href="javascript:;" data-id="5">克</a>
+                        </li>
+                        <li  role="presentation">
+                            <a class="item" href="javascript:;" data-id="6">升</a>
+                        </li>
+                        <li  role="presentation">
+                            <a class="item" href="javascript:;" data-id="7">箱</a>
+                        </li>
+                        <li  role="presentation">
+                            <a class="item" href="javascript:;" data-id="8">盒</a>
+                        </li>
+                        <li  role="presentation">
+                            <a class="item" href="javascript:;" data-id="9">件</a>
+                        </li>
+                        <li  role="presentation">
+                            <a class="item" href="javascript:;" data-id="10">框</a>
+                        </li>
+                        <li  role="presentation">
+                            <a class="item" href="javascript:;" data-id="11">包</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <span class="c333 must">数量 : <input type="text" class="price-num" value="0"></span>
+            <span class=" must"><span class="c333">售价 : </span><input class="current-price" type="text" value="0">元</span>
+            <span class=""><span class="c333">市场价 : </span><input class="market-price" type="text" value="0">元</span>
+        </div>
+    </div>
+</div>
+<ul class="clone-goods hidden">
+    <li class="goods-all-item">
+        <p class="all-item-title">添加日期 : <span class="goods-add-time"></span></p>
+        <div class="all-item-top">
+            <span class="check-box item-checkbox ml10" ></span>
+            <span class="item-name goods-goods-name"></span>
+            <div class="iblock goods-group">
+                <div class="cate-title mt2">商品分组：</div>
+                <div class="dropdown slide-down-select pull-left w130 mt2">
+                    <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                        <em class="pull-left c333 current-group" data-id="">默认分组</em>
+                        <span class="caret pull-right no-margin-left rotate0"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right w130 group-goods-lst" role="menu" aria-labelledby="dropdownMenu18">
+                    </ul>
+                </div>
+            </div>
+            <span class="txt-box mls">库存 : <span class="c333"><span class="stock-num">723</span><span class="stock-name stock-unit-name">个</span></span></span>
+            <span class="txt-box">待成交 : <span class="c333"><span class="stay-num">223</span><span class="stock-name">个</span></span></span>
+            <span class="switch-btn"><i></i>已<span class="up">上</span><span class="down">下</span>架</span>
+        </div>
+        <div class="all-item-cont group">
+            <div class="all-item-left fl">
+                <dl class="item-dl group">
+                    <dt class="fl">
+                        <img class="cur-goods-img" src="/static/images/TDSG.png" alt=""/>
+                        <a href="javascript:;" class="show-txtimg" data-text="">查看图文详情</a>
+                    </dt>
+                    <dd class="fl">
+                        <p>
+                            <span class="mr10">商品分类 : <span class="c333 goods-classify"></span></span>
+                            <span class="mr10">排序优先级 : <span class="c333 goods-priority"></span></span>
+                            <span class="mr10">商品限购 : <span class="c333 limit-num"></span></span>
+                        </p>
+                        <div class="item-goods-detail mt10 group">
+                            <span class="item-goods-title fl">商品介绍:</span>
+                            <p class="item-goods-txt c333 fl">
+                            </p>
+                        </div>
+                    </dd>
+                </dl>
+            </div>
+            <div class="all-item-right fl">
+                <p>
+                    <span class="mr10">商品点赞 : <span class="c333 dianzan">2233</span></span>
+                    <a class="mr10 hidden" href="javascript:;">商品评论 : <span class="goods-comment-num">22</span>条</a>
+                    <span class="mr10">销量 : <span class="c333"><span class="goods-vol">2233</span><span class="stock-name">个</span></span></span>
+                </p>
+                <div class="goods-price-list">
+                </div>
+            </div>
+            <div class="group"></div>
+            <p class="all-bm-group">
+                <a href="javascript:;" class="del-all-item">删除</a>
+                <a href="javascript:;" class="spread-all-item">推广商品</a>
+                <a href="javascript:;" class="eidt-all-item">编辑</a>
+            </p>
+            <div class="sw-er-tip all-position invisible">
+                <div class="top-arr">
+                    <span class="line1"></span>
+                    <span class="line2"></span>
+                </div>
+                <p class="er-text">商品链接</p>
+                <div class="wrap-ipt">
+                    <input type="text" class="sw-link-txt" value="http://senguo.cc/list" disabled/>
+                    <input type="button" class="sw-link-copy" value="复制链接"/>
+                </div>
+                <div class="wrap-er group">
+                    <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
+                    <div class="er-text lh80 fl">列表二维码</div>
+                    <div class="er-img fl er-code-img">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+</ul>
+<div class="pop-win pop-img-win">
+    <div class="pop-up-img" data-index="">
+        <div class="pop-img-top">
+            <p><span class="c333">本地图片 : </span>最多上传5张</p>
+            <ul class="item-img-lst group" id="item-img-lst">
+                <li class="add-img-box" id="add-img-box">
+                    <a href="javascript:;" class="add-item-list" id="add-img-btn">+</a>
+                </li>
+            </ul>
+            <!--待用，别删 -->
+            <!--p class="group mt10"><span class="c333">森果图片库 : </span><span class="red-txt">苹果</span></p>
+            <ul class="item-img-lst group sg-img-list">
+                <li class="img-bo img-box1">
+                    <div class="img-selected">已选</div>
+                    <img src="/static/images/anoa-1-md.gif" alt="商品图片"/>
+                    <a class="show-bigimg" data-src="/static/images/anoa-1-md.gif" href="javascript:;">预览大图</a>
+                </li>
+                <li class="img-bo img-box2">
+                    <div class="img-selected">已选</div>
+                    <img src="/static/images/anoa-1-md.gif" alt="商品图片"/>
+                    <a class="show-bigimg" data-src="/static/images/anoa-1-md.gif" href="javascript:;">预览大图</a>
+                </li>
+                <li class="img-bo img-box3">
+                    <div class="img-selected">已选</div>
+                    <img src="/static/images/anoa-1-md.gif" alt="商品图片"/>
+                    <a class="show-bigimg" href="javascript:;">预览大图</a>
+                </li>
+                <li class="img-bo img-box4">
+                    <div class="img-selected">已选</div>
+                    <img src="/static/images/anoa-1-md.gif" alt="商品图片"/>
+                    <a class="show-bigimg" href="javascript:;">预览大图</a>
+                </li>
+            </ul-->
+        </div>
+        <div class="wrap-pop-btn">
+            <a href="javascript:;" class="ok-btn" id="upload-img">确认上传</a>
+            <a href="javascript:;" class="cancel-btn">取消</a>
+        </div>
+    </div>
+</div>
+<div class="pop-win pop-editor">
+    <div class="wrap-kindeditor">
+        <textarea id="kindEditor" class="kindeditor"></textarea>
+        <div class="wrap-pop-btn">
+            <a href="javascript:;" class="ok-btn ok-editor">确定</a>
+            <a href="javascript:;" class="cancel-btn">取消</a>
+        </div>
+    </div>
+</div>
+<div class="pop-win pop-unit">
+    <div class="wrap-unit">
+        <div class="unit-box">
+            <p><span class="c333 mr10">单位换算</span>需要经过换算，让单位统一，保证库存与销量的统计保持一致</p>
+            <p class="mt10"><input type="text" class="w60 mr10" id="first_num" placeholder="填整数"/><span id="now-unit" class="c333 mr10">斤</span>=<input type="text" class="ml10 w60 mr10" id="second_num" placeholder="填整数"/> <span id="stock-unit" class="c333">个</span></p>
+            <p class="mt10">换算案例 : 5个苹果，重2斤，则填写 2斤=5个</p>
+            <p class="pl68">1份苹果有3个，则填写1份=3个</p>
+        </div>
+        <div class="wrap-pop-btn">
+            <a href="javascript:;" class="ok-btn ok-unit-box">确定</a>
+            <a href="javascript:;" class="cancel-btn">取消</a>
+        </div>
+    </div>
+</div>
+<div class="wrap-big-img">
+    <img src="/static/images/anoa-1-md.gif" alt="显示大图"/>
+</div>
+<div class="wrap-loading-box">
+    <div class="loading-box">
+        <div class="loader">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+        <div class="load-txt">加载中...</div>
+    </div>
+</div>
+{% end %}
+{% block js %}
+<script src="/static/js/third/jquery.zclip.min.js"></script>
+<script src="/static/js/third/qrcode.min.js"></script>
+<script src="{{static_url('js/plupload/plupload.full.min.js')}}"></script>
+<script src="{{static_url('js/plupload/i18n/zh_CN.js')}}"></script>
+<script src="{{static_url('js/editor/kindeditor-min.js')}}"></script>
+<script src="{{static_url('js/editor/zh_CN.js')}}"></script>
+<script src="{{static_url('js/qiniu.min.js')}}"></script>
+<script src="{{static_url('js/admin-goods-all.js')}}"></script>
 {% end %}

@@ -251,8 +251,12 @@ class _AccountApi(_CommonApi):
 			u.accountinfo.wx_country=wx_userinfo["country"]
 			u.accountinfo.wx_province=wx_userinfo["province"]
 			u.accountinfo.wx_city=wx_userinfo["city"]
-			u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
-			u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+			if wx_userinfo["headimgurl"] not in [None,'']:
+				u.accountinfo.headimgurl=wx_userinfo["headimgurl"]
+				u.accountinfo.headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+			else:
+				u.accountinfo.headimgurl=None
+				u.accountinfo.headimgurl_small = None
 			u.accountinfo.nickname = wx_userinfo["nickname"]
 
 			#####################################################################################
@@ -287,14 +291,19 @@ class _AccountApi(_CommonApi):
 		
 		# 基本账户中不存在，先创建基本信息，再添加到该用户账户中去
 		print("[微信登录]用户不存在，注册为新用户")
-		headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+		if wx_userinfo["headimgurl"] not in [None,'']:
+			headimgurl = wx_userinfo["headimgurl"]
+			headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+		else:
+			headimgurl = None
+			headimgurl_small = None
 		account_info = Accountinfo(
 			wx_unionid=wx_userinfo["unionid"],
 			wx_openid=wx_userinfo["openid"],
 			wx_country=wx_userinfo["country"],
 			wx_province=wx_userinfo["province"],
 			wx_city=wx_userinfo["city"],
-			headimgurl=wx_userinfo["headimgurl"],
+			headimgurl=headimgurl,
 			headimgurl_small = headimgurl_small,
 			nickname=wx_userinfo["nickname"],
 			sex = wx_userinfo["sex"])
@@ -560,6 +569,8 @@ class Shop(MapBase, _CommonApi):
 	marketing = relationship("Marketing", uselist=False)
 
 	super_temp_active = Column(Integer,default = 1) #1:receive the message from wx 0:do not receive#5.26
+
+	# group_priority = Column(String(50)) #[group.id,group index]
 
 	def __repr__(self):
 		return "<Shop: {0} (id={1}, code={2})>".format(
@@ -1098,6 +1109,10 @@ class FruitType(MapBase,  _CommonApi):
 	code = Column(String(128), default="", unique=True)
 	
 	name = Column(String(64))
+	color = Column(Integer,default=0)
+	length = Column(Integer,default=0)
+	garden = Column(Integer,default=0)
+	nature = Column(Integer,default=0)
 
 class ShopOnsalefruitLink(MapBase):
 	"""
@@ -1193,8 +1208,8 @@ class Order(MapBase, _CommonApi):
 	receiver = Column(String(64), nullable=False)
 	address_text = Column(String(1024), nullable=False)
 	message = Column(String(100)) #用户留言
-	status = Column(TINYINT, default=ORDER_STATUS.ORDERED)  # 订单状态:DELETED = 0,ORDERED = 1, JH = 2,SH1 = 3
-														   # #SH2 = 4,Received=5，FINISH = 6, AFTER_SALE = 10
+	status = Column(TINYINT, default=ORDER_STATUS.ORDERED)  # 订单状态:未付款 = －1, 已删除 = 0, 未处理 = 1, JH = 2, SH1 = 3
+														    # SH2 = 4, 已收货 = 5, 用户评价 = 6, 自动评价 = 7, AFTER_SALE = 10
 	type = Column(TINYINT) #订单类型 1:立即送 2：按时达
 	intime_period = Column(Integer,default = 30) #when type is 1,it's usefull
 	freight = Column(SMALLINT, default=0)  # 订单运费
@@ -1240,9 +1255,6 @@ class Order(MapBase, _CommonApi):
 			return None
 		if order:
 			fruits = eval(order.fruits)
-			mgoods = eval(order.mgoods)
-			# print(fruits)
-			# print(type(fruits))
 		if fruits:
 			charge_types = session.query(ChargeType).filter(ChargeType.id.in_\
 				(fruits.keys())).all()
@@ -1254,23 +1266,11 @@ class Order(MapBase, _CommonApi):
 				if fruits[int(charge_type.id)]==0:
 					continue
 				# print(fruits[int(charge_type.id)]['num'])
-				num = fruits[int(charge_type.id)]['num'] * charge_type.unit_num * charge_type.num
+				num = int(fruits[int(charge_type.id)]['num'] * (charge_type.select_num/charge_type.unit_num) * charge_type.num)
 				charge_type.fruit.storage+= num
 				charge_type.fruit.current_saled -=num
 				charge_type.fruit.saled -= num
 				print("[订单管理]取消订单，恢复库存数量(水果)：",num)
-		if mgoods:
-			#print("print mark 6:",mgoods,'**********************************')
-			charge_types = session.query(MChargeType).filter(MChargeType.id.in_(mgoods.keys())).all()
-			for charge_type in charge_types:
-				# print("before",charge_type.mgoods.storage,charge_type.mgoods.current_saled)
-				if mgoods[int(charge_type.id)]==0:
-					continue 
-				num =mgoods[int(charge_type.id)]['num'] *charge_type.unit_num * charge_type.num
-				charge_type.mgoods.storage += num
-				charge_type.mgoods.current_saled -= num
-				charge_type.mgoods.saled -= num
-				print("[订单管理]取消订单，恢复库存数量(其他)：",num)
 		session.commit()
 		return True
 
@@ -1325,7 +1325,7 @@ class Fruit(MapBase, _CommonApi):
 	saled = Column(Integer) #销量
 	storage = Column(Float)
 	favour = Column(Integer, default=0)  # 赞
-	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
+	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份 4:kg 5:克 6:升 7:箱 8:盒 9:件 10:框 11:包
 	tag = Column(TINYINT, default=TAG.NULL) #标签
 	img_url = Column(String(500))
 	intro = Column(String(100))
@@ -1333,7 +1333,7 @@ class Fruit(MapBase, _CommonApi):
 	limit_num =  Column(Integer, default=0) #max number could buy #5.27
 	add_time = Column(DateTime, default=func.now()) #5.27
 	delete_time = Column(DateTime) #5.27
-	group_id =  Column(Integer, default=0) #0:default group 1000:record group GoodsGroup.id #5.27
+	group_id =  Column(Integer, default=0) #0:default_group -1:record_group GoodsGroup.id #5.27
 	classify  = Column(Integer, default=0)  #:0:fruit 1:dry_fruit 3:other
 	temp_mgoods_id =  Column(Integer, default=0)  #to save mgoods_id for temp
 	detail_describe = Column(String(2000)) #goods detail
@@ -1342,6 +1342,7 @@ class Fruit(MapBase, _CommonApi):
 	charge_types = relationship("ChargeType") #支持多种计价方式
 	fruit_type = relationship("FruitType", uselist=False)
 	shop = relationship("Shop", uselist=False)
+
 
 #水果单品的计价类型
 class ChargeType(MapBase, _CommonApi):
@@ -1354,6 +1355,8 @@ class ChargeType(MapBase, _CommonApi):
 	unit_num = Column(Float, default=1)#单位换算
 	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 	market_price =  Column(Float)#市场价 #5.27
+	select_num = Column(Integer, default=1) #6.4
+	relate = Column(Float, default=1) # 库存换算关系
 
 	fruit = relationship("Fruit", uselist=False)
 
@@ -1370,11 +1373,17 @@ class GoodsGroup(MapBase, _CommonApi):
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
 	name =  Column(String(50))
-	priority =  Column(Integer)
 	status = Column(Integer,default = 1) #0:been deleted 1:normal
 	intro = Column(String(100))
 	create_time = Column(DateTime, default=func.now())
 
+class GroupPriority(MapBase, _CommonApi):
+	__tablename__ = "group_priority"
+	__table_args__ = {"extend_existing": True}
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
+	group_id = Column(Integer)
+	priority = Column(Integer)
 
 # 用户自定义的商品类型
 class Menu(MapBase, _CommonApi):

@@ -51,7 +51,7 @@ var shopItem=function (shops){
         var dishide = '';
         var distance = '';
         var link = '/'+shop_code;
-        if(lat == 0 || ulat == 0){
+        if(!lat || lat == 0 || !ulat || ulat == 0){
             dishide = "hidden";
         }else{
             distance = getDist(lat,lon);
@@ -232,7 +232,7 @@ function initProviceAndCityCode(p, c){
 }
 /*根据经纬度获取距离*/
 function getDist(lat,lng){
-    if(lat == 0) return false;
+    if(!lat || lat == 0) return false;
     var res = '';
     var pointA = new BMap.Point(ulat,ulng);  // 用户坐标
     var pointB = new BMap.Point(lat,lng);  // 店铺坐标

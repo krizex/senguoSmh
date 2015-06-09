@@ -24,7 +24,7 @@ $(document).ready(function(){
     if(send_day==1){
         if(create_year==year&&create_month==month&&create_day==day) $('.send_date').text('今天');
         else $('.send_date').hide();
-        if(status==5||status==6){
+        if(status==5||status==6||status==7){
             $('.send_date').text('');
         }
     }
@@ -32,7 +32,7 @@ $(document).ready(function(){
         if(create_year==year&&create_month==month&&create_day+1==day) $('.send_date').text('今天');
         else if(create_year==year&&create_month==month&&create_day==day) $('.send_date').text('明天');//下单模式选择了“明天”，但是日期到了“明天”的情况
         else $('.send_date').hide();
-        if(status==5||status==6){
+        if(status==5||status==6||status==7){
             $('.send_date').text('');
         }
     }
@@ -45,11 +45,28 @@ $(document).ready(function(){
     cancelOrder(order_id);
     confirmRemove();
 }).on("click","#go-alipay",function(){
-    if(isWeiXin()){
-        window.location.href="/customer/online/orderdetail?alipayUrl="+encodeURIComponent($(this).attr("data-url"))+"&order_id="+$("#cancel-order").attr("data-id");
-    }else{
-        window.location.href=$(this).attr("data-url");
-    }
+    var $this = $(this);
+    $.ajax({
+        url:"/customer/overtime?order_id="+$("#order-id").val(),
+        type:"get",
+        success:function(res){
+            if(res.success){
+                if(res.overtime == 1){
+                    noticeBox("当前订单15分钟未支付，已自动取消，请重新下单");
+                    setTimeout(function(){
+                        window.location.href="/"+res.shop_code;
+                    },2000);
+                }
+                else{
+                    if(isWeiXin()){
+                        window.location.href="/customer/online/orderdetail?alipayUrl="+encodeURIComponent($this.attr("data-url"))+"&order_id="+$("#cancel-order").attr("data-id");
+                    }else{
+                        window.location.href=$this.attr("data-url");
+                    }
+                }
+            }
+        }
+    });
 });
 function isWeiXin(){
     var ua = window.navigator.userAgent.toLowerCase();
@@ -69,20 +86,29 @@ function removeDom(){
 }
 function statusText(n){
     switch (n){
+        case -1:
+            $("#status-txt").text('未付款');
+            $(".order-wawa").css("left","0");
+            $(".order-line-grade").css("width","0");
+            $(".order-status-txt").css("left","0");
+            $(".tel-btn").hide();
+            break;
         case 0:
             $("#status-txt").text('已取消');
-            $(".order-wawa").css("left","0%");
-            $(".order-line-grade").css("width","0%");
-            $(".order-status-txt").css("left","0%");
+            $(".order-wawa").css("left","0");
+            $(".order-line-grade").css("width","0");
+            $(".order-status-txt").css("left","0");
             $(".tel-btn").show();
             break;
         case 1:
             $("#status-txt").text('已下单');
-            $(".order-wawa").css("left","0%");
-            $(".order-line-grade").css("width","0%");
-            $(".order-status-txt").css("left","0%");
+            $(".order-wawa").css("left","0");
+            $(".order-line-grade").css("width","0");
+            $(".order-status-txt").css("left","0");
             $(".tel-btn").show();
             break;
+        case 2:
+        case 3:
         case 4:
             $("#status-txt").text('配送中');
             $(".order-wawa").css("left","50%");
@@ -98,18 +124,12 @@ function statusText(n){
             $(".tel-btn").show();
             break;
         case 6:
+        case 7:
             $("#status-txt").text('已评价');
             $(".order-wawa").css("left","100%");
             $(".order-line-grade").css("width","100%");
             $(".order-status-txt").css("left","100%");
             $(".tel-btn").show();
-            break;
-        case -1:
-            $("#status-txt").text('未付款');
-            $(".order-wawa").css("left","0");
-            $(".order-line-grade").css("width","0");
-            $(".order-status-txt").css("left","0");
-            $(".tel-btn").hide();
             break;
     }
 }

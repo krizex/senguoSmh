@@ -173,6 +173,7 @@ function getCookie(key){
             return unescape(aCrumb[1]);
         }
     }
+    return '';
 }
 
 function SetCookie(name,value,days){
@@ -266,7 +267,7 @@ function stopPropagation(e) {
     }  
 }  
 //confirmbox
-getItem('/static/items/confirmBox.html?v=20150530',function(data){window.dataObj.confirmBox=data});
+getItem('/static/items/confirmBox.html?v=20160608',function(data){window.dataObj.confirmBox=data});
 var confirmBox=function(text,index,type,id){
     var $box=$(window.dataObj.confirmBox);
     $box.find('.message').text(text);

@@ -1,70 +1,71 @@
 {% extends 'detail-base.html' %}
-{% block title %}商品详情{% end %}
+{% block title %}商品名称-商品详情{% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/idangerous.swiper.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/market-goods.css')}}"/>
 {% end %}
 {% block header %}{% end %}
 {% block content %}
-<div class="wrap-goods-detail">
+{% import json%}
+<script>
+    window.dataObj.cart_fs = {% raw json.dumps(cart_fs) %}
+</script>
+{% if good %}
+<input type="hidden" value="{{shop_code}}" id="shop_code"/>
+<div class="wrap-goods-detail" data-id="{{good.id}}">
     <div class="img-list">
-        <a href="javascript:;" class="roll-bg back"><i></i></a>
-        <a href="javascript:;" class="roll-bg share"><i></i></a>
+        <a href="{{reverse_url('Market',shop_code)}}" class="roll-bg back add-cart"><i></i></a>
+        <!--a href="javascript:;" class="roll-bg share"><i></i></a-->
         <div class="swiper-container" id="swiper-container">
             <div class="swiper-wrapper">
+                {% if img_url %}
+                    {% for img in img_url%}
+                    <div class="swiper-slide item">
+                        <img src="{{img}}" alt=""/>
+                    </div>
+                    {% end %}
+                {% else %}
                 <div class="swiper-slide item">
-                    <img src="/static/images/TDSG.png" alt=""/>
+                    <img src="/static/images/furit.jpg" alt="图片详情"/>
                 </div>
-                <div class="swiper-slide item">
-                    <img src="/static/images/anoa-7-md.gif" alt=""/>
-                </div>
+                {% end %}
             </div>
         </div>
         <div class="pagination"></div>
     </div>
     <div class="wrap-goods-info">
-        <p class="goods-title">【新鲜的水果】 南非进口红心西瓜</p>
-        <p class="goods-info">南非西柚是我们公司自己在南非农场进口的，2015年的新
-            货已经到达中国了,我们从5月起开始大量发货了! 我们做
-            诚信的水果进口商和销售商,卖真正的南非西柚。</p>
+        <p class="goods-title">{{good.name or ''}}</p>
+        <p class="goods-info">{{good.intro or ''}}</p>
         <p class="goods-num">
-            <span class="zan">999</span>
-            <span>销量 999</span>
+            <span class="zan {% if good.favour_today %}zaned{% end %}" id="dianzan" data-flag="{{good.favour_today}}" data-id="{{good.id}}">{{good.favour or 0}}</span>
+            <span>销量 {{good.saled or 0}}</span>
         </p>
     </div>
     <ul class="wrap-choose-goods">
+        {% for charge in charge_types %}
         <li>
-            <span class="now-price">100元</span>
-            <span class="old-price">99元/500克</span>
-            <div class="want-num ">
+            <span class="now-price">{{charge['price']}}元</span>
+            <span class="old-price">{{charge['market_price']}}元/<span class="number">{{charge['num']}}</span>{{charge['unit']}}</span>
+            <div class="want-num" data-id="{{charge['id']}}" data-relate="{{charge['relate']}}">
                 <span class="minus minus-num">-</span>
                 <input type="text" pattern="\d*" novalidate autocorrect="off" value="1" disabled/>
                 <span class="add add-num">+</span>
             </div>
-            <div class="now-buy">立即购买</div>
+            <div class="now-buy" data-storage="{{good.storage}}">立即购买</div>
         </li>
-        <li>
-            <span class="now-price">100元</span>
-            <span class="old-price">99元/500克</span>
-            <div class="want-num ">
-                <span class="minus minus-num">-</span>
-                <input type="text" pattern="\d*" novalidate autocorrect="off" value="1" disabled/>
-                <span class="add add-num">+</span>
-            </div>
-            <div class="now-buy">立即购买</div>
-        </li>
+        {% end %}
     </ul>
     <ul class="goods-choose-lst group">
         <li class="active">商品详情</li>
-        <li>商品评价(20)</li>
+        <!-- <li>商品评价(20)</li> -->
     </ul>
     <ul class="goods-info-lst">
         <li class="goods-intro active">
-            <p>南非西柚是我们公司自己在南非农场进口的，2015年的新
-                货已经到达中国了,我们从</p>
-            <img src="/static/images/anoa-7-md.gif" alt=""/>
-            <p>南非西柚是我们公司自己在南非农场进口的，2015年的新
-                货已经到达中国了</p>
+            {% if good.detail_describe %}
+                {% raw good.detail_describe%}
+            {% else %}
+                <p class="txt-ac mt20">当前无商品详情！</p>
+            {% end %}
         </li>
         <li class="goods-comment">
             <ul class="comment-lst">
@@ -95,17 +96,20 @@
             </ul>
         </li>
     </ul>
-    <a href="javascript:;" class="shop-area" id="shop-area">
+    <a href="{{reverse_url('customerShopProfile',shop_code)}}" class="shop-area add-cart" id="shop-area">
         <span class="roll-bg shop-in">
             <i></i>
         </span>
-        <span>店铺：水果先生</span>
+        <span>店铺：{{shop_name}}</span>
     </a>
-    <a href="javascript:;" class="roll-bg cart-bg" id="cart-bg">
+    <a href="{{reverse_url('customerCart',shop_code)}}" class="roll-bg cart-bg add-cart" id="cart-bg">
         <i></i>
-        <span class="move-cart" id="cart-now-num">1</span>
+        <span class="move-cart" id="cart-now-num">0</span>
     </a>
 </div>
+{% else %}
+<p class="txt-ac mt20">当前商品不存在！</p>
+{% end %}
 {% end %}
 {% block other %}
 

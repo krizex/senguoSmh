@@ -48,8 +48,8 @@ class OnlineWxPay(CustomerBaseHandler):
 
 		charge_types = self.session.query(models.ChargeType).filter(
 			models.ChargeType.id.in_(eval(order.fruits).keys())).all()
-		mcharge_types = self.session.query(models.MChargeType).filter(
-			models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
+		# mcharge_types = self.session.query(models.MChargeType).filter(
+		# 	models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
 
 		if order.type == 2:
 			freight = order.shop.config.freight_on_time
@@ -65,11 +65,11 @@ class OnlineWxPay(CustomerBaseHandler):
 				sender_img = None
 		goods = []
 		f_d = eval(order.fruits)
-		m_d = eval(order.mgoods)
+		# m_d = eval(order.mgoods)
 		for f in f_d:
 			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-		for m in m_d:
-			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+		# for m in m_d:
+		# 	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('onlineWxPay')
 		print("[微信支付]redirect_uri：",path)
@@ -242,6 +242,9 @@ class OrderDetail(CustomerBaseHandler):
 		alipayUrl = self.args['alipayUrl']
 		order_id = self.args['order_id']
 		print("[支付宝支付]order_id：",order_id)
+		order = self.session.query(models.Order).filter_by(id = order_id).first()
+		if not order:
+			return self.send_fail('order not found')
 		return self.render("customer/alipay-tip.html",alipayUrl = alipayUrl,order_id = order_id)
 
 class JustOrder(CustomerBaseHandler):
@@ -269,6 +272,7 @@ class OnlineAliPay(CustomerBaseHandler):
 	def get(self):
 		if self._action == 'AliPayCallback':
 			return self.handle_onAlipay_callback()
+		# 在线支付提交订单
 		elif self._action == "AliPay":
 			print("[支付宝支付]进入AliPay")
 			order_id = int(self.get_cookie("order_id"))

@@ -105,11 +105,17 @@ class GlobalBaseHandler(BaseHandler):
 	def timestamp_to_str(self, timestamp):
 		return time.strftime("%Y-%m-%d %H:%M", time.gmtime(timestamp))
 
+	#通过经纬度计算距离
 	def get_distance(self,lat1,lon1,lat2,lon2):
-		hsinX = math.sin((lon1 - lon2) * 0.5)
-		hsinY = math.sin((lat1 - lat2) * 0.5)
-		h = hsinY * hsinY + (math.cos(lat1) * math.cos(lat2) * hsinX * hsinX)
-		return 2 * math.atan2(math.sqrt(h), math.sqrt(1 - h)) * 6367000
+		EARTH_RADIUS = 6378.137
+		radLat1 = lat1 * math.pi / 180.0
+		radLat2 = lat2 * math.pi / 180.0
+		a = radLat1 - radLat2
+		b = lon1 * math.pi / 180.0 - lon2 * math.pi / 180.0
+		s = 2 * math.asin(math.sqrt(math.pow(math.sin(a / 2), 2) + math.cos(radLat1) * math.cos(radLat2) * math.pow(math.sin(b / 2), 2)))
+		s = s * EARTH_RADIUS
+		s*= 1000
+		return s;
 
 
 	def code_to_text(self, column_name, code):
@@ -118,11 +124,11 @@ class GlobalBaseHandler(BaseHandler):
 		#将服务区域的编码转换为文字显示
 		if column_name == "service_area":
 			if code & models.SHOP_SERVICE_AREA.HIGH_SCHOOL:
-				text += "高校 "
+				text += "高校"
 			if code & models.SHOP_SERVICE_AREA.COMMUNITY:
-				text += "社区 "
+				text += "社区"
 			if code & models.SHOP_SERVICE_AREA.TRADE_CIRCLE:
-				text += "商圈 "
+				text += "商圈"
 			if code & models.SHOP_SERVICE_AREA.OTHERS:
 				text += "其他"
 			return text
@@ -229,9 +235,107 @@ class GlobalBaseHandler(BaseHandler):
 		data['status']        = shop.status
 
 		return data
+
+
+	def getUnit(self,unit):
+		if unit == 1:
+			name ='个' 
+		elif unit == 2 :
+			name ='斤'
+		elif unit == 3 :
+			name ='份'
+		elif unit == 4 :
+		 	name ='kg'
+		elif unit == 5 :
+			name ='克'
+		elif unit == 6 :
+			name ='升'
+		elif unit == 7 :
+		 	name ='箱'
+		elif unit == 8 :
+			name ='盒'
+		elif unit == 9 :
+			name ='件'
+		elif unit == 10 :
+		 	name ='框'
+		elif unit == 11 :
+			name ='包'
+		else:
+			name =''
+		return name
  
+	def getGoodsData(self,datalist):
+		data = []
+		shop_id = self.current_shop.id
+		for d in datalist:
+			add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else ''
+			delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
+			if d.img_url:
+				img_url= d.img_url.split(";")
+			else:
+				img_url = ''
+			intro = '' if not d.intro else d.intro
+			detail_describe = '' if not d.detail_describe else d.detail_describe
 
+			group_id = d.group_id
+			if  group_id == 0:
+				group_name = "默认分组"
+			elif group_id == -1:
+				group_name = "店铺推荐"
+			else:
+				group_name = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id=shop_id,status=1).first().name
 
+			charge_types = []
+			for charge in d.charge_types:
+				market_price ="" if not charge.market_price else charge.market_price
+				unit = charge.unit
+				unit_name = self.getUnit(unit)
+				charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
+					'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price,'select_num':charge.select_num})
+
+			_unit = d.unit
+			_unit_name = self.getUnit(_unit)
+			data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
+				'saled':d.saled,'storage':d.storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
+				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
+				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name})
+		return data
+
+	def getGoodsOne(self,d):
+		data = {}
+		shop_id = self.current_shop.id
+		add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else ''
+		delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
+		if d.img_url:
+			img_url= d.img_url.split(";")
+		else:
+			img_url = ''
+		intro = '' if not d.intro else d.intro
+		detail_describe = '' if not d.detail_describe else d.detail_describe
+
+		group_id = d.group_id
+		if  group_id == 0:
+			group_name = "默认分组"
+		elif group_id == -1:
+			group_name = "店铺推荐"
+		else:
+			group_name = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id=shop_id,status=1).first().name
+
+		charge_types = []
+		for charge in d.charge_types:
+			market_price ="" if not charge.market_price else charge.market_price
+			unit = charge.unit
+			unit_name = self.getUnit(unit)
+			charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
+				'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price,'select_num':charge.select_num})
+
+		_unit = int(d.unit)
+		_unit_name = self.getUnit(_unit)
+		data = {'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
+			'saled':d.saled,'storage':d.storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
+			'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
+			'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name}
+		return data
 
 
 class FrontBaseHandler(GlobalBaseHandler):
@@ -378,13 +482,12 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		if not user_id:
 			self._user = None
 		else:
-			# print(user_id,'get_current_user: user_id')
+			# Logger.info("_AccountBaseHandler get_current_user: user_id: ",user_id)
 			self._user = self.__account_model__.get_by_id(self.session, user_id)
-			# print(self._user,"self._user")
+			# Logger.info("_AccountBaseHandler get_current_user: self._user: ",self._user)
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:
-				Logger.warn("Suspicious Access", "may be trying to fuck you")
-				
+				Logger.warn("_AccountBaseHandler get_current_user: self._user not found")
 		return self._user
 
 	_ARG_DEFAULT = []
@@ -407,17 +510,28 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
 
 
-		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*10,
+		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*100,
 
-							  policy={"callbackUrl": "http://test123.senguo.cc/fruitzone/imgcallback",
+							  policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
 									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
-#        token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
+		# token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
+		print("[七牛授权]发送Token：",token)
+		return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
+
+
+	def get_editor_token(self, action, id):
+		q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
+
+
+		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*100,
+							  policy={"returnUrl": "http://test123.senguo.cc/admin/editorCallback",
+									  "returnBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 		print("[七牛授权]发送Token：",token)
 		return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 
 	def get_qiniu_token(self,action,id):
 		q = qiniu.Auth(ACCESS_KEY,SECRET_KEY)
-		token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
+		token = q.upload_token(BUCKET_SHOP_IMG,expires = 60*30*100)
 		print("[七牛授权]获得Token：",token)
 		return token
 
@@ -509,13 +623,13 @@ class SuperBaseHandler(_AccountBaseHandler):
 
 	def shop_close(self):
 		# print(self)
-		print('close shop')
+		print("[定时任务]关闭店铺")
 		session = models.DBSession()
-		close_shop_list = []
 		try:
 			shops = session.query(models.Shop).filter_by(status = 1).all()
 		except:
-			print("[超级管理员]shops error")
+			shops = None
+			print("[定时任务]关闭店铺错误")
 		if shops:
 			for shop in shops:
 				shop_code = shop.shop_code
@@ -528,23 +642,23 @@ class SuperBaseHandler(_AccountBaseHandler):
 				# print(x)
 				now = datetime.datetime.now()
 				days = (now -x).days
-				if days >14:
-					if shop_code =='not set':
+				if days > 14:
+					if (shop_code == 'not set') or (len(fruits)+len(menus) == 0):
 						shop.status = 0
-						close_shop_list.append(shop_code)
-					if len(fruits) == 0 and len(menus) == 0:
-						shop.status = 0
-						close_shop_list.append(shop_code)
-					try:
-						follower_count = session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
-					except:
-						return self.send_fail('follower_count error')
-					if follower_count <2:
-						shop.status =0
-						close_shop_list.append(shop_code)
-				session.commit()
-			print("[超级管理员]关闭店铺：",close_shop_list)
+						print("[定时任务]店铺关闭成功：",shop_id,"未设置店铺号/无商品")
+					else:
+						try:
+							follower_count = session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
+						except:
+							return self.send_fail('follower_count error')
+						if follower_count < 2:
+							shop.status = 0
+							print("[定时任务]店铺关闭成功：",shop_id,"关注数小于2")							
+
+			session.commit()
+			print("[定时任务]关闭店铺完成")
 			# return self.send_success(close_shop_list = close_shop_list)
+			
 	def get_login_url(self):
 		return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		# return self.reverse_url('customerLogin')
@@ -684,7 +798,7 @@ class StaffBaseHandler(_AccountBaseHandler):
 			shop_id = self.current_user.shops[0].id
 			self.set_secure_cookie("staff_shop_id", str(shop_id), domain=ROOT_HOST_NAME)
 		elif not next((x for x in self.current_user.shops if x.id == shop_id), None):
-			return self.finish('你不是这个店铺的员工,可能已经被解雇了')
+			return self.finish('你不是这个店铺的员工，可能已经被解雇了')
 		self.shop_id = shop_id
 		self.shop_name = next(x for x in self.current_user.shops if x.id == shop_id).shop_name
 		self.hirelink = self.session.query(models.HireLink).filter_by(
@@ -703,21 +817,20 @@ class CustomerBaseHandler(_AccountBaseHandler):
 	__wexin_oauth_url_name__ = "customerOauth"
 	__wexin_check_url_name__ = "customerwxBind"
 	@tornado.web.authenticated
-	def save_cart(self, charge_type_id, shop_id, inc, menu_type):
+	def save_cart(self, charge_type_id, shop_id, inc):
 		"""
 		用户购物车操作函数，对购物车进行修改或者删除商品：
 		charge_type_id：要删除的商品的计价类型
 		shop_id：用户在每个店铺都有一个购物车
 		inc：购物车操作类型
-		menu_type：商品类型（fruit：系统内置，menu：商家自定义）
+		# menu_type：商品类型（fruit：系统内置，menu：商家自定义）
 		#inc==0 删,inc==1:减，inc==2：增；type==0：fruit，type==1：menu
 		"""
 		cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
-		if menu_type == 0:
-			self._f(cart, "fruits", charge_type_id, inc)
-		else:
-			self._f(cart, "mgoods", charge_type_id, inc)
-		if not (eval(cart.fruits) or eval(cart.mgoods)):#购物车空了
+
+		self._f(cart, "fruits", charge_type_id, inc)
+		
+		if not eval(cart.fruits):#购物车空了
 			return True
 		return False
 	def get_login_url(self):
@@ -754,10 +867,9 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		"""
 		try:cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
 		except:cart = None
-		if not cart or (cart.fruits == "" and cart.mgoods == ""): #购物车为空
+		if not cart or (cart.fruits == ""): #购物车为空
 			return None, None
 		fruits={}
-		mgoodses={}
 		if cart.fruits:
 			d = eval(cart.fruits)
 			charge_types=self.session.query(models.ChargeType).\
@@ -770,22 +882,13 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					del d[key]
 			cart.update(session=self.session, fruits=str(d)) #更新购物车
 			for charge_type in charge_types:
+				if charge_type.fruit.img_url:
+					img_url=charge_type.fruit.img_url.split(";")[0]
+				else:
+					img_url= None
 				fruits[charge_type.id] = {"charge_type": charge_type, "num": d[charge_type.id],
-										  "code": charge_type.fruit.fruit_type.code}
-		if cart.mgoods:
-			d = eval(cart.mgoods)
-			mcharge_types=self.session.query(models.MChargeType).\
-				filter(models.MChargeType.id.in_(d.keys())).all()
-			mcharge_types = [x for x in mcharge_types if x.mgoods.active == 1]#过滤掉下架商品
-			l = [x.id for x in mcharge_types]
-			keys = list(d.keys())
-			for key in keys:
-				if key not in l:
-					del d[key]
-			cart.update(session=self.session, mgoods=str(d))
-			for mcharge_type in mcharge_types:
-				mgoodses[mcharge_type.id]={"mcharge_type": mcharge_type, "num": d[mcharge_type.id]}
-		return fruits, mgoodses
+										  "code": charge_type.fruit.fruit_type.code,"img_url":img_url}
+		return fruits
 
 
 	@property
@@ -1065,11 +1168,11 @@ class WxOauth2:
 				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
 			"topcolor": "#FF0000",
 			"data": {
-				"first": {"value": "您好，您所申请的店铺“%s”已经通过审核！" % shop_name, "color": "#173177"},
+				"first": {"value": "您好，您所申请的店铺『%s』已经通过审核！" % shop_name, "color": "#173177"},
 				"keyword1": {"value": name, "color": "#173177"},
 				"keyword2": {"value": phone, "color": "#173177"},
 				"keyword3": {"value": time, "color": "#173177"},
-				"remark": {"value": "务必点击详情，查看使用教程！", "color": "#FF4040"}}
+				"remark": {"value": "请务必点击详情，查看使用教程！", "color": "#FF4040"}}
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
@@ -1089,7 +1192,7 @@ class WxOauth2:
 				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
 			"topcolor": "#FF0000",
 			"data": {
-				"first": {"value": "您好，您所申请的店铺“%s”未通过审核！" % shop_name, "color": "#173177"},
+				"first": {"value": "您好，您所申请的店铺『%s』未通过审核。" % shop_name, "color": "#173177"},
 				"keyword1": {"value": name, "color": "#173177"},
 				"keyword2": {"value": phone, "color": "#173177"},
 				"keyword3": {"value": time, "color": "#173177"},
@@ -1116,8 +1219,8 @@ class WxOauth2:
 				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
 			"topcolor": "#FF0000",
 			"data": {
-				"first": {"value": "您好，“%s”" % name, "color": "#173177"},
-				"keyword1": {"value": "您被 “%s”添加为管理员！" % shop_name, "color": "#173177"},
+				"first": {"value": "您好，%s" % name, "color": "#173177"},
+				"keyword1": {"value": "您被『%s』添加为管理员！" % shop_name, "color": "#173177"},
 				"keyword3": {"value": time, "color": "#173177"},
 				}
 		}
@@ -1159,7 +1262,7 @@ class WxOauth2:
 		if data["errcode"] != 0:
 			print("[模版消息]发送给管理员失败：",data)
 			return False
-		print("[模版消息]发送给管理员成功")
+		# print("[模版消息]发送给管理员成功")
 		return True
 
 	@classmethod
@@ -1171,7 +1274,7 @@ class WxOauth2:
 			   + "送货地址：" + address  +'\n\n'\
 			   + "请及时配送订单。"
 		order_type_temp = int(order_type)
-		order_type = "即时送" if order_type_temp == 1 else "按时达"
+		order_type = "立即送" if order_type_temp == 1 else "按时达"
 		postdata = {
 			'touser':touser,
 			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
@@ -1192,7 +1295,32 @@ class WxOauth2:
 		if data["errcode"] != 0:
 			print("[模版消息]发送给配送员失败：",data)
 			return False
-		print("[模版消息]发送给配送员成功")
+		# print("[模版消息]发送给配送员成功")
+		return True
+
+	@classmethod
+	def post_batch_msg(cls,touser,staff_name,shop_name,count):
+		postdata = {
+			'touser':touser,
+			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
+			'url':staff_order_url,
+			"data":{
+				"first":{"value":"配送员 {0} 您好，店铺『{1}』有 {2} 个新的订单需要配送。".format(staff_name,shop_name,count),"color": "#173177"},
+				"tradeDateTime":{"value":"批量信息","color":"#173177"},
+				"orderType":{"value":"批量信息","color":"#173177"},
+				"customerInfo":{"value":"批量信息","color":"#173177"},
+				"orderItemName":{"value":"订单编号","color":"#173177"},
+				"orderItemData":{"value":"批量信息","color":"#173177"},
+				"remark":{"value":"\n有多个订单需要配送，具体信息请点击详情进入查看。","color":"#173177"},
+			}
+		}
+		access_token = cls.get_client_access_token()
+		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
+		data = json.loads(res.content.decode("utf-8"))
+		if data["errcode"] != 0:
+			print("[模版消息]发送给配送员失败：",data)
+			return False
+		# print("[模版消息]发送给配送员成功")
 		return True
 
 
@@ -1219,8 +1347,7 @@ class WxOauth2:
 		if data["errcode"] != 0:
 			print("[模版消息]发送给客户失败：",data)
 			return False
-		print("[模版消息]发送给客户成功")
-		# print('order send SUCCESS')
+		# print("[模版消息]发送给客户成功")
 		return True
 
 	@classmethod

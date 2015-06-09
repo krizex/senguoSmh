@@ -52,6 +52,8 @@ $(document).ready(function(){
             $(".sw-er-tip").addClass("invisible");
         }
     });
+}).on("click",".sw-er-tip",function(e){
+    e.stopPropagation();
 }).on("click","#spread-list",function(e){
     e.stopPropagation();
     $(".sw-er-tip").addClass("invisible");
