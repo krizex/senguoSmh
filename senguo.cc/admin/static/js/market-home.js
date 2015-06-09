@@ -424,7 +424,7 @@ var goodsList=function(page,action){
                 if(window.dataObj.goods_item==undefined){
                     getItem('/static/items/customer/market-goods-item.html?v=20150532',function(data){
                         window.dataObj.goods_item=data;
-                        getItem('/static/items/customer/charge-item.html?v=20150530',function(data){
+                        getItem('/static/items/customer/charge-item.html?v=20150532',function(data){
                             window.dataObj.charge_item=data;
                             getItem('/static/items/customer/classify_item.html?v=20150530',function(data){
                                 window.dataObj.classify_item=data;

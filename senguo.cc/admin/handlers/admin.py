@@ -182,7 +182,7 @@ class SwitchShop(AdminBaseHandler):
 			.filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
 			shop.satisfy = satisfy
 			shop.comment_count = comment_count
-			shop.goods_count = fruit_count+mgoods_count	
+			shop.goods_count = fruit_count
 			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()
 			shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100)
 			shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
@@ -1303,6 +1303,7 @@ class Goods(AdminBaseHandler):
 		current_shop = self.current_shop
 		shop_id = current_shop.id
 		qiniuToken = self.get_qiniu_token('goods',_id)
+		shop_code = current_shop.shop_code
 		if action == "all":
 			try:
 				goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.active!=0)
@@ -1417,7 +1418,7 @@ class Goods(AdminBaseHandler):
 			dealing_count =goods.filter(models.Fruit.current_saled!=0).count()
 			c_list.append({"all_count":all_count,"on_count":on_count,"off_count":off_count,"sold_count":sold_count,"dealing_count":dealing_count})
 
-			return self.render("admin/goods-all.html",context=dict(subpage="goods"),token=qiniuToken,group_list=group_list,c_list=c_list)
+			return self.render("admin/goods-all.html",context=dict(subpage="goods"),token=qiniuToken,group_list=group_list,c_list=c_list,shop_code=shop_code)
 						
 		elif action == "classify":	
 			if self.args["type"] != [] :
@@ -2241,10 +2242,11 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 										 'comment_create_date', 'start_time', 'end_time', 'create_date']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
-			d['mgoods'] = eval(d['mgoods'])
+			# d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["send_time"] = order.send_time
 			d["customer_id"] = order.customer_id
+			d['nickname'] = self.session.query(models.Customer).filter_by(id=order.customer_id).first().accountinfo.nickname
 
 			#yy
 			d["shop_new"] = 0
