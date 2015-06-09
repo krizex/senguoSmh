@@ -48,6 +48,9 @@ $(document).ready(function(){
 }).on("click",".spread-group",function(e){
     e.stopPropagation();
     $(this).closest(".right-link").children(".sw-er-tip").toggleClass("invisible");
+}).on("mousedown mousemove",".sw-er-tip",function(e){
+    e.stopPropagation();
+    return false;
 }).on("click",".del-group",function(){
     curGroup = $(this).closest("li");
     $("#del-win").modal('show');
@@ -189,6 +192,11 @@ $(document).ready(function(){
 //drag
 function drag(obj){
     obj.onmousedown=function(ev){
+        if($(ev.target).closest(".sw-er-tip").length>0){
+            return false;
+        }else{
+            $(".sw-er-tip").addClass("invisible");
+        }
         var $this = $(obj);
         var oEvent = ev || event;
         var disX = oEvent.clientX-$this.position().left;
