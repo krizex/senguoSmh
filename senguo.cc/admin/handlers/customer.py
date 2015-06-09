@@ -853,8 +853,8 @@ class Market(CustomerBaseHandler):
 		group_list=[]
 		goods = self.session.query(models.Fruit).filter_by(shop_id = shop.id)
 		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop.id).order_by(models.GroupPriority.priority).all()
-		default_count = goods.filter_by(group_id=0).count()
-		record_count = goods.filter_by(group_id=-1).count()
+		default_count = goods.filter_by(group_id=0,active=1).count()
+		record_count = goods.filter_by(group_id=-1,active=1).count()
 		if group_priority:
 			for g in group_priority:
 				group_id = g.group_id
@@ -865,7 +865,7 @@ class Market(CustomerBaseHandler):
 				else:
 					_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop.id,status = 1).first()
 					if _group:
-						goods_count = goods.filter_by( group_id = _group.id ).count()
+						goods_count = goods.filter_by( group_id = _group.id,active=1).count()
 						if goods_count !=0 :
 							group_list.append({'id':_group.id,'name':_group.name})
 		else:
