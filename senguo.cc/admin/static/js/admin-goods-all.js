@@ -91,11 +91,12 @@ $(document).ready(function(){
 }).on("click",".spread-all-item",function(e){
     e.stopPropagation();
     $(this).closest(".all-bm-group").next(".sw-er-tip").toggleClass("invisible");
-}).on("click",".dropdown-menu .item",function(){
+}).on("click",".dropdown-menu .item",function(){//下拉切换
     var price_unit = $(this).html();
     var $this = $(this);
-    if($(this).closest("ul").hasClass("price-unit-list")){
+    if($(this).closest("ul").hasClass("price-unit-list")){//售价方式切换
         $(this).closest("ul").prev("button").children("em").html(price_unit).attr("data-id",$(this).attr("data-id"));
+        $(this).closest(".wrap-add-price").find(".now-unit").html(price_unit);
         var $item = $(this).closest(".goods-all-item");
         curPrice = $(this).closest(".wrap-add-price");
         var cur_unit = $item.find(".current-unit").html();
@@ -124,6 +125,8 @@ $(document).ready(function(){
         }else{
             $this.closest("ul").prev("button").children("em").html(price_unit).attr("data-id",$this.attr("data-id"));
         }
+    }else if($(this).closest("ul").hasClass("group-edit-goods-lst")){
+        $this.closest("ul").prev("button").children("em").html(price_unit).attr("data-id",$this.attr("data-id"));
     }
 }).on("click",".del-img",function(){//删除图片
     var $list = $(this).closest(".item-img-lst");
@@ -149,7 +152,7 @@ $(document).ready(function(){
     var index = goods_item.index();
     var group = {id:goods_item.find(".current-group").attr("data-id"),text:goods_item.find(".current-group").html()};
     var switch_btn = {id:goods_item.find(".switch-btn").attr("data-id"),text:goods_item.find(".switch-btn").attr("class")};
-    $.getItem("/static/items/admin/goods-item.html?2059",function(data){
+    $.getItem("/static/items/admin/goods-item.html?2259",function(data){
         var goodsItem = data;
         var $item = $(goodsItem).clone();
         $item.find(".current-group").attr("data-id",group.id).html(group.text);
@@ -160,10 +163,16 @@ $(document).ready(function(){
         goodsEdit = true;
     });
 }).on("click",".cancel-edit-goods",function(){
-    var _this = $(this);
-    _this.closest(".goods-all-item").prev(".goods-all-item").show();
-    _this.closest(".goods-all-item").remove();
+    var $this = $(this);
+    if($this.closest(".goods-all-item").attr("data-id")){
+        $this.closest(".goods-all-item").prev(".goods-all-item").show();
+        $this.closest(".goods-all-item").remove();
+    }else{
+        cancelAddGoods();
+    }
     goodsEdit = false;
+}).on("click",".cancel-add-goods",function(){
+    cancelAddGoods();
 }).on("click",".ok-edit-goods",function(){  //保存编辑后的商品
     var _this = $(this);
     var $item = _this.closest(".goods-all-item");
@@ -177,28 +186,42 @@ $(document).ready(function(){
         Tip("请先完成正在编辑的商品");
         return false;
     }
-    $(".wrap-classify").prevAll().addClass("hidden");
+    $(".wrap-classify").prevAll("div").addClass("hidden");
     $(".wrap-classify").removeClass("hidden");
+    $(this).addClass("hidden");
+    $(".goods-step").children(".step1").removeClass("c999").addClass("c333");
+    $(".goods-step").children(".step2").removeClass("c333").addClass("c999");
 }).on("click",".fruit-item-list li",function(){//选择分类并添加商品
     var classify = $(this).html();
     var class_id = $(this).attr("data-id");
-    $.getItem("/static/items/admin/goods-item.html?2059",function(data){
+    $.getItem("/static/items/admin/goods-item.html?2369",function(data){
         var goodsItem = data;
         var $item = $(goodsItem).clone();
         $item.find(".goods-classify").html(classify).attr("data-id",class_id);
-        $item.find(".group-goods-lst").html($("#group-goods-lst").children(".presentation").clone());
-        $item.find(".group-goods-lst").find(".group-counts").hide();
+        $item.find(".group-edit-goods-lst").html($("#group-goods-lst").children(".presentation").clone());
+        $item.find(".group-edit-goods-lst").find(".group-counts").hide();
+        $item.find(".switch-btn").addClass("hidden");
         $item.find(".all-item-title").remove();
-        if($(".goods-all-list").children().size()>0){
+        $item.find(".choose-classify").removeClass("hidden");
+        $(".goods-step").children(".step1").removeClass("c333").addClass("c999");
+        $(".goods-step").children(".step2").removeClass("c999").addClass("c333");
+        /*if($(".goods-all-list").children().size()>0){
             $(".goods-all-list").children(".goods-all-item").first().before($item);
         }else{
             $(".goods-all-list").append($item);
-        }
+        }*/
+        $(".goods-classify-box").addClass("hidden");
+        $(".new-goods").empty().append($item).removeClass("hidden");
         curItem = $item;
         goodsEdit = true;
-        $(".wrap-classify").addClass("hidden");
-        $(".wrap-classify").prevAll().removeClass("hidden");
+       // $(".wrap-classify").addClass("hidden");
+        //$(".wrap-classify").prevAll("div").removeClass("hidden");
     });
+}).on("click",".choose-classify",function(){//重选分类
+    $(".goods-step").children(".step1").removeClass("c999").addClass("c333");
+    $(".goods-step").children(".step2").removeClass("c333").addClass("c999");
+    $(".goods-classify-box").removeClass("hidden");
+    $(".new-goods").empty().addClass("hidden");
 }).on("click","#upload-img",function(){ //保存上传后的图片
     var $list = $("#item-img-lst").children(".img-bo");
     var $item = curItem;
@@ -214,18 +237,23 @@ $(document).ready(function(){
     $(".pop-img-win").hide();
 }).on("click",".show-txtimg",function(){
     var isEditor = $(this).attr("data-flag");
-    if(editor){
-        editor.html($(this).attr("data-text"));
-        if(isEditor=="true"){
-            $(".ke-icon-image").removeClass("hidden");
+    var sHtml = $(this).attr("data-text");
+    if(sHtml){
+        if(editor){
+            editor.html($(this).attr("data-text"));
+            if(isEditor=="true"){
+                $(".ke-icon-image").removeClass("hidden");
+            }else{
+                $(".ke-icon-image").addClass("hidden");
+            }
+            $(".pop-editor").show();
         }else{
-            $(".ke-icon-image").addClass("hidden");
+            initEditor($(this));
         }
-        $(".pop-editor").show();
+        curEditor = $(this);
     }else{
-        initEditor($(this));
+        Tip("当前商品无商品详情");
     }
-    curEditor = $(this);
 }).on("click",".pop-editor",function(e){
     if($(e.target).closest(".wrap-kindeditor").size()==0){
         $(".pop-editor").hide();
@@ -269,6 +297,8 @@ $(document).ready(function(){
         return false;
     }else{
         curPrice.attr("data-first",firstNum).attr("data-second",secondNum);
+        curPrice.find(".first-num").html(firstNum);
+        curPrice.find(".second-num").html(secondNum);
         $(".pop-unit").hide();
     }
 }).on("click","#batch-up",function(){//批量上架&下架
@@ -337,11 +367,26 @@ $(document).ready(function(){
         }
     }
 });
+//取消添加商品
+function cancelAddGoods(){
+    $(".wrap-classify").prevAll("div").removeClass("hidden");
+    $(".wrap-classify").addClass("hidden");
+    $("#add-goods").removeClass("hidden");
+    $(".goods-step").children(".step1").removeClass("c999").addClass("c333");
+    $(".goods-step").children(".step2").removeClass("c333").addClass("c999");
+    $(".new-goods").empty().addClass("hidden");
+    $(".goods-classify-box").removeClass("hidden");
+}
 //切换库存单位
 function switchUnit($list,id,name){
     for(var i=0; i<$list.size(); i++){
-        $list.eq(i).attr("data-first","1").attr("data-second","1");
-        $list.eq(i).find(".price-unit").attr("data-id",id).html(name);
+        var $this = $list.eq(i);
+        $this.attr("data-first","1").attr("data-second","1");
+        $this.find(".price-unit").attr("data-id",id).html(name);
+        $this.find(".first-num").html("1");
+        $this.find(".second-num").html("1");
+        $this.find(".now-unit").html(name);
+        $this.find(".stock-unit").html(name);
     }
 }
 //添加&编辑商品
@@ -349,6 +394,7 @@ function dealGoods($item,type){
     var limit_num = $item.find(".limit_num").val();
     var priority = $item.find(".goods-priority").val();
     var name = $item.find(".goods-goods-name").val();
+    var info = $item.find(".goods-info").val();
     if(isNaN(limit_num) || parseInt(limit_num)<0){
         return Tip("商品限购必须为数字");
     }
@@ -357,6 +403,9 @@ function dealGoods($item,type){
     }
     if(name.length>10 || $.trim(name)==""){
         return Tip("商品名字不能为空且不能超过10个字");
+    }
+    if(info.length>150){
+        return Tip("商品简介不能超过150个字");
     }
     var imgUrls = $item.find(".drag-img-list").find("img");
     var imgList = {};
@@ -403,7 +452,6 @@ function dealGoods($item,type){
     }
     var group_name = $item.find(".current-group").html();
     var group_id = $item.find(".current-group").attr("data-id");
-    var info = $item.find(".goods-info").val();
     var storage = $item.find(".stock-num").val();
     var unit = $item.find(".current-unit").attr("data-id");
     var fruit_type_id = $item.find(".goods-classify").attr("data-id");
@@ -492,6 +540,9 @@ function initEditGoods($item,index){
             item.attr("data-id",price.id);
             item.attr("data-first",price.unit_num);
             item.attr("data-second",price.select_num);
+            item.find(".first-num").html(price.unit_num);
+            item.find(".second-num").html(price.select_num);
+            item.find(".now-unit").html(price.unit_name);
             item.find(".price-index").html(j+1);
             item.find(".price-unit").html(price.unit_name).attr("data-id",price.unit);
             item.find(".price-num").val(price.num);
@@ -502,13 +553,14 @@ function initEditGoods($item,index){
     }
     $item.find(".stock-num").val(goods.storage);
     $item.find(".current-unit").html(goods.unit_name).attr("data-id",goods.unit);
+    $item.find(".stock-unit").html(goods.unit_name);
     $item.find(".goods-classify").html(goods.fruit_type_name).attr("data-id",goods.fruit_type_id);
     $item.find(".goods-info").val(goods.intro);
     $item.find(".show-txtimg").attr("data-text",goods.detail_describe);
     $item.find(".limit_num").val(goods.limit_num);
     $item.find(".goods-priority").val(goods.priority);
-    $item.find(".group-goods-lst").html($("#group-goods-lst").children(".presentation").clone());
-    $item.find(".group-goods-lst").find(".group-counts").hide();
+    $item.find(".group-edit-goods-lst").html($("#group-goods-lst").children(".presentation").clone());
+    $item.find(".group-edit-goods-lst").find(".group-counts").hide();
 }
 //编辑完成
 function finishEditGoods($item,data){
@@ -688,7 +740,9 @@ function initEditor($obj){
             ],
             afterCreate: function(){
                 this.sync();
-                if($obj){
+                if($obj.attr("data-flag")=="true"){
+                    $(".ke-icon-image").removeClass("hidden");
+                }else{
                     $(".ke-icon-image").addClass("hidden");
                 }
             },

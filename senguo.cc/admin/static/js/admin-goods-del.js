@@ -65,11 +65,16 @@ $(document).ready(function(){
         }
     }
 }).on("click",".show-txtimg",function(){ //查看图文详情
-    if(editor){
-        editor.html($(this).attr("data-text"));
-        $(".pop-editor").show();
+    var sHtml = $(this).attr("data-text");
+    if(sHtml){
+        if(editor){
+            editor.html($(this).attr("data-text"));
+            $(".pop-editor").show();
+        }else{
+            initEditor($(this).attr("data-text"));
+        }
     }else{
-        initEditor($(this).attr("data-text"));
+        Tip("当前商品无商品详情");
     }
 }).on("click",".pop-editor",function(e){
     if($(e.target).closest(".wrap-kindeditor").size()==0){
