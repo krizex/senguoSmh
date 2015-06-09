@@ -968,16 +968,13 @@ class Market(CustomerBaseHandler):
 			).order_by(models.GroupPriority.priority,models.Fruit.priority.desc(),models.Fruit.add_time.desc())
 		
 		fruits = fruits.filter(models.Fruit.active == 1,models.Fruit.shop_id == shop_id).distinct()
-		for fruit in fruits:
-			print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
+		# for fruit in fruits:
+		# 	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
 		count_fruit =fruits.distinct().count()
-		print(count_fruit,'count_fruit')
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		if total_page == page:
 			nomore = True
-		print(total_page)
 		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
-		print(fruits,offset,page_size)
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruits_data,nomore=nomore)
 
