@@ -238,7 +238,7 @@ $(document).ready(function(){
 }).on("click",".show-txtimg",function(){
     var isEditor = $(this).attr("data-flag");
     var sHtml = $(this).attr("data-text");
-    if(sHtml){
+    if(isEditor=="true"){
         if(editor){
             editor.html($(this).attr("data-text"));
             if(isEditor=="true"){
@@ -250,9 +250,22 @@ $(document).ready(function(){
         }else{
             initEditor($(this));
         }
-        curEditor = $(this);
     }else{
-        Tip("当前商品无商品详情");
+        if(sHtml){
+            if(editor){
+                editor.html($(this).attr("data-text"));
+                if(isEditor=="true"){
+                    $(".ke-icon-image").removeClass("hidden");
+                }else{
+                    $(".ke-icon-image").addClass("hidden");
+                }
+                $(".pop-editor").show();
+            }else{
+                initEditor($(this));
+            }
+        }else{
+            Tip("当前商品无商品详情");
+        }
     }
 }).on("click",".pop-editor",function(e){
     if($(e.target).closest(".wrap-kindeditor").size()==0){
