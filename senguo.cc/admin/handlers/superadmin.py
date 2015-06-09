@@ -841,10 +841,11 @@ class Balance(SuperBaseHandler):
 		# print(person_num,'haaha')
 
 		for item in cash_list:
-			cash_on = cash_on+item.value
+			cash_on += item.value
 		for item in shop_list:
-			total_balance = total_balance + item.shop_balance
+			total_balance += item.shop_balance
 
+		cash_on = format(cash_on,'.2f')
 		total_balance = format(total_balance,'.2f')
 		return self.render('superAdmin/balance-detail.html',cash_times=cash_times,cash_success=cash_success,\
 			total_balance=total_balance,cash_on=cash_on,context=dict(page="detail"))
@@ -1034,16 +1035,3 @@ class ApplyCash(SuperBaseHandler):
 		return self.send_success(history = history)
 
 		
-
-
-
-
-
-
-
-
-
-
-
-
-
