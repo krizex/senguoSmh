@@ -41,13 +41,13 @@ def print_time(args):
 
 def main():
 
-	countTime = Pysettimer(print_time,(),10,True)
+	countTime = Pysettimer(print_time,(),60,True)
 	countTime.start()
 
-	mytime = Pysettimer(order_comment,(),60*10,True)
+	mytime = Pysettimer(order_comment,(),60*60,True)
 	mytime.start()
 
-	shopTime = Pysettimer(SuperBaseHandler.shop_close,(),60*10,True)
+	shopTime = Pysettimer(SuperBaseHandler.shop_close,(),60*60,True)
 	shopTime.start()
 
 	deletToken = Pysettimer(delete,(),60*10,True)
