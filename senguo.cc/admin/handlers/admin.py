@@ -1664,7 +1664,7 @@ class Goods(AdminBaseHandler):
 		elif action == "apply_cookie":
 			return self.send_qiniu_token("apply_cookie",int(data["goods_id"]))
 
-		elif action in ["add_charge_type", "edit_active", "edit_goods", "default_goods_img","delete_goods"]:  # fruit_id
+		elif action in ["add_charge_type", "edit_active", "edit_goods", "default_goods_img","delete_goods","change_group"]:  # fruit_id
 			try:goods = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).one()
 			except:return self.send_error(404)
 			if goods.shop != self.current_shop:
