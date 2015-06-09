@@ -105,7 +105,7 @@ $(document).ready(function(){
                 num=0;
                 setTimeout(function(){
                     _this.closest(".want-num").hide();
-                },600);
+                },300);
                 // $("#cart-now-num").addClass("move-cart");
                 var cart_now=parseInt($("#cart-now-num").html());
                 $("#cart-now-num").html(cart_now-1);
