@@ -37,7 +37,7 @@ def delete(args):
 	session.commit()
 
 def print_time(args):
-	print time.strftime('%H:%M:%S')
+	print(time.strftime('%H:%M:%S'))
 
 def main():
 
