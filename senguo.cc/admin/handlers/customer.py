@@ -999,7 +999,7 @@ class Market(CustomerBaseHandler):
 
 		fruits = self.session.query(models.Fruit).outerjoin(models.Shop,models.Fruit.shop_id == models.Shop.id,\
 			).outerjoin(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id).filter(models.Fruit.shop_id == shop_id,\
-			models.Fruit.active == 1)
+			models.Fruit.active == 1).order_by(models.GroupPriority.priority,models.Fruit.priority.desc(),models.Fruit.add_time.desc())
 
 		print(fruits.distinct(models.Fruit.id).count(),'dddddddddddddddddd')
 		
