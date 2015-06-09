@@ -35,7 +35,7 @@ $(document).ready(function(){
         var id=parseInt($this.siblings(".want-num").attr('data-id'));
         var relate=parseFloat($this.parents("li").find(".want-num").attr('data-relate'));
         var unit_num=parseFloat($this.parents("li").find('.number').text());
-        var storage=parseFloat($this.attr("data-storage"))
+        var storage=parseFloat($this.attr("data-storage"));
         var change_num=relate*unit_num;
         if(storage<change_num){
             return noticeBox("库存不足啦~~");
@@ -63,10 +63,14 @@ $(document).ready(function(){
         var num = parseInt($this.prev("input").val());
         var relate=parseFloat($this.parents(".want-num").attr('data-relate'));
         var unit_num=parseFloat($this.parents("li").find('.number').text());
-        var storage=parseFloat($this.parents("li").find('.now-buy').attr("data-storage"))
+        var storage=parseFloat($this.parents("li").find('.now-buy').attr("data-storage"));
+        var limit_num=parseInt($this.parents(".wrap-goods-detail").attr('data-limit'));
         var change_num=relate*unit_num*num;
         if(storage<change_num){
             return noticeBox("库存不足啦~~");
+        }
+        if(limit_num>0&&num==limit_num){
+            return  noticeBox('商品限购数量'+limit_num);
         }
         $this.parents("li").find('.now-buy').attr({"data-storage":storage-change_num})
         if(isNaN(num)){
@@ -85,12 +89,12 @@ $(document).ready(function(){
         var num = parseInt($(this).next("input").val());
         var relate=parseFloat($this.parents(".want-num").attr('data-relate'));
         var unit_num=parseFloat($this.parents("li").find('.number').text());
-        var storage=parseFloat($this.parents("li").find('.now-buy').attr("data-storage"))
+        var storage=parseFloat($this.parents("li").find('.now-buy').attr("data-storage"));
         var change_num=relate*unit_num*num;
         // if(storage<change_num){
         //     return noticeBox("库存不足啦~~");
         // }
-        $this.parents("li").find('.now-buy').attr({"data-storage":storage+change_num})
+        $this.parents("li").find('.now-buy').attr({"data-storage":storage+change_num});
         if(isNaN(num)){
             noticeBox("别调戏我哦，请输入数字类型");
         }else{
@@ -186,8 +190,8 @@ function cartNum(cart_ms){
             var charge = item.eq(j);
             var id = charge.data('id');
             if (id == cart_ms[key][0]) {
-                    $(".now-buy").addClass("r70");
-                    $(".now-buy").prev(".want-num").show().addClass("w90");
+                    $(".now-buy").eq(j).addClass("r70");
+                    $(".now-buy").eq(j).prev(".want-num").show().addClass("w90");
                     charge.find('input').val(cart_ms[key][1]);
                // charge.siblings('.now-buy').hide();
             }

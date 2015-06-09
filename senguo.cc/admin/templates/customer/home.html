@@ -65,9 +65,7 @@
 <div class="wrap-goods-box" id="wrap-goods-box">
     <div class="goods-box">
          {% for group in context['group_list'] %}
-         {% if group['id'] != -1 %}
          <p class="text-white no-mar-btom classify-title font18 text-center bg-green hidden classify-{{group['id']}}">{{group['name']}}</p>
-         {% end %}
         <ul class="goods-list-{{group['id']}} fruit-list goods-list" >
         </ul> 
         {% end %}

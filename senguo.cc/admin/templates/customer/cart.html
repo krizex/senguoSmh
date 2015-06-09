@@ -10,7 +10,7 @@
     <div class="bg-box">
         <ul class="cart-list set-w100-fle mt42 m-b0">
             {% for key in cart_f %}
-            <li class="cart-list-item set-w100-fle fruit_item text-grey m-b5 {{cart_f[key]['code']}}">
+            <li class="cart-list-item set-w100-fle fruit_item text-grey m-b5 {{cart_f[key]['code']}}" data-limit="{{cart_f[key]['limit_num']}}">
                 <div class="box bg set-w100-fle">
                     {% if cart_f[key]['img_url'] %}
                     <img src="/static/images/holder.png?v=20150330" class="goods-img pull-left w15 lazy_img" data-original="{{cart_f[key]['img_url']}}?imageView/1/w/170/h/170"/>

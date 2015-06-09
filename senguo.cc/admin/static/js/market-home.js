@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    $('.classify-title').first().hide();
     var shop_logo=$('#shop_imgurl').attr('data-img');
     if(parseInt($("#shop_status").val())==3){
         modalNotice("店铺休息中，暂不接收新订单");
@@ -24,32 +25,32 @@ $(document).ready(function(){
         var bullets = document.getElementById('position').getElementsByTagName('li');
     }
     /*var notice_con=window.dataObj.notices;
-     if(typeof(notice_con)!='undefined'){
-     $.getItem('/static/items/customer/notice-item.html?v=20150530',function(data){
-     $('.notice-board').show();
-     window.dataObj.notice_item=data;
-     var notice_item=window.dataObj.notice_item;
-     for(var i=0;i<notice_con.length;i++){
-     var summary=notice_con[i][0];
-     var detail=notice_con[i][1];
-     var item=$(notice_item);
-     item.find('.title').text(summary);
-     item.find('.notice-detail').val(detail);
-     $('.swipe-wrap').append(item);
-     $('#position').append('<li></li>');
-     }
-     $('#position li').first().addClass('on');
-     if($('#position li').length>0){
-     var slider =
-     Swipe(document.getElementById('slider'), {
-     auto: 3000,
-     continuous: true,
-     callback: function(pos) {
-     var i = bullets.length;
-     while (i--) {
-     bullets[i].className = ' ';
-     }
-     bullets[pos].className = 'on';
+    if(typeof(notice_con)!='undefined'){
+        $.getItem('/static/items/customer/notice-item.html?v=20160608',function(data){
+            $('.notice-board').show();
+            window.dataObj.notice_item=data;
+            var notice_item=window.dataObj.notice_item;
+            for(var i=0;i<notice_con.length;i++){
+                var summary=notice_con[i][0];
+                var detail=notice_con[i][1];
+                var item=$(notice_item);
+                item.find('.title').text(summary);
+                item.find('.notice-detail').val(detail);
+                $('.swipe-wrap').append(item);
+                $('#position').append('<li></li>');
+            }
+            $('#position li').first().addClass('on');
+            if($('#position li').length>0){
+                var slider =
+                    Swipe(document.getElementById('slider'), {
+                        auto: 3000,
+                        continuous: true,
+                        callback: function(pos) {
+                            var i = bullets.length;
+                            while (i--) {
+                                bullets[i].className = ' ';
+                            }
+                            bullets[pos].className = 'on';
 
      }
      });
@@ -479,7 +480,7 @@ var fruitItem=function(box,fruits,type){
     var favour_today=fruits['favour_today'];
     var limit_num=fruits['limit_num'];
     if(!code) code='TDSG';
-    $item.attr({'data-id':id,'data-type':type,'data-storage':storage,'data-num':storage,'data-favour':favour_today}).addClass(code);
+    $item.attr({'data-id':id,'data-type':type,'data-storage':storage,'data-num':storage,'data-favour':favour_today,'data-limit':limit_num}).addClass(code);
     $item.find('.fruit_intro').val(intro);
     $item.find('.fruit-name').text(name);
     if(saled>9999) $item.find('.number').text('9999+');
@@ -588,6 +589,7 @@ function goodsNum(target,action){
     var relate=parseFloat(target.parents('.num_box').siblings('.charge-type').attr('data-relate'));
     var unit_num=parseFloat(target.parents('.num_box').siblings('.charge-type').find('.num').text());
     var change_num=relate*unit_num*num;
+    var limit_num=parseInt(parent.attr('data-limit'));
     if(action==1&&num<=0) {num=0;target.addClass('disable');}
     if(action==2)
     {
@@ -597,6 +599,9 @@ function goodsNum(target,action){
         else if(storage>0){
             if(storage-change_num<0){
                 return  noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',target);
+            }
+            if(limit_num>0&&num==limit_num){
+                return  noticeBox('商品限购数量'+limit_num);
             }
             num++;
             item.val(num);

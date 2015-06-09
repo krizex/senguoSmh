@@ -108,7 +108,7 @@ function stopPropagation(e) {
 } 
 
 ///confirmbox
-getItem('/static/items/confirmBox.html?v=20150530',function(data){window.dataObj.confirmBox=data});
+getItem('/static/items/confirmBox.html?v=20160608',function(data){window.dataObj.confirmBox=data});
 var confirmBox=function(text,index,type){
         var $box=$(window.dataObj.confirmBox);
         $box.find('.message').text(text);

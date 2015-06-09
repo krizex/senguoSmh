@@ -1357,7 +1357,7 @@ class Goods(AdminBaseHandler):
 				filter_status2 = self.args["filter_status2"]
 
 				if filter_status == "all":
-					goods = goods
+					goods = goods.order_by(models.Fruit.active)
 				elif filter_status =="on":
 					goods = goods.filter_by(active = 1)
 				elif filter_status =="off":
@@ -1664,7 +1664,7 @@ class Goods(AdminBaseHandler):
 		elif action == "apply_cookie":
 			return self.send_qiniu_token("apply_cookie",int(data["goods_id"]))
 
-		elif action in ["add_charge_type", "edit_active", "edit_goods", "default_goods_img","delete_goods"]:  # fruit_id
+		elif action in ["add_charge_type", "edit_active", "edit_goods", "default_goods_img","delete_goods","change_group"]:  # fruit_id
 			try:goods = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).one()
 			except:return self.send_error(404)
 			if goods.shop != self.current_shop:
@@ -1731,10 +1731,19 @@ class Goods(AdminBaseHandler):
 					charge_old.delete()
 					self.session.commit()
 					for charge_type in data["charge_types"]:
-						unit_num = int(charge_type["unit_num"]) if charge_type["unit_num"] else 1
-						select_num = int(charge_type["select_num"]) if charge_type["select_num"] else 1
-						market_price = charge_type["market_price"] if charge_type["market_price"] else 0
-						relate = int(charge_type["select_num"])/int(charge_type["unit_num"])
+						if charge_type["unit_num"] and charge_type["unit_num"] !='':
+							unit_num = int(charge_type["unit_num"])
+						else:
+							unit_num = 1
+						if charge_type["select_num"] and charge_type["select_num"] !='':
+							select_num = int(charge_type["select_num"])
+						else:
+							select_num = 1
+						if charge_type["market_price"] and charge_type["market_price"] !='':
+							market_price = int(charge_type["market_price"])
+						else:
+							market_price = 0
+						relate = select_num/unit_num
 						charge_types = models.ChargeType(
 												fruit_id=int(data["goods_id"]),
 												price=charge_type["price"],
@@ -1911,7 +1920,7 @@ class editorCallback(AdminBaseHandler):
 			for value in info.split("&"):
 				data.append(value.split("="))
 			key = data[0][1].replace('"','').strip()
-			imgurl = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/'+str(key)
+			imgurl = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/'+str(key)+'?imageView2/2/w/700'
 		return self.write('{"error":0, "url": "'+imgurl+'"}')
 
 class editorFileManage(AdminBaseHandler):

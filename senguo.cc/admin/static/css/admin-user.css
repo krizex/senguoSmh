@@ -3,9 +3,9 @@
 
 .group-select{width:74px;height:26px;color:#666;}
 .groups{margin-top:10px;margin-right:20px;}
-.users-list-action{padding:8px 0 12px;border:1px solid #eee;border-bottom:none;}
+.users-list-action{padding:10px 0 10px;border:1px solid #eee;border-bottom:none;}
 .users-list-action .check-all{float:left;margin:9px 3px 0 15px;}
-.users-list-action .move{display:inline-block;margin-top:7px;margin-left:10px;}
+.users-list-action .move{display:inline-block;margin-top:3px;margin-left:10px;}
 
 .users-list{height:auto;border:1px solid #eee;border-top:none;}
 .users-list .users-list-item{height:auto;border-top:1px solid #eee;}
@@ -22,7 +22,7 @@
 .users-list li .show-info .user-info .user-info-con .user-level{width:24px;height:14px;background:#f7c468;}
 .users-list li .show-info .user-info .user-info-con .level-price{font-weight:bold;}
 .users-list li .show-info .user-info  .user-info-con .user-account{background:url("../images/container-icon2.png") no-repeat;margin-left:10px;padding-left:20px;font-weight:bold;}
-.users-list li .show-info .history-order{text-decoration:underline;line-height:50px;}
+.users-list li .show-info .history-order{line-height:50px;}
 
 .users-list li .hide-info{height:auto;border-top:1px solid #eee;}
 .users-list li .hide-info .personal-info{padding:0 50px;margin-top:10px;width:210px;}
