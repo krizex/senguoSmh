@@ -182,7 +182,7 @@ class SwitchShop(AdminBaseHandler):
 			.filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
 			shop.satisfy = satisfy
 			shop.comment_count = comment_count
-			shop.goods_count = fruit_count+mgoods_count	
+			shop.goods_count = fruit_count
 			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()
 			shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100)
 			shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
@@ -2241,10 +2241,11 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 										 'comment_create_date', 'start_time', 'end_time', 'create_date']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
-			d['mgoods'] = eval(d['mgoods'])
+			# d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["send_time"] = order.send_time
 			d["customer_id"] = order.customer_id
+			d['nickname'] = self.session.query(models.Customer).filter_by(id=order.customer_id).first().accountinfo.nickname
 
 			#yy
 			d["shop_new"] = 0
