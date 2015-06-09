@@ -427,7 +427,7 @@ function dealGoods($item,type){
     if(isNaN(priority) || parseInt(priority)>9 || parseInt(priority)<0){
         return Tip("优先级必须为0-9的数字");
     }
-    if(name.length>10 || $.trim(name)==""){
+    if(name.length>12 || $.trim(name)==""){
         return Tip("商品名字不能为空且不能超过10个字");
     }
     if(info.length>150){

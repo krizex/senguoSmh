@@ -66,7 +66,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .cart-bg>span{font-size: 12px;color: #fff;background-color: #ce6c5a;border-radius: 50%;display:block;position: absolute;top: -4px;right: -4px;height: 16px;line-height: 15px;min-width: 16px;padding: 0 4px;opacity: 1;-webkit-transition:all .3s ease-out;text-align: center;}
 .cart-bg .move-cart{width: 30px;height: 30px;top: -110px;right:100px;line-height: 30px;text-align: center;opacity: 0;-webkit-transition:none;}
 .wrap-goods-info{padding: 10px;}
-.goods-title{font-size: 14px;color: #221814;margin-bottom: 5px;}
+.goods-title{font-size: 18px;color: #221814;margin-bottom: 5px;}
 .goods-info{font-size: 14px;color: #989898;line-height: 18px;}
 .goods-num{font-size: 14px;margin-top: 8px;text-align: right;color: #989898;}
 .goods-num .zan{display: inline-block;cursor:pointer;padding-left: 16px;height: 16px;background-image: url('/static/images/icon_love.png');background-repeat: no-repeat;background-size: 14px;background-position: 0 2px;}

@@ -98,9 +98,9 @@ textarea{border-color:#eee;}
 .must:before{content: '*';color: #f25f5f;position: absolute;right:100%;}
 .item-img-lst>li{float: left;width: 60px;margin-right: 15px;position: relative;}
 .item-img-lst .add-img-box{position: static !important;}
-.item-img-lst>li img{width: 60px;height: 60px;}
+.item-img-lst>li img{width: 60px;height: 60px;border-radius: 2px;}
 .item-img-lst .show-bigimg{display: block;text-align: center;font-size: 12px;}
-.add-item-list{background-color: #ccc;color: #fff;font-size: 65px;display: block;height: 60px;text-align: center;line-height: 50px;}
+.add-item-list{background-color: #ccc;color: #fff;font-size: 56px;display: block;height: 60px;text-align: center;line-height: 48px;border-radius: 2px;}
 .add-item-list:hover,.add-item-list:visited,.add-item-list:link{color: #fff;}
 .edit-item-right{width: 55%;-webkit-box-sizing: border-box;padding-left: 25px;}
 .wrap-textarea{width: 360px;margin-top: 5px;}
