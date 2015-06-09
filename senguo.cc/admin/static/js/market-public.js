@@ -371,6 +371,34 @@ Modal.prototype.modal=function(type){
         $target.addClass('fade').removeClass('in').css({'display':'none'});
     }
 }
+
+//modal notice
+function modalNotice(notice){
+    var item =  '<div class="modal in" id="notice-box" style="display:block">'+
+                    '<div class="modal-dialog anim-bounceIn">'+
+                        '<div class="modal-content bg-white">'+
+                            '<div class="modal-top"><img src="/static/images/info_top.png"/></div>'+
+                            '<div class="modal-header set-width-float">'+
+                                '<button type="button" class="close dismiss-notice">✕</button>'+
+                                '<h2 class="modal-title  text-center line48">温馨提示</h2>'+
+                            '</div>'+
+                            '<div class="modal-body set-width-float text-center">'+
+                                '<p class="detail font14 text-center">{{notice}}</p>'+
+                            '</div>'+
+                            '<div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>'+
+                        '</div>'+
+                    '</div>'+
+                '</div>';
+    var render = template.compile(item);
+    var content = render({notice:notice});
+    $('body').append(content);
+    $("#container,#nav").css({'-webkit-filter':'blur(3px)'});
+    $(document).on('click','.dismiss-notice',function(){
+        $("#container,#nav").removeAttr("style");
+        $('#notice-box').remove();
+    });
+}
+
 //点选动画
 function pulse(target){
     target.removeClass('anim-pulse').addClass('anim-pulse').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function(){
@@ -381,31 +409,5 @@ function pulse(target){
 function wobble(target){
     target.removeClass('anim-wobble').addClass('anim-wobble').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function(){
         target.removeClass('anim-wobble');
-    });
-}
-//modal notice
-function modalNotice(notice){
-    var item='<div class="modal in" id="notice-box" style="display:block">'+
-                        '<div class="modal-dialog anim-bounceIn">'+
-                            '<div class="modal-content bg-white">'+
-                                '<div class="modal-top"><img src="/static/images/info_top.png"/></div>'+
-                                '<div class="modal-header set-width-float">'+
-                                    '<button type="button" class="close dismiss-notice">✕</button>'+
-                                    '<h2 class="modal-title  text-center line48">温馨提示</h2>'+
-                                '</div>'+
-                                '<div class="modal-body set-width-float text-center">'+
-                                    '<p class="detail font14 text-center">{{notice}}</p>'+
-                                '</div>'+
-                                '<div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>'+
-                            '</div>'+
-                        '</div>'+
-                    '</div>';
-    var render = template.compile(item);
-    var content = render({notice:notice});
-    $('body').append(content);
-    $("#container,#nav").css({'-webkit-filter':'blur(3px)'});
-    $(document).on('click','.dismiss-notice',function(){
-        $("#container,#nav").removeAttr("style");
-        $('#notice-box').remove();
     });
 }
