@@ -273,6 +273,7 @@ $(document).ready(function(){
             Tip("当前商品无商品详情");
         }
     }
+    curEditor = $(this);
 }).on("click",".pop-editor",function(e){
     if($(e.target).closest(".wrap-kindeditor").size()==0){
         $(".pop-editor").hide();

@@ -45,7 +45,7 @@
         {% for charge in charge_types %}
         <li>
             <span class="now-price">{{charge['price']}}元</span>
-            <span class="old-price"><span class="market-price">{{charge['market_price']}}元</span>/<span class="number">{{charge['num']}}</span>{{charge['unit']}}</span>
+            <span class="old-price">{% if charge['market_price'] and charge['market_price']>0 %}<span class="market-price">{{charge['market_price']}}元</span>{% end %}/<span class="number">{{charge['num']}}</span>{{charge['unit']}}</span>
             <div class="want-num" data-id="{{charge['id']}}" data-relate="{{charge['relate']}}">
                 <span class="minus minus-num">-</span>
                 <input type="text" pattern="\d*" novalidate autocorrect="off" value="1" readonly="readonly" />
@@ -56,7 +56,7 @@
         {% end %}
     </ul>
     <ul class="goods-choose-lst group">
-        <li class="active">商品详情</li>
+        <li class="active">图文详情</li>
         <!-- <li>商品评价(20)</li> -->
     </ul>
     <ul class="goods-info-lst">
@@ -64,7 +64,7 @@
             {% if good.detail_describe %}
                 {% raw good.detail_describe%}
             {% else %}
-                <p class="txt-ac mt20">当前无商品详情！</p>
+                <p class="txt-ac mt20">当前商品无图文详情！</p>
             {% end %}
         </li>
         <li class="goods-comment">

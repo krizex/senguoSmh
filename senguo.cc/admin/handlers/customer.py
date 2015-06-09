@@ -926,9 +926,10 @@ class Market(CustomerBaseHandler):
 				
 
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
+				saled = fruit.saled if fruit.saled else 0
 
 				data.append({'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,\
-					'storage':fruit.storage,'tag':fruit.tag,'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':fruit.saled,'favour':fruit.favour,\
+					'storage':fruit.storage,'tag':fruit.tag,'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':saled,'favour':fruit.favour,\
 					'favour_today':favour_today,'group_id':fruit.group_id,'limit_num':fruit.limit_num})
 			return data
 
@@ -956,8 +957,10 @@ class Market(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments("page?:int","search?:str")
 	def search_list(self):
+		import urllib
 		page = int(self.args["page"])
-		name = self.args['search']
+		name = urllib.parse.unquote(self.args['search'])
+		print(name)
 		page_size = 10
 		nomore = False
 		offset = (page-1) * page_size
@@ -970,8 +973,6 @@ class Market(CustomerBaseHandler):
 		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active=1).filter(models.Fruit.name.like("%%%s%%" % name)).order_by(models.Fruit.add_time.desc())
 		count_fruit = fruits.count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		print(page)
-		print(total_page)
 		if total_page <= page:
 			nomore = True
 		fruits = fruits.offset(offset).limit(page_size).all()

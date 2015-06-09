@@ -253,7 +253,7 @@ function is_weixin(){
     $.getUrlParam = function (name, default_value) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
         var r = window.location.search.substr(1).match(reg);
-        if (r != null) return unescape(r[2]); return default_value || null;
+        if (r != null) return decodeURI(r[2]); return default_value || null;
     }
 })(Zepto);
 

@@ -101,7 +101,6 @@ $(document).ready(function(){
     //get infomations of goods and push into html
     var link_group=$.getUrlParam("group");
     var link_search=$.getUrlParam("search");
-    console.log(encodeURI('天天'));
     if(link_group!= null){
         window.dataObj.page=1;
         window.dataObj.action=6;
@@ -112,9 +111,8 @@ $(document).ready(function(){
     else if(link_search != null){
         window.dataObj.page=1;
         window.dataObj.action=9;
-        _search = encodeURI('天天');
+        _search = link_search;
         goodsList(1,9);
-        console.log(link_search);
     }else{
          goodsList(1,5); 
     }
@@ -421,7 +419,7 @@ var scrollLoading=function(){
         }
         else if(nomore==true){
             if(window.dataObj.action==9){
-                $('.loading').html("~无搜索结果 ( > < )~").show();
+                $('.loading').html("~没有更多结果了 ( > < )~").show();
             }else{
                 $('.loading').html("~没有更多商品了呢 ( > < )~").show();
             }
@@ -448,7 +446,7 @@ var goodsList=function(page,action){
                 nomore = res.nomore
                 if(nomore == true){
                     if(action==9){
-                        $('.loading').html("~无搜索结果 ( > < )~").show();
+                        $('.loading').html("~没有更多结果了 ( > < )~").show();
                     }else{
                         $('.loading').html("~没有更多商品了呢 ( > < )~").show();
                     }
