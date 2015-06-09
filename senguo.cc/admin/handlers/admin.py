@@ -1357,7 +1357,7 @@ class Goods(AdminBaseHandler):
 				filter_status2 = self.args["filter_status2"]
 
 				if filter_status == "all":
-					goods = goods
+					goods = goods.order_by(models.Fruit.active)
 				elif filter_status =="on":
 					goods = goods.filter_by(active = 1)
 				elif filter_status =="off":

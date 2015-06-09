@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    $('.classify-title').first().hide();
     var shop_logo=$('#shop_imgurl').attr('data-img');
     if(parseInt($("#shop_status").val())==3){
         modalNotice("店铺休息中，暂不接收新订单");
@@ -24,32 +25,32 @@ $(document).ready(function(){
         var bullets = document.getElementById('position').getElementsByTagName('li');
     }
     /*var notice_con=window.dataObj.notices;
-     if(typeof(notice_con)!='undefined'){
-     $.getItem('/static/items/customer/notice-item.html?v=20150530',function(data){
-     $('.notice-board').show();
-     window.dataObj.notice_item=data;
-     var notice_item=window.dataObj.notice_item;
-     for(var i=0;i<notice_con.length;i++){
-     var summary=notice_con[i][0];
-     var detail=notice_con[i][1];
-     var item=$(notice_item);
-     item.find('.title').text(summary);
-     item.find('.notice-detail').val(detail);
-     $('.swipe-wrap').append(item);
-     $('#position').append('<li></li>');
-     }
-     $('#position li').first().addClass('on');
-     if($('#position li').length>0){
-     var slider =
-     Swipe(document.getElementById('slider'), {
-     auto: 3000,
-     continuous: true,
-     callback: function(pos) {
-     var i = bullets.length;
-     while (i--) {
-     bullets[i].className = ' ';
-     }
-     bullets[pos].className = 'on';
+    if(typeof(notice_con)!='undefined'){
+        $.getItem('/static/items/customer/notice-item.html?v=20160608',function(data){
+            $('.notice-board').show();
+            window.dataObj.notice_item=data;
+            var notice_item=window.dataObj.notice_item;
+            for(var i=0;i<notice_con.length;i++){
+                var summary=notice_con[i][0];
+                var detail=notice_con[i][1];
+                var item=$(notice_item);
+                item.find('.title').text(summary);
+                item.find('.notice-detail').val(detail);
+                $('.swipe-wrap').append(item);
+                $('#position').append('<li></li>');
+            }
+            $('#position li').first().addClass('on');
+            if($('#position li').length>0){
+                var slider =
+                    Swipe(document.getElementById('slider'), {
+                        auto: 3000,
+                        continuous: true,
+                        callback: function(pos) {
+                            var i = bullets.length;
+                            while (i--) {
+                                bullets[i].className = ' ';
+                            }
+                            bullets[pos].className = 'on';
 
      }
      });

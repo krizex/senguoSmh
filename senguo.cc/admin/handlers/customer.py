@@ -851,18 +851,23 @@ class Market(CustomerBaseHandler):
 		self.set_cookie("cart_count", str(cart_count))
 
 		group_list=[]
+		goods = self.session.query(models.Fruit).filter_by(shop_id = shop.id)
 		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop.id).order_by(models.GroupPriority.priority).all()
+		default_count = goods.filter_by(group_id=0).count()
+		record_count = goods.filter_by(group_id=-1).count()
 		if group_priority:
 			for g in group_priority:
 				group_id = g.group_id
-				if group_id == -1:
+				if group_id == -1 and record_count !=0:
 					group_list.append({'id':-1,'name':'店铺推荐'})
-				elif group_id == 0:
+				elif group_id == 0 and default_count !=0:
 					group_list.append({'id':0,'name':' 默认分组'})
 				else:
 					_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop.id,status = 1).first()
 					if _group:
-						group_list.append({'id':_group.id,'name':_group.name})
+						goods_count = goods.filter_by( group_id = _group.id ).count()
+						if goods_count !=0 :
+							group_list.append({'id':_group.id,'name':_group.name})
 		else:
 			group_list.append({'id':0,'name':'默认分组'})
 
