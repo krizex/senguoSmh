@@ -895,6 +895,8 @@ class Market(CustomerBaseHandler):
 			return self.dry_list()
 		elif action == 8:
 			return self.mgood_list()
+		elif action == 9:
+			return self.search_list()
 	# @classmethod
 	def w_getdata(self,session,m,customer_id):
 			data = []
@@ -946,7 +948,31 @@ class Market(CustomerBaseHandler):
 		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1).order_by(models.Fruit.add_time.desc())
 		count_fruit = fruits.count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		if total_page == page:
+		if total_page <= page:
+			nomore = True
+		fruits = fruits.offset(offset).limit(page_size).all()
+		fruit_list = self.w_getdata(self.session,fruits,customer_id)
+		return self.send_success(data = fruit_list ,nomore = nomore)
+
+	@CustomerBaseHandler.check_arguments("page?:int","search?:str")
+	def search_list(self):
+		page = int(self.args["page"])
+		name = self.args['search']
+		page_size = 10
+		nomore = False
+		offset = (page-1) * page_size
+		shop_id = int(self.get_cookie("market_shop_id"))
+		customer_id = self.current_user.id
+		shop   = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if not shop:
+			return self.send_error(404)
+		
+		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active=1).filter(models.Fruit.name.like("%%%s%%" % name)).order_by(models.Fruit.add_time.desc())
+		count_fruit = fruits.count()
+		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
+		print(page)
+		print(total_page)
+		if total_page <= page:
 			nomore = True
 		fruits = fruits.offset(offset).limit(page_size).all()
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
@@ -972,7 +998,7 @@ class Market(CustomerBaseHandler):
 		# 	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
 		count_fruit =fruits.distinct().count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		if total_page == page:
+		if total_page <= page:
 			nomore = True
 		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)

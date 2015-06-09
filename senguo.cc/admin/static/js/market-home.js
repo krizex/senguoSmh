@@ -99,7 +99,25 @@ $(document).ready(function(){
     //分类显示
     var top_title=$('.top-title');
     //get infomations of goods and push into html
-    goodsList(1,5);
+    var link_group=$.getUrlParam("group");
+    var link_search=$.getUrlParam("search");
+    console.log(encodeURI('天天'));
+    if(link_group!= null){
+        window.dataObj.page=1;
+        window.dataObj.action=6;
+        _group_id = parseInt(link_group);
+        goodsList(1,6);
+       
+    }
+    else if(link_search != null){
+        window.dataObj.page=1;
+        window.dataObj.action=9;
+        _search = encodeURI('天天');
+        goodsList(1,9);
+        console.log(link_search);
+    }else{
+         goodsList(1,5); 
+    }
     scrollLoading();
     //已在购物车里的商品
     var cart_fs=window.dataObj.cart_fs;
@@ -383,6 +401,10 @@ window.dataObj.count=1;
 window.dataObj.action=5;
 window.dataObj.finished=true;
 var nomore=false;
+var _group_id;
+var _search;
+
+
 $('.loading').html("~努力加载中 ( > < )~").show();
 var scrollLoading=function(){
     $(window).scroll(function(){
@@ -398,7 +420,11 @@ var scrollLoading=function(){
             goodsList(window.dataObj.page,window.dataObj.action);
         }
         else if(nomore==true){
-            $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+            if(window.dataObj.action==9){
+                $('.loading').html("~无搜索结果 ( > < )~").show();
+            }else{
+                $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+            }
         }
     });
 }
@@ -412,13 +438,20 @@ var goodsList=function(page,action){
     if(action==6){
         args.group_id = _group_id;
     }
+    if(action==9){
+        args.search = _search;
+    }
     // alert('i am here');
     $.postJson(url,args,function(res){
             if(res.success)
             {
                 nomore = res.nomore
                 if(nomore == true){
-                    $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+                    if(action==9){
+                        $('.loading').html("~无搜索结果 ( > < )~").show();
+                    }else{
+                        $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+                    }
                 }
                 //get item dom
                 if(window.dataObj.goods_item==undefined){
