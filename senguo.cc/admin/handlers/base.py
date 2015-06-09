@@ -105,7 +105,7 @@ class GlobalBaseHandler(BaseHandler):
 	def timestamp_to_str(self, timestamp):
 		return time.strftime("%Y-%m-%d %H:%M", time.gmtime(timestamp))
 
-	#通过经纬度计算距离
+	#通过两点经纬度计算距离
 	def get_distance(self,lat1,lon1,lat2,lon2):
 		EARTH_RADIUS = 6378.137
 		radLat1 = lat1 * math.pi / 180.0
@@ -189,11 +189,11 @@ class GlobalBaseHandler(BaseHandler):
 		staff_id = order.SH2_id
 		staff_info = session.query(models.Accountinfo).filter_by(id = staff_id).first()
 		if staff_info is not None:
-				sender_phone = staff_info.phone
-				sender_img = staff_info.headimgurl_small
+			sender_phone = staff_info.phone
+			sender_img = staff_info.headimgurl_small
 		else:
-				sender_phone =None
-				sender_img = None
+			sender_phone =None
+			sender_img = None
 
 		data['totalPrice']    = order.totalPrice
 		data['charge_types']  = session.query(models.ChargeType).\
@@ -217,7 +217,7 @@ class GlobalBaseHandler(BaseHandler):
 
 		return data
 
-	#获去店铺信息
+	#获取店铺信息
 	def get_shopInfo(self,shop):
 		data = {}
 		data['shop_name']     = shop.shop_name
