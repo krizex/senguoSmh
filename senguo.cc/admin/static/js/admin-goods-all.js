@@ -1,14 +1,5 @@
 var goods_list=null,curItem=null,curPrice=null,curEditor="",goodsEdit = false,aLis=[],aPos=[],zIndex= 1,pn= 0,editor=null,_type,_sub_type,isSearch=false;
 $(document).ready(function(){
-    $(".sw-link-copy").zclip({
-        path: "/static/js/third/ZeroClipboard.swf",
-        copy: function(){
-            return $(this).prev("input").val();
-        },
-        afterCopy:function(){/* 复制成功后的操作 */
-            Tip("链接已经复制到剪切板");
-        }
-    });
     $(".er-code-img").each(function(){
         var _this = $(this);
         new QRCode(this, {
@@ -22,6 +13,21 @@ $(document).ready(function(){
         }
     });
     var link_type=$.getUrlParam("type");
+    var oDo = $.getUrlParam("do");
+    if(oDo){//添加商品
+        $(".wrap-classify").prevAll("div").addClass("hidden");
+        $(".wrap-classify").removeClass("hidden");
+        $("#add-goods").addClass("hidden");
+        $(".goods-step").children(".step1").removeClass("c999").addClass("c333");
+        $(".goods-step").children(".step2").removeClass("c333").addClass("c999");
+        if(localStorage.getItem("add")=='1'){
+            window.location.href="/admin/goods/all";
+        }else{
+            localStorage.setItem("add",'1');
+        }
+    }else{
+        localStorage.setItem("add",'0');
+    }
     var sub_type=parseInt($.getUrlParam("type_id"));
     if(link_type=="classify"){//分类跳转
         getGoodsItem(link_type,0,sub_type);
@@ -389,6 +395,7 @@ function cancelAddGoods(){
     $(".goods-step").children(".step2").removeClass("c333").addClass("c999");
     $(".new-goods").empty().addClass("hidden");
     $(".goods-classify-box").removeClass("hidden");
+    goodsEdit=false;
 }
 //切换库存单位
 function switchUnit($list,id,name){
@@ -844,6 +851,15 @@ function insertGoods(data){
         $item.find(".group-goods-lst").find(".group-counts").hide();
         $(".goods-all-list").append($item);
     }
+    $(".sw-link-copy").zclip({
+        path: "/static/js/third/ZeroClipboard.swf",
+        copy: function(){
+            return $(this).prev("input").val();
+        },
+        afterCopy:function(){/* 复制成功后的操作 */
+            Tip("链接已经复制到剪切板");
+        }
+    });
 }
 
 $(document).ready(function(){

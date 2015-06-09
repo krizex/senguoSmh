@@ -82,6 +82,8 @@ $(document).ready(function(){
     }
 }).on("click",".cancel-btn",function(){
     $(this).closest(".pop-win").hide();
+}).on("click","#add-goods",function(){//添加商品
+    window.location.href="/admin/goods/all?do=addgoods";
 });
 //取消删除
 function cancelDel(id){
