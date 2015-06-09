@@ -1754,7 +1754,7 @@ class OrderDetail(CustomerBaseHandler):
 		shop_code = order.shop.shop_code
 		shop_name = order.shop.shop_name
 		return self.render("customer/order-detail.html", order=order,
-						   charge_types=charge_types, mcharge_types=mcharge_types,comment_imgUrl=comment_imgUrl,\
+						   charge_types=charge_types,comment_imgUrl=comment_imgUrl,\
 						   shop_code=shop_code,online_type=online_type,shop_name=shop_name)
 
 	@tornado.web.authenticated
