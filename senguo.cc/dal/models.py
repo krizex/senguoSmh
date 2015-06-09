@@ -570,6 +570,8 @@ class Shop(MapBase, _CommonApi):
 
 	super_temp_active = Column(Integer,default = 1) #1:receive the message from wx 0:do not receive#5.26
 
+	# group_priority = Column(String(50)) #[group.id,group index]
+
 	def __repr__(self):
 		return "<Shop: {0} (id={1}, code={2})>".format(
 			self.shop_name, self.id, self.shop_code)
@@ -1107,6 +1109,10 @@ class FruitType(MapBase,  _CommonApi):
 	code = Column(String(128), default="", unique=True)
 	
 	name = Column(String(64))
+	color = Column(Integer,default=0)
+	length = Column(Integer,default=0)
+	garden = Column(Integer,default=0)
+	nature = Column(Integer,default=0)
 
 class ShopOnsalefruitLink(MapBase):
 	"""
@@ -1249,9 +1255,6 @@ class Order(MapBase, _CommonApi):
 			return None
 		if order:
 			fruits = eval(order.fruits)
-			mgoods = eval(order.mgoods)
-			# print(fruits)
-			# print(type(fruits))
 		if fruits:
 			charge_types = session.query(ChargeType).filter(ChargeType.id.in_\
 				(fruits.keys())).all()
@@ -1263,23 +1266,11 @@ class Order(MapBase, _CommonApi):
 				if fruits[int(charge_type.id)]==0:
 					continue
 				# print(fruits[int(charge_type.id)]['num'])
-				num = fruits[int(charge_type.id)]['num'] * charge_type.unit_num * charge_type.num
+				num = int(fruits[int(charge_type.id)]['num'] * (charge_type.select_num/charge_type.unit_num) * charge_type.num)
 				charge_type.fruit.storage+= num
 				charge_type.fruit.current_saled -=num
 				charge_type.fruit.saled -= num
 				print("[订单管理]取消订单，恢复库存数量(水果)：",num)
-		if mgoods:
-			#print("print mark 6:",mgoods,'**********************************')
-			charge_types = session.query(MChargeType).filter(MChargeType.id.in_(mgoods.keys())).all()
-			for charge_type in charge_types:
-				# print("before",charge_type.mgoods.storage,charge_type.mgoods.current_saled)
-				if mgoods[int(charge_type.id)]==0:
-					continue 
-				num =mgoods[int(charge_type.id)]['num'] *charge_type.unit_num * charge_type.num
-				charge_type.mgoods.storage += num
-				charge_type.mgoods.current_saled -= num
-				charge_type.mgoods.saled -= num
-				print("[订单管理]取消订单，恢复库存数量(其他)：",num)
 		session.commit()
 		return True
 
@@ -1334,14 +1325,65 @@ class Fruit(MapBase, _CommonApi):
 	saled = Column(Integer) #销量
 	storage = Column(Float)
 	favour = Column(Integer, default=0)  # 赞
-	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
+	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份 4:kg 5:克 6:升 7:箱 8:盒 9:件 10:框 11:包
 	tag = Column(TINYINT, default=TAG.NULL) #标签
 	img_url = Column(String(500))
 	intro = Column(String(100))
 	priority = Column(SMALLINT, default=1)
+	limit_num =  Column(Integer, default=0) #max number could buy #5.27
+	add_time = Column(DateTime, default=func.now()) #5.27
+	delete_time = Column(DateTime) #5.27
+	group_id =  Column(Integer, default=0) #0:default_group -1:record_group GoodsGroup.id #5.27
+	classify  = Column(Integer, default=0)  #:0:fruit 1:dry_fruit 3:other
+	temp_mgoods_id =  Column(Integer, default=0)  #to save mgoods_id for temp
+	detail_describe = Column(String(2000)) #goods detail
+
+
 	charge_types = relationship("ChargeType") #支持多种计价方式
 	fruit_type = relationship("FruitType", uselist=False)
 	shop = relationship("Shop", uselist=False)
+
+
+#水果单品的计价类型
+class ChargeType(MapBase, _CommonApi):
+	__tablename__ = "charge_type"
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	fruit_id = Column(Integer, ForeignKey(Fruit.id), nullable=False)
+	price = Column(Float)#售价 
+	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
+	num = Column(Float)#计价数量
+	unit_num = Column(Float, default=1)#单位换算
+	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
+	market_price =  Column(Float)#市场价 #5.27
+	select_num = Column(Integer, default=1) #6.4
+	relate = Column(Float, default=1) # 库存换算关系
+
+	fruit = relationship("Fruit", uselist=False)
+
+class FruitComment(MapBase, _CommonApi):
+	__tablename__ = "fruit_comment" #5.27
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
+	fruit_id = Column(Integer, ForeignKey(Fruit.id), nullable=False)
+	comment = Column(String(500))
+	create_time = Column(DateTime, default=func.now())
+
+class GoodsGroup(MapBase, _CommonApi):
+	__tablename__ = "goods_group" #5.27 self define
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
+	name =  Column(String(50))
+	status = Column(Integer,default = 1) #0:been deleted 1:normal
+	intro = Column(String(100))
+	create_time = Column(DateTime, default=func.now())
+
+class GroupPriority(MapBase, _CommonApi):
+	__tablename__ = "group_priority"
+	__table_args__ = {"extend_existing": True}
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
+	group_id = Column(Integer)
+	priority = Column(Integer)
 
 # 用户自定义的商品类型
 class Menu(MapBase, _CommonApi):
@@ -1375,18 +1417,6 @@ class MGoods(MapBase, _CommonApi):
 	mcharge_types = relationship("MChargeType") #支持多种计价方式
 	menu = relationship("Menu", uselist=False)
 
-#水果单品的计价类型
-class ChargeType(MapBase, _CommonApi):
-	__tablename__ = "charge_type"
-	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-	fruit_id = Column(Integer, ForeignKey(Fruit.id), nullable=False)
-	price = Column(Float)#单价
-	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份
-	num = Column(Float)#计价数量
-	unit_num = Column(Float, default=1)#单位换算
-	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
-
-	fruit = relationship("Fruit", uselist=False)
 
 #用户自定义商品的计价类型
 class MChargeType(MapBase, _CommonApi):

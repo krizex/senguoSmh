@@ -48,9 +48,14 @@ handlers = [
 	(r"/customer/wxauth", handlers.customer.WxBind, {"action":"wx_auth"}, "customerwxAuth"),
 	(r"/customer/wxBind", handlers.customer.WxBind, {"action":"wx_bind"}, "customerwxBind"),
 	(r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
+	(r"/customer/insertData1",handlers.customer.InsertData1,{},"InsertData1"),
+	(r"/customer/insertData2",handlers.customer.InsertData2,{},"InsertData2"),
+	(r"/customer/insertData3",handlers.customer.InsertData3,{},"InsertData3"),
+	(r"/customer/insertData4",handlers.customer.InsertData4,{},"InsertData4"),
 	(r"/customer/discover/(\w+)",handlers.customer.Discover,{},"customerDiscover"),
+
 	#商品详情
-	(r"/customer/goods/(\w+)",handlers.customer.Goods,{},"customerGoods"),
+	(r"/customer/goods/(\w+)",handlers.customer.customerGoods,{},"customerGoods"),
 	(r"/customer/overtime",handlers.customer.Overtime,{},"customerOverTime"),
 
 	# (r"/fruitzone/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
@@ -189,6 +194,14 @@ handlers = [
 	(r"/admin/wxauth", handlers.admin.AdminAuth, {"action":"wxauth"}, "adminwxAuth"),
 	(r"/admin/wxcheck", handlers.admin.AdminAuth, {"action":"wxcheck"}, "adminwxCheck"),
 
+	(r"/admin/goods/all", handlers.admin.Goods, {"action":"all"}, "adminGoods"),
+	(r"/admin/goods/classify", handlers.admin.Goods, {"action":"classify"}, "adminGoodsClassify"),
+	(r"/admin/goods/group", handlers.admin.Goods, {"action":"group"}, "adminGoodsGroup"),
+	(r"/admin/goods/delete", handlers.admin.Goods, {"action":"delete"}, "adminGoodsDelete"),
+
+	(r"/admin/editorTest", handlers.admin.editorTest, {}, "admineditorTest"),
+	(r"/admin/editorFileManage", handlers.admin.editorFileManage, {}, "admineditorFileManage"),
+	(r"/admin/editorCallback", handlers.admin.editorCallback, {}, "admineditorCallback"),
 	# (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
 	# (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
 	# (r"/admin/finance", handlers.admin.Finance, {}, "adminFinance"),
@@ -254,7 +267,8 @@ handlers = [
 	#(r"/shop/(\w+)", handlers.customer.Market, {}, "Market"),
 	#remove shop
 	(r"/(\w+)", handlers.customer.Market, {}, "Market"),
-
+	#商品详情
+	(r"/(\w+)/goods/(\w+)",handlers.customer.customerGoods,{},"customerGoods"),
 
 
 	(r"/fruitzone/systemPurchase/", handlers.fruitzone.SystemPurchase, {

@@ -255,7 +255,7 @@ function Vrify(phone,target){
     var action='gencode';
     var url="/customer/phoneVerify?action=customer";
     var phone=$('#enterPhone').val();
-    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    var regPhone=/^(1)\d{10}$/;
     if(phone.length > 11 ||phone.length<11 || !regPhone.test(phone)){
         $('#getVrify').removeClass('bg-greyc').removeAttr('disabled');
         return warnNotice("手机号貌似有错o(╯□╰)o",target);
@@ -297,7 +297,7 @@ function TiePhone(target){
     var phone=$('#enterPhone').val().trim();
     var code=$('#enterVrify').val().trim();
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
-    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    var regPhone=/^(1)\d{10}$/;
     if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){
         $('#tiePhone').removeClass('bg-greyc').removeAttr('disabled');
         return warnNotice("手机号貌似有错o(╯□╰)o",target);

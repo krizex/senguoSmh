@@ -1,0 +1,115 @@
+{% extends 'goods-set-base.html' %}
+{% block setcontent %}
+<div class="wrap-goods-groups">
+    <div class="groups-top">
+        <p>拖拽卡片调整分组排序的优先级，越靠上的排序优先级越高</p>
+        <p>分组删除数据后，该分组的商品会进入默认分组</p>
+        <a href="javascript:;" class="add-btn add-groups">+新建商品分组</a>
+    </div>
+    <div class="wrap-group-list">
+        <ul class="group-lst">
+             <li data-index="0" data-rel="0" data-id="-1" class="bg-grey2 item">
+                <div class="right-link">
+                    <a href="javascript:;" class="spread-group">推广分组</a>
+                    <div class="sw-er-tip all-position invisible">
+                        <div class="top-arr">
+                            <span class="line1"></span>
+                            <span class="line2"></span>
+                        </div>
+                        <p class="er-text">商品链接</p>
+                        <div class="wrap-ipt">
+                            <input type="text" class="sw-link-txt" value="http://senguo.cc/{{current_shop.shop_code}}/1000" disabled/>
+                            <input type="button" class="sw-link-copy"  id="" value="复制链接"/>
+                        </div>
+                        <div class="wrap-er group">
+                            <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
+                            <div class="er-text lh80 fl">列表二维码</div>
+                            <div class="er-img fl er-code-img">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="c333">店铺推荐（{{record_count}}）</p>
+                <p>该分组最多加入6个商品，分组排序优先级最高</p>
+            </li>
+           {% for d in data %}
+            <li data-index="" data-rel="" data-id="{{d['id']}}" class="self-group item">
+                <div class="right-link">
+                    {% if d['id']==0 %}
+                    <a href="javascript:;" class="spread-group">推广分组</a>
+                    {% else %}
+                    <a href="javascript:;" class="del-group">删除分组</a>
+                    <a href="javascript:;" class="spread-group">推广分组</a>
+                    <a href="javascript:;" class="edit-group">编辑</a>
+                    {% end %}
+                    <div class="sw-er-tip all-position invisible">
+                        <div class="top-arr">
+                            <span class="line1"></span>
+                            <span class="line2"></span>
+                        </div>
+                        <p class="er-text">商品链接</p>
+                        <div class="wrap-ipt">
+                            <input type="text" class="sw-link-txt" value="http://senguo.cc/{{current_shop.shop_code}}?group={{d['id']}}" disabled/>
+                            <input type="button" class="sw-link-copy"  id="" value="复制链接"/>
+                        </div>
+                        <div class="wrap-er group">
+                            <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
+                            <div class="er-text lh80 fl">列表二维码</div>
+                            <div class="er-img fl er-code-img">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="c333"><span class="group-name">{% if d['id']==0 %}默认分组{% else %}{{d['name']}}{% end %}</span>（{{d['num']}}）</p>
+                <p class="group-intro">{% if d['id']==0 %}若不设置分组，商品会默认进入该分组中{% else %}{{d['intro']}}{% end %}</p>
+            </li>
+            {% end %}
+        </ul>
+    </div>
+</div>
+<div class="order_set_box modal fade" id="del-win" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header set-width-float txt-center">
+                <span class="title c333">
+                    确认删除该分组？
+                </span>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-box mt30 group">
+                    <button type="button" class="pull-right modal-concel-btn" href="javascript:;" data-dismiss="modal">取消</button>
+                    <button type="button" class="pull-left modal-sure-btn ok-del-group" href="javascript:;">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="order_set_box modal fade" id="new-win" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header set-width-float txt-center">
+                <span class="title c333">
+                    新建分组
+                </span>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body set-width-float">
+                <p><span class="c333">分组名称</span>&nbsp;&nbsp;<input type="text" class="w400 c333 txt-left" id="group-name"/></p>
+                <p class="mt10"><span class="c333 pull-left">分组说明</span>&nbsp;&nbsp;<textarea id="group-info" class="group-text w400 c333"></textarea></p>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-box mt30 group">
+                    <button type="button" class="pull-right modal-concel-btn" href="javascript:;" data-dismiss="modal">取消</button>
+                    <button type="button" class="pull-left modal-sure-btn ok-add-group edit-btn" href="javascript:;">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block js %}
+<script src="/static/js/third/jquery.zclip.min.js"></script>
+<script src="/static/js/third/qrcode.min.js"></script>
+<script src="{{static_url('js/admin-goods-group.js')}}"></script>
+{% end %}
