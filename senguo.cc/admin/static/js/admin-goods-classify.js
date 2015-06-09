@@ -34,6 +34,8 @@ $(document).ready(function(){
             window.location.href="/admin/goods/all?type=goodsearch&content="+key+"&page=0";
         }
     }
+}).on("click","#add-goods",function(){//添加商品
+    window.location.href="/admin/goods/all?do=addgoods";
 });
 
 function getData(type,sub_type){

@@ -69,7 +69,7 @@ $(document).ready(function(){
     if(sHtml){
         if(editor){
             editor.html($(this).attr("data-text"));
-            $(".pop-editor").show();
+            editor.clickToolbar('preview');
         }else{
             initEditor($(this).attr("data-text"));
         }
@@ -196,7 +196,6 @@ function initEditor(text){
     $.ajax({url: '/admin/editorTest?action=editor', async: false, success: function(data){
         var token1 = data.token;
         var token = data.res;
-        $(".pop-editor").show();
         editor = KindEditor.create('#kindEditor', {
             uploadJson : 'http://upload.qiniu.com/',
             filePostName : 'file',
@@ -216,5 +215,6 @@ function initEditor(text){
             }
         });
         editor.html(text);
+        editor.clickToolbar('preview');
     }});
 }

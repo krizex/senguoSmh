@@ -41,6 +41,16 @@ $(document).ready(function(){
     getData('fruit','color');
     _type = 'fruit';
     _sub_type = 'color';
+    var zb_t;
+    window.onbeforeunload = function(){
+        if(goodsEdit==true){
+            setTimeout(function(){zb_t = setTimeout(onunloadcancel, 0)}, 0);
+            return "当前有商品正在编辑，确定离开此页？";
+        }
+    }
+    window.onunloadcancel = function(){
+        clearTimeout(zb_t);
+    }
 }).on("click",".all-select-box",function(){
     $(this).toggleClass("checked-box");
     if($(this).hasClass("checked-box")){
@@ -112,10 +122,16 @@ $(document).ready(function(){
             $(".pop-unit").show();
         }
     }else if($(this).closest("ul").hasClass("condition-list")){//条件查询
+        if(goodsEdit){
+            return Tip("请先完成正在编辑的商品");
+        }
         isSearch = false;
         $(this).closest("ul").prev("button").children("em").html(price_unit).attr("data-id",$(this).attr("data-id"));
         getGoodsItem("all",pn,"");
     }else if($(this).closest("ul").hasClass("batch-group-list")){//批量分组
+        if(goodsEdit){
+            return Tip("请先完成正在编辑的商品");
+        }
         batchGroup(price_unit,$(this).attr("data-id"),$this);
     }else if($(this).closest("ul").hasClass("group-goods-lst")){//切换单个商品分组
         var group_id = $(this).attr("data-id");
@@ -158,7 +174,7 @@ $(document).ready(function(){
     var index = goods_item.index();
     var group = {id:goods_item.find(".current-group").attr("data-id"),text:goods_item.find(".current-group").html()};
     var switch_btn = {id:goods_item.find(".switch-btn").attr("data-id"),text:goods_item.find(".switch-btn").attr("class")};
-    $.getItem("/static/items/admin/goods-item.html?2259",function(data){
+    $.getItem("/static/items/admin/goods-item.html?2249",function(data){
         var goodsItem = data;
         var $item = $(goodsItem).clone();
         $item.find(".current-group").attr("data-id",group.id).html(group.text);
@@ -197,10 +213,11 @@ $(document).ready(function(){
     $(this).addClass("hidden");
     $(".goods-step").children(".step1").removeClass("c999").addClass("c333");
     $(".goods-step").children(".step2").removeClass("c333").addClass("c999");
+    goodsEdit = true;
 }).on("click",".fruit-item-list li",function(){//选择分类并添加商品
     var classify = $(this).html();
     var class_id = $(this).attr("data-id");
-    $.getItem("/static/items/admin/goods-item.html?2369",function(data){
+    $.getItem("/static/items/admin/goods-item.html?2349",function(data){
         var goodsItem = data;
         var $item = $(goodsItem).clone();
         $item.find(".goods-classify").html(classify).attr("data-id",class_id);
@@ -247,11 +264,6 @@ $(document).ready(function(){
     if(isEditor=="true"){
         if(editor){
             editor.html($(this).attr("data-text"));
-            if(isEditor=="true"){
-                $(".ke-icon-image").removeClass("hidden");
-            }else{
-                $(".ke-icon-image").addClass("hidden");
-            }
             $(".pop-editor").show();
         }else{
             initEditor($(this));
@@ -260,12 +272,11 @@ $(document).ready(function(){
         if(sHtml){
             if(editor){
                 editor.html($(this).attr("data-text"));
-                if(isEditor=="true"){
-                    $(".ke-icon-image").removeClass("hidden");
-                }else{
-                    $(".ke-icon-image").addClass("hidden");
-                }
-                $(".pop-editor").show();
+                editor.clickToolbar('preview');
+                //editor.readonly(true);
+                //$(".ke-toolbar").children().addClass("hidden").append("<span class='preview-txt c333'>预览</span>");
+                //$(".ke-icon-image").addClass("hidden");
+                //$(".pop-editor").show();
             }else{
                 initEditor($(this));
             }
@@ -273,6 +284,7 @@ $(document).ready(function(){
             Tip("当前商品无商品详情");
         }
     }
+    curEditor = $(this);
 }).on("click",".pop-editor",function(e){
     if($(e.target).closest(".wrap-kindeditor").size()==0){
         $(".pop-editor").hide();
@@ -509,6 +521,7 @@ function dealGoods($item,type){
         if (res.success) {
             if(type == "add"){
                 Tip("新商品添加成功！");
+                goodsEdit = false;
                 setTimeout(function(){
                     window.location.href="/admin/goods/all?&page=0";
                 },2000);
@@ -746,7 +759,9 @@ function initEditor($obj){
     $.ajax({url: '/admin/editorTest?action=editor', async: false, success: function(data){
         var token1 = data.token;
         var token = data.res;
-        $(".pop-editor").show();
+        if($obj.attr("data-flag")=="true"){
+            $(".pop-editor").show();
+        }
         editor = KindEditor.create('#kindEditor', {
             uploadJson : 'http://upload.qiniu.com/',
             filePostName : 'file',
@@ -760,11 +775,6 @@ function initEditor($obj){
             ],
             afterCreate: function(){
                 this.sync();
-                if($obj.attr("data-flag")=="true"){
-                    $(".ke-icon-image").removeClass("hidden");
-                }else{
-                    $(".ke-icon-image").addClass("hidden");
-                }
             },
             afterBlur: function(){this.sync();},
             afterUpload : function(url) {
@@ -773,6 +783,14 @@ function initEditor($obj){
             }
         });
         editor.html($obj.attr("data-text"));
+        if($obj.attr("data-flag")!="true"){
+            editor.clickToolbar('preview');
+        }else{
+            $(".ke-tabs-ul").children("li").eq(0).remove();
+            $(".ke-tabs-ul").children("li").addClass("ke-tabs-li-selected");
+            $(".ke-dialog-body").find(".tab1").hide();
+            $(".ke-dialog-body").find(".tab2").show();
+        }
     }});
 }
 

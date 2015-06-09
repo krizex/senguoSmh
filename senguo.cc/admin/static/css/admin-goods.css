@@ -132,8 +132,9 @@ textarea{border-color:#eee;}
 .wrap-news-gooods{background-color: #f5f5f5;}
 .goods-step{margin-bottom:10px;padding-top:15px;text-align: center;}
 .goods-classify-box .fruit-item-list li{background-color: #fff;}
-.new-goods .wrap-more-set{background-color: #fff;}
-.new-goods .wrap-pop-btn{background-color: #f5f5f5;}
+.goods-edit-item .all-item-cont{background-color: #f3f3f3;}
+.goods-edit-item .wrap-more-set{background-color: #fff;}
+.goods-edit-item .wrap-pop-btn{background-color: #f5f5f5;}
 .goods-step .step1{color: #333;}
 .goods-step .step2{color: #999;}
 .edit-item-top input{line-height: 1;}
@@ -149,6 +150,12 @@ textarea{border-color:#eee;}
 .ke-dialog-content input{text-indent: 0;text-align: left;width: auto;}
 .ke-dialog-content .ke-input-number{width: 50px;}
 .ke-dialog-content input[type=radio]{width: auto;}
+.ke-dialog-mask{background-color: rgba(0,0,0,.4) !important;}
+.ke-tabs-li-selected{display: none !important;}
+.ke-tabs-li{border-bottom: 1px solid #FFF !important;cursor: default !important;background-color: #fff !important;}
+.ke-dialog-body .tab1{display: none !important;}
+.ke-dialog-body .tab2{display: block !important;}
+.ke-dialog-body input[type=file]{cursor: pointer !important;}
 /*分类*/
 .wrap-fruit-select{position: relative;height: 30px;margin: 10px 0;}
 .fruit-select{position: absolute;right: 0;top: 0;}
@@ -188,7 +195,7 @@ textarea{border-color:#eee;}
 .group-text{height: 80px;}
 
 /*已删除*/
-.cancel-del-goods{position: absolute;right: 10px;top: 4px;width: 90px;}
+.cancel-del-goods{position: absolute;right: 10px;top: 6px;width: 90px;}
 
 
 
