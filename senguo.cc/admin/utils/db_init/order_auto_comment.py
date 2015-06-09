@@ -36,8 +36,14 @@ def delete(args):
 	print("[定时任务]AccessToken更新：",session.query(models.AccessToken).count())
 	session.commit()
 
+def print_time(args):
+	print time.strftime('%H:%M:%S')
 
 def main():
+
+	countTime = Pysettimer(print_time,(),10,True)
+	countTime.start()
+
 	mytime = Pysettimer(order_comment,(),60*10,True)
 	mytime.start()
 
