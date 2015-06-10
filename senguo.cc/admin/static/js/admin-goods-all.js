@@ -420,13 +420,13 @@ function dealGoods($item,type){
     var name = $item.find(".goods-goods-name").val();
     var info = $item.find(".goods-info").val();
     if(isNaN(limit_num) || parseInt(limit_num)<0){
-        return Tip("商品限购必须为数字");
+        return Tip("商品限购必须为整数");
     }
     if(isNaN(priority) || parseInt(priority)>9 || parseInt(priority)<0){
         return Tip("优先级必须为0-9的数字");
     }
     if(name.length>12 || $.trim(name)==""){
-        return Tip("商品名字不能为空且不能超过10个字");
+        return Tip("商品名字不能为空且不能超过12个字");
     }
     if(info.length>150){
         return Tip("商品简介不能超过150个字");
