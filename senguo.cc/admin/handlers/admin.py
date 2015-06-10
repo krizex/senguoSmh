@@ -76,6 +76,8 @@ class Home(AdminBaseHandler):
 
 		shop_auth =  self.current_shop.shop_auth
 		self.set_secure_cookie("shop_id",str(self.current_shop.id))
+
+
 		if shop_auth in [1,2]:
 			show_balance = True
 		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
@@ -682,6 +684,10 @@ class Order(AdminBaseHandler):
 										 'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
+			if d['mgoods']:
+				d['mgoods'] = eval(d['mgoods'])
+			else:
+				d['mgoods'] = {}
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["sent_time"] = order.send_time
 			info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
@@ -2186,7 +2192,10 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 										 'comment_create_date', 'start_time', 'end_time', 'create_date']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
-			# d['mgoods'] = eval(d['mgoods'])
+			if d['mgoods']:
+				d['mgoods'] = eval(d['mgoods'])
+			else:
+				d['mgoods'] = {}
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["send_time"] = order.send_time
 			d["customer_id"] = order.customer_id
