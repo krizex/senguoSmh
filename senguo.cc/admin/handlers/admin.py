@@ -1649,14 +1649,30 @@ class Goods(AdminBaseHandler):
 			args["shop_id"] = shop_id
 			goods = models.Fruit(**args)
 			for charge_type in data["charge_types"]:
-				unit_num = int(charge_type["unit_num"]) if charge_type["unit_num"] else 1
-				select_num = int(charge_type["select_num"]) if charge_type["select_num"] else 1
-				market_price = float(charge_type["market_price"]) if charge_type["market_price"] else 0
-				price = float(charge_type["price"])
+				if charge_type["unit_num"] and charge_type["unit_num"] !='':
+					unit_num = int(charge_type["unit_num"])
+				else:
+					unit_num = 1
+				if charge_type["select_num"] and charge_type["select_num"] !='':
+					select_num = int(charge_type["select_num"])
+				else:
+					select_num = 1
+				if charge_type["market_price"] and charge_type["market_price"] !='':
+					market_price = float(charge_type["market_price"])
+				else:
+					market_price = 0
+				if charge_type["price"] and charge_type["price"] !='':
+					price = float(charge_type["price"])
+				else:
+					price = 0
+				if charge_type["num"] and charge_type["num"] !='':
+					num = float(charge_type["num"])
+				else:
+					num = 0
 				relate = select_num/unit_num
 				goods.charge_types.append(models.ChargeType(price=format(price,'.2f'),
 										unit=int(charge_type["unit"]),
-										num=charge_type["num"],
+										num=format(num,'.2f'),
 										unit_num=unit_num,
 										market_price=format(market_price,'.2f'),
 										select_num=select_num,
@@ -1751,13 +1767,20 @@ class Goods(AdminBaseHandler):
 							market_price = float(charge_type["market_price"])
 						else:
 							market_price = 0
+						if charge_type["price"] and charge_type["price"] !='':
+							price = float(charge_type["price"])
+						else:
+							price = 0
+						if charge_type["num"] and charge_type["num"] !='':
+							num = float(charge_type["num"])
+						else:
+							num = 0
 						relate = select_num/unit_num
-						price = float(charge_type["price"])
 						charge_types = models.ChargeType(
 												fruit_id=int(data["goods_id"]),
 												price=format(price,'.2f'),
 												unit=int(charge_type["unit"]),
-												num=charge_type["num"],
+												num=format(num,'.2f'),
 												unit_num=unit_num,
 												market_price=format(market_price,'.2f'),
 												select_num=select_num,
