@@ -77,15 +77,19 @@ $(document).ready(function(){
         $(this).prev(".img-selected").toggle();
         $(this).toggleClass("selected-img");
     }else{
-        if($("#item-img-lst").children(".img-bo").size()<=5){
+        if($("#item-img-lst").children(".img-bo").size()<5){
             var src = $(this).attr("src");
-            var index = $("#item-img-lst").children(".img-bo").size()-1;
+            var index = $("#item-img-lst").children(".img-bo").size();
             var item = '<li class="img-bo" data-index="'+index+'" data-rel="'+index+'"><img src="'+src+'" class="img"><a class="del-img" href="javascript:;">x</a></li>';
             $("#add-img-box").before(item);
             $(this).prev(".img-selected").show();
             $(this).addClass("selected-img");
+            if($("#item-img-lst").children(".img-bo").size()==5){
+                $("#item-img-lst").children(".add-img-box").addClass("hidden");
+            }
         }else{
-            Tip("只能添加5张照片哦！")
+            Tip("只能添加5张照片哦！");
+            $("#item-img-lst").children(".add-img-box").addClass("hidden");
         }
     }
 }).on("click",".sg-img-list .img-selected",function(){
@@ -211,6 +215,7 @@ $(document).ready(function(){
 }).on("click",".fruit-item-list li",function(){//选择分类并添加商品
     var classify = $(this).html();
     var class_id = $(this).attr("data-id");
+    var goods_code = $(this).attr("data-code");
     $.getItem("/static/items/admin/goods-item.html?2349",function(data){
         var goodsItem = data;
         var $item = $(goodsItem).clone();
@@ -220,19 +225,13 @@ $(document).ready(function(){
         $item.find(".switch-btn").addClass("hidden");
         $item.find(".all-item-title").remove();
         $item.find(".choose-classify").removeClass("hidden");
+        $item.find(".drag-img-list").children(".add-img-box").before('<li class="img-bo" data-index="0" data-rel="0"><img src="/static/design_img/'+goods_code+'.png" url="/static/design_img/'+goods_code+'.png" alt="商品图片" class="image"><a class="del-img" href="javascript:;">x</a></li>');
         $(".goods-step").children(".step1").removeClass("c333").addClass("c999");
         $(".goods-step").children(".step2").removeClass("c999").addClass("c333");
-        /*if($(".goods-all-list").children().size()>0){
-            $(".goods-all-list").children(".goods-all-item").first().before($item);
-        }else{
-            $(".goods-all-list").append($item);
-        }*/
         $(".goods-classify-box").addClass("hidden");
         $(".new-goods").empty().append($item).removeClass("hidden");
         curItem = $item;
         goodsEdit = true;
-       // $(".wrap-classify").addClass("hidden");
-        //$(".wrap-classify").prevAll("div").removeClass("hidden");
     });
 }).on("click",".choose-classify",function(){//重选分类
     $(".goods-step").children(".step1").removeClass("c999").addClass("c333");
@@ -267,10 +266,6 @@ $(document).ready(function(){
             if(editor){
                 editor.html($(this).attr("data-text"));
                 editor.clickToolbar('preview');
-                //editor.readonly(true);
-                //$(".ke-toolbar").children().addClass("hidden").append("<span class='preview-txt c333'>预览</span>");
-                //$(".ke-icon-image").addClass("hidden");
-                //$(".pop-editor").show();
             }else{
                 initEditor($(this));
             }
@@ -291,6 +286,9 @@ $(document).ready(function(){
     var $item = $(".wrap-price-item").children(".wrap-add-price").clone();
     var index = $(this).closest(".edit-item-right").children(".wrap-add-price").size();
     $item.find(".price-index").html(index+1);
+    var current_unit = $(this).closest(".goods-all-item").find(".current-unit").html();
+    $item.find(".now-unit").html(current_unit);
+    $item.find(".stock-unit").html(current_unit);
     $(this).closest("p").before($item);
 }).on("click",".del-price-type",function(){//删除售价方式
     $(this).closest(".wrap-add-price").remove();
@@ -613,7 +611,7 @@ function finishEditGoods($item,data){
     if(goods.charge_types.length>0){
         for(var j=0; j<goods.charge_types.length; j++){
             var good = goods.charge_types[j];
-            if(good.market_price){
+            if(good.market_price && good.market_price!=0){
                 var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+good.unit_name+'</span></span><span class="mr10">市场价 : <span class="">'+good.market_price+'元</span></span></p>';
             }else{
                 var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+good.unit_name+'</span></span><span class="mr10">市场价 : <span class="">未设置</span></span></p>';
@@ -783,11 +781,6 @@ function initEditor($obj){
         editor.html($obj.attr("data-text"));
         if($obj.attr("data-flag")!="true"){
             editor.clickToolbar('preview');
-        }else{
-            $(".ke-tabs-ul").children("li").eq(0).remove();
-            $(".ke-tabs-ul").children("li").addClass("ke-tabs-li-selected");
-            $(".ke-dialog-body").find(".tab1").hide();
-            $(".ke-dialog-body").find(".tab2").show();
         }
     }});
 }
@@ -856,7 +849,7 @@ function insertGoods(data){
         if(goods.charge_types.length>0){
             for(var j=0; j<goods.charge_types.length; j++){
                 var good = goods.charge_types[j];
-                if(good.market_price){
+                if(good.market_price && good.market_price!=0){
                     var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+good.unit_name+'</span></span><span class="mr10">市场价 : <span class="">'+good.market_price+'元</span></span></p>';
                 }else{
                     var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+good.unit_name+'</span></span><span class="mr10">市场价 : <span class="">未设置</span></span></p>'; 
@@ -1133,7 +1126,7 @@ function getData(type,sub_type){
                     '<p class="title {{property}}">{{name}}</p>'+
                     '<ul class="fruit-item-list group">'+
                     '{{each types as type}}'+
-                    '<li data-id="{{type.id}}">{{type.name}}</li>'+
+                    '<li data-id="{{type.id}}" data-code="{{type.code}}">{{type.name}}</li>'+
                     '{{/each}}'+
                     '</ul>'+
                     '</li>';
@@ -1169,7 +1162,7 @@ function getData2(con){
                 var data = res.data;
                 $('.fruit-list').empty();
                 var item='<ul class="fruit-item-list group">'+
-                    '<li data-id="{{id}}">{{name}}</li>'+
+                    '<li data-id="{{id}}" data-code="{{code}}">{{name}}</li>'+
                     '</ul>';
                 for(var d in data){
                     if(data[d].length!=0){
@@ -1177,7 +1170,8 @@ function getData2(con){
                         var html = render({
                             id:data[d]['id'],
                             name:data[d]['name'],
-                            num:data[d]['num']
+                            num:data[d]['num'],
+                            code:data[d]['code']
                         });
                         $('.fruit-list').append(html);
                     }

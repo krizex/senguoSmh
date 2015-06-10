@@ -1322,7 +1322,7 @@ class Fruit(MapBase, _CommonApi):
 	name = Column(String(20))
 	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 	current_saled = Column(Integer, default=0) #售出：未处理的订单数
-	saled = Column(Integer) #销量
+	saled = Column(Integer, default=0) #销量
 	storage = Column(Float)
 	favour = Column(Integer, default=0)  # 赞
 	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份 4:kg 5:克 6:升 7:箱 8:盒 9:件 10:框 11:包

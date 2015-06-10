@@ -112,7 +112,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
 			send_time = send_time,remark=remark,pay_type=pay_type,online_type=online_type,freight = freight,\
 			goods = goods,sender_phone=sender_phone,sender_img=sender_img,charge_types=charge_types,\
-			mcharge_types = mcharge_types,order=order)
+			order=order)
 
 	def check_xsrf_cookie(self):
 		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -201,11 +201,11 @@ class OnlineWxPay(CustomerBaseHandler):
 			#goods 
 			goods = []
 			f_d = eval(order.fruits)
-			m_d = eval(order.mgoods)
+			# m_d = eval(order.mgoods)
 			for f in f_d:
 				goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-			for m in m_d:
-				goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+			# for m in m_d:
+			#	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 			goods = str(goods)[1:-1]
 			print("[提交订单]订单详情：",goods)
 			order_totalPrice = float('%.2f'% totalPrice)
@@ -289,7 +289,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			print("[支付宝支付]order_num：",self.order_num)
 
 			charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
-			mcharge_types = self.session.query(models.MChargeType).filter(models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
+			# mcharge_types = self.session.query(models.MChargeType).filter(models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
 
 			shop_id   = order.shop_id
 			shopName  = order.shop.shop_name
@@ -317,16 +317,15 @@ class OnlineAliPay(CustomerBaseHandler):
 					order.sender_img = None
 			goods = []
 			f_d = eval(order.fruits)
-			m_d = eval(order.mgoods)
 			for f in f_d:
 				goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-			for m in m_d:
-				goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+			# for m in m_d:
+			# 	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 			return self.render("fruitzone/payali.html",totalPrice = totalPrice,shopName = shopName,\
 				alipayUrl = alipayUrl,create_date=create_date,receiver=receiver,phone=phone,\
 				address=address,send_time=send_time,remark=remark,pay_type=pay_type,online_type=\
 				online_type,status=status,freight=freight,goods = goods,order=order,charge_types=\
-				charge_types,mcharge_types=mcharge_types)
+				charge_types)
 		else:
 			return self.send_fail('404')
 	# @tornado.web.authenticated
@@ -456,11 +455,11 @@ class OnlineAliPay(CustomerBaseHandler):
 		#goods 
 		goods = []
 		f_d = eval(order.fruits)
-		m_d = eval(order.mgoods)
+		# m_d = eval(order.mgoods)
 		for f in f_d:
 			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-		for m in m_d:
-			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+		# for m in m_d:
+		#	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		goods = str(goods)[1:-1]
 		print("[提交订单]订单详情：",goods)
 		order_totalPrice = float('%.2f'% totalPrice)
@@ -544,11 +543,11 @@ class OnlineAliPay(CustomerBaseHandler):
 		#goods 
 		goods = []
 		f_d = eval(order.fruits)
-		m_d = eval(order.mgoods)
+		# m_d = eval(order.mgoods)
 		for f in f_d:
 			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-		for m in m_d:
-			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+		# for m in m_d:
+		#	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		goods = str(goods)[1:-1]
 		print("[提交订单]订单详情：",goods)
 		order_totalPrice = float('%.2f'% totalPrice)

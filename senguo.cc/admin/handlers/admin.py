@@ -75,6 +75,9 @@ class Home(AdminBaseHandler):
 		show_balance = False
 
 		shop_auth =  self.current_shop.shop_auth
+		self.set_secure_cookie("shop_id",str(self.current_shop.id))
+
+
 		if shop_auth in [1,2]:
 			show_balance = True
 		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
@@ -681,7 +684,10 @@ class Order(AdminBaseHandler):
 										 'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
-			# d['mgoods'] = eval(d['mgoods'])
+			if d['mgoods']:
+				d['mgoods'] = eval(d['mgoods'])
+			else:
+				d['mgoods'] = {}
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["sent_time"] = order.send_time
 			info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
@@ -704,6 +710,7 @@ class Order(AdminBaseHandler):
 					# print(d["SH2"],'i am admin order' )
 			d["SH2s"] = SH2s
 			data.append(d)
+			# print(data)
 		return self.render("admin/orders.html", data = data, order_type=order_type,
 						   count=self._count(),page_sum=page_sum, context=dict(subpage='order'))
 
@@ -1644,14 +1651,14 @@ class Goods(AdminBaseHandler):
 			for charge_type in data["charge_types"]:
 				unit_num = int(charge_type["unit_num"]) if charge_type["unit_num"] else 1
 				select_num = int(charge_type["select_num"]) if charge_type["select_num"] else 1
-				market_price = charge_type["market_price"] if charge_type["market_price"] else 0
+				market_price = float(charge_type["market_price"]) if charge_type["market_price"] else 0
+				price = float(charge_type["price"])
 				relate = select_num/unit_num
-				print(unit_num , select_num , int(unit_num/select_num))
-				goods.charge_types.append(models.ChargeType(price=charge_type["price"],
+				goods.charge_types.append(models.ChargeType(price=format(price,'.2f'),
 										unit=int(charge_type["unit"]),
 										num=charge_type["num"],
 										unit_num=unit_num,
-										market_price=market_price,
+										market_price=format(market_price,'.2f'),
 										select_num=select_num,
 										relate=relate))
 
@@ -1741,17 +1748,18 @@ class Goods(AdminBaseHandler):
 						else:
 							select_num = 1
 						if charge_type["market_price"] and charge_type["market_price"] !='':
-							market_price = int(charge_type["market_price"])
+							market_price = float(charge_type["market_price"])
 						else:
 							market_price = 0
 						relate = select_num/unit_num
+						price = float(charge_type["price"])
 						charge_types = models.ChargeType(
 												fruit_id=int(data["goods_id"]),
-												price=charge_type["price"],
+												price=format(price,'.2f'),
 												unit=int(charge_type["unit"]),
 												num=charge_type["num"],
 												unit_num=unit_num,
-												market_price=market_price,
+												market_price=format(market_price,'.2f'),
 												select_num=select_num,
 												relate=relate)
 						self.session.add(charge_types)
@@ -1927,64 +1935,6 @@ class editorCallback(AdminBaseHandler):
 class editorFileManage(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		# import hmac
-		# import pycurl
-		# import os.path
-		# import urllib
-		# import hashlib
-		# import io
-		# from io import BytesIO
-		# link = self.get_argument("path")
-		# path = "123_"+link if link else 123
-		# url = "/list?"+'bucket='+BUCKET_SHOP_IMG+'&delimiter=_&prefix='+path+'_'
-		# # sign = urllib.parse.quote(
-		# # 	base64.b64encode(
-		# # 		hmac.new(SECRET_KEY.encode('ascii'),(url+"\n").encode('ascii'), digestmod=hashlib.sha1).hexdigest().encode('ascii')
-		# # 	))
-		# # token = ACCESS_KEY+':'+str(base64.b64encode(sign.encode('ascii'))).replace('+','-').replace('/','_')
-		# # print(token,'1111111111')
-		# shop_id = self.current_shop.id
-		# accesstoken = self.get_qiniu_token("editor",shop_id)
-		# header =  ['Host:rsf.qbox.me','Content-Type:application/x-www-form-urlencoded','Authorization: QBox '+accesstoken]
-		# head_url =("http://rsf.qbox.me"+url).strip()
-		# curl = pycurl.Curl()
-		# f = io.BytesIO()
-		# curl.setopt(pycurl.URL, head_url)
-		# curl.setopt(pycurl.HTTPHEADER,header)
-		# curl.setopt(pycurl.WRITEFUNCTION, f.write)
-		# curl.setopt(pycurl.FOLLOWLOCATION, 1)
-		# curl.setopt(pycurl.MAXREDIRS, 5)
-		# curl.setopt(pycurl.POSTFIELDS,"")
-		# curl.perform()
-		# backinfo = ''
-		# print(curl.getinfo(pycurl.RESPONSE_CODE))
-		# if curl.getinfo(pycurl.RESPONSE_CODE) == 200:
-		# 	backinfo = f.getvalue()
-		# curl.close()
-		# f.close()
-
-		# file_list = []
-		# ext_arr = ['gif','jpg','jpeg','png','bmp']
-		# for info in backinfo["items"]:
-		# 	absolute_path = os.path.abspath(info['key'])
-		# 	extension  = os.path.splitext(absolute_path)[-1] 
-		# 	file_ext = extension.lower()
-		# 	filename = info['key'].replace(path+'_','')
-		# 	time = datetime.datetime.fromtimestamp(info['putTime']).strftime('%m-%d-%Y %H:%M:%S')
-		# 	is_photo = next(file_ext,ext_arr)
-		# 	file_ist.append({'is_dir':False,'has_file':False,'filesize':info['size'],'is_photo':is_photo,'filename':filename,'datetime':time})
-
-		# for info in backinfo["commonPrefixes"]:
-		# 	name =  info.split('_')
-		# 	file_ist.append({'is_dir':True,'has_file':True,'filename':name[1]})
-
-		# backinfo["moveup_dir_path"] = ''
-		# backinfo["current_dir_path"] = self.get_argument("path")
-		# backinfo["current_url"] = SHOP_IMG_HOST+'/'+path+'_'
-		# backinfo["file_list"] = file_list
-
-		# print('Content-Type:application/json; charset=utf-8')
-		# return self.send_success(json_encode(backinfo))
 		return self.send_success()
 
 # 用户管理
@@ -2242,7 +2192,10 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 										 'comment_create_date', 'start_time', 'end_time', 'create_date']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
-			# d['mgoods'] = eval(d['mgoods'])
+			if d['mgoods']:
+				d['mgoods'] = eval(d['mgoods'])
+			else:
+				d['mgoods'] = {}
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["send_time"] = order.send_time
 			d["customer_id"] = order.customer_id
