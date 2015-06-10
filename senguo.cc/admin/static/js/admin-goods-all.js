@@ -77,7 +77,6 @@ $(document).ready(function(){
         $(this).prev(".img-selected").toggle();
         $(this).toggleClass("selected-img");
     }else{
-        debugger;
         if($("#item-img-lst").children(".img-bo").size()<5){
             var src = $(this).attr("src");
             var index = $("#item-img-lst").children(".img-bo").size()-1;
