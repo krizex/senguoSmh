@@ -1,4 +1,4 @@
-body{color: #999;}
+body{color: #999;font-size: 14px;}
 input{border: 1px solid #e7e7eb;height: 26px;color: #333;text-align: center;width: 45px;outline: none;}
 textarea{border-color:#eee;}
 .add-btn{width: 116px;display:inline-block;margin-left:20px;font-size: 14px;color: #fff;text-align: center;height: 28px;line-height: 28px;background-color: #52b43f;border-radius: 2px;}

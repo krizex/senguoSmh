@@ -48,7 +48,7 @@ img{border:none;}
 .backstage-header .logo-con .logo{margin-right:20px;margin-left:10px;}
 .backstage-header .logo-con span{display:inline-block;float:left;}
 .backstage-header .logo-con .title{border-left:1px solid #d9dadc;height:46px;line-height:46px;font-size:22px;padding:0 8px 0 20px;margin-top:2px;color:#666}
-.backstage-header .logo-con .beta{width:54px;height:24px;color:#999;line-height:24px;text-align:center;}
+.backstage-header .logo-con .beta{width:54px;height:24px;color:#999;line-height:24px;text-align:center;font-size:12px;}
 .backstage-header .header-nav{}
 .backstage-header .header-nav li{float:left;padding:0 15px;}
 .backstage-header .header-nav li a{color:#000;display:block;font-size: 12px;}
