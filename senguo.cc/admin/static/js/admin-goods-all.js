@@ -231,6 +231,9 @@ $(document).ready(function(){
         $item.find(".all-item-title").remove();
         $item.find(".choose-classify").removeClass("hidden");
         $item.find(".drag-img-list").children(".add-img-box").before('<li class="img-bo" data-index="0" data-rel="0"><img src="/static/design_img/'+goods_code+'.png" url="/static/design_img/'+goods_code+'.png" alt="商品图片" class="image"><a class="del-img" href="javascript:;">x</a></li>');
+        var $price = $(".wrap-price-item").children(".wrap-add-price").clone();
+        $price.find(".price-index").html("1");
+        $item.find(".edit-item-right").children("p").before($price);
         $(".goods-step").children(".step1").removeClass("c333").addClass("c999");
         $(".goods-step").children(".step2").removeClass("c999").addClass("c333");
         $(".goods-classify-box").addClass("hidden");
@@ -531,7 +534,7 @@ function dealGoods($item,type){
                 goodsEdit = false;
                 setTimeout(function(){
                     window.location.href="/admin/goods/all?&page=0";
-                },2000);
+                },1200);
             }else{
                 Tip("商品编辑成功！");
                 var data = res.data;

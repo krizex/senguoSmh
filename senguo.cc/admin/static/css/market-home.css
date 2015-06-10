@@ -16,7 +16,7 @@ html,body{width: 100%}
 .goods-list-item .num_box{width:90px;overflow:hidden;height:32px;}
 .goods-list-item .charge-style{clear:both;}
 .goods-list-item .charge-style span,a{display:inline-block;}
-.goods-list-item .charge-first{width:100%;float:left;line-height:36px;}
+.goods-list-item .charge-first{width:100%;float:left;line-height:36px;padding-right:25px;}
 .goods-list-item .charge-list{padding-right:25px;padding-left:95px !important;overflow:hidden;padding-top:5px;}
 .goods-list-item .charge-list li{height:36px;line-height:36px;margin:2px 0;padding-top:2px;}
 .goods-list-item .number-change{position:relative;width:90px;z-index:10;}
@@ -109,4 +109,5 @@ html,body{width: 100%}
 .herder .back{position:absolute;left:10px;top:12px;display:inline-block;width:24px;height:27px;background:url('/static/svg/back-white@2x.png');background-size:10px 16px;background-repeat: no-repeat;}
 .search-linput{width: 80%;position: absolute;height: 26px;border: none;background-color: rgba(105,154,113,.9);font-size:14px;color: #fff;border-radius: 26px;padding: 0 15px;right: 42px;top:7px;}
 .mt40{margin-top: 40px !important;}
-.searchlist li{font-size:14px;line-height:20px;color:#666;padding:5px;border-bottom:1px solid #fff;}
+.searchlist{background-color: #fff;}
+.searchlist li{font-size:14px;line-height:20px;color:#666;padding:10px;border-bottom:1px solid #f5f5f5;}
