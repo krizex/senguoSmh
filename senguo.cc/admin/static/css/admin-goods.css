@@ -181,10 +181,10 @@ textarea{border-color:#eee;}
 .title.blue{background:#DCF0FD;}
 
 /*分组*/
-.groups-top{padding: 10px 30px;position: relative;background-color: #f5f5f5;}
+.groups-top{padding: 10px 30px;position: relative;background-color: #f4f5f9;}
 .groups-top>p{color: #333;line-height: 26px;}
 .add-groups{position: absolute;right: 15px;top: 20px;}
-.wrap-group-list{padding: 15px 20px;}
+.wrap-group-list{padding: 15px 20px;font-size: 14px;}
 .group-lst>li:first-child{cursor: auto;}
 .group-lst>li{width:877px;border: 1px solid #eee;padding: 8px 10px;position: relative;cursor: move;-webkit-box-sizing: border-box;background-color: #fff;}
 .group-lst>li:last-child{border-bottom: 1px solid #eee;}
