@@ -1016,12 +1016,7 @@ class Market(CustomerBaseHandler):
 			nomore = True
 		#fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
 		fruits = fruits.all()
-		print('分页后')
-		for fruit in fruits:
-			print(fruit.id,fruit.group_id)
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
-		print('最后返回数据')
-		print(fruits_data)
 		nomore = True
 		return self.send_success(data = fruits_data,nomore=nomore)
 
