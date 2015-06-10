@@ -11,8 +11,8 @@ html,body{width: 100%}
 .goods-list-item .goods-info{width:100%;position:absolute;z-index:10;padding-left:95px !important;overflow:hidden;}
 .goods-list-item .great-number{margin-bottom:0;line-height:35px;}
 .goods-list-item .great-number em{background:url('../svg/icon_list-2.png') no-repeat 0 center;display:inline-block;width:10px;height:10px;background-size:140px 180px;}
-.goods-list-item .great-number .gray-heart{background-position:-70px -81px;}
-.goods-list-item .great-number .red-heart{background-position:-70px -71px !important;}
+.goods-list-item .great-number .gray-heart{background-position:-70px -80px;}
+.goods-list-item .great-number .red-heart{background-position:-70px -70px !important;}
 .goods-list-item .num_box{width:90px;overflow:hidden;height:32px;}
 .goods-list-item .charge-style{clear:both;}
 .goods-list-item .charge-style span,a{display:inline-block;}

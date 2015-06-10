@@ -268,7 +268,7 @@ class GlobalBaseHandler(BaseHandler):
 		data = []
 		shop_id = self.current_shop.id
 		for d in datalist:
-			add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else ''
+			add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time else ''
 			delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
 			if d.img_url:
 				img_url= d.img_url.split(";")
@@ -304,7 +304,7 @@ class GlobalBaseHandler(BaseHandler):
 	def getGoodsOne(self,d):
 		data = {}
 		shop_id = self.current_shop.id
-		add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else ''
+		add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time else ''
 		delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
 		if d.img_url:
 			img_url= d.img_url.split(";")

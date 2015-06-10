@@ -8,6 +8,7 @@ $(document).ready(function(){
     if(mWidth>800){
         $("#shop-area").css("left",(mWidth-width)/2+"px");
         $("#cart-bg").css("left",((mWidth-width)/2+width-54)+"px");
+        $("#back-bg").css("left",(mWidth-width)/2+"px");
     }
     $("body").css("backgroundColor","#fff");
     $(".phone-box").css("paddingBottom","20px").css("backgroundColor","#fff");
