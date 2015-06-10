@@ -681,7 +681,6 @@ class Order(AdminBaseHandler):
 										 'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
-			# d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["sent_time"] = order.send_time
 			info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
@@ -704,6 +703,7 @@ class Order(AdminBaseHandler):
 					# print(d["SH2"],'i am admin order' )
 			d["SH2s"] = SH2s
 			data.append(d)
+			# print(data)
 		return self.render("admin/orders.html", data = data, order_type=order_type,
 						   count=self._count(),page_sum=page_sum, context=dict(subpage='order'))
 
