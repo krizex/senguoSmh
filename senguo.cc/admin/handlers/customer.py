@@ -1121,8 +1121,16 @@ class GoodsSearch(CustomerBaseHandler):
 	def post(self):
 		shop_id = self.shop_id
 		search = self.args["search"]
-		names = self.session.query(models.Fruit.name).filter_by(shop_id = shop_id,active=1).filter(models.Fruit.name.like("%%%s%%" % search)).all()
-		return self.send_success(data=names)
+		data = []
+		name_list = self.session.query(models.Fruit.name).filter_by(shop_id = shop_id,active=1).filter(models.Fruit.name.like("%%%s%%" % search))
+		names = name_list.distinct().all()
+		if names:
+			for name in names:
+				count = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active=1,name = name[0]).count()
+				data.append({'name':name[0],'num':count})
+		else:
+			data = []
+		return self.send_success(data=data)
 
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated

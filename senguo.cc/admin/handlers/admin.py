@@ -1330,7 +1330,10 @@ class Goods(AdminBaseHandler):
 						count = goods.count()
 						count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 						datalist = goods.offset(offset).limit(page_size).all()
-						data = self.getGoodsData(datalist)
+						if datalist:
+							data = self.getGoodsData(datalist)
+						else:
+							datalist = []
 						return self.send_success(data=data,count=count)
 
 				elif _type =="goods_search":
@@ -1342,11 +1345,14 @@ class Goods(AdminBaseHandler):
 						page = 0
 					page_size = 10
 					offset = page * page_size
-					goods = self.session.query(models.Fruit).filter(models.Fruit.name.like("%%%s%%" % name))
+					goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.name.like("%%%s%%" % name))
 					count = goods.count()
 					count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 					datalist = goods.offset(offset).limit(page_size).all()
-					data = self.getGoodsData(goods)
+					if goods:
+						data = self.getGoodsData(goods)
+					else:
+						data = []
 					return self.send_success(data=data,count=count)
 
 			elif self.args["filter_status"] !=[]:
