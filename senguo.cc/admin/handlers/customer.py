@@ -1,4 +1,4 @@
-from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth
+from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth,get_unblock,unblock
 from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
 import dal.models as models
 import tornado.web
@@ -793,6 +793,7 @@ class ShopComment(CustomerBaseHandler):
 
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
+	@get_unblock
 	def get(self, shop_code):
 		w_follow = True
 		fruits=''
@@ -979,7 +980,7 @@ class Market(CustomerBaseHandler):
 		fruits = fruits.all()
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruit_list ,nomore = nomore)
-
+	@unblock
 	@CustomerBaseHandler.check_arguments("page?:int")
 	def commodity_list(self):
 		page = self.args["page"]
@@ -1004,8 +1005,8 @@ class Market(CustomerBaseHandler):
 
 		print(fruits.count(),'dddddddddddddddddd',shop.shop_code)
 		
-		for fruit in fruits:
-			print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
+		#for fruit in fruits:
+		#	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
 		count_fruit =fruits.distinct().count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		print(count_fruit , total_page)
