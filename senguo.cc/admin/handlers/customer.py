@@ -870,7 +870,9 @@ class Market(CustomerBaseHandler):
 						if goods_count !=0 :
 							group_list.append({'id':_group.id,'name':_group.name})
 		else:
+			group_list.append({'id':-1,'name':'店铺推荐'})
 			group_list.append({'id':0,'name':'默认分组'})
+
 
 		return self.render("customer/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,\
