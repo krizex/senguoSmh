@@ -79,13 +79,17 @@ $(document).ready(function(){
     }else{
         if($("#item-img-lst").children(".img-bo").size()<5){
             var src = $(this).attr("src");
-            var index = $("#item-img-lst").children(".img-bo").size()-1;
+            var index = $("#item-img-lst").children(".img-bo").size();
             var item = '<li class="img-bo" data-index="'+index+'" data-rel="'+index+'"><img src="'+src+'" class="img"><a class="del-img" href="javascript:;">x</a></li>';
             $("#add-img-box").before(item);
             $(this).prev(".img-selected").show();
             $(this).addClass("selected-img");
+            if($("#item-img-lst").children(".img-bo").size()==5){
+                $("#item-img-lst").children(".add-img-box").addClass("hidden");
+            }
         }else{
-            Tip("只能添加5张照片哦！")
+            Tip("只能添加5张照片哦！");
+            $("#item-img-lst").children(".add-img-box").addClass("hidden");
         }
     }
 }).on("click",".sg-img-list .img-selected",function(){
@@ -221,7 +225,7 @@ $(document).ready(function(){
         $item.find(".switch-btn").addClass("hidden");
         $item.find(".all-item-title").remove();
         $item.find(".choose-classify").removeClass("hidden");
-
+        $item.find(".drag-img-list").children(".add-img-box").before('<li class="img-bo" data-index="0" data-rel="0"><img src="/static/design_img/'+goods_code+'.png" url="/static/design_img/'+goods_code+'.png" alt="商品图片" class="image"><a class="del-img" href="javascript:;">x</a></li>');
         $(".goods-step").children(".step1").removeClass("c333").addClass("c999");
         $(".goods-step").children(".step2").removeClass("c999").addClass("c333");
         $(".goods-classify-box").addClass("hidden");
