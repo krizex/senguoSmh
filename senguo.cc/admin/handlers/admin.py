@@ -1646,9 +1646,9 @@ class Goods(AdminBaseHandler):
 				unit_num = int(charge_type["unit_num"]) if charge_type["unit_num"] else 1
 				select_num = int(charge_type["select_num"]) if charge_type["select_num"] else 1
 				market_price = float(charge_type["market_price"]) if charge_type["market_price"] else 0
+				price = float(charge_type["price"])
 				relate = select_num/unit_num
-				print(unit_num , select_num , int(unit_num/select_num))
-				goods.charge_types.append(models.ChargeType(price=charge_type["price"],
+				goods.charge_types.append(models.ChargeType(price=format(price,'.2f'),
 										unit=int(charge_type["unit"]),
 										num=charge_type["num"],
 										unit_num=unit_num,
@@ -1746,9 +1746,10 @@ class Goods(AdminBaseHandler):
 						else:
 							market_price = 0
 						relate = select_num/unit_num
+						price = float(charge_type["price"])
 						charge_types = models.ChargeType(
 												fruit_id=int(data["goods_id"]),
-												price=charge_type["price"],
+												price=format(price,'.2f'),
 												unit=int(charge_type["unit"]),
 												num=charge_type["num"],
 												unit_num=unit_num,
