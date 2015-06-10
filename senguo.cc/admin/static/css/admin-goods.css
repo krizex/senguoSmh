@@ -103,7 +103,7 @@ textarea{border-color:#eee;}
 .add-item-list:hover,.add-item-list:visited,.add-item-list:link{color: #fff;}
 .edit-item-right{width: 55%;-webkit-box-sizing: border-box;padding-left: 25px;}
 .wrap-textarea{width: 360px;margin-top: 5px;}
-.wrap-textarea>textarea{border: 1px solid #eee;height: 80px;overflow: auto;width: 100%;}
+.wrap-textarea>textarea{border: 1px solid #eee;height: 80px;overflow: auto;width: 100%;text-indent: 5px;}
 .wrap-price>span{display: inline-block;margin-right: 5px;}
 .all-position .er-logo{left: 130px;}
 .short-slide{float: left;margin-right: 10px;top: -4px;}
