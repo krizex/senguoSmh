@@ -213,6 +213,7 @@ class ShopList(FruitzoneBaseHandler):
 				shops.sort(key = lambda shop:shop['comment_count'],reverse = True)
 			else:
 				return self.send_fail(error_text = 'key_word error')
+		shops = shops[_page_count*page:_page_count*page+_page_count]
 		if shops == [] or len(shops)<_page_count:
 			nomore =True
 		return self.send_success(shops=shops,nomore = nomore)
