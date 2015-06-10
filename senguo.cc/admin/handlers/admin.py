@@ -76,6 +76,8 @@ class Home(AdminBaseHandler):
 
 		shop_auth =  self.current_shop.shop_auth
 		self.set_secure_cookie("shop_id",str(self.current_shop.id))
+
+
 		if shop_auth in [1,2]:
 			show_balance = True
 		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
@@ -682,6 +684,10 @@ class Order(AdminBaseHandler):
 										 'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
+			if d['mgoods']:
+				d['mgoods'] = eval(d['mgoods'])
+			else:
+				d['mgoods'] = {}
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["sent_time"] = order.send_time
 			info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
@@ -1643,14 +1649,30 @@ class Goods(AdminBaseHandler):
 			args["shop_id"] = shop_id
 			goods = models.Fruit(**args)
 			for charge_type in data["charge_types"]:
-				unit_num = int(charge_type["unit_num"]) if charge_type["unit_num"] else 1
-				select_num = int(charge_type["select_num"]) if charge_type["select_num"] else 1
-				market_price = float(charge_type["market_price"]) if charge_type["market_price"] else 0
+				if charge_type["unit_num"] and charge_type["unit_num"] !='':
+					unit_num = int(charge_type["unit_num"])
+				else:
+					unit_num = 1
+				if charge_type["select_num"] and charge_type["select_num"] !='':
+					select_num = int(charge_type["select_num"])
+				else:
+					select_num = 1
+				if charge_type["market_price"] and charge_type["market_price"] !='':
+					market_price = float(charge_type["market_price"])
+				else:
+					market_price = 0
+				if charge_type["price"] and charge_type["price"] !='':
+					price = float(charge_type["price"])
+				else:
+					price = 0
+				if charge_type["num"] and charge_type["num"] !='':
+					num = float(charge_type["num"])
+				else:
+					num = 0
 				relate = select_num/unit_num
-				print(unit_num , select_num , int(unit_num/select_num))
-				goods.charge_types.append(models.ChargeType(price=charge_type["price"],
+				goods.charge_types.append(models.ChargeType(price=format(price,'.2f'),
 										unit=int(charge_type["unit"]),
-										num=charge_type["num"],
+										num=format(num,'.2f'),
 										unit_num=unit_num,
 										market_price=format(market_price,'.2f'),
 										select_num=select_num,
@@ -1745,12 +1767,20 @@ class Goods(AdminBaseHandler):
 							market_price = float(charge_type["market_price"])
 						else:
 							market_price = 0
+						if charge_type["price"] and charge_type["price"] !='':
+							price = float(charge_type["price"])
+						else:
+							price = 0
+						if charge_type["num"] and charge_type["num"] !='':
+							num = float(charge_type["num"])
+						else:
+							num = 0
 						relate = select_num/unit_num
 						charge_types = models.ChargeType(
 												fruit_id=int(data["goods_id"]),
-												price=charge_type["price"],
+												price=format(price,'.2f'),
 												unit=int(charge_type["unit"]),
-												num=charge_type["num"],
+												num=format(num,'.2f'),
 												unit_num=unit_num,
 												market_price=format(market_price,'.2f'),
 												select_num=select_num,
@@ -2185,7 +2215,10 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 										 'comment_create_date', 'start_time', 'end_time', 'create_date']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
-			# d['mgoods'] = eval(d['mgoods'])
+			if d['mgoods']:
+				d['mgoods'] = eval(d['mgoods'])
+			else:
+				d['mgoods'] = {}
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["send_time"] = order.send_time
 			d["customer_id"] = order.customer_id

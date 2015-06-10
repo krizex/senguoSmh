@@ -340,7 +340,6 @@ input{color:#333;text-indent:5px;}
 .links_item {display: inline-block;vertical-align: middle;padding: 0 1em;line-height: 1em;border-left: 1px solid #d9dadc;}
 .links_item:first-child {border-left-width: 0;}
 .ft .links_item a {color: #f1f1f1;}
-<<<<<<< HEAD
 /*加载中*/
 .wrap-loading-box{width: 100%;height: 100%;position: fixed;width: 100%;background-color: rgba(0,0,0,.1);top: 0;left: 0;z-index:9999;}
 .loading-box{position: fixed;z-index:9999;top: 50%;left:50%;-webkit-transform:translate(-50%, -50%);display: -webkit-flex;display: flex;-webkit-justify-content: center;justify-content: center;}
