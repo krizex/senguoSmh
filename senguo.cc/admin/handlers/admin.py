@@ -75,6 +75,7 @@ class Home(AdminBaseHandler):
 		show_balance = False
 
 		shop_auth =  self.current_shop.shop_auth
+		self.set_secure_cookie("shop_id",str(self.current_shop.id))
 		if shop_auth in [1,2]:
 			show_balance = True
 		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
@@ -1644,14 +1645,14 @@ class Goods(AdminBaseHandler):
 			for charge_type in data["charge_types"]:
 				unit_num = int(charge_type["unit_num"]) if charge_type["unit_num"] else 1
 				select_num = int(charge_type["select_num"]) if charge_type["select_num"] else 1
-				market_price = charge_type["market_price"] if charge_type["market_price"] else 0
+				market_price = float(charge_type["market_price"]) if charge_type["market_price"] else 0
 				relate = select_num/unit_num
 				print(unit_num , select_num , int(unit_num/select_num))
 				goods.charge_types.append(models.ChargeType(price=charge_type["price"],
 										unit=int(charge_type["unit"]),
 										num=charge_type["num"],
 										unit_num=unit_num,
-										market_price=market_price,
+										market_price=format(market_price,'.2f'),
 										select_num=select_num,
 										relate=relate))
 
@@ -1741,7 +1742,7 @@ class Goods(AdminBaseHandler):
 						else:
 							select_num = 1
 						if charge_type["market_price"] and charge_type["market_price"] !='':
-							market_price = int(charge_type["market_price"])
+							market_price = float(charge_type["market_price"])
 						else:
 							market_price = 0
 						relate = select_num/unit_num
@@ -1751,7 +1752,7 @@ class Goods(AdminBaseHandler):
 												unit=int(charge_type["unit"]),
 												num=charge_type["num"],
 												unit_num=unit_num,
-												market_price=market_price,
+												market_price=format(market_price,'.2f'),
 												select_num=select_num,
 												relate=relate)
 						self.session.add(charge_types)
