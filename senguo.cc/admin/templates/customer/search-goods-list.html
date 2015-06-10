@@ -12,7 +12,7 @@
 {% block content%}
 <input type="hidden" id="shop_code" value="{{context['shop_code']}}"/>
 <header class="herder bg-green text-white text-center">
-        <a href="javascript:;" class="back" id="back"></a>
+        <a href="{{reverse_url('Market',context['shop_code'])}}" class="back" id="back"></a>
         <input type="text" placeholder="请输入商品名" class="search-linput pull-left" id="searchKey"/>
         <a href="javascript:;" class="search-btn" id="searchSubmit"></a>
 </header>

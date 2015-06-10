@@ -870,8 +870,10 @@ class Market(CustomerBaseHandler):
 						if goods_count !=0 :
 							group_list.append({'id':_group.id,'name':_group.name})
 		else:
-			group_list.append({'id':-1,'name':'店铺推荐'})
-			group_list.append({'id':0,'name':'默认分组'})
+			if record_count !=0 :
+				group_list.append({'id':-1,'name':'店铺推荐'})
+			if default_count !=0 :
+				group_list.append({'id':0,'name':'默认分组'})
 
 
 		return self.render("customer/home.html",
@@ -1015,12 +1017,7 @@ class Market(CustomerBaseHandler):
 			nomore = True
 		#fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
 		fruits = fruits.all()
-		# print('分页后')
-		for fruit in fruits:
-			print(fruit.id,fruit.group_id)
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
-		# print('最后返回数据')
-		# print(fruits_data)
 		nomore = True
 		return self.send_success(data = fruits_data,nomore=nomore)
 
@@ -1124,9 +1121,7 @@ class GoodsSearch(CustomerBaseHandler):
 	def post(self):
 		shop_id = self.shop_id
 		search = self.args["search"]
-		print(search)
 		names = self.session.query(models.Fruit.name).filter_by(shop_id = shop_id,active=1).filter(models.Fruit.name.like("%%%s%%" % search)).all()
-		print(names)
 		return self.send_success(data=names)
 
 class Cart(CustomerBaseHandler):
