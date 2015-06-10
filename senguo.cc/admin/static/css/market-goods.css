@@ -54,7 +54,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .swiper-pagination-switch{width:12px;height: 12px;border-radius:50%;-webkit-box-sizing:border-box;display: inline-block;margin:0 5px;-webkit-transition:all .2s ease;background-color: #fff;}
 .swiper-active-switch{background-color: #80c092;}
 .roll-bg{width: 34px;height: 34px;border-radius: 50%;background-color: rgba(128,192,146,.6);z-index:999;cursor: pointer;}
-.back{position: absolute;left: 10px;top: 10px;}
+.back{position: fixed;left: 10px;top: 10px;}
 .back>i{position: absolute;width: 10px;height: 22px;background-image: url('/static/images/arrow_left.png'); top: 8px;left: 10px;}
 .share{position: absolute;right: 10px;top: 10px;}
 .share>i{position: absolute;width: 16px;height: 18px;background-image: url('/static/images/icon_share.png');top: 8px;left: 8px;}
