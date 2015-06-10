@@ -77,6 +77,7 @@ fruit_types = [{'id': 1, 'name': '梨子', 'code': 'Li','color':2,'length':2,'ga
                {'id': 69, 'name': '杏子', 'code':'xingzi','color':2,'length':2,'garden':2,'nature':3},
 
 
+               
                # 干果类型
                   # 所有干果的颜色默认为2 yellow 
                   # 干果长度按照名词长度定 
@@ -105,8 +106,11 @@ fruit_types = [{'id': 1, 'name': '梨子', 'code': 'Li','color':2,'length':2,'ga
                {'id': 1021, 'name': '枸杞','code':'gouqi','color':2,'length':2,'garden':7,'nature':2},
                {'id': 1022, 'name': '杏干','code':'xinggan','color':2,'length':2,'garden':7,'nature':2},
                {'id': 1023, 'name': '无花果干','code':'wuhuaguogan','color':2,'length':4,'garden':7,'nature':2},
+
+               
       #其他 color = 0  length = 2  默认        
-      #     
+               {'id': 999, 'name': '其他', 'code':'shuiguoqita','color':0,'length':0,'garden':0,'nature':0},
+               {'id': 1999, 'name': '其他', 'code':'ganguoqita','color':0,'length':0,'garden':0,'nature':0},
                {'id': 2000, 'name': '其他','code':'TDSG','color':0,'length':2,'garden':0,'nature':0},
 
 ]

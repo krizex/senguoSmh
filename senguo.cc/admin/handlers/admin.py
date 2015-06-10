@@ -119,6 +119,7 @@ class Home(AdminBaseHandler):
 			admin = self.session.query(models.HireLink).filter_by(shop_id=shop_id,staff_id=self.current_user.id,active=1,work=9).first()
 			if not admin and shop.admin != self.current_user:
 				return self.send_error(403)#必须做权限检查：可能这个shop并不属于current_user
+			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
 			self.current_shop = shop
 			self.set_secure_cookie("shop_id", str(shop.id), domain=ROOT_HOST_NAME)
 			return self.send_success()
@@ -1450,33 +1451,34 @@ class Goods(AdminBaseHandler):
 				datalist = []
 				if sub_type == "color":
 					for i in range(7):
-						if i == 0:
-							color = "unknow"
-							name = '其它'
-						elif i ==1:
-							color = "red"
-							name = '红色'
-						elif i == 2:
-							color = "yellow"
-							name = '黄色'
-						elif i == 3:
-							color = "green"
-							name = '绿色'
-						elif i == 4:
-							color = "purple"
-							name = '紫色'
-						elif i == 5:
-							color = "white"
-							name = '白色'
-						elif i == 6:
-							color = "blue"
-							name = '蓝色'
-						types = fruit_types.filter_by(color=i).all()
-						types = self.getClass(types)
-						datalist.append({'name':name,'property':color,'data':types})
+						if i >0:
+							if i ==1:
+								color = "red"
+								name = '红色'
+							elif i == 2:
+								color = "yellow"
+								name = '黄色'
+							elif i == 3:
+								color = "green"
+								name = '绿色'
+							elif i == 4:
+								color = "purple"
+								name = '紫色'
+							elif i == 5:
+								color = "white"
+								name = '白色'
+							elif i == 6:
+								color = "blue"
+								name = '蓝色'
+							types = fruit_types.filter_by(color=i).order_by(models.FruitType.color).all()
+							types = self.getClass(types)
+							datalist.append({'name':name,'property':color,'data':types})
+					types0 = fruit_types.filter_by(color=0).all()
+					types0 = self.getClass(types0)
+					datalist.append({'name':'其它','property':"unknow",'data':types0})
 				elif sub_type == "length":
 					for i in range(5):
-						if i >0:
+						if i>0:
 							if i == 1:
 								name ='一个字'
 							elif i == 2:
@@ -1488,40 +1490,43 @@ class Goods(AdminBaseHandler):
 							types = fruit_types.filter_by(length=i).all()
 							types = self.getClass(types)
 							datalist.append({'name':name,'property':i,'data':types})
+					types0 = fruit_types.filter_by(length=0).all()
+					types0 = self.getClass(types0)
+					datalist.append({'name':'其它','property':"unknow",'data':types0})
 				elif sub_type == "garden":
 					for i in range(8):
-						if i == 0:
-							garden = "unknow"
-							name = "其它"
-						elif i ==1:
-							garden = "renguo"
-							name = "仁果类"
-						elif i == 2:
-							garden = "heguo"
-							name = "核果类"
-						elif i == 3:
-							garden = "jiangguo"
-							name = "浆果类"
-						elif i == 4:
-							garden = "ganju"
-							name = "柑橘类"
-						elif i == 5:
-							garden = "redai"
-							name = "热带及亚热带类"
-						elif i == 6:
-							garden = "shiguo"
-							name = "什果类"
-						elif i == 6:
-							garden = "jianguo"
-							name = "坚果类"
-						types = fruit_types.filter_by(garden=i).all()
-						types = self.getClass(types)
-						datalist.append({'name':name,'property':garden,'data':types})
+						if i>0:
+							if i ==1:
+								garden = "renguo"
+								name = "仁果类"
+							elif i == 2:
+								garden = "heguo"
+								name = "核果类"
+							elif i == 3:
+								garden = "jiangguo"
+								name = "浆果类"
+							elif i == 4:
+								garden = "ganju"
+								name = "柑橘类"
+							elif i == 5:
+								garden = "redai"
+								name = "热带及亚热带类"
+							elif i == 6:
+								garden = "shiguo"
+								name = "什果类"
+							elif i == 6:
+								garden = "jianguo"
+								name = "坚果类"
+							types = fruit_types.filter_by(garden=i).all()
+							types = self.getClass(types)
+							datalist.append({'name':name,'property':garden,'data':types})
+					types0 = fruit_types.filter_by(garden=0).all()
+					types0 = self.getClass(types0)
+					datalist.append({'name':'其它','property':"unknow",'data':types0})
 				elif sub_type == "nature":
 					for i in range(4):
-							if i == 0:
-								name ='其它'
-							elif i == 1:
+						if i>0:
+							if i == 1:
 								name = '凉性'
 							elif i == 2:
 								name = '热性'
@@ -1530,6 +1535,9 @@ class Goods(AdminBaseHandler):
 							types = fruit_types.filter_by(nature=i).all()
 							types = self.getClass(types)
 							datalist.append({'name':name,'property':i,'data':types})
+					types0 = fruit_types.filter_by(nature=0).all()
+					types0 = self.getClass(types0)
+					datalist.append({'name':'其它','property':"unknow",'data':types0})
 				else:
 					return self.send_fail(404)
 				return self.send_success(data=datalist)
