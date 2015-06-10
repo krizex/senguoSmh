@@ -110,7 +110,7 @@ img{border:none;}
 .container-right .right-title{font-size:16px;display:block;margin-bottom:10px;}
 .mode-lock{background:#f4f5f9;width:100%;float:left;padding:10px 0;height:77px;}
 
-.subnav-box{position:relative;height:40px;border-bottom:1px solid #eee;width:100%;overflow:hidden;}
+.subnav-box{position:relative;height:40px;border-bottom:1px solid #e7e7eb;width:100%;overflow:hidden;}
 .subnav li{float:left;width:90px;height:40px;text-align:center;line-height:42px;}
 .subnav li a{color:#333;font-size:14px;display:block;}
 .subnav li:hover{border-bottom:3px solid #a0a3ab;margin-top:-1px;}
