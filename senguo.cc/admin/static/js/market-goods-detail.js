@@ -71,7 +71,7 @@ $(document).ready(function(){
             return noticeBox("库存不足啦~~");
         }
         if(limit_num>0&&num==limit_num){
-            return  noticeBox('当前商品最多只能买 '+limit_num+' 件哦！');
+            return noticeBox('当前商品最多只能买 '+limit_num+' 件哦！');
         }
         $this.parents("li").find('.now-buy').attr({"data-storage":storage-change_num})
         if(isNaN(num)){

@@ -1,8 +1,9 @@
-body{font-size: 14px;color: #999;}
+body{color: #999;}
 input{border: 1px solid #eee;height: 26px;font-size: 12px;color: #333;text-align: center;width: 45px;outline: none;}
 textarea{border-color:#eee;}
 .add-btn{width: 116px;display:inline-block;margin-left:20px;font-size: 14px;color: #fff;text-align: center;height: 28px;line-height: 28px;background-color: #52b43f;border-radius: 2px;}
 .wrap-all-goods{margin-top: 15px;}
+.wrap-classify{font-size: 14px;}
 .wrap-pop-btn{background-color: #fbfbfb;border-top:1px solid #eee;padding: 10px 0;text-align: center;}
 .wrap-pop-btn>a{display: inline-block;width: 90px;text-align: center;font-size: 14px;height: 28px;line-height: 28px;border-radius: 2px;border: 1px solid #eee;}
 .ok-btn{background-color: #33CC66;color: #fff;margin-right: 20px;}
