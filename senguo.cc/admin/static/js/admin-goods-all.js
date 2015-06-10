@@ -267,10 +267,6 @@ $(document).ready(function(){
             if(editor){
                 editor.html($(this).attr("data-text"));
                 editor.clickToolbar('preview');
-                //editor.readonly(true);
-                //$(".ke-toolbar").children().addClass("hidden").append("<span class='preview-txt c333'>预览</span>");
-                //$(".ke-icon-image").addClass("hidden");
-                //$(".pop-editor").show();
             }else{
                 initEditor($(this));
             }
@@ -779,11 +775,6 @@ function initEditor($obj){
         editor.html($obj.attr("data-text"));
         if($obj.attr("data-flag")!="true"){
             editor.clickToolbar('preview');
-        }else{
-            $(".ke-tabs-ul").children("li").eq(0).remove();
-            $(".ke-tabs-ul").children("li").addClass("ke-tabs-li-selected");
-            $(".ke-dialog-body").find(".tab1").hide();
-            $(".ke-dialog-body").find(".tab2").show();
         }
     }});
 }
@@ -1125,7 +1116,7 @@ function getData(type,sub_type){
                     '<p class="title {{property}}">{{name}}</p>'+
                     '<ul class="fruit-item-list group">'+
                     '{{each types as type}}'+
-                    '<li data-id="{{type.id}}">{{type.name}}</li>'+
+                    '<li data-id="{{type.id}}" data-code="{{type.code}}">{{type.name}}</li>'+
                     '{{/each}}'+
                     '</ul>'+
                     '</li>';
@@ -1161,7 +1152,7 @@ function getData2(con){
                 var data = res.data;
                 $('.fruit-list').empty();
                 var item='<ul class="fruit-item-list group">'+
-                    '<li data-id="{{id}}">{{name}}</li>'+
+                    '<li data-id="{{id}}" data-code="{{code}}">{{name}}</li>'+
                     '</ul>';
                 for(var d in data){
                     if(data[d].length!=0){
@@ -1169,7 +1160,8 @@ function getData2(con){
                         var html = render({
                             id:data[d]['id'],
                             name:data[d]['name'],
-                            num:data[d]['num']
+                            num:data[d]['num'],
+                            code:data[d]['code']
                         });
                         $('.fruit-list').append(html);
                     }

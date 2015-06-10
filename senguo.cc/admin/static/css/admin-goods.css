@@ -151,10 +151,10 @@ textarea{border-color:#eee;}
 .ke-dialog-content .ke-input-number{width: 50px;}
 .ke-dialog-content input[type=radio]{width: auto;}
 .ke-dialog-mask{background-color: rgba(0,0,0,.4) !important;}
-.ke-tabs-li-selected{display: none !important;}
+/*.ke-tabs-ul>li:first-child{display: none !important;}
 .ke-tabs-li{border-bottom: 1px solid #FFF !important;cursor: default !important;background-color: #fff !important;}
 .ke-dialog-body .tab1{display: none !important;}
-.ke-dialog-body .tab2{display: block !important;}
+.ke-dialog-body .tab2{display: block !important;}*/
 .ke-dialog-body input[type=file]{cursor: pointer !important;}
 /*分类*/
 .wrap-fruit-select{position: relative;height: 30px;margin: 10px 0;}
