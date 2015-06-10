@@ -40,7 +40,7 @@ textarea{border-color:#eee;}
 .dropdown-menu .item{padding-left:14px;}
 .dropdown-menu li a:hover{color:#fff;background-color: #6ba4ef;}
 .caret{margin-top:10px;color: #333;}
-.borderc{border: 1px solid #eee;}
+.borderc{border: 1px solid #e7e7eb;}
 .pointer{cursor: pointer;}
 .min80{min-width: 80px;}
 .mt2{margin-top: 2px;}
@@ -58,7 +58,7 @@ textarea{border-color:#eee;}
 .goods-all-list>li{margin-top: 10px;}
 .goods-all-list>p{text-align: center;margin-top: 20px;}
 .all-item-title{font-size: 14px;}
-.all-item-top{background-color: #f3f3f3;height: 40px;line-height:30px;font-size: 14px;position: relative;}
+.all-item-top{background-color: #f4f5f9;height: 40px;line-height:30px;font-size: 14px;position: relative;}
 .item-checkbox{vertical-align: -3px;}
 .item-name{color: #ff6666;display: inline-block;width: 170px;}
 .iblock{display: inline-block;position: relative;}
