@@ -112,7 +112,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
 			send_time = send_time,remark=remark,pay_type=pay_type,online_type=online_type,freight = freight,\
 			goods = goods,sender_phone=sender_phone,sender_img=sender_img,charge_types=charge_types,\
-			mcharge_types = mcharge_types,order=order)
+			order=order)
 
 	def check_xsrf_cookie(self):
 		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -201,11 +201,11 @@ class OnlineWxPay(CustomerBaseHandler):
 			#goods 
 			goods = []
 			f_d = eval(order.fruits)
-			m_d = eval(order.mgoods)
+			# m_d = eval(order.mgoods)
 			for f in f_d:
 				goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-			for m in m_d:
-				goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+			# for m in m_d:
+			#	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 			goods = str(goods)[1:-1]
 			print("[提交订单]订单详情：",goods)
 			order_totalPrice = float('%.2f'% totalPrice)
@@ -455,11 +455,11 @@ class OnlineAliPay(CustomerBaseHandler):
 		#goods 
 		goods = []
 		f_d = eval(order.fruits)
-		m_d = eval(order.mgoods)
+		# m_d = eval(order.mgoods)
 		for f in f_d:
 			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-		for m in m_d:
-			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+		# for m in m_d:
+		#	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		goods = str(goods)[1:-1]
 		print("[提交订单]订单详情：",goods)
 		order_totalPrice = float('%.2f'% totalPrice)
@@ -543,11 +543,11 @@ class OnlineAliPay(CustomerBaseHandler):
 		#goods 
 		goods = []
 		f_d = eval(order.fruits)
-		m_d = eval(order.mgoods)
+		# m_d = eval(order.mgoods)
 		for f in f_d:
 			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-		for m in m_d:
-			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+		# for m in m_d:
+		#	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		goods = str(goods)[1:-1]
 		print("[提交订单]订单详情：",goods)
 		order_totalPrice = float('%.2f'% totalPrice)
