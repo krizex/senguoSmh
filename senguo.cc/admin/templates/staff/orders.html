@@ -11,7 +11,6 @@
 <ul class="order-list bg-white">
     {% for order in orders %}
     {% set fruits=eval(order.fruits)%}
-    {% set mgoods=eval(order.mgoods)%}
     {% set left=''%}
     {% set width=''%}
     <li class="order-list-item  mb-10 bg-pale-green" data-status="{{order.status }}">
@@ -78,13 +77,7 @@
                     <span class="pull-left text-pink">x{{fruits[key]['num']}}</span>
                 </li>
                 {% end %}
-                {% for key in  mgoods%}
-                <li class="clearfix pull-left" >
-                    <span class="pull-left">{{mgoods[key]['mgoods_name']}}</span>
-                    <span class="pull-left">{{mgoods[key]['charge']}}</span>
-                    <span class="pull-left text-pink">x{{mgoods[key]['num']}}</span>
-                </li>
-                {% end %}
+                
             </ul>
             <!--<div class="status-bar-box" data-id="status-bar-box" >
                 <div class="status-bar" data-id="status-bar" >

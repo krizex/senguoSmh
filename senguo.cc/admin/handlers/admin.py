@@ -182,7 +182,7 @@ class SwitchShop(AdminBaseHandler):
 			.filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
 			shop.satisfy = satisfy
 			shop.comment_count = comment_count
-			shop.goods_count = fruit_count+mgoods_count	
+			shop.goods_count = fruit_count
 			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()
 			shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100)
 			shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
@@ -681,7 +681,6 @@ class Order(AdminBaseHandler):
 										 'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
-			d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["sent_time"] = order.send_time
 			info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
@@ -704,6 +703,7 @@ class Order(AdminBaseHandler):
 					# print(d["SH2"],'i am admin order' )
 			d["SH2s"] = SH2s
 			data.append(d)
+			# print(data)
 		return self.render("admin/orders.html", data = data, order_type=order_type,
 						   count=self._count(),page_sum=page_sum, context=dict(subpage='order'))
 
@@ -1087,8 +1087,10 @@ class Shelf(AdminBaseHandler):
 		fruit_type_d = {}
 		if self.args["id"] < 1000:
 			fruit_types = self.session.query(models.FruitType).filter("id < 1000").all()
-		else:
+		elif 1000<self.args["id"] < 2000:
 			fruit_types = self.session.query(models.FruitType).filter("id > 1000").all()
+		else:
+			fruit_types = self.session.query(models.FruitType).filter_by( id=2000 ).all()
 		for fruit_type in fruit_types:
 			fruit_type_d[fruit_type.id] = {"code": fruit_type.code, "name": fruit_type.name, "sum": 0}
 
@@ -1116,8 +1118,13 @@ class Shelf(AdminBaseHandler):
 							   menus=self.current_shop.menus,
 							   context=dict(subpage="goods", goodsSubpage="fruit"))
 		elif action == "menu":#todo 合法性检查
-			try:mgoodses = self.session.query(models.MGoods).filter_by(menu_id=self.args["id"]).all()
-			except:return self.send_error(404)
+			_id = int(self.args["id"]) 
+			if _id == 2000:
+				mgoodses = self.session.query(models.Fruit).filter_by(fruit_type_id=2000,shop_id=self.current_shop.id).all()
+
+			# try:mgoodses = self.session.query(models.MGoods).filter_by(menu_id=self.args["id"]).all()
+			# except:return self.send_error(404)
+
 			return self.render("admin/goods-menu.html", mgoodses=mgoodses, menus=self.current_shop.menus,
 							   context=dict(subpage="goods", goodsSubpage="menu"))
 
@@ -1278,6 +1285,706 @@ class Shelf(AdminBaseHandler):
 		else:
 			return self.send_error(404)
 
+		return self.send_success()
+
+# 商品管理
+class Goods(AdminBaseHandler):
+	@tornado.web.authenticated
+	def initialize(self, action):
+		self._action = action
+
+	def token(self,token):
+		editorToken = self.get_editor_token("editor", _id)
+
+	@AdminBaseHandler.check_arguments("type?","sub_type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?","content?")
+	def get(self):
+		action = self._action
+		_id = str(time.time())
+		current_shop = self.current_shop
+		shop_id = current_shop.id
+		qiniuToken = self.get_qiniu_token('goods',_id)
+		shop_code = current_shop.shop_code
+		if action == "all":
+			try:
+				goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.active!=0)
+			except:
+				goods = []
+			if self.args["type"] !=[]:
+				_type = self.args["type"]
+				if _type == "classify":
+					data = []
+					datalist = []
+					page = int(self.args["page"])
+					page_size = 10
+					offset = page * page_size
+					if self.args["sub_type"] != []:
+						type_id = int(self.args["sub_type"])
+						goods = goods.filter_by(fruit_type_id=type_id).order_by(models.Fruit.add_time.desc())
+						count = goods.count()
+						count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
+						datalist = goods.offset(offset).limit(page_size).all()
+						data = self.getGoodsData(datalist)
+						return self.send_success(data=data,count=count)
+
+				elif _type =="goods_search":
+					name = self.args["content"]
+					data = []
+					if "page" in self.args:
+						page = int(self.args["page"])
+					else:
+						page = 0
+					page_size = 10
+					offset = page * page_size
+					goods = self.session.query(models.Fruit).filter(models.Fruit.name.like("%%%s%%" % name))
+					count = goods.count()
+					count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
+					datalist = goods.offset(offset).limit(page_size).all()
+					data = self.getGoodsData(goods)
+					return self.send_success(data=data,count=count)
+
+			elif self.args["filter_status"] !=[]:
+				data = []
+				if "page" in self.args:
+					page = int(self.args["page"])
+				else:
+					page = 0
+				page_size = 10
+				offset = page * page_size				
+				filter_status = self.args["filter_status"]
+				if filter_status == []:
+					filter_status = "all"
+				order_status1 = self.args["order_status1"]
+				order_status2 = self.args["order_status2"]
+				filter_status2 = self.args["filter_status2"]
+
+				if filter_status == "all":
+					goods = goods.order_by(models.Fruit.active)
+				elif filter_status =="on":
+					goods = goods.filter_by(active = 1)
+				elif filter_status =="off":
+					goods = goods.filter_by(active = 2)
+				elif filter_status =="sold_out":
+					goods = goods.filter_by(storage = 0)
+				elif filter_status =="current_sell":
+					goods = goods.filter(models.Fruit.current_saled !=0 )
+
+				if filter_status2 != []:
+					filter_status2 = int(filter_status2)
+					# print(filter_status2)
+					if filter_status2 == -2:
+						goods = goods	
+					else:
+						goods = goods.filter_by(group_id = filter_status2)
+						
+
+				if order_status1 =="group":
+					case_one = 'models.Fruit.group_id'
+				elif order_status1 =="classify":
+					case_one = 'models.Fruit.fruit_type_id'	
+
+
+				if order_status2 == "add_time":
+					goods = goods.order_by(models.Fruit.add_time.desc(),eval(case_one))
+				elif order_status2 == "name":
+					goods = goods.order_by(models.Fruit.name.desc(),eval(case_one))
+				elif order_status2 == "saled":
+					goods = goods.order_by(models.Fruit.saled.desc(),eval(case_one))
+				elif order_status2 == "storage":
+					goods = goods.order_by(models.Fruit.storage.desc(),eval(case_one))
+				elif order_status2 == "current_saled":
+					goods = goods.order_by(models.Fruit.current_saled.desc(),eval(case_one))
+
+				count = goods.count()
+				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
+				datalist = goods.offset(offset).limit(page_size).all()
+				data = self.getGoodsData(datalist)
+				return self.send_success(data=data,count=count)
+
+			group_list = []
+			groups = self.session.query(models.GoodsGroup).filter_by(shop_id=shop_id,status=1).all()
+			default_count = goods.filter_by(group_id=0).count()
+			record_count = goods.filter_by(group_id=-1).count()
+			group_list.append({"id":0,"name":"默认分组","num":default_count})
+			group_list.append({"id":-1,"name":"店铺推荐","num":record_count})
+			for g in groups:
+				goods_count = goods.filter_by( group_id = g.id ).count()
+				group_list.append({"id":g.id,"name":g.name,"num":goods_count})
+
+			c_list = []
+			all_count = goods.count()
+			on_count = goods.filter_by(active=1).count()
+			off_count = goods.filter_by(active=2).count()
+			sold_count =goods.filter_by(storage=0).count()
+			dealing_count =goods.filter(models.Fruit.current_saled!=0).count()
+			c_list.append({"all_count":all_count,"on_count":on_count,"off_count":off_count,"sold_count":sold_count,"dealing_count":dealing_count})
+
+			return self.render("admin/goods-all.html",context=dict(subpage="goods"),token=qiniuToken,group_list=group_list,c_list=c_list,shop_code=shop_code)
+						
+		elif action == "classify":	
+			if self.args["type"] != [] :
+				_type = self.args["type"]
+				sub_type = self.args["sub_type"]
+				try:
+					fruit_types = self.session.query(models.FruitType)
+				except:
+					fruit_types = []
+				if _type == "fruit":
+					fruit_types = fruit_types.filter(models.FruitType.id<1000)
+				elif _type == "ganguo":
+					fruit_types = fruit_types.filter(and_(models.FruitType.id<2000,models.FruitType.id>1000))
+				elif _type == "other":
+					fruit_types = fruit_types.filter_by(id=2000)
+				datalist = []
+				if sub_type == "color":
+					for i in range(7):
+						if i == 0:
+							color = "unknow"
+							name = '其它'
+						elif i ==1:
+							color = "red"
+							name = '红色'
+						elif i == 2:
+							color = "yellow"
+							name = '黄色'
+						elif i == 3:
+							color = "green"
+							name = '绿色'
+						elif i == 4:
+							color = "purple"
+							name = '紫色'
+						elif i == 5:
+							color = "white"
+							name = '白色'
+						elif i == 6:
+							color = "blue"
+							name = '蓝色'
+						types = fruit_types.filter_by(color=i).all()
+						types = self.getClass(types)
+						datalist.append({'name':name,'property':color,'data':types})
+				elif sub_type == "length":
+					for i in range(5):
+						if i >0:
+							if i == 1:
+								name ='一个字'
+							elif i == 2:
+								name ='两个字'
+							elif i == 3:
+								name ='三个字'
+							elif i == 4:
+								name ='四个字'
+							types = fruit_types.filter_by(length=i).all()
+							types = self.getClass(types)
+							datalist.append({'name':name,'property':i,'data':types})
+				elif sub_type == "garden":
+					for i in range(8):
+						if i == 0:
+							garden = "unknow"
+							name = "其它"
+						elif i ==1:
+							garden = "renguo"
+							name = "仁果类"
+						elif i == 2:
+							garden = "heguo"
+							name = "核果类"
+						elif i == 3:
+							garden = "jiangguo"
+							name = "浆果类"
+						elif i == 4:
+							garden = "ganju"
+							name = "柑橘类"
+						elif i == 5:
+							garden = "redai"
+							name = "热带及亚热带类"
+						elif i == 6:
+							garden = "shiguo"
+							name = "什果类"
+						elif i == 6:
+							garden = "jianguo"
+							name = "坚果类"
+						types = fruit_types.filter_by(garden=i).all()
+						types = self.getClass(types)
+						datalist.append({'name':name,'property':garden,'data':types})
+				elif sub_type == "nature":
+					for i in range(4):
+							if i == 0:
+								name ='其它'
+							elif i == 1:
+								name = '凉性'
+							elif i == 2:
+								name = '热性'
+							elif i == 3:
+								name = '中性'
+							types = fruit_types.filter_by(nature=i).all()
+							types = self.getClass(types)
+							datalist.append({'name':name,'property':i,'data':types})
+				else:
+					return self.send_fail(404)
+				return self.send_success(data=datalist)
+			else:
+				return self.render("admin/goods-classify.html",context=dict(subpage="goods"))
+		elif action == "group":
+			data = []
+			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id)
+			default_count = goods.filter_by(group_id=0).count()
+			record_count = goods.filter_by(group_id=-1).count()
+			group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id).order_by(models.GroupPriority.priority).all()
+			goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,active=1)
+			# _group = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1).all()
+			# for g in _group:
+			# 	goods_count = goods.filter_by( group_id = g.id ).count()
+			# 	data.append({'id':g.id,'name':g.name,'intro':g.intro,'num':goods_count})
+			if group_priority:
+				for g in group_priority:
+					group_id = g.group_id
+					if group_id != -1:
+						if group_id == 0:
+							data.append({'id':0,'name':'','intro':'','num':default_count})
+						else:
+							_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop_id,status = 1).first()
+							if _group:
+								goods_count = goods.filter_by( group_id = _group.id ).count()
+								data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count})
+			else:
+				data.append({'id':0,'name':'','intro':'','num':default_count})
+			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,record_count=record_count)
+
+		elif action == "delete":
+			if "page" in self.args:
+				data = []
+				datalist = []
+				page = int(self.args["page"])
+				page_size = 10
+				offset = page * page_size
+				goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active = 0)
+
+				if self.args["type"] == "goods_search":
+					name = self.args["content"]
+					goods = goods.filter(models.Fruit.name.like("%%%s%%" % name))
+
+				count = goods.count()
+				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
+				datalist = goods.offset(offset).limit(page_size).all()
+				data = self.getGoodsData(datalist)
+				return self.send_success(data=data,count=count)
+			return self.render("admin/goods-delete.html",context=dict(subpage="goods"))
+
+	def getClass(self,con):
+		data = []
+		for c in con:
+			try:
+				num = self.session.query(models.Fruit).filter_by(shop_id=self.current_shop.id,fruit_type_id=c.id).count()
+			except:
+				num = 0
+			data.append({'id':c.id,'code':c.code,'name':c.name,'num':num})
+		return data
+
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action", "data", "charge_type_id?:int")
+	def post(self):
+		action = self.args["action"]
+		data = self.args["data"]
+		current_shop = self.current_shop
+		shop_id = current_shop.id
+		if action == "add_goods":
+			if not (data["charge_types"] and data["charge_types"]):  # 如果没有计价方式、打开market时会有异常
+				return self.send_fail("请至少添加一种计价方式")
+			if len(data["intro"]) > 100:
+				return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
+			args={}
+			args["fruit_type_id"] = int(data["fruit_type_id"])
+			args["name"] = data["name"]
+			args["storage"] = data["storage"]
+			args["unit"] = data["unit"]
+			if data["detail_describe"]:
+				args["detail_describe"] = data["detail_describe"].replace("script","'/script/'")
+			#if data["tag"]:
+				#args["tag"] = data["tag"]
+			if "limit_num" in data:
+				args["limit_num"] = data["limit_num"]
+			if "group_id" in data:
+				group_id = int(data["group_id"])
+				if group_id == -1:
+					re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
+					if re_count >= 6:
+						return self.send_fail("推荐分组至多只能添加六个商品")
+				if group_id !=0 and group_id !=-1:
+					_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = shop_id,status = 1).first()
+					if _group:
+						args["group_id"] = group_id
+					else:
+						return self.send_fail('该商品分组不存在或已被删除')
+				else:
+					args["group_id"] =group_id
+
+			if "img_url" in data:  # 前端可能上传图片不成功，发来一个空的，所以要判断
+				index_list = data["img_url"]["index"]
+				img_list = data["img_url"]["src"]
+				img_urls= []
+				for i in range(len(index_list)):
+					for index,val in enumerate(index_list):
+						val= int(val)
+						if val == i:
+							imgurl = img_list[index]
+							img_urls.append(imgurl)
+						args["img_url"] = ";".join(img_urls)  if img_urls else None
+
+			if "priority" in data:
+				priority = data["priority"]
+			else:
+				priority = 0
+
+			if "intro" in data:
+				intro = data["intro"]
+
+			args["intro"] = intro
+			args["priority"] = priority
+			args["fruit_type_id"] = data["fruit_type_id"]
+			args["shop_id"] = shop_id
+			goods = models.Fruit(**args)
+			for charge_type in data["charge_types"]:
+				unit_num = int(charge_type["unit_num"]) if charge_type["unit_num"] else 1
+				select_num = int(charge_type["select_num"]) if charge_type["select_num"] else 1
+				market_price = charge_type["market_price"] if charge_type["market_price"] else 0
+				relate = select_num/unit_num
+				print(unit_num , select_num , int(unit_num/select_num))
+				goods.charge_types.append(models.ChargeType(price=charge_type["price"],
+										unit=int(charge_type["unit"]),
+										num=charge_type["num"],
+										unit_num=unit_num,
+										market_price=market_price,
+										select_num=select_num,
+										relate=relate))
+
+			self.session.add(goods)
+			self.session.commit()
+			return self.send_success()
+
+		elif action == "edit_goods_img":
+			return self.send_qiniu_token("fruit", int(data["goods_id"]))
+
+		elif action == "apply_cookie":
+			return self.send_qiniu_token("apply_cookie",int(data["goods_id"]))
+
+		elif action in ["add_charge_type", "edit_active", "edit_goods", "default_goods_img","delete_goods","change_group"]:  # fruit_id
+			try:goods = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).one()
+			except:return self.send_error(404)
+			if goods.shop != self.current_shop:
+				return self.send_error(403)
+
+			if action == "add_charge_type":
+				# print('num',data["num"],data["unit"],data["price"])
+				charge_type = models.ChargeType(fruit_id=goods.id,
+								price=data["price"],
+								unit=data["unit"],
+								num=data["num"],
+								unit_num=data["unit_num"],
+								market_price=data["market_price"],)
+				self.session.add(charge_type)
+				self.session.commit()
+				return self.send_success()
+			elif action == "edit_active":
+				if goods.active == 1:
+					goods.update(session=self.session, active = 2)
+				elif goods.active == 2:
+					goods.update(session=self.session, active = 1)
+
+			elif action =="change_group":
+				group_id = int(data["group_id"])
+				if group_id == -1:
+					re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
+					if re_count >= 6:
+						return self.send_fail("推荐分组至多只能添加六个商品")
+				
+				if group_id !=0 and group_id !=-1:
+						_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = shop_id,status = 1).first()
+						if _group:
+							group_id = _group.id
+						else:
+							return self.send_fail('该商品分组不存在或已被删除')
+				goods.update(session=self.session, group_id = int(data["group_id"]))			
+
+			elif action == "edit_goods":
+				if len(data["intro"]) > 100:
+					return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
+				if "group_id" in data:
+					group_id = int(data["group_id"])
+					if group_id !=0 and group_id !=-1:
+						_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = shop_id,status = 1).first()
+						if _group:
+							group_id = group_id
+						else:
+							return self.send_fail('该商品分组不存在或已被删除')
+				if "img_url" in data:  # 前端可能上传图片不成功，发来一个空的，所以要判断
+					index_list = data["img_url"]["index"]
+					img_list = data["img_url"]["src"]
+					img_urls= []
+					img_first = ''
+					for i in range(len(index_list)):
+						for index,val in enumerate(index_list):
+							val= int(val)
+							if val == i:
+								imgurl = img_list[index]
+								img_urls.append(imgurl)
+							_img_urls = ";".join(img_urls)
+
+				if "charge_types" in data:
+					charge_old = self.session.query(models.ChargeType).filter_by(fruit_id=int(data["goods_id"]))
+					charge_old.delete()
+					self.session.commit()
+					for charge_type in data["charge_types"]:
+						if charge_type["unit_num"] and charge_type["unit_num"] !='':
+							unit_num = int(charge_type["unit_num"])
+						else:
+							unit_num = 1
+						if charge_type["select_num"] and charge_type["select_num"] !='':
+							select_num = int(charge_type["select_num"])
+						else:
+							select_num = 1
+						if charge_type["market_price"] and charge_type["market_price"] !='':
+							market_price = int(charge_type["market_price"])
+						else:
+							market_price = 0
+						relate = select_num/unit_num
+						charge_types = models.ChargeType(
+												fruit_id=int(data["goods_id"]),
+												price=charge_type["price"],
+												unit=int(charge_type["unit"]),
+												num=charge_type["num"],
+												unit_num=unit_num,
+												market_price=market_price,
+												select_num=select_num,
+												relate=relate)
+						self.session.add(charge_types)
+
+				detail_describe = data["detail_describe"].replace("script","'/script/'")
+
+				goods.update(session=self.session,
+						name = data["name"],
+						storage = data["storage"],
+						unit= data["unit"],
+						img_url = _img_urls,
+						intro = data["intro"],
+						priority = data["priority"],
+						limit_num = data["limit_num"],
+						group_id = group_id,
+						detail_describe = detail_describe
+						)
+				_data = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).one()
+				data = self.getGoodsOne(_data)
+				return self.send_success(data=data)
+
+			elif action == "default_goods_img":  # 恢复默认图
+				goods.img_url = ''
+				self.session.commit()
+			elif action == "delete_goods":
+				time_now = datetime.datetime.now()
+				goods.update(session=self.session, active = 0,delete_time = time_now)
+
+		elif action in ["del_charge_type", "edit_charge_type"]:  # charge_type_id
+			charge_type_id = self.args["charge_type_id"]
+			try: q = self.session.query(models.ChargeType).filter_by(id=charge_type_id)
+			except:return self.send_error(404)
+			if action == "del_charge_type":
+				q.delete()
+			else:
+				q.one().update(session=self.session,price=data["price"],
+						 unit=data["unit"],
+						 num=data["num"],
+						 unit_num=data["unit_num"])
+			self.session.commit()
+		
+		elif action == "add_img":
+			return self.send_qiniu_token("add", 0)
+
+		elif action in ["batch_on",'batch_off',"batch_group"]:
+			for _id in data["goods_id"]:
+				try:
+					goods = self.session.query(models.Fruit).filter_by( id = _id ).first()
+				except:
+					return self.send_error(404)
+				if action == 'batch_on':
+					goods.active = 1
+				elif action == 'batch_off':
+					goods.active = 2
+				elif action == 'batch_group':
+					group_id = int(data["group_id"])
+					if group_id == -1:
+						re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
+						if re_count >= 6:
+							return self.send_fail("推荐分组至多只能添加六个商品")
+					goods.group_id= group_id
+				self.session.commit()
+
+		elif action =="add_group":
+			args={}
+			args["shop_id"] = shop_id
+			args["name"] = data["name"]
+			args["intro"] = data["intro"]
+			groups = self.session.query(models.GoodsGroup).filter_by(shop_id = shop_id,status = 1)
+			group_count = groups.count
+			if group_count == 5:
+				return self.send_fail('至多可添加五中自定义分组！')
+			if not args["name"] or not args["intro"]:
+				return self.send_fail('请填写相应分组信息')			
+			_group = models.GoodsGroup(**args)
+			self.session.add(_group)
+			self.session.commit()
+			_id=groups.filter_by(status = 1).order_by(models.GoodsGroup.create_time.desc()).first().id
+			return self.send_success(id=_id)
+
+		elif action in["delete_group","edit_group"]:
+			_id = data["id"]
+			_group = self.session.query(models.GoodsGroup).filter_by(id=_id,shop_id=shop_id,status=1).first()
+			if _group:
+				if action == "delete_group":
+					_group.status = 0
+					goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=_id).all()
+					for good in goods :
+						good.group_id = 0 
+				elif action =="edit_group":
+					_group.name = data["name"]
+					_group.intro = data["intro"]
+				self.session.commit()
+			else:
+				return self.send_fail('该商品分组不存在或已被删除')
+
+		elif action == "group_priority":
+			groups = self.session.query(models.GoodsGroup).filter_by(shop_id=shop_id,status=1)
+			id_list = data["id"]
+			index_list = data["index"]
+			data = []
+			self.session.query(models.GroupPriority).filter_by(shop_id=shop_id).delete()
+			for index,val in enumerate(index_list):
+				_id = id_list[index]
+				if _id !=0:
+					try:
+						group = groups.filter_by(id=_id).first()
+					except:
+						return self.send_fail('该分组不存在')
+					group_priority = models.GroupPriority(shop_id=shop_id,group_id=_id,priority=val)
+					self.session.add(group_priority)
+			self.session.commit()
+
+		elif action == "batch_reset_delete":
+			for _id in data["goods_id"]:
+				try:
+					goods = self.session.query(models.Fruit).filter_by( id = _id ).first()
+				except:
+					return self.send_error(404)
+				if goods:
+					goods.active = 1
+				self.session.commit()
+
+		elif action == "reset_delete":
+			try:
+				goods = self.session.query(models.Fruit).filter_by( id = data["id"] ).first()
+			except:
+				return self.send_error(404)
+			if goods:
+				goods.active = 1
+			self.session.commit()
+
+		elif action =="classify_search":
+			classify = data["classify"]
+			try:
+				fruit_types = self.session.query(models.FruitType).filter(models.FruitType.name.like("%%%s%%" % classify)).all()
+			except:
+				return self.send_fail('没有该商品分类')
+			if fruit_types == []:
+				return self.send_fail('没有该商品分类')
+			types = self.getClass(fruit_types)
+			return self.send_success(data=types)
+		else:
+			return self.send_error(404)
+
+		return self.send_success()
+
+class editorTest(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action?:str")
+	def get(self):
+		if "action" in self.args:
+			if self.args["action"] == "editor" :
+				shop_id = self.current_shop.id
+				token = self.get_editor_token("editor", shop_id)
+				return token
+		return self.render("admin/test-editor.html",context=dict(subpage="goods"))
+
+class editorCallback(AdminBaseHandler):
+	def get(self):
+		import json
+		import base64
+		upload_ret = self.get_argument("upload_ret")
+		if upload_ret:
+			info = bytes.decode(base64.b64decode(upload_ret))
+			data = []
+			for value in info.split("&"):
+				data.append(value.split("="))
+			key = data[0][1].replace('"','').strip()
+			imgurl = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/'+str(key)+'?imageView2/2/w/700'
+		return self.write('{"error":0, "url": "'+imgurl+'"}')
+
+class editorFileManage(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		# import hmac
+		# import pycurl
+		# import os.path
+		# import urllib
+		# import hashlib
+		# import io
+		# from io import BytesIO
+		# link = self.get_argument("path")
+		# path = "123_"+link if link else 123
+		# url = "/list?"+'bucket='+BUCKET_SHOP_IMG+'&delimiter=_&prefix='+path+'_'
+		# # sign = urllib.parse.quote(
+		# # 	base64.b64encode(
+		# # 		hmac.new(SECRET_KEY.encode('ascii'),(url+"\n").encode('ascii'), digestmod=hashlib.sha1).hexdigest().encode('ascii')
+		# # 	))
+		# # token = ACCESS_KEY+':'+str(base64.b64encode(sign.encode('ascii'))).replace('+','-').replace('/','_')
+		# # print(token,'1111111111')
+		# shop_id = self.current_shop.id
+		# accesstoken = self.get_qiniu_token("editor",shop_id)
+		# header =  ['Host:rsf.qbox.me','Content-Type:application/x-www-form-urlencoded','Authorization: QBox '+accesstoken]
+		# head_url =("http://rsf.qbox.me"+url).strip()
+		# curl = pycurl.Curl()
+		# f = io.BytesIO()
+		# curl.setopt(pycurl.URL, head_url)
+		# curl.setopt(pycurl.HTTPHEADER,header)
+		# curl.setopt(pycurl.WRITEFUNCTION, f.write)
+		# curl.setopt(pycurl.FOLLOWLOCATION, 1)
+		# curl.setopt(pycurl.MAXREDIRS, 5)
+		# curl.setopt(pycurl.POSTFIELDS,"")
+		# curl.perform()
+		# backinfo = ''
+		# print(curl.getinfo(pycurl.RESPONSE_CODE))
+		# if curl.getinfo(pycurl.RESPONSE_CODE) == 200:
+		# 	backinfo = f.getvalue()
+		# curl.close()
+		# f.close()
+
+		# file_list = []
+		# ext_arr = ['gif','jpg','jpeg','png','bmp']
+		# for info in backinfo["items"]:
+		# 	absolute_path = os.path.abspath(info['key'])
+		# 	extension  = os.path.splitext(absolute_path)[-1] 
+		# 	file_ext = extension.lower()
+		# 	filename = info['key'].replace(path+'_','')
+		# 	time = datetime.datetime.fromtimestamp(info['putTime']).strftime('%m-%d-%Y %H:%M:%S')
+		# 	is_photo = next(file_ext,ext_arr)
+		# 	file_ist.append({'is_dir':False,'has_file':False,'filesize':info['size'],'is_photo':is_photo,'filename':filename,'datetime':time})
+
+		# for info in backinfo["commonPrefixes"]:
+		# 	name =  info.split('_')
+		# 	file_ist.append({'is_dir':True,'has_file':True,'filename':name[1]})
+
+		# backinfo["moveup_dir_path"] = ''
+		# backinfo["current_dir_path"] = self.get_argument("path")
+		# backinfo["current_url"] = SHOP_IMG_HOST+'/'+path+'_'
+		# backinfo["file_list"] = file_list
+
+		# print('Content-Type:application/json; charset=utf-8')
+		# return self.send_success(json_encode(backinfo))
 		return self.send_success()
 
 # 用户管理
@@ -1535,10 +2242,11 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 										 'comment_create_date', 'start_time', 'end_time', 'create_date']
 			d = order.safe_props(False)
 			d['fruits'] = eval(d['fruits'])
-			d['mgoods'] = eval(d['mgoods'])
+			# d['mgoods'] = eval(d['mgoods'])
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d')
 			d["send_time"] = order.send_time
 			d["customer_id"] = order.customer_id
+			d['nickname'] = self.session.query(models.Customer).filter_by(id=order.customer_id).first().accountinfo.nickname
 
 			#yy
 			d["shop_new"] = 0
@@ -2120,7 +2828,6 @@ class ShopConfig(AdminBaseHandler):
 		service_area = self.code_to_text("service_area", self.current_shop.shop_service_area)
 		lat = self.current_shop.lon
 		lon = self.current_shop.lat
-
 		return self.render("admin/shop-info-set.html", city=city,province=province,address=address,lat=lat,lon=lon, \
 			service_area=service_area, context=dict(subpage='shop_set',shopSubPage='info_set'))
 

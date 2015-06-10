@@ -48,8 +48,8 @@ class OnlineWxPay(CustomerBaseHandler):
 
 		charge_types = self.session.query(models.ChargeType).filter(
 			models.ChargeType.id.in_(eval(order.fruits).keys())).all()
-		mcharge_types = self.session.query(models.MChargeType).filter(
-			models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
+		# mcharge_types = self.session.query(models.MChargeType).filter(
+		# 	models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
 
 		if order.type == 2:
 			freight = order.shop.config.freight_on_time
@@ -65,11 +65,11 @@ class OnlineWxPay(CustomerBaseHandler):
 				sender_img = None
 		goods = []
 		f_d = eval(order.fruits)
-		m_d = eval(order.mgoods)
+		# m_d = eval(order.mgoods)
 		for f in f_d:
 			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-		for m in m_d:
-			goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+		# for m in m_d:
+		# 	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('onlineWxPay')
 		print("[微信支付]redirect_uri：",path)
@@ -289,7 +289,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			print("[支付宝支付]order_num：",self.order_num)
 
 			charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
-			mcharge_types = self.session.query(models.MChargeType).filter(models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
+			# mcharge_types = self.session.query(models.MChargeType).filter(models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
 
 			shop_id   = order.shop_id
 			shopName  = order.shop.shop_name
@@ -317,16 +317,15 @@ class OnlineAliPay(CustomerBaseHandler):
 					order.sender_img = None
 			goods = []
 			f_d = eval(order.fruits)
-			m_d = eval(order.mgoods)
 			for f in f_d:
 				goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-			for m in m_d:
-				goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+			# for m in m_d:
+			# 	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 			return self.render("fruitzone/payali.html",totalPrice = totalPrice,shopName = shopName,\
 				alipayUrl = alipayUrl,create_date=create_date,receiver=receiver,phone=phone,\
 				address=address,send_time=send_time,remark=remark,pay_type=pay_type,online_type=\
 				online_type,status=status,freight=freight,goods = goods,order=order,charge_types=\
-				charge_types,mcharge_types=mcharge_types)
+				charge_types)
 		else:
 			return self.send_fail('404')
 	# @tornado.web.authenticated

@@ -197,7 +197,7 @@ function Apply(target){
     var code=$('#verify_code').val().trim();
     var phone=$('#phone').val().trim();
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
-    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    var regPhone=/^(1)\d{10}$/;
     var regChinese=/^[\u4e00-\u9faf]+$/;
     if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){
          $('#submitApply').removeAttr('disabled').addClass('bg-green');
@@ -321,7 +321,7 @@ function reApply(evt){
     var wx_Name=$('#wx_Name').val().trim();
     var code=$('#verify_code').val().trim();
     var phone=$('#phone').val().trim();
-    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    var regPhone=/^(1)\d{10}$/;
     if(phone.length > 0 && phone.length<11 && !regPhone.test(phone)){return noticeBox("电话貌似有错o(╯□╰)o");}
     if(shop_name.length>15){return noticeBox('店铺名称请不要超过15个字符！')}
     if(shop_address_detail.length>50){return noticeBox('详细地址请不要超过50个字符！')}
@@ -373,7 +373,7 @@ function Vrify(target){
     var action='gencode_shop_apply';
     var url="/fruitzone/phoneVerify?action=admin";
     var phone=$('#phone').val();
-    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    var regPhone=/^(1)\d{10}$/;
     if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){
         $('#getVrify').removeAttr('disabled').addClass('bg-green');
         return noticeBox("电话貌似有错o(╯□╰)o",target);

@@ -128,8 +128,8 @@ $(document).ready(function(){
     $(document).on('click','#getVrify',function(evt){
         evt.preventDefault();
         var phone=$('#enterPhone').val();
-        var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
-        if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){return warnNotice("手机号貌似有错o(╯□╰)o");}
+        var regPhone=/^(1)\d{10}$/;
+        if(phone.length > 11|| phone.length<11 || !regPhone.test(phone)){return warnNotice("手机号貌似有错o(╯□╰)o");}
         if(!phone){return warnNotice('手机号不能为空');}
         $('#getVrify').attr({'disabled':true});
         Vrify(phone);
@@ -492,22 +492,26 @@ function goodsNum(target,action){
     var price=parent.find('.item_price').text();
     var item_price=target.parents('.cart-list').find('.item_total_price');
     var item=target.siblings('.number-input');
-    var num=item.val();
+    var num=parseInt(item.val());
+    var limit_num=parseInt(parent.attr('data-limit'));
     var total;
     var $list_total_price=$('#list_total_price');
-    if(parent.hasClass('fruit_item')){menu_type=0}
-    else if(parent.hasClass('menu_item')){menu_type=1}
     if(action==1&&num<=0) {num=0;target.addClass('disable');}
     var args={
         action:action,
-        charge_type_id:charge_type_id,
-        menu_type:menu_type
+        charge_type_id:charge_type_id
     };
+    if(action==2){
+         if(limit_num>0&&num==limit_num){
+            return  noticeBox('商品限购数量'+limit_num);
+        }
+    }
     $.postJson(url,args,function(res){
             if(res.success)
             {
                 if(action==2)
                 {
+                   
                     num++;
                     item.val(num);
                     total=mathFloat(num*price);
@@ -608,7 +612,7 @@ function itemDelete(target,menu_type) {
 function addressAddEdit(action,name,address,phone,target){
     var url='/customer/'+getCookie('market_shop_code');
     var action=action;
-    //var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    var regPhone=/^(1)\d{10}$/;
     var address_id=$('.address-box').attr('data-id');
     if(name == null){return noticeBox('请输入收货人姓名！',target)}
     if(name.length > 10){return noticeBox('姓名请不要超过10个字！',target)}
@@ -738,7 +742,11 @@ function orderSubmit(target){
                     }else{
                         window.location.href=window.dataObj.success_href; 
                     }
-                }
+                 }
+                 else{
+                    $('#submitOrder').removeClass('bg-grey text-grey3').text('提交订单').removeAttr('disabled'); 
+                    return noticeBox(res.error_text);
+                 }
             });
         }
         else {
@@ -796,7 +804,7 @@ function TiePhone(evt){
     var phone=$('#enterPhone').val();
     var code=$('#enterVrify').val();
     var regNumber=/^[0-9]*[1-9][0-9]*$/;
-    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    var regPhone=/^(1)\d{10}$/;
     if(phone.length > 11 || phone.length<11 || !regPhone.test(phone)){return warnNotice("手机号貌似有错o(╯□╰)o");}
     if(!phone){return warnNotice('请输入手机号');}
     if(!code){return warnNotice('请输入验证码');}

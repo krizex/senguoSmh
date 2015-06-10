@@ -10,10 +10,10 @@
     <div class="bg-box">
         <ul class="cart-list set-w100-fle mt42 m-b0">
             {% for key in cart_f %}
-            <li class="cart-list-item set-w100-fle fruit_item text-grey m-b5 {{cart_f[key]['code']}}">
+            <li class="cart-list-item set-w100-fle fruit_item text-grey m-b5 {{cart_f[key]['code']}}" data-limit="{{cart_f[key]['limit_num']}}">
                 <div class="box bg set-w100-fle">
-                    {% if cart_f[key]['charge_type'].fruit.img_url %}
-                    <img src="/static/images/holder.png?v=20150330" class="goods-img pull-left w15 lazy_img" data-original="{{cart_f[key]['charge_type'].fruit.img_url}}?imageView/1/w/170/h/170"/>
+                    {% if cart_f[key]['img_url'] %}
+                    <img src="/static/images/holder.png?v=20150330" class="goods-img pull-left w15 lazy_img" data-original="{{cart_f[key]['img_url']}}?imageView/1/w/170/h/170"/>
                     {% else %}
                     <img src="/static/images/holder.png?v=20150330" class="goods-img pull-left w15 lazy_img" data-original="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.png?v=20150316"/>
                     {% end %}
@@ -39,38 +39,6 @@
                         </div>
                     </div>
                 </div>
-            </li>
-            {% end %}
-            {% for key in cart_m %}
-            <li class="cart-list-item set-w100-fle menu_item TDSG text-grey m-b5">
-                <div class="box bg set-w100-fle">
-                    {% if cart_m[key]['mcharge_type'].mgoods.img_url %}
-                    <img src="" class="goods-img pull-left w15 lazy_img" data-original="{{cart_m[key]['mcharge_type'].mgoods.img_url}}?imageView/1/w/170/h/170"/>
-                    {% else %}
-                    <img src="" class="goods-img pull-left w15 lazy_img" data-original="/static/design_img/TDSG.png?v=20150316"/>
-                    {% end %}
-                    <div class="goods-info pull-left font14 p010">
-                        <div class="clearfix">
-                            <span class="name pull-left color">{{cart_m[key]['mcharge_type'].mgoods.name}}</span>
-                            <span class="price pull-left">￥<span class="item_total_price"></span>元</span>
-                        </div>
-                        <span class="p0 charge-type color" data-id="{{cart_m[key]['mcharge_type'].id}}">
-                            <span class="item_price">{{cart_m[key]['mcharge_type'].price}}</span>
-                                元/{{cart_m[key]['mcharge_type'].num}}
-                             <span data-id="{{cart_m[key]['mcharge_type'].unit}}" class="chargeUnit"></span
-                        </span>
-                    </div>
-                    <div class="action-box font14">
-                        <span class="pull-left number-change set-inl-blo">
-                            <a class="minus-plus text-green  number-plus text-center font18 bg_change" href="javascript:;"></a>
-                            <input type="text" value="{{cart_m[key]['num']}}" class="number-input item_number text-center bg_change" readonly/>
-                            <a class="minus-plus text-green  number-minus text-center font18 bg_change" href="javascript:;"></a>
-                        </span>
-                        <div class="pull-right delete-btn">
-                            <a href="javascript:;" class="pull-right delete-item text-center font18 text-grey">x</a>
-                        </div>
-                    </div>
-                 </div>
             </li>
             {% end %}
         </ul>

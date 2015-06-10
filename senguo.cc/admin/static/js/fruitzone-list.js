@@ -164,7 +164,6 @@ $(document).ready(function(){
 
 //获取用户当前地理位置
 function initLocation(){
-
     if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(function(position){
             refuse_flag = true;
@@ -444,10 +443,9 @@ function filter(data){
    var type = window.dataObj.type;
     window.dataObj.action="filter";
    var action="filter";
-   var page = 1;
    window.dataObj.page=1;
+    var page = window.dataObj.page;
     var url="";
-     if(!page){page=1}
     var args={
         action:action,
         page:page,
@@ -458,13 +456,15 @@ function filter(data){
         args.lat = ulat;
         args.lon = ulng;
     }
-    if(type=='city') {
-        args.city=Int(data);
-        window.dataObj.type=='city'
-    }
-    else if(type=='province') {
-        args.province=Int(data);
-        window.dataObj.type=='province'
+    if(data){
+        if(type=='city') {
+            args.city=Int(data);
+            window.dataObj.type=='city'
+        }
+        else if(type=='province') {
+            args.province=Int(data);
+            window.dataObj.type=='province'
+        }
     }
     /*if(!data){return noticeBox('选择城市！')}*/
     $.postJson(url,args,

@@ -23,7 +23,7 @@ $(document).ready(function(){
 
 function Vrify(target){
     var phone=$('#enterPhone').val();
-    var regPhone=/(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$/;
+    var regPhone=/^(1)\d{10}$/;
     if(!phone){
              $('#getVrify').removeAttr('disabled').removeClass('bg-grey');
     	return noticeBox('手机号不能为空',target);

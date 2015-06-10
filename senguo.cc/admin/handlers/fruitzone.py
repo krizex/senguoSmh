@@ -113,7 +113,7 @@ class ShopList(FruitzoneBaseHandler):
 					.filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
 					shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100) 
 					shop.comment_count = comment_count
-					shop.goods_count = fruit_count+mgoods_count		
+					shop.goods_count = fruit_count	
 					shops.append(shop.safe_props())
 		# print(shops,'shops')
 		return shops
@@ -635,6 +635,13 @@ class QiniuCallback(FruitzoneBaseHandler):
 			return self.send_success()
 		elif action == "shopAuth_cookie":
 			return self.send_success()
+		elif action =="editor":
+			import json
+			import base64
+			upload_ret = self.get_argument("upload_ret")
+			if upload_ret:
+				s = json.loads(base64.b64decode(upload_ret).replace('-','_').replace('+','/'))
+			return self.write('{"error":0, "url": "'+s['url']+'"}')
 		return self.send_error(404)
 
 

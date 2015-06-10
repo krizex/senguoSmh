@@ -1,12 +1,13 @@
 $(document).ready(function(){
 	var link=window.location.href;
 	if(link.match('all')){
-		$('.all').addClass('active');
+		$('.aall').addClass('active');
+        $("#add-goods").removeClass("hidden");
 	}else if(link.match('classify')){
-		$('.classify').addClass('active');
+		$('.aclassify').addClass('active');
 	}else if(link.match('group')){
-		$('.group').addClass('active');
+		$('.agroup').addClass('active');
 	}else if(link.match('delete')){
-		$('.delete').addClass('active');
+		$('.adelete').addClass('active');
 	}
 });
