@@ -37,7 +37,7 @@ textarea{border-color:#eee;}
 .slide-down-select em{font-style:normal;display:inline-block;width:110px;font-size:14px;overflow:hidden;padding-left: 10px;text-align: left;}
 .dropdown-toggle{padding:0 4px;}
 .dropdown-menu li{width:100%;padding:0px;}
-.dropdown-menu .item{padding-left:12px;}
+.dropdown-menu .item{padding-left:14px;}
 .dropdown-menu li a:hover{color:#fff;background-color: #6ba4ef;}
 .caret{margin-top:10px;color: #333;}
 .borderc{border: 1px solid #eee;}

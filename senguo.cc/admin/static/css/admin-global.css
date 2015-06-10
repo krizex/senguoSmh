@@ -336,7 +336,7 @@ input{color:#333;text-indent:5px;}
 .w150{width:150px;}
 .invisible{visibility:hidden;}
 
-.foot {padding: 24px 0;color: #f1f1f1;text-align: center;background-color: #b8b9b9;}
+.foot {padding: 24px 0;color: #f1f1f1;text-align: center;background-color: #b8b9b9;font-size: 12px;}
 .links_item {display: inline-block;vertical-align: middle;padding: 0 1em;line-height: 1em;border-left: 1px solid #d9dadc;}
 .links_item:first-child {border-left-width: 0;}
 .ft .links_item a {color: #f1f1f1;}
