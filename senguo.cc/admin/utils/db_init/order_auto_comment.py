@@ -39,7 +39,7 @@ def delete(args):
 global count
 count = 1
 
-def print_time():
+def print_time(args):
 	global count
 	print(count,'-',time.strftime('%H:%M'))
 	count += 1
@@ -61,5 +61,4 @@ def main():
 
 if __name__ == '__main__':
 	main()
-	
 
