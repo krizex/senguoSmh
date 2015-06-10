@@ -1,4 +1,4 @@
-from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth
+from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth,get_unblock,unblock
 from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
 import dal.models as models
 import tornado.web
@@ -793,6 +793,7 @@ class ShopComment(CustomerBaseHandler):
 
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
+	@get_unblock
 	def get(self, shop_code):
 		w_follow = True
 		fruits=''
@@ -869,7 +870,9 @@ class Market(CustomerBaseHandler):
 						if goods_count !=0 :
 							group_list.append({'id':_group.id,'name':_group.name})
 		else:
+			group_list.append({'id':-1,'name':'店铺推荐'})
 			group_list.append({'id':0,'name':'默认分组'})
+
 
 		return self.render("customer/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,\
@@ -975,10 +978,11 @@ class Market(CustomerBaseHandler):
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		if total_page <= page:
 			nomore = True
-		fruits = fruits.offset(offset).limit(page_size).all()
+		#fruits = fruits.offset(offset).limit(page_size).all()
+		fruits = fruits.all()
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruit_list ,nomore = nomore)
-
+	@unblock
 	@CustomerBaseHandler.check_arguments("page?:int")
 	def commodity_list(self):
 		page = self.args["page"]
@@ -1001,17 +1005,19 @@ class Market(CustomerBaseHandler):
 			).outerjoin(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id).filter(models.Fruit.shop_id == shop_id,\
 			models.Fruit.active == 1).order_by(models.GroupPriority.group_id,models.Fruit.priority.desc(),models.Fruit.add_time.desc())
 
-		print(fruits.distinct(models.Fruit.id).count(),'dddddddddddddddddd')
+		print(fruits.count(),'dddddddddddddddddd',shop.shop_code)
 		
-		# for fruit in fruits:
-		# 	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
+		#for fruit in fruits:
+		#	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
 		count_fruit =fruits.distinct().count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		print(count_fruit , total_page)
 		if total_page <= page:
 			nomore = True
-		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
+		#fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
+		fruits = fruits.all()
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
+		nomore = True
 		return self.send_success(data = fruits_data,nomore=nomore)
 
 
