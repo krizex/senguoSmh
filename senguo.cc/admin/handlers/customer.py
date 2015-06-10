@@ -975,7 +975,8 @@ class Market(CustomerBaseHandler):
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		if total_page <= page:
 			nomore = True
-		fruits = fruits.offset(offset).limit(page_size).all()
+		#fruits = fruits.offset(offset).limit(page_size).all()
+		fruits = fruits.all()
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruit_list ,nomore = nomore)
 
@@ -1001,17 +1002,24 @@ class Market(CustomerBaseHandler):
 			).outerjoin(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id).filter(models.Fruit.shop_id == shop_id,\
 			models.Fruit.active == 1).order_by(models.GroupPriority.group_id,models.Fruit.priority.desc(),models.Fruit.add_time.desc())
 
-		print(fruits.distinct(models.Fruit.id).count(),'dddddddddddddddddd')
+		print(fruits.count(),'dddddddddddddddddd',shop.shop_code)
 		
-		# for fruit in fruits:
-		# 	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
+		for fruit in fruits:
+			print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
 		count_fruit =fruits.distinct().count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		print(count_fruit , total_page)
 		if total_page <= page:
 			nomore = True
-		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
+		#fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
+		fruits = fruits.all()
+		print('分页后')
+		for fruit in fruits:
+			print(fruit.id,fruit.group_id)
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
+		print('最后返回数据')
+		print(fruits_data)
+		nomore = True
 		return self.send_success(data = fruits_data,nomore=nomore)
 
 
