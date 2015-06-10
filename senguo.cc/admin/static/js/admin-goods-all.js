@@ -286,6 +286,9 @@ $(document).ready(function(){
     var $item = $(".wrap-price-item").children(".wrap-add-price").clone();
     var index = $(this).closest(".edit-item-right").children(".wrap-add-price").size();
     $item.find(".price-index").html(index+1);
+    var current_unit = $(this).closest(".goods-all-item").find(".current-unit").html();
+    $item.find(".now-unit").html(current_unit);
+    $item.find(".stock-unit").html(current_unit);
     $(this).closest("p").before($item);
 }).on("click",".del-price-type",function(){//删除售价方式
     $(this).closest(".wrap-add-price").remove();
