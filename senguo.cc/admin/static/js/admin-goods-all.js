@@ -77,7 +77,8 @@ $(document).ready(function(){
         $(this).prev(".img-selected").toggle();
         $(this).toggleClass("selected-img");
     }else{
-        if($("#item-img-lst").children(".img-bo").size()<=5){
+        debugger;
+        if($("#item-img-lst").children(".img-bo").size()<5){
             var src = $(this).attr("src");
             var index = $("#item-img-lst").children(".img-bo").size()-1;
             var item = '<li class="img-bo" data-index="'+index+'" data-rel="'+index+'"><img src="'+src+'" class="img"><a class="del-img" href="javascript:;">x</a></li>';
@@ -211,6 +212,7 @@ $(document).ready(function(){
 }).on("click",".fruit-item-list li",function(){//选择分类并添加商品
     var classify = $(this).html();
     var class_id = $(this).attr("data-id");
+    var goods_code = $(this).attr("data-code");
     $.getItem("/static/items/admin/goods-item.html?2349",function(data){
         var goodsItem = data;
         var $item = $(goodsItem).clone();
@@ -220,19 +222,13 @@ $(document).ready(function(){
         $item.find(".switch-btn").addClass("hidden");
         $item.find(".all-item-title").remove();
         $item.find(".choose-classify").removeClass("hidden");
+
         $(".goods-step").children(".step1").removeClass("c333").addClass("c999");
         $(".goods-step").children(".step2").removeClass("c999").addClass("c333");
-        /*if($(".goods-all-list").children().size()>0){
-            $(".goods-all-list").children(".goods-all-item").first().before($item);
-        }else{
-            $(".goods-all-list").append($item);
-        }*/
         $(".goods-classify-box").addClass("hidden");
         $(".new-goods").empty().append($item).removeClass("hidden");
         curItem = $item;
         goodsEdit = true;
-       // $(".wrap-classify").addClass("hidden");
-        //$(".wrap-classify").prevAll("div").removeClass("hidden");
     });
 }).on("click",".choose-classify",function(){//重选分类
     $(".goods-step").children(".step1").removeClass("c999").addClass("c333");
