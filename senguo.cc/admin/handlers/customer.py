@@ -1010,7 +1010,7 @@ class Market(CustomerBaseHandler):
 		print(count_fruit , total_page)
 		if total_page <= page:
 			nomore = True
-		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
+		fruits =  fruits.all()
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruits_data,nomore=nomore)
 
