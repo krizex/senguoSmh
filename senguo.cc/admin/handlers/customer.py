@@ -1100,6 +1100,15 @@ class Market(CustomerBaseHandler):
 		self.save_cart(charge_type_id, self.shop_id, action)
 		return self.send_success()
 
+class GoodsSearch(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		shop_id     = self.shop_id
+		shop = self.session.query(models.Shop).filter_by(id=shop_id ).first()
+		if not shop:
+			return self.send_error(404)
+		return self.render("customer/search-goods-list.html",context=dict(subpage='home',shop_code=shop.shop_code))
+
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):

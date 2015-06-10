@@ -10,13 +10,14 @@
 {% end%}
 
 {% block content%}
+<input type="hidden" id="shop_code" value="{{context['shop_code']}}"/>
 <header class="herder bg-green text-white text-center">
         <a href="javascript:;" class="back" id="back"></a>
         <input type="text" placeholder="请输入商品名" class="search-linput pull-left" id="searchKey"/>
         <a href="javascript:;" class="search-btn" id="searchSubmit"></a>
 </header>
 <div class="shoplist_box mt40">
-    <ul class="shoplist">
+    <ul class="searchlist">
 
     </ul>
 </div>
@@ -25,5 +26,5 @@
 
 {% end %}
 {% block bottom %}
-<script src="{{static_url('js/market-home.js')}}"></script>
+<script src="{{static_url('js/market-search.js')}}"></script>
 {% end %}
