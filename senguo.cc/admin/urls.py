@@ -48,10 +48,6 @@ handlers = [
 	(r"/customer/wxauth", handlers.customer.WxBind, {"action":"wx_auth"}, "customerwxAuth"),
 	(r"/customer/wxBind", handlers.customer.WxBind, {"action":"wx_bind"}, "customerwxBind"),
 	(r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
-	(r"/customer/insertData1",handlers.customer.InsertData1,{},"InsertData1"),
-	(r"/customer/insertData2",handlers.customer.InsertData2,{},"InsertData2"),
-	(r"/customer/insertData3",handlers.customer.InsertData3,{},"InsertData3"),
-	(r"/customer/insertData4",handlers.customer.InsertData4,{},"InsertData4"),
 	(r"/customer/discover/(\w+)",handlers.customer.Discover,{},"customerDiscover"),
 
 	#商品详情
