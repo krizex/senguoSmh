@@ -2238,7 +2238,7 @@ class payTest(CustomerBaseHandler):
 
 			#########################################################
 
-			# 支付成功后，用户对应店铺 余额 增1加
+			# 支付成功后，用户对应店铺 余额 增加
 			#判断是否已经回调过，如果记录在表中，则不执行接下来操作
 			old_balance_history=self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
 			if old_balance_history:
@@ -2302,7 +2302,7 @@ class AlipayNotify(CustomerBaseHandler):
 		# 应放在 支付成功的回调里
 		#########################################################
 
-		# 支付成功后，用户对应店铺 余额 增1加
+		# 支付成功后，用户对应店铺 余额 增加
 		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 			shop_id = shop_id).first()
 		print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')

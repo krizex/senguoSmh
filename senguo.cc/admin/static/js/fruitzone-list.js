@@ -10,7 +10,7 @@ $(document).ready(function(){
     }
     else{
         var q = decodeURIComponent(decodeURIComponent($.getUrlParam('q')));
-        if(q){
+        if(q && q!="null"){
             Search(q);
         }else{
             initLocation();

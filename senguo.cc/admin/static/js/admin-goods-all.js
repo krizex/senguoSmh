@@ -92,7 +92,7 @@ $(document).ready(function(){
                 $("#item-img-lst").children(".add-img-box").addClass("hidden");
             }
         }else{
-            Tip("只能添加5张照片哦！");
+            Tip("只能添加5张照片哦");
             $("#item-img-lst").children(".add-img-box").addClass("hidden");
         }
     }
@@ -176,7 +176,7 @@ $(document).ready(function(){
     var index = goods_item.index();
     var group = {id:goods_item.find(".current-group").attr("data-id"),text:goods_item.find(".current-group").html()};
     var switch_btn = {id:goods_item.find(".switch-btn").attr("data-id"),text:goods_item.find(".switch-btn").attr("class")};
-    $.getItem("/static/items/admin/goods-item.html?2249",function(data){
+    $.getItem("/static/items/admin/goods-item.html?v=20150609",function(data){
         var goodsItem = data;
         var $item = $(goodsItem).clone();
         $item.find(".current-group").attr("data-id",group.id).html(group.text);
@@ -221,7 +221,7 @@ $(document).ready(function(){
     var classify = $(this).html();
     var class_id = $(this).attr("data-id");
     var goods_code = $(this).attr("data-code");
-    $.getItem("/static/items/admin/goods-item.html?2349",function(data){
+    $.getItem("/static/items/admin/goods-item.html?v=20150609",function(data){
         var goodsItem = data;
         var $item = $(goodsItem).clone();
         $item.find(".goods-classify").html(classify).attr("data-id",class_id);
@@ -388,7 +388,7 @@ $(document).ready(function(){
 }).on("click","#goods-all-search",function(){//商品搜索
     var value = $("#goods-all-ipt").val();
     if($.trim(value)==""){
-        return Tip("搜索条件不能为空！");
+        return Tip("搜索条件不能为空");
     }
     isSearch = true;
     getGoodsItem("goods_search",0,"",value);
@@ -426,22 +426,27 @@ function switchUnit($list,id,name){
 }
 //添加&编辑商品
 function dealGoods($item,type){
-    var limit_num = $item.find(".limit_num").val();
-    var priority = $item.find(".goods-priority").val();
-    var name = $item.find(".goods-goods-name").val();
-    var info = $item.find(".goods-info").val();
-    if(isNaN(limit_num) || parseInt(limit_num)<0){
-        return Tip("商品限购必须为整数");
-    }
-    if(isNaN(priority) || parseInt(priority)>9 || parseInt(priority)<0){
-        return Tip("优先级必须为0-9的数字");
-    }
+    //数字正则、金额正则
+    var testNum = /^[0-9]\d*(\.\d+)?$/;
+    var testMoney = /^(([0-9]|([1-9][0-9]{0,9}))((\.[0-9]{1,2})?))$/;
+    
+    //商品名称、商品分组、库存、库存单位
+    var name = $item.find(".goods-goods-name").val().trim();
+    var group_name = $item.find(".current-group").html();
+    var group_id = $item.find(".current-group").attr("data-id");
+    var storage = $item.find(".stock-num").val().trim();
+    var unit = $item.find(".current-unit").attr("data-id");
     if(name.length>12 || $.trim(name)==""){
-        return Tip("商品名字不能为空且不能超过12个字");
+        return Tip("商品名称不能为空且不能超过12个字");
     }
-    if(info.length>150){
-        return Tip("商品简介不能超过150个字");
+    if(!testNum.test(storage)){
+        return Tip("请填写正确的库存，只能为数字")
     }
+
+    //商品类目
+    var fruit_type_id = $item.find(".goods-classify").attr("data-id");
+    
+    //商品图片
     var imgUrls = $item.find(".drag-img-list").find("img");
     var imgList = {};
     if(imgUrls.size()==0){
@@ -460,9 +465,12 @@ function dealGoods($item,type){
         imgList.index = arr1;
         imgList.src = arr2;
     }
+
+    //售价方式
     var price_type = $item.find(".edit-item-right").children(".wrap-add-price");
     var price_list = [];
     var price_null = false;
+    var market_price_null = false;
     if(price_type.size()==0){
         return Tip("请至少添加一种售价方式");
     }else{
@@ -471,12 +479,15 @@ function dealGoods($item,type){
             var unit_num = $(this).attr("data-first");
             var unit = $(this).find(".price-unit").attr("data-id");
             var unit_name = $(this).find(".price-unit").html();
-            var num = $(this).find(".price-num").val();
+            var num = $(this).find(".price-num").val().trim();
             var select_num = $(this).attr("data-second");
-            var price = $(this).find(".current-price").val();
-            var markey_price = $(this).find(".market-price").val();
-            if(num=="" || price==""){
+            var price = $(this).find(".current-price").val().trim();
+            var market_price = $(this).find(".market-price").val().trim();
+            if(!testNum.test(num) || !testMoney.test(price)){
                 price_null = true;
+            }
+            if(!testMoney.test(market_price) && market_price!=""){
+                market_price_null = true;
             }
             var item = {
                 unit_num:unit_num,//第一个数量
@@ -484,7 +495,7 @@ function dealGoods($item,type){
                 num:num,//数量
                 select_num:select_num,//第二个数量
                 price:price,//价格
-                market_price:markey_price,//市场价
+                market_price:market_price,//市场价
                 unit_name:unit_name
             }
             if(type=="edit"){item.id=id;}
@@ -492,19 +503,35 @@ function dealGoods($item,type){
         });
     }
     if(price_null){
-        return Tip("数量和售价不能为空");
+        return Tip("请填写正确的数量和售价，最多保留2位小数");
     }
-    var group_name = $item.find(".current-group").html();
-    var group_id = $item.find(".current-group").attr("data-id");
-    var storage = $item.find(".stock-num").val();
-    var unit = $item.find(".current-unit").attr("data-id");
-    var fruit_type_id = $item.find(".goods-classify").attr("data-id");
-    var limit_num = $item.find(".limit_num").val();
-    var priority = $item.find(".goods-priority").val();
+    if(market_price_null){
+        return Tip("请填写正确的市场价，若不需要设置市场价，请留空");
+    }
+
+    //商品简介
+    var info = $item.find(".goods-info").val();
+    if(info.length>100){
+        return Tip("商品简介不能超过100个字，更多内容请在商品详情页添加");
+    }
+
+    //商品详情
     var detail_describe = "";
     if(editor){
         detail_describe = editor.html();
     }
+
+    //商品限购、排序优先级
+    var limit_num = $item.find(".limit_num").val().trim();
+    var priority = $item.find(".goods-priority").val().trim();
+    if(isNaN(limit_num) || parseInt(limit_num)<0){
+        return Tip("商品限购必须为正整数");
+    }
+    if(isNaN(priority) || parseInt(priority)>9 || parseInt(priority)<0){
+        return Tip("优先级必须为0-9之间的数字");
+    }
+    
+    //传入数据
     var url="";
     var data={
         group_id: group_id,//分组id
@@ -532,13 +559,13 @@ function dealGoods($item,type){
     $.postJson(url,args,function(res) {
         if (res.success) {
             if(type == "add"){
-                Tip("新商品添加成功！");
+                Tip("新商品添加成功");
                 goodsEdit = false;
                 setTimeout(function(){
                     window.location.href="/admin/goods/all?&page=0";
                 },1200);
             }else{
-                Tip("商品编辑成功！");
+                Tip("商品编辑成功");
                 var data = res.data;
                 finishEditGoods($item.prev(".goods-all-item"),data);
                 $item.prev(".goods-all-item").show();
@@ -632,7 +659,7 @@ function finishEditGoods($item,data){
     if(goods.charge_types.length>0){
         for(var j=0; j<goods.charge_types.length; j++){
             var good = goods.charge_types[j];
-            if(good.market_price && good.market_price!=0){
+            if(good.market_price){
                 var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+good.unit_name+'</span></span><span class="mr10">市场价 : <span class="">'+good.market_price+'元</span></span></p>';
             }else{
                 var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+good.unit_name+'</span></span><span class="mr10">市场价 : <span class="">未设置</span></span></p>';
@@ -684,7 +711,7 @@ function batchGroup(name,group_id,$obj){
     };
     $.postJson(url,args,function(res) {
         if (res.success) {
-            Tip("批量分组成功！");
+            Tip("批量分组成功");
             $obj.closest("ul").prev("button").children("em").html($obj.html()).attr("data-id",$obj.attr("data-id"));
             batchList.each(function(){
                 $(this).closest(".goods-all-item").find(".batch-group").html(name.split("(")[0]).attr("data-id",group_id);
@@ -721,7 +748,7 @@ function batchGoods(type){
     }
     $.postJson(url,args,function(res) {
         if (res.success) {
-            Tip("批量操作成功！");
+            Tip("批量操作成功");
             if(type=="up"){
                 batchList.each(function(){
                     $(this).closest(".goods-all-item").find(".switch-btn").addClass("switch-btn-active");
@@ -747,7 +774,7 @@ function delGoods(id){
     };
     $.postJson(url,args,function(res) {
         if (res.success) {
-            Tip("商品删除成功！");
+            Tip("商品删除成功");
             setTimeout(function(){
                 window.location.reload(true);
             },2000);
@@ -766,7 +793,7 @@ function switchGoodsRack(id,$obj){
     $.postJson(url,args,function(res) {
         if (res.success) {
             $obj.toggleClass("switch-btn-active");
-            Tip("商品状态操作成功！");
+            Tip("商品状态操作成功");
         }else{
             Tip(res.error_text);
         }
@@ -831,7 +858,7 @@ function getGoodsItem(action,page,type_id,value){
                 var data = res.data;
                 $(".goods-all-list").empty();
                 if(data.length==0){
-                    $(".goods-all-list").append("<p>没有查询到任何商品！</p>");
+                    $(".goods-all-list").append("<p>没有查询到任何商品</p>");
                 }else{
                     $(".page-total").html(res.count);
                     $(".page-now").html(pn+1);
@@ -872,7 +899,7 @@ function insertGoods(data){
         if(goods.charge_types.length>0){
             for(var j=0; j<goods.charge_types.length; j++){
                 var good = goods.charge_types[j];
-                if(good.market_price && good.market_price!=0){
+                if(good.market_price){
                     var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+good.unit_name+'</span></span><span class="mr10">市场价 : <span class="">'+good.market_price+'元</span></span></p>';
                 }else{
                     var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+good.unit_name+'</span></span><span class="mr10">市场价 : <span class="">未设置</span></span></p>'; 
@@ -1002,7 +1029,7 @@ function previewImage(file,callback){//file为plupload事件监听函数参数�
     }else{
         var preloader = new mOxie.Image();
         preloader.onload = function() {
-            preloader.downsize( 100,100 ,true);//先压缩一下要预览的图片,宽，高
+            preloader.downsize(100,100,true);//先压缩一下要预览的图片,宽，高
             var imgsrc = preloader.type=='image/jpeg' ? preloader.getAsDataURL('image/jpeg',70) : preloader.getAsDataURL(); //得到图片src,实质为一个base64编码的数据
             callback && callback(imgsrc); //callback传入的参数为预览图片的url
             preloader.destroy();
@@ -1204,6 +1231,6 @@ function getData2(con){
             }
             else return Tip(res.error_text);
         },
-        function(){return Tip('网络错误！')}
+        function(){return Tip('网络错误')}
     );
 }
