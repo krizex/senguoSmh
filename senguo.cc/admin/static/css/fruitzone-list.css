@@ -57,7 +57,7 @@
 .shop_attr{color: #999;font-size: 12px;line-height: 18px;}
 .location{display: inline-block;width: 15px;height: 18px;float:left;background-image: url('/static/images/icon_list.png');background-repeat: no-repeat;background-size: 92%;background-position: 0 -26px;}
 .red-txt{color: #ff6666;}
-.shoplist li{cursor: pointer;font-size: 14px;color: #333;height: 40px;line-height: 40px;display: block;background-color: #fff;padding: 0 10px;border-bottom: 1px solid #f5f5f5;}
+.shopslist li{cursor: pointer;font-size: 14px;color: #333;height: 40px;line-height: 40px;display: block;background-color: #fff;padding: 0 10px;border-bottom: 1px solid #f5f5f5;}
 .shoplist .counts{float: right;}
 .no-title{margin-top: 60px;color: #999;}
 

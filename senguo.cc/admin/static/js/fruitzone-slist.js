@@ -1,5 +1,4 @@
 $(document).ready(function(){
-    $(document).on('click','#searchSubmit',function(){Search();});
     $("#searchKey").on("keyup",function(e){
         if($(this).val().trim()==""){
         }else{
@@ -9,9 +8,11 @@ $(document).ready(function(){
     $("#back").on("click",function(){
         history.go(-1);
     })
-}).on("click",".shoplist li",function(){
+}).on("click",".shopslist li",function(){
     var key = $("#searchKey").val();
     window.location.href="/list?q="+encodeURIComponent(encodeURIComponent(key));
+}).on("click","#searchSubmit",function(){
+    Search();
 });
 function qsearch(){
     var q=$('#searchKey').val().trim();
@@ -25,17 +26,17 @@ function qsearch(){
         function(res){
             if(res.success){
                 var shops = res.shops;
-                $('.shoplist').empty();
+                $('.shopslist').empty();
                 if(shops.length==0){
-                    if($(".shoplist").children("p").size()==0){
-                        $('.shoplist').append('<p class="text-center no-title text-grey">无搜索结果！</p>');
+                    if($(".shopslist").children("p").size()==0){
+                        $('.shopslist').append('<p class="text-center no-title text-grey">无搜索结果！</p>');
                     }
                 }else{
                     var sLis = "";
                     for(var i=0; i<shops.length; i++){
                         sLis = '<li><span class="counts"><span class="red-txt search-counts">'+shops[i].count+'</span>个结果</span><span class="name search-counts">'+shops[i].name+'</span></li>';
                     }
-                    $(".shoplist").append(sLis);
+                    $(".shopslist").append(sLis);
                 }
             }
             else return noticeBox(res.error_text);
@@ -43,11 +44,12 @@ function qsearch(){
     );
 }
 function Search(){
-    if($(".shoplist").children("li").size()==0){
+    if($(".shopslist").children("li").size()==0){
         noticeBox("当前关键字无搜索结果");
         return false;
     }else{
-        window.location.href="/list?q="+encodeURIComponent(encodeURIComponent(q));
+        var key = $("#searchKey").val();
+        window.location.href="/list?q="+encodeURIComponent(encodeURIComponent(key));
     }
 }
 
