@@ -1674,7 +1674,7 @@ class Goods(AdminBaseHandler):
 				if charge_type["market_price"] and charge_type["market_price"] !='':
 					market_price = float(charge_type["market_price"])
 				else:
-					market_price = 0
+					market_price = None
 				if charge_type["price"] and charge_type["price"] !='':
 					price = float(charge_type["price"])
 				else:
