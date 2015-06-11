@@ -293,11 +293,14 @@ $(document).ready(function(){
     }
 }).on("click",".add-price-type",function(){//新增售价方式
     var $item = $(".wrap-price-item").children(".wrap-add-price").clone();
-    var index = $(this).closest(".edit-item-right").children(".wrap-add-price").size();
+    var index = $(this).parents(".edit-item-right").children(".wrap-add-price").size();
     $item.find(".price-index").html(index+1);
-    var current_unit = $(this).closest(".goods-all-item").find(".current-unit").html();
+    var current_unit = $(this).parents(".goods-all-item").find(".current-unit").html();
+    var current_unit_id = $(this).parents(".goods-all-item").find(".current-unit").attr("data-id");
+    console.log(current_unit);
     $item.find(".now-unit").html(current_unit);
     $item.find(".stock-unit").html(current_unit);
+    $item.find(".price-unit").html(current_unit).attr("data-id",current_unit_id);
     $(this).closest("p").before($item);
 }).on("click",".del-price-type",function(){//删除售价方式
     var id=$(this).parents('.wrap-add-price').attr('data-id');
@@ -650,6 +653,7 @@ function finishEditGoods($item,data){
     }
     $item.find(".current-group").html(goods.group_name).attr("data-id",goods.group_id);
     $item.find(".stock-num").html(goods.storage);
+    $item.find(".stock-name").html(goods.unit_name);
     $item.find(".stock-unit-name").html(goods.unit_name);
     if(goods.active==1){  //上架
         $item.find(".switch-btn").addClass("switch-btn-active");

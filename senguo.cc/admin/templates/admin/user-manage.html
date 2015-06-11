@@ -36,6 +36,7 @@
     </div>
 </div>
 <ul class="users-list clearfix">
+    {% import time %}
     {% for customer in customers %}
     <li class="users-list-item  clearfix" data-id="{{customer.accountinfo.id}}">
         <div class="show-info set-w100-fle">
@@ -59,7 +60,7 @@
                 <p class="text-grey9">个人信息</p>
                 <p>姓名：{{customer.accountinfo.realname or '无'}}</p>
                 <p>手机：{{customer.accountinfo.phone or '无'}}</p>
-                <p>生日：{{customer.accountinfo.birthday or '无'}}</p>
+                <p>生日：{% if customer.accountinfo.birthday %}{{datetime.datetime.fromtimestamp(customer.accountinfo.birthday).strftime('%Y-%m-%d')}}{% else %}无{% end %}</p>
             </div>
             <div class="focus-shop pull-left">
                 <p class="text-grey9">关注的店铺</p>
