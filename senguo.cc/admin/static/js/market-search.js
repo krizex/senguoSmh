@@ -13,7 +13,7 @@ $(document).ready(function(){
     window.location.href="/"+$('#shop_code').val()+"?search="+search;
 }).on('click','.searchlist li',function(){
     var $this=$(this);
-    var search=$this.text();
+    var search=$this.find('.name').text();
     window.location.href="/"+$('#shop_code').val()+"?search="+search;
 });
 
@@ -31,12 +31,14 @@ function search(search){
                     $('.searchlist').append('<li class="text-center">无搜索结果</li>');
                 }
                 for(var i in data){
-                    var name=data[i][0];
-                    var item='<li>{{name}}</li>';
+                    var name = data[i]["name"];
+                    var num = data[i]["num"];
+                    var item='<li><span class="pull-right">{{num}}条结果</span><span class="name">{{name}}</span></li>';
                     var render=template.compile(item);
-                    var html=render({name:name});
+                    var html=render({name:name,num:num});
                     $('.searchlist').append(html);
                 }
+                $('.loading').show().find('.num').text(res.total);
               
             }
             else {
