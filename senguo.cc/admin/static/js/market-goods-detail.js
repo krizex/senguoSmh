@@ -6,9 +6,9 @@ $(document).ready(function(){
     var mWidth = $(window).width();
     var width = $("#swiper-container").width();
     if(mWidth>800){
-        $("#shop-area").css("left",(mWidth-width)/2+"px");
-        $("#cart-bg").css("left",((mWidth-width)/2+width-54)+"px");
-        $("#back-bg").css("left",(mWidth-width)/2+"px");
+        $("#shop-area").css("left",(mWidth-width)/2+15+"px");
+        $("#cart-bg").css("left",((mWidth-width)/2+width-39)+"px");
+        $("#back-bg").css("left",(mWidth-width)/2+15+"px");
     }
     $("body").css("backgroundColor","#fff");
     $(".phone-box").css("paddingBottom","20px").css("backgroundColor","#fff");
