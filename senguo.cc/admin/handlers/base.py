@@ -291,7 +291,7 @@ class GlobalBaseHandler(BaseHandler):
 				unit = charge.unit
 				unit_name = self.getUnit(unit)
 				charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
-					'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price,'select_num':charge.select_num})
+					'num':charge.num,'unit_num':charge.unit_num,'market_price':charge.market_price,'select_num':charge.select_num})
 
 			_unit = d.unit
 			_unit_name = self.getUnit(_unit)
@@ -327,7 +327,7 @@ class GlobalBaseHandler(BaseHandler):
 			unit = charge.unit
 			unit_name = self.getUnit(unit)
 			charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
-				'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price,'select_num':charge.select_num})
+				'num':charge.num,'unit_num':charge.unit_num,'market_price':charge.market_price,'select_num':charge.select_num})
 
 		_unit = int(d.unit)
 		_unit_name = self.getUnit(_unit)
