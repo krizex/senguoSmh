@@ -467,6 +467,7 @@ function dealGoods($item,type){
         return Tip("请至少添加一种售价方式");
     }else{
         price_type.each(function(){
+            var id = $(this).attr("data-id");
             var unit_num = $(this).attr("data-first");
             var unit = $(this).find(".price-unit").attr("data-id");
             var unit_name = $(this).find(".price-unit").html();
@@ -486,6 +487,7 @@ function dealGoods($item,type){
                 market_price:markey_price,//市场价
                 unit_name:unit_name
             }
+            if(type=="edit"){item.id=id;}
             price_list.push(item);
         });
     }

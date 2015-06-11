@@ -242,6 +242,11 @@ $(document).ready(function(){
     var relate=parseFloat($this.parents('.num_box').siblings('.charge-type').attr('data-relate'));
     var unit_num=parseFloat($this.parents('.num_box').siblings('.charge-type').find('.num').text());
     var change_num=relate*unit_num*1;
+    var buy_today=$this.parents('.num_box').attr('data-buy');
+    var allow_num=parseInt($this.parents('.num_box').attr('data-allow'));
+    if(buy_today=='true'&&allow_num<=0){
+        return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
+    }
     if(storage-change_num<0){
         return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
     }
@@ -273,6 +278,11 @@ $(document).ready(function(){
     var num=Int($this.siblings('.number-input').val().trim());
     var storage=parseFloat(parent.attr('data-storage'));
     var regNum=/^[0-9]*$/;
+    var buy_today=$this.parents('.num_box').attr('data-buy');
+    var allow_num=parseInt($this.parents('.num_box').attr('data-allow'));
+    if(buy_today=='true'&&num>=allow_num){
+        return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
+    }
     if(!regNum.test(num)) {
         $this.siblings('.number-input').val(storage);
         return noticeBox('商品数量只能为整数！',$this);
@@ -455,7 +465,7 @@ var goodsList=function(page,action){
                 if(window.dataObj.goods_item==undefined){
                     getItem('/static/items/customer/market-goods-item.html?v=20150609',function(data){
                         window.dataObj.goods_item=data;
-                        getItem('/static/items/customer/charge-item.html?v=20150609',function(data){
+                        getItem('/static/items/customer/charge-item.html?v=20150611',function(data){
                             window.dataObj.charge_item=data;
                             getItem('/static/items/customer/classify_item.html?v=20150609',function(data){
                                 window.dataObj.classify_item=data;
@@ -546,10 +556,20 @@ var fruitItem=function(box,fruits,type){
             var num=charge_types[0]['num'];
             var unit=charge_types[0]['unit'];
             var relate=charge_types[0]['relate'];
-            $charge_item.attr({'data-id':id,'data-relate':relate});
+            var market_price=charge_types[0]['market_price'];
+            var limit_today =charge_types[0]['limit_today'];
+            var allow_num=charge_types[0]['allow_num'];
+            console.log(allow_num);
+            $charge_item.attr({'data-id':id,'data-relate':relate,'data-buy':limit_today,'data-allow':allow_num});
             $charge_item.find('.price').text(price);
             $charge_item.find('.num').text(num);
             $charge_item.find('.chargeUnit').text(unit);
+            if(market_price>0){
+               $charge_item.find('.market-price').text(market_price); 
+            }
+            else{
+                $charge_item.find('.market').hide();
+            }
             $item.find('.charge-first').append($charge_item);
         }
         else{
@@ -558,10 +578,20 @@ var fruitItem=function(box,fruits,type){
             var num=charge_types[key]['num'];
             var unit=charge_types[key]['unit'];
             var relate=charge_types[key]['relate'];
-            $charge_item.attr({'data-id':id,'data-relate':relate}).addClass('more_charge');
+            var market_price=charge_types[key]['market_price'];
+            var limit_today =charge_types[key]['limit_today'];
+            var allow_num=charge_types[key]['allow_num'];
+             console.log(allow_num);
+            $charge_item.attr({'data-id':id,'data-relate':relate,'data-buy':limit_today,'data-allow':allow_num}).addClass('more_charge');
             $charge_item.find('.price').text(price);
             $charge_item.find('.num').text(num);
             $charge_item.find('.chargeUnit').text(unit);
+            if(market_price>0){
+               $charge_item.find('.market-price').text(market_price); 
+            }
+            else{
+                $charge_item.find('.market').hide();
+            }
             var $li=$('<li class="border-color set-w100-fle"></li>');
             $li.append($charge_item);
             $item.find('.charge-list').append($li);
@@ -631,7 +661,7 @@ function goodsNum(target,action){
             if(storage-change_num<0){
                 return  noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',target);
             }
-            if(limit_num>0&&num==limit_num){
+            if(limit_num>0&&num>=limit_num){
                 return  noticeBox('商品限购数量'+limit_num);
             }
             num++;
