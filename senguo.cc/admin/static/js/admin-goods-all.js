@@ -92,7 +92,7 @@ $(document).ready(function(){
                 $("#item-img-lst").children(".add-img-box").addClass("hidden");
             }
         }else{
-            Tip("只能添加5张照片哦！");
+            Tip("只能添加5张照片哦");
             $("#item-img-lst").children(".add-img-box").addClass("hidden");
         }
     }
@@ -388,7 +388,7 @@ $(document).ready(function(){
 }).on("click","#goods-all-search",function(){//商品搜索
     var value = $("#goods-all-ipt").val();
     if($.trim(value)==""){
-        return Tip("搜索条件不能为空！");
+        return Tip("搜索条件不能为空");
     }
     isSearch = true;
     getGoodsItem("goods_search",0,"",value);
@@ -426,21 +426,23 @@ function switchUnit($list,id,name){
 }
 //添加&编辑商品
 function dealGoods($item,type){
-    var limit_num = $item.find(".limit_num").val();
-    var priority = $item.find(".goods-priority").val();
-    var name = $item.find(".goods-goods-name").val();
+    var testNum = /^[0-9].*$/;
+    var testMoney = /^(([0-9]|([1-9][0-9]{0,9}))((\.[0-9]{1,2})?))$/;
+    var limit_num = $item.find(".limit_num").val().trim();
+    var priority = $item.find(".goods-priority").val().trim();
+    var name = $item.find(".goods-goods-name").val().trim();
     var info = $item.find(".goods-info").val();
     if(isNaN(limit_num) || parseInt(limit_num)<0){
-        return Tip("商品限购必须为整数");
+        return Tip("商品限购必须为正整数");
     }
     if(isNaN(priority) || parseInt(priority)>9 || parseInt(priority)<0){
-        return Tip("优先级必须为0-9的数字");
+        return Tip("优先级必须为0-9之间的数字");
     }
     if(name.length>12 || $.trim(name)==""){
-        return Tip("商品名字不能为空且不能超过12个字");
+        return Tip("商品名称不能为空且不能超过12个字");
     }
-    if(info.length>150){
-        return Tip("商品简介不能超过150个字");
+    if(info.length>100){
+        return Tip("商品简介不能超过100个字，更多内容请在商品详情页添加");
     }
     var imgUrls = $item.find(".drag-img-list").find("img");
     var imgList = {};
@@ -470,12 +472,15 @@ function dealGoods($item,type){
             var unit_num = $(this).attr("data-first");
             var unit = $(this).find(".price-unit").attr("data-id");
             var unit_name = $(this).find(".price-unit").html();
-            var num = $(this).find(".price-num").val();
+            var num = $(this).find(".price-num").val().trim();
             var select_num = $(this).attr("data-second");
-            var price = $(this).find(".current-price").val();
-            var markey_price = $(this).find(".market-price").val();
-            if(num=="" || price==""){
+            var price = $(this).find(".current-price").val().trim();
+            var market_price = $(this).find(".market-price").val().trim();
+            if(!testNum.test(num) || !testMoney.test(price)){
                 price_null = true;
+            }
+            if(!testMoney.test(market_price) && market_price!=""){
+                market_price_null = true;
             }
             var item = {
                 unit_num:unit_num,//第一个数量
@@ -483,22 +488,28 @@ function dealGoods($item,type){
                 num:num,//数量
                 select_num:select_num,//第二个数量
                 price:price,//价格
-                market_price:markey_price,//市场价
+                market_price:market_price,//市场价
                 unit_name:unit_name
             }
             price_list.push(item);
         });
     }
     if(price_null){
-        return Tip("数量和售价不能为空");
+        return Tip("请填写正确的数量和售价");
+    }
+    if(market_price_null){
+        return Tip("请填写正确的市场价，若不需设置市场价，请留空");
     }
     var group_name = $item.find(".current-group").html();
     var group_id = $item.find(".current-group").attr("data-id");
-    var storage = $item.find(".stock-num").val();
+    var storage = $item.find(".stock-num").val().trim();
+    if(!testNum.test(storage)){
+        return Tip("请填写正确的库存")
+    }
     var unit = $item.find(".current-unit").attr("data-id");
     var fruit_type_id = $item.find(".goods-classify").attr("data-id");
-    var limit_num = $item.find(".limit_num").val();
-    var priority = $item.find(".goods-priority").val();
+    var limit_num = $item.find(".limit_num").val().trim();
+    var priority = $item.find(".goods-priority").val().trim();
     var detail_describe = "";
     if(editor){
         detail_describe = editor.html();
@@ -530,13 +541,13 @@ function dealGoods($item,type){
     $.postJson(url,args,function(res) {
         if (res.success) {
             if(type == "add"){
-                Tip("新商品添加成功！");
+                Tip("新商品添加成功");
                 goodsEdit = false;
                 setTimeout(function(){
                     window.location.href="/admin/goods/all?&page=0";
                 },1200);
             }else{
-                Tip("商品编辑成功！");
+                Tip("商品编辑成功");
                 var data = res.data;
                 finishEditGoods($item.prev(".goods-all-item"),data);
                 $item.prev(".goods-all-item").show();
@@ -682,7 +693,7 @@ function batchGroup(name,group_id,$obj){
     };
     $.postJson(url,args,function(res) {
         if (res.success) {
-            Tip("批量分组成功！");
+            Tip("批量分组成功");
             $obj.closest("ul").prev("button").children("em").html($obj.html()).attr("data-id",$obj.attr("data-id"));
             batchList.each(function(){
                 $(this).closest(".goods-all-item").find(".batch-group").html(name.split("(")[0]).attr("data-id",group_id);
@@ -719,7 +730,7 @@ function batchGoods(type){
     }
     $.postJson(url,args,function(res) {
         if (res.success) {
-            Tip("批量操作成功！");
+            Tip("批量操作成功");
             if(type=="up"){
                 batchList.each(function(){
                     $(this).closest(".goods-all-item").find(".switch-btn").addClass("switch-btn-active");
@@ -745,7 +756,7 @@ function delGoods(id){
     };
     $.postJson(url,args,function(res) {
         if (res.success) {
-            Tip("商品删除成功！");
+            Tip("商品删除成功");
             setTimeout(function(){
                 window.location.reload(true);
             },2000);
@@ -764,7 +775,7 @@ function switchGoodsRack(id,$obj){
     $.postJson(url,args,function(res) {
         if (res.success) {
             $obj.toggleClass("switch-btn-active");
-            Tip("商品状态操作成功！");
+            Tip("商品状态操作成功");
         }else{
             Tip(res.error_text);
         }
@@ -829,7 +840,7 @@ function getGoodsItem(action,page,type_id,value){
                 var data = res.data;
                 $(".goods-all-list").empty();
                 if(data.length==0){
-                    $(".goods-all-list").append("<p>没有查询到任何商品！</p>");
+                    $(".goods-all-list").append("<p>没有查询到任何商品</p>");
                 }else{
                     $(".page-total").html(res.count);
                     $(".page-now").html(pn+1);
@@ -1000,7 +1011,7 @@ function previewImage(file,callback){//file为plupload事件监听函数参数�
     }else{
         var preloader = new mOxie.Image();
         preloader.onload = function() {
-            preloader.downsize( 100,100 ,true);//先压缩一下要预览的图片,宽，高
+            preloader.downsize(100,100,true);//先压缩一下要预览的图片,宽，高
             var imgsrc = preloader.type=='image/jpeg' ? preloader.getAsDataURL('image/jpeg',70) : preloader.getAsDataURL(); //得到图片src,实质为一个base64编码的数据
             callback && callback(imgsrc); //callback传入的参数为预览图片的url
             preloader.destroy();
@@ -1202,6 +1213,6 @@ function getData2(con){
             }
             else return Tip(res.error_text);
         },
-        function(){return Tip('网络错误！')}
+        function(){return Tip('网络错误')}
     );
 }
