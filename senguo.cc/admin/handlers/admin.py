@@ -1672,7 +1672,7 @@ class Goods(AdminBaseHandler):
 				else:
 					select_num = 1
 				if charge_type["market_price"] and charge_type["market_price"] !='':
-					market_price = float(charge_type["market_price"])
+					market_price = round(float(charge_type["market_price"]),2)
 				else:
 					market_price = None
 				if charge_type["price"] and charge_type["price"] !='':
@@ -1779,9 +1779,9 @@ class Goods(AdminBaseHandler):
 						else:
 							select_num = 1
 						if charge_type["market_price"] and charge_type["market_price"] !='':
-							market_price = float(charge_type["market_price"])
+							market_price = round(float(charge_type["market_price"]),2)
 						else:
-							market_price = 0
+							market_price = None
 						if charge_type["price"] and charge_type["price"] !='':
 							price = float(charge_type["price"])
 						else:
@@ -1800,7 +1800,7 @@ class Goods(AdminBaseHandler):
 									 unit=charge_type["unit"],
 									 num=format(num,'.2f'),
 									 unit_num=unit_num,
-									 market_price=format(market_price,'.2f'),
+									 market_price=market_price,
 									 select_num=select_num,
 									 relate=relate
 									 )
@@ -1811,7 +1811,7 @@ class Goods(AdminBaseHandler):
 											unit=int(charge_type["unit"]),
 											num=format(num,'.2f'),
 											unit_num=unit_num,
-											market_price=format(market_price,'.2f'),
+											market_price=market_price,
 											select_num=select_num,
 											relate=relate)
 							self.session.add(charge_types)
