@@ -427,7 +427,7 @@ function switchUnit($list,id,name){
 //添加&编辑商品
 function dealGoods($item,type){
     //数字正则、金额正则
-    var testNum = /^[0-9]*[.]?[0-9]*$/;
+    var testNum = /^[0-9]\d*(\.\d+)?$/;
     var testMoney = /^(([0-9]|([1-9][0-9]{0,9}))((\.[0-9]{1,2})?))$/;
     
     //商品名称、商品分组、库存、库存单位
@@ -445,7 +445,7 @@ function dealGoods($item,type){
 
     //商品类目
     var fruit_type_id = $item.find(".goods-classify").attr("data-id");
-
+    
     //商品图片
     var imgUrls = $item.find(".drag-img-list").find("img");
     var imgList = {};
