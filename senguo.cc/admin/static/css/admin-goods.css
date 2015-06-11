@@ -127,7 +127,7 @@ textarea{border-color:#eee;text-indent: 5px;}
 .drag-img-list>li{cursor:move;}
 .del-price-type{margin-right: 28px;}
 .goods-goods-name{text-align: left;font-weight: bold;}
-.stock-num{text-indent: 0;}
+.stock-num{text-indent: 0 !important;}
 .wrap-unit{position: absolute;background: #fff;border: 1px solid #eee;left: 50%;top: 50%;-webkit-transform:translate(-50%,-50%);z-index:992;}
 .unit-box{padding:10px 30px;}
 .cancel-add-goods{display: inline-block;background-size: 18px;background-image: url('/static/images/arr_back.png');background-repeat: no-repeat;background-position: left center;text-indent: 22px;}
