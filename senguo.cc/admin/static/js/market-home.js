@@ -465,7 +465,7 @@ var goodsList=function(page,action){
                 if(window.dataObj.goods_item==undefined){
                     getItem('/static/items/customer/market-goods-item.html?v=20150609',function(data){
                         window.dataObj.goods_item=data;
-                        getItem('/static/items/customer/charge-item.html?v=20150611',function(data){
+                        getItem('/static/items/customer/charge-item.html?v=20150610',function(data){
                             window.dataObj.charge_item=data;
                             getItem('/static/items/customer/classify_item.html?v=20150609',function(data){
                                 window.dataObj.classify_item=data;
