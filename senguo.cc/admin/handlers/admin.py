@@ -1796,7 +1796,7 @@ class Goods(AdminBaseHandler):
 												unit=int(charge_type["unit"]),
 												num=format(num,'.2f'),
 												unit_num=unit_num,
-												market_price=market_price,
+												market_price=format(market_price,'.2f'),
 												select_num=select_num,
 												relate=relate)
 						self.session.add(charge_types)
