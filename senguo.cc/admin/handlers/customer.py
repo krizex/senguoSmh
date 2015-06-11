@@ -1,4 +1,4 @@
-from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth
+from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth,get_unblock,unblock
 from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
 import dal.models as models
 import tornado.web
@@ -16,6 +16,11 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import partial, wraps
 
 from threading import Timer
+
+import tornado.websocket
+
+from dal.db_configs import DBSession
+
 
 EXECUTOR = ThreadPoolExecutor(max_workers=4)
 
@@ -791,8 +796,50 @@ class ShopComment(CustomerBaseHandler):
 	def get(self):
 		return self.render("customer/comment.html")
 
+class StorageChange(tornado.websocket.WebSocketHandler):
+	session = DBSession()
+	def open(self):
+		print('open')
+	def onclose(self):
+		print('on_close')
+	def on_message(self,message):
+		print(self,message)
+		s =  message.split(',')
+		print(s)
+		try:
+			add      = int(s[0])
+			fruit_id = int(s[1])
+			storage_change = float(s[2])
+		except:
+			self.write_message('error')
+		fruit = self.session.query(models.Fruit).filter_by(id = fruit_id).first()
+		if not fruit:
+			print('fruit not found')
+			return self.write_message('error')
+		print(fruit)
+		if add == 1: #购物车添加
+			cart_storage = fruit.cart_storage + storage_change
+			if fruit.storage < cart_storage:
+				self.write_message('error')
+			else:
+				print(fruit.cart_storage)
+				fruit.cart_storage = cart_storage
+				self.session.commit()
+				self.write_message('success')
+		elif add == 0:
+			fruit.cart_storage -= storage_change
+			self.session.commit()
+			self.write_message('success')
+		else:
+			self.write_message('error')
+
+	
+		
+
+
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
+	@get_unblock
 	def get(self, shop_code):
 		w_follow = True
 		fruits=''
@@ -975,10 +1022,11 @@ class Market(CustomerBaseHandler):
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		if total_page <= page:
 			nomore = True
-		fruits = fruits.offset(offset).limit(page_size).all()
+		#fruits = fruits.offset(offset).limit(page_size).all()
+		fruits = fruits.all()
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruit_list ,nomore = nomore)
-
+	@unblock
 	@CustomerBaseHandler.check_arguments("page?:int")
 	def commodity_list(self):
 		page = self.args["page"]
@@ -1001,17 +1049,26 @@ class Market(CustomerBaseHandler):
 			).outerjoin(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id).filter(models.Fruit.shop_id == shop_id,\
 			models.Fruit.active == 1).order_by(models.GroupPriority.group_id,models.Fruit.priority.desc(),models.Fruit.add_time.desc())
 
-		print(fruits.distinct(models.Fruit.id).count(),'dddddddddddddddddd')
+		print(fruits.count(),'dddddddddddddddddd',shop.shop_code)
 		
-		# for fruit in fruits:
-		# 	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
+		#for fruit in fruits:
+		#	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
 		count_fruit =fruits.distinct().count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		print(count_fruit , total_page)
 		if total_page <= page:
 			nomore = True
-		fruits =  fruits.all()
+
+		#fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
+		fruits = fruits.all()
+		print('分页后')
+		for fruit in fruits:
+			print(fruit.id,fruit.group_id)
+
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
+		print('最后返回数据')
+		print(fruits_data)
+		nomore = True
 		return self.send_success(data = fruits_data,nomore=nomore)
 
 
@@ -2242,25 +2299,13 @@ class AlipayNotify(CustomerBaseHandler):
 		return
 
 class InsertData(CustomerBaseHandler):
-	@tornado.web.authenticated
+	# @tornado.web.authenticated
 	# @CustomerBaseHandler.check_arguments("code?:str")
+	@tornado.web.asynchronous
 	def get(self):
-		from sqlalchemy import create_engine, func, ForeignKey, Column
-		session = self.session	
-		# try:
-		# 	shop_list = self.session.query(models.Shop).all()
-		# except:
-		# 	print('no shop at all')
-		# if shop_list:
-		# 	for shop in shop_list:
-		# 		shop_id = shop.id
-		# 		market = models.Marketing( id = shop_id )
-		# 		self.session.add(market)
-		# 		self.session.commit()
-		# time.sleep(100)
-
-		
-		return self.send_success()
+		# from sqlalchemy import create_engine, func, ForeignKey, Column
+		# session = self.session	
+		self.render('customer/storage-change.html')
 
 class  Overtime(CustomerBaseHandler):
 	@tornado.web.authenticated
