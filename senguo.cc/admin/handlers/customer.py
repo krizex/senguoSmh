@@ -847,7 +847,8 @@ class Market(CustomerBaseHandler):
 		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		if not shop:
 			return self.send_error(404)
-		# self.current_shop = shop
+		self.current_shop = shop
+		print(self.current_shop)
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
