@@ -1674,7 +1674,7 @@ class Goods(AdminBaseHandler):
 				if charge_type["market_price"] and charge_type["market_price"] !='':
 					market_price = float(charge_type["market_price"])
 				else:
-					market_price = 0
+					market_price = None
 				if charge_type["price"] and charge_type["price"] !='':
 					price = float(charge_type["price"])
 				else:
@@ -1688,7 +1688,7 @@ class Goods(AdminBaseHandler):
 										unit=int(charge_type["unit"]),
 										num=format(num,'.2f'),
 										unit_num=unit_num,
-										market_price=format(market_price,'.2f'),
+										market_price=market_price,
 										select_num=select_num,
 										relate=relate))
 
@@ -1765,9 +1765,10 @@ class Goods(AdminBaseHandler):
 							_img_urls = ";".join(img_urls)
 
 				if "charge_types" in data:
-					charge_old = self.session.query(models.ChargeType).filter_by(fruit_id=int(data["goods_id"]))
-					charge_old.delete()
-					self.session.commit()
+					try:
+						good = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).one()
+					except:
+						good = None
 					for charge_type in data["charge_types"]:
 						if charge_type["unit_num"] and charge_type["unit_num"] !='':
 							unit_num = int(charge_type["unit_num"])
@@ -1790,16 +1791,38 @@ class Goods(AdminBaseHandler):
 						else:
 							num = 0
 						relate = select_num/unit_num
-						charge_types = models.ChargeType(
-												fruit_id=int(data["goods_id"]),
-												price=format(price,'.2f'),
-												unit=int(charge_type["unit"]),
-												num=format(num,'.2f'),
-												unit_num=unit_num,
-												market_price=format(market_price,'.2f'),
-												select_num=select_num,
-												relate=relate)
-						self.session.add(charge_types)
+						try:
+							q = self.session.query(models.ChargeType).filter_by(id=charge_type['id'])
+						except:
+							q = None
+						if q:
+							q.one().update(session=self.session,price=format(price,'.2f'),
+									 unit=charge_type["unit"],
+									 num=format(num,'.2f'),
+									 unit_num=unit_num,
+									 market_price=format(market_price,'.2f'),
+									 select_num=select_num,
+									 relate=relate
+									 )
+						else:
+							charge_types = models.ChargeType(
+											fruit_id=int(data["goods_id"]),
+											price=format(price,'.2f'),
+											unit=int(charge_type["unit"]),
+											num=format(num,'.2f'),
+											unit_num=unit_num,
+											market_price=format(market_price,'.2f'),
+											select_num=select_num,
+											relate=relate)
+							self.session.add(charge_types)
+							
+				if "del_charge_types" in data:
+					for _id in data["del_charge_types"]:
+						try:
+							q = self.session.query(models.ChargeType).filter_by(id=_id)
+						except:
+							q = None
+						q.delete()
 
 				detail_describe = data["detail_describe"].replace("script","'/script/'")
 

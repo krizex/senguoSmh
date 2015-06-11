@@ -43,7 +43,7 @@
     </div>
     <ul class="wrap-choose-goods">
         {% for charge in charge_types %}
-        <li>
+        <li data-buy="{{charge['limit_today']}}" data-allow="{{charge['allow_num']}}">
             <span class="now-price">{{charge['price']}}元</span>
             <span class="old-price">{% if charge['market_price'] and charge['market_price']>0 %}<span class="market-price">{{charge['market_price']}}元</span>{% end %}/<span class="number">{{charge['num']}}</span>{{charge['unit']}}</span>
             <div class="want-num" data-id="{{charge['id']}}" data-relate="{{charge['relate']}}">
