@@ -476,6 +476,7 @@ function dealGoods($item,type){
             var select_num = $(this).attr("data-second");
             var price = $(this).find(".current-price").val().trim();
             var market_price = $(this).find(".market-price").val().trim();
+            console.log(market_price);
             if(!testNum.test(num) || !testMoney.test(price)){
                 price_null = true;
             }
