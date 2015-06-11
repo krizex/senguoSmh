@@ -426,24 +426,27 @@ function switchUnit($list,id,name){
 }
 //添加&编辑商品
 function dealGoods($item,type){
+    //数字正则、金额正则
     var testNum = /^[0-9].*$/;
     var testMoney = /^(([0-9]|([1-9][0-9]{0,9}))((\.[0-9]{1,2})?))$/;
-    var limit_num = $item.find(".limit_num").val().trim();
-    var priority = $item.find(".goods-priority").val().trim();
+    
+    //商品名称、商品分组、库存、库存单位
     var name = $item.find(".goods-goods-name").val().trim();
-    var info = $item.find(".goods-info").val();
-    if(isNaN(limit_num) || parseInt(limit_num)<0){
-        return Tip("商品限购必须为正整数");
-    }
-    if(isNaN(priority) || parseInt(priority)>9 || parseInt(priority)<0){
-        return Tip("优先级必须为0-9之间的数字");
-    }
+    var group_name = $item.find(".current-group").html();
+    var group_id = $item.find(".current-group").attr("data-id");
+    var storage = $item.find(".stock-num").val().trim();
+    var unit = $item.find(".current-unit").attr("data-id");
     if(name.length>12 || $.trim(name)==""){
         return Tip("商品名称不能为空且不能超过12个字");
     }
-    if(info.length>100){
-        return Tip("商品简介不能超过100个字，更多内容请在商品详情页添加");
+    if(!testNum.test(storage)){
+        return Tip("请填写正确的库存")
     }
+
+    //商品类目
+    var fruit_type_id = $item.find(".goods-classify").attr("data-id");
+
+    //商品图片
     var imgUrls = $item.find(".drag-img-list").find("img");
     var imgList = {};
     if(imgUrls.size()==0){
@@ -462,6 +465,8 @@ function dealGoods($item,type){
         imgList.index = arr1;
         imgList.src = arr2;
     }
+
+    //售价方式
     var price_type = $item.find(".edit-item-right").children(".wrap-add-price");
     var price_list = [];
     var price_null = false;
@@ -501,20 +506,30 @@ function dealGoods($item,type){
     if(market_price_null){
         return Tip("请填写正确的市场价，若不需设置市场价，请留空");
     }
-    var group_name = $item.find(".current-group").html();
-    var group_id = $item.find(".current-group").attr("data-id");
-    var storage = $item.find(".stock-num").val().trim();
-    if(!testNum.test(storage)){
-        return Tip("请填写正确的库存")
+
+    //商品简介
+    var info = $item.find(".goods-info").val();
+    if(info.length>100){
+        return Tip("商品简介不能超过100个字，更多内容请在商品详情页添加");
     }
-    var unit = $item.find(".current-unit").attr("data-id");
-    var fruit_type_id = $item.find(".goods-classify").attr("data-id");
-    var limit_num = $item.find(".limit_num").val().trim();
-    var priority = $item.find(".goods-priority").val().trim();
+
+    //商品详情
     var detail_describe = "";
     if(editor){
         detail_describe = editor.html();
     }
+    
+    //商品限购、排序优先级
+    var limit_num = $item.find(".limit_num").val().trim();
+    var priority = $item.find(".goods-priority").val().trim();
+    if(isNaN(limit_num) || parseInt(limit_num)<0){
+        return Tip("商品限购必须为正整数");
+    }
+    if(isNaN(priority) || parseInt(priority)>9 || parseInt(priority)<0){
+        return Tip("优先级必须为0-9之间的数字");
+    }
+    
+    //传入数据
     var url="";
     var data={
         group_id: group_id,//分组id
