@@ -465,7 +465,7 @@ var goodsList=function(page,action){
                 if(window.dataObj.goods_item==undefined){
                     getItem('/static/items/customer/market-goods-item.html?v=20150609',function(data){
                         window.dataObj.goods_item=data;
-                        getItem('/static/items/customer/charge-item.html?v=20150611',function(data){
+                        getItem('/static/items/customer/charge-item.html?v=20150610',function(data){
                             window.dataObj.charge_item=data;
                             getItem('/static/items/customer/classify_item.html?v=20150609',function(data){
                                 window.dataObj.classify_item=data;
@@ -565,7 +565,7 @@ var fruitItem=function(box,fruits,type){
             $charge_item.find('.num').text(num);
             $charge_item.find('.chargeUnit').text(unit);
             if(market_price>0){
-               $charge_item.find('.market-price').text(market_price); 
+               $charge_item.find('.market-price').text(market_price+'元'); 
             }
             else{
                 $charge_item.find('.market').hide();
@@ -587,7 +587,7 @@ var fruitItem=function(box,fruits,type){
             $charge_item.find('.num').text(num);
             $charge_item.find('.chargeUnit').text(unit);
             if(market_price>0){
-               $charge_item.find('.market-price').text(market_price); 
+               $charge_item.find('.market-price').text(market_price+'元'); 
             }
             else{
                 $charge_item.find('.market').hide();
