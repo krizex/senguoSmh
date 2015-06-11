@@ -12,17 +12,17 @@ import requests
 import base64
 import decimal
 
-class order(AdminBaseHandler):
+class Order(AdminBaseHandler):
 	# @tornado.web.authenticated
 	def get(self):
-		return self.render("")
+		return self.render("m-admin/order.html")
 
-class order(AdminBaseHandler):
+class OrderDetail(AdminBaseHandler):
 	# @tornado.web.authenticated
 	def get(self):
-		return self.render("")
+		return self.render("m-admin/order-detail.html")
 
-class order(AdminBaseHandler):
+class Center(AdminBaseHandler):
 	# @tornado.web.authenticated
 	def get(self):
-		return self.render("")
+		return self.render("m-admin/center.html")
