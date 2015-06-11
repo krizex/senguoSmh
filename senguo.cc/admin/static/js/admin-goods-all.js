@@ -427,7 +427,7 @@ function switchUnit($list,id,name){
 //添加&编辑商品
 function dealGoods($item,type){
     //数字正则、金额正则
-    var testNum = /^[0-9].*$/;
+    var testNum = /^[0-9]*[.]?[0-9]*$/;
     var testMoney = /^(([0-9]|([1-9][0-9]{0,9}))((\.[0-9]{1,2})?))$/;
     
     //商品名称、商品分组、库存、库存单位
@@ -440,7 +440,7 @@ function dealGoods($item,type){
         return Tip("商品名称不能为空且不能超过12个字");
     }
     if(!testNum.test(storage)){
-        return Tip("请填写正确的库存")
+        return Tip("请填写正确的库存，只能为数字")
     }
 
     //商品类目
@@ -501,10 +501,10 @@ function dealGoods($item,type){
         });
     }
     if(price_null){
-        return Tip("请填写正确的数量和售价");
+        return Tip("请填写正确的数量和售价，最多保留2位小数");
     }
     if(market_price_null){
-        return Tip("请填写正确的市场价，若不需设置市场价，请留空");
+        return Tip("请填写正确的市场价，若不需要设置市场价，请留空");
     }
 
     //商品简介
@@ -518,7 +518,7 @@ function dealGoods($item,type){
     if(editor){
         detail_describe = editor.html();
     }
-    
+
     //商品限购、排序优先级
     var limit_num = $item.find(".limit_num").val().trim();
     var priority = $item.find(".goods-priority").val().trim();
