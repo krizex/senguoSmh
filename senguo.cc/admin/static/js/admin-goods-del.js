@@ -176,12 +176,14 @@ function insertGoods(data){
         $item.find(".stay-num").html(goods.current_saled);
         $item.find(".show-txtimg").attr("data-text",goods.detail_describe);
         $item.find(".goods-classify").html(goods.fruit_type_name);
-        $item.find(".item-goods-txt").html(goods.info);
+        $item.find(".item-goods-txt").html(goods.intro);
         $item.find(".dianzan").html(goods.favour);
+        $item.find(".goods-priority").html(goods.priority);
+        $item.find(".limit-num").html(goods.limit_num);
         if(goods.charge_types.length>0){
             for(var j=0; j<goods.charge_types.length; j++){
                 var good = goods.charge_types[j];
-                if(good.market_price && good.market_price!=0){
+                if(good.market_price){
                     var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+good.unit_name+'</span></span><span class="mr10">市场价 : <span class="">'+good.market_price+'元</span></span></p>';
                 }else{
                     var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+good.unit_name+'</span></span><span class="mr10">市场价 : <span class="">未设置</span></span></p>';

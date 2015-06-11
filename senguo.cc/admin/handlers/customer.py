@@ -147,6 +147,7 @@ class customerGoods(CustomerBaseHandler):
 			good.favour_today = False
 		else:
 			good.favour_today = favour.create_date == datetime.date.today()
+
 		if good:
 			if good.img_url:
 				img_url= good.img_url.split(";")
@@ -155,16 +156,33 @@ class customerGoods(CustomerBaseHandler):
 		else:
 			good = []
 			img_url = ''
+
 		charge_types= []
 		for charge_type in good.charge_types:
 			unit  = charge_type.unit
 			unit =self.getUnit(unit)
+			limit_today = False
+			allow_num = ''
+			try:
+				limit_if = self.session.query(models.GoodsLimit).filter_by(charge_type_id = charge_type.id,customer_id = self.current_user.id)\
+				.order_by(models.GoodsLimit.create_time.desc()).first()
+			except:
+				limit_if = None
+			if limit_if and good.limit_num !=0:
+				time_now = datetime.datetime.now().strftime('%Y-%m-%d')
+				create_time = limit_if.create_time.strftime('%Y-%m-%d')
+				if time_now == create_time:
+					limit_today = True
+					if limit_if.limit_num == good.limit_num:
+						allow_num = limit_if.allow_num
+					else:
+						allow_num = good.limit_num - limit_if.buy_num
 			charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
-				'market_price':charge_type.market_price,'relate':charge_type.relate})
+				'market_price':charge_type.market_price,'relate':charge_type.relate,"limit_today":limit_today,"allow_num":allow_num})
 		cart_f = self.read_cart(shop.id)
 		cart_count = len(cart_f) 
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
-		return self.render('customer/goods-detail.html',good=good,shop_name=shop_name,img_url=img_url,shop_code=shop_code,charge_types=charge_types,cart_fs=cart_fs)
+		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,shop_code=shop_code,charge_types=charge_types,cart_fs=cart_fs)
 		
 
 
@@ -917,7 +935,11 @@ class Market(CustomerBaseHandler):
 						if goods_count !=0 :
 							group_list.append({'id':_group.id,'name':_group.name})
 		else:
-			group_list.append({'id':0,'name':'默认分组'})
+			if record_count !=0 :
+				group_list.append({'id':-1,'name':'店铺推荐'})
+			if default_count !=0 :
+				group_list.append({'id':0,'name':'默认分组'})
+
 
 		return self.render("customer/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,\
@@ -963,15 +985,31 @@ class Market(CustomerBaseHandler):
 					favour_today = False
 				else:
 					favour_today = favour.create_date == datetime.date.today()
-				# print('favour_today',favour_today)
-
+				# print('favour_today',favour_today)				
+					
 				charge_types= []
 				for charge_type in fruit.charge_types:
 					unit  = charge_type.unit
 					unit =self.getUnit(unit)
+					
+					limit_today = False
+					allow_num = ''
+					try:
+						limit_if = session.query(models.GoodsLimit).filter_by(charge_type_id = charge_type.id,customer_id = customer_id)\
+						.order_by(models.GoodsLimit.create_time.desc()).first()
+					except:
+						limit_if = None
+					if limit_if and fruit.limit_num !=0:
+						time_now = datetime.datetime.now().strftime('%Y-%m-%d')
+						create_time = limit_if.create_time.strftime('%Y-%m-%d')
+						if time_now == create_time:
+							limit_today = True
+							if limit_if.limit_num == fruit.limit_num:
+								allow_num = limit_if.allow_num
+							else:
+								allow_num = fruit.limit_num - limit_if.buy_num
 					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
-						'market_price':charge_type.market_price,'relate':charge_type.relate})
-				
+						'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':limit_today,'allow_num':allow_num})
 
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 				saled = fruit.saled if fruit.saled else 0
@@ -1053,26 +1091,18 @@ class Market(CustomerBaseHandler):
 			models.Fruit.active == 1,models.Fruit.id !=None).order_by(models.GroupPriority.group_id,models.Fruit.priority.desc(),\
 			models.Fruit.add_time.desc()).distinct(models.Fruit.id)
 
-		print(fruits.count(),'dddddddddddddddddd',shop.shop_code)
 		
 		for fruit in fruits:
 			print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
 		count_fruit =fruits.distinct().count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		print(count_fruit , total_page)
+		# print(count_fruit , total_page)
 		if total_page <= page:
 			nomore = True
 
-		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
-		# fruits = fruits.all()
-		print('分页后')
-		for fruit in fruits:
-			print(fruit.id,fruit.group_id)
 
+		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
-		print('最后返回数据')
-		print(fruits_data)
-		# nomore = True
 		return self.send_success(data = fruits_data,nomore=nomore)
 
 
@@ -1160,6 +1190,31 @@ class Market(CustomerBaseHandler):
 		charge_type_id = self.args["charge_type_id"]
 		self.save_cart(charge_type_id, self.shop_id, action)
 		return self.send_success()
+
+class GoodsSearch(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		shop_id = self.shop_id
+		shop = self.session.query(models.Shop).filter_by(id=shop_id ).first()
+		if not shop:
+			return self.send_error(404)
+		return self.render("customer/search-goods-list.html",context=dict(subpage='home',shop_code=shop.shop_code))
+
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("search:str")
+	def post(self):
+		shop_id = self.shop_id
+		search = self.args["search"]
+		data = []
+		name_list = self.session.query(models.Fruit.name).filter_by(shop_id = shop_id,active=1).filter(models.Fruit.name.like("%%%s%%" % search))
+		names = name_list.distinct().all()
+		if names:
+			for name in names:
+				count = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active=1,name = name[0]).count()
+				data.append({'name':name[0],'num':count})
+		else:
+			data = []
+		return self.send_success(data=data)
 
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -1250,11 +1305,39 @@ class Cart(CustomerBaseHandler):
 			charge_types = self.session.query(models.ChargeType).\
 				filter(models.ChargeType.id.in_(fruits.keys())).all()
 			for charge_type in charge_types:
-
 				if fruits[str(charge_type.id)] in [0,None]:  # 有可能num为0，直接忽略掉
 					continue
 				totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
 				num = int(fruits[str(charge_type.id)]*charge_type.relate*charge_type.num)
+
+				limit_num = charge_type.fruit.limit_num
+				buy_num = int(fruits[str(charge_type.id)])
+				
+				try:
+					limit_if = self.session.query(models.GoodsLimit).filter_by(charge_type_id = charge_type.id,customer_id = customer_id)\
+					.order_by(models.GoodsLimit.create_time.desc()).first()
+				except:
+					limit_if = None
+				if limit_num !=0:
+					allow_num = limit_num - buy_num
+					if allow_num < 0:
+						return self.send_fail("限购商品"+charge_type.fruit.name+"购买数量已达上限")
+					if limit_if:
+						time_now = datetime.datetime.now().strftime('%Y-%m-%d')
+						create_time = limit_if.create_time.strftime('%Y-%m-%d')
+						if time_now == create_time:
+							buy_num = limit_if.buy_num+buy_num
+							if limit_if.limit_num == limit_num:
+								allow_num = limit_if.limit_num-buy_num
+							else:
+								allow_num = limit_num-buy_num
+								if allow_num <=0:
+									return self.send_fail("限购商品"+charge_type.fruit.name+"购买数量已达上限")
+							goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
+							self.session.add(goods_limit)
+					else:
+						goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
+						self.session.add(goods_limit)					
 
 				charge_type.fruit.storage -= num  # 更新库存
 				if charge_type.fruit.saled:
@@ -1265,7 +1348,7 @@ class Cart(CustomerBaseHandler):
 				if charge_type.fruit.storage < 0:
 					return self.send_fail('“%s”库存不足' % charge_type.fruit.name)
 				# print(charge_type.price)
-				print(charge_type.num , unit[charge_type.unit])
+
 				f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
 									 "charge":"%.2f元/%.1f %s" % (float(charge_type.price), charge_type.num, unit[charge_type.unit])}
 
@@ -1427,7 +1510,7 @@ class Cart(CustomerBaseHandler):
 			order.get_num(session,order.id)
 			print("[定时任务]订单取消成功：",order.num)
 		else:
-			print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除",order.num)
+			print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除：",order.num)
 
 class CartCallback(CustomerBaseHandler):
 
@@ -1498,6 +1581,8 @@ class CartCallback(CustomerBaseHandler):
 				other_name = info.nickname
 				WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,\
 					customer_name,order_totalPrice,send_time,goods,phone,address)
+			# send message to customer
+			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
 
 
 		####################################################
@@ -2205,7 +2290,7 @@ class payTest(CustomerBaseHandler):
 
 			#########################################################
 
-			# 支付成功后，用户对应店铺 余额 增1加
+			# 支付成功后，用户对应店铺 余额 增加
 			#判断是否已经回调过，如果记录在表中，则不执行接下来操作
 			old_balance_history=self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
 			if old_balance_history:
@@ -2269,7 +2354,7 @@ class AlipayNotify(CustomerBaseHandler):
 		# 应放在 支付成功的回调里
 		#########################################################
 
-		# 支付成功后，用户对应店铺 余额 增1加
+		# 支付成功后，用户对应店铺 余额 增加
 		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 			shop_id = shop_id).first()
 		print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')

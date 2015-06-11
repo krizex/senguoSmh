@@ -7,6 +7,7 @@ import handlers.infowall
 import handlers.official
 import handlers.onlinePay
 import handlers.activity
+import handlers.Madmin
 from dal import models
 #todo:handlers太大会不会影响性能？
 
@@ -90,6 +91,7 @@ handlers = [
 	(r"/customer/points", handlers.customer.Points, {}, "customerPoints"),
 	(r"/customer/balance", handlers.customer.Balance, {}, "customerBalance"),
 	(r"/customer/recharge", handlers.customer.Recharge, {}, "customerRecharge"),
+	(r"/customer/search", handlers.customer.GoodsSearch, {}, "customerGoodsSearch"),
 	(r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
 	(r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
 	(r"/customer/phoneVerify", handlers.fruitzone.PhoneVerify, {
@@ -204,6 +206,10 @@ handlers = [
 	# (r"/admin/finance", handlers.admin.Finance, {}, "adminFinance"),
 	# (r"/admin/settings/profile", handlers.admin.Settings,
 	#  {"action":"profile"}, "adminSettingsProfile")
+	
+	(r"/madmin/order", handlers.Madmin.Order, {}, "MadminOrder"),
+	(r"/madmin/orderDetail", handlers.Madmin.OrderDetail, {}, "MadminOrderDetail"),
+	(r"/madmin/center", handlers.Madmin.Center, {}, "MadminCenter"),
 	
 	# (r"/staff/...")
 

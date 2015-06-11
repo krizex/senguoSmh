@@ -5,7 +5,7 @@ small, strike, strong, tt, var,
 b, i, dl, dt, dd, ol, ul, li,
 form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td {margin: 0; padding: 0; list-style:none;border: none; outline: none; vertical-align: baseline;}
-html,body,div,p,textarea,input,select,button,h1,h2,h3,h4,h5,h6{font-size:14px;line-height: 1.25;font-family: 'Microsoft Yahei','Arial','宋体';}
+html,body,div,p,textarea,input,select,button,h1,h2,h3,h4,h5,h6{font-size:14px;line-height: 1.25;font-family: "Microsoft YaHei","Helvetica Neue","Arial";}
 a,a:link,a:visited,a:hover,a:active{text-decoration: none;}
 img,input,button,select{vertical-align: middle;border:none;width: 100%;}
 img{width: auto;}
@@ -54,7 +54,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .swiper-pagination-switch{width:12px;height: 12px;border-radius:50%;-webkit-box-sizing:border-box;display: inline-block;margin:0 5px;-webkit-transition:all .2s ease;background-color: #fff;}
 .swiper-active-switch{background-color: #80c092;}
 .roll-bg{width: 34px;height: 34px;border-radius: 50%;background-color: rgba(128,192,146,.6);z-index:999;cursor: pointer;}
-.back{position: absolute;left: 10px;top: 10px;}
+.back{position: fixed;left: 10px;top: 10px;}
 .back>i{position: absolute;width: 10px;height: 22px;background-image: url('/static/images/arrow_left.png'); top: 8px;left: 10px;}
 .share{position: absolute;right: 10px;top: 10px;}
 .share>i{position: absolute;width: 16px;height: 18px;background-image: url('/static/images/icon_share.png');top: 8px;left: 8px;}
@@ -84,8 +84,8 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .want-num .minus{left: 0;top: 0;}
 .want-num .add{top: 0;right: 0;}
 .goods-choose-lst{margin-top: 12px;}
-.goods-choose-lst>li{width:100%;float:left;-webkit-box-sizing: border-box;border: 1px solid #e4e4e4;height: 36px;line-height: 36px;text-align: center;color: #999;font-size: 14px;cursor: pointer;}
-.goods-choose-lst>li:last-child{border-left:none;}
+.goods-choose-lst>li{width:100%;float:left;-webkit-box-sizing: border-box;border: 1px solid #e4e4e4;height: 42px;line-height: 40px;text-align: center;color: #999;font-size: 14px;cursor: pointer;}
+.goods-choose-lst>li:last-child{border-left:none; border-right:none;}
 .goods-choose-lst .active{border-top:2px solid #7ebf91;color: #80c092;}
 .goods-info-lst>li{display: none;line-height:26px;padding:10px;}
 .goods-info-lst .active{display: block;}

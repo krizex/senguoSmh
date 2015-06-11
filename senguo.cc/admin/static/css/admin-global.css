@@ -48,7 +48,7 @@ img{border:none;}
 .backstage-header .logo-con .logo{margin-right:20px;margin-left:10px;}
 .backstage-header .logo-con span{display:inline-block;float:left;}
 .backstage-header .logo-con .title{border-left:1px solid #d9dadc;height:46px;line-height:46px;font-size:22px;padding:0 8px 0 20px;margin-top:2px;color:#666}
-.backstage-header .logo-con .beta{width:54px;height:24px;color:#999;line-height:24px;text-align:center;}
+.backstage-header .logo-con .beta{width:54px;height:24px;color:#999;line-height:24px;text-align:center;font-size:12px;}
 .backstage-header .header-nav{}
 .backstage-header .header-nav li{float:left;padding:0 15px;}
 .backstage-header .header-nav li a{color:#000;display:block;font-size: 12px;}
@@ -73,7 +73,7 @@ img{border:none;}
 .backstage-header .header-nav .dropdown-toggle{padding:0 4px;}
 .backstage-header .header-nav .dropdown-menu li{width:100%;padding:0px;}
 .backstage-header .header-nav .dropdown-menu li a:hover{color:#fff;background-color: #6ba4ef;}
-.backstage-header .header-nav .caret{margin-top:10px;color: #333;}
+.backstage-header .header-nav .caret{margin-top:10px;color: #c6c6c6;}
 .menu-icona{background-repeat: no-repeat;background-position:  18px center; background-size:14px;padding-right: 0 !important;padding-left: 40px !important;}
 .sshop{background-image: url('/static/images/iconfont-qiehuan.png');}
 .swoon{background-image: url('/static/images/iconfont-wode.png');}
@@ -110,7 +110,7 @@ img{border:none;}
 .container-right .right-title{font-size:16px;display:block;margin-bottom:10px;}
 .mode-lock{background:#f4f5f9;width:100%;float:left;padding:10px 0;height:77px;}
 
-.subnav-box{position:relative;height:40px;border-bottom:1px solid #eee;width:100%;overflow:hidden;}
+.subnav-box{position:relative;height:40px;border-bottom:1px solid #e7e7eb;width:100%;overflow:hidden;}
 .subnav li{float:left;width:90px;height:40px;text-align:center;line-height:42px;}
 .subnav li a{color:#333;font-size:14px;display:block;}
 .subnav li:hover{border-bottom:3px solid #a0a3ab;margin-top:-1px;}
@@ -203,7 +203,7 @@ img{border:none;}
 .bg-grey3{background:#f3f3f3;}
 .bg-grey5{background:#f5f5f5;}
 .bg-grey9{background:#999;}
-.bg-greya{background:#fafafa;}
+.bg-greya{background:#f9f9f9;}
 .bg-greyd{background:#ddd;}
 .bg-blue{background:#6ba4ef;}
 .bg-white{background-color:#fff;}
@@ -228,6 +228,7 @@ img{border:none;}
 .ml10{margin-left:10px;}
 .mt5{margin-top:5px;}
 .mt40{margin-top:40px;}
+.mt30{margin-top: 30px;}
 
 .p0{padding:0px !important;}
 .p10{padding:10px !important;}
@@ -278,7 +279,7 @@ input{color:#333;text-indent:5px;}
 .add-swshop:hover{color: #999;}
 .sw-er-tip{padding: 15px 15px 30px 20px;border: 1px solid #ccc;position: absolute;background-color: #fff;z-index:55;top:40px;left: 88px;}
 .er-text{color: #666;text-align: left;}
-.wrap-ipt{white-space: nowrap;}
+.wrap-ipt{white-space: nowrap;font-size: 12px;}
 .wrap-ipt>input{margin-top: 10px;border: 1px solid #ccc;height: 30px;color: #666;text-indent: 0;outline: none;}
 .sw-link-txt{background-color: #f9f9f9;width: 200px;padding-left: 8px;}
 .sw-link-copy{width:80px;text-align: center;background-color: #fff;margin-left: -4px;}
@@ -336,12 +337,12 @@ input{color:#333;text-indent:5px;}
 .w150{width:150px;}
 .invisible{visibility:hidden;}
 
-.foot {padding: 24px 0;color: #f1f1f1;text-align: center;background-color: #b8b9b9;}
+.foot {padding: 24px 0;color: #f1f1f1;text-align: center;background-color: #b8b9b9;font-size: 12px;}
 .links_item {display: inline-block;vertical-align: middle;padding: 0 1em;line-height: 1em;border-left: 1px solid #d9dadc;}
 .links_item:first-child {border-left-width: 0;}
 .ft .links_item a {color: #f1f1f1;}
 /*加载中*/
-.wrap-loading-box{width: 100%;height: 100%;position: fixed;width: 100%;background-color: rgba(0,0,0,.1);top: 0;left: 0;z-index:9999;}
+.wrap-loading-box{width: 100%;height: 100%;position: fixed;width: 100%;background-color: rgba(255,255,255,.4);top: 0;left: 0;z-index:9999;}
 .loading-box{position: fixed;z-index:9999;top: 50%;left:50%;-webkit-transform:translate(-50%, -50%);display: -webkit-flex;display: flex;-webkit-justify-content: center;justify-content: center;}
 .loading-box .loader {-webkit-align-self: center;align-self: center;width: 99px; text-indent: -9999em;}
 .loading-box .ball {border-radius: 50%;background-color: #fe6a7c;width: 10px; height: 10px;position: absolute;top: 0;left: 0;-webkit-animation: loading 1.2s linear infinite; animation: loading 1.2s linear infinite;}

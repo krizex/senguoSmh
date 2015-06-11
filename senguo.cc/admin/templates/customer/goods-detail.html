@@ -14,7 +14,7 @@
 <input type="hidden" value="{{shop_code}}" id="shop_code"/>
 <div class="wrap-goods-detail" data-id="{{good.id}}" data-limit="{{good.limit_num}}" data-storage="{{good.storage}}">
     <div class="img-list">
-        <a href="{{reverse_url('Market',shop_code)}}" class="roll-bg back add-cart"><i></i></a>
+        <a href="{{reverse_url('Market',shop_code)}}" class="roll-bg back add-cart" id="back-bg"><i></i></a>
         <!--a href="javascript:;" class="roll-bg share"><i></i></a-->
         <div class="swiper-container" id="swiper-container">
             <div class="swiper-wrapper">
@@ -38,12 +38,12 @@
         <p class="goods-info">{{good.intro or ''}}</p>
         <p class="goods-num">
             <span class="zan {% if good.favour_today %}zaned{% end %}" id="dianzan" data-flag="{{good.favour_today}}" data-id="{{good.id}}">{{good.favour or 0}}</span>
-            <span>销量 {{good.saled or 0}}</span>
+            <span>&nbsp;销量 {{good.saled or 0}}</span>
         </p>
     </div>
     <ul class="wrap-choose-goods">
         {% for charge in charge_types %}
-        <li>
+        <li data-buy="{{charge['limit_today']}}" data-allow="{{charge['allow_num']}}">
             <span class="now-price">{{charge['price']}}元</span>
             <span class="old-price">{% if charge['market_price'] and charge['market_price']>0 %}<span class="market-price">{{charge['market_price']}}元</span>{% end %}/<span class="number">{{charge['num']}}</span>{{charge['unit']}}</span>
             <div class="want-num" data-id="{{charge['id']}}" data-relate="{{charge['relate']}}">

@@ -1386,6 +1386,16 @@ class GroupPriority(MapBase, _CommonApi):
 	group_id = Column(Integer)
 	priority = Column(Integer)
 
+class GoodsLimit(MapBase, _CommonApi):
+	__tablename__ = "goods_limit"
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	charge_type_id = Column(Integer, nullable=False)
+	customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
+	create_time = Column(DateTime, default=func.now())
+	limit_num = Column(Integer)
+	buy_num = Column(Integer)
+	allow_num = Column(Integer)
+
 # 用户自定义的商品类型
 class Menu(MapBase, _CommonApi):
 	__tablename__ = "menu"

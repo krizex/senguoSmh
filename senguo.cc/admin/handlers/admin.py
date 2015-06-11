@@ -119,6 +119,7 @@ class Home(AdminBaseHandler):
 			admin = self.session.query(models.HireLink).filter_by(shop_id=shop_id,staff_id=self.current_user.id,active=1,work=9).first()
 			if not admin and shop.admin != self.current_user:
 				return self.send_error(403)#必须做权限检查：可能这个shop并不属于current_user
+			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
 			self.current_shop = shop
 			self.set_secure_cookie("shop_id", str(shop.id), domain=ROOT_HOST_NAME)
 			return self.send_success()
@@ -1330,7 +1331,10 @@ class Goods(AdminBaseHandler):
 						count = goods.count()
 						count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 						datalist = goods.offset(offset).limit(page_size).all()
-						data = self.getGoodsData(datalist)
+						if datalist:
+							data = self.getGoodsData(datalist)
+						else:
+							datalist = []
 						return self.send_success(data=data,count=count)
 
 				elif _type =="goods_search":
@@ -1342,11 +1346,14 @@ class Goods(AdminBaseHandler):
 						page = 0
 					page_size = 10
 					offset = page * page_size
-					goods = self.session.query(models.Fruit).filter(models.Fruit.name.like("%%%s%%" % name))
+					goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.name.like("%%%s%%" % name))
 					count = goods.count()
 					count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 					datalist = goods.offset(offset).limit(page_size).all()
-					data = self.getGoodsData(goods)
+					if goods:
+						data = self.getGoodsData(goods)
+					else:
+						data = []
 					return self.send_success(data=data,count=count)
 
 			elif self.args["filter_status"] !=[]:
@@ -1444,33 +1451,34 @@ class Goods(AdminBaseHandler):
 				datalist = []
 				if sub_type == "color":
 					for i in range(7):
-						if i == 0:
-							color = "unknow"
-							name = '其它'
-						elif i ==1:
-							color = "red"
-							name = '红色'
-						elif i == 2:
-							color = "yellow"
-							name = '黄色'
-						elif i == 3:
-							color = "green"
-							name = '绿色'
-						elif i == 4:
-							color = "purple"
-							name = '紫色'
-						elif i == 5:
-							color = "white"
-							name = '白色'
-						elif i == 6:
-							color = "blue"
-							name = '蓝色'
-						types = fruit_types.filter_by(color=i).all()
-						types = self.getClass(types)
-						datalist.append({'name':name,'property':color,'data':types})
+						if i >0:
+							if i ==1:
+								color = "red"
+								name = '红色'
+							elif i == 2:
+								color = "yellow"
+								name = '黄色'
+							elif i == 3:
+								color = "green"
+								name = '绿色'
+							elif i == 4:
+								color = "purple"
+								name = '紫色'
+							elif i == 5:
+								color = "white"
+								name = '白色'
+							elif i == 6:
+								color = "blue"
+								name = '蓝色'
+							types = fruit_types.filter_by(color=i).order_by(models.FruitType.color).all()
+							types = self.getClass(types)
+							datalist.append({'name':name,'property':color,'data':types})
+					types0 = fruit_types.filter_by(color=0).all()
+					types0 = self.getClass(types0)
+					datalist.append({'name':'其它','property':"unknow",'data':types0})
 				elif sub_type == "length":
 					for i in range(5):
-						if i >0:
+						if i>0:
 							if i == 1:
 								name ='一个字'
 							elif i == 2:
@@ -1482,40 +1490,43 @@ class Goods(AdminBaseHandler):
 							types = fruit_types.filter_by(length=i).all()
 							types = self.getClass(types)
 							datalist.append({'name':name,'property':i,'data':types})
+					types0 = fruit_types.filter_by(length=0).all()
+					types0 = self.getClass(types0)
+					datalist.append({'name':'其它','property':"unknow",'data':types0})
 				elif sub_type == "garden":
 					for i in range(8):
-						if i == 0:
-							garden = "unknow"
-							name = "其它"
-						elif i ==1:
-							garden = "renguo"
-							name = "仁果类"
-						elif i == 2:
-							garden = "heguo"
-							name = "核果类"
-						elif i == 3:
-							garden = "jiangguo"
-							name = "浆果类"
-						elif i == 4:
-							garden = "ganju"
-							name = "柑橘类"
-						elif i == 5:
-							garden = "redai"
-							name = "热带及亚热带类"
-						elif i == 6:
-							garden = "shiguo"
-							name = "什果类"
-						elif i == 6:
-							garden = "jianguo"
-							name = "坚果类"
-						types = fruit_types.filter_by(garden=i).all()
-						types = self.getClass(types)
-						datalist.append({'name':name,'property':garden,'data':types})
+						if i>0:
+							if i ==1:
+								garden = "renguo"
+								name = "仁果类"
+							elif i == 2:
+								garden = "heguo"
+								name = "核果类"
+							elif i == 3:
+								garden = "jiangguo"
+								name = "浆果类"
+							elif i == 4:
+								garden = "ganju"
+								name = "柑橘类"
+							elif i == 5:
+								garden = "redai"
+								name = "热带及亚热带类"
+							elif i == 6:
+								garden = "shiguo"
+								name = "什果类"
+							elif i == 6:
+								garden = "jianguo"
+								name = "坚果类"
+							types = fruit_types.filter_by(garden=i).all()
+							types = self.getClass(types)
+							datalist.append({'name':name,'property':garden,'data':types})
+					types0 = fruit_types.filter_by(garden=0).all()
+					types0 = self.getClass(types0)
+					datalist.append({'name':'其它','property':"unknow",'data':types0})
 				elif sub_type == "nature":
 					for i in range(4):
-							if i == 0:
-								name ='其它'
-							elif i == 1:
+						if i>0:
+							if i == 1:
 								name = '凉性'
 							elif i == 2:
 								name = '热性'
@@ -1524,6 +1535,9 @@ class Goods(AdminBaseHandler):
 							types = fruit_types.filter_by(nature=i).all()
 							types = self.getClass(types)
 							datalist.append({'name':name,'property':i,'data':types})
+					types0 = fruit_types.filter_by(nature=0).all()
+					types0 = self.getClass(types0)
+					datalist.append({'name':'其它','property':"unknow",'data':types0})
 				else:
 					return self.send_fail(404)
 				return self.send_success(data=datalist)
@@ -1658,23 +1672,23 @@ class Goods(AdminBaseHandler):
 				else:
 					select_num = 1
 				if charge_type["market_price"] and charge_type["market_price"] !='':
-					market_price = float(charge_type["market_price"])
+					market_price = round(float(charge_type["market_price"]),2)
 				else:
-					market_price = 0
+					market_price = None
 				if charge_type["price"] and charge_type["price"] !='':
 					price = float(charge_type["price"])
 				else:
 					price = 0
 				if charge_type["num"] and charge_type["num"] !='':
-					num = float(charge_type["num"])
+					num = round(float(charge_type["num"]),2)
 				else:
 					num = 0
 				relate = select_num/unit_num
-				goods.charge_types.append(models.ChargeType(price=format(price,'.2f'),
+				goods.charge_types.append(models.ChargeType(price=price,
 										unit=int(charge_type["unit"]),
-										num=format(num,'.2f'),
+										num=num,
 										unit_num=unit_num,
-										market_price=format(market_price,'.2f'),
+										market_price=market_price,
 										select_num=select_num,
 										relate=relate))
 
@@ -1751,9 +1765,10 @@ class Goods(AdminBaseHandler):
 							_img_urls = ";".join(img_urls)
 
 				if "charge_types" in data:
-					charge_old = self.session.query(models.ChargeType).filter_by(fruit_id=int(data["goods_id"]))
-					charge_old.delete()
-					self.session.commit()
+					try:
+						good = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).one()
+					except:
+						good = None
 					for charge_type in data["charge_types"]:
 						if charge_type["unit_num"] and charge_type["unit_num"] !='':
 							unit_num = int(charge_type["unit_num"])
@@ -1764,28 +1779,50 @@ class Goods(AdminBaseHandler):
 						else:
 							select_num = 1
 						if charge_type["market_price"] and charge_type["market_price"] !='':
-							market_price = float(charge_type["market_price"])
+							market_price = round(float(charge_type["market_price"]),2)
 						else:
-							market_price = 0
+							market_price = None
 						if charge_type["price"] and charge_type["price"] !='':
-							price = float(charge_type["price"])
+							price = round(float(charge_type["price"]),2)
 						else:
 							price = 0
 						if charge_type["num"] and charge_type["num"] !='':
-							num = float(charge_type["num"])
+							num = round(float(charge_type["num"]),2)
 						else:
 							num = 0
 						relate = select_num/unit_num
-						charge_types = models.ChargeType(
-												fruit_id=int(data["goods_id"]),
-												price=format(price,'.2f'),
-												unit=int(charge_type["unit"]),
-												num=format(num,'.2f'),
-												unit_num=unit_num,
-												market_price=format(market_price,'.2f'),
-												select_num=select_num,
-												relate=relate)
-						self.session.add(charge_types)
+						try:
+							q = self.session.query(models.ChargeType).filter_by(id=charge_type['id'])
+						except:
+							q = None
+						if q:
+							q.one().update(session=self.session,price=price,
+									 unit=charge_type["unit"],
+									 num=num,
+									 unit_num=unit_num,
+									 market_price=market_price,
+									 select_num=select_num,
+									 relate=relate
+									 )
+						else:
+							charge_types = models.ChargeType(
+											fruit_id=int(data["goods_id"]),
+											price=price,
+											unit=int(charge_type["unit"]),
+											num=num,
+											unit_num=unit_num,
+											market_price=market_price,
+											select_num=select_num,
+											relate=relate)
+							self.session.add(charge_types)
+							
+				if "del_charge_types" in data:
+					for _id in data["del_charge_types"]:
+						try:
+							q = self.session.query(models.ChargeType).filter_by(id=_id)
+						except:
+							q = None
+						q.delete()
 
 				detail_describe = data["detail_describe"].replace("script","'/script/'")
 

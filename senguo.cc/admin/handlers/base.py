@@ -268,7 +268,7 @@ class GlobalBaseHandler(BaseHandler):
 		data = []
 		shop_id = self.current_shop.id
 		for d in datalist:
-			add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else ''
+			add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time else ''
 			delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
 			if d.img_url:
 				img_url= d.img_url.split(";")
@@ -304,7 +304,7 @@ class GlobalBaseHandler(BaseHandler):
 	def getGoodsOne(self,d):
 		data = {}
 		shop_id = self.current_shop.id
-		add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else ''
+		add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time else ''
 		delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
 		if d.img_url:
 			img_url= d.img_url.split(";")
@@ -323,7 +323,7 @@ class GlobalBaseHandler(BaseHandler):
 
 		charge_types = []
 		for charge in d.charge_types:
-			market_price ="" if not charge.market_price else charge.market_price
+			market_price ="" if charge.market_price == None else charge.market_price
 			unit = charge.unit
 			unit_name = self.getUnit(unit)
 			charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\

@@ -1,21 +1,20 @@
 {% extends 'goods-set-base.html' %}
 {% block setcontent %}
 <div class="wrap-classify">
-    <p class="c333 mt10 choose-text">添加新商品/选择商品分类</p>
-    <div class="subnav-box clearfix">
+    <div class="subnav-box clearfix mt30">
         <ul class="subnav pull-left furit-type">
             <li class="text-center s-fruit active" data-type="fruit"><a href="javascript:;">水果</a></li>
             <li class="text-center s-dryfruit" data-type="ganguo"><a href="javascript:;">干果</a></li>
             <li class="text-center s-other" data-type="other"><a href="javascript:;">其它</a></li>
         </ul>
         <div class="search-input input-group pull-right classify-input">
-            <input type="text" value="" placeholder="搜索商品分类" class="search-con form-control" id="search-classify"/>
+            <input type="text" value="" placeholder="搜索商品类目" class="search-con form-control" id="search-classify"/>
             <input type="submit" value="" class="search-btn form-control fruit-search"/>
         </div>
     </div>
     <div class="wrap-fruit-select">
         <div class="fruit-select">
-            <div class="cate-title mt2">水果分类排列方式 : </div>
+            <div class="cate-title mt2">水果类目排列方式 : </div>
             <div class="dropdown slide-down-select pull-left w130 mt2 ml5">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
                     <em title="{{current_shop.shop_name}}" class="pull-left select-now" id="9">颜色</em>
