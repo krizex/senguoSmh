@@ -9,14 +9,19 @@ $(document).ready(function(){
         }
     }
     else{
-         initLocation();
-           var city_id = $("#city_id").val();
-        if(city_id){
-            window.dataObj.action='filter';
-            window.dataObj.type='city';
-            filter(city_id);
+        var q = decodeURIComponent(decodeURIComponent($.getUrlParam('q')));
+        if(q){
+            Search(q);
         }else{
-            filter();
+            initLocation();
+            var city_id = $("#city_id").val();
+            if(city_id){
+                window.dataObj.action='filter';
+                window.dataObj.type='city';
+                filter(city_id);
+            }else{
+                filter();
+            }
         }
     }
     scrollLoading();
@@ -229,7 +234,6 @@ function remove_bg(){
 }
 
 var shopItem=function (shops){
-    var shop_item=window.dataObj.shop_item;
     var $item = '<li class="item bg-white">'+
                             '<a href="{{link}}" class="shop_link">'+
                             '<div class="shop-status {{statu}}"></div>'+
@@ -401,19 +405,18 @@ var scrollLoading=function(){
     }); 
 }   
 
-function Search(evt,page){
-    evt.preventDefault();
+function Search(q){
     window.dataObj.page=1;
-    var q=$('#searchKey').val().trim();
+    var q=q;
+    window.dataObj.action = "search";
     var action="search";
     var url="";
-    if(!page){page=1}
+    var page = window.dataObj.page;
     var args={
         q:q,
         action:action,
         page:page
     }
-    if(!q){return noticeBox('请输入店铺名！')}
     $.postJson(url,args,
         function(res){
             if(res.success)
@@ -421,15 +424,14 @@ function Search(evt,page){
                 $('.shoplist').empty();
                  var shops=res.shops;
                  nomore = res.nomore;
-                if(res.shops==''){
-                    $('.shoplist').empty();
+                if(shops.length==0){
                     window.dataObj.maxnum=1;
                     $('.shoplist').append('<h4 class="text-center mt10 text-grey">无搜索结果！</h4>');
                  }
                 else {
                     window.dataObj.action='search';
                     window.dataObj.data=q;
-                    shopItem(shops,q);  
+                    shopItem(shops);
                 }
             }
             else return noticeBox(res.error_text);
@@ -466,7 +468,6 @@ function filter(data){
             window.dataObj.type=='province'
         }
     }
-    /*if(!data){return noticeBox('选择城市！')}*/
     $.postJson(url,args,
         function(res){
             if(res.success)
@@ -485,7 +486,7 @@ function filter(data){
                 else {
                       window.dataObj.action='filter';
                       window.dataObj.data=Int(data);
-                     shopItem(shops,data); 
+                     shopItem(shops);
                 }
                 $(".wrap-loading-box").addClass("hidden");
             }else{
