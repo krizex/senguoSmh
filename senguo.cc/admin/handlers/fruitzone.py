@@ -152,7 +152,8 @@ class ShopList(FruitzoneBaseHandler):
 
 		if "service_area" in self.args:
 			service_area = int(self.args['service_area'])
-			q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
+			if service_area != 0:
+				q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
 			# q = q.filter_by(shop_service_area = service_area)
 		
 		if "city" in self.args:
