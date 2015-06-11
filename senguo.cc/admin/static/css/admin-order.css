@@ -10,7 +10,7 @@
 .order-list-action{margin:10px 0;}
 .order-list-action .select-box{border:1px solid #ccc;}
 .order-list-action .select-all{margin-top:2px;margin-left:5px;}
-.order-list-item{margin-bottom:5px;position:relative;padding-top:10px;border:1px solid #fafafa;}
+.order-list-item{margin-bottom:5px;position:relative;padding-top:10px;border:1px solid #f9f9f9;}
 .order-list-item:hover{background:#f2f2f2;cursor:pointer;border-color:#f2f2f2;}
 .order-list-item:hover .custom-order{background:#fff;}
 
@@ -98,7 +98,7 @@
 .collapse-btn a img{width:25px;}
 
 .order-list-item .input-group-btn{display:inline-block;}
-.order-list-item .dropdown-toggle{border:1px solid #fafafa;font-size:12px;padding:0;}
+.order-list-item .dropdown-toggle{border:1px solid #e7e7eb;font-size:12px;padding:0;}
 .order-list-item .input-group-btn .caret{padding:0 !important;}
 .order-list-item .dropdown-menu{font-size:12px;margin-top:-1px;}
 .order-list-item .dropdown-menu li a{padding:5px 20px;}
