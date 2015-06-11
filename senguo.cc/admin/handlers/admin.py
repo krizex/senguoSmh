@@ -1779,7 +1779,7 @@ class Goods(AdminBaseHandler):
 						else:
 							select_num = 1
 						if charge_type["market_price"] and charge_type["market_price"] !='':
-							market_price = round(float(charge_type["market_price"],2))
+							market_price = round(float(charge_type["market_price"]),2)
 						else:
 							market_price = None
 						if charge_type["price"] and charge_type["price"] !='':
