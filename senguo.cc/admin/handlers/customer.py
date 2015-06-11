@@ -1276,11 +1276,12 @@ class Cart(CustomerBaseHandler):
 						time_now = datetime.datetime.now().strftime('%Y-%m-%d')
 						create_time = limit_if.create_time.strftime('%Y-%m-%d')
 						if time_now == create_time:
+							buy_num = limit_if.buy_num+buy_num
 							if limit_if.limit_num == limit_num:
-								allow_num = limit_if.allow_num-buy_num
+								allow_num = limit_if.limit_num-buy_num
 							else:
-								allow_num = limit_num-limit_if.buy_num-buy_num
-								if allow_num <0:
+								allow_num = limit_num-buy_num
+								if allow_num <=0:
 									return self.send_fail("限购商品"+charge_type.fruit.name+"购买数量已达上限")
 							goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
 							self.session.add(goods_limit)
