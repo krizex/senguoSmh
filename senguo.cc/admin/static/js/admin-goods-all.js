@@ -1,4 +1,4 @@
-var goods_list=null,curItem=null,curPrice=null,curEditor="",goodsEdit = false,cur_code="",aLis=[],aPos=[],zIndex= 1,pn= 0,editor=null,_type,_sub_type,isSearch=false;
+var goods_list=null,curItem=null,curPrice=null,curEditor="",goodsEdit = false,cur_code="",aLis=[],aPos=[],zIndex= 1,pn= 0,editor=null,_type,_sub_type,isSearch=false,del_list=[];
 $(document).ready(function(){
     $(document).on("click",function(e){
         if($(e.target).closest(".sw-er-tip").size()==0){
@@ -300,7 +300,11 @@ $(document).ready(function(){
     $item.find(".stock-unit").html(current_unit);
     $(this).closest("p").before($item);
 }).on("click",".del-price-type",function(){//删除售价方式
+    var id=$(this).parents('.wrap-add-price').attr('data-id');
     $(this).closest(".wrap-add-price").remove();
+    if(id){
+        del_list.push(id);
+    }
 }).on('click','.furit-type li',function(){/*水果分类*/
     var $this=$(this);
     $this.addClass('active').siblings('li').removeClass('active');
@@ -549,6 +553,7 @@ function dealGoods($item,type){
     };
     if(type == "edit"){
         data.goods_id=$item.attr("data-id");
+        data.del_charge_types=del_list;
     }
     var args = {data:data};
     if(type=="edit"){
@@ -561,6 +566,7 @@ function dealGoods($item,type){
             if(type == "add"){
                 Tip("新商品添加成功");
                 goodsEdit = false;
+                del_list =[];
                 setTimeout(function(){
                     window.location.href="/admin/goods/all?&page=0";
                 },1200);
