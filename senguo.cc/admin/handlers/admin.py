@@ -1839,6 +1839,7 @@ class Goods(AdminBaseHandler):
 						)
 				_data = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).one()
 				data = self.getGoodsOne(_data)
+				print('------------',data)
 				return self.send_success(data=data)
 
 			elif action == "default_goods_img":  # 恢复默认图
