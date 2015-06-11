@@ -323,7 +323,7 @@ class GlobalBaseHandler(BaseHandler):
 
 		charge_types = []
 		for charge in d.charge_types:
-			market_price ="" if charge.market_price != None else charge.market_price
+			market_price ="" if charge.market_price == None else charge.market_price
 			unit = charge.unit
 			unit_name = self.getUnit(unit)
 			charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
