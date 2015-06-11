@@ -565,7 +565,7 @@ var fruitItem=function(box,fruits,type){
             $charge_item.find('.num').text(num);
             $charge_item.find('.chargeUnit').text(unit);
             if(market_price>0){
-               $charge_item.find('.market-price').text(market_price); 
+               $charge_item.find('.market-price').text(market_price+'元'); 
             }
             else{
                 $charge_item.find('.market').hide();
@@ -587,7 +587,7 @@ var fruitItem=function(box,fruits,type){
             $charge_item.find('.num').text(num);
             $charge_item.find('.chargeUnit').text(unit);
             if(market_price>0){
-               $charge_item.find('.market-price').text(market_price); 
+               $charge_item.find('.market-price').text(market_price+'元'); 
             }
             else{
                 $charge_item.find('.market').hide();
