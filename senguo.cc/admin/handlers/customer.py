@@ -1044,15 +1044,18 @@ class Market(CustomerBaseHandler):
 
 		# fruits = self.session.query(models.Fruit).outerjoin(models.GroupPriority,models.Fruit.shop_id == models.GroupPriority.shop_id\
 		# 	).filter(models.Fruit.shop_id == shop_id,models.Fruit.active == 1).order_by(models.GroupPriority.priority)
-
-		fruits = self.session.query(models.Fruit).outerjoin(models.Shop,models.Fruit.shop_id == models.Shop.id,\
-			).outerjoin(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id).filter(models.Fruit.shop_id == shop_id,\
-			models.Fruit.active == 1).order_by(models.GroupPriority.group_id,models.Fruit.priority.desc(),models.Fruit.add_time.desc())
+		fruit_only = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active =1)
+		group_only = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id)
+		print(fruit_only.count(), group_only.count(),'fruit_only')
+		fruits = self.session.query(models.Fruit).join(models.Shop,models.Fruit.shop_id == models.Shop.id,\
+			).join(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id).filter(models.Fruit.shop_id == shop_id,\
+			models.Fruit.active == 1,models.Fruit.id !=None).order_by(models.GroupPriority.group_id,models.Fruit.priority.desc(),\
+			models.Fruit.add_time.desc()).distinct(models.Fruit.id)
 
 		print(fruits.count(),'dddddddddddddddddd',shop.shop_code)
 		
-		#for fruit in fruits:
-		#	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
+		for fruit in fruits:
+			print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
 		count_fruit =fruits.distinct().count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		print(count_fruit , total_page)
