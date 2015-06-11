@@ -740,7 +740,7 @@ function orderSubmit(target){
                         window.location.href=res.success_url;
                         //window.location.href="/customer/orders/detail/"+res.order_id;
                     }else{
-                        // window.location.href=window.dataObj.success_href; 
+                        window.location.href=window.dataObj.success_href; 
                     }
                  }
                  else{
