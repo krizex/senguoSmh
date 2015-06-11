@@ -1762,7 +1762,10 @@ class Goods(AdminBaseHandler):
 							if val == i:
 								imgurl = img_list[index]
 								img_urls.append(imgurl)
-							_img_urls = ";".join(img_urls)
+							if img_urls:
+								_img_urls = ";".join(img_urls)
+							else:
+								_img_urls = None
 
 				if "charge_types" in data:
 					try:
