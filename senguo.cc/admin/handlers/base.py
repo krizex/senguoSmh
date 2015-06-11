@@ -834,8 +834,10 @@ class CustomerBaseHandler(_AccountBaseHandler):
 			return True
 		return False
 	def get_login_url(self):
-		return self.get_wexin_oauth_link(next_url=self.request.full_url())
-		#return self.reverse_url('customerLogin')
+		if self.is_wexin_browser():
+			return self.get_wexin_oauth_link(next_url=self.request.full_url())
+		else:
+			return self.reverse_url('customerLogin')
 
 	def _f(self, cart, menu, charge_type_id, inc):
 		d = eval(getattr(cart, menu))
