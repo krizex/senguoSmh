@@ -1062,8 +1062,8 @@ class Market(CustomerBaseHandler):
 		if total_page <= page:
 			nomore = True
 
-		#fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
-		fruits = fruits.all()
+		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
+		# fruits = fruits.all()
 		print('分页后')
 		for fruit in fruits:
 			print(fruit.id,fruit.group_id)
@@ -1071,7 +1071,7 @@ class Market(CustomerBaseHandler):
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
 		print('最后返回数据')
 		print(fruits_data)
-		nomore = True
+		# nomore = True
 		return self.send_success(data = fruits_data,nomore=nomore)
 
 
