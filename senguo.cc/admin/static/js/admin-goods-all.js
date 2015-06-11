@@ -465,6 +465,7 @@ function dealGoods($item,type){
     var price_type = $item.find(".edit-item-right").children(".wrap-add-price");
     var price_list = [];
     var price_null = false;
+    var market_price_null = false;
     if(price_type.size()==0){
         return Tip("请至少添加一种售价方式");
     }else{
@@ -476,7 +477,6 @@ function dealGoods($item,type){
             var select_num = $(this).attr("data-second");
             var price = $(this).find(".current-price").val().trim();
             var market_price = $(this).find(".market-price").val().trim();
-            console.log(market_price);
             if(!testNum.test(num) || !testMoney.test(price)){
                 price_null = true;
             }
