@@ -1688,7 +1688,7 @@ class Goods(AdminBaseHandler):
 										unit=int(charge_type["unit"]),
 										num=format(num,'.2f'),
 										unit_num=unit_num,
-										market_price=format(market_price,'.2f'),
+										market_price=market_price,
 										select_num=select_num,
 										relate=relate))
 
@@ -1794,7 +1794,7 @@ class Goods(AdminBaseHandler):
 								 unit=charge_type["unit"],
 								 num=format(num,'.2f'),
 								 unit_num=unit_num,
-								 market_price=format(market_price,'.2f'),
+								 market_price=market_price,
 								 select_num=select_num,
 								 relate=relate
 								 )
