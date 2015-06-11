@@ -1688,7 +1688,7 @@ class Goods(AdminBaseHandler):
 										unit=int(charge_type["unit"]),
 										num=format(num,'.2f'),
 										unit_num=unit_num,
-										market_price=format(market_price,'.2f'),
+										market_price=market_price,
 										select_num=select_num,
 										relate=relate))
 
@@ -1823,6 +1823,7 @@ class Goods(AdminBaseHandler):
 						except:
 							q = None
 						q.delete()
+
 				detail_describe = data["detail_describe"].replace("script","'/script/'")
 
 				goods.update(session=self.session,
