@@ -38,6 +38,11 @@ $(document).ready(function(){
         var unit_num=parseFloat($this.parents("li").find('.number').text());
         var storage=parseFloat($this.attr("data-storage"));
         var change_num=relate*unit_num;
+        var buy_today=$this.parents('li').attr('data-buy');
+        var allow_num=parseInt($this.parents('li').attr('data-allow'));
+        if(buy_today=='True'&&allow_num<=0){
+            return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
+        }
         if(storage<change_num){
             return noticeBox("库存不足啦~~");
         }
@@ -67,10 +72,15 @@ $(document).ready(function(){
         var storage=parseFloat($this.parents("li").find('.now-buy').attr("data-storage"));
         var limit_num=parseInt($this.parents(".wrap-goods-detail").attr('data-limit'));
         var change_num=relate*unit_num*num;
+        var buy_today=$this.parents('li').attr('data-buy');
+        var allow_num=parseInt($this.parents('li').attr('data-allow'));
+        if(buy_today=='True'&&num>=allow_num){
+            return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
+        }
         if(storage<change_num){
             return noticeBox("库存不足啦~~");
         }
-        if(limit_num>0&&num==limit_num){
+        if(limit_num>0&&num>=limit_num){
             return noticeBox('当前商品最多只能买 '+limit_num+' 件哦！');
         }
         $this.parents("li").find('.now-buy').attr({"data-storage":storage-change_num})

@@ -1765,9 +1765,6 @@ class Goods(AdminBaseHandler):
 							_img_urls = ";".join(img_urls)
 
 				if "charge_types" in data:
-					charge_old = self.session.query(models.ChargeType).filter_by(fruit_id=int(data["goods_id"]))
-					charge_old.delete()
-					self.session.commit()
 					for charge_type in data["charge_types"]:
 						if charge_type["unit_num"] and charge_type["unit_num"] !='':
 							unit_num = int(charge_type["unit_num"])
@@ -1790,16 +1787,17 @@ class Goods(AdminBaseHandler):
 						else:
 							num = 0
 						relate = select_num/unit_num
-						charge_types = models.ChargeType(
-												fruit_id=int(data["goods_id"]),
-												price=format(price,'.2f'),
-												unit=int(charge_type["unit"]),
-												num=format(num,'.2f'),
-												unit_num=unit_num,
-												market_price=format(market_price,'.2f'),
-												select_num=select_num,
-												relate=relate)
-						self.session.add(charge_types)
+
+						try: q = self.session.query(models.ChargeType).filter_by(id=charge_type['id'])
+						except:return self.send_error(404)
+						q.one().update(session=self.session,price=format(price,'.2f'),
+								 unit=charge_type["unit"],
+								 num=format(num,'.2f'),
+								 unit_num=unit_num,
+								 market_price=format(market_price,'.2f'),
+								 select_num=select_num,
+								 relate=relate
+								 )
 
 				detail_describe = data["detail_describe"].replace("script","'/script/'")
 
