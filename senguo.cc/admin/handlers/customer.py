@@ -1532,7 +1532,7 @@ class CartCallback(CustomerBaseHandler):
 				WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,\
 					customer_name,order_totalPrice,send_time,goods,phone,address)
 			# send message to customer
-		 	WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
+			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
 
 
 		####################################################
