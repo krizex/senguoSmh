@@ -1682,11 +1682,6 @@ class Order(CustomerBaseHandler):
 			page = self.args['page']
 			offset = (page - 1) * page_size
 			orders = [x for x in self.current_user.orders if x.status == 1 or x.status == -1]
-			# print(len(orders),'未处理订单 数量')
-			# woody
-			# for order in orders:
-			# 	order.send_time = order.get_sendtime(session,order.id)
-
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
@@ -1696,17 +1691,12 @@ class Order(CustomerBaseHandler):
 				orders = orders[offset:]
 			else:
 				return self.send_fail("暂无订单")
-			# print('orders',orders)
 			orders = self.get_orderData(session,orders)
-			# print('after ',orders)
 			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "waiting":
 			page = self.args["page"]
 			offset = (page - 1) * page_size
 			orders = [x for x in self.current_user.orders if x.status in (2, 3, 4)]
-			# print(len(orders),'待收货状态订单')
-			# for order in orders:
-			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
@@ -1736,12 +1726,7 @@ class Order(CustomerBaseHandler):
 			for x in orderlist:
 				if x.status == 5:
 					order5.append(x)
-				#if x.status == 6:
-				#	order6.append(x)
 			orders = order5 + order6
-			# print(len(orders),'已完成订单数量')
-			# for order in orders:
-			# 	order.send_time = order.get_sendtime(session,order.id)
 			total_count = len(orders)
 			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
 			if offset + page_size <= total_count:
@@ -1756,13 +1741,9 @@ class Order(CustomerBaseHandler):
 			page = self.args["page"]
 			offset = (page - 1) * page_size
 			orders = self.current_user.orders
-			# print(len(orders),'所有订单数量')
 			session = self.session
-			# for order in orders:
-			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time,reverse = True)
 			total_count = len(orders)
-			# print(total_count)
 			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
 			if offset + page_size <= total_count:
 				orders = orders[offset:offset + page_size]
@@ -1918,13 +1899,6 @@ class OrderDetail(CustomerBaseHandler):
 			online_type = order.online_type
 		else:
 			online_type = None
-		
-
-		###################################################################
-		# time's format
-		# woody
-		# 3.9
-		###################################################################
 		staff_id = order.SH2_id
 		staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id).first()
 		if staff_info is not None:
@@ -2057,8 +2031,6 @@ class Balance(CustomerBaseHandler):
 			data = history[offset:]
 		else:
 			nomore = True
-			# print("history page error")
-		# print("data\n",data)
 
 		return self.send_success(data = data,nomore=nomore)
 
