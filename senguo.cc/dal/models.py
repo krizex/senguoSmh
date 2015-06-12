@@ -30,9 +30,11 @@ class POINT_TYPE:
 	SERIES_SIGNIN = 4 # +5
 	PREPARE_PAY= 5  # +2
 	FAVOUR     = 6 # +1
-	COMMENT    = 7 # +5
+	COMMENT    = 7 # +2
 	FIRST_ORDER= 8 # +5
 	BING_PHONE = 9
+	COMMENTIMG = 10 #+2
+	SHOP_FULLPOINT = 11 #+2
 
 class SHOP_SERVICE_AREA:
 	"""服务区域, 使用方法：HIGH_SCHOOL | COMMUNITY，实现多选"""

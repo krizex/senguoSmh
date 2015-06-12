@@ -73,6 +73,8 @@ var getList=function(page,action){
                 else if(type==7) {type='评价';}
                 else if(type==8) {type='首次下单';}
                 else if(type==9) {type='绑定手机号';}
+                else if(type==10) {type='评价晒图';}
+                else if(type==11) {type='店铺评分三项满分';}
                 var list_item =render({
                       type:type,
                       time:time,

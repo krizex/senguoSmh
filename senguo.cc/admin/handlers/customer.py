@@ -1840,7 +1840,29 @@ class Order(CustomerBaseHandler):
 			order.commodity_quality = int(data["commodity_quality"])
 			order.send_speed        = int(data["send_speed"])
 			order.shop_service      = int(data["shop_service"])
+			notice =''
+			if int(data["commodity_quality"])==100 and int(data["send_speed"])==100 and int(data["shop_service"])==100:
+				try:
+					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
+						order.customer_id,shop_id = order.shop_id).first()
+				except :
+					shop_follow = None
+					self.send_fail("shop_point error")
 
+				if shop_follow:
+					if shop_follow.shop_point:
+						shop_follow.shop_point += 2
+					try:
+						point_history = models.PointHistory(customer_id = self.current_user.id , shop_id = order.shop_id)
+					except:
+						self.send_fail("point_history error:COMMENT")
+					if point_history:
+						point_history.point_type = models.POINT_TYPE.SHOP_FULLPOINT
+						point_history.each_point = 2
+						notice = '店铺评价满分，积分+2'
+						self.session.add(point_history)
+			self.session.commit()
+			return self.send_success(notice=notice)
 			# customer_id = self.current_user.id
 			# shop_id     = self.get_cookie("market_shop_id")
 
@@ -1890,17 +1912,26 @@ class Order(CustomerBaseHandler):
 
 				if shop_follow:
 					if shop_follow.shop_point:
-						shop_follow.shop_point += 5
+						shop_follow.shop_point += 2
+						if imgUrl:
+							shop_follow.shop_point += 2
 					try:
 						point_history = models.PointHistory(customer_id = self.current_user.id , shop_id = order.shop_id)
 					except:
 						self.send_fail("point_history error:COMMENT")
 					if point_history:
 						point_history.point_type = models.POINT_TYPE.COMMENT
-						point_history.each_point = 5
-						notice = '评论成功，积分+5'
+						point_history.each_point = 2
+						notice = '评论成功，积分+2'
 						self.session.add(point_history)
 						self.session.commit()
+						if imgUrl:
+							point_history.point_type = models.POINT_TYPE.COMMENTIMG
+							point_history.each_point = 2
+							notice = '评论成功，积分+2,评论晒图，积分+2'
+							self.session.add(point_history)
+							self.session.commit()
+
 			self.session.commit()
 			return self.send_success(notice=notice)
 
