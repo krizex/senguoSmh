@@ -466,7 +466,7 @@ var goodsList=function(page,action){
         cartNum(c_fs,'.fruit-list');
         window.dataObj.count++;
         window.dataObj.finished=true;
-        $(".wrap-loading-box").addClass("hidden");
+        $(".wrap-loading-box").remove();
     }
 };
 
