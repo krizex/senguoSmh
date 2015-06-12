@@ -32,7 +32,7 @@ $(document).ready(function(){
     pn = pn+1;
     getGoodsItem();
 }).on("click",".jump-to",function(){
-    var num = $(".input-page").val();
+    var num = $(this).closest("ul").find(".input-page").val();
     var total = $(".page-total").html();
     if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>(parseInt(total)-1)){
         return Tip("页码格式不对或者数字超出页码范围");
@@ -41,7 +41,7 @@ $(document).ready(function(){
     getGoodsItem();
 }).on("keyup",".input-page",function(e){
     if(e.keyCode==13){
-        var num = $(".input-page").val();
+        var num = $(this).closest("ul").find(".input-page").val();
         var total = $(".page-total").html();
         if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>(parseInt(total)-1)){
             return Tip("页码格式不对或者数字超出页码范围");
