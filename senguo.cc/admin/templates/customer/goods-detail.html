@@ -37,7 +37,7 @@
         <p class="goods-title">{{good.name or ''}}</p>
         <p class="goods-info">{{good.intro or ''}}</p>
         <p class="goods-num">
-            <span id="dianzan" data-flag="{{good.favour_today}}" data-id="{{good.id}}"><span class="zan {% if good.favour_today %}zaned{% end %}"></span>{{good.favour or 0}}</span>
+            <span id="dianzan" data-flag="{{good.favour_today}}" data-id="{{good.id}}"><span class="zan {% if good.favour_today %}zaned{% end %}"></span><span class="num">{{good.favour or 0}}</span></span>
             <span>&nbsp;销量 {{good.saled or 0}}</span>
         </p>
     </div>

@@ -163,7 +163,8 @@ function great(id,$this){
     };
     $.postJson(url,args,function(res){
             if(res.success){
-                $this.attr("data-flag","True").find("span").addClass("zaned").html(parseInt($this.html())+1);
+                $this.attr("data-flag","True").find(".zan").addClass("zaned");
+                $this.attr("data-flag","True").find(".num").html(parseInt($this.html())+1);
             }
             else noticeBox(res.error_text);
         },
