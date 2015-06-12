@@ -866,7 +866,6 @@ class Market(CustomerBaseHandler):
 		if not shop:
 			return self.send_error(404)
 		self.current_shop = shop
-		print(self.current_shop)
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
@@ -1013,10 +1012,14 @@ class Market(CustomerBaseHandler):
 
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 				saled = fruit.saled if fruit.saled else 0
+				if img_url ==None or len(fruit.img_url.split(";"))==1 and fruit.detail_describe ==None:
+					detail_no = True
+				else:
+					detail_no = False
 
 				data.append({'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,\
 					'storage':fruit.storage,'tag':fruit.tag,'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':saled,'favour':fruit.favour,\
-					'favour_today':favour_today,'group_id':fruit.group_id,'limit_num':fruit.limit_num})
+					'favour_today':favour_today,'group_id':fruit.group_id,'limit_num':fruit.limit_num,'detail_no':detail_no})
 			return data
 
 	@CustomerBaseHandler.check_arguments("page?:int","group_id?:int")
@@ -1046,7 +1049,6 @@ class Market(CustomerBaseHandler):
 		import urllib
 		page = int(self.args["page"])
 		name = urllib.parse.unquote(self.args['search'])
-		print(name)
 		page_size = 10
 		nomore = False
 		offset = (page-1) * page_size
@@ -1085,23 +1087,23 @@ class Market(CustomerBaseHandler):
 		# 	).filter(models.Fruit.shop_id == shop_id,models.Fruit.active == 1).order_by(models.GroupPriority.priority)
 		fruit_only = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active =1)
 		group_only = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id)
-		print(fruit_only.count(), group_only.count(),'fruit_only')
+		# print(fruit_only.count(), group_only.count(),'fruit_only')
 		fruits = self.session.query(models.Fruit).join(models.Shop,models.Fruit.shop_id == models.Shop.id,\
 			).join(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id).filter(models.Fruit.shop_id == shop_id,\
 			models.Fruit.active == 1,models.Fruit.id !=None).order_by(models.GroupPriority.group_id,models.Fruit.priority.desc(),\
-			models.Fruit.add_time.desc()).distinct(models.Fruit.id)
+			models.Fruit.add_time.desc()).distinct(models.Fruit.id).all()
 
 		
-		for fruit in fruits:
-			print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
-		count_fruit =fruits.distinct().count()
-		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		# print(count_fruit , total_page)
-		if total_page <= page:
-			nomore = True
+		# for fruit in fruits:
+		# 	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
+		# count_fruit =fruits.distinct().count()
+		# total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
+		# # print(count_fruit , total_page)
+		# if total_page <= page:
+		# 	nomore = True
+		nomore = True
 
-
-		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
+		# fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruits_data,nomore=nomore)
 
@@ -1836,7 +1838,29 @@ class Order(CustomerBaseHandler):
 			order.commodity_quality = int(data["commodity_quality"])
 			order.send_speed        = int(data["send_speed"])
 			order.shop_service      = int(data["shop_service"])
+			notice =''
+			if int(data["commodity_quality"])==100 and int(data["send_speed"])==100 and int(data["shop_service"])==100:
+				try:
+					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
+						order.customer_id,shop_id = order.shop_id).first()
+				except :
+					shop_follow = None
+					self.send_fail("shop_point error")
 
+				if shop_follow:
+					if shop_follow.shop_point:
+						shop_follow.shop_point += 2
+					try:
+						point_history = models.PointHistory(customer_id = self.current_user.id , shop_id = order.shop_id)
+					except:
+						self.send_fail("point_history error:COMMENT")
+					if point_history:
+						point_history.point_type = models.POINT_TYPE.SHOP_FULLPOINT
+						point_history.each_point = 2
+						notice = '店铺评价满分，积分+2'
+						self.session.add(point_history)
+			self.session.commit()
+			return self.send_success(notice=notice)
 			# customer_id = self.current_user.id
 			# shop_id     = self.get_cookie("market_shop_id")
 
@@ -1886,17 +1910,26 @@ class Order(CustomerBaseHandler):
 
 				if shop_follow:
 					if shop_follow.shop_point:
-						shop_follow.shop_point += 5
+						shop_follow.shop_point += 2
+						if imgUrl:
+							shop_follow.shop_point += 2
 					try:
 						point_history = models.PointHistory(customer_id = self.current_user.id , shop_id = order.shop_id)
 					except:
 						self.send_fail("point_history error:COMMENT")
 					if point_history:
 						point_history.point_type = models.POINT_TYPE.COMMENT
-						point_history.each_point = 5
-						notice = '评论成功，积分+5'
+						point_history.each_point = 2
+						notice = '评论成功，积分+2'
 						self.session.add(point_history)
 						self.session.commit()
+						if imgUrl:
+							point_history.point_type = models.POINT_TYPE.COMMENTIMG
+							point_history.each_point = 2
+							notice = '评论成功，积分+2,评论晒图，积分+2'
+							self.session.add(point_history)
+							self.session.commit()
+
 			self.session.commit()
 			return self.send_success(notice=notice)
 

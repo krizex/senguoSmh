@@ -194,7 +194,25 @@ $(document).ready(function(){
     var $this=$(this);
     var status=$this.attr('data-id');
     var text =$this.text();
-    $('#shop_status').attr({'data-id':status}).text(text);
+    var url="";
+    var action='shop_status';
+    var data={shop_status:status};
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success)
+            {
+                    $('#shop_status').text(text).attr({'data-id':status});
+            }
+            else  Tip(res.error_text);
+        },
+        function(){
+            Tip('网络好像不给力呢~ ( >O< ) ~！');}
+    );
+
 });
 //初始化百度地图
 function initBmap(){

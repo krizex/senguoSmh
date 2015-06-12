@@ -68,34 +68,19 @@ $(document).ready(function(){
         //分类滚动监听
         if($(window).scrollTop()>top){
             //$(".notice-box").hide();
+            $('.classify-list').addClass('fix-top2');
             $('.top-title').addClass('fix-top');
+            
             //$(".wrap-goods-box").height($(window).height()-50);
         }else{
             //$(".notice-box").show();
+            $('.classify-list').removeClass('fix-top2');
             $('.top-title').removeClass('fix-top');
+            
             //$(".wrap-goods-box").height($(window).height()-50-$(".wrap-notice-box").height());
         }
         //s_top = $(".wrap-goods-box").scrollTop();
     });
-
-    //all numer of page
-    // var fruit_pages=Int($('#fruit_page').val());
-    // var dry_pages=Int($('#dry_page').val());
-    // var pages_count=Int($('#page_count').val());
-    // //if type of mgoods doesn't exit then hide the mgoods button
-    // var m_pages=window.dataObj.mgoods_page;
-    // for(var i=0;i<m_pages.length;i++){
-    //     var page=m_pages[i][0];
-    //     var menu_id=m_pages[i][1];
-    //     if(!page) $('.menu_classify'+menu_id).hide();
-    // }
-    // //if fruit or dry_fruit doesn't exit
-    // if(!fruit_pages) {
-    //     $('#dryFruitPosition').hide();
-    //     if(!dry_pages) {
-    //         $('.menu_title').first().hide();
-    //     }
-    // }
     //分类显示
     var top_title=$('.top-title');
     //get infomations of goods and push into html
@@ -124,10 +109,6 @@ $(document).ready(function(){
         window.dataObj.fruits[cart_fs[key][0]]=cart_fs[key][1];
         fruits_num();
     }
-    // for(var key in cart_ms) {
-    //     window.dataObj.mgoods[cart_ms[key][0]]=cart_ms[key][1];
-    //     mgoods_num();
-    // }
 }).on('click','.notice-item',function(){
         //公告详情
         var $this=$(this);
@@ -135,18 +116,19 @@ $(document).ready(function(){
         var detail_box=new Modal('detail_box');
         detail_box.modal('show');
         $('.detail-box').find('.detail').text(detail);
-    }).on('click','.goods-list-item',function(e){
-        var $this=$(this);
-        var storage=parseInt($this.attr('data-storage'));
-        var id=$this.attr('data-id');
-        var shop_code=$('#shop_code').val();
-        if (storage != 0) {
-            if($(e.target).closest(".forbid_click").size()==0){
-                addCart("/"+shop_code+"/goods/"+id);
-            }
-        }else{
-            return noticeBox("当前商品已经卖完啦");
+}).on('click','.goods-list-item',function(e){
+    var $this=$(this);
+    var storage=parseInt($this.attr('data-num'));
+    var detail_no=$this.attr('data-detail');
+    var id=$this.attr('data-id');
+    var shop_code=$('#shop_code').val();
+    if (storage > 0 && detail_no=='false') {
+        if($(e.target).closest(".forbid_click").size()==0){
+            addCart("/"+shop_code+"/goods/"+id);
         }
+    }else if(storage<=0){
+        return noticeBox("当前商品已经卖完啦");
+    }
 }).on('click','.check-lg-img',function(){
     //查看大图
     var $this=$(this);
@@ -183,36 +165,40 @@ $(document).ready(function(){
 }).on('click','.focus-btn',function(){
     //关注店铺
     focus();
-}).on('click','.goods-class-choose li',function(){
-    //分类选择
-    var $this=$(this);
-    var text=$this.text();
-    $('#classify').text(text).siblings('.up').toggle().siblings('.down').toggle();
-    $('.classify-title').addClass('hidden');
-    $('.goods-list').empty();
-    var group_id=$this.attr('data-id');
-    if(group_id!=-2){
-        window.dataObj.page=1;
-        window.dataObj.action=6;
-        _group_id = group_id;
-        goodsList(1,6);
-    }
-    else{
-        window.dataObj.page=1;
-        window.dataObj.action=5;
-        goodsList(1,5);
-    }
-    // var top=$('#'+g_class+'').offset().top;
-    // $('.choose-classify .icon').toggle();
-    // var w_height=$('#'+g_class+'').height();
-    // document.body.scrollTop =top-3*w_height;
-    //top_title.find('.classify').text(text);
+}).on('click','.classify-icon',function(){
+    $('.classify-list').toggle();
 }).on('click','.choose-classify',function(){
     var $this=$(this);
     $this.find('.icon').toggle();
     $('.goods-class-choose').toggle();
-}).on('click','.goods-class-choose li',function(){
-    $('.goods-class-choose').hide();
+}).on('click','.classify-list li',function(){
+    $('.classify-list').toggle();
+    var $this=$(this);
+    var text=$this.text();
+    $('#classify').text(text);
+    var group_id=Number($this.attr('data-id'));
+    var top=$('.classify-'+group_id).offset().top;
+    if(group_id==-1){
+        top=$('.goods-list--1').offset().top-40;
+    }
+    $(window).scrollTop(top);
+    // $('.classify-title').addClass('hidden');
+    // $('.goods-list').empty();
+    // if(group_id!=-2){
+    //     window.dataObj.page=1;
+    //     window.dataObj.action=6;
+    //     _group_id = group_id;
+    //     goodsList(1,6);
+    // }
+    // else{
+    //     window.dataObj.page=1;
+    //     window.dataObj.action=5;
+    //     goodsList(1,5);
+    // }
+}).on('click','body',function(e){
+    if($(e.target).closest('.to-hide').length == 0){
+        $('.classify-list').hide();
+    }
 }).on('click','#all_goods',function(){
     //get all goods
     $('.goods-list').empty();
@@ -251,7 +237,11 @@ $(document).ready(function(){
         return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
     }
     parent.attr({'data-storage':storage-change_num});
-    $this.siblings('.number-change').find('.number-input').val(0);
+    if(storage==1){
+       $this.siblings('.number-change').find('.number-input').val(1); 
+    }else{
+        $this.siblings('.number-change').find('.number-input').val(0);
+    }
     if(storage>0) {
         pulse($this.siblings('.number-change').find('.number-plus'));
         goodsNum($this.siblings('.number-change').find('.number-plus'),2);
@@ -356,14 +346,12 @@ $(document).ready(function(){
                     storage_origin=storage_origin-storage;
                     for(var i=0;i<num_item.length;i++){
                         storage_now=storage_origin-num_item.eq(i).val();
-                        //console.log(storage_now);
                     }
                 }
                 else {
                     storage_now=0;
                 };
                 parent.attr({'data-storage':storage_now});
-                //console.log(233333);
                 if(storage_now<num) {return noticeBox('只有这么多了哦！┑(￣▽ ￣)┍',$this);}
             }
         }
@@ -371,7 +359,6 @@ $(document).ready(function(){
             $this.val(num);
             storage_now=storage_now-num;
             parent.attr({'data-storage':storage_now});
-            //console.log(24444444);
         }
     }
     else if(num>=999) {
@@ -379,14 +366,12 @@ $(document).ready(function(){
         else parent.attr({'data-storage':0});
         if(storage<999) {
             $this.val(Int(storage_now));
-            //console.log(25555555);
             return noticeBox('只有这么多了哦！┑(￣▽ ￣)┍',$this);
         }
         else {
             $this.val(999);
             storage_now=storage_now-999;
             parent.attr({'data-storage':storage_now});
-            //console.log(266666);
             return noticeBox('最多只能添加999哦！┑(￣▽ ￣)┍',$this);
         }
     }
@@ -454,23 +439,22 @@ var goodsList=function(page,action){
             if(res.success)
             {
                 nomore = res.nomore
-                if(nomore == true){
-                    if(action==9){
-                        $('.loading').html("~没有更多结果了 ( > < )~").show();
-                    }else{
-                        $('.loading').html("~没有更多商品了呢 ( > < )~").show();
-                    }
-                }
+                // if(nomore == true){
+                //     if(action==9){
+                //         $('.loading').html("~没有更多结果了 ( > < )~").show();
+                //     }else{
+                //         $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+                //     }
+                // }
                 //get item dom
                 if(window.dataObj.goods_item==undefined){
-                    getItem('/static/items/customer/market-goods-item.html?v=20150609',function(data){
+                    getItem('/static/items/customer/market-goods-item.html?v=20150612',function(data){
                         window.dataObj.goods_item=data;
-                        getItem('/static/items/customer/charge-item.html?v=20150615',function(data){
+                        getItem('/static/items/customer/charge-item.html?v=20150612',function(data){
                             window.dataObj.charge_item=data;
                             getItem('/static/items/customer/classify_item.html?v=20150609',function(data){
                                 window.dataObj.classify_item=data;
                                 initData(res.data);
-
                             });
                         });
                     });
@@ -520,8 +504,9 @@ var fruitItem=function(box,fruits,type){
     var charge_types=fruits['charge_types'];
     var favour_today=fruits['favour_today'];
     var limit_num=fruits['limit_num'];
+    var detail_no=fruits['detail_no'];
     if(!code) code='TDSG';
-    $item.attr({'data-id':id,'data-type':type,'data-storage':storage,'data-num':storage,'data-favour':favour_today,'data-limit':limit_num}).addClass(code);
+    $item.attr({'data-id':id,'data-type':type,'data-storage':storage,'data-num':storage,'data-favour':favour_today,'data-limit':limit_num,'data-detail':detail_no}).addClass(code);
     $item.find('.fruit_intro').val(intro);
     $item.find('.fruit-name').text(name);
     if(saled>9999) $item.find('.number').text('9999+');
@@ -559,7 +544,6 @@ var fruitItem=function(box,fruits,type){
             var market_price=charge_types[0]['market_price'];
             var limit_today =charge_types[0]['limit_today'];
             var allow_num=charge_types[0]['allow_num'];
-            console.log(allow_num);
             $charge_item.attr({'data-id':id,'data-relate':relate,'data-buy':limit_today,'data-allow':allow_num});
             $charge_item.find('.price').text(price);
             $charge_item.find('.num').text(num);
@@ -581,7 +565,6 @@ var fruitItem=function(box,fruits,type){
             var market_price=charge_types[key]['market_price'];
             var limit_today =charge_types[key]['limit_today'];
             var allow_num=charge_types[key]['allow_num'];
-             console.log(allow_num);
             $charge_item.attr({'data-id':id,'data-relate':relate,'data-buy':limit_today,'data-allow':allow_num}).addClass('more_charge');
             $charge_item.find('.price').text(price);
             $charge_item.find('.num').text(num);

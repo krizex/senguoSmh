@@ -1,6 +1,6 @@
 body{color: #999;font-size: 14px;}
 input{border: 1px solid #e7e7eb;height: 26px;color: #333;text-align: center;width: 45px;outline: none;text-indent: 0;}
-textarea{border-color:#eee;text-indent: 5px;}
+textarea{border-color:#eee;padding: 2px 5px;}
 .add-btn{width: 116px;display:inline-block;margin-left:20px;font-size: 14px;color: #fff;text-align: center;height: 28px;line-height: 28px;background-color: #52b43f;border-radius: 2px;}
 .wrap-all-goods{margin-top: 15px;}
 .wrap-classify{font-size: 14px;}
