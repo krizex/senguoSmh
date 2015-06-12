@@ -328,7 +328,7 @@ $(document).ready(function(){
     if(confirm("确认删除该商品？")){
         var $obj = $(this).closest(".goods-all-item");
         var id = $obj.attr("data-id");
-        delGoods(id);
+        delGoods(id,$obj);
     }
 }).on("click",".ok-unit-box",function(){//确认单位换算
     var firstNum = $("#first_num").val().trim();
@@ -353,20 +353,22 @@ $(document).ready(function(){
     if(pn==0){
         return Tip("当前已经是第一页");
     }
+    pn = pn-1;
     if(isSearch){
-        getGoodsItem("goods_search",pn--,"",$("#goods-all-ipt").val());
+        getGoodsItem("goods_search",pn,"",$("#goods-all-ipt").val());
     }else{
-        getGoodsItem("all",pn--);
+        getGoodsItem("all",pn);
     }
 }).on("click",".next-page",function(){//下一页
     var total = $(".page-total").html();
     if(pn==parseInt(total)-1){
         return Tip("当前已经是最后一页");
     }
+    pn = pn+1;
     if(isSearch){
-        getGoodsItem("goods_search",pn++,"",$("#goods-all-ipt").val());
+        getGoodsItem("goods_search",pn,"",$("#goods-all-ipt").val());
     }else{
-        getGoodsItem("all",pn++);
+        getGoodsItem("all",pn);
     }
 }).on("click",".jump-to",function(){
     var num = $(".input-page").val();
@@ -774,7 +776,7 @@ function batchGoods(type){
     });
 }
 //删除商品
-function delGoods(id){
+function delGoods(id, $obj){
     var url="";
     var args={
         action:'delete_goods',
@@ -785,9 +787,12 @@ function delGoods(id){
     $.postJson(url,args,function(res) {
         if (res.success) {
             Tip("商品删除成功");
-            setTimeout(function(){
+            $obj.slideUp(200);
+            /*setTimeout(function(){
                 window.location.reload(true);
-            },2000);
+            },2000);*/
+        }else{
+            Tip(res.error_text);
         }
     });
 }
@@ -852,6 +857,7 @@ function getGoodsItem(action,page,type_id,value){
     var order_status1 = $(".order_status1").attr("data-id");
     var order_status2 = $(".order_status2").attr("data-id");
     var filter_status2 = $(".filter_status2").attr("data-id");
+    pn = page;
     if(action=="classify"){
         url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&type=classify&sub_type="+type_id+"&page="+pn;
     }else if(action=="goods_search"){
@@ -867,11 +873,11 @@ function getGoodsItem(action,page,type_id,value){
                 goods_list = res.data;
                 var data = res.data;
                 $(".goods-all-list").empty();
+                $(".page-now").html(pn+1);
                 if(data.length==0){
                     $(".goods-all-list").append("<p>没有查询到任何商品</p>");
                 }else{
                     $(".page-total").html(res.count);
-                    $(".page-now").html(pn+1);
                     insertGoods(data);
                 }
                 $(".wrap-loading-box").addClass("hidden");

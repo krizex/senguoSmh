@@ -24,12 +24,13 @@
     <header>
         {% block header %}{% end %}
     </header>
+    {% block setcontent %}
     <div class="container">
         {% block content %}{% end %}
     </div>
+    {% end %}
 <script type="text/javascript" src="/static/m-admin/js/zepto.min.js"></script>
 <script type="text/javascript" src="/static/m-admin/js/util.js"></script>
-<script type="text/javascript" src="/static/m-admin/js/shop-index.js"></script>
 {% block bottom %}{% end %}
 </body>
 </html> 
