@@ -866,7 +866,6 @@ class Market(CustomerBaseHandler):
 		if not shop:
 			return self.send_error(404)
 		self.current_shop = shop
-		print(self.current_shop)
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
@@ -1050,7 +1049,6 @@ class Market(CustomerBaseHandler):
 		import urllib
 		page = int(self.args["page"])
 		name = urllib.parse.unquote(self.args['search'])
-		print(name)
 		page_size = 10
 		nomore = False
 		offset = (page-1) * page_size
@@ -1093,19 +1091,19 @@ class Market(CustomerBaseHandler):
 		fruits = self.session.query(models.Fruit).join(models.Shop,models.Fruit.shop_id == models.Shop.id,\
 			).join(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id).filter(models.Fruit.shop_id == shop_id,\
 			models.Fruit.active == 1,models.Fruit.id !=None).order_by(models.GroupPriority.group_id,models.Fruit.priority.desc(),\
-			models.Fruit.add_time.desc()).distinct(models.Fruit.id)
+			models.Fruit.add_time.desc()).distinct(models.Fruit.id).all()
 
 		
 		# for fruit in fruits:
 		# 	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
-		count_fruit =fruits.distinct().count()
-		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		# print(count_fruit , total_page)
-		if total_page <= page:
-			nomore = True
+		# count_fruit =fruits.distinct().count()
+		# total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
+		# # print(count_fruit , total_page)
+		# if total_page <= page:
+		# 	nomore = True
+		nomore = True
 
-
-		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
+		# fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruits_data,nomore=nomore)
 
