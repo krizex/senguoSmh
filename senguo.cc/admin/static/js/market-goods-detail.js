@@ -164,6 +164,10 @@ function great(id,$this){
                 $this.attr("data-flag","True").find(".zan").addClass("zaned");
                 $this.attr("data-flag","True").find(".num").html(parseInt($this.find(".num").html())+1);
             }
+            if(res.notice)
+            {
+                noticeBox(res.notice);
+            }
             else noticeBox(res.error_text);
         },
         function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
