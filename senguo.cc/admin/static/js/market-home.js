@@ -1,4 +1,26 @@
 $(document).ready(function(){
+    //分类显示
+    var top_title=$('.top-title');
+    //get infomations of goods and push into html
+    var link_group=$.getUrlParam("group");
+    var link_search=$.getUrlParam("search");
+    if(link_group!= null){
+        window.dataObj.page=1;
+        window.dataObj.action=6;
+        _group_id = parseInt(link_group);
+        goodsList(1,6);
+    }
+    else if(link_search != null){
+        window.dataObj.page=1;
+        window.dataObj.action=9;
+        _search = link_search;
+        goodsList(1,9);
+        $('#classify').text('搜索结果');
+        $('.wrap-goods-box').css('margin-top','40px');
+    }else{
+         goodsList(1,5); 
+    }
+    scrollLoading();
     var shop_logo=$('#shop_imgurl').attr('data-img');
     if(parseInt($("#shop_status").val())==3){
         modalNotice("店铺休息中，暂不接收新订单");
@@ -46,36 +68,16 @@ $(document).ready(function(){
             //$(".wrap-goods-box").height($(window).height()-50-$(".wrap-notice-box").height());
         }
         //s_top = $(".wrap-goods-box").scrollTop();
+        if(link_search == null){
          //分类滚动监听
-        var box=$('.classify-title');
-        for(var i=0;i<box.length;i++){
-            var dist=box[i].offsetTop;
-            var classify=box[i].innerHTML;
-            if($(window).scrollTop()>=dist){$('#classify').text(classify);}
-        }
+            var box=$('.classify-title');
+            for(var i=0;i<box.length;i++){
+                var dist=box[i].offsetTop;
+                var classify=box[i].innerHTML;
+                if($(window).scrollTop()>=dist){$('#classify').text(classify);}
+            }
+         }
     });
-    //分类显示
-    var top_title=$('.top-title');
-    //get infomations of goods and push into html
-    var link_group=$.getUrlParam("group");
-    var link_search=$.getUrlParam("search");
-    if(link_group!= null){
-        window.dataObj.page=1;
-        window.dataObj.action=6;
-        _group_id = parseInt(link_group);
-        goodsList(1,6);
-    }
-    else if(link_search != null){
-        window.dataObj.page=1;
-        window.dataObj.action=9;
-        _search = link_search;
-        goodsList(1,9);
-        $('#classify').text('搜索结果');
-        $('.wrap-goods-box').css('margin-top','40px');
-    }else{
-         goodsList(1,5); 
-    }
-    scrollLoading();
     //已在购物车里的商品
     var cart_fs=window.dataObj.cart_fs;
     // var cart_ms=window.dataObj.cart_ms;
