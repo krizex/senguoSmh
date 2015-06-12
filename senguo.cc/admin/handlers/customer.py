@@ -1032,7 +1032,7 @@ class Market(CustomerBaseHandler):
 		if not shop:
 			return self.send_error(404)
 		
-		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1).order_by(models.Fruit.add_time.desc())
+		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1).order_by(models.Fruit.priority.desc(),models.Fruit.add_time.desc())
 		count_fruit = fruits.count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		if total_page <= page:
