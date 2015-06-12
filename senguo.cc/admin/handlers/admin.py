@@ -196,7 +196,7 @@ class SwitchShop(AdminBaseHandler):
 				shop.total_money = format(total_money,'.2f')
 			else:		
 				shop.total_money=0
-			shop.address = self.code_to_text("shop_city", self.current_shop.shop_city) +" " + self.current_shop.shop_address_detail
+			shop.address = self.code_to_text("shop_city",shop.shop_city) +" " + shop.shop_address_detail
 			shop_list.append(shop.safe_props())
 		return shop_list
 
