@@ -72,7 +72,7 @@ $(document).ready(function(){
          //分类滚动监听
             var box=$('.classify-title');
             for(var i=0;i<box.length;i++){
-                var dist=box[i].offsetTop;
+                var dist=box[i].offsetTop-40;
                 var classify=box[i].innerHTML;
                 if($(window).scrollTop()>=dist){$('#classify').text(classify);}
             }
