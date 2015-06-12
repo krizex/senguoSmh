@@ -404,6 +404,7 @@ var scrollLoading=function(){
     });
 }
 var goodsList=function(page,action){
+    $(".wrap-loading-box").removeClass("hidden");
     var url='';
     var action = action;
     var args={
@@ -441,9 +442,11 @@ var goodsList=function(page,action){
                         $('.loading').html("~没有更多商品了呢 ( > < )~").show();
                     }
                 }
+                $(".wrap-loading-box").addClass("hidden");
             }
             else {
                 noticeBox(res.error_text);
+                $(".wrap-loading-box").addClass("hidden");
             }
         },
         function(){noticeBox('网络好像不给力呢~ ( >O< ) ~');},
