@@ -28,7 +28,7 @@
     </ul>
 </div>
 <div class="order-list-box">
-    <ul class="order-lists pt10">
+    <ul class="order-lists pt10" id="order-lists">
         <li>
             <p class="order-time item">下单时间 : 2015-11-20 15:22:30</p>
             <ul class="order-content">
@@ -89,7 +89,40 @@
                             </a>
                         </div>
                         <div class="order-status-txt" style="left:100%;">
-                            <span class="#c333">配送中</span><a class="" href="tel:15002787394">拨号</a>
+                            <span class="#c333">配送中</span><a class="" href="tel:">拨号</a>
+                        </div>
+                    </div>
+                </div>
+            </ul>
+        </li>
+        <li>
+            <p class="order-time item">下单时间 : 2015-11-20 15:22:30</p>
+            <ul class="order-content">
+                <li>
+                    <p>
+                        <span class="fr money item"><span class="red-txt">44.55</span>元(到付)</span>
+                        <span>NO.55554444</span>
+                    </p>
+                </li>
+                <li>
+                    <p class="item time">2015-11-20 15:22:30</p>
+                </li>
+                <li>
+                    <p class="item loc">湖北省武汉市洪山区珞瑜路888号</p>
+                </li>
+                <li>
+                    <p class="item say red-txt">留言留言留言留言留言留言</p>
+                </li>
+                <div class="order-grade">
+                    <div class="order-line">
+                        <div class="order-line-grade" style="width:100%;"></div>
+                        <div class="order-wawa" style="left:100%;">
+                            <a class="img-border" href="javascript:;">
+                                <img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="配送员头像">
+                            </a>
+                        </div>
+                        <div class="order-status-txt" style="left:100%;">
+                            <span class="#c333">配送中</span><a class="" href="tel:">拨号</a>
                         </div>
                     </div>
                 </div>
@@ -103,11 +136,11 @@
         <div class="pop-staff-box">
             <p class="title">分配员工</p>
             <ul class="staff-list">
-                <li class="active">
+                <li class="active" data-tel="15555555555">
                     <span class="img-border mr10"><img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="员工头像"/></span>
                     <span>马大灰||东二区、西三区所有</span>
                 </li>
-                <li>
+                <li data-tel="15555550000">
                     <span class="img-border mr10"><img src="/static/images/TDSG.png" alt="员工头像"/></span>
                     <span>马大灰||东二区、西三区所有</span>
                 </li>
@@ -116,6 +149,16 @@
                 确认并设为处理中
             </p>
         </div>
+    </div>
+</div>
+<div class="wrap-loading-box">
+    <div class="loading-box">
+        <div class="loader">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+        <div class="load-txt">加载中...</div>
     </div>
 </div>
 {% end %}
