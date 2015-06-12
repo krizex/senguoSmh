@@ -287,7 +287,7 @@ class GlobalBaseHandler(BaseHandler):
 
 			charge_types = []
 			for charge in d.charge_types:
-				market_price ="" if not charge.market_price else charge.market_price
+				market_price ="" if charge.market_price == None else charge.market_price
 				unit = charge.unit
 				unit_name = self.getUnit(unit)
 				charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
@@ -323,7 +323,7 @@ class GlobalBaseHandler(BaseHandler):
 
 		charge_types = []
 		for charge in d.charge_types:
-			market_price ="" if not charge.market_price else charge.market_price
+			market_price ="" if charge.market_price == None else charge.market_price
 			unit = charge.unit
 			unit_name = self.getUnit(unit)
 			charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
@@ -834,8 +834,10 @@ class CustomerBaseHandler(_AccountBaseHandler):
 			return True
 		return False
 	def get_login_url(self):
-		return self.get_wexin_oauth_link(next_url=self.request.full_url())
-		#return self.reverse_url('customerLogin')
+		if self.is_wexin_browser():
+			return self.get_wexin_oauth_link(next_url=self.request.full_url())
+		else:
+			return self.reverse_url('customerLogin')
 
 	def _f(self, cart, menu, charge_type_id, inc):
 		d = eval(getattr(cart, menu))

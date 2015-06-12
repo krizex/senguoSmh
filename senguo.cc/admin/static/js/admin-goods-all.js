@@ -331,8 +331,8 @@ $(document).ready(function(){
         delGoods(id);
     }
 }).on("click",".ok-unit-box",function(){//确认单位换算
-    var firstNum = $("#first_num").val();
-    var secondNum = $("#second_num").val();
+    var firstNum = $("#first_num").val().trim();
+    var secondNum = $("#second_num").val().trim();
     if(isNaN(firstNum) || isNaN(secondNum)){
         Tip("请填入整数，不能含有小数点");
         return false;
@@ -443,7 +443,7 @@ function dealGoods($item,type){
     var group_id = $item.find(".current-group").attr("data-id");
     var storage = $item.find(".stock-num").val().trim();
     var unit = $item.find(".current-unit").attr("data-id");
-    if(name.length>12 || $.trim(name)==""){
+    if(name.length>12 || name==""){
         return Tip("商品名称不能为空且不能超过12个字");
     }
     if(!testNum.test(storage)){
@@ -490,7 +490,7 @@ function dealGoods($item,type){
             var select_num = $(this).attr("data-second");
             var price = $(this).find(".current-price").val().trim();
             var market_price = $(this).find(".market-price").val().trim();
-            if(!testNum.test(num) || !testMoney.test(price)){
+            if(!testMoney.test(num) || !testMoney.test(price)){
                 price_null = true;
             }
             if(!testMoney.test(market_price) && market_price!=""){
@@ -669,7 +669,7 @@ function finishEditGoods($item,data){
     if(goods.charge_types.length>0){
         for(var j=0; j<goods.charge_types.length; j++){
             var good = goods.charge_types[j];
-            if(good.market_price){
+            if(good.market_price !== ""){
                 var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+good.unit_name+'</span></span><span class="mr10">市场价 : <span class="">'+good.market_price+'元</span></span></p>';
             }else{
                 var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+good.unit_name+'</span></span><span class="mr10">市场价 : <span class="">未设置</span></span></p>';
@@ -909,7 +909,7 @@ function insertGoods(data){
         if(goods.charge_types.length>0){
             for(var j=0; j<goods.charge_types.length; j++){
                 var good = goods.charge_types[j];
-                if(good.market_price){
+                if(good.market_price !== ""){
                     var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+good.unit_name+'</span></span><span class="mr10">市场价 : <span class="">'+good.market_price+'元</span></span></p>';
                 }else{
                     var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+good.unit_name+'</span></span><span class="mr10">市场价 : <span class="">未设置</span></span></p>'; 

@@ -50,6 +50,7 @@ handlers = [
 	(r"/customer/wxBind", handlers.customer.WxBind, {"action":"wx_bind"}, "customerwxBind"),
 	(r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
 	(r"/customer/discover/(\w+)",handlers.customer.Discover,{},"customerDiscover"),
+	(r"/customer/storagechange",handlers.customer.StorageChange),
 
 	#商品详情
 	(r"/customer/goods/(\w+)",handlers.customer.customerGoods,{},"customerGoods"),
