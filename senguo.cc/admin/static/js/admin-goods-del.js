@@ -22,17 +22,17 @@ $(document).ready(function(){
     if(pn==0){
         return Tip("当前已经是第一页");
     }
-    pn--;
+    pn = pn-1;
     getGoodsItem();
 }).on("click",".next-page",function(){//下一页
     var total = $(".page-total").html();
-    if(pn==parseInt(total)){
+    if(pn==parseInt(total)-1){
         return Tip("当前已经是最后一页");
     }
-    pn++;
+    pn = pn+1;
     getGoodsItem();
 }).on("click",".jump-to",function(){
-    var num = $(".input-page").val();
+    var num = $(this).closest("ul").find(".input-page").val();
     var total = $(".page-total").html();
     if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>(parseInt(total)-1)){
         return Tip("页码格式不对或者数字超出页码范围");
@@ -41,7 +41,7 @@ $(document).ready(function(){
     getGoodsItem();
 }).on("keyup",".input-page",function(e){
     if(e.keyCode==13){
-        var num = $(".input-page").val();
+        var num = $(this).closest("ul").find(".input-page").val();
         var total = $(".page-total").html();
         if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>(parseInt(total)-1)){
             return Tip("页码格式不对或者数字超出页码范围");

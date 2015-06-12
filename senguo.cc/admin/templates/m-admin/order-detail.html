@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}订单详情{% end %}
+{% block head %}
+<link rel="stylesheet" type="text/css" href="/static/css/fruit-color.css">
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back">返回</a>
+    <span>订单详情</span>
+</div>
+{% end %}
+{% block content %}
+<div class="order-detail-box">
+    <div class="order-grade">
+        <div class="order-line">
+            <div class="order-line-grade"></div>
+            <div class="order-wawa">
+                <a class="img-border" href="javascript:;">
+                    <img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="配送员头像">
+                </a>
+            </div>
+            <div class="order-status-txt">
+                <a class="" href="javascript:;">分配员工</a>
+            </div>
+        </div>
+    </div>
+    <div class="order-item pt10">
+        <p class="text-black">订单编号：<span class="order-id" data-id="77">1000076</span></p>
+        <p>下单时间：<span>2015-06-07 16:49:59</span></p>
+        <p>收货人：<span>zhoubing</span><span class="user-box">用户：<a href="javascript:;">用户昵称</a></span></p>
+        <p>联系电话：<span>15002787394</span><a class="ml10" href="tel:15002787394">拨号</a></p>
+        <p>收货地址：<span>sdfsdfsdf</span></p>
+        <p>配送时间：<span class="send_date m-r10" style="display: none;">今天</span><span>2015-06-07 17:30~18:00</span></p>
+        <p>订单备注：<span>无</span></p>
+        <p class="text-black">支付方式：<span class="">货到付款</span></p>
+    </div>
+    <div class="order-item">
+        <h4 class="top-title"><span class="black-txt">周兵的店铺</span><span class="arr-right"></span></h4>
+        <ul class="goods-lst">
+            <li class="group Lz">
+                <dl class="goods-item dl">
+                    <dt>
+                        <img src="/static/design_img/TDSG.png" alt="商品图片">
+                    </dt>
+                    <dd class="bg">
+                        <p class="color">好吃的荔枝</p>
+                        <p class="color txt-ar"><span class="big">2</span>x<span>1</span>&nbsp;&nbsp;小计：<span>110.0</span>元</p>
+                        <p class="color">55.00元/1.0 斤</p>
+                    </dd>
+                </dl>
+            </li>
+            <li class="group banli">
+                <dl class="goods-item dl">
+                    <dt>
+                        <img src="/static/design_img/TDSG.png" alt="商品图片">
+                    </dt>
+                    <dd class="bg">
+                        <p class="color">打板栗</p>
+                        <p class="color txt-ar"><span>7</span>x<span>1</span>&nbsp;&nbsp;小计：<span>84.0</span>元</p>
+                        <p class="color">12.00元/2.0 斤</p>
+                    </dd>
+                </dl>
+            </li>
+        </ul>
+        <p>商品总价<span class="fr"><span class="red-txt">194.0元</span></span></p>
+        <p>配送费<span class="fr"><span class="red-txt">0元</span></span></p>
+        <p class="dash-bt group"><span class="fr c000">应付款：<span class="red-txt">194.0元</span></span></p>
+    </div>
+</div>
+<div class="wrap-bm-btn" id="nav">
+    <a class="fr red-btn" href="javascript:;" data-id="77" >完成配送</a>
+    <a class="fr white-btn" href="javascript:;" data-id="77">取消订单</a>
+</div>
+<div class="pop-win pop-staff hide">
+    <div class="pop-content">
+        <div class="pop-staff-box">
+            <p class="title">分配员工</p>
+            <ul class="staff-list">
+                <li class="active">
+                    <span class="img-border mr10"><img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="员工头像"/></span>
+                    <span>马大灰||东二区、西三区所有</span>
+                </li>
+                <li>
+                    <span class="img-border mr10"><img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="员工头像"/></span>
+                    <span>马大灰||东二区、西三区所有</span>
+                </li>
+            </ul>
+            <p class="btn-box sure-staff">
+                确认并设为处理中
+            </p>
+        </div>
+    </div>
+</div>
+{% end %}
