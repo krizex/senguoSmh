@@ -125,7 +125,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .img-cover .loader-quart {border-radius: 50%; border: 4px solid rgba(255, 255, 255, 0.4);}
 .loader-quart:after {content: '';position: absolute;top: -4px;right: -4px;bottom: -4px;left: -4px;border-radius: 50%;border: 4px solid transparent; border-top-color: #fff;-webkit-animation: spin .8s linear infinite;animation: spin .8s linear infinite;}
 /*评价详情*/
-.point-show{background-color: #f5f7f5;padding: 10px 20px;}
+.point-show{background-color: #f5f7f5;padding: 10px 20px;height: 96px;transition: height 1s 0.5s;}
 .point-left{width: 50px;}
 .mt12{margin-top: 12px;}
 .point-name{position: relative;}
