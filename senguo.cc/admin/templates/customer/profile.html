@@ -153,6 +153,8 @@
     <a class="back-btn clearfix b-radius0 mt20" href="{{reverse_url('customerLogout')}}">退出登录</a>
     <p class="copy-right">powered by senguo.cc</p>
 </div>
+{% end %}
+{% block bottom %}
 <div class="modal fade tie-popbox" id="tieBox">
     <div class="modal-dialog anim-bounceIn">
         <div class="modal-content">
@@ -284,8 +286,6 @@
         </div>
     </div>
 </div>
-{% end %}
-{% block bottom %}
 <script src="{{static_url('js/sha256.js')}}"></script>
 <script src="{{static_url('js/market-profile.js')}}"></script>
 {% end %}

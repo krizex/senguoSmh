@@ -110,6 +110,7 @@
 <input type="hidden" value="{{order.create_date.month}}" class="create_month"/>
 <input type="hidden" value="{{order.create_date.day}}" class="create_day"/>
 <input type="hidden" value="{{order.today}}" class="send_day"/>
+{% end %}
 <div class="modal fade comment-box" id="pointsBox">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -133,7 +134,6 @@
         </div>
     </div>
 </div>
-{% end %}
 {% block bottom %}
 <script src="{{static_url('js/third/baguetteBox.min.js')}}"></script>
 <script src="{{static_url('js/market-order-detail.js')}}"></script>
