@@ -35,7 +35,7 @@ background-size:140px 180px;}
 .height40{height:40px;}
 li:last-child{border-bottom:0px;}
 .user-comment .comment-item:last-child{border-bottom:0px;}
-.cert-type{color: #fff;font-size: 10px;border-radius: 8px;background-color: #7cc066;width: 55px;height: 15px;line-height: 15px;display: inline-block;margin-left: 10px;text-align: center;}
+.cert-type{color: #fff;font-size: 10px;border-radius: 8px;background-color: #7cc066;width: 55px;height: 15px;line-height: 15px;display: inline-block;margin-left: 10px;text-align: center;vertical-align: text-bottom;}
 .shop-name{vertical-align: middle;}
 .per-txt{font-size: 12px;color: #7fde9e;}
 .num-txt{font-size: 12px;color: #999;}
