@@ -209,7 +209,7 @@ handlers = [
 	
 	(r"/madmin/order", handlers.Madmin.Order, {}, "MadminOrder"),
 	(r"/madmin/orderDetail", handlers.Madmin.OrderDetail, {}, "MadminOrderDetail"),
-	(r"/madmin/center", handlers.Madmin.Center, {}, "MadminCenter"),
+	(r"/madmin/shopProfile", handlers.Madmin.ShopProfile, {}, "MadminCenter"),
 	
 	# (r"/staff/...")
 

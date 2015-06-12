@@ -87,7 +87,7 @@ function removeDom(){
 function statusText(n){
     switch (n){
         case -1:
-            $("#status-txt").text('未付款');
+            $("#status-txt").text('未支付');
             $(".order-wawa").css("left","0");
             $(".order-line-grade").css("width","0");
             $(".order-status-txt").css("left","0");

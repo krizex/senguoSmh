@@ -1013,10 +1013,14 @@ class Market(CustomerBaseHandler):
 
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 				saled = fruit.saled if fruit.saled else 0
+				if img_url ==None or len(fruit.img_url.split(";"))==1 and fruit.detail_describe ==None:
+					detail_no = True
+				else:
+					detail_no = False
 
 				data.append({'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,\
 					'storage':fruit.storage,'tag':fruit.tag,'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':saled,'favour':fruit.favour,\
-					'favour_today':favour_today,'group_id':fruit.group_id,'limit_num':fruit.limit_num})
+					'favour_today':favour_today,'group_id':fruit.group_id,'limit_num':fruit.limit_num,'detail_no':detail_no})
 			return data
 
 	@CustomerBaseHandler.check_arguments("page?:int","group_id?:int")
@@ -1032,7 +1036,7 @@ class Market(CustomerBaseHandler):
 		if not shop:
 			return self.send_error(404)
 		
-		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1).order_by(models.Fruit.add_time.desc())
+		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1).order_by(models.Fruit.priority.desc(),models.Fruit.add_time.desc())
 		count_fruit = fruits.count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		if total_page <= page:
@@ -1085,15 +1089,15 @@ class Market(CustomerBaseHandler):
 		# 	).filter(models.Fruit.shop_id == shop_id,models.Fruit.active == 1).order_by(models.GroupPriority.priority)
 		fruit_only = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active =1)
 		group_only = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id)
-		print(fruit_only.count(), group_only.count(),'fruit_only')
+		# print(fruit_only.count(), group_only.count(),'fruit_only')
 		fruits = self.session.query(models.Fruit).join(models.Shop,models.Fruit.shop_id == models.Shop.id,\
 			).join(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id).filter(models.Fruit.shop_id == shop_id,\
 			models.Fruit.active == 1,models.Fruit.id !=None).order_by(models.GroupPriority.group_id,models.Fruit.priority.desc(),\
 			models.Fruit.add_time.desc()).distinct(models.Fruit.id)
 
 		
-		for fruit in fruits:
-			print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
+		# for fruit in fruits:
+		# 	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
 		count_fruit =fruits.distinct().count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		# print(count_fruit , total_page)

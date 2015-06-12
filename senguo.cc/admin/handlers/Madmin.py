@@ -22,7 +22,7 @@ class OrderDetail(AdminBaseHandler):
 	def get(self):
 		return self.render("m-admin/order-detail.html")
 
-class Center(AdminBaseHandler):
+class ShopProfile(AdminBaseHandler):
 	# @tornado.web.authenticated
 	def get(self):
-		return self.render("m-admin/center.html")
+		return self.render("m-admin/shop-profile.html")
