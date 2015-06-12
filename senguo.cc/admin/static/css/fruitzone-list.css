@@ -12,7 +12,8 @@
 .filter_search  .search-box{position: absolute;height: 40px;top: 0;left: 0;background-color: #fff;z-index: 888;width: 100%;padding-left: 10px;padding-top: 5px;display: none;}
 .filter_search .search-input{width:88%;height:30px;border:none;background:#f4f4f4;border-radius:20px;text-indent:10px;}
 .filter_search  .btn{padding:0px;background:#fff;width:12%;display:inline-block;line-height:30px;}
-.search-linput{width: 80%;position: absolute;height: 26px;border: none;background-color: rgba(105,154,113,.9);font-size:14px;color: #fff;border-radius: 26px;padding: 0 15px;right: 42px;top:7px;}
+.search-linput{width: calc(100% - 80px);position: absolute;height: 30px;line-height: 30px;border: none;background-color: rgba(105,154,113,.35);font-size:14px;color: #fff;border-radius: 30px;padding: 0 15px;right: 42px;top:5px;}
+.search-linput::-webkit-input-placeholder {color:#fff};
 .c-list{position: absolute;top: 34px;right: 0;width: 120px;margin-right:-22px;background-color: #fff;border: 1px solid #d9d9d9;display: none;}
 .com-list{margin-right: -14px;}
 .c-list>li{height: 35px;line-height: 35px;text-align: center;color: #666;font-size: 14px;cursor: pointer;display: block;border-bottom: 1px solid #d9d9d9;}
