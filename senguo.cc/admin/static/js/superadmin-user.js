@@ -1,6 +1,6 @@
 $(document).ready(function(){
     $.ajaxSetup({'async':false});
-    $.getItem(item_link+'/user-item.html?v=20150609',function(data){item=data;});
+    $.getItem(item_link+'/user-item.html?v=20150613',function(data){item=data;});
     getContent('all',0);
     classify($('.all'),'all');
     classify($('.admin'),'admin');
