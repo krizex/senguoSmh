@@ -46,6 +46,7 @@ $(document).ready(function(){
         if(storage<change_num){
             return noticeBox("库存不足啦~~");
         }
+        $this.attr("data-storage",storage-change_num);
         var _this = $(this);
         if(_this.hasClass("r70")) return false;
         $(this).addClass("r70");

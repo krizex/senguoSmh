@@ -144,7 +144,7 @@ $(document).ready(function(){
             if($(e.target).closest(".forbid_click").size()==0){
                 addCart("/"+shop_code+"/goods/"+id);
             }
-        }else{
+        }else if(storage<0){
             return noticeBox("当前商品已经卖完啦");
         }
 }).on('click','.check-lg-img',function(){
@@ -251,7 +251,11 @@ $(document).ready(function(){
         return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
     }
     parent.attr({'data-storage':storage-change_num});
-    $this.siblings('.number-change').find('.number-input').val(0);
+    if(storage==1){
+       $this.siblings('.number-change').find('.number-input').val(1); 
+    }else{
+        $this.siblings('.number-change').find('.number-input').val(0);
+    }
     if(storage>0) {
         pulse($this.siblings('.number-change').find('.number-plus'));
         goodsNum($this.siblings('.number-change').find('.number-plus'),2);
