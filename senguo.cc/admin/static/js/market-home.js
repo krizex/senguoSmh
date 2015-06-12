@@ -442,7 +442,6 @@ var goodsList=function(page,action){
                         $('.loading').html("~没有更多商品了呢 ( > < )~").show();
                     }
                 }
-                $(".wrap-loading-box").addClass("hidden");
             }
             else {
                 noticeBox(res.error_text);
@@ -467,6 +466,7 @@ var goodsList=function(page,action){
         cartNum(c_fs,'.fruit-list');
         window.dataObj.count++;
         window.dataObj.finished=true;
+        $(".wrap-loading-box").addClass("hidden");
     }
 };
 
