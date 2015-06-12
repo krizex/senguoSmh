@@ -20,6 +20,7 @@
      <p class="text-center mt10 text-grey9">当前没有任积分历史</p>
  </div>
 {% end %}
+{% block bottom %}
 <div class="modal fade comment-box" id="pointsBox">
     <div class="modal-dialog anim-bounceIn">
         <div class="modal-content">
@@ -49,4 +50,5 @@
         </div>
     </div>
 </div>
-{% block bottom %}<script src="{{static_url('js/market-points.js')}}"></script>{% end %}
+<script src="{{static_url('js/market-points.js')}}"></script>
+{% end %}

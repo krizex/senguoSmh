@@ -137,8 +137,8 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .percent-bar{background-color: #d2d3d2;border-radius: 14px;margin: 10px 0;height: 12px;}
 .percent-bar>span{display: block;width: 20%;height: 12px;border-radius: 14px;}
 .percent-bar .bar1{background-color: #f7cb86;transition: width 1s;}
-.percent-bar .bar2{background-color: #80de9e;transition: width 1s 0.2s;}
-.percent-bar .bar3{background-color: #5be8ef;transition: width 1s 0.4s;}
+.percent-bar .bar2{background-color: #80de9e;transition: width 1s 0.4s;}
+.percent-bar .bar3{background-color: #5be8ef;transition: width 1s 0.8s;}
 .point-com-lst{padding: 0 10px 10px 10px;}
 .point-com-lst>li{border-bottom: 1px solid #f2f2f2;padding: 10px 0;}
 .ccom-item{position: relative;}
