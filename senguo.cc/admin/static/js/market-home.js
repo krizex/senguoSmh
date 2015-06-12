@@ -18,9 +18,14 @@ $(document).ready(function(){
         $('#classify').text('搜索结果');
         $('.wrap-goods-box').css('margin-top','40px');
     }else{
-         goodsList(1,5); 
+         $('.classify-list li').each(function(){
+            var $this=$(this);
+            var id = Number($this.attr('data-id'));
+            _group_id = id;
+            goodsList(1,6); 
+         });    
     }
-    scrollLoading();
+    // scrollLoading();
     var shop_logo=$('#shop_imgurl').attr('data-img');
     if(parseInt($("#shop_status").val())==3){
         modalNotice("店铺休息中，暂不接收新订单");
@@ -453,9 +458,7 @@ var goodsList=function(page,action){
     var initData=function(data){
         var data=data;
         for(var key in data){
-            if(action==5){
-                $('.classify-'+data[key]['group_id']).removeClass('hidden');
-            }
+            $('.classify-'+data[key]['group_id']).removeClass('hidden');
             fruitItem($('.goods-list-'+data[key]['group_id']),data[key]);//fruits information
         }
         var fruits=window.dataObj.fruits;
