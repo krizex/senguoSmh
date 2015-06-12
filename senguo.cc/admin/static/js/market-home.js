@@ -138,9 +138,10 @@ $(document).ready(function(){
     }).on('click','.goods-list-item',function(e){
         var $this=$(this);
         var storage=parseInt($this.attr('data-storage'));
+        var detail_no=$this.attr('data-detail');
         var id=$this.attr('data-id');
         var shop_code=$('#shop_code').val();
-        if (storage != 0) {
+        if (storage != 0 && detail_no=='false') {
             if($(e.target).closest(".forbid_click").size()==0){
                 addCart("/"+shop_code+"/goods/"+id);
             }
@@ -524,8 +525,9 @@ var fruitItem=function(box,fruits,type){
     var charge_types=fruits['charge_types'];
     var favour_today=fruits['favour_today'];
     var limit_num=fruits['limit_num'];
+    var detail_no=fruits['detail_no'];
     if(!code) code='TDSG';
-    $item.attr({'data-id':id,'data-type':type,'data-storage':storage,'data-num':storage,'data-favour':favour_today,'data-limit':limit_num}).addClass(code);
+    $item.attr({'data-id':id,'data-type':type,'data-storage':storage,'data-num':storage,'data-favour':favour_today,'data-limit':limit_num,'data-detail':detail_no}).addClass(code);
     $item.find('.fruit_intro').val(intro);
     $item.find('.fruit-name').text(name);
     if(saled>9999) $item.find('.number').text('9999+');
