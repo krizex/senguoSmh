@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}森果手机端后台{% end %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,maximum-scale=1,minimum-scale=1,initial-scale=1,user-scalable=no">
+    <meta name="keywords" content="森果,水果商城,水果,O2O,森果登录,微信卖水果,水果系统,森果后台,微信商城运营,生鲜商城,线上水果">
+    <meta name="description" content="森果是帮助商家在微信上搭建微信商城的平台，提供店铺、商品、订单、消息和客户的管理模块，同时还提供丰富的营销应用和活动插件。">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="/static/m-admin/css/reset.css">
+    <link rel="stylesheet" type="text/css" href="/static/m-admin/css/main.css">
+    {% block head %}{% end %}
+    <script>
+        window.dataObj = {
+            _xsrf: "{{handler.xsrf_token}}"};
+    </script>
+</head>
+<body>
+    <header>
+        {% block header %}{% end %}
+    </header>
+    {% block setcontent %}
+    <div class="container">
+        {% block content %}{% end %}
+    </div>
+    {% end %}
+<script type="text/javascript" src="/static/m-admin/js/zepto.min.js"></script>
+<script type="text/javascript" src="/static/m-admin/js/util.js"></script>
+{% block bottom %}{% end %}
+</body>
+</html> 

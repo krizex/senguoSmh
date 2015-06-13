@@ -1,0 +1,30 @@
+{% extends 'detail-base.html' %}
+{% block title %}我的订单{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/market-order-list.css')}}"/>
+{% end %}
+{%block back%}{{reverse_url('customerHome',handler.shop_code)}}{% end %}
+{% block top %}我的订单{% end %}
+{% block content %}
+
+<ul class="order-nav text-center m-b0 clearfix font14 bg-white mt42">
+    <li data-action="all"><a href="{{reverse_url('customerOrder')}}?action=all">全部</a></li>
+    <li data-action="unhandled"><a href="{{reverse_url('customerOrder')}}?action=unhandled">未处理</a></li>
+    <li data-action="waiting"><a href="{{reverse_url('customerOrder')}}?action=waiting">待收货</a></li>
+    <li data-action="finish"><a href="{{reverse_url('customerOrder')}}?action=finish">未评价</a></li>
+    <!--<li data-action=""><a href="#">退款/售后</a></li>-->
+</ul>
+<h3 class="text-center set-w100-fle mt100 no_orders" style="display:none;">暂无订单ヾ(●´▽`●)ノ</h3>
+<div class="list-header clearfix" style="display:none;">
+    <img src="{{static_url('svg/left_corner@2x.png')}}" class="left-corner src_change"/>
+    <div class="set-w100-fle corner-box">
+        <span class="corner bg_change"></span>
+    </div>
+    <img src="{{static_url('svg/right_corner@2x.png')}}" class="right-corner src_change"/>
+</div>
+<ul class="order-list bg-white clearfix">
+</ul>
+<div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中 ( > < )~</div>
+<div class="no_more text-center text-grey9 font12 mt10" style="display:none">~没有更多订单了呢 ( > < )~</div>
+{% end %}
+{% block bottom %}<script src="{{static_url('js/market-order.js')}}"></script>{% end %}
