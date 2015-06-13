@@ -42,7 +42,7 @@ class Access(SuperBaseHandler):
 			return self.write("对不起，你不属于此系统用户，我们拒绝你的加入。")
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 
-		next_url = self.get_argument("next", self.reverse_url("superShopManage"))
+		next_url = self.get_argument("next", self.reverse_url("superShopManage")) + '?action=all_temp&search&shop_auth=2&shop_status=1&shop_sort_key=1&if_reverse=1&page=1&flag=1'
 		return self.redirect(next_url)
 
 class ShopAdminManage(SuperBaseHandler):
@@ -56,7 +56,7 @@ class ShopAdminManage(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("page?:int")
 	def get(self):
-		return self.redirect('/super/shopManage?action=all&search&shop_auth=2&shop_status=1&shop_sort_key=1&if_reverse=1&page=1&flag=1')
+		return self.redirect('/super/shopManage?action=all_temp&search&shop_auth=2&shop_status=1&shop_sort_key=1&if_reverse=1&page=1&flag=1')
 		offset = (self.args.get("page", 1)-1) * self._page_count
 		try:
 		    q = self.session.query(models.ShopAdmin)
