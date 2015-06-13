@@ -1,0 +1,37 @@
+.main-list {border-top: 1px solid #e7e7eb;padding-bottom:100px;}
+.header{margin-bottom:0px;}
+h4{margin-top:0px;margin-bottom:0px;}
+hr{margin:5px 0;}
+p{margin-bottom:5px;}
+
+.order-list-item{width:100%;text-align:left;position:relative;font-size:13px;}
+.order-list-item .toggle{display:block;}
+.order-list-item .button-box {position: absolute;right:10px;top:5px;}
+.order-list-item .clear-btn {width:90px;}
+.order-list-item span {margin-right: 8px;}
+.order-list-item .active {background-color: rgba(20, 200, 20, 0.1);}
+.order-list-item .not-started {color: #888;background-color: #f6f6f6;}
+.order-list-item #staff-msg {width: 90%;border:1px solid #ccc;padding:3px;margin-bottom:5px;}
+.order-list-item #staff-msg-accept {padding:3px 15px;}
+.order-list-item .title{padding-top:5px;}
+.order-list-item .content{padding:5px 10px;background:url('../images/arrow-down.gif') no-repeat 98% 90%;background-size:12px;}
+
+.update-hint {padding: 10px;}
+
+.status-bar-box{font-size:13px;margin:0 20px;margin-top:18px;margin-bottom:20px}
+.status-bar-box .circle-icon{width:14px;height:14px;border-radius:8px;padding:0;background-color:#00d681;position:absolute;margin-top:-5px;box-shadow:inset 0 -1px 5px #888}
+.status-bar-box .status-box{position:absolute;display:inline-block;color:#00d681;text-shadow:0 1px 1px #ececec;padding:15px 0;overflow:visible}
+.status-bar-box .status-box .status{position:relative;left:-42px;display:block;width:100px;text-align:center}
+.status-bar-box .status-bar{position:relative;width:95%;height:4px;background-color:#d9d9d9;border-radius:2px;box-shadow:inset 0 1px 2px #c3c3c3}
+.status-bar-box .status-bar .inner{height:4px;position:absolute;display:inline-block;background-color:#00d681;box-shadow:inset 0 -1px 2px #999}
+
+.status-bar-box .left0{left:0;}
+.status-bar-box .left50{left:50%;}
+.status-bar-box .left100{left:100%;}
+.status-bar-box .width0{width:0;}
+.status-bar-box .width50{width:50%;}
+.status-bar-box .width100{width:100%;}
+
+.remark-input{width:80%;padding:5px;}
+.arrive{background:#ccc !important;color:#fff !important;}
+.remark_notice{line-height:34px;font-size:12px;}

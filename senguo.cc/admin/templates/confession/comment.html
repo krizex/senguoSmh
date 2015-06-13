@@ -1,0 +1,46 @@
+{% extends 'base.html'%}
+{% block title %}{{shop_name}}-告白墙-评论详情{% end %}
+{% block head %}
+<style type="text/css">
+	.container{background:#fff;padding-bottom:0px;}
+</style>
+{% end %}
+{% block content %}
+ <header class="detail-header text-white center-block">
+    <a href="{{reverse_url('ConfessionHome',shop_code)}}" class="return-btn bg_change">&nbsp;</a>
+    <span class="title font16">告白墙-评论详情</span>
+</header>
+<div class="bg-white confess-info" data-code="{{shop_code}}" data-id="{{confess[0]['id']}}">
+	<div class="mt50 group info">
+		<div class="fl img">
+			<img src="{{confess[0]['imgurl'] or '/static/images/TDSG.png'}}">
+		</div>
+		<div class="fl other ml10">
+			<p class="font14 text-pink">{{confess[0]['user']}}</p>
+			<p class="mt5">{{confess[0]['time']}}</p>
+		</div>
+	</div>
+	<div class="confess group mt10">
+		{{confess[0]['confession']}}
+	</div>
+	<div class="group some-btn mt10">
+		<a href="javascript:;" class="fr comment-btn ml10 text-grey6"><i class="fl"></i><span class="num">{{confess[0]['comment']}}</span></a>
+		<a href="javascript:;" class="fr  great-btn text-grey6 great"><i class="fl"></i><span class="num">{{confess[0]['great']}}</span></a>
+	</div>
+</div>
+<div class="pt10 bg-pink2 p10 comment-list {% if comment == [] %} hidden{% end %}">
+	<ul>
+
+		{% for con in comment %}
+		<li data-id="{{con['id']}}"><span class="text-pink"><span class="name">{{con['nickname']}}：</span>{% if con['type'] == 1%}@{{con['comment_author']}}{% end %}</span><span class="mr10">{{con['comment']}}</span><span class="text-grey9 time">{{con['time']}}</span></li>
+		{% end %}
+		
+	</ul>
+</div>
+<div class="group comment-box bg-white hidden">
+	 <input class="comment-text group fl" placeholder="我也评论一句..."/>	
+	<button class="btn  sub-comment bg-white fr">发表</button>
+</div>
+{% end %}{% block bottom %}
+<script src="{{static_url('js/confession/comment.js')}}"></script>
+{% end %}

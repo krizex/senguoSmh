@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% block title %}账户管理{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-main.css')}}"/>{% end %}
+{% block content %}
+<div class="account-top">
+    <span class="right-title">账户余额</span>
+    <span class="acc-money">{{shop_balance}}<span class="small-txt">&nbsp;元</span></span>
+    {% if has_done == 0 %}
+    <a class="get-money" href="javascript:;">提现中：{{apply_value}}元。提现申请已提交成功，我们将在1-3个工作日内完成审核。</a>
+    {% elif has_done == 2 %}
+    <a class="get-money" href="javascript:;" id="get-money" data-target=".bs-apply-com" data-toggle="modal">重新提现</a>
+    <span class="text-pink font14 fail-notice">（提现失败，原因：{{decline_reason}}）</span>
+    {% else %}
+    <a class="get-money" href="javascript:;" id="get-money" data-target=".bs-apply-com" data-toggle="modal">提现</a>
+    {% end %}
+</div>
+<ul class="acc-report">
+    <li>1、用户充值或在线支付的金额记入账户余额里。</li>
+    <li>2、账户余额为森果平台为卖家代收的用户钱款，店铺管理员可以申请提现。</li>
+</ul>
+<div class="account-top mt20">
+    <span class="right-title mb10">余额账单</span>
+</div>
+<div class="wrap-bm">
+    <ul class="tab-lst group">
+        <li class="active all-list">所有账单</li>
+        <li class="cash-list">提现记录</li>
+        <li class="charge-list">用户充值</li>
+        <li class="online-list">在线支付</li>
+        <li class="spend-list">余额消费记录</li>
+        <li class="available-list">可提现额度</li>
+    </ul>
+    <div class="acc-con-lst">
+            <div class="wrap-acc-num cash-count hidden">
+                <span class="account-num">累计提现&nbsp;<span class="green-txt f16 cash"></span>元</span>
+            </div>
+             <div class="wrap-acc-num charge-count hidden">
+                <span class="account-num">累计额度&nbsp;<span class="green-txt f16 charge-total"></span>元</span>
+                <span class="account-num">用户已使用&nbsp;<span class="green-txt f16 charge-use"></span>元</span>
+                <span class="account-num">未使用剩余&nbsp;<span class="green-txt f16 charge-left"></span>元</span>
+            </div>
+             <div class="wrap-acc-num online-count hidden">
+                <span class="account-num">累计额度&nbsp;<span class="green-txt f16 online-total"></span>元</span>
+                <span class="account-num">累计次数&nbsp;<span class="green-txt f16 online-times"></span>次</span>
+                <span class="account-num">累计人数&nbsp;<span class="green-txt f16 online-person"></span>人</span>
+            </div>
+              <div class="wrap-acc-num spend-count hidden">
+                <span class="account-num">累计消费&nbsp;<span class="green-txt f16 spend-total"></span>元</span>
+                <span class="account-num">余额被消费后才能提现，对整个账户余额的值无影响。</span>
+            </div>
+            <div class="wrap-acc-num available-count hidden">
+                <span class="account-num">余额支付和在线支付的订单，只有当订单送达（订单无法取消或删除）后，才记入可提现额度里。</span>
+            </div>
+            <table class="tb-account mt20">
+                <colgroup>
+                    <col width="20%"/>
+                    <col width="50%"/>
+                    <col width="15%"/>
+                    <col width="15%"/>
+                </colgroup>
+                <tr>
+                    <th class="pl20">时间</th>
+                    <th class="">操作</th>
+                    <th class="text-right title3">账户余额变化 </th>
+                    <th class="text-right pr20 title4">余额</th>
+                </tr>
+            </table>
+    </div>
+</div>        
+<h4 class="text-center hidden no-list">暂无账单信息！</h4>
+<div class="list-pagination hidden">
+    <ul>
+        <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+        <li>
+            <span class="page-now">1</span>/<span class="page-total">1</span>
+        </li>
+        <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+        <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+        <li><a href="javascript:;" class="jump-to">跳转</a></li>
+    </ul>
+</div>
+<div class="modal bs-apply-com" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content del-com-cont">
+             <div class="modal-header clearfix">
+                <span class="title pull-left" id="myModalLabel">提现申请</span>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body font14">
+                <div class="apply-cash-box">
+                    <p class ="text-grey2 pl50">个人认证的店铺，提现时间为3个工作日，节假日顺延</p>
+                    <p class ="text-grey2 pl50 mb10">企业认证的店铺，提现时间为1个工作日，节假日顺延</p>
+                    <p class ="text-pink pl50 mb10">注意：余额支付和在线支付的订单，只有当订单送达（订单无法取消或删除）后，</br>　　　订单金额会才计入可提现额度</p>
+                    <p class ="text-pink pl50 mb10">注意：由于初期提现为人工手动结算，为提高工作人员的工作效率，只有当您的</br>　　　可提现额度满100时才能进行提现，请大家谅解</p>
+                    <table class="per-tb">
+                        <colgroup>
+                            <col width="150"/>
+                        </colgroup>
+                        <tr>
+                            <td class="left">可提现额度：</td>
+                            <td > <span class="green-txt f16 available-balance">{{available_balance}}</span>&nbsp;元</td>
+                        </tr>
+                        <tr>
+                            <td class="left">提现金额：</td>
+                            <td> <input tpye="text" class="money-ipt money"></td>
+                        </tr>
+                        <tr>
+                            <td class="left">支付宝账号：</td>
+                            <td><input tpye="text" class="money-ipt  alipay-account" value="{{current_shop.alipay_account or ''}}" placeholder="请填写店铺超级管理员的支付宝账号"></td>
+                        </tr>
+                        <tr>
+                            <td class="left">姓名：</td>
+                            <td>
+                                <input tpye="text" class="money-ipt account-name" value="{{current_shop.alipay_account_name or ''}}" placeholder="请填写店铺超级管理员支付宝认证姓名">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="left">短信验证码：</td>
+                            <td>
+                                <input type="text" id="per-code"/><a href="javascript:;" class="per-btn get-code" id="getPerCode">获取验证码</a>
+                                {% if current_shop.admin.accountinfo.phone %}
+                                <p class="per-tip mt10">短信验证码将发送到店铺超级管理员绑定的手机号<span id="perCode">{{current_shop.admin.accountinfo.phone}}</span>上</p>
+                                <p class="per-tip mt10">如需修改绑定的手机号，<a href="/customer/profile">修改绑定</a></p>
+                                {% else %}
+                                <p class="per-tip mt10">您还没绑定手机号，<a href="/customer/profile">现在绑定</a></p>
+                                {% end %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td><a href="javascript:;" class="per-btn per-commit" id="cash-apply">申请提现</a></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/admin-account.js')}}"></script>
+{% end %}

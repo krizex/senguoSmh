@@ -1,0 +1,68 @@
+{% extends 'shop-base.html'%}
+{% block shop %}
+    <div class="wrap-comment">
+        <ul class="com-list">
+        {% for  data in context['data']%}
+            <li data-id="{{data[7]}}" class="item">
+                <ul class="com-attr group">
+                    <li>店铺：<a href="/{{data[0]}}">{{data[1]}}</a></li>
+                    <li>管理员：<a href="javascript:;">{{data[2]}}</a></li>
+                    <li>申请时间：<span>{{data[3]}}</span></li>
+                </ul>
+                <p class="del-com">删除理由：<span>{{data[4]}}</span></p>
+                <dl class="com-item group">
+                    <dd><img class="per-img" src="{{data[5]['headimgurl_small'] or '/static/images/test-img.jpg'}}" alt="头像"/></dd>
+                    <dt>
+                        <ul class="com-attr group">
+                            <li><a href="javascript:;">{{data[5]['name']}}</a></li>
+                            <li><span>{{data[5]['order_create_date']}}</span></li>
+                            <li>订单编号：<a href="javascript:;">{{data[5]['num']}}</a></li>
+                        </ul>
+                        <p class="com-cont">
+                            {{data[5]['comment']}}
+                        </p>
+                    </dt>
+                </dl>
+                {% set hide1='' %}
+                {% set hide2='' %}
+                {% set hide3='' %}
+                {% if data[6] == 0 %}
+                     {% set hide2='hide' %}
+                     {% set hide3='hide' %}
+                {% elif data[6] == 1%}
+                     {% set hide1='hide' %}
+                     {% set hide3='hide' %}
+                {% else %}
+                     {% set hide1='hide' %}
+                     {% set hide2='hide' %}
+                {% end %}
+                <div class="btn-group txt-ac action-box {{hide1}}" data-id="{{data[6]}}">
+                    <a href="javascript:;" class="blue-btn cancel-btn  reject-del">拒绝删除</a>
+                    <a href="javascript:;" class="grey-btn ok-btn {{hide1}}">确认删除</a>
+                </div>
+                 <div class="btn-group {{hide2}}">
+                    <span class="super-opinion green-txt">已删除</span>
+                 </div>
+                 <div class="btn-group {{hide3}} rejected">
+                     <span class="super-opinion red-txt ">拒绝删除：<span class="super-reason">{{data[4]}}</span></span>
+                 </div>
+            </li>
+            {% end %}
+        </ul>
+    </div>
+    <div class="wrap-com-pop hide">
+        <div class="com-pop ov-center">
+            <div class="pop-title">拒绝删除理由：</div>
+            <div class="wrap-area">
+                <textarea id="com-cont"></textarea>
+            </div>
+            <div class="btn-group txt-ac">
+                <a href="javascript:;" class="blue-btn ok-pop">提交</a>
+                <a href="javascript:;" class="grey-btn cancel-pop">取消</a>
+            </div>
+        </div>
+    </div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/superadmin-shop-manage.js')}}"></script>
+{% end %}
