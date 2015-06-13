@@ -1,17 +1,33 @@
+page=1;
 $(document).ready(function(){
     $('.rejectApply').on('click',function(){$(this).siblings('.reject-box').modal('show');})
     $('.rejectSend').on('click',function(){Reject($(this));});
     $('.passApply').on('click',function(){Pass($(this));});
     //翻页
-    $(document).on('click','#PrePage',function(){
-        var action= $.getUrlParam('action');
-        var page=Int($.getUrlParam('page'));
-        if(page>1) window.location.href='http://zone.senguo.cc/super/shopManage?action='+action+'&&page='+(page-1);
+     $(document).on('click','#PrePage',function(){
+        var inputinfo=$("#inputinfo").val();
+        if(page>1){
+            page--;
+             if(inputinfo==""){
+            insertShop(page);
+        }
+        else{
+                searchshop(page_search);
+            }
+        }
+        else{
+            return Tip("当前已经是第一页");
+            }
     });
     $(document).on('click','#NextPage',function(){
-        var action= $.getUrlParam('action');
-        var page=Int($.getUrlParam('page'));
-        window.location.href='http://zone.senguo.cc/super/shopManage?action='+action+'&&page='+(page+1);
+        if(inputinfo==""){
+             page++;
+            insertShop(page);
+        }
+        else{
+            page++;
+            searchshop(page);
+        }
     });
     if(localStorage.getItem("itemIndex")){
         $(".shop-manage-nav li").removeClass("active").eq(localStorage.getItem("itemIndex")).addClass("active");
@@ -73,7 +89,70 @@ $(document).ready(function(){
         rejectAuth();
 }).on("click","#concel-apply",function(e){
     $(".wrap-com-pop").addClass("hide");
+}).on("change","#shopstatus",function(){
+    page=1;
+     insertShop(page);
+}).on("change","#sortrule",function(){
+    page=1;
+    insertShop(page);
+}).on("change","#renzheng",function(){
+    page=1;
+     insertShop(page);
+}).on("click","#search",function(){
+    page=1;
+    searchshop(page);
+}).on("keyup","#inputinfo",function(){
+    page=1;
+    searchshop(page);
+}).on("change","#ifreverse",function(){
+    page=1;
+    insertShop(page);
 });
+
+function insertShop(page){
+    var action= $.getUrlParam('action');
+    var v2=$('#sortrule').val();//选中的值
+    var v3=$('#renzheng').val();//选中的值
+    var v=$('#shopstatus').val();
+    var ifreverse=$('#ifreverse').val();
+    var url='/super/shopManage?action='+action+'&search&shop_auth='+v3+'&shop_status='+v+'&shop_sort_key='+v2+'&if_reverse='+ifreverse+'&page='+page+'&flag=0';
+   $.ajax({
+            url:url,
+            type:"get",
+            success:function(res){
+                if(res.success){
+                        var shops = res.output_data;
+                        $('#list-group').empty()
+                         for(var i=0; i<shops.length; i++){
+        var shop = shops[i];
+        var $item = $("#temp-ul").children("li").clone();
+        if(shop.shop_trademark_url){
+             $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView/1/w/100/h/100");
+        }else{
+            $item.find(".shop-img").attr("src","/static/images/TDSG.png");
+        }     
+        $item.find(".ushop_name").html(shop.shop_name);
+        $item.find(".uauth_type").html(shop.auth_type);
+        $item.find(".uadmin_nickname").html(shop.admin_nickname);
+        $item.find(".ushop_address_name").html(shop.shop_address_detail);
+        $item.find(".ushop_code").html(shop.shop_code);
+        $item.find(".ushop_status").html(shop.shop_shop_status);
+        $item.find(".ucreate_date").html(shop.create_date);
+        $item.find(".uold_msg").html(shop.old_msg);
+        $item.find(".usatisfy").html(shop.satisfy);
+        $item.find(".uorder_count").html(shop.order_count);
+        $item.find(".ugoods_count").html(shop.goods_count);
+        $item.find(".ushop_property").html(shop.shop_property);
+        $item.find(".usingle_price").html(shop.single_price);
+        $item.find(".uavailable_balance").html(shop.available_balance);
+        $item.find(".ufans_count").html(shop.fans_count);
+        $("#list-group").append($item);
+                                        }
+                                                }
+                                            }
+                });
+
+}
 
 window.onbeforeunload = function(){
     localStorage.setItem("itemIndex",0);
@@ -217,4 +296,49 @@ function rejectDel(){
             }
         }
     )
+}
+
+function searchshop(page){
+    var searchinfo=$("#inputinfo")[0].value;
+    searchinfo='='+searchinfo;
+    var url='/super/shopManage?action=all&search'+searchinfo+'&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&page='+page+'&flag=0';
+   $.ajax({
+            url:url,
+            type:"get",
+            success:function(res){
+                if(res.success){
+                        var shops = res.output_data;
+                        $('#list-group').empty()
+                        if(shops.length==0){
+                    $("#list-group").append("<p>没有查询到任何有关的商家！</p>");
+                }else{
+                         for(var i=0; i<shops.length; i++){
+        var shop = shops[i];
+        var $item = $("#temp-ul").children("li").clone();
+        if(shop.shop_trademark_url){
+             $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView/1/w/100/h/100");
+        }else{
+            $item.find(".shop-img").attr("src","/static/images/TDSG.png");
+        }     
+        $item.find(".ushop_name").html(shop.shop_name);
+        $item.find(".uauth_type").html(shop.auth_type);
+        $item.find(".uadmin_nickname").html(shop.admin_nickname);
+        $item.find(".ushop_address_name").html(shop.shop_address_detail);
+        $item.find(".ushop_code").html(shop.shop_code);
+        $item.find(".ushop_status").html(shop.shop_shop_status);
+        $item.find(".ucreate_date").html(shop.create_date);
+        $item.find(".uold_msg").html(shop.old_msg);
+        $item.find(".usatisfy").html(shop.satisfy);
+        $item.find(".uorder_count").html(shop.order_count);
+        $item.find(".ugoods_count").html(shop.goods_count);
+        $item.find(".ushop_property").html(shop.shop_property);
+        $item.find(".usingle_price").html(shop.single_price);
+        $item.find(".uavailable_balance").html(shop.available_balance);
+        $item.find(".ufans_count").html(shop.fans_count);
+        $("#list-group").append($item);
+                                        }
+                                                }
+                                            }
+                                        }
+                });
 }
