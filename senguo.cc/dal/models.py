@@ -573,6 +573,12 @@ class Shop(MapBase, _CommonApi):
 	super_temp_active = Column(Integer,default = 1) #1:receive the message from wx 0:do not receive#5.26
 
 	# group_priority = Column(String(50)) #[group.id,group index]
+	#add 6.4pm by jyj
+	fans_count = Column(Integer,default = 0,nullable=False)  # the number of fans in this shop
+
+	#add 6.5pm by cm
+	shop_property = Column(Float,default = 0,nullable = False)
+
 
 	def __repr__(self):
 		return "<Shop: {0} (id={1}, code={2})>".format(
@@ -587,6 +593,26 @@ class Shop(MapBase, _CommonApi):
 			return None
 		print('print mark 4: success')
 		return order_count
+
+	#add 6-4pm by jyj
+	def get_fansCount(self,shop_id):
+		try:
+			fans_count = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()
+		except:
+			print("print mark 3:error")
+			return None
+		print("print mark 4:sucess")
+		return fans_count
+
+	#add 6-5pm by cm
+	def get_shop_property(self,shop_id):
+		try:
+			shop_property =  self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id=shop.id).scalar()
+		except:
+			print("print mark 3:error")
+			return None
+		print("print mark 4:sucess")
+		return shop_property
 
 class ShopAuthenticate(MapBase,_AccountApi):
 	__tablename__ = "shop_auth"
