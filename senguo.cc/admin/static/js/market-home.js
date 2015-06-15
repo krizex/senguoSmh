@@ -429,9 +429,9 @@ var goodsList=function(page,action){
                 nomore = res.nomore
                 //get item dom
                 if(window.dataObj.goods_item==undefined){
-                    getItem('/static/items/customer/market-goods-item.html?v=20150612',function(data){
+                    getItem('/static/items/customer/market-goods-item.html?v=20150613',function(data){
                         window.dataObj.goods_item=data;
-                        getItem('/static/items/customer/charge-item.html?v=20150612',function(data){
+                        getItem('/static/items/customer/charge-item.html?v=20150613',function(data){
                             window.dataObj.charge_item=data;
                             initData(res.data);
                         });

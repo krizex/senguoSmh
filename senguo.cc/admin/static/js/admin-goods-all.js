@@ -77,17 +77,17 @@ $(document).ready(function(){
     $("#demo-img").children(".show-bigimg").attr("data-src","/static/design_img/"+cur_code+".png");
     $(".pop-img-win").show();
 }).on("click",".sg-img-list img",function(){//选择图片库图片
-    if($(this).hasClass("selected-img")){
-        $(this).prev(".img-selected").toggle();
-        $(this).toggleClass("selected-img");
-    }else{
+    //if($(this).hasClass("selected-img")){
+    //    $(this).prev(".img-selected").toggle();
+    //    $(this).toggleClass("selected-img");
+    //}else{
         if($("#item-img-lst").children(".img-bo").size()<5){
             var src = $(this).attr("src");
             var index = $("#item-img-lst").children(".img-bo").size();
             var item = '<li class="img-bo" data-index="'+index+'" data-rel="'+index+'"><img src="'+src+'" url="'+src+'" class="img"><a class="del-img" href="javascript:;">x</a></li>';
             $("#add-img-box").before(item);
-            $(this).prev(".img-selected").show();
-            $(this).addClass("selected-img");
+            //$(this).prev(".img-selected").show();
+            //$(this).addClass("selected-img");
             if($("#item-img-lst").children(".img-bo").size()==5){
                 $("#item-img-lst").children(".add-img-box").addClass("hidden");
             }
@@ -95,7 +95,7 @@ $(document).ready(function(){
             Tip("只能添加5张照片哦");
             $("#item-img-lst").children(".add-img-box").addClass("hidden");
         }
-    }
+    //}
 }).on("click",".sg-img-list .img-selected",function(){
     $(this).toggle();
     $(this).next("img").toggleClass("selected-img");
@@ -176,7 +176,7 @@ $(document).ready(function(){
     var index = goods_item.index();
     var group = {id:goods_item.find(".current-group").attr("data-id"),text:goods_item.find(".current-group").html()};
     var switch_btn = {id:goods_item.find(".switch-btn").attr("data-id"),text:goods_item.find(".switch-btn").attr("class")};
-    $.getItem("/static/items/admin/goods-item.html?v=20150609",function(data){
+    $.getItem("/static/items/admin/goods-item.html?v=20150613",function(data){
         var goodsItem = data;
         var $item = $(goodsItem).clone();
         $item.find(".current-group").attr("data-id",group.id).html(group.text);
@@ -221,7 +221,7 @@ $(document).ready(function(){
     var classify = $(this).html();
     var class_id = $(this).attr("data-id");
     var goods_code = $(this).attr("data-code");
-    $.getItem("/static/items/admin/goods-item.html?v=20150609",function(data){
+    $.getItem("/static/items/admin/goods-item.html?v=20150613",function(data){
         var goodsItem = data;
         var $item = $(goodsItem).clone();
         $item.find(".goods-classify").html(classify).attr("data-id",class_id);

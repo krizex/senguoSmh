@@ -113,7 +113,7 @@ var goodsList=function(page,action){
         if(res.success)
         {
             if(window.dataObj.list_item==undefined){
-                getItem('/static/items/customer/orderlist_item.html?v='+new Date().getTime(),function(data){
+                getItem('/static/items/customer/orderlist_item.html?v=20150613',function(data){
                     window.dataObj.list_item=data;
                     initData(res);
                 });    
