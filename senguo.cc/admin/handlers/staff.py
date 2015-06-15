@@ -232,6 +232,7 @@ class Order(StaffBaseHandler):
 					shop.is_balance = 1
 					shop.order_count += 1  #店铺订单数加1
 
+					
 					#add by jyj 2015-6-15
 					totalprice_inc = order.totalPrice
 					shop.shop_property += totalprice_inc
