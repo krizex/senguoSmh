@@ -18,8 +18,9 @@ a:hover{text-decoration:none;cursor:pointer;}
 a:focus{text-decoration:none;outline:none;}
 .form-control{font-size:12px;padding:0;}
 .dropdown-toggle{border-radius:2px;background:#fff;color:#666;border:1px solid #ccc;padding:4px 10px;}
+#statusMenu{width:89px;}
 .dropdown-menu{min-width:0px;border-radius:1px;width:104px;border-color:#ddd;box-shadow:none;-webkit-box-shadow:none;border-top:none;padding:0px;top:25px;left:-1px;margin:0;overflow: hidden;}
-.dropdown-menu li a{display:block;}
+.dropdown-menu li a{display:block;line-height:20px;}
 .dropdown-menu li a:hover{}
 .row{margin:0;}
 textarea{resize:none;}
@@ -75,10 +76,10 @@ img{border:none;}
 .backstage-header .header-nav .dropdown-menu li a:hover{color:#fff;background-color: #6ba4ef;}
 .backstage-header .header-nav .caret{margin-top:10px;color: #c6c6c6;}
 .menu-icona{background-repeat: no-repeat;background-position:  18px center; background-size:14px;padding-right: 0 !important;padding-left: 40px !important;}
-.sshop{background-image: url('/static/images/iconfont-qiehuan.png');}
-.swoon{background-image: url('/static/images/iconfont-wode.png');}
-.sshop:hover{background-image: url('/static/images/iconfont-qiehuan_white.png');}
-.swoon:hover{background-image: url('/static/images/iconfont-wode_white.png');}
+.sshop{background-image: url('/static/images/admin_switch.png');}
+.swoon{background-image: url('/static/images/admin_center.png');}
+.sshop:hover{background-image: url('/static/images/admin_switch_white.png');}
+.swoon:hover{background-image: url('/static/images/admin_center_white.png');}
 .noauth>a{display: inline-block!important;}
 .switch-change-phone{text-align: left !important;margin-top:2px;}
 .switch-change-phone .band-tel{font-size: 12px !important;margin-left: 0!important;font-weight:normal !important;float: left;margin-right: 5px;}
@@ -129,6 +130,7 @@ img{border:none;}
 .send-message-btn{display:inline-block;width:84px;height:28px;border:1px solid #b2b2b2;border-radius:2px;line-height:28px;text-indent:30px;background:url("../images/container-icon.gif") no-repeat 8px -238px;color:#666;}
 .add-btn-sty{display:inline-block;padding:0 10px;background:#44b549;color:#fff;border-radius:1px;}
 .add-btn-sty:hover{background:#70d674;color:#fff;}
+.add-btn{width: 116px;display:inline-block;margin-left:20px;font-size: 14px;color: #fff;text-align: center;height: 28px;line-height: 28px;background-color: #52b43f;border-radius: 2px;}
 .add-btn2{display:inline-block;border:1px solid #ccc;background:#fff;color:#44B549;height:30px;line-height:30px;padding:0 8px;}
 .delete-btn{display:inline-block;border:1px solid #ccc;background:#fff;color:#CB2F36;height:30px;line-height:30px;padding:0 8px;}
 .delete-btn2{display:inline-block;background:url("../images/container-icon.gif") no-repeat 0 3px;height:26px;line-height:26px;padding:0 10px;}

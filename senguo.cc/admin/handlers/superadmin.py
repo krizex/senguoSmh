@@ -306,7 +306,7 @@ class ShopManage(SuperBaseHandler):
 					single_price = 0
 				else:
 					single_price = shop.shop_property/shop.order_count
-				single_price = format(single_price,".1f")
+				single_price = format(single_price,".2f")
 				data["single_price"] = single_price
 				data["available_balance"] = shop.available_balance
 
@@ -355,7 +355,7 @@ class ShopManage(SuperBaseHandler):
 					single_price = 0
 				else:
 					single_price = shop.shop_property/shop.order_count
-				single_price = format(single_price,".1f")
+				single_price = format(single_price,".2f")
 				data["single_price"] = single_price
 
 				data["available_balance"] = shop.available_balance
