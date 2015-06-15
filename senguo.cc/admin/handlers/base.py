@@ -169,6 +169,16 @@ class GlobalBaseHandler(BaseHandler):
 			else:
 				text = "SYS_ORDER_STATUS: 此编码不存在"
 			return text
+		#add 6.10pm by jyj
+		elif column_name == "create_date_timestamp":
+			text = ""
+			import datetime
+			import time
+			ltime=time.localtime(int(code))
+			timeStr=time.strftime("%Y-%m-%d %H:%M:%S", ltime)
+			text = timeStr
+			return text
+
 
 	#获取订单详情
 	def get_order_detail(self,session,order_id):
