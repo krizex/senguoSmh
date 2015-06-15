@@ -301,6 +301,10 @@ class Home(CustomerBaseHandler):
 			shop_id   = shop.id
 			shop_logo = shop.shop_trademark_url
 			balance_on = shop.config.balance_on_active
+			if shop.marketing:
+				shop_marketing = shop.marketing.confess_active
+			else:
+				shop_marketing = 0
 			if shop.shop_auth in [1,2,3,4]:
 				show_balance = True
 			# print(shop,shop.shop_auth)
@@ -311,6 +315,7 @@ class Home(CustomerBaseHandler):
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
+		self.set_cookie("shop_marketing", str(shop_marketing))
 		shop_point = 0
 		shop_balance = 0
 		try:
@@ -375,12 +380,15 @@ class Discover(CustomerBaseHandler):
 			return self.send_fail('shop error')
 		if shop:
 			if shop.marketing:
+				shop_marketing = shop.marketing.confess_active
 				confess_active = shop.marketing.confess_active
 			else:
+				shop_marketing = 0
 				confess_active = 0
 			shop_auth = shop.shop_auth
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self.set_cookie("market_shop_code",str(shop.shop_code))
+			self.set_cookie("shop_marketing", str(shop_marketing))
 		else:
 			shop_auth = 0
 			confess_active = 0
@@ -561,10 +569,15 @@ class ShopProfile(CustomerBaseHandler):
 		shop_id = shop.id
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
+		if shop.marketing:
+			shop_marketing = shop.marketing.confess_active
+		else:
+			shop_marketing = 0
 
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
+		self.set_cookie("shop_marketing", str(shop_marketing))
 		satisfy = 0
 		commodity_quality = 0
 		send_speed        = 0
@@ -873,9 +886,15 @@ class Market(CustomerBaseHandler):
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
+		if shop.marketing:
+			shop_marketing = shop.marketing.confess_active
+		else:
+			shop_marketing = 0
+
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
+		self.set_cookie("shop_marketing", str(shop_marketing))
 		if not self.session.query(models.CustomerShopFollow).filter_by(
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			w_follow = False
@@ -943,11 +962,9 @@ class Market(CustomerBaseHandler):
 			if default_count !=0 :
 				group_list.append({'id':0,'name':'默认分组'})
 
-
 		return self.render("customer/home.html",
-						   context=dict(cart_count=cart_count, subpage='home',notices=notices,\
-							shop_name=shop.shop_name,shop_code=shop.shop_code,w_follow = w_follow,\
-							cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
+						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,shop_code=shop.shop_code,\
+						   	w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:int","page?:int","menu_id?:int")
@@ -1253,6 +1270,10 @@ class Cart(CustomerBaseHandler):
 		shop_id = shop.id
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
+		if shop.marketing:
+			shop_marketing = shop.marketing.confess_active
+		else:
+			shop_marketing = 0
 		try:
 			customer_follow =self.session.query(models.CustomerShopFollow).\
 			filter_by(customer_id = customer_id,shop_id =shop_id ).first()
@@ -1264,6 +1285,7 @@ class Cart(CustomerBaseHandler):
 			shop_new = customer_follow.shop_new
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
+		self.set_cookie("shop_marketing", str(shop_marketing))
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits))): #购物车为空
 			return self.render("notice/cart-empty.html",context=dict(subpage='cart'))

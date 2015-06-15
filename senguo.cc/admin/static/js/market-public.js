@@ -71,6 +71,12 @@ $(document).ready(function(){
             $('.discover-new').addClass('hidden');
         }
     }
+
+    var shop_marketing=parseInt(getCookie('shop_marketing'));
+    if(shop_marketing==0){
+        $('.discover-tab').hide();
+        $('.bottom-nav li').removeClass('w20').addClass('w25');
+    }
 });
 
 function wexin(link,imgurl){
