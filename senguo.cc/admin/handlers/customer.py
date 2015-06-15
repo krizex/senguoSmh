@@ -1380,7 +1380,7 @@ class Cart(CustomerBaseHandler):
 				# print(charge_type.price)
 
 				f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
-									 "charge":"%.2f元/%.1f %s" % (float(charge_type.price), charge_type.num, unit[charge_type.unit])}
+									 "charge":"%.2f元/%.2f %s" % (float(charge_type.price), charge_type.num, unit[charge_type.unit])}
 
 		#按时达/立即送 的时间段处理
 		start_time = 0
