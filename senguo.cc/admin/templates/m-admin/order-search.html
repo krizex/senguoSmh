@@ -1,33 +1,20 @@
 {% extends 'base.html' %}
-{% block title %}订单管理{% end %}
+{% block title %}订单搜索{% end %}
 {% block head %}
-<link rel="stylesheet" href="{{static_url('m-admin/css/idangerous.swiper.css')}}"/>
 {% end %}
 {% block header %}
 <div class="header">
     <a href="javascript:;" class="back">返回</a>
     <div class="wrap-order-tab">
         <ul class="group order-type-list">
-            <li class="active item">立即送</li>
-            <li class="item">按时达</li>
-            <li class="item">自提</li>
-            <li class="tab-bg"></li>
+            <li class=""><input type="text" placeholder="请输入订单号搜索"/></li>
         </ul>
     </div>
     <a href="javascript:;" class="head-right search"></a>
 </div>
 {% end %}
 {% block setcontent %}
-<div class="container pt70 pm80">
-<div class="second-tab">
-    <ul class="second-tab-list group">
-        <li class="item">未处理</li>
-        <li class="item">处理中</li>
-        <li class="item">已送达</li>
-        <li class="item">所有订单</li>
-        <li class="tab-line"></li>
-    </ul>
-</div>
+<div class="container pm80">
 <div class="order-list-box">
     <div class="swiper-container" id="swiper-container">
         <div class="swiper-wrapper">
@@ -347,6 +334,5 @@
 </div>
 {% end %}
 {% block bottom %}
-<script src="{{static_url('m-admin/js/idangerous.swiper.min.js')}}"></script>
-<script src="{{static_url('m-admin/js/order.js')}}"></script>
+<script src="{{static_url('m-admin/js/order-search.js')}}"></script>
 {% end %}
