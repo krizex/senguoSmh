@@ -178,7 +178,18 @@ class GlobalBaseHandler(BaseHandler):
 			timeStr=time.strftime("%Y-%m-%d %H:%M:%S", ltime)
 			text = timeStr
 			return text
-
+		##
+		#add by jyj 2015-6-15
+		elif column_name == "have_offline_entity":
+			text = ""
+			if code == 0:
+				text = "没有实体店，水果o2o探索中"
+			elif code == 1:
+				text = "已有实体店，并在经营中"
+			else:
+				text = "没有卖过水果想尝试"
+			return text
+		##
 
 	#获取订单详情
 	def get_order_detail(self,session,order_id):
