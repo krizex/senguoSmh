@@ -7,7 +7,7 @@ import handlers.infowall
 import handlers.official
 import handlers.onlinePay
 import handlers.activity
-import handlers.Madmin
+import handlers.madmin
 from dal import models
 #todo:handlers太大会不会影响性能？
 
@@ -211,10 +211,10 @@ handlers = [
 	# (r"/admin/settings/profile", handlers.admin.Settings,
 	#  {"action":"profile"}, "adminSettingsProfile")
 	
-	(r"/madmin/order", handlers.Madmin.Order, {}, "MadminOrder"),
-	(r"/madmin/orderDetail", handlers.Madmin.OrderDetail, {}, "MadminOrderDetail"),
-	(r"/madmin/shopProfile", handlers.Madmin.ShopProfile, {}, "MadminCenter"),
-	
+	(r"/madmin/order", handlers.madmin.Order, {}, "MadminOrder"),
+	(r"/madmin/orderDetail", handlers.madmin.OrderDetail, {}, "MadminOrderDetail"),
+	(r"/madmin/shopProfile", handlers.madmin.ShopProfile, {}, "MadminCenter"),
+	(r"/madmin/orderSearch", handlers.madmin.OrderSearch, {}, "MadminSearch"),
 	# (r"/staff/...")
 
 	# 水果圈子
