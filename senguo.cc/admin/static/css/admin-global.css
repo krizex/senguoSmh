@@ -17,7 +17,7 @@ ul{padding-left:0px;margin-bottom:0px;}
 a:hover{text-decoration:none;cursor:pointer;}
 a:focus{text-decoration:none;outline:none;}
 .form-control{font-size:12px;padding:0;}
-.dropdown-toggle{border-radius:2px;background:#fff;color:#666;border:1px solid #ccc;padding:4px 10px;}
+.dropdown-toggle{border-radius:2px;background:#fff;color:#666;border:1px solid #ccc;padding:4px 10px;width:89px;}
 .dropdown-menu{min-width:0px;border-radius:1px;width:104px;border-color:#ddd;box-shadow:none;-webkit-box-shadow:none;border-top:none;padding:0px;top:25px;left:-1px;margin:0;overflow: hidden;}
 .dropdown-menu li a{display:block;line-height:20px;}
 .dropdown-menu li a:hover{}
