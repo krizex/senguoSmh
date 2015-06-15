@@ -18,15 +18,9 @@
         <!--a href="javascript:;" class="roll-bg share"><i></i></a-->
         <div class="swiper-container" id="swiper-container">
             <div class="swiper-wrapper">
-                {% if img_url %}
-                    {% for img in img_url%}
-                    <div class="swiper-slide item">
-                        <img src="{{img}}?imageView2/2/w/700" alt=""/>
-                    </div>
-                    {% end %}
-                {% else %}
+                {% for img in img_url%}
                 <div class="swiper-slide item">
-                    <img src="/static/images/furit.jpg" alt="图片详情"/>
+                    <img src="{{img}}?imageView2/2/w/700" alt=""/>
                 </div>
                 {% end %}
             </div>
