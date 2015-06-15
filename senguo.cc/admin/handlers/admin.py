@@ -726,6 +726,7 @@ class Order(AdminBaseHandler):
 		shop_id = self.current_shop.id
 		#shop_point add by order.totalPrice
 		staff_info = []
+		
 		if order_status == 4:
 			try:
 				staff_info = self.session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id )\
@@ -1622,8 +1623,8 @@ class Goods(AdminBaseHandler):
 			args["unit"] = data["unit"]
 			if data["detail_describe"]:
 				args["detail_describe"] = data["detail_describe"].replace("script","'/script/'")
-			#if data["tag"]:
-				#args["tag"] = data["tag"]
+			if data["tag"]:
+				args["tag"] = data["tag"]
 			if "limit_num" in data:
 				args["limit_num"] = data["limit_num"]
 			if "group_id" in data:
@@ -1842,7 +1843,8 @@ class Goods(AdminBaseHandler):
 						priority = data["priority"],
 						limit_num = data["limit_num"],
 						group_id = group_id,
-						detail_describe = detail_describe
+						detail_describe = detail_describe,
+						tag = int(data["tag"])
 						)
 				_data = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).one()
 				data = self.getGoodsOne(_data)

@@ -1,7 +1,6 @@
 body{color: #999;font-size: 14px;}
 input{border: 1px solid #e7e7eb;height: 26px;color: #333;text-align: center;width: 45px;outline: none;text-indent: 0;}
 textarea{border-color:#eee;padding: 2px 5px;}
-.add-btn{width: 116px;display:inline-block;margin-left:20px;font-size: 14px;color: #fff;text-align: center;height: 28px;line-height: 28px;background-color: #52b43f;border-radius: 2px;}
 .wrap-all-goods{margin-top: 15px;}
 .wrap-classify{font-size: 14px;}
 .wrap-pop-btn{background-color: #fbfbfb;border-top:1px solid #eee;padding: 10px 0;text-align: center;}
@@ -21,6 +20,7 @@ textarea{border-color:#eee;padding: 2px 5px;}
 .mt8{margin-top: 8px;}
 .mt4{margin-top: 4px;}
 .mr10{margin-right: 10px;}
+.mr5{margin-right: 5px !important;}
 .pl68{padding-left: 68px;}
 .c333{color: #333 !important;}
 .c222{color: #222 !important;}
@@ -158,6 +158,9 @@ textarea{border-color:#eee;padding: 2px 5px;}
 .ke-dialog-body .tab1{display: none !important;}
 .ke-dialog-body .tab2{display: block !important;}*/
 .ke-dialog-body input[type=file]{cursor: pointer !important;}
+.tag-item{display:inline-block;width:70px;text-align:center;border:1px solid #ddd;}
+.tag-item.active{border-color:#44b549;color:#44b549;}
+.tag-item:hover{cursor:pointer;}
 /*分类*/
 .wrap-fruit-select{position: relative;height: 30px;margin: 10px 0;}
 .fruit-select{position: absolute;right: 0;top: 0;}

@@ -237,7 +237,7 @@ function gettable2(action,page,dom){
 }
 */
 
-/*
+
 function getSum(page,type,options,myChart){
     options.xAxis[0].data=[];
     for(var j=0;j<options.series.length;j++){
@@ -263,7 +263,7 @@ function getSum(page,type,options,myChart){
     myChart.refresh();
     myChart.setOption(options);
 }
-*/
+
 
 function getCount(action,page,type,options,myChart){
     options.xAxis[0].data=[];
@@ -280,7 +280,6 @@ function getCount(action,page,type,options,myChart){
     }
     myChart.refresh();
     myChart.setOption(options);
-
 }
 
 function typeChange(dom,action,options,mychart){
@@ -289,7 +288,6 @@ function typeChange(dom,action,options,mychart){
         var type = $this.data('id');
         getCount(action,0,type,options,mychart);
     });
-
 }
 
 /*

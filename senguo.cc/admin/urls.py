@@ -215,7 +215,7 @@ handlers = [
 	(r"/madmin/orderDetail", handlers.madmin.OrderDetail, {}, "MadminOrderDetail"),
 	(r"/madmin/shopProfile", handlers.madmin.ShopProfile, {}, "MadminCenter"),
 	(r"/madmin/orderSearch", handlers.madmin.OrderSearch, {}, "MadminSearch"),
-	
+
 	# (r"/staff/...")
 
 	# 水果圈子
