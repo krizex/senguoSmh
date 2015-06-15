@@ -31,7 +31,7 @@ html,body{width: 100%}
 .show-box{padding-right:10px;height:90px;}
 .sale{height:26px;line-height:26px;width:65px;overflow:hidden;}
 .click-great{background-size:20px;position:relative;}
-.click-great em{display:inline-block;position:absolute;top:13px;width:16px;height:16px;background:url('../svg/heart@2x.png') no-repeat 0 0;background-size:32px;margin-left:-22px;margin-right:5px;}
+.click-great em{display:inline-block;position:absolute;top:13px;width:16px;height:16px;background:url('../svg/heart.png') no-repeat 0 0;background-size:32px;margin-left:-22px;margin-right:5px;}
 .clicked em{background-position:-16px 0 !important;}
 .shape{position:absolute;display:inline-block;width:140px;height:220px;right:11px;top:-50px;transform:rotate(36deg);-ms-transform:rotate(36deg);-moz-transform:rotate(38deg);-webkit-transform:rotate(38deg);-o-transform:rotate(38deg);}
 .pr35{padding-right:35px;}
@@ -86,7 +86,7 @@ html,body{width: 100%}
 .top-title .tit .up{background-position:0 0px;}
 .top-title .tit .down{background-position:0 -12px;}
 .classify-icon{font-size:16px;background:#6DCD8D;display:inline-block;width:92px;text-indent:16px;position:absolute;z-index:66;left:0;}
-.classify-icon em{display:inline-block;background:url('/static/images/category.png');position:absolute;left:56px;top:11px;background-size:18px;width:18px;height:18px;}
+.classify-icon em{display:inline-block;background:url('/static/images/goods_category.png');position:absolute;left:56px;top:11px;background-size:18px;width:18px;height:18px;}
 .classify-list{width:92px;height:100%;position:absolute;z-index:999;margin-top:40px;}
 .classify-list li{font-size:15px;width:100%;height:40px;line-height:40px;overflow:hidden;border-bottom:1px solid #A4FAC1;text-indent:10px;}
 
@@ -109,7 +109,7 @@ html,body{width: 100%}
 .fix-top{position:fixed;top:0;}
 .fix-top2{position:fixed;top:0;}
 .search-btn{display:block;position:absolute;width:60px;height:40px;right:0;}
-.search-btn>em{display:block;background-image:url('/static/images/shop_top.png');background-repeat:no-repeat;background-size:20px 40px;background-position:0px -20px;width:20px;height:20px;margin:10px 28px;}
+.search-btn>em{display:block;background-image:url('/static/images/list_top.png');background-repeat:no-repeat;background-size:20px 40px;background-position:0px -20px;width:20px;height:20px;margin:10px 28px;}
 .bg-green{background-color: #80e0a0 !important}
 .herder{width:100%;min-width:320px;max-width:800px;overflow:hidden;margin:0 auto;height:100%;background:#fff;height:40px;line-height:40px;position:fixed;z-index: 999;top: 0;}
 .herder .back{display:block;position:absolute;left:0;width:60px;height:40px;}
