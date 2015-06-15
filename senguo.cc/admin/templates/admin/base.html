@@ -154,7 +154,7 @@
             {% end %}
             <li>
                 <span class="manage"><i></i>管理</span>
-                <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1&page=0" class="{{order_active}} has-red-tip" data-action="order">订单管理<b class="red-tip hidden" id="order_ordernum">200</b></a>
+                <a href="{{reverse_url('adminOrder')}}?order_type=1" class="{{order_active}} has-red-tip" data-action="order">订单管理<b class="red-tip hidden" id="order_ordernum">200</b></a>
                 <a href="{{reverse_url('adminGoods')}}" class="{{goods_active}}">商品管理</a>
                 <a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0" class="{{user_active}} has-red-tip" data-action="user">用户管理<b class="red-tip hidden" id="user_usernum">5</b></a>
                 <a href="{{reverse_url('adminStaffJH')}}?action=SH2" class="{{staff_active}} has-red-tip" data-action="staff">员工管理<b class="red-tip hidden" id="staff_staffnum">5</b></a>
