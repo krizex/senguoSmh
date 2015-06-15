@@ -577,7 +577,7 @@ class Shop(MapBase, _CommonApi):
 	fans_count = Column(Integer,default = 0,nullable=False)  # the number of fans in this shop
 
 	#add 6.5pm by cm
-	shop_property = Column(Double,default = 0,nullable = False)
+	shop_property = Column(Float,default = 0,nullable = False)
 
 
 	def __repr__(self):
