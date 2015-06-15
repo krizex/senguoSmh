@@ -726,6 +726,7 @@ class Order(AdminBaseHandler):
 		shop_id = self.current_shop.id
 		#shop_point add by order.totalPrice
 		staff_info = []
+		
 		if order_status == 4:
 			try:
 				staff_info = self.session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id )\
