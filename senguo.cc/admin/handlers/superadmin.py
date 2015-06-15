@@ -838,6 +838,205 @@ class ShopStatic(SuperBaseHandler):
 		page_sum = (datetime.datetime.now() - first_order.create_date).days//30 + 1
 		return self.send_success(page_sum=page_sum, data=data)
 
+#add by jyj 2015-6-15
+class OrderStatic(SuperBaseHandler):
+	def get(self):
+		return self.render("superAdmin/count-order.html",context=dict(subpage='orderstatic'))
+
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments("action:str")
+	def post(self):
+		action = self.args["action"]
+		if action == "order_time":
+			return self.order_time()
+		elif action == "recive_time":
+			return self.recive_time()
+
+	@SuperBaseHandler.check_arguments("page:int", "type:int")
+	def sum(self):
+		page = self.args["page"]
+		type = self.args["type"]
+		if page == 0:
+			now = datetime.datetime.now()
+			start_date = datetime.datetime(now.year, now.month, 1)
+			end_date = now
+		else:
+			date = self.monthdelta(datetime.datetime.now(), page)
+			start_date = datetime.datetime(date.year, date.month, 1)
+			end_date = datetime.datetime(date.year, date.month, date.day)
+
+		orders = self.session.query(models.Order.id, models.Order.create_date,
+									models.Order.totalPrice, models.Order.type,
+									models.Order.pay_type). \
+			filter(models.Order.shop_id == self.current_shop.id,
+				   models.Order.create_date >= start_date,
+				   models.Order.create_date <= end_date,
+				   not_(models.Order.status.in_([-1,0]))).all()
+
+		data = {}
+		for x in range(1, end_date.day+1):  # 初始化数据
+			data[x] = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+		if type == 1:
+			for order in orders:
+				data[order[1].day][1] += 1
+				if order[3] == 2:
+					data[order[1].day][2] += 1
+				else:
+					data[order[1].day][3] += 1
+				if order[4] == 1:
+					data[order[1].day][4] += 1
+				else:
+					data[order[1].day][5] += 1
+		elif type == 2:
+			for order in orders:
+				data[order[1].day][1] += order[2]
+				if order[3] == 2:
+					data[order[1].day][2] += order[2]
+				else:
+					data[order[1].day][3] += order[2]
+				if order[4] == 1:
+					data[order[1].day][4] += order[2]
+				else:
+					data[order[1].day][5] += order[2]
+		else:
+			return self.send_error(404)
+		return self.send_success(data=data)
+
+	@SuperBaseHandler.check_arguments("type:int")
+	def order_time(self):
+		type = self.args["type"]
+		q = self.session.query(func.hour(models.Order.create_date), func.count()).\
+				filter(models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0])))
+		if type == 1:  # 累计数据
+			pass
+		elif type == 2:  # 昨天数据
+			now = datetime.datetime.now() - datetime.timedelta(1)
+			start_date = datetime.datetime(now.year, now.month, now.day, 0)
+			end_date = datetime.datetime(now.year, now.month, now.day, 23)
+			q = q.filter(models.Order.create_date >= start_date,
+					   models.Order.create_date <= end_date)
+		else:
+			return self.send_error(404)
+		ss = q.group_by(func.hour(models.Order.create_date)).all()
+		data = {}
+		for key in range(0, 24):
+			data[key] = 0
+		for s in ss:
+			data[s[0]] = s[1]
+		return self.send_success(data=data)
+
+
+	@SuperBaseHandler.check_arguments("type:int")
+	def recive_time(self):
+		type = self.args["type"]
+		q = self.session.query(models.Order.type, models.Order.start_time, models.Order.end_time).\
+			filter(models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0])))
+		if type == 1:
+			orders = q.all()
+		elif type == 2:
+			now = datetime.datetime.now() - datetime.timedelta(1)
+			start_date = datetime.datetime(now.year, now.month, now.day, 0)
+			end_date = datetime.datetime(now.year, now.month, now.day, 23)
+			orders = q.filter(models.Order.create_date >= start_date,
+							  models.Order.create_date <= end_date).all()
+		else:
+			return self.send_error(404)
+		stop_range = self.current_shop.config.stop_range
+		data = {}
+		for key in range(0, 24):
+			data[key] = 0
+		for order in orders:
+			if order[0] == 1:  # 立即送收货时间估计
+				data[order[1].hour + (order[1].minute+stop_range)//60] += 1
+			else:  # 按时达收货时间估计
+				data[(order[1].hour+order[2].hour)//2] += 1
+		return self.send_success(data=data)
+
+
+	'''
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("superAdmin/count-order.html",context=dict(subpage='count',subcount='order'))
+
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments("action:str")
+	def post(self):
+		action = self.args["action"]
+
+		if action == "num":
+			return self.num()
+
+		elif action == "province":
+			provinces = self.session.query(models.Shop.shop_province, func.count()).\
+				group_by(models.Shop.shop_province).all()
+			data = []
+			for province in provinces:
+				data.append((dis_dict[province[0]]["name"], province[1]))
+
+		elif action == "city":
+			cities = self.session.query(models.Shop.shop_city, func.count()).\
+				group_by(models.Shop.shop_city).all()
+			data = []
+			for city in cities:
+				code = city[0]
+				if "city" in dis_dict[city[0]//10000*10000]:
+					name = dis_dict[city[0]//10000*10000]["city"][code]["name"]
+				else:
+					name = dis_dict[city[0]]["name"]
+				data.append((name, city[1]))
+		else:
+			return self.send_fail()
+		total = self.session.query(models.Shop).count()
+		return self.send_success(data=data, total=total)
+
+	@SuperBaseHandler.check_arguments("page:int")
+	def num(self):
+		page = self.args["page"]
+		if page == 0:
+			now = datetime.datetime.now()
+			start_date = datetime.datetime(now.year, now.month, 1)
+			end_date = now
+		else:
+			date = self.monthdelta(datetime.datetime.now(), page)
+			start_date = datetime.datetime(date.year, date.month, 1)
+			end_date = datetime.datetime(date.year, date.month, date.day)
+
+		# 日订单数，日总订单金额
+		s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
+			filter(models.Order.create_date >= start_date,
+				   models.Order.create_date <= end_date,models.Order.status !=0).\
+			group_by(func.year(models.Order.create_date),
+					 func.month(models.Order.create_date),
+					 func.day(models.Order.create_date)).\
+			order_by(models.Order.create_date.desc()).all()
+
+		# 总订单数
+		total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
+			filter(models.Order.create_date <= end_date,models.Order.status != 0).all()
+		total = list(total[0])
+
+		data = []
+		i = 0
+		date = end_date
+		# data的封装格式为：[日期，日，日订单数，累计订单数，日订单总金额，累计订单总金额]
+		while 1:
+			if i < len(s) and s[i][0].date() == date.date():
+				data.append((date.strftime('%Y-%m-%d'), date.day, s[i][1], total[1], format(s[i][2],'.2f'), format(total[0],'.2f')))
+				total[1] -= s[i][1]
+				total[0] -= s[i][2]
+				i += 1
+			else:
+				data.append((date.strftime('%Y-%m-%d'), date.day, 0, total[1], format(0,'.2f'), format(total[0],'.2f')))
+			date -= datetime.timedelta(1)
+			if date <= start_date:
+				break
+		first_order = self.session.query(models.Order).\
+			order_by(models.Order.create_date).first()
+		page_sum = (datetime.datetime.now() - first_order.create_date).days//30 + 1
+		return self.send_success(page_sum=page_sum, data=data)
+	'''
+##
+
 class Official(SuperBaseHandler):
 	def get(self):
 		return self.render("m-official/home.html")
