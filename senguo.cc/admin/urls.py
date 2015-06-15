@@ -164,6 +164,10 @@ handlers = [
 	(r"/super/incstatic", handlers.superadmin.IncStatic, {}, "superIncStatic"),
 	(r"/super/dstatic", handlers.superadmin.DistributStatic, {}, "superDStatic"),
 	(r"/super/shopstatic", handlers.superadmin.ShopStatic, {}, "superShopStatic"),
+
+	#add by jyj 2015-6-15
+	(r"/super/orderstatic", handlers.superadmin.OrderStatic, {}, "superOrderStatic"),
+	##
 	# (r"/super/Commentdelete",handlers.superadmin.CommentApplyDelete,{},"superCommentDelete"),
 
 
