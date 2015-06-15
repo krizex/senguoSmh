@@ -4,12 +4,6 @@
 var curStaff = null,width = 0;
 $(document).ready(function(){
     width = $(window).width();
-    $(".pop-win").on("click",function(e){
-        if($(e.target).closest(".pop-content").length==0){
-            $(".pop-win").addClass("hide");
-        }
-    })
-
     $(".order-grade .task-staff").on("click",function(){
         curStaff = $(this).closest(".order-grade");
         $(".pop-staff").removeClass("hide");

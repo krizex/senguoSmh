@@ -77,6 +77,9 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .mt30{margin-top: 30px;}
 .ml10{margin-left: 10px;}
 .mr10{margin-right: 10px;}
+.mt-100{margin-top: -100px;}
+/*提示框*/
+.zb-tip{width: 70%;position: fixed;left: 50%;top: 20%;-webkit-transform:translate(-50%,-50%);z-index:10000;color: #fff;border-radius: 10px;padding: 10px 8px;text-align: center;font-size: 14px;line-height:26px;background-color: rgba(255,105,105,.8);}
 /*页面头部*/
 .header{position: fixed;top: 0;left: 0;z-index:999;width: 100%;background-color: #48b6a4;height: 40px;line-height:40px;color: #fff;text-align: center;}
 .back{display: inline-block;height: 40px;min-width:40px;line-height:40px;padding-left: 12px;background-image: url('/static/svg/back-white@2x.png');background-size: 10px 16px;color: #fff;position: absolute;left: 10px;top: 0;background-position: left center;}
@@ -87,6 +90,8 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 /*弹出框底层*/
 .pop-win{width: 100%;height: 100%;position: fixed;background-color: rgba(255,255,255,.4);top: 0;left: 0;z-index:9999;}
 .pop-content{width:80%;background-color: #fff;position: absolute;left: 50%;top: 40%;-webkit-transform:translate(-50%,-50%);}
+/*页面提示文字*/
+.no-result{font-size: 14px;text-align: center;color: #999;}
 /*加载中动画*/
 .wrap-loading-box{width: 100%;height: 100%;position: fixed;background-color: rgba(255,255,255,.4);top: 0;left: 0;z-index:9999;}
 .loading-box{position: fixed;z-index:9999;top: 50%;left:50%;-webkit-transform:translate(-50%, -50%);display: -webkit-flex;display: flex;-webkit-justify-content: center;justify-content: center;}

@@ -87,7 +87,20 @@ Guid.NewGuid = function(){
     }
     return new Guid(g);
 }
-
+/*global tip*/
+var zb_timer = null;
+function Tip(text){
+    clearTimeout(zb_timer);
+    if($("#zb-tip").size()>0){
+        $("#zb-tip").html(text).removeClass("hidden");
+    }else{
+        var tip = '<div class="zb-tip" id="zb-tip">'+text+'</div>';
+        $("body").append(tip);
+    }
+    zb_timer = setTimeout(function(){
+        $("#zb-tip").addClass("hidden");
+    },2000);
+}
 /*获取滑动方向，touch*/
 var touch = {
     getSlideAngle:function(dx, dy){
@@ -156,3 +169,20 @@ function isIos(){
         return false;
     }
 }
+/*post*/
+$.postJson = function(url, args,successCall){
+    args._xsrf = window.dataObj._xsrf;
+    $.ajax({
+        type:"post",
+        url:url,
+        data:JSON.stringify(args),
+        contentType:"application/json; charset=UTF-8",
+        success:successCall,
+        fail:function(){
+            Tip("服务器出错了，请联系管理员");
+        },
+        error:function(){
+            Tip("服务器出错了，请联系管理员");
+        }
+    });
+};

@@ -80,8 +80,9 @@
 .loc{background-image: url('/static/m-admin/img/icon_loc.png');background-size: 16px!important;}
 .say{background-image: url('/static/m-admin/img/icon_say.png');}
 .order-content .order-grade{margin-top: -20px;}
-
-
+/*订单搜索*/
+.search-ipt{width: 100%;background-color: transparent;border: none;height: 28px;color:#fff;padding: 2px 10px;-webkit-box-sizing: border-box;font-size: 14px;}
+.wrap-ipt{line-height: 1;height: 28px;}
 
 
 
