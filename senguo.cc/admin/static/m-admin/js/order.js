@@ -4,6 +4,7 @@
 var curStaff = null,startX = 0,startY = 0,width = 0;
 $(document).ready(function(){
     width = $(window).width();
+    var minheight = $(window).height()-70;
     $(".pop-win").on("click",function(e){
         if($(e.target).closest(".pop-content").length==0){
             $(".pop-win").addClass("hide");
@@ -18,6 +19,7 @@ $(document).ready(function(){
         var index = $(this).index();
         //$(".second-tab-list .item").removeClass("active").eq(index).addClass("active");
         $(".second-tab-list .tab-line").css("left",$(this).position().left);
+        swiper.swipeTo(index);
     });
     $(".order-grade .task-staff").on("click",function(){
         curStaff = $(this).closest(".order-grade");
@@ -41,11 +43,23 @@ $(document).ready(function(){
        $(".pop-staff").addClass("hide");
     });
     $(window).scroll(function(){
-
+        console.log(333);
     });
-    initEvent($("#order-lists")[0]);
+    $(".swiper-wrapper").width(width*$(".swiper-slide").size());
+    $(".swiper-slide").css({minHeight:minheight+"px"});
+    var swiper = new Swiper('#swiper-container',{
+        mode: 'horizontal',
+        grabCursor: true,
+        resistance:"100%",
+        autoplayDisableOnInteraction:false,
+        onSlideChangeEnd:function(swiper){
+            var index = swiper.activeIndex;
+            $(".second-tab-list .tab-line").css("left",$(".second-tab-list").children(".item").eq(index).position().left);
+        }
+    });
 });
-function initEvent(obj){
+/*function initEvent(obj){
+    initEvent($("#order-lists")[0]);
     obj.addEventListener('touchstart', function (ev) {
         //ev.preventDefault();
         startX = ev.touches[0].pageX;
@@ -72,4 +86,4 @@ function initEvent(obj){
     obj.addEventListener('touchend', function (ev) {
         //ev.preventDefault();
     }, false);
-}
+}*/

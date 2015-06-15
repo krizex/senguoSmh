@@ -7,6 +7,9 @@
 {% set attribute_active = ""%}
 {% set shop_active = ""%}
 {% set apply_active = ""%}
+<!--add by jyj 2015-6-15-->
+{% set order_active = ""%}
+<!---->
 
 {% if subcount == "user"%}
     {% set user_active = "active"%}
@@ -14,15 +17,21 @@
     {% set shop_active = "active"%}
 {% elif subcount == "attribute"%}
     {% set attribute_active = "active"%}
-{% else %}
+    <!--change by jyj 2015-6-15-->
+{% elif subcount == "apply"%}
     {% set apply_active = "active"%}
+<!---->
+<!--add by jyj 2015-6-15-->
+{% else %}
+    {% set order_active = "active"%}
+<!---->
 {% end %}
 <div class="row">
     <div class="admin-left pull-left">
         <ul class="nav nav-stacked shop-manage-nav text-right" role="tablist">
             <li class="all nav_item {{user_active}}">
                 <a href="{{reverse_url('superIncStatic')}}">用户增长</a>
-            </li>
+            </li> 
             <li class="admin nav_item {{attribute_active}}">
                 <a href="{{reverse_url('superDStatic')}}">用户属性分布</a>
             </li>
@@ -32,6 +41,11 @@
             <li class="phone nav_item {{apply_active}}">
                 <a href="{{reverse_url('superIncStatic')}}">入驻申请</a>
             </li>
+            <!--add by jyj 2015-6-15-->
+            <li class="phone nav_item {{order_active}}">
+                <a href="{{reverse_url('superOrderStatic')}}">订单统计</a>
+            </li>
+            <!---->
         </ul>
     </div>
     {% block count %}

@@ -136,9 +136,9 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .point-cen{width: calc(100% - 140px);-webkit-box-sizing: border-box;min-width: 50%;padding: 0 0 0 5px;}
 .percent-bar{background-color: #d2d3d2;border-radius: 14px;margin: 10px 0;height: 12px;}
 .percent-bar>span{display: block;width: 20%;height: 12px;border-radius: 14px;}
-.percent-bar .bar1{background-color: #f7cb86;transition: width 1s 0.2s;}
-.percent-bar .bar2{background-color: #80de9e;transition: width 1s 0.5s;}
-.percent-bar .bar3{background-color: #5be8ef;transition: width 1s 0.8s;}
+.percent-bar .bar1{background-color: #f7cb86;transition: width 1s 0.2s;-webkit-transition: width 1s 0.2s;}
+.percent-bar .bar2{background-color: #80de9e;transition: width 1s 0.5s;-webkit-transition: width 1s 0.5s;}
+.percent-bar .bar3{background-color: #5be8ef;transition: width 1s 0.8s;-webkit-transition: width 1s 0.8s;}
 .point-com-lst{padding: 0 10px 10px 10px;}
 .point-com-lst>li{border-bottom: 1px solid #f2f2f2;padding: 10px 0;}
 .ccom-item{position: relative;}

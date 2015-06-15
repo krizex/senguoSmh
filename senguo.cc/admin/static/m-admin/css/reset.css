@@ -16,8 +16,8 @@ input{border-radius:0;-webkit-appearance: none;-moz-appearance:none;appearance:n
 input:focus,textarea:focus{outline: none;}
 input[type='button']{cursor: pointer;}
 ul,li,a,i,span{-webkit-tap-highlight-color:rgba(0,0,0,0);}/*去除点击高亮样式*/
-a{background-repeat: no-repeat;background-size: contain;}
-a,a:visited,a:hover,a:focus{color:#6ba4ef;font-size:14px;text-decoration: none;outline:none;background-color: transparent;}
+a{background-repeat: no-repeat;background-size: contain;color:#6ba4ef;}
+a,a:visited,a:hover,a:focus{font-size:14px;text-decoration: none;outline:none;background-color: transparent;}
 img{width: 100%;}
 textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .group:before,.group:after{content:'';display: block;line-height: 0;height: 0;font-size: 0;clear: both;}
@@ -81,7 +81,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .header{position: fixed;top: 0;left: 0;z-index:999;width: 100%;background-color: #48b6a4;height: 40px;line-height:40px;color: #fff;text-align: center;}
 .back{display: inline-block;height: 40px;min-width:40px;line-height:40px;padding-left: 12px;background-image: url('/static/svg/back-white@2x.png');background-size: 10px 16px;color: #fff;position: absolute;left: 10px;top: 0;background-position: left center;}
 .head-right{display: block;height: 40px;width:40px;background-size: 20px;position: absolute;right: 10px;top: 0;background-position: right center;}
-.search{background-image: url('/static/images/shop_top.png');background-position: 14px -22px;top: 4px;background-size: 22px;}
+.search{background-image: url('/static/images/shop_top.png');background-position: 14px -22px;top: 8px;background-size: 22px;}
 /*页面容器*/
 .container{position: relative;z-index: 1;padding-top: 40px;}
 /*弹出框底层*/
