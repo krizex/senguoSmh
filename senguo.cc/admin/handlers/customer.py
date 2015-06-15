@@ -1338,7 +1338,7 @@ class Cart(CustomerBaseHandler):
 				if fruits[str(charge_type.id)] in [0,None]:  # 有可能num为0，直接忽略掉
 					continue
 				totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
-				num = int(fruits[str(charge_type.id)]*charge_type.relate*charge_type.num)
+				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num
 
 				limit_num = charge_type.fruit.limit_num
 				buy_num = int(fruits[str(charge_type.id)])
