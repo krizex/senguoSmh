@@ -31,7 +31,7 @@
     {% set receipt_active ='active' %}
 {% end %}
 {% set shop_code =current_shop.shop_code %}
-<span class="right-title">店铺设置{% if shop_code and shop_code!='not set' %}<span class="shop-link ml10">当前店铺：<a href="{{reverse_url('Market',shop_code)}}" target="_blank">{{current_shop.shop_name}}</a></span>{% else %}<span class="shop-link ml10">{{current_shop.shop_name}} (请设置店铺号)</span>{% end %}<a href="/admin/switchshop">切换店铺</a></span>
+<span class="right-title">店铺设置{% if shop_code and shop_code!='not set' %}<span class="shop-link ml10">当前店铺：<a href="{{reverse_url('Market',shop_code)}}" target="_blank">{{current_shop.shop_name}}</a></span>{% else %}<span class="shop-link ml10">{{current_shop.shop_name}} (请设置店铺号)</span>{% end %}<a href="/admin/switchshop" class="add-btn switch">　切换店铺</a></span>
 <div class="subnav-box">
     <ul class="subnav group">
         <!--<li class="{{delivery_active}}" id="deliverySet"><a href="{{reverse_url('adminConfig')}}?action=delivery">配送设置</a></li>-->
@@ -40,7 +40,7 @@
         <!--<li><a href="#">充值设置</a></li>-->
         <li class="{{receipt_active}}" id="receiptSet"><a href="{{reverse_url('adminConfig')}}?action=receipt">小票设置</a></li>
         <li class="{{cert_active}}" id=""><a href="{{reverse_url('adminShopAuth')}}">店铺认证</a></li>
-         {% if current_shop.shop_auth !=0 %}
+        {% if current_shop.shop_auth !=0 %}
         <li class="{{pay_active}}"><a href="{{reverse_url('adminConfig')}}?action=pay">支付方式</a></li>
         <li class="{{phone_active}}"><a href="{{reverse_url('adminConfig')}}?action=phone">短信验证</a></li>
         <li class="{{admin_active}}"><a href="{{reverse_url('adminConfig')}}?action=admin">管理员设置</a></li>
