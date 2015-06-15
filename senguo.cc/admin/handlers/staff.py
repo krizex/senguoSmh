@@ -129,21 +129,21 @@ class Order(StaffBaseHandler):
 	   
 		if work == 1: #JH
 			orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
-				JH_id=self.current_user.id, status=models.ORDER_STATUS.JH).desc()
+				JH_id=self.current_user.id, status=models.ORDER_STATUS.JH)
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
-											 models.Order.JH_id==self.current_user.id, models.Order.status.in_([3,4,5,6,7])).desc()
+											 models.Order.JH_id==self.current_user.id, models.Order.status.in_([3,4,5,6,7]))
 		elif work ==2: #SH1
 			orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
-				SH1_id=self.current_user.id, status=models.ORDER_STATUS.SH1).desc()
+				SH1_id=self.current_user.id, status=models.ORDER_STATUS.SH1)
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
-								  models.Order.SH1_id==self.current_user.id,models.Order.status.in_([4,5,6,7])).desc()
+								  models.Order.SH1_id==self.current_user.id,models.Order.status.in_([4,5,6,7]))
 		elif work ==3: #SH2
 			orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
-				models.Order.SH2_id==self.current_user.id, models.Order.status.in_([4,5])).desc()
+				models.Order.SH2_id==self.current_user.id, models.Order.status.in_([4,5]))
 			orders_len = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
 				models.Order.SH2_id==self.current_user.id, models.Order.status.in_([4]))
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
-								  models.Order.SH2_id==self.current_user.id, models.Order.status.in_([5,6,7])).desc()
+								  models.Order.SH2_id==self.current_user.id, models.Order.status.in_([5,6,7]))
 		else:
 			return self.send_error(404)
 
