@@ -22,7 +22,9 @@ $(document).ready(function(){
             var $this=$(this);
             var id = Number($this.attr('data-id'));
             _group_id = id;
-            goodsList(1,6); 
+            if(window.dataObj.finished==true){
+                goodsList(1,6); 
+            }
          });    
     }
     // scrollLoading();
@@ -103,7 +105,7 @@ $(document).ready(function(){
     var detail_no=$this.attr('data-detail');
     var id=$this.attr('data-id');
     var shop_code=$('#shop_code').val();
-    if (storage > 0 && detail_no=='false') {
+    if (storage > 0 && detail_no=='False') {
         if($(e.target).closest(".forbid_click").size()==0){
             addCart("/"+shop_code+"/goods/"+id);
         }
@@ -132,7 +134,7 @@ $(document).ready(function(){
     large_box.find('#largeImg').attr({'src':img_url});
     large_box.find('.modal-title').text(fruit_name);
     large_box.find('.intro').text(fruit_intro);
-    if(if_favour=='true') {large_box.find('.click-great').addClass('clicked').removeClass('able_click')}
+    if(if_favour=='True') {large_box.find('.click-great').addClass('clicked').removeClass('able_click')}
     else {large_box.find('.click-great').removeClass('clicked').addClass('able_click');}
 }).on('click','.clicked',function(){
     noticeBox('亲，你今天已经为该商品点过赞了，一天只能对一个商品赞一次哦');
@@ -212,12 +214,12 @@ $(document).ready(function(){
      $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
      }*/
     var storage=parseFloat(parent.attr('data-storage'));
-    var relate=parseFloat($this.parents('.num_box').siblings('.charge-type').attr('data-relate'));
+    var relate=parseFloat($this.parents('.charge-item').attr('data-relate'));
     var unit_num=parseFloat($this.parents('.num_box').siblings('.charge-type').find('.num').text());
     var change_num=relate*unit_num*1;
-    var buy_today=$this.parents('.num_box').attr('data-buy');
-    var allow_num=parseInt($this.parents('.num_box').attr('data-allow'));
-    if(buy_today=='true'&&allow_num<=0){
+    var buy_today=$this.parents('.charge-item').attr('data-buy');
+    var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
+    if(buy_today=='True'&&allow_num<=0){
         return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
     }
     if(storage-change_num<0){
@@ -255,9 +257,9 @@ $(document).ready(function(){
     var num=Int($this.siblings('.number-input').val().trim());
     var storage=parseFloat(parent.attr('data-storage'));
     var regNum=/^[0-9]*$/;
-    var buy_today=$this.parents('.num_box').attr('data-buy');
-    var allow_num=parseInt($this.parents('.num_box').attr('data-allow'));
-    if(buy_today=='true'&&num>=allow_num){
+    var buy_today=$this.parents('.charge-item').attr('data-buy');
+    var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
+    if(buy_today=='True'&&num>=allow_num){
         return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
     }
     if(!regNum.test(num)) {
@@ -383,8 +385,6 @@ window.dataObj.finished=true;
 var nomore=false;
 var _group_id;
 var _search;
-
-
 $('.loading').html("~努力加载中 ( > < )~").show();
 var scrollLoading=function(){
     $(window).scroll(function(){
@@ -427,19 +427,7 @@ var goodsList=function(page,action){
             if(res.success)
             {
                 nomore = res.nomore
-                //get item dom
-                if(window.dataObj.goods_item==undefined){
-                    getItem('/static/items/customer/market-goods-item.html?v=20150613',function(data){
-                        window.dataObj.goods_item=data;
-                        getItem('/static/items/customer/charge-item.html?v=20150613',function(data){
-                            window.dataObj.charge_item=data;
-                            initData(res.data);
-                        });
-                    });
-                }
-                else {
-                    initData(res.data);
-                }
+                initData(res.data);
                 if(nomore == true){
                     if(action==9){
                         $('.loading').html("~没有更多结果了 ( > < )~").show();
@@ -455,28 +443,66 @@ var goodsList=function(page,action){
         },
         function(){noticeBox('网络好像不给力呢~ ( >O< ) ~');},
         function(){noticeBox('服务器貌似出错了~ ( >O< ) ~');});
-    var initData=function(data){
-        var data=data;
-        for(var key in data){
-            $('.classify-'+data[key]['group_id']).removeClass('hidden');
-            fruitItem($('.goods-list-'+data[key]['group_id']),data[key]);//fruits information
+        var initData=function(data){
+            var data=data;
+            for(var key in data){
+                $('.classify-'+data[key]['group_id']).removeClass('hidden');
+                fruitItem($('.goods-list-'+data[key]['group_id']),data[key]);//fruits information
+            }
+            var fruits=window.dataObj.fruits;
+            var c_fs=[];
+            for(var key in fruits){
+                c_fs.push([key,fruits[key]]);
+            };
+            cartNum(c_fs,'.fruit-list');
+            window.dataObj.count++;
+            window.dataObj.finished=true;
+            $(".wrap-loading-box").remove();
         }
-        var fruits=window.dataObj.fruits;
-        var c_fs=[];
-        for(var key in fruits){
-            c_fs.push([key,fruits[key]]);
-        };
-        cartNum(c_fs,'.fruit-list');
-        window.dataObj.count++;
-        window.dataObj.finished=true;
-        $(".wrap-loading-box").remove();
-    }
 };
+var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{detail_no}}">'+
+                    '<div class="clearfix box bg {{if storage<=0 }}desaturate{{/if}}">'+
+                        '<div class="goods-img pull-left forbid_click">'+
+                            '<a href="javascript:;" class="check-lg-img">'+
+                                '<img src="/static/images/holder.png?v=20150330" class="img lazy_img" data-original="{{ori_img}}">'+
+                                '<span class="tag text-white text-center tagItem font8" data-id="{{tag}}"></span>'+
+                            '</a>'+
+                        '</div>'+
+                        '<div class="goods-info pull-left">'+
+                            '<p class="clearfix">'+
+                                '<span class="pull-left color fruit-name font14">{{name}}</span>'+
+                                '<span class="pull-right text-grey sale font12">销量: <span class="color number">{{saled}}</span></span>'+
+                            '</p>'+
+                            '<p class="great-number font12">'+
+                                '<em class="bg_change heart {{heart}}" data-id="{{favour}}"></em>'+
+                                '<span class="great">{{favour}}</span>'+
+                            '</p>'+
+                            '<ul class="charge-list charge-style font14 color {{charge_types}}">'+
+                                '{{each charge_types as key}}'+
+                                '<li class="border-color set-w100-fle charge-item" data-id="{{key["id"]}}" data-relate="{{key["relate"]}}" data-buy="{{key["limit_today"]}}" data-allow={{key["allow_num"]}}>'+
+                                    '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
+                                        '<span class="price">{{key["price"]}}</span>元&nbsp;<span class="unit"><span class="market">{{if key["market_price"]>0 }}<span class="market-price">{{key["market_price"]}}元</span>{{/if}}</span>/<span class="num">{{key["num"]}}</span><span class="chargeUnit">{{key["unit"]}}</span></span>'+
+                                    '</span>'+
+                                    '<span class="forbid_click pull-right num_box">'+
+                                        '<span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>'+
+                                        '<span class="pull-right p0 number-change hidden forbid_click">'+
+                                            '<button class="minus-plus pull-right number-plus bg_change"></button>'+
+                                            '<input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"readonly/>'+
+                                            '<button class="minus-plus pull-right number-minus bg_change"></button>'+
+                                        '</span>'+
+                                    '</span>'+
+                                '</li>'+
+                                '{{/each}}'+
+                            '</ul>'+
+                        '</div>'+
+                    '</div>'+
+                    '<input type="hidden" class="fruit_intro" value="{{intro}}"/>'+
+                    '{{if storage<=0 }}'+
+                    '<div class="sold-out bg_change" style="background-color:rgba(0,0,0,0.1)"><div class="out"></div></div>'+
+                    '{{/if}}'+
+                '</li>';
 
 var fruitItem=function(box,fruits,type){
-    var goods_item=window.dataObj.goods_item;
-    var charge_item=window.dataObj.charge_item;
-    var $item=$(goods_item);
     var id=fruits['id'];
     var storage=fruits['storage'];
     var code=fruits['code'];
@@ -490,89 +516,40 @@ var fruitItem=function(box,fruits,type){
     var favour_today=fruits['favour_today'];
     var limit_num=fruits['limit_num'];
     var detail_no=fruits['detail_no'];
-    if(!code) code='TDSG';
-    $item.attr({'data-id':id,'data-type':type,'data-storage':storage,'data-num':storage,'data-favour':favour_today,'data-limit':limit_num,'data-detail':detail_no}).addClass(code);
-    $item.find('.fruit_intro').val(intro);
-    $item.find('.fruit-name').text(name);
-    if(saled>9999) $item.find('.number').text('9999+');
-    else $item.find('.number').text(saled);
-    $item.find('.great').text(favour).siblings('em').attr({'data-id':favour}); //if favour is not correct,should been replaced
-    if(favour_today) $item.find('.heart').addClass('red-heart');
-    else $item.find('.heart').addClass('gray-heart');
-    //商品标签转换
-    tagText($item.find('.tagItem'),tag);
-    //售完状态
-    if(storage<=0){
-        $item.append('<div class="sold-out bg_change"><div class="out"></div></div>').find('.box').addClass('desaturate').find('.arrow').css({'border-color':'transparent #B6B6B6 transparent transparent'});
-        $item.find('.sold-out').css({'background-color':'rgba(0,0,0,0.1)'});
-        $item.find('.bg').css({'background':'#FCFCFC'});
-        $item.find('.color').css({'color':'#757575'});
-        //AndroidImg('bg_change');
+    var heart='';
+    var sold_out='';
+    var ori_img='';
+    if(!code) {code='TDSG';}
+    if(saled>9999){saled='9999+'}
+    if(favour_today=='true'){
+        heart='red-heart';
+    }else{
+        heart='gray-heart';
     }
-    //if there isn't only one type of charge_type
-    //if(charge_types.length>1){
-    //    $item.find('.show-box').addClass('toggle');
-    //    $item.find('.charge-list').addClass('toggle');
-    //    $item.find('.toggle_icon').addClass('arrow');
-    //    $item.addClass('pr35');
-    //    $item.find('.back-shape').addClass('shape');
-    //}
-    //charge_type info
-    for(var key in charge_types ){
-        var $charge_item=$(charge_item);
-        if(key==0){
-            var id=charge_types[0]['id'];
-            var price=charge_types[0]['price'];
-            var num=charge_types[0]['num'];
-            var unit=charge_types[0]['unit'];
-            var relate=charge_types[0]['relate'];
-            var market_price=charge_types[0]['market_price'];
-            var limit_today =charge_types[0]['limit_today'];
-            var allow_num=charge_types[0]['allow_num'];
-            $charge_item.attr({'data-id':id,'data-relate':relate,'data-buy':limit_today,'data-allow':allow_num});
-            $charge_item.find('.price').text(price);
-            $charge_item.find('.num').text(num);
-            $charge_item.find('.chargeUnit').text(unit);
-            if(market_price>0){
-               $charge_item.find('.market-price').text(market_price+'元'); 
-            }
-            else{
-                $charge_item.find('.market').hide();
-            }
-            $item.find('.charge-first').append($charge_item);
-        }
-        else{
-            var id=charge_types[key]['id'];
-            var price=charge_types[key]['price'];
-            var num=charge_types[key]['num'];
-            var unit=charge_types[key]['unit'];
-            var relate=charge_types[key]['relate'];
-            var market_price=charge_types[key]['market_price'];
-            var limit_today =charge_types[key]['limit_today'];
-            var allow_num=charge_types[key]['allow_num'];
-            $charge_item.attr({'data-id':id,'data-relate':relate,'data-buy':limit_today,'data-allow':allow_num}).addClass('more_charge');
-            $charge_item.find('.price').text(price);
-            $charge_item.find('.num').text(num);
-            $charge_item.find('.chargeUnit').text(unit);
-            if(market_price>0){
-               $charge_item.find('.market-price').text(market_price+'元'); 
-            }
-            else{
-                $charge_item.find('.market').hide();
-            }
-            var $li=$('<li class="border-color set-w100-fle"></li>');
-            $li.append($charge_item);
-            $item.find('.charge-list').append($li);
-        }
-        //goods img
-        if(!img_url){
-            $item.find('.img').attr({'data-original':'/static/design_img/'+code+'.png'});
-        }else{
-            $item.find('.img').attr({'data-original':img_url+'?imageView/1/w/170/h/170'});
-        }
+    if(!img_url){
+        ori_img='/static/design_img/'+code+'.png';
+    }else{
+        ori_img=img_url+'?imageView/1/w/170/h/170';
     }
-    box.append($item);
-    //$('.lazy_img').lazyload({container: $("#wrap-goods-box"),threshold:10});
+    var render=template.compile(goods_item);
+    var html=render({
+        code:code,
+        goos_id:id,
+        storage:storage,
+        favour_today:favour_today,
+        limit_num:limit_num,
+        detail_no:detail_no,
+        intro:intro,
+        name:name,
+        saled:saled,
+        favour:favour,
+        heart:heart,
+        tag:tag,
+        charge_types:charge_types,
+        sold_out:sold_out,
+        ori_img:ori_img
+    });
+    box.append(html);
     $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
 };
 window.dataObj.fruits={};
@@ -584,14 +561,14 @@ function cartNum(cart_ms,list){
             var item=item_list.eq(i).find('.charge-type');
             for(var j=0;j<item.length;j++){
                 var charge = item.eq(j);
-                var id = charge.data('id');
+                var id = charge.parents('.charge-item').attr('data-id');
                 var add = charge.siblings('.num_box').find('.to-add');
                 var change = charge.siblings('.num_box').find('.number-change');
                 var input = change.find('.number-input');
                 if (id == cart_ms[key][0]) {
                     var $parent=charge.parents('.goods-list-item');
                     var storage=$parent.attr('data-storage');
-                    add.removeClass('show');
+                    add.addClass('hidden');
                     change.removeClass('hidden');
                     input.val(cart_ms[key][1]);
                     $parent.attr({'data-storage':storage-cart_ms[key][1]});
@@ -612,10 +589,10 @@ function goodsNum(target,action){
     var change=target.parents('.number-change');
     var num=parseInt(item.val());
     var parent=target.parents('.goods-list-item');
-    var storage=parseFloat(parent.data('storage'));
+    var storage=parseFloat(parent.attr('data-storage'));
     var type_list=target.parents('.goods-list');
-    var id=target.parents('.num_box').attr('data-id');
-    var relate=parseFloat(target.parents('.num_box').siblings('.charge-type').attr('data-relate'));
+    var id=target.parents('.charge-item').attr('data-id');
+    var relate=parseFloat(target.parents('.charge-item').attr('data-relate'));
     var unit_num=parseFloat(target.parents('.num_box').siblings('.charge-type').find('.num').text());
     var change_num=relate*unit_num*num;
     var limit_num=parseInt(parent.attr('data-limit'));
@@ -623,9 +600,9 @@ function goodsNum(target,action){
     if(action==2)
     {
         if(storage<=0){
-            noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',target);
+            return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',target);
         }
-        else if(storage>0){
+        else{
             if(storage-change_num<0){
                 return  noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',target);
             }
@@ -729,7 +706,7 @@ function great(type,id){
                     var goods_id=$this.data('id');
                     if(type==type&&goods_id==id){
                         var num=$this.find('.great').text();
-                        $this.attr({'data-favour':'true'});
+                        $this.attr({'data-favour':'True'});
                         $this.find('.great').text(Int(num)+1).siblings('em').addClass('red-heart');
                     }
                 });

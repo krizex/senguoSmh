@@ -1029,7 +1029,7 @@ class Market(CustomerBaseHandler):
 							else:
 								allow_num = fruit.limit_num - limit_if.buy_num
 					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
-						'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':limit_today,'allow_num':allow_num})
+						'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),'allow_num':allow_num})
 
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 				saled = fruit.saled if fruit.saled else 0
@@ -1040,7 +1040,7 @@ class Market(CustomerBaseHandler):
 
 				data.append({'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,\
 					'storage':fruit.storage,'tag':fruit.tag,'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':saled,'favour':fruit.favour,\
-					'favour_today':favour_today,'group_id':fruit.group_id,'limit_num':fruit.limit_num,'detail_no':detail_no})
+					'favour_today':str(favour_today),'group_id':fruit.group_id,'limit_num':fruit.limit_num,'detail_no':str(detail_no)})
 			return data
 
 	@CustomerBaseHandler.check_arguments("page?:int","group_id?:int")
