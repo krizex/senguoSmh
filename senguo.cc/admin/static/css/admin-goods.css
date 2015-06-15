@@ -21,6 +21,7 @@ textarea{border-color:#eee;padding: 2px 5px;}
 .mt8{margin-top: 8px;}
 .mt4{margin-top: 4px;}
 .mr10{margin-right: 10px;}
+.mr5{margin-right: 5px !important;}
 .pl68{padding-left: 68px;}
 .c333{color: #333 !important;}
 .c222{color: #222 !important;}
@@ -158,6 +159,9 @@ textarea{border-color:#eee;padding: 2px 5px;}
 .ke-dialog-body .tab1{display: none !important;}
 .ke-dialog-body .tab2{display: block !important;}*/
 .ke-dialog-body input[type=file]{cursor: pointer !important;}
+.tag-item{display:inline-block;width:70px;text-align:center;border:1px solid #ddd;}
+.tag-item.active{border-color:#44b549;color:#44b549;}
+.tag-item:hover{cursor:pointer;}
 /*分类*/
 .wrap-fruit-select{position: relative;height: 30px;margin: 10px 0;}
 .fruit-select{position: absolute;right: 0;top: 0;}
@@ -198,3 +202,4 @@ textarea{border-color:#eee;padding: 2px 5px;}
 
 /*已删除*/
 .cancel-del-goods{position: absolute;right: 10px;top: 6px;width: 90px;}
+

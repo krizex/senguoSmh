@@ -465,7 +465,7 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id=
                         '<div class="goods-img pull-left forbid_click">'+
                             '<a href="javascript:;" class="check-lg-img">'+
                                 '<img src="/static/images/holder.png?v=20150330" class="img lazy_img" data-original="{{ori_img}}">'+
-                                '<span class="tag text-white text-center tagItem font8" data-id="{{tag}}"></span>'+
+                                '<span class="tag text-white text-center tagItem font8 {{tag}}"></span>'+
                             '</a>'+
                         '</div>'+
                         '<div class="goods-info pull-left">'+
@@ -530,6 +530,15 @@ var fruitItem=function(box,fruits,type){
         ori_img='/static/design_img/'+code+'.png';
     }else{
         ori_img=img_url+'?imageView/1/w/170/h/170';
+    }
+    if(tag==2){
+        tag='limit_tag';
+    }else if(tag==3){
+        tag='hot_tag';
+    }else if(tag==4){
+        tag='sale_tag';
+    }else if(tag==5){
+        tag='new_tag';
     }
     var render=template.compile(goods_item);
     var html=render({
