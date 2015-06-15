@@ -179,9 +179,13 @@ class customerGoods(CustomerBaseHandler):
 						allow_num = good.limit_num - limit_if.buy_num
 			charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
 				'market_price':charge_type.market_price,'relate':charge_type.relate,"limit_today":limit_today,"allow_num":allow_num})
+		if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
+			self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
+			self.session.commit()
 		cart_f = self.read_cart(shop.id)
-		cart_count = len(cart_f) 
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
+		cart_count = len(cart_f)
+		self.set_cookie("cart_count", str(cart_count))
 		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,shop_code=shop_code,charge_types=charge_types,cart_fs=cart_fs)
 		
 
