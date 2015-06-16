@@ -310,10 +310,10 @@ function orderItem(page){
                     }
                     //根据订单状态显示/隐藏
                     if(status==0) {
-                        if(del_reason=null){
+                        if(del_reason==null){
                             $item.find('.order-status').empty().text('该订单已被用户取消').css({'line-height':'50px','color':'#44b549'});
                         }
-                        else if(del_reason='timeout'){
+                        else if(del_reason=='timeout'){
                             $item.find('.order-status').empty().text('该订单15分钟未支付，已自动取消').css({'line-height':'50px','color':'#44b549'});
                         }
                         else{
