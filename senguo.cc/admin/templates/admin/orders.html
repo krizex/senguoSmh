@@ -11,20 +11,10 @@
 {% if order_type ==1 %}
     {% set lock_mode = current_shop.config.now_on %}
     {% set type_num =1 %}
-    {% set count1=count[11]%}
-    {% set count2=count[12]%}
-    {% set count3=count[13]%}
-    {% set count4=count[14]%}
-    {% set count5=count[15]%}
     {% set now_active='active'%}
 {% elif order_type ==2 %}
     {% set lock_mode = current_shop.config.ontime_on %}
     {% set type_num =2 %}
-    {% set count1=count[21]%}
-    {% set count2=count[22]%}
-    {% set count3=count[23]%}
-    {% set count4=count[24]%}
-    {% set count5=count[25]%}
     {% set in_active='active'%}
 {% end %}
 {% if lock_mode == True %}
@@ -42,11 +32,11 @@
     <ul class="subnav pull-left order-type">
         <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3 {{now_active}}">
             <a href="{{reverse_url('adminOrder')}}?order_type=1" class="text-grey3">立即送</a>
-            <span class="number" id="atonce">{{count[11]}}</span>
+            <span class="number" id="atonce"></span>
         </li>
         <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3 {{in_active}}">
             <a href="{{reverse_url('adminOrder')}}?order_type=2" class="text-grey3">按时达</a>
-            <span class="number" id="ontime">{{count[21]}}</span>
+            <span class="number" id="ontime"></span>
         </li>
         <!--<li class="text-center col-lg-3">
             <a href="#" class="text-grey3">周期购</a>
@@ -95,19 +85,19 @@
 <div class="subnav-box">
     <ul class="subnav pull-left order-status">
         <li class="active" data-id="1">
-            <a href="javascript:;">未处理&nbsp;<span class="text-pink" id="not-deal">{{count1}}</span></a>
+            <a href="javascript:;">未处理&nbsp;<span class="text-pink num" id="not-deal"></span></a>
         </li>
         <li data-id="2">
-            <a href="javascript:;">配送中&nbsp;<span class="text-pink">{{count2}}</span></a>
+            <a href="javascript:;">配送中&nbsp;<span class="text-pink num"></span></a>
         </li>
         <li data-id="3">
-            <a href="javascript:;">已送达&nbsp;<span class="text-pink">{{count3}}</span></a>
+            <a href="javascript:;">已送达&nbsp;<span class="text-pink num"></span></a>
         </li>
         <li data-id="4">
-            <a href="javascript:;">售后/退款&nbsp;<span class="text-pink">{{count4}}</span></a>
+            <a href="javascript:;">售后/退款&nbsp;<span class="text-pink num"></span></a>
         </li>
         <li data-id="5">
-            <a href="javascript:;">所有订单&nbsp;<span class="text-pink">{{count5}}</span></a>
+            <a href="javascript:;">所有订单&nbsp;<span class="text-pink num"></span></a>
         </li>
     </ul>
     <!--<a class="orders-recycle pull-right text-grey9" href="#">订单回收站</a>-->
@@ -342,6 +332,16 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+<div class="wrap-loading-box hidden">
+    <div class="loading-box">
+        <div class="loader">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+        <div class="load-txt">加载中...</div>
     </div>
 </div>
 {% end %}

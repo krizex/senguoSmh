@@ -685,8 +685,10 @@ class Order(AdminBaseHandler):
 			# print("[订单管理]当前店铺：",self.current_shop)
 
 			for order in orders:
-				order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id',
-											 'comment_create_date', 'start_time', 'end_time',        'create_date','today','type']
+				order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id','comment','comment_imgUrl','comment_reply',
+											 'comment_create_date', 'start_time', 'end_time','commodity_quality','create_date','today',
+											 'type','active','arrival_day','arrival_time','finish_admin_id','intime_period',
+											 'send_admin_id','send_speed','shop_service']
 				d = order.safe_props(False)
 				d['fruits'] = eval(d['fruits'])
 				if d['mgoods']:
@@ -694,7 +696,7 @@ class Order(AdminBaseHandler):
 				else:
 					d['mgoods'] = {}
 				d['create_date'] = order.create_date.strftime('%Y-%m-%d %H:%M:%S')
-				d["sent_time"] = order.send_time
+				# d["sent_time"] = order.send_time
 				info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
 				d["nickname"] = info.accountinfo.nickname
 				d["customer_id"] = order.customer_id
@@ -708,15 +710,16 @@ class Order(AdminBaseHandler):
 					# print("[订单管理]读取订单，订单用户ID：",order.customer_id,"，新用户标识：",d["shop_new"])
 				SH2s = []
 				for staff in staffs:
-					staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone}
+					staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone,\
+					"headimgurl":staff.accountinfo.headimgurl_small}
 					SH2s.append(staff_data)
 					if staff.id == order.SH2_id:  # todo JH、SH1
 						d["SH2"] = staff_data
 						# print(d["SH2"],'i am admin order' )
 				d["SH2s"] = SH2s
 				data.append(d)
-			return self.send_success(data = data,page_sum=page_sum)
-		return self.render("admin/orders.html",order_type=order_type,count=self._count(), context=dict(subpage='order'))
+			return self.send_success(data = data,page_sum=page_sum,count=self._count())
+		return self.render("admin/orders.html",order_type=order_type, context=dict(subpage='order'))
 
 
 	def edit_status(self,order,order_status,send_message=True):
@@ -2259,15 +2262,16 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 					not_(models.Order.status.in_([-1,0]))).all()
 			elif action == 'order':
 				orders = self.session.query(models.Order).filter(
-					models.Order.num==self.args['id'], models.Order.shop_id==self.current_shop.id,\
-					not_(models.Order.status.in_([-1,0]))).all()
+					models.Order.num==self.args['id'], models.Order.shop_id==self.current_shop.id).all()
 			else:
 				return self.send_error(404)
 			data = []
 			delta = datetime.timedelta(1)
 			for order in orders:
-				order.__protected_props__ = [ 'shop_id', 'JH_id', 'SH1_id', 'SH2_id',
-											 'comment_create_date', 'start_time', 'end_time', 'create_date']
+				order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id','comment','comment_imgUrl','comment_reply',
+											 'comment_create_date', 'start_time', 'end_time','commodity_quality','create_date','today',
+											 'type','active','arrival_day','arrival_time','finish_admin_id','intime_period',
+											 'send_admin_id','send_speed','shop_service']
 				d = order.safe_props(False)
 				d['fruits'] = eval(d['fruits'])
 				if d['mgoods']:
@@ -2275,7 +2279,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 				else:
 					d['mgoods'] = {}
 				d['create_date'] = order.create_date.strftime('%Y-%m-%d')
-				d["send_time"] = order.send_time
+				# d["send_time"] = order.send_time
 				d["customer_id"] = order.customer_id
 				d['nickname'] = self.session.query(models.Customer).filter_by(id=order.customer_id).first().accountinfo.nickname
 
