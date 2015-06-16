@@ -106,6 +106,7 @@ $(document).ready(function(){
     }
     _page=0;
     orderItem(0);
+    $('#all-check').removeClass('checked');
 }).on('click','.pre-page',function(){
      var $this=$(this);
      if(_page>0){
@@ -180,6 +181,7 @@ var getStaffItem=function(url){
 }
 
 function orderItem(page){
+    $(".wrap-loading-box").removeClass("hidden");
     var action=$.getUrlParam('action');
     var url;
     if(action=='order'){
@@ -202,6 +204,18 @@ function orderItem(page){
                 var data=res.data;
                 $('.page-total').text(parseInt(res.page_sum));
                 _page_total=parseInt(res.page_sum);
+                if(res.count){
+                     _count=res.count;
+                    var type=parseInt($.getUrlParam("order_type"));
+                    $('.order-status li').each(function(){
+                        var $this=$(this);
+                        var index=$this.index()+1;
+                        var i=parseInt(type.toString()+index.toString());
+                        $this.find('.num').text(_count[i]);
+                    });
+                    $('#atonce').text(_count[11]);
+                    $('#ontime').text(_count[21]);
+                }
                  if(_page_total <=1){
                     $('.list-pagination').hide();
                 }
@@ -224,6 +238,7 @@ function orderItem(page){
                 }
                 if(data.length==0){
                     $('.order-list-content').append('<h4 class="text-center mt40">当前分类暂无订单信息</h3>');
+                    $(".wrap-loading-box").addClass("hidden");
                     return false;
                 }
                 for(var i=0;i<data.length;i++){
@@ -310,10 +325,10 @@ function orderItem(page){
                     }
                     //根据订单状态显示/隐藏
                     if(status==0) {
-                        if(del_reason=null){
+                        if(del_reason==null){
                             $item.find('.order-status').empty().text('该订单已被用户取消').css({'line-height':'50px','color':'#44b549'});
                         }
-                        else if(del_reason='timeout'){
+                        else if(del_reason=='timeout'){
                             $item.find('.order-status').empty().text('该订单15分钟未支付，已自动取消').css({'line-height':'50px','color':'#44b549'});
                         }
                         else{
@@ -415,8 +430,10 @@ function orderItem(page){
                     $item.find('.goods-total-number').text(goods_num);
                     $('.order-list-content').append($item);
                 }
+             $(".wrap-loading-box").addClass("hidden");
             }
             else {
+                $(".wrap-loading-box").addClass("hidden");
                 return Tip(res.error_text);
             }
         }
@@ -545,7 +562,10 @@ function orderDelete(target){
     $.postJson(url,args,function(res){
             if(res.success){
                 $('.order_set_box').modal('hide');
-                $('.order-list-item').eq(index).remove();
+                $('.order-list-item').eq(index).find('.order-status').empty().text('该订单已删除（原因：'+del_reason+'）').css({'line-height':'50px','color':'#44b549'});
+                $('.order-list-item').eq(index).find('.unable_edit_order').show();
+                $('.order-list-item').eq(index).find('.address-adapt').hide();
+                $('.order-list-item').eq(index).find('.able_edit_order').hide();
             }
             else return Tip(res.error_text);
         },

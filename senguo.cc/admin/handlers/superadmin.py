@@ -140,6 +140,25 @@ class ShopManage(SuperBaseHandler):
 		action = self.args["action"]
 		flag=self.args["flag"]
 		
+
+		#add by jyj 2015-6-16
+		output_data_count = {}
+		output_data_count["status_5_count"] = self.session.query(models.Shop).count()
+		output_data_count["status_4_count"] = self.session.query(models.Shop).filter(models.Shop.shop_code == 'not set').count()
+		output_data_count["status_2_count"] = self.session.query(models.Shop).filter(models.Shop.status == 2).count()
+		output_data_count["status_1_count"] = self.session.query(models.Shop).filter(models.Shop.status == 1).count()
+		output_data_count["status_3_count"] = self.session.query(models.Shop).filter(models.Shop.status == 3).count()
+		output_data_count["status_0_count"] = self.session.query(models.Shop).filter(models.Shop.status == 0).count()
+
+		output_data_count["auth_4_count"] = self.session.query(models.Shop).count()
+		output_data_count["auth_3_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,2,3,4])).count()
+		
+		output_data_count["auth_2_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,4])).count()
+		output_data_count["auth_1_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([2,3])).count()
+		output_data_count["auth_0_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth == 0).count()
+		
+		##
+
 		#add 6.6pm search(根据店铺号或店铺名搜索的功能):
 		if 'search' in self.args:
 			from sqlalchemy.sql import or_ 
@@ -350,8 +369,12 @@ class ShopManage(SuperBaseHandler):
 				data["satisfy"] = satisfy
 
 				data["order_count"] = shop.order_count
-				data["goods_count"] = len(shop.fruits) + self.session.query(models.MGoods).\
-					join(models.Menu).filter(models.Menu.shop_id == shop.id).count()
+
+				#chang by jyj 2015-6-16
+				data["goods_count"] = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
+				##
+
+				print(data["goods_count"])
 				data["shop_property"] = shop.shop_property
 
 				if shop.order_count == 0:
@@ -363,18 +386,13 @@ class ShopManage(SuperBaseHandler):
 
 				data["available_balance"] = shop.available_balance
 				data["fans_count"] = shop.fans_count
-
-				#add by jyj 2015-6-15
-				data["search_count"] = search_count
-				##
-
 				output_data.append(data)
 				
 			if flag==1:
 				print(flag)
-				return self.render("superAdmin/shop-manage.html", output_data=output_data,context=dict(subpage='shop',action=action,count=count))
+				return self.render("superAdmin/shop-manage.html", output_data=output_data,output_data_count=output_data_count,context=dict(subpage='shop',action=action,count=count))
 			else :
-				return self.send_success(output_data=output_data)
+				return self.send_success(output_data=output_data,output_data_count=output_data_count)
 
 		else:
 			return self.send_error(404)
@@ -863,8 +881,10 @@ class OrderStatic(SuperBaseHandler):
 	@SuperBaseHandler.check_arguments("type:int")
 	def order_time(self):
 		type = self.args["type"]
-		q = self.session.query(func.hour(models.Order.create_date),func.minute(models.Order.create_date)).\
+		q = self.session.query(func.hour(models.Order.create_date), func.minute(models.Order.create_date)).\
 				filter(not_(models.Order.status.in_([-1,0])))
+		#q = self.session.query(models.Order.create_date).\
+		#		filter(not_(models.Order.status.in_([-1,0])))
 		if type == 1:  # 累计数据
 			pass
 		elif type == 2:  # 昨天数据
@@ -882,10 +902,11 @@ class OrderStatic(SuperBaseHandler):
 			if e[1] < 30: 
 				data[e[0]] += 1
 			else:
-				if e[0] +1 == 24:
+				if e[0]+1 == 24:
 					data[0] += 1
 				else:
 					data[e[0]] += 1
+			
 		return self.send_success(data=data)
 
 	@SuperBaseHandler.check_arguments("type:int")
@@ -915,6 +936,7 @@ class OrderStatic(SuperBaseHandler):
 			else:  # 按时达收货时间估计
 				data[(order[1].hour+order[2].hour)//2] += 1
 
+		print (data)
 		return self.send_success(data=data)
 ##
 

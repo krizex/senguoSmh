@@ -1191,11 +1191,11 @@ class WxOauth2:
 				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
 			"topcolor": "#FF0000",
 			"data": {
-				"first": {"value": "您好，您所申请的店铺『%s』已经通过审核！" % shop_name, "color": "#44b549"},
+				"first": {"value": "您好，您所申请的店铺『%s』已经通过审核！\n请添加森果客服微信 senguocc100" % shop_name, "color": "#44b549"},
 				"keyword1": {"value": name, "color": "#173177"},
 				"keyword2": {"value": phone, "color": "#173177"},
 				"keyword3": {"value": time, "color": "#173177"},
-				"remark": {"value": "请务必点击详情，查看使用教程！", "color": "#FF4040"}}
+				"remark": {"value": "请务必点击详情，查看使用教程", "color": "#FF4040"}}
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
