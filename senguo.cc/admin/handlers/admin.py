@@ -587,7 +587,7 @@ class Order(AdminBaseHandler):
 	# todo: 当订单越来越多时，current_shop.orders 会不会越来越占内存？
 	@tornado.web.authenticated
 	#@get_unblock
-	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?")
+	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?","pay_type?:int","user_type?:int","filter?:str")
 	#order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
 	def get(self):
 		order_type = self.args["order_type"]
@@ -621,103 +621,70 @@ class Order(AdminBaseHandler):
 			count = 0
 			page_sum = 0
 			orders = []
-		
-			if order_type == 10:  # 搜索订单：为了格式统一，order_status为order.num
-				orders = self.session.query(models.Order).filter(models.Order.num==order_status,\
-					models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0]))).all()
-				order_type = 1
-				count = self.session.query(models.Order).filter(models.Order.type==order_type,models.Order.status==order_status,\
-					models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0]))).count()
-			elif order_status == 1:
+			if self.current_shop.orders:
+				order_list = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id)
+			else:
+				order_list = None
+
+			if "user_type" in self.args:#filter user_type
+				user_type = int(self.args["user_type"])
+				if user_type != 9:#not all
+					order_list = self.session.query(models.Order).\
+					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
+					filter(models.Order.shop_id==self.current_shop.id,models.CustomerShopFollow.shop_new==user_type,\
+						models.CustomerShopFollow.shop_id==self.current_shop.id).distinct()
+
+			if "pay_type" in self.args:#filter pay_type
+				pay_type = int(self.args["pay_type"])
+				if pay_type != 9:#not all
+					order_list = order_list.filter(models.Order.pay_type==pay_type)
+
+			if order_status == 1:#filter order_status
 				order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
 					not_(models.Order.status.in_([-1,0]))).count()
 				new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
 				self.current_shop.new_order_sum = order_sum
-				orders = [x for x in self.current_shop.orders if x.type == order_type and x.status == 1]
-				count = len(orders)
-				# woody 4.3
-				session = self.session
-				# for order in orders:
-				# 	order.send_time = order.get_sendtime(session,order.id)
-				orders.sort(key = lambda order:order.send_time,reverse = False)
-				session.commit()
-			elif order_status == 5:#all
-				orders = [x for x in self.current_shop.orders if x.type == order_type]
-				count = len(orders)
-				session = self.session
-				# for order in orders:
-				# 	order.send_time = order.get_sendtime(session,order.id)
-				orders.sort(key = lambda order:order.send_time,reverse = True)
+				self.session.commit()
+				orders = [x for x in order_list if x.type == order_type and x.status == 1]
+
 			elif order_status == 2:#unfinish
-				orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in [2, 3, 4]]
-				count = len(orders)
-				# woody 4.3
-				session = self.session
-				# for order in orders:
-				# 	order.send_time = order.get_sendtime(session,order.id)
-				orders.sort(key = lambda order:order.send_time,reverse = True)
+				orders = [x for x in order_list if x.type == order_type and x.status in [2, 3, 4]]
 
 			elif order_status == 3:
-				try:
-					orderlist = self.session.query(models.Order).order_by(desc(models.Order.arrival_day),models.Order.arrival_time\
-						).filter(models.Order.type == order_type,models.Order.shop_id == self.current_shop.id,\
-						not_(models.Order.status.in_([-1,0]))).all()
-				except:
-					return self.send_fail("orderlist error")
-				# orders = [x for x in self.current_shop.orders if x.type == order_type and x.status in (5, 6)]
-				orders = [x for x in orderlist if x.type == order_type and x.status in (5, 6, 7)]
-				count = len(orders)
+				orders = [x for x in order_list if x.type == order_type and x.status in (5, 6, 7)]
+
 			elif order_status == 4:
 				pass
+			elif order_status == 5:#all
+				orders = [x for x in order_list if x.type == order_type]
 			else:
 				return self.send.send_error(404)
 
+			if self.args["filter"] !=[]:
+				filter_status = self.args["filter"]
+				if filter_status  == "send_positive":
+					orders.sort(key = lambda order:order.send_time,reverse = False)
+				elif filter_status  == "send_desc":
+					orders.sort(key = lambda order:order.send_time,reverse = True)
+				elif filter_status  == "order_positive":
+					orders.sort(key = lambda order:order.create_date,reverse = False)
+				elif filter_status  == "order_desc":
+					orders.sort(key = lambda order:order.create_date,reverse = True)
+				elif filter_status  == "price_positive":
+					orders.sort(key = lambda order:order.totalPrice,reverse = False)
+				elif filter_status  == "price_desc":
+					orders.sort(key = lambda order:order.totalPrice,reverse = True)
+
+
+			count = len(orders)
 			page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			session = self.session
 			page_area = page * page_size
 			orders = orders[page_area:page_area+10]
-			# print("after sort",orders)
-			# for order in orders:
-			#     print(order.w_send_time)
-
-			data = []
+			data = self.getOrder(orders)
 			delta = datetime.timedelta(1)
 			# print("[订单管理]当前店铺：",self.current_shop)
-
-			for order in orders:
-				order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id','comment','comment_imgUrl','comment_reply',
-											 'comment_create_date', 'start_time', 'end_time','commodity_quality','create_date','today',
-											 'type','active','arrival_day','arrival_time','finish_admin_id','intime_period',
-											 'send_admin_id','send_speed','shop_service']
-				d = order.safe_props(False)
-				d['fruits'] = eval(d['fruits'])
-				if d['mgoods']:
-					d['mgoods'] = eval(d['mgoods'])
-				else:
-					d['mgoods'] = {}
-				d['create_date'] = order.create_date.strftime('%Y-%m-%d %H:%M:%S')
-				# d["sent_time"] = order.send_time
-				info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
-				d["nickname"] = info.accountinfo.nickname
-				d["customer_id"] = order.customer_id
-				staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
-					models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id,models.HireLink.active == 1)).all()
-				d["shop_new"] = 0
-				follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
-					models.CustomerShopFollow.customer_id == order.customer_id).first()
-				if follow:
-					d["shop_new"]=follow.shop_new
-					# print("[订单管理]读取订单，订单用户ID：",order.customer_id,"，新用户标识：",d["shop_new"])
-				SH2s = []
-				for staff in staffs:
-					staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone,\
-					"headimgurl":staff.accountinfo.headimgurl_small}
-					SH2s.append(staff_data)
-					if staff.id == order.SH2_id:  # todo JH、SH1
-						d["SH2"] = staff_data
-						# print(d["SH2"],'i am admin order' )
-				d["SH2s"] = SH2s
-				data.append(d)
+			
 			return self.send_success(data = data,page_sum=page_sum,count=self._count())
 		return self.render("admin/orders.html",order_type=order_type, context=dict(subpage='order'))
 
@@ -2265,42 +2232,8 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 					models.Order.num==self.args['id'], models.Order.shop_id==self.current_shop.id).all()
 			else:
 				return self.send_error(404)
-			data = []
 			delta = datetime.timedelta(1)
-			for order in orders:
-				order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id','comment','comment_imgUrl','comment_reply',
-											 'comment_create_date', 'start_time', 'end_time','commodity_quality','create_date','today',
-											 'type','active','arrival_day','arrival_time','finish_admin_id','intime_period',
-											 'send_admin_id','send_speed','shop_service']
-				d = order.safe_props(False)
-				d['fruits'] = eval(d['fruits'])
-				if d['mgoods']:
-					d['mgoods'] = eval(d['mgoods'])
-				else:
-					d['mgoods'] = {}
-				d['create_date'] = order.create_date.strftime('%Y-%m-%d')
-				# d["send_time"] = order.send_time
-				d["customer_id"] = order.customer_id
-				d['nickname'] = self.session.query(models.Customer).filter_by(id=order.customer_id).first().accountinfo.nickname
-
-				#yy
-				d["shop_new"] = 0
-				follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
-					models.CustomerShopFollow.customer_id == order.customer_id).first()
-				# print("[订单查询]读取订单，订单用户ID：",follow.customer_id)
-				if follow:
-					d["shop_new"]=follow.shop_new
-				staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
-					models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id,models.HireLink.active ==1 )).all()
-				SH2s = []
-				for staff in staffs:
-					staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname,\
-					 "phone": staff.accountinfo.phone,"headimgurl":staff.accountinfo.headimgurl_small}
-					SH2s.append(staff_data)
-					if staff.id == order.SH2_id:  # todo JH、SH1
-						d["SH2"] = staff_data
-				d["SH2s"] = SH2s
-				data.append(d)
+			data = self.getOrder(orders)
 			return self.send_success(data=data,page_sum=0)
 
 		return self.render("admin/order-list.html", context=dict(subpage=subpage))

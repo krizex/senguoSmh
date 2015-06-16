@@ -281,7 +281,7 @@ function orderItem(page){
                     if(!remark||remark==null) {
                         $item.find('.saler-remark').hide();
                     }
-                    if(isprint==1) {
+                    if(isprint==1||isprint==true) {
                         $item.find('.print-order').addClass('text-grey9');
                     }
                     if(shop_new!=1) {
