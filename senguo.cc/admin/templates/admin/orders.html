@@ -102,6 +102,81 @@
     </ul>
     <!--<a class="orders-recycle pull-right text-grey9" href="#">订单回收站</a>-->
 </div>
+<ul class="category-list group">
+    <li>
+        <div class="cate-title">排序规则 : </div>
+        <div class="dropdown slide-down-select pull-left w130">
+            <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
+                <em class="pull-left filter" data-id="send_positive">配送时间正序</em>
+                <span class="caret pull-right no-margin-left rotate0"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentShopChange3">
+                <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="send_positive">配送时间正序</a>
+                </li>
+                 <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="send_desc">配送时间倒序</a>
+                </li>
+                 <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="order_positive">下单时间正序</a>
+                </li>
+                 <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="order_desc">下单时间倒序</a>
+                </li>
+                 <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="price_desc">金额从多到少</a>
+                </li>
+                 <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="price_positive">金额从少到多</a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li>
+        <div class="cate-title">支付方式 : </div>
+        <div class="dropdown slide-down-select pull-left w130">
+            <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu4" data-toggle="dropdown">
+                <em class="pull-left pay_type" data-id="9">所有</em>
+                <span class="caret pull-right no-margin-left rotate0"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu4" id="currentShopChange4">
+                <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="9">所有</a>
+                </li>
+                <li  role="presentation">
+                    <a class="item" href="javascript:;" data-id="3">在线支付</a>
+                </li>
+                 <li  role="presentation">
+                    <a class="item" href="javascript:;" data-id="2">余额支付</a>
+                </li>
+                 <li  role="presentation">
+                    <a class="item" href="javascript:;" data-id="1">货到付款</a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li>
+        <div class="cate-title">用户类型 : </div>
+        <div class="dropdown slide-down-select pull-left w130">
+            <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu5" data-toggle="dropdown">
+                <em class="pull-left user_type" data-id="9">所有</em>
+                <span class="caret pull-right no-margin-left rotate0"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu5" id="currentShopChange5">
+                <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="9">所有</a>
+                </li>
+                <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="0">新用户</a>
+                </li>
+                <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="1">老用户</a>
+                </li>
+            </ul>
+        </div>
+    </li>
+</ul>
+
 <!--orders-mode-lock-end-->
 <div class="order-list set-width-float">
     <div class="func-box set-width-float mt10">

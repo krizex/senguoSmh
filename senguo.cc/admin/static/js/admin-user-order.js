@@ -143,6 +143,9 @@ $(document).ready(function(){
     }else if(num>_page_total){
         return Tip('没有该页的数据');
     }
+}).on('click','.condition-list li',function(){
+    $(this).closest("ul").prev("button").children("em").html($(this).text()).attr("data-id",$(this).find('a').attr("data-id"));
+    orderItem(_page);
 });
 
 var orders=window.dataObj.order;
@@ -184,16 +187,19 @@ function orderItem(page){
     $(".wrap-loading-box").removeClass("hidden");
     var action=$.getUrlParam('action');
     var url;
+    var filter_status = $(".filter").attr("data-id");
+    var pay_type = $(".pay_type").attr("data-id");
+    var user_type = $(".user_type").attr("data-id");
     if(action=='order'){
-        url=window.location.href+'&&page='+page;
+        url=window.location.href+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page;
     }else if(action=='customer_order'){
-        url=window.location.href+'&&page='+page;
+        url=window.location.href+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page;
     }else if(action=='SH2_order'){
-        url=window.location.href+'&&page='+page;
+        url=window.location.href+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page;
     }else{
         var link=window.location.href;
         var status=$('.order-status').find('.active').first().attr('data-id');
-        url=link+'&&order_status='+status+'&&page='+page; 
+        url=link+'&order_status='+status+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page; 
     } 
     $('.order-list-content').empty();
     $.ajax({

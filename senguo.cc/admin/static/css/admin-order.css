@@ -173,3 +173,16 @@
 .func-box .check{margin:6px 5px 0 9px;}
 .order-list-item  .check{position:absolute;left:8px;top:16px;}
 .blak-set-btn{height:28px;line-height:28px;padding:0 8px;color:#333;}
+
+.category-list{background:#f4f5f9;padding:10px;}
+.category-list>li{float: left;width: 33.3333%;}
+.cate-title{font-size: 14px;color: #999;height: 28px;line-height: 28px;float: left;margin-right: 5px;}
+.slide-down-select{display:inline-block;width:100%;background:#fff;color:#000;border:1px solid #ddd;margin-left:0px;}
+.slide-down-select .slide-btn{height: 24px;line-height: 24px;display: block;border: none;outline: none;width: 100%;}
+.slide-down-select em{font-style:normal;display:inline-block;width:110px;font-size:14px;overflow:hidden;padding-left: 10px;text-align: left;}
+.dropdown-toggle{padding:0 4px;}
+.dropdown-menu li{width:100%;padding:0px;}
+.dropdown-menu .item{padding-left:14px;}
+.dropdown-menu li a:hover{color:#fff;background-color: #6ba4ef;}
+.caret{margin-top:10px;color: #c6c6c6;}
+.w130{width:130px !important;}
