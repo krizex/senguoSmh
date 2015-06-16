@@ -71,8 +71,8 @@ textarea{border-color:#eee;padding: 2px 5px;}
 .switch-btn-active{background-color: #44b549;padding-left: 0;padding-right:20px;}
 .switch-btn .up{display: none;}
 .switch-btn .down{display: inline;}
-.switch-btn>i{position: absolute;display: inline-block;border-radius: 50%;height: 23px;width: 23px;background-color: #fff;left: 1px;top: 1px;}
-.switch-btn-active>i{right: 1px;left: auto;}
+.switch-btn>i{position: absolute;display: inline-block;border-radius: 50%;height: 23px;width: 23px;background-color: #fff;left: 1px;top: 1px;transition: 0.2s;-webkit-transition: 0.2s;}
+.switch-btn-active>i{left: 66px;}
 .switch-btn-active .up{display: inline;}
 .switch-btn-active .down{display: none;}
 .all-item-cont{border:1px solid #e7e7eb;border-top:none;padding: 15px;position: relative;}
