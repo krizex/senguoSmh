@@ -42,7 +42,7 @@ $(document).ready(function(){
     $(".order-lists>li").on("click",function(){//进入订单详情
         var id = $(this).attr("data-id");
         window.location.href="/madmin/orderDetail?id="+id;
-    })
+    });
 });
 function searchOrder(id){
     var url = "";

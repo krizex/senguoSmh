@@ -53,6 +53,10 @@ $(document).ready(function(){
             $(".second-tab-list .tab-line").css("left",$(".second-tab-list").children(".item").eq(index).position().left);
         }
     });
+    $(".order-lists>li").on("click",function(){//进入订单详情
+        var id = $(this).attr("data-id");
+        window.location.href="/madmin/orderDetail?id="+id;
+    });
 });
 
 var goodsList=function(page,action){
