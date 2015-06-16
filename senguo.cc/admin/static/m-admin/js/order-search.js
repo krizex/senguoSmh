@@ -7,35 +7,17 @@ $(document).ready(function(){
         if($(e.target).closest(".pop-content").length==0){
             $(".pop-win").addClass("hide");
         }
-    })
-
-    $(".order-grade .task-staff").on("click",function(e){
-        e.stopPropagation();
-        var list = eval($(this).closest(".order-grade").attr("data-SH2s"));
-        var lis = "";
-        for(var i=0; i<list.length; i++){
-            var item = list[i];
-            lis += '<li class="" data-tel="'+item.phone+'"><span class="img-border mr10"><img src="'+item.headimgurl+'" alt="员工头像"/></span><span class="">'+item.nickname+'</span></li>';
-        }
-        $("#staff-list").empty().append(lis);
-        $(".pop-staff").removeClass("hide");
     });
-    $(".staff-list>li").on("click",function(){
+    $(document).on("click",".staff-list>li",function(){
         var index = $(this).index();
         var src = $(this).find("img").attr("src");
-        $("#sure-staff").attr("data-src",src);
-        $("#sure-staff").attr("data-tel",$(this).attr("data-tel"));
+        $("#sure-staff").attr("data-src",src).attr("data-id",$(this).attr("data-id")).attr("data-tel",$(this).attr("data-tel"));
         $(".staff-list>li").removeClass("active").eq(index).addClass("active");
     });
     $("#sure-staff").on("click",function(){
-        var tel = $(this).attr("data-tel");
-        curStaff.find("img").attr("src",$(this).attr("data-src"));
-        curStaff.find(".order-line-grade").css("width","50%");
-        curStaff.find(".order-wawa").css("left","50%");
-        curStaff.find(".order-wawa").children("a").removeClass("task-staff");
-        curStaff.find(".order-status-txt").css("left","50%");
-        curStaff.find(".order-status-txt").empty().append('<span class="#c333">配送中</span><a class="" href="tel:'+tel+'">拨号</a>');
-        $(".pop-staff").addClass("hide");
+        var order_id = curStaff.closest("li").attr("data-id");
+        var staff_id = $(this).attr("data-id");
+        switchStaff(order_id,staff_id,$(this));
     });
     $("#search-order").on("click",function(){  //订单搜索
         var id = $("#search-ipt").val();
@@ -45,9 +27,23 @@ $(document).ready(function(){
             searchOrder(id);
         }
     });
-    $(".order-lists>li").on("click",function(){//进入订单详情
+    $(document).on("click",".order-lists>li",function(e){//进入订单详情
+        if($(e.target).closest(".task-staff").length>0){
+            return false;
+        }
         var id = $(this).attr("data-id");
         window.location.href="/madmin/orderDetail?id="+id;
+    });
+    $(document).on("click",".task-staff",function(){
+        var list = JSON.parse($(this).closest(".order-grade").attr("data-sh2s"));
+        var lis = "";
+        for (var i = 0; i < list.length; i++) {
+            var item = list[i];
+            lis += '<li class="" data-tel="' + item.phone + '" data-id="'+item.id+'"><span class="img-border mr10"><img src="' + item.headimgurl + '" alt="员工头像"/></span><span class="">' + item.nickname + '</span></li>';
+        }
+        $("#staff-list").empty().append(lis);
+        curStaff = $(this).closest(".order-grade");
+        $(".pop-staff").removeClass("hide");
     });
 });
 function searchOrder(id){
@@ -57,7 +53,7 @@ function searchOrder(id){
         type:"get",
         success:function(res){
             if(res.success){
-                var order = res.data;
+                var order = res.data[0];
                 if(order.length==0){
                     $(".no-result").html("没有查到任何数据").removeClass("hide");
                 }else{
@@ -68,7 +64,32 @@ function searchOrder(id){
             }
         }
     });
-
+}
+//切换送货员
+function switchStaff(order_id,staff_id,$obj){
+    var url = "/admin/order";
+    var args = {
+        action:"edit_SH2",
+        data:{
+            order_id:order_id,
+            staff_id:staff_id
+        }
+    };
+    $.postJson(url,args,function(res){
+        if(res.success){
+            var tel = $obj.attr("data-tel");
+            var src = $obj.attr("data-src")
+            curStaff.find("img").attr("src",src);
+            curStaff.find(".order-line-grade").css("width","50%");
+            curStaff.find(".order-wawa").css("left","50%");
+            curStaff.find(".order-wawa").children("a").removeClass("task-staff");
+            curStaff.find(".order-status-txt").css("left","50%");
+            curStaff.find(".order-status-txt").empty().append('<span class="#c333">配送中</span><a class="" href="tel:'+tel+'">拨号</a>');
+            $(".pop-staff").addClass("hide");
+        }else{
+            Tip(res.error_text);
+        }
+    });
 }
 function initData(order){
     $("#order-lists").empty();
@@ -80,8 +101,8 @@ function initData(order){
     $item.find(".order-num").html(order.num);
     $item.find(".time").html(order.send_time);
     $item.find(".loc").html(order.address_text);
-    $item.find(".say").html(order.message);
-    $item.find(".order-grade").attr("data-SH2s",order.SH2s);
+    $item.find(".say").html(order.message || "无");
+    $item.find(".order-grade").attr("data-sh2s",JSON.stringify(order.SH2s));
     if(order.pay_type == 1){
         pay_type = "货到付款";
     }else if(order.pay_type == 2){
