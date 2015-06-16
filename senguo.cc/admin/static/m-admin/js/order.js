@@ -16,7 +16,8 @@ $(document).ready(function(){
         $(".second-tab-list .tab-line").css("left",$(this).position().left);
         swiper.swipeTo(index);
     });
-    $(".order-grade .task-staff").on("click",function(){
+    $(".order-grade .task-staff").on("click",function(e){
+        e.stopPropagation();
         curStaff = $(this).closest(".order-grade");
         $(".pop-staff").removeClass("hide");
     });
