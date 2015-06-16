@@ -1530,7 +1530,7 @@ class Cart(CustomerBaseHandler):
 		return self.send_success(order_id = order.id)
 
 	def order_cancel_auto(self,session,order_id):
-		print("[定时任务]订单取消：",order_id,self)
+		# print("[定时任务]订单取消：",order_id,self)
 		order = session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			return self.send_fail('order_cancel_auto: order not found!')
@@ -1538,9 +1538,9 @@ class Cart(CustomerBaseHandler):
 			order.status = 0
 			order.del_reason = "timeout"
 			order.get_num(session,order.id)
-			print("[定时任务]订单取消成功：",order.num)
-		else:
-			print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除：",order.num)
+			# print("[定时任务]订单取消成功：",order.num)
+		#else:
+		#	print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除：",order.num)
 
 class CartCallback(CustomerBaseHandler):
 
@@ -1815,9 +1815,9 @@ class Order(CustomerBaseHandler):
 				return self.send_fail("该订单已经送达，无法取消")
 			if order.pay_type == 3 and order.status != -1:
 				return self.send_fail("在线支付『已付款』的订单暂时不能取消，如有疑问请直接与店家联系")
-			print("[订单管理]取消订单，订单原状态：",order.status)
+			# print("[订单管理]取消订单，订单原状态：",order.status)
 			order.status = 0
-			print("[订单管理]取消订单，订单现状态：",order.status)
+			# print("[订单管理]取消订单，订单现状态：",order.status)
 			# recover the sale and storage
 			# woody
 			# 3.27
