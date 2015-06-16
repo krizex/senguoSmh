@@ -680,44 +680,10 @@ class Order(AdminBaseHandler):
 			# for order in orders:
 			#     print(order.w_send_time)
 
-			data = []
+			data = self.getOrder(orders)
 			delta = datetime.timedelta(1)
 			# print("[订单管理]当前店铺：",self.current_shop)
-
-			for order in orders:
-				order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id','comment','comment_imgUrl','comment_reply',
-											 'comment_create_date', 'start_time', 'end_time','commodity_quality','create_date','today',
-											 'type','active','arrival_day','arrival_time','finish_admin_id','intime_period',
-											 'send_admin_id','send_speed','shop_service']
-				d = order.safe_props(False)
-				d['fruits'] = eval(d['fruits'])
-				if d['mgoods']:
-					d['mgoods'] = eval(d['mgoods'])
-				else:
-					d['mgoods'] = {}
-				d['create_date'] = order.create_date.strftime('%Y-%m-%d %H:%M:%S')
-				# d["sent_time"] = order.send_time
-				info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
-				d["nickname"] = info.accountinfo.nickname
-				d["customer_id"] = order.customer_id
-				staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
-					models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id,models.HireLink.active == 1)).all()
-				d["shop_new"] = 0
-				follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
-					models.CustomerShopFollow.customer_id == order.customer_id).first()
-				if follow:
-					d["shop_new"]=follow.shop_new
-					# print("[订单管理]读取订单，订单用户ID：",order.customer_id,"，新用户标识：",d["shop_new"])
-				SH2s = []
-				for staff in staffs:
-					staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone,\
-					"headimgurl":staff.accountinfo.headimgurl_small}
-					SH2s.append(staff_data)
-					if staff.id == order.SH2_id:  # todo JH、SH1
-						d["SH2"] = staff_data
-						# print(d["SH2"],'i am admin order' )
-				d["SH2s"] = SH2s
-				data.append(d)
+			
 			return self.send_success(data = data,page_sum=page_sum,count=self._count())
 		return self.render("admin/orders.html",order_type=order_type, context=dict(subpage='order'))
 
@@ -2265,42 +2231,8 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 					models.Order.num==self.args['id'], models.Order.shop_id==self.current_shop.id).all()
 			else:
 				return self.send_error(404)
-			data = []
 			delta = datetime.timedelta(1)
-			for order in orders:
-				order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id','comment','comment_imgUrl','comment_reply',
-											 'comment_create_date', 'start_time', 'end_time','commodity_quality','create_date','today',
-											 'type','active','arrival_day','arrival_time','finish_admin_id','intime_period',
-											 'send_admin_id','send_speed','shop_service']
-				d = order.safe_props(False)
-				d['fruits'] = eval(d['fruits'])
-				if d['mgoods']:
-					d['mgoods'] = eval(d['mgoods'])
-				else:
-					d['mgoods'] = {}
-				d['create_date'] = order.create_date.strftime('%Y-%m-%d')
-				# d["send_time"] = order.send_time
-				d["customer_id"] = order.customer_id
-				d['nickname'] = self.session.query(models.Customer).filter_by(id=order.customer_id).first().accountinfo.nickname
-
-				#yy
-				d["shop_new"] = 0
-				follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
-					models.CustomerShopFollow.customer_id == order.customer_id).first()
-				# print("[订单查询]读取订单，订单用户ID：",follow.customer_id)
-				if follow:
-					d["shop_new"]=follow.shop_new
-				staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
-					models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id,models.HireLink.active ==1 )).all()
-				SH2s = []
-				for staff in staffs:
-					staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname,\
-					 "phone": staff.accountinfo.phone,"headimgurl":staff.accountinfo.headimgurl_small}
-					SH2s.append(staff_data)
-					if staff.id == order.SH2_id:  # todo JH、SH1
-						d["SH2"] = staff_data
-				d["SH2s"] = SH2s
-				data.append(d)
+			data = self.getOrder(orders)
 			return self.send_success(data=data,page_sum=0)
 
 		return self.render("admin/order-list.html", context=dict(subpage=subpage))
