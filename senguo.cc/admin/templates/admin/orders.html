@@ -3,13 +3,11 @@
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-order.css')}}"/>{% end %}
 {% block content %}
 {% set current_shop = handler.current_shop%}
-{% import json %}
-<script>
-    window.dataObj.order={% raw json.dumps(data) %}
-</script>
 {% set lock_mode='' %}
 {% set notice=''%}
 {% set notic2e=''%}
+{% set now_active=''%}
+{% set in_active=''%}
 {% if order_type ==1 %}
     {% set lock_mode = current_shop.config.now_on %}
     {% set type_num =1 %}
@@ -18,6 +16,7 @@
     {% set count3=count[13]%}
     {% set count4=count[14]%}
     {% set count5=count[15]%}
+    {% set now_active='active'%}
 {% elif order_type ==2 %}
     {% set lock_mode = current_shop.config.ontime_on %}
     {% set type_num =2 %}
@@ -26,6 +25,7 @@
     {% set count3=count[23]%}
     {% set count4=count[24]%}
     {% set count5=count[25]%}
+    {% set in_active='active'%}
 {% end %}
 {% if lock_mode == True %}
     {% set lock_mode = 'unlock-mode'%}
@@ -40,12 +40,12 @@
 <span class="right-title" id="order-title-manage">订单管理</span>
 <div class="subnav-box clearfix">
     <ul class="subnav pull-left order-type">
-        <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3">
-            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1&page=0" class="text-grey3">立即送</a>
+        <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3 {{now_active}}">
+            <a href="{{reverse_url('adminOrder')}}?order_type=1" class="text-grey3">立即送</a>
             <span class="number" id="atonce">{{count[11]}}</span>
         </li>
-        <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3">
-            <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=1&page=0" class="text-grey3">按时达</a>
+        <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3 {{in_active}}">
+            <a href="{{reverse_url('adminOrder')}}?order_type=2" class="text-grey3">按时达</a>
             <span class="number" id="ontime">{{count[21]}}</span>
         </li>
         <!--<li class="text-center col-lg-3">
@@ -94,20 +94,20 @@
 </div>
 <div class="subnav-box">
     <ul class="subnav pull-left order-status">
-        <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=1&page=0">未处理&nbsp;<span class="text-pink" id="not-deal">{{count1}}</span></a>
+        <li class="active" data-id="1">
+            <a href="javascript:;">未处理&nbsp;<span class="text-pink" id="not-deal">{{count1}}</span></a>
         </li>
-        <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=2&page=0">配送中&nbsp;<span class="text-pink">{{count2}}</span></a>
+        <li data-id="2">
+            <a href="javascript:;">配送中&nbsp;<span class="text-pink">{{count2}}</span></a>
         </li>
-        <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=3&page=0">已送达&nbsp;<span class="text-pink">{{count3}}</span></a>
+        <li data-id="3">
+            <a href="javascript:;">已送达&nbsp;<span class="text-pink">{{count3}}</span></a>
         </li>
-        <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=4&page=0">售后/退款&nbsp;<span class="text-pink">{{count4}}</span></a>
+        <li data-id="4">
+            <a href="javascript:;">售后/退款&nbsp;<span class="text-pink">{{count4}}</span></a>
         </li>
-        <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=5&page=0">所有订单&nbsp;<span class="text-pink">{{count5}}</span></a>
+        <li data-id="5">
+            <a href="javascript:;">所有订单&nbsp;<span class="text-pink">{{count5}}</span></a>
         </li>
     </ul>
     <!--<a class="orders-recycle pull-right text-grey9" href="#">订单回收站</a>-->
@@ -128,7 +128,7 @@
         <ul>
             <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
             <li>
-                <span class="page-now"></span>/<span class="page-total">{{page_sum}}</span>
+                <span class="page-now"></span>/<span class="page-total"></span>
             </li>
             <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
             <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>

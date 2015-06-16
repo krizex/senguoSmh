@@ -7,6 +7,9 @@ from sqlalchemy import exists, func, extract, DATE, desc,or_
 from dal.dis_dict import dis_dict
 from libs.msgverify import check_msg_token,get_access_token,user_subscribe
 
+#add by jyj 2015-6-15
+from sqlalchemy import func, desc, and_, or_, exists,not_
+##
 
 ############################
 # added by woody  2015.3.6
@@ -360,6 +363,11 @@ class ShopManage(SuperBaseHandler):
 
 				data["available_balance"] = shop.available_balance
 				data["fans_count"] = shop.fans_count
+
+				#add by jyj 2015-6-15
+				data["search_count"] = search_count
+				##
+
 				output_data.append(data)
 				
 			if flag==1:
@@ -849,65 +857,13 @@ class OrderStatic(SuperBaseHandler):
 		action = self.args["action"]
 		if action == "order_time":
 			return self.order_time()
-		elif action == "recive_time":
-			return self.recive_time()
-	'''
-	@SuperBaseHandler.check_arguments("page:int", "type:int")
-	def sum(self):
-		page = self.args["page"]
-		type = self.args["type"]
-		if page == 0:
-			now = datetime.datetime.now()
-			start_date = datetime.datetime(now.year, now.month, 1)
-			end_date = now
-		else:
-			date = self.monthdelta(datetime.datetime.now(), page)
-			start_date = datetime.datetime(date.year, date.month, 1)
-			end_date = datetime.datetime(date.year, date.month, date.day)
-
-		orders = self.session.query(models.Order.id, models.Order.create_date,
-									models.Order.totalPrice, models.Order.type,
-									models.Order.pay_type). \
-			filter(models.Order.shop_id == self.current_shop.id,
-				   models.Order.create_date >= start_date,
-				   models.Order.create_date <= end_date,
-				   not_(models.Order.status.in_([-1,0]))).all()
-
-		data = {}
-		for x in range(1, end_date.day+1):  # 初始化数据
-			data[x] = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
-		if type == 1:
-			for order in orders:
-				data[order[1].day][1] += 1
-				if order[3] == 2:
-					data[order[1].day][2] += 1
-				else:
-					data[order[1].day][3] += 1
-				if order[4] == 1:
-					data[order[1].day][4] += 1
-				else:
-					data[order[1].day][5] += 1
-		elif type == 2:
-			for order in orders:
-				data[order[1].day][1] += order[2]
-				if order[3] == 2:
-					data[order[1].day][2] += order[2]
-				else:
-					data[order[1].day][3] += order[2]
-				if order[4] == 1:
-					data[order[1].day][4] += order[2]
-				else:
-					data[order[1].day][5] += order[2]
-		else:
-			return self.send_error(404)
-		return self.send_success(data=data)
-
-	'''
+		elif action == "receive_time":
+			return self.receive_time()
 
 	@SuperBaseHandler.check_arguments("type:int")
 	def order_time(self):
 		type = self.args["type"]
-		q = self.session.query(func.hour(models.Order.create_date), func.count()).\
+		q = self.session.query(func.hour(models.Order.create_date),func.minute(models.Order.create_date)).\
 				filter(not_(models.Order.status.in_([-1,0])))
 		if type == 1:  # 累计数据
 			pass
@@ -919,19 +875,24 @@ class OrderStatic(SuperBaseHandler):
 					   models.Order.create_date <= end_date)
 		else:
 			return self.send_error(404)
-		ss = q.group_by(func.hour(models.Order.create_date)).all()
 		data = {}
 		for key in range(0, 24):
 			data[key] = 0
-		for s in ss:
-			data[s[0]] = s[1]
+		for e in q.all():
+			if e[1] < 30: 
+				data[e[0]] += 1
+			else:
+				if e[0] +1 == 24:
+					data[0] += 1
+				else:
+					data[e[0]] += 1
 		return self.send_success(data=data)
 
 	@SuperBaseHandler.check_arguments("type:int")
-	def recive_time(self):
+	def receive_time(self):
 		type = self.args["type"]
-		q = self.session.query(models.Order.type, models.Order.start_time, models.Order.end_time).\
-			filter(models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0])))
+		q = self.session.query(models.Order.type, models.Order.start_time, models.Order.end_time,models.Config.stop_range).\
+			filter(not_(models.Order.status.in_([-1,0])),models.Order.shop_id == models.Shop.id,models.Shop.id == models.Config.id)
 		if type == 1:
 			orders = q.all()
 		elif type == 2:
@@ -942,15 +903,18 @@ class OrderStatic(SuperBaseHandler):
 							  models.Order.create_date <= end_date).all()
 		else:
 			return self.send_error(404)
-		stop_range = self.current_shop.config.stop_range
+
+		#stop_range = self.current_shop.config.stop_range
+
 		data = {}
 		for key in range(0, 24):
 			data[key] = 0
 		for order in orders:
 			if order[0] == 1:  # 立即送收货时间估计
-				data[order[1].hour + (order[1].minute+stop_range)//60] += 1
+				data[order[1].hour + (order[1].minute+order[3])//60] += 1
 			else:  # 按时达收货时间估计
 				data[(order[1].hour+order[2].hour)//2] += 1
+
 		return self.send_success(data=data)
 ##
 
