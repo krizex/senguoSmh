@@ -144,4 +144,24 @@ $(document).ready(function () {
     console.log(2333);
     $this.hide().siblings('.notice-sure').show();
     $('.wall-content').hide().siblings('.wall-notice').show();
+}).on('click','#coupon',function(){
+    var data={
+"coupon_money":20,"use_rule":1,"total_num":5,"get_limitnum":1,"used_for":1,
+"valid_way":0,"uneffictive_time":12,"day_start":0,"last_day":1
+    };
+    var args={action:"newcoupon",data:data};
+    var url='';
+    $.postJson(url,args,
+        function (res) {
+            if (res.success) {
+                console.log(res.success);
+            }
+            else {
+                Tip(res.error_text);
+                console.log('error');
+            }
+        },
+        function () {
+            Tip('网络好像不给力呢~ ( >O< ) ~');
+        })
 });

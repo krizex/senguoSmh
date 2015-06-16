@@ -11,7 +11,10 @@ from libs.msgverify import gen_msg_token,check_msg_token
 import requests
 import base64
 import decimal
-
+import json
+# add by cm 2015.5.15
+import string
+import random
 # 登陆处理
 class Access(AdminBaseHandler):
 	def initialize(self, action):
@@ -2852,6 +2855,7 @@ class ShopConfig(AdminBaseHandler):
 	def post(self):
 		action = self.args["action"]
 		data = self.args["data"]
+		print("aaaaaaaaa",data)
 		shop = self.current_shop
 		if action == "edit_shop_name":
 			shop.shop_name = data["shop_name"]
@@ -2995,18 +2999,57 @@ class BalanceManage(AdminBaseHandler):
 		return self.send_success(haha = 'haha')
 
 class Marketing(AdminBaseHandler):
-	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action:str")
-	def get(self):
-		action = self.args["action"]
-		if action == "lovewall":
-			return self.render("admin/lovewall.html",context=dict(subpage = 'marketing'))
-
+	curent_shop_id=None
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str","data?:str")
+	def get(self):
+		action = self.args["action"]
+		curent_shop_id=self.current_shop
+		if action == "lovewall":
+			return self.render("admin/lovewall.html",context=dict(subpage = 'marketing'))
+		elif action=="coupon":
+			coupons=self.session.query(models.CouponsShop).filter_by(shop_id=self.curent_shop_id).all()
+			data=[]
+			for x in coupons:
+				x_coupon={"coupon_money":x.coupon_money,"get_limitnum":x.get_limitnum,"used_for":x.used_for,"use_num":x.use_num,"remain_num":x.coupon_remainnum,"totalnum":x.coupon_totalnum}
+				data.append(x_coupon)
+				print(x_coupon)
+			# x_coupon={"coupon_money":1,"get_limitnum":1,"used_for":1,"use_num":1,"remain_num":1,"totalnum":1}
+			# data.append(x_coupon)
+			# print(x_coupon)
+			return self.render("admin/coupon.html",data=data,context=dict(subpage='marketing'))
+		elif action=="newcoupon":
+			# @AdminBaseHandler.check_arguments("action:str","coupon_money:int","use_rule:float","total_num:int",\
+			# 	"get_limitnum:int","used_for:int","valid_way:int","uneffictive_time:date","day_start:int","last_day:int")
+			data=self.args["data"]
+			# print(data)
+			data = json.loads(data)
+			coupon_money=data["coupon_money"]
+			use_rule=data["use_rule"]
+			total_num=data["total_num"]
+			get_limitnum=data["get_limitnum"]
+			used_for=data["used_for"]
+			valid_way=data["valid_way"]
+			uneffictive_time=data["uneffictive_time"]
+			day_start=data["day_start"]
+			last_day=data["last_day"]
+			coupons_id=self.session.query(models.CouponsShop).filter_by(shop_id=self.curent_shop_id).count()+1
+			for i in range(total_num):
+				chars=string.digits+string.ascii_letters
+				chars=''.join(random.sample(chars*10,5))
+				chars.join(str(i))
+				new_coupon=models.CouponsShop(shop_id=self.curent_shop_id,coupon_id=coupons_id,coupon_key=chars,\
+					coupon_money=coupon_money,coupon_totalnum=total_num,coupon_remainnum=total_num,valid_way=valid_way,\
+					day_start=day_start,last_day=last_day,\
+					get_limitnum=get_limitnum,used_for=used_for,use_rule=use_rule)
+				session.add(new_coupon)
+			session.commit()
+			return self.render("admin/newcoupon.html",context=dict(subpage='marketing'))
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action:str","data")
 	def post(self):
 		action = self.args["action"]
-		current_shop = self.current_shop
+		current_shop = self.current_shop.id
 		if action == "confess_active":
 			active = current_shop.marketing.confess_active
 			current_shop.marketing.confess_active = 0 if active == 1 else 1
@@ -3019,11 +3062,59 @@ class Marketing(AdminBaseHandler):
 		elif action == "confess_only":
 			only = current_shop.marketing.confess_only
 			current_shop.marketing.confess_only = 0 if only == 1 else 1
+		elif action=="coupon":
+			coupons=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop).all()
+			data=[]
+			for x in coupons:
+				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop,coupons_id=x).first()
+				x_coupon={"coupon_money":q.coupon_money,"get_limitnum":q.get_limitnum,"used_for":q.used_for,"use_num":q.coupon_usenum,"remain_num":q.coupon_remainnum,"totalnum":q.coupon_totalnum}
+				data.append(x_coupon)
+				print(x_coupon)
+			return self.render("admin/coupon.html",data=data,context=dict(subpage='marketing'))
+		elif action=="newcoupon":
+			data=self.args["data"]
+			coupon_money=data["coupon_money"]
+			use_rule=data["use_rule"]
+			total_num=data["total_num"]
+			get_limitnum=data["get_limitnum"]
+			used_for=data["used_for"]
+			valid_way=data["valid_way"]
+			uneffictive_time=data["uneffictive_time"]
+			day_start=data["day_start"]
+			last_day=data["last_day"]
+			#  注意这里获得coupon_id的过程 相当的曲折 ，这里的a 识query类型  而a[0]识 result 类型 只有a[0][0]才是int类型
+			a=self.session.query(func.max(models.CouponsShop.coupon_id)).filter_by(shop_id=1203)
+			for i in range(total_num):
+				chars=string.digits+string.ascii_letters
+				chars=''.join(random.sample(chars*10,5))
+				chars.join(str(i))
+				new_coupon=models.CouponsShop(shop_id=current_shop,coupon_id=a[0][0],coupon_key=chars,\
+					uneffective_time=uneffictive_time，coupon_money=coupon_money,coupon_totalnum=total_num,coupon_remainnum=total_num,valid_way=valid_way,\
+					day_start=day_start,last_day=last_day,\
+					get_limitnum=get_limitnum,used_for=used_for,use_rule=use_rule)
+				self.session.add(new_coupon)
+			self.session.commit()
+			return self.render("admin/newcoupon.html",context=dict(subpage='marketing'))
+		elif action=="details":
+			coupon_id=self.args["coupons_id"]
+			select_rule=self.args["select_rule"]
+			if select_rule==0:
+				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop,coupons_id=coupons_id).all()
+			elif select_rule==1:
+				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop,coupons_id=coupons_id,customer_id=None).all()	
+			elif select_rule==2:
+				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop,coupons_id=coupons_id,if_used=1).all()
+			else :
+				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop,coupons_id=coupons_id,if_uneffective=1).all()
+			for x in q:
+				x_coupon={"coupon_money":x.coupon_money,"customer_id":x.customer_id,"get_date":x.get_date,"use_date":x.use_date,"order_id":x.order_id}
+				data.append(x_coupon)
+				print(x_coupon)
+			return self.render("admin/details.html",data=data,context=dict(subpage='marketing')) 
 		else:
 			return self.send_fail('something must wrong')
 		self.session.commit()
 		return self.send_success()
-
 
 class Confession(AdminBaseHandler):
 	@tornado.web.authenticated
@@ -3036,6 +3127,7 @@ class Confession(AdminBaseHandler):
 		confession = ''
 		datalist = []
 		if action == "all":
+			# 我开始的时候用的识filter 但是后台报错 我使用了 filter_by之后错误解决 为什么呢？？？
 			q = self.session.query(models.ConfessionWall).filter_by( shop_id = self.current_shop.id,status = 1).order_by(models.ConfessionWall.create_time.desc())
 		elif action == "hot":
 			q = self.session.query(models.ConfessionWall).filter_by( shop_id = self.current_shop.id,status = 1).order_by(models.ConfessionWall.great.desc())	
