@@ -19,12 +19,13 @@ function initBmap() {
         width : 180,     // 信息窗口宽度
         height: 60,     // 信息窗口高度
         title : name , // 信息窗口标题
+        opacity:0.6,
         enableMessage:false//设置允许信息窗发送短息
     };
     if (lon != 0) {
         oPoint = new BMap.Point(lon, lat);  // 创建点坐标
         map.enableScrollWheelZoom();
-        map.centerAndZoom(oPoint, 19);
+        map.centerAndZoom(oPoint, 15);
         marker = new BMap.Marker(oPoint);
         map.addOverlay(marker);
         var infoWindow = new BMap.InfoWindow("地址："+address, opts);  // 创建信息窗口对象
