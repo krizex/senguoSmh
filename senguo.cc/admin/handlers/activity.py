@@ -430,3 +430,14 @@ class ConfessionList(CustomerBaseHandler):
 			return self.render("confession/list.html", datalist=datalist,action=action,nomore=nomore)
 		else :
 			return self.send_success(datalist = datalist,nomore=nomore)
+
+
+class Coupon(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("coupon/coupon.html")
+
+class CouponDetail(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("coupon/coupon-detail.html")

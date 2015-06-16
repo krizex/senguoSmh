@@ -27,6 +27,10 @@ handlers = [
 	(r"/lovewall/list/(\w+)", handlers.activity.ConfessionList, {}, "ConfessionList"),
 	(r"/lovewall/comment/(\w+)", handlers.activity.ConfessionComment, {}, "ConfessionComment"),
 	(r"/lovewall/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
+
+	#优惠券
+	(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),
+	(r"/coupon/detail", handlers.activity.CouponDetail, {}, "CouponDetail"),
 	
 	(r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
 	(r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
