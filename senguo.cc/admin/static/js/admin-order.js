@@ -1,12 +1,5 @@
 $(document).ready(function(){
         //翻页
-    var page=Int($.getUrlParam('page'));
-    var order_type=$.getUrlParam('order_type');
-    var order_status=$.getUrlParam('order_status');
-    var total_page=Math.ceil($('.page-total').text());
-    $('.page-now').text(page+1);
-    $('.page-total').text(total_page);
-    getPage(page,'/admin/order?order_type='+order_type+'&order_status='+order_status+'&page=',total_page);
     $('body').on('mouseenter','.edit_item_box',function(){
         var $this=$(this);
         if($this.hasClass('to-edit-item')){
@@ -23,8 +16,6 @@ $(document).ready(function(){
     //导航栏active样式
     var order_type_item=$('.order-type').find('li');
     var order_status_item=$('.order-status').find('li');
-    addActive(order_type_item,orderType);
-    addActive(order_status_item,orderStatus);
     //时间格式
     $('.timer').each(function(){
         var $this=$(this);
@@ -204,12 +195,12 @@ $(document).ready(function(){
             }
         })
     },10000);
+    
 }).on("click","#new-order-box",function(){
    window.location.reload(true);
 });
 var link='/admin/order';
-var orderType=$.getUrlParam('order_type');
-var orderStatus=$.getUrlParam('order_status');
+
 
 function addActive(target,id){
     for(var i=0;i<target.length;i++)
