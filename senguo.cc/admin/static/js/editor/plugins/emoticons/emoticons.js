@@ -82,7 +82,7 @@ KindEditor.plugin('emoticons', function(K) {
 					cell.addClass('ke-cell');
 					bindCellEvent(cell, j, num);
 					var span = K('<span class="ke-img"></span>')
-						.css('background-position', '-' + (24 * num) + 'px 0px')
+						.css('background-position', '-' + (24 * num) + 'px 0')
 						.css('background-image', 'url(' + path + 'static.gif)');
 					cell.append(span);
 					elements.push(cell);

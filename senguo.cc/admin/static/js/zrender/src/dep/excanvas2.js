@@ -1555,7 +1555,7 @@ if (!document.createElement('canvas').getContext) {
     this.lineScale_ = 1;
 
     this.ghost_ = document.createElement('div');
-    var cssText = 'position:absolute; left:0px; right: 0px; top: 0px; bottom: 0px;';
+    var cssText = 'position:absolute; left:0; right: 0; top: 0; bottom: 0;';
     this.ghost_.style.cssText = cssText;
 
     this.element_.appendChild(this.ghost_);

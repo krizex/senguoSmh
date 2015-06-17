@@ -25,7 +25,7 @@ $(document).ready(function(){
 	              var w_width=$(window).width();	     
 		$("#slide").animate({"left": -w_width * index + "px"}, 600);
 		$('.animate0').animate({"opacity": "0"}, 350).eq(index).animate({"opacity": "1"}, 400);
-		$('.animate1').animate({"right": "-9999px"}, 500).eq(index).animate({"right": "0px"}, 400);
+		$('.animate1').animate({"right": "-9999px"}, 500).eq(index).animate({"right": "0"}, 400);
 		$(".num li").removeClass("on").eq(index).addClass("on");
 	}
 	function initSlide(){

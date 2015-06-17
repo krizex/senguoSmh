@@ -1,5 +1,5 @@
 
-.infowall-nav{text-align:center;padding-left:0px;}
+.infowall-nav{text-align:center;padding-left:0;}
 .infowall-nav li{display:inline-block;font-size:1.4em;line-height:1.6em;}
 .infowall-nav li a{display:block;padding:0 0.5em;color:#333;}
 .infowall-nav li.active a{color:#00D289;}
@@ -10,7 +10,7 @@
 .text-grey3{color:#666;}
 
 .info-content{padding:0;}
-.infowall-list{width:100%;float:left;padding-left:0px;}
+.infowall-list{width:100%;float:left;padding-left:0;}
 .infowall-list-item{margin-bottom:0.5em;width:100%;float:left;padding:0.5em 1em;}
 .infowall-list-item .head-img{width:40px;height:40px;}
 .infowall-list-item .info-text{padding:0.5em 0;margin-bottom:0.5em;border-bottom:1px solid #e7e7eb;}

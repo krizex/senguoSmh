@@ -98,7 +98,7 @@ window.CodeMirror = (function() {
     else input.setAttribute("wrap", "off");
     input.setAttribute("autocorrect", "off"); input.setAttribute("autocapitalize", "off");
     // Wraps and hides input textarea
-    d.inputDiv = elt("div", [input], null, "overflow: hidden; position: relative; width: 3px; height: 0px;");
+    d.inputDiv = elt("div", [input], null, "overflow: hidden; position: relative; width: 3px; height: 0;");
     // The actual fake scrollbars.
     d.scrollbarH = elt("div", [elt("div", null, null, "height: 1px")], "CodeMirror-hscrollbar");
     d.scrollbarV = elt("div", [elt("div", null, null, "width: 1px")], "CodeMirror-vscrollbar");
@@ -137,7 +137,7 @@ window.CodeMirror = (function() {
     if (place.appendChild) place.appendChild(d.wrapper); else place(d.wrapper);
 
     // Needed to hide big blue blinking cursor on Mobile Safari
-    if (ios) input.style.width = "0px";
+    if (ios) input.style.width = "0";
     if (!webkit) d.scroller.draggable = true;
     // Needed to handle Tab key in KHTML
     if (khtml) { d.inputDiv.style.height = "1px"; d.inputDiv.style.position = "absolute"; }
@@ -2792,7 +2792,7 @@ window.CodeMirror = (function() {
       node.style.left = node.style.right = "";
       if (horiz == "right") {
         left = display.sizer.clientWidth - node.offsetWidth;
-        node.style.right = "0px";
+        node.style.right = "0";
       } else {
         if (horiz == "left") left = 0;
         else if (horiz == "middle") left = (display.sizer.clientWidth - node.offsetWidth) / 2;
