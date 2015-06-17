@@ -18,6 +18,9 @@ $(document).ready(function(){
         $('#classify').text('搜索结果');
         $('.wrap-goods-box').css('margin-top','40px');
     }else{
+        if($('.classify-list li').length==0){
+            $(".wrap-loading-box").addClass("hidden");
+        }
          $('.classify-list li').each(function(){
             var $this=$(this);
             var id = Number($this.attr('data-id'));
@@ -222,10 +225,6 @@ $(document).ready(function(){
     if(buy_today=='True'&&allow_num<=0){
         return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
     }
-    if(storage-change_num<0){
-        return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
-    }
-    parent.attr({'data-storage':storage-change_num});
     if(storage==1){
        $this.siblings('.number-change').find('.number-input').val(1); 
     }else{
@@ -246,6 +245,13 @@ $(document).ready(function(){
         }
     }
     else {noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)}
+    if(storage-change_num<0){
+        return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
+    }
+    else if(storage-change_num==0){
+        $this.siblings('.number-change').find('.number-input').val(1);
+    }
+    parent.attr({'data-storage':storage-change_num});
 }).on('click','.number-minus',function(){
     //商品数量操作
     var $this=$(this);
