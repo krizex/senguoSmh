@@ -1,4 +1,10 @@
 $(document).ready(function(){
+    var day_type=$.getUrlParam('day_type');
+    if(typeof(day_type)==undefined||day_type==null){
+        $('.all').addClass('active');
+    }else{
+        $('.'+day_type).addClass('active');
+    }
     //订单完成
     $(document).on('click','.order_finish',function(){
         var $this=$(this);

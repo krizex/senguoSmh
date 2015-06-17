@@ -177,12 +177,16 @@ class Order(StaffBaseHandler):
 			return self.send_error(404)
 		if "day_type" in self.args:
 			day_type=self.args["day_type"]
+			today = datetime.date.today()
+			timedelta=datetime.timedelta(days=1)
+			tomorrow=(today+timedelta).strftime("%Y-%m-%d")
+			today=today.strftime("%Y-%m-%d")
 			if day_type == "today":
-				orders = [x for x in orders if (x.today == 1 and x.create_date.day == day) or (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
+				orders = [x for x in orders if (x.today == 1 and x.create_date.strftime("%Y-%m-%d") == today) or (x.today == 2 and (x.create_date+datetime.timedelta(days=1)).strftime("%Y-%m-%d") == today)]#过滤掉明天的订单
 			elif day_type == "tomorrow":
-				orders = [x for x in orders if(x.today == 2 and x.create_date.day == day)]
+				orders = [x for x in orders if(x.today == 2 and (x.create_date+datetime.timedelta(days=1)).strftime("%Y-%m-%d") == tomorrow)]
 			elif day_type == "overtime":
-				orders = [x for x in orders if(x.today == 1 and x.create_date.day < day) or (x.today == 2 and x.create_date.day+1 < day)]
+				orders = [x for x in orders if(x.today == 1 and x.create_date.strftime("%Y-%m-%d") < today) or (x.today == 2 and (x.create_date+datetime.timedelta(days=1)).strftime("%Y-%m-%d") < today)]
 
 		return self.render("staff/orders.html", orders=orders, page=page)
 
