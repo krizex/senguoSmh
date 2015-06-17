@@ -114,7 +114,7 @@ class Home(StaffBaseHandler):
 
 class Order(StaffBaseHandler):
 	@tornado.web.authenticated
-	@StaffBaseHandler.check_arguments("order_type")
+	@StaffBaseHandler.check_arguments("order_type","day_type?")
 	def get(self):
 		order_type = self.args["order_type"]
 		try:
@@ -160,12 +160,13 @@ class Order(StaffBaseHandler):
 		#               (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
 		orders_ontime = len(orders_len2)
 		self.set_cookie("orders_ontime",str(orders_ontime))
+
+
 		if order_type == "now":
 			orders = orders.filter_by(type=1).filter(models.Order.status!=5 or 6 or 7).order_by(models.Order.id.desc()).all()       
 			page = 'now'
 		elif order_type == "on_time":
 			orders = orders.filter_by(type=2).filter(models.Order.status!=5 or 6 or 7).order_by(models.Order.send_time).all()     
-			day = datetime.datetime.now().day
 			# orders = [x for x in orders if (x.today == 1 and x.create_date.day == day) or
 			#           (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单  
 			page = 'on_time'
@@ -174,6 +175,15 @@ class Order(StaffBaseHandler):
 			page = 'history'
 		else:
 			return self.send_error(404)
+		if "day_type" in self.args:
+			day_type=self.args["day_type"]
+			if day_type == "today":
+				orders = [x for x in orders if (x.today == 1 and x.create_date.day == day) or (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
+			elif day_type == "tomorrow":
+				orders = [x for x in orders if(x.today == 2 and x.create_date.day == day)]
+			elif day_type == "overtime":
+				orders = [x for x in orders if(x.today == 1 and x.create_date.day < day) or (x.today == 2 and x.create_date.day+1 < day)]
+
 		return self.render("staff/orders.html", orders=orders, page=page)
 
 	@tornado.web.authenticated
