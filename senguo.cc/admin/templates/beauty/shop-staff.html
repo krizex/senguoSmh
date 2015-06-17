@@ -1,0 +1,35 @@
+{% extends 'detail-base.html' %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/market-staff.css')}}"/>{% end %}
+{% block top %}店铺成员信息{% end %}
+{% block content %}
+  {% if member_list%}
+  <ul class="staff-list pt36">
+      {% for member in member_list%}
+      <li class="staff-item bg-white set-w100-fle">
+          <div class="staff-info set-w100-fle">
+              <div class="set-w100-fle p0">
+                  <div class="pull-left img">
+                      <img src="{{member['img'] or '/static/images/TDSG.png'}}">
+                  </div>
+                  <div class="pull-left p010">
+                      <p>{{member['name']}}</p>
+                      <p class="mt5 m-b5">出生年月：{{member['birthday']}}</p>
+                      <p>职位：{{member['work']}}</p>
+                  </div>
+              </div>
+              <!--<div class="col-lg-4 col-md-4 col-xs-4 col-sm-4 p0">-->
+                    <!--<a href="javascript:;" class="collect-btn btn text-green3 pull-right">收藏</a>-->
+              <!--</div>-->
+          </div>
+          <ul class="staff-info set-w100-fle">
+              <li class="set-w100-fle">手机号：{{member['phone']}}</li>
+              <li class="set-w100-fle">微信号：{{member['wx_username']  or '无'}}</li>
+              <!--<li>QQ：8888888</li>-->
+          </ul>
+      </li>
+      {% end %}
+  </ul>
+{% else %}
+    <h3 class="text-center mt42 pt36">店铺暂无任何成员！</h3>
+{% end %}
+{% end %}
