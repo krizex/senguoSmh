@@ -57,5 +57,5 @@ function clock() {
     $(".BMap_pop").children("div").eq(2).children("div").css({"background":"#333","border-top-right-radius":"10px"});
     $(".BMap_pop").children("div").eq(4).children("div").css({"background":"#333","border-bottom-left-radius":"10px"});
     $(".BMap_pop").children("div").eq(6).children("div").css({"background":"#333","border-bottom-right-radius":"10px"});
-    $(".BMap_pop").children("img").eq(3).attr("src","/static/images/iw3.png");
+    $(".BMap_pop").children("div").eq(7).children("img").attr("src","/static/images/iw3.png");
 }
