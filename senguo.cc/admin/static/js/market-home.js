@@ -237,9 +237,10 @@ $(document).ready(function(){
     if(storage>0) {
         if(storage-change_num<0){
             return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
-        }
-        else if(storage-change_num==0){
+        }else if(storage-change_num==0){
             $this.siblings('.number-change').find('.number-input').val(0);
+        }else{
+            $this.siblings('.number-change').find('.number-input').val(0); 
         }
         pulse($this.siblings('.number-change').find('.number-plus'));
         goodsNum($this.siblings('.number-change').find('.number-plus'),2);
