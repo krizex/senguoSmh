@@ -2485,6 +2485,11 @@ class Config(AdminBaseHandler):
 				admin.temp_active  = 0
 			self.session.commit()
 			return self.send_success()
+		elif action=="tpl_choose":
+			tpl_id=int(self.args["data"]["tpl_id"])
+			self.current_shop.shop_tpl=tpl_id
+			self.session.commit()
+			return self.send_success()
 		else:
 			return self.send_error(404)
 		return self.send_success()

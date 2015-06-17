@@ -134,3 +134,14 @@
 
 .admin-set-list .func-mode{top:-1px;}
 .add-btn.switch{background-image: url('/static/images/admin_switch_white.png');background-repeat: no-repeat;background-size: 14px;background-position: 18px;width: 200px;}
+
+.tpl-list{border:1px solid #eee;clear:both;}
+.tpl-list>li{border-bottom:1px solid #eee;clear:both;padding:10px;height:100px;}
+.tpl-list>li:last-child{border-bottom:none;}
+.tpl-list>li>img{width:}
+.tpl-list .view-box{width:120px;height:80px;background:#eee;overflow:hidden;}
+.tpl-list .view-box img{width:100%;}
+.tpl-list .choose-btn{display:inline-block;width:20px;height:20px;border:1px solid #ddd;background:#fff;border-radius:50%;}
+.tpl-list .choose-btn.active{background:#44b549}
+.mr10{margin-right:10px;}
+.mr20{margin-right:20px;}
