@@ -8172,7 +8172,7 @@ define(
             // 背景
             this._bgDom = document.createElement('div');
             this._bgDom.style.cssText = [
-                'position:absolute;left:0px;top:0px;width:',
+                'position:absolute;left:0;top:0;width:',
                 this._width, 'px;height:', this._height + 'px;', 
                 '-webkit-user-select:none;user-select;none;',
                 '-webkit-touch-callout:none;'
@@ -8364,7 +8364,7 @@ define(
                 this.insertLayer(zlevel, layer);
 
                 // Context is created after dom inserted to document
-                // Or excanvas will get 0px clientWidth and clientHeight
+                // Or excanvas will get 0 clientWidth and clientHeight
                 layer.initContext();
             }
 
