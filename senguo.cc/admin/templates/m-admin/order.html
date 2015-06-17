@@ -1,0 +1,390 @@
+{% extends 'base.html' %}
+{% block title %}订单管理{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('m-admin/css/idangerous.swiper.css')}}"/>
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back">返回</a>
+    <div class="wrap-order-tab">
+        <ul class="group order-type-list">
+            <li class="active item">立即送</li>
+            <li class="item">按时达</li>
+            <li class="item">自提</li>
+            <li class="tab-bg"></li>
+        </ul>
+    </div>
+    <a href="/madmin/orderSearch" class="head-right search"></a>
+</div>
+{% end %}
+{% block setcontent %}
+<div class="container pt70 pm80">
+<div class="second-tab">
+    <ul class="second-tab-list group">
+        <li class="item" data-action="unhandled">未处理</li>
+        <li class="item" data-action="waiting">处理中</li>
+        <li class="item" data-action="finish">已送达</li>
+        <li class="item" data-action="all">所有订单</li>
+        <li class="tab-line"></li>
+    </ul>
+</div>
+<div class="order-list-box">
+    <div class="swiper-container" id="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide item">
+                <ul class="order-lists pt10" id="order-not">
+                    <li>
+                        <p class="order-time item">下单时间 : 2015-11-20 15:22:30</p>
+                        <ul class="order-content">
+                            <li>
+                                <p>
+                                    <span class="fr money item"><span class="red-txt">44.55</span>元(到付)</span>
+                                    <span>NO.55554444</span>
+                                </p>
+                            </li>
+                            <li>
+                                <p class="item time">2015-11-20 15:22:30</p>
+                            </li>
+                            <li>
+                                <p class="item loc">湖北省武汉市洪山区珞瑜路888号</p>
+                            </li>
+                            <li>
+                                <p class="item say red-txt">留言留言留言留言留言留言</p>
+                            </li>
+                            <div class="order-grade">
+                                <div class="order-line">
+                                    <div class="order-line-grade"></div>
+                                    <div class="order-wawa">
+                                        <a class="task-staff img-border" href="javascript:;">
+                                            <img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="配送员头像">
+                                        </a>
+                                    </div>
+                                    <div class="order-status-txt">
+                                        <a class="task-staff" href="javascript:;">分配员工</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </ul>
+                    </li>
+                    <li>
+                        <p class="order-time item">下单时间 : 2015-11-20 15:22:30</p>
+                        <ul class="order-content">
+                            <li>
+                                <p>
+                                    <span class="fr money item"><span class="red-txt">44.55</span>元(到付)</span>
+                                    <span>NO.55554444</span>
+                                </p>
+                            </li>
+                            <li>
+                                <p class="item time">2015-11-20 15:22:30</p>
+                            </li>
+                            <li>
+                                <p class="item loc">湖北省武汉市洪山区珞瑜路888号</p>
+                            </li>
+                            <li>
+                                <p class="item say red-txt">留言留言留言留言留言留言</p>
+                            </li>
+                            <div class="order-grade">
+                                <div class="order-line">
+                                    <div class="order-line-grade" style="width:100%;"></div>
+                                    <div class="order-wawa" style="left:100%;">
+                                        <a class="img-border" href="javascript:;">
+                                            <img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="配送员头像">
+                                        </a>
+                                    </div>
+                                    <div class="order-status-txt" style="left:100%;">
+                                        <span class="#c333">配送中</span><a class="" href="tel:">拨号</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="swiper-slide item">
+                <ul class="order-lists pt10" id="order-ing">
+                    <li>
+                        <p class="order-time item">下单时间 : 2015-11-20 15:22:30</p>
+                        <ul class="order-content">
+                            <li>
+                                <p>
+                                    <span class="fr money item"><span class="red-txt">44.55</span>元(到付)</span>
+                                    <span>NO.111111</span>
+                                </p>
+                            </li>
+                            <li>
+                                <p class="item time">2015-11-20 15:22:30</p>
+                            </li>
+                            <li>
+                                <p class="item loc">湖北省武汉市洪山区珞瑜路888号</p>
+                            </li>
+                            <li>
+                                <p class="item say red-txt">留言留言留言留言留言留言</p>
+                            </li>
+                            <div class="order-grade">
+                                <div class="order-line">
+                                    <div class="order-line-grade"></div>
+                                    <div class="order-wawa">
+                                        <a class="task-staff img-border" href="javascript:;">
+                                            <img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="配送员头像">
+                                        </a>
+                                    </div>
+                                    <div class="order-status-txt">
+                                        <a class="task-staff" href="javascript:;">分配员工</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </ul>
+                    </li>
+                    <li>
+                        <p class="order-time item">下单时间 : 2015-11-20 15:22:30</p>
+                        <ul class="order-content">
+                            <li>
+                                <p>
+                                    <span class="fr money item"><span class="red-txt">44.55</span>元(到付)</span>
+                                    <span>NO.55554444</span>
+                                </p>
+                            </li>
+                            <li>
+                                <p class="item time">2015-11-20 15:22:30</p>
+                            </li>
+                            <li>
+                                <p class="item loc">湖北省武汉市洪山区珞瑜路888号</p>
+                            </li>
+                            <li>
+                                <p class="item say red-txt">留言留言留言留言留言留言</p>
+                            </li>
+                            <div class="order-grade">
+                                <div class="order-line">
+                                    <div class="order-line-grade" style="width:100%;"></div>
+                                    <div class="order-wawa" style="left:100%;">
+                                        <a class="img-border" href="javascript:;">
+                                            <img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="配送员头像">
+                                        </a>
+                                    </div>
+                                    <div class="order-status-txt" style="left:100%;">
+                                        <span class="#c333">配送中</span><a class="" href="tel:">拨号</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="swiper-slide item">
+                <ul class="order-lists pt10" id="order-already">
+                    <li>
+                        <p class="order-time item">下单时间 : 2015-11-20 15:22:30</p>
+                        <ul class="order-content">
+                            <li>
+                                <p>
+                                    <span class="fr money item"><span class="red-txt">44.55</span>元(到付)</span>
+                                    <span>NO.2222222</span>
+                                </p>
+                            </li>
+                            <li>
+                                <p class="item time">2015-11-20 15:22:30</p>
+                            </li>
+                            <li>
+                                <p class="item loc">湖北省武汉市洪山区珞瑜路888号</p>
+                            </li>
+                            <li>
+                                <p class="item say red-txt">留言留言留言留言留言留言</p>
+                            </li>
+                            <div class="order-grade">
+                                <div class="order-line">
+                                    <div class="order-line-grade"></div>
+                                    <div class="order-wawa">
+                                        <a class="task-staff img-border" href="javascript:;">
+                                            <img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="配送员头像">
+                                        </a>
+                                    </div>
+                                    <div class="order-status-txt">
+                                        <a class="task-staff" href="javascript:;">分配员工</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </ul>
+                    </li>
+                    <li>
+                        <p class="order-time item">下单时间 : 2015-11-20 15:22:30</p>
+                        <ul class="order-content">
+                            <li>
+                                <p>
+                                    <span class="fr money item"><span class="red-txt">44.55</span>元(到付)</span>
+                                    <span>NO.2222222</span>
+                                </p>
+                            </li>
+                            <li>
+                                <p class="item time">2015-11-20 15:22:30</p>
+                            </li>
+                            <li>
+                                <p class="item loc">湖北省武汉市洪山区珞瑜路888号</p>
+                            </li>
+                            <li>
+                                <p class="item say red-txt">留言留言留言留言留言留言</p>
+                            </li>
+                            <div class="order-grade">
+                                <div class="order-line">
+                                    <div class="order-line-grade" style="width:100%;"></div>
+                                    <div class="order-wawa" style="left:100%;">
+                                        <a class="img-border" href="javascript:;">
+                                            <img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="配送员头像">
+                                        </a>
+                                    </div>
+                                    <div class="order-status-txt" style="left:100%;">
+                                        <span class="#c333">配送中</span><a class="" href="tel:">拨号</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="swiper-slide item">
+                <ul class="order-lists pt10" id="order-all">
+                    <li>
+                        <p class="order-time item">下单时间 : 2015-11-20 15:22:30</p>
+                        <ul class="order-content">
+                            <li>
+                                <p>
+                                    <span class="fr money item"><span class="red-txt">44.55</span>元(到付)</span>
+                                    <span>NO.33333</span>
+                                </p>
+                            </li>
+                            <li>
+                                <p class="item time">2015-11-20 15:22:30</p>
+                            </li>
+                            <li>
+                                <p class="item loc">湖北省武汉市洪山区珞瑜路888号</p>
+                            </li>
+                            <li>
+                                <p class="item say red-txt">留言留言留言留言留言留言</p>
+                            </li>
+                            <div class="order-grade">
+                                <div class="order-line">
+                                    <div class="order-line-grade"></div>
+                                    <div class="order-wawa">
+                                        <a class="task-staff img-border" href="javascript:;">
+                                            <img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="配送员头像">
+                                        </a>
+                                    </div>
+                                    <div class="order-status-txt">
+                                        <a class="task-staff" href="javascript:;">分配员工</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </ul>
+                    </li>
+                    <li>
+                        <p class="order-time item">下单时间 : 2015-11-20 15:22:30</p>
+                        <ul class="order-content">
+                            <li>
+                                <p>
+                                    <span class="fr money item"><span class="red-txt">44.55</span>元(到付)</span>
+                                    <span>NO.3333333</span>
+                                </p>
+                            </li>
+                            <li>
+                                <p class="item time">2015-11-20 15:22:30</p>
+                            </li>
+                            <li>
+                                <p class="item loc">湖北省武汉市洪山区珞瑜路888号</p>
+                            </li>
+                            <li>
+                                <p class="item say red-txt">留言留言留言留言留言留言</p>
+                            </li>
+                            <div class="order-grade">
+                                <div class="order-line">
+                                    <div class="order-line-grade" style="width:100%;"></div>
+                                    <div class="order-wawa" style="left:100%;">
+                                        <a class="img-border" href="javascript:;">
+                                            <img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="配送员头像">
+                                        </a>
+                                    </div>
+                                    <div class="order-status-txt" style="left:100%;">
+                                        <span class="#c333">配送中</span><a class="" href="tel:">拨号</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <p class="no-result mt-100">页面加载中...</p>
+</div>
+</div>
+<ul class="hide" id="order-item">
+    <li>
+        <p class="order-time item">下单时间 : <span class="down-time">2015-11-20 15:22:30</span></p>
+        <ul class="order-content">
+            <li>
+                <p>
+                    <span class="fr money item"><span class="red-txt order-money">44.55</span>元(<span class="pay-type">到付</span>)</span>
+                    <span>NO.<span class="order-num">33333</span></span>
+                </p>
+            </li>
+            <li>
+                <p class="item time">2015-11-20 15:22:30</p>
+            </li>
+            <li>
+                <p class="item loc">湖北省武汉市洪山区珞瑜路888号</p>
+            </li>
+            <li>
+                <p class="item say red-txt">留言留言留言留言留言留言</p>
+            </li>
+            <div class="order-grade">
+                <div class="order-line">
+                    <div class="order-line-grade"></div>
+                    <div class="order-wawa">
+                        <a class="task-staff img-border" href="javascript:;">
+                            <img class="staff-img" src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="配送员头像">
+                        </a>
+                    </div>
+                    <div class="order-status-txt">
+                        <a class="task-staff first-step" href="javascript:;">分配员工</a>
+                        <!--<span class="second-step"><span class="#c333 ">配送中</span><a class="" href="tel:">拨号</a></span>
+                        <span class="third-step"><span class="#c333 ">已完成</span></span>-->
+                    </div>
+                </div>
+            </div>
+        </ul>
+    </li>
+</ul>
+<div class="pop-win pop-staff hide">
+    <div class="pop-content">
+        <div class="pop-staff-box">
+            <p class="title">分配员工</p>
+            <ul class="staff-list">
+                <li class="" data-tel="">
+                    <span class="img-border mr10"><img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="员工头像"/></span>
+                    <span>马大灰||东二区、西三区所有</span>
+                </li>
+                <li data-tel="15555550000">
+                    <span class="img-border mr10"><img src="/static/images/TDSG.png" alt="员工头像"/></span>
+                    <span>马大灰||东二区、西三区所有</span>
+                </li>
+            </ul>
+            <p class="btn-box sure-staff" id="sure-staff">
+                确认并设为处理中
+            </p>
+        </div>
+    </div>
+</div>
+<!--div class="wrap-loading-box hide">
+    <div class="loading-box">
+        <div class="loader">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+        <div class="load-txt">加载中...</div>
+    </div>
+</div-->
+{% end %}
+{% block bottom %}
+<script src="{{static_url('m-admin/js/idangerous.swiper.min.js')}}"></script>
+<script src="{{static_url('m-admin/js/order.js')}}"></script>
+{% end %}
