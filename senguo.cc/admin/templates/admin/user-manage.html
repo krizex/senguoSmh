@@ -44,11 +44,11 @@
             <div class="user-info pull-left">
                 <span class="user-name set-inl-blo">{{customer.accountinfo.nickname}}<i class="user-sex pull-right set-inl-blo" data-id="{{customer.accountinfo.sex}}"></i></span>
                 <div class="user-info-con">
-                    <span>用户积分：{{customer.shop_point}}</span>
+                    <span>用户ID：{{customer.accountinfo.id}}</span>
                     <!--<span class="user-level text-white text-center">Lv3</span>
                     <span class="level-price text-grey2">566</span>-->
-                    <span class="user-account text-grey2 ml10">{{customer.shop_balance}}元</span>
-                    <spna class="ml10">用户ID：{{customer.accountinfo.id}}</spna>
+                    <span class="user-account text-grey2 ml10">{{customer.shop_balance}} 元</span>
+                    <spna class="ml10">用户积分：{{customer.shop_point}}</spna>
                 </div>
                 <span class="remark text-pink mt10 {% if customer.remark ==None %}hidden{% end %}">备注：{{customer.remark}}</span>
             </div>
