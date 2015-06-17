@@ -2292,6 +2292,8 @@ class Config(AdminBaseHandler):
 				return self.render('admin/admin-set.html',context=dict(subpage='shop_set',shopSubPage='admin_set'),notice=notice,datalist=datalist)
 			else:
 				return self.redirect(self.reverse_url('adminShopConfig'))
+		elif action == "template":
+			return self.render('admin/shop-template-set.html',context=dict(subpage='shop_set',shopSubPage='template_set'))
 			
 		else:
 			return self.send_error(404)
