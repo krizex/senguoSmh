@@ -37,3 +37,4 @@ p{margin-bottom:5px;}
 .remark_notice{line-height:34px;font-size:12px;}
 .filter-box{clear:both;height:50px;line-height:50px;}
 .filter-box a{width:20%;color:#333;background:#F3FFF1;border:1px solid #ddd;}
+.filter-box a.active{background:#33CC66;color:#fff;}
