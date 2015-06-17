@@ -4,8 +4,6 @@ $(document).ready(function(){
     }
     $(".wrap-area-box").height($(window).height());
     initBmap();
-    $(".BMap_pop").children("div").eq(0).children("div").css({"background":"#333","border-top-left-radius":"10px"});
-    $(".BMap_pop").children("div").eq(2).children("div").css({"background":"#333","border-top-right-radius":"10px"});
 }).on("click","#go-back",function(){
     history.go(-1);
 });
@@ -35,6 +33,8 @@ function initBmap() {
         marker.addEventListener("click", function(){
             map.openInfoWindow(infoWindow,point); //开启信息窗口
         });
+        $(".BMap_pop").children("div").eq(0).children("div").css({"background":"#333","border-top-left-radius":"10px"});
+        $(".BMap_pop").children("div").eq(2).children("div").css({"background":"#333","border-top-right-radius":"10px"});
     }else{
         var myGeo = new BMap.Geocoder();
         myGeo.getPoint(address, function (point) {
@@ -50,6 +50,8 @@ function initBmap() {
                 });
             }
         });
+        $(".BMap_pop").children("div").eq(0).children("div").css({"background":"#333","border-top-left-radius":"10px"});
+        $(".BMap_pop").children("div").eq(2).children("div").css({"background":"#333","border-top-right-radius":"10px"});
     }
 }
 
