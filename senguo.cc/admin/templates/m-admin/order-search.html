@@ -24,22 +24,22 @@
 </div>
 <ul class="hide" id="order-item">
     <li>
-        <p class="order-time item">下单时间 : <span class="down-time">2015-11-20 15:22:30</span></p>
+        <p class="order-time item">下单时间 : <span class="down-time"></span></p>
         <ul class="order-content">
             <li>
                 <p>
-                    <span class="fr money item"><span class="red-txt order-money">44.55</span>元(<span class="pay-type">到付</span>)</span>
-                    <span>NO.<span class="order-num">33333</span></span>
+                    <span class="fr money item"><span class="red-txt order-money"></span>元(<span class="pay-type"></span>)</span>
+                    <span>NO.<span class="order-num"></span></span>
                 </p>
             </li>
             <li>
-                <p class="item time">2015-11-20 15:22:30</p>
+                <p class="item time"></p>
             </li>
             <li>
-                <p class="item loc">湖北省武汉市洪山区珞瑜路888号</p>
+                <p class="item loc"></p>
             </li>
             <li>
-                <p class="item say red-txt">留言留言留言留言留言留言</p>
+                <p class="item say red-txt"></p>
             </li>
             <div class="order-grade">
                 <div class="order-line">
@@ -51,8 +51,8 @@
                     </div>
                     <div class="order-status-txt">
                         <a class="task-staff first-step" href="javascript:;">分配员工</a>
-                        <!--<span class="second-step"><span class="#c333 ">配送中</span><a class="" href="tel:">拨号</a></span>
-                        <span class="third-step"><span class="#c333 ">已完成</span></span>-->
+                        <span class="second-step hide"><span class="#c333 ">配送中</span><a class="staff-tel" href="tel:">拨号</a></span>
+                        <span class="third-step hide"><span class="#c333 ">已完成</span></span>
                     </div>
                 </div>
             </div>
@@ -63,15 +63,7 @@
     <div class="pop-content">
         <div class="pop-staff-box">
             <p class="title">分配员工</p>
-            <ul class="staff-list">
-                <li class="" data-tel="">
-                    <span class="img-border mr10"><img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="员工头像"/></span>
-                    <span>马大灰||东二区、西三区所有</span>
-                </li>
-                <li data-tel="15555550000">
-                    <span class="img-border mr10"><img src="/static/images/TDSG.png" alt="员工头像"/></span>
-                    <span>马大灰||东二区、西三区所有</span>
-                </li>
+            <ul class="staff-list" id="staff-list">
             </ul>
             <p class="btn-box sure-staff" id="sure-staff">
                 确认并设为处理中
