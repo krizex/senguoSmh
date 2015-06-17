@@ -38,7 +38,7 @@ $(document).ready(function(){
     window.onbeforeunload = function(){
         if(goodsEdit==true){
             setTimeout(function(){zb_t = setTimeout(onunloadcancel, 0)}, 0);
-            return "当前有商品正在编辑，确定离开此页？";
+            return "当前有商品正在编辑还未保存，确定离开此页？";
         }
     }
     window.onunloadcancel = function(){
@@ -92,7 +92,7 @@ $(document).ready(function(){
                 $("#item-img-lst").children(".add-img-box").addClass("hidden");
             }
         }else{
-            Tip("只能添加5张照片哦");
+            Tip("商品图片最多只能添加5张");
             $("#item-img-lst").children(".add-img-box").addClass("hidden");
         }
     //}
@@ -250,7 +250,7 @@ $(document).ready(function(){
 }).on("click","#upload-img",function(){ //保存上传后的图片
     var $list = $("#item-img-lst").children(".img-bo");
     var $item = curItem;
-    if($list.size()>5){Tip("只能上传5张图片哦！"); return false;}
+    if($list.size()>5){Tip("商品图片最多只能添加5张"); return false;}
     $item.find(".drag-img-list").children(".add-img-box").prevAll("li").remove();
     $item.find(".drag-img-list").children(".add-img-box").before($list);
     if($list.length==5){
@@ -279,7 +279,7 @@ $(document).ready(function(){
                 initEditor($(this));
             }
         }else{
-            Tip("当前商品无商品详情");
+            Tip("当前商品未添加商品详情，您可以点击“编辑”后添加商品详情");
         }
     }
     curEditor = $(this);
@@ -333,8 +333,8 @@ $(document).ready(function(){
 }).on("click",".ok-unit-box",function(){//确认单位换算
     var firstNum = $("#first_num").val().trim();
     var secondNum = $("#second_num").val().trim();
-    if(isNaN(firstNum) || isNaN(secondNum)){
-        Tip("请填入整数，不能含有小数点");
+    if(parseInt(firstNum)!=firstNum || parseInt(secondNum)!=secondNum || firstNum<=0 || secondNum<=0){
+        Tip("单位换算两边的数字必须为正整数");
         return false;
     }else{
         curPrice.attr("data-first",firstNum).attr("data-second",secondNum);
@@ -371,10 +371,10 @@ $(document).ready(function(){
         getGoodsItem("all",pn);
     }
 }).on("click",".jump-to",function(){
-    var num = $(this).closest("ul").find(".input-page").val();
+    var num = $(this).closest("ul").find(".input-page").val().trim();
     var total = $(".page-total").html();
-    if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>parseInt(total)){
-        return Tip("页码格式不对或者数字超出页码范围");
+    if(parseInt(num)!=num || num=="" || parseInt(num)<1 || parseInt(num)>parseInt(total)){
+        return Tip("您输入的页码格式不对或者数字超出页码范围");
     }
     if(isSearch){
         getGoodsItem("goods_search",num-1,"",$("#goods-all-ipt").val());
@@ -383,10 +383,10 @@ $(document).ready(function(){
     }
 }).on("keyup",".input-page",function(e){
     if(e.keyCode==13){
-        var num = $(this).closest("ul").find(".input-page").val();
+        var num = $(this).closest("ul").find(".input-page").val().trim();
         var total = $(".page-total").html();
-        if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>parseInt(total)){
-            return Tip("页码格式不对或者数字超出页码范围");
+        if(parseInt(num)!=num || num=="" || parseInt(num)<1 || parseInt(num)>parseInt(total)){
+            return Tip("您输入的页码格式不对或者数字超出页码范围");
         }
         if(isSearch){
             getGoodsItem("goods_search",num-1,"",$("#goods-all-ipt").val());
@@ -397,7 +397,7 @@ $(document).ready(function(){
 }).on("click","#goods-all-search",function(){//商品搜索
     var value = $("#goods-all-ipt").val();
     if($.trim(value)==""){
-        return Tip("搜索条件不能为空");
+        return Tip("搜索内容不能为空");
     }
     isSearch = true;
     getGoodsItem("goods_search",0,"",value);
@@ -463,9 +463,9 @@ function dealGoods($item,type){
     var imgUrls = $item.find(".drag-img-list").find("img");
     var imgList = {};
     if(imgUrls.size()==0){
-        return Tip("必须上传至少一张商品图片");
+        return Tip("请至少添加一张商品图片");
     }else if(imgUrls.size()>5){
-        return Tip("图片不能超过5张");
+        return Tip("商品图片最多只能添加5张");
     }else{
         var arr1 = [];
         var arr2 = [];
@@ -525,7 +525,7 @@ function dealGoods($item,type){
     //商品简介
     var info = $item.find(".goods-info").val();
     if(info.length>100){
-        return Tip("商品简介不能超过100个字，更多内容请在商品详情页添加");
+        return Tip("商品简介不能超过100个字，更多内容请在商品图文详情中添加");
     }
 
     //商品详情
@@ -537,11 +537,11 @@ function dealGoods($item,type){
     //商品限购、排序优先级
     var limit_num = $item.find(".limit_num").val().trim();
     var priority = $item.find(".goods-priority").val().trim();
-    if(isNaN(limit_num) || parseInt(limit_num)<0){
+    if(parseInt(limit_num)!=limit_num || parseInt(limit_num)<0){
         return Tip("商品限购必须为正整数");
     }
-    if(isNaN(priority) || parseInt(priority)>9 || parseInt(priority)<0){
-        return Tip("优先级必须为0-9之间的数字");
+    if(parseInt(priority)!=priority || parseInt(priority)>9 || parseInt(priority)<0){
+        return Tip("优先级必须为0-9之间的整数");
     }
     
     //传入数据
@@ -574,7 +574,7 @@ function dealGoods($item,type){
     $.postJson(url,args,function(res) {
         if (res.success) {
             if(type == "add"){
-                Tip("新商品添加成功");
+                Tip("商品添加成功");
                 goodsEdit = false;
                 del_list =[];
                 setTimeout(function(){
@@ -698,7 +698,7 @@ function singleGroup(goods_id,group_id,$obj){
     };
     $.postJson(url,args,function(res) {
         if (res.success) {
-            Tip("分组设置成功！");
+            Tip("商品分组设置成功");
             $obj.closest("ul").prev("button").children("em").html($obj.html()).attr("data-id",$obj.attr("data-id"));
         }else{
             Tip(res.error_text);
@@ -711,7 +711,7 @@ function batchGroup(name,group_id,$obj){
         return Tip("请先完成正在编辑的商品");
     }
     if($(".checked-box").size()==0){
-        return Tip("您没有选中任何商品哦");
+        return Tip("您没有选中任何商品");
     }
     var aIds = [];
     var batchList = $(".goods-all-list").find(".checked-box");
@@ -745,7 +745,7 @@ function batchGoods(type){
         return Tip("请先完成正在编辑的商品");
     }
     if($(".checked-box").size()==0){
-        return Tip("您没有选中任何商品哦");
+        return Tip("您没有选中任何商品");
     }
     var aIds = [];
     var batchList = $(".goods-all-list").find(".checked-box");
@@ -1001,11 +1001,11 @@ $(document).ready(function(){
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
-                    Tip("图片大小不能超过4M哦");
+                    Tip("上传图片大小请不要超过4M");
                 } else if (err.code == -601) {
-                    Tip("图片格式不对哦，只能上传png、jpg格式图片");
+                    Tip("上传图片格式只能为png、jpg图片");
                 } else if (err.code == -200) {
-                    Tip("当前页面过期，请刷新页面");
+                    Tip("当前页面过期，请刷新页面后再上传");
                 } else {
                     Tip(err.code + ": " + err.message);
                 }
@@ -1247,9 +1247,7 @@ function getData2(con){
                         });
                         $('.fruit-list').append(html);
                     }
-
                 }
-
             }
             else return Tip(res.error_text);
         },
