@@ -8,6 +8,7 @@ $(document).ready(function(){
     if(mWidth>800){
         $("#shop-area").css("left",(mWidth-width)/2+"px");
         $("#cart-bg").css("left",((mWidth-width)/2+width-54)+"px");
+        $("#back-bg").css("left",(mWidth-width)/2+"px");
     }
     $("body").css("backgroundColor","#fff");
     $(".phone-box").css("paddingBottom","20px").css("backgroundColor","#fff");
@@ -37,9 +38,15 @@ $(document).ready(function(){
         var unit_num=parseFloat($this.parents("li").find('.number').text());
         var storage=parseFloat($this.attr("data-storage"));
         var change_num=relate*unit_num;
+        var buy_today=$this.parents('li').attr('data-buy');
+        var allow_num=parseInt($this.parents('li').attr('data-allow'));
+        if(buy_today=='True'&&allow_num<=0){
+            return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
+        }
         if(storage<change_num){
             return noticeBox("库存不足啦~~");
         }
+        $this.attr("data-storage",storage-change_num);
         var _this = $(this);
         if(_this.hasClass("r70")) return false;
         $(this).addClass("r70");
@@ -66,11 +73,16 @@ $(document).ready(function(){
         var storage=parseFloat($this.parents("li").find('.now-buy').attr("data-storage"));
         var limit_num=parseInt($this.parents(".wrap-goods-detail").attr('data-limit'));
         var change_num=relate*unit_num*num;
-        if(storage<change_num){
+        var buy_today=$this.parents('li').attr('data-buy');
+        var allow_num=parseInt($this.parents('li').attr('data-allow'));
+        if(buy_today=='True'&&num>=allow_num){
+            return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
+        }
+        if(storage<=change_num){
             return noticeBox("库存不足啦~~");
         }
-        if(limit_num>0&&num==limit_num){
-            return  noticeBox('商品限购数量'+limit_num);
+        if(limit_num>0&&num>=limit_num){
+            return noticeBox('当前商品最多只能买 '+limit_num+' 件哦！');
         }
         $this.parents("li").find('.now-buy').attr({"data-storage":storage-change_num})
         if(isNaN(num)){
@@ -137,8 +149,6 @@ $(document).ready(function(){
 }).on('click','.add-cart',function(){
     var link=$(this).attr('href');
     addCart(link);
-}).on("click",".back",function(){
-    window.history.go(-1);
 });
 //点赞
 function great(id,$this){
@@ -151,7 +161,12 @@ function great(id,$this){
     };
     $.postJson(url,args,function(res){
             if(res.success){
-                $this.attr("data-flag","True").addClass("zaned").html(parseInt($this.html())+1);
+                $this.attr("data-flag","True").find(".zan").addClass("zaned");
+                $this.attr("data-flag","True").find(".num").html(parseInt($this.find(".num").html())+1);
+            }
+            if(res.notice)
+            {
+                noticeBox(res.notice);
             }
             else noticeBox(res.error_text);
         },

@@ -1,5 +1,36 @@
 $(document).ready(function(){
-    $('.classify-title').first().hide();
+    //分类显示
+    var top_title=$('.top-title');
+    //get infomations of goods and push into html
+    var link_group=$.getUrlParam("group");
+    var link_search=$.getUrlParam("search");
+    if(link_group!= null){
+        window.dataObj.page=1;
+        window.dataObj.action=6;
+        _group_id = parseInt(link_group);
+        goodsList(1,6);
+    }
+    else if(link_search != null){
+        window.dataObj.page=1;
+        window.dataObj.action=9;
+        _search = link_search;
+        goodsList(1,9);
+        $('#classify').text('搜索结果');
+        $('.wrap-goods-box').css('margin-top','40px');
+    }else{
+        if($('.classify-list li').length==0){
+            $(".wrap-loading-box").addClass("hidden");
+        }
+         $('.classify-list li').each(function(){
+            var $this=$(this);
+            var id = Number($this.attr('data-id'));
+            _group_id = id;
+            if(window.dataObj.finished==true){
+                goodsList(1,6); 
+            }
+         });    
+    }
+    // scrollLoading();
     var shop_logo=$('#shop_imgurl').attr('data-img');
     if(parseInt($("#shop_status").val())==3){
         modalNotice("店铺休息中，暂不接收新订单");
@@ -24,40 +55,7 @@ $(document).ready(function(){
             });
         var bullets = document.getElementById('position').getElementsByTagName('li');
     }
-    /*var notice_con=window.dataObj.notices;
-    if(typeof(notice_con)!='undefined'){
-        $.getItem('/static/items/customer/notice-item.html?v=20160608',function(data){
-            $('.notice-board').show();
-            window.dataObj.notice_item=data;
-            var notice_item=window.dataObj.notice_item;
-            for(var i=0;i<notice_con.length;i++){
-                var summary=notice_con[i][0];
-                var detail=notice_con[i][1];
-                var item=$(notice_item);
-                item.find('.title').text(summary);
-                item.find('.notice-detail').val(detail);
-                $('.swipe-wrap').append(item);
-                $('#position').append('<li></li>');
-            }
-            $('#position li').first().addClass('on');
-            if($('#position li').length>0){
-                var slider =
-                    Swipe(document.getElementById('slider'), {
-                        auto: 3000,
-                        continuous: true,
-                        callback: function(pos) {
-                            var i = bullets.length;
-                            while (i--) {
-                                bullets[i].className = ' ';
-                            }
-                            bullets[pos].className = 'on';
 
-     }
-     });
-     var bullets = document.getElementById('position').getElementsByTagName('li');
-     }
-     });
-     }*/
     var top=$('.top-title').offset().top;
     $('goods-list').last().addClass('m-b60');
     $('.bottom-nav').find('li').addClass('add_cart');
@@ -68,55 +66,28 @@ $(document).ready(function(){
         //分类滚动监听
         if($(window).scrollTop()>top){
             //$(".notice-box").hide();
+            $('.classify-list').addClass('fix-top2');
             $('.top-title').addClass('fix-top');
+            
             //$(".wrap-goods-box").height($(window).height()-50);
         }else{
             //$(".notice-box").show();
+            $('.classify-list').removeClass('fix-top2');
             $('.top-title').removeClass('fix-top');
+            
             //$(".wrap-goods-box").height($(window).height()-50-$(".wrap-notice-box").height());
         }
         //s_top = $(".wrap-goods-box").scrollTop();
+        if(link_search == null){
+         //分类滚动监听
+            var box=$('.classify-title');
+            for(var i=0;i<box.length;i++){
+                var dist=box[i].offsetTop-40;
+                var classify=box[i].innerHTML;
+                if($(window).scrollTop()>=dist){$('#classify').text(classify);}
+            }
+         }
     });
-
-    //all numer of page
-    // var fruit_pages=Int($('#fruit_page').val());
-    // var dry_pages=Int($('#dry_page').val());
-    // var pages_count=Int($('#page_count').val());
-    // //if type of mgoods doesn't exit then hide the mgoods button
-    // var m_pages=window.dataObj.mgoods_page;
-    // for(var i=0;i<m_pages.length;i++){
-    //     var page=m_pages[i][0];
-    //     var menu_id=m_pages[i][1];
-    //     if(!page) $('.menu_classify'+menu_id).hide();
-    // }
-    // //if fruit or dry_fruit doesn't exit
-    // if(!fruit_pages) {
-    //     $('#dryFruitPosition').hide();
-    //     if(!dry_pages) {
-    //         $('.menu_title').first().hide();
-    //     }
-    // }
-    //分类显示
-    var top_title=$('.top-title');
-    //get infomations of goods and push into html
-    var link_group=$.getUrlParam("group");
-    var link_search=$.getUrlParam("search");
-    if(link_group!= null){
-        window.dataObj.page=1;
-        window.dataObj.action=6;
-        _group_id = parseInt(link_group);
-        goodsList(1,6);
-       
-    }
-    else if(link_search != null){
-        window.dataObj.page=1;
-        window.dataObj.action=9;
-        _search = link_search;
-        goodsList(1,9);
-    }else{
-         goodsList(1,5); 
-    }
-    scrollLoading();
     //已在购物车里的商品
     var cart_fs=window.dataObj.cart_fs;
     // var cart_ms=window.dataObj.cart_ms;
@@ -124,10 +95,6 @@ $(document).ready(function(){
         window.dataObj.fruits[cart_fs[key][0]]=cart_fs[key][1];
         fruits_num();
     }
-    // for(var key in cart_ms) {
-    //     window.dataObj.mgoods[cart_ms[key][0]]=cart_ms[key][1];
-    //     mgoods_num();
-    // }
 }).on('click','.notice-item',function(){
         //公告详情
         var $this=$(this);
@@ -135,18 +102,19 @@ $(document).ready(function(){
         var detail_box=new Modal('detail_box');
         detail_box.modal('show');
         $('.detail-box').find('.detail').text(detail);
-    }).on('click','.goods-list-item',function(e){
-        var $this=$(this);
-        var storage=parseInt($this.attr('data-storage'));
-        var id=$this.attr('data-id');
-        var shop_code=$('#shop_code').val();
-        if (storage != 0) {
-            if($(e.target).closest(".forbid_click").size()==0){
-                addCart("/"+shop_code+"/goods/"+id);
-            }
-        }else{
-            return noticeBox("当前商品已经卖完啦");
+}).on('click','.goods-list-item',function(e){
+    var $this=$(this);
+    var storage=parseInt($this.attr('data-num'));
+    var detail_no=$this.attr('data-detail');
+    var id=$this.attr('data-id');
+    var shop_code=$('#shop_code').val();
+    if (storage > 0 && detail_no=='False') {
+        if($(e.target).closest(".forbid_click").size()==0){
+            addCart("/"+shop_code+"/goods/"+id);
         }
+    }else if(storage<=0){
+        return noticeBox("当前商品已经卖完啦");
+    }
 }).on('click','.check-lg-img',function(){
     //查看大图
     var $this=$(this);
@@ -169,7 +137,7 @@ $(document).ready(function(){
     large_box.find('#largeImg').attr({'src':img_url});
     large_box.find('.modal-title').text(fruit_name);
     large_box.find('.intro').text(fruit_intro);
-    if(if_favour=='true') {large_box.find('.click-great').addClass('clicked').removeClass('able_click')}
+    if(if_favour=='True') {large_box.find('.click-great').addClass('clicked').removeClass('able_click')}
     else {large_box.find('.click-great').removeClass('clicked').addClass('able_click');}
 }).on('click','.clicked',function(){
     noticeBox('亲，你今天已经为该商品点过赞了，一天只能对一个商品赞一次哦');
@@ -183,36 +151,46 @@ $(document).ready(function(){
 }).on('click','.focus-btn',function(){
     //关注店铺
     focus();
-}).on('click','.goods-class-choose li',function(){
-    //分类选择
-    var $this=$(this);
-    var text=$this.text();
-    $('#classify').text(text).siblings('.up').toggle().siblings('.down').toggle();
-    $('.classify-title').addClass('hidden');
-    $('.goods-list').empty();
-    var group_id=$this.attr('data-id');
-    if(group_id!=-2){
-        window.dataObj.page=1;
-        window.dataObj.action=6;
-        _group_id = group_id;
-        goodsList(1,6);
+}).on('click','.classify-icon',function(){
+    var link_search=$.getUrlParam("search");
+     if(link_search != null){
+        var shop_code=$('#shop_code').val();
+        window.location.href="/"+shop_code;
+    }else{
+        $('.classify-list').toggle();
     }
-    else{
-        window.dataObj.page=1;
-        window.dataObj.action=5;
-        goodsList(1,5);
-    }
-    // var top=$('#'+g_class+'').offset().top;
-    // $('.choose-classify .icon').toggle();
-    // var w_height=$('#'+g_class+'').height();
-    // document.body.scrollTop =top-3*w_height;
-    //top_title.find('.classify').text(text);
 }).on('click','.choose-classify',function(){
     var $this=$(this);
     $this.find('.icon').toggle();
     $('.goods-class-choose').toggle();
-}).on('click','.goods-class-choose li',function(){
-    $('.goods-class-choose').hide();
+}).on('click','.classify-list li',function(){
+    $('.classify-list').toggle();
+    var $this=$(this);
+    var text=$this.text();
+    $('#classify').text(text);
+    var group_id=Number($this.attr('data-id'));
+    var top=$('.classify-'+group_id).offset().top;
+    if(group_id==-1){
+        top=$('.goods-list--1').offset().top-40;
+    }
+    $(window).scrollTop(top);
+    // $('.classify-title').addClass('hidden');
+    // $('.goods-list').empty();
+    // if(group_id!=-2){
+    //     window.dataObj.page=1;
+    //     window.dataObj.action=6;
+    //     _group_id = group_id;
+    //     goodsList(1,6);
+    // }
+    // else{
+    //     window.dataObj.page=1;
+    //     window.dataObj.action=5;
+    //     goodsList(1,5);
+    // }
+}).on('click','body',function(e){
+    if($(e.target).closest('.to-hide').length == 0){
+        $('.classify-list').hide();
+    }
 }).on('click','#all_goods',function(){
     //get all goods
     $('.goods-list').empty();
@@ -239,14 +217,19 @@ $(document).ready(function(){
      $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
      }*/
     var storage=parseFloat(parent.attr('data-storage'));
-    var relate=parseFloat($this.parents('.num_box').siblings('.charge-type').attr('data-relate'));
+    var relate=parseFloat($this.parents('.charge-item').attr('data-relate'));
     var unit_num=parseFloat($this.parents('.num_box').siblings('.charge-type').find('.num').text());
     var change_num=relate*unit_num*1;
-    if(storage-change_num<0){
-        return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
+    var buy_today=$this.parents('.charge-item').attr('data-buy');
+    var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
+    if(buy_today=='True'&&allow_num<=0){
+        return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
     }
-    parent.attr({'data-storage':storage-change_num});
-    $this.siblings('.number-change').find('.number-input').val(0);
+    if(storage==1){
+       $this.siblings('.number-change').find('.number-input').val(1); 
+    }else{
+        $this.siblings('.number-change').find('.number-input').val(0);
+    }
     if(storage>0) {
         pulse($this.siblings('.number-change').find('.number-plus'));
         goodsNum($this.siblings('.number-change').find('.number-plus'),2);
@@ -262,6 +245,13 @@ $(document).ready(function(){
         }
     }
     else {noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)}
+    if(storage-change_num<0){
+        return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
+    }
+    else if(storage-change_num==0){
+        $this.siblings('.number-change').find('.number-input').val(1);
+    }
+    parent.attr({'data-storage':storage-change_num});
 }).on('click','.number-minus',function(){
     //商品数量操作
     var $this=$(this);
@@ -273,6 +263,11 @@ $(document).ready(function(){
     var num=Int($this.siblings('.number-input').val().trim());
     var storage=parseFloat(parent.attr('data-storage'));
     var regNum=/^[0-9]*$/;
+    var buy_today=$this.parents('.charge-item').attr('data-buy');
+    var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
+    if(buy_today=='True'&&num>=allow_num){
+        return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
+    }
     if(!regNum.test(num)) {
         $this.siblings('.number-input').val(storage);
         return noticeBox('商品数量只能为整数！',$this);
@@ -346,14 +341,12 @@ $(document).ready(function(){
                     storage_origin=storage_origin-storage;
                     for(var i=0;i<num_item.length;i++){
                         storage_now=storage_origin-num_item.eq(i).val();
-                        //console.log(storage_now);
                     }
                 }
                 else {
                     storage_now=0;
                 };
                 parent.attr({'data-storage':storage_now});
-                //console.log(233333);
                 if(storage_now<num) {return noticeBox('只有这么多了哦！┑(￣▽ ￣)┍',$this);}
             }
         }
@@ -361,7 +354,6 @@ $(document).ready(function(){
             $this.val(num);
             storage_now=storage_now-num;
             parent.attr({'data-storage':storage_now});
-            //console.log(24444444);
         }
     }
     else if(num>=999) {
@@ -369,14 +361,12 @@ $(document).ready(function(){
         else parent.attr({'data-storage':0});
         if(storage<999) {
             $this.val(Int(storage_now));
-            //console.log(25555555);
             return noticeBox('只有这么多了哦！┑(￣▽ ￣)┍',$this);
         }
         else {
             $this.val(999);
             storage_now=storage_now-999;
             parent.attr({'data-storage':storage_now});
-            //console.log(266666);
             return noticeBox('最多只能添加999哦！┑(￣▽ ￣)┍',$this);
         }
     }
@@ -401,8 +391,6 @@ window.dataObj.finished=true;
 var nomore=false;
 var _group_id;
 var _search;
-
-
 $('.loading').html("~努力加载中 ( > < )~").show();
 var scrollLoading=function(){
     $(window).scroll(function(){
@@ -427,6 +415,7 @@ var scrollLoading=function(){
     });
 }
 var goodsList=function(page,action){
+    $(".wrap-loading-box").removeClass("hidden");
     var url='';
     var action = action;
     var args={
@@ -444,6 +433,7 @@ var goodsList=function(page,action){
             if(res.success)
             {
                 nomore = res.nomore
+                initData(res.data);
                 if(nomore == true){
                     if(action==9){
                         $('.loading').html("~没有更多结果了 ( > < )~").show();
@@ -451,53 +441,74 @@ var goodsList=function(page,action){
                         $('.loading').html("~没有更多商品了呢 ( > < )~").show();
                     }
                 }
-                //get item dom
-                if(window.dataObj.goods_item==undefined){
-                    getItem('/static/items/customer/market-goods-item.html?v=20150532',function(data){
-                        window.dataObj.goods_item=data;
-                        getItem('/static/items/customer/charge-item.html?v=20150532',function(data){
-                            window.dataObj.charge_item=data;
-                            getItem('/static/items/customer/classify_item.html?v=20150530',function(data){
-                                window.dataObj.classify_item=data;
-                                initData(res.data);
-
-                            });
-                        });
-                    });
-                }
-                else {
-                    initData(res.data);
-                }
             }
             else {
                 noticeBox(res.error_text);
+                $(".wrap-loading-box").addClass("hidden");
             }
         },
         function(){noticeBox('网络好像不给力呢~ ( >O< ) ~');},
         function(){noticeBox('服务器貌似出错了~ ( >O< ) ~');});
-    var initData=function(data){
-        var data=data;
-        for(var key in data){
-            if(action==5){
+        var initData=function(data){
+            var data=data;
+            for(var key in data){
                 $('.classify-'+data[key]['group_id']).removeClass('hidden');
+                fruitItem($('.goods-list-'+data[key]['group_id']),data[key]);//fruits information
             }
-            fruitItem($('.goods-list-'+data[key]['group_id']),data[key]);//fruits information
+            var fruits=window.dataObj.fruits;
+            var c_fs=[];
+            for(var key in fruits){
+                c_fs.push([key,fruits[key]]);
+            };
+            cartNum(c_fs,'.fruit-list');
+            window.dataObj.count++;
+            window.dataObj.finished=true;
+            $(".wrap-loading-box").remove();
         }
-        var fruits=window.dataObj.fruits;
-        var c_fs=[];
-        for(var key in fruits){
-            c_fs.push([key,fruits[key]]);
-        };
-        cartNum(c_fs,'.fruit-list');
-        window.dataObj.count++;
-        window.dataObj.finished=true;
-    }
 };
+var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{detail_no}}">'+
+                    '<div class="clearfix box bg {{if storage<=0 }}desaturate{{/if}}">'+
+                        '<div class="goods-img pull-left forbid_click">'+
+                            '<a href="javascript:;" class="check-lg-img">'+
+                                '<img src="/static/images/holder.png?v=20150330" class="img lazy_img" data-original="{{ori_img}}">'+
+                                '<span class="tag text-white text-center tagItem font8 {{tag}}"></span>'+
+                            '</a>'+
+                        '</div>'+
+                        '<div class="goods-info pull-left">'+
+                            '<p class="clearfix">'+
+                                '<span class="pull-left color fruit-name font14">{{name}}</span>'+
+                                '<span class="pull-right text-grey sale font12">销量: <span class="color number">{{saled}}</span></span>'+
+                            '</p>'+
+                            '<p class="great-number font12">'+
+                                '<em class="bg_change heart {{heart}}" data-id="{{favour}}"></em>'+
+                                '<span class="great">{{favour}}</span>'+
+                            '</p>'+
+                            '<ul class="charge-list charge-style font14 color {{charge_types}}">'+
+                                '{{each charge_types as key}}'+
+                                '<li class="border-color set-w100-fle charge-item" data-id="{{key["id"]}}" data-relate="{{key["relate"]}}" data-buy="{{key["limit_today"]}}" data-allow={{key["allow_num"]}}>'+
+                                    '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
+                                        '<span class="price">{{key["price"]}}</span>元&nbsp;<span class="unit"><span class="market">{{if key["market_price"]>0 }}<span class="market-price">{{key["market_price"]}}元</span>{{/if}}</span>/<span class="num">{{key["num"]}}</span><span class="chargeUnit">{{key["unit"]}}</span></span>'+
+                                    '</span>'+
+                                    '<span class="forbid_click pull-right num_box">'+
+                                        '<span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>'+
+                                        '<span class="pull-right p0 number-change hidden forbid_click">'+
+                                            '<button class="minus-plus pull-right number-plus bg_change"></button>'+
+                                            '<input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"readonly/>'+
+                                            '<button class="minus-plus pull-right number-minus bg_change"></button>'+
+                                        '</span>'+
+                                    '</span>'+
+                                '</li>'+
+                                '{{/each}}'+
+                            '</ul>'+
+                        '</div>'+
+                    '</div>'+
+                    '<input type="hidden" class="fruit_intro" value="{{intro}}"/>'+
+                    '{{if storage<=0 }}'+
+                    '<div class="sold-out bg_change" style="background-color:rgba(0,0,0,0.1)"><div class="out"></div></div>'+
+                    '{{/if}}'+
+                '</li>';
 
 var fruitItem=function(box,fruits,type){
-    var goods_item=window.dataObj.goods_item;
-    var charge_item=window.dataObj.charge_item;
-    var $item=$(goods_item);
     var id=fruits['id'];
     var storage=fruits['storage'];
     var code=fruits['code'];
@@ -510,71 +521,50 @@ var fruitItem=function(box,fruits,type){
     var charge_types=fruits['charge_types'];
     var favour_today=fruits['favour_today'];
     var limit_num=fruits['limit_num'];
-    if(!code) code='TDSG';
-    $item.attr({'data-id':id,'data-type':type,'data-storage':storage,'data-num':storage,'data-favour':favour_today,'data-limit':limit_num}).addClass(code);
-    $item.find('.fruit_intro').val(intro);
-    $item.find('.fruit-name').text(name);
-    if(saled>9999) $item.find('.number').text('9999+');
-    else $item.find('.number').text(saled);
-    $item.find('.great').text(favour).siblings('em').attr({'data-id':favour}); //if favour is not correct,should been replaced
-    if(favour_today) $item.find('.heart').addClass('red-heart');
-    else $item.find('.heart').addClass('gray-heart');
-    //商品标签转换
-    tagText($item.find('.tagItem'),tag);
-    //售完状态
-    if(storage<=0){
-        $item.append('<div class="sold-out bg_change"><div class="out"></div></div>').find('.box').addClass('desaturate').find('.arrow').css({'border-color':'transparent #B6B6B6 transparent transparent'});
-        $item.find('.sold-out').css({'background-color':'rgba(0,0,0,0.1)'});
-        $item.find('.bg').css({'background':'#FCFCFC'});
-        $item.find('.color').css({'color':'#757575'});
-        //AndroidImg('bg_change');
+    var detail_no=fruits['detail_no'];
+    var heart='';
+    var sold_out='';
+    var ori_img='';
+    if(!code) {code='TDSG';}
+    if(saled>9999){saled='9999+'}
+    if(favour_today=='true'){
+        heart='red-heart';
+    }else{
+        heart='gray-heart';
     }
-    //if there isn't only one type of charge_type
-    //if(charge_types.length>1){
-    //    $item.find('.show-box').addClass('toggle');
-    //    $item.find('.charge-list').addClass('toggle');
-    //    $item.find('.toggle_icon').addClass('arrow');
-    //    $item.addClass('pr35');
-    //    $item.find('.back-shape').addClass('shape');
-    //}
-    //charge_type info
-    for(var key in charge_types ){
-        var $charge_item=$(charge_item);
-        if(key==0){
-            var id=charge_types[0]['id'];
-            var price=charge_types[0]['price'];
-            var num=charge_types[0]['num'];
-            var unit=charge_types[0]['unit'];
-            var relate=charge_types[0]['relate'];
-            $charge_item.attr({'data-id':id,'data-relate':relate});
-            $charge_item.find('.price').text(price);
-            $charge_item.find('.num').text(num);
-            $charge_item.find('.chargeUnit').text(unit);
-            $item.find('.charge-first').append($charge_item);
-        }
-        else{
-            var id=charge_types[key]['id'];
-            var price=charge_types[key]['price'];
-            var num=charge_types[key]['num'];
-            var unit=charge_types[key]['unit'];
-            var relate=charge_types[key]['relate'];
-            $charge_item.attr({'data-id':id,'data-relate':relate}).addClass('more_charge');
-            $charge_item.find('.price').text(price);
-            $charge_item.find('.num').text(num);
-            $charge_item.find('.chargeUnit').text(unit);
-            var $li=$('<li class="border-color set-w100-fle"></li>');
-            $li.append($charge_item);
-            $item.find('.charge-list').append($li);
-        }
-        //goods img
-        if(!img_url){
-            $item.find('.img').attr({'data-original':'/static/design_img/'+code+'.png'});
-        }else{
-            $item.find('.img').attr({'data-original':img_url+'?imageView/1/w/170/h/170'});
-        }
+    if(!img_url){
+        ori_img='/static/design_img/'+code+'.png';
+    }else{
+        ori_img=img_url+'?imageView/1/w/170/h/170';
     }
-    box.append($item);
-    //$('.lazy_img').lazyload({container: $("#wrap-goods-box"),threshold:10});
+    if(tag==2){
+        tag='limit_tag';
+    }else if(tag==3){
+        tag='hot_tag';
+    }else if(tag==4){
+        tag='sale_tag';
+    }else if(tag==5){
+        tag='new_tag';
+    }
+    var render=template.compile(goods_item);
+    var html=render({
+        code:code,
+        goos_id:id,
+        storage:storage,
+        favour_today:favour_today,
+        limit_num:limit_num,
+        detail_no:detail_no,
+        intro:intro,
+        name:name,
+        saled:saled,
+        favour:favour,
+        heart:heart,
+        tag:tag,
+        charge_types:charge_types,
+        sold_out:sold_out,
+        ori_img:ori_img
+    });
+    box.append(html);
     $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
 };
 window.dataObj.fruits={};
@@ -586,14 +576,14 @@ function cartNum(cart_ms,list){
             var item=item_list.eq(i).find('.charge-type');
             for(var j=0;j<item.length;j++){
                 var charge = item.eq(j);
-                var id = charge.data('id');
+                var id = charge.parents('.charge-item').attr('data-id');
                 var add = charge.siblings('.num_box').find('.to-add');
                 var change = charge.siblings('.num_box').find('.number-change');
                 var input = change.find('.number-input');
                 if (id == cart_ms[key][0]) {
                     var $parent=charge.parents('.goods-list-item');
                     var storage=$parent.attr('data-storage');
-                    add.removeClass('show');
+                    add.addClass('hidden');
                     change.removeClass('hidden');
                     input.val(cart_ms[key][1]);
                     $parent.attr({'data-storage':storage-cart_ms[key][1]});
@@ -614,10 +604,10 @@ function goodsNum(target,action){
     var change=target.parents('.number-change');
     var num=parseInt(item.val());
     var parent=target.parents('.goods-list-item');
-    var storage=parseFloat(parent.data('storage'));
+    var storage=parseFloat(parent.attr('data-storage'));
     var type_list=target.parents('.goods-list');
-    var id=target.parents('.num_box').attr('data-id');
-    var relate=parseFloat(target.parents('.num_box').siblings('.charge-type').attr('data-relate'));
+    var id=target.parents('.charge-item').attr('data-id');
+    var relate=parseFloat(target.parents('.charge-item').attr('data-relate'));
     var unit_num=parseFloat(target.parents('.num_box').siblings('.charge-type').find('.num').text());
     var change_num=relate*unit_num*num;
     var limit_num=parseInt(parent.attr('data-limit'));
@@ -625,13 +615,13 @@ function goodsNum(target,action){
     if(action==2)
     {
         if(storage<=0){
-            noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',target);
+            return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',target);
         }
-        else if(storage>0){
+        else{
             if(storage-change_num<0){
                 return  noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',target);
             }
-            if(limit_num>0&&num==limit_num){
+            if(limit_num>0&&num>=limit_num){
                 return  noticeBox('商品限购数量'+limit_num);
             }
             num++;
@@ -731,7 +721,7 @@ function great(type,id){
                     var goods_id=$this.data('id');
                     if(type==type&&goods_id==id){
                         var num=$this.find('.great').text();
-                        $this.attr({'data-favour':'true'});
+                        $this.attr({'data-favour':'True'});
                         $this.find('.great').text(Int(num)+1).siblings('em').addClass('red-heart');
                     }
                 });

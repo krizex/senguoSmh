@@ -11,7 +11,7 @@ import tornado.escape
 from dal.dis_dict import dis_dict
 import time
 import tornado.web
-from sqlalchemy import desc,or_
+from sqlalchemy import desc,or_,and_
 import datetime
 import qiniu
 from settings import *
@@ -169,6 +169,27 @@ class GlobalBaseHandler(BaseHandler):
 			else:
 				text = "SYS_ORDER_STATUS: 此编码不存在"
 			return text
+		#add 6.10pm by jyj
+		elif column_name == "create_date_timestamp":
+			text = ""
+			import datetime
+			import time
+			ltime=time.localtime(int(code))
+			timeStr=time.strftime("%Y-%m-%d %H:%M:%S", ltime)
+			text = timeStr
+			return text
+		##
+		#add by jyj 2015-6-15
+		elif column_name == "have_offline_entity":
+			text = ""
+			if code == 0:
+				text = "没有实体店，水果o2o探索中"
+			elif code == 1:
+				text = "已有实体店，并在经营中"
+			else:
+				text = "没有卖过水果想尝试"
+			return text
+		##
 
 	#获取订单详情
 	def get_order_detail(self,session,order_id):
@@ -268,7 +289,7 @@ class GlobalBaseHandler(BaseHandler):
 		data = []
 		shop_id = self.current_shop.id
 		for d in datalist:
-			add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else ''
+			add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time else ''
 			delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
 			if d.img_url:
 				img_url= d.img_url.split(";")
@@ -287,7 +308,7 @@ class GlobalBaseHandler(BaseHandler):
 
 			charge_types = []
 			for charge in d.charge_types:
-				market_price ="" if not charge.market_price else charge.market_price
+				market_price ="" if charge.market_price == None else charge.market_price
 				unit = charge.unit
 				unit_name = self.getUnit(unit)
 				charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
@@ -304,7 +325,7 @@ class GlobalBaseHandler(BaseHandler):
 	def getGoodsOne(self,d):
 		data = {}
 		shop_id = self.current_shop.id
-		add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time	else ''
+		add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time else ''
 		delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
 		if d.img_url:
 			img_url= d.img_url.split(";")
@@ -323,7 +344,7 @@ class GlobalBaseHandler(BaseHandler):
 
 		charge_types = []
 		for charge in d.charge_types:
-			market_price ="" if not charge.market_price else charge.market_price
+			market_price ="" if charge.market_price == None else charge.market_price
 			unit = charge.unit
 			unit_name = self.getUnit(unit)
 			charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
@@ -780,6 +801,44 @@ class AdminBaseHandler(_AccountBaseHandler):
 		# return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		return self.reverse_url('customerLogin')
 
+	def getOrder(self,orders):
+		data = []
+		for order in orders:
+			order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id','comment','comment_imgUrl','comment_reply',
+										 'comment_create_date', 'start_time', 'end_time','commodity_quality','create_date','today',
+										 'type','active','arrival_day','arrival_time','finish_admin_id','intime_period',
+										 'send_admin_id','send_speed','shop_service']
+			d = order.safe_props(False)
+			d['fruits'] = eval(d['fruits'])
+			if d['mgoods']:
+				d['mgoods'] = eval(d['mgoods'])
+			else:
+				d['mgoods'] = {}
+			d['create_date'] = order.create_date.strftime('%Y-%m-%d %H:%M:%S')
+			# d["sent_time"] = order.send_time
+			info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
+			d["nickname"] = info.accountinfo.nickname
+			d["customer_id"] = order.customer_id
+			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
+				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id,models.HireLink.active == 1)).all()
+			d["shop_new"] = 0
+			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
+				models.CustomerShopFollow.customer_id == order.customer_id).first()
+			if follow:
+				d["shop_new"]=follow.shop_new
+				# print("[订单管理]读取订单，订单用户ID：",order.customer_id,"，新用户标识：",d["shop_new"])
+			SH2s = []
+			for staff in staffs:
+				staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone,\
+				"headimgurl":staff.accountinfo.headimgurl_small}
+				SH2s.append(staff_data)
+				if staff.id == order.SH2_id:  # todo JH、SH1
+					d["SH2"] = staff_data
+					# print(d["SH2"],'i am admin order' )
+			d["SH2s"] = SH2s
+			data.append(d)
+		return data
+
 
 class StaffBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopStaff
@@ -834,8 +893,10 @@ class CustomerBaseHandler(_AccountBaseHandler):
 			return True
 		return False
 	def get_login_url(self):
-		return self.get_wexin_oauth_link(next_url=self.request.full_url())
-		#return self.reverse_url('customerLogin')
+		if self.is_wexin_browser():
+			return self.get_wexin_oauth_link(next_url=self.request.full_url())
+		else:
+			return self.reverse_url('customerLogin')
 
 	def _f(self, cart, menu, charge_type_id, inc):
 		d = eval(getattr(cart, menu))
@@ -1168,11 +1229,11 @@ class WxOauth2:
 				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
 			"topcolor": "#FF0000",
 			"data": {
-				"first": {"value": "您好，您所申请的店铺『%s』已经通过审核！" % shop_name, "color": "#44b549"},
+				"first": {"value": "您好，您所申请的店铺『%s』已经通过审核！\n请添加森果客服微信 senguocc100" % shop_name, "color": "#44b549"},
 				"keyword1": {"value": name, "color": "#173177"},
 				"keyword2": {"value": phone, "color": "#173177"},
 				"keyword3": {"value": time, "color": "#173177"},
-				"remark": {"value": "请务必点击详情，查看使用教程！", "color": "#FF4040"}}
+				"remark": {"value": "请务必点击详情，查看使用教程", "color": "#FF4040"}}
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))

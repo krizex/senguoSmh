@@ -90,7 +90,6 @@ function getData2(con){
                 '</ul>';
 			for(var d in data){
 				if(data[d].length!=0){
-					console.log(d);
 					var render = template.compile(item);
 					var html = render({
 						id:data[d]['id'],

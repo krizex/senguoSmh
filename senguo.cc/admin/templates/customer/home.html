@@ -47,22 +47,26 @@
         </div>
     </div>
     <div class="no-mar-btom top-title">
-        <div class="inner text-white rainshed_green  bg_change" id="fruitPosition">
-            <a href="javascript:;" class="search-btn" id="search-btn"></a>
+        <div class="inner text-white bg-green" id="fruitPosition">
+            <a href="{{reverse_url('customerGoodsSearch')}}" class="search-btn" id="search-btn"><em></em></a>
             <a href="javascript:;"  class="text-white tit choose-classify set-w100-fle text-center">
-                <!--<span>分类</span>
-                <em class="set-inl-blo pull-right"></em>-->
-                <span class="classify text-center set-inl-blo font18"><span id="classify">全部商品</span><em class="icon up font16" style="display:none;"></em><em class="icon down font16" ></em></span>
+                <span class="classify text-center set-inl-blo font18"><span id="classify">{% if len(context['group_list'])>0 %}{{context['group_list'][0]['name']}}{% end %}</span><!-- <em class="icon up font16" style="display:none;"></em><em class="icon down font16" ></em> --></span>
             </a>
+            <a href="javascript:;" class="pull-left classify-icon text-white to-hide"> <span>分组</span><em class="set-inl-blo pull-right"></em></a>
         </div>
-        <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle anim-bounceDown" style="display:none">  
+       <!--  <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle anim-bounceDown" style="display:none">  
             <li class="text-grey6 bg-white pull-left text-center" data-id="-2">全部商品</li>
             {% for group in context['group_list'] %}
             <li class="text-grey6 bg-white pull-left text-center" data-id="{{group['id']}}">{{group['name']}}</li>
             {% end %}
-        </ul>
+        </ul> -->  
     </div>
 </div>
+<ul class="classify-list bg-green text-white anim-bounceDown to-hide" style="display:none;">
+    {% for group in context['group_list'] %}
+    <li class="pull-left" data-id="{{group['id']}}">{{group['name']}}</li>
+    {% end %}
+</ul>
 <div class="wrap-goods-box" id="wrap-goods-box">
     <div class="goods-box">
          {% for group in context['group_list'] %}
@@ -72,6 +76,16 @@
         {% end %}
     </div>
     <div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中 ( > < )~</div>
+</div>
+<div class="wrap-loading-box">
+    <div class="loading-box">
+        <div class="loader">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+        <div class="load-txt">加载中...</div>
+    </div>
 </div>
 {% end %}
 {% block other %}
@@ -128,36 +142,4 @@
 {% block bottom %}
 <script src="{{static_url('js/market-home.js')}}"></script>
 {% end %}
-<script id="goodsItem" type="text/html">
-         <li class="goods-list-item font10 text-grey {{code}}" data-id="{{id}}" data-type="{{type}}" data-num="{{storage}}">
-            <div class="clearfix box bg">
-                <div class="set-width-float">
-                    <div class="goods-img pull-left">
-                        <a href="javascript:;" class="check-lg-img">
-                            <img src="/static/images/holder.png?v=20150330" class="img lazy_img" data-original="{{img_url}}">
-                            <span class="tag text-white text-center tagItem font8" data-id="{{tag}}"></span>
-                        </a>
-                    </div>
-                    <input type="hidden" class="fruit_intro" value="{{intro}}"/>
-                    <div class="goods-info pull-left">
-                        <div class="show-box">
-                            <p class="clearfix">
-                                <span class="pull-left color fruit-name font14"></span>
-                                <span class="pull-right text-grey sale font12">销量: <span class="color number"></span></span>
-                            </p>
-                            <p class="great-number font12">
-                                <em class="bg_change heart"></em>
-                                <span class="great"></span>
-                            </p>
-                            <div class="charge-first charge-style font14 color">          
-                            </div>
-                        </div>
-                    </div>
-                    //<span class="back-shape bg"></span>
-                    //<span class="icon-bg toggle_icon"></span>
-                </div>
-                <ul class="charge-list charge-style color clearfix font14 color">
-                </ul>
-            </div>
-        </li>
-    </script>
+

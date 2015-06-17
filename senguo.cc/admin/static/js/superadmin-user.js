@@ -1,6 +1,6 @@
 $(document).ready(function(){
     $.ajaxSetup({'async':false});
-    $.getItem(item_link+'/user-item.html?v=20160608',function(data){item=data;});
+    $.getItem(item_link+'/user-item.html?v=20150613',function(data){item=data;});
     getContent('all',0);
     classify($('.all'),'all');
     classify($('.admin'),'admin');
@@ -70,7 +70,7 @@ function getContent(action,page){
 
 function pushItem(data,item,list){
     for(var key in data){
-        var $ite=$('<li><a href="http://zone.senguo.cc/shop/'+data[key][1]+'"></a></li>');
+        var $ite=$('<li><a href="/shop/'+data[key][1]+'"></a></li>');
         $ite.find('a').text(data[key][2]);
         item.find(list).append($ite);
     }

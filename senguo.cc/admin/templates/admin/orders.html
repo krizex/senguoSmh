@@ -3,29 +3,19 @@
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-order.css')}}"/>{% end %}
 {% block content %}
 {% set current_shop = handler.current_shop%}
-{% import json %}
-<script>
-    window.dataObj.order={% raw json.dumps(data) %}
-</script>
 {% set lock_mode='' %}
 {% set notice=''%}
 {% set notic2e=''%}
+{% set now_active=''%}
+{% set in_active=''%}
 {% if order_type ==1 %}
     {% set lock_mode = current_shop.config.now_on %}
     {% set type_num =1 %}
-    {% set count1=count[11]%}
-    {% set count2=count[12]%}
-    {% set count3=count[13]%}
-    {% set count4=count[14]%}
-    {% set count5=count[15]%}
+    {% set now_active='active'%}
 {% elif order_type ==2 %}
     {% set lock_mode = current_shop.config.ontime_on %}
     {% set type_num =2 %}
-    {% set count1=count[21]%}
-    {% set count2=count[22]%}
-    {% set count3=count[23]%}
-    {% set count4=count[24]%}
-    {% set count5=count[25]%}
+    {% set in_active='active'%}
 {% end %}
 {% if lock_mode == True %}
     {% set lock_mode = 'unlock-mode'%}
@@ -40,13 +30,13 @@
 <span class="right-title" id="order-title-manage">订单管理</span>
 <div class="subnav-box clearfix">
     <ul class="subnav pull-left order-type">
-        <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3">
-            <a href="{{reverse_url('adminOrder')}}?order_type=1&order_status=1&page=0" class="text-grey3">立即送</a>
-            <span class="number" id="atonce">{{count[11]}}</span>
+        <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3 {{now_active}}">
+            <a href="{{reverse_url('adminOrder')}}?order_type=1" class="text-grey3">立即送</a>
+            <span class="number" id="atonce"></span>
         </li>
-        <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3">
-            <a href="{{reverse_url('adminOrder')}}?order_type=2&order_status=1&page=0" class="text-grey3">按时达</a>
-            <span class="number" id="ontime">{{count[21]}}</span>
+        <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3 {{in_active}}">
+            <a href="{{reverse_url('adminOrder')}}?order_type=2" class="text-grey3">按时达</a>
+            <span class="number" id="ontime"></span>
         </li>
         <!--<li class="text-center col-lg-3">
             <a href="#" class="text-grey3">周期购</a>
@@ -94,24 +84,99 @@
 </div>
 <div class="subnav-box">
     <ul class="subnav pull-left order-status">
-        <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=1&page=0">未处理&nbsp;<span class="text-pink" id="not-deal">{{count1}}</span></a>
+        <li class="active" data-id="1">
+            <a href="javascript:;">未处理&nbsp;<span class="text-pink num" id="not-deal"></span></a>
         </li>
-        <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=2&page=0">配送中&nbsp;<span class="text-pink">{{count2}}</span></a>
+        <li data-id="2">
+            <a href="javascript:;">配送中&nbsp;<span class="text-pink num"></span></a>
         </li>
-        <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=3&page=0">已送达&nbsp;<span class="text-pink">{{count3}}</span></a>
+        <li data-id="3">
+            <a href="javascript:;">已送达&nbsp;<span class="text-pink num"></span></a>
         </li>
-        <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=4&page=0">售后/退款&nbsp;<span class="text-pink">{{count4}}</span></a>
+        <li data-id="4">
+            <a href="javascript:;">售后/退款&nbsp;<span class="text-pink num"></span></a>
         </li>
-        <li>
-            <a href="{{reverse_url('adminOrder')}}?order_type={{type_num}}&order_status=5&page=0">所有订单&nbsp;<span class="text-pink">{{count5}}</span></a>
+        <li data-id="5">
+            <a href="javascript:;">所有订单&nbsp;<span class="text-pink num"></span></a>
         </li>
     </ul>
     <!--<a class="orders-recycle pull-right text-grey9" href="#">订单回收站</a>-->
 </div>
+<ul class="category-list group">
+    <li>
+        <div class="cate-title">排序规则 : </div>
+        <div class="dropdown slide-down-select pull-left w130">
+            <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
+                <em class="pull-left filter" data-id="send_positive">配送时间正序</em>
+                <span class="caret pull-right no-margin-left rotate0"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentShopChange3">
+                <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="send_positive">配送时间正序</a>
+                </li>
+                 <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="send_desc">配送时间倒序</a>
+                </li>
+                 <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="order_positive">下单时间正序</a>
+                </li>
+                 <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="order_desc">下单时间倒序</a>
+                </li>
+                 <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="price_desc">金额从多到少</a>
+                </li>
+                 <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="price_positive">金额从少到多</a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li>
+        <div class="cate-title">支付方式 : </div>
+        <div class="dropdown slide-down-select pull-left w130">
+            <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu4" data-toggle="dropdown">
+                <em class="pull-left pay_type" data-id="9">所有</em>
+                <span class="caret pull-right no-margin-left rotate0"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu4" id="currentShopChange4">
+                <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="9">所有</a>
+                </li>
+                <li  role="presentation">
+                    <a class="item" href="javascript:;" data-id="3">在线支付</a>
+                </li>
+                 <li  role="presentation">
+                    <a class="item" href="javascript:;" data-id="2">余额支付</a>
+                </li>
+                 <li  role="presentation">
+                    <a class="item" href="javascript:;" data-id="1">货到付款</a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li>
+        <div class="cate-title">用户类型 : </div>
+        <div class="dropdown slide-down-select pull-left w130">
+            <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu5" data-toggle="dropdown">
+                <em class="pull-left user_type" data-id="9">所有</em>
+                <span class="caret pull-right no-margin-left rotate0"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu5" id="currentShopChange5">
+                <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="9">所有</a>
+                </li>
+                <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="0">新用户</a>
+                </li>
+                <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="1">老用户</a>
+                </li>
+            </ul>
+        </div>
+    </li>
+</ul>
+
 <!--orders-mode-lock-end-->
 <div class="order-list set-width-float">
     <div class="func-box set-width-float mt10">
@@ -128,7 +193,7 @@
         <ul>
             <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
             <li>
-                <span class="page-now"></span>/<span class="page-total">{{page_sum}}</span>
+                <span class="page-now"></span>/<span class="page-total"></span>
             </li>
             <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
             <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
@@ -342,6 +407,16 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+<div class="wrap-loading-box hidden">
+    <div class="loading-box">
+        <div class="loader">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+        <div class="load-txt">加载中...</div>
     </div>
 </div>
 {% end %}

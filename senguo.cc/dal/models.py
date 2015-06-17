@@ -30,9 +30,11 @@ class POINT_TYPE:
 	SERIES_SIGNIN = 4 # +5
 	PREPARE_PAY= 5  # +2
 	FAVOUR     = 6 # +1
-	COMMENT    = 7 # +5
+	COMMENT    = 7 # +2
 	FIRST_ORDER= 8 # +5
 	BING_PHONE = 9
+	COMMENTIMG = 10 #+2
+	SHOP_FULLPOINT = 11 #+2
 
 class SHOP_SERVICE_AREA:
 	"""服务区域, 使用方法：HIGH_SCHOOL | COMMUNITY，实现多选"""
@@ -571,6 +573,12 @@ class Shop(MapBase, _CommonApi):
 	super_temp_active = Column(Integer,default = 1) #1:receive the message from wx 0:do not receive#5.26
 
 	# group_priority = Column(String(50)) #[group.id,group index]
+	#add 6.4pm by jyj
+	fans_count = Column(Integer,default = 0,nullable=False)  # the number of fans in this shop
+
+	#add 6.5pm by cm
+	shop_property = Column(Float,default = 0,nullable = False)
+
 
 	def __repr__(self):
 		return "<Shop: {0} (id={1}, code={2})>".format(
@@ -585,6 +593,26 @@ class Shop(MapBase, _CommonApi):
 			return None
 		print('print mark 4: success')
 		return order_count
+
+	#add 6-4pm by jyj
+	def get_fansCount(self,shop_id):
+		try:
+			fans_count = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()
+		except:
+			print("print mark 3:error")
+			return None
+		print("print mark 4:sucess")
+		return fans_count
+
+	#add 6-5pm by cm
+	def get_shop_property(self,shop_id):
+		try:
+			shop_property =  self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id=shop.id).scalar()
+		except:
+			print("print mark 3:error")
+			return None
+		print("print mark 4:sucess")
+		return shop_property
 
 class ShopAuthenticate(MapBase,_AccountApi):
 	__tablename__ = "shop_auth"
@@ -1270,7 +1298,7 @@ class Order(MapBase, _CommonApi):
 				charge_type.fruit.storage+= num
 				charge_type.fruit.current_saled -=num
 				charge_type.fruit.saled -= num
-				print("[订单管理]取消订单，恢复库存数量(水果)：",num)
+				# print("[订单管理]取消订单，恢复库存数量：",num)
 		session.commit()
 		return True
 
@@ -1324,6 +1352,7 @@ class Fruit(MapBase, _CommonApi):
 	current_saled = Column(Integer, default=0) #售出：未处理的订单数
 	saled = Column(Integer, default=0) #销量
 	storage = Column(Float)
+	cart_storage = Column(Float,default = 0)
 	favour = Column(Integer, default=0)  # 赞
 	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份 4:kg 5:克 6:升 7:箱 8:盒 9:件 10:框 11:包
 	tag = Column(TINYINT, default=TAG.NULL) #标签
@@ -1384,6 +1413,16 @@ class GroupPriority(MapBase, _CommonApi):
 	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
 	group_id = Column(Integer)
 	priority = Column(Integer)
+
+class GoodsLimit(MapBase, _CommonApi):
+	__tablename__ = "goods_limit"
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	charge_type_id = Column(Integer, nullable=False)
+	customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
+	create_time = Column(DateTime, default=func.now())
+	limit_num = Column(Integer)
+	buy_num = Column(Integer)
+	allow_num = Column(Integer)
 
 # 用户自定义的商品类型
 class Menu(MapBase, _CommonApi):

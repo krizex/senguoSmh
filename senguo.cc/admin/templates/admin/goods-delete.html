@@ -2,6 +2,17 @@
 {% block setcontent %}
 <div class="wrap-goods-del">
     <ul class="list-operate group">
+        <div class="users-pagination list-pagination group mt0 pull-right">
+            <ul>
+                <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+                <li>
+                    <span class="page-now">1</span>/<span class="page-total">1</span>
+                </li>
+                <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+                <li><input class="input-page form-control" type="text" placeholder="输入页码"></li>
+                <li><a href="javascript:;" class="jump-to">跳转</a></li>
+            </ul>
+        </div>
         <li class="">
             <span class="check-box ml10 all-select-box"></span>全选
         </li>
@@ -31,8 +42,8 @@
             <div class="iblock goods-group">
                 <div class="cate-title mt2">商品分组：<span class="current-group c333">默认分组</span></div>
             </div>
-            <span class="txt-box mls">库存 : <span class="c333"><span class="stock-num">723</span>个</span></span>
-            <span class="txt-box">待成交 : <span class="c333"><span class="stay-num">223</span>个</span></span>
+            <span class="txt-box mls">库存 : <span class="c333"> <span class="stock-num"></span>个</span></span>
+            <span class="txt-box">待成交 : <span class="c333"> <span class="stay-num"></span>个</span></span>
             <a href="javascript:;" class="add-btn cancel-del-goods">撤销删除</a>
         </div>
         <div class="all-item-cont group">
@@ -44,12 +55,12 @@
                     </dt>
                     <dd class="fl">
                         <p>
-                            <span class="mr10">商品分类 : <span class="c333 goods-classify"></span></span>
+                            <span class="mr10">商品类目 : <span class="c333 goods-classify"></span></span>
                             <span class="mr10">排序优先级 : <span class="c333 goods-priority"></span></span>
                             <span class="mr10">商品限购 : <span class="c333 limit-num"></span></span>
                         </p>
                         <div class="item-goods-detail mt10 group">
-                            <span class="item-goods-title fl">商品介绍:</span>
+                            <span class="item-goods-title fl">商品介绍 : </span>
                             <p class="item-goods-txt c333 fl">
                             </p>
                         </div>
@@ -59,8 +70,8 @@
             <div class="all-item-right fl">
                 <p>
                     <span class="mr10">商品点赞 : <span class="c333 dianzan"></span></span>
-                    <a class="mr10 hidden" href="javascript:;">商品评论 : <span class="goods-comment-num"></span>条</a>
-                    <span class="mr10">销量 : <span class="c333"><span class="goods-vol"></span>个</span></span>
+                    <a class="mr10 hidden" href="javascript:;">商品评论 : <span class="goods-comment-num"></span> 条</a>
+                    <span class="mr10">销量 : <span class="c333"><span class="c333 goods-vol"> </span>个</span></span>
                 </p>
                 <div class="goods-price-list">
                 </div>

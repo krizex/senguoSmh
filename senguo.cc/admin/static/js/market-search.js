@@ -2,35 +2,43 @@ $(document).ready(function(){
 	$("#searchKey").on("keyup",function(e){
         if($(this).val().trim()==""){
         }else{
-           
+           search($(this).val().trim());
         }
     });
-    $("#back").on("click",function(){
-        history.go(-1);
-    })
+}).on('click','#searchSubmit',function(){
+    var search=$("#searchKey").val();
+    if(!search){
+        return noticeBox('请输入商品名称关键字');
+    }
+    window.location.href="/"+$('#shop_code').val()+"?search="+search;
+}).on('click','.searchlist li',function(){
+    var $this=$(this);
+    var search=$this.find('.name').text();
+    window.location.href="/"+$('#shop_code').val()+"?search="+search;
 });
 
-function search(){
+function search(search){
 	var url='';
-    var action = action;
     var args={
-        action:action,
-        page:page
+        search:search
     };
-    if(action==6){
-        args.group_id = _group_id;
-    }
-    if(action==9){
-        args.search = _search;
-    }
-    // alert('i am here');
     $.postJson(url,args,function(res){
             if(res.success)
             {
-                nomore = res.nomore
-                if(nomore == true){
-                    $('.loading').html("~没有更多结果了 ( > < )~").show();
+                var data=res.data;
+                $('.searchlist').empty();
+                if(data.length==0){
+                    $('.searchlist').append('<li class="text-center">无搜索结果</li>');
                 }
+                for(var i in data){
+                    var name = data[i]["name"];
+                    var num = data[i]["num"];
+                    var item='<li><span class="pull-right">{{num}}条结果</span><span class="name">{{name}}</span></li>';
+                    var render=template.compile(item);
+                    var html=render({name:name,num:num});
+                    $('.searchlist').append(html);
+                }
+                $('.loading').show().find('.num').text(res.total);
               
             }
             else {
@@ -39,22 +47,5 @@ function search(){
         },
         function(){noticeBox('网络好像不给力呢~ ( >O< ) ~');},
         function(){noticeBox('服务器貌似出错了~ ( >O< ) ~');});
-    var initData=function(data){
-        var data=data;
-        for(var key in data){
-            if(action==5){
-                $('.classify-'+data[key]['group_id']).removeClass('hidden');
-            }
-            fruitItem($('.goods-list-'+data[key]['group_id']),data[key]);//fruits information
-        }
-        var fruits=window.dataObj.fruits;
-        var c_fs=[];
-        for(var key in fruits){
-            c_fs.push([key,fruits[key]]);
-        };
-        cartNum(c_fs,'.fruit-list');
-        window.dataObj.count++;
-        window.dataObj.finished=true;
-    }
-};
+    
 }

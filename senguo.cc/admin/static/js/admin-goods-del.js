@@ -22,17 +22,17 @@ $(document).ready(function(){
     if(pn==0){
         return Tip("当前已经是第一页");
     }
-    pn--;
+    pn = pn-1;
     getGoodsItem();
 }).on("click",".next-page",function(){//下一页
     var total = $(".page-total").html();
-    if(pn==parseInt(total)){
+    if(pn==parseInt(total)-1){
         return Tip("当前已经是最后一页");
     }
-    pn++;
+    pn = pn+1;
     getGoodsItem();
 }).on("click",".jump-to",function(){
-    var num = $(".input-page").val();
+    var num = $(this).closest("ul").find(".input-page").val();
     var total = $(".page-total").html();
     if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>(parseInt(total)-1)){
         return Tip("页码格式不对或者数字超出页码范围");
@@ -41,7 +41,7 @@ $(document).ready(function(){
     getGoodsItem();
 }).on("keyup",".input-page",function(e){
     if(e.keyCode==13){
-        var num = $(".input-page").val();
+        var num = $(this).closest("ul").find(".input-page").val();
         var total = $(".page-total").html();
         if(isNaN(num) || $.trim(num)=="" || parseInt(num)<1 || parseInt(num)>(parseInt(total)-1)){
             return Tip("页码格式不对或者数字超出页码范围");
@@ -176,12 +176,14 @@ function insertGoods(data){
         $item.find(".stay-num").html(goods.current_saled);
         $item.find(".show-txtimg").attr("data-text",goods.detail_describe);
         $item.find(".goods-classify").html(goods.fruit_type_name);
-        $item.find(".item-goods-txt").html(goods.info);
+        $item.find(".item-goods-txt").html(goods.intro);
         $item.find(".dianzan").html(goods.favour);
+        $item.find(".goods-priority").html(goods.priority);
+        $item.find(".limit-num").html(goods.limit_num);
         if(goods.charge_types.length>0){
             for(var j=0; j<goods.charge_types.length; j++){
                 var good = goods.charge_types[j];
-                if(good.market_price && good.market_price!=0){
+                if(good.market_price !== ""){
                     var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+good.unit_name+'</span></span><span class="mr10">市场价 : <span class="">'+good.market_price+'元</span></span></p>';
                 }else{
                     var item = '<p class="mt10"><span class="mr10">售价'+(j+1)+' : <span class="red-txt">'+good.price+'元/'+good.num+good.unit_name+'</span></span><span class="mr10">市场价 : <span class="">未设置</span></span></p>';

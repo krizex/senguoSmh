@@ -71,6 +71,12 @@ $(document).ready(function(){
             $('.discover-new').addClass('hidden');
         }
     }
+
+    var shop_marketing=parseInt(getCookie('shop_marketing'));
+    if(shop_marketing==0){
+        $('.discover-tab').hide();
+        $('.bottom-nav li').removeClass('w20').addClass('w25');
+    }
 });
 
 function wexin(link,imgurl){
@@ -267,7 +273,7 @@ function stopPropagation(e) {
     }  
 }  
 //confirmbox
-getItem('/static/items/confirmBox.html?v=20160608',function(data){window.dataObj.confirmBox=data});
+getItem('/static/items/confirmBox.html?v=20150613',function(data){window.dataObj.confirmBox=data});
 var confirmBox=function(text,index,type,id){
     var $box=$(window.dataObj.confirmBox);
     $box.find('.message').text(text);

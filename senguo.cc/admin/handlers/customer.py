@@ -17,26 +17,32 @@ from functools import partial, wraps
 
 from threading import Timer
 
+import tornado.websocket
+
+from dal.db_configs import DBSession
+# from wxpay import QRWXpay
+
+
 EXECUTOR = ThreadPoolExecutor(max_workers=4)
 
 def unblock(f):
 
-    @tornado.web.asynchronous
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        self = args[0]
+	@tornado.web.asynchronous
+	@wraps(f)
+	def wrapper(*args, **kwargs):
+		self = args[0]
 
-        def callback(future):
-            # self.write(future.result())
-            self.finish()
+		def callback(future):
+			# self.write(future.result())
+			self.finish()
 
-        EXECUTOR.submit(
-            partial(f, *args, **kwargs)
-        ).add_done_callback(
-            lambda future: tornado.ioloop.IOLoop.instance().add_callback(
-                partial(callback, future)))
+		EXECUTOR.submit(
+			partial(f, *args, **kwargs)
+		).add_done_callback(
+			lambda future: tornado.ioloop.IOLoop.instance().add_callback(
+				partial(callback, future)))
 
-    return wrapper
+	return wrapper
 
 
 class Access(CustomerBaseHandler):
@@ -142,6 +148,7 @@ class customerGoods(CustomerBaseHandler):
 			good.favour_today = False
 		else:
 			good.favour_today = favour.create_date == datetime.date.today()
+
 		if good:
 			if good.img_url:
 				img_url= good.img_url.split(";")
@@ -150,16 +157,37 @@ class customerGoods(CustomerBaseHandler):
 		else:
 			good = []
 			img_url = ''
+
 		charge_types= []
 		for charge_type in good.charge_types:
 			unit  = charge_type.unit
 			unit =self.getUnit(unit)
+			limit_today = False
+			allow_num = ''
+			try:
+				limit_if = self.session.query(models.GoodsLimit).filter_by(charge_type_id = charge_type.id,customer_id = self.current_user.id)\
+				.order_by(models.GoodsLimit.create_time.desc()).first()
+			except:
+				limit_if = None
+			if limit_if and good.limit_num !=0:
+				time_now = datetime.datetime.now().strftime('%Y-%m-%d')
+				create_time = limit_if.create_time.strftime('%Y-%m-%d')
+				if time_now == create_time:
+					limit_today = True
+					if limit_if.limit_num == good.limit_num:
+						allow_num = limit_if.allow_num
+					else:
+						allow_num = good.limit_num - limit_if.buy_num
 			charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
-				'market_price':charge_type.market_price,'relate':charge_type.relate})
+				'market_price':charge_type.market_price,'relate':charge_type.relate,"limit_today":limit_today,"allow_num":allow_num})
+		if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
+			self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
+			self.session.commit()
 		cart_f = self.read_cart(shop.id)
-		cart_count = len(cart_f) 
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
-		return self.render('customer/goods-detail.html',good=good,shop_name=shop_name,img_url=img_url,shop_code=shop_code,charge_types=charge_types,cart_fs=cart_fs)
+		cart_count = len(cart_f)
+		self.set_cookie("cart_count", str(cart_count))
+		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,shop_code=shop_code,charge_types=charge_types,cart_fs=cart_fs)
 		
 
 
@@ -274,6 +302,10 @@ class Home(CustomerBaseHandler):
 			shop_id   = shop.id
 			shop_logo = shop.shop_trademark_url
 			balance_on = shop.config.balance_on_active
+			if shop.marketing:
+				shop_marketing = shop.marketing.confess_active
+			else:
+				shop_marketing = 0
 			if shop.shop_auth in [1,2,3,4]:
 				show_balance = True
 			# print(shop,shop.shop_auth)
@@ -284,6 +316,7 @@ class Home(CustomerBaseHandler):
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
+		self.set_cookie("shop_marketing", str(shop_marketing))
 		shop_point = 0
 		shop_balance = 0
 		try:
@@ -348,12 +381,15 @@ class Discover(CustomerBaseHandler):
 			return self.send_fail('shop error')
 		if shop:
 			if shop.marketing:
+				shop_marketing = shop.marketing.confess_active
 				confess_active = shop.marketing.confess_active
 			else:
+				shop_marketing = 0
 				confess_active = 0
 			shop_auth = shop.shop_auth
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self.set_cookie("market_shop_code",str(shop.shop_code))
+			self.set_cookie("shop_marketing", str(shop_marketing))
 		else:
 			shop_auth = 0
 			confess_active = 0
@@ -534,10 +570,15 @@ class ShopProfile(CustomerBaseHandler):
 		shop_id = shop.id
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
+		if shop.marketing:
+			shop_marketing = shop.marketing.confess_active
+		else:
+			shop_marketing = 0
 
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
+		self.set_cookie("shop_marketing", str(shop_marketing))
 		satisfy = 0
 		commodity_quality = 0
 		send_speed        = 0
@@ -791,26 +832,74 @@ class ShopComment(CustomerBaseHandler):
 	def get(self):
 		return self.render("customer/comment.html")
 
+class StorageChange(tornado.websocket.WebSocketHandler):
+	session = DBSession()
+	def open(self):
+		print('open')
+	def onclose(self):
+		print('on_close')
+	def on_message(self,message):
+		print(self,message)
+		s =  message.split(',')
+		print(s)
+		try:
+			add      = int(s[0])
+			fruit_id = int(s[1])
+			storage_change = float(s[2])
+		except:
+			self.write_message('error')
+		fruit = self.session.query(models.Fruit).filter_by(id = fruit_id).first()
+		if not fruit:
+			print('fruit not found')
+			return self.write_message('error')
+		print(fruit)
+		if add == 1: #购物车添加
+			cart_storage = fruit.cart_storage + storage_change
+			if fruit.storage < cart_storage:
+				self.write_message('error')
+			else:
+				print(fruit.cart_storage)
+				fruit.cart_storage = cart_storage
+				self.session.commit()
+				self.write_message('success')
+		elif add == 0:
+			fruit.cart_storage -= storage_change
+			self.session.commit()
+			self.write_message('success')
+		else:
+			self.write_message('error')
+
+	
+		
+
+
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@get_unblock
 	def get(self, shop_code):
 		w_follow = True
-		fruits=''
-		page_size = 10
+		# fruits=''
+		# page_size = 10
 		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		if not shop:
 			return self.send_error(404)
-		# self.current_shop = shop
+		self.current_shop = shop
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
+		if shop.marketing:
+			shop_marketing = shop.marketing.confess_active
+		else:
+			shop_marketing = 0
+
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
+		self.set_cookie("shop_marketing", str(shop_marketing))
 		if not self.session.query(models.CustomerShopFollow).filter_by(
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			w_follow = False
+			shop.fans_count = shop.fans_count + 1
 			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0)
 			if shop_follow:
 				if shop_follow.shop_point is not None:
@@ -845,39 +934,46 @@ class Market(CustomerBaseHandler):
 			self.session.commit()
 		cart_f = self.read_cart(shop.id)
 		cart_count = len(cart_f) 
-		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
-		fruits = [x for x in shop.fruits if x.active == 1]
+		if cart_count>0:
+			cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
+		else:
+			cart_fs = []
 		
 		notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
 		self.set_cookie("cart_count", str(cart_count))
 
 		group_list=[]
-		goods = self.session.query(models.Fruit).filter_by(shop_id = shop.id)
-		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop.id).order_by(models.GroupPriority.priority).all()
-		default_count = goods.filter_by(group_id=0,active=1).count()
-		record_count = goods.filter_by(group_id=-1,active=1).count()
-		if group_priority:
-			for g in group_priority:
-				group_id = g.group_id
-				if group_id == -1 and record_count !=0:
+		try:
+			g= self.session.query(models.Fruit).filter_by(shop_id = shop.id).all()
+		except:
+			g = None
+		if g and g!=[]:
+			goods = self.session.query(models.Fruit).filter_by(shop_id = shop.id)
+			group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop.id).order_by(models.GroupPriority.priority).all()
+			default_count = goods.filter_by(group_id=0,active=1).count()
+			record_count = goods.filter_by(group_id=-1,active=1).count()
+			if group_priority:
+				for g in group_priority:
+					group_id = g.group_id
+					if group_id == -1 and record_count !=0:
+						group_list.append({'id':-1,'name':'店铺推荐'})
+					elif group_id == 0 and default_count !=0:
+						group_list.append({'id':0,'name':' 默认分组'})
+					else:
+						_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop.id,status = 1).first()
+						if _group:
+							goods_count = goods.filter_by( group_id = _group.id,active=1).count()
+							if goods_count !=0 :
+								group_list.append({'id':_group.id,'name':_group.name})
+			else:
+				if record_count !=0 :
 					group_list.append({'id':-1,'name':'店铺推荐'})
-				elif group_id == 0 and default_count !=0:
-					group_list.append({'id':0,'name':' 默认分组'})
-				else:
-					_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop.id,status = 1).first()
-					if _group:
-						goods_count = goods.filter_by( group_id = _group.id,active=1).count()
-						if goods_count !=0 :
-							group_list.append({'id':_group.id,'name':_group.name})
-		else:
-			group_list.append({'id':-1,'name':'店铺推荐'})
-			group_list.append({'id':0,'name':'默认分组'})
-
+				if default_count !=0 :
+					group_list.append({'id':0,'name':'默认分组'})
 
 		return self.render("customer/home.html",
-						   context=dict(cart_count=cart_count, subpage='home',notices=notices,\
-							shop_name=shop.shop_name,shop_code=shop.shop_code,w_follow = w_follow,\
-							cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
+						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,shop_code=shop.shop_code,\
+						   	w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:int","page?:int","menu_id?:int")
@@ -918,22 +1014,42 @@ class Market(CustomerBaseHandler):
 					favour_today = False
 				else:
 					favour_today = favour.create_date == datetime.date.today()
-				# print('favour_today',favour_today)
-
+				# print('favour_today',favour_today)				
+					
 				charge_types= []
 				for charge_type in fruit.charge_types:
 					unit  = charge_type.unit
 					unit =self.getUnit(unit)
+					
+					limit_today = False
+					allow_num = ''
+					try:
+						limit_if = session.query(models.GoodsLimit).filter_by(charge_type_id = charge_type.id,customer_id = customer_id)\
+						.order_by(models.GoodsLimit.create_time.desc()).first()
+					except:
+						limit_if = None
+					if limit_if and fruit.limit_num !=0:
+						time_now = datetime.datetime.now().strftime('%Y-%m-%d')
+						create_time = limit_if.create_time.strftime('%Y-%m-%d')
+						if time_now == create_time:
+							limit_today = True
+							if limit_if.limit_num == fruit.limit_num:
+								allow_num = limit_if.allow_num
+							else:
+								allow_num = fruit.limit_num - limit_if.buy_num
 					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
-						'market_price':charge_type.market_price,'relate':charge_type.relate})
-				
+						'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),'allow_num':allow_num})
 
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 				saled = fruit.saled if fruit.saled else 0
+				if img_url == None or len(fruit.img_url.split(";"))==1 and fruit.detail_describe ==None:
+					detail_no = True
+				else:
+					detail_no = False
 
 				data.append({'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,\
 					'storage':fruit.storage,'tag':fruit.tag,'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':saled,'favour':fruit.favour,\
-					'favour_today':favour_today,'group_id':fruit.group_id,'limit_num':fruit.limit_num})
+					'favour_today':str(favour_today),'group_id':fruit.group_id,'limit_num':fruit.limit_num,'detail_no':str(detail_no)})
 			return data
 
 	@CustomerBaseHandler.check_arguments("page?:int","group_id?:int")
@@ -941,7 +1057,7 @@ class Market(CustomerBaseHandler):
 		page = int(self.args["page"])
 		group_id = int(self.args['group_id'])
 		page_size = 10
-		nomore = False
+		nomore = True
 		offset = (page-1) * page_size
 		shop_id = int(self.get_cookie("market_shop_id"))
 		customer_id = self.current_user.id
@@ -949,12 +1065,13 @@ class Market(CustomerBaseHandler):
 		if not shop:
 			return self.send_error(404)
 		
-		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1).order_by(models.Fruit.add_time.desc())
-		count_fruit = fruits.count()
-		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		if total_page <= page:
-			nomore = True
-		fruits = fruits.offset(offset).limit(page_size).all()
+		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1)\
+		.order_by(models.Fruit.priority.desc(),models.Fruit.add_time.desc()).all()
+		# count_fruit = fruits.count()
+		# total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
+		# if total_page <= page:
+		# 	nomore = True
+		# fruits = fruits.offset(offset).limit(page_size).all()
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruit_list ,nomore = nomore)
 
@@ -963,7 +1080,6 @@ class Market(CustomerBaseHandler):
 		import urllib
 		page = int(self.args["page"])
 		name = urllib.parse.unquote(self.args['search'])
-		print(name)
 		page_size = 10
 		nomore = False
 		offset = (page-1) * page_size
@@ -989,6 +1105,7 @@ class Market(CustomerBaseHandler):
 		page_size = 10
 		offset = (page -1) * page_size
 		nomore = False
+		print('login in commodity_list')
 
 		customer_id = self.current_user.id
 		shop_id = int(self.get_cookie('market_shop_id'))
@@ -1000,29 +1117,44 @@ class Market(CustomerBaseHandler):
 
 		# fruits = self.session.query(models.Fruit).outerjoin(models.GroupPriority,models.Fruit.shop_id == models.GroupPriority.shop_id\
 		# 	).filter(models.Fruit.shop_id == shop_id,models.Fruit.active == 1).order_by(models.GroupPriority.priority)
+		fruit_only = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active =1)
+		group_only = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id)
+		# print(fruit_only.count(), group_only.count(),'fruit_only')
 
-		fruits = self.session.query(models.Fruit).outerjoin(models.Shop,models.Fruit.shop_id == models.Shop.id,\
-			).outerjoin(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id).filter(models.Fruit.shop_id == shop_id,\
-			models.Fruit.active == 1).order_by(models.GroupPriority.group_id,models.Fruit.priority.desc(),models.Fruit.add_time.desc())
+		fruits = self.session.query(models.Fruit).join(models.Shop,models.Fruit.shop_id == models.Shop.id,\
+			).join(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id).filter(models.Fruit.shop_id == shop_id,\
+			models.Fruit.active == 1,models.Fruit.id !=None).order_by(models.GroupPriority.group_id,models.Fruit.priority.desc(),\
+			models.Fruit.add_time.desc()).distinct(models.Fruit.id).all()
 
-		print(fruits.count(),'dddddddddddddddddd',shop.shop_code)
 		
-		#for fruit in fruits:
-		#	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
+
+		for fruit in fruits:
+			print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
 		count_fruit =fruits.distinct().count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		print(count_fruit , total_page)
+		# print(count_fruit , total_page)
 		if total_page <= page:
 			nomore = True
-		#fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
-		fruits = fruits.all()
-		print('分页后')
-		for fruit in fruits:
-			print(fruit.id,fruit.group_id)
+		# sql = text(" select fruit.shop_id, fruit.id ,fruit.name,charge_type.id ,fruit.group_id,shop.shop_name ,\
+		# 	group_priority.priority  from (( fruit join charge_type on charge_type.fruit_id = fruit.id) join \
+		# 		shop  on  fruit.shop_id = shop.id) left join  group_priority  on (fruit.group_id = \
+		# 		group_priority.group_id and fruit.shop_id = group_priority.shop_id) where fruit.shop_id = 230 \
+		# order by group_priority.priority , fruit.id")
+
+
+		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
+
+		# for fruit in fruits:
+		# 	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
+		# count_fruit =fruits.distinct().count()
+		# total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
+		# # print(count_fruit , total_page)
+		# if total_page <= page:
+		# 	nomore = True
+
+		# fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
+
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
-		print('最后返回数据')
-		print(fruits_data)
-		nomore = True
 		return self.send_success(data = fruits_data,nomore=nomore)
 
 
@@ -1111,6 +1243,31 @@ class Market(CustomerBaseHandler):
 		self.save_cart(charge_type_id, self.shop_id, action)
 		return self.send_success()
 
+class GoodsSearch(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		shop_id = self.shop_id
+		shop = self.session.query(models.Shop).filter_by(id=shop_id ).first()
+		if not shop:
+			return self.send_error(404)
+		return self.render("customer/search-goods-list.html",context=dict(subpage='home',shop_code=shop.shop_code))
+
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("search:str")
+	def post(self):
+		shop_id = self.shop_id
+		search = self.args["search"]
+		data = []
+		name_list = self.session.query(models.Fruit.name).filter_by(shop_id = shop_id,active=1).filter(models.Fruit.name.like("%%%s%%" % search))
+		names = name_list.distinct().all()
+		if names:
+			for name in names:
+				count = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active=1,name = name[0]).count()
+				data.append({'name':name[0],'num':count})
+		else:
+			data = []
+		return self.send_success(data=data)
+
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
@@ -1141,6 +1298,10 @@ class Cart(CustomerBaseHandler):
 		shop_id = shop.id
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
+		if shop.marketing:
+			shop_marketing = shop.marketing.confess_active
+		else:
+			shop_marketing = 0
 		try:
 			customer_follow =self.session.query(models.CustomerShopFollow).\
 			filter_by(customer_id = customer_id,shop_id =shop_id ).first()
@@ -1152,6 +1313,7 @@ class Cart(CustomerBaseHandler):
 			shop_new = customer_follow.shop_new
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
+		self.set_cookie("shop_marketing", str(shop_marketing))
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits))): #购物车为空
 			return self.render("notice/cart-empty.html",context=dict(subpage='cart'))
@@ -1200,11 +1362,41 @@ class Cart(CustomerBaseHandler):
 			charge_types = self.session.query(models.ChargeType).\
 				filter(models.ChargeType.id.in_(fruits.keys())).all()
 			for charge_type in charge_types:
-
 				if fruits[str(charge_type.id)] in [0,None]:  # 有可能num为0，直接忽略掉
 					continue
 				totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
-				num = int(fruits[str(charge_type.id)]*charge_type.relate*charge_type.num)
+
+				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num
+
+
+				limit_num = charge_type.fruit.limit_num
+				buy_num = int(fruits[str(charge_type.id)])
+				
+				try:
+					limit_if = self.session.query(models.GoodsLimit).filter_by(charge_type_id = charge_type.id,customer_id = customer_id)\
+					.order_by(models.GoodsLimit.create_time.desc()).first()
+				except:
+					limit_if = None
+				if limit_num !=0:
+					allow_num = limit_num - buy_num
+					if allow_num < 0:
+						return self.send_fail("限购商品"+charge_type.fruit.name+"购买数量已达上限")
+					if limit_if:
+						time_now = datetime.datetime.now().strftime('%Y-%m-%d')
+						create_time = limit_if.create_time.strftime('%Y-%m-%d')
+						if time_now == create_time:
+							buy_num = limit_if.buy_num+buy_num
+							if limit_if.limit_num == limit_num:
+								allow_num = limit_if.limit_num-buy_num
+							else:
+								allow_num = limit_num-buy_num
+								if allow_num <=0:
+									return self.send_fail("限购商品"+charge_type.fruit.name+"购买数量已达上限")
+							goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
+							self.session.add(goods_limit)
+					else:
+						goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
+						self.session.add(goods_limit)					
 
 				charge_type.fruit.storage -= num  # 更新库存
 				if charge_type.fruit.saled:
@@ -1215,9 +1407,9 @@ class Cart(CustomerBaseHandler):
 				if charge_type.fruit.storage < 0:
 					return self.send_fail('“%s”库存不足' % charge_type.fruit.name)
 				# print(charge_type.price)
-				print(charge_type.num , unit[charge_type.unit])
+
 				f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
-									 "charge":"%.2f元/%.1f %s" % (float(charge_type.price), charge_type.num, unit[charge_type.unit])}
+									 "charge":"%.2f元/%.2f %s" % (float(charge_type.price), charge_type.num, unit[charge_type.unit])}
 
 		#按时达/立即送 的时间段处理
 		start_time = 0
@@ -1367,7 +1559,7 @@ class Cart(CustomerBaseHandler):
 		return self.send_success(order_id = order.id)
 
 	def order_cancel_auto(self,session,order_id):
-		print("[定时任务]订单取消：",order_id,self)
+		# print("[定时任务]订单取消：",order_id,self)
 		order = session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			return self.send_fail('order_cancel_auto: order not found!')
@@ -1375,9 +1567,9 @@ class Cart(CustomerBaseHandler):
 			order.status = 0
 			order.del_reason = "timeout"
 			order.get_num(session,order.id)
-			print("[定时任务]订单取消成功：",order.num)
-		else:
-			print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除",order.num)
+			# print("[定时任务]订单取消成功：",order.num)
+		#else:
+		#	print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除：",order.num)
 
 class CartCallback(CustomerBaseHandler):
 
@@ -1448,6 +1640,8 @@ class CartCallback(CustomerBaseHandler):
 				other_name = info.nickname
 				WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,\
 					customer_name,order_totalPrice,send_time,goods,phone,address)
+			# send message to customer
+			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
 
 
 		####################################################
@@ -1547,11 +1741,6 @@ class Order(CustomerBaseHandler):
 			page = self.args['page']
 			offset = (page - 1) * page_size
 			orders = [x for x in self.current_user.orders if x.status == 1 or x.status == -1]
-			# print(len(orders),'未处理订单 数量')
-			# woody
-			# for order in orders:
-			# 	order.send_time = order.get_sendtime(session,order.id)
-
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
@@ -1561,17 +1750,12 @@ class Order(CustomerBaseHandler):
 				orders = orders[offset:]
 			else:
 				return self.send_fail("暂无订单")
-			# print('orders',orders)
 			orders = self.get_orderData(session,orders)
-			# print('after ',orders)
 			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "waiting":
 			page = self.args["page"]
 			offset = (page - 1) * page_size
 			orders = [x for x in self.current_user.orders if x.status in (2, 3, 4)]
-			# print(len(orders),'待收货状态订单')
-			# for order in orders:
-			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
@@ -1601,12 +1785,7 @@ class Order(CustomerBaseHandler):
 			for x in orderlist:
 				if x.status == 5:
 					order5.append(x)
-				#if x.status == 6:
-				#	order6.append(x)
 			orders = order5 + order6
-			# print(len(orders),'已完成订单数量')
-			# for order in orders:
-			# 	order.send_time = order.get_sendtime(session,order.id)
 			total_count = len(orders)
 			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
 			if offset + page_size <= total_count:
@@ -1621,13 +1800,9 @@ class Order(CustomerBaseHandler):
 			page = self.args["page"]
 			offset = (page - 1) * page_size
 			orders = self.current_user.orders
-			# print(len(orders),'所有订单数量')
 			session = self.session
-			# for order in orders:
-			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time,reverse = True)
 			total_count = len(orders)
-			# print(total_count)
 			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
 			if offset + page_size <= total_count:
 				orders = orders[offset:offset + page_size]
@@ -1650,9 +1825,9 @@ class Order(CustomerBaseHandler):
 				return self.send_fail("该订单已经送达，无法取消")
 			if order.pay_type == 3 and order.status != -1:
 				return self.send_fail("在线支付『已付款』的订单暂时不能取消，如有疑问请直接与店家联系")
-			print("[订单管理]取消订单，订单原状态：",order.status)
+			# print("[订单管理]取消订单，订单原状态：",order.status)
 			order.status = 0
-			print("[订单管理]取消订单，订单现状态：",order.status)
+			# print("[订单管理]取消订单，订单现状态：",order.status)
 			# recover the sale and storage
 			# woody
 			# 3.27
@@ -1701,7 +1876,29 @@ class Order(CustomerBaseHandler):
 			order.commodity_quality = int(data["commodity_quality"])
 			order.send_speed        = int(data["send_speed"])
 			order.shop_service      = int(data["shop_service"])
+			notice =''
+			if int(data["commodity_quality"])==100 and int(data["send_speed"])==100 and int(data["shop_service"])==100:
+				try:
+					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
+						order.customer_id,shop_id = order.shop_id).first()
+				except :
+					shop_follow = None
+					self.send_fail("shop_point error")
 
+				if shop_follow:
+					if shop_follow.shop_point:
+						shop_follow.shop_point += 2
+					try:
+						point_history = models.PointHistory(customer_id = self.current_user.id , shop_id = order.shop_id)
+					except:
+						self.send_fail("point_history error:COMMENT")
+					if point_history:
+						point_history.point_type = models.POINT_TYPE.SHOP_FULLPOINT
+						point_history.each_point = 2
+						notice = '店铺评价满分，积分+2'
+						self.session.add(point_history)
+			self.session.commit()
+			return self.send_success(notice=notice)
 			# customer_id = self.current_user.id
 			# shop_id     = self.get_cookie("market_shop_id")
 
@@ -1751,17 +1948,26 @@ class Order(CustomerBaseHandler):
 
 				if shop_follow:
 					if shop_follow.shop_point:
-						shop_follow.shop_point += 5
+						shop_follow.shop_point += 2
+						if imgUrl:
+							shop_follow.shop_point += 2
 					try:
 						point_history = models.PointHistory(customer_id = self.current_user.id , shop_id = order.shop_id)
 					except:
 						self.send_fail("point_history error:COMMENT")
 					if point_history:
 						point_history.point_type = models.POINT_TYPE.COMMENT
-						point_history.each_point = 5
-						notice = '评论成功，积分+5'
+						point_history.each_point = 2
+						notice = '评论成功，积分+2'
 						self.session.add(point_history)
 						self.session.commit()
+						if imgUrl:
+							point_history.point_type = models.POINT_TYPE.COMMENTIMG
+							point_history.each_point = 2
+							notice = '评论成功，积分+2,评论晒图，积分+2'
+							self.session.add(point_history)
+							self.session.commit()
+
 			self.session.commit()
 			return self.send_success(notice=notice)
 
@@ -1783,13 +1989,6 @@ class OrderDetail(CustomerBaseHandler):
 			online_type = order.online_type
 		else:
 			online_type = None
-		
-
-		###################################################################
-		# time's format
-		# woody
-		# 3.9
-		###################################################################
 		staff_id = order.SH2_id
 		staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id).first()
 		if staff_info is not None:
@@ -1922,8 +2121,6 @@ class Balance(CustomerBaseHandler):
 			data = history[offset:]
 		else:
 			nomore = True
-			# print("history page error")
-		# print("data\n",data)
 
 		return self.send_success(data = data,nomore=nomore)
 
@@ -2048,6 +2245,41 @@ class ShopComment(CustomerBaseHandler):
 		orderid=self.args["num"]
 		return self.render("customer/comment-shop.html",orderid=orderid)
 
+class QrWxpay(CustomerBaseHandler):
+	def initialize(self):
+		self.qr_wxpay = QRWXpay(appid='wx0ed17cdc9020a96e',
+				   mch_id='10023430',
+				   key='af8164b968911db7567f98b73122dbc3',
+				   notify_url='http://test123.senguo.cc/customer/qrwxpay',
+				   appsecret='6ecd60383b7e26a09d51a12e75649b3e')
+	def get(self):
+		product_id = '12345'
+		url = self.qr_wxpay.generate_static_qr(product_id)
+		print(url)
+		return self.render('customer/qrwxpay.html',url = url)
+		product = {
+		'attach': u'标题',
+		'body': u'内容',
+		'out_trade_no': 22222,
+		'total_fee': 0.01,}
+		img = self.qr_wxpay.generate_product_qr(product)
+		img_io = StringIO()
+		img.save(img_io)  # 直接将生成的QR放在了内存里, 请根据实际需求选择放在内存还是放在硬盘上
+		img_io.seek(0)
+		return send_file(img_io, mimetype='image/jpeg')
+
+
+	def post(self):
+		xml_str = request.data
+		ret, ret_dict = qr_wxpay.verify_callback(xml_str)
+		if ret:
+			product_id = ret_dict['product_id']
+			print(product_id,'product_id')
+		else:
+			print('callback error')
+ 
+
+
 class payTest(CustomerBaseHandler):
 
 	@tornado.web.authenticated
@@ -2155,7 +2387,7 @@ class payTest(CustomerBaseHandler):
 
 			#########################################################
 
-			# 支付成功后，用户对应店铺 余额 增1加
+			# 支付成功后，用户对应店铺 余额 增加
 			#判断是否已经回调过，如果记录在表中，则不执行接下来操作
 			old_balance_history=self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
 			if old_balance_history:
@@ -2219,7 +2451,7 @@ class AlipayNotify(CustomerBaseHandler):
 		# 应放在 支付成功的回调里
 		#########################################################
 
-		# 支付成功后，用户对应店铺 余额 增1加
+		# 支付成功后，用户对应店铺 余额 增加
 		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 			shop_id = shop_id).first()
 		print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
@@ -2253,25 +2485,19 @@ class AlipayNotify(CustomerBaseHandler):
 		return
 
 class InsertData(CustomerBaseHandler):
-	@tornado.web.authenticated
+	# @tornado.web.authenticated
 	# @CustomerBaseHandler.check_arguments("code?:str")
+	@tornado.web.asynchronous
 	def get(self):
-		from sqlalchemy import create_engine, func, ForeignKey, Column
-		session = self.session	
-		# try:
-		# 	shop_list = self.session.query(models.Shop).all()
-		# except:
-		# 	print('no shop at all')
-		# if shop_list:
-		# 	for shop in shop_list:
-		# 		shop_id = shop.id
-		# 		market = models.Marketing( id = shop_id )
-		# 		self.session.add(market)
-		# 		self.session.commit()
-		# time.sleep(100)
-
-		
-		return self.send_success()
+		import datetime
+		# from sqlalchemy import create_engine, func, ForeignKey, Column
+		# session = self.session	
+		fruit = self.session.query(models.Order).limit(10)
+		for test in fruit:
+			if test is not None:
+				print(test.create_date.hour)
+				print(test.create_date,type(test.create_date))
+		self.render('customer/storage-change.html')
 
 class  Overtime(CustomerBaseHandler):
 	@tornado.web.authenticated

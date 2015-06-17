@@ -7,6 +7,7 @@ import handlers.infowall
 import handlers.official
 import handlers.onlinePay
 import handlers.activity
+import handlers.madmin
 from dal import models
 #todo:handlers太大会不会影响性能？
 
@@ -26,6 +27,10 @@ handlers = [
 	(r"/lovewall/list/(\w+)", handlers.activity.ConfessionList, {}, "ConfessionList"),
 	(r"/lovewall/comment/(\w+)", handlers.activity.ConfessionComment, {}, "ConfessionComment"),
 	(r"/lovewall/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
+
+	#优惠券
+	(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),
+	(r"/coupon/detail", handlers.activity.CouponDetail, {}, "CouponDetail"),
 	
 	(r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
 	(r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
@@ -49,6 +54,8 @@ handlers = [
 	(r"/customer/wxBind", handlers.customer.WxBind, {"action":"wx_bind"}, "customerwxBind"),
 	(r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
 	(r"/customer/discover/(\w+)",handlers.customer.Discover,{},"customerDiscover"),
+	(r"/customer/storagechange",handlers.customer.StorageChange),
+	(r"/customer/qrwxpay",handlers.customer.QrWxpay,{},"customerQrWxpay"),
 
 	#商品详情
 	(r"/customer/goods/(\w+)",handlers.customer.customerGoods,{},"customerGoods"),
@@ -89,6 +96,7 @@ handlers = [
 	(r"/customer/points", handlers.customer.Points, {}, "customerPoints"),
 	(r"/customer/balance", handlers.customer.Balance, {}, "customerBalance"),
 	(r"/customer/recharge", handlers.customer.Recharge, {}, "customerRecharge"),
+	(r"/customer/search", handlers.customer.GoodsSearch, {}, "customerGoodsSearch"),
 	(r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
 	(r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
 	(r"/customer/phoneVerify", handlers.fruitzone.PhoneVerify, {
@@ -161,6 +169,10 @@ handlers = [
 	(r"/super/incstatic", handlers.superadmin.IncStatic, {}, "superIncStatic"),
 	(r"/super/dstatic", handlers.superadmin.DistributStatic, {}, "superDStatic"),
 	(r"/super/shopstatic", handlers.superadmin.ShopStatic, {}, "superShopStatic"),
+
+	#add by jyj 2015-6-15
+	(r"/super/orderstatic", handlers.superadmin.OrderStatic, {}, "superOrderStatic"),
+	##
 	# (r"/super/Commentdelete",handlers.superadmin.CommentApplyDelete,{},"superCommentDelete"),
 
 
@@ -204,6 +216,11 @@ handlers = [
 	# (r"/admin/settings/profile", handlers.admin.Settings,
 	#  {"action":"profile"}, "adminSettingsProfile")
 	
+	(r"/madmin/order", handlers.madmin.Order, {}, "MadminOrder"),
+	(r"/madmin/orderDetail", handlers.madmin.OrderDetail, {}, "MadminOrderDetail"),
+	(r"/madmin/shopProfile", handlers.madmin.ShopProfile, {}, "MadminCenter"),
+	(r"/madmin/orderSearch", handlers.madmin.OrderSearch, {}, "MadminSearch"),
+
 	# (r"/staff/...")
 
 	# 水果圈子
