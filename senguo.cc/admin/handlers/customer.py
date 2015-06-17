@@ -1377,6 +1377,7 @@ class Cart(CustomerBaseHandler):
 					.order_by(models.GoodsLimit.create_time.desc()).first()
 				except:
 					limit_if = None
+				print(limit_num)
 				if limit_num !=0:
 					allow_num = limit_num - buy_num
 					if allow_num < 0:
@@ -1394,9 +1395,13 @@ class Cart(CustomerBaseHandler):
 									return self.send_fail("限购商品"+charge_type.fruit.name+"购买数量已达上限")
 							goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
 							self.session.add(goods_limit)
+						else:
+							goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
+							self.session.add(goods_limit)
 					else:
 						goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
-						self.session.add(goods_limit)					
+						self.session.add(goods_limit)
+					self.session.commit()					
 
 				charge_type.fruit.storage -= num  # 更新库存
 				if charge_type.fruit.saled:
