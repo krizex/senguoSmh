@@ -100,7 +100,7 @@
 .order-list-item .input-group-btn{display:inline-block;}
 .order-list-item .dropdown-toggle{border:1px solid #e7e7eb;font-size:12px;padding:0;}
 .order-list-item .input-group-btn .caret{padding:0 !important;}
-.order-list-item .dropdown-menu{font-size:12px;margin-top:-1px;}
+.order-list-item .dropdown-menu{font-size:12px;margin-top:3px;margin-left:1px}
 .order-list-item .dropdown-menu li a{padding:5px 20px;}
 
 .sendNowBox .modal-body{padding:40px 90px;}
