@@ -52,7 +52,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .boder-rd{border-right:1px solid #e7e7eb;}
 .show-info{width:100%;padding-bottom:10px;}
 .action-box{width:400px;height:40px;}
-.action-box .btn{height:30px;line-height:30px;width:40%;padding:0px;}
+.action-box .btn{height:30px;line-height:30px;width:40%;padding:0;}
 .w80{width:80px;height:80px;}
 /*认证-删除评论*/
 .cert-shop>li{width:33.3%;font-size:14px;height: 24px;line-height:24px;color: #333;float:left;}

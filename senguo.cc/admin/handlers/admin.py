@@ -75,7 +75,12 @@ class Home(AdminBaseHandler):
 		show_balance = False
 
 		shop_auth =  self.current_shop.shop_auth
-		self.set_secure_cookie("shop_id",str(self.current_shop.id))
+		if self.get_secure_cookie("shop_id"):
+			shop_id = int(self.get_secure_cookie("shop_id").decode())
+			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
+			shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
+			self.current_shop = shop
+			self.set_secure_cookie("shop_id", str(shop.id), domain=ROOT_HOST_NAME)
 
 
 		if shop_auth in [1,2]:
@@ -98,17 +103,17 @@ class Home(AdminBaseHandler):
 						   new_follower_sum=new_follower_sum, follower_sum=follower_sum,\
 						   show_balance = show_balance,new_sys_notices=new_sys_notices, \
 						   sys_notices=sys_notices, context=dict())
+	# @tornado.web.authenticated
+	# @AdminBaseHandler.check_arguments("shop_id:int")
+	# def post(self):  # 商家多个店铺之间的切换
+	# 	shop_id = self.args["shop_id"]
+	# 	try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
+	# 	except:return self.send_error(404)
+	# 	if shop.admin != self.current_user:
+	# 		return self.send_error(403)#必须做权限检查：可能这个shop并不属于current_user
+	# 	self.set_secure_cookie("shop_id", str(shop_id), domain=ROOT_HOST_NAME)
+	# 	return self.send_success()
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("shop_id:int")
-	def post(self):  # 商家多个店铺之间的切换
-		shop_id = self.args["shop_id"]
-		try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
-		except:return self.send_error(404)
-		if shop.admin != self.current_user:
-			return self.send_error(403)#必须做权限检查：可能这个shop并不属于current_user
-		self.set_secure_cookie("shop_id", str(shop_id), domain=ROOT_HOST_NAME)
-		return self.send_success()
-
 	@AdminBaseHandler.check_arguments("action","data?")
 	def post(self):  # 商家 or 管理员多个店铺之间的切换
 		action = self.args["action"]
@@ -645,18 +650,22 @@ class Order(AdminBaseHandler):
 				new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
 				self.current_shop.new_order_sum = order_sum
 				self.session.commit()
-				orders = [x for x in order_list if x.type == order_type and x.status == 1]
+				if order_list:
+					orders = [x for x in order_list if x.type == order_type and x.status == 1]
 
 			elif order_status == 2:#unfinish
-				orders = [x for x in order_list if x.type == order_type and x.status in [2, 3, 4]]
+				if order_list:
+					orders = [x for x in order_list if x.type == order_type and x.status in [2, 3, 4]]
 
 			elif order_status == 3:
-				orders = [x for x in order_list if x.type == order_type and x.status in (5, 6, 7)]
+				if order_list:
+					orders = [x for x in order_list if x.type == order_type and x.status in (5, 6, 7)]
 
 			elif order_status == 4:
 				pass
 			elif order_status == 5:#all
-				orders = [x for x in order_list if x.type == order_type]
+				if order_list:
+					orders = [x for x in order_list if x.type == order_type]
 			else:
 				return self.send.send_error(404)
 
@@ -2011,9 +2020,11 @@ class Follower(AdminBaseHandler):
 			count = q.count()
 			customers = q.offset(page*page_size).limit(page_size).all()
 
+		##################################################################
 		# Modify by Sky - 2015.6.1
 		# 用户搜索，支持根据手机号/真名/昵称搜索，支持关键字模糊搜索，支持收件人搜索
-		# TODO:搜索性能需改进
+		# TODO: 搜索性能需改进，应进行多表联合查询
+		##################################################################
 		elif action == "search":  
 			wd = self.args["wd"]
 
@@ -2444,7 +2455,7 @@ class Config(AdminBaseHandler):
 				admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).first()
 			except:
 				return self.send_fail('该管理员不存在')
-			admin.active = 0
+			self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).delete()
 			self.session.commit()
 			return self.send_success()
 		elif action =="super_temp_active":
@@ -2791,6 +2802,12 @@ class ShopBalance(AdminBaseHandler):
 class ShopConfig(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		if self.get_secure_cookie("shop_id"):
+			shop_id = int(self.get_secure_cookie("shop_id").decode())
+			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
+			shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
+			self.current_shop = shop
+			self.set_secure_cookie("shop_id", str(shop.id), domain=ROOT_HOST_NAME)
 		city = self.code_to_text("city", self.current_shop.shop_city)
 		province = self.code_to_text("province", self.current_shop.shop_province)
 		address = self.code_to_text("shop_city", self.current_shop.shop_city) +\

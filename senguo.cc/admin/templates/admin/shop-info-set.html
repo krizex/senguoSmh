@@ -129,34 +129,40 @@
     </li>
     <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">店铺地址</span>
-        <div class="w2 pull-left">
-            <p class="info_show address hidden" id="info_address" data-lng="0" data-lat="0">{{address}}</p>
-            <div class="info_hide">
-                <div class="dropdown select-provience pull-left set-right10 province_select" data-toggle="modal" data-target="#provinceList">
-                    <button class="btn btn-default dropdown-toggle" type="button">
-                        <span  id="provinceAddress" data-code="{{current_shop.shop_province or ''}}" class="reProvince">{{province}}</span>
-                        <span class="caret"></span>
-                    </button>
-                </div>
-                <div class="dropdown pull-left select-city set-right10 city_select" data-toggle="modal" data-target="#cityList">
-                    <button class="btn btn-default dropdown-toggle" type="button">
-                        <span id="cityAddress" data-code="{{current_shop.shop_city or ''}}" class="reCity">{{city}}</span>
-                        <span class="caret"></span>
-                    </button>
-                </div>
-                <input type="text" class="input-box input1 pull-left" placeholder="请填写详细地址，至多50个字符" id="addressDetail" value="{{current_shop.shop_address_detail or ''}}"/>
-                <input type="button" class="pull-left search-lbs" id="search-lbs" value="地图搜索"/>
+        <div class="address-start">
+            <div class="pull-right">
+                <a class="info_edit show" href="javascript:;" id="edit-address">修改</a>
             </div>
+            <p class="info_show address" id="info_address" data-lng="0" data-lat="0">{{address}}</p>
         </div>
-        <div class="pull-right">
-            <input type="hidden" value="{{lat}}" id="lat"/>
-            <input type="hidden" value="{{lon}}" id="lon"/>
-            <a class="info_edit  hidden" href="javascript:;">修改</a>
-            <a class="info_sure address-sure" href="javascript:;" data-id="address" id="save-lbs">保存</a>
+        <div class="wrap-shop-address hidden">
+            <div class="w2 pull-left">
+                <div class="info_hide">
+                    <div class="dropdown select-provience pull-left set-right10 province_select" data-toggle="modal" data-target="#provinceList">
+                        <button class="btn btn-default dropdown-toggle" type="button">
+                            <span  id="provinceAddress" data-code="{{current_shop.shop_province or ''}}" class="reProvince">{{province}}</span>
+                            <span class="caret"></span>
+                        </button>
+                    </div>
+                    <div class="dropdown pull-left select-city set-right10 city_select" data-toggle="modal" data-target="#cityList">
+                        <button class="btn btn-default dropdown-toggle" type="button">
+                            <span id="cityAddress" data-code="{{current_shop.shop_city or ''}}" class="reCity">{{city}}</span>
+                            <span class="caret"></span>
+                        </button>
+                    </div>
+                    <input type="text" class="input-box input1 pull-left" placeholder="请填写详细地址，至多50个字符" id="addressDetail" value="{{current_shop.shop_address_detail or ''}}"/>
+                    <input type="button" class="pull-left search-lbs" id="search-lbs" value="地图搜索"/>
+                </div>
+            </div>
+            <div class="pull-right">
+                <input type="hidden" value="{{lat}}" id="lat"/>
+                <input type="hidden" value="{{lon}}" id="lon"/>
+                <a class="info_sure address-sure" href="javascript:;" data-id="address" id="save-lbs">保存</a>
+            </div>
         </div>
         <span class="w1 pull-left set-inl-blo">&nbsp;</span>
         <div class="w2 pull-left wrap-bmap-box">
-            <span class="hand-search" id="hand-search">手动标注位置</span>
+            <span class="hand-search hidden" id="hand-search">手动标注位置</span>
             <div class="wrap-bmap" id="bmap">
             </div>
         </div>

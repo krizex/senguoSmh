@@ -18,6 +18,9 @@ $(document).ready(function(){
         $('#classify').text('搜索结果');
         $('.wrap-goods-box').css('margin-top','40px');
     }else{
+        if($('.classify-list li').length==0){
+            $(".wrap-loading-box").addClass("hidden");
+        }
          $('.classify-list li').each(function(){
             var $this=$(this);
             var id = Number($this.attr('data-id'));
@@ -101,16 +104,17 @@ $(document).ready(function(){
         $('.detail-box').find('.detail').text(detail);
 }).on('click','.goods-list-item',function(e){
     var $this=$(this);
-    var storage=parseInt($this.attr('data-num'));
+    var storage=Number($this.attr('data-num'));
     var detail_no=$this.attr('data-detail');
     var id=$this.attr('data-id');
     var shop_code=$('#shop_code').val();
-    if (storage > 0 && detail_no=='False') {
-        if($(e.target).closest(".forbid_click").size()==0){
+    console.log(storage);
+    if($(e.target).closest(".forbid_click").size()==0){
+        if (storage > 0 && detail_no=='False') {
             addCart("/"+shop_code+"/goods/"+id);
+        }else if(storage<=0){
+            return noticeBox("当前商品已经卖完啦");
         }
-    }else if(storage<=0){
-        return noticeBox("当前商品已经卖完啦");
     }
 }).on('click','.check-lg-img',function(){
     //查看大图
@@ -219,19 +223,25 @@ $(document).ready(function(){
     var change_num=relate*unit_num*1;
     var buy_today=$this.parents('.charge-item').attr('data-buy');
     var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
+    if(change_num==NaN){
+        change_num=0;
+    }
     if(buy_today=='True'&&allow_num<=0){
         return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
     }
-    if(storage-change_num<0){
-        return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
-    }
-    parent.attr({'data-storage':storage-change_num});
-    if(storage==1){
-       $this.siblings('.number-change').find('.number-input').val(1); 
-    }else{
-        $this.siblings('.number-change').find('.number-input').val(0);
-    }
+    // if(storage==1){
+    //    $this.siblings('.number-change').find('.number-input').val(1); 
+    // }else{
+    //     $this.siblings('.number-change').find('.number-input').val(0);
+    // }
     if(storage>0) {
+        if(storage-change_num<0){
+            return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
+        }else if(storage-change_num==0){
+            $this.siblings('.number-change').find('.number-input').val(0);
+        }else{
+            $this.siblings('.number-change').find('.number-input').val(0); 
+        }
         pulse($this.siblings('.number-change').find('.number-plus'));
         goodsNum($this.siblings('.number-change').find('.number-plus'),2);
         $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
@@ -244,8 +254,10 @@ $(document).ready(function(){
             SetCookie('cart_count',window.dataObj.cart_count);
             $this.removeClass('add_cart_num');
         }
+       
     }
-    else {noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)}
+    else {noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)} 
+    parent.attr({'data-storage':storage-change_num});
 }).on('click','.number-minus',function(){
     //商品数量操作
     var $this=$(this);
@@ -576,11 +588,14 @@ function cartNum(cart_ms,list){
                 var input = change.find('.number-input');
                 if (id == cart_ms[key][0]) {
                     var $parent=charge.parents('.goods-list-item');
-                    var storage=$parent.attr('data-storage');
+                    var storage=$parent.attr('data-num');
                     add.addClass('hidden');
                     change.removeClass('hidden');
                     input.val(cart_ms[key][1]);
-                    $parent.attr({'data-storage':storage-cart_ms[key][1]});
+                    var relate=parseFloat(charge.parents('.charge-item').attr('data-relate'));
+                    var unit_num=parseFloat(charge.find('.num').text());
+                    var change_num=relate*unit_num*cart_ms[key][1];
+                    $parent.attr({'data-storage':storage-change_num});
                     //if(charge.hasClass('more_charge')) {
                     //    $parent.find('.charge-list').show();
                     //    $parent.find('.back-shape').toggleClass('hidden');

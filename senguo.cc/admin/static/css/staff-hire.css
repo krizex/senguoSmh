@@ -1,5 +1,5 @@
 li{list-style:none;}
-ul{padding-left:0px;}
+ul{padding-left:0;}
 .recruit-apply-list{width:100%;max-width:800px;margin:0 auto;background:#f2f2f2;padding:5px !important;border:2px solid #ccc;font-size:14px;}
 .recruit-apply-list .title{font-weight:bold;}
 .recruit-apply-list .tit2{border-top:2px solid #ccc;padding-top:15px;}

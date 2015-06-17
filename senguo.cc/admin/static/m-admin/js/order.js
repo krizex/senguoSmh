@@ -16,7 +16,8 @@ $(document).ready(function(){
         $(".second-tab-list .tab-line").css("left",$(this).position().left);
         swiper.swipeTo(index);
     });
-    $(".order-grade .task-staff").on("click",function(){
+    $(".order-grade .task-staff").on("click",function(e){
+        e.stopPropagation();
         curStaff = $(this).closest(".order-grade");
         $(".pop-staff").removeClass("hide");
     });
@@ -52,6 +53,10 @@ $(document).ready(function(){
             var index = swiper.activeIndex;
             $(".second-tab-list .tab-line").css("left",$(".second-tab-list").children(".item").eq(index).position().left);
         }
+    });
+    $(".order-lists>li").on("click",function(){//进入订单详情
+        var id = $(this).attr("data-id");
+        window.location.href="/madmin/orderDetail?id="+id;
     });
 });
 

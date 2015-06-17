@@ -114,7 +114,7 @@ class Home(StaffBaseHandler):
 
 class Order(StaffBaseHandler):
 	@tornado.web.authenticated
-	@StaffBaseHandler.check_arguments("order_type")
+	@StaffBaseHandler.check_arguments("order_type","day_type?")
 	def get(self):
 		order_type = self.args["order_type"]
 		try:
@@ -160,12 +160,13 @@ class Order(StaffBaseHandler):
 		#               (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
 		orders_ontime = len(orders_len2)
 		self.set_cookie("orders_ontime",str(orders_ontime))
+
+
 		if order_type == "now":
 			orders = orders.filter_by(type=1).filter(models.Order.status!=5 or 6 or 7).order_by(models.Order.id.desc()).all()       
 			page = 'now'
 		elif order_type == "on_time":
 			orders = orders.filter_by(type=2).filter(models.Order.status!=5 or 6 or 7).order_by(models.Order.send_time).all()     
-			day = datetime.datetime.now().day
 			# orders = [x for x in orders if (x.today == 1 and x.create_date.day == day) or
 			#           (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单  
 			page = 'on_time'
@@ -174,6 +175,19 @@ class Order(StaffBaseHandler):
 			page = 'history'
 		else:
 			return self.send_error(404)
+		if "day_type" in self.args:
+			day_type=self.args["day_type"]
+			today = datetime.date.today()
+			timedelta=datetime.timedelta(days=1)
+			tomorrow=(today+timedelta).strftime("%Y-%m-%d")
+			today=today.strftime("%Y-%m-%d")
+			if day_type == "today":
+				orders = [x for x in orders if (x.today == 1 and x.create_date.strftime("%Y-%m-%d") == today) or (x.today == 2 and (x.create_date+datetime.timedelta(days=1)).strftime("%Y-%m-%d") == today)]#过滤掉明天的订单
+			elif day_type == "tomorrow":
+				orders = [x for x in orders if(x.today == 2 and (x.create_date+datetime.timedelta(days=1)).strftime("%Y-%m-%d") == tomorrow)]
+			elif day_type == "overtime":
+				orders = [x for x in orders if(x.today == 1 and x.create_date.strftime("%Y-%m-%d") < today) or (x.today == 2 and (x.create_date+datetime.timedelta(days=1)).strftime("%Y-%m-%d") < today)]
+
 		return self.render("staff/orders.html", orders=orders, page=page)
 
 	@tornado.web.authenticated
@@ -377,6 +391,7 @@ class Hire(StaffBaseHandler):
 				hireform.intro = data["intro"]
 				hireform.advantage = data["advantage"]
 				hireform.status = 1
+				hireform.work = 3
 			except:
 				self.session.add(models.HireForm(staff_id=self.current_user.id, shop_id=shop_id,
 								intro=data["intro"], advantage=data["advantage"]))

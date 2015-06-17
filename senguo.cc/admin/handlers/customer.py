@@ -20,7 +20,7 @@ from threading import Timer
 import tornado.websocket
 
 from dal.db_configs import DBSession
-from wxpay import QRWXpay
+# from wxpay import QRWXpay
 
 
 EXECUTOR = ThreadPoolExecutor(max_workers=4)
@@ -878,8 +878,8 @@ class Market(CustomerBaseHandler):
 	@get_unblock
 	def get(self, shop_code):
 		w_follow = True
-		fruits=''
-		page_size = 10
+		# fruits=''
+		# page_size = 10
 		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		if not shop:
 			return self.send_error(404)
@@ -934,35 +934,42 @@ class Market(CustomerBaseHandler):
 			self.session.commit()
 		cart_f = self.read_cart(shop.id)
 		cart_count = len(cart_f) 
-		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
-		fruits = [x for x in shop.fruits if x.active == 1]
+		if cart_count>0:
+			cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
+		else:
+			cart_fs = []
 		
 		notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
 		self.set_cookie("cart_count", str(cart_count))
 
 		group_list=[]
-		goods = self.session.query(models.Fruit).filter_by(shop_id = shop.id)
-		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop.id).order_by(models.GroupPriority.priority).all()
-		default_count = goods.filter_by(group_id=0,active=1).count()
-		record_count = goods.filter_by(group_id=-1,active=1).count()
-		if group_priority:
-			for g in group_priority:
-				group_id = g.group_id
-				if group_id == -1 and record_count !=0:
+		try:
+			g= self.session.query(models.Fruit).filter_by(shop_id = shop.id).all()
+		except:
+			g = None
+		if g and g!=[]:
+			goods = self.session.query(models.Fruit).filter_by(shop_id = shop.id)
+			group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop.id).order_by(models.GroupPriority.priority).all()
+			default_count = goods.filter_by(group_id=0,active=1).count()
+			record_count = goods.filter_by(group_id=-1,active=1).count()
+			if group_priority:
+				for g in group_priority:
+					group_id = g.group_id
+					if group_id == -1 and record_count !=0:
+						group_list.append({'id':-1,'name':'店铺推荐'})
+					elif group_id == 0 and default_count !=0:
+						group_list.append({'id':0,'name':' 默认分组'})
+					else:
+						_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop.id,status = 1).first()
+						if _group:
+							goods_count = goods.filter_by( group_id = _group.id,active=1).count()
+							if goods_count !=0 :
+								group_list.append({'id':_group.id,'name':_group.name})
+			else:
+				if record_count !=0 :
 					group_list.append({'id':-1,'name':'店铺推荐'})
-				elif group_id == 0 and default_count !=0:
-					group_list.append({'id':0,'name':' 默认分组'})
-				else:
-					_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop.id,status = 1).first()
-					if _group:
-						goods_count = goods.filter_by( group_id = _group.id,active=1).count()
-						if goods_count !=0 :
-							group_list.append({'id':_group.id,'name':_group.name})
-		else:
-			if record_count !=0 :
-				group_list.append({'id':-1,'name':'店铺推荐'})
-			if default_count !=0 :
-				group_list.append({'id':0,'name':'默认分组'})
+				if default_count !=0 :
+					group_list.append({'id':0,'name':'默认分组'})
 
 		return self.render("customer/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,shop_code=shop.shop_code,\
@@ -1370,6 +1377,7 @@ class Cart(CustomerBaseHandler):
 					.order_by(models.GoodsLimit.create_time.desc()).first()
 				except:
 					limit_if = None
+				print(limit_num)
 				if limit_num !=0:
 					allow_num = limit_num - buy_num
 					if allow_num < 0:
@@ -1387,9 +1395,13 @@ class Cart(CustomerBaseHandler):
 									return self.send_fail("限购商品"+charge_type.fruit.name+"购买数量已达上限")
 							goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
 							self.session.add(goods_limit)
+						else:
+							goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
+							self.session.add(goods_limit)
 					else:
 						goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
-						self.session.add(goods_limit)					
+						self.session.add(goods_limit)
+					self.session.commit()					
 
 				charge_type.fruit.storage -= num  # 更新库存
 				if charge_type.fruit.saled:
