@@ -18,10 +18,10 @@ class OnlineWxPay(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments('code?:str','order_id?:str')
 	def get(self):
-		print("[微信支付]full_url：",self.request.full_url())
+		# print("[微信支付]full_url：",self.request.full_url())
 		path_url = self.request.full_url()
 		order_id = self.get_cookie("order_id")
-		#order_id = int(self.args['order_id'])
+		# order_id = int(self.args['order_id'])
 
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
@@ -72,37 +72,37 @@ class OnlineWxPay(CustomerBaseHandler):
 		# 	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		#path = 'http://auth.senguo.cc/fruitzone/paytest'
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('onlineWxPay')
-		print("[微信支付]redirect_uri：",path)
-		print("[微信支付]当前code：",self.args['code'])
+		# print("[微信支付]redirect_uri：",path)
+		# print("[微信支付]当前code：",self.args['code'])
 		code = self.args.get('code',None)
 		if len(code) is 2:
 			url = jsApi.createOauthUrlForCode(path)
-			print("[微信支付]获取code的url：",url)
+			# print("[微信支付]获取code的url：",url)
 			return self.redirect(url)
 		else:
 			jsApi.setCode(code)
 			openid = jsApi.getOpenid()
-			print("[微信支付]当前code：",code)
+			# print("[微信支付]当前code：",code)
 			if not openid:
 				print("[微信支付]OpenID未获取到")	
 			unifiedOrder =   UnifiedOrder_pub()
 			# totalPrice = self.args['totalPrice'] 
-			#totalPrice =float( self.get_cookie('money'))
-			print("[微信支付]totalPrice：",totalPrice)
+			# totalPrice =float( self.get_cookie('money'))
+			# print("[微信支付]totalPrice：",totalPrice)
 			unifiedOrder.setParameter("body",'charge')
 			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
 			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",order_num)
-			#orderPriceSplite = (order.price) * 100
+			# orderPriceSplite = (order.price) * 100
 			wxPrice =int(totalPrice * 100)
-			print("[微信支付]wxPrice：",wxPrice)
+			# print("[微信支付]wxPrice：",wxPrice)
 			unifiedOrder.setParameter('total_fee',wxPrice)
 			unifiedOrder.setParameter('trade_type',"JSAPI")
 			prepay_id = unifiedOrder.getPrepayId()
-			print("[微信支付]prepay_id：",prepay_id)
+			# print("[微信支付]prepay_id：",prepay_id)
 			jsApi.setPrepayId(prepay_id)
 			renderPayParams = jsApi.getParameters()
-			print("[微信支付]renderPayParams：",renderPayParams)
+			# print("[微信支付]renderPayParams：",renderPayParams)
 			noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
 			timestamp = datetime.datetime.now().timestamp()
 			wxappid = 'wx0ed17cdc9020a96e'
@@ -130,9 +130,9 @@ class OnlineWxPay(CustomerBaseHandler):
 			# 生成一条余额记录
 			# 给店铺管理员 和 顾客 发送微信消息
 			##############################################################
-			print("[微信支付]回调成功")
+			# print("[微信支付]回调成功")
 			data = self.request.body
-			print("[微信支付]回调request.body：",self.request.body)
+			# print("[微信支付]回调request.body：",self.request.body)
 			xml = data.decode('utf-8')
 			UnifiedOrder = UnifiedOrder_pub()
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
@@ -172,7 +172,7 @@ class OnlineWxPay(CustomerBaseHandler):
 				return self.send_fail('shop not found')
 			shop.shop_balance += totalPrice
 			self.session.commit()
-			print("[微信支付]支付后，商店总额：",shop.shop_balance)
+			# print("[微信支付]支付后，商店总额：",shop.shop_balance)
 
 			# 支付成功后  生成一条余额支付记录
 			customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
@@ -184,7 +184,7 @@ class OnlineWxPay(CustomerBaseHandler):
 				balance_value = totalPrice,balance_record = '在线支付(微信)：订单'+ order.num, name = name , balance_type = 3,\
 				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id)
 			self.session.add(balance_history)
-			print("[微信支付]支付后，生成balance_history：",balance_history)
+			# print("[微信支付]支付后，生成balance_history：",balance_history)
 			self.session.commit()
 
 			# send weixin message
@@ -197,7 +197,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			create_date= order.create_date
 			customer_name = order.receiver
 			c_tourse      = customer.accountinfo.wx_openid
-			print("[提交订单]用户OpenID：",c_tourse)	
+			# print("[提交订单]用户OpenID：",c_tourse)	
 			#goods 
 			goods = []
 			f_d = eval(order.fruits)
@@ -207,9 +207,9 @@ class OnlineWxPay(CustomerBaseHandler):
 			# for m in m_d:
 			#	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 			goods = str(goods)[1:-1]
-			print("[提交订单]订单详情：",goods)
+			# print("[提交订单]订单详情：",goods)
 			order_totalPrice = float('%.2f'% totalPrice)
-			print("[提交订单]订单总价：",order_totalPrice)
+			# print("[提交订单]订单总价：",order_totalPrice)
 			# send_time     = order.get_sendtime(session,order.id)
 			send_time = order.send_time
 			address = order.address_text
@@ -241,7 +241,7 @@ class OrderDetail(CustomerBaseHandler):
 	def get(self):
 		alipayUrl = self.args['alipayUrl']
 		order_id = self.args['order_id']
-		print("[支付宝支付]order_id：",order_id)
+		# print("[支付宝支付]order_id：",order_id)
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			return self.send_fail('order not found')
@@ -265,7 +265,7 @@ class OnlineAliPay(CustomerBaseHandler):
 	def initialize(self,action):
 		self._action = action
 		self.order_num = None
-		print("[支付宝支付]action：",self._action)
+		# print("[支付宝支付]action：",self._action)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("order_id?:str")
@@ -274,9 +274,9 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.handle_onAlipay_callback()
 		# 在线支付提交订单
 		elif self._action == "AliPay":
-			print("[支付宝支付]进入AliPay")
+			# print("[支付宝支付]进入AliPay")
 			order_id = int(self.get_cookie("order_id"))
-			print("[支付宝支付]order_id：",order_id)
+			# print("[支付宝支付]order_id：",order_id)
 			#self.order_num = order_num
 			#order_id = int(self.args['order_id'])
 			order = self.session.query(models.Order).filter_by(id = order_id).first()
@@ -285,8 +285,8 @@ class OnlineAliPay(CustomerBaseHandler):
 			totalPrice = order.totalPrice
 			alipayUrl =  self.handle_onAlipay(order.num)
 			self.order_num = order.num
-			print("[支付宝支付]alipayUrl：",alipayUrl)
-			print("[支付宝支付]order_num：",self.order_num)
+			# print("[支付宝支付]alipayUrl：",alipayUrl)
+			# print("[支付宝支付]order_num：",self.order_num)
 
 			charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
 			# mcharge_types = self.session.query(models.MChargeType).filter(models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
@@ -341,17 +341,17 @@ class OnlineAliPay(CustomerBaseHandler):
 
 	# @CustomerBaseHandler.check_arguments("order_id:str","price?:float")
 	def handle_onAlipay(self,order_num):
-		print("[支付宝支付]进入handle_onAlipay")
+		# print("[支付宝支付]进入handle_onAlipay")
 		# order_num = self.order_num if self.order_num else 'NULL'
-		print("[支付宝支付]order_num：",order_num)
+		# print("[支付宝支付]order_num：",order_num)
 		# order = models.Order.get_by_id(self.session,int(self.args['order_id']))
 		order = self.session.query(models.Order).filter_by(num = str(order_num)).first()
 		if not order:
-			print("[支付宝支付]订单不存在")
+			# print("[支付宝支付]订单不存在")
 			return self.send_fail(error_text="抱歉，此订单不存在")
 		#跳转到支付页
-		else:
-			print("[支付宝支付]order：",order)
+		#else:
+		#	print("[支付宝支付]order：",order)
 		order_id = order.id
 		price    = order.totalPrice
 
@@ -360,13 +360,13 @@ class OnlineAliPay(CustomerBaseHandler):
 		except Exception as e:
 			return self.send_fail(error_text = '系统繁忙，请稍后再试')
 		# return self.redirect(url)
-		print("[支付宝支付]跳转url：",url)
+		# print("[支付宝支付]跳转url：",url)
 		return url
 
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 
 	def create_alipay_url(self,price,order_id):
-		print("[支付宝支付]进入create_alipay_url：",price,order_id)
+		# print("[支付宝支付]进入create_alipay_url：",price,order_id)
 		authed_url = self._alipay.create_direct_pay_by_user_url(
 			out_trade_no = str(order_id),
 			subject      = 'alipay',
@@ -376,7 +376,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			call_back_url = "%s%s"%(ALIPAY_HANDLE_HOST,self.reverse_url("noticeSuccess")),
 			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("onlineAliNotify")),
 			)
-		print("[支付宝支付]authed_url：",authed_url)
+		# print("[支付宝支付]authed_url：",authed_url)
 		return authed_url
 
 	def check_xsrf_cookie(self):
@@ -388,14 +388,14 @@ class OnlineAliPay(CustomerBaseHandler):
 	def handle_onAlipay_notify(self):
 		sign = self.args.pop('sign')
 		signmethod = self._alipay.getSignMethod(**self.args)
-		print("[支付宝支付]回调成功")
+		# print("[支付宝支付]回调成功")
 		if signmethod(self.args) != sign:
 			return self.send_error(403)
-		print("[支付宝支付]回调请求数据：",self.args['notify_data'])
+		# print("[支付宝支付]回调请求数据：",self.args['notify_data'])
 		notify_data = xmltodict.parse(self.args['notify_data'])['notify']
 		orderId = notify_data["out_trade_no"]
 		ali_trade_no=notify_data["trade_no"]
-		print("[支付宝支付]ali_trade_no：",ali_trade_no)
+		# print("[支付宝支付]ali_trade_no：",ali_trade_no)
 		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
 		if old_balance_history:
 			return self.send_success()
@@ -425,7 +425,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.send_fail('shop not found')
 		shop.shop_balance += totalPrice
 		self.session.commit()
-		print("[支付宝支付]支付后，商店总额：",shop.shop_balance)
+		# print("[支付宝支付]支付后，商店总额：",shop.shop_balance)
 
 		# 支付成功后  生成一条余额支付记录
 		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
@@ -437,7 +437,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			balance_value = totalPrice,balance_record = '在线支付(支付宝)：订单'+ order.num, name = name , balance_type = 3,\
 			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id= ali_trade_no)
 		self.session.add(balance_history)
-		print("[支付宝支付]支付后，生成balance_history：",balance_history)
+		# print("[支付宝支付]支付后，生成balance_history：",balance_history)
 		self.session.commit()
 
 		# send weixin message
@@ -450,7 +450,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		create_date= order.create_date
 		customer_name = order.receiver
 		c_tourse      = customer.accountinfo.wx_openid
-		print("[提交订单]用户OpenID：",c_tourse)
+		# print("[提交订单]用户OpenID：",c_tourse)
 
 		#goods 
 		goods = []
@@ -461,9 +461,9 @@ class OnlineAliPay(CustomerBaseHandler):
 		# for m in m_d:
 		#	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		goods = str(goods)[1:-1]
-		print("[提交订单]订单详情：",goods)
+		# print("[提交订单]订单详情：",goods)
 		order_totalPrice = float('%.2f'% totalPrice)
-		print("[提交订单]订单总价：",order_totalPrice)
+		# print("[提交订单]订单总价：",order_totalPrice)
 		# send_time     = order.get_sendtime(session,order.id)
 		send_time = order.send_time
 		address = order.address_text
@@ -513,7 +513,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.send_fail('shop not found')
 		shop.shop_balance += totalPrice
 		self.session.commit()
-		print("[支付宝支付]支付后，商店总额：",shop.shop_balance)
+		# print("[支付宝支付]支付后，商店总额：",shop.shop_balance)
 
 		# 支付成功后  生成一条余额支付记录
 		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
@@ -525,7 +525,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			balance_value = totalPrice,balance_record = '在线支付(支付宝)：订单'+ order.num, name = name , balance_type = 3,\
 			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=ali_trade_no)
 		self.session.add(balance_history)
-		print("[支付宝支付]支付后，生成balance_history：",balance_history)
+		# print("[支付宝支付]支付后，生成balance_history：",balance_history)
 		self.session.commit()
 
 		# send weixin message
@@ -538,7 +538,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		create_date= order.create_date
 		customer_name = order.receiver
 		c_tourse      = customer.accountinfo.wx_openid
-		print("[提交订单]用户OpenID：",c_tourse)
+		# print("[提交订单]用户OpenID：",c_tourse)
 
 		#goods 
 		goods = []
@@ -549,9 +549,9 @@ class OnlineAliPay(CustomerBaseHandler):
 		# for m in m_d:
 		#	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
 		goods = str(goods)[1:-1]
-		print("[提交订单]订单详情：",goods)
+		# print("[提交订单]订单详情：",goods)
 		order_totalPrice = float('%.2f'% totalPrice)
-		print("[提交订单]订单总价：",order_totalPrice)
+		# print("[提交订单]订单总价：",order_totalPrice)
 		# send_time     = order.get_sendtime(session,order.id)
 		send_time = order.send_time
 		address = order.address_text
@@ -562,34 +562,3 @@ class OnlineAliPay(CustomerBaseHandler):
 		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 
 		return self.redirect(self.reverse_url("noticeSuccess"))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

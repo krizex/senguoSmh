@@ -26,3 +26,8 @@ class ShopProfile(AdminBaseHandler):
 	# @tornado.web.authenticated
 	def get(self):
 		return self.render("m-admin/shop-profile.html")
+		
+class OrderSearch(AdminBaseHandler):
+	# @tornado.web.authenticated
+	def get(self):
+		return self.render("m-admin/order-search.html")

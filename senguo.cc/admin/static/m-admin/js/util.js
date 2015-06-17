@@ -87,7 +87,20 @@ Guid.NewGuid = function(){
     }
     return new Guid(g);
 }
-
+/*global tip*/
+var zb_timer = null;
+function Tip(text){
+    clearTimeout(zb_timer);
+    if($("#zb-tip").size()>0){
+        $("#zb-tip").html(text).removeClass("hidden");
+    }else{
+        var tip = '<div class="zb-tip" id="zb-tip">'+text+'</div>';
+        $("body").append(tip);
+    }
+    zb_timer = setTimeout(function(){
+        $("#zb-tip").addClass("hidden");
+    },2000);
+}
 /*获取滑动方向，touch*/
 var touch = {
     getSlideAngle:function(dx, dy){
@@ -116,39 +129,34 @@ var touch = {
         return result;
     }
 }
-
-//设置cookie
-//name是cookie中的名，value是对应的值，iTime是多久过期（单位为天）,path:设置cookie作用域
-function setCookie(name,value,iTime){
-    if(arguments.length==2){
-        var iTime = 300;
-    }
-    var oDate = new Date();
-    //设置cookie过期时间
-    oDate.setTime(oDate.getTime()+iTime*24*3600*1000);
-    document.cookie = name+'='+value+';path=/;domain=.uwu.im;expires='+oDate.toGMTString();
-}
-//获取cookie
-function getCookie(name){
-    //cookie中的数据都是以分号加空格区分开
-    var arr = document.cookie.split("; ");
-    for(var i=0; i<arr.length; i++){
-        if(arr[i].split("=")[0] == name){
-            return arr[i].split("=")[1];
+var cookie={
+    //name是cookie中的名，value是对应的值，iTime是多久过期（单位为天）,path:设置cookie作用域
+    setCookie:function(name,value,iTime){
+        if(arguments.length==2){
+            var iTime = 300;
         }
-    }
-    //未找到对应的cookie则返回空字符串
-    return '';
-}
-//删除cookie
-function removeCookie(name){
-    //调用setCookie方法，把时间设置为-1
-    if(name.indexOf(",")==-1){
-        setCookie(name,1,-1);
-    }else{
-        var arr = name.split(",");
+        var oDate = new Date();
+        oDate.setTime(oDate.getTime()+iTime*24*3600*1000);
+        document.cookie = name+"="+value+";path=/;expires="+oDate.toGMTString();
+    },
+    getCookie:function(name){
+        var arr = document.cookie.split("; ");
         for(var i=0; i<arr.length; i++){
-            setCookie(arr[i],1,-1);
+            if(arr[i].split("=")[0] == name){
+                return arr[i].split("=")[1];
+            }
+        }
+        //未找到对应的cookie则返回空字符串
+        return '';
+    },
+    removeCookie:function(name){
+        if(name.indexOf(",")==-1){
+            this.setCookie(name,1,-1);
+        }else{
+            var arr = name.split(",");
+            for(var i=0; i<arr.length; i++){
+                this.setCookie(arr[i],1,-1);
+            }
         }
     }
 }
@@ -161,3 +169,20 @@ function isIos(){
         return false;
     }
 }
+/*post*/
+$.postJson = function(url, args,successCall){
+    args._xsrf = window.dataObj._xsrf;
+    $.ajax({
+        type:"post",
+        url:url,
+        data:JSON.stringify(args),
+        contentType:"application/json; charset=UTF-8",
+        success:successCall,
+        fail:function(){
+            Tip("服务器出错了，请联系管理员");
+        },
+        error:function(){
+            Tip("服务器出错了，请联系管理员");
+        }
+    });
+};

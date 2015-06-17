@@ -1,12 +1,5 @@
 $(document).ready(function(){
         //翻页
-    var page=Int($.getUrlParam('page'));
-    var order_type=$.getUrlParam('order_type');
-    var order_status=$.getUrlParam('order_status');
-    var total_page=Math.ceil($('.page-total').text());
-    $('.page-now').text(page+1);
-    $('.page-total').text(total_page);
-    getPage(page,'/admin/order?order_type='+order_type+'&order_status='+order_status+'&page=',total_page);
     $('body').on('mouseenter','.edit_item_box',function(){
         var $this=$(this);
         if($this.hasClass('to-edit-item')){
@@ -23,8 +16,6 @@ $(document).ready(function(){
     //导航栏active样式
     var order_type_item=$('.order-type').find('li');
     var order_status_item=$('.order-status').find('li');
-    addActive(order_type_item,orderType);
-    addActive(order_status_item,orderStatus);
     //时间格式
     $('.timer').each(function(){
         var $this=$(this);
@@ -56,7 +47,7 @@ $(document).ready(function(){
     $(document).on('click','.add-new-time',function(){//添加显示
         var max=$('.time-list').find('.time-list-item').length;
         if(max<20) {
-            $.getItem('/static/items/admin/add-period-item.html?v=20150609',function(data){
+            $.getItem('/static/items/admin/add-period-item.html?v=20150613',function(data){
                 var $item=$(data);
                 for(var i=0;i<=23;i++)
                 {
@@ -204,12 +195,12 @@ $(document).ready(function(){
             }
         })
     },10000);
+    
 }).on("click","#new-order-box",function(){
    window.location.reload(true);
 });
 var link='/admin/order';
-var orderType=$.getUrlParam('order_type');
-var orderStatus=$.getUrlParam('order_status');
+
 
 function addActive(target,id){
     for(var i=0;i<target.length;i++)
@@ -270,7 +261,7 @@ function addEditPeriod(target,action){
             if(res.success){
                 if(action=='add_period'){
                     parent.empty().hide();
-                    var item_url='/static/items/admin/send-period-item.html?v=20150609';
+                    var item_url='/static/items/admin/send-period-item.html?v=20150613';
                     $.getItem(item_url,function(data){
                         var $item=$(data);
                         $item.attr({'data-id':res.period_id});

@@ -76,21 +76,21 @@ class Home(StaffBaseHandler):
 			orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
 				JH_id=self.current_user.id, status=models.ORDER_STATUS.JH)
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
-											 models.Order.JH_id==self.current_user.id, models.Order.status.in_([3,4,5,6,7]))
+											 models.Order.JH_id==self.current_user.id, models.Order.status.in_([3,4,5,6,7])).order_by(models.Order.id.desc())
 		elif work ==2: #SH1
 			orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
 				SH1_id=self.current_user.id, status=models.ORDER_STATUS.SH1)
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
-								  models.Order.SH1_id==self.current_user.id,models.Order.status.in_([4,5,6,7]))
+								  models.Order.SH1_id==self.current_user.id,models.Order.status.in_([4,5,6,7])).order_by(models.Order.id.desc())
 		elif work ==3: #SH2
 			orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
 				models.Order.SH2_id==self.current_user.id, models.Order.status.in_([4]))
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
-								  models.Order.SH2_id==self.current_user.id, models.Order.status.in_([5,6,7]))
+								  models.Order.SH2_id==self.current_user.id, models.Order.status.in_([5,6,7])).order_by(models.Order.id.desc())
 		else:
 			return self.send_error(404)
-		orders_intime = orders.filter_by(type=1).order_by(models.Order.create_date).all()
-		orders_ontime = orders.filter_by(type=2).order_by(models.Order.start_time).all()
+		orders_intime = orders.filter_by(type=1).all()
+		orders_ontime = orders.filter_by(type=2).all()
 		day = datetime.datetime.now().day
 		# orders_ontime = [x for x in orders_ontime if (x.today == 1 and x.create_date.day == day) or
 		#           (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
@@ -131,40 +131,40 @@ class Order(StaffBaseHandler):
 			orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
 				JH_id=self.current_user.id, status=models.ORDER_STATUS.JH)
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
-											 models.Order.JH_id==self.current_user.id, models.Order.status.in_([3,4,5,6,7]))
+											 models.Order.JH_id==self.current_user.id, models.Order.status.in_([3,4,5,6,7])).order_by(models.Order.id.desc())
 		elif work ==2: #SH1
 			orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
 				SH1_id=self.current_user.id, status=models.ORDER_STATUS.SH1)
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
-								  models.Order.SH1_id==self.current_user.id,models.Order.status.in_([4,5,6,7]))
+								  models.Order.SH1_id==self.current_user.id,models.Order.status.in_([4,5,6,7])).order_by(models.Order.id.desc())
 		elif work ==3: #SH2
 			orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
 				models.Order.SH2_id==self.current_user.id, models.Order.status.in_([4,5]))
 			orders_len = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
 				models.Order.SH2_id==self.current_user.id, models.Order.status.in_([4]))
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
-								  models.Order.SH2_id==self.current_user.id, models.Order.status.in_([5,6,7]))
+								  models.Order.SH2_id==self.current_user.id, models.Order.status.in_([5,6,7])).order_by(models.Order.id.desc())
 		else:
 			return self.send_error(404)
 
 		orders_intime = 0
 		orders_ontime = 0
 
-		orders_len1 = orders_len.filter_by(type=1).order_by(models.Order.create_date).all()
+		orders_len1 = orders_len.filter_by(type=1).all()
 		orders_intime = len(orders_len1)
 		self.set_cookie("orders_intime",str(orders_intime))
 
-		orders_len2 = orders_len.filter_by(type=2).order_by(models.Order.start_time).all()
+		orders_len2 = orders_len.filter_by(type=2).all()
 		day = datetime.datetime.now().day
 		# orders_len2 = [x for x in orders_len2 if (x.today == 1 and x.create_date.day == day) or
 		#               (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
 		orders_ontime = len(orders_len2)
 		self.set_cookie("orders_ontime",str(orders_ontime))
 		if order_type == "now":
-			orders = orders.filter_by(type=1).filter(models.Order.status!=5 or 6 or 7).order_by(models.Order.create_date).all()       
+			orders = orders.filter_by(type=1).filter(models.Order.status!=5 or 6 or 7).order_by(models.Order.id.desc()).all()       
 			page = 'now'
 		elif order_type == "on_time":
-			orders = orders.filter_by(type=2).filter(models.Order.status!=5 or 6 or 7).order_by(models.Order.start_time).all()     
+			orders = orders.filter_by(type=2).filter(models.Order.status!=5 or 6 or 7).order_by(models.Order.send_time).all()     
 			day = datetime.datetime.now().day
 			# orders = [x for x in orders if (x.today == 1 and x.create_date.day == day) or
 			#           (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单  
@@ -231,6 +231,12 @@ class Order(StaffBaseHandler):
 						return self.send_fail("shop not found!")
 					shop.is_balance = 1
 					shop.order_count += 1  #店铺订单数加1
+
+					
+					#add by jyj 2015-6-15
+					totalprice_inc = order.totalPrice
+					shop.shop_property += totalprice_inc
+					##
 					#
 					customer_info = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
 					if not customer_info:

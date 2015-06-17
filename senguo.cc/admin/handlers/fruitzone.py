@@ -254,9 +254,15 @@ class ShopList(FruitzoneBaseHandler):
 				   models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 				   models.Shop.shop_code !='not set',models.Shop.status !=0 )
 		shops = []
-		q = q.limit(5).all()
-		shops = self.get_data(q)
-		return self.send_success(shops=shops)
+
+		q = q.distinct().count()
+		# for i in q:
+		# 	count = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
+		# 	filter(models.Shop.shop_name==i[0],models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
+		# 		   models.Shop.shop_code !='not set',models.Shop.status !=0 ).count()
+		# 	shops.append({'name':i[0],'count':count})
+		return self.send_success(q=q)
+
 
 class Community(FruitzoneBaseHandler):
 	def get(self):

@@ -47,22 +47,26 @@
         </div>
     </div>
     <div class="no-mar-btom top-title">
-        <div class="inner text-white rainshed_green  bg_change" id="fruitPosition">
-            <a href="{{reverse_url('customerGoodsSearch')}}" class="search-btn" id="search-btn"></a>
+        <div class="inner text-white bg-green" id="fruitPosition">
+            <a href="{{reverse_url('customerGoodsSearch')}}" class="search-btn" id="search-btn"><em></em></a>
             <a href="javascript:;"  class="text-white tit choose-classify set-w100-fle text-center">
-                <!--<span>分类</span>
-                <em class="set-inl-blo pull-right"></em>-->
-                <span class="classify text-center set-inl-blo font18"><span id="classify">全部商品</span><em class="icon up font16" style="display:none;"></em><em class="icon down font16" ></em></span>
+                <span class="classify text-center set-inl-blo font18"><span id="classify">{{context['group_list'][0]['name']}}</span><!-- <em class="icon up font16" style="display:none;"></em><em class="icon down font16" ></em> --></span>
             </a>
+            <a href="javascript:;" class="pull-left classify-icon text-white to-hide"> <span>分组</span><em class="set-inl-blo pull-right"></em></a>
         </div>
-        <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle anim-bounceDown" style="display:none">  
+       <!--  <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle anim-bounceDown" style="display:none">  
             <li class="text-grey6 bg-white pull-left text-center" data-id="-2">全部商品</li>
             {% for group in context['group_list'] %}
             <li class="text-grey6 bg-white pull-left text-center" data-id="{{group['id']}}">{{group['name']}}</li>
             {% end %}
-        </ul>
+        </ul> -->  
     </div>
 </div>
+<ul class="classify-list bg-green text-white anim-bounceDown to-hide" style="display:none;">
+    {% for group in context['group_list'] %}
+    <li class="pull-left" data-id="{{group['id']}}">{{group['name']}}</li>
+    {% end %}
+</ul>
 <div class="wrap-goods-box" id="wrap-goods-box">
     <div class="goods-box">
          {% for group in context['group_list'] %}
@@ -72,6 +76,16 @@
         {% end %}
     </div>
     <div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中 ( > < )~</div>
+</div>
+<div class="wrap-loading-box">
+    <div class="loading-box">
+        <div class="loader">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+        <div class="load-txt">加载中...</div>
+    </div>
 </div>
 {% end %}
 {% block other %}

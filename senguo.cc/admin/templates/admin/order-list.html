@@ -2,10 +2,6 @@
 {% block title %}订单管理{% end %}
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-order.css')}}"/>{% end %}
 {% block content %}
-{% import json %}
-<script>
-    window.dataObj.order={% raw json.dumps(data) %}
-</script>
 <span class="right-title"></span>
 <ul class="order-list-content set-width-float">
 </ul>
@@ -29,6 +25,16 @@
                 </div>
             </div>
        </div>
+    </div>
+</div>
+<div class="wrap-loading-box hidden">
+    <div class="loading-box">
+        <div class="loader">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+        <div class="load-txt">加载中...</div>
     </div>
 </div>
 {% end %}

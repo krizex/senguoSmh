@@ -180,9 +180,13 @@ class customerGoods(CustomerBaseHandler):
 						allow_num = good.limit_num - limit_if.buy_num
 			charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
 				'market_price':charge_type.market_price,'relate':charge_type.relate,"limit_today":limit_today,"allow_num":allow_num})
+		if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
+			self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
+			self.session.commit()
 		cart_f = self.read_cart(shop.id)
-		cart_count = len(cart_f) 
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
+		cart_count = len(cart_f)
+		self.set_cookie("cart_count", str(cart_count))
 		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,shop_code=shop_code,charge_types=charge_types,cart_fs=cart_fs)
 		
 
@@ -298,6 +302,10 @@ class Home(CustomerBaseHandler):
 			shop_id   = shop.id
 			shop_logo = shop.shop_trademark_url
 			balance_on = shop.config.balance_on_active
+			if shop.marketing:
+				shop_marketing = shop.marketing.confess_active
+			else:
+				shop_marketing = 0
 			if shop.shop_auth in [1,2,3,4]:
 				show_balance = True
 			# print(shop,shop.shop_auth)
@@ -308,6 +316,7 @@ class Home(CustomerBaseHandler):
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
+		self.set_cookie("shop_marketing", str(shop_marketing))
 		shop_point = 0
 		shop_balance = 0
 		try:
@@ -372,12 +381,15 @@ class Discover(CustomerBaseHandler):
 			return self.send_fail('shop error')
 		if shop:
 			if shop.marketing:
+				shop_marketing = shop.marketing.confess_active
 				confess_active = shop.marketing.confess_active
 			else:
+				shop_marketing = 0
 				confess_active = 0
 			shop_auth = shop.shop_auth
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self.set_cookie("market_shop_code",str(shop.shop_code))
+			self.set_cookie("shop_marketing", str(shop_marketing))
 		else:
 			shop_auth = 0
 			confess_active = 0
@@ -558,10 +570,15 @@ class ShopProfile(CustomerBaseHandler):
 		shop_id = shop.id
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
+		if shop.marketing:
+			shop_marketing = shop.marketing.confess_active
+		else:
+			shop_marketing = 0
 
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
+		self.set_cookie("shop_marketing", str(shop_marketing))
 		satisfy = 0
 		commodity_quality = 0
 		send_speed        = 0
@@ -867,16 +884,22 @@ class Market(CustomerBaseHandler):
 		if not shop:
 			return self.send_error(404)
 		self.current_shop = shop
-		print(self.current_shop)
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
+		if shop.marketing:
+			shop_marketing = shop.marketing.confess_active
+		else:
+			shop_marketing = 0
+
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
+		self.set_cookie("shop_marketing", str(shop_marketing))
 		if not self.session.query(models.CustomerShopFollow).filter_by(
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			w_follow = False
+			shop.fans_count = shop.fans_count + 1
 			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0)
 			if shop_follow:
 				if shop_follow.shop_point is not None:
@@ -941,11 +964,9 @@ class Market(CustomerBaseHandler):
 			if default_count !=0 :
 				group_list.append({'id':0,'name':'默认分组'})
 
-
 		return self.render("customer/home.html",
-						   context=dict(cart_count=cart_count, subpage='home',notices=notices,\
-							shop_name=shop.shop_name,shop_code=shop.shop_code,w_follow = w_follow,\
-							cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
+						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,shop_code=shop.shop_code,\
+						   	w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:int","page?:int","menu_id?:int")
@@ -1010,7 +1031,7 @@ class Market(CustomerBaseHandler):
 							else:
 								allow_num = fruit.limit_num - limit_if.buy_num
 					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
-						'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':limit_today,'allow_num':allow_num})
+						'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),'allow_num':allow_num})
 
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 				saled = fruit.saled if fruit.saled else 0
@@ -1021,7 +1042,7 @@ class Market(CustomerBaseHandler):
 
 				data.append({'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,\
 					'storage':fruit.storage,'tag':fruit.tag,'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':saled,'favour':fruit.favour,\
-					'favour_today':favour_today,'group_id':fruit.group_id,'limit_num':fruit.limit_num,'detail_no':detail_no})
+					'favour_today':str(favour_today),'group_id':fruit.group_id,'limit_num':fruit.limit_num,'detail_no':str(detail_no)})
 			return data
 
 	@CustomerBaseHandler.check_arguments("page?:int","group_id?:int")
@@ -1029,7 +1050,7 @@ class Market(CustomerBaseHandler):
 		page = int(self.args["page"])
 		group_id = int(self.args['group_id'])
 		page_size = 10
-		nomore = False
+		nomore = True
 		offset = (page-1) * page_size
 		shop_id = int(self.get_cookie("market_shop_id"))
 		customer_id = self.current_user.id
@@ -1037,12 +1058,13 @@ class Market(CustomerBaseHandler):
 		if not shop:
 			return self.send_error(404)
 		
-		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1).order_by(models.Fruit.priority.desc(),models.Fruit.add_time.desc())
-		count_fruit = fruits.count()
-		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		if total_page <= page:
-			nomore = True
-		fruits = fruits.offset(offset).limit(page_size).all()
+		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1)\
+		.order_by(models.Fruit.priority.desc(),models.Fruit.add_time.desc()).all()
+		# count_fruit = fruits.count()
+		# total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
+		# if total_page <= page:
+		# 	nomore = True
+		# fruits = fruits.offset(offset).limit(page_size).all()
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruit_list ,nomore = nomore)
 
@@ -1051,7 +1073,6 @@ class Market(CustomerBaseHandler):
 		import urllib
 		page = int(self.args["page"])
 		name = urllib.parse.unquote(self.args['search'])
-		print(name)
 		page_size = 10
 		nomore = False
 		offset = (page-1) * page_size
@@ -1096,9 +1117,10 @@ class Market(CustomerBaseHandler):
 		fruits = self.session.query(models.Fruit).join(models.Shop,models.Fruit.shop_id == models.Shop.id,\
 			).join(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id).filter(models.Fruit.shop_id == shop_id,\
 			models.Fruit.active == 1,models.Fruit.id !=None).order_by(models.GroupPriority.group_id,models.Fruit.priority.desc(),\
-			models.Fruit.add_time.desc()).distinct(models.Fruit.id)
+			models.Fruit.add_time.desc()).distinct(models.Fruit.id).all()
 
 		
+
 		for fruit in fruits:
 			print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
 		count_fruit =fruits.distinct().count()
@@ -1114,6 +1136,17 @@ class Market(CustomerBaseHandler):
 
 
 		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
+
+		# for fruit in fruits:
+		# 	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
+		# count_fruit =fruits.distinct().count()
+		# total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
+		# # print(count_fruit , total_page)
+		# if total_page <= page:
+		# 	nomore = True
+
+		# fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
+
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruits_data,nomore=nomore)
 
@@ -1258,6 +1291,10 @@ class Cart(CustomerBaseHandler):
 		shop_id = shop.id
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
+		if shop.marketing:
+			shop_marketing = shop.marketing.confess_active
+		else:
+			shop_marketing = 0
 		try:
 			customer_follow =self.session.query(models.CustomerShopFollow).\
 			filter_by(customer_id = customer_id,shop_id =shop_id ).first()
@@ -1269,6 +1306,7 @@ class Cart(CustomerBaseHandler):
 			shop_new = customer_follow.shop_new
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
+		self.set_cookie("shop_marketing", str(shop_marketing))
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits))): #购物车为空
 			return self.render("notice/cart-empty.html",context=dict(subpage='cart'))
@@ -1320,8 +1358,12 @@ class Cart(CustomerBaseHandler):
 				if fruits[str(charge_type.id)] in [0,None]:  # 有可能num为0，直接忽略掉
 					continue
 				totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
+<<<<<<< HEAD
 				num = (fruits[str(charge_type.id)]*charge_type.relate*charge_type.num)
 				print(num)
+=======
+				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num
+>>>>>>> leaf/senguo2.0
 
 				limit_num = charge_type.fruit.limit_num
 				buy_num = int(fruits[str(charge_type.id)])
@@ -1363,7 +1405,7 @@ class Cart(CustomerBaseHandler):
 				# print(charge_type.price)
 
 				f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
-									 "charge":"%.2f元/%.1f %s" % (float(charge_type.price), charge_type.num, unit[charge_type.unit])}
+									 "charge":"%.2f元/%.2f %s" % (float(charge_type.price), charge_type.num, unit[charge_type.unit])}
 
 		#按时达/立即送 的时间段处理
 		start_time = 0
@@ -1513,7 +1555,7 @@ class Cart(CustomerBaseHandler):
 		return self.send_success(order_id = order.id)
 
 	def order_cancel_auto(self,session,order_id):
-		print("[定时任务]订单取消：",order_id,self)
+		# print("[定时任务]订单取消：",order_id,self)
 		order = session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			return self.send_fail('order_cancel_auto: order not found!')
@@ -1521,9 +1563,9 @@ class Cart(CustomerBaseHandler):
 			order.status = 0
 			order.del_reason = "timeout"
 			order.get_num(session,order.id)
-			print("[定时任务]订单取消成功：",order.num)
-		else:
-			print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除：",order.num)
+			# print("[定时任务]订单取消成功：",order.num)
+		#else:
+		#	print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除：",order.num)
 
 class CartCallback(CustomerBaseHandler):
 
@@ -1779,9 +1821,9 @@ class Order(CustomerBaseHandler):
 				return self.send_fail("该订单已经送达，无法取消")
 			if order.pay_type == 3 and order.status != -1:
 				return self.send_fail("在线支付『已付款』的订单暂时不能取消，如有疑问请直接与店家联系")
-			print("[订单管理]取消订单，订单原状态：",order.status)
+			# print("[订单管理]取消订单，订单原状态：",order.status)
 			order.status = 0
-			print("[订单管理]取消订单，订单现状态：",order.status)
+			# print("[订单管理]取消订单，订单现状态：",order.status)
 			# recover the sale and storage
 			# woody
 			# 3.27
@@ -1830,7 +1872,29 @@ class Order(CustomerBaseHandler):
 			order.commodity_quality = int(data["commodity_quality"])
 			order.send_speed        = int(data["send_speed"])
 			order.shop_service      = int(data["shop_service"])
+			notice =''
+			if int(data["commodity_quality"])==100 and int(data["send_speed"])==100 and int(data["shop_service"])==100:
+				try:
+					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
+						order.customer_id,shop_id = order.shop_id).first()
+				except :
+					shop_follow = None
+					self.send_fail("shop_point error")
 
+				if shop_follow:
+					if shop_follow.shop_point:
+						shop_follow.shop_point += 2
+					try:
+						point_history = models.PointHistory(customer_id = self.current_user.id , shop_id = order.shop_id)
+					except:
+						self.send_fail("point_history error:COMMENT")
+					if point_history:
+						point_history.point_type = models.POINT_TYPE.SHOP_FULLPOINT
+						point_history.each_point = 2
+						notice = '店铺评价满分，积分+2'
+						self.session.add(point_history)
+			self.session.commit()
+			return self.send_success(notice=notice)
 			# customer_id = self.current_user.id
 			# shop_id     = self.get_cookie("market_shop_id")
 
@@ -1880,17 +1944,26 @@ class Order(CustomerBaseHandler):
 
 				if shop_follow:
 					if shop_follow.shop_point:
-						shop_follow.shop_point += 5
+						shop_follow.shop_point += 2
+						if imgUrl:
+							shop_follow.shop_point += 2
 					try:
 						point_history = models.PointHistory(customer_id = self.current_user.id , shop_id = order.shop_id)
 					except:
 						self.send_fail("point_history error:COMMENT")
 					if point_history:
 						point_history.point_type = models.POINT_TYPE.COMMENT
-						point_history.each_point = 5
-						notice = '评论成功，积分+5'
+						point_history.each_point = 2
+						notice = '评论成功，积分+2'
 						self.session.add(point_history)
 						self.session.commit()
+						if imgUrl:
+							point_history.point_type = models.POINT_TYPE.COMMENTIMG
+							point_history.each_point = 2
+							notice = '评论成功，积分+2,评论晒图，积分+2'
+							self.session.add(point_history)
+							self.session.commit()
+
 			self.session.commit()
 			return self.send_success(notice=notice)
 

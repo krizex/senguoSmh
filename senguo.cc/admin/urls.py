@@ -7,7 +7,7 @@ import handlers.infowall
 import handlers.official
 import handlers.onlinePay
 import handlers.activity
-import handlers.Madmin
+import handlers.madmin
 from dal import models
 #todo:handlers太大会不会影响性能？
 
@@ -27,6 +27,10 @@ handlers = [
 	(r"/lovewall/list/(\w+)", handlers.activity.ConfessionList, {}, "ConfessionList"),
 	(r"/lovewall/comment/(\w+)", handlers.activity.ConfessionComment, {}, "ConfessionComment"),
 	(r"/lovewall/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
+
+	#优惠券
+	(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),
+	(r"/coupon/detail", handlers.activity.CouponDetail, {}, "CouponDetail"),
 	
 	(r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
 	(r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
@@ -165,6 +169,10 @@ handlers = [
 	(r"/super/incstatic", handlers.superadmin.IncStatic, {}, "superIncStatic"),
 	(r"/super/dstatic", handlers.superadmin.DistributStatic, {}, "superDStatic"),
 	(r"/super/shopstatic", handlers.superadmin.ShopStatic, {}, "superShopStatic"),
+
+	#add by jyj 2015-6-15
+	(r"/super/orderstatic", handlers.superadmin.OrderStatic, {}, "superOrderStatic"),
+	##
 	# (r"/super/Commentdelete",handlers.superadmin.CommentApplyDelete,{},"superCommentDelete"),
 
 
@@ -208,10 +216,11 @@ handlers = [
 	# (r"/admin/settings/profile", handlers.admin.Settings,
 	#  {"action":"profile"}, "adminSettingsProfile")
 	
-	(r"/madmin/order", handlers.Madmin.Order, {}, "MadminOrder"),
-	(r"/madmin/orderDetail", handlers.Madmin.OrderDetail, {}, "MadminOrderDetail"),
-	(r"/madmin/shopProfile", handlers.Madmin.ShopProfile, {}, "MadminCenter"),
-	
+	(r"/madmin/order", handlers.madmin.Order, {}, "MadminOrder"),
+	(r"/madmin/orderDetail", handlers.madmin.OrderDetail, {}, "MadminOrderDetail"),
+	(r"/madmin/shopProfile", handlers.madmin.ShopProfile, {}, "MadminCenter"),
+	(r"/madmin/orderSearch", handlers.madmin.OrderSearch, {}, "MadminSearch"),
+
 	# (r"/staff/...")
 
 	# 水果圈子

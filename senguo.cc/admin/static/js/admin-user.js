@@ -14,7 +14,7 @@ $(document).ready(function(){
     $('.page-now').text(page+1);
     $('.page-total').text(total_page);
     var user_number=$('.users-list-item').length;
-    getPage(page,'/admin/follower?action=all&&order_by=time&&page=',total_page);
+    getPage(page,'/admin/follower?action='+user_type+'&&order_by=time&&page=',total_page);
     $('.search-btn').on('click',function(){
         var search=$('.search-con').val().trim();
         if(!search){return Tip('搜索内容不能为空')};
