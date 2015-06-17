@@ -49,6 +49,8 @@ function initBmap() {
             }
         });
     }
+    $(".BMap_pop").children("div").eq(0).children("div").css({"background":"#333","border-top-left-radius":"10px"});
+    $(".BMap_pop").children("div").eq(1).children("div").css({"background":"#333","border-top-left-radius":"10px"});
 }
 
 
