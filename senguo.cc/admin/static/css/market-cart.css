@@ -7,8 +7,8 @@
 .bottom-line{background:url('../svg/cart-paper-border@2x.png') repeat-x;height:8px;background-size:8px;}
 
 .list-group .active{border-color:#f0f4f0;border-left:2px solid #33CC66;}
-.list-group-item:first-child{border-radius:0px;}
-.list-group-item:last-child{border-radius:0px;}
+.list-group-item:first-child{border-radius:0;}
+.list-group-item:last-child{border-radius:0;}
 .list-group-item{border-left:2px solid #f0f4f0;overflow:hidden;position: relative;}
 .list-group-item:hover{border-color:#f0f4f0;border-left:2px solid #f0f4f0;}
 .list-group-item.active:hover{border-color:#f0f4f0;border-left-color:#33CC66;}
@@ -36,10 +36,10 @@
 .cart-list-item .delete-btn a{display:inline-block;width:25px;height:30px;line-height:26px;margin-left:5px;}
 .cart-list-item .name{min-width:90px;}
 
-.send_type{border-top-left-radius:2px;border-top-right-radius:2px;overflow:hidden;margin-bottom:0px;}
+.send_type{border-top-left-radius:2px;border-top-right-radius:2px;overflow:hidden;margin-bottom:0;}
 .send_type li{padding:6px 15px;}
 .send_type li a{display:block;border-radius:4px;}
-.send_type li a p{margin-bottom:0px;margin-top:3px;}
+.send_type li a p{margin-bottom:0;margin-top:3px;}
 .send_type li a p:last-child{margin-bottom:3px;}
 .send_type li.active a{border-color:#33CC66;}
 .send_type li.active .top{color:#33CC66;}
@@ -48,7 +48,7 @@
 
 .send_day{overflow:hidden;width:80%;}
 .send_day li{margin-right:2px;}
-.send_day li a{display:block;border-radius:0px;padding:5px 10px;}
+.send_day li a{display:block;border-radius:0;padding:5px 10px;}
 .send_day .active{border: none;}
 .send_day li.active a{background:#33CC66 !important;border-radius:2px;color:#fff !important;}
 
@@ -58,7 +58,7 @@
 .send_period .list-group-item .active:hover{border: none;background: none;}
 .send_period .active .period_name,.send_period .active .ontime-txt{color:#33CC66 !important;}
 .send_period .active .checkbox-btn{background-image: url('/static/images/check_checked.png');}
-.send_period p{margin:0px;}
+.send_period p{margin:0;}
 .period_name{min-width:90px;}
 
 .pay_type .title{width:90px;}

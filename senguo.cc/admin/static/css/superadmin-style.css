@@ -24,7 +24,7 @@
 
 /*-----------------------------------------admin-manage----------------------------------------------*/
 .admin-manage-left{}
-.admin-manage-left .nav{border-bottom:0px;}
+.admin-manage-left .nav{border-bottom:0;}
 .admin-manage-left .nav li{text-indent:15px;}
 .admin-manage-left .nav li a{color:#333;}
 .admin-manage-left .nav .active a{color:#fff;}

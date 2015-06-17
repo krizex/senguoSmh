@@ -1,7 +1,7 @@
 /*公用全局样式*/
 * {margin:0;padding:0;}
 *{-webkit-tap-highlight-color:transparent;-webkit-appearance: none;}
-img {border:0px;}
+img {border:0;}
 ul li{list-style:none;}
 a{text-decoration:none;outline-style:none;}
 a:hover{text-decoration:none;}

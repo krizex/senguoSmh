@@ -81,20 +81,20 @@
 .set-padding-10{padding:10px;}
 .fruit-left-title{padding:10px;border-bottom:1px solid #eee;}
 .fruit-right-title{padding:10px;border-bottom:1px solid #eee;margin-top:3px;}
-.fruit-right-title .btn{border-radius:0px;padding:3px 8px;}
+.fruit-right-title .btn{border-radius:0;padding:3px 8px;}
 .fruit-right-title .tit{line-height:26px;padding-left:20px;}
 
 #preview_box .modal-dialog{width:1200px;margin:0 auto;}
-#preview_box .modal-body{padding-top:0px;}
+#preview_box .modal-body{padding-top:0;}
 .preview-box{position:relative;height:580px;overflow:hidden;}
 .preview-list{width:1250px;position:absolute;}
 .preview-list li{float:left;height:120px;margin-right:25px;margin-bottom:25px;padding:5px;border:2px solid #fff;overflow:hidden;text-align:center;}
 .preview-list li img{width:80px;height:80px;}
-.preview-list li p{height:30px;line-height:30px;margin-bottom:0px;font-size:14px;}
+.preview-list li p{height:30px;line-height:30px;margin-bottom:0;font-size:14px;}
 
-.sale_tag{background:url('../svg/icon_list-2.png') no-repeat 0px -106px;width:52px;height:52px;background-size:140px 180px;}
+.sale_tag{background:url('../svg/icon_list-2.png') no-repeat 0 -106px;width:52px;height:52px;background-size:140px 180px;}
 .new_tag{background:url('../svg/icon_list-2.png') no-repeat -82px -72px;width:36px;height:47px;background-size:140px 180px;}
-.hot_tag{background:url('../svg/icon_list-2.png') no-repeat 0px -164px;width:58px;height:18px;background-size:140px 180px;}
+.hot_tag{background:url('../svg/icon_list-2.png') no-repeat 0 -164px;width:58px;height:18px;background-size:140px 180px;}
 .limit_tag{background:url('../svg/icon_list-2.png') no-repeat -68px -128px;width:52px;height:52px;background-size:140px 180px;}
 
 .goods-item-show .sale_tag{top:0;left:0}

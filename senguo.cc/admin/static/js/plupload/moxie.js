@@ -2454,8 +2454,8 @@ define('moxie/runtime/Runtime', [
 
 					Basic.extend(shimContainer.style, {
 						position: 'absolute',
-						top: '0px',
-						left: '0px',
+						top: '0',
+						left: '0',
 						width: '1px',
 						height: '1px',
 						overflow: 'hidden'
@@ -5791,8 +5791,8 @@ define("moxie/image/Image", [
 								// position and size properly
 								Basic.extend(runtime.getShimContainer().style, {
 									//position: 'relative',
-									top: '0px',
-									left: '0px',
+									top: '0',
+									left: '0',
 									width: imgCopy.width + 'px',
 									height: imgCopy.height + 'px'
 								});

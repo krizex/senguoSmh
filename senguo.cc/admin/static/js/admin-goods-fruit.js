@@ -96,7 +96,7 @@ $(document).ready(function(){
         $('#preview_box').modal('show');
     });
     $('.preview-prepage').on('click',function(){
-        $('.preview-list').animate({top:'0px'});
+        $('.preview-list').animate({top:'0'});
         $('.preview-prepage').hide();
         $('.preview-nextpage').show();
     });

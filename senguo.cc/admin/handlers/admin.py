@@ -2455,7 +2455,7 @@ class Config(AdminBaseHandler):
 				admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).first()
 			except:
 				return self.send_fail('该管理员不存在')
-			admin.active = 0
+			self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).delete()
 			self.session.commit()
 			return self.send_success()
 		elif action =="super_temp_active":

@@ -4,9 +4,6 @@ $(document).ready(function(){
     }
     $(".wrap-area-box").height($(window).height());
     initBmap();
-}).on("tilesloaded",function(){
-    $(".BMap_pop").children("div").eq(0).children("div").css({"background":"#333","border-top-left-radius":"10px"});
-    $(".BMap_pop").children("div").eq(2).children("div").css({"background":"#333","border-top-right-radius":"10px"});
 }).on("click","#go-back",function(){
     history.go(-1);
 });
@@ -34,7 +31,7 @@ function initBmap() {
         var infoWindow = new BMap.InfoWindow("地址："+address, opts);  // 创建信息窗口对象
         map.openInfoWindow(infoWindow,oPoint);
         marker.addEventListener("click", function(){
-            map.openInfoWindow(infoWindow,point); //开启信息窗口
+            map.openInfoWindow(infoWindow,oPoint); //开启信息窗口
         });
     }else{
         var myGeo = new BMap.Geocoder();
@@ -54,5 +51,11 @@ function initBmap() {
     }
 }
 
-
-
+var int=self.setInterval("clock()",100);
+function clock() {
+    $(".BMap_pop").children("div").eq(0).children("div").css({"background":"#333","border-top-left-radius":"10px"});
+    $(".BMap_pop").children("div").eq(2).children("div").css({"background":"#333","border-top-right-radius":"10px"});
+    $(".BMap_pop").children("div").eq(4).children("div").css({"background":"#333","border-bottom-left-radius":"10px"});
+    $(".BMap_pop").children("div").eq(6).children("div").css({"background":"#333","border-bottom-right-radius":"10px"});
+    $(".BMap_pop").children("div").eq(7).children("img").attr("src","/static/images/i.png");
+}
