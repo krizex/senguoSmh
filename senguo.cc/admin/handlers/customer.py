@@ -20,28 +20,29 @@ from threading import Timer
 import tornado.websocket
 
 from dal.db_configs import DBSession
+from wxpay import QRWXpay
 
 
 EXECUTOR = ThreadPoolExecutor(max_workers=4)
 
 def unblock(f):
 
-    @tornado.web.asynchronous
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        self = args[0]
+	@tornado.web.asynchronous
+	@wraps(f)
+	def wrapper(*args, **kwargs):
+		self = args[0]
 
-        def callback(future):
-            # self.write(future.result())
-            self.finish()
+		def callback(future):
+			# self.write(future.result())
+			self.finish()
 
-        EXECUTOR.submit(
-            partial(f, *args, **kwargs)
-        ).add_done_callback(
-            lambda future: tornado.ioloop.IOLoop.instance().add_callback(
-                partial(callback, future)))
+		EXECUTOR.submit(
+			partial(f, *args, **kwargs)
+		).add_done_callback(
+			lambda future: tornado.ioloop.IOLoop.instance().add_callback(
+				partial(callback, future)))
 
-    return wrapper
+	return wrapper
 
 
 class Access(CustomerBaseHandler):
@@ -1034,7 +1035,7 @@ class Market(CustomerBaseHandler):
 
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 				saled = fruit.saled if fruit.saled else 0
-				if img_url ==None or len(fruit.img_url.split(";"))==1 and fruit.detail_describe ==None:
+				if img_url == None or len(fruit.img_url.split(";"))==1 and fruit.detail_describe ==None:
 					detail_no = True
 				else:
 					detail_no = False
@@ -1097,6 +1098,7 @@ class Market(CustomerBaseHandler):
 		page_size = 10
 		offset = (page -1) * page_size
 		nomore = False
+		print('login in commodity_list')
 
 		customer_id = self.current_user.id
 		shop_id = int(self.get_cookie('market_shop_id'))
@@ -1111,12 +1113,30 @@ class Market(CustomerBaseHandler):
 		fruit_only = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active =1)
 		group_only = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id)
 		# print(fruit_only.count(), group_only.count(),'fruit_only')
+
 		fruits = self.session.query(models.Fruit).join(models.Shop,models.Fruit.shop_id == models.Shop.id,\
 			).join(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id).filter(models.Fruit.shop_id == shop_id,\
 			models.Fruit.active == 1,models.Fruit.id !=None).order_by(models.GroupPriority.group_id,models.Fruit.priority.desc(),\
 			models.Fruit.add_time.desc()).distinct(models.Fruit.id).all()
 
 		
+
+		for fruit in fruits:
+			print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
+		count_fruit =fruits.distinct().count()
+		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
+		# print(count_fruit , total_page)
+		if total_page <= page:
+			nomore = True
+		# sql = text(" select fruit.shop_id, fruit.id ,fruit.name,charge_type.id ,fruit.group_id,shop.shop_name ,\
+		# 	group_priority.priority  from (( fruit join charge_type on charge_type.fruit_id = fruit.id) join \
+		# 		shop  on  fruit.shop_id = shop.id) left join  group_priority  on (fruit.group_id = \
+		# 		group_priority.group_id and fruit.shop_id = group_priority.shop_id) where fruit.shop_id = 230 \
+		# order by group_priority.priority , fruit.id")
+
+
+		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
+
 		# for fruit in fruits:
 		# 	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
 		# count_fruit =fruits.distinct().count()
@@ -1124,9 +1144,9 @@ class Market(CustomerBaseHandler):
 		# # print(count_fruit , total_page)
 		# if total_page <= page:
 		# 	nomore = True
-		nomore = True
 
 		# fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
+
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruits_data,nomore=nomore)
 
@@ -1338,7 +1358,9 @@ class Cart(CustomerBaseHandler):
 				if fruits[str(charge_type.id)] in [0,None]:  # 有可能num为0，直接忽略掉
 					continue
 				totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
+
 				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num
+
 
 				limit_num = charge_type.fruit.limit_num
 				buy_num = int(fruits[str(charge_type.id)])
@@ -1712,11 +1734,6 @@ class Order(CustomerBaseHandler):
 			page = self.args['page']
 			offset = (page - 1) * page_size
 			orders = [x for x in self.current_user.orders if x.status == 1 or x.status == -1]
-			# print(len(orders),'未处理订单 数量')
-			# woody
-			# for order in orders:
-			# 	order.send_time = order.get_sendtime(session,order.id)
-
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
@@ -1726,17 +1743,12 @@ class Order(CustomerBaseHandler):
 				orders = orders[offset:]
 			else:
 				return self.send_fail("暂无订单")
-			# print('orders',orders)
 			orders = self.get_orderData(session,orders)
-			# print('after ',orders)
 			return self.send_success(orders = orders ,total_page= total_page)
 		elif action == "waiting":
 			page = self.args["page"]
 			offset = (page - 1) * page_size
 			orders = [x for x in self.current_user.orders if x.status in (2, 3, 4)]
-			# print(len(orders),'待收货状态订单')
-			# for order in orders:
-			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
@@ -1766,12 +1778,7 @@ class Order(CustomerBaseHandler):
 			for x in orderlist:
 				if x.status == 5:
 					order5.append(x)
-				#if x.status == 6:
-				#	order6.append(x)
 			orders = order5 + order6
-			# print(len(orders),'已完成订单数量')
-			# for order in orders:
-			# 	order.send_time = order.get_sendtime(session,order.id)
 			total_count = len(orders)
 			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
 			if offset + page_size <= total_count:
@@ -1786,13 +1793,9 @@ class Order(CustomerBaseHandler):
 			page = self.args["page"]
 			offset = (page - 1) * page_size
 			orders = self.current_user.orders
-			# print(len(orders),'所有订单数量')
 			session = self.session
-			# for order in orders:
-			# 	order.send_time = order.get_sendtime(session,order.id)
 			orders.sort(key = lambda order:order.send_time,reverse = True)
 			total_count = len(orders)
-			# print(total_count)
 			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
 			if offset + page_size <= total_count:
 				orders = orders[offset:offset + page_size]
@@ -1979,13 +1982,6 @@ class OrderDetail(CustomerBaseHandler):
 			online_type = order.online_type
 		else:
 			online_type = None
-		
-
-		###################################################################
-		# time's format
-		# woody
-		# 3.9
-		###################################################################
 		staff_id = order.SH2_id
 		staff_info = self.session.query(models.Accountinfo).filter_by(id = staff_id).first()
 		if staff_info is not None:
@@ -2118,8 +2114,6 @@ class Balance(CustomerBaseHandler):
 			data = history[offset:]
 		else:
 			nomore = True
-			# print("history page error")
-		# print("data\n",data)
 
 		return self.send_success(data = data,nomore=nomore)
 
@@ -2243,6 +2237,41 @@ class ShopComment(CustomerBaseHandler):
 	def get(self):
 		orderid=self.args["num"]
 		return self.render("customer/comment-shop.html",orderid=orderid)
+
+class QrWxpay(CustomerBaseHandler):
+	def initialize(self):
+		self.qr_wxpay = QRWXpay(appid='wx0ed17cdc9020a96e',
+				   mch_id='10023430',
+				   key='af8164b968911db7567f98b73122dbc3',
+				   notify_url='http://test123.senguo.cc/customer/qrwxpay',
+				   appsecret='6ecd60383b7e26a09d51a12e75649b3e')
+	def get(self):
+		product_id = '12345'
+		url = self.qr_wxpay.generate_static_qr(product_id)
+		print(url)
+		return self.render('customer/qrwxpay.html',url = url)
+		product = {
+		'attach': u'标题',
+		'body': u'内容',
+		'out_trade_no': 22222,
+		'total_fee': 0.01,}
+		img = self.qr_wxpay.generate_product_qr(product)
+		img_io = StringIO()
+		img.save(img_io)  # 直接将生成的QR放在了内存里, 请根据实际需求选择放在内存还是放在硬盘上
+		img_io.seek(0)
+		return send_file(img_io, mimetype='image/jpeg')
+
+
+	def post(self):
+		xml_str = request.data
+		ret, ret_dict = qr_wxpay.verify_callback(xml_str)
+		if ret:
+			product_id = ret_dict['product_id']
+			print(product_id,'product_id')
+		else:
+			print('callback error')
+ 
+
 
 class payTest(CustomerBaseHandler):
 
@@ -2453,8 +2482,14 @@ class InsertData(CustomerBaseHandler):
 	# @CustomerBaseHandler.check_arguments("code?:str")
 	@tornado.web.asynchronous
 	def get(self):
+		import datetime
 		# from sqlalchemy import create_engine, func, ForeignKey, Column
 		# session = self.session	
+		fruit = self.session.query(models.Order).limit(10)
+		for test in fruit:
+			if test is not None:
+				print(test.create_date.hour)
+				print(test.create_date,type(test.create_date))
 		self.render('customer/storage-change.html')
 
 class  Overtime(CustomerBaseHandler):
