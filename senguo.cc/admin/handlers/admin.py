@@ -75,7 +75,12 @@ class Home(AdminBaseHandler):
 		show_balance = False
 
 		shop_auth =  self.current_shop.shop_auth
-		self.set_secure_cookie("shop_id",str(self.current_shop.id))
+		if self.get_secure_cookie("shop_id"):
+			shop_id = int(self.get_secure_cookie("shop_id").decode())
+			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
+			shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
+			self.current_shop = shop
+			self.set_secure_cookie("shop_id", str(shop.id), domain=ROOT_HOST_NAME)
 
 
 		if shop_auth in [1,2]:
@@ -645,18 +650,22 @@ class Order(AdminBaseHandler):
 				new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
 				self.current_shop.new_order_sum = order_sum
 				self.session.commit()
-				orders = [x for x in order_list if x.type == order_type and x.status == 1]
+				if order_list:
+					orders = [x for x in order_list if x.type == order_type and x.status == 1]
 
 			elif order_status == 2:#unfinish
-				orders = [x for x in order_list if x.type == order_type and x.status in [2, 3, 4]]
+				if order_list:
+					orders = [x for x in order_list if x.type == order_type and x.status in [2, 3, 4]]
 
 			elif order_status == 3:
-				orders = [x for x in order_list if x.type == order_type and x.status in (5, 6, 7)]
+				if order_list:
+					orders = [x for x in order_list if x.type == order_type and x.status in (5, 6, 7)]
 
 			elif order_status == 4:
 				pass
 			elif order_status == 5:#all
-				orders = [x for x in order_list if x.type == order_type]
+				if order_list:
+					orders = [x for x in order_list if x.type == order_type]
 			else:
 				return self.send.send_error(404)
 
@@ -2791,6 +2800,12 @@ class ShopBalance(AdminBaseHandler):
 class ShopConfig(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		if self.get_secure_cookie("shop_id"):
+			shop_id = int(self.get_secure_cookie("shop_id").decode())
+			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
+			shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
+			self.current_shop = shop
+			self.set_secure_cookie("shop_id", str(shop.id), domain=ROOT_HOST_NAME)
 		city = self.code_to_text("city", self.current_shop.shop_city)
 		province = self.code_to_text("province", self.current_shop.shop_province)
 		address = self.code_to_text("shop_city", self.current_shop.shop_city) +\
