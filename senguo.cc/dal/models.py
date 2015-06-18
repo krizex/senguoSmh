@@ -1649,6 +1649,7 @@ def init_db_data():
 class CouponsShop(MapBase, _CommonApi):
  	__tablename__='coupon_shop'
  	shop_id=Column(Integer,ForeignKey(Shop.id),nullable=False)
+ 	shop_name=Column(String)
  	coupon_id=Column(Integer,nullable=False)
  	customer_id=Column(Integer,ForeignKey(Customer.id))
  	coupon_key=Column(String,primary_key=True,nullable=False)
@@ -1658,9 +1659,9 @@ class CouponsShop(MapBase, _CommonApi):
  	coupon_remainnum=Column(Integer,nullable=False)
  	#优惠方式  0：固定日期  1：领取后生效
  	valid_way=Column(Integer,default=0,nullable=False)
- 	uneffective_time=Column(DateTime,default=func.now())
- 	get_date=Column(DateTime)
- 	use_date=Column(DateTime)
+ 	uneffective_time=Column(Date,default=func.now())
+ 	get_date=Column(Date)
+ 	use_date=Column(Date)
  	if_used=Column(Integer,default=0)
  	if_uneffective=Column(Integer,default=0)
  	order_id=Column(Integer)
@@ -1669,13 +1670,6 @@ class CouponsShop(MapBase, _CommonApi):
  	get_limitnum=Column(Integer,nullable=False,default=1)
  	used_for=Column(Integer,default=0)
  	use_rule=Column(Float,nullable=False)
- 	# def __init__(self, arg):
- 	# 	super(ClassName, self).__init__()
- 	# 	self.arg = arg
-	# def get_remainnum(self,session,shop_id):
-	# 	order = session.query(CouponsShop).filter_by(shop_id= shop_id).first()
-	# 	coupon_remainnum=coupon_totalnum-coupon_usenum
-	# 	return coupon_remainnum
  		 
 	
 # 用户优惠券
@@ -1684,14 +1678,14 @@ class CouponsCustomer(MapBase, _CommonApi):
 	coupon_id=Column(String(11),nullable=False)
 	coupon_key=Column(String(11),ForeignKey(CouponsShop.coupon_key),nullable=False)
 	customer_id=Column(Integer,ForeignKey(Customer.id),primary_key=True,nullable=False)
+	shop_name=Column(String)
 	shop_id=Column(Integer,ForeignKey(CouponsShop.shop_id))
-	get_date=Column(DateTime,default=func.now())
-	use_date=Column(DateTime)
-	uneffective_time=Column(DateTime)
+	get_date=Column(Date,default=func.now())
+	use_date=Column(Date)
+	uneffective_time=Column(Date)
 	if_used=Column(Integer,default=0)
 	if_uneffective=Column(Integer,default=0)
 	order_id=Column(Integer,nullable=False)
+	used_for=Column(Integer,default=0)
+	use_rule=Column(Float,nullable=False)
 
-	# def get_uneffective_time(self,session,)
-
-'''
