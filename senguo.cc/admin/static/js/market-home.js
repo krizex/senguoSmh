@@ -17,6 +17,7 @@ $(document).ready(function(){
         goodsList(1,9);
         $('#classify').text('搜索结果');
         $('.wrap-goods-box').css('margin-top','40px');
+        $('.classify-title').hide();
     }else{
         if($('.classify-list li').length==0){
             $(".wrap-loading-box").addClass("hidden");
@@ -108,7 +109,6 @@ $(document).ready(function(){
     var detail_no=$this.attr('data-detail');
     var id=$this.attr('data-id');
     var shop_code=$('#shop_code').val();
-    console.log(storage);
     if($(e.target).closest(".forbid_click").size()==0){
         if (storage > 0 && detail_no=='False') {
             addCart("/"+shop_code+"/goods/"+id);

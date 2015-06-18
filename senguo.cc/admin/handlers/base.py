@@ -852,25 +852,17 @@ class SuperBaseHandler(_AccountBaseHandler):
 				shop_id = shop.id
 				fruits = shop.fruits
 				menus = shop.menus
+				fans_count = shop.fans_count
 				# print(menus)
 				create_date = shop.create_date_timestamp
 				x = datetime.datetime.fromtimestamp(create_date)
 				# print(x)
 				now = datetime.datetime.now()
-				days = (now -x).days
+				days = (now - x).days
 				if days > 14:
-					if (shop_code == 'not set') or (len(fruits)+len(menus) == 0):
+					if (shop_code == 'not set') or (fans_count < 2) or (len(fruits)+len(menus) == 0):
 						shop.status = 0
-						print("[定时任务]店铺关闭成功：",shop_id,"未设置店铺号/无商品")
-					else:
-						try:
-							follower_count = session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
-						except:
-							return self.send_fail('follower_count error')
-						if follower_count < 2:
-							shop.status = 0
-							print("[定时任务]店铺关闭成功：",shop_id,"关注数小于2")							
-
+						print("[定时任务]店铺关闭成功：",shop_id)
 			session.commit()
 			print("[定时任务]关闭店铺完成")
 			# return self.send_success(close_shop_list = close_shop_list)
@@ -984,7 +976,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 							models.HireLink.active == 1,models.HireLink.work == 9).first())
 			else:
 				shop = next((x for x in self.current_user.shops if x.id == shop_id), None)
-			if not shop_id or not shop:#初次登陆，默认选择一个店铺
+			if not shop_id or not shop:#初次登录，默认选择一个店铺
 				self.current_shop = self.current_user.shops[0]
 				self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
 				return
