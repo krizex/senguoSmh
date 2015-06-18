@@ -256,7 +256,7 @@ $(document).ready(function(){
         }
        
     }
-    else {noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)} 
+    else {return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)} 
     parent.attr({'data-storage':storage-change_num});
 }).on('click','.number-minus',function(){
     //商品数量操作
