@@ -148,7 +148,7 @@ function worMode(target){
 }
 
 function shopChnage(shop_id){
-    var url='/admin';
+    var url='/admin/home';
     var data={shop_id:shop_id};
     var args={action:'shop_change',data:data};
     $.postJson(url,args,function(res){
@@ -159,7 +159,7 @@ function shopChnage(shop_id){
 }
 
 function otherShop(){
-    var url='/admin';
+    var url='/admin/home';
     var args={action:'other_shop'};
     $.postJson(url,args,function(res){
         if(res.success){

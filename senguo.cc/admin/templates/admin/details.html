@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-marketing.css')}}"/>{% end %}
+
+{% block content %}
+{% set shop_code = current_shop.shop_code %}
+<div class="row">
+    <a href="/admin/marketing?action=coupon"><button class="button clearfix">返回</button></a>
+   <span class="mytitle">优惠券/优惠券详情</span>
+</div>
+
+<div class="row div2 div0">
+    <div class="col-lg-2">
+       优惠码
+    </div>
+    <div class="col-lg-2">
+     优惠金额
+    </div>
+    <div class="col-lg-2">
+       用户
+    </div>
+    <div class="col-lg-2">
+    领取时间
+    </div>
+    <div class="col-lg-2">
+    使用时间
+    </div>
+    <div class="col-lg-2">
+      消费记录
+    </div>
+</div>
+
+<div class="div1">
+    <ul>
+    {% for data in output_data %}
+        <li class="top-box row details">
+            <div class="col-lg-2">
+                <p class="tit1">{{data["coupon_key"]}}</p>
+                <button class="copy">复制</button>
+            </div>
+            <div>
+                <div class="col-lg-2">
+                
+                <p class="tit2">{{data["coupon_money"]}}</p>
+            </div>
+            <div class="col-lg-2">
+                {{data["customer_id"]}}
+            </div>
+            <div class="col-lg-2">
+                {{data["get_date"]}}
+            </div>
+            <div class="col-lg-2">
+                限商品分组：{{data["use_date"]}}
+            </div>
+            <div class="col-lg-2 tit3">
+                {{data["order_id"]}}</div>
+            </div>
+        </li>
+        {% end %}
+    </ul>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/admin-marketing.js')}}"></script>
+{% end %}

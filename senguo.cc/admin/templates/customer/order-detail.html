@@ -88,13 +88,13 @@
 {% if order.comment%}
 <div class="wrap-bm-btn">
     <a class="fr add-comment white-btn" href="/customer/ordercomment?orderid={{order.id}}">修改评价</a>
-    <a class="fr go-shopping white-btn" href="/{{shop_code}}">继续购买</a>
+    <a class="fr go-shopping white-btn" href="/{{handler.shop_code}}">继续购买</a>
 </div>
 {% end %}
 {% if order.status == 5 %}
 <div class="wrap-bm-btn">
     <a class="fr add-comment red-btn" href="{{reverse_url('customerShopComment')}}?num={{order.id}}">评价</a>
-    <a class="fr go-shopping white-btn" href="/{{shop_code}}">继续购买</a>
+    <a class="fr go-shopping white-btn" href="/{{handler.shop_code}}">继续购买</a>
 </div>
 {% end %}
 {% if order.status == -1 or order.status == 1%}

@@ -11,10 +11,10 @@
     window.dataObj.cart_fs = {% raw json.dumps(cart_fs) %}
 </script>
 {% if good %}
-<input type="hidden" value="{{shop_code}}" id="shop_code"/>
+<input type="hidden" value="{{handler.shop_code}}" id="shop_code"/>
 <div class="wrap-goods-detail" data-id="{{good.id}}" data-limit="{{good.limit_num}}" data-storage="{{good.storage}}">
     <div class="img-list">
-        <a href="{{reverse_url('Market',shop_code)}}" class="roll-bg back add-cart" id="back-bg"><i></i></a>
+        <a href="{{reverse_url('Market',handler.shop_code)}}" class="roll-bg back add-cart" id="back-bg"><i></i></a>
         <!--a href="javascript:;" class="roll-bg share"><i></i></a-->
         <div class="swiper-container" id="swiper-container">
             <div class="swiper-wrapper">
@@ -90,13 +90,13 @@
             </ul>
         </li>
     </ul>
-    <a href="{{reverse_url('customerShopProfile',shop_code)}}" class="shop-area add-cart" id="shop-area">
+    <a href="{{reverse_url('customerShopProfile',handler.shop_code)}}" class="shop-area add-cart" id="shop-area">
         <span class="roll-bg shop-in">
             <i></i>
         </span>
         <span>店铺：{{shop_name}}</span>
     </a>
-    <a href="{{reverse_url('customerCart',shop_code)}}" class="roll-bg cart-bg add-cart" id="cart-bg">
+    <a href="{{reverse_url('customerCart',handler.shop_code)}}" class="roll-bg cart-bg add-cart" id="cart-bg">
         <i></i>
         <span class="move-cart" id="cart-now-num">0</span>
     </a>
