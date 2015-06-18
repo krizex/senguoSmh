@@ -1682,7 +1682,7 @@ class CouponsShop(MapBase, _CommonApi):
 class CouponsCustomer(MapBase, _CommonApi):
 	__tablename__='coupon_customer'
 	coupon_id=Column(String(11),nullable=False)
-	conpon_key=Column(String(11),ForeignKey(CouponsShop.coupon_key),nullable=False)
+	coupon_key=Column(String(11),ForeignKey(CouponsShop.coupon_key),nullable=False)
 	customer_id=Column(Integer,ForeignKey(Customer.id),primary_key=True,nullable=False)
 	shop_id=Column(Integer,ForeignKey(CouponsShop.shop_id))
 	get_date=Column(DateTime,default=func.now())

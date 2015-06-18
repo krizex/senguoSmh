@@ -3009,8 +3009,8 @@ class Marketing(AdminBaseHandler):
 			coupons_id=self.session.query(models.CouponsShop).filter_by(shop_id=self.curent_shop_id).count()+1
 			for i in range(total_num):
 				chars=string.digits+string.ascii_letters
-				chars=''.join(random.sample(chars*10,5))
-				chars.join(str(i))
+				chars=''.join(random.sample(chars*10,4))
+				chars=chars+str(i)+'M'+str(current_shop_id)
 				new_coupon=models.CouponsShop(shop_id=self.curent_shop_id,coupon_id=coupons_id,coupon_key=chars,\
 					coupon_money=coupon_money,coupon_totalnum=total_num,coupon_remainnum=total_num,valid_way=valid_way,\
 					day_start=day_start,last_day=last_day,\
@@ -3106,8 +3106,8 @@ class Marketing(AdminBaseHandler):
 				m=a[0][0]+1
 			for i in range(total_num):
 				chars=string.digits+string.ascii_letters
-				chars=''.join(random.sample(chars*10,5))
-				chars.join(str(i))
+				chars=''.join(random.sample(chars*10,4))
+				chars=chars+str(i)+'M'+str(current_shop_id)
 				new_coupon=models.CouponsShop(shop_id=current_shop_id,coupon_id=m,coupon_key=chars,\
 					uneffective_time=uneffective_time,coupon_money=coupon_money,coupon_totalnum=total_num,\
 					coupon_remainnum=total_num,valid_way=valid_way,day_start=day_start,last_day=last_day,\

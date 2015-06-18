@@ -455,18 +455,20 @@ class CouponDetail(CustomerBaseHandler):
 		data=[]
 		if action==detail:
 			q=self.session.query(modeles.CouponsCustomer).filter_by(customer_id=current_customer_id,coupon_key=mcoupon_key)
-			for x in q:
+			if q!=None:
 				x_coupon={"coupon_money":q.coupon_money,"get_date":q.get_date,"uneffective_time":q.uneffective_time,"if_used":q.if_used}
 				data.append(x_coupon)
 			return self.render("coupon/detail.html",output_data=data)
 		elif action==search:
 			q=self.session.query(modeles.CouponsCustomer).filter_by(customer_id=current_customer_id,coupon_key=mcoupon_key)
-			for x in q:
+			if q!=None:
 				x_coupon={"coupon_money":q.coupon_money,"get_date":q.get_date,"uneffective_time":q.uneffective_time,"if_used":q.if_used}
 				data.append(x_coupon)
 			return self.render("coupon/detail.html",output_data=data)
 		elif action=="usecoupon":
+			pass
 		elif action=="grab":
+			pass
 
 		
 		
