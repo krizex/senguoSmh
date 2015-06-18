@@ -2008,8 +2008,8 @@ class Follower(AdminBaseHandler):
 					q = q.order_by(desc(models.CustomerShopFollow.create_time))
 			elif action == "old":  # 老用户
 				q = self.session.query(models.Customer).\
-					join(models.Order).filter( and_(models.Order.shop_id == self.current_shop.id,\
-						or_(models.Order.status==5,models.Order.status==6,models.Order.status==7,models.Order.status==10))).distinct()
+					join(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == self.current_shop.id,\
+					models.CustomerShopFollow.shop_new == 1)#.distinct()
 			elif action == "charge":
 				q = self.session.query(models.Customer).join(models.BalanceHistory,models.Customer.id == models.BalanceHistory.customer_id).\
 					filter(models.BalanceHistory.shop_id == self.current_shop.id,models.BalanceHistory.balance_type==1).distinct()
