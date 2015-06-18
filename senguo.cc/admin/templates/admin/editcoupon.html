@@ -5,7 +5,8 @@
 {% set shop_code = current_shop.shop_code %}
 <div class="row">
     <a href="/admin/marketing?action=coupon"><button class="button clearfix">返回</button></a>
-   <span class="mytitle">优惠券/新建优惠券</span>
+   <span class="mytitle">优惠券/编辑优惠券</span>
+   <p class="tit7"> 当前正在编辑的优惠券编号为[{{output_data["coupon_id"]}}]</p>
 </div>
 <div class="row"> 
       <div class="col-lg-8">
@@ -87,7 +88,7 @@
       <div class="col-lg-4 div1"> hhhh</div>
 </div>
 <div class="row">
-    <button class="configbtn">确认</button>
+    <button class="edit configbtn">确认</button>
     <a href="/admin/marketing?action=coupon"> <button class="configcancel">取消</button></a>
 </div>
 <!-- <div class="row div2 div0">
