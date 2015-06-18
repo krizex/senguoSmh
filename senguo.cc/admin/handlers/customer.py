@@ -54,7 +54,10 @@ class Access(CustomerBaseHandler):
 		print("[用户登录]跳转URL：",next_url)
 		if self._action == "login":
 			next_url = self.get_argument("next", "")
-			return self.render("login/m_login.html",
+			if self.current_user:
+				return self.redirect(self.reverse_url("customerProfile"))
+			else:
+				return self.render("login/m_login.html",
 								 context=dict(next_url=next_url))
 		elif self._action == "logout":
 			self.clear_current_user()
@@ -187,7 +190,7 @@ class customerGoods(CustomerBaseHandler):
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
-		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,shop_code=shop_code,charge_types=charge_types,cart_fs=cart_fs)
+		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
 		
 
 
@@ -397,7 +400,7 @@ class Discover(CustomerBaseHandler):
 			confess_count =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id,scan=0).count()
 		except:
 			confess_count = 0 
-		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_code=shop_code,shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count)
+		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count)
 
 class ShopArea(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -824,7 +827,7 @@ class Comment(CustomerBaseHandler):
 			if len(date_list)<page_size:
 				nomore = True
 			return self.render("customer/comment.html", date_list=date_list,nomore=nomore,satisfy = satisfy,send_speed=send_speed,\
-				shop_service = shop_service,commodity_quality=commodity_quality,shop_code=shop_code)
+				shop_service = shop_service,commodity_quality=commodity_quality)
 		return self.send_success(date_list=date_list,nomore=nomore)
 
 class ShopComment(CustomerBaseHandler):
@@ -972,7 +975,7 @@ class Market(CustomerBaseHandler):
 					group_list.append({'id':0,'name':'默认分组'})
 
 		return self.render("customer/home.html",
-						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,shop_code=shop.shop_code,\
+						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 						   	w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
 
 	@tornado.web.authenticated
@@ -1250,7 +1253,7 @@ class GoodsSearch(CustomerBaseHandler):
 		shop = self.session.query(models.Shop).filter_by(id=shop_id ).first()
 		if not shop:
 			return self.send_error(404)
-		return self.render("customer/search-goods-list.html",context=dict(subpage='home',shop_code=shop.shop_code))
+		return self.render("customer/search-goods-list.html",context=dict(subpage='home'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("search:str")
@@ -1327,7 +1330,7 @@ class Cart(CustomerBaseHandler):
 		periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1).all()
 		return self.render("customer/cart.html", cart_f=cart_f,config=shop.config,
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
-						   shop_name  = shop_name ,shop_code=shop_code,shop_logo = shop_logo,balance_value=balance_value,\
+						   shop_name  = shop_name ,shop_logo = shop_logo,balance_value=balance_value,\
 						  shop_new=shop_new,shop_status=shop_status,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
@@ -2009,9 +2012,8 @@ class OrderDetail(CustomerBaseHandler):
 			comment_imgUrl = None
 		shop_code = order.shop.shop_code
 		shop_name = order.shop.shop_name
-		return self.render("customer/order-detail.html", order=order,
-						   charge_types=charge_types,comment_imgUrl=comment_imgUrl,\
-						   shop_code=shop_code,online_type=online_type,shop_name=shop_name)
+		return self.render("customer/order-detail.html", order=order,charge_types=charge_types,comment_imgUrl=comment_imgUrl\
+			,online_type=online_type,shop_name=shop_name)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data?")
