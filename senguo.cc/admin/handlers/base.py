@@ -789,7 +789,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 							models.HireLink.active == 1,models.HireLink.work == 9).first())
 			else:
 				shop = next((x for x in self.current_user.shops if x.id == shop_id), None)
-			if not shop_id or not shop:#初次登陆，默认选择一个店铺
+			if not shop_id or not shop:#初次登录，默认选择一个店铺
 				self.current_shop = self.current_user.shops[0]
 				self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
 				return
