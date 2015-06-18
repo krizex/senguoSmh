@@ -1613,6 +1613,12 @@ class ConfessionGreat(MapBase, _CommonApi):
 	wall_id = Column(Integer,ForeignKey(ConfessionWall.id),nullable = False)
 	create_time = Column(DateTime,default = func.now())
 
+class ShortUrl(MapBase,_CommonApi):
+	__tablename__ = 'shorturl'
+	id = Column(Integer,primary_key = True , nullable = False , autoincrement = True)
+	short_url = Column(String(32),nullable = False)
+	long_url  = Column(String(64),nullable = False)
+
 def init_db_data():
 	MapBase.metadata.create_all()
 	# add fruittypes to database

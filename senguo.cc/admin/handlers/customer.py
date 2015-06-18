@@ -54,7 +54,10 @@ class Access(CustomerBaseHandler):
 		print("[用户登录]跳转URL：",next_url)
 		if self._action == "login":
 			next_url = self.get_argument("next", "")
-			return self.render("login/m_login.html",
+			if self.current_user:
+				return self.redirect(self.reverse_url("customerProfile"))
+			else:
+				return self.render("login/m_login.html",
 								 context=dict(next_url=next_url))
 		elif self._action == "logout":
 			self.clear_current_user()
@@ -187,7 +190,7 @@ class customerGoods(CustomerBaseHandler):
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
-		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,shop_code=shop_code,charge_types=charge_types,cart_fs=cart_fs)
+		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
 		
 
 
@@ -397,7 +400,7 @@ class Discover(CustomerBaseHandler):
 			confess_count =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id,scan=0).count()
 		except:
 			confess_count = 0 
-		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_code=shop_code,shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count)
+		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count)
 
 class ShopArea(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -824,7 +827,7 @@ class Comment(CustomerBaseHandler):
 			if len(date_list)<page_size:
 				nomore = True
 			return self.render("customer/comment.html", date_list=date_list,nomore=nomore,satisfy = satisfy,send_speed=send_speed,\
-				shop_service = shop_service,commodity_quality=commodity_quality,shop_code=shop_code)
+				shop_service = shop_service,commodity_quality=commodity_quality)
 		return self.send_success(date_list=date_list,nomore=nomore)
 
 class ShopComment(CustomerBaseHandler):
@@ -970,8 +973,9 @@ class Market(CustomerBaseHandler):
 					group_list.append({'id':-1,'name':'店铺推荐'})
 				if default_count !=0 :
 					group_list.append({'id':0,'name':'默认分组'})
+
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
-						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,shop_code=shop.shop_code,\
+						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 						   	w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
 
 	@tornado.web.authenticated
@@ -1249,7 +1253,7 @@ class GoodsSearch(CustomerBaseHandler):
 		shop = self.session.query(models.Shop).filter_by(id=shop_id ).first()
 		if not shop:
 			return self.send_error(404)
-		return self.render("customer/search-goods-list.html",context=dict(subpage='home',shop_code=shop.shop_code))
+		return self.render("customer/search-goods-list.html",context=dict(subpage='home'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("search:str")
@@ -1326,7 +1330,7 @@ class Cart(CustomerBaseHandler):
 		periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1).all()
 		return self.render(self.tpl_path(shop.shop_tpl)+"/cart.html", cart_f=cart_f,config=shop.config,
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
-						   shop_name  = shop_name ,shop_code=shop_code,shop_logo = shop_logo,balance_value=balance_value,\
+						   shop_name  = shop_name ,shop_logo = shop_logo,balance_value=balance_value,\
 						  shop_new=shop_new,shop_status=shop_status,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
@@ -2008,9 +2012,8 @@ class OrderDetail(CustomerBaseHandler):
 			comment_imgUrl = None
 		shop_code = order.shop.shop_code
 		shop_name = order.shop.shop_name
-		return self.render("customer/order-detail.html", order=order,
-						   charge_types=charge_types,comment_imgUrl=comment_imgUrl,\
-						   shop_code=shop_code,online_type=online_type,shop_name=shop_name)
+		return self.render("customer/order-detail.html", order=order,charge_types=charge_types,comment_imgUrl=comment_imgUrl\
+			,online_type=online_type,shop_name=shop_name)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data?")
@@ -2250,96 +2253,81 @@ class ShopComment(CustomerBaseHandler):
 		return self.render("customer/comment-shop.html",orderid=orderid)
 
 class QrWxpay(CustomerBaseHandler):
-	def initialize(self):
-		self.qr_wxpay = QRWXpay(appid='wx0ed17cdc9020a96e',
-				   mch_id='10023430',
-				   key='af8164b968911db7567f98b73122dbc3',
-				   notify_url='http://test123.senguo.cc/customer/qrwxpay',
-				   appsecret='6ecd60383b7e26a09d51a12e75649b3e')
 	def get(self):
-		product_id = '12345'
-		url = self.qr_wxpay.generate_static_qr(product_id)
-		print(url)
-		return self.render('customer/qrwxpay.html',url = url)
-		product = {
-		'attach': u'标题',
-		'body': u'内容',
-		'out_trade_no': 22222,
-		'total_fee': 0.01,}
-		img = self.qr_wxpay.generate_product_qr(product)
-		img_io = StringIO()
-		img.save(img_io)  # 直接将生成的QR放在了内存里, 请根据实际需求选择放在内存还是放在硬盘上
-		img_io.seek(0)
-		return send_file(img_io, mimetype='image/jpeg')
+		import pyqrcode
 
-
-	def post(self):
-		xml_str = request.data
-		ret, ret_dict = qr_wxpay.verify_callback(xml_str)
-		if ret:
-			product_id = ret_dict['product_id']
-			print(product_id,'product_id')
-		else:
-			print('callback error')
- 
-
+		
 
 class payTest(CustomerBaseHandler):
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments('code?:str','totalPrice?')
 	def get(self):
-		print(self.request.full_url())
-		path_url = self.request.full_url()
-		# totalPrice = self.args['totalPrice']
-
-		jsApi  = JsApi_pub()
-		#path = 'http://auth.senguo.cc/fruitzone/paytest'
-		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('fruitzonePayTest')
-		print(path , 'redirect_uri is Ture?')
-		print(self.args['code'],'sorry  i dont know')
-		code = self.args.get('code',None)
-		print(code,'how old are you',len(code))
-		if len(code) is 2:
-			url = jsApi.createOauthUrlForCode(path)
-			print(url,'code?')
-			return self.redirect(url)
-		else:
-			totalPrice =int((float(self.get_cookie('money')))*100)
-			orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(totalPrice)+'a'+str(int(time.time()))
-			print(orderId,'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-			jsApi.setCode(code)
-			openid = jsApi.getOpenid()
-			print(openid,code,'hope is not []')
-			if not openid:
-				print('openid not exit')	
+		totalPrice =int((float(self.get_cookie('money')))*100)
+		orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(1)+'a'+str(int(time.time()))
+		if not self.is_wexin_browser():
 			unifiedOrder =   UnifiedOrder_pub()
-			# totalPrice = self.args['totalPrice'] 
-			#totalPrice =float( self.get_cookie('money'))
-			print(totalPrice,'long time no see!')
-			unifiedOrder.setParameter("body",'charge')
+			unifiedOrder.setParameter("body",'QrWxpay')
 			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/fruitzone/paytest')
-			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",orderId)
-			#orderPriceSplite = (order.price) * 100
-			wxPrice =int(totalPrice )
-			print(wxPrice,'sure')
-			unifiedOrder.setParameter('total_fee',wxPrice)
-			unifiedOrder.setParameter('trade_type',"JSAPI")
-			prepay_id = unifiedOrder.getPrepayId()
-			print(prepay_id,'prepay_id================')
-			jsApi.setPrepayId(prepay_id)
-			renderPayParams = jsApi.getParameters()
-			print(renderPayParams)
-			noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
-			timestamp = datetime.datetime.now().timestamp()
-			wxappid = 'wx0ed17cdc9020a96e'
-			signature = self.signature(noncestr,timestamp,path_url)
-			totalPrice = float(totalPrice/100)
+			unifiedOrder.setParameter('total_fee',totalPrice)
+			unifiedOrder.setParameter('trade_type',"NATIVE")
+			res = unifiedOrder.postXml().decode('utf-8')
+			res_dict = unifiedOrder.xmlToArray(res)
+			print(res,type(res_dict))
+			if 'code_url' in res_dict:
+				print(res_dict['code_url'])
+				# url = pyqrcode.create(res_dict['code_url'])
+				# url.png('really.png',scale = 8)
+				return self.render("customer/qrwxpay.html" , url = res_dict['code_url'])
+			else:
+				return self.send_fail('can not get code_url!')
+		else:
+			print(self.request.full_url())
+			path_url = self.request.full_url()
+			jsApi  = JsApi_pub()
+			path = APP_OAUTH_CALLBACK_URL + self.reverse_url('fruitzonePayTest')
+			print(path , 'redirect_uri is Ture?')
+			print(self.args['code'],'sorry  i dont know')
+			code = self.args.get('code',None)
+			print(code,'how old are you',len(code))
+			if len(code) is 2:
+				url = jsApi.createOauthUrlForCode(path)
+				print(url,'code?')
+				return self.redirect(url)
+			else:
+				jsApi.setCode(code)
+				openid = jsApi.getOpenid()
+				print(openid,code,'hope is not []')
+				if not openid:
+					print('openid not exit')	
+				unifiedOrder =   UnifiedOrder_pub()
+				# totalPrice = self.args['totalPrice'] 
+				#totalPrice =float( self.get_cookie('money'))
+				print(totalPrice,'long time no see!')
+				unifiedOrder.setParameter("body",'charge')
+				unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/fruitzone/paytest')
+				unifiedOrder.setParameter("openid",openid)
+				unifiedOrder.setParameter("out_trade_no",orderId)
+				#orderPriceSplite = (order.price) * 100
+				wxPrice =int(totalPrice )
+				print(wxPrice,'sure')
+				unifiedOrder.setParameter('total_fee',wxPrice)
+				unifiedOrder.setParameter('trade_type',"JSAPI")
+				prepay_id = unifiedOrder.getPrepayId()
+				print(prepay_id,'prepay_id================')
+				jsApi.setPrepayId(prepay_id)
+				renderPayParams = jsApi.getParameters()
+				print(renderPayParams)
+				noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
+				timestamp = datetime.datetime.now().timestamp()
+				wxappid = 'wx0ed17cdc9020a96e'
+				signature = self.signature(noncestr,timestamp,path_url)
+				totalPrice = float(totalPrice/100)
 		
-		# return self.send_success(renderPayParams = renderPayParams)
-		return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
-			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)
+			# return self.send_success(renderPayParams = renderPayParams)
+			return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
+				noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)
 
 	def check_xsrf_cookie(self):
 		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -2493,14 +2481,13 @@ class InsertData(CustomerBaseHandler):
 	# @CustomerBaseHandler.check_arguments("code?:str")
 	@tornado.web.asynchronous
 	def get(self):
-		import datetime
+		# import datetime
 		# from sqlalchemy import create_engine, func, ForeignKey, Column
 		# session = self.session	
-		fruit = self.session.query(models.Order).limit(10)
-		for test in fruit:
-			if test is not None:
-				print(test.create_date.hour)
-				print(test.create_date,type(test.create_date))
+		from handlers.base import UrlShorten
+		short = UrlShorten.get_short_url('http://www.baidu.com/haha/hehe/gaga/memeda')
+		print(short,type(short))
+		print(UrlShorten.get_long_url(short))
 		self.render('customer/storage-change.html')
 
 class  Overtime(CustomerBaseHandler):
