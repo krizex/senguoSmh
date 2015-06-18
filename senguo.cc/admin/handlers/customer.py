@@ -328,7 +328,7 @@ class Home(CustomerBaseHandler):
 			return self.send_fail("point show error")
 		if shop_follow:
 			if shop_follow.shop_point:
-				shop_point = format(shop_follow.shop_point,'.2f')
+				shop_point = int(shop_follow.shop_point)
 				shop_balance = format(shop_follow.shop_balance,'.2f')
 			else:
 				shop_point = 0
@@ -2160,7 +2160,7 @@ class Points(CustomerBaseHandler):
 			self.send_fail("point show error")
 		if shop_follow:
 			if shop_follow.shop_point:
-				shop_point = shop_follow.shop_point
+				shop_point = int(shop_follow.shop_point)
 			else:
 				shop_point = 0
 
