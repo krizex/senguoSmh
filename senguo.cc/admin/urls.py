@@ -182,7 +182,7 @@ handlers = [
 	(r"/admin/oauth", handlers.admin.Access, {"action":"oauth"}, "adminOauth"),
 	(r"/admin/logout", handlers.admin.Access, {"action":"logout"}, "adminLogout"),
 	(r"/admin/register", handlers.admin.Access, {"action":"register"}, "adminRegister"),
-	(r"/admin/switchshop", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
+	(r"/admin/home", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
 	(r"/admin/ostatic", handlers.admin.OrderStatic, {}, "adminOrderStatic"),
 	(r"/admin/fstatic", handlers.admin.FollowerStatic, {}, "adminFollowerStatic"),
 	(r"/admin/order", handlers.admin.Order, {}, "adminOrder"),
