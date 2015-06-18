@@ -30,6 +30,10 @@ $(document).ready(function(){
             $this.addClass('stop-mode').find('.text').text('订单提醒未启用');
         }
     });
+    if($('.tpl-list')){
+        var tpl_id=parseInt($('.tpl-list').attr('data-id'));
+        $('.choose-btn').eq(tpl_id).addClass('active');
+    }
 }).on('click','.cash_active',function(){
     var $this=$(this);
     if($this.attr("data-flag")=="off") return false;
@@ -309,5 +313,30 @@ $(document).ready(function(){
         function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
         );
 
+}).on('click','.choose-btn',function(){
+    var $this=$(this);
+    if($this.attr("data-flag")=="off") return false;
+    $this.attr("data-flag","off");
+    var id =$this.attr('data-id');
+    var url='';
+    var data={tpl_id:id};
+    var action="tpl_choose";
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                $this.attr("data-flag","on");
+                $this.addClass('active').parents('li').siblings('li').find('.choose-btn').removeClass('active');
+            }
+            else{
+                    $this.attr("data-flag","on");
+                    return Tip(res.error_text);
+            }
+        },
+        function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
+        );
 });
 var link='/admin/config';

@@ -2292,6 +2292,8 @@ class Config(AdminBaseHandler):
 				return self.render('admin/admin-set.html',context=dict(subpage='shop_set',shopSubPage='admin_set'),notice=notice,datalist=datalist)
 			else:
 				return self.redirect(self.reverse_url('adminShopConfig'))
+		elif action == "template":
+			return self.render('admin/shop-template-set.html',context=dict(subpage='shop_set',shopSubPage='template_set'))
 			
 		else:
 			return self.send_error(404)
@@ -2455,7 +2457,7 @@ class Config(AdminBaseHandler):
 				admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).first()
 			except:
 				return self.send_fail('该管理员不存在')
-			admin.active = 0
+			self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).delete()
 			self.session.commit()
 			return self.send_success()
 		elif action =="super_temp_active":
@@ -2481,6 +2483,11 @@ class Config(AdminBaseHandler):
 				other_admin = None
 			for admin in other_admin:
 				admin.temp_active  = 0
+			self.session.commit()
+			return self.send_success()
+		elif action=="tpl_choose":
+			tpl_id=int(self.args["data"]["tpl_id"])
+			self.current_shop.shop_tpl=tpl_id
 			self.session.commit()
 			return self.send_success()
 		else:
