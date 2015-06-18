@@ -699,10 +699,7 @@ class Order(AdminBaseHandler):
 
 
 	def edit_status(self,order,order_status,send_message=True):
-		if order_status == 4:
-			order.update(self.session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
-		elif order_status == 5:
-			order.update(self.session, status=order_status,finish_admin_id = self.current_user.accountinfo.id)
+		# if order_status == 4:
 		# when the order complete ,
 		# woody
 		shop_id = self.current_shop.id
@@ -710,145 +707,15 @@ class Order(AdminBaseHandler):
 		staff_info = []
 		
 		if order_status == 4:
-			try:
-				staff_info = self.session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id )\
-				.filter(models.HireLink.shop_id == shop_id,models.HireLink.default_staff == 1).first()
-			except:
-				print("didn't find default staff")
-			if staff_info:
-				openid = staff_info.wx_openid
-				staff_name = staff_info.nickname
-			else:
-				openid = self.current_shop.admin.accountinfo.wx_openid
-				staff_name = self.current_shop.admin.accountinfo.nickname
-			shop_name = self.current_shop.shop_name
-			order_id = order.num
-			order_type = order.type
-			create_date = order.create_date
-			customer_name = order.receiver
-			order_totalPrice = order.totalPrice
-			# send_time = order.get_sendtime(self.session,order.id)
-			send_time = order.send_time
-			phone = order.phone
-			address = order.address_text
-			# print("ready to send message")
+			order.update(self.session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
 			if send_message:
-				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone,address)
+				self.send_staff_message(self.session,order)
+			# print('success')
 		if order_status == 5:
-			now = datetime.datetime.now()
-			order.arrival_day = now.strftime("%Y-%m-%d")
-			order.arrival_time= now.strftime("%H:%M")
-			self.session.commit()
-			customer_id = order.customer_id
-			shop_id = order.shop_id
-			totalprice = order.totalPrice
+			# print('login in order_status 5')
+			order.update(self.session, status=order_status,finish_admin_id = self.current_user.accountinfo.id)
+			self.order_done(self.session,order)
 
-			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-			if not shop:
-				return self.send_fail('shop not found')
-			shop.is_balance = 1
-			shop.order_count += 1  #店铺订单数加1
-
-			
-			#add by jyj 2015-6-15
-			totalprice_inc = order.totalPrice
-			shop.shop_property += totalprice_inc
-			##
-
-			customer_info = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
-			if not customer_info:
-				return self.send_fail('customer not found')
-			customer_info.is_new = 1
-			name = customer_info.nickname
-			self.session.commit()
-
-			#
-			customer = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
-				shop_id = shop_id).first()
-			if not customer:
-				return self.send_fail('customer error')
-			if customer.shop_new == 0:
-				customer.shop_new = 1
-				# print("[订单管理]用户",customer_id,"完成订单，新用户标识置为：",customer.shop_new)
-			self.session.commit()
-
-			try:
-				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
-					customer_id,shop_id = shop_id).first()
-			except:
-				self.send_fail("shop_point error")
-			try:
-				order_count = self.session.query(models.Order).filter(models.Order.customer_id == customer_id,\
-					models.Order.shop_id == shop_id,not_(models.Order.status.in_([-1,0]))).count()
-			except:
-				self.send_fail("find order by customer_id and shop_id error")
-			# the first order , shop_point add by 5
-			if order_count==1:
-				if shop_follow:
-					if shop_follow.shop_point == None:
-						shop_follow.shop_point =0
-					shop_follow.shop_point += 5
-					self.session.commit()
-					try:
-						point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
-					except:
-						self.send_fail("point_history error:First_order")
-					if point_history:
-						point_history.point_type = models.POINT_TYPE.FIRST_ORDER
-						point_history.each_point = 5
-						# print(point_history.each_point)
-						self.session.add(point_history)
-						self.session.commit()
-
-			if order.pay_type == 2:    #余额 支付
-				if shop_follow:
-					if shop_follow.shop_point == None:
-						shop_follow.shop_point =0
-					shop_follow.shop_point += 2
-					self.session.commit()
-
-					try:
-						point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
-					except:
-						self.send_fail("point_history error:PREPARE_PAY")
-					if point_history:
-						point_history.point_type = models.POINT_TYPE.PREPARE_PAY
-						point_history.each_point = 2
-						self.session.add(point_history)
-						self.session.commit()
-
-				shop.available_balance += totalprice
-				balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,\
-					balance_record = "可提现额度入账：订单"+order.num+"完成",name = name,balance_value = totalprice,shop_totalPrice=\
-					shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,available_balance=\
-					shop.available_balance,balance_type = 6)
-				self.session.add(balance_history)
-				self.session.commit()
-
-			if order.pay_type == 3:
-				shop.available_balance += totalprice
-				balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,\
-					balance_record = "可提现额度入账：订单"+order.num+"完成",name = name,balance_value = totalprice,shop_totalPrice=\
-					shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,available_balance=\
-					shop.available_balance,balance_type = 7)
-				self.session.add(balance_history)
-				self.session.commit()
-
-
-			if shop_follow: 
-				if shop_follow.shop_point == None:
-					shop_follow.shop_point =0
-				shop_follow.shop_point += totalprice
-				self.session.commit()
-				try:
-					point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
-				except:
-					self.send_fail("point_history error:totalprice")
-				if point_history:
-					point_history.point_type = models.POINT_TYPE.TOTALPRICE
-					point_history.each_point = totalprice
-					self.session.add(point_history)
-					self.session.commit()
 	@tornado.web.authenticated
 	@unblock
 	@AdminBaseHandler.check_arguments("action", "data")
@@ -927,31 +794,8 @@ class Order(AdminBaseHandler):
 				if not SH2:
 					return self.send_fail("没找到该送货员")
 				order.update(session=self.session, status=4, SH2_id=int(data["staff_id"]))
-				#########################################################################################################
-				# send message to staff
-				# woody
-				# 3.21
-				id = SH2.id
-				try:
-					staff_info = self.session.query(models.Accountinfo).filter_by(id = id).first()
-				except:
-					self.send_fail("staff'infomation error")
-				openid = staff_info.wx_openid
-				staff_name = staff_info.nickname
-				shop_name = self.current_shop.shop_name
-				order_id = order.num
-				order_type = order.type
-				create_date = order.create_date
-				customer_name = order.receiver
-				order_totalPrice = order.totalPrice
-				# send_time = order.get_sendtime(self.session,order.id)
-				send_time = order.send_time
-				phone = order.phone
-				address = order.address_text
-				# print("ready to send message")
-
-				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone,address)
-				# print("success?")
+				print('beforeeeeeeeeeeeeeeeeeeeee')
+				self.send_staff_message(self.session,order)
 
 			elif action == "edit_status":
 				if order.status == -1:
