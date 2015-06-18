@@ -1643,7 +1643,7 @@ def init_db_data():
 	print("init db success")
 	return True
 
-
+'''
 # add by cm 2015.6.15
 # 商家优惠券
 class CouponsShop(MapBase, _CommonApi):
@@ -1694,4 +1694,4 @@ class CouponsCustomer(MapBase, _CommonApi):
 
 	# def get_uneffective_time(self,session,)
 
-
+'''

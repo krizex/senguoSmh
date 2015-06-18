@@ -2978,6 +2978,7 @@ class Marketing(AdminBaseHandler):
 		current_shop_id=self.current_shop.id
 		if action == "lovewall":
 			return self.render("admin/lovewall.html",context=dict(subpage = 'marketing'))
+		'''
 		elif action=="coupon":
 			coupons=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id).all()
 			data=[]
@@ -3047,7 +3048,8 @@ class Marketing(AdminBaseHandler):
 			x_coupon={"coupon_id":coupon_id,"coupon_money":q.coupon_money,"get_limitnum":q.get_limitnum,"use_rule":q.use_rule,"use_for":q.used_for,"valid_way":q.valid_way,"day_start":q.day_start,\
 			"last_day":q.last_day,"uneffective_time":q.uneffective_time,"coupon_totalnum":q.coupon_totalnum}
 			return self.render("admin/editcoupon.html",output_data=x_coupon,context=dict(subpage='marketing'))
-
+		'''
+	
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str","data")
 	def post(self):
@@ -3065,6 +3067,7 @@ class Marketing(AdminBaseHandler):
 		elif action == "confess_only":
 			only = current_shop.marketing.confess_only
 			current_shop.marketing.confess_only = 0 if only == 1 else 1
+		'''
 		elif action=="newpage":
 			return self.render("admin/newcoupon.html",context=dict(subpage='marketing'))
 		elif action=="coupon":
@@ -3163,6 +3166,7 @@ class Marketing(AdminBaseHandler):
 			return self.send_fail('something must wrong')
 		self.session.commit()
 		return self.send_success()
+		'''
 
 # 营销和玩法 - 告白墙管理
 
