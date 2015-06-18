@@ -617,8 +617,8 @@ class ShopProfile(CustomerBaseHandler):
 		if q and q.last_date == datetime.date.today():
 			signin = True
 		operate_days = (datetime.datetime.now() - datetime.datetime.fromtimestamp(shop.create_date_timestamp)).days
-		fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop_id).count()
-		order_sum = self.session.query(models.Shop.order_count).filter_by(id=shop_id).first()[0]
+		fans_sum = shop.fans_count
+		order_sum = shop.order_count
 		goods_sum = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
 		address = self.code_to_text("shop_city", shop.shop_city) + " " + shop.shop_address_detail
 		service_area = self.code_to_text("service_area", shop.shop_service_area)
