@@ -878,7 +878,7 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
-	@get_unblock
+	# @get_unblock
 	def get(self, shop_code):
 		w_follow = True
 		# fruits=''
