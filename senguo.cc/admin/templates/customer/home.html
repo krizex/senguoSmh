@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}【{{context['shop_name']}}】一家不错的O2O店铺，快来关注吧~{% end %}
 {% block head %}
-<link rel="stylesheet" href="{{static_url('css/market-home.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/beauty/market-home.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 {% end %}
 {% block content %}
@@ -16,68 +16,51 @@
 <input type="hidden" id="shop_name" value="{{context['shop_name']}}"/>
 <input type="hidden" id="shop_code" value="{{handler.shop_code}}"/>
 <span id="shop_imgurl" data-img="{{context['shop_logo']}}"></span>
-<div class="wrap-notice-box">
-    <div class="notice-box">
-        <!--<img src="{{static_url('images/banner.png')}}" class="default-banner img"/>-->
-        <div class="notice-board">
-            {% if notices %}
-            <div id="slider" class="swipe" style="visibility: visible;">
-                <div class="swipe-wrap">
-                    {% for notice in notices%}
-                    <figure>
-                        <div class="wrap text-center text-white font16 notice-item">
-                            <label class="title">{{notice[0]}}</label>
-                            <img src="/static/images/banner.png" class="img"/>
-                            <input type="hidden" value="{{notice[1]}}" class="notice-detail"/>
-                        </div>
-                    </figure>
-                    {% end%}
+<div class="wrap-home">
+    <div class="header">
+        <a href="javascript:;" class="menu" id="menu"></a>
+        <span>商品列表</span>
+        <a href="{{reverse_url('customerGoodsSearch')}}" class="head-right search"></a>
+    </div>
+    <ul class="groupt-list h0" id="groupt-list">
+        <li class="active"><a href="javascrit:;">默认分组</a></li>
+        <li><a href="javascrit:;">店铺推荐</a></li>
+        <li><a href="javascrit:;">热带水果</a></li>
+    </ul>
+    <div class="mt40">
+        <ul class="fruit-list">
+            <li class="red">
+                <img src="/static/images/furit.jpg" alt="水果图片"/>
+                <div class="fruit-right">
+                    <p class="name">烟台樱桃好好吃的呢的呢</p>
+                    <p class="price">￥ <span class="font16">16.50/</span>2斤</p>
+                    <div class="wrap-furit-opera bg">
+                        <p class="furit-opera">
+                            <span class="minus">-</span>
+                            <span class="add">+</span>
+                            <input type="text" disabled value="1"/>
+                        </p>
+                    </div>
                 </div>
-            </div>
-            <nav class="circle">
-                <ul id="position">
-                    {% for notice in notices%}
-                    <li></li>
-                    {% end%}
-                </ul>
-            </nav>
-            {% else %}
-            <img src="/static/images/banner.png" class="default-img img"/>
-            {% end %}
-        </div>
-    </div>
-    <div class="no-mar-btom top-title">
-        <div class="inner text-white bg-green" id="fruitPosition">
-            <a href="{{reverse_url('customerGoodsSearch')}}" class="search-btn" id="search-btn"><em></em></a>
-            <a href="javascript:;"  class="text-white tit choose-classify set-w100-fle text-center">
-                <span class="classify text-center set-inl-blo font18"><span id="classify">{% if len(context['group_list'])>0 %}{{context['group_list'][0]['name']}}{% end %}</span><!-- <em class="icon up font16" style="display:none;"></em><em class="icon down font16" ></em> --></span>
-            </a>
-            <a href="javascript:;" class="pull-left classify-icon text-white to-hide"> <span>分组</span><em class="set-inl-blo pull-right"></em></a>
-        </div>
-       <!--  <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle anim-bounceDown" style="display:none">  
-            <li class="text-grey6 bg-white pull-left text-center" data-id="-2">全部商品</li>
-            {% for group in context['group_list'] %}
-            <li class="text-grey6 bg-white pull-left text-center" data-id="{{group['id']}}">{{group['name']}}</li>
-            {% end %}
-        </ul> -->  
+            </li>
+            <li class="yellow">
+                <img src="/static/images/furit.jpg" alt="水果图片"/>
+                <div class="fruit-right">
+                    <p class="name">烟台樱桃好好吃的呢的呢</p>
+                    <p class="price">￥ <span class="font16">16.50/</span>2斤</p>
+                    <div class="wrap-furit-opera bg">
+                        <p class="furit-opera">
+                            <span class="minus hidden center">-</span>
+                            <span class="add center">+</span>
+                            <input type="text" class="hidden" disabled value="1"/>
+                        </p>
+                    </div>
+                </div>
+            </li>
+        </ul>
     </div>
 </div>
-<ul class="classify-list bg-green text-white anim-bounceDown to-hide" style="display:none;">
-    {% for group in context['group_list'] %}
-    <li class="pull-left" data-id="{{group['id']}}">{{group['name']}}</li>
-    {% end %}
-</ul>
-<div class="wrap-goods-box" id="wrap-goods-box">
-    <div class="goods-box">
-         {% for group in context['group_list'] %}
-         <p class="text-white no-mar-btom classify-title font18 text-center bg-green hidden classify-{{group['id']}}">{{group['name']}}</p>
-        <ul class="goods-list-{{group['id']}} fruit-list goods-list" >
-        </ul> 
-        {% end %}
-    </div>
-    <div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中 ( > < )~</div>
-</div>
-<div class="wrap-loading-box">
+<div class="wrap-loading-box hidden">
     <div class="loading-box">
         <div class="loader">
             <div class="ball"></div>
@@ -87,59 +70,8 @@
         <div class="load-txt">加载中...</div>
     </div>
 </div>
-{% end %}
-{% block other %}
-<div class="modal fade large-img-box" id="large_imgbox">
-    <div class="modal-dialog anim-bounceIn">
-        <div class="modal-content bg-white">
-            <div class="modal-header bg_change rainshed_green">
-                <button type="button" class="close text-green2 dismiss">✕</button>
-                <h2 class="modal-title text-green2 text-center line36">是水果啊啊啊</h2>
-            </div>
-            <div class="modal-body set-width-float text-center">
-                <img src="" id="largeImg" class="mt42"/>
-                <p class="intro font14 text-center">哈哈哈哈哈哈<a href="javascript:;" class="pull-right mr10 mt10 text-grey3">商品详情>></a></p>
 
-            </div>
-            <div class="modal-footer bg-white set-width-float">
-                <a href="javascript:;" class="click-great text-center font16 text-grey3 able_click"><em class="bg_change"></em>赞一个</a>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade detail-box" id="detail_box">
-    <div class="modal-dialog anim-bounceIn">
-        <div class="modal-content">
-            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
-            <div class="modal-header set-width-float">
-                <button type="button" class="close dismiss">✕</button>
-                <h2 class="modal-title  text-center line48">公告详情</h2>
-            </div>
-            <div class="modal-body set-width-float text-center">
-                <p class="detail font14 text-center"></p>
-            </div>
-            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
-        </div>
-    </div>
-</div>
-<div class="modal fade focus-box" id="focus_box">
-    <div class="modal-dialog anim-bounceIn">
-        <div class="modal-content">
-            <div class="modal-header set-width-float">
-                <button type="button" class="close text-green2 dismiss">✕</button>
-                <h2 class="modal-title text-green2 text-center"></h2>
-            </div>
-            <div class="modal-body set-width-float text-center pt-10">
-                <p class="font14 mt42 text-center">点击下方 “关注” 按钮后才可以添加商品呦!ヾ(●´▽`●)ノ</p>
-            </div>
-            <div class="modal-footer set-width-float">
-                <button  class="btn btn-default center-block focus-btn bg-green text-white">关注</button>
-            </div>
-        </div>
-    </div>
-</div>
 {% end %}
 {% block bottom %}
-<script src="{{static_url('js/market-home.js')}}"></script>
+<script src="{{static_url('js/beauty/market-home.js')}}"></script>
 {% end %}
-
