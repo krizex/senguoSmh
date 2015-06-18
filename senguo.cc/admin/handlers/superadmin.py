@@ -168,8 +168,8 @@ class ShopManage(SuperBaseHandler):
 				shops = q.order_by(models.Shop.id).all()
 			else:
 				q = self.session.query(models.Shop).filter(or_(models.Shop.shop_name.like("%{0}%".format(self.args["search"])),
-				  	 models.Shop.shop_code.like("%{0}%".format(self.args["search"]))),\
-				  	 models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
+				  	models.Shop.shop_code.like("%{0}%".format(self.args["search"]))),\
+				  	models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 				   	models.Shop.shop_code !='not set',models.Shop.status !=0 ).all()
 				shops = q
 		else:
@@ -390,7 +390,7 @@ class ShopManage(SuperBaseHandler):
 				output_data.append(data)
 				
 			if flag==1:
-				print(flag)
+				#print(flag)
 				return self.render("superAdmin/shop-manage.html", output_data=output_data,output_data_count=output_data_count,context=dict(subpage='shop',action=action,count=count))
 			else :
 				return self.send_success(output_data=output_data,output_data_count=output_data_count)
@@ -460,7 +460,7 @@ class ShopManage(SuperBaseHandler):
 				content = message_fail_content)
 			headers = dict(Host = '106.ihuyi.cn',)
 			r = requests.post(url,data = postdata , headers = headers)
-			print("[超级管理员]审核通知短信平台返回信息：",r.text)
+			# print("[超级管理员]审核通知短信平台返回信息：",r.text)
 
 			reason = "原因：" + message_reason
 
@@ -937,7 +937,7 @@ class OrderStatic(SuperBaseHandler):
 			else:  # 按时达收货时间估计
 				data[(order[1].hour+order[2].hour)//2] += 1
 
-		print (data)
+		#print(data)
 		return self.send_success(data=data)
 ##
 

@@ -2007,9 +2007,8 @@ class Follower(AdminBaseHandler):
 				if order_by == "time":
 					q = q.order_by(desc(models.CustomerShopFollow.create_time))
 			elif action == "old":  # 老用户
-				q = self.session.query(models.Customer).\
-					join(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == self.current_shop.id,\
-					models.CustomerShopFollow.shop_new == 1)#.distinct()
+				q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+					filter(models.CustomerShopFollow.shop_id == self.current_shop.id,models.CustomerShopFollow.shop_new == 1)
 			elif action == "charge":
 				q = self.session.query(models.Customer).join(models.BalanceHistory,models.Customer.id == models.BalanceHistory.customer_id).\
 					filter(models.BalanceHistory.shop_id == self.current_shop.id,models.BalanceHistory.balance_type==1).distinct()
@@ -2058,9 +2057,9 @@ class Follower(AdminBaseHandler):
 				filter(models.CustomerShopFollow.customer_id == customers[x].id).all()
 			shop_point = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customers[x].id,\
 				shop_id = shop_id).first()
-			customers[x].shop_point = shop_point.shop_point
+			customers[x].shop_point = round(shop_point.shop_point,2)
 			customers[x].shop_names = [y[0] for y in shop_names]
-			customers[x].shop_balance = shop_point.shop_balance
+			customers[x].shop_balance = format(shop_point.shop_balance,".2f")
 			customers[x].remark = shop_point.remark
 
 		page_sum=count/page_size
