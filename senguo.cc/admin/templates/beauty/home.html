@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}【{{context['shop_name']}}】一家不错的O2O店铺，快来关注吧~{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/beauty/market-home.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
+{% end %}
+{% block content %}
+{% set notices=context['notices']%}
+{% import json%}
+<script>
+    window.dataObj.notices = {% raw json.dumps(context["notices"]) %}
+    window.dataObj.cart_fs = {% raw json.dumps(context["cart_fs"]) %}
+</script>
+<input type="hidden" id="shop_status" value="{{context['shop_status']}}"/>
+<input type="hidden" id="if_focus" value="{{context['w_follow']}}"/>
+<input type="hidden" id="shop_name" value="{{context['shop_name']}}"/>
+<input type="hidden" id="shop_code" value="{{handler.shop_code}}"/>
+<span id="shop_imgurl" data-img="{{context['shop_logo']}}"></span>
+<div class="wrap-home">
+    <div class="header">
+        <a href="javascript:;" class="menu" id="menu"></a>
+        <span>商品列表</span>
+        <a href="{{reverse_url('customerGoodsSearch')}}" class="head-right search"></a>
+    </div>
+    <ul class="groupt-list h0" id="groupt-list">
+        <li class="active"><a href="javascrit:;">默认分组</a></li>
+        <li><a href="javascrit:;">店铺推荐</a></li>
+        <li><a href="javascrit:;">热带水果</a></li>
+    </ul>
+    <div class="mt40">
+        <ul class="fruit-list">
+            <li class="red">
+                <img src="/static/images/furit.jpg" alt="水果图片"/>
+                <div class="fruit-right">
+                    <p class="name">烟台樱桃好好吃的呢的呢</p>
+                    <p class="price">￥ <span class="font16">16.50/</span>2斤</p>
+                    <div class="wrap-furit-opera bg">
+                        <p class="furit-opera">
+                            <span class="minus">-</span>
+                            <span class="add">+</span>
+                            <input type="text" disabled value="1"/>
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="yellow">
+                <img src="/static/images/furit.jpg" alt="水果图片"/>
+                <div class="fruit-right">
+                    <p class="name">烟台樱桃好好吃的呢的呢</p>
+                    <p class="price">￥ <span class="font16">16.50/</span>2斤</p>
+                    <div class="wrap-furit-opera bg">
+                        <p class="furit-opera">
+                            <span class="minus hidden center">-</span>
+                            <span class="add center">+</span>
+                            <input type="text" class="hidden" disabled value="1"/>
+                        </p>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="wrap-loading-box hidden">
+    <div class="loading-box">
+        <div class="loader">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+        <div class="load-txt">加载中...</div>
+    </div>
+</div>
+
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/beauty/market-home.js')}}"></script>
+{% end %}
