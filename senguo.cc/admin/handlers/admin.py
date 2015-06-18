@@ -12,7 +12,7 @@ import requests
 import base64
 import decimal
 
-# 登陆处理
+# 登录处理
 class Access(AdminBaseHandler):
 	def initialize(self, action):
 		self._action = action
@@ -61,7 +61,7 @@ class Access(AdminBaseHandler):
 		next_url = self.get_argument("next", self.reverse_url("OfficialHome"))
 		return self.redirect(next_url)
 
-# 商家后台首页
+# 后台首页
 class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -142,7 +142,7 @@ class Home(AdminBaseHandler):
 		else:
 			return self.send_error(404)
 
-#admin 店铺切换
+# 店铺切换
 class SwitchShop(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -205,7 +205,7 @@ class SwitchShop(AdminBaseHandler):
 			shop_list.append(shop.safe_props())
 		return shop_list
 
-#admin后台轮询
+# 后台轮询
 class Realtime(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -217,6 +217,7 @@ class Realtime(AdminBaseHandler):
 		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
 		on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
 		return self.send_success(new_order_sum=new_order_sum, order_sum=order_sum,new_follower_sum=new_follower_sum, follower_sum=follower_sum,on_num=on_num)
+
 # 订单统计
 class OrderStatic(AdminBaseHandler):
 
@@ -511,6 +512,7 @@ class FollowerStatic(AdminBaseHandler):
 				filter(models.CustomerShopFollow.shop_id == self.current_shop.id).count()
 			return self.send_success(male_sum=male_sum, female_sum=female_sum, total=total)
 
+# 消息与评价
 class Comment(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str", "page:int")
@@ -1071,7 +1073,7 @@ class Order(AdminBaseHandler):
 				count[order.type*10+4] += 1
 		return count
 
-# 商品管理
+# 商品管理（老）
 class Shelf(AdminBaseHandler):
 
 	@tornado.web.authenticated
@@ -1282,7 +1284,7 @@ class Shelf(AdminBaseHandler):
 
 		return self.send_success()
 
-# 商品管理
+# 商品管理（新）
 class Goods(AdminBaseHandler):
 	@tornado.web.authenticated
 	def initialize(self, action):
@@ -1870,7 +1872,7 @@ class Goods(AdminBaseHandler):
 					if group_id == -1:
 						re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
 						if re_count >= 6:
-							return self.send_fail("推荐分组至多只能添加六个商品")
+							return self.send_fail("推荐分组最多只能添加六个商品")
 					goods.group_id= group_id
 				self.session.commit()
 
@@ -1882,7 +1884,7 @@ class Goods(AdminBaseHandler):
 			groups = self.session.query(models.GoodsGroup).filter_by(shop_id = shop_id,status = 1)
 			group_count = groups.count
 			if group_count == 5:
-				return self.send_fail('至多可添加五中自定义分组！')
+				return self.send_fail('最多只能添加五种自定义分组')
 			if not args["name"] or not args["intro"]:
 				return self.send_fail('请填写相应分组信息')			
 			_group = models.GoodsGroup(**args)
@@ -2083,7 +2085,7 @@ class Follower(AdminBaseHandler):
 				self.session.commit()
 				return self.send_success()
 
-
+# 员工管理
 class Staff(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action")
@@ -2212,7 +2214,7 @@ class Staff(AdminBaseHandler):
 			return self.send_fail()
 		return self.send_success()
 
-
+# 订单搜索
 class SearchOrder(AdminBaseHandler):  # 用户历史订单
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "id:int","page?:int")
@@ -2248,6 +2250,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 
 		return self.render("admin/order-list.html", context=dict(subpage=subpage))
 
+# 店铺设置
 class Config(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action",'status?')
@@ -2486,6 +2489,7 @@ class Config(AdminBaseHandler):
 			return self.send_error(404)
 		return self.send_success()
 
+# 店铺设置 - 管理员设置
 class AdminAuth(AdminBaseHandler):
 	@tornado.web.authenticated
 	def initialize(self, action):
@@ -2548,7 +2552,7 @@ class AdminAuth(AdminBaseHandler):
 		else:
 			return self.redirect('/admin/config?action=admin&status=fail')
 
-
+# 账户余额
 class ShopBalance(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -2798,6 +2802,7 @@ class ShopBalance(AdminBaseHandler):
 		else:
 			return self.send_fail('action error')
 
+# 店铺设置 - 店铺信息
 class ShopConfig(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -2863,7 +2868,7 @@ class ShopConfig(AdminBaseHandler):
 		self.session.commit()
 		return self.send_success()
 
-
+# 店铺设置 - 店铺认证
 class ShopAuthenticate(AdminBaseHandler):
 	@tornado.web.authenticated
 	# @AdminBaseHandler.check_arguments()
@@ -2958,12 +2963,7 @@ class ShopAuthenticate(AdminBaseHandler):
 			self.session.commit()
 			return self.send_success()
 
-
-class BalanceManage(AdminBaseHandler):
-	@tornado.web.authenticated
-	def get(self):
-		return self.send_success(haha = 'haha')
-
+# 营销和玩法
 class Marketing(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str")
@@ -2994,7 +2994,7 @@ class Marketing(AdminBaseHandler):
 		self.session.commit()
 		return self.send_success()
 
-
+# 营销和玩法 - 告白墙管理
 class Confession(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str", "page:int")
