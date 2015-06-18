@@ -488,10 +488,18 @@ function orderPrint(target,action){
                     var inner=window.document.body.innerHTML;
                     window.document.body.innerHTML=html.innerHTML;
                     var img = $("#img");
-                    img.on("load",function(){
+                    var src=img.attr('src');
+                    if(src!='None'&& src!=undefined){
+                      img.on("load",function(){
                          window.print();
                          window.document.body.innerHTML=inner;
-                    });
+                        });  
+                    }
+                    else{
+                       window.print();
+                       window.document.body.innerHTML=inner; 
+                    }
+                    
                 }
                 else return Tip(res.error_text);
             },
@@ -517,7 +525,7 @@ function orderPrint(target,action){
             var saler_remark=parent.find('.order_remark').text(); 
             var user_remark=parent.find('.message-content').text();
 
-            $.getItem('/static/items/admin/order-print-page.html?v=20150616',function(data){
+            $.getItem('/static/items/admin/order-print-page.html?v=20150618',function(data){
                 var $item=$(data);
                 $item.find('.notes-head').text(shop_name);
                 $item.find('.orderId').text(order_num);
@@ -534,7 +542,7 @@ function orderPrint(target,action){
                 if(user_remark=='null'){$item.find('.user-remark').hide()}
                 if(print_remark) {$item.find('.extra-info-box').show().find('.print-remark').text(print_remark); }
                 if(print_img_active == 1){
-                     if(!print_img) {
+                     if(!print_img||print_img=='None') {
                         $item.find('.shop-img').remove();
                     }
                     else {
