@@ -262,7 +262,6 @@ class ShopManage(SuperBaseHandler):
 		#add 6.6pm by jyj,search_count:
 		search_count = len(shops)
 		##
-
 			
 		q_temp = self.session.query(models.ShopTemp)
 		q_applying = q_temp.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
@@ -307,20 +306,14 @@ class ShopManage(SuperBaseHandler):
 				##############################################################################
 				account_info = self.session.query(models.Accountinfo).get(shop.admin_id)
 				wx_openid = account_info.wx_openid
-
-				
 				#subscribe = user_subscribe(wx_openid)
 				data["subscribe"] = account_info.subscribe  
+				
 				data["shop_trademark_url"] = shop.shop_trademark_url
-				
-				data["shop_name"] = shop.shop_name  #
-				
-				#data["shop_code"] = shop.shop_code  #
+				data["shop_name"] = shop.shop_name
 				data["city"] = self.code_to_text('shop_city', shop.shop_city)
 				data["staff_count"] = len(shop.staffs)
 				data["follower_count"] = shop.fans_count  
-				data["goods_count"] = len(shop.fruits) + self.session.query(models.MGoods).\
-					join(models.Menu).filter(models.Menu.shop_id == shop.id).count()  #
 				data["old_user"] = self.session.query(models.Customer).join(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == shop.id,models.CustomerShopFollow.shop_new == 1).count()
 				data["admin_name"] = shop.admin.accountinfo.realname
 				data["operate_days"] = (datetime.datetime.now() - datetime.datetime.
@@ -343,8 +336,6 @@ class ShopManage(SuperBaseHandler):
 				data["admin_nickname"] = shop.admin.accountinfo.nickname
 				data["shop_address_detail"] = shop.shop_address_detail
 				data["shop_code"] = shop.shop_code
-				shop_status_array = ['关闭','营业中','筹备中','休息中']
-
 				shop_status_array = ['关闭','营业中','筹备中','休息中']
 
 				data["shop_shop_status"] = shop_status_array[shop.status]
