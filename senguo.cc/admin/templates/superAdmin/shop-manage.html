@@ -101,14 +101,9 @@
                         </p>
                         <p>
                             <span class="tit2 available_balance">账户：{{data["available_balance"]}}元</span>
-                            <span class="fans_count">粉丝数：{{data["fans_count"]}}</span>
+                            <span class="fans_count">粉丝数：{{data["fans_count"]}} (老用户 {{data["old_user"]}})</span>
                         </p> 
                     </div>
-                </div>
-                <div class="col-lg-5 col-md-5 ml-6">
-                        <p>  
-                            <span class="tit2 old_user">老用户：{{data["old_user"]}}</span>
-                        </p>
                 </div>
         </li>
         {% end %}
@@ -167,14 +162,9 @@
                         </p>
                         <p>
                             <span class="tit2 ">账户：<span class="uavailable_balance"></span>元</span>
-                            <span class="">粉丝数：<span class="ufans_count"></span></span>
+                            <span class="">粉丝数：<span class="ufans_count"></span> (老用户 <span class="uold_user"></span>)</span>
                         </p> 
                     </div>
-                </div>
-                <div class="col-lg-5 col-md-5 ml-6">
-                        <p>  
-                            <span class="tit2 ">老用户：<span class="uold_user"></span>条</span>
-                        </p>
                 </div>
         </li>
     </ul>
