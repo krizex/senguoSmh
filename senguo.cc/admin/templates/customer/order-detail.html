@@ -34,7 +34,7 @@
                 <dl class="goods-item group">
                     <dd>
                         {% if charge_type.fruit.img_url %}
-                        <img src="{{charge_type.fruit.img_url}}?imageView/1/w/170/h/170" alt="商品图片"/>
+                        <img src="{{charge_type.fruit.img_url.split(';')[0]}}?imageView/1/w/170/h/170" alt="商品图片"/>
                         {% else %}
                         <img src="/static/design_img/TDSG.png" alt="商品图片"/>
                         {% end %}
@@ -88,13 +88,13 @@
 {% if order.comment%}
 <div class="wrap-bm-btn">
     <a class="fr add-comment white-btn" href="/customer/ordercomment?orderid={{order.id}}">修改评价</a>
-    <a class="fr go-shopping white-btn" href="/{{shop_code}}">继续购买</a>
+    <a class="fr go-shopping white-btn" href="/{{handler.shop_code}}">继续购买</a>
 </div>
 {% end %}
 {% if order.status == 5 %}
 <div class="wrap-bm-btn">
     <a class="fr add-comment red-btn" href="{{reverse_url('customerShopComment')}}?num={{order.id}}">评价</a>
-    <a class="fr go-shopping white-btn" href="/{{shop_code}}">继续购买</a>
+    <a class="fr go-shopping white-btn" href="/{{handler.shop_code}}">继续购买</a>
 </div>
 {% end %}
 {% if order.status == -1 or order.status == 1%}

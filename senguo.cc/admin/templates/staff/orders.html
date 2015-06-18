@@ -8,6 +8,23 @@
         <a>有新的订单，点这里或者按刷新按钮刷新</a>
 	</div>
 </section>
+{% if page !='home '%}
+{% set type=''%}
+<ul class="filter-box clear-fix">
+    {%if page == 'now' %}
+        {% set type='now'%} 
+    {% elif page == 'on_time' %}
+        {% set type='on_time'%}  
+    {% elif page == 'history' %}
+        {% set type='history'%}
+    {% end %}
+    <!-- <span class="title mr10 font16">订单筛选:</span> -->
+    <a class="btn all" href="{{reverse_url('staffOrder')}}?order_type={{type}}">全部</a>
+    <a class="btn today" href="{{reverse_url('staffOrder')}}?order_type={{type}}&day_type=today">今天</a>
+    <a class="btn tomorrow" href="{{reverse_url('staffOrder')}}?order_type={{type}}&day_type=tomorrow">明天</a>
+    <a class="btn overtime" href="{{reverse_url('staffOrder')}}?order_type={{type}}&day_type=overtime">已过期</a>
+</ul>
+{% end %}
 <ul class="order-list bg-white">
     {% for order in orders %}
     {% set fruits=eval(order.fruits)%}

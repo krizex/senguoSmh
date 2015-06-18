@@ -7,6 +7,9 @@ from sqlalchemy import exists, func, extract, DATE, desc,or_
 from dal.dis_dict import dis_dict
 from libs.msgverify import check_msg_token,get_access_token,user_subscribe
 
+#add by jyj 2015-6-15
+from sqlalchemy import func, desc, and_, or_, exists,not_
+##
 
 ############################
 # added by woody  2015.3.6
@@ -42,7 +45,7 @@ class Access(SuperBaseHandler):
 			return self.write("对不起，你不属于此系统用户，我们拒绝你的加入。")
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 
-		next_url = self.get_argument("next", self.reverse_url("superShopManage"))
+		next_url = self.get_argument("next", self.reverse_url("superShopManage")) + '?action=all_temp&search&shop_auth=2&shop_status=1&shop_sort_key=1&if_reverse=1&page=1&flag=1'
 		return self.redirect(next_url)
 
 class ShopAdminManage(SuperBaseHandler):
@@ -56,7 +59,7 @@ class ShopAdminManage(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("page?:int")
 	def get(self):
-		return self.redirect('/super/shopManage?action=all&search&shop_auth=2&shop_status=1&shop_sort_key=1&if_reverse=1&page=1&flag=1')
+		return self.redirect('/super/shopManage?action=all_temp&search&shop_auth=2&shop_status=1&shop_sort_key=1&if_reverse=1&page=1&flag=1')
 		offset = (self.args.get("page", 1)-1) * self._page_count
 		try:
 		    q = self.session.query(models.ShopAdmin)
@@ -137,6 +140,25 @@ class ShopManage(SuperBaseHandler):
 		action = self.args["action"]
 		flag=self.args["flag"]
 		
+
+		#add by jyj 2015-6-16
+		output_data_count = {}
+		output_data_count["status_5_count"] = self.session.query(models.Shop).count()
+		output_data_count["status_4_count"] = self.session.query(models.Shop).filter(models.Shop.shop_code == 'not set').count()
+		output_data_count["status_2_count"] = self.session.query(models.Shop).filter(models.Shop.status == 2).count()
+		output_data_count["status_1_count"] = self.session.query(models.Shop).filter(models.Shop.status == 1).count()
+		output_data_count["status_3_count"] = self.session.query(models.Shop).filter(models.Shop.status == 3).count()
+		output_data_count["status_0_count"] = self.session.query(models.Shop).filter(models.Shop.status == 0).count()
+
+		output_data_count["auth_4_count"] = self.session.query(models.Shop).count()
+		output_data_count["auth_3_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,2,3,4])).count()
+		
+		output_data_count["auth_2_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,4])).count()
+		output_data_count["auth_1_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([2,3])).count()
+		output_data_count["auth_0_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth == 0).count()
+		
+		##
+
 		#add 6.6pm search(根据店铺号或店铺名搜索的功能):
 		if 'search' in self.args:
 			from sqlalchemy.sql import or_ 
@@ -146,8 +168,8 @@ class ShopManage(SuperBaseHandler):
 				shops = q.order_by(models.Shop.id).all()
 			else:
 				q = self.session.query(models.Shop).filter(or_(models.Shop.shop_name.like("%{0}%".format(self.args["search"])),
-				  	 models.Shop.shop_code.like("%{0}%".format(self.args["search"]))),\
-				  	 models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
+				  	models.Shop.shop_code.like("%{0}%".format(self.args["search"]))),\
+				  	models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 				   	models.Shop.shop_code !='not set',models.Shop.status !=0 ).all()
 				shops = q
 		else:
@@ -295,6 +317,7 @@ class ShopManage(SuperBaseHandler):
 				data["follower_count"] = shop.fans_count  
 				data["goods_count"] = len(shop.fruits) + self.session.query(models.MGoods).\
 					join(models.Menu).filter(models.Menu.shop_id == shop.id).count()  #
+				data["old_user"] = self.session.query(models.Customer).join(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == shop.id,models.CustomerShopFollow.shop_new == 1).count()
 				data["admin_name"] = shop.admin.accountinfo.realname
 				data["operate_days"] = (datetime.datetime.now() - datetime.datetime.
 										fromtimestamp(shop.create_date_timestamp)).days
@@ -306,7 +329,7 @@ class ShopManage(SuperBaseHandler):
 					single_price = 0
 				else:
 					single_price = shop.shop_property/shop.order_count
-				single_price = format(single_price,".1f")
+				single_price = format(single_price,".2f")
 				data["single_price"] = single_price
 				data["available_balance"] = shop.available_balance
 
@@ -347,15 +370,19 @@ class ShopManage(SuperBaseHandler):
 				data["satisfy"] = satisfy
 
 				data["order_count"] = shop.order_count
-				data["goods_count"] = len(shop.fruits) + self.session.query(models.MGoods).\
-					join(models.Menu).filter(models.Menu.shop_id == shop.id).count()
+
+				#chang by jyj 2015-6-16
+				data["goods_count"] = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
+				##
+
+				#print(data["goods_count"])
 				data["shop_property"] = shop.shop_property
 
 				if shop.order_count == 0:
 					single_price = 0
 				else:
 					single_price = shop.shop_property/shop.order_count
-				single_price = format(single_price,".1f")
+				single_price = format(single_price,".2f")
 				data["single_price"] = single_price
 
 				data["available_balance"] = shop.available_balance
@@ -363,10 +390,10 @@ class ShopManage(SuperBaseHandler):
 				output_data.append(data)
 				
 			if flag==1:
-				print(flag)
-				return self.render("superAdmin/shop-manage.html", output_data=output_data,context=dict(subpage='shop',action=action,count=count))
+				#print(flag)
+				return self.render("superAdmin/shop-manage.html", output_data=output_data,output_data_count=output_data_count,context=dict(subpage='shop',action=action,count=count))
 			else :
-				return self.send_success(output_data=output_data)
+				return self.send_success(output_data=output_data,output_data_count=output_data_count)
 
 		else:
 			return self.send_error(404)
@@ -433,7 +460,7 @@ class ShopManage(SuperBaseHandler):
 				content = message_fail_content)
 			headers = dict(Host = '106.ihuyi.cn',)
 			r = requests.post(url,data = postdata , headers = headers)
-			print("[超级管理员]审核通知短信平台返回信息：",r.text)
+			# print("[超级管理员]审核通知短信平台返回信息：",r.text)
 
 			reason = "原因：" + message_reason
 
@@ -837,6 +864,82 @@ class ShopStatic(SuperBaseHandler):
 			order_by(models.Order.create_date).first()
 		page_sum = (datetime.datetime.now() - first_order.create_date).days//30 + 1
 		return self.send_success(page_sum=page_sum, data=data)
+
+#add by jyj 2015-6-15
+class OrderStatic(SuperBaseHandler):
+	def get(self):
+		return self.render("superAdmin/count-order.html",context=dict(subpage='orderstatic'))
+
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments("action:str")
+	def post(self):
+		action = self.args["action"]
+		if action == "order_time":
+			return self.order_time()
+		elif action == "receive_time":
+			return self.receive_time()
+
+	@SuperBaseHandler.check_arguments("type:int")
+	def order_time(self):
+		type = self.args["type"]
+		q = self.session.query(func.hour(models.Order.create_date), func.minute(models.Order.create_date)).\
+				filter(not_(models.Order.status.in_([-1,0])))
+		#q = self.session.query(models.Order.create_date).\
+		#		filter(not_(models.Order.status.in_([-1,0])))
+		if type == 1:  # 累计数据
+			pass
+		elif type == 2:  # 昨天数据
+			now = datetime.datetime.now() - datetime.timedelta(1)
+			start_date = datetime.datetime(now.year, now.month, now.day, 0)
+			end_date = datetime.datetime(now.year, now.month, now.day, 23)
+			q = q.filter(models.Order.create_date >= start_date,
+					   models.Order.create_date <= end_date)
+		else:
+			return self.send_error(404)
+		data = {}
+		for key in range(0, 24):
+			data[key] = 0
+		for e in q.all():
+			if e[1] < 30: 
+				data[e[0]] += 1
+			else:
+				if e[0]+1 == 24:
+					data[0] += 1
+				else:
+					data[e[0]] += 1
+			
+		return self.send_success(data=data)
+
+	@SuperBaseHandler.check_arguments("type:int")
+	def receive_time(self):
+		type = self.args["type"]
+		q = self.session.query(models.Order.type, models.Order.start_time, models.Order.end_time,models.Config.stop_range).\
+			filter(not_(models.Order.status.in_([-1,0])),models.Order.shop_id == models.Shop.id,models.Shop.id == models.Config.id)
+		if type == 1:
+			orders = q.all()
+		elif type == 2:
+			now = datetime.datetime.now() - datetime.timedelta(1)
+			start_date = datetime.datetime(now.year, now.month, now.day, 0)
+			end_date = datetime.datetime(now.year, now.month, now.day, 23)
+			orders = q.filter(models.Order.create_date >= start_date,
+							  models.Order.create_date <= end_date).all()
+		else:
+			return self.send_error(404)
+
+		#stop_range = self.current_shop.config.stop_range
+
+		data = {}
+		for key in range(0, 24):
+			data[key] = 0
+		for order in orders:
+			if order[0] == 1:  # 立即送收货时间估计
+				data[order[1].hour + (order[1].minute+order[3])//60] += 1
+			else:  # 按时达收货时间估计
+				data[(order[1].hour+order[2].hour)//2] += 1
+
+		#print(data)
+		return self.send_success(data=data)
+##
 
 class Official(SuperBaseHandler):
 	def get(self):

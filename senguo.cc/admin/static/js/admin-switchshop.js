@@ -70,16 +70,17 @@ $(document).ready(function(){
    
         if(shop_id){
             if(!$(e.target).hasClass('.forbid_click')){
-                var url='/admin';
+                var url='/admin/home';
                 var data={shop_id:shop_id};
                 var args={action:'shop_change',data:data};
                 $.postJson(url,args,function(res){
                     if(res.success){
                          if(shop_code!="not set" && typeof(shop_code) != undefined){
-                                window.location.href='/admin';
+                                window.location.href='/admin/home';
                             }else{
                             window.location.href="/admin/config/shop";
                             }
+
                     }
                 });
             }

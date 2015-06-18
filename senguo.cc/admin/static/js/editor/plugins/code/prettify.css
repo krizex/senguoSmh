@@ -8,6 +8,6 @@ pre.prettyprint {
 	font-size: 110%;
 	display: block;
 	font-family: "Consolas", "Monaco", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
-	margin: 1em 0px;
+	margin: 1em 0;
 	white-space: pre;
 }

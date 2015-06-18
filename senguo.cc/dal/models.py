@@ -1298,7 +1298,7 @@ class Order(MapBase, _CommonApi):
 				charge_type.fruit.storage+= num
 				charge_type.fruit.current_saled -=num
 				charge_type.fruit.saled -= num
-				print("[订单管理]取消订单，恢复库存数量(水果)：",num)
+				# print("[订单管理]取消订单，恢复库存数量：",num)
 		session.commit()
 		return True
 
@@ -1610,6 +1610,12 @@ class ConfessionGreat(MapBase, _CommonApi):
 	customer_id = Column(Integer, ForeignKey(Customer.id),nullable=False)
 	wall_id = Column(Integer,ForeignKey(ConfessionWall.id),nullable = False)
 	create_time = Column(DateTime,default = func.now())
+
+class ShortUrl(MapBase,_CommonApi):
+	__tablename__ = 'shorturl'
+	id = Column(Integer,primary_key = True , nullable = False , autoincrement = True)
+	short_url = Column(String(32),nullable = False)
+	long_url  = Column(String(64),nullable = False)
 
 def init_db_data():
 	MapBase.metadata.create_all()

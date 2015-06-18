@@ -11,7 +11,7 @@ import tornado.escape
 from dal.dis_dict import dis_dict
 import time
 import tornado.web
-from sqlalchemy import desc,or_
+from sqlalchemy import desc,or_,and_
 import datetime
 import qiniu
 from settings import *
@@ -178,7 +178,18 @@ class GlobalBaseHandler(BaseHandler):
 			timeStr=time.strftime("%Y-%m-%d %H:%M:%S", ltime)
 			text = timeStr
 			return text
-
+		##
+		#add by jyj 2015-6-15
+		elif column_name == "have_offline_entity":
+			text = ""
+			if code == 0:
+				text = "没有实体店，水果o2o探索中"
+			elif code == 1:
+				text = "已有实体店，并在经营中"
+			else:
+				text = "没有卖过水果想尝试"
+			return text
+		##
 
 	#获取订单详情
 	def get_order_detail(self,session,order_id):
@@ -255,19 +266,19 @@ class GlobalBaseHandler(BaseHandler):
 		elif unit == 3 :
 			name ='份'
 		elif unit == 4 :
-		 	name ='kg'
+			name ='kg'
 		elif unit == 5 :
 			name ='克'
 		elif unit == 6 :
 			name ='升'
 		elif unit == 7 :
-		 	name ='箱'
+			name ='箱'
 		elif unit == 8 :
 			name ='盒'
 		elif unit == 9 :
 			name ='件'
 		elif unit == 10 :
-		 	name ='框'
+			name ='框'
 		elif unit == 11 :
 			name ='包'
 		else:
@@ -790,6 +801,44 @@ class AdminBaseHandler(_AccountBaseHandler):
 		# return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		return self.reverse_url('customerLogin')
 
+	def getOrder(self,orders):
+		data = []
+		for order in orders:
+			order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id','comment','comment_imgUrl','comment_reply',
+										 'comment_create_date', 'start_time', 'end_time','commodity_quality','create_date','today',
+										 'type','active','arrival_day','arrival_time','finish_admin_id','intime_period',
+										 'send_admin_id','send_speed','shop_service']
+			d = order.safe_props(False)
+			d['fruits'] = eval(d['fruits'])
+			if d['mgoods']:
+				d['mgoods'] = eval(d['mgoods'])
+			else:
+				d['mgoods'] = {}
+			d['create_date'] = order.create_date.strftime('%Y-%m-%d %H:%M:%S')
+			# d["sent_time"] = order.send_time
+			info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
+			d["nickname"] = info.accountinfo.nickname
+			d["customer_id"] = order.customer_id
+			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
+				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id,models.HireLink.active == 1)).all()
+			d["shop_new"] = 0
+			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
+				models.CustomerShopFollow.customer_id == order.customer_id).first()
+			if follow:
+				d["shop_new"]=follow.shop_new
+				# print("[订单管理]读取订单，订单用户ID：",order.customer_id,"，新用户标识：",d["shop_new"])
+			SH2s = []
+			for staff in staffs:
+				staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone,\
+				"headimgurl":staff.accountinfo.headimgurl_small}
+				SH2s.append(staff_data)
+				if staff.id == order.SH2_id:  # todo JH、SH1
+					d["SH2"] = staff_data
+					# print(d["SH2"],'i am admin order' )
+			d["SH2s"] = SH2s
+			data.append(d)
+		return data
+
 
 class StaffBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopStaff
@@ -1026,16 +1075,6 @@ class QqOauth:
 		return qq_info
 
 
-
-
-
-
-
-
-
-
-
-
 jsapi_ticket = {"jsapi_ticket": '', "create_timestamp": 0}  # 用全局变量存好，避免每次都要申请
 access_token = {"access_token": '', "create_timestamp": 0}
 
@@ -1180,11 +1219,11 @@ class WxOauth2:
 				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
 			"topcolor": "#FF0000",
 			"data": {
-				"first": {"value": "您好，您所申请的店铺『%s』已经通过审核！" % shop_name, "color": "#44b549"},
+				"first": {"value": "您好，您所申请的店铺『%s』已经通过审核！\n请添加森果客服微信 senguocc100" % shop_name, "color": "#44b549"},
 				"keyword1": {"value": name, "color": "#173177"},
 				"keyword2": {"value": phone, "color": "#173177"},
 				"keyword3": {"value": time, "color": "#173177"},
-				"remark": {"value": "请务必点击详情，查看使用教程！", "color": "#FF4040"}}
+				"remark": {"value": "请务必点击详情，查看使用教程", "color": "#FF4040"}}
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
@@ -1389,6 +1428,66 @@ class WxOauth2:
 		authorize?appid={0}&redirect_uri={1}&response_type=code&scope={2}&state={3}#\
 		wechat_redirect'.format(appid,redirect_url,scope,state)
 		return url
+
+
+class UrlShorten:
+	session = models.DBSession()
+	code_map = (
+	  'a' , 'b' , 'c' , 'd' , 'e' , 'f' , 'g' , 'h' ,  
+	   'i' , 'j' , 'k' , 'l' , 'm' , 'n' , 'o' , 'p' ,  
+	   'q' , 'r' , 's' , 't' , 'u' , 'v' , 'w' , 'x' ,  
+	   'y' , 'z' , '0' , '1' , '2' , '3' , '4' , '5' ,  
+	   '6' , '7' , '8' , '9' , 'A' , 'B' , 'C' , 'D' ,  
+	   'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' ,  
+	   'M' , 'N' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' ,  
+	   'U' , 'V' , 'W' , 'X' , 'Y' , 'Z')
+
+	@classmethod
+	def get_md5(self,longurl):
+		longurl = longurl.encode('utf8') if isinstance(longurl,str) else longurl
+		m = hashlib.md5()
+		m.update(longurl)
+		return m.hexdigest()
+
+	@classmethod
+	def get_short_url(self,long_url):
+		url = self.session.query(models.ShortUrl).filter_by(long_url = long_url).first()
+		if url:
+			short_url = url.short_url
+			self.session.commit()
+			return short_url
+		else:
+			hkeys = []
+			hex   =  self.get_md5(long_url)
+			for i in range(0,1):
+				n = int(hex[i*8:(i+1)*8],16)
+				v = []
+				e = 0
+				for j in range(0,8):
+					x = 0x0000003D & n
+					e |= ((0x00000002 & n ) >> 1) << j  
+					v.insert(0,self.code_map[x])
+					n = n >> 6
+				e |= n << 5
+				v.insert(0,self.code_map[e & 0x0000003D])
+				hkeys.append("".join(v))
+			url = models.ShortUrl(short_url = hkeys[0],long_url = long_url)
+			self.session.add(url)
+			self.session.commit()
+			return hkeys[0]
+	@classmethod
+	def get_long_url(self,short_url):
+		url = self.session.query(models.ShortUrl).filter_by(short_url = short_url).first()
+		if not url:
+			return False
+		long_url = url.long_url
+		self.session.commit()
+		return long_url
+
+
+
+
+
 
 
 

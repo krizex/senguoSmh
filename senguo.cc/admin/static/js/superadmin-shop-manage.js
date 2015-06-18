@@ -6,7 +6,21 @@ $(document).ready(function(){
     //翻页
      $(document).on('click','#PrePage',function(){
         var inputinfo=$("#inputinfo").val();
-        if(page>1){
+        if(inputinfo==""){
+           if(page>1){
+            page--;
+            insertShop(page);
+           }
+           else  return Tip("当前已经是第一页");
+        }
+        else{
+              if(page>1){
+            page--;
+            searchshop(page);
+           }
+           else  return Tip("当前已经是第一页");
+        }
+        /*if(page>1){
             page--;
              if(inputinfo==""){
             insertShop(page);
@@ -17,7 +31,7 @@ $(document).ready(function(){
         }
         else{
             return Tip("当前已经是第一页");
-            }
+            }*/
     });
     $(document).on('click','#NextPage',function(){
         if(inputinfo==""){
@@ -125,6 +139,7 @@ function insertShop(page){
                         $('#list-group').empty()
                          for(var i=0; i<shops.length; i++){
         var shop = shops[i];
+        console.log(shop.shop_code);
         var $item = $("#temp-ul").children("li").clone();
         if(shop.shop_trademark_url){
              $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView/1/w/100/h/100");
@@ -146,6 +161,7 @@ function insertShop(page){
         $item.find(".usingle_price").html(shop.single_price);
         $item.find(".uavailable_balance").html(shop.available_balance);
         $item.find(".ufans_count").html(shop.fans_count);
+        $item.find(".uold_user").html(shop.old_user);
         $("#list-group").append($item);
                                         }
                                                 }
@@ -335,6 +351,7 @@ function searchshop(page){
         $item.find(".usingle_price").html(shop.single_price);
         $item.find(".uavailable_balance").html(shop.available_balance);
         $item.find(".ufans_count").html(shop.fans_count);
+        $item.find(".uold_user").html(shop.old_user);
         $("#list-group").append($item);
                                         }
                                                 }

@@ -19,7 +19,7 @@ ul{padding-left:0;}
 .btn-red{background:#FF0000;}
 .btn-green{background:#009933;}
 
-.top_head{width:100%;box-shadow:0px 0px 5px #ccc;height:60px;margin-bottom:50px;}
+.top_head{width:100%;box-shadow:0 0 5px #ccc;height:60px;margin-bottom:50px;}
 .header-nav{height:60px;line-height:60px;}
 .header-nav .nav{}
 .header-nav a{font-weight:bold;color:#333;}
@@ -44,7 +44,7 @@ ul{padding-left:0;}
 
 .count-badge{margin-left:10px;text-indent:0;}
 p{word-break:break-all;}
-.p0{padding:0px !important;}
+.p0{padding:0 !important;}
 .mt5{margin-top:5px;}
 a{color:#44b549;}
 a:hover{color: #44b549;text-decoration: none;}
@@ -93,8 +93,12 @@ a:focus{text-decoration:none;}
 .search-input input{float:left;}
 .search-input .search-con{width:200px;height:28px;border:1px solid #d9d9d9;color:#999;-ms-line-height:28px;text-indent:30px;background:url(“../images/search-icon.gif”) no-repeat 8px center;transition:width 0.3s;-moz-transition:width 0.3s;-webkit-transition:width 0.3s;-o-transition:width 0.3s;}
 .search-input .search-con:focus{width:266px;}
-.search-input .search-btn{width:70px;height:28px;border:1px solid #d9d9d9;border-left:none;border-top-right-radius:2px;border-bottom-right-radius:2px;background:#f4f5f9;color:#666;text-indent:0px;}
+.search-input .search-btn{width:70px;height:28px;border:1px solid #d9d9d9;border-left:none;border-top-right-radius:2px;border-bottom-right-radius:2px;background:#f4f5f9;color:#666;text-indent:0;}
 /**/
 
 /*add 6.9pm by jyj*/
 .rejectApply{color: #000;}
+/**/
+/*add by jyj 2015-6-16*/
+.top-margin1{margin-top:15px;}
+/**/
