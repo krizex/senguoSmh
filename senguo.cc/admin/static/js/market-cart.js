@@ -224,7 +224,7 @@ $(document).ready(function(){
         $('.intime-intro').hide();
         $('.now-intro').show();
         $('#freight_money').text(window.dataObj.freigh_now);
-        $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
+        $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
         $('.send-intime').on('click',function(){
             $(this).removeClass('active');
             if(now_on=='True'){
@@ -241,7 +241,7 @@ $(document).ready(function(){
         $('.intime-intro').show();
         $('.now-intro').hide();
         $('#freight_money').text(window.dataObj.freigh_ontime);
-        $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
+        $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
         //按时达模式选择
         $('#sendInTime').on('click',function(){
             var $this=$(this);
@@ -255,7 +255,7 @@ $(document).ready(function(){
             $('.now-intro').hide();
             window.dataObj.total_price=mathFloat($list_total_price.text());
             $('#freight_money').text(window.dataObj.freigh_ontime);
-            $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
+            $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
             if(window.dataObj.total_price<window.dataObj.mincharge_intime){
                 $('.mincharge_intime').show();
             }
@@ -270,7 +270,7 @@ $(document).ready(function(){
         $('.intime-intro').show();
         $('.now-intro').hide();
         $('#freight_money').text(window.dataObj.freigh_ontime);
-        $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
+        $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
         $('.send-now').on('click',function(){
             $(this).removeClass('active');
             if(intime_on=='True'){
@@ -290,7 +290,7 @@ $(document).ready(function(){
         $('.intime-intro').hide();
         $('.now-intro').show();
         $('#freight_money').text(window.dataObj.freigh_now);
-        $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
+        $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
         //立即送模式选择/立即送最低起送金额提示
         $('#sendNow').on('click',function(){  
             var $this=$(this);
@@ -326,7 +326,7 @@ $(document).ready(function(){
                 $('.now-intro').show();
                 window.dataObj.total_price=mathFloat($list_total_price.text());
                 $('#freight_money').text(window.dataObj.freigh_now);
-                $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
+                $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
                 if(window.dataObj.total_price<window.dataObj.mincharge_now){
                     $('.mincharge_now').show();
                     $('.mincharge_intime').hide();
@@ -342,7 +342,7 @@ $(document).ready(function(){
         $('.send-now').removeClass('active');
         $('.send-intime').removeClass('active');
         $('#freight_money').text(0);
-        $('#final_price').text(0);
+        $('.final_price').text(0);
         $('.send_now').hide();
         $('.intime-intro').hide();
         $('.now-intro').hide();
@@ -352,7 +352,7 @@ $(document).ready(function(){
         $('.intime-intro').show();
         $('.now-intro').hide();
         $('#freight_money').text(window.dataObj.freigh_ontime);
-        $('#final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
+        $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
     }
     if(typeof(intime_on)=='undefined'&&now_on=='True'){
         if(window.dataObj.total_price<window.dataObj.mincharge_now){
@@ -457,7 +457,7 @@ var getPrice=function(){
     window.dataObj.price_list=[];
     var freight=mathFloat($('#freight_money').text());
     var $list_total_price=$('#list_total_price');
-    var $final_price=$('#final_price');
+    var $final_price=$('.final_price');
     //商品价格小计
     $('.item_total_price').each(function(){
         var $this=$(this);
