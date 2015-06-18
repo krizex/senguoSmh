@@ -266,19 +266,19 @@ class GlobalBaseHandler(BaseHandler):
 		elif unit == 3 :
 			name ='份'
 		elif unit == 4 :
-		 	name ='kg'
+			name ='kg'
 		elif unit == 5 :
 			name ='克'
 		elif unit == 6 :
 			name ='升'
 		elif unit == 7 :
-		 	name ='箱'
+			name ='箱'
 		elif unit == 8 :
 			name ='盒'
 		elif unit == 9 :
 			name ='件'
 		elif unit == 10 :
-		 	name ='框'
+			name ='框'
 		elif unit == 11 :
 			name ='包'
 		else:
@@ -1075,16 +1075,6 @@ class QqOauth:
 		return qq_info
 
 
-
-
-
-
-
-
-
-
-
-
 jsapi_ticket = {"jsapi_ticket": '', "create_timestamp": 0}  # 用全局变量存好，避免每次都要申请
 access_token = {"access_token": '', "create_timestamp": 0}
 
@@ -1438,6 +1428,66 @@ class WxOauth2:
 		authorize?appid={0}&redirect_uri={1}&response_type=code&scope={2}&state={3}#\
 		wechat_redirect'.format(appid,redirect_url,scope,state)
 		return url
+
+
+class UrlShorten:
+	session = models.DBSession()
+	code_map = (
+	  'a' , 'b' , 'c' , 'd' , 'e' , 'f' , 'g' , 'h' ,  
+	   'i' , 'j' , 'k' , 'l' , 'm' , 'n' , 'o' , 'p' ,  
+	   'q' , 'r' , 's' , 't' , 'u' , 'v' , 'w' , 'x' ,  
+	   'y' , 'z' , '0' , '1' , '2' , '3' , '4' , '5' ,  
+	   '6' , '7' , '8' , '9' , 'A' , 'B' , 'C' , 'D' ,  
+	   'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' ,  
+	   'M' , 'N' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' ,  
+	   'U' , 'V' , 'W' , 'X' , 'Y' , 'Z')
+
+	@classmethod
+	def get_md5(self,longurl):
+		longurl = longurl.encode('utf8') if isinstance(longurl,str) else longurl
+		m = hashlib.md5()
+		m.update(longurl)
+		return m.hexdigest()
+
+	@classmethod
+	def get_short_url(self,long_url):
+		url = self.session.query(models.ShortUrl).filter_by(long_url = long_url).first()
+		if url:
+			short_url = url.short_url
+			self.session.commit()
+			return short_url
+		else:
+			hkeys = []
+			hex   =  self.get_md5(long_url)
+			for i in range(0,1):
+				n = int(hex[i*8:(i+1)*8],16)
+				v = []
+				e = 0
+				for j in range(0,8):
+					x = 0x0000003D & n
+					e |= ((0x00000002 & n ) >> 1) << j  
+					v.insert(0,self.code_map[x])
+					n = n >> 6
+				e |= n << 5
+				v.insert(0,self.code_map[e & 0x0000003D])
+				hkeys.append("".join(v))
+			url = models.ShortUrl(short_url = hkeys[0],long_url = long_url)
+			self.session.add(url)
+			self.session.commit()
+			return hkeys[0]
+	@classmethod
+	def get_long_url(self,short_url):
+		url = self.session.query(models.ShortUrl).filter_by(short_url = short_url).first()
+		if not url:
+			return False
+		long_url = url.long_url
+		self.session.commit()
+		return long_url
+
+
+
+
+
 
 
 

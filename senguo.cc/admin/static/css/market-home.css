@@ -3,7 +3,7 @@ html,body{width: 100%}
 .phone-box{padding-bottom:120px;}
 .wrap-goods-box{/*padding-bottom: 100px;*/}
 .goods-list{width:100%;float:left;margin:0;}
-.goods-list-item{width:100%;float:left;position:relative;overflow:hidden;margin-bottom:4px;}
+.goods-list-item{width:100%;float:left;position:relative;overflow:hidden;margin-bottom:4px;transition:0.2s;-webkit-transition:0.2s;}
 .goods-list-item .goods-img{position:relative;overflow:hidden;max-width:90px !important;max-height:90px;margin-right:-95px;z-index:50;}
 .goods-list-item .goods-img .tag{display:inline-block;position:absolute;background-size:140px 180px;}
 .goods-list-item .goods-img a{width:100%;overflow:hidden;padding:2px;}

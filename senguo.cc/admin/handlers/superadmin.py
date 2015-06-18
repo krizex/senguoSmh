@@ -317,6 +317,7 @@ class ShopManage(SuperBaseHandler):
 				data["follower_count"] = shop.fans_count  
 				data["goods_count"] = len(shop.fruits) + self.session.query(models.MGoods).\
 					join(models.Menu).filter(models.Menu.shop_id == shop.id).count()  #
+				data["old_user"] = self.session.query(models.Customer).join(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == shop.id,models.CustomerShopFollow.shop_new == 1).count()
 				data["admin_name"] = shop.admin.accountinfo.realname
 				data["operate_days"] = (datetime.datetime.now() - datetime.datetime.
 										fromtimestamp(shop.create_date_timestamp)).days
@@ -374,7 +375,7 @@ class ShopManage(SuperBaseHandler):
 				data["goods_count"] = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
 				##
 
-				print(data["goods_count"])
+				#print(data["goods_count"])
 				data["shop_property"] = shop.shop_property
 
 				if shop.order_count == 0:
