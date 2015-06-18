@@ -70,7 +70,7 @@ $(document).ready(function(){
    
         if(shop_id){
             if(!$(e.target).hasClass('.forbid_click')){
-                var url='/admin';
+                var url='/admin/home';
                 var data={shop_id:shop_id};
                 var args={action:'shop_change',data:data};
                 $.postJson(url,args,function(res){
