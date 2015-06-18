@@ -434,10 +434,41 @@ class ConfessionList(CustomerBaseHandler):
 
 class Coupon(CustomerBaseHandler):
 	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("action:str", "customer_id?:int")
 	def get(self):
-		return self.render("coupon/coupon.html")
-
+		action=self.args["action"]
+		current_customer_id=self.args["customer_id"]
+		data=[]
+		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=current_customer_id).all()
+		for x in q:
+			x_coupon={"coupon_money":x.coupon_money,"get_date":x.get_date,"uneffective_time":x.uneffective_time,"if_used":x.if_used}
+			data.append(x_coupon)
+		return self.render("coupon/coupon.html",output_data=data)
 class CouponDetail(CustomerBaseHandler):
 	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("action:str", "customer_id:int","coupon_key:str")
 	def get(self):
-		return self.render("coupon/coupon-detail.html")
+		action=self.args["action"]
+		data=self.args["data"]
+		current_customer_id=data["customer_id"]
+		mcoupon_key=data["coupon_key"]
+		data=[]
+		if action==detail:
+			q=self.session.query(modeles.CouponsCustomer).filter_by(customer_id=current_customer_id,coupon_key=mcoupon_key)
+			for x in q:
+				x_coupon={"coupon_money":q.coupon_money,"get_date":q.get_date,"uneffective_time":q.uneffective_time,"if_used":q.if_used}
+				data.append(x_coupon)
+			return self.render("coupon/detail.html",output_data=data)
+		elif action==search:
+			q=self.session.query(modeles.CouponsCustomer).filter_by(customer_id=current_customer_id,coupon_key=mcoupon_key)
+			for x in q:
+				x_coupon={"coupon_money":q.coupon_money,"get_date":q.get_date,"uneffective_time":q.uneffective_time,"if_used":q.if_used}
+				data.append(x_coupon)
+			return self.render("coupon/detail.html",output_data=data)
+		elif action=="usecoupon":
+		elif action=="grab":
+
+		
+		
+
+			
