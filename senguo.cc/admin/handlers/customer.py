@@ -22,9 +22,8 @@ import tornado.websocket
 from dal.db_configs import DBSession
 # from wxpay import QRWXpay
 
-
+# 非阻塞
 EXECUTOR = ThreadPoolExecutor(max_workers=4)
-
 def unblock(f):
 
 	@tornado.web.asynchronous
@@ -44,7 +43,7 @@ def unblock(f):
 
 	return wrapper
 
-
+# 登录处理
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
 		self._action = action
@@ -119,6 +118,7 @@ class Access(CustomerBaseHandler):
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 		return self.redirect(next_url)
 
+# 第三方登录
 class Third(CustomerBaseHandler):
 	def initialize(self, action):
 		self._action = action
@@ -126,7 +126,8 @@ class Third(CustomerBaseHandler):
 		action =self._action
 		if self._action == "weixin":
 			return self.redirect(self.get_weixin_login_url())
-#商品详情
+
+# 商品详情
 class customerGoods(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code,goods_id):
@@ -192,8 +193,7 @@ class customerGoods(CustomerBaseHandler):
 		self.set_cookie("cart_count", str(cart_count))
 		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
 		
-
-
+# 手机注册
 class RegistByPhone(CustomerBaseHandler):
 	def get(self):
 		return self.render("login/m_register.html")
@@ -247,6 +247,7 @@ class RegistByPhone(CustomerBaseHandler):
 			print("[手机注册]手机号",phone,"注册成功，用户ID为：",u.id)
 			return self.send_success()
 
+# 重置密码
 class Password(CustomerBaseHandler):
 	def get(self):
 		return self.render("login/m_password.html")
@@ -285,9 +286,7 @@ class Password(CustomerBaseHandler):
 			u.update(self.session,password=password)
 			return self.send_success()
 
-
-
-
+# 商城首页 商品列表
 class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
@@ -329,7 +328,7 @@ class Home(CustomerBaseHandler):
 			return self.send_fail("point show error")
 		if shop_follow:
 			if shop_follow.shop_point:
-				shop_point = format(shop_follow.shop_point,'.2f')
+				shop_point = int(shop_follow.shop_point)
 				shop_balance = format(shop_follow.shop_balance,'.2f')
 			else:
 				shop_point = 0
@@ -375,6 +374,7 @@ class Home(CustomerBaseHandler):
 			self.session.commit()
 		return self.send_success()
 
+# 发现
 class Discover(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
@@ -402,6 +402,7 @@ class Discover(CustomerBaseHandler):
 			confess_count = 0 
 		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count)
 
+# 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
@@ -416,6 +417,7 @@ class ShopArea(CustomerBaseHandler):
 
 		return self.render('customer/shop-area.html',context=dict(subpage=''),address = address,lat = lat ,lon = lon,shop_name=shop_name)
 
+# 个人中心
 class CustomerProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action?")
@@ -504,6 +506,7 @@ class CustomerProfile(CustomerBaseHandler):
 			return self.send_error(404)
 		return self.send_success()
 
+# 个人中心 - 绑定微信
 class WxBind(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def initialize(self, action):
@@ -560,6 +563,7 @@ class WxBind(CustomerBaseHandler):
 		else:
 			print('[微信绑定]微信绑定错误')
 
+# 店铺
 class ShopProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self, shop_code):
@@ -613,8 +617,8 @@ class ShopProfile(CustomerBaseHandler):
 		if q and q.last_date == datetime.date.today():
 			signin = True
 		operate_days = (datetime.datetime.now() - datetime.datetime.fromtimestamp(shop.create_date_timestamp)).days
-		fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop_id).count()
-		order_sum = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
+		fans_sum = shop.fans_count
+		order_sum = shop.order_count
 		goods_sum = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
 		address = self.code_to_text("shop_city", shop.shop_city) + " " + shop.shop_address_detail
 		service_area = self.code_to_text("service_area", shop.shop_service_area)
@@ -753,6 +757,7 @@ class ShopProfile(CustomerBaseHandler):
 			self.session.commit()
 		return self.send_success(notice='签到成功，积分+1')
 
+# 店铺 - 店铺成员
 class Members(CustomerBaseHandler):
 	def get(self):
 		# shop_id = self.shop_id
@@ -790,6 +795,7 @@ class Members(CustomerBaseHandler):
 		# print(member_list)
 		return self.render("customer/shop-staff.html", member_list=member_list)
 
+# 店铺 - 店铺评价
 class Comment(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("page:int")
@@ -830,6 +836,7 @@ class Comment(CustomerBaseHandler):
 				shop_service = shop_service,commodity_quality=commodity_quality)
 		return self.send_success(date_list=date_list,nomore=nomore)
 
+# 店铺 - 评价详情
 class ShopComment(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -1246,6 +1253,7 @@ class Market(CustomerBaseHandler):
 		self.save_cart(charge_type_id, self.shop_id, action)
 		return self.send_success()
 
+# 商品 - 商品搜索
 class GoodsSearch(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -1271,6 +1279,7 @@ class GoodsSearch(CustomerBaseHandler):
 			data = []
 		return self.send_success(data=data)
 
+# 购物篮
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
@@ -1579,6 +1588,7 @@ class Cart(CustomerBaseHandler):
 		#else:
 		#	print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除：",order.num)
 
+# 购物篮 - 订单提交回调
 class CartCallback(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments('order_id')
@@ -1696,6 +1706,7 @@ class Wexin(CustomerBaseHandler):
 		return self.send_success(noncestr=noncestr, timestamp=timestamp,
 								 signature=self.signature(noncestr, timestamp, url))
 
+# 我的 - 我的订单
 class Order(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action")
@@ -1983,7 +1994,7 @@ class Order(CustomerBaseHandler):
 		else:
 			return self.send_error(404)
 		
-
+# 我的 - 我的订单 - 订单详情
 class OrderDetail(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,order_id):
@@ -2055,6 +2066,7 @@ class OrderDetail(CustomerBaseHandler):
 		else:
 			return self.send_error(404)
 
+# 我的 - 余额详情
 class Balance(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -2131,6 +2143,7 @@ class Balance(CustomerBaseHandler):
 
 		return self.send_success(data = data,nomore=nomore)
 
+# 我的 - 积分详情
 class Points(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -2147,7 +2160,7 @@ class Points(CustomerBaseHandler):
 			self.send_fail("point show error")
 		if shop_follow:
 			if shop_follow.shop_point:
-				shop_point = shop_follow.shop_point
+				shop_point = int(shop_follow.shop_point)
 			else:
 				shop_point = 0
 
@@ -2196,8 +2209,7 @@ class Points(CustomerBaseHandler):
 
 		return self.send_success(data = data,nomore=nomore)
 
-
-
+# 余额充值
 class Recharge(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments('code?:str','action?:str')
@@ -2224,8 +2236,7 @@ class Recharge(CustomerBaseHandler):
 			return self.send_success(url = url)
 		return self.render("customer/recharge.html",code = code,url=url )
 
-
-
+# 我的 - 我的订单 - 评价订单
 class OrderComment(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments('orderid:str')
@@ -2256,7 +2267,6 @@ class QrWxpay(CustomerBaseHandler):
 	def get(self):
 		import pyqrcode
 
-		
 
 class payTest(CustomerBaseHandler):
 
@@ -2490,7 +2500,11 @@ class InsertData(CustomerBaseHandler):
 		print(UrlShorten.get_long_url(short))
 		self.render('customer/storage-change.html')
 
-class  Overtime(CustomerBaseHandler):
+# 支付超时判断
+# 返回：
+# 		0 - 不超时
+# 		1 - 超时
+class Overtime(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("order_id?:str")
 	def get(self):
