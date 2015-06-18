@@ -43,7 +43,7 @@ class Access(SuperBaseHandler):
 		# 登录
 		u = models.SuperAdmin.login_by_unionid(self.session, userinfo["unionid"])
 		if not u:
-			return self.write("对不起，你不属于此系统用户，我们拒绝你的加入。")
+			return self.write("对不起，你不属于此系统的用户")
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 
 		next_url = self.get_argument("next", self.reverse_url("superShopManage")) + '?action=all_temp&search&shop_auth=2&shop_status=1&shop_sort_key=1&if_reverse=1&page=1&flag=1'

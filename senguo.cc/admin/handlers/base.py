@@ -657,25 +657,17 @@ class SuperBaseHandler(_AccountBaseHandler):
 				shop_id = shop.id
 				fruits = shop.fruits
 				menus = shop.menus
+				fans_count = shop.fans_count
 				# print(menus)
 				create_date = shop.create_date_timestamp
 				x = datetime.datetime.fromtimestamp(create_date)
 				# print(x)
 				now = datetime.datetime.now()
-				days = (now -x).days
+				days = (now - x).days
 				if days > 14:
-					if (shop_code == 'not set') or (len(fruits)+len(menus) == 0):
+					if (shop_code == 'not set') or (fans_count < 2) or (len(fruits)+len(menus) == 0):
 						shop.status = 0
-						print("[定时任务]店铺关闭成功：",shop_id,"未设置店铺号/无商品")
-					else:
-						try:
-							follower_count = session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
-						except:
-							return self.send_fail('follower_count error')
-						if follower_count < 2:
-							shop.status = 0
-							print("[定时任务]店铺关闭成功：",shop_id,"关注数小于2")							
-
+						print("[定时任务]店铺关闭成功：",shop_id)
 			session.commit()
 			print("[定时任务]关闭店铺完成")
 			# return self.send_success(close_shop_list = close_shop_list)
