@@ -43,7 +43,7 @@ class Access(SuperBaseHandler):
 		# 登录
 		u = models.SuperAdmin.login_by_unionid(self.session, userinfo["unionid"])
 		if not u:
-			return self.write("对不起，你不属于此系统用户，我们拒绝你的加入。")
+			return self.write("对不起，你不属于此系统的用户")
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 
 		next_url = self.get_argument("next", self.reverse_url("superShopManage")) + '?action=all_temp&search&shop_auth=2&shop_status=1&shop_sort_key=1&if_reverse=1&page=1&flag=1'
@@ -262,7 +262,6 @@ class ShopManage(SuperBaseHandler):
 		#add 6.6pm by jyj,search_count:
 		search_count = len(shops)
 		##
-
 			
 		q_temp = self.session.query(models.ShopTemp)
 		q_applying = q_temp.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
@@ -307,20 +306,14 @@ class ShopManage(SuperBaseHandler):
 				##############################################################################
 				account_info = self.session.query(models.Accountinfo).get(shop.admin_id)
 				wx_openid = account_info.wx_openid
-
-				
 				#subscribe = user_subscribe(wx_openid)
 				data["subscribe"] = account_info.subscribe  
+				
 				data["shop_trademark_url"] = shop.shop_trademark_url
-				
-				data["shop_name"] = shop.shop_name  #
-				
-				#data["shop_code"] = shop.shop_code  #
+				data["shop_name"] = shop.shop_name
 				data["city"] = self.code_to_text('shop_city', shop.shop_city)
 				data["staff_count"] = len(shop.staffs)
 				data["follower_count"] = shop.fans_count  
-				data["goods_count"] = len(shop.fruits) + self.session.query(models.MGoods).\
-					join(models.Menu).filter(models.Menu.shop_id == shop.id).count()  #
 				data["old_user"] = self.session.query(models.Customer).join(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == shop.id,models.CustomerShopFollow.shop_new == 1).count()
 				data["admin_name"] = shop.admin.accountinfo.realname
 				data["operate_days"] = (datetime.datetime.now() - datetime.datetime.
@@ -343,8 +336,6 @@ class ShopManage(SuperBaseHandler):
 				data["admin_nickname"] = shop.admin.accountinfo.nickname
 				data["shop_address_detail"] = shop.shop_address_detail
 				data["shop_code"] = shop.shop_code
-				shop_status_array = ['关闭','营业中','筹备中','休息中']
-
 				shop_status_array = ['关闭','营业中','筹备中','休息中']
 
 				data["shop_shop_status"] = shop_status_array[shop.status]
@@ -484,7 +475,6 @@ class ShopManage(SuperBaseHandler):
 			config = models.Config()
 			config.periods.extend([period1, period2, period3])
 			marketing = models.Marketing()
-
 
 			# 把临时表的内容复制到shop表
 			shop = models.Shop(admin_id=shop_temp.admin_id,
@@ -949,38 +939,38 @@ class Official(SuperBaseHandler):
 	def get(self):
 		return self.render("m-official/home.html")
 
-class ShopClose(SuperBaseHandler):
-	@tornado.web.authenticated
-	def get(self):
-		try:
-			shops = self.session.query(models.Shop).filter_by(status =1).all()
-		except:
-			return self.send_fail('shopclose error')
-		if shops:
-			for shop in shops:
-				shop_code = shop.shop_code
-				shop_id = shop.id
-				fruits = shop.fruits
-				menus = shop.menus
-				# print(menus)
-				create_date = shop.create_date_timestamp
-				x = datetime.datetime.fromtimestamp(create_date)
-				# print(x)
-				now = datetime.datetime.now()
-				days = (now -x).days
-				if days >14:
-					if shop_code =='not set':
-						shop.status = 0
-					if len(fruits) == 0 and len(menus) == 0:
-						shop.status = 0 
-					try:
-						follower_count = self.session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
-					except:
-						return self.send_fail('follower_count error')
-					if follower_count <2:
-						shop.status =0
-				self.session.commit()
-			return self.send_success()
+# class ShopClose(SuperBaseHandler):
+# 	@tornado.web.authenticated
+# 	def get(self):
+# 		try:
+# 			shops = self.session.query(models.Shop).filter_by(status =1).all()
+# 		except:
+# 			return self.send_fail('shopclose error')
+# 		if shops:
+# 			for shop in shops:
+# 				shop_code = shop.shop_code
+# 				shop_id = shop.id
+# 				fruits = shop.fruits
+# 				menus = shop.menus
+# 				# print(menus)
+# 				create_date = shop.create_date_timestamp
+# 				x = datetime.datetime.fromtimestamp(create_date)
+# 				# print(x)
+# 				now = datetime.datetime.now()
+# 				days = (now -x).days
+# 				if days >14:
+# 					if shop_code =='not set':
+# 						shop.status = 0
+# 					if len(fruits) == 0 and len(menus) == 0:
+# 						shop.status = 0 
+# 					try:
+# 						follower_count = self.session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
+# 					except:
+# 						return self.send_fail('follower_count error')
+# 					if follower_count <2:
+# 						shop.status =0
+# 				self.session.commit()
+# 			return self.send_success()
 
 # class Comment(SuperBaseHandler):
 # 	@tornado.web.authenticated

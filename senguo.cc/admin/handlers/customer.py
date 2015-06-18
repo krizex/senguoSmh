@@ -328,7 +328,7 @@ class Home(CustomerBaseHandler):
 			return self.send_fail("point show error")
 		if shop_follow:
 			if shop_follow.shop_point:
-				shop_point = format(shop_follow.shop_point,'.2f')
+				shop_point = int(shop_follow.shop_point)
 				shop_balance = format(shop_follow.shop_balance,'.2f')
 			else:
 				shop_point = 0
@@ -617,8 +617,8 @@ class ShopProfile(CustomerBaseHandler):
 		if q and q.last_date == datetime.date.today():
 			signin = True
 		operate_days = (datetime.datetime.now() - datetime.datetime.fromtimestamp(shop.create_date_timestamp)).days
-		fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop_id).count()
-		order_sum = self.session.query.with_entities(models.Shop.order_count).filter_by(id=shop_id).first()
+		fans_sum = shop.fans_count
+		order_sum = shop.order_count
 		goods_sum = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
 		address = self.code_to_text("shop_city", shop.shop_city) + " " + shop.shop_address_detail
 		service_area = self.code_to_text("service_area", shop.shop_service_area)
@@ -1614,54 +1614,7 @@ class CartCallback(CustomerBaseHandler):
 		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		# if not address:
 		# 	return self.send_fail("没找到地址", 404)
-
-		admin_name = shop.admin.accountinfo.nickname
-		touser     = shop.admin.accountinfo.wx_openid
-		shop_name  = shop.shop_name
-		order_id   = order.num
-		order_type = order.type
-		online_type= order.online_type
-		pay_type   = order.pay_type
-		phone      = order.phone
-		totalPrice = order.totalPrice
-		if order_type == 1:
-			order_type = '立即送'
-		else:
-			order_type = '按时达'
-		create_date= order.create_date
-		customer_name = order.receiver
-		c_tourse   = customer.accountinfo.wx_openid
-		goods = []
-		f_d = eval(order.fruits)
-		for f in f_d:
-			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-		goods = str(goods)[1:-1]
-		print("[提交订单]订单详情：",goods)
-		order_totalPrice = float('%.2f'% totalPrice)
-		print("[提交订单]订单总价：",order_totalPrice)
-		# send_time     = order.get_sendtime(session,order.id)
-		send_time = order.send_time
-		address = order.address_text
-		order_realid = order.id
-		if pay_type != 3:
-			if shop.super_temp_active != 0:
-				WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
-						customer_name,order_totalPrice,send_time,goods,phone,address)
-			try:
-				other_admin = self.session.query(models.HireLink).filter_by(shop_id = shop.id,active=1,work=9,temp_active=1).first()
-			except:
-				other_admin = None
-			if other_admin:
-				info =self.session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id)\
-				.filter(models.ShopStaff.id == other_admin.staff_id).first()
-				other_touser = info.wx_openid
-				other_name = info.nickname
-				WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,\
-					customer_name,order_totalPrice,send_time,goods,phone,address)
-			# send message to customer
-			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
-
-
+		self.send_admin_message(self.session,order)
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
 		# 同时生成余额变动记录,
@@ -2160,7 +2113,7 @@ class Points(CustomerBaseHandler):
 			self.send_fail("point show error")
 		if shop_follow:
 			if shop_follow.shop_point:
-				shop_point = shop_follow.shop_point
+				shop_point = int(shop_follow.shop_point)
 			else:
 				shop_point = 0
 
@@ -2273,14 +2226,15 @@ class payTest(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments('code?:str','totalPrice?')
 	def get(self):
-		totalPrice =int((float(self.get_cookie('money')))*100)
-		orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(1)+'a'+str(int(time.time()))
+		totalPrice = float(self.get_cookie('money'))
+		wxPrice    = totalPrice * 100
+		orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(wxPrice)+'a'+str(int(time.time()))
 		if not self.is_wexin_browser():
 			unifiedOrder =   UnifiedOrder_pub()
 			unifiedOrder.setParameter("body",'QrWxpay')
 			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/fruitzone/paytest')
 			unifiedOrder.setParameter("out_trade_no",orderId)
-			unifiedOrder.setParameter('total_fee',totalPrice)
+			unifiedOrder.setParameter('total_fee',wxPrice)
 			unifiedOrder.setParameter('trade_type',"NATIVE")
 			res = unifiedOrder.postXml().decode('utf-8')
 			res_dict = unifiedOrder.xmlToArray(res)
@@ -2320,7 +2274,6 @@ class payTest(CustomerBaseHandler):
 				unifiedOrder.setParameter("openid",openid)
 				unifiedOrder.setParameter("out_trade_no",orderId)
 				#orderPriceSplite = (order.price) * 100
-				wxPrice =int(totalPrice )
 				print(wxPrice,'sure')
 				unifiedOrder.setParameter('total_fee',wxPrice)
 				unifiedOrder.setParameter('trade_type',"JSAPI")
@@ -2333,7 +2286,7 @@ class payTest(CustomerBaseHandler):
 				timestamp = datetime.datetime.now().timestamp()
 				wxappid = 'wx0ed17cdc9020a96e'
 				signature = self.signature(noncestr,timestamp,path_url)
-				totalPrice = float(totalPrice/100)
+				# totalPrice = float(totalPrice/100)
 		
 			# return self.send_success(renderPayParams = renderPayParams)
 			return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
@@ -2424,67 +2377,6 @@ class payTest(CustomerBaseHandler):
 			return self.write('success')
 	#	else:
 	#		return self.send_fail('其它支付方式尚未开发')
-
-class AlipayNotify(CustomerBaseHandler):
-	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("sign", "result", "out_trade_no","trade_no", "request_token")
-	def get(self):
-		# data = self.args['data']
-		sign = self.args.pop("sign")
-		signmethod = self._alipay.getSignMethod()
-		if signmethod(self.args) != sign:
-			Logger.warn("SystemPurchase: sign from alipay error!")
-			return self.send_error(403)
-		order_id=int(self.args["out_trade_no"])
-		ali_trade_no=self.args["trade_no"]
-		print(order_id,ali_trade_no,'hhhhhhhhhhhhhhhhhhhh')
-		data = order_id.split('a')
-		totalPrice = float(data[0])
-		# shop_id = self.get_cookie('market_shop_id')
-		shop_id = int(data[1])
-		customer_id = self.current_user.id
-		print(totalPrice,shop_id ,customer_id,'ididid')
-	#	code = self.args['code']
-	#	path_url = self.request.full_url()
-		# totalPrice =float( self.get_cookie('money'))
-		#########################################################
-		# 用户余额增加 
-		# 同时店铺余额相应增加 
-		# 应放在 支付成功的回调里
-		#########################################################
-
-		# 支付成功后，用户对应店铺 余额 增加
-		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
-			shop_id = shop_id).first()
-		print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
-		if not shop_follow:
-			return self.send_fail('shop_follow not found')
-		shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
-		self.session.commit()
-
-		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		if not shop:
-			return self.send_fail('shop not found')
-		shop.shop_balance += totalPrice
-		self.session.commit()
-		print(shop.shop_balance ,'充值后 商店 总额')
-
-		# 支付成功后  生成一条余额支付记录
-		name = self.current_user.accountinfo.nickname
-		balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-			balance_value = totalPrice,balance_record = '余额充值(微信)：用户 '+ name  , name = name , balance_type = 0,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = totalPrice)
-		self.session.add(balance_history)
-		print(balance_history , '钱没有白充吧？！')
-		self.session.commit()
-		return self.send_success(text = 'success')
-		# return self.render('fruitzone/alipayTest.html')
-
-		
-	def check_xsrf_cookie(self):
-		print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!pass wxpay xsrf check!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-		pass
-		return
 
 class InsertData(CustomerBaseHandler):
 	# @tornado.web.authenticated
