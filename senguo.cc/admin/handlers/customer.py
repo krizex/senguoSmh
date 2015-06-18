@@ -970,8 +970,7 @@ class Market(CustomerBaseHandler):
 					group_list.append({'id':-1,'name':'店铺推荐'})
 				if default_count !=0 :
 					group_list.append({'id':0,'name':'默认分组'})
-
-		return self.render("customer/home.html",
+		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,shop_code=shop.shop_code,\
 						   	w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
 
@@ -1325,7 +1324,7 @@ class Cart(CustomerBaseHandler):
 			if fruit_id not in storages:
 				storages[fruit_id] = fruit_storage
 		periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1).all()
-		return self.render("customer/cart.html", cart_f=cart_f,config=shop.config,
+		return self.render(self.tpl_path(shop.shop_tpl)+"/cart.html", cart_f=cart_f,config=shop.config,
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name  = shop_name ,shop_code=shop_code,shop_logo = shop_logo,balance_value=balance_value,\
 						  shop_new=shop_new,shop_status=shop_status,context=dict(subpage='cart'))
