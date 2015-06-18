@@ -79,7 +79,7 @@
                 </p>
                 <p>
                     <span class="tit1 create_date">注册时间：{{data["create_date"]}}</span>
-                     <a href="/super/shopManage?action=all_temp&search&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&&page=1&flag=1"  target="_blank"><span class="text-blue">申请信息</span></a>
+                    <a href="/super/shopManage?action=all_temp&search&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&&page=1&flag=1"  target="_blank"><span class="text-blue">申请信息</span></a>
                 </p>
             </div>
             <div class="col-lg-12 col-md-12" style="background-color:#F8F8F8">
@@ -95,7 +95,7 @@
                         </p> 
                 </div>
                 <div class="col-lg-5 col-md-5 ml13">   
-                         <p>
+                        <p>
                             <span class="tit2 shop_property">营业额：{{data["shop_property"]}}元</span>
                             <span class="single_price">客单价：{{data["single_price"]}}元</span>
                         </p>
@@ -104,6 +104,11 @@
                             <span class="fans_count">粉丝数：{{data["fans_count"]}}</span>
                         </p> 
                     </div>
+                </div>
+                <div class="col-lg-5 col-md-5 ml-6">
+                        <p>  
+                            <span class="tit2 old_user">老用户：{{data["old_user"]}}</span>
+                        </p>
                 </div>
         </li>
         {% end %}
@@ -165,6 +170,11 @@
                             <span class="">粉丝数：<span class="ufans_count"></span></span>
                         </p> 
                     </div>
+                </div>
+                <div class="col-lg-5 col-md-5 ml-6">
+                        <p>  
+                            <span class="tit2 ">老用户：<span class="uold_user"></span>条</span>
+                        </p>
                 </div>
         </li>
     </ul>

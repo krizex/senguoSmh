@@ -161,6 +161,7 @@ function insertShop(page){
         $item.find(".usingle_price").html(shop.single_price);
         $item.find(".uavailable_balance").html(shop.available_balance);
         $item.find(".ufans_count").html(shop.fans_count);
+        $item.find(".uold_user").html(shop.old_user);
         $("#list-group").append($item);
                                         }
                                                 }
@@ -350,6 +351,7 @@ function searchshop(page){
         $item.find(".usingle_price").html(shop.single_price);
         $item.find(".uavailable_balance").html(shop.available_balance);
         $item.find(".ufans_count").html(shop.fans_count);
+        $item.find(".uold_user").html(shop.old_user);
         $("#list-group").append($item);
                                         }
                                                 }
