@@ -27,7 +27,7 @@
         </div>
     </div>
     <div class="order-item">
-        <h4 class="top-title"><span class="black-txt">{{shop_name}}</span><span class="arr-right"></span><a href="tel:{{order.sender_phone}}" class="contact-us fr tel-btn"><i class="i-contact"></i>联系客服</a></h4>
+        <h4 class="top-title"><a href="/{{handler.shop_code}}"><span class="black-txt">{{shop_name}}</span></a><span class="arr-right"></span><a href="tel:{{order.sender_phone}}" class="contact-us fr tel-btn"><i class="i-contact"></i>联系客服</a></h4>
         <ul class="goods-lst">
         {% for charge_type in charge_types %}
             <li class="group {{charge_type.fruit.fruit_type.code}}">
