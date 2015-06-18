@@ -14,19 +14,48 @@ import libs.xmltodict as xmltodict
 from libs.msgverify import gen_msg_token,check_msg_token
 from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
 
-class OnlineWxPay(CustomerBaseHandler):
+class QrWxpay(CustomerBaseHandler):
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments('code?:str','order_id?:str')
+	@CustomerBaseHandler.check_arguments('order_id?:str')
 	def get(self):
-		# print("[微信支付]full_url：",self.request.full_url())
-		path_url = self.request.full_url()
-		order_id = self.get_cookie("order_id")
-		# order_id = int(self.args['order_id'])
-
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			return self.send_fail('order not found')
 		totalPrice = order.totalPrice
+		
+		
+
+class OnlineWxPay(CustomerBaseHandler):
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments('code?:str','order_id?:str')
+	def get(self):
+		order_id = self.get_cookie("order_id")
+		order = self.session.query(models.Order).filter_by(id = order_id).first()
+		if not order:
+			return self.send_fail('order not found')
+		totalPrice = order.totalPrice
+		wxPrice =int(totalPrice * 100)
+
+		if not self.is_wexin_browser():
+			unifiedOrder =  UnifiedOrder_pub()
+			unifiedOrder.setParameter("body",'QrWxpay')
+			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
+			unifiedOrder.setParameter("out_trade_no",order.num)
+			unifiedOrder.setParameter('total_fee',wxPrice)
+			unifiedOrder.setParameter('trade_type',"NATIVE")
+			res = unifiedOrder.postXml().decode('utf-8')
+			res_dict = unifiedOrder.xmlToArray(res)
+			print(res,type(res_dict))
+			if 'code_url' in res_dict:
+				print(res_dict['code_url'])
+				# return self.send_success(url = res_dict['code_url'])
+				return self.render('customer/qrwxpay.html',url = res_dict['code_url'])
+			else:
+				return self.send_fail('can not get code_url!')
+
+		# print("[微信支付]full_url：",self.request.full_url())
+		path_url = self.request.full_url()
+		
 		shop_id   = order.shop_id
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
@@ -48,9 +77,6 @@ class OnlineWxPay(CustomerBaseHandler):
 
 		charge_types = self.session.query(models.ChargeType).filter(
 			models.ChargeType.id.in_(eval(order.fruits).keys())).all()
-		# mcharge_types = self.session.query(models.MChargeType).filter(
-		# 	models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
-
 		if order.type == 2:
 			freight = order.shop.config.freight_on_time
 		else:
@@ -65,15 +91,9 @@ class OnlineWxPay(CustomerBaseHandler):
 				sender_img = None
 		goods = []
 		f_d = eval(order.fruits)
-		# m_d = eval(order.mgoods)
 		for f in f_d:
 			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-		# for m in m_d:
-		# 	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
-		#path = 'http://auth.senguo.cc/fruitzone/paytest'
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('onlineWxPay')
-		# print("[微信支付]redirect_uri：",path)
-		# print("[微信支付]当前code：",self.args['code'])
 		code = self.args.get('code',None)
 		if len(code) is 2:
 			url = jsApi.createOauthUrlForCode(path)
@@ -186,52 +206,53 @@ class OnlineWxPay(CustomerBaseHandler):
 			self.session.add(balance_history)
 			# print("[微信支付]支付后，生成balance_history：",balance_history)
 			self.session.commit()
+			self.send_admin_message(self.session,order)
 
 			# send weixin message
-			admin_name = shop.admin.accountinfo.nickname
-			touser     = shop.admin.accountinfo.wx_openid
-			shop_name  = shop.shop_name
-			order_id   = order.num
-			order_type = "立即送" if order.type == 1 else "按时达"
-			phone      = order.phone
-			create_date= order.create_date
-			customer_name = order.receiver
-			c_tourse      = customer.accountinfo.wx_openid
-			# print("[提交订单]用户OpenID：",c_tourse)	
-			#goods 
-			goods = []
-			f_d = eval(order.fruits)
-			# m_d = eval(order.mgoods)
-			for f in f_d:
-				goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-			# for m in m_d:
-			#	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
-			goods = str(goods)[1:-1]
-			# print("[提交订单]订单详情：",goods)
-			order_totalPrice = float('%.2f'% totalPrice)
-			# print("[提交订单]订单总价：",order_totalPrice)
-			# send_time     = order.get_sendtime(session,order.id)
-			send_time = order.send_time
-			address = order.address_text
+			# admin_name = shop.admin.accountinfo.nickname
+			# touser     = shop.admin.accountinfo.wx_openid
+			# shop_name  = shop.shop_name
+			# order_id   = order.num
+			# order_type = "立即送" if order.type == 1 else "按时达"
+			# phone      = order.phone
+			# create_date= order.create_date
+			# customer_name = order.receiver
+			# c_tourse      = customer.accountinfo.wx_openid
+			# # print("[提交订单]用户OpenID：",c_tourse)	
+			# #goods 
+			# goods = []
+			# f_d = eval(order.fruits)
+			# # m_d = eval(order.mgoods)
+			# for f in f_d:
+			# 	goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+			# # for m in m_d:
+			# #	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+			# goods = str(goods)[1:-1]
+			# # print("[提交订单]订单详情：",goods)
+			# order_totalPrice = float('%.2f'% totalPrice)
+			# # print("[提交订单]订单总价：",order_totalPrice)
+			# # send_time     = order.get_sendtime(session,order.id)
+			# send_time = order.send_time
+			# address = order.address_text
 
-			if shop.super_temp_active !=0:
-				WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
-				customer_name,order_totalPrice,send_time,goods,phone,address)
+			# if shop.super_temp_active !=0:
+			# 	WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
+			# 	customer_name,order_totalPrice,send_time,goods,phone,address)
 
-			try:
-				other_admin = self.session.query(models.HireLink).filter_by(shop_id = shop.id,active=1,work=9,temp_active=1).first()
-			except:
-				other_admin = None
-			if other_admin:
-				info =self.session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id)\
-				.filter(models.ShopStaff.id == other_admin.staff_id).first()
-				other_touser = info.wx_openid
-				other_name = info.nickname
-				WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,\
-				customer_name,order_totalPrice,send_time,goods,phone,address)
+			# try:
+			# 	other_admin = self.session.query(models.HireLink).filter_by(shop_id = shop.id,active=1,work=9,temp_active=1).first()
+			# except:
+			# 	other_admin = None
+			# if other_admin:
+			# 	info =self.session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id)\
+			# 	.filter(models.ShopStaff.id == other_admin.staff_id).first()
+			# 	other_touser = info.wx_openid
+			# 	other_name = info.nickname
+			# 	WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,\
+			# 	customer_name,order_totalPrice,send_time,goods,phone,address)
 			
-			# send message to customer
-			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
+			# # send message to customer
+			# WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 			return self.write('success')
 
 
@@ -440,38 +461,39 @@ class OnlineAliPay(CustomerBaseHandler):
 		# print("[支付宝支付]支付后，生成balance_history：",balance_history)
 		self.session.commit()
 
+		self.send_admin_message(self.session,order)
 		# send weixin message
-		admin_name = shop.admin.accountinfo.nickname
-		touser     = shop.admin.accountinfo.wx_openid
-		shop_name  = shop.shop_name
-		order_id   = order.num
-		order_type = "立即送" if order.type == 1 else "按时达"
-		phone      = order.phone
-		create_date= order.create_date
-		customer_name = order.receiver
-		c_tourse      = customer.accountinfo.wx_openid
-		# print("[提交订单]用户OpenID：",c_tourse)
+		# admin_name = shop.admin.accountinfo.nickname
+		# touser     = shop.admin.accountinfo.wx_openid
+		# shop_name  = shop.shop_name
+		# order_id   = order.num
+		# order_type = "立即送" if order.type == 1 else "按时达"
+		# phone      = order.phone
+		# create_date= order.create_date
+		# customer_name = order.receiver
+		# c_tourse      = customer.accountinfo.wx_openid
+		# # print("[提交订单]用户OpenID：",c_tourse)
 
-		#goods 
-		goods = []
-		f_d = eval(order.fruits)
-		# m_d = eval(order.mgoods)
-		for f in f_d:
-			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-		# for m in m_d:
-		#	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
-		goods = str(goods)[1:-1]
-		# print("[提交订单]订单详情：",goods)
-		order_totalPrice = float('%.2f'% totalPrice)
-		# print("[提交订单]订单总价：",order_totalPrice)
-		# send_time     = order.get_sendtime(session,order.id)
-		send_time = order.send_time
-		address = order.address_text
+		# #goods 
+		# goods = []
+		# f_d = eval(order.fruits)
+		# # m_d = eval(order.mgoods)
+		# for f in f_d:
+		# 	goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+		# # for m in m_d:
+		# #	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+		# goods = str(goods)[1:-1]
+		# # print("[提交订单]订单详情：",goods)
+		# order_totalPrice = float('%.2f'% totalPrice)
+		# # print("[提交订单]订单总价：",order_totalPrice)
+		# # send_time     = order.get_sendtime(session,order.id)
+		# send_time = order.send_time
+		# address = order.address_text
 
-		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
-			customer_name,order_totalPrice,send_time,goods,phone,address)
-		# send message to customer
-		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
+		# WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
+		# 	customer_name,order_totalPrice,send_time,goods,phone,address)
+		# # send message to customer
+		# WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 		return self.write('success')
 
 
@@ -529,36 +551,37 @@ class OnlineAliPay(CustomerBaseHandler):
 		self.session.commit()
 
 		# send weixin message
-		admin_name = shop.admin.accountinfo.nickname
-		touser     = shop.admin.accountinfo.wx_openid
-		shop_name  = shop.shop_name
-		order_id   = order.num
-		order_type = "立即送" if order.type == 1 else "按时达"
-		phone      = order.phone
-		create_date= order.create_date
-		customer_name = order.receiver
-		c_tourse      = customer.accountinfo.wx_openid
-		# print("[提交订单]用户OpenID：",c_tourse)
+		self.send_admin_message(self.session,order)
+		# admin_name = shop.admin.accountinfo.nickname
+		# touser     = shop.admin.accountinfo.wx_openid
+		# shop_name  = shop.shop_name
+		# order_id   = order.num
+		# order_type = "立即送" if order.type == 1 else "按时达"
+		# phone      = order.phone
+		# create_date= order.create_date
+		# customer_name = order.receiver
+		# c_tourse      = customer.accountinfo.wx_openid
+		# # print("[提交订单]用户OpenID：",c_tourse)
 
-		#goods 
-		goods = []
-		f_d = eval(order.fruits)
-		# m_d = eval(order.mgoods)
-		for f in f_d:
-			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-		# for m in m_d:
-		#	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
-		goods = str(goods)[1:-1]
-		# print("[提交订单]订单详情：",goods)
-		order_totalPrice = float('%.2f'% totalPrice)
-		# print("[提交订单]订单总价：",order_totalPrice)
-		# send_time     = order.get_sendtime(session,order.id)
-		send_time = order.send_time
-		address = order.address_text
+		# #goods 
+		# goods = []
+		# f_d = eval(order.fruits)
+		# # m_d = eval(order.mgoods)
+		# for f in f_d:
+		# 	goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+		# # for m in m_d:
+		# #	goods.append([m_d[m].get('mgoods_name'), m_d[m].get('charge') ,m_d[m].get('num')])
+		# goods = str(goods)[1:-1]
+		# # print("[提交订单]订单详情：",goods)
+		# order_totalPrice = float('%.2f'% totalPrice)
+		# # print("[提交订单]订单总价：",order_totalPrice)
+		# # send_time     = order.get_sendtime(session,order.id)
+		# send_time = order.send_time
+		# address = order.address_text
 
-		WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
-			customer_name,order_totalPrice,send_time,goods,phone,address)
-		# send message to customer
-		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
+		# WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,\
+		# 	customer_name,order_totalPrice,send_time,goods,phone,address)
+		# # send message to customer
+		# WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 
 		return self.redirect(self.reverse_url("noticeSuccess"))
