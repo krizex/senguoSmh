@@ -4,22 +4,38 @@
 {% end %}
 {% block header %}
 <div class="header">
-    <span>森果体验店</span>
+    <span>{{shop.shop_name}}</span>
     <a href="/customer/profile" class="head-right profile-center"></a>
 </div>
 {% end %}
 {% block content %}
+{% set shop_status="" %}
+{% set shop_auth="" %}
+{% if shop.status == 0 %}
+{% set shop_status="关闭" %}
+{% elif shop.status == 1 %}
+{% set shop_status="营业中" %}
+{% elif shop.status == 2 %}
+{% set shop_status="筹备中" %}
+{% elif shop.status == 3 %}
+{% set shop_status="休息中" %}
+{% end %}
+{% if shop.status in[1,4] %}
+{% set shop_auth="个人认证" %}
+{% elif shop.status in[2,3] %}
+{% set shop_auth="企业认证" %}
+{% end %}
 <div class="shop-profile">
     <div class="profile-top white-box">
         <div class="sw-tip shopping" data-status="1"></div>
-        <span class="sw-tip-txt">营业中</span>
+        <span class="sw-tip-txt">{{shop_status}}</span>
         <dl class="dl ptm6">
             <dt>
-                <img src="/static/images/TDSG.png" alt="店铺logo"/>
+                <img src="{{shop.shop_trademark_url or '/static/images/TDSG.png'}}" alt="店铺logo"/>
             </dt>
             <dd>
-                <p class="title c333 mt4">森果体验店<span class="shop-auth" data-auth="1">个人认证</span></p>
-                <p class="c333 mt15">店铺链接 : <a href="http://senguo.cc/zhoubing" class="shop-link">http://senguo.cc/zhoubing</a></p>
+                <p class="title c333 mt4">{{shop.shop_name}}<span class="shop-auth" data-auth="{{shop_auth}}">个人认证</span></p>
+                <p class="c333 mt15">{% if shop.shop_code %}店铺链接 : <a href="http://senguo.cc/{{shop.shop_code}}" class="shop-link">http://senguo.cc/{{shop.shop_code}}</a>{% else %}未设置店铺号 {% end %}</p>
             </dd>
         </dl>
     </div>
@@ -31,76 +47,76 @@
         <ul class="group stat-list">
             <li>
                 <p class="name">新增用户</p>
-                <p class="num">223</p>
+                <p class="num">{{new_follower_sum}}</p>
             </li>
             <li>
-                <p class="name">新增用户</p>
-                <p class="num">223</p>
+                <p class="name">新增订单</p>
+                <p class="num">{{new_order_sum}}</p>
             </li>
             <li>
-                <p class="name">新增用户</p>
-                <p class="num">223</p>
+                <p class="name">总订单数</p>
+                <p class="num">{{order_sum}}</p>
             </li>
             <li>
-                <p class="name">新增用户</p>
-                <p class="num">223</p>
+                <p class="name">总营业额</p>
+                <p class="num">{{total_money}}</p>
             </li>
         </ul>
     </div>
     <div class="white-box">
         <p class="box-title">
-            <a href="javascript:;" class="more fr">更多</a>
+            <a href="{{reverse_url('MadminOrder')}}" class="more fr">更多</a>
             <span class="box-icon data-order">订单管理</span>
         </p>
         <ul class="group stat-order-list pm8">
-            <a href="javascript:;">
+            <a href="{{reverse_url('MadminOrder')}}">
                 <li>
                     <p class="name">按时达</p>
-                    <p class="num"><span class="tip-num">333</span></p>
+                    <p class="num"><span class="tip-num">{{ontime_count}}</span></p>
                 </li>
             </a>
-            <a href="javascript:;">
+            <a href="{{reverse_url('MadminOrder')}}">
                 <li>
                     <p class="name">立即送</p>
-                    <p class="num"><span class="tip-num">333</span></p>
+                    <p class="num"><span class="tip-num">{{intime_count}}</span></p>
                 </li>
             </a>
-            <a href="javascript:;">
+            <a href="{{reverse_url('MadminOrder')}}">
                 <li>
                     <p class="name">自提</p>
-                    <p class="num"><span class="tip-num">333</span></p>
+                    <p class="num"><span class="tip-num">{{self_count}}</span></p>
                 </li>
             </a>
         </ul>
         <a href="javascript:;">
             <p class="box-title btf5">
-                <span class="fr c000">36</span>
+                <span class="fr c000">{{goods_count}}</span>
                 <span class="box-icon data-goods">商品管理</span>
             </p>
         </a>
         <a href="javascript:;">
             <p class="box-title btf5">
-                <span class="fr c000">336</span>
+                <span class="fr c000">{{staff_count}}</span>
                 <span class="box-icon data-staff">员工管理</span>
             </p>
         </a>
         <a href="javascrpt:;">
             <p class="box-title btf5">
-                <span class="fr c000">3436</span>
+                <span class="fr c000">{{shop.fans_count}}</span>
                 <span class="box-icon data-user">用户管理</span>
             </p>
         </a>
     </div>
     <div class="white-box">
-        <a href="javascript:;">
+        <a href="{{reverse_url('MadminComment')}}">
             <p class="box-title">
-                <span class="fr tip-num mt12">3436</span>
+                <span class="fr tip-num mt12">{{comment_count}}</span>
                 <span class="box-icon data-msg">消息与评价</span>
             </p>
         </a>
         <a href="javascript:;">
             <p class="box-title btf5">
-                <span class="fr c000">3436</span>
+                <span class="fr c000">{{shop.shop_balance}}</span>
                 <span class="box-icon data-account">账户余额</span>
             </p>
         </a>
