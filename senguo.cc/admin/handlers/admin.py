@@ -2907,7 +2907,7 @@ class Marketing(AdminBaseHandler):
 			current_shop.marketing.confess_notice = self.args["data"]
 		elif action =="confess_type":
 			_type = current_shop.marketing.confess_type
-			print(_type)
+			# print(_type)
 			current_shop.marketing.confess_type = 0 if _type == 1 else 1
 		elif action == "confess_only":
 			only = current_shop.marketing.confess_only
