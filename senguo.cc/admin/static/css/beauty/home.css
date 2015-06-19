@@ -8,7 +8,7 @@ body{font-size: 14px;}
 .swiper-slide>img{width: 100%;}
 .pagination{position: absolute;z-index:30;right:12px;bottom: 8px;white-space: nowrap;line-height: 1;}
 .swiper-pagination-switch{width:8px;height: 8px;border-radius:50%;-webkit-box-sizing:border-box;display: inline-block;margin:0 5px;-webkit-transition:all .2s ease;background-color: #fff;}
-.swiper-active-switch{background-color: #fff;}
+.swiper-active-switch{background-color: #333;opacity: 0.2}
 .notice-title{position: absolute;bottom:0;padding-left: 15px;height: 30px;font-size:14px;line-height: 30px;color: #fff;background-color: rgba(128, 192, 145, 0.8);z-index:20;}
 .notice-top{padding: 10px 0;}
 .notice-top>p{text-indent: 10px;border-left:4px solid #afd6a6;height:24px;line-height: 24px;color: #000;margin-left: 1px;}
@@ -21,7 +21,7 @@ body{font-size: 14px;}
 .item-info .item-info-name,.item-info .item-info-price p{text-align:right !important;}
 
 .item-info .item-info-name{padding-right: 36px;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width: 152px;}
-.now-buy{position: absolute; height: 24px;width: 70px;display: block;line-height: 24px;color:#fff;text-align: center;border: 1px solid #fff;bottom: 15px;right: 42px;}
+.now-buy{position: absolute; height: 24px;width: 70px;display: block;line-height: 22px;color:#fff;text-align: center;border: 1px solid #fff;bottom: 15px;right: 42px;}
 .more-goods{border: 1px solid #bad6df;margin:0 10px;border-top-color: #dfe9ec;height: 30px;line-height: 30px;color: #bad6df;font-size: 14px;text-align: center;display: block;}
 
 .red .bg{background-color: #ea655d;}
@@ -35,7 +35,7 @@ body{font-size: 14px;}
 .fruit-list{border-top: 1px solid #eee;}
 .fruit-list>li{margin-bottom: 10px;height: 130px;overflow: hidden;position: relative;cursor: pointer;}
 .fruit-list>li img{width: 100%;padding-right:150px;}
-.fruit-right{position: absolute;right: 0;top: 0;width: 150px;height: 100%;padding-left: 10px;background-color: #fff;}
+.fruit-right{position: absolute;right: 0;top: 0;width: 150px;height: 100%;padding-left: 10px;background-color: #fff;border-bottom-right-radius: 26%;}
 .fruit-right .name{color: #999;font-size: 14px;margin-top: 15px;padding-right: 12px;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;}
 .fruit-right .price{color: #f6b564;font-size: 12px;margin-top: 15px;}
 .wrap-furit-opera{position: absolute;bottom: 0;left:0;width: 150px;text-align: center;height: 36px;border-bottom-right-radius: 34px;}

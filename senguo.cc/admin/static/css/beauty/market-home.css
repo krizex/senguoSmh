@@ -10,7 +10,7 @@ body{font-size: 14px;}
 .fruit-list{border-top: 1px solid #eee;}
 .fruit-list>li{margin-bottom: 10px;height: 130px;overflow: hidden;position: relative;cursor: pointer;}
 .fruit-list>li img{width: 100%;}
-.fruit-right{position: absolute;right: 0;top: 0;width: 150px;height: 100%;padding-left: 10px;background-color: #fff;}
+.fruit-right{position: absolute;right: 0;top: 0;width: 150px;height: 100%;padding-left: 10px;background-color: #fff;border-bottom-right-radius: 26%;}
 .fruit-right .name{color: #999;font-size: 14px;margin-top: 15px;padding-right: 12px;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;}
 .fruit-right .price{color: #f6b564;font-size: 12px;margin-top: 15px;}
 .wrap-furit-opera{position: absolute;bottom: 0;left:0;width: 150px;text-align: center;height: 36px;border-bottom-right-radius: 34px;}
