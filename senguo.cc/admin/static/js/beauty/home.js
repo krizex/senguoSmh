@@ -76,16 +76,15 @@ $(document).ready(function(){
         window.location.href="/"+shop_code;
     }
     else{
-        if($("#groupt-list").hasClass("h0")){
-            $(this).addClass("menu-active");
-            $("#groupt-list").removeClass("h0");
-            $(".groupt-list li").addClass("anim-bounceDown");
-            $(".groupt-list li").one("webkitAnimationEnd",function(){
-                $(this).removeClass("anim-bounceDown");
-            });
-        }else{
+        if($("#groupt-list").hasClass("moveshow")){
             $(this).removeClass("menu-active");
-            $("#groupt-list").addClass("h0");
+            $("#groupt-list").removeClass("moveshow");
+            $('.list-box').removeClass("moveright");
+           
+        }else{
+            $(this).addClass("menu-active");
+            $("#groupt-list").addClass("moveshow");
+            $('.list-box').addClass("moveright");
         }
     }
     
@@ -99,16 +98,18 @@ $(document).ready(function(){
     var group_id=Number($this.attr('data-id'));
     var top=$('.goods-list-'+group_id).offset().top-40;
     $(window).scrollTop(top);
-     if($("#groupt-list").hasClass("h0")){
-            $(this).addClass("menu-active");
-            $("#groupt-list").removeClass("h0");
+     if($("#groupt-list").hasClass("moveshow")){
+            $(this).addClass("menu-active").siblings('li').removeClass('menu-active');
+            $("#groupt-list").removeClass("moveshow");
+            $('.list-box').removeClass("moveright");
             $(".groupt-list li").addClass("anim-bounceDown");
             $(".groupt-list li").one("webkitAnimationEnd",function(){
                 $(this).removeClass("anim-bounceDown");
             });
         }else{
             $(this).removeClass("menu-active");
-            $("#groupt-list").addClass("h0");
+            $("#groupt-list").addClass("moveshow");
+            $('.list-box').addClass("moveright");
         }
 }).on('click','.to-add',function(){
     //首次添加商品
@@ -152,7 +153,6 @@ $(document).ready(function(){
     parent.attr({'data-storage':storage-change_num});
 }).on('click','.number-minus',function(){
     //商品数量操作
-    console.log(2333);
     var $this=$(this);
     pulse($this);
     goodsNum($this,1);
