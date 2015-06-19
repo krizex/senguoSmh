@@ -2215,7 +2215,7 @@ class payTest(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments('code?:str','totalPrice?')
 	def get(self):
 		totalPrice = float(self.get_cookie('money'))
-		wxPrice    = totalPrice * 100
+		wxPrice    =int(totalPrice * 100)
 		orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(wxPrice)+'a'+str(int(time.time()))
 		if not self.is_wexin_browser():
 			unifiedOrder =   UnifiedOrder_pub()

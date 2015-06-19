@@ -1688,4 +1688,5 @@ class CouponsCustomer(MapBase, _CommonApi):
 	order_id=Column(Integer,nullable=False)
 	used_for=Column(Integer,default=0)
 	use_rule=Column(Float,nullable=False)
+'''
 

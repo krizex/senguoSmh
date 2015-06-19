@@ -476,7 +476,6 @@ class ShopManage(SuperBaseHandler):
 			config.periods.extend([period1, period2, period3])
 			marketing = models.Marketing()
 
-
 			# 把临时表的内容复制到shop表
 			shop = models.Shop(admin_id=shop_temp.admin_id,
 										 shop_name=shop_temp.shop_name,
@@ -940,38 +939,38 @@ class Official(SuperBaseHandler):
 	def get(self):
 		return self.render("m-official/home.html")
 
-class ShopClose(SuperBaseHandler):
-	@tornado.web.authenticated
-	def get(self):
-		try:
-			shops = self.session.query(models.Shop).filter_by(status =1).all()
-		except:
-			return self.send_fail('shopclose error')
-		if shops:
-			for shop in shops:
-				shop_code = shop.shop_code
-				shop_id = shop.id
-				fruits = shop.fruits
-				menus = shop.menus
-				# print(menus)
-				create_date = shop.create_date_timestamp
-				x = datetime.datetime.fromtimestamp(create_date)
-				# print(x)
-				now = datetime.datetime.now()
-				days = (now -x).days
-				if days >14:
-					if shop_code =='not set':
-						shop.status = 0
-					if len(fruits) == 0 and len(menus) == 0:
-						shop.status = 0 
-					try:
-						follower_count = self.session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
-					except:
-						return self.send_fail('follower_count error')
-					if follower_count <2:
-						shop.status =0
-				self.session.commit()
-			return self.send_success()
+# class ShopClose(SuperBaseHandler):
+# 	@tornado.web.authenticated
+# 	def get(self):
+# 		try:
+# 			shops = self.session.query(models.Shop).filter_by(status =1).all()
+# 		except:
+# 			return self.send_fail('shopclose error')
+# 		if shops:
+# 			for shop in shops:
+# 				shop_code = shop.shop_code
+# 				shop_id = shop.id
+# 				fruits = shop.fruits
+# 				menus = shop.menus
+# 				# print(menus)
+# 				create_date = shop.create_date_timestamp
+# 				x = datetime.datetime.fromtimestamp(create_date)
+# 				# print(x)
+# 				now = datetime.datetime.now()
+# 				days = (now -x).days
+# 				if days >14:
+# 					if shop_code =='not set':
+# 						shop.status = 0
+# 					if len(fruits) == 0 and len(menus) == 0:
+# 						shop.status = 0 
+# 					try:
+# 						follower_count = self.session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
+# 					except:
+# 						return self.send_fail('follower_count error')
+# 					if follower_count <2:
+# 						shop.status =0
+# 				self.session.commit()
+# 			return self.send_success()
 
 # class Comment(SuperBaseHandler):
 # 	@tornado.web.authenticated
