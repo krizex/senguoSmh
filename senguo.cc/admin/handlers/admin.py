@@ -3013,11 +3013,11 @@ class Marketing(AdminBaseHandler):
 				x_coupon={"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"customer_id":customer_id,"get_date":x.get_date,"use_date":x.use_date,"order_id":x.order_id}
 				data.append(x_coupon)
 			return self.render("admin/details.html",output_data=data,context=dict(subpage='marketing')) 
+		'''
 		else:
 			return self.send_fail('something must wrong')
 		self.session.commit()
 		return self.send_success()
-		'''
 
 
 # 营销和玩法 - 告白墙管理
