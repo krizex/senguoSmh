@@ -28,8 +28,8 @@ body{font-size: 14px;}
 .yellow .bg{background-color: #f0c83f;}
 .wrap-home{position:relative;}
 .header{position: fixed;top: 0;z-index:999;width: 100%;max-width:800px;min-width:320px;background-color: #fff;height: 40px;line-height:40px;color: #afd6a4;text-align: center;}
-.menu{display: inline-block;height: 40px;min-width:40px;line-height:40px;background-image: url('/static/images/menu.png');background-size: 20px;position: absolute;left: 10px;top: 0;background-position: left center;background-repeat: no-repeat;}
-.menu-active{background-image: url('/static/images/menu_active.png');}
+.menu{display: inline-block;height: 40px;min-width:40px;line-height:40px;background-image: url('/static/images/goods_category_grey.png');background-size: 18px;position: absolute;left: 10px;top: 0;background-position: left center;background-repeat: no-repeat;}
+.menu-active{background-image: url('/static/images/goods_category_green.png');}
 .head-right{display: block;height: 40px;width:40px;background-size: 20px;position: absolute;right: 10px;top: 0;background-position: right center;background-repeat: no-repeat;}
 .search{background-image: url('/static/images/search-icon.gif');}
 .fruit-list{border-top: 1px solid #eee;}
