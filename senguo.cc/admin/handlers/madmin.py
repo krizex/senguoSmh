@@ -54,14 +54,18 @@ class ShopProfile(AdminBaseHandler):
 		else:		
 			total_money=0
 
-		order_list=self.session.query(models.Order).filter_by(shop_id=shop.id,status=1)
-		intime_count = order_list.filter_by(type=1).count()
-		ontime_count = order_list.filter_by(type=2).count()
-		self_count = order_list.filter_by(type=3).count()
+		order_list=self.session.query(models.Order).filter_by(shop_id=shop.id)
+		intime_count = order_list.filter_by(type=1,status=1).count()
+		ontime_count = order_list.filter_by(type=2,status=1).count()
+		self_count = order_list.filter_by(type=3,status=1).count()
+		comment_count = order_list.filter_by(status = 6).count()
+		staff_count = self.session.query(models.HireLink).filter_by(shop_id = shop.id,active=1).count()
+		goods_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
 
 		return self.render("m-admin/shop-profile.html", new_order_sum=new_order_sum, order_sum=order_sum,
 						   new_follower_sum=new_follower_sum, follower_sum=follower_sum,show_balance = show_balance,\
-						   shop=shop,total_money=total_money,intime_count=intime_count,ontime_count=ontime_count,self_count=self_count)
+						   shop=shop,total_money=total_money,intime_count=intime_count,ontime_count=ontime_count,\
+						   self_count=self_count,comment_count=comment_count,staff_count=staff_count,goods_count=goods_count)
 		
 class OrderSearch(AdminBaseHandler):
 	# @tornado.web.authenticated
@@ -70,7 +74,7 @@ class OrderSearch(AdminBaseHandler):
 
 class Comment(AdminBaseHandler):
 	# @tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("page:int")
+	@AdminBaseHandler.check_arguments("page?:int")
 	def get(self):
 		customer_id = self.current_user.id
 		shop_id     = self.get_cookie("market_shop_id")
@@ -91,14 +95,18 @@ class Comment(AdminBaseHandler):
 				shop_service = int(q[0][2])
 			if commodity_quality and send_speed and shop_service:
 				satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
-		page = self.args["page"]
+		try:
+			page = self.args["page"]
+		except:
+			page = 0
 		page_size = 20
 		comments = self.get_comments(shop_id, page, page_size)
 		date_list = []
 		nomore = False
 		for comment in comments:
-			date_list.append({"img": comment[6], "name": comment[7],
-							"comment": comment[0], "time": self.timedelta(comment[1]), "reply":comment[3], "imgurls":comment[10]})
+			date_list.append({"id":comment[4],"img": comment[6], "name": comment[7],"comment": comment[0],
+			 "time": comment[1].strftime('%Y-%m-%d'), "reply":comment[3], "imgurls":comment[10],"commodity_quality":comment[11],
+			 "send_speed": comment[12],"shop_service": comment[13],'order_num':comment[2],'index':comment[14]})
 		if date_list == []:
 			nomore = True
 		if page == 0:
