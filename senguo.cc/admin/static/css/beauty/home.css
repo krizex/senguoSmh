@@ -42,7 +42,7 @@ body{font-size: 14px;}
 .furit-opera{display: inline-block;position: relative;max-width: 90px;margin-top: 4px;height:28px;}
 .wrap-furit-opera .center{left:31px;right: auto;}
 .wrap-furit-opera input{width: 90px;border: 1px solid #fff;background-color: transparent;height: 28px;text-align: center;border-radius: 28px;color: #fff;}
-.wrap-furit-opera span{width: 28px;height: 28px;display:inline-block;text-align:center;font-size:16px;line-height:28px;border: 1px solid #fff;color: #fff;border-radius: 50%;position: absolute;top: 0;-webkit-transition:all .4s ease-in-out;}
+.wrap-furit-opera span{width: 28px;height: 28px;display:inline-block;text-align:center;font-size:22px;line-height:24px;border: 1px solid #fff;color: #fff;border-radius: 50%;position: absolute;top: 0;-webkit-transition:all .4s ease-in-out;}
 .wrap-furit-opera .to-add{left:60px;margin-top:4px;}
 .wrap-furit-opera .add{right:0;}
 .wrap-furit-opera .minus{left:0;}
