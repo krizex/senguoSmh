@@ -338,5 +338,10 @@ $(document).ready(function(){
         },
         function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
         );
+}).on('click','.pre-view',function(){
+    var $this=$(this);
+    $('.preview_box').modal('show');
+    var src=$this.parents('li').find('.view-img').attr('src');
+    $('#preview-img').attr('src',src);
 });
 var link='/admin/config';
