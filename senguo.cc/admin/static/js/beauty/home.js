@@ -152,6 +152,7 @@ $(document).ready(function(){
     parent.attr({'data-storage':storage-change_num});
 }).on('click','.number-minus',function(){
     //商品数量操作
+    console.log(2333);
     var $this=$(this);
     pulse($this);
     goodsNum($this,1);
