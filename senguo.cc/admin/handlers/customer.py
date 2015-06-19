@@ -191,7 +191,7 @@ class customerGoods(CustomerBaseHandler):
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
-		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
+		return self.render(self.tpl_path(shop.shop_tpl)+'/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
 		
 # 手机注册
 class RegistByPhone(CustomerBaseHandler):

@@ -1,8 +1,5 @@
 body{font-size: 14px;}
-<<<<<<< HEAD
 .font16{font-size:16px !important;}
-=======
->>>>>>> fca976d0076a548b58ed4cc7584089892d99d19c
 .wrap-notice-box{background-color: #fff;}
 .notice-list{width: 100%;height: 0;padding-bottom: 46%;position: relative;background-color: #fff;}
 .swiper-container{width: 100%;height: 0;padding-bottom: 46%;overflow: hidden;position: relative;}
@@ -36,7 +33,7 @@ body{font-size: 14px;}
 .search{background-image: url('/static/images/search-icon.gif');}
 .fruit-list{border-top: 1px solid #eee;}
 .fruit-list>li{margin-bottom: 10px;height: 130px;overflow: hidden;position: relative;cursor: pointer;}
-.fruit-list>li img{width: 100%;}
+.fruit-list>li img{width: 100%;padding-right:150px;}
 .fruit-right{position: absolute;right: 0;top: 0;width: 150px;height: 100%;padding-left: 10px;background-color: #fff;}
 .fruit-right .name{color: #999;font-size: 14px;margin-top: 15px;padding-right: 12px;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;}
 .fruit-right .price{color: #f6b564;font-size: 12px;margin-top: 15px;}

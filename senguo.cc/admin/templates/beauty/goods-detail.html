@@ -14,7 +14,7 @@
 <input type="hidden" value="{{handler.shop_code}}" id="shop_code"/>
 <div class="wrap-goods-detail" data-id="{{good.id}}" data-limit="{{good.limit_num}}" data-storage="{{good.storage}}">
     <div class="img-list">
-        <a href="{{reverse_url('Market',handler.shop_code)}}" class="roll-bg back add-cart" id="back-bg"><i></i></a>
+        <a href="{{reverse_url('Market',handler.shop_code)}}?action=all" class="roll-bg back add-cart" id="back-bg"><i></i></a>
         <!--a href="javascript:;" class="roll-bg share"><i></i></a-->
         <div class="swiper-container" id="swiper-container">
             <div class="swiper-wrapper">
