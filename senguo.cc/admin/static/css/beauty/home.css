@@ -22,16 +22,16 @@ body{font-size: 14px;}
 
 .item-info .item-info-name{padding-right: 36px;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width: 152px;}
 .now-buy{position: absolute; height: 24px;width: 70px;display: block;line-height: 22px;color:#fff;text-align: center;border: 1px solid #fff;bottom: 15px;right: 42px;}
-.more-goods{border: 1px solid #bad6df;margin:0 10px;height: 30px;line-height: 28px;color: #bad6df;font-size: 14px;text-align: center;display: block;}
+.more-goods{border: 1px solid #bad6df;margin:0 10px;height: 36px;line-height: 34px;color: #bad6df;font-size: 14px;text-align: center;display: block;}
 
 .red .bg{background-color: #ea655d;}
 .yellow .bg{background-color: #f0c83f;}
 .wrap-home{position:relative;}
-.header{position: fixed;top: 0;z-index:999;width: 100%;max-width:800px;min-width:320px;background-color: #fff;height: 40px;line-height:40px;color: #afd6a4;text-align: center;}
-.menu{display: inline-block;height: 40px;min-width:40px;line-height:40px;background-image: url('/static/images/menu.png');background-size: 20px;position: absolute;left: 10px;top: 0;background-position: left center;background-repeat: no-repeat;}
-.menu-active{background-image: url('/static/images/menu_active.png');}
-.head-right{display: block;height: 40px;width:40px;background-size: 20px;position: absolute;right: 10px;top: 0;background-position: right center;background-repeat: no-repeat;}
-.search{background-image: url('/static/images/search-icon.gif');}
+.header{position: fixed;top: 0;z-index:999;width: 100%;max-width:800px;min-width:320px;background-color: #fff;height: 40px;line-height:40px;color: #afd6a4;text-align: center;font-size: 16px;}
+.menu{display: inline-block;height: 40px;min-width:60px;line-height:40px;background-image: url('/static/images/goods_category_grey.png');background-size: 18px;position: absolute;left: 0;top: 0;background-position: 12px center;background-repeat: no-repeat;}
+.menu-active{background-image: url('/static/images/goods_category_green.png');}
+.head-right{display: block;height: 40px;width: 60px;background-size: 20px;position: absolute;right: 0;top: 0;background-position: 26px center;background-repeat: no-repeat;}
+.search{background-image: url('/static/images/list_search_grey.png');background-size: 20px;}
 .fruit-list{border-top: 1px solid #eee;}
 .fruit-list>li{margin-bottom: 10px;height: 130px;overflow: hidden;position: relative;cursor: pointer;}
 .fruit-list>li img{width: 100%;padding-right:150px;}
