@@ -3,7 +3,7 @@
  */
 $(document).ready(function(){
     var height = $(window).height();
-    $(".container").height(height);
+    $(".container").css("minHeight",height);
     //兑换
     $(document).on("click","#convert-btn",function(){
         var key = $("#convert-btn").val();
@@ -47,6 +47,8 @@ function searchKey(key){
                 var coupon = res.data;
                 var $item = $("#coupon-item").children().clone();
                 $item.find(".coupon-link").attr("href","/coupon/detail?action=detail&coupon_key="+coupon.coupon_key);
+                $item.find(".shop-name").html(coupon.shop_name);
+                $item.find(".shop-url").html("http://senguo.cc/"+coupon.shop_code).attr("href","http://senguo.cc/"+coupon.shop_code);
                 $item.find(".coupon-money").html(coupon.coupon_money);
                 $item.find(".used-rule").html(coupon.use_rule);
                 $item.find(".use-time").html(coupon.effective_time);
