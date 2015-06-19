@@ -13,12 +13,16 @@
             <a href="javascrpipt:;" class="convert-btn" id="convert-btn">兑换</a>
         </div>
         <ul class="coupon-list" id="coupon-list">
-            {% for coupon in output_data %}
+            {#{% for coupon in output_data %}
             <li>
                 <a href="/coupon/detail?action=detail&coupon_key={{coupon['coupon_key']}}">
                     <div class="gap gap-right"></div>
                     <div class="gap gap-left"></div>
                     <div class="coupon-item {% if coupon['if_used']==1 %}coupon-acitve{% end %}">
+                        <p class="shop-info">
+                            <span class="shop-name">{{coupon['shop_name']}}</span>
+                            <a class="ml5 shop-url" href="http://senguo.cc/{{coupon['shop_code']}}">http://senguo.cc/{{coupon['shop_code']}}</a>
+                        </p>
                         <dl class="group">
                             <dt class="fl"><span class="rmb">￥</span><span class="coupon-money">{{coupon['coupon_money']}}</span></dt>
                             <dd class="fl">
@@ -33,16 +37,20 @@
                     </div>
                 </a>
             </li>
-            {% end %}
+            {% end %}#}
         </ul>
     </div>
 </div>
-<ul class="coupon-item" id="coupon-item">
+<ul class="hide" id="coupon-item">
     <li>
         <a href="" class="coupon-link">
             <div class="gap gap-right"></div>
             <div class="gap gap-left"></div>
             <div class="coupon-item">
+                <p class="shop-info">
+                    <span class="shop-name"></span>
+                    <a class="ml5 shop-url" href=""></a>
+                </p>
                 <dl class="group">
                     <dt class="fl"><span class="rmb">￥</span><span class="coupon-money"></span></dt>
                     <dd class="fl">
