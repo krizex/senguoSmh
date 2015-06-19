@@ -146,8 +146,8 @@ $(document).ready(function () {
 }).on('click','.configbtn',function(){
     getinput("newcoupon",0);
 }).on('click','.editconfigbtn',function(){
-    var coupon_id=int($.getUrlParam("coupon_id"))
-    getinput("edit",coupon_id);
+    var coupon_id=$.getUrlParam("coupon_id")
+    getinput("editcoupon",coupon_id);
 }).on('click','.details',function(){
     var data={
 "coupon_id":1,"select_rule":1};

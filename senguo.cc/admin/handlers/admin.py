@@ -705,10 +705,7 @@ class Order(AdminBaseHandler):
 
 
 	def edit_status(self,order,order_status,send_message=True):
-		if order_status == 4:
-			order.update(self.session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
-		elif order_status == 5:
-			order.update(self.session, status=order_status,finish_admin_id = self.current_user.accountinfo.id)
+		# if order_status == 4:
 		# when the order complete ,
 		# woody
 		shop_id = self.current_shop.id
@@ -716,145 +713,15 @@ class Order(AdminBaseHandler):
 		staff_info = []
 		
 		if order_status == 4:
-			try:
-				staff_info = self.session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id )\
-				.filter(models.HireLink.shop_id == shop_id,models.HireLink.default_staff == 1).first()
-			except:
-				print("didn't find default staff")
-			if staff_info:
-				openid = staff_info.wx_openid
-				staff_name = staff_info.nickname
-			else:
-				openid = self.current_shop.admin.accountinfo.wx_openid
-				staff_name = self.current_shop.admin.accountinfo.nickname
-			shop_name = self.current_shop.shop_name
-			order_id = order.num
-			order_type = order.type
-			create_date = order.create_date
-			customer_name = order.receiver
-			order_totalPrice = order.totalPrice
-			# send_time = order.get_sendtime(self.session,order.id)
-			send_time = order.send_time
-			phone = order.phone
-			address = order.address_text
-			# print("ready to send message")
+			order.update(self.session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
 			if send_message:
-				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone,address)
+				self.send_staff_message(self.session,order)
+			# print('success')
 		if order_status == 5:
-			now = datetime.datetime.now()
-			order.arrival_day = now.strftime("%Y-%m-%d")
-			order.arrival_time= now.strftime("%H:%M")
-			self.session.commit()
-			customer_id = order.customer_id
-			shop_id = order.shop_id
-			totalprice = order.totalPrice
+			# print('login in order_status 5')
+			order.update(self.session, status=order_status,finish_admin_id = self.current_user.accountinfo.id)
+			self.order_done(self.session,order)
 
-			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-			if not shop:
-				return self.send_fail('shop not found')
-			shop.is_balance = 1
-			shop.order_count += 1  #店铺订单数加1
-
-			
-			#add by jyj 2015-6-15
-			totalprice_inc = order.totalPrice
-			shop.shop_property += totalprice_inc
-			##
-
-			customer_info = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
-			if not customer_info:
-				return self.send_fail('customer not found')
-			customer_info.is_new = 1
-			name = customer_info.nickname
-			self.session.commit()
-
-			#
-			customer = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
-				shop_id = shop_id).first()
-			if not customer:
-				return self.send_fail('customer error')
-			if customer.shop_new == 0:
-				customer.shop_new = 1
-				# print("[订单管理]用户",customer_id,"完成订单，新用户标识置为：",customer.shop_new)
-			self.session.commit()
-
-			try:
-				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
-					customer_id,shop_id = shop_id).first()
-			except:
-				self.send_fail("shop_point error")
-			try:
-				order_count = self.session.query(models.Order).filter(models.Order.customer_id == customer_id,\
-					models.Order.shop_id == shop_id,not_(models.Order.status.in_([-1,0]))).count()
-			except:
-				self.send_fail("find order by customer_id and shop_id error")
-			# the first order , shop_point add by 5
-			if order_count==1:
-				if shop_follow:
-					if shop_follow.shop_point == None:
-						shop_follow.shop_point =0
-					shop_follow.shop_point += 5
-					self.session.commit()
-					try:
-						point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
-					except:
-						self.send_fail("point_history error:First_order")
-					if point_history:
-						point_history.point_type = models.POINT_TYPE.FIRST_ORDER
-						point_history.each_point = 5
-						# print(point_history.each_point)
-						self.session.add(point_history)
-						self.session.commit()
-
-			if order.pay_type == 2:    #余额 支付
-				if shop_follow:
-					if shop_follow.shop_point == None:
-						shop_follow.shop_point =0
-					shop_follow.shop_point += 2
-					self.session.commit()
-
-					try:
-						point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
-					except:
-						self.send_fail("point_history error:PREPARE_PAY")
-					if point_history:
-						point_history.point_type = models.POINT_TYPE.PREPARE_PAY
-						point_history.each_point = 2
-						self.session.add(point_history)
-						self.session.commit()
-
-				shop.available_balance += totalprice
-				balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,\
-					balance_record = "可提现额度入账：订单"+order.num+"完成",name = name,balance_value = totalprice,shop_totalPrice=\
-					shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,available_balance=\
-					shop.available_balance,balance_type = 6)
-				self.session.add(balance_history)
-				self.session.commit()
-
-			if order.pay_type == 3:
-				shop.available_balance += totalprice
-				balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,\
-					balance_record = "可提现额度入账：订单"+order.num+"完成",name = name,balance_value = totalprice,shop_totalPrice=\
-					shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,available_balance=\
-					shop.available_balance,balance_type = 7)
-				self.session.add(balance_history)
-				self.session.commit()
-
-
-			if shop_follow: 
-				if shop_follow.shop_point == None:
-					shop_follow.shop_point =0
-				shop_follow.shop_point += totalprice
-				self.session.commit()
-				try:
-					point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
-				except:
-					self.send_fail("point_history error:totalprice")
-				if point_history:
-					point_history.point_type = models.POINT_TYPE.TOTALPRICE
-					point_history.each_point = totalprice
-					self.session.add(point_history)
-					self.session.commit()
 	@tornado.web.authenticated
 	@unblock
 	@AdminBaseHandler.check_arguments("action", "data")
@@ -933,31 +800,8 @@ class Order(AdminBaseHandler):
 				if not SH2:
 					return self.send_fail("没找到该送货员")
 				order.update(session=self.session, status=4, SH2_id=int(data["staff_id"]))
-				#########################################################################################################
-				# send message to staff
-				# woody
-				# 3.21
-				id = SH2.id
-				try:
-					staff_info = self.session.query(models.Accountinfo).filter_by(id = id).first()
-				except:
-					self.send_fail("staff'infomation error")
-				openid = staff_info.wx_openid
-				staff_name = staff_info.nickname
-				shop_name = self.current_shop.shop_name
-				order_id = order.num
-				order_type = order.type
-				create_date = order.create_date
-				customer_name = order.receiver
-				order_totalPrice = order.totalPrice
-				# send_time = order.get_sendtime(self.session,order.id)
-				send_time = order.send_time
-				phone = order.phone
-				address = order.address_text
-				# print("ready to send message")
-
-				WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,phone,address)
-				# print("success?")
+				print('beforeeeeeeeeeeeeeeeeeeeee')
+				self.send_staff_message(self.session,order)
 
 			elif action == "edit_status":
 				if order.status == -1:
@@ -2970,27 +2814,28 @@ class ShopAuthenticate(AdminBaseHandler):
 
 # 营销和玩法
 class Marketing(AdminBaseHandler):
-	curent_shop_id=None
+	# curent_shop_id=None
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str","data?:str","coupon_id?:int","select_rule?:int")
 	def get(self):
 		action = self.args["action"]
-		current_shop_id=self.current_shop.id
+		# current_shop_id=self.current_shop.id
 		if action == "lovewall":
 			return self.render("admin/lovewall.html",context=dict(subpage = 'marketing'))
+		'''
 		elif action=="coupon":
 			coupons=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id).all()
+			m=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id).count()
 			data=[]
 			a=self.session.query(func.max(models.CouponsShop.coupon_id)).filter_by(shop_id=current_shop_id)
-			for x in range(1,a[0][0]+1):
-				print(x)
-				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=x).first()
+			if m!=0:
+				for x in range(1,a[0][0]+1):
+					q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=x).first()
 				# get_num=self.session.query(models.CouponsShop).filter(shop_id==current_shop_id,coupon_id==x,customer_id!=None).count()
-				get_num=0
-				x_coupon={"coupon_id":q.coupon_id,"coupon_money":q.coupon_money,"get_limitnum":q.get_limitnum,"use_rule":q.use_rule,"use_for":q.used_for,"coupon_usenum":q.coupon_usenum,\
-				"uneffective_time":q.uneffective_time,"coupon_remainnum":get_num,"coupon_totalnum":q.coupon_totalnum}
-				data.append(x_coupon)
-				print(x_coupon)
+					get_num=0
+					x_coupon={"coupon_id":q.coupon_id,"coupon_money":q.coupon_money,"get_limitnum":q.get_limitnum,"use_rule":q.use_rule,"use_for":q.used_for,"coupon_usenum":q.coupon_usenum,\
+					"uneffective_time":q.uneffective_time,"coupon_remainnum":get_num,"coupon_totalnum":q.coupon_totalnum}
+					data.append(x_coupon)
 			return self.render("admin/coupon.html",output_data=data,context=dict(subpage='marketing'))
 		elif action=="newcoupon":
 			# @AdminBaseHandler.check_arguments("action:str","coupon_money:int","use_rule:float","total_num:int",\
@@ -3035,19 +2880,20 @@ class Marketing(AdminBaseHandler):
 			for x in q:
 				x_coupon={"coupon_key":x.coupon_key,"coupon_money":x.coupon_money,"customer_id":x.customer_id,"get_date":x.get_date,"use_date":x.use_date,"order_id":x.order_id}
 				data.append(x_coupon)
-				print(x_coupon)
-			print(data)
 			return self.render("admin/details.html",output_data=data,context=dict(subpage='marketing'))
 		elif action=="newpage":
 			return self.render("admin/newcoupon.html",context=dict(subpage='marketing'))
-		elif action=="edit":
+		elif action=="editcoupon":
 			coupon_id=int(self.args["coupon_id"])
 			data=[]
 			q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id).first()
+			if q.customer_id=='None':
+				q.customer_id=='gggg'
 			x_coupon={"coupon_id":coupon_id,"coupon_money":q.coupon_money,"get_limitnum":q.get_limitnum,"use_rule":q.use_rule,"use_for":q.used_for,"valid_way":q.valid_way,"day_start":q.day_start,\
 			"last_day":q.last_day,"uneffective_time":q.uneffective_time,"coupon_totalnum":q.coupon_totalnum}
 			return self.render("admin/editcoupon.html",output_data=x_coupon,context=dict(subpage='marketing'))
-
+		'''
+	
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str","data")
 	def post(self):
@@ -3065,10 +2911,12 @@ class Marketing(AdminBaseHandler):
 		elif action == "confess_only":
 			only = current_shop.marketing.confess_only
 			current_shop.marketing.confess_only = 0 if only == 1 else 1
+		'''
 		elif action=="newpage":
 			return self.render("admin/newcoupon.html",context=dict(subpage='marketing'))
 		elif action=="coupon":
 			coupons=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id).all()
+			m=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id).count()
 			data=[]
 			a=self.session.query(func.max(models.CouponsShop.coupon_id)).filter_by(shop_id=current_shop_id)
 			for x in range(1,a[0][0]+1):
@@ -3116,7 +2964,7 @@ class Marketing(AdminBaseHandler):
 				self.session.add(new_coupon)
 			self.session.commit()
 			return self.render("admin/newcoupon.html",context=dict(subpage='marketing'))
-		elif action=="edit":
+		elif action=="editcoupon":
 			data=self.args["data"]
 			coupon_money=data["coupon_money"]
 			use_rule=data["use_rule"]
@@ -3134,11 +2982,13 @@ class Marketing(AdminBaseHandler):
 			else:
 				day_start=data["day_start"]
 				last_day=data["last_day"]
-			new_coupon=models.CouponsShop(shop_id=current_shop_id,coupon_id=coupon_id,uneffective_time=uneffective_time,\
-				coupon_money=coupon_money,coupon_totalnum=total_num,\
-				coupon_remainnum=total_num,valid_way=valid_way,day_start=day_start,last_day=last_day,\
-				get_limitnum=get_limitnum,used_for=used_for,use_rule=use_rule)
-			self.session.merge(new_coupon)
+			q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id)
+			for x in q:
+				new_coupon=models.CouponsShop(shop_id=current_shop_id,coupon_id=coupon_id,uneffective_time=uneffective_time,\
+					coupon_money=coupon_money,coupon_totalnum=total_num,\
+					coupon_remainnum=total_num,valid_way=valid_way,day_start=day_start,last_day=last_day,\
+					get_limitnum=get_limitnum,used_for=used_for,use_rule=use_rule)
+				self.session.merge(new_coupon)
 			return self.render("admin/editcoupon.html",context=dict(subpage='marketing'))
 		elif action=="details":
 			data=self.args["data"]
@@ -3154,15 +3004,20 @@ class Marketing(AdminBaseHandler):
 			else :
 				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,if_uneffective=1).all()
 			for x in q:
-				x_coupon={"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"customer_id":x.customer_id,"get_date":x.get_date,"use_date":x.use_date,"order_id":x.order_id}
+				print(q.customer_id)
+				if q.customer_id==None:
+					customer_id=='gggg'
+				else :
+					customer_id=q.customer_id
+				x_coupon={"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"customer_id":customer_id,"get_date":x.get_date,"use_date":x.use_date,"order_id":x.order_id}
 				data.append(x_coupon)
-				print(x_coupon)
-			print(data)
 			return self.render("admin/details.html",output_data=data,context=dict(subpage='marketing')) 
 		else:
 			return self.send_fail('something must wrong')
 		self.session.commit()
 		return self.send_success()
+		'''
+
 
 # 营销和玩法 - 告白墙管理
 

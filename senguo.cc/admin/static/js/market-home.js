@@ -256,7 +256,7 @@ $(document).ready(function(){
         }
        
     }
-    else {noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)} 
+    else {return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)} 
     parent.attr({'data-storage':storage-change_num});
 }).on('click','.number-minus',function(){
     //商品数量操作
@@ -265,23 +265,26 @@ $(document).ready(function(){
     goodsNum($this,1);
 }).on('click','.number-plus',function(){
     var $this=$(this);
-    var parent=$this.parents('.goods-list-item');
-    var num=Int($this.siblings('.number-input').val().trim());
-    var storage=parseFloat(parent.attr('data-storage'));
-    var regNum=/^[0-9]*$/;
-    var buy_today=$this.parents('.charge-item').attr('data-buy');
-    var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
-    if(buy_today=='True'&&num>=allow_num){
-        return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
+    if($this.parents('.charge-item').find('.to-add').hasClass('hidden')){
+        var parent=$this.parents('.goods-list-item');
+        var num=Int($this.siblings('.number-input').val().trim());
+        var storage=parseFloat(parent.attr('data-storage'));
+        var regNum=/^[0-9]*$/;
+        var buy_today=$this.parents('.charge-item').attr('data-buy');
+        var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
+        if(buy_today=='True'&&num>=allow_num){
+            return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
+        }
+        if(!regNum.test(num)) {
+            $this.siblings('.number-input').val(storage);
+            return noticeBox('商品数量只能为整数！',$this);
+        }
+        if(num<999) {pulse($this);goodsNum($this,2);}
+        else {
+            return noticeBox('最多只能添加999哦！',$this);
+        } 
     }
-    if(!regNum.test(num)) {
-        $this.siblings('.number-input').val(storage);
-        return noticeBox('商品数量只能为整数！',$this);
-    }
-    if(num<999) {pulse($this);goodsNum($this,2);}
-    else {
-        return noticeBox('最多只能添加999哦！',$this);
-    }
+   
 }).on('change','.number-input',function(){
     var $this=$(this);
     var num=$this.val();
@@ -618,8 +621,9 @@ function goodsNum(target,action){
     var id=target.parents('.charge-item').attr('data-id');
     var relate=parseFloat(target.parents('.charge-item').attr('data-relate'));
     var unit_num=parseFloat(target.parents('.num_box').siblings('.charge-type').find('.num').text());
-    var change_num=relate*unit_num*num;
+    var change_num=relate*unit_num*1;
     var limit_num=parseInt(parent.attr('data-limit'));
+    console.log(storage);
     if(action==1&&num<=0) {num=0;target.addClass('disable');}
     if(action==2)
     {
