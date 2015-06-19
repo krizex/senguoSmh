@@ -12,6 +12,7 @@ from dal.dis_dict import dis_dict
 import time
 import tornado.web
 from sqlalchemy import desc,or_,and_
+from sqlalchemy.orm.exc import NoResultFound
 import datetime
 import qiniu
 from settings import *
@@ -22,6 +23,8 @@ import threading
 
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial, wraps
+
+
 
 EXECUTOR = ThreadPoolExecutor(max_workers=4)
 
@@ -359,6 +362,7 @@ class GlobalBaseHandler(BaseHandler):
 		return data
 
 
+
 class FrontBaseHandler(GlobalBaseHandler):
 	pass
 
@@ -636,6 +640,197 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		h = hashlib.sha1(string.encode())
 		return h.hexdigest()
 
+	# send message to staff  , woody,6.17
+	@classmethod
+	def send_staff_message(self,session,order):
+		print('login in send_staff_message')
+		print(order.SH2_id)
+		try:
+			staff_info = session.query(models.Accountinfo).filter_by(id = order.SH2_id).first()
+		except NoResultFound:
+			return self.send_fail('send_staff_message:staff_info not found')
+		openid = staff_info.wx_openid
+		staff_name = staff_info.nickname
+		order_id = order.num
+		order_type = order.type
+		create_date = order.create_date
+		customer_name = order.receiver
+		order_totalPrice = order.totalPrice
+		send_time = order.send_time
+		phone = order.phone
+		address = order.address_text
+		shop_name = order.shop.shop_name
+
+		WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
+			order_totalPrice,send_time,phone,address,)
+		print('SUCCESS')
+
+	@classmethod
+	def send_admin_message(self,session,order):
+		admin_name = order.shop.admin.accountinfo.nickname
+		touser     = order.shop.admin.accountinfo.wx_openid
+		shop_id    = order.shop.id
+		shop_name  = order.shop.shop_name
+		order_id   = order.num
+		order_type = order.type
+		online_type= order.online_type
+		pay_type   = order.pay_type
+		phone      = order.phone
+		totalPrice = order.totalPrice
+		order_type = '立即送' if order_type == 1 else '按时达'
+		create_date= order.create_date
+		customer_name=order.receiver
+		customer_id = order.customer_id
+		try:
+			customer = session.query(models.Customer).filter_by(id = customer_id).first()
+		except NoResultFound:
+			return self.send_fail('customer not found')
+		c_tourse   =customer.accountinfo.wx_openid
+		goods = []
+		f_d = eval(order.fruits)
+		for f in f_d:
+			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+		goods = str(goods)[1:-1]
+		order_totalPrice = float('%.2f' % totalPrice)
+		send_time = order.send_time
+		address = order.address_text
+		order_realid = order.id
+		if pay_type != 3:
+			if order.shop.super_temp_active != 0:
+				WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods,
+					phone,address)
+			try:
+				other_admin = session.query(models.HireLink).filter_by(shop_id = shop_id,active = 1, work = 9 , temp_active = 1).first()
+			except NoResultFound:
+				other_admin = None
+			if other_admin:
+				info = session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id).filter(models.ShopStaff.id
+					== other_admin.staff_id).first()
+				other_name = info.nickname
+				other_touser = info.wx_openid
+				WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,
+					send_time,goods,phone,address)
+			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
+
+
+	##############################################################################################
+	# 订单完成后 ，积分 相应增加 ，店铺可提现余额相应增加 
+	# 同时生成相应的积分记录 和 余额记录 
+	# 若是余额 支付 会产生 额外的2分积分
+	# 客户 对 平台 和 该店铺来说都变成 老客户
+	##############################################################################################
+	@classmethod
+	def order_done(self,session,order):
+		now = datetime.datetime.now()
+		order.arrival_day = now.strftime("%Y-%m-%d")
+		order.arrival_time= now.strftime("%H:%M")
+		customer_id       = order.customer_id
+		shop_id           = order.shop_id
+		totalprice        = order.totalPrice
+
+		order.shop.is_balance = 1
+		order.shop.order_count += 1  #店铺订单数加1
+
+		#add by jyj 2015-6-15
+		totalprice_inc = order.totalPrice
+		order.shop.shop_property += totalprice_inc
+		print(order.shop.shop_property,'order.shop.order_count')
+
+		try:
+			customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
+		except NoResultFound:
+			return self.send_fail('order_done: customer not found')
+		customer_info.is_new = 1
+		name = customer_info.nickname
+		
+		try:
+			shop_follow = session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,shop_id = shop_id).first()
+		except NoResultFound:
+			return self.send_fail('shop_follow error')
+		if shop_follow.shop_new == 0:
+			shop_follow.shop_new = 1
+			# print("[订单管理]用户",customer_id,"完成订单，新用户标识置为：",customer.shop_new)
+		try:
+			order_count = session.query(models.Order).filter_by(customer_id = customer_id,shop_id = shop_id).count()
+		except:
+			self.send_fail("find order by customer_id and shop_id error")
+		#首单 积分 加5 ,woody
+		if order_count==1:
+			if shop_follow.shop_point == None:
+				shop_follow.shop_point =0
+			shop_follow.shop_point += 5
+			# print(shop_follow.shop_point,'shop_follow.shop_point')
+			try:
+				point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
+			except NoResultFound:
+				self.send_fail("point_history error:First_order")
+			if point_history:
+				point_history.point_type = models.POINT_TYPE.FIRST_ORDER
+				point_history.each_point = 5
+				session.add(point_history)
+
+		if order.pay_type == 2:    #余额 支付
+			if shop_follow.shop_point == None:
+				shop_follow.shop_point =0
+			shop_follow.shop_point += 2
+			# print(shop_follow.shop_point,'shop_follow.shop_point')
+			try:
+				point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
+			except:
+				self.send_fail("point_history error:PREPARE_PAY")
+			if point_history:
+				point_history.point_type = models.POINT_TYPE.PREPARE_PAY
+				point_history.each_point = 2
+				session.add(point_history)
+				
+
+			# 订单完成后，将相应店铺可提现 余额相应增加
+			order.shop.available_balance += totalprice
+			print(order.shop.available_balance,'order.shop.available_balance')
+
+			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
+				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
+				available_balance=order.shop.available_balance,balance_type = 6)
+			session.add(balance_history)
+
+		if order.pay_type == 3:
+			order.shop.available_balance += totalprice
+			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
+				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
+				available_balance=order.shop.available_balance,balance_type = 7)
+			session.add(balance_history)
+		
+
+		#增 与订单总额相等的积分
+		if shop_follow.shop_point == None:
+			shop_follow.shop_point =0
+			shop_follow.shop_point += totalprice
+			session.commit()
+			try:
+				point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
+			except:
+				self.send_fail("point_history error:totalprice")
+			if point_history:
+				point_history.point_type = models.POINT_TYPE.TOTALPRICE
+				point_history.each_point = totalprice
+				session.add(point_history)
+		session.commit()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				
 
 class SuperBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.SuperAdmin
@@ -657,25 +852,17 @@ class SuperBaseHandler(_AccountBaseHandler):
 				shop_id = shop.id
 				fruits = shop.fruits
 				menus = shop.menus
+				fans_count = shop.fans_count
 				# print(menus)
 				create_date = shop.create_date_timestamp
 				x = datetime.datetime.fromtimestamp(create_date)
 				# print(x)
 				now = datetime.datetime.now()
-				days = (now -x).days
+				days = (now - x).days
 				if days > 14:
-					if (shop_code == 'not set') or (len(fruits)+len(menus) == 0):
+					if (shop_code == 'not set') or (fans_count < 2) or (len(fruits)+len(menus) == 0):
 						shop.status = 0
-						print("[定时任务]店铺关闭成功：",shop_id,"未设置店铺号/无商品")
-					else:
-						try:
-							follower_count = session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
-						except:
-							return self.send_fail('follower_count error')
-						if follower_count < 2:
-							shop.status = 0
-							print("[定时任务]店铺关闭成功：",shop_id,"关注数小于2")							
-
+						print("[定时任务]店铺关闭成功：",shop_id)
 			session.commit()
 			print("[定时任务]关闭店铺完成")
 			# return self.send_success(close_shop_list = close_shop_list)

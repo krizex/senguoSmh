@@ -1645,5 +1645,50 @@ def init_db_data():
 	print("init db success")
 	return True
 
-
+'''
+# add by cm 2015.6.15
+# 商家优惠券
+class CouponsShop(MapBase, _CommonApi):
+ 	__tablename__='coupon_shop'
+ 	shop_id=Column(Integer,ForeignKey(Shop.id),nullable=False)
+ 	shop_name=Column(String)
+ 	coupon_id=Column(Integer,nullable=False)
+ 	customer_id=Column(Integer,ForeignKey(Customer.id))
+ 	coupon_key=Column(String,primary_key=True,nullable=False)
+ 	coupon_money=Column(Float,nullable=False)
+ 	coupon_totalnum=Column(Integer,nullable=False)
+ 	coupon_usenum=Column(Integer,default=0)
+ 	coupon_remainnum=Column(Integer,nullable=False)
+ 	#优惠方式  0：固定日期  1：领取后生效
+ 	valid_way=Column(Integer,default=0,nullable=False)
+ 	uneffective_time=Column(Date,default=func.now())
+ 	get_date=Column(Date)
+ 	use_date=Column(Date)
+ 	if_used=Column(Integer,default=0)
+ 	if_uneffective=Column(Integer,default=0)
+ 	order_id=Column(Integer)
+ 	day_start=Column(Integer,default=0,nullable=False)
+ 	last_day=Column(Integer,nullable=False)
+ 	get_limitnum=Column(Integer,nullable=False,default=1)
+ 	used_for=Column(Integer,default=0)
+ 	use_rule=Column(Float,nullable=False)
+ 		 
+	
+# 用户优惠券
+class CouponsCustomer(MapBase, _CommonApi):
+	__tablename__='coupon_customer'
+	coupon_id=Column(String(11),nullable=False)
+	coupon_key=Column(String(11),ForeignKey(CouponsShop.coupon_key),nullable=False)
+	customer_id=Column(Integer,ForeignKey(Customer.id),primary_key=True,nullable=False)
+	shop_name=Column(String)
+	shop_id=Column(Integer,ForeignKey(CouponsShop.shop_id))
+	get_date=Column(Date,default=func.now())
+	use_date=Column(Date)
+	uneffective_time=Column(Date)
+	if_used=Column(Integer,default=0)
+	if_uneffective=Column(Integer,default=0)
+	order_id=Column(Integer,nullable=False)
+	used_for=Column(Integer,default=0)
+	use_rule=Column(Float,nullable=False)
+'''
 
