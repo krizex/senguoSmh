@@ -353,7 +353,8 @@ var shopsList=function(page,data,action){
     }
     else if(action=='admin_shop'){
         args.id=data;
-        $(".filter_search").empty();
+        $(".filter_search").addClass("hidden");
+        $(".area_box").css("padding-top","40px");
     }
     $.postJson(url,args,function(res){
             if(res.success)
