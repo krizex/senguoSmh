@@ -2675,7 +2675,7 @@ class ShopConfig(AdminBaseHandler):
 	def post(self):
 		action = self.args["action"]
 		data = self.args["data"]
-		print("aaaaaaaaa",data)
+		# print("aaaaaaaaa",data)
 		shop = self.current_shop
 		if action == "edit_shop_name":
 			shop.shop_name = data["shop_name"]
