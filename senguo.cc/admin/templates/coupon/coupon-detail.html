@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 {% block head %}
+<div class="header">
+    <a href="javascript:;" class="back">返回</a>
+    <span>店铺优惠券</span>
+</div>
 {% end %}
-
 {% block content %}
 <div class="container">
     <ul class="get-coupon-list">
@@ -9,14 +12,13 @@
             <div class="bor-left"></div>
             <div class="bor-right"></div>
             <div class="get-top">
-                <a href="javascript:;" class="get-coupon">领取</a>
-                <a href="javascript:;" class="use-coupon">使用</a>
+                <a href="javascript:;" class="get-coupon" id="get-coupon" data-key="{{output_data['coupon_key']}}">领取</a>
             </div>
-            <p class="get-money">5元优惠券</p>
+            <p class="get-money">{{output_data['coupon_money']}}元优惠券</p>
             <div class="coupon-info">
-                <p>使用限制 : 订单满12元使用（含运费）</p>
-                <p>有效日期 : 2015.5.27-9.30</p>
-                <p>领取日期 :  2015.5.27-9.30 12:00</p>
+                <p>使用限制 : 订单满{{output_data['use_rule']}}元使用（含运费）</p>
+                <p>有效日期 : {{output_data['effective_time']}}</p>
+                <p>领取日期 : {{output_data['effective_time']}}</p>
             </div>
         </li>
     </ul>

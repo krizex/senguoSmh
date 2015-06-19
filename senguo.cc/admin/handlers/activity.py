@@ -435,14 +435,15 @@ class Coupon(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action?:str")
 	def get(self):
-		action=self.args["action"]
-		customer_id=self.current_user.id
-		data=[]
-		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id).all()
-		for x in q:
-			x_coupon={"coupon_money":x.coupon_money,"get_date":x.get_date,"uneffective_time":x.uneffective_time,"if_used":x.if_used}
-			data.append(x_coupon)
-		return self.render("coupon/coupon.html",output_data=data)
+		#action=self.args["action"]
+		#customer_id=self.current_user.id
+		#data=[]
+		#q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id).all()
+		#for x in q:
+		#	x_coupon={"coupon_money":x.coupon_money,"get_date":x.get_date,"uneffective_time":x.uneffective_time,"if_used":x.if_used}
+		#	data.append(x_coupon)
+		#return self.render("coupon/coupon.html",output_data=data)
+		return self.render("coupon/coupon.html")
 class CouponDetail(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","coupon_key:str")
