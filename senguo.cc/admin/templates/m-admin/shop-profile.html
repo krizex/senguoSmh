@@ -4,7 +4,7 @@
 {% end %}
 {% block header %}
 <div class="header">
-    <span>森果体验店</span>
+    <span>{{shop.shop_name}}</span>
     <a href="/customer/profile" class="head-right profile-center"></a>
 </div>
 {% end %}
@@ -12,14 +12,14 @@
 <div class="shop-profile">
     <div class="profile-top white-box">
         <div class="sw-tip shopping" data-status="1"></div>
-        <span class="sw-tip-txt">营业中</span>
+        <span class="sw-tip-txt">{{shop.status}}</span>
         <dl class="dl ptm6">
             <dt>
-                <img src="/static/images/TDSG.png" alt="店铺logo"/>
+                <img src="{{shop.shop_trademark_url or '/static/images/TDSG.png'}}" alt="店铺logo"/>
             </dt>
             <dd>
-                <p class="title c333 mt4">森果体验店<span class="shop-auth" data-auth="1">个人认证</span></p>
-                <p class="c333 mt15">店铺链接 : <a href="http://senguo.cc/zhoubing" class="shop-link">http://senguo.cc/zhoubing</a></p>
+                <p class="title c333 mt4">{{shop.shop_name}}<span class="shop-auth" data-auth="{{shop.shop_auth}}">个人认证</span></p>
+                <p class="c333 mt15">{% if shop.shop_code %}店铺链接 : <a href="http://senguo.cc/{{shop.shop_code}}" class="shop-link">http://senguo.cc/{{shop.shop_code}}</a>{% else %}未设置店铺号 {% end %}</p>
             </dd>
         </dl>
     </div>
@@ -31,19 +31,19 @@
         <ul class="group stat-list">
             <li>
                 <p class="name">新增用户</p>
-                <p class="num">223</p>
+                <p class="num">{{new_follower_sum}}</p>
             </li>
             <li>
-                <p class="name">新增用户</p>
-                <p class="num">223</p>
+                <p class="name">新增订单</p>
+                <p class="num">{{new_order_sum}}</p>
             </li>
             <li>
-                <p class="name">新增用户</p>
-                <p class="num">223</p>
+                <p class="name">总订单数</p>
+                <p class="num">{{order_sum}}</p>
             </li>
             <li>
-                <p class="name">新增用户</p>
-                <p class="num">223</p>
+                <p class="name">总营业额</p>
+                <p class="num">{{total_money}}</p>
             </li>
         </ul>
     </div>
@@ -56,19 +56,19 @@
             <a href="javascript:;">
                 <li>
                     <p class="name">按时达</p>
-                    <p class="num"><span class="tip-num">333</span></p>
+                    <p class="num"><span class="tip-num">{{ontime_count}}</span></p>
                 </li>
             </a>
             <a href="javascript:;">
                 <li>
                     <p class="name">立即送</p>
-                    <p class="num"><span class="tip-num">333</span></p>
+                    <p class="num"><span class="tip-num">{{intime_count}}</span></p>
                 </li>
             </a>
             <a href="javascript:;">
                 <li>
                     <p class="name">自提</p>
-                    <p class="num"><span class="tip-num">333</span></p>
+                    <p class="num"><span class="tip-num">{{self_count}}</span></p>
                 </li>
             </a>
         </ul>

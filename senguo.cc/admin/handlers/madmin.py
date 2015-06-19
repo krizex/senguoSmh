@@ -25,7 +25,43 @@ class OrderDetail(AdminBaseHandler):
 class ShopProfile(AdminBaseHandler):
 	# @tornado.web.authenticated
 	def get(self):
-		return self.render("m-admin/shop-profile.html")
+		if self.get_secure_cookie("shop_id"):
+			shop_id = int(self.get_secure_cookie("shop_id").decode())
+			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
+			shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
+			self.current_shop = shop
+			self.set_secure_cookie("shop_id", str(shop.id), domain=ROOT_HOST_NAME)
+
+		show_balance = False
+		shop_auth =  self.current_shop.shop_auth
+
+		if shop_auth in [1,2]:
+			show_balance = True
+		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
+			not_(models.Order.status.in_([-1,0]))).count()
+		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+
+		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
+		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
+		self.current_shop.new_follower_sum = follower_sum
+
+		try:
+			total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id ,status =6).all()[0][0]
+		except:
+			total_money = None
+		if total_money:		
+			total_money = format(total_money,'.2f')
+		else:		
+			total_money=0
+
+		order_list=self.session.query(models.Order).filter_by(shop_id=shop.id,status=1)
+		intime_count = order_list.filter_by(type=1).count()
+		ontime_count = order_list.filter_by(type=2).count()
+		self_count = order_list.filter_by(type=3).count()
+
+		return self.render("m-admin/shop-profile.html", new_order_sum=new_order_sum, order_sum=order_sum,
+						   new_follower_sum=new_follower_sum, follower_sum=follower_sum,show_balance = show_balance,\
+						   shop=shop,total_money=total_money,intime_count=intime_count,ontime_count=ontime_count,self_count=self_count)
 		
 class OrderSearch(AdminBaseHandler):
 	# @tornado.web.authenticated
