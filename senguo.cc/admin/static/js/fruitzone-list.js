@@ -354,6 +354,9 @@ var shopsList=function(page,data,action){
     else if(action=='admin_shop'){
         args.id=data
     }
+    else if(action=='shop'){
+        $(".filter_search").hide()
+    }
     $.postJson(url,args,function(res){
             if(res.success)
             {
