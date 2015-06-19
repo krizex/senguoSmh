@@ -2814,12 +2814,12 @@ class ShopAuthenticate(AdminBaseHandler):
 
 # 营销和玩法
 class Marketing(AdminBaseHandler):
-	# curent_shop_id=None
+	curent_shop_id=None
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str","data?:str","coupon_id?:int","select_rule?:int")
 	def get(self):
 		action = self.args["action"]
-		# current_shop_id=self.current_shop.id
+		current_shop_id=self.current_shop.id
 		if action == "lovewall":
 			return self.render("admin/lovewall.html",context=dict(subpage = 'marketing'))
 		'''
@@ -2899,6 +2899,7 @@ class Marketing(AdminBaseHandler):
 	def post(self):
 		action = self.args["action"]
 		current_shop_id = self.current_shop.id
+		current_shop = self.current_shop
 		if action == "confess_active":
 			active = current_shop.marketing.confess_active
 			current_shop.marketing.confess_active = 0 if active == 1 else 1
