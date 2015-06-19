@@ -549,6 +549,9 @@ function orderPrint(target,action){
                         $item.find('#img').attr('src',print_img);
                     }
                 }
+                else{
+                    $item.find('.shop-img').remove(); 
+                }
                $item.find('.moneyPaid').text(paid);
                html.innerHTML+=$item[0].innerHTML;
         });
