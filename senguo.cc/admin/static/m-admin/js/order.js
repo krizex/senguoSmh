@@ -60,7 +60,7 @@ $(document).ready(function(){
     });
 });
 
-var goodsList=function(page,action){
+var goooooooo=function(page,action){
     $(".no-result").html("数据正在加载中...");
     var url='';
     var action=action;
@@ -68,6 +68,7 @@ var goodsList=function(page,action){
         action:action,
         page:page
     };
+
     $.postJson(url,args,function(res){
             if(res.success){
                 var data = res.orders;
@@ -214,3 +215,258 @@ var goodsList=function(page,action){
         window.dataObj.finished=true;
     }
 };
+
+function orderItem(page){
+    $(".wrap-loading-box").removeClass("hidden");
+    var action=$.getUrlParam('action');
+    var url;
+    var filter_status = $(".filter").attr("data-id");
+    var pay_type = $(".pay_type").attr("data-id");
+    var user_type = $(".user_type").attr("data-id");
+    url=link+'/admin/order?order_type=1'+'&page='+page; 
+    } 
+    $('.order-list-content').empty();
+    $.ajax({
+        url:url,
+        type:"get",
+        success:function(res){
+            if(res.success){
+                var data=res.data;
+                $('.page-total').text(parseInt(res.page_sum));
+                _page_total=parseInt(res.page_sum);
+                if(res.count){
+                     _count=res.count;
+                    var type=parseInt($.getUrlParam("order_type"));
+                    $('.order-status li').each(function(){
+                        var $this=$(this);
+                        var index=$this.index()+1;
+                        var i=parseInt(type.toString()+index.toString());
+                        $this.find('.num').text(_count[i]);
+                    });
+                    $('#atonce').text(_count[11]);
+                    $('#ontime').text(_count[21]);
+                }
+                 if(_page_total <=1){
+                    $('.list-pagination').hide();
+                }
+                else {
+                    $('.list-pagination').show();
+                    if(_page===0) {
+                        $('.pre-page').hide();
+                    }
+                    else{
+                        $('.pre-page').show();
+                    }
+                    if(_page_total-1== _page){
+                        $('.next-page').hide();
+                    }
+                    else{
+                        $('.next-page').show();
+                        
+                    }
+                    $('.page-now').text(_page+1);
+                }
+                if(data.length==0){
+                    $('.order-list-content').append('<h4 class="text-center mt40">当前分类暂无订单信息</h3>');
+                    $(".wrap-loading-box").addClass("hidden");
+                    return false;
+                }
+                for(var i=0;i<data.length;i++){
+                    var $item=$($list_item);
+                    var SH2=data[i]['SH2'];
+                    var SH2s=data[i]['SH2s'];
+                    var active=data[i]['active'];
+                    var address_text=data[i]['address_text'];
+                    var create_date=data[i]['create_date'];
+                    var freight=data[i]['freight'];
+                    var fruits=data[i]['fruits'];
+                    var id=data[i]['id'];
+                    var isprint=data[i]['isprint'];
+                    var message=data[i]['message'];
+                    var money_paid=data[i]['money_paid'];
+                    var num=data[i]['num'];
+                    var pay_type=data[i]['pay_type'];      
+                    var mgoods=data[i]['mgoods']; 
+                    var phone=data[i]['phone'];
+                    var receiver=data[i]['receiver'];  
+                    var remark=data[i]['remark'];
+                    var send_time=data[i]['send_time'];
+                    var staff_remark=data[i]['staff_remark'];
+                    var status=data[i]['status'];
+                    var tip=data[i]['tip'];
+                    var today=data[i]['today'];
+                    var totalPrice=data[i]['totalPrice'];
+                    var type=data[i]['type'];
+                    var shop_new=data[i]['shop_new'];
+                    var del_reason=data[i]['del_reason'];
+                    var nickname=data[i]['nickname'];
+                    var customer_id=data[i]['customer_id'];
+                          
+                    if(!message) {
+                        $item.find('.order-message').hide();
+                    }
+                    if(!staff_remark) {
+                        $item.find('.staff-replay').hide();
+                    }
+                    if(!remark||remark==null) {
+                        $item.find('.saler-remark').hide();
+                    }
+                    if(isprint==1||isprint==true) {
+                        $item.find('.print-order').addClass('text-grey9');
+                    }
+                    if(shop_new!=1) {
+                        $item.find('.new').show();
+                    }
+                    $item.find('.name').text(nickname).attr('href','/admin/follower?action=filter&&order_by=time&&page=0&&wd='+customer_id);
+                    $item.find('.receiver').text(receiver);
+                    $item.attr({'data-id':id,'data-type':type});
+                    $item.find('.send-time').text(send_time);
+                    $item.find('.order-code').text(num);
+                    $item.find('.order-price').text(totalPrice);
+                    $item.find('.goods-total-charge').text(totalPrice);
+                    $item.find('.total_price_input').text(totalPrice);
+                    $item.find('.address_show').text(address_text);
+                    $item.find('.phone').text(phone);
+                    $item.find('.message-content').text(message);
+                    $item.find('.staff-remark').text(staff_remark);
+                    $item.find('.order_remark').text(remark);
+                    $item.find('.order-status').attr({'data-id':status});
+                    $item.find('.order-time').text(create_date);
+                    $item.find('.saler-remark').val(remark);
+                    //立即送小费显示/隐藏
+                    if(type==1){
+                        $item.find('.tip').text(tip);
+                    }
+                    else {
+                        $item.find('.tips').hide();
+                    }
+                    //根据支付方式显示/隐藏
+                    if(pay_type==2){ 
+                        $item.find('.pay-status').text('余额支付'); 
+                        $item.find('.price_edit').hide();
+                    } 
+                    else if(pay_type == 3){
+                        $item.find('.pay-status').text('在线支付'); 
+                        $item.find('.price_edit').hide();
+                        if(status!=-1){$item.find('.delete-order').hide();}
+                    }
+                    else { 
+                        $item.find('.pay-status').text('货到付款'); 
+                    }
+                    //根据订单状态显示/隐藏
+                    if(status==0) {
+                        if(del_reason==null){
+                            $item.find('.order-status').empty().text('该订单已被用户取消').css({'line-height':'50px','color':'#44b549'});
+                        }
+                        else if(del_reason=='timeout'){
+                            $item.find('.order-status').empty().text('该订单15分钟未支付，已自动取消').css({'line-height':'50px','color':'#44b549'});
+                        }
+                        else{
+                            $item.find('.order-status').empty().text('该订单已删除（原因：'+del_reason+'）').css({'line-height':'50px','color':'#44b549'});
+                        }
+                        $item.find('.unable_edit_order').show();
+                        $item.find('.address-adapt').hide();
+                    }
+                    else if(status==-1) {
+                        $item.find('.status_unpaid').removeClass('hidden');
+                        $item.find('.able_edit_order').show();
+                        $item.find('.address-adapt').hide();
+                    }
+                    else if(status==1) {
+                        $item.find('.status_order').removeClass('hidden');
+                        $item.find('.able_edit_order').show();
+                        $item.find('.able_edit_sender').show();
+                        $item.find('.status-send').show();
+                    }
+                    else if(status==4) {
+                        $item.find('.status_send').removeClass('hidden');
+                        $item.find('.able_edit_order').show();
+                        $item.find('.able_edit_sender').show();
+                        $item.find('.status-finish').show();
+                    }
+                    else if(status==5) {
+                        $item.find('.status_finish').removeClass('hidden');
+                        $item.find('.unable_edit_order').show();
+                        $item.find('.unable_edit_sender').show();
+                    }
+                    else if(status==6) {
+                        $item.find('.status_comment').removeClass('hidden');
+                        $item.find('.status-comment').show();
+                        $item.find('.unable_edit_order').show();
+                        $item.find('.unable_edit_sender').show();
+                    }
+                    else if(status==7) {
+                        $item.find('.status_comment').removeClass('hidden');
+                        $item.find('.status-autocomment').show();
+                        $item.find('.unable_edit_order').show();
+                        $item.find('.unable_edit_sender').show();
+                    }
+                    //商品数据
+                    var goods_num=0;
+                    var g_num=0;
+                    var m_num=0;
+                    for(var key in fruits){
+                        g_num++;
+                        var $goods=$($goods_item);
+                        $goods.find('.code').text(g_num);
+                        $goods.find('.goods-name').text(fruits[key]['fruit_name']);
+                        $goods.find('.goods-price').text(fruits[key]['charge']);
+                        $goods.find('.goods-number').text(fruits[key]['num']);
+                        $item.find('.goods-list').append($goods);
+                        goods_num=goods_num+fruits[key]['num'];
+                    }
+                    for(var key in mgoods){
+                        m_num++;
+                        var $mgoods=$($goods_item);
+                        var num=$item.find('.goods-list li').length;
+                        $mgoods.find('.code').text(num+1);
+                        $mgoods.find('.goods-name').text(mgoods[key]['mgoods_name']);
+                        $mgoods.find('.goods-price').text(mgoods[key]['charge']);
+                        $mgoods.find('.goods-number').text(mgoods[key]['num']);
+                        $item.find('.goods-list').append($mgoods);
+                        goods_num=goods_num+mgoods[key]['num'];
+                    }
+                    //送货员选择
+                    var $current_sender=$item.find('.current_sender');
+                    var $send_change=$item.find('.send_change');
+                    var $sender=$send_change.find('.send_person');
+                    var CurrentStaff=function(target,val){
+                      target.attr({'data-id':val['id']});
+                      target.find('.sender-code').text(val['id']);
+                      target.find('.sender-name').text(val['nickname']);
+                      target.find('.sender-phone').text(val['phone']);
+                };
+                if(SH2s.length>0){
+                    if(!SH2){
+                        CurrentStaff($sender,SH2s[0]);
+                        CurrentStaff($current_sender,SH2s[0]);
+                         for(var key in SH2s){
+                            var $staff=$($staff_item);
+                            CurrentStaff($staff,SH2s[key]);
+                            $item.find('.send_person_list').append($staff);
+                        }       
+                    }else{
+                        CurrentStaff($sender,SH2);
+                        CurrentStaff($current_sender,SH2);
+                        for(var key in SH2s){
+                            var $staff=$($staff_item);
+                            if(SH2s[key]['id']==SH2['id']) $staff.addClass('bg-blue');
+                            CurrentStaff($staff,SH2s[key]);
+                            $item.find('.send_person_list').append($staff);
+                        }
+                        }
+                    }
+                    //商品总件数
+                    $item.find('.goods-total-number').text(goods_num);
+                    $('.order-list-content').append($item);
+                }
+             $(".wrap-loading-box").addClass("hidden");
+            }
+            else {
+                $(".wrap-loading-box").addClass("hidden");
+                return Tip(res.error_text);
+            }
+        }
+    })
+    
+}
