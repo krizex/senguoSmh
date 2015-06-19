@@ -345,9 +345,9 @@ class OrderStatic(AdminBaseHandler):
 	def order_table(self):
 		page = self.args["page"]
 		page_size = 15
-
 		start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
 		end_date = datetime.datetime.now() - datetime.timedelta(page*page_size)
+		print(start_date , end_date )
 
 		# 日订单数，日总订单金额
 		s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
@@ -358,12 +358,15 @@ class OrderStatic(AdminBaseHandler):
 					 func.month(models.Order.create_date),
 					 func.day(models.Order.create_date)).\
 			order_by(desc(models.Order.create_date)).all()
+		for temp in s:
+			print(temp[0].strftime('%Y-%m-%d'))
 
 		# 总订单数
 		total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
 			filter(models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0]))).\
 			filter(models.Order.create_date <= end_date).all()
 		total = list(total[0])
+		# print(total , 'totallllllllllllllllllllllllll')
 
 		# 日老用户订单数
 		ids = self.old_follower_ids(self.current_shop.id)
@@ -389,20 +392,25 @@ class OrderStatic(AdminBaseHandler):
 		# data的封装格式为：[日期，日订单数，累计订单数，日订单总金额，累计订单总金额，日老用户订单数，累计老用户订单数]
 		for x in range(0, 15):
 			date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
-			if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
+			print(date.strftime('%Y-%m-%d'))
+			# if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
+			if i < len(s) and (s[i][0].strftime('%Y-%m-%d') == date.strftime('%Y-%m-%d')):
 				if j < len(s_old) and (datetime.datetime.now()-s_old[j][0]).days == x+(page*page_size):
 					data.append((date.strftime('%Y-%m-%d'), s[i][1], total[1], format(float(s[i][2]),'.2f'), format(float(total[0]),'.2f'), s_old[j][1], old_total))
+					# print(s[i][1],date.strftime('%Y-%m-%d'),s[i][0].strftime('%Y-%m-%d'),s[i][2])
 					total[1] -= s[i][1]
 					total[0] -= s[i][2]
-					old_total -= s_old[j][1]
+					old_total -= s_old[j][1] 
 					i += 1
 					j += 1
 				else:
+					# print(s[i][1],date.strftime('%Y-%m-%d'),s[i][0].strftime('%Y-%m-%d'),s[i][2])
 					data.append((date.strftime('%Y-%m-%d'), s[i][1], total[1], format(float(s[i][2]),'.2f'), format(float(total[0]),'.2f'), 0, old_total))
 					total[1] -= s[i][1]
 					total[0] -= s[i][2]
 					i += 1
 			else:
+				# print(date.strftime('%Y-%m-%d'))
 				if total[0]:
 					data.append((date.strftime('%Y-%m-%d'), 0, total[1], 0, format(float(total[0]),'.2f'), 0, old_total))
 				else:
@@ -416,6 +424,7 @@ class OrderStatic(AdminBaseHandler):
 			page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
 		else:
 			page_sum = 0
+		# print(data)
 		return self.send_success(page_sum=page_sum, data=data)
 
 	# 老用户的id
@@ -3023,7 +3032,7 @@ class Marketing(AdminBaseHandler):
 # 营销和玩法 - 告白墙管理
 class Confession(AdminBaseHandler):
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action:str", "page:int")
+	@AdminBaseHandler.check_arguments("action?:str", "page?:int")
 	def get(self):
 		action = self.args["action"]
 		page = self.args["page"]
@@ -3031,25 +3040,56 @@ class Confession(AdminBaseHandler):
 		pages=0
 		confession = ''
 		datalist = []
-		if action == "all":
-			# 我开始的时候用的识filter 但是后台报错 我使用了 filter_by之后错误解决 为什么呢？？？
-			q = self.session.query(models.ConfessionWall).filter_by( shop_id = self.current_shop.id,status = 1).order_by(models.ConfessionWall.create_time.desc())
-		elif action == "hot":
-			q = self.session.query(models.ConfessionWall).filter_by( shop_id = self.current_shop.id,status = 1).order_by(models.ConfessionWall.great.desc())	
-		else:
-			return self.send_error(404)
-		confession = q.offset(page*page_size).limit(page_size).all()
+		q = self.session.query(models.ConfessionWall,
+			models.Accountinfo,models.ConfessionWall.create_time).outerjoin(
+			models.Accountinfo,
+			models.ConfessionWall.customer_id == models.Accountinfo.id).filter(
+			models.ConfessionWall.shop_id==self.current_shop.id,
+			models.ConfessionWall.status == 1).distinct(models.ConfessionWall.id)
 		count = q.count()
-		pages = count/page_size
-		for data in confession:
-			info = self.session.query(models.Customer).filter_by(id=data.customer_id).first()
-			user = info.accountinfo.nickname
-			imgurl = info.accountinfo.headimgurl_small
-			sex = info.accountinfo.sex
-			time = data.create_time.strftime('%Y-%m-%d %H:%M:%S')
-			datalist.append({'id':data.id,'user':user,'imgurl':imgurl,'time':time,'name':data.other_name,\
-				'type':data.confession_type,'confession':data.confession,'great':data.great,\
-				'comment':data.comment,'floor':data.floor,'sex':sex,'address':data.other_address,'phone':data.other_phone})
+		pages = int(count/page_size) if count % page_size == 0 else int(count/page_size) + 1
+		if action == 'all':
+			q = q.order_by(models.ConfessionWall.create_time).offset(page * page_size).limit(page_size)
+		elif action == 'hot':
+			q = q.order_by(models.ConfessionWall.great.desc()).offset(page * page_size).limit(page_size)
+		for temp in q:
+			print(temp.ConfessionWall.id,temp.Accountinfo.id)
+			datalist.append(dict(
+				id = temp.ConfessionWall.id,
+				user = temp.Accountinfo.nickname,
+				imgurl = temp.Accountinfo.headimgurl_small,
+				time = temp.create_time.strftime('%Y-%m-%d %H:%M:%S'),
+				name = temp.ConfessionWall.other_name,
+				type = temp.ConfessionWall.confession_type,
+				confession = temp.ConfessionWall.confession ,
+				great = temp.ConfessionWall.great,
+				comment = temp.ConfessionWall.comment,
+				floor = temp.ConfessionWall.floor,
+				sex   = temp.Accountinfo.sex,
+				address= temp.ConfessionWall.other_address,
+				phone = temp.ConfessionWall.other_phone))
+		# return self.send_success(data = datalist)
+
+
+		# if action == "all":
+		# 	# 我开始的时候用的识filter 但是后台报错 我使用了 filter_by之后错误解决 为什么呢？？？
+		# 	q = self.session.query(models.ConfessionWall).filter_by( shop_id = self.current_shop.id,status = 1).order_by(models.ConfessionWall.create_time.desc())
+		# elif action == "hot":
+		# 	q = self.session.query(models.ConfessionWall).filter_by( shop_id = self.current_shop.id,status = 1).order_by(models.ConfessionWall.great.desc())	
+		# else:
+		# 	return self.send_error(404)
+		# confession = q.offset(page*page_size).limit(page_size).all()
+		# count = q.count()
+		# pages = count/page_size
+		# for data in confession:
+		# 	info = self.session.query(models.Customer).filter_by(id=data.customer_id).first()
+		# 	user = info.accountinfo.nickname
+		# 	imgurl = info.accountinfo.headimgurl_small
+		# 	sex = info.accountinfo.sex
+		# 	time = data.create_time.strftime('%Y-%m-%d %H:%M:%S')
+		# 	datalist.append({'id':data.id,'user':user,'imgurl':imgurl,'time':time,'name':data.other_name,\
+		# 		'type':data.confession_type,'confession':data.confession,'great':data.great,\
+		# 		'comment':data.comment,'floor':data.floor,'sex':sex,'address':data.other_address,'phone':data.other_phone})
 		return self.render("admin/confession.html", action = action, datalist=datalist, pages=pages,context=dict(subpage='marketing'))
 
 	@AdminBaseHandler.check_arguments("action:str", "data")
