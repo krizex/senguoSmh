@@ -244,6 +244,7 @@ var goodsList=function(page,action,type){
         }
 };
 var goods_item1='<li class="{{code}}">'+
+                    '<a href="{{link}}">'+
                     '<img src="/static/images/fruit3.jpg" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/>'+
                     '<div class="item-info bg-color">'+
                         '<div class="skew item-info-name {{if charge_types["market_price"]>0 }}mt10{{else}}mt20{{/if}}">{{name}}</div>'+
@@ -256,6 +257,7 @@ var goods_item1='<li class="{{code}}">'+
                     '{{if storage<=0 }}'+
                     '<div class="sold-out bg_change" style="background-color:rgba(0,0,0,0.1)"><div class="out"></div></div>'+
                     '{{/if}}'+
+                    '</a>'+
                 '</li>';
 var goods_item2='<li class="{{code}} goods-list-item" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{detail_no}}">'+
                 '<a href="{{link}}" class="add_cart"><img src="/static/images/fruit3.jpg" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/></a>'+
@@ -466,4 +468,68 @@ function stopDefault(e) {
     else
         window.event.returnValue = false;
     return false;
+}
+
+var startX = 0,startY = 0,t = 0,wHeight,disHeight;
+$(document).ready(function(){ 
+        wHeight = $(window).height();
+        var height = $(".container").height();
+        disHeight = height-wHeight;
+    });
+document.addEventListener('touchstart', function (ev) {
+    startX = ev.touches[0].pageX;
+    startY = ev.touches[0].pageY;  
+    t = $(window).scrollTop();
+
+}, false);
+document.addEventListener('touchmove', function (ev) {
+    var moveX,moveY;
+    moveX = ev.touches[0].pageX;
+    moveY = ev.touches[0].pageY;
+}, false);
+document.addEventListener('touchend', function (ev) {
+    var endX, endY;
+    endX = ev.changedTouches[0].pageX;
+    endY = ev.changedTouches[0].pageY;
+    var direction = GetSlideDirection(startX, startY, endX, endY);
+    var disY = Math.abs(endY - startY);
+    var top = $(window).scrollTop();
+    switch (direction) {
+        case 1:   //上
+            if(t>=disHeight && disY>50 && window.location.href.indexOf("all")==-1){ 
+                var shop_code=$('#shop_code').val();
+                window.location.href="/"+shop_code+"?action=all"; 
+            }
+            break;
+        case 2:   //下
+
+            break;
+        default:            
+    }   
+}, false);
+//返回角度
+function GetSlideAngle(dx, dy) {
+    return Math.atan2(dy, dx) * 180 / Math.PI;
+}    
+//根据起点和终点返回方向 1：向上，2：向下，3：向左，4：向右,0：未滑动
+function GetSlideDirection(startX, startY, endX, endY) {
+    var dy = startY - endY;
+    var dx = endX - startX;
+    var result = 0;
+    //如果滑动距离太短
+    if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
+        return result;
+    }
+    var angle = GetSlideAngle(dx, dy);
+    if (angle >= -45 && angle < 45) {
+        result = 4;
+    } else if (angle >= 45 && angle < 135) {
+        result = 1;
+    } else if (angle >= -135 && angle < -45) {
+        result = 2;
+    }
+    else if ((angle >= 135 && angle <= 180) || (angle >= -180 && angle < -135)) {
+        result = 3;
+    }    
+    return result;
 }
