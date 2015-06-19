@@ -34,7 +34,7 @@
     {% set receipt_active ='active' %}
 {% end %}
 {% set shop_code =current_shop.shop_code %}
-<span class="right-title">店铺设置<span class="shop-link ml20">当前店铺：{% if shop_code and shop_code!='not set' %}<a href="{{reverse_url('Market',shop_code)}}" target="_blank">{{current_shop.shop_name}}</a></span>{% else %}<span class="shop-link">{{current_shop.shop_name}} (请设置店铺号)</span>{% end %}<a href="/admin/switchshop" class="add-btn switch">　 切换店铺 / 多店铺管理</a></span>
+<span class="right-title">店铺设置<span class="shop-link ml20">当前店铺：{% if shop_code and shop_code!='not set' %}<a href="{{reverse_url('Market',shop_code)}}" target="_blank">{{current_shop.shop_name}}</a></span>{% else %}<span class="shop-link">{{current_shop.shop_name}} (请设置店铺号)</span>{% end %}<a href="{{reverse_url('switchshop')}}" class="add-btn switch">　 切换店铺 / 多店铺管理</a></span>
 <div class="subnav-box">
     <ul class="subnav group">
         <!--<li class="{{delivery_active}}" id="deliverySet"><a href="{{reverse_url('adminConfig')}}?action=delivery">配送设置</a></li>-->
