@@ -10,7 +10,7 @@ $(document).ready(function () {
         }
 
     });
-    /*$('.action-btn').each(function () {
+    $('.action-btn').each(function () {
         var $this = $(this);
         var status = $this.data('status');
         if (status == 1) {
@@ -20,7 +20,7 @@ $(document).ready(function () {
             $this.addClass('bg-green').text('启用');
         }
 
-    });*/
+    });
 }).on('click', '.confess-active', function () {
     var $this = $(this);
     if ($this.attr("data-flag") == "off") return false;

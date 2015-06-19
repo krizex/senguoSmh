@@ -7,25 +7,33 @@
     <div class="coupon-box">
         <div class="wrap-coupon-ipt">
             <input type="text" class="coupon-ipt" placeholder="输入代金券/优惠券码"/>
-            <a href="javascrpipt:;" class="convert-btn">兑换</a>
+            <a href="javascrpipt:;" class="convert-btn" id="convert-btn">兑换</a>
         </div>
         <ul class="coupon-list">
+            {% for coupon in output_data %}
             <li>
-                <div class="coupon-item coupon-acitve">
-                    <dl class="group">
-                        <dt class="fl"><span class="rmb">￥</span><span class="coupon-money">20</span></dt>
-                        <dd class="fl">
-                            <p class="f16">满12元使用</p>
-                            <p class="f12">2015.5.27-9.30</p>
-                            <p class="f32">优惠券</p>
-                        </dd>
-                    </dl>
-                    <div class="coupon-text">
-                        <span class="text">已消费</span>
+                <a href="/coupon/detail?action=detail&coupon_key={{coupon['coupon_key']}}">
+                    <div class="gap gap-right"></div>
+                    <div class="gap gap-left"></div>
+                    <div class="coupon-item {% if coupon['if_used']==1 %}coupon-acitve{% end %}">
+                        <dl class="group">
+                            <dt class="fl"><span class="rmb">￥</span><span class="coupon-money">coupon['coupon_money']</span></dt>
+                            <dd class="fl">
+                                <p class="f16">满12元使用</p>
+                                <p class="f12">2015.5.27-9.30</p>
+                                <p class="f32">优惠券</p>
+                            </dd>
+                        </dl>
+                        <div class="coupon-text">
+                            <span class="text">{% if coupon['if_used']==1 %}未消费{% else %}已消费{% end %}</span>
+                        </div>
                     </div>
-                </div>
+                </a>
             </li>
-            <li>
+            {% end %}
+            <!--<li>
+                <div class="gap gap-right"></div>
+                <div class="gap gap-left"></div>
                 <div class="coupon-item">
                     <dl class="group">
                         <dt class="fl"><span class="rmb">￥</span><span class="coupon-money">20</span></dt>
@@ -39,10 +47,11 @@
                         <span class="text">未消费</span>
                     </div>
                 </div>
-            </li>
+            </li>-->
         </ul>
     </div>
 </div>
 {% end %}
 {% block bottom %}
+
 {% end %}
