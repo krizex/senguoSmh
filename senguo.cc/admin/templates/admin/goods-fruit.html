@@ -16,7 +16,7 @@
                 <div class="goods-img pull-left">
                     <span class="goods-tag" data-id="{{fruit.tag}}"></span>
                     {% if fruit.img_url%}
-                    <img src="{{fruit.img_url}}?imageView/1/w/100/h/100"/>
+                    <img src="{{fruit.img_url}}?imageView2/1/w/100/h/100"/>
                     {% else %}
                     <img src="/static/design_img/{{fruit.fruit_type.code}}.png?v=20150316"/>
                     {% end %}
@@ -67,7 +67,7 @@
                 <div class="upload-img goods-left pull-left">
                     <span class="goods-tag" data-id="{{fruit.tag}}"></span>
                     {% if fruit.img_url%}
-                    <img src="{{fruit.img_url}}?imageView/1/w/100/h/100" class="imgPreview" data-key="{{fruit.img_url}}" data-code="{{fruit.fruit_type.code}}"/>
+                    <img src="{{fruit.img_url}}?imageView2/1/w/100/h/100" class="imgPreview" data-key="{{fruit.img_url}}" data-code="{{fruit.fruit_type.code}}"/>
                     {% else %}
                     <img src="/static/design_img/{{fruit.fruit_type.code}}.png?v=20150316" class="imgPreview" data-key="{{fruit.img_url}}" data-code="{{fruit.fruit_type.code}}"/>
                     {% end %}

@@ -37,7 +37,7 @@ $(document).ready(function(){
                 };
             },
             'onUploadComplete':function(){
-                $('.hire-img').attr({'src':'http://7tszl5.com2.z0.glb.qiniudn.com/'+key+'?imageView/1/w/100/h/100','data-id':key});
+                $('.hire-img').attr({'src':'http://7tszl5.com2.z0.glb.qiniudn.com/'+key+'?imageView2/1/w/100/h/100','data-id':key});
             }
 
         });*/

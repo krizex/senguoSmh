@@ -142,7 +142,7 @@ function insertShop(page){
         console.log(shop.shop_code);
         var $item = $("#temp-ul").children("li").clone();
         if(shop.shop_trademark_url){
-             $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView/1/w/100/h/100");
+             $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView2/1/w/100/h/100");
         }else{
             $item.find(".shop-img").attr("src","/static/images/TDSG.png");
         }     
@@ -332,7 +332,7 @@ function searchshop(page){
         var shop = shops[i];
         var $item = $("#temp-ul").children("li").clone();
         if(shop.shop_trademark_url){
-             $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView/1/w/100/h/100");
+             $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView2/1/w/100/h/100");
         }else{
             $item.find(".shop-img").attr("src","/static/images/TDSG.png");
         }     

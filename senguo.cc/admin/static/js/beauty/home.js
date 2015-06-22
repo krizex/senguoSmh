@@ -295,11 +295,11 @@ var fruitItem=function(box,fruits,type){
     if(!img_url){
         ori_img='/static/design_img/'+code+'.png';
     }else{
-         if(type=='recommend'){
-            ori_img=img_url+'?imageView2/1/w/800/h/368';
-         }
+        if(type=='recommend'){
+            ori_img=img_url+'?imageView2/1/w/800/interlace/1';
+        }
         else{
-            ori_img=img_url+'?imageView2/1/w/800/h/368';
+            ori_img=img_url+'?imageView2/1/w/800/interlace/1';
         }
     }
     if(tag==2){

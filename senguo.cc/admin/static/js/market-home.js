@@ -544,7 +544,7 @@ var fruitItem=function(box,fruits,type){
     if(!img_url){
         ori_img='/static/design_img/'+code+'.png';
     }else{
-        ori_img=img_url+'?imageView/1/w/170/h/170';
+        ori_img=img_url+'?imageView2/1/w/170/h/170';
     }
     if(tag==2){
         tag='limit_tag';
