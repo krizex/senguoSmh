@@ -38,7 +38,7 @@ function initBmap() {
         myGeo.getPoint(address, function (point) {
             if (point) {
                 oPoint = point;
-                map.centerAndZoom(point, 19);
+                map.centerAndZoom(point, 15);
                 marker = new BMap.Marker(point);
                 map.addOverlay(marker);
                 var infoWindow = new BMap.InfoWindow("地址："+address, opts);  // 创建信息窗口对象
