@@ -39,14 +39,26 @@ function getContent(action,page){
                 for(var i=0;i<users.length;i++){
                     var $item=$(item);
                     var user=users[i];
+
+                    //add by jyj 2015-6-22
+                    var user_id = user[0];
+                    //
                     var img=user[1];
                     var name=user[2];
                     var sex=user[3];
                     var province=user[4];
                     var city=user[5];
                     var phone=user[6];
-                    var fshop=user[7];
-                    var oshop=user[8];
+
+                    //add by jyj 2015-6-22
+                    var birthday = user[8];
+                    if(birthday == 0){
+                            birthday = "未知";
+                    }
+                    //
+
+                    var fshop=user[9];
+                    var oshop=user[10];
                     if(!phone) phone='未绑定';
                     $item.find('.img').attr({'src':img});
                     $item.find('.name').text(name).attr({'data-sex':sex});

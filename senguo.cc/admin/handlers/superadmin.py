@@ -653,7 +653,7 @@ class User(SuperBaseHandler):
 		sum["admin"] = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).count()
 		sum["customer"] = q.filter(exists().where(models.Accountinfo.id == models.CustomerShopFollow.customer_id)).count()
 		sum["phone"] = q.filter(models.Accountinfo.phone != '').count()
-		return self.render("superAdmin/user.html", sum=sum, context=dict(subpage='user'))
+		return self.render("superAdmin/user.html", sum=sum, context=dict(subpage='user'))      
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action:str", "page:int")
@@ -662,14 +662,10 @@ class User(SuperBaseHandler):
 		page = self.args["page"]
 		page_size = 20
 
-		q = self.session.query(models.Accountinfo.id,
-									   models.Accountinfo.headimgurl,
-									   models.Accountinfo.nickname,
-									   models.Accountinfo.sex,
-									   models.Accountinfo.wx_province,
-									   models.Accountinfo.wx_city,
-									   models.Accountinfo.phone).order_by(desc(models.Accountinfo.id))
-
+		#change by jyj 2015-6-22
+		q = self.session.query(models.Accountinfo.id,models.Accountinfo.headimgurl,models.Accountinfo.nickname,models.Accountinfo.sex, \
+					models.Accountinfo.wx_province,models.Accountinfo.wx_city,models.Accountinfo.phone,models.Accountinfo.birthday).order_by(desc(models.Accountinfo.id))
+		##
 		if action == "all":
 			pass
 		elif action == "admin":
@@ -686,7 +682,22 @@ class User(SuperBaseHandler):
 				join(models.CustomerShopFollow).\
 				filter(models.CustomerShopFollow.customer_id == users[i][0]).all()
 			h_names = self.session.query(models.Shop.id,models.Shop.shop_code,models.Shop.shop_name).filter_by(admin_id=users[i][0]).all()
+
+			#add by jyj 2015-6-22
+			#将生日的时间戳转换为日期类型：
+			# print(users[i][7])
+			if users[i][7] == None:
+				birthday = 0
+				# print("aaaaaaaaaaaaaa")
+			else:
+				b_time_stamp = users[i][7]
+				print(type(b_time_stamp))
+				dateArray = datetime.datetime.utcfromtimestamp(b_time_stamp)
+				birthday = dateArray.strftime("%Y年%m月%d日")
+				print("aaaaa",birthday)
+			##
 			users[i] = list(users[i])
+			users[i].append(birthday)
 			users[i].append(f_names)
 			users[i].append(h_names)
 		return self.send_success(data=users)
