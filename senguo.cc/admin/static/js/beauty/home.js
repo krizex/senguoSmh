@@ -296,10 +296,10 @@ var fruitItem=function(box,fruits,type){
         ori_img='/static/design_img/'+code+'.png';
     }else{
         if(type=='recommend'){
-            ori_img=img_url+'?imageView2/1/w/800/interlace/1';
+            ori_img=img_url+'?imageView2/1/w/800';
         }
         else{
-            ori_img=img_url+'?imageView2/1/w/800/interlace/1';
+            ori_img=img_url+'?imageView2/1/w/800';
         }
     }
     if(tag==2){
