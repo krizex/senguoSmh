@@ -76,15 +76,15 @@ $(document).ready(function(){
         window.location.href="/"+shop_code;
     }
     else{
-        if($("#groupt-list").hasClass("moveshow")){
+        if($("#menu").hasClass("menu-active")){
             $(this).removeClass("menu-active");
-            $("#groupt-list").removeClass("moveshow");
-            $('.list-box').removeClass("moveright");
+            $("#groupt-list").animate({"opacity":0},30).animate({"margin-left":"-75px"},10);
+            $('.list-box').animate({"left":"0"},10);
            
         }else{
             $(this).addClass("menu-active");
-            $("#groupt-list").addClass("moveshow");
-            $('.list-box').addClass("moveright");
+            $("#groupt-list").animate({"margin-left":0,"opacity":1},20);
+            $('.list-box').animate({"left":"75px"},20);
         }
     }
     
@@ -98,19 +98,8 @@ $(document).ready(function(){
     var group_id=Number($this.attr('data-id'));
     var top=$('.goods-list-'+group_id).offset().top-40;
     $(window).scrollTop(top);
-     if($("#groupt-list").hasClass("moveshow")){
-            $(this).addClass("menu-active").siblings('li').removeClass('menu-active');
-            $("#groupt-list").removeClass("moveshow");
-            $('.list-box').removeClass("moveright");
-            $(".groupt-list li").addClass("anim-bounceDown");
-            $(".groupt-list li").one("webkitAnimationEnd",function(){
-                $(this).removeClass("anim-bounceDown");
-            });
-        }else{
-            $(this).removeClass("menu-active");
-            $("#groupt-list").addClass("moveshow");
-            $('.list-box').addClass("moveright");
-        }
+    $('.list-box').animate({"left":"0"},10);
+    $("#groupt-list").animate({"opacity":0},30).animate({"margin-left":"-75px"},10);
 }).on('click','.to-add',function(){
     //首次添加商品
     var $this=$(this);
@@ -306,7 +295,12 @@ var fruitItem=function(box,fruits,type){
     if(!img_url){
         ori_img='/static/design_img/'+code+'.png';
     }else{
-        ori_img=img_url+'?imageView/1/w/800/h/700';
+         if(type=='recommend'){
+            ori_img=img_url+'?imageView/1/w/800/h/200';
+         }
+        else{
+            ori_img=img_url+'?imageView/1/w/800/h/600';
+        }
     }
     if(tag==2){
         tag='limit_tag';

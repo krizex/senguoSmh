@@ -2,6 +2,7 @@
 {% block title%}公告设置{% end %}
 
 {% block setcontent %}
+<input type="hidden" id="data" value="{{token}}"/>
 <div class="set-description">
     <p>编辑和修改商城水果公告栏的内容</p>
     <p>摘要为公告栏直接显示的内容，用户可点击查看详情。</p>
@@ -9,7 +10,8 @@
     <table class="set-list table table-bordered">
         <tr class="bg-grey2">
             <td colspan="2">摘要</td>
-            <td colspan="2">详情</td>
+            <td>详情</td>
+            <td colspan="2">背景</td>
         </tr>
         {% for notice in notices %}
         <tr class="set-list-item" data-id="{{notice.id}}">
@@ -19,10 +21,17 @@
                     <a class="stop-mode" href="javascript:;" style="display:none;">未启用</a>
                 </div>
             </td>
-            <td class="col-lg-4 address-show summary">{{notice.summary}}</td>
-            <td class="col-lg-4 address-edit"  style="display:none;"><textarea class="notice_summary">{{notice.summary}}</textarea></td>
-            <td class="col-lg-6 address-show detail">{{notice.detail}}</td>
-            <td class="col-lg-6 address-edit" style="display:none;"> <textarea class="notice_detail">{{notice.detail}}</textarea></td>
+            <td class="col-lg-3 address-show summary">{{notice.summary}}</td>
+            <td class="col-lg-3 address-edit"  style="display:none;"><textarea class="notice_summary">{{notice.summary}}</textarea></td>
+            <td class="col-lg-4 address-show detail">{{notice.detail}}</td>
+            <td class="col-lg-4 address-edit" style="display:none;"> <textarea class="notice_detail">{{notice.detail}}</textarea></td>
+            <td class="col-lg-3 address-show img_url"><img src="{{notice.img_url or '/static/images/fruit3.jpg'}}?imageView/1/w/180/h/100" class="notice_img"/></td>
+            <td class="col-lg-3 address-edit"  style="display:none;">
+                <div class="notice_img_box" id="wrap-legal-img">
+                    <img class="notice_img preview-img" src="{{notice.img_url or '/static/images/fruit3.jpg'}}?imageView/1/w/180/h/100" alt="背景" url="{{notice.img_url}}"/>
+                    <span class="title text-white text-center edit-img">点击修改</span>
+                </div>
+            </td>
             <td class="address-show">
                 <a href="javascript:;" class="edit-btn2 info-edit">编辑</a>
             </td>
@@ -49,6 +58,13 @@
                         <span class="pull-left set-right10">详情</span>
                         <textarea class="new-notice-detail pull-left"></textarea>
                     </div>
+                    <div class="clearfix mt10">
+                        <span class="pull-left set-right10">背景</span>
+                        <div class="img_add_box" id="wrap-add-img">
+                            <span class="title text-white text-center button bg-green" id="upload-add">添加背景</span>
+                            <img class="hide mt10" src="" alt="背景" id="add-img"/>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer text-center">
                     <button class="btn bg-green text-white add-new-notice">确定</button>
@@ -58,4 +74,9 @@
         </div>
     </div>
 {% end %}
-{% block setbottom %}<script src="{{static_url('js/admin-notice-set.js')}}"></script>{% end %}
+{% block setbottom %}
+<script src="{{static_url('js/plupload/plupload.full.min.js')}}"></script>
+<script src="{{static_url('js/plupload/i18n/zh_CN.js')}}"></script>
+<script src="{{static_url('js/qiniu.min.js')}}"></script>
+<script src="{{static_url('js/admin-notice-set.js')}}"></script>
+{% end %}

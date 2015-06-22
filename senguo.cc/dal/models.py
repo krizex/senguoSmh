@@ -1529,6 +1529,7 @@ class Notice(MapBase):
 	active = Column(TINYINT, default=1)  # 1：开启 2：关闭
 	summary = Column(String(100)) #摘要
 	detail = Column(String(500)) #详情
+	img_url = Column(String(100)) #公告背景
 
 #按时达时间段设置
 class Period(MapBase):

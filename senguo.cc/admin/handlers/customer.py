@@ -939,7 +939,7 @@ class Market(CustomerBaseHandler):
 		else:
 			cart_fs = []
 		
-		notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
+		notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
 		self.set_cookie("cart_count", str(cart_count))
 
 		group_list=[]
