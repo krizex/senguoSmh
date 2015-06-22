@@ -2299,9 +2299,9 @@ class payTest(CustomerBaseHandler):
 
 		# 微信 余额 支付
 	#	if action == 'wx_pay':
-			print("[微信充值]回调成功")
+			# print("[微信充值]回调成功")
 			data = self.request.body
-			print("[微信充值]回调request.body：",self.request.body)
+			# print("[微信充值]回调request.body：",self.request.body)
 			xml = data.decode('utf-8')
 			UnifiedOrder = UnifiedOrder_pub()
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
@@ -2329,7 +2329,7 @@ class payTest(CustomerBaseHandler):
 			
 			
 			#totalPrice =float( self.get_cookie('money'))
-			print(customer_id,shop_id,totalPrice)
+			#print(customer_id,shop_id,totalPrice)
 			#########################################################
 			# 用户余额增加 
 			# 同时店铺余额相应增加 
@@ -2342,7 +2342,7 @@ class payTest(CustomerBaseHandler):
 				return self.write('success')
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 				shop_id = shop_id).first()
-			print(customer_id, shop_id,'没充到别家店铺去吧')
+			# print(customer_id, shop_id,'没充到别家店铺去吧')
 			if not shop_follow:
 				return self.send_fail('shop_follow not found')
 			shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
@@ -2353,7 +2353,7 @@ class payTest(CustomerBaseHandler):
 				return self.send_fail('shop not found')
 			shop.shop_balance += totalPrice
 			self.session.commit()
-			print(shop.shop_balance ,'充值后 商店 总额')
+			# print(shop.shop_balance ,'充值后 商店 总额')
 
 			# 支付成功后  生成一条余额支付记录
 			customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
@@ -2364,7 +2364,7 @@ class payTest(CustomerBaseHandler):
 				balance_value = totalPrice,balance_record = '余额充值(微信)：用户 '+ name  , name = name , balance_type = 0,\
 				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id)
 			self.session.add(balance_history)
-			print(balance_history , '钱没有白充吧？！')
+			# print(balance_history , '钱没有白充吧？！')
 			self.session.commit()
 
 			return self.write('success')
