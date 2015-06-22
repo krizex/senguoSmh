@@ -1364,17 +1364,16 @@ class CheckCash(SuperBaseHandler):
 				self.session.commit()
 
 			output_data = data
-			print(output_data)
 			return self.send_success(output_data=output_data)
 		elif action == 'history':
 			page = self.args["page"]
 			check_profit_len = self.session.query(models.CheckProfit).count()
 			if check_profit_len == 0:
 				balance_history = self.session.query(models.BalanceHistory).\
-					   filter(models.BalanceHistory.balance_type.in_([0,3])).order_by(desc(models.BalanceHistory.create_time))
+					   filter(models.BalanceHistory.balance_type.in_([0,3])).order_by(models.BalanceHistory.create_time)
 			else:
 				balance_history = self.session.query(models.BalanceHistory).\
-					   filter(models.BalanceHistory.balance_type.in_([0,3])).order_by(desc(models.BalanceHistory.create_time)).offset((page-1)*page_size).limit(page_size)
+					   filter(models.BalanceHistory.balance_type.in_([0,3])).order_by(models.BalanceHistory.create_time).offset((page-1)*page_size).limit(page_size)
 
 			history_list = balance_history.all()
 			for his in history_list:
