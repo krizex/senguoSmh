@@ -149,6 +149,6 @@
 .notice_img_box {position:relative;max-height:120px;overflow:hidden;}
 .notice_img_box .title{display:inline-block;width:100%;background:rgba(0,0,0,0.5);position:absolute;bottom:0;left:0;height:30px;line-height:30px;}
 .notice_img{width:100%;border:1px solid #eee;}
-.img_add_box .button{display:inline-block;width:150px;height:30px;line-height:30px;border-radius:2px;}
+.img_add_box .button{display:inline-block;width:150px;height:30px;line-height:30px;border-radius:2px;cursor:pointer;}
 .img_add_box{width:220px;height:140px;overflow:hidden;}
 .img_add_box img{width:100%;}
