@@ -2,7 +2,9 @@ var ulat = 0,ulng =0,refuse_flag = true,loc_flag=false;
 $(document).ready(function(){
     var link_action=$.getUrlParam('action');
     if(link_action){
-            if(link_action=='shop'){
+        if(link_action=='shop'){
+            $(".filter_search").addClass("hidden");
+            $(".area_box").css("padding-top","40px");
             var shops=$('.shoplist').attr('data-shop');
             var id=$.getUrlParam('id');
             shopsList(0,id,'admin_shop');
@@ -352,7 +354,7 @@ var shopsList=function(page,data,action){
         args.q=data
     }
     else if(action=='admin_shop'){
-        args.id=data
+        args.id=data;
     }
     $.postJson(url,args,function(res){
             if(res.success)

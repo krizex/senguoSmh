@@ -27,6 +27,7 @@ class Home(FruitzoneBaseHandler):
 	def get(self):
 	   shop_count = self.get_shop_count()
 	   return self.render("fruitzone/index.html",context=dict(shop_count = shop_count,subpage=""))
+
 #店铺搜索
 class SearchList(FruitzoneBaseHandler):
 	def get(self):
