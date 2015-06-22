@@ -19,25 +19,26 @@ function initBmap() {
         width : 180,     // 信息窗口宽度
         height: 60,     // 信息窗口高度
         title : name , // 信息窗口标题
+        opacity:0.6,
         enableMessage:false//设置允许信息窗发送短息
     };
     if (lon != 0) {
         oPoint = new BMap.Point(lon, lat);  // 创建点坐标
         map.enableScrollWheelZoom();
-        map.centerAndZoom(oPoint, 19);
+        map.centerAndZoom(oPoint, 15);
         marker = new BMap.Marker(oPoint);
         map.addOverlay(marker);
         var infoWindow = new BMap.InfoWindow("地址："+address, opts);  // 创建信息窗口对象
         map.openInfoWindow(infoWindow,oPoint);
         marker.addEventListener("click", function(){
-            map.openInfoWindow(infoWindow,point); //开启信息窗口
+            map.openInfoWindow(infoWindow,oPoint); //开启信息窗口
         });
     }else{
         var myGeo = new BMap.Geocoder();
         myGeo.getPoint(address, function (point) {
             if (point) {
                 oPoint = point;
-                map.centerAndZoom(point, 19);
+                map.centerAndZoom(point, 15);
                 marker = new BMap.Marker(point);
                 map.addOverlay(marker);
                 var infoWindow = new BMap.InfoWindow("地址："+address, opts);  // 创建信息窗口对象
@@ -50,5 +51,11 @@ function initBmap() {
     }
 }
 
-
-
+var int=self.setInterval("clock()",100);
+function clock() {
+    $(".BMap_pop").children("div").eq(0).children("div").css({"background":"#333","border-top-left-radius":"10px"});
+    $(".BMap_pop").children("div").eq(2).children("div").css({"background":"#333","border-top-right-radius":"10px"});
+    $(".BMap_pop").children("div").eq(4).children("div").css({"background":"#333","border-bottom-left-radius":"10px"});
+    $(".BMap_pop").children("div").eq(6).children("div").css({"background":"#333","border-bottom-right-radius":"10px"});
+    $(".BMap_pop").children("div").eq(7).children("img").attr("src","/static/images/i.png");
+}

@@ -1,18 +1,18 @@
 var notify = null,notice = false;
 $(document).ready(function(){
-if (window.screen.width=='600')
-    document.write ('<body style="zoom: 55%">');
-else if (window.screen.width=='800') 
-    document.write ('<body style="zoom: 75%">');
-$('.developing').on('click',function(){
-    Tip('此功能暂未开放！');
-});
-//if weixin
-if(isWeiXin()){
-    $('.header-box').removeClass('w1200').addClass('w1200_m');
-    $('.container').removeClass('mt80');
-    $('.backstage-header').removeClass('header-fix');
-}
+    if (window.screen.width=='600')
+        document.write ('<body style="zoom: 55%">');
+    else if (window.screen.width=='800') 
+        document.write ('<body style="zoom: 75%">');
+    $('.developing').on('click',function(){
+        Tip('此功能暂未开放！');
+    });
+    //if weixin
+    if(isWeiXin()){
+        $('.header-box').removeClass('w1200').addClass('w1200_m');
+        $('.container').removeClass('mt80');
+        $('.backstage-header').removeClass('header-fix');
+    }
     getRealData();
     setInterval(function(){
         getRealData();
@@ -49,7 +49,7 @@ if(isWeiXin()){
             }
         });
     });
-
+    // document.cookie="shop_id="+getCookie("shop_id");
 }).on("click",".has-red-tip",function(){
     var action = $(this).attr("data-action");
 
@@ -148,7 +148,7 @@ function worMode(target){
 }
 
 function shopChnage(shop_id){
-    var url='/admin';
+    var url='/admin/home';
     var data={shop_id:shop_id};
     var args={action:'shop_change',data:data};
     $.postJson(url,args,function(res){
@@ -159,7 +159,7 @@ function shopChnage(shop_id){
 }
 
 function otherShop(){
-    var url='/admin';
+    var url='/admin/home';
     var args={action:'other_shop'};
     $.postJson(url,args,function(res){
         if(res.success){
@@ -256,4 +256,28 @@ function getPage(page,url,total){
             }
         });
     }
+}
+function getCookie(key){
+    var aCookie = document.cookie.split(";");
+    for (var i=0; i < aCookie.length; i++){
+        var aCrumb = aCookie[i].split("=");
+        if (key === aCrumb[0].replace(/^\s*|\s*$/,"")){
+            return unescape(aCrumb[1]);
+        }
+    }
+    return '';
+}
+
+function SetCookie(name,value,days){
+    var days=arguments[2]?arguments[2]:30; //此 cookie 将被保存 30 天
+    var exp=new Date();    //new Date("December 31, 9998");
+    exp.setTime(exp.getTime() + days*86400000);
+    document.cookie=name+"="+escape(value)+";path=/;expires="+exp.toGMTString();
+}
+
+function delCookie(name){
+    var exp = new Date();
+    exp.setTime(exp.getTime() - 1);
+    var cval=getCookie(name);
+    if(cval!=null) document.cookie= name + "="+cval+";expires="+exp.toGMTString();
 }

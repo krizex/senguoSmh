@@ -7,7 +7,7 @@ import handlers.infowall
 import handlers.official
 import handlers.onlinePay
 import handlers.activity
-import handlers.Madmin
+import handlers.madmin
 from dal import models
 #todo:handlers太大会不会影响性能？
 
@@ -27,6 +27,10 @@ handlers = [
 	(r"/lovewall/list/(\w+)", handlers.activity.ConfessionList, {}, "ConfessionList"),
 	(r"/lovewall/comment/(\w+)", handlers.activity.ConfessionComment, {}, "ConfessionComment"),
 	(r"/lovewall/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
+
+	#优惠券
+	(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),
+	(r"/coupon/detail", handlers.activity.CouponDetail, {}, "CouponDetail"),
 	
 	(r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
 	(r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
@@ -51,6 +55,7 @@ handlers = [
 	(r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
 	(r"/customer/discover/(\w+)",handlers.customer.Discover,{},"customerDiscover"),
 	(r"/customer/storagechange",handlers.customer.StorageChange),
+	(r"/customer/qrwxpay",handlers.customer.QrWxpay,{},"customerQrWxpay"),
 
 	#商品详情
 	(r"/customer/goods/(\w+)",handlers.customer.customerGoods,{},"customerGoods"),
@@ -131,7 +136,7 @@ handlers = [
 	(r"/super/shopAdminProfile/(\d+)", handlers.superadmin.ShopAdminProfile, {}, "superShopAdminProfile"),
 	# 店铺信息详情
 	(r"/super/shopProfile/(\d+)", handlers.superadmin.ShopProfile, {}, "superShopProfile"),
-	(r"/super/shopclose",handlers.superadmin.ShopClose,{},"shopclose"),
+	#(r"/super/shopclose",handlers.superadmin.ShopClose,{},"shopclose"),
 	#test url
 	(r"/super/comment",handlers.superadmin.Comment,{},"supercomment"),
 
@@ -183,7 +188,7 @@ handlers = [
 	(r"/admin/oauth", handlers.admin.Access, {"action":"oauth"}, "adminOauth"),
 	(r"/admin/logout", handlers.admin.Access, {"action":"logout"}, "adminLogout"),
 	(r"/admin/register", handlers.admin.Access, {"action":"register"}, "adminRegister"),
-	(r"/admin", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
+	(r"/admin/home", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
 	(r"/admin/ostatic", handlers.admin.OrderStatic, {}, "adminOrderStatic"),
 	(r"/admin/fstatic", handlers.admin.FollowerStatic, {}, "adminFollowerStatic"),
 	(r"/admin/order", handlers.admin.Order, {}, "adminOrder"),
@@ -199,7 +204,7 @@ handlers = [
 	(r"/admin/realtime",handlers.admin.Realtime,{},""),
 	(r"/admin/marketing",handlers.admin.Marketing,{},"adminMarketing"),
 	(r"/admin/confession",handlers.admin.Confession,{},"adminConfession"),
-	(r"/admin/switchshop",handlers.admin.SwitchShop,{},"switchshop"),
+	(r"/admin",handlers.admin.SwitchShop,{},"switchshop"),
 	(r"/admin/wxauth", handlers.admin.AdminAuth, {"action":"wxauth"}, "adminwxAuth"),
 	(r"/admin/wxcheck", handlers.admin.AdminAuth, {"action":"wxcheck"}, "adminwxCheck"),
 
@@ -216,11 +221,12 @@ handlers = [
 	# (r"/admin/finance", handlers.admin.Finance, {}, "adminFinance"),
 	# (r"/admin/settings/profile", handlers.admin.Settings,
 	#  {"action":"profile"}, "adminSettingsProfile")
-	
-	(r"/madmin/order", handlers.Madmin.Order, {}, "MadminOrder"),
-	(r"/madmin/orderDetail", handlers.Madmin.OrderDetail, {}, "MadminOrderDetail"),
-	(r"/madmin/shopProfile", handlers.Madmin.ShopProfile, {}, "MadminCenter"),
-	
+	##移动端后台
+	(r"/madmin/order", handlers.madmin.Order, {}, "MadminOrder"),
+	(r"/madmin/orderDetail", handlers.madmin.OrderDetail, {}, "MadminOrderDetail"),
+	(r"/madmin/shopProfile", handlers.madmin.ShopProfile, {}, "MadminCenter"),
+	(r"/madmin/orderSearch", handlers.madmin.OrderSearch, {}, "MadminSearch"),
+	(r"/madmin/comment", handlers.madmin.Comment, {}, "MadminComment"),
 	# (r"/staff/...")
 
 	# 水果圈子

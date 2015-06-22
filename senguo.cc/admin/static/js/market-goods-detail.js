@@ -72,7 +72,7 @@ $(document).ready(function(){
         var unit_num=parseFloat($this.parents("li").find('.number').text());
         var storage=parseFloat($this.parents("li").find('.now-buy').attr("data-storage"));
         var limit_num=parseInt($this.parents(".wrap-goods-detail").attr('data-limit'));
-        var change_num=relate*unit_num*num;
+        var change_num=relate*unit_num*1;
         var buy_today=$this.parents('li').attr('data-buy');
         var allow_num=parseInt($this.parents('li').attr('data-allow'));
         if(buy_today=='True'&&num>=allow_num){
@@ -102,7 +102,7 @@ $(document).ready(function(){
         var relate=parseFloat($this.parents(".want-num").attr('data-relate'));
         var unit_num=parseFloat($this.parents("li").find('.number').text());
         var storage=parseFloat($this.parents("li").find('.now-buy').attr("data-storage"));
-        var change_num=relate*unit_num*num;
+        var change_num=relate*unit_num*1;
         // if(storage<change_num){
         //     return noticeBox("库存不足啦~~");
         // }
@@ -192,9 +192,7 @@ function addCart(link){
                 window.location.href=link;
             }
             else return noticeBox(res.error_text);
-        },
-         function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-         function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        }
     );
 }
 

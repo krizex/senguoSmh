@@ -2,7 +2,9 @@ var ulat = 0,ulng =0,refuse_flag = true,loc_flag=false;
 $(document).ready(function(){
     var link_action=$.getUrlParam('action');
     if(link_action){
-            if(link_action=='shop'){
+        if(link_action=='shop'){
+            $(".filter_search").addClass("hidden");
+            $(".area_box").css("padding-top","40px");
             var shops=$('.shoplist').attr('data-shop');
             var id=$.getUrlParam('id');
             shopsList(0,id,'admin_shop');
@@ -76,7 +78,7 @@ $(document).ready(function(){
             }
         }
         else{
-            $('.city_name').text(province_name);
+            $('.city_name').text(province_name).attr("data-id",province_code);
             filter(province_code,'province');
         }
     });
@@ -105,10 +107,9 @@ $(document).ready(function(){
     $(document).on('click','.city_list li',function(){
         var $this=$(this);
         var city_code=$this.attr('data-code');
-        $("#city_id").val(city_code);
         var city_name=$this.find('.name').text();
         window.dataObj.type='city';
-        $('.city_name').text(city_name);
+        $('.city_name').text(city_name).attr("data-id",city_code);
         filter(city_code,'city');
     });
     //all city
@@ -117,8 +118,7 @@ $(document).ready(function(){
         var province_code=$this.attr('data-code');
         var province_name=$this.attr('data-name');
         window.dataObj.type='province';
-        $('.city_name').text(province_name);
-        $("#city_id").val(province_code);
+        $('.city_name').text(province_name).attr("data-id",province_code);
         filter(province_code,'province');
     });
     //whole country
@@ -129,7 +129,7 @@ $(document).ready(function(){
          filter();
         $('.list_item').addClass('hidden');
         $('.city_choose').removeClass('city_choosed');
-        $('.city_name').text('全国');
+        $('.city_name').text('全国').attr("data-id",'');
     });
     //条件选择
     $(document).on("click",".school,.comme",function(){
@@ -148,7 +148,7 @@ $(document).ready(function(){
         var service_area = $(this).attr("data-key");
         $("#school_name").text($(this).html()).attr("data-key",service_area);
         $(this).closest("ul").hide();
-        filter($("#city_id").val());
+        filter($('.city_name').attr('data-id'));
     });
     //选择规则
     $(document).on("click",".com-list li",function(){
@@ -162,7 +162,7 @@ $(document).ready(function(){
             if(parseInt(key_word)==2){
                 loc_flag = true;
             }
-            filter($("#city_id").val());
+            filter($('.city_name').attr('data-id'));
         }
     });
 });
@@ -354,7 +354,7 @@ var shopsList=function(page,data,action){
         args.q=data
     }
     else if(action=='admin_shop'){
-        args.id=data
+        args.id=data;
     }
     $.postJson(url,args,function(res){
             if(res.success)

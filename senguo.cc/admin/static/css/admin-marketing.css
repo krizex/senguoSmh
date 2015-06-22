@@ -13,3 +13,22 @@ table{width:100%;border-collapse:collapse;overflow:hidden;}
 tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px solid #eee;}
 .set-box td{padding:10px;border-top:solid 1px #eee;}
 .set-box textarea{width:100%;height:60px;padding:2px;}
+
+
+/*为优惠券功能添加新的css样式*/
+.div0{font-size: 15px}
+.div1{font-size: 15px;margin-top: 40px;border-color: #0000ff}
+.tit1{margin-left: 25px}
+.tit2{font-size: 13px}
+.tit3{font-size: 18px;margin-left: 0px}
+.tit4{font-size: 13px;color: #ff0000}
+.tit5{font-size: 13px}
+.tit6{font-size: 15px;color: #44ff00}
+.tit7{font-size: 15px;color: #ff7700;margin-left: 20px}
+.back{background-color: #00ff00;margin-left: 20px;font-size: 20px}
+.mytitle{font-size: 20px;margin-left: 40px}
+.div2{line-height:20px;margin-bottom:20px;margin-top:120px;position:relative;padding:15px;background:#f4f5f9;}
+.button{background-color: #00ff00;margin-left: 20px;font-size: 15px}
+.configbtn{background-color: #0000ff;margin-left: 300px;font-size: 20px;margin-top: 40px}
+.configcancel{background-color: #0000ff;margin-left: 30px;font-size: 20px;margin-top: 40px}
+.editconfigbtn{background-color: #0000ff;margin-left: 300px;font-size: 20px;margin-top: 40px}

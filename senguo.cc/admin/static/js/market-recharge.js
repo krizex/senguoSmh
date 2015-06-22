@@ -28,7 +28,6 @@ $(document).ready(function(){
         return false;
     }
     if(m_type==0){
-        if(isWeiXin()){
             if(isMon(money)){
                 SetCookie("money",money,30);
                 window.location.href="/fruitzone/paytest?totalPrice="+money;
@@ -36,9 +35,7 @@ $(document).ready(function(){
                 noticeBox("您输入的金额格式不对，请重新输入");
                 return false;
             }
-        }else{
-            noticeBox("当前是微信支付，请在微信客户端中打开此页面支付");
-        }
+        
     }else if(m_type==1){
         if(isMon(money)){
             SetCookie("money",money,30);

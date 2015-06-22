@@ -15,12 +15,12 @@
         <div class="order-line">
             <div class="order-line-grade"></div>
             <div class="order-wawa">
-                <a class="img-border" href="javascript:;">
+                <a class="img-border task-staff" href="javascript:;">
                     <img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="配送员头像">
                 </a>
             </div>
             <div class="order-status-txt">
-                <a class="" href="javascript:;">分配员工</a>
+                <a class="task-staff" href="javascript:;">分配员工</a>
             </div>
         </div>
     </div>
@@ -76,19 +76,22 @@
         <div class="pop-staff-box">
             <p class="title">分配员工</p>
             <ul class="staff-list">
-                <li class="active">
-                    <span class="img-border mr10"><img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="员工头像"/></span>
-                    <span>马大灰||东二区、西三区所有</span>
-                </li>
                 <li>
                     <span class="img-border mr10"><img src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="员工头像"/></span>
                     <span>马大灰||东二区、西三区所有</span>
                 </li>
+                <li>
+                    <span class="img-border mr10"><img src="http://ershou.u.qiniudn.com/Web_1434334559401_o_19nqg0v598hc14ea1epn3o7mfj9?imageView2/5/w/100/h/100" alt="员工头像"/></span>
+                    <span>马大灰||东二区、西三区所有</span>
+                </li>
             </ul>
-            <p class="btn-box sure-staff">
+            <p class="btn-box sure-staff" id="sure-staff">
                 确认并设为处理中
             </p>
         </div>
     </div>
 </div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('m-admin/js/order-detail.js')}}"></script>
 {% end %}

@@ -430,3 +430,51 @@ class ConfessionList(CustomerBaseHandler):
 			return self.render("confession/list.html", datalist=datalist,action=action,nomore=nomore)
 		else :
 			return self.send_success(datalist = datalist,nomore=nomore)
+
+class Coupon(CustomerBaseHandler):
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("action?:str")
+	def get(self):
+		#action=self.args["action"]
+		#customer_id=self.current_user.id
+		#data=[]
+		#q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id).all()
+		#for x in q:
+		#	x_coupon={"coupon_money":x.coupon_money,"get_date":x.get_date,"uneffective_time":x.uneffective_time,"if_used":x.if_used}
+		#	data.append(x_coupon)
+		#return self.render("coupon/coupon.html",output_data=data)
+		return self.render("coupon/coupon.html")
+class CouponDetail(CustomerBaseHandler):
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("action:str","coupon_key:str")
+	def get(self):
+		action=self.args["action"]
+		customer_id=self.current_user.id
+		print(self.args)
+		mcoupon_key=self.args["coupon_key"]
+		print(mcoupon_key)
+		data=[]
+		if action=="detail":
+			q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,coupon_key=mcoupon_key).first()
+			if q!=None:
+				x_coupon={"coupon_money":q.coupon_money,"get_date":q.get_date,"uneffective_time":q.uneffective_time,"if_used":q.if_used}
+				data.append(x_coupon)
+			return self.render("coupon/coupon-detail.html",output_data=data)
+		elif action=="search":
+			url=self.reverse_url("CouponDetail")+'?action=detail&coupon_key='+mcoupon_key
+			print(url)
+			# return self.render("coupon/detail.html")
+			return self.redirect(url)
+		elif action=="":
+			q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,coupon_key=mcoupon_key)
+			if q!=None:
+				x_coupon={"coupon_money":q.coupon_money,"get_date":q.get_date,"uneffective_time":q.uneffective_time,"if_used":q.if_used}
+				data.append(x_coupon)
+			return self.render("coupon/detail.html",output_data=data)
+		elif action=="grab":
+			pass
+
+		
+		
+
+			

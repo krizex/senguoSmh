@@ -10,12 +10,20 @@
 {% if shop_auth != 0%}
 {% if confess_active == 1%}
     <li class="title clearfix bg-white font14 confess">
-	    <a href="{{reverse_url('ConfessionHome',shop_code)}}" class="text-grey3 confess-wall">
+	    <a href="{{reverse_url('ConfessionHome',handler.shop_code)}}" class="text-grey3 confess-wall">
 	    	<i class="pull-left"></i>
 	    	<span class="pull-left">告白墙</span>
 	    	<span class="pull-left ml10 text-grey9">看看果友们的真情告白</span>
 	    	<span class="confess-circle circle bg-pink text-white hidden">{{confess_count}}</span>
 	    </a>
+    </li>
+    <li class="title clearfix bg-white font14 coupon hidden">
+        <a href="/coupon?action=coupon" class="text-grey3 confess-wall">
+            <i class="pull-left"></i>
+            <span class="pull-left">优惠券</span>
+            <span class="pull-left ml10 text-grey9"></span>
+            <span class="confess-circle circle bg-pink text-white hidden">{{confess_count}}</span>
+        </a>
     </li>
 {% end %}
 {% end %}

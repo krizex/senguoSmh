@@ -15,6 +15,7 @@ from sqlalchemy import func, desc, and_, or_, exists,not_
 # added by woody  2015.3.6
 import requests
 
+# 登录处理
 class Access(SuperBaseHandler):
 	
 	def initialize(self, action):
@@ -42,12 +43,13 @@ class Access(SuperBaseHandler):
 		# 登录
 		u = models.SuperAdmin.login_by_unionid(self.session, userinfo["unionid"])
 		if not u:
-			return self.write("对不起，你不属于此系统用户，我们拒绝你的加入。")
+			return self.write("对不起，你不属于此系统的用户")
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 
 		next_url = self.get_argument("next", self.reverse_url("superShopManage")) + '?action=all_temp&search&shop_auth=2&shop_status=1&shop_sort_key=1&if_reverse=1&page=1&flag=1'
 		return self.redirect(next_url)
 
+# 店铺
 class ShopAdminManage(SuperBaseHandler):
 	"""商家管理，基本上是信息展示"""
 
@@ -118,6 +120,8 @@ class ShopAdminProfile(SuperBaseHandler):
 		time_tuple = time.localtime(admin.accountinfo.birthday)
 		birthday = time.strftime("%Y-%m", time_tuple)
 		return self.render("superAdmin/admin-profile.html", context=dict(admin=admin, birthday=birthday,))
+
+
 class ShopProfile(SuperBaseHandler):
 	@tornado.web.authenticated
 	#@SuperBaseHandler.check_arguments("id:int")
@@ -130,7 +134,7 @@ class ShopProfile(SuperBaseHandler):
 			return self.send_error(404)
 		return self.render("superAdmin/shop-profile.html", context=dict(shop=shop,subpage='shop'))
 
-
+# 店铺管理
 class ShopManage(SuperBaseHandler):
 	_page_count = 20
 
@@ -167,8 +171,8 @@ class ShopManage(SuperBaseHandler):
 				shops = q.order_by(models.Shop.id).all()
 			else:
 				q = self.session.query(models.Shop).filter(or_(models.Shop.shop_name.like("%{0}%".format(self.args["search"])),
-				  	 models.Shop.shop_code.like("%{0}%".format(self.args["search"]))),\
-				  	 models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
+				  	models.Shop.shop_code.like("%{0}%".format(self.args["search"]))),\
+				  	models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 				   	models.Shop.shop_code !='not set',models.Shop.status !=0 ).all()
 				shops = q
 		else:
@@ -256,7 +260,6 @@ class ShopManage(SuperBaseHandler):
 		#add 6.6pm by jyj,search_count:
 		search_count = len(shops)
 		##
-
 			
 		q_temp = self.session.query(models.ShopTemp)
 		q_applying = q_temp.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
@@ -301,20 +304,15 @@ class ShopManage(SuperBaseHandler):
 				##############################################################################
 				account_info = self.session.query(models.Accountinfo).get(shop.admin_id)
 				wx_openid = account_info.wx_openid
-
-				
 				#subscribe = user_subscribe(wx_openid)
 				data["subscribe"] = account_info.subscribe  
+				
 				data["shop_trademark_url"] = shop.shop_trademark_url
-				
-				data["shop_name"] = shop.shop_name  #
-				
-				#data["shop_code"] = shop.shop_code  #
+				data["shop_name"] = shop.shop_name
 				data["city"] = self.code_to_text('shop_city', shop.shop_city)
 				data["staff_count"] = len(shop.staffs)
 				data["follower_count"] = shop.fans_count  
-				data["goods_count"] = len(shop.fruits) + self.session.query(models.MGoods).\
-					join(models.Menu).filter(models.Menu.shop_id == shop.id).count()  #
+				data["old_user"] = self.session.query(models.Customer).join(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == shop.id,models.CustomerShopFollow.shop_new == 1).count()
 				data["admin_name"] = shop.admin.accountinfo.realname
 				data["operate_days"] = (datetime.datetime.now() - datetime.datetime.
 										fromtimestamp(shop.create_date_timestamp)).days
@@ -326,7 +324,7 @@ class ShopManage(SuperBaseHandler):
 					single_price = 0
 				else:
 					single_price = shop.shop_property/shop.order_count
-				single_price = format(single_price,".1f")
+				single_price = format(single_price,".2f")
 				data["single_price"] = single_price
 				data["available_balance"] = shop.available_balance
 
@@ -336,8 +334,6 @@ class ShopManage(SuperBaseHandler):
 				data["admin_nickname"] = shop.admin.accountinfo.nickname
 				data["shop_address_detail"] = shop.shop_address_detail
 				data["shop_code"] = shop.shop_code
-				shop_status_array = ['关闭','营业中','筹备中','休息中']
-
 				shop_status_array = ['关闭','营业中','筹备中','休息中']
 
 				data["shop_shop_status"] = shop_status_array[shop.status]
@@ -378,7 +374,7 @@ class ShopManage(SuperBaseHandler):
 					single_price = 0
 				else:
 					single_price = shop.shop_property/shop.order_count
-				single_price = format(single_price,".1f")
+				single_price = format(single_price,".2f")
 				data["single_price"] = single_price
 
 				data["available_balance"] = shop.available_balance
@@ -386,7 +382,7 @@ class ShopManage(SuperBaseHandler):
 				output_data.append(data)
 				
 			if flag==1:
-				print(flag)
+				#print(flag)
 				return self.render("superAdmin/shop-manage.html", output_data=output_data,output_data_count=output_data_count,context=dict(subpage='shop',action=action,count=count))
 			else :
 				return self.send_success(output_data=output_data,output_data_count=output_data_count)
@@ -456,7 +452,7 @@ class ShopManage(SuperBaseHandler):
 				content = message_fail_content)
 			headers = dict(Host = '106.ihuyi.cn',)
 			r = requests.post(url,data = postdata , headers = headers)
-			print("[超级管理员]审核通知短信平台返回信息：",r.text)
+			# print("[超级管理员]审核通知短信平台返回信息：",r.text)
 
 			reason = "原因：" + message_reason
 
@@ -476,7 +472,6 @@ class ShopManage(SuperBaseHandler):
 			config = models.Config()
 			config.periods.extend([period1, period2, period3])
 			marketing = models.Marketing()
-
 
 			# 把临时表的内容复制到shop表
 			shop = models.Shop(admin_id=shop_temp.admin_id,
@@ -582,8 +577,7 @@ class Feedback(SuperBaseHandler):
 			return self.send_success()
 		else:
 			return self.send_error(404)
-		
-	
+
 class OrderManage(SuperBaseHandler):
 	_page_count = 20
 	
@@ -649,7 +643,7 @@ class OrderManage(SuperBaseHandler):
 				return self.send_fail(error_text="该用户不存在")
 			return self.send_success()
 
-
+# 用户管理
 class User(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -697,7 +691,7 @@ class User(SuperBaseHandler):
 			users[i].append(h_names)
 		return self.send_success(data=users)
 
-
+# 统计 - 用户增长
 class IncStatic(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -762,7 +756,7 @@ class IncStatic(SuperBaseHandler):
 					fromtimestamp(first_info.create_date_timestamp)).days//30 + 1
 		return self.send_success(data=l[::-1], page_sum=page_sum)
 
-
+# 统计 - 用户属性分布 
 class DistributStatic(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -778,7 +772,7 @@ class DistributStatic(SuperBaseHandler):
 			group_by(models.Accountinfo.wx_city).all()
 		return self.send_success(total=total, sex=sex, province=province, city=city)
 
-
+# 统计 - 店铺数据
 class ShopStatic(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -861,7 +855,8 @@ class ShopStatic(SuperBaseHandler):
 		page_sum = (datetime.datetime.now() - first_order.create_date).days//30 + 1
 		return self.send_success(page_sum=page_sum, data=data)
 
-#add by jyj 2015-6-15
+# 统计 - 订单统计 
+# add by jyj 2015-6-15
 class OrderStatic(SuperBaseHandler):
 	def get(self):
 		return self.render("superAdmin/count-order.html",context=dict(subpage='orderstatic'))
@@ -933,7 +928,7 @@ class OrderStatic(SuperBaseHandler):
 			else:  # 按时达收货时间估计
 				data[(order[1].hour+order[2].hour)//2] += 1
 
-		print (data)
+		#print(data)
 		return self.send_success(data=data)
 ##
 
@@ -941,46 +936,45 @@ class Official(SuperBaseHandler):
 	def get(self):
 		return self.render("m-official/home.html")
 
-
-
-class ShopClose(SuperBaseHandler):
-	@tornado.web.authenticated
-	def get(self):
-		try:
-			shops = self.session.query(models.Shop).filter_by(status =1).all()
-		except:
-			return self.send_fail('shopclose error')
-		if shops:
-			for shop in shops:
-				shop_code = shop.shop_code
-				shop_id = shop.id
-				fruits = shop.fruits
-				menus = shop.menus
-				# print(menus)
-				create_date = shop.create_date_timestamp
-				x = datetime.datetime.fromtimestamp(create_date)
-				# print(x)
-				now = datetime.datetime.now()
-				days = (now -x).days
-				if days >14:
-					if shop_code =='not set':
-						shop.status = 0
-					if len(fruits) == 0 and len(menus) == 0:
-						shop.status = 0 
-					try:
-						follower_count = self.session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
-					except:
-						return self.send_fail('follower_count error')
-					if follower_count <2:
-						shop.status =0
-				self.session.commit()
-			return self.send_success()
+# class ShopClose(SuperBaseHandler):
+# 	@tornado.web.authenticated
+# 	def get(self):
+# 		try:
+# 			shops = self.session.query(models.Shop).filter_by(status =1).all()
+# 		except:
+# 			return self.send_fail('shopclose error')
+# 		if shops:
+# 			for shop in shops:
+# 				shop_code = shop.shop_code
+# 				shop_id = shop.id
+# 				fruits = shop.fruits
+# 				menus = shop.menus
+# 				# print(menus)
+# 				create_date = shop.create_date_timestamp
+# 				x = datetime.datetime.fromtimestamp(create_date)
+# 				# print(x)
+# 				now = datetime.datetime.now()
+# 				days = (now -x).days
+# 				if days >14:
+# 					if shop_code =='not set':
+# 						shop.status = 0
+# 					if len(fruits) == 0 and len(menus) == 0:
+# 						shop.status = 0 
+# 					try:
+# 						follower_count = self.session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
+# 					except:
+# 						return self.send_fail('follower_count error')
+# 					if follower_count <2:
+# 						shop.status =0
+# 				self.session.commit()
+# 			return self.send_success()
 
 # class Comment(SuperBaseHandler):
 # 	@tornado.web.authenticated
 # 	def get(self):
 # 	    self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'all':10,'all_temp':10}))
-				
+
+# 店铺 - 删除评论申请
 class Comment(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -1026,8 +1020,8 @@ class Comment(SuperBaseHandler):
 		order = comment_apply.order
 		if action == 'commit':
 			#order.status = 5
-			order.comment = None
-			order.comment_reply = None
+			#order.comment = None
+			#order.comment_reply = None
 			comment_apply.has_done = 1
 			self.session.commit()
 			return self.send_success(status = 0, msg = 'success',data = {})
@@ -1039,7 +1033,7 @@ class Comment(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 
-
+# 店铺 - 店铺认证申请
 class ShopAuthenticate(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('page')
@@ -1099,7 +1093,7 @@ class ShopAuthenticate(SuperBaseHandler):
 			return self.send_error(404)
 		return self.send_success(status=0,msg = 'success',data = {})
 
-
+# 余额 - 余额详情
 class Balance(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -1204,6 +1198,7 @@ class Balance(SuperBaseHandler):
 
 		# return self.send_success()
 
+# 余额 - 提现申请
 class ApplyCash(SuperBaseHandler):
 	
 	@tornado.web.authenticated

@@ -130,15 +130,15 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .mt12{margin-top: 12px;}
 .point-name{position: relative;}
 .point-name>p{width: 40px;font-size: 14px;color: #999;line-height: 22px;text-align: center;}
-.point-name .line{position: absolute;left: 0;top: 8px;height: 60px;width: 0px;border-left: 1px solid #ccc;display: block;}
+.point-name .line{position: absolute;left: 0;top: 8px;height: 60px;width: 0;border-left: 1px solid #ccc;display: block;}
 .nor-txt{color: #999;font-size: 14px;line-height: 22px;}
 .percent-txt{color: #7fde9e;font-size: 18px;line-height: 140%;}
 .point-cen{width: calc(100% - 140px);-webkit-box-sizing: border-box;min-width: 50%;padding: 0 0 0 5px;}
 .percent-bar{background-color: #d2d3d2;border-radius: 14px;margin: 10px 0;height: 12px;}
 .percent-bar>span{display: block;width: 20%;height: 12px;border-radius: 14px;}
-.percent-bar .bar1{background-color: #f7cb86;transition: width 1s 0.2s;}
-.percent-bar .bar2{background-color: #80de9e;transition: width 1s 0.5s;}
-.percent-bar .bar3{background-color: #5be8ef;transition: width 1s 0.8s;}
+.percent-bar .bar1{background-color: #f7cb86;transition: width 1s 0.2s;-webkit-transition: width 1s 0.2s;}
+.percent-bar .bar2{background-color: #80de9e;transition: width 1s 0.5s;-webkit-transition: width 1s 0.5s;}
+.percent-bar .bar3{background-color: #5be8ef;transition: width 1s 0.8s;-webkit-transition: width 1s 0.8s;}
 .point-com-lst{padding: 0 10px 10px 10px;}
 .point-com-lst>li{border-bottom: 1px solid #f2f2f2;padding: 10px 0;}
 .ccom-item{position: relative;}
@@ -167,8 +167,8 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 @keyframes spin {0% { -webkit-transform: rotate(0deg);tranform: rotate(0deg);}100% {-webkit-transform: rotate(360deg);tranform: rotate(360deg);}}
 
 @-webkit-keyframes zl{0%{-webkit-transform:translateX(-270px);} 100%{-webkit-transform:translateX(800px);}}
-@-webkit-keyframes up-down{0%{-webkit-transform:translateY(-80px);} 100%{-webkit-transform:translateY(0px);}}
-@-webkit-keyframes up{0%{-webkit-transform:translateY(0px);} 100%{-webkit-transform:translateY(-800px);}}
+@-webkit-keyframes up-down{0%{-webkit-transform:translateY(-80px);} 100%{-webkit-transform:translateY(0);}}
+@-webkit-keyframes up{0%{-webkit-transform:translateY(0);} 100%{-webkit-transform:translateY(-800px);}}
 
 .zl{-webkit-animation:zl 1.8s linear;}
 .up-down{-webkit-animation: up-down .2s linear 5 alternate;}

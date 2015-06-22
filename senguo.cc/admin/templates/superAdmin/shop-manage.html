@@ -11,12 +11,12 @@
                 <span style="margin-bottom:60px">店铺状态：</span>
 
                     <select id="shopstatus"  style="width:100px"  >
-                        <option value="5">所有(<span>{{output_data_count["status_5_count"]}}</span>)</option>
-                        <option value="4">未激活(<span>{{output_data_count["status_4_count"]}}</span>)</option>
-                        <option value="2">筹备中(<span>{{output_data_count["status_2_count"]}}</span>)</option>
-                        <option value="1">营业中(<span>{{output_data_count["status_1_count"]}}</span>)</option>
-                        <option value="3">休息中(<span>{{output_data_count["status_3_count"]}}</span>)</option>
-                        <option value="0">已停业(<span>{{output_data_count["status_0_count"]}}</span>)</option>>
+                        <option value="5">所有 (<span>{{output_data_count["status_5_count"]}}</span>)</option>
+                        <option value="4">未激活 (<span>{{output_data_count["status_4_count"]}}</span>)</option>
+                        <option value="2">筹备中 (<span>{{output_data_count["status_2_count"]}}</span>)</option>
+                        <option value="1">营业中 (<span>{{output_data_count["status_1_count"]}}</span>)</option>
+                        <option value="3">休息中 (<span>{{output_data_count["status_3_count"]}}</span>)</option>
+                        <option value="0">已停业 (<span>{{output_data_count["status_0_count"]}}</span>)</option>>
                     </select>                
                 <span id="dropDownList2" class="dropdown">
                 <span style="margin-left:60px;margin-bottom:50px">排序规则：</span>
@@ -41,11 +41,11 @@
                 <span  id="dropDownList3" class="dropdown">
                 <span style="margin-left:60px;margin-bottom:50px">认证状态：</span>
                     <select id="renzheng" style="width:100px">
-                        <option value="4">所有(<span>{{output_data_count["auth_4_count"]}}</span>)</option>
-                        <option value="3">已认证(<span>{{output_data_count["auth_3_count"]}}</span>)</option>
-                        <option value="2">个人认证(<span>{{output_data_count["auth_2_count"]}}</span>)</option>
-                        <option value="1">企业认证(<span>{{output_data_count["auth_1_count"]}}</span>)</option>
-                        <option value="0">未认证(<span>{{output_data_count["auth_0_count"]}}</span>)</option>
+                        <option value="4">所有 (<span>{{output_data_count["auth_4_count"]}}</span>)</option>
+                        <option value="3">已认证 (<span>{{output_data_count["auth_3_count"]}}</span>)</option>
+                        <option value="2">个人认证 (<span>{{output_data_count["auth_2_count"]}}</span>)</option>
+                        <option value="1">企业认证 (<span>{{output_data_count["auth_1_count"]}}</span>)</option>
+                        <option value="0">未认证 (<span>{{output_data_count["auth_0_count"]}}</span>)</option>
                     </select>
                 </span>
             </div>
@@ -79,7 +79,7 @@
                 </p>
                 <p>
                     <span class="tit1 create_date">注册时间：{{data["create_date"]}}</span>
-                     <a href="/super/shopManage?action=all_temp&search&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&&page=1&flag=1"  target="_blank"><span class="text-blue">申请信息</span></a>
+                    <a href="/super/shopManage?action=all_temp&search&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&&page=1&flag=1"  target="_blank"><span class="text-blue">申请信息</span></a>
                 </p>
             </div>
             <div class="col-lg-12 col-md-12" style="background-color:#F8F8F8">
@@ -92,10 +92,13 @@
                         <p>
                             <span class="tit2 order_count">订单数：{{data["order_count"]}}个</span>
                             <span class="goods_count">商品种类：{{data["goods_count"]}}种</span>
+                        </p>
+                        <p>
+                            <span class="tit2 old_user">老用户：{{data["old_user"]}}</span>
                         </p> 
                 </div>
                 <div class="col-lg-5 col-md-5 ml13">   
-                         <p>
+                        <p>
                             <span class="tit2 shop_property">营业额：{{data["shop_property"]}}元</span>
                             <span class="single_price">客单价：{{data["single_price"]}}元</span>
                         </p>
@@ -153,6 +156,9 @@
                         <p>
                             <span class="tit2 ">订单数：<span class="uorder_count"></span>个</span>
                             <span class="">商品种类：<span class="ugoods_count"></span>种</span>
+                        </p> 
+                        <p>
+                            <span class="tit2 ">老用户：<span class="uold_user"></span></span>
                         </p> 
                 </div>
                 <div class="col-lg-5 col-md-5 ml13">   

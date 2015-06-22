@@ -190,6 +190,13 @@ $(document).ready(function(){
             else infoEdit($this);
         });
     });
+    //修改地理位置
+    $("#edit-address").on("click",function(){
+        $(".address-start").toggleClass("hidden");
+        $(".wrap-shop-address").toggleClass("hidden");
+        $(".hand-search").toggleClass("hidden");
+        $("#hand-search").html("手动标注位置");
+    });
 }).on('click','.shop_status-list li',function(){
     var $this=$(this);
     var status=$this.attr('data-id');
@@ -245,6 +252,7 @@ function initBmap(){
     $("#hand-search").on("click",function(){
         marker.setAnimation(BMAP_ANIMATION_BOUNCE);
         marker.enableDragging();
+        $("#hand-search").html("位置标注中...");
     });
     $("#save-lbs").on("click",function(){
         if(!isHand){
@@ -256,7 +264,7 @@ function initBmap(){
         myGeo.getPoint(address, function(point){
             if (point) {
                 map.removeOverlay(marker);
-                map.centerAndZoom(point, 19);
+                map.centerAndZoom(point, 17);
                 initPoint(map,point,myGeo);
             }else{
                 if(flag){
@@ -280,7 +288,9 @@ function initBmap(){
                 $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
                 $("#info_address").html(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
                 initProviceAndCityCode(addComp.province,addComp.city);
-                Tip("地理位置已经获取，不要忘记点击保存哦！");
+                $("#hand-search").html("手动标注位置");
+                infoEdit($("#save-lbs"),true);//保存坐标
+                //Tip("地理位置已经获取，不要忘记点击保存哦！");
             });
             $("#info_address").attr("data-lng",p.lng).attr("data-lat", p.lat);
         }
@@ -325,7 +335,7 @@ var saveFile = function(data, filename){
     save_link.dispatchEvent(event);
 };
 
-function infoEdit(target){
+function infoEdit(target,is_address){
     var url="";
     var action_name=target.data('id');
     var data={};
@@ -444,7 +454,15 @@ function infoEdit(target){
                     $('.phone').text(shop_phone);
                 }
                 else if(action_name=='address'){
-                    Tip("店铺地图位置设置成功");
+                    if(is_address){
+                        Tip("店铺地图设置成功");
+                    }else{
+                        $("#info_address").html($("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val());
+                        $(".address-start").toggleClass("hidden");
+                        $(".wrap-shop-address").toggleClass("hidden");
+                        $(".hand-search").toggleClass("hidden");
+                        Tip("店铺地址设置成功");
+                    }
                 }
                 else if(action_name=='area')
                 {

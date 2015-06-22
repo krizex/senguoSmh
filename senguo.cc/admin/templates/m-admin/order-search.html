@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}订单搜索{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back">返回</a>
+    <div class="wrap-order-tab">
+        <ul class="group order-type-list">
+            <div class="wrap-ipt"><input type="text" class="search-ipt" placeholder="请输入订单号搜索" id="search-ipt"/></div>
+        </ul>
+    </div>
+    <a href="javascript:;" class="head-right search" id="search-order"></a>
+</div>
+{% end %}
+{% block setcontent %}
+<div class="container pm80">
+<div class="order-list-box">
+    <ul class="order-lists pt10" id="order-lists">
+
+    </ul>
+    <p class="no-result mt30 hide">没有搜索到任何数据！</p>
+</div>
+</div>
+<ul class="hide" id="order-item">
+    <li>
+        <p class="order-time item">下单时间 : <span class="down-time"></span></p>
+        <ul class="order-content">
+            <li>
+                <p>
+                    <span class="fr money item"><span class="red-txt order-money"></span>元(<span class="pay-type"></span>)</span>
+                    <span>NO.<span class="order-num"></span></span>
+                </p>
+            </li>
+            <li>
+                <p class="item time"></p>
+            </li>
+            <li>
+                <p class="item loc"></p>
+            </li>
+            <li>
+                <p class="item say red-txt"></p>
+            </li>
+            <div class="order-grade">
+                <div class="order-line">
+                    <div class="order-line-grade"></div>
+                    <div class="order-wawa">
+                        <a class="task-staff img-border" href="javascript:;">
+                            <img class="staff-img" src="http://wx.qlogo.cn/mmopen/PiajxSqBRaEKHOAKNagHiamMbY0KwoqOfESNl4S6PGtKXpHG5Obe5oG0tu1OdRogJ7UWFJdRYhrgtKuvDZT0OlOw/132" alt="配送员头像">
+                        </a>
+                    </div>
+                    <div class="order-status-txt">
+                        <a class="task-staff first-step" href="javascript:;">分配员工</a>
+                        <span class="second-step hide"><span class="#c333 ">配送中</span><a class="staff-tel" href="tel:">拨号</a></span>
+                        <span class="third-step hide"><span class="#c333 ">已完成</span></span>
+                    </div>
+                </div>
+            </div>
+        </ul>
+    </li>
+</ul>
+<div class="pop-win pop-staff hide">
+    <div class="pop-content">
+        <div class="pop-staff-box">
+            <p class="title">分配员工</p>
+            <ul class="staff-list" id="staff-list">
+            </ul>
+            <p class="btn-box sure-staff" id="sure-staff">
+                确认并设为处理中
+            </p>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('m-admin/js/order-search.js')}}"></script>
+{% end %}

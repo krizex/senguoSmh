@@ -16,11 +16,11 @@ $(document).ready(function(){
 		var address = $('#other-address').val().trim();
 		if(!name){
 			$this.removeClass('bg-greyc').removeAttr('disabled');
-			return noticeBox('请填写TA的姓名哦～')
+			return noticeBox('请填写TA的姓名哦～');
 		}
 		if(name.length>20){
 			$this.removeClass('bg-greyc').removeAttr('disabled');
-			return noticeBox('姓名请不要超过20字～')
+			return noticeBox('姓名请不要超过20字～');
 		}
 		if(!phone){
 			$this.removeClass('bg-greyc').removeAttr('disabled');
@@ -28,23 +28,23 @@ $(document).ready(function(){
 		}
 		if(phone.length>11||phone.length<11){
 			$this.removeClass('bg-greyc').removeAttr('disabled');
-			return noticeBox('手机号貌似不正确～ ')
+			return noticeBox('手机号貌似不正确～ ');
 		}
 		if(!confession){
 			$this.removeClass('bg-greyc').removeAttr('disabled');
-			return noticeBox('请填上告白的内容吧～')
+			return noticeBox('请填上告白的内容吧～');
 		}
 		if(confession.length>500){
 			$this.removeClass('bg-greyc').removeAttr('disabled');
-			return noticeBox('真心的告白，不需要如此多的文字～')
+			return noticeBox('真心的告白，不需要如此多的文字～');
 		}
 		if(!address){
 			$this.removeClass('bg-greyc').removeAttr('disabled');
-			return noticeBox('请填写TA的地址，方便我们礼品派送哦～ ')
+			return noticeBox('请填写TA的地址，方便我们礼品派送哦～ ');
 		}
 		if(address.length>50){
 			$this.removeClass('bg-greyc').removeAttr('disabled');
-			return noticeBox('地址请不要超过50字～ ')
+			return noticeBox('地址请不要超过50字～ ');
 		}
 		var data={
 			name:name,

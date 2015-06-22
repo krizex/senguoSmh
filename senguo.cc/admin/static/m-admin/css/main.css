@@ -54,7 +54,7 @@
 .goods-lst>li{margin-top: 10px;display: block;}
 .goods-item>dd>p{font-size:12px;line-height: 20px;}
 .user-box{position: absolute;left: 50%;}
-.pop-staff-box{border: 1px solid #eee;box-shadow: 1px 2px 4px 0px #ccc;}
+.pop-staff-box{border: 1px solid #eee;box-shadow: 1px 2px 4px 0 #ccc;}
 .pop-staff-box .title{height: 36px;line-height: 36px;text-align: center;color: #000;}
 .staff-list{padding: 4px 0 20px 0;}
 .staff-list>li{height: 41px;line-height: 41px;padding-left: 20px;color: #999;margin-bottom: 10px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
@@ -66,7 +66,7 @@
 .order-type-list{background-color: #318b7d;border-radius: 28px;position: relative;z-index:1;}
 .order-type-list>li{float: left;width: 33.33%;color: #fff;line-height: 28px;text-align: center;position: relative;z-index:10;}
 .order-type-list .active{color: #48b6a4;}
-.order-type-list .tab-bg{background-color: #fff;height:28px;border-radius: 28px;position: absolute;z-index:3;-webkit-transition:all ease-in-out .2s;left: 0px;}
+.order-type-list .tab-bg{background-color: #fff;height:28px;border-radius: 28px;position: absolute;z-index:3;-webkit-transition:all ease-in-out .2s;left: 0;}
 .second-tab{position: fixed;top: 40px;left: 0;z-index:999;width: 100%;height: 30px;}
 .second-tab-list{background-color: #fff;padding: 0 10px;position: relative;z-index: 1;}
 .second-tab-list>li{float:left;width: 25%;height: 30px;line-height: 30px;text-align: center;color: #333;}
@@ -80,11 +80,40 @@
 .loc{background-image: url('/static/m-admin/img/icon_loc.png');background-size: 16px!important;}
 .say{background-image: url('/static/m-admin/img/icon_say.png');}
 .order-content .order-grade{margin-top: -20px;}
-
-
-
-
-
+/*订单搜索*/
+.search-ipt{width: 100%;background-color: transparent;border: none;height: 28px;color:#fff;padding: 2px 10px;-webkit-box-sizing: border-box;font-size: 14px;}
+.wrap-ipt{line-height: 1;height: 28px;}
+/*消息评价*/
+.point-show{background-color: #f5f7f5;padding: 10px 20px;}
+.point-left{width: 50px;}
+.mt12{margin-top: 12px;}
+.point-name{position: relative;}
+.point-name>p{width: 40px;font-size: 14px;color: #999;line-height: 22px;text-align: center;}
+.point-name .line{position: absolute;left: 0;top: 8px;height: 60px;width: 0;border-left: 1px solid #ccc;display: block;}
+.nor-txt{color: #999;font-size: 14px;line-height: 22px;}
+.percent-txt{color: #7fde9e;font-size: 18px;line-height: 140%;}
+.point-cen{width: calc(100% - 140px);-webkit-box-sizing: border-box;min-width: 50%;padding: 0 0 0 5px;}
+.percent-bar{background-color: #d2d3d2;border-radius: 14px;margin: 10px 0;height: 12px;}
+.percent-bar>span{display: block;width: 20%;height: 12px;border-radius: 14px;}
+.percent-bar .bar1{background-color: #f7cb86;transition: width 1s 0.2s;-webkit-transition: width 1s 0.2s;}
+.percent-bar .bar2{background-color: #80de9e;transition: width 1s 0.5s;-webkit-transition: width 1s 0.5s;}
+.percent-bar .bar3{background-color: #5be8ef;transition: width 1s 0.8s;-webkit-transition: width 1s 0.8s;}
+.point-com-lst{padding-bottom: 10px;}
+.ccom-item{position: relative;background-color: #fff;padding: 10px 0;}
+.ccom-item>dd{width: 60px;padding-right: 10px;height: 100%;overflow: hidden;position: absolute;left: 0;top: 0;min-height:60px;}
+.wrap-o-img{width: 42px;height: 42px;border-radius: 50%;border: 3px solid #aeddda;-webkit-box-sizing: content-box;margin-top: 8px;margin-left: 5px;}
+.ccom-item>dd img{width: 42px;height: 42px;border-radius: 50%;}
+.ccom-item>dt{-webkit-box-sizing: border-box;overflow: hidden;padding-left:60px;width:100%;}
+.time-txt{color: #999;font-size: 12px;}
+.com-txt{color: #666;line-height: 18px;font-size: 12px;margin-top: 5px;}
+.com-goods-lst{margin-top: 5px;}
+.com-goods-lst>li{float: left;-webkit-box-sizing: border-box;margin-right: 10px;overflow: hidden;}
+.com-goods-lst>li>img{width: 100%;}
+.reply-txt{color: #52b43f;font-size: 12px;line-height: 18px;margin-top: 5px;}
+.reply-box{padding: 10px 12px;border: 1px solid #eee;box-shadow: 1px 2px 4px 0 #ccc;}
+.reply-box .title{color: #333;font-size: 14px;text-align: center;}
+.reply-box .textarea{margin-top: 10px;width: 100%;color: #999;line-height: 20px;font-size: 14px;background-color: #f5f5f5;height: 100px;}
+.reply-box .commit-reply{display:block;margin:15px auto 0 auto;background-color: #48b6a4;height: 28px;line-height: 28px;border-radius:14px;text-align: center;width:60%;text-align: center;color: #fff;}
 
 
 
