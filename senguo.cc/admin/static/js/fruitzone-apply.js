@@ -146,7 +146,7 @@ $(document).ready(function(){
                 };
             },
             'onUploadComplete':function(){
-                $('#logoImg').show().attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/200/h/200','data-key':key});
+                $('#logoImg').show().attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView2/1/w/200/h/200','data-key':key});
                 $('.apply-box').find('.filename').hide();
                 $('.apply-box').find('.fileinfo').hide();
                 $('.apply-box').find('.close').hide();

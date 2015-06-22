@@ -191,7 +191,7 @@ class customerGoods(CustomerBaseHandler):
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
-		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
+		return self.render(self.tpl_path(shop.shop_tpl)+'/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
 		
 # 手机注册
 class RegistByPhone(CustomerBaseHandler):
@@ -344,7 +344,7 @@ class Home(CustomerBaseHandler):
 			elif order.status == 10:
 				count[6] += 1
 		# print(count)
-		return self.render("customer/personal-center.html", count=count,shop_point =shop_point, \
+		return self.render(self.tpl_path(shop.shop_tpl)+"/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
 			show_balance = show_balance,balance_on=balance_on,context=dict(subpage='center'))
 	@tornado.web.authenticated
@@ -400,7 +400,7 @@ class Discover(CustomerBaseHandler):
 			confess_count =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id,scan=0).count()
 		except:
 			confess_count = 0 
-		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count)
+		return self.render(self.tpl_path(shop.shop_tpl)+'/discover.html',context=dict(subpage='discover'),shop_code=shop_code,shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count)
 
 # 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):
@@ -630,7 +630,7 @@ class ShopProfile(CustomerBaseHandler):
 		session = self.session
 		w_id = self.current_user.id
 		session.commit()
-		return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
+		return self.render(self.tpl_path(shop.shop_tpl)+"/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
 						   fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
 						   service_area=service_area, headimgurls=headimgurls, signin=signin,satisfy=satisfy,
 						   comments=self.get_comments(shop_id, page_size=3), comment_sum=comment_sum,
@@ -955,7 +955,7 @@ class Market(CustomerBaseHandler):
 		else:
 			cart_fs = []
 		
-		notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
+		notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
 		self.set_cookie("cart_count", str(cart_count))
 
 		group_list=[]
@@ -1004,7 +1004,7 @@ class Market(CustomerBaseHandler):
 					# if goods_count !=0 :
 					group_list.append({'id':_group.id,'name':_group.name})
 
-		return self.render("customer/home.html",
+		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 						   	w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
 
@@ -1328,7 +1328,7 @@ class Cart(CustomerBaseHandler):
 		self.set_cookie("shop_marketing", str(shop_marketing))
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits))): #购物车为空
-			return self.render("notice/cart-empty.html",context=dict(subpage='cart'))
+			return self.render(self.tpl_path(shop.shop_tpl)+"/cart-empty.html",context=dict(subpage='cart'))
 		cart_f = self.read_cart(shop_id)
 		for item in cart_f:
 			fruit = cart_f[item].get('charge_type').fruit
@@ -1337,7 +1337,7 @@ class Cart(CustomerBaseHandler):
 			if fruit_id not in storages:
 				storages[fruit_id] = fruit_storage
 		periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1).all()
-		return self.render("customer/cart.html", cart_f=cart_f,config=shop.config,
+		return self.render(self.tpl_path(shop.shop_tpl)+"/cart.html", cart_f=cart_f,config=shop.config,
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,\
 						  shop_new=shop_new,shop_status=shop_status,context=dict(subpage='cart'))

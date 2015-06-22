@@ -23,7 +23,7 @@ body{font-size: 14px;}
 
 .item-info .item-info-name{padding-right: 36px;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;width: 152px;}
 .now-buy{position: absolute; height: 24px;width: 70px;display: block;line-height: 22px;color:#fff;text-align: center;border: 1px solid #fff;bottom: 15px;right: 42px;}
-.more-goods{border: 1px solid #bad6df;margin:0 10px;height: 36px;line-height: 34px;color: #bad6df;font-size: 14px;text-align: center;display: block;}
+.more-goods{border: 1px solid #bad6df;margin:0 10px 10px;height: 36px;line-height: 34px;color: #bad6df;font-size: 14px;text-align: center;display: block;}
 
 .red .bg{background-color: #ea655d;}
 .yellow .bg{background-color: #f0c83f;}

@@ -1840,7 +1840,7 @@ class editorCallback(AdminBaseHandler):
 			for value in info.split("&"):
 				data.append(value.split("="))
 			key = data[0][1].replace('"','').strip()
-			imgurl = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/'+str(key)+'?imageView2/2/w/700'
+			imgurl = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/'+str(key)+'?imageView2/2/w/800'
 		return self.write('{"error":0, "url": "'+imgurl+'"}')
 
 class editorFileManage(AdminBaseHandler):
@@ -2119,7 +2119,8 @@ class Config(AdminBaseHandler):
 		if action == "delivery":
 			return self.render("admin/shop-address-set.html", addresses=config.addresses,context=dict(subpage='shop_set',shopSubPage='delivery_set'))
 		elif action == "notice":
-			return self.render("admin/shop-notice-set.html", notices=config.notices,context=dict(subpage='shop_set',shopSubPage='notice_set'))
+			token = self.get_qiniu_token("shop_notice_cookie",self.current_shop.id)
+			return self.render("admin/shop-notice-set.html", notices=config.notices,token=token,context=dict(subpage='shop_set',shopSubPage='notice_set'))
 		elif action == "recharge":
 			pass
 		elif action == "receipt":
@@ -2152,6 +2153,8 @@ class Config(AdminBaseHandler):
 				return self.render('admin/admin-set.html',context=dict(subpage='shop_set',shopSubPage='admin_set'),notice=notice,datalist=datalist)
 			else:
 				return self.redirect(self.reverse_url('adminShopConfig'))
+		elif action == "template":
+			return self.render('admin/shop-template-set.html',context=dict(subpage='shop_set',shopSubPage='template_set'))
 			
 		else:
 			return self.send_error(404)
@@ -2170,14 +2173,19 @@ class Config(AdminBaseHandler):
 				self.session.commit()
 				return self.send_success(address1_id=addr1.id)#commit后id会自动生成
 			elif action == "add_notice":
+				if "img_url" in data:
+					img_url = data["img_url"]
+				else:
+					img_url = ''
 				notice = models.Notice(
 					summary=data["summary"],
-					detail=data["detail"])
+					detail=data["detail"],
+					img_url=img_url)
 				self.current_shop.config.notices.append(notice)
 				self.session.commit()
 			elif action == "edit_receipt": #小票设置
 				self.current_shop.config.update(session=self.session,
-												receipt_msg=data["receipt_msg"])
+												receipt_msg=data["receipt_msg"])				
 		elif action in ["add_addr2", "edit_addr1_active"]:
 			addr1 = next((x for x in self.current_shop.config.addresses if x.id==data["addr1_id"]), None)
 			if action == "add_addr2":
@@ -2197,8 +2205,13 @@ class Config(AdminBaseHandler):
 			if action == "edit_notice_active":
 				notice.active = 1 if notice.active == 2 else 2
 			elif action == "edit_notice":
+				if "img_url" in data:
+					img_url = data["img_url"]
+				else:
+					img_url = ''
 				notice.summary = data["summary"]
 				notice.detail = data["detail"]
+				notice.img_url=img_url
 			self.session.commit()
 		elif action == "edit_recipe_img":
 			return self.send_qiniu_token("receipt", self.current_shop.id)
@@ -2341,6 +2354,11 @@ class Config(AdminBaseHandler):
 				other_admin = None
 			for admin in other_admin:
 				admin.temp_active  = 0
+			self.session.commit()
+			return self.send_success()
+		elif action=="tpl_choose":
+			tpl_id=int(self.args["data"]["tpl_id"])
+			self.current_shop.shop_tpl=tpl_id
 			self.session.commit()
 			return self.send_success()
 		else:

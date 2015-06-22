@@ -30,7 +30,7 @@
         <div class="header-nav height50 pull-right">
             <ul class="navbar">
                 <li class="area-info brnone">
-                    <img src="{{current_user.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}?imageView/1/w/100/h/100" class="admin-img round height50 pull-left"/>
+                    <img src="{{current_user.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" class="admin-img round height50 pull-left"/>
                     <div class="switch-info area pull-right switch-area">
                         <div class="job text-left mt5"><a href="/customer/profile" class="text-link">{{current_user.accountinfo.nickname}}</a></div>
                         <div class="switch-change-phone">
@@ -86,7 +86,7 @@
                     <span class="sw-tip-txt"></span>
                     <dl class="group">
                         <dt class="fl">
-                            <img src="{{shop['shop_trademark_url'] or '/static/images/TDSG.png'}}?imageView/1/w/100/h/100" alt="{{shop['shop_name']}}"/>
+                            <img src="{{shop['shop_trademark_url'] or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" alt="{{shop['shop_name']}}"/>
                             <a href="javascript:;" class="text-link spread-shop" data-url="{{reverse_url('Market',shop['shop_code'])}}">推广店铺</a>
                             <div class="sw-er-tip invisible forbid_click">
                                 <div class="left-arr">
@@ -122,7 +122,7 @@
                     {% else %}
                     <dl class="group">
                         <dt class="fl">
-                            <img src="{{shop['shop_trademark_url'] or '/static/images/TDSG.png'}}?imageView/1/w/100/h/100" alt="{{shop['shop_name']}}"/>
+                            <img src="{{shop['shop_trademark_url'] or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" alt="{{shop['shop_name']}}"/>
                         </dt>
                         <dd class="fl sw-listr">
                             <p class="sw-title">{{shop['shop_name']}}</p>

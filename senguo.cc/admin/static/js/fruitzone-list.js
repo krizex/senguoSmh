@@ -310,7 +310,7 @@ var shopItem=function (shops){
                 var render=template.compile($item);
                 var content=render({
                     link:link,
-                    logo_url:logo_url+'?imageView/1/w/100/h/100',
+                    logo_url:logo_url+'?imageView2/1/w/100/h/100',
                     shop_name:name,
                     shop_code:shop_code,
                     shop_auth:shop_auth,

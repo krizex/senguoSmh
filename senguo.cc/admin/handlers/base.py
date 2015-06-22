@@ -1215,6 +1215,14 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		#print(shop_count)
 		return shop_count
 
+	def tpl_path(self,tpl_id):#模板切换
+		tpl_path = ""
+		if tpl_id == 1:
+			tpl_path = "beauty"
+		else:
+			tpl_path = "customer"
+		return tpl_path
+
 
 import urllib.request
 

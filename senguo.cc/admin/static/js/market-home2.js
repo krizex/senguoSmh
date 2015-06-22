@@ -615,7 +615,7 @@ var fruitItem=function(box,fruits,type){
             if(!img_url){
                 $item.find('.img').attr({'data-original':'/static/design_img/'+code+'.png'});
             }else{
-                $item.find('.img').attr({'data-original':img_url+'?imageView/1/w/170/h/170'});
+                $item.find('.img').attr({'data-original':img_url+'?imageView2/1/w/170/h/170'});
             }
         } 
         box.append($item);

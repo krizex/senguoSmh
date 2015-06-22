@@ -1,0 +1,19 @@
+{% extends 'base.html'%}
+{% block title %}购物篮{% end %}
+{% block head %}
+<style>
+.block-index{width:100%;height:100%;position:absolute;padding-top:100px;max-width:800px;}
+.time{position:absolute;top:10px;right:20px;font-size:30px;font-weight:bold;}
+.w210{width:210px;}
+</style>
+{% end %}
+{% block content %}
+<div class="rainshed bg_change"></div>
+<div class="block-index">
+    <a href="{{reverse_url('Market',handler.shop_code)}}" class="link">
+        <span class="time text-white font16 pull-right"></span>
+        <img src="/static/images/empty_l.png" class="center-block src_change w210"/>
+    </a>
+</div>
+{% end %}
+{% block bottom%}<script src="{{static_url('js/market-empty.js')}}"></script>{% end %}

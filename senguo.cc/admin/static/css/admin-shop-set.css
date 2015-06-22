@@ -16,8 +16,8 @@
 .add-address-box .add-address2-list{width:100%;}
 .add-address-box .add-address2-list li{width:100%;float:left;margin-top:5px;}
 
-.new-notice-title{width:60%;margin-bottom:10px;}
-.new-notice-detail{width:60%;height:100px;}
+.new-notice-title{width:470px;margin-bottom:20px;font-size:14px;}
+.new-notice-detail{width:470px;height:100px;margin-bottom:20px;font-size:14px;}
 
 .info-set-list{border:1px solid #eee;border-bottom:none;}
 .info-set-list .item{border-bottom:1px solid #eee;padding:15px;}
@@ -42,8 +42,8 @@
 .receipt-img img{height:40px;}
 .receipt-msg{width:80%;overflow:hidden;height:80px;}
 
-.notice_summary{width:60%;margin-bottom:10px;overflow:hidden;}
-.notice_detail{width:80%;overflow:hidden;}
+.notice_summary{width:100%;height:28px;overflow:hidden;}
+.notice_detail{width:100%;height:120px;overflow:hidden;}
 
 .download_img{line-height:100px;}
 
@@ -134,3 +134,21 @@
 
 .admin-set-list .func-mode{top:-1px;}
 .add-btn.switch{background-image: url('/static/images/admin_switch_white.png');background-repeat: no-repeat;background-size: 14px;background-position: 18px;width: 200px;}
+
+.tpl-list{border:1px solid #eee;clear:both;}
+.tpl-list>li{border-bottom:1px solid #eee;clear:both;padding:10px;height:100px;}
+.tpl-list>li:last-child{border-bottom:none;}
+.tpl-list>li>img{width:}
+.tpl-list .view-box{width:120px;height:80px;background:#eee;overflow:hidden;}
+.tpl-list .view-box img{width:100%;}
+.tpl-list .choose-btn{display:inline-block;width:20px;height:20px;border:1px solid #ddd;background:#fff;border-radius:50%;}
+.tpl-list .choose-btn.active{background:#44b549}
+.mr10{margin-right:10px;}
+.mr20{margin-right:20px;}
+
+.notice_img_box {position:relative;max-height:120px;overflow:hidden;}
+.notice_img_box .title{display:inline-block;width:100%;background:rgba(0,0,0,0.5);position:absolute;bottom:0;left:0;height:30px;line-height:30px;}
+.notice_img{width:100%;border:1px solid #eee;}
+.img_add_box .button{display:inline-block;width:150px;height:30px;line-height:30px;border-radius:2px;cursor:pointer;}
+.img_add_box{width:220px;height:140px;overflow:hidden;}
+.img_add_box img{width:100%;}
