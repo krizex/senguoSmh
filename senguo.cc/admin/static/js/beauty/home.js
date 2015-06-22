@@ -99,7 +99,7 @@ $(document).ready(function(){
     var top=$('.goods-list-'+group_id).offset().top-40;
     $(window).scrollTop(top);
     $('.list-box').animate({"left":"0"},200);
-    $("#groupt-list").animate({"opacity":0},200).animate({"margin-left":"-75px"},200);
+    $("#groupt-list").animate({"margin-left":"-75px"},200);
 }).on('click','.to-add',function(){
     //首次添加商品
     var $this=$(this);
