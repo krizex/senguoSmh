@@ -1646,6 +1646,32 @@ def init_db_data():
 	print("init db success")
 	return True
 
+
+#add by jyj 2015-6-18
+class CheckProfit(MapBase, _CommonApi):
+	__tablename__ = "check_profit"
+
+	id = Column(Integer,primary_key = True,nullable = False,autoincrement=True)
+	create_time = Column(DateTime,nullable = False) 
+	is_checked = Column(Integer, default = False,nullable = False)
+	wx_record = Column(Float,default = 0)
+	wx_count_record = Column(Integer,default=0)
+	alipay_record = Column(Float,default = 0)
+	alipay_count_record = Column(Integer,default=0)
+	widt_record = Column(Float,default = 0)
+	widt_count_record = Column(Integer,default=0)
+	total_record = Column(Float,default = 0)
+	total_count_record = Column(Integer,default=0)
+
+	wx = Column(Float,default = 0)
+	wx_count = Column(Integer,default=0)
+	alipay = Column(Float,default = 0)
+	alipay_count = Column(Integer,default=0)
+	widt = Column(Float,default = 0)
+	widt_count = Column(Integer,default=0)
+	total = Column(Float,default = 0)
+	total_count = Column(Integer,default=0)
+
 '''
 # add by cm 2015.6.15
 # 商家优惠券

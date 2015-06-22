@@ -47,3 +47,22 @@
 .apply-cash-box .per-btn{height: 28px;line-height: 28px;width: 160px;margin-left: 48px;text-align: center;color: #fff;border-radius: 3px;background-color: #52b43f;display: block;}
 .apply-cash-box .get-code{width: 130px;display: inline-block;margin-left: 15px;}
 
+
+/*add by jyj 2015-6-20*/
+.pl10{padding-left: 10px !important;}
+.pr10{padding-right: 10px !important;}
+.mlf300{margin-left: 300px;}
+.tb-history{width: 100%;table-layout: fixed;border:1px solid #e7e7eb;}
+.tb-history th{height: 30px;line-height: 30px;color: #33;font-size: 14px;}
+.tb-history td{height: 30px;line-height: 30px;color: #666;font-size: 14px;border-bottom:1px solid #eee;}
+.tb-history tr:hover{background-color:#f6f6f6;}
+/**/
+
+/*add by jyj 2015-6-21*/
+#checkinput_bg{ display: none;  position: fixed;  top: 0%;  left: 0%;  width: 100%;  height: 100%;  background-color: black;  z-index:1001;  -moz-opacity: 0.7;  opacity:.70;  filter: alpha(opacity=70);}
+#div-input{display: none;  position: fixed;  top: 25%;  left: 25%;  width: 50%;  height: 42%;  padding: 8px;  border: 1px solid #E8E9F7;  background-color: white;  z-index:1002;  overflow: auto;}
+.mlf70{margin-left: 70px;}
+/**/
+/*add by jyj 2015-6-22*/
+.txt-al{text-align: left !important;}
+/**/

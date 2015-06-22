@@ -199,3 +199,13 @@ function bubbleSort(arr){
     }
     return arr[0];
 }
+
+//add by zb 2015-6-16
+$(window).scroll(function(){
+    if($(window).scrollTop()>700){
+        $(".go-top").show();
+    }else{
+        $(".go-top").hide();
+    }
+});
+//

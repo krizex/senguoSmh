@@ -8,6 +8,7 @@ $(document).ready(function(){
     if($("#apply-cont-lst").size()>0){
         apply_list = '{{each history as his}}'+
             '<li data-apply-id="{{his.id}}">'+
+            
                 '<ul class="shop-attr-lst group">'+
                     '<li>店铺名：<a href="/{{his.shop_code}}" target="_blank">{{his.shop_name}}</a></li>'+
                     '<li>认证类型：{{ if his.shop_auth==1 || his.shop_auth==4 }}个人认证{{ /if }}{{ if his.shop_auth==2 || his.shop_auth==3}}企业认证{{ /if }}</li>'+
@@ -251,11 +252,14 @@ function history(action,page){
                 $('.no-list').removeClass('hide');
                }
                else{
-        $('.no-list').addClass('hide');
+                $('.no-list').addClass('hide');
                }
                for(var i in history){
                 var item= '<tr class="con">'
-+                                       '<td class="pl20">店铺名：<a href="/{{shop_code}}" target="_blank">{{shop_name}}</a> {{title}} {{record}}</td>'
+                //chang by jyj 2015-6-16
+// +                                       '<td class="pl20">店铺名：<a href="/{{shop_code}}" target="_blank">{{shop_name}}</a> {{title}} {{record}}</td>'
++                                       '<td class="pl20">店铺名：<a href="/super/balance/{{shop_code}}" title="点击查看该店铺余额详情">{{shop_name}}</a> {{title}} {{record}}</td>'
+            // 
 +                                       '<td class="c999">{{time}}</td>'
 +                                       '<td class="orange-txt txt-ar"><span class="f16">{{balance_value}}</span><span class="c999">元</span></td>'
 +                                       '<td class="green-txt txt-ar pr20"><span class="f16">{{balance}}</span><span class="c999">元</span></td>'
@@ -299,7 +303,8 @@ function history(action,page){
             else{
                     alert(res.error_text);
             }
-        },
-        function(){alert('网络好像不给力呢~ ( >O< ) ~');}
+        }
+        //change by jyj 2015-6-16
+        // function(){alert('网络好像不给力呢~ ( >O< ) ~');}
         );
 };
