@@ -440,7 +440,6 @@ class OrderStatic(AdminBaseHandler):
 		ids = [x[0] for x in q]
 		return ids
 
-
 # 用户统计
 class FollowerStatic(AdminBaseHandler):
 	@tornado.web.authenticated
@@ -3105,5 +3104,3 @@ class Confession(AdminBaseHandler):
 			q.status = 0
 			self.session.commit()
 		return self.send_success()
-
-
