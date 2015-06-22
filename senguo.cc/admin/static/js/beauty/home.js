@@ -83,7 +83,7 @@ $(document).ready(function(){
            
         }else{
             $(this).addClass("menu-active");
-            //$("#groupt-list").animate({"margin-left":0,"opacity":1},200);
+            $("#groupt-list").animate({"margin-left":"0"},200);
             $('.list-box').animate({"left":"75px"},200);
         }
     }
