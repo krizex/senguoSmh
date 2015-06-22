@@ -22,8 +22,6 @@ class QrWxpay(CustomerBaseHandler):
 		if not order:
 			return self.send_fail('order not found')
 		totalPrice = order.totalPrice
-		
-		
 
 class OnlineWxPay(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -139,7 +137,6 @@ class OnlineWxPay(CustomerBaseHandler):
 		pass
 		return
 
-
 	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?:str')
 	def post(self):
 			# print(self.args,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
@@ -254,7 +251,6 @@ class OnlineWxPay(CustomerBaseHandler):
 			# # send message to customer
 			# WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 			return self.write('success')
-
 
 class OrderDetail(CustomerBaseHandler):
 	#@tornado.web.authenticated
@@ -495,7 +491,6 @@ class OnlineAliPay(CustomerBaseHandler):
 		# # send message to customer
 		# WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 		return self.write('success')
-
 
 	@CustomerBaseHandler.check_arguments("sign","result","out_trade_no","trade_no","request_token")
 	def handle_onAlipay_callback(self):

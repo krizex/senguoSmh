@@ -217,7 +217,7 @@ handlers = [
 	#  {"action":"profile"}, "adminSettingsProfile")
 	##移动端后台
 	(r"/madmin/order", handlers.madmin.Order, {}, "MadminOrder"),
-	(r"/madmin/orderDetail", handlers.madmin.OrderDetail, {}, "MadminOrderDetail"),
+	(r"/madmin/orderDetail/(\w+)", handlers.madmin.OrderDetail, {}, "MadminOrderDetail"),
 	(r"/madmin/shopProfile", handlers.madmin.ShopProfile, {}, "MadminCenter"),
 	(r"/madmin/orderSearch", handlers.madmin.OrderSearch, {}, "MadminSearch"),
 	(r"/madmin/comment", handlers.madmin.Comment, {}, "MadminComment"),
