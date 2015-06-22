@@ -76,16 +76,15 @@ $(document).ready(function(){
         window.location.href="/"+shop_code;
     }
     else{
-        if($("#groupt-list").hasClass("h0")){
-            $(this).addClass("menu-active");
-            $("#groupt-list").removeClass("h0");
-            $(".groupt-list li").addClass("anim-bounceDown");
-            $(".groupt-list li").one("webkitAnimationEnd",function(){
-                $(this).removeClass("anim-bounceDown");
-            });
-        }else{
+        if($("#menu").hasClass("menu-active")){
             $(this).removeClass("menu-active");
-            $("#groupt-list").addClass("h0");
+            $("#groupt-list").animate({"opacity":0},200).animate({"margin-left":"-75px"},200);
+            $('.list-box').animate({"left":"0"},200);
+           
+        }else{
+            $(this).addClass("menu-active");
+            $("#groupt-list").animate({"margin-left":0,"opacity":1},200);
+            $('.list-box').animate({"left":"75px"},200);
         }
     }
     
@@ -99,17 +98,8 @@ $(document).ready(function(){
     var group_id=Number($this.attr('data-id'));
     var top=$('.goods-list-'+group_id).offset().top-40;
     $(window).scrollTop(top);
-     if($("#groupt-list").hasClass("h0")){
-            $(this).addClass("menu-active");
-            $("#groupt-list").removeClass("h0");
-            $(".groupt-list li").addClass("anim-bounceDown");
-            $(".groupt-list li").one("webkitAnimationEnd",function(){
-                $(this).removeClass("anim-bounceDown");
-            });
-        }else{
-            $(this).removeClass("menu-active");
-            $("#groupt-list").addClass("h0");
-        }
+    $('.list-box').animate({"left":"0"},10);
+    $("#groupt-list").animate({"opacity":0},200).animate({"margin-left":"-75px"},200);
 }).on('click','.to-add',function(){
     //首次添加商品
     var $this=$(this);
@@ -152,7 +142,6 @@ $(document).ready(function(){
     parent.attr({'data-storage':storage-change_num});
 }).on('click','.number-minus',function(){
     //商品数量操作
-    console.log(2333);
     var $this=$(this);
     pulse($this);
     goodsNum($this,1);
@@ -249,8 +238,8 @@ var goods_item1='<li class="{{code}}">'+
                     '<div class="item-info bg-color">'+
                         '<div class="skew item-info-name {{if charge_types["market_price"]>0 }}mt10{{else}}mt20{{/if}}">{{name}}</div>'+
                         '<div class="skew item-info-price mt10" data-id="{{charge_types["id"]}}">'+
-                            '￥&nbsp;<span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span>'+
-                            '{{if charge_types["market_price"]>0 }}<p class="market">￥<span class="market-price">{{charge_types["market_price"]}}元</span/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span></p>{{/if}}'+
+                            '￥ <span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span>'+
+                            '{{if charge_types["market_price"]>0 }}<p class="market">￥ <span class="market-price">{{charge_types["market_price"]}}元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span></p>{{/if}}'+
                         '</div>'+
                         '<a href="{{link}}" class="skew now-buy">立即购买</a>'+
                     '</div>'+
@@ -264,8 +253,8 @@ var goods_item2='<li class="{{code}} goods-list-item" data-id="{{goos_id}}" data
                 '<div class="fruit-right charge-item"  data-id="{{charge_types["id"]}}" data-relate="{{charge_types["relate"]}}" data-buy="{{charge_types["limit_today"]}}" data-allow={{charge_types["allow_num"]}}>'+
                     '<p class="name">{{name}}</p>'+
                     '<div class="price charge-type">'+
-                        '￥&nbsp;<span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span>{{charge_types["unit"]}}</span>'+
-                        '{{if charge_types["market_price"]>0 }}<p class="market text-grey9">￥<span class="market-price">{{charge_types["market_price"]}}元</span/{{charge_types["num"]}}{{charge_types["unit"]}}</span></p>{{/if}}'+
+                        '￥ <span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span>{{charge_types["unit"]}}</span>'+
+                        '{{if charge_types["market_price"]>0 }}<p class="market text-grey9">￥ <span class="market-price">{{charge_types["market_price"]}}元/{{charge_types["num"]}}{{charge_types["unit"]}}</span></p>{{/if}}'+
                     '</div>'+
                     '<div class="wrap-furit-opera bg-color num_box">'+
                         '<span class="to-add add add_cart_num">+</span>'+
@@ -306,7 +295,12 @@ var fruitItem=function(box,fruits,type){
     if(!img_url){
         ori_img='/static/design_img/'+code+'.png';
     }else{
-        ori_img=img_url+'?imageView/1/w/800/h/700';
+         if(type=='recommend'){
+            ori_img=img_url+'?imageView2/2/w/800';
+         }
+        else{
+            ori_img=img_url+'?imageView2/2/w/800';
+        }
     }
     if(tag==2){
         tag='limit_tag';
