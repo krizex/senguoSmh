@@ -159,8 +159,7 @@ class ShopManage(SuperBaseHandler):
 		
 		output_data_count["auth_2_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,4])).count()
 		output_data_count["auth_1_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([2,3])).count()
-		output_data_count["auth_0_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth == 0).count()
-		
+		output_data_count["auth_0_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth == 0).count()	
 		##
 
 		#add 6.6pm search(根据店铺号或店铺名搜索的功能):
@@ -181,7 +180,6 @@ class ShopManage(SuperBaseHandler):
 			q = self.session.query(models.Shop)  #把所有店铺查询出来，存放在q中
 			shops = q.order_by(models.Shop.id).all()
 
-		
 		shop_auth = self.args["shop_auth"]
 		shop_status = self.args["shop_status"]
 		shop_sort_key = self.args["shop_sort_key"]
@@ -370,7 +368,6 @@ class ShopManage(SuperBaseHandler):
 				data["goods_count"] = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
 				##
 
-				#print(data["goods_count"])
 				data["shop_property"] = shop.shop_property
 
 				if shop.order_count == 0:
@@ -1310,3 +1307,311 @@ class ApplyCash(SuperBaseHandler):
 		return self.send_success(history = history)
 
 		
+
+#add by jyj 2015-6-17
+class CheckCash(SuperBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("superAdmin/balance-check.html",context=dict())
+	
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('action','data','page?:int')
+	def post(self):
+		page_size = 5
+		action = self.args["action"]
+		# print("@@@@@@@@@@",action)
+		if action == 'check':
+			data = self.args["data"]
+			# print("###########",data)
+
+			# print("#########",data["check_date"])
+			date_tmp = time.strptime(data["check_date"],"%Y-%m-%d")
+			y,m,d = date_tmp[:3]
+			check_time = datetime.datetime(y,m,d,23,59,59)
+			record = self.session.query(models.CheckProfit).filter(models.CheckProfit.create_time == check_time).first();
+
+			wx = record.wx_record
+			wx_count = record.wx_count_record
+			alipay = record.alipay_record
+			alipay_count = record.alipay_count_record
+			widt = record.widt_record
+			widt_count = record.widt_count_record
+			total = record.total_record
+			total_count = record.total_count_record
+
+			data["is_checked"] = int(data["is_checked"] )
+			data["wx"] =round(float(data["wx"]),2)
+			data["alipay"] =round(float(data["alipay"]),2)
+			data["widt"] =round(float(data["widt"]),2)
+			data["wx_count"] = int(data["wx_count"])
+			data["alipay_count"] = int(data["alipay_count"])
+			data["widt_count"] = int(data["widt_count"])
+
+			if data["wx"]==wx and data["wx_count"]==wx_count and data["alipay"]==alipay and data["alipay_count"]==alipay_count and \
+			   data["widt"]==widt and data["widt_count"]==widt_count and data["wx"]+data["alipay"]==total and data["wx_count"]+data["alipay_count"]==total_count:
+				data["is_checked"] = 1
+			else:
+				data["is_checked"] = 0
+
+			if data["is_checked"] == 1:
+				check_history = models.CheckProfit(create_time = check_time,is_checked =\
+					1,wx_record = wx,wx_count_record = wx_count,alipay_record = \
+					alipay,alipay_count_record = alipay_count,widt_record = widt,widt_count_record = \
+					widt_count,total_record = total,total_count_record=total_count,wx=wx,wx_count= \
+					wx_count,alipay=alipay,alipay_count=alipay_count,widt=widt,widt_count=widt_count,total=total,total_count=total_count)
+				self.session.add(check_history)
+				self.session.query(models.CheckProfit).filter(models.CheckProfit.create_time == check_time,models.CheckProfit.is_checked==0).delete()
+				self.session.commit()
+
+			output_data = data
+			return self.send_success(output_data=output_data)
+		elif action == 'history':
+			page = self.args["page"]
+			check_profit_len = self.session.query(models.CheckProfit).count()
+			if check_profit_len == 0:
+				balance_history = self.session.query(models.BalanceHistory).\
+					   filter(models.BalanceHistory.balance_type.in_([0,3])).order_by(models.BalanceHistory.create_time)
+			else:
+				balance_history = self.session.query(models.BalanceHistory).\
+					   filter(models.BalanceHistory.balance_type.in_([0,3])).order_by(models.BalanceHistory.create_time).offset((page-1)*page_size).limit(page_size)
+
+			history_list = balance_history.all()
+			for his in history_list:
+				create_time = his.create_time
+				create_time = datetime.datetime(create_time.year, create_time.month, create_time.day, 23,59,59)
+				is_created_query = self.session.query(models.CheckProfit).filter(models.CheckProfit.create_time == create_time).all();
+				if len(is_created_query) != 0:
+					is_created = 1
+				else:
+					is_created = 0
+				if is_created == 0:
+					wx = 0.0
+					wx_count = 0
+					alipay = 0.0
+					alipay_count = 0
+
+					start_time = datetime.datetime(create_time.year, create_time.month, create_time.day, 0,0,0)
+					tomorrow = create_time + datetime.timedelta(1)
+					end_time = datetime.datetime(tomorrow.year, tomorrow.month, tomorrow.day, 0,0,0)
+
+					balance_his = self.session.query(models.BalanceHistory).\
+							   filter(models.BalanceHistory.balance_type.in_([0,3]),models.BalanceHistory.create_time >= start_time,\
+							   	models.BalanceHistory.create_time < end_time);
+					his_list = balance_his.all()
+
+					for temp in his_list:
+						#微信收入和笔数：
+						#支付宝收入和笔数：
+						if temp.balance_type == 3:
+							if temp.balance_record[5:7] == '支付':
+								alipay += temp.balance_value
+								alipay_count += 1
+							elif temp.balance_record[5:7] == '微信':
+								wx += temp.balance_value
+								wx_count += 1
+						#用户充值：
+						elif temp.balance_type == 0:
+							if temp.balance_record[5:7] == '支付':
+								alipay += temp.balance_value
+								alipay_count += 1
+							elif temp.balance_record[5:7] == '微信':
+								wx += temp.balance_value
+								wx_count += 1
+					
+					#总收入和笔数：
+					total = wx + alipay
+					total_count = wx_count + alipay_count
+
+					# 提现金额和提现笔数：
+					widt = self.session.query(func.sum(models.ApplyCashHistory.value)).filter(models.ApplyCashHistory.has_done==1,\
+								models.ApplyCashHistory.create_time >= start_time,models.ApplyCashHistory.create_time < end_time).all()
+					widt = widt[0][0]
+					if widt == None:
+						widt = 0
+
+					widt_count = self.session.query(models.ApplyCashHistory).filter(models.ApplyCashHistory.has_done==1,\
+								models.ApplyCashHistory.create_time >= start_time,models.ApplyCashHistory.create_time < end_time).count()
+					data = {}
+					data["create_time"] = create_time
+					data["total"] = format(total,".2f")
+					data["total_count"] = total_count
+					data["wx"] = format(wx,".2f")
+					data["wx_count"] = wx_count
+					data["alipay"] = format(alipay,".2f")
+					data["alipay_count"] = alipay_count
+					data["widt"] = format(widt,".2f")
+					data["widt_count"] = widt_count
+
+					check_history = models.CheckProfit(create_time = data["create_time"],is_checked =\
+						0,wx_record = data["wx"],wx_count_record = data["wx_count"],alipay_record = \
+						data["alipay"] ,alipay_count_record = data["alipay_count"] ,widt_record = data["widt"] ,widt_count_record = \
+						data["widt_count"] ,total_record = data["total"] ,total_count_record=data["total_count"],wx=0,wx_count= \
+						0,alipay=0,alipay_count=0,widt=0,widt_count=0,total=0,total_count=0)
+					self.session.add(check_history)
+					self.session.commit()
+
+			#检查昨天的对账单是否创建，如果没有创建，说明balance_history的昨天的在线支付、用户余额充值的记录为空，说明昨天的对账单的记录值为0，
+			#这还是要创建check_profit表的昨天的数据的，只不过收入数据和提现数据每一项都为0.
+			lastday = datetime.datetime.now() - datetime.timedelta(1)
+			lastday_end_date = datetime.datetime(lastday.year, lastday.month, lastday.day, 23,59,59)
+			# 检查昨天的对账单是否创建
+			is_created_query = self.session.query(models.CheckProfit).filter(models.CheckProfit.create_time == lastday_end_date).all();
+			if len(is_created_query) != 0:
+				is_created = 1
+			else:
+				is_created = 0
+			if is_created == 0:
+				check_history = models.CheckProfit(create_time = lastday_end_date,is_checked =\
+						0,wx_record = 0,wx_count_record = 0,alipay_record = \
+						0,alipay_count_record = 0 ,widt_record = 0 ,widt_count_record = \
+						0 ,total_record = 0 ,total_count_record=0,wx=0,wx_count= \
+						0,alipay=0,alipay_count=0,widt=0,widt_count=0,total=0,total_count=0)
+				self.session.add(check_history)
+				self.session.commit()
+
+			# 获取page_sum:
+			page_item_sum = self.session.query(models.CheckProfit).count();
+			page_sum = page_item_sum/page_size
+			# print(page_sum)
+
+			check_history = self.session.query(models.CheckProfit).order_by(desc(models.CheckProfit.create_time)).offset((page-1)*page_size).limit(page_size).all()
+			output_data = []
+			# print(len(check_history))
+			for check_his in check_history:
+				#其实如果对账成功，那么CheckProfit表中的记录值和实际值肯定是一样的；
+				#如果还没有对账，那么CheckProfit表中只会有记录值。
+				#所以向前台返回数据的时候没有必要把所有数据都返回，而只需要把记录的数据返回即可。
+
+				data = {}  #data={}要放在循环里，否则会有诡异的错误
+				data["create_time"] = check_his.create_time.strftime("%Y-%m-%d")
+				data["is_checked"] = check_his.is_checked
+				data["wx_record"] = check_his.wx_record
+				data["wx_count_record"] = check_his.wx_count_record
+				data["alipay_record"] = check_his.alipay_record
+				data["alipay_count_record"] = check_his.alipay_count_record
+				data["widt_record"] = check_his.widt_record
+				data["widt_count_record"] = check_his.widt_count_record
+				data["total_record"] = check_his.total_record
+				data["total_count_record"] = check_his.total_count_record
+				data["wx"] = check_his.wx
+				data["wx_count"] = check_his.wx_count
+				data["alipay"] = check_his.alipay
+				data["alipay_count"] = check_his.alipay_count
+				data["widt"] = check_his.widt
+				data["widt_count"] = check_his.widt_count
+				data["total"] = check_his.total
+				data["total_count"] = check_his.total_count
+
+				output_data.append(data)
+			return self.send_success(output_data=output_data,page_sum = page_sum)
+
+#add by jyj 2015-6-16
+class ShopBalanceDetail(SuperBaseHandler):
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments("page?:int")
+	def get(self,shop_code):
+		if shop_code != "not set":
+			pass	
+		else:
+			return self.send_error(404)
+		history_list = []
+		history = []
+
+		shop_id = self.session.query(models.Shop.id).filter(models.Shop.shop_code == shop_code).first()
+		shop_id = shop_id[0]
+
+		cash_applying = self.session.query(models.ApplyCashHistory.value).filter(models.ApplyCashHistory.has_done == 0).first()
+		if(cash_applying == None):
+			cash_applying = 0
+			cash_applying = format(cash_applying,'.2f')
+		else:
+			cash_applying = cash_applying[0]
+			cash_applying = format(cash_applying,'.2f')
+
+		balance_history = self.session.query(models.BalanceHistory).\
+				   filter(models.BalanceHistory.shop_id == shop_id,models.BalanceHistory.balance_type.in_([0,2,3])).order_by(desc(models.BalanceHistory.create_time)).offset(0).limit(1)
+		history_list = balance_history.all()
+
+		for temp in history_list:
+			shop = self.session.query(models.Shop).filter(models.Shop.shop_code == shop_code).first()
+			shop_name = shop.shop_name
+			create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
+			shop_totalBalance = temp.shop_totalPrice
+
+			if shop_totalBalance == None:
+					shop_totalBalance=0
+			shop_totalBalance = format(shop_totalBalance,'.2f')
+
+			history.append({'shop_name':shop_name,'balance':shop_totalBalance,'cash_applying':cash_applying})
+		return self.render("superAdmin/shop-balance-detail.html",history = history,context=dict())
+
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('page:int')
+	def post(self,shop_code):
+		page_size = 20
+		page = int(self.args["page"])
+		if shop_code != "not set":
+			pass	
+		else:
+			return self.send_error(404)
+		history_list = []
+		history = []
+
+		shop_id = self.session.query(models.Shop.id).filter(models.Shop.shop_code == shop_code).first()
+		shop_id = shop_id[0]
+
+		record_num = balance_history = self.session.query(models.BalanceHistory).\
+				   filter(models.BalanceHistory.shop_id == shop_id,models.BalanceHistory.balance_type.in_([0,2,3])).order_by(desc(models.BalanceHistory.create_time)).count()
+		page_sum = record_num/page_size
+		if page == 0:  #如果前台传来的page=0，表示只获取page_sum
+			return self.send_success(page_sum=page_sum)
+
+		cash_applying = self.session.query(models.ApplyCashHistory.value).filter(models.ApplyCashHistory.has_done == 0).first()
+		if(cash_applying == None):
+			cash_applying = 0
+			cash_applying = format(cash_applying,'.2f')
+		else:
+			cash_applying = cash_applying[0]
+			cash_applying = format(cash_applying,'.2f')
+	
+		balance_history = self.session.query(models.BalanceHistory).\
+				   filter(models.BalanceHistory.shop_id == shop_id,models.BalanceHistory.balance_type.in_([0,2,3])).order_by(desc(models.BalanceHistory.create_time)).offset((page-1)*page_size).limit(page_size)
+
+		history_list = balance_history.all()
+		count = balance_history.count();
+
+		for temp in history_list:
+			shop = self.session.query(models.Shop).filter(models.Shop.shop_code == shop_code).first()
+			shop_name = shop.shop_name
+			create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
+			shop_totalBalance = temp.shop_totalPrice
+
+			if shop_totalBalance == None:
+					shop_totalBalance=0
+			shop_totalBalance = format(shop_totalBalance,'.2f')
+
+			record = ''
+			order_num = ''
+			order_num_txt = ''
+			if temp.balance_type == 3:
+				record = temp.balance_record[0:4] + ':' 
+				if temp.balance_record[5:7] == '支付':
+					order_num = temp.balance_record[12:32]
+				else:
+					order_num = temp.balance_record[11:32]
+				name = temp.name[0:6]
+				order_num_txt = "-订单编号"
+			elif temp.balance_type == 2:
+				record = "提现:"
+				name = "店铺管理员"
+			elif temp.balance_type == 0:
+				record = "用户充值:"
+				name = temp.name
+
+			balance_value = format(temp.balance_value,'.2f')
+
+			history.append({'shop_name':shop_name,'shop_code':shop_code,'time':create_time,'balance':shop_totalBalance,\
+					'balance_value':balance_value,'type':temp.balance_type,'record':record,'order_num':order_num,\
+					'name':name,'order_num_txt':order_num_txt,'cash_applying':cash_applying})
+		return self.send_success(page_sum=page_sum,history = history)
+##

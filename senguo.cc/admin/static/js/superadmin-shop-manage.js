@@ -1,22 +1,21 @@
-page=1;
+page_shop=1,inputinfo=$("#inputinfo").val();
 $(document).ready(function(){
     $('.rejectApply').on('click',function(){$(this).siblings('.reject-box').modal('show');})
     $('.rejectSend').on('click',function(){Reject($(this));});
     $('.passApply').on('click',function(){Pass($(this));});
     //翻页
      $(document).on('click','#PrePage',function(){
-        var inputinfo=$("#inputinfo").val();
         if(inputinfo==""){
-           if(page>1){
-            page--;
-            insertShop(page);
+           if(page_shop>1){
+            page_shop--;
+            insertShop(page_shop);
            }
            else  return Tip("当前已经是第一页");
         }
         else{
-              if(page>1){
-            page--;
-            searchshop(page);
+              if(page_shop>1){
+            page_shop--;
+            searchshop(page_shop);
            }
            else  return Tip("当前已经是第一页");
         }
@@ -35,12 +34,12 @@ $(document).ready(function(){
     });
     $(document).on('click','#NextPage',function(){
         if(inputinfo==""){
-             page++;
-            insertShop(page);
+             page_shop++;
+            insertShop(page_shop);
         }
         else{
-            page++;
-            searchshop(page);
+            page_shop++;
+            searchshop(page_shop);
         }
     });
     if(localStorage.getItem("itemIndex")){
@@ -104,23 +103,23 @@ $(document).ready(function(){
 }).on("click","#concel-apply",function(e){
     $(".wrap-com-pop").addClass("hide");
 }).on("change","#shopstatus",function(){
-    page=1;
-     insertShop(page);
+    page_shop=1;
+     insertShop(page_shop);
 }).on("change","#sortrule",function(){
-    page=1;
-    insertShop(page);
+    page_shop=1;
+    insertShop(page_shop);
 }).on("change","#renzheng",function(){
-    page=1;
-     insertShop(page);
+    page_shop=1;
+     insertShop(page_shop);
 }).on("click","#search",function(){
-    page=1;
-    searchshop(page);
+    page_shop=1;
+    searchshop(page_shop);
 }).on("keyup","#inputinfo",function(){
-    page=1;
-    searchshop(page);
+    page_shop=1;
+    searchshop(page_shop);
 }).on("change","#ifreverse",function(){
-    page=1;
-    insertShop(page);
+    page_shop=1;
+    insertShop(page_shop);
 });
 
 function insertShop(page){
@@ -130,44 +129,55 @@ function insertShop(page){
     var v=$('#shopstatus').val();
     var ifreverse=$('#ifreverse').val();
     var url='/super/shopManage?action='+action+'&search&shop_auth='+v3+'&shop_status='+v+'&shop_sort_key='+v2+'&if_reverse='+ifreverse+'&page='+page+'&flag=0';
-   $.ajax({
+    $.ajax({
             url:url,
             type:"get",
             success:function(res){
                 if(res.success){
                         var shops = res.output_data;
-                        $('#list-group').empty()
-                         for(var i=0; i<shops.length; i++){
-        var shop = shops[i];
-        console.log(shop.shop_code);
-        var $item = $("#temp-ul").children("li").clone();
-        if(shop.shop_trademark_url){
-             $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView2/1/w/100/h/100");
-        }else{
-            $item.find(".shop-img").attr("src","/static/images/TDSG.png");
-        }     
-        $item.find(".ushop_name").html(shop.shop_name);
-        $item.find(".uauth_type").html(shop.auth_type);
-        $item.find(".uadmin_nickname").html(shop.admin_nickname);
-        $item.find(".ushop_address_name").html(shop.shop_address_detail);
-        $item.find(".ushop_code").html(shop.shop_code);
-        $item.find(".ushop_status").html(shop.shop_shop_status);
-        $item.find(".ucreate_date").html(shop.create_date);
-        $item.find(".uold_msg").html(shop.old_msg);
-        $item.find(".usatisfy").html(shop.satisfy);
-        $item.find(".uorder_count").html(shop.order_count);
-        $item.find(".ugoods_count").html(shop.goods_count);
-        $item.find(".ushop_property").html(shop.shop_property);
-        $item.find(".usingle_price").html(shop.single_price);
-        $item.find(".uavailable_balance").html(shop.available_balance);
-        $item.find(".ufans_count").html(shop.fans_count);
-        $item.find(".uold_user").html(shop.old_user);
-        $("#list-group").append($item);
-                                        }
-                                                }
-                                            }
-                });
+                        $('#list-group').empty();
+                        for(var i=0; i<shops.length; i++){
+                                    var shop = shops[i];
+                                    var $item = $("#temp-ul").children("li").clone();
+                                    if(shop.shop_trademark_url){
+                                        $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView2/1/w/100/h/100");
+                                    }else{
+                                        $item.find(".shop-img").attr("src","/static/images/TDSG.png");
+                                    } 
+                                    //delete by jyj 2015-6-22    
+                                    //$item.find(".ushop_name").html(shop.shop_name);
+                                    //
 
+                                    $item.find(".uauth_type").html(shop.auth_type);
+                                    $item.find(".uadmin_nickname").html(shop.admin_nickname);
+                                    $item.find(".ushop_address_name").html(shop.shop_address_detail);
+                                    $item.find(".ushop_code").html(shop.shop_code);
+                                    $item.find(".ushop_status").html(shop.shop_shop_status);
+                                    $item.find(".ucreate_date").html(shop.create_date);
+                                    $item.find(".uold_msg").html(shop.old_msg);
+                                    $item.find(".usatisfy").html(shop.satisfy);
+                                    $item.find(".uorder_count").html(shop.order_count);
+                                    $item.find(".ugoods_count").html(shop.goods_count);
+                                    $item.find(".ushop_property").html(shop.shop_property);
+                                    $item.find(".usingle_price").html(shop.single_price);
+                                    $item.find(".uavailable_balance").html(shop.available_balance);
+                                    $item.find(".ufans_count").html(shop.fans_count);
+                                    $item.find(".uold_user").html(shop.old_user);
+
+                                    // change by jyj 2015-6-22:
+                                    $item.find(".ushop_code_link").attr("href",'/'+shop.shop_code);
+                                    $item.find(".ushop_code_link").text(shop.shop_name);
+                                    //
+
+                                    // if(i==0){
+                                    //     // alert($item.find(".ushop_code_link").text());
+                                    //     alert("aaaaaaaaaa")
+                                    // }
+                                    $("#list-group").append($item);
+                                }
+                         }
+           }
+      });
 }
 
 window.onbeforeunload = function(){
@@ -318,7 +328,7 @@ function searchshop(page){
     var searchinfo=$("#inputinfo")[0].value;
     searchinfo='='+searchinfo;
     var url='/super/shopManage?action=all&search'+searchinfo+'&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&page='+page+'&flag=0';
-   $.ajax({
+    $.ajax({
             url:url,
             type:"get",
             success:function(res){
@@ -327,35 +337,36 @@ function searchshop(page){
                         $('#list-group').empty()
                         if(shops.length==0){
                     $("#list-group").append("<p>没有查询到任何有关的商家！</p>");
-                }else{
-                         for(var i=0; i<shops.length; i++){
-        var shop = shops[i];
-        var $item = $("#temp-ul").children("li").clone();
-        if(shop.shop_trademark_url){
-             $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView2/1/w/100/h/100");
-        }else{
-            $item.find(".shop-img").attr("src","/static/images/TDSG.png");
-        }     
-        $item.find(".ushop_name").html(shop.shop_name);
-        $item.find(".uauth_type").html(shop.auth_type);
-        $item.find(".uadmin_nickname").html(shop.admin_nickname);
-        $item.find(".ushop_address_name").html(shop.shop_address_detail);
-        $item.find(".ushop_code").html(shop.shop_code);
-        $item.find(".ushop_status").html(shop.shop_shop_status);
-        $item.find(".ucreate_date").html(shop.create_date);
-        $item.find(".uold_msg").html(shop.old_msg);
-        $item.find(".usatisfy").html(shop.satisfy);
-        $item.find(".uorder_count").html(shop.order_count);
-        $item.find(".ugoods_count").html(shop.goods_count);
-        $item.find(".ushop_property").html(shop.shop_property);
-        $item.find(".usingle_price").html(shop.single_price);
-        $item.find(".uavailable_balance").html(shop.available_balance);
-        $item.find(".ufans_count").html(shop.fans_count);
-        $item.find(".uold_user").html(shop.old_user);
-        $("#list-group").append($item);
-                                        }
-                                                }
-                                            }
-                                        }
-                });
+                }
+                else{
+                        for(var i=0; i<shops.length; i++){
+                                        var shop = shops[i];
+                                        var $item = $("#temp-ul").children("li").clone();
+                                        if(shop.shop_trademark_url){
+                                            $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView/1/w/100/h/100");
+                                        }else{
+                                            $item.find(".shop-img").attr("src","/static/images/TDSG.png");
+                                        }     
+                                        $item.find(".ushop_name").html(shop.shop_name);
+                                        $item.find(".uauth_type").html(shop.auth_type);
+                                        $item.find(".uadmin_nickname").html(shop.admin_nickname);
+                                        $item.find(".ushop_address_name").html(shop.shop_address_detail);
+                                        $item.find(".ushop_code").html(shop.shop_code);
+                                        $item.find(".ushop_status").html(shop.shop_shop_status);
+                                        $item.find(".ucreate_date").html(shop.create_date);
+                                        $item.find(".uold_msg").html(shop.old_msg);
+                                        $item.find(".usatisfy").html(shop.satisfy);
+                                        $item.find(".uorder_count").html(shop.order_count);
+                                        $item.find(".ugoods_count").html(shop.goods_count);
+                                        $item.find(".ushop_property").html(shop.shop_property);
+                                        $item.find(".usingle_price").html(shop.single_price);
+                                        $item.find(".uavailable_balance").html(shop.available_balance);
+                                        $item.find(".ufans_count").html(shop.fans_count);
+                                        $item.find(".uold_user").html(shop.old_user);
+                                        $("#list-group").append($item);
+                          }
+                     }
+                  }
+                }
+    });
 }
