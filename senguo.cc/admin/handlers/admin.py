@@ -245,7 +245,7 @@ class OrderStatic(AdminBaseHandler):
 	def sum(self):
 		page = self.args["page"]
 		type = self.args["type"]
-		print(type)
+		# print(type)
 		if page == 0:
 			now = datetime.datetime.now()
 			start_date = datetime.datetime(now.year, now.month, 1)
@@ -351,7 +351,7 @@ class OrderStatic(AdminBaseHandler):
 		page_size = 15
 		start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
 		end_date = datetime.datetime.now() - datetime.timedelta(page*page_size-1) 
-		print(start_date , end_date )
+		# print(start_date , end_date )
 
 		# 日订单数，日总订单金额
 		s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
@@ -362,15 +362,15 @@ class OrderStatic(AdminBaseHandler):
 					 func.month(models.Order.create_date),
 					 func.day(models.Order.create_date)).\
 			order_by(desc(models.Order.create_date)).all()
-		for temp in s:
-			print(temp[0].strftime('%Y-%m-%d'),temp[1],temp[2])
+		#for temp in s:
+		#	print(temp[0].strftime('%Y-%m-%d'),temp[1],temp[2])
 
 		# 总订单数
 		total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
 			filter(models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0]))).\
 			filter(models.Order.create_date <= end_date).all()
 		total = list(total[0])
-		print(total , 'totallllllllllllllllllllllllll')
+		#print(total , 'totallllllllllllllllllllllllll')
 
 		# 日老用户订单数
 		ids = self.old_follower_ids(self.current_shop.id)
@@ -428,7 +428,7 @@ class OrderStatic(AdminBaseHandler):
 			page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
 		else:
 			page_sum = 0
-		print(data)
+		# print(data)
 		return self.send_success(page_sum=page_sum, data=data)
 
 	# 老用户的id
@@ -812,7 +812,7 @@ class Order(AdminBaseHandler):
 				if not SH2:
 					return self.send_fail("没找到该送货员")
 				order.update(session=self.session, status=4, SH2_id=int(data["staff_id"]))
-				print('beforeeeeeeeeeeeeeeeeeeeee')
+				# print('beforeeeeeeeeeeeeeeeeeeeee')
 				self.send_staff_message(self.session,order)
 
 			elif action == "edit_status":
@@ -3056,7 +3056,7 @@ class Confession(AdminBaseHandler):
 		elif action == 'hot':
 			q = q.order_by(models.ConfessionWall.great.desc()).offset(page * page_size).limit(page_size)
 		for temp in q:
-			print(temp.ConfessionWall.id,temp.Accountinfo.id)
+			# print(temp.ConfessionWall.id,temp.Accountinfo.id)
 			datalist.append(dict(
 				id = temp.ConfessionWall.id,
 				user = temp.Accountinfo.nickname,
