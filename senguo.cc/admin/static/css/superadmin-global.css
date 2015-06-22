@@ -102,3 +102,15 @@ a:focus{text-decoration:none;}
 /*add by jyj 2015-6-16*/
 .top-margin1{margin-top:15px;}
 /**/
+
+/*add by zb 2015-6-16*/
+.go-top{position: fixed;bottom: 60px;display:none;right: 20px;background: url('/static/images/go-top.png') no-repeat center center;width: 32px;height: 32px;z-index: 9999;}
+/**/
+
+/*add by jyj 2015-6-16*/
+.align-center{line-height: 30px;text-align: center}
+.div-fl{float:left;}
+.text-gray{color:#C8C8C8;}
+.top-margin2{margin-top:10px;}
+.balance-red{color:#FF3300;}
+/**/

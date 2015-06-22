@@ -139,7 +139,6 @@ function insertShop(page){
                         $('#list-group').empty()
                          for(var i=0; i<shops.length; i++){
         var shop = shops[i];
-        console.log(shop.shop_code);
         var $item = $("#temp-ul").children("li").clone();
         if(shop.shop_trademark_url){
              $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView/1/w/100/h/100");

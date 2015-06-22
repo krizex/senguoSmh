@@ -284,13 +284,15 @@ class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
 		# shop_id = self.shop_id
-		print("[个人中心]店铺号：",shop_code)
+		print("**********************[个人中心]店铺号：",shop_code)
+
 		# 用于标识 是否现实 用户余额 ，当 店铺 认证 通过之后 为 True ，否则为False
 		show_balance = False
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
 		except:
 			return self.send_fail('shop error')
+		print("**********************",shop_code)
 		# print(shop.shop_code)
 		if shop is not None:
 			shop_name = shop.shop_name
@@ -335,10 +337,11 @@ class Home(CustomerBaseHandler):
 		return self.render("customer/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
 			show_balance = show_balance,balance_on=balance_on,context=dict(subpage='center'))
+	
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data")
 	def post(self,shop_code):
-		action = self.args["action"]
+		action = self.args["action"] 
 		data = self.args["data"]
 		if action == "add_address":
 			address = models.Address(customer_id=self.current_user.id,

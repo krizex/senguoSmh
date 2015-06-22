@@ -142,6 +142,12 @@ handlers = [
 	(r"/super/shopauth",handlers.superadmin.ShopAuthenticate,{},"superShopAuth"),
 	(r"/super/balance",handlers.superadmin.Balance,{},"superBalance"),
 	(r"/super/cash",handlers.superadmin.ApplyCash,{},"superApplyCash"),
+
+	#add by jyj 2015-6-16
+	(r"/super/check_cash",handlers.superadmin.CheckCash,{},"superCheckCash"),
+	(r"/super/balance/(\w+)",handlers.superadmin.ShopBalanceDetail,{},"ShopBalanceDetail"),
+	##
+
 	## 商城购买订单
 	(r"/super/orderManage/", handlers.superadmin.OrderManage, {
 		"action":"new"}, "superOrderManage"),
