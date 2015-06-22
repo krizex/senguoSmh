@@ -19,8 +19,39 @@ class Order(AdminBaseHandler):
 
 class OrderDetail(AdminBaseHandler):
 	# @tornado.web.authenticated
-	def get(self):
-		return self.render("m-admin/order-detail.html")
+	def get(self,order_num):
+		shop_id = self.current_shop.id
+		try:
+			order = self.session.query(models.Order).filter(models.Order.num==order_num, models.Order.shop_id==shop_id).first()
+		except:
+			return self.send_error(404)
+		charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
+		
+		if order.pay_type == 1:
+			order.pay_type_con = "货到付款"
+		elif order.pay_type == 2:
+			order.pay_type_con = "余额支付"
+		else:
+			order.pay_type_con = "在线支付"
+
+		customer_id = order.customer_id
+		customer_info = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
+		if customer_info is not None:
+			order.customer_nickname=customer_info.nickname
+
+		SH2s=[]
+		staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
+				models.HireLink.work == 3, models.HireLink.shop_id == shop_id,models.HireLink.active == 1)).all()
+		for staff in staffs:
+			staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone,\
+			"headimgurl":staff.accountinfo.headimgurl_small}
+			SH2s.append(staff_data)
+			if staff.id == order.SH2_id:  # todo JH、SH1
+				order.SH2 = staff_data
+		order.SH2s = SH2s
+
+		return self.render("m-admin/order-detail.html",order=order,charge_types=charge_types)
+
 
 class ShopProfile(AdminBaseHandler):
 	# @tornado.web.authenticated

@@ -1976,7 +1976,7 @@ class OrderDetail(CustomerBaseHandler):
 		shop_code = order.shop.shop_code
 		shop_name = order.shop.shop_name
 		return self.render("customer/order-detail.html", order=order,charge_types=charge_types,comment_imgUrl=comment_imgUrl,\
-						   online_type=online_type,shop_name=shop_name)
+						   online_type=online_type,shop_name=shop_name,shop_code=shop_code)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data?")
