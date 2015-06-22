@@ -2,13 +2,13 @@
 .user-info{position:relative;background:#dcedd8;}
 .user-info .bg{width:100%;}
 .user-info .user-img{width:100%;height:100%;z-index:10;left:0;top:0;}
-.user-info .wrap-img{width:30%;border-radius:50%;margin:15px auto 0 auto;padding:20px;border:15px solid #c1e0ba;margin-bottom:-50px;background:#b0d8a6;font-size: 0;-webkit-box-sizing: content-box;}
+.user-info .wrap-img{width:26%;border-radius:50%;margin:10px auto 0 auto;padding:25px;border:12px solid #c1e0ba;margin-bottom:-50px;background:#b0d8a6;font-size: 0;-webkit-box-sizing: content-box;}
 .user-info .img{width:100%;}
 .user-info .code{margin-top:6%;}
 .user-info .user-sex{display:inline-block;width:12px;height:16px;font-weight:bolder;}
 .male{color:deepskyblue;}
 .female{color:hotpink;}
-.info{background:#dcedd8;margin-top:15px !important;}
+.info{background:#dcedd8;margin-top:20px !important;color: #999;}
 .property{background:#fff;}
 .property a{position:relative;z-index:999;}
 
