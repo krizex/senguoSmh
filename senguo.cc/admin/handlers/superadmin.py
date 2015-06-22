@@ -453,7 +453,7 @@ class ShopManage(SuperBaseHandler):
 				password='sg201404',
 				mobile=mobile,
 				content = message_fail_content)
-			headers = dict(Host = '106.ihuyi.cn',)
+			headers = dict(Host = '106.ihuyi.cn',connection = "close")
 			r = requests.post(url,data = postdata , headers = headers)
 			# print("[超级管理员]审核通知短信平台返回信息：",r.text)
 
@@ -535,7 +535,7 @@ class ShopManage(SuperBaseHandler):
 				password='sg201404',
 				mobile=mobile,
 				content = message_content)
-			headers = dict(Host = '106.ihuyi.cn',)
+			headers = dict(Host = '106.ihuyi.cn',connection="close")
 			r = requests.post(url,data = postdata , headers = headers)
 			# print(r.text)
 			# test_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'
@@ -1023,8 +1023,8 @@ class Comment(SuperBaseHandler):
 		order = comment_apply.order
 		if action == 'commit':
 			#order.status = 5
-			order.comment = None
-			order.comment_reply = None
+			#order.comment = None
+			#order.comment_reply = None
 			comment_apply.has_done = 1
 			self.session.commit()
 			return self.send_success(status = 0, msg = 'success',data = {})

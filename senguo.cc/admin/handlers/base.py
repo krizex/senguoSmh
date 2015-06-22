@@ -1425,7 +1425,7 @@ class WxOauth2:
 				"remark": {"value": "请务必点击详情，查看使用教程", "color": "#FF4040"}}
 		}
 		access_token = cls.get_client_access_token()
-		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
+		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
 			print("[模版消息]店铺审核消息发送失败：", data)
@@ -1449,7 +1449,7 @@ class WxOauth2:
 				"remark": {"value": reason, "color": "#FF4040"}}
 		}
 		access_token = cls.get_client_access_token()
-		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
+		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
 			print("[模板消息]店铺审核消息发送失败：", data)
@@ -1475,7 +1475,7 @@ class WxOauth2:
 				}
 		}
 		access_token = cls.get_client_access_token()
-		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata))
+		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
 			print("[模版消息]店铺审核消息发送失败：", data)
@@ -1507,7 +1507,7 @@ class WxOauth2:
 			}
 		}
 		access_token = cls.get_client_access_token()
-		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
+		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
 			print("[模版消息]发送给管理员失败：",data)
@@ -1540,7 +1540,7 @@ class WxOauth2:
 			}
 		}
 		access_token = cls.get_client_access_token()
-		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
+		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
 			print("[模版消息]发送给配送员失败：",data)
@@ -1565,7 +1565,7 @@ class WxOauth2:
 			}
 		}
 		access_token = cls.get_client_access_token()
-		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata))
+		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
 			print("[模版消息]发送给配送员失败：",data)
@@ -1591,7 +1591,7 @@ class WxOauth2:
 			}
 		}
 		access_token = cls.get_client_access_token()
-		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata))
+		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 
 		if data["errcode"] != 0:
@@ -1605,7 +1605,7 @@ class WxOauth2:
 		# print(type(openid))
 		access_token = cls.get_client_access_token()
 		user_subcribe_url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token={0}&openid={1}'.format(access_token,openid)
-		res = requests.get(user_subcribe_url)
+		res = requests.get(user_subcribe_url,headers = {"connection":"close"})
 		if type(res.content)== bytes:
 			s = str(res.content,'utf-8')
 		else:
