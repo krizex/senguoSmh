@@ -25,13 +25,13 @@
                 {% if notices %}
                     {% for notice in notices%}
                     <div class="swiper-slide item">
-                        <img src="{{notice[2] or '/static/images/fruit3.jpg'}}?imageView2/1/w/800/h/368" alt="推荐商品图片"/>
+                        <img src="{{notice[2] or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/800/h/368" alt="推荐商品图片"/>
                         <p class="notice-title">{{notice[0]}}</p>
                     </div>
                     {% end %}
                 {% else %}
                 <div class="swiper-slide item">
-                    <img src="/static/images/fruit3.jpg" alt="推荐商品图片"/>
+                    <img src="/static/images/holder_fruit.jpg" alt="推荐商品图片"/>
                 </div>
                 {% end %}
             </div>

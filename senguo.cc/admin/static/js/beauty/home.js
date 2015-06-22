@@ -234,7 +234,7 @@ var goodsList=function(page,action,type){
 };
 var goods_item1='<li class="{{code}}">'+
                     '<a href="{{link}}">'+
-                    '<img src="/static/images/fruit3.jpg" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/>'+
+                    '<img src="/static/images/holder_fruit.jpg" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/>'+
                     '<div class="item-info bg-color">'+
                         '<div class="skew item-info-name {{if charge_types["market_price"]>0 }}mt10{{else}}mt20{{/if}}">{{name}}</div>'+
                         '<div class="skew item-info-price mt10" data-id="{{charge_types["id"]}}">'+
@@ -249,7 +249,7 @@ var goods_item1='<li class="{{code}}">'+
                     '</a>'+
                 '</li>';
 var goods_item2='<li class="{{code}} goods-list-item" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{detail_no}}">'+
-                '<a href="{{link}}" class="add_cart"><img src="/static/images/fruit3.jpg" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/></a>'+
+                '<a href="{{link}}" class="add_cart"><img src="/static/images/holder_fruit.jpg" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/></a>'+
                 '<div class="fruit-right charge-item"  data-id="{{charge_types["id"]}}" data-relate="{{charge_types["relate"]}}" data-buy="{{charge_types["limit_today"]}}" data-allow={{charge_types["allow_num"]}}>'+
                     '<p class="name">{{name}}</p>'+
                     '<div class="price charge-type">'+
