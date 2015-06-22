@@ -245,6 +245,7 @@ class OrderStatic(AdminBaseHandler):
 	def sum(self):
 		page = self.args["page"]
 		type = self.args["type"]
+		print(type)
 		if page == 0:
 			now = datetime.datetime.now()
 			start_date = datetime.datetime(now.year, now.month, 1)
@@ -254,10 +255,12 @@ class OrderStatic(AdminBaseHandler):
 			start_date = datetime.datetime(date.year, date.month, 1)
 			end_date = datetime.datetime(date.year, date.month, date.day)
 
-		orders = self.session.query(models.Order.id, models.Order.create_date,
-									models.Order.totalPrice, models.Order.type,
-									models.Order.pay_type). \
-			filter(models.Order.shop_id == self.current_shop.id,
+		orders = self.session.query(
+			models.Order.id, 
+			models.Order.create_date,
+			models.Order.totalPrice, 
+			models.Order.type,
+			models.Order.pay_type).filter(models.Order.shop_id == self.current_shop.id,
 				   models.Order.create_date >= start_date,
 				   models.Order.create_date <= end_date,
 				   not_(models.Order.status.in_([-1,0]))).all()
@@ -267,28 +270,29 @@ class OrderStatic(AdminBaseHandler):
 			data[x] = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
 		if type == 1:
 			for order in orders:
-				data[order[1].day][1] += 1
-				if order[3] == 2:
+				data[order[1].day][1] += 1  #订单总数
+				if order[3] == 2:    # 按时达订单数
 					data[order[1].day][2] += 1
-				else:
+				else:                #立即送订单数
 					data[order[1].day][3] += 1
-				if order[4] == 1:
+				if order[4] == 1:    # 货到付款订单数
 					data[order[1].day][4] += 1
-				else:
+				else:                #余额订单数(其实还包含货到付款)
 					data[order[1].day][5] += 1
 		elif type == 2:
 			for order in orders:
-				data[order[1].day][1] += order[2]
-				if order[3] == 2:
+				data[order[1].day][1] += order[2] #订单总价
+				if order[3] == 2:                #按时达订单总价
 					data[order[1].day][2] += order[2]
-				else:
+				else:                            #立即送订单总价
 					data[order[1].day][3] += order[2]
-				if order[4] == 1:
+				if order[4] == 1:                #货到付款订单总价
 					data[order[1].day][4] += order[2]
-				else:
+				else:                            # #余额订单总价(其实还包含货到付款)
 					data[order[1].day][5] += order[2]
 		else:
 			return self.send_error(404)
+		# print(data)
 		return self.send_success(data=data)
 
 	@AdminBaseHandler.check_arguments("type:int")
@@ -346,27 +350,27 @@ class OrderStatic(AdminBaseHandler):
 		page = self.args["page"]
 		page_size = 15
 		start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
-		end_date = datetime.datetime.now() - datetime.timedelta(page*page_size)
+		end_date = datetime.datetime.now() - datetime.timedelta(page*page_size-1) 
 		print(start_date , end_date )
 
 		# 日订单数，日总订单金额
 		s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
 			filter_by(shop_id=self.current_shop.id).\
 			filter(models.Order.create_date >= start_date,
-				   models.Order.create_date <= end_date,not_(models.Order.status.in_([-1,0]))).\
+				   models.Order.create_date < end_date,not_(models.Order.status.in_([-1,0]))).\
 			group_by(func.year(models.Order.create_date),
 					 func.month(models.Order.create_date),
 					 func.day(models.Order.create_date)).\
 			order_by(desc(models.Order.create_date)).all()
 		for temp in s:
-			print(temp[0].strftime('%Y-%m-%d'))
+			print(temp[0].strftime('%Y-%m-%d'),temp[1],temp[2])
 
 		# 总订单数
 		total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
 			filter(models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0]))).\
 			filter(models.Order.create_date <= end_date).all()
 		total = list(total[0])
-		# print(total , 'totallllllllllllllllllllllllll')
+		print(total , 'totallllllllllllllllllllllllll')
 
 		# 日老用户订单数
 		ids = self.old_follower_ids(self.current_shop.id)
@@ -392,7 +396,7 @@ class OrderStatic(AdminBaseHandler):
 		# data的封装格式为：[日期，日订单数，累计订单数，日订单总金额，累计订单总金额，日老用户订单数，累计老用户订单数]
 		for x in range(0, 15):
 			date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
-			print(date.strftime('%Y-%m-%d'))
+			# print(date.strftime('%Y-%m-%d'))
 			# if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
 			if i < len(s) and (s[i][0].strftime('%Y-%m-%d') == date.strftime('%Y-%m-%d')):
 				if j < len(s_old) and (datetime.datetime.now()-s_old[j][0]).days == x+(page*page_size):
@@ -424,7 +428,7 @@ class OrderStatic(AdminBaseHandler):
 			page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
 		else:
 			page_sum = 0
-		# print(data)
+		print(data)
 		return self.send_success(page_sum=page_sum, data=data)
 
 	# 老用户的id
