@@ -351,7 +351,7 @@ class OrderStatic(AdminBaseHandler):
 		page_size = 15
 		start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
 		end_date = datetime.datetime.now() - datetime.timedelta(page*page_size-1) 
-		print(start_date , end_date )
+		# print(start_date , end_date )
 
 		# 日订单数，日总订单金额
 		s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
@@ -362,15 +362,15 @@ class OrderStatic(AdminBaseHandler):
 					 func.month(models.Order.create_date),
 					 func.day(models.Order.create_date)).\
 			order_by(desc(models.Order.create_date)).all()
-		for temp in s:
-			print(temp[0].strftime('%Y-%m-%d'),temp[1],temp[2])
+		# for temp in s:
+		# 	print(temp[0].strftime('%Y-%m-%d'),temp[1],temp[2])
 
 		# 总订单数
 		total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
 			filter(models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0]))).\
 			filter(models.Order.create_date <= end_date).all()
 		total = list(total[0])
-		print(total , 'totallllllllllllllllllllllllll')
+		# print(total , 'totallllllllllllllllllllllllll')
 
 		# 日老用户订单数
 		ids = self.old_follower_ids(self.current_shop.id)
@@ -428,7 +428,7 @@ class OrderStatic(AdminBaseHandler):
 			page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
 		else:
 			page_sum = 0
-		print(data)
+		# print(data)
 		return self.send_success(page_sum=page_sum, data=data)
 
 	# 老用户的id
@@ -2404,7 +2404,7 @@ class AdminAuth(AdminBaseHandler):
 				password='sg201404',
 				mobile=mobile,
 				content = message_content)
-			headers = dict(Host = '106.ihuyi.cn',)
+			headers = dict(Host = '106.ihuyi.cn',connection = 'close')
 			r = requests.post(url,data = postdata , headers = headers)
 			print(r.text)
 			WxOauth2.post_add_msg(account_info.wx_openid, message_shop_name,account_info.nickname)

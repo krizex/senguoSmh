@@ -19,7 +19,7 @@ def get_access_token():
     AppID = 'wx0ed17cdc9020a96e'
     grant_type = 'client_credential'
     url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type={0}&appid={1}&secret={2}'.format(grant_type,AppID,AppSecret)
-    r = requests.get(url)
+    r = requests.get(url,headers = {"connection":"close"})
     s = r.content
     s = str(s,'utf-8')
     t = json.loads(s)
@@ -32,7 +32,7 @@ def get_access_token():
 def user_subscribe(openid):
     access_token = get_access_token()
     url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token={0}&openid={1}'.format(access_token,openid)
-    r = requests.get(url)
+    r = requests.get(url,headers = {"connection":"close"})
     s = str(r.content,'utf-8')
     t = json.loads(s)
     subscribe = t.get('subscribe',None)
