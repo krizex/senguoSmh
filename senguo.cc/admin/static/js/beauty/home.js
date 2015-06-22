@@ -78,13 +78,13 @@ $(document).ready(function(){
     else{
         if($("#menu").hasClass("menu-active")){
             $(this).removeClass("menu-active");
-            $("#groupt-list").animate({"opacity":0},30).animate({"margin-left":"-75px"},10);
-            $('.list-box').animate({"left":"0"},10);
+            $("#groupt-list").animate({"opacity":0},200).animate({"margin-left":"-75px"},200);
+            $('.list-box').animate({"left":"0"},200);
            
         }else{
             $(this).addClass("menu-active");
-            $("#groupt-list").animate({"margin-left":0,"opacity":1},20);
-            $('.list-box').animate({"left":"75px"},20);
+            $("#groupt-list").animate({"margin-left":0,"opacity":1},200);
+            $('.list-box').animate({"left":"75px"},200);
         }
     }
     
@@ -99,7 +99,7 @@ $(document).ready(function(){
     var top=$('.goods-list-'+group_id).offset().top-40;
     $(window).scrollTop(top);
     $('.list-box').animate({"left":"0"},10);
-    $("#groupt-list").animate({"opacity":0},30).animate({"margin-left":"-75px"},10);
+    $("#groupt-list").animate({"opacity":0},200).animate({"margin-left":"-75px"},200);
 }).on('click','.to-add',function(){
     //首次添加商品
     var $this=$(this);
@@ -296,10 +296,10 @@ var fruitItem=function(box,fruits,type){
         ori_img='/static/design_img/'+code+'.png';
     }else{
          if(type=='recommend'){
-            ori_img=img_url+'?imageView/1/w/800/h/480';
+            ori_img=img_url+'?imageView2/2/w/800';
          }
         else{
-            ori_img=img_url+'?imageView/1/w/800/h/600';
+            ori_img=img_url+'?imageView2/2/w/800';
         }
     }
     if(tag==2){
