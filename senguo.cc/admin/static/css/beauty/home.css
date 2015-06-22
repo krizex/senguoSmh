@@ -10,9 +10,9 @@ body{font-size: 14px;}
 .pagination{position: absolute;z-index:30;right:12px;bottom: 8px;white-space: nowrap;line-height: 1;}
 .swiper-pagination-switch{width:8px;height: 8px;border-radius:50%;-webkit-box-sizing:border-box;display: inline-block;margin:0 5px;-webkit-transition:all .2s ease;background-color: #fff;}
 .swiper-active-switch{background-color: #333;opacity: 0.2}
-.notice-title{position: absolute;bottom:0;padding-left: 15px;height: 30px;font-size:14px;line-height: 30px;color: #fff;background-color: rgba(128, 192, 145, 0.8);z-index:20;}
+.notice-title{position: absolute;bottom:0;padding-left: 15px;height: 30px;font-size:14px;line-height: 30px;color: #fff;background-color: rgba(175, 214, 166, 0.8);z-index:20;}
 .notice-top{padding: 10px 0;}
-.notice-top>p{text-indent: 10px;border-left:4px solid #afd6a6;height:24px;line-height: 24px;color: #000;margin-left: 1px;}
+.notice-top>p{text-indent: 10px;border-left:4px solid #afd6a5;height:24px;line-height: 24px;color: #000;margin-left: 1px;}
 .recommend-list{padding: 0 10px;}
 .recommend-list>li{position: relative;height: 120px;overflow: hidden;padding-right: 100px;margin-bottom: 10px;}
 .recommend-list .item-info{position: absolute;right: -20px;height: 120px;top: 0;-webkit-transform:skew(15deg);width: 140px;}

@@ -238,8 +238,8 @@ var goods_item1='<li class="{{code}}">'+
                     '<div class="item-info bg-color">'+
                         '<div class="skew item-info-name {{if charge_types["market_price"]>0 }}mt10{{else}}mt20{{/if}}">{{name}}</div>'+
                         '<div class="skew item-info-price mt10" data-id="{{charge_types["id"]}}">'+
-                            '￥&nbsp;<span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span>'+
-                            '{{if charge_types["market_price"]>0 }}<p class="market">￥<span class="market-price">{{charge_types["market_price"]}}元</span/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span></p>{{/if}}'+
+                            '￥ <span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span>'+
+                            '{{if charge_types["market_price"]>0 }}<p class="market">￥ <span class="market-price">{{charge_types["market_price"]}}元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span></p>{{/if}}'+
                         '</div>'+
                         '<a href="{{link}}" class="skew now-buy">立即购买</a>'+
                     '</div>'+
@@ -253,8 +253,8 @@ var goods_item2='<li class="{{code}} goods-list-item" data-id="{{goos_id}}" data
                 '<div class="fruit-right charge-item"  data-id="{{charge_types["id"]}}" data-relate="{{charge_types["relate"]}}" data-buy="{{charge_types["limit_today"]}}" data-allow={{charge_types["allow_num"]}}>'+
                     '<p class="name">{{name}}</p>'+
                     '<div class="price charge-type">'+
-                        '￥&nbsp;<span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span>{{charge_types["unit"]}}</span>'+
-                        '{{if charge_types["market_price"]>0 }}<p class="market text-grey9">￥<span class="market-price">{{charge_types["market_price"]}}元</span/{{charge_types["num"]}}{{charge_types["unit"]}}</span></p>{{/if}}'+
+                        '￥ <span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span>{{charge_types["unit"]}}</span>'+
+                        '{{if charge_types["market_price"]>0 }}<p class="market text-grey9">￥ <span class="market-price">{{charge_types["market_price"]}}元/{{charge_types["num"]}}{{charge_types["unit"]}}</span></p>{{/if}}'+
                     '</div>'+
                     '<div class="wrap-furit-opera bg-color num_box">'+
                         '<span class="to-add add add_cart_num">+</span>'+

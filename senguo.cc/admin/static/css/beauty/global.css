@@ -133,10 +133,10 @@ button:focus{outline:0;}
 .bottom-nav ul{margin-bottom:0;}
 .bottom-nav li{text-align:center;position:relative;height:46px;}
 .bottom-nav li a{display:block;background-size:2em !important;padding-top:7px;}
-.bottom-nav li a em{display:inline-block;background:url('/static/svg/icon_list-2.png') no-repeat;width:21px;height:21px;margin:0 auto;background-size:140px;overflow:hidden;}
+.bottom-nav li a em{display:inline-block;background:url('/static/images/beauty/icon_list.png') no-repeat;width:21px;height:21px;margin:0 auto;background-size:140px;overflow:hidden;}
 .bottom-nav li a p{line-height:14px;}
-.bottom-nav li:hover a{color:#80c26b !important;}
-.bottom-nav .active a{color:#80c26b !important;}
+.bottom-nav li:hover a{color:#afd6a5 !important;}
+.bottom-nav .active a{color:#afd6a5 !important;}
 .bottom-nav .home em{background-position:0 0;}
 .bottom-nav .goods em{background-position:-25px 0;}
 .bottom-nav .cart em{background-position:-50px 0;}
@@ -230,7 +230,7 @@ button:focus{outline:0;}
 
 .border-c{border:1px solid #ccc;}
 .rainshed{background:url('/static/svg/rainshed2@2x.png') repeat-x;height:45px;line-height:42px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;background-size:40px 43px;}
-.rainshed2{background:url('/static/svg/rainshed1@2x.png') repeat-x;height:45px;line-height:42px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;background-size:40px 43px;}
+.rainshed2{background:url('/static/images/beauty/rainshed.png') repeat-x;height:45px;line-height:42px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;background-size:40px 43px;}
 .rainshed_green{background:url('/static/svg/rainshed_green@2x.png') repeat-x;height:45px;line-height:38px;width:100%;max-width:800px;background-size:20px 45px;overflow:hidden;z-index:100;}
 
 .desaturate{filter:grayscale(100%);-webkit-filter:grayscale(100%);-moz-filter:grayscale(100%);-ms-filter:grayscale(100%);-o-filter:grayscale(100%);filter: url('/static/svg/saturate.svg#greyscale');filter: grayscale(100%);filter:gray;filter: grayscale(1)}
