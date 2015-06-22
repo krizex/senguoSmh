@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% block title %}【{{shop_name}}】一家不错的O2O店铺，快来关注吧~{% end %}
 {% block head %}
-<link rel="stylesheet" href="{{static_url('css/market-cart.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/beauty/cart.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 {% end %}
 {% block content %}
     <span id="shop_imgurl" data-img="{{shop_logo}}" data-code="{{handler.shop_code}}"></span>
-    <div class="rainshed bg_change fix-title"></div>
-    <div class="bg-box">
-        <ul class="cart-list set-w100-fle mt42 m-b0">
+    <div class="rainshed2 bg_change fix-title"></div>
+    <div class="bg-box mt42">
+        <ul class="cart-list set-w100-fle m-b0">
             {% for key in cart_f %}
             <li class="cart-list-item set-w100-fle fruit_item text-grey m-b5 {{cart_f[key]['code']}}" data-limit="{{cart_f[key]['limit_num']}}">
                 <div class="box bg set-w100-fle">

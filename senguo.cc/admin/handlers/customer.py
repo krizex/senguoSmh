@@ -342,7 +342,7 @@ class Home(CustomerBaseHandler):
 			elif order.status == 10:
 				count[6] += 1
 		# print(count)
-		return self.render("customer/personal-center.html", count=count,shop_point =shop_point, \
+		return self.render(self.tpl_path(shop.shop_tpl)+"/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
 			show_balance = show_balance,balance_on=balance_on,context=dict(subpage='center'))
 	@tornado.web.authenticated
@@ -623,7 +623,7 @@ class ShopProfile(CustomerBaseHandler):
 		session = self.session
 		w_id = self.current_user.id
 		session.commit()
-		return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
+		return self.render(self.tpl_path(shop.shop_tpl)+"/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
 						   fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
 						   service_area=service_area, headimgurls=headimgurls, signin=signin,satisfy=satisfy,
 						   comments=self.get_comments(shop_id, page_size=3), comment_sum=comment_sum,
