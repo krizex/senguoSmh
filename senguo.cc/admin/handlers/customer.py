@@ -1615,11 +1615,15 @@ class CartCallback(CustomerBaseHandler):
 		if not shop or not customer:
 			Logger.warn("CartCallback: shop/customer not found")
 			return self.send_fail('CartCallback: shop/customer not found')
-		# #送货地址处理
+		# 送货地址处理
 		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		# if not address:
 		# 	return self.send_fail("没找到地址", 404)
-		self.send_admin_message(self.session,order)
+
+		# 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
+		if order.pay_type != 3:
+			self.send_admin_message(self.session,order)
+		
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
 		# 同时生成余额变动记录,
