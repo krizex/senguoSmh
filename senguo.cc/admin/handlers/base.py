@@ -1137,7 +1137,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					img_url=charge_type.fruit.img_url.split(";")[0]
 				else:
 					img_url= None
-				fruits[charge_type.id] = {"charge_type": charge_type, "num": round(d[charge_type.id],2),
+				fruits[charge_type.id] = {"charge_type": charge_type, "num": d[charge_type.id],
 										  "code": charge_type.fruit.fruit_type.code,"img_url":img_url,'limit_num':charge_type.fruit.limit_num}
 		return fruits
 
