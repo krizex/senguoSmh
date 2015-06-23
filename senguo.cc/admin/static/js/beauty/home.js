@@ -71,19 +71,19 @@ $(document).ready(function(){
     window.location.href="/"+shop_code+"?action=all"; 
 }).on("click","#menu",function(){
     var link_search=$.getUrlParam("search");
-     if(link_search != null){
+    if(link_search != null){
         var shop_code=$('#shop_code').val();
         window.location.href="/"+shop_code;
     }
     else{
         if($("#menu").hasClass("menu-active")){
             $(this).removeClass("menu-active");
-            $("#groupt-list").animate({"opacity":0},200).animate({"margin-left":"-75px"},200);
+            $("#groupt-list").animate({"margin-left":"-75px","opacity":"0"},200);
             $('.list-box').animate({"left":"0"},200);
            
         }else{
             $(this).addClass("menu-active");
-            $("#groupt-list").animate({"margin-left":0,"opacity":1},200);
+            $("#groupt-list").animate({"margin-left":"0","opacity":"1"},200);
             $('.list-box').animate({"left":"75px"},200);
         }
     }
@@ -98,8 +98,8 @@ $(document).ready(function(){
     var group_id=Number($this.attr('data-id'));
     var top=$('.goods-list-'+group_id).offset().top-40;
     $(window).scrollTop(top);
-    $('.list-box').animate({"left":"0"},10);
-    $("#groupt-list").animate({"opacity":0},200).animate({"margin-left":"-75px"},200);
+    $('.list-box').animate({"left":"0"},200);
+    $("#groupt-list").animate({"margin-left":"-75px","opacity":0},200);
 }).on('click','.to-add',function(){
     //首次添加商品
     var $this=$(this);
@@ -234,7 +234,7 @@ var goodsList=function(page,action,type){
 };
 var goods_item1='<li class="{{code}}">'+
                     '<a href="{{link}}">'+
-                    '<img src="/static/images/fruit3.jpg" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/>'+
+                    '<img src="/static/images/holder_fruit.jpg" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/>'+
                     '<div class="item-info bg-color">'+
                         '<div class="skew item-info-name {{if charge_types["market_price"]>0 }}mt10{{else}}mt20{{/if}}">{{name}}</div>'+
                         '<div class="skew item-info-price mt10" data-id="{{charge_types["id"]}}">'+
@@ -249,7 +249,7 @@ var goods_item1='<li class="{{code}}">'+
                     '</a>'+
                 '</li>';
 var goods_item2='<li class="{{code}} goods-list-item" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{detail_no}}">'+
-                '<a href="{{link}}" class="add_cart"><img src="/static/images/fruit3.jpg" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/></a>'+
+                '<a href="{{link}}" class="add_cart"><img src="/static/images/holder_fruit.jpg" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/></a>'+
                 '<div class="fruit-right charge-item"  data-id="{{charge_types["id"]}}" data-relate="{{charge_types["relate"]}}" data-buy="{{charge_types["limit_today"]}}" data-allow={{charge_types["allow_num"]}}>'+
                     '<p class="name">{{name}}</p>'+
                     '<div class="price charge-type">'+
@@ -295,11 +295,11 @@ var fruitItem=function(box,fruits,type){
     if(!img_url){
         ori_img='/static/design_img/'+code+'.png';
     }else{
-         if(type=='recommend'){
-            ori_img=img_url+'?imageView2/2/w/800';
-         }
+        if(type=='recommend'){
+            ori_img=img_url+'?imageView2/1/w/800';
+        }
         else{
-            ori_img=img_url+'?imageView2/2/w/800';
+            ori_img=img_url+'?imageView2/1/w/800';
         }
     }
     if(tag==2){

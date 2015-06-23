@@ -12,6 +12,7 @@
 {% set pay_active ='' %}
 {% set phone_active ='' %}
 {% set admin_active= ''%}
+{% set tpl_active= ''%}
 
 {% if shopSubPage == 'delivery_set'  %}
     {% set delivery_active ='active' %}
@@ -27,6 +28,8 @@
     {% set phone_active ='active' %}
 {% elif shopSubPage =='admin_set' %}
     {% set admin_active ='active' %}
+{% elif shopSubPage =='template_set' %}
+    {% set tpl_active ='active' %}
 {% else %}
     {% set receipt_active ='active' %}
 {% end %}
@@ -44,6 +47,7 @@
         <li class="{{pay_active}}"><a href="{{reverse_url('adminConfig')}}?action=pay">支付方式</a></li>
         <li class="{{phone_active}}"><a href="{{reverse_url('adminConfig')}}?action=phone">短信验证</a></li>
         <li class="{{admin_active}}"><a href="{{reverse_url('adminConfig')}}?action=admin">管理员设置</a></li>
+        <li class="{{tpl_active}}"><a href="{{reverse_url('adminConfig')}}?action=template">商城模板</a></li>
         {% end %} 
     </ul>
 </div>

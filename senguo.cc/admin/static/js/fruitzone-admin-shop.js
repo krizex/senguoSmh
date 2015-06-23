@@ -61,7 +61,7 @@ $(document).ready(function(){
             'onUploadComplete':function(){
                 alert('图像上传成功，如遇网络问题图像无法加载的情况，请刷新页面！');
                 var filename=$('#shopLogoUpload').find('.filename').text();
-                $('#logoImg').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView/1/w/200/h/200'});
+                $('#logoImg').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView2/1/w/200/h/200'});
                 $('#shopLogoUpload').find('.filename').hide();
                 $('#shopLogoUpload').find('.fileinfo').hide();
                 $('#shopLogoUpload').find('.close').hide();

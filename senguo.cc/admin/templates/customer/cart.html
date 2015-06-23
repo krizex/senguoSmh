@@ -13,7 +13,7 @@
             <li class="cart-list-item set-w100-fle fruit_item text-grey m-b5 {{cart_f[key]['code']}}" data-limit="{{cart_f[key]['limit_num']}}">
                 <div class="box bg set-w100-fle">
                     {% if cart_f[key]['img_url'] %}
-                    <img src="/static/images/holder.png?v=20150330" class="goods-img pull-left w15 lazy_img" data-original="{{cart_f[key]['img_url']}}?imageView/1/w/170/h/170"/>
+                    <img src="/static/images/holder.png?v=20150330" class="goods-img pull-left w15 lazy_img" data-original="{{cart_f[key]['img_url']}}?imageView2/1/w/170/h/170"/>
                     {% else %}
                     <img src="/static/images/holder.png?v=20150330" class="goods-img pull-left w15 lazy_img" data-original="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.png?v=20150316"/>
                     {% end %}
@@ -23,9 +23,7 @@
                             <span class="price pull-left">￥<span class="item_total_price"></span>元</span>
                         </div>
                     <span class="p0 charge-type pull-left color" data-id="{{cart_f[key]['charge_type'].id}}">
-                        <span class="item_price">{{cart_f[key]['charge_type'].price}}</span>
-                        元/{{cart_f[key]['charge_type'].num}}
-                        <span data-id="{{cart_f[key]['charge_type'].unit}}" class="chargeUnit"></span>
+                        <span class="item_price">{{cart_f[key]['charge_type'].price}}</span>元/{{cart_f[key]['charge_type'].num}}<span data-id="{{cart_f[key]['charge_type'].unit}}" class="chargeUnit"></span>
                     </span>
                     </div>
                     <div class="action-box font14">

@@ -20,7 +20,7 @@
             <div class="swiper-wrapper">
                 {% for img in img_url%}
                 <div class="swiper-slide item">
-                    <img src="{{img}}?imageView2/2/w/700" alt=""/>
+                    <img src="{{img}}?imageView2/2/w/800" alt=""/>
                 </div>
                 {% end %}
             </div>
@@ -49,17 +49,14 @@
         </li>
         {% end %}
     </ul>
+    {% if good.detail_describe %}
     <ul class="goods-choose-lst group">
         <li class="active">图文详情</li>
         <!-- <li>商品评价(20)</li> -->
     </ul>
     <ul class="goods-info-lst">
         <li class="goods-intro active">
-            {% if good.detail_describe %}
-                {% raw good.detail_describe%}
-            {% else %}
-                <p class="txt-ac mt20">当前商品无图文详情！</p>
-            {% end %}
+            {% raw good.detail_describe%}
         </li>
         <li class="goods-comment">
             <ul class="comment-lst">
@@ -90,6 +87,7 @@
             </ul>
         </li>
     </ul>
+    {% end %}
     <a href="{{reverse_url('customerShopProfile',handler.shop_code)}}" class="shop-area add-cart" id="shop-area">
         <span class="roll-bg shop-in">
             <i></i>
