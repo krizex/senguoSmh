@@ -1,4 +1,4 @@
-from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth,get_unblock,unblock
+from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth#,get_unblock,unblock
 from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
 import dal.models as models
 import tornado.web
@@ -24,25 +24,25 @@ import urllib
 # from wxpay import QRWXpay
 
 # 非阻塞
-EXECUTOR = ThreadPoolExecutor(max_workers=4)
-def unblock(f):
+# EXECUTOR = ThreadPoolExecutor(max_workers=4)
+# def unblock(f):
 
-	@tornado.web.asynchronous
-	@wraps(f)
-	def wrapper(*args, **kwargs):
-		self = args[0]
+# 	@tornado.web.asynchronous
+# 	@wraps(f)
+# 	def wrapper(*args, **kwargs):
+# 		self = args[0]
 
-		def callback(future):
-			# self.write(future.result())
-			self.finish()
+# 		def callback(future):
+# 			# self.write(future.result())
+# 			self.finish()
 
-		EXECUTOR.submit(
-			partial(f, *args, **kwargs)
-		).add_done_callback(
-			lambda future: tornado.ioloop.IOLoop.instance().add_callback(
-				partial(callback, future)))
+# 		EXECUTOR.submit(
+# 			partial(f, *args, **kwargs)
+# 		).add_done_callback(
+# 			lambda future: tornado.ioloop.IOLoop.instance().add_callback(
+# 				partial(callback, future)))
 
-	return wrapper
+# 	return wrapper
 
 # 登录处理
 class Access(CustomerBaseHandler):
@@ -882,17 +882,14 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 		else:
 			self.write_message('error')
 
-	
-		
-
-
+# 商城入口
 class Market(CustomerBaseHandler):
-	@tornado.web.authenticated
-	def initialize(self):
-		self.current_shop = None
+	#@tornado.web.authenticated
+	#def initialize(self):
+	#	self.current_shop = None
 
 	@tornado.web.authenticated
-	@get_unblock
+	#@get_unblock
 	def get(self, shop_code):
 		w_follow = True
 		# fruits=''
@@ -1140,7 +1137,7 @@ class Market(CustomerBaseHandler):
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruit_list ,nomore = nomore)
 
-	@unblock
+	#@unblock
 	@CustomerBaseHandler.check_arguments("page?:int")
 	def commodity_list(self):
 		page = self.args["page"]
@@ -1343,7 +1340,7 @@ class Cart(CustomerBaseHandler):
 		return self.render(self.tpl_path(shop.shop_tpl)+"/cart.html", cart_f=cart_f,config=shop.config,
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,\
-						  shop_new=shop_new,shop_status=shop_status,context=dict(subpage='cart'))
+						   shop_new=shop_new,shop_status=shop_status,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "pay_type:int", "period_id:int",
@@ -1377,15 +1374,13 @@ class Cart(CustomerBaseHandler):
 			if type(fruits) == str:
 				fruits = json.loads(fruits)
 			# print("login fruits")
-			charge_types = self.session.query(models.ChargeType).\
-				filter(models.ChargeType.id.in_(fruits.keys())).all()
+			charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(fruits.keys())).all()
 			for charge_type in charge_types:
 				if fruits[str(charge_type.id)] in [0,None]:  # 有可能num为0，直接忽略掉
 					continue
 				totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
 
 				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num
-
 
 				limit_num = charge_type.fruit.limit_num
 				buy_num = int(fruits[str(charge_type.id)])
@@ -1432,7 +1427,7 @@ class Cart(CustomerBaseHandler):
 				# print(charge_type.price)
 
 				f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
-									 "charge":"%.2f元/%.2f %s" % (float(charge_type.price), charge_type.num, unit[charge_type.unit])}
+									 "charge":"%.2f元/%.2f%s" % (charge_type.price, charge_type.num, unit[charge_type.unit])}
 
 		#按时达/立即送 的时间段处理
 		start_time = 0
@@ -1610,6 +1605,7 @@ class CartCallback(CustomerBaseHandler):
 		if not order:
 			Logger.warn("CartCallback: order not found")
 			return self.send_fail("CartCallback: order not found")
+		totalPrice = order.totalPrice
 		shop_id = order.shop_id
 		customer_id = order.customer_id
 		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
@@ -1617,11 +1613,15 @@ class CartCallback(CustomerBaseHandler):
 		if not shop or not customer:
 			Logger.warn("CartCallback: shop/customer not found")
 			return self.send_fail('CartCallback: shop/customer not found')
-		# #送货地址处理
+		# 送货地址处理
 		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		# if not address:
 		# 	return self.send_fail("没找到地址", 404)
-		self.send_admin_message(self.session,order)
+
+		# 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
+		if order.pay_type != 3:
+			self.send_admin_message(self.session,order)
+		
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
 		# 同时生成余额变动记录,
