@@ -579,6 +579,8 @@ class Shop(MapBase, _CommonApi):
 	#add 6.5pm by cm
 	shop_property = Column(Float,default = 0,nullable = False)
 
+	shop_tpl = Column(Integer,default = 0) #6-17 shop template 0:customer 1:beauty
+
 
 	def __repr__(self):
 		return "<Shop: {0} (id={1}, code={2})>".format(
@@ -1527,6 +1529,7 @@ class Notice(MapBase):
 	active = Column(TINYINT, default=1)  # 1：开启 2：关闭
 	summary = Column(String(100)) #摘要
 	detail = Column(String(500)) #详情
+	img_url = Column(String(100)) #公告背景
 
 #按时达时间段设置
 class Period(MapBase):

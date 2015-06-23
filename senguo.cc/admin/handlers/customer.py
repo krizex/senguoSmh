@@ -20,6 +20,7 @@ from threading import Timer
 import tornado.websocket
 
 from dal.db_configs import DBSession
+import urllib
 # from wxpay import QRWXpay
 
 # 非阻塞
@@ -190,7 +191,7 @@ class customerGoods(CustomerBaseHandler):
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
-		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
+		return self.render(self.tpl_path(shop.shop_tpl)+'/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
 		
 # 手机注册
 class RegistByPhone(CustomerBaseHandler):
@@ -345,7 +346,7 @@ class Home(CustomerBaseHandler):
 			elif order.status == 10:
 				count[6] += 1
 		# print(count)
-		return self.render("customer/personal-center.html", count=count,shop_point =shop_point, \
+		return self.render(self.tpl_path(shop.shop_tpl)+"/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
 			show_balance = show_balance,balance_on=balance_on,context=dict(subpage='center'))
 	
@@ -402,7 +403,7 @@ class Discover(CustomerBaseHandler):
 			confess_count =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id,scan=0).count()
 		except:
 			confess_count = 0 
-		return self.render('customer/discover.html',context=dict(subpage='discover'),shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count)
+		return self.render(self.tpl_path(shop.shop_tpl)+'/discover.html',context=dict(subpage='discover'),shop_code=shop_code,shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count)
 
 # 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):
@@ -632,7 +633,7 @@ class ShopProfile(CustomerBaseHandler):
 		session = self.session
 		w_id = self.current_user.id
 		session.commit()
-		return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
+		return self.render(self.tpl_path(shop.shop_tpl)+"/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
 						   fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
 						   service_area=service_area, headimgurls=headimgurls, signin=signin,satisfy=satisfy,
 						   comments=self.get_comments(shop_id, page_size=3), comment_sum=comment_sum,
@@ -887,15 +888,21 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
+	def initialize(self):
+		self.current_shop = None
+
+	@tornado.web.authenticated
 	@get_unblock
 	def get(self, shop_code):
 		w_follow = True
 		# fruits=''
 		# page_size = 10
-		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
-		if not shop:
+		try:
+			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
+		except:
 			return self.send_error(404)
 		self.current_shop = shop
+		print(self,self.current_shop)
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
@@ -951,39 +958,56 @@ class Market(CustomerBaseHandler):
 		else:
 			cart_fs = []
 		
-		notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
+		notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
 		self.set_cookie("cart_count", str(cart_count))
 
 		group_list=[]
-		try:
-			g= self.session.query(models.Fruit).filter_by(shop_id = shop.id).all()
-		except:
-			g = None
-		if g and g!=[]:
-			goods = self.session.query(models.Fruit).filter_by(shop_id = shop.id)
-			group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop.id).order_by(models.GroupPriority.priority).all()
-			default_count = goods.filter_by(group_id=0,active=1).count()
-			record_count = goods.filter_by(group_id=-1,active=1).count()
-			if group_priority:
-				for g in group_priority:
-					group_id = g.group_id
-					if group_id == -1 and record_count !=0:
-						group_list.append({'id':-1,'name':'店铺推荐'})
-					elif group_id == 0 and default_count !=0:
-						group_list.append({'id':0,'name':' 默认分组'})
-					else:
-						_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop.id,status = 1).first()
-						if _group:
-							goods_count = goods.filter_by( group_id = _group.id,active=1).count()
-							if goods_count !=0 :
-								group_list.append({'id':_group.id,'name':_group.name})
-			else:
-				if record_count !=0 :
-					group_list.append({'id':-1,'name':'店铺推荐'})
-				if default_count !=0 :
-					group_list.append({'id':0,'name':'默认分组'})
 
-		return self.render("customer/home.html",
+		# try:
+		# 	fruits= self.session.query(models.Fruit).filter_by(shop_id = shop.id).all()
+		# except:
+		# 	fruits = None
+		# if fruits and fruits!=[]:
+		# 	goods = self.session.query(models.Fruit).filter_by(shop_id = shop.id)
+		# 	group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop.id).order_by(models.GroupPriority.priority).all()
+		# 	default_count = goods.filter_by(group_id=0,active=1).count()
+		# 	record_count = goods.filter_by(group_id=-1,active=1).count()
+		# 	if group_priority:
+		# 		for temp in group_priority:
+		# 			group_id = temp.group_id
+		# 			if group_id == -1 and record_count !=0:
+		# 				group_list.append({'id':-1,'name':'店铺推荐'})
+		# 			elif group_id == 0 and default_count !=0:
+		# 				group_list.append({'id':0,'name':' 默认分组'})
+		# 			else:
+		# 				_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop.id,status = 1).first()
+		# 				if _group:
+		# 					goods_count = goods.filter_by( group_id = _group.id,active=1).count()
+		# 					if goods_count !=0 :
+		# 						group_list.append({'id':_group.id,'name':_group.name})
+		# 	else:
+		# 		if record_count !=0 :
+		# 			group_list.append({'id':-1,'name':'店铺推荐'})
+		# 		if default_count !=0 :
+		# 			group_list.append({'id':0,'name':'默认分组'})
+		
+		goods = self.session.query(models.Fruit.group_id,models.GroupPriority.priority).outerjoin(models.GroupPriority,and_(models.Fruit.shop_id ==
+			models.GroupPriority.shop_id,models.GroupPriority.group_id == models.Fruit.group_id)).filter(
+		models.Fruit.shop_id == shop.id,models.Fruit.active == 1).order_by(models.GroupPriority.priority).distinct(models.Fruit.id)
+		for temp in goods:
+			# print(temp)
+			if temp.group_id == 0:
+				group_list.append({'id':0,'name':'默认分组'})
+			elif temp.group_id == -1:
+				group_list.append({'id':-1,'name':'店铺推荐'})
+			else:
+				_group = self.session.query(models.GoodsGroup).filter_by(id=temp.group_id,shop_id = shop.id,status = 1).first()
+				if _group:
+					# goods_count = self.session.query(models.Fruit).filter_by(shop_id = shop.id, group_id = _group.id,active=1).count()
+					# if goods_count !=0 :
+					group_list.append({'id':_group.id,'name':_group.name})
+
+		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 						   	w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
 
@@ -1068,17 +1092,24 @@ class Market(CustomerBaseHandler):
 	def fruit_list(self):
 		page = int(self.args["page"])
 		group_id = int(self.args['group_id'])
+		print(group_id,'group_id')
 		page_size = 10
 		nomore = True
 		offset = (page-1) * page_size
 		shop_id = int(self.get_cookie("market_shop_id"))
 		customer_id = self.current_user.id
-		shop   = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		if not shop:
-			return self.send_error(404)
-		
-		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1)\
-		.order_by(models.Fruit.priority.desc(),models.Fruit.add_time.desc()).all()
+
+		# fruits_test = self.session.query(models.Fruit,models.FruitFavour,models.FruitFavour.create_date).join(models.FruitFavour,models.FruitFavour.f_m_id == 
+		# 	models.Fruit.id).filter(models.Fruit.shop_id == shop_id,models.FruitFavour.customer_id == customer_id)
+
+		# for temp in fruits_test:
+		# 	print(temp)
+
+		try:
+			fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1)\
+			.order_by(models.Fruit.priority.desc(),models.Fruit.add_time.desc()).all()
+		except:
+			return self.send_fail("fruits not found")
 		# count_fruit = fruits.count()
 		# total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		# if total_page <= page:
@@ -1089,7 +1120,6 @@ class Market(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments("page?:int","search?:str")
 	def search_list(self):
-		import urllib
 		page = int(self.args["page"])
 		name = urllib.parse.unquote(self.args['search'])
 		page_size = 10
@@ -1097,11 +1127,10 @@ class Market(CustomerBaseHandler):
 		offset = (page-1) * page_size
 		shop_id = int(self.get_cookie("market_shop_id"))
 		customer_id = self.current_user.id
-		shop   = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		if not shop:
-			return self.send_error(404)
-		
-		fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active=1).filter(models.Fruit.name.like("%%%s%%" % name)).order_by(models.Fruit.add_time.desc())
+		try:
+			fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active=1).filter(models.Fruit.name.like("%%%s%%" % name)).order_by(models.Fruit.add_time.desc())
+		except:
+			return self.send_fail('fruits not found')
 		count_fruit = fruits.count()
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		if total_page <= page:
@@ -1110,6 +1139,7 @@ class Market(CustomerBaseHandler):
 		fruits = fruits.all()
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruit_list ,nomore = nomore)
+
 	@unblock
 	@CustomerBaseHandler.check_arguments("page?:int")
 	def commodity_list(self):
@@ -1124,48 +1154,19 @@ class Market(CustomerBaseHandler):
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
 			return self,send_error(404)
-		# fruits = self.session.query(models.Fruit).join(models.Shop).join(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id,\
-		# 	).order_by(models.GroupPriority.priority,models.Fruit.priority.desc(),models.Fruit.add_time.desc())
-
-		# fruits = self.session.query(models.Fruit).outerjoin(models.GroupPriority,models.Fruit.shop_id == models.GroupPriority.shop_id\
-		# 	).filter(models.Fruit.shop_id == shop_id,models.Fruit.active == 1).order_by(models.GroupPriority.priority)
 		fruit_only = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active =1)
 		group_only = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id)
-		# print(fruit_only.count(), group_only.count(),'fruit_only')
-
 		fruits = self.session.query(models.Fruit).join(models.Shop,models.Fruit.shop_id == models.Shop.id,\
 			).join(models.GroupPriority,models.Fruit.group_id == models.GroupPriority.group_id).filter(models.Fruit.shop_id == shop_id,\
 			models.Fruit.active == 1,models.Fruit.id !=None).order_by(models.GroupPriority.group_id,models.Fruit.priority.desc(),\
 			models.Fruit.add_time.desc()).distinct(models.Fruit.id).all()
-
-		
-
-		for fruit in fruits:
-			print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
-		count_fruit =fruits.distinct().count()
-		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		# print(count_fruit , total_page)
-		if total_page <= page:
-			nomore = True
-		# sql = text(" select fruit.shop_id, fruit.id ,fruit.name,charge_type.id ,fruit.group_id,shop.shop_name ,\
-		# 	group_priority.priority  from (( fruit join charge_type on charge_type.fruit_id = fruit.id) join \
-		# 		shop  on  fruit.shop_id = shop.id) left join  group_priority  on (fruit.group_id = \
-		# 		group_priority.group_id and fruit.shop_id = group_priority.shop_id) where fruit.shop_id = 230 \
-		# order by group_priority.priority , fruit.id")
-
-
-		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
-
 		# for fruit in fruits:
 		# 	print(fruit.id,fruit.shop_id,fruit.group_id,fruit.priority,fruit.add_time)
-		# count_fruit =fruits.distinct().count()
-		# total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		# # print(count_fruit , total_page)
-		# if total_page <= page:
-		# 	nomore = True
-
-		# fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
-
+		count_fruit =fruits.distinct().count()
+		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
+		if total_page <= page:
+			nomore = True
+		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruits_data,nomore=nomore)
 
@@ -1330,7 +1331,7 @@ class Cart(CustomerBaseHandler):
 		self.set_cookie("shop_marketing", str(shop_marketing))
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits))): #购物车为空
-			return self.render("notice/cart-empty.html",context=dict(subpage='cart'))
+			return self.render(self.tpl_path(shop.shop_tpl)+"/cart-empty.html",context=dict(subpage='cart'))
 		cart_f = self.read_cart(shop_id)
 		for item in cart_f:
 			fruit = cart_f[item].get('charge_type').fruit
@@ -1339,7 +1340,7 @@ class Cart(CustomerBaseHandler):
 			if fruit_id not in storages:
 				storages[fruit_id] = fruit_storage
 		periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1).all()
-		return self.render("customer/cart.html", cart_f=cart_f,config=shop.config,
+		return self.render(self.tpl_path(shop.shop_tpl)+"/cart.html", cart_f=cart_f,config=shop.config,
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,\
 						  shop_new=shop_new,shop_status=shop_status,context=dict(subpage='cart'))
@@ -1353,6 +1354,7 @@ class Cart(CustomerBaseHandler):
 		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
+		print(json.dumps(self.args))
 		current_shop = self.session.query(models.Shop).filter_by( id = shop_id).first()
 		online_type = ''
 		shop_status = current_shop.status
@@ -1372,6 +1374,8 @@ class Cart(CustomerBaseHandler):
 		totalPrice=0
 
 		if fruits:
+			if type(fruits) == str:
+				fruits = json.loads(fruits)
 			# print("login fruits")
 			charge_types = self.session.query(models.ChargeType).\
 				filter(models.ChargeType.id.in_(fruits.keys())).all()
@@ -1598,6 +1602,7 @@ class CartCallback(CustomerBaseHandler):
 	def post(self):
 		try:
 			order_id = int(self.args['order_id'])
+			print(order_id)
 		except:
 			Logger.error("CartCallback: get order_id error")
 			return self.send_fail("CartCallback: get order_id error")
@@ -1979,7 +1984,7 @@ class OrderDetail(CustomerBaseHandler):
 		shop_code = order.shop.shop_code
 		shop_name = order.shop.shop_name
 		return self.render("customer/order-detail.html", order=order,charge_types=charge_types,comment_imgUrl=comment_imgUrl,\
-						   online_type=online_type,shop_name=shop_name)
+						   online_type=online_type,shop_name=shop_name,shop_code=shop_code)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data?")

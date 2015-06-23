@@ -129,18 +129,18 @@ function insertShop(page){
     var v=$('#shopstatus').val();
     var ifreverse=$('#ifreverse').val();
     var url='/super/shopManage?action='+action+'&search&shop_auth='+v3+'&shop_status='+v+'&shop_sort_key='+v2+'&if_reverse='+ifreverse+'&page='+page+'&flag=0';
-   $.ajax({
+    $.ajax({
             url:url,
             type:"get",
             success:function(res){
                 if(res.success){
                         var shops = res.output_data;
                         $('#list-group').empty();
-                         for(var i=0; i<shops.length; i++){
+                        for(var i=0; i<shops.length; i++){
                                     var shop = shops[i];
                                     var $item = $("#temp-ul").children("li").clone();
                                     if(shop.shop_trademark_url){
-                                         $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView/1/w/100/h/100");
+                                        $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView2/1/w/100/h/100");
                                     }else{
                                         $item.find(".shop-img").attr("src","/static/images/TDSG.png");
                                     } 
@@ -178,7 +178,6 @@ function insertShop(page){
                          }
            }
       });
-
 }
 
 window.onbeforeunload = function(){
@@ -329,7 +328,7 @@ function searchshop(page){
     var searchinfo=$("#inputinfo")[0].value;
     searchinfo='='+searchinfo;
     var url='/super/shopManage?action=all&search'+searchinfo+'&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&page='+page+'&flag=0';
-   $.ajax({
+    $.ajax({
             url:url,
             type:"get",
             success:function(res){
@@ -340,11 +339,11 @@ function searchshop(page){
                     $("#list-group").append("<p>没有查询到任何有关的商家！</p>");
                 }
                 else{
-                         for(var i=0; i<shops.length; i++){
+                        for(var i=0; i<shops.length; i++){
                                         var shop = shops[i];
                                         var $item = $("#temp-ul").children("li").clone();
                                         if(shop.shop_trademark_url){
-                                             $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView/1/w/100/h/100");
+                                            $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView/1/w/100/h/100");
                                         }else{
                                             $item.find(".shop-img").attr("src","/static/images/TDSG.png");
                                         }     
@@ -374,5 +373,5 @@ function searchshop(page){
                      }
                   }
                 }
-                });
+    });
 }

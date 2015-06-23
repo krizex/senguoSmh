@@ -31,6 +31,7 @@ $(document).ready(function(){
         $(".pop-reply").removeClass("hide");
     });
     $(document).on("click",".commit-reply",function(){
+        console.log(curItem);
         var text = $("#reply-text").val();
         var id = curItem.attr("data-id");
         commitReply(id,text);
@@ -52,6 +53,7 @@ function commitReply(id,text){
             }else{
                 dt.append('<p class="reply-txt">商家回复：'+text+'</p>');
             }
+            $(".pop-reply").addClass("hide");
             Tip("回复成功");
         }else{
             Tip(res.error_text);
@@ -87,7 +89,7 @@ function scrollLoading(){
 function commentList(page){
     $('.loading').html("~努力加载中 ( > < )~").show();
     $.ajax({
-        url:'/customer/comment?page='+page,
+        url:'/madmin/comment?page='+page,
         type:"get",
         success:function(res){
             if(res.success){
@@ -102,16 +104,16 @@ function commentList(page){
                 }
                 for(var i in comment_list){
                     var item = '<li>'+
-                        '<p class="order-time item">{{time}}<span class="fr mr10">第103条</span></p>'+
-                        '<dl class="ccom-item group"  id="10">'+
+                        '<p class="order-time item">{{time}}<span class="fr mr10">第{{index}}条</span></p>'+
+                        '<dl class="ccom-item group"  data-id="{{id}}">'+
                         '<dd class="fl">'+
                         '<div class="wrap-o-img">'+
                         '<img src="{{img}}" width="50" height="50" alt="头像"/>'+
                         '</div>'+
                         '</dd>'+
                         '<dt class="fl" class="right-com">'+
-                        '<p><span class="nor-txt">{{name}}</span><span class="time-txt fr mr10">订单号 : <a href="javascript:;">55554444</a></span></p>'+
-                        '<p class="com-txt"><span class="c999">质量 : </span>100 <span class="c999 ml5">速度 : </span>100 <span class="c999 ml5">服务 : </span>100</p>'+
+                        '<p><span class="nor-txt">{{name}}</span><span class="time-txt fr mr10">订单号 : <a href="javascript:;">{{order_num}}</a></span></p>'+
+                        '<p class="com-txt"><span class="c999">质量 : </span>{{commodity_quality}} <span class="c999 ml5">速度 : </span>{{send_speed}} <span class="c999 ml5">服务 : </span>{{shop_service}}</p>'+
                         '<p class="com-txt"><a href="javascript:;" class="fr mr10 ml5 reply-btn">回复</a>{{comment}}</p>'+
                         '{{ if imgurls }}<ul class="group com-goods-lst">'+
                         '{{ each imgurls as img index }}'+
@@ -123,19 +125,31 @@ function commentList(page){
                         '{{ /if }}'+
                         '</dt></dl></li>';
                     var render = template.compile(item);
+                    var id=comment_list[i]['id'];
                     var img=comment_list[i]['img'] || '/static/images/TDSG.png';
                     var name=comment_list[i]['name'];
                     var time=comment_list[i]['time'];
                     var comment=comment_list[i]['comment'];
                     var reply=comment_list[i]['reply'];
                     var imgurls = comment_list[i]['imgurls'];
+                    var commodity_quality=comment_list[i]['commodity_quality'];
+                    var send_speed=comment_list[i]['send_speed'];
+                    var shop_service=comment_list[i]['shop_service'];
+                    var order_num=comment_list[i]['order_num'];
+                    var index=comment_list[i]['index'];
                     var list_item =render({
+                        id:id,
                         img:img,
                         name:name,
                         time:time,
                         comment:comment,
                         reply:reply,
-                        imgurls:imgurls
+                        imgurls:imgurls,
+                        commodity_quality:commodity_quality,
+                        send_speed:send_speed,
+                        shop_service:shop_service,
+                        order_num:order_num,
+                        index:index
                     });
                     $(".point-com-lst").append(list_item);
                 }
