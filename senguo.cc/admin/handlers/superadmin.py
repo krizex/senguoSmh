@@ -383,7 +383,7 @@ class ShopManage(SuperBaseHandler):
 				
 			if flag==1:
 				#print(flag)
-				return self.render("superAdmin/shop-manage.html", output_data=output_data,output_data_count=output_data_count,context=dict(subpage='shop',action=action,count=count))
+				return self.render("superAdmin/shop-manage.html", output_data=output_data,output_data_count=output_data_count,context=dict(subpage='all',action=action,count=count))
 			else :
 				return self.send_success(output_data=output_data,output_data_count=output_data_count)
 
@@ -397,7 +397,7 @@ class ShopManage(SuperBaseHandler):
 		# shops 是models.Shop实例的列表
 		
 		return self.render("superAdmin/apply-manage.html", context=dict(
-				shops = shops,subpage='shop', action=action,
+				shops = shops,subpage='apply', action=action,
 				count=count))
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action")
@@ -656,7 +656,7 @@ class User(SuperBaseHandler):
 		return self.render("superAdmin/user.html", sum=sum, context=dict(subpage='user'))      
 
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments("action:str", "page:int")
+	@SuperBaseHandler.check_arguments("action:str","inputinfo?:str","page:int")
 	def post(self):
 		action = self.args["action"]
 		page = self.args["page"]
@@ -674,6 +674,10 @@ class User(SuperBaseHandler):
 			q = q.filter(exists().where(models.Accountinfo.id == models.CustomerShopFollow.customer_id))
 		elif action == "phone":
 			q = q.filter(models.Accountinfo.phone != '')
+		# add by jyj 2015-6-23:
+		elif action == "search":
+			inputinfo = self.args["inputinfo"]
+			q = q.filter(or_(models.Accountinfo.nickname.like("%{0}%".format(inputinfo)),(func.concat(models.Accountinfo.id,'')).like("%{0}%".format(inputinfo))))
 		else:
 			return self.send_error(404)
 		users = q.offset(page*page_size).limit(page_size).all()
@@ -693,8 +697,7 @@ class User(SuperBaseHandler):
 				b_time_stamp = users[i][7]
 				print(type(b_time_stamp))
 				dateArray = datetime.datetime.utcfromtimestamp(b_time_stamp)
-				birthday = dateArray.strftime("%Y年%m月%d日")
-				print("aaaaa",birthday)
+				birthday = dateArray.strftime("%Y-%m-%d")
 			##
 			users[i] = list(users[i])
 			users[i].append(birthday)
@@ -870,7 +873,7 @@ class ShopStatic(SuperBaseHandler):
 # add by jyj 2015-6-15
 class OrderStatic(SuperBaseHandler):
 	def get(self):
-		return self.render("superAdmin/count-order.html",context=dict(subpage='orderstatic'))
+		return self.render("superAdmin/count-order.html",context=dict(subcount='orderstatic'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action:str")
@@ -1018,7 +1021,7 @@ class Comment(SuperBaseHandler):
 				comment = comment)
 			data.append([shop_code,shop_name,admin_name ,create_date, comment_apply.delete_reason,order_info,has_done,apply_id])
 		# return self.send_success(data = data)
-		self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'del_apply':apply_count,'all_temp':'','all':'','auth_apply':''},data=data))
+		self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'del_apply':apply_count,'all_temp':'','all':'','auth_apply':''},subpage="delete",data=data))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id:int','decline_reason?:str')
@@ -1056,7 +1059,7 @@ class ShopAuthenticate(SuperBaseHandler):
 		#apply_list=self.session.query(models.ShopAuthenticate).all()[page_area:page_area+10]
 		apply_list=self.session.query(models.ShopAuthenticate).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
 		count = {'all':'','all_temp':'','del_apply':'','auth_apply':auth_apply}
-		self.render('superAdmin/shop-cert-apply.html',context=dict(count = count,auth_apply_list=apply_list))
+		self.render('superAdmin/shop-cert-apply.html',context=dict(count = count,subpage="auth",auth_apply_list=apply_list))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id','decline_reason?:str','apply_type:int')
@@ -1323,7 +1326,7 @@ class ApplyCash(SuperBaseHandler):
 class CheckCash(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render("superAdmin/balance-check.html",context=dict())
+		return self.render("superAdmin/balance-check.html",context=dict(page='check'))
 	
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','data','page?:int')
