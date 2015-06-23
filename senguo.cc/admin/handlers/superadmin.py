@@ -450,7 +450,7 @@ class ShopManage(SuperBaseHandler):
 				password='sg201404',
 				mobile=mobile,
 				content = message_fail_content)
-			headers = dict(Host = '106.ihuyi.cn',connection = "close")
+			headers = dict(Host = '106.ihuyi.cn',)
 			r = requests.post(url,data = postdata , headers = headers)
 			# print("[超级管理员]审核通知短信平台返回信息：",r.text)
 
@@ -532,7 +532,7 @@ class ShopManage(SuperBaseHandler):
 				password='sg201404',
 				mobile=mobile,
 				content = message_content)
-			headers = dict(Host = '106.ihuyi.cn',connection="close")
+			headers = dict(Host = '106.ihuyi.cn',)
 			r = requests.post(url,data = postdata , headers = headers)
 			# print(r.text)
 			# test_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'

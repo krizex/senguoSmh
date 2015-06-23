@@ -43,7 +43,7 @@ class ShopList(FruitzoneBaseHandler):
 		remote_ip = self.remote_ip
 		# print(remote_ip)
 		url = 'http://ip.taobao.com/service/getIpInfo.php?ip={0}'.format(remote_ip)
-		res =  requests.get(url,headers = {"connection":"close"})
+		res =  requests.get(url)
 		content = res.text
 		# print(content)
 		t = json.loads(content)
