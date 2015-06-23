@@ -52,7 +52,7 @@ html,body{width: 100%}
 .large-img-box .modal-footer{margin-top:0;border-bottom-left-radius:8px;border-bottom-right-radius:8px;}
 
 .notice-box{min-height:120px;}
-.notice-board{min-height:120px;width:100%;position:relative;}
+.notice-board{min-height:120px;width:100%;position:relative;max-height:300px;overflow:hidden;}
 .notice-board .swipe{overflow:hidden;visibility: hidden;position:relative;}
 .notice-board .swipe .wrap{min-height:120px;float:left;width:100%;}
 .notice-board .swipe-wrap {overflow:hidden;position:relative;min-height:120px;}
