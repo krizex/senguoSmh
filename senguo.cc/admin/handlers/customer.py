@@ -1340,7 +1340,7 @@ class Cart(CustomerBaseHandler):
 		return self.render(self.tpl_path(shop.shop_tpl)+"/cart.html", cart_f=cart_f,config=shop.config,
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,\
-						  shop_new=shop_new,shop_status=shop_status,context=dict(subpage='cart'))
+						   shop_new=shop_new,shop_status=shop_status,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "pay_type:int", "period_id:int",
