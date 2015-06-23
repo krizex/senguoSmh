@@ -699,22 +699,21 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		send_time = order.send_time
 		address = order.address_text
 		order_realid = order.id
-		if pay_type != 3:
-			if order.shop.super_temp_active != 0:
-				WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods,
-					phone,address)
-			try:
-				other_admin = session.query(models.HireLink).filter_by(shop_id = shop_id,active = 1, work = 9 , temp_active = 1).first()
-			except NoResultFound:
-				other_admin = None
-			if other_admin:
-				info = session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id).filter(models.ShopStaff.id
-					== other_admin.staff_id).first()
-				other_name = info.nickname
-				other_touser = info.wx_openid
-				WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,
-					send_time,goods,phone,address)
-			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
+		if order.shop.super_temp_active != 0:
+			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods,
+				phone,address)
+		try:
+			other_admin = session.query(models.HireLink).filter_by(shop_id = shop_id,active = 1, work = 9 , temp_active = 1).first()
+		except NoResultFound:
+			other_admin = None
+		if other_admin:
+			info = session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id).filter(models.ShopStaff.id
+				== other_admin.staff_id).first()
+			other_name = info.nickname
+			other_touser = info.wx_openid
+			WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,
+				send_time,goods,phone,address)
+		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
 
 
 	##############################################################################################
