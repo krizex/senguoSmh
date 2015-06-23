@@ -889,7 +889,7 @@ class Market(CustomerBaseHandler):
 		self.current_shop = None
 
 	@tornado.web.authenticated
-	@get_unblock
+	#@get_unblock
 	def get(self, shop_code):
 		w_follow = True
 		# fruits=''
@@ -1137,7 +1137,7 @@ class Market(CustomerBaseHandler):
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruit_list ,nomore = nomore)
 
-	@unblock
+	#@unblock
 	@CustomerBaseHandler.check_arguments("page?:int")
 	def commodity_list(self):
 		page = self.args["page"]
