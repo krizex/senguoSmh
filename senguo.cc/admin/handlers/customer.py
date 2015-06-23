@@ -882,10 +882,7 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 		else:
 			self.write_message('error')
 
-	
-		
-
-
+# 商城入口
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def initialize(self):
