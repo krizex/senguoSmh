@@ -1,4 +1,4 @@
-from handlers.base import AdminBaseHandler,WxOauth2#,unblock,get_unblock
+from handlers.base import AdminBaseHandler,WxOauth2,unblock,get_unblock
 import dal.models as models
 import tornado.web
 from settings import *
@@ -733,7 +733,7 @@ class Order(AdminBaseHandler):
 			self.order_done(self.session,order)
 
 	@tornado.web.authenticated
-	#@unblock
+	@unblock
 	@AdminBaseHandler.check_arguments("action", "data")
 	def post(self):
 		action = self.args["action"]
