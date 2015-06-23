@@ -2419,7 +2419,7 @@ class AdminAuth(AdminBaseHandler):
 				password='sg201404',
 				mobile=mobile,
 				content = message_content)
-			headers = dict(Host = '106.ihuyi.cn',)
+			headers = dict(Host = '106.ihuyi.cn',connection = 'close')
 			r = requests.post(url,data = postdata , headers = headers)
 			print(r.text)
 			WxOauth2.post_add_msg(account_info.wx_openid, message_shop_name,account_info.nickname)
