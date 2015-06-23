@@ -1607,6 +1607,7 @@ class CartCallback(CustomerBaseHandler):
 		if not order:
 			Logger.warn("CartCallback: order not found")
 			return self.send_fail("CartCallback: order not found")
+		totalPrice = order.totalPrice
 		shop_id = order.shop_id
 		customer_id = order.customer_id
 		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
