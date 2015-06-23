@@ -25,46 +25,47 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import partial, wraps
 
 
+# 非阻塞
+# EXECUTOR = ThreadPoolExecutor(max_workers=4)
 
-EXECUTOR = ThreadPoolExecutor(max_workers=4)
+# def unblock(f):
 
-def unblock(f):
+# 	@tornado.web.asynchronous
+# 	@wraps(f)
+# 	def wrapper(*args, **kwargs):
+# 		self = args[0]
 
-	@tornado.web.asynchronous
-	@wraps(f)
-	def wrapper(*args, **kwargs):
-		self = args[0]
+# 		def callback(future):
+# 			# pass
+# 			self.finish()
 
-		def callback(future):
-			# pass
-			self.finish()
+# 		EXECUTOR.submit(
+# 			partial(f, *args, **kwargs)
+# 		).add_done_callback(
+# 			lambda future: tornado.ioloop.IOLoop.instance().add_callback(
+# 				partial(callback, future)))
 
-		EXECUTOR.submit(
-			partial(f, *args, **kwargs)
-		).add_done_callback(
-			lambda future: tornado.ioloop.IOLoop.instance().add_callback(
-				partial(callback, future)))
+# 	return wrapper
 
-	return wrapper
+# def get_unblock(f):
 
-def get_unblock(f):
+# 	@tornado.web.asynchronous
+# 	@wraps(f)
+# 	def wrapper(*args, **kwargs):
+# 		self = args[0]
 
-	@tornado.web.asynchronous
-	@wraps(f)
-	def wrapper(*args, **kwargs):
-		self = args[0]
+# 		def callback(future):
+# 			pass
+# 			# self.finish()
 
-		def callback(future):
-			pass
-			# self.finish()
+# 		EXECUTOR.submit(
+# 			partial(f, *args, **kwargs)
+# 		).add_done_callback(
+# 			lambda future: tornado.ioloop.IOLoop.instance().add_callback(
+# 				partial(callback, future)))
 
-		EXECUTOR.submit(
-			partial(f, *args, **kwargs)
-		).add_done_callback(
-			lambda future: tornado.ioloop.IOLoop.instance().add_callback(
-				partial(callback, future)))
+# 	return wrapper
 
-	return wrapper
 # 4.14 woody
 class Pysettimer(threading.Thread):
 	def __init__(self,function,args = None ,timeout = 1 ,is_loop = False):

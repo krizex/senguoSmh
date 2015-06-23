@@ -1,4 +1,4 @@
-from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth,get_unblock,unblock
+from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth#,get_unblock,unblock
 from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
 import dal.models as models
 import tornado.web
@@ -24,25 +24,25 @@ import urllib
 # from wxpay import QRWXpay
 
 # 非阻塞
-EXECUTOR = ThreadPoolExecutor(max_workers=4)
-def unblock(f):
+# EXECUTOR = ThreadPoolExecutor(max_workers=4)
+# def unblock(f):
 
-	@tornado.web.asynchronous
-	@wraps(f)
-	def wrapper(*args, **kwargs):
-		self = args[0]
+# 	@tornado.web.asynchronous
+# 	@wraps(f)
+# 	def wrapper(*args, **kwargs):
+# 		self = args[0]
 
-		def callback(future):
-			# self.write(future.result())
-			self.finish()
+# 		def callback(future):
+# 			# self.write(future.result())
+# 			self.finish()
 
-		EXECUTOR.submit(
-			partial(f, *args, **kwargs)
-		).add_done_callback(
-			lambda future: tornado.ioloop.IOLoop.instance().add_callback(
-				partial(callback, future)))
+# 		EXECUTOR.submit(
+# 			partial(f, *args, **kwargs)
+# 		).add_done_callback(
+# 			lambda future: tornado.ioloop.IOLoop.instance().add_callback(
+# 				partial(callback, future)))
 
-	return wrapper
+# 	return wrapper
 
 # 登录处理
 class Access(CustomerBaseHandler):
@@ -884,9 +884,9 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 
 # 商城入口
 class Market(CustomerBaseHandler):
-	@tornado.web.authenticated
-	def initialize(self):
-		self.current_shop = None
+	#@tornado.web.authenticated
+	#def initialize(self):
+	#	self.current_shop = None
 
 	@tornado.web.authenticated
 	#@get_unblock

@@ -1,4 +1,4 @@
-from handlers.base import AdminBaseHandler,WxOauth2,unblock,get_unblock
+from handlers.base import AdminBaseHandler,WxOauth2#,unblock,get_unblock
 import dal.models as models
 import tornado.web
 from settings import *
