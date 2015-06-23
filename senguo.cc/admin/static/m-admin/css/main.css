@@ -41,7 +41,13 @@
 .order-line-grade{background-color: #7fbfaf;position: absolute;top: 0;left: 0;height: 8px;border-radius: 8px;}
 .order-wawa{position: absolute;width: 40px;height:40px;background-size: contain;top: -18px;margin-left: -20px;border-radius: 50%;}
 .order-wawa img{width: 40px;height: 40px;border-radius: 50%;}
-.order-status-txt{position: absolute;display: inline-block;line-height: 20px;font-size: 12px;-webkit-transform:translate(-50%,0);top:28px;color:#333;width: 100px;text-align: center;}
+.order-l0{left:0;}
+.order-w0{width:0;}
+.order-l50{left:50%;}
+.order-w50{width:50%;}
+.order-l100{left:100%;}
+.order-w100{width:100%;}
+.order-status-txt{position: absolute;display: inline-block;line-height: 20px;font-size: 12px;-webkit-transform:translate(-50%,0);top:28px;color:#333;width: 150px;text-align: center;}
 .order-status-txt>a{font-size: 12px;margin-left:5px;}
 .arr-right{display: inline-block;width: 8px;height:14px;background-image: url("/static/images/arr-right.png");background-size: contain;background-repeat: no-repeat;position: relative;top: 2px;left: 10px;}
 .goods-info-lst{padding-bottom:50px;}
@@ -80,6 +86,8 @@
 .loc{background-image: url('/static/m-admin/img/icon_loc.png');background-size: 16px!important;}
 .say{background-image: url('/static/m-admin/img/icon_say.png');}
 .order-content .order-grade{margin-top: -20px;}
+.swiper-wrapper,.swiper-slide{overflow: auto;}
+.order-lists>li{position: relative;z-index:100;}
 /*订单搜索*/
 .search-ipt{width: 100%;background-color: transparent;border: none;height: 28px;color:#fff;padding: 2px 10px;-webkit-box-sizing: border-box;font-size: 14px;}
 .wrap-ipt{line-height: 1;height: 28px;}

@@ -10,7 +10,7 @@
 </div>
 {% end %}
 {% block content %}
-<div class="order-detail-box">
+<div class="order-detail-box" data-id="{{order.id}}">
     <div class="order-grade">
         <div class="order-line">
             <div class="order-line-grade"></div>
@@ -19,12 +19,19 @@
                     {% if order.status == -1%}
                     <img src="/static/images/TDSG.png" alt="配送员头像"/>
                     {% else %}
-                    <img src="{{order.SH2['headimgurl']}} or '/static/images/TDSG.png'" alt="配送员头像"/>
+                        {% if order.SH2%}
+                        <img src="{{order.SH2['headimgurl'] or '/static/images/TDSG.png'}} " alt="配送员头像"/>
+                        {% else %}
+                        <img src="/static/images/TDSG.png" alt="配送员头像"/>
+                        {% end %}
                     {% end %}
                 </a>
             </div>
             <div class="order-status-txt">
                 <a class="task-staff" href="javascript:;" data-id="{{order.status}}" id="status-txt">分配员工</a>
+                {% if order.status in[4,5,6,7] and order.SH2 %}
+                <a class="tel-btn" href="tel:{{order.SH2['phone']}}">拨号</a>
+                {% end %}
             </div>
         </div>
     </div>
@@ -35,8 +42,10 @@
         <p>联系电话：<span>{{order.phone}}</span><a class="ml10" href="tel:{{order.phone}}">拨号</a></p>
         <p>收货地址：<span>{{order.address_text}}</span></p>
         <p>配送时间：<span class="send_date m-r10" style="display: none;">今天</span><span>{{order.send_time}}</span></p>
-        <p>订单备注：<span>{{order.message or '无'}}</span></p>
+        {% if order.message %}<p>订单备注：<span>{{order.message or '无'}}</span></p>{% end %}
+        <p class="{% if order.remark == None%}hide{% end %} remark">商家备注：<spanc class="con">{{order.remark or '无'}}</span></p>
         <p class="text-black">支付方式：<span class="">{{order.pay_type_con}}</span></p>
+        <p class="del-reason hide">订单删除备注：<span class="text">{{order.del_reason}}</span></p>
     </div>
     <div class="order-item">
         <h4 class="top-title"><span class="black-txt">{{handler.current_shop.shop_name}}</span><span class="arr-right"></span></h4>
@@ -66,9 +75,10 @@
         <p class="dash-bt group"><span class="fr c000">应付款：<span class="red-txt">{{order.totalPrice}}元</span></span></p>
     </div>
 </div>
-<div class="wrap-bm-btn" id="nav">
-    <a class="fr red-btn fun-btn" href="javascript:;" data-id="77" >完成配送</a>
-    <a class="fr white-btn delete-order" href="javascript:;" data-id="77">删除订单</a>
+<div class="wrap-bm-btn" id="nav" style="display:none;">
+    <a class="fr red-btn fun-btn" href="javascript:;">完成配送</a>
+    <a class="fr white-btn remark-order" href="javascript:;">备注</a>
+    <a class="fr white-btn delete-order" href="javascript:;">删除</a>
 </div>
 <div class="pop-win pop-staff hide">
     <div class="pop-content">
@@ -76,7 +86,7 @@
             <p class="title">分配员工</p>
             <ul class="staff-list">
                 {% for SH2 in order.SH2s %}
-                <li>
+                <li data-id="{{SH2['id']}}" data-tel="{{SH2['phone']}}">
                     <span class="img-border mr10"><img src="{{SH2['headimgurl']}} or '/static/images/TDSG.png'" alt="员工头像"/></span>
                     <span>{{SH2['nickname']}}</span>
                 </li>
@@ -85,6 +95,28 @@
             <p class="btn-box sure-staff" id="sure-staff">
                 确认并设为处理中
             </p>
+        </div>
+    </div>
+</div>
+<div class="pop-win pop-del hide">
+    <div class="pop-content">
+        <div class="pop-staff-box">
+            <textarea  id="order-del"></textarea>
+            <div class="btn-box">
+                <button type="button" class="sure-btn">确定</button>
+                <button type="button" class="close">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="pop-win pop-confirm hide">
+    <div class="pop-content">
+        <div class="pop-staff-box">
+            <p class="text txt-center"></p>
+            <div class="btn-box">
+                <button type="button" class="func-sure" id="">确定</button>
+                <button type="button" class="close">取消</button>
+            </div>
         </div>
     </div>
 </div>

@@ -708,9 +708,12 @@ class Order(AdminBaseHandler):
 			orders = orders[page_area:page_area+10]
 			data = self.getOrder(orders)
 			delta = datetime.timedelta(1)
+			nomore = False
+			if page+1 == page_sum:
+				nomore = True
 			# print("[订单管理]当前店铺：",self.current_shop)
 			
-			return self.send_success(data = data,page_sum=page_sum,count=self._count())
+			return self.send_success(data = data,page_sum=page_sum,count=self._count(),nomore=nomore)
 		return self.render("admin/orders.html",order_type=order_type, context=dict(subpage='order'))
 
 

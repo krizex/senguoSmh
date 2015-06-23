@@ -40,6 +40,7 @@ class OrderDetail(AdminBaseHandler):
 			order.customer_nickname=customer_info.nickname
 
 		SH2s=[]
+		order.SH2={}
 		staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
 				models.HireLink.work == 3, models.HireLink.shop_id == shop_id,models.HireLink.active == 1)).all()
 		for staff in staffs:
@@ -48,6 +49,7 @@ class OrderDetail(AdminBaseHandler):
 			SH2s.append(staff_data)
 			if staff.id == order.SH2_id:  # todo JH、SH1
 				order.SH2 = staff_data
+
 		order.SH2s = SH2s
 
 		return self.render("m-admin/order-detail.html",order=order,charge_types=charge_types)
