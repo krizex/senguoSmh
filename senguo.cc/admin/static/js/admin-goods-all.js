@@ -306,7 +306,7 @@ $(document).ready(function(){
     var id=$(this).parents('.wrap-add-price').attr('data-id');
     $(this).closest(".wrap-add-price").remove();
     if(id){
-        del_list.push(id);
+        del_list.push(parseInt(id));
     }
 }).on('click','.furit-type li',function(){/*水果分类*/
     var $this=$(this);

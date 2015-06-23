@@ -885,10 +885,6 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
-	def initialize(self):
-		self.current_shop = None
-
-	@tornado.web.authenticated
 	@get_unblock
 	def get(self, shop_code):
 		w_follow = True
@@ -898,8 +894,8 @@ class Market(CustomerBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		except:
 			return self.send_error(404)
-		self.current_shop = shop
-		print(self,self.current_shop)
+		# self.current_shop = shop
+		# print(self,self.current_shop)
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
@@ -950,11 +946,8 @@ class Market(CustomerBaseHandler):
 			self.session.commit()
 		cart_f = self.read_cart(shop.id)
 		cart_count = len(cart_f) 
-		if cart_count>0:
-			cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
-		else:
-			cart_fs = []
 		
+		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]  if cart_count > 0 else []
 		notices = [(x.summary, x.detail) for x in shop.config.notices if x.active == 1]
 		self.set_cookie("cart_count", str(cart_count))
 
@@ -1000,8 +993,6 @@ class Market(CustomerBaseHandler):
 			else:
 				_group = self.session.query(models.GoodsGroup).filter_by(id=temp.group_id,shop_id = shop.id,status = 1).first()
 				if _group:
-					# goods_count = self.session.query(models.Fruit).filter_by(shop_id = shop.id, group_id = _group.id,active=1).count()
-					# if goods_count !=0 :
 					group_list.append({'id':_group.id,'name':_group.name})
 
 		return self.render("customer/home.html",
@@ -1607,6 +1598,7 @@ class CartCallback(CustomerBaseHandler):
 		if not order:
 			Logger.warn("CartCallback: order not found")
 			return self.send_fail("CartCallback: order not found")
+		totalPrice = order.totalPrice
 		shop_id = order.shop_id
 		customer_id = order.customer_id
 		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
