@@ -55,7 +55,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .swiper-active-switch{background-color: #80c092;}
 .roll-bg{width: 34px;height: 34px;border-radius: 50%;background-color: rgba(128,192,146,.6);z-index:999;cursor: pointer;}
 .back{position: fixed;left: 10px;top: 10px;}
-.back>i{position: absolute;width: 10px;height: 22px;background-image: url('/static/images/goodsdetail_back.png'); top: 8px;left: 10px;}
+.back>i{position: absolute;width: 10px;height: 18px;background-image: url('/static/images/goodsdetail_back.png'); top: 8px;left: 10px;}
 .share{position: absolute;right: 10px;top: 10px;}
 .share>i{position: absolute;width: 16px;height: 18px;background-image: url('/static/images/icon_share.png');top: 8px;left: 8px;}
 .shop-area{position: fixed;left: 10px;bottom:10px;min-width: 80px;padding-left: 40px;padding-right:10px;border:1px solid #23ac39;text-align: center;border-radius: 34px;height: 34px;line-height:33px;z-index:990;color: #333;font-size: 14px;background-color: #fff;}
