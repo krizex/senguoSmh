@@ -14,6 +14,7 @@
 
 .login_check{width:60%;min-width:186px;max-width:280px;margin-top:20px;}
 .login_check .login{width:100%;border-radius:30px;padding:9px 0;margin-bottom:20px;}
+.login-text{height: 20px;line-height: 20px;color: #999;text-align: center;width:65px;font-size: 12px;}
 /*register*/
 .progress_box{padding:10px 0;}
 .progress_box li{}
