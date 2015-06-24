@@ -1,4 +1,3 @@
-hhhha 
 jyj 6.15pm
 jyj 6.15 16:47 debug
 jyj 6.15 23:10 finish order-count function on superadmin
@@ -6,3 +5,5 @@ jyj 6.16 15:49 debug
 jyj 6.22 finish check-cash and shop-balance-detail functions.
 jyj 6.22 de 1 bug about table's id
 jyj 6.22 de 1 bug about super-shop-manage's shop link.
+jyj 6.23 finish super-user-manage's search and info display functions.
+jyj 6.24 13:24 de 1 bug about super-user-manage's js-bug
