@@ -98,8 +98,8 @@ class Home(StaffBaseHandler):
 		orders_intime   = len(orders_intime)
 		orders_ontime  = len(orders_ontime)
 	  
-		print("[送货员端]立即送订单：",orders_intime)
-		print("[送货员端]按时达订单：",orders_ontime)
+		# print("[送货员端]立即送订单：",orders_intime)
+		# print("[送货员端]按时达订单：",orders_ontime)
 		self.set_cookie("orders_intime",str(orders_intime))
 		self.set_cookie("orders_ontime",str(orders_ontime))
 		return self.render("staff/home.html", page="home")

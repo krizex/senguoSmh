@@ -267,9 +267,9 @@ class JsApi_pub(Common_util_pub):
         """通过curl向微信提交code，以获取openid"""
         url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid={0}&secret={1}&code={2}&grant_type=authorization_code'.format(WxPayConf_pub.APPID,WxPayConf_pub.APPSECRET,self.code)
         data = HttpClient().get(url)
-        print("[微信支付]获取OpenID的url：",url)
+        # print("[微信支付]获取OpenID的url：",url)
         data = str(data,encoding = 'utf-8')
-        print("[微信支付]获取OpenID的url返回数据：",data)
+        # print("[微信支付]获取OpenID的url返回数据：",data)
         try:
             openId = json.loads(data)["openid"]
             self.openid = openId
@@ -377,7 +377,7 @@ class UnifiedOrder_pub(Wxpay_client_pub):
         """获取prepay_id"""
         self.postXml()
         self.result = self.xmlToArray(self.response)
-        print("[微信支付]获取到prepay_id了吗？",self.result,'self.result**************')
+        # print("[微信支付]获取到prepay_id了吗？",self.result,'self.result**************')
         prepay_id = self.result["prepay_id"]
         return prepay_id
 
