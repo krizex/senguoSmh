@@ -83,8 +83,9 @@
                     <div id="sendPeriod" class="send_period list-group font14">
                         <div class="arrow-top left70"></div>
                         <ul id="sendDay" class="send_day nav-pills clearfix text-center type-choose m-b10 font14 mt10">
-                            <li data-id="1" class="active pull-left item" id="send_today"><a href="javascript:;" class="text-green">今天</a></li>
-                            <li data-id="2" id="send_tomorrow" class="pull-left item"><a href="javascript:;" class="text-green">明天</a></li>
+                            {% set day=config.day_on_time %}
+                            <li data-id="1" class="{% if day == 0 or day==1 %}active{% end %} {% if day==2 %}hidden{% end %} pull-left item" id="send_today"><a href="javascript:;" class="text-green">今天</a></li>
+                            <li data-id="2" id="send_tomorrow" class="{% if day==2 %}active{% end %} {% if day==1 %}hidden{% end %} pull-left item"><a href="javascript:;" class="text-green">明天</a></li>
                         </ul>
                         <div id="sendPerTime" class="">
                         {% for period in periods%}

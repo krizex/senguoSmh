@@ -198,7 +198,25 @@ $(document).ready(function(){
     
 }).on("click","#new-order-box",function(){
    window.location.reload(true);
+}).on("click",".send-day .btn",function(){
+    var $this=$(this);
+    $this.addClass("active").siblings(".btn").removeClass("active");
+    var day=parseInt($this.attr("data-id"));
+    var url="";
+    var action="edit_send_day";
+    var data={day:day};
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,function(res){
+        if(res.success){
+
+        }
+        else return Tip(res.error_text);
+    });
 });
+
 var link='/admin/order';
 
 

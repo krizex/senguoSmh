@@ -771,6 +771,9 @@ class Order(AdminBaseHandler):
 			except:return self.send_error(404)
 			q.delete()
 			self.session.commit()
+		elif action == "edit_send_day":
+			self.current_shop.config.day_on_time = int(data["day"])
+			self.session.commit()
 		elif action == "edit_ontime_on":
 			self.current_shop.config.ontime_on = not self.current_shop.config.ontime_on
 			self.session.commit()
