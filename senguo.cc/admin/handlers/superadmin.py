@@ -430,6 +430,22 @@ class ShopManage(SuperBaseHandler):
 		if not self.args["new_status"] in models.SHOP_STATUS.DATA_LIST:
 			return self.send_error(400)
 
+		#首个店铺未进行店铺认证不允许再申请店铺
+		try:
+			shops = self.session.query(models.Shop).filter_by(admin_id=shop_temp.admin_id)
+		except:
+			shops = None
+
+		if shops:
+			shop_frist = shops.first()
+			if shop_frist:
+				if shop_frist.shop_auth==0:
+					return self.send_fail("该商家第一个店铺还未进行认证")
+				elif shop_frist.shop_auth in [1,4] and shops.count() >= 5:
+					return self.send_fail("该商家第首个店铺为个人认证,最多只可申请5个店铺")
+				elif shop_frist.shop_auth in [2,3] and shops.count() >= 15:
+					return self.send_fail("该商家第首个店铺为企业认证,最多只可申请15个店铺")
+
 		if self.args["new_status"] == models.SHOP_STATUS.DECLINED:
 			shop_temp.update(self.session, shop_status=3,
 						declined_reason=self.args["declined_reason"])
