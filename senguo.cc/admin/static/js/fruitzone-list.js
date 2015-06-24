@@ -179,7 +179,7 @@ function initLocation(){
             geoc.getLocation(point, function(rs){
                 var addComp = rs.addressComponents;
                 initProviceAndCityCode(addComp.province, addComp.city);
-                $(".city_name").text(addComp.city).attr("data-id",city_code);;
+                $(".city_name").text(addComp.city);
                 filter($("#city_id").val());
             });
         },function(error){
@@ -194,13 +194,15 @@ function initLocation(){
 function initProviceAndCityCode(p, c){
     $.each(window.dataObj.area,function(name,value){
         if(value.name==p){
-            window.dataObj.city = 'province';
+            window.dataObj.type = 'province';
             $("#city_id").val(name);
+            $(".city_name").attr("data-id",name);
             if(value['city']){
                 $.each(value.city,function(i,n){
                     if(n.name==c){
                         $("#city_id").val(i);
-                        window.dataObj.city = 'city';
+                        $(".city_name").attr("data-id",i);
+                        window.dataObj.type = 'city';
                         return false;
                     }
                 })
