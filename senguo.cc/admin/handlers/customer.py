@@ -23,27 +23,6 @@ from dal.db_configs import DBSession
 import urllib
 # from wxpay import QRWXpay
 
-# 非阻塞
-EXECUTOR = ThreadPoolExecutor(max_workers=4)
-def unblock(f):
-
-	@tornado.web.asynchronous
-	@wraps(f)
-	def wrapper(*args, **kwargs):
-		self = args[0]
-
-		def callback(future):
-			# self.write(future.result())
-			self.finish()
-
-		EXECUTOR.submit(
-			partial(f, *args, **kwargs)
-		).add_done_callback(
-			lambda future: tornado.ioloop.IOLoop.instance().add_callback(
-				partial(callback, future)))
-
-	return wrapper
-
 # 登录处理
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
