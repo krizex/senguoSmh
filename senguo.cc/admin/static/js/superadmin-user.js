@@ -99,6 +99,7 @@ function getContent(action,page){
                     $item.find('.birthday').text(birthday);
                     //
 
+                     //change by jyj 2015-6-24
                     var fshop=user[9];
                     if(fshop.length != 0){
                         if(fshop[0][2].length != 0){
@@ -115,6 +116,7 @@ function getContent(action,page){
                         tmp1[0] = tmp2;
                         fshop = tmp1;
                     }
+                    //
                     
                     var oshop=user[10];
 
@@ -188,6 +190,7 @@ function getSearchContent(action,inputinfo,page){
                     $item.find('.birthday').text(birthday);
                     //
 
+                    //change by jyj 2015-6-24
                     var fshop=user[9];
                     if(fshop.length != 0){
                         if(fshop[0][2].length != 0){
@@ -204,6 +207,7 @@ function getSearchContent(action,inputinfo,page){
                         tmp1[0] = tmp2;
                         fshop = tmp1;
                     }
+                    //
 
                     var oshop=user[10];
 
