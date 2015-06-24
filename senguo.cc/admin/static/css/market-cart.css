@@ -25,7 +25,7 @@
 .cart-list-item .w10{width:10%;}
 .cart-list-item .goods-info{height:100%;}
 .cart-list-item .charge-type{position:absolute;bottom:5px;left:75px;width:130px;}
-.cart-list-item .action-box{position:absolute;right:5px;top:35%;}
+.cart-list-item .action-box{position:absolute;right:5px;bottom:5px;}
 .cart-list-item .charge-item{height:30px;line-height:30px;position:absolute;bottom:0;}
 .cart-list-item .number-change{position:relative;width:90px;}
 .cart-list-item .minus-plus{display:inline-block;float:left;border:none;width:32px;height:32px;background:url('../svg/icon_list-2.png') no-repeat;position:absolute;z-index:10;background-size:140px 180px;}
@@ -33,7 +33,7 @@
 .cart-list-item .number-plus{right:0;background-position:-34px -72px;}
 .cart-list-item .number-minus{left:0;background-position:0 -72px;}
 .cart-list-item .disable{border-color:#ccc;color:#ccc;}
-.cart-list-item .delete-btn a{display:inline-block;width:25px;height:30px;line-height:26px;}
+.cart-list-item .delete-btn a{display:inline-block;width:25px;height:60px;line-height:56px;margin-top:-30px;}
 
 .send_type{border-top-left-radius:2px;border-top-right-radius:2px;overflow:hidden;margin-bottom:0;}
 .send_type li{padding:6px 15px;}
