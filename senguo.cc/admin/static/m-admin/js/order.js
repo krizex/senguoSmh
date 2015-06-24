@@ -55,17 +55,17 @@ $(document).ready(function(){
 }).on("click",".order-lists>li",function(e){//进入订单详情
     var $this=$(this);
     var num = $this.attr("data-num");
-    if($(e.target).closest(".task-staff").size()==0){
+    if($(e.target).closest(".forbid_click").size()==0){
        window.location.href="/madmin/orderDetail/"+num; 
     }
 }).on("click",".order-grade .task-staff",function(e){
      var $this=$(this);
-     var status=parseInt($this.parents('.order-item').attr('data-status'));
+     var status=parseInt($this.parents('.m-order-item').attr('data-status'));
      if(status==1||status==4){
         e.stopPropagation();
         curStaff = $(this).closest(".order-grade");
-        $(".pop-staff").removeClass("hide").attr("data-id",$this.parents('.order-item').attr('data-id'));
-        $(".staff-list").empty().html($this.parents('.order-item').find('.order-staff-list').html());
+        $(".pop-staff").removeClass("hide").attr("data-id",$this.parents('.m-order-item').attr('data-id'));
+        $(".staff-list").empty().html($this.parents('.m-order-item').find('.order-staff-list').html());
      } 
 }).on("click",".staff-list>li",function(){
     var index = $(this).index();
@@ -74,7 +74,7 @@ $(document).ready(function(){
     $(".staff-list>li").removeClass("active").eq(index).addClass("active");
 });
 
-var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" class="order-item" data-id="{{id}}">'+
+var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" class="m-order-item" data-id="{{id}}">'+
                     '<p class="order-time item">下单时间 : {{create_date}}</p>'+
                     '<ul class="order-content">'+
                         '<li>'+
@@ -90,7 +90,7 @@ var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" clas
                             '<p class="item loc">{{send_address}}</p>'+
                         '</li>'+
                         '<li>'+
-                            '{{ if message }}<p class="item say red-txt">{{message}}</p>{{ /if }}'+
+                            '<p class="item say red-txt">{{message}}</p>'+
                         '</li>'+
                         '<li class="{{show}}">'+
                             '<p class="red-txt">{{del_status}}</p>'+
@@ -98,19 +98,20 @@ var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" clas
                         '<div class="order-grade">'+
                             '<div class="order-line {{hide}}">'+
                                 '<div class="order-line-grade {{width}}"></div>'+
-                                '<div class="order-wawa {{left}}">'+
+                                '<div class="order-wawa {{left}} forbid_click">'+
                                     '<a class="task-staff img-border" href="javascript:;">'+
                                         '<img src="{{staff_img}}" alt="配送员头像">'+
                                     '</a>'+
                                 '</div>'+
-                                '<div class="order-status-txt {{left}}">'+
-                                    '<a class="task-staff c999" href="javascript:;">{{sender_name}}</a><a class="{{tel_show}}" href="tel:{{staff_phone}}">拨号</a>'+
+                                '<div class="order-status-txt {{left}} forbid_click">'+
+                                    '<a class="task-staff {{color}}" href="javascript:;">{{sender_name}}</a><a class="{{tel_show}}" href="tel:{{staff_phone}}">拨号</a>'+
                                 '</div>'+
                             '</div>'+
                         '</div>'+
                         '<ul class="order-staff-list hide">'+
                             '{{each SH2s as sh2}}'+
                             '<li class="" data-tel="{{sh2["phone"]}}" data-id="{{sh2["id"]}}">'+
+                                '<span class="check fr">✓</span>'+
                                 '<span class="img-border mr10"><img src="{{sh2["headimgurl"]}}" alt="员工头像"/></span>'+
                                 '<span>{{sh2["nickname"]}}</span>'+
                             '</li>'+
@@ -180,9 +181,10 @@ var getOrder=function(page){
                     var left;
                     var sender_name;
                     var del_status;
-                    var show='hide';
-                    var hide='show';
+                    var show='hidden';
+                    var hide='visible';
                     var tel_show='hide';
+                    var color="c999";
 
                     if(data[i]['SH2']){
                         var staff_img=data[i]['SH2']['headimgurl'];
@@ -193,6 +195,9 @@ var getOrder=function(page){
                         var staff_phone='';
                         var sender='';
                     }   
+                    if(!message){
+                        message='无';
+                    }
                     if(pay_type==1){
                         pay_type = "货到付款";
                     }else if(pay_type==2){
@@ -205,14 +210,14 @@ var getOrder=function(page){
                             $("#status-txt").text('未支付');
                             width='order-w0';
                             left='order-l0';
-                            show='hide';
-                            hide='show';
+                            show='hidden';
+                            hide='visible';
                             break;
                         case 0:         
                             width='order-w0';
                             left='order-l0';
-                            hide='hide';
-                            show='show';
+                            hide='hidden';
+                            show='visible';
                             if(del_reason){
                                 if(del_reason=='timeout'){
                                     del_status='该订单15分钟未支付，已自动取消';
@@ -229,6 +234,7 @@ var getOrder=function(page){
                             width='order-w0';
                             left='order-l0';
                             sender_name='分配员工';
+                            color='';
                             break;
                         case 2:
                         case 3:
@@ -236,13 +242,13 @@ var getOrder=function(page){
                             width='order-w50';
                             left='order-l50';
                             sender_name=sender+'配送中';
-                            tel_show='show';
+                            tel_show='visible';
                             break;
                         case 5:
                             width='order-w100';
                             left='order-l100';
                             sender_name=sender+'已送达';
-                            tel_show='show';
+                            tel_show='visible';
                             break;
                         case 6:
                         case 7:
@@ -271,7 +277,8 @@ var getOrder=function(page){
                        hide:hide,
                        del_status:del_status,
                        show:show,
-                       tel_show:tel_show
+                       tel_show:tel_show,
+                       color:color
                     });
                     $('.order-lists').eq(index).append(html);
                 }

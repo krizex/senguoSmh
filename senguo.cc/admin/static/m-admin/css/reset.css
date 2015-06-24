@@ -27,6 +27,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .bgSwitch{-webkit-transition:all .3s ease-in-out;}
 .clip{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .hidden{visibility: hidden;}
+.visible{visibility: visible;}
 .hide{display: none!important;}
 .show{display: block!important;}
 .right{text-align: right;}
