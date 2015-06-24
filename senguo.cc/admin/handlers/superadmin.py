@@ -664,7 +664,7 @@ class User(SuperBaseHandler):
 
 		#change by jyj 2015-6-22
 		q = self.session.query(models.Accountinfo.id,models.Accountinfo.headimgurl_small,models.Accountinfo.nickname,models.Accountinfo.sex, \
-					models.Accountinfo.wx_province,models.Accountinfo.wx_city,models.Accountinfo.phone,models.Accountinfo.birthday).order_by(desc(models.Accountinfo.id))
+					models.Accountinfo.wx_province,models.Accountinfo.wx_city,models.Accountinfo.phone,func.FROM_UNIXTIME(models.Accountinfo.birthday,"%Y-%m-%d")).order_by(desc(models.Accountinfo.id))
 		##
 		if action == "all":
 			pass
@@ -692,12 +692,8 @@ class User(SuperBaseHandler):
 			# print(users[i][7])
 			if users[i][7] == None:
 				birthday = 0
-				# print("aaaaaaaaaaaaaa")
 			else:
-				b_time_stamp = users[i][7]
-				# print(type(b_time_stamp))
-				dateArray = datetime.datetime.utcfromtimestamp(b_time_stamp)
-				birthday = dateArray.strftime("%Y-%m-%d")
+				birthday = users[i][7]
 			##
 			users[i] = list(users[i])
 			users[i].append(birthday)
