@@ -179,7 +179,7 @@ function initLocation(){
             geoc.getLocation(point, function(rs){
                 var addComp = rs.addressComponents;
                 initProviceAndCityCode(addComp.province, addComp.city);
-                $(".city_name").text(addComp.city);
+                $(".city_name").text(addComp.city).attr("data-id",city_code);;
                 filter($("#city_id").val());
             });
         },function(error){

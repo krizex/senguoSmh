@@ -1,4 +1,4 @@
-.img-border{display: inline-block;border: 2px solid #48b6a4;border-radius: 50%;line-height: 1;}
+.img-border{display: inline-block;border: 2px solid #76ccc0;border-radius: 50%;line-height: 1;}
 /*店铺中心*/
 .profile-top{position: relative}
 .profile-center{background-image: url("/static/m-admin/img/icon_center.png");}
@@ -65,7 +65,11 @@
 .pop-staff-box .title{text-align: center;margin-bottom:10px;}
 .staff-list{padding: 4px 0 20px 0;}
 .staff-list>li{height: 41px;line-height: 41px;padding-left: 20px;color: #999;margin-bottom: 10px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
+.staff-list .img-border{border-color:#999;}
+.staff-list .check{visibility:hidden;}
 .staff-list .active{color: #76ccc0;}
+.staff-list .active .img-border{border-color:#76ccc0;}
+.staff-list .active .check{visibility:visible;}
 .staff-list>li img{width: 36px;height: 36px;border-radius: 50%;}
 .pop-staff-box .btn-box{height: 36px;line-height: 36px;text-align: center;color: #fff;background-color: #48b6a4;}
 /*订单管理*/
@@ -80,7 +84,7 @@
 .second-tab-list .tab-line{position: absolute;width:24%;bottom:0;height: 2px;background-color: #48b6a4;left: 10px;-webkit-transition:all ease-in-out .2s;}
 .order-content{padding: 0 10px 10px 10px;background-color: #fff;}
 .order-content p{height: 30px;line-height: 30px;color:#333;}
-.order-content .item{padding-left: 26px;background-size: 20px;background-position: left center;background-repeat: no-repeat;}
+.order-content .item{padding-left: 26px;background-size: 20px;background-position: left center;background-repeat: no-repeat;white-space: nowrap;overflow: hidden;text-overflow:ellipsis;}
 .order-time{font-size: 12px;height: 28px;line-height: 30px;color: #999;padding-left: 32px;background-size: 14px;background-image: url('/static/m-admin/img/icon_tip.png');background-repeat: no-repeat;background-position: 10px bottom;}
 .money{background-image: url('/static/m-admin/img/icon_money.png');}
 .time{background-image: url('/static/m-admin/img/icon_time.png');}

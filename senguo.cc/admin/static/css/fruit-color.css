@@ -1,7 +1,7 @@
 /* 其他 */
 .TDSG .color{color:#8cbd03}
 .TDSG .bg{background-color:#f9ffe8}
-.TDSG .bg-color{background-color:#c8e0aa}
+.TDSG .bg-color{background-color:#94AF73}
 .TDSG .icon-bg{border-color:transparent #c8e0aa transparent transparent;}
 .shuiguoqita .color{color:#8cbd03}
 .shuiguoqita .bg{background-color:#f9ffe8}
@@ -22,11 +22,11 @@
 .Qpg .icon-bg{border-color:transparent #5CB56C transparent transparent;}
 .Xg .color{color:#EE618C}
 .Xg .bg{background-color:#FFF6F6}
-.Xg .bg-color{background-color:#fd9292}
+.Xg .bg-color{background-color:#FB4462}
 .Xg .icon-bg{border-color:transparent #EE618C transparent transparent;}
 .Lz .color{color:#F97060}
 .Lz .bg{background-color:#FFF9F5}
-.Lz .bg-color{background-color:#fecfac}
+.Lz .bg-color{background-color:#E56868}
 .Lz .icon-bg{border-color:transparent #F97060 transparent transparent;}
 .Nm .color{color:#C0CB04}
 .Nm .bg{background-color:#F9FAE9}
@@ -46,7 +46,7 @@
 .Li .icon-bg{border-color:transparent #EDB800 transparent transparent;}
 .Xfq .color{color:#f85853}
 .Xfq .bg{background-color:#FFF9F9}
-.Xfq .bg-color{background-color:#ffa4b1}
+.Xfq .bg-color{background-color:#EB524E}
 .Xfq .icon-bg{border-color:transparent #F85853 transparent transparent;}
 .Qli .color{color:#97CA27}
 .Qli .bg{background-color:#FAFFF4}
@@ -58,7 +58,7 @@
 .Jz .icon-bg{border-color:transparent #FBAB2D transparent transparent;}
 .Pg .color{color:#F25C5C}
 .Pg .bg{background-color:#FFF8F8}
-.Pg .bg-color{background-color:#ff8989}
+.Pg .bg-color{background-color:#E05050}
 .Pg .icon-bg{border-color:transparent #F25C5C transparent transparent;}
 .Xj .color{color:#FBDF12}
 .Xj .bg{background-color:#FFFDF3}
@@ -70,7 +70,7 @@
 .Tz .icon-bg{border-color:transparent #e4f45f transparent transparent;}
 .Mg .color{color:#F8BC14}
 .Mg .bg{background-color:#FFFDEF}
-.Mg .bg-color{background-color:#ffef60}
+.Mg .bg-color{background-color:#FBE412}
 .Mg .icon-bg{border-color:transparent #F8BC14 transparent transparent;}
 .Mht .color{color:#A3D221}
 .Mht .bg{background-color:#FDFFF2}
@@ -98,11 +98,11 @@
 .Dz .icon-bg{border-color:transparent #E95B34 transparent transparent;}
 .Sl .color{color:#E43D40}
 .Sl .bg{background-color:#FFF6F5}
-.Sl .bg-color{background-color:#ff6e67}
+.Sl .bg-color{background-color:#CA3043}
 .Sl .icon-bg{border-color:transparent #E43D40 transparent transparent;}
 .Smt .color{color:#EE6666}
 .Smt .bg{background-color:#FFFBFB}
-.Smt .bg-color{background-color:#ffb8b8}
+.Smt .bg-color{background-color:#EF6F6F}
 .Smt .icon-bg{border-color:transparent #EE6666 transparent transparent;}
 .Yez .color{color:#856458}
 .Yez .bg{background-color:#FFFBF8}
@@ -122,7 +122,7 @@
 .Blm .icon-bg{border-color:transparent #A5A026 transparent transparent;}
 .Sz .color{color:#F78F1E}
 .Sz .bg{background-color:#FFF9EF}
-.Sz .bg-color{background-color:#fe7e8a}
+.Sz .bg-color{background-color:#F0D3BC}
 .Sz .icon-bg{border-color:transparent #F78F1E transparent transparent;}
 .Gy .color{color:#916231}
 .Gy .bg{background-color:#fffaef}
@@ -134,11 +134,11 @@
 .Pp .icon-bg{border-color:transparent #F07D06  transparent transparent;}
 .Hz .color{color:#BD2408}
 .Hz .bg{background-color:#FFF8F3}
-.Hz .bg-color{background-color:#ff846e}
+.Hz .bg-color{background-color:#D5563F}
 .Hz .icon-bg{border-color:transparent #BD2408 transparent transparent;}
 .Bl .color{color:#878F2F}
 .Bl .bg{background-color:#FFFFEE}
-.Bl .bg-color{background-color:#e4e06b}
+.Bl .bg-color{background-color:#FDDF25}
 .Bl .icon-bg{border-color:transparent #878F2F transparent transparent;}
 .Shiz .color{color:#f78f1e}
 .Shiz .bg-color{background-color:#ffc051}
@@ -146,7 +146,7 @@
 .Shiz .icon-bg{border-color:transparent #ffc051 transparent transparent;}
 .Shanzhu .color{color:#9E1B39}
 .Shanzhu .bg{background-color:#FFF8FA}
-.Shanzhu .bg-color{background-color:#fa6a8b}
+.Shanzhu .bg-color{background-color:#8E2F4D}
 .Shanzhu .icon-bg{border-color:transparent #9E1B39 transparent transparent;}
 .Hdg .color{color:#e8aa02}
 .Hdg .bg-color{background-color:#ffd646}
@@ -154,11 +154,11 @@
 .Hdg .icon-bg{border-color:transparent #ffe26d transparent transparent;}
 .Cm .color{color:#E61211}
 .Cm .bg{background-color:#FFF8F4}
-.Cm .bg-color{background-color:#fa6253}
+.Cm .bg-color{background-color:#FE4E4D}
 .Cm .icon-bg{border-color:transparent #E61211 transparent transparent;}
 .Xlg .color{color:#C2642C}
 .Xlg .bg{background-color:#FFFBF8}
-.Xlg .bg-color{background-color:#f8b289}
+.Xlg .bg-color{background-color:#9D5125}
 .Xlg .icon-bg{border-color:transparent #C2642C transparent transparent;}
 .Gz .color{color:#5B212B}
 .Gz .bg{background-color:#FFFFF4}
@@ -186,7 +186,7 @@
 .wuhuaguo .icon-bg{border-color:transparent #9A536C transparent transparent;}
 .yingtao .color{color:#FF6740}
 .yingtao .bg{background-color:#FEF6F6}
-.yingtao .bg-color{background-color:#ec7886}
+.yingtao .bg-color{background-color:#970202}
 .yingtao .icon-bg{border-color:transparent #FF6740 transparent transparent;}
 .baixiangguo .color{color:#C28700}
 .baixiangguo .bg{background-color:#FFFBF5}
@@ -198,7 +198,7 @@
 .ganlan .icon-bg{border-color:transparent #B5BB41 transparent transparent;}
 .hongmaodan .color{color:#CC1A4E}
 .hongmaodan .bg{background-color:#FFF9F9}
-.hongmaodan .bg-color{background-color:#f09491}
+.hongmaodan .bg-color{background-color:#C5244C}
 .hongmaodan .icon-bg{border-color:transparent #CC1A4E transparent transparent;}
 .lianwu .color{color:#E62129}
 .lianwu .bg{background-color:#FFF9F9}
@@ -222,7 +222,7 @@
 .sheguo .icon-bg{border-color:transparent #9C4547 transparent transparent;}
 .fengli .color{color:#878F2F}
 .fengli .bg{background-color:#FFFFEE}
-.fengli .bg-color{background-color:#e4e06b}
+.fengli .bg-color{background-color:#FDDF25}
 .fengli .icon-bg{border-color:transparent #878F2F transparent transparent;}
 .huangdijiao .color{color:#FBDF12}
 .huangdijiao .bg{background-color:#FFFDF3}
@@ -231,11 +231,11 @@
 
 .hongti .color{color:#9C4547}
 .hongti .bg{background-color:#FFF7F7}
-.hongti .bg-color{background-color:#ff95b5}
+.hongti .bg-color{background-color:#D57BA7}
 .hongti .icon-bg{border-color:transparent #9C4547 transparent transparent;}
 .jialiguo .color{color:#9C4547}
 .jialiguo .bg{background-color:#FFF7F7}
-.jialiguo .bg-color{background-color:#ff8989}
+.jialiguo .bg-color{background-color:#E05050}
 .jialiguo .icon-bg{border-color:transparent #9C4547 transparent transparent;}
 .longyan .color{color:#916231}
 .longyan .bg{background-color:#fffaef}
@@ -243,7 +243,7 @@
 .longyan .icon-bg{border-color:transparent #ffebbc transparent transparent;}
 .chelizhi .color{color:#E23457}
 .chelizhi .bg{background-color:#FFF7F8}
-.chelizhi .bg-color{background-color:#ec7886}
+.chelizhi .bg-color{background-color:#970202}
 .chelizhi .icon-bg{border-color:transparent #E23457 transparent transparent;}
 .ximei .color{color:#E75716}
 .ximei .bg{background-color:#FFF7F8}
@@ -255,7 +255,7 @@
 .lanmei .icon-bg{border-color:transparent #632B8C transparent transparent;}
 .huangxigua .color{color:#FFD800}
 .huangxigua .bg{background-color:#FFFAF6}
-.huangxigua .bg-color{background-color:#feb78b}
+.huangxigua .bg-color{background-color:#FFE572}
 .huangxigua .icon-bg{border-color:transparent #FFD800 transparent transparent;}
 
 .huanggua .color{color:#FFD800}
