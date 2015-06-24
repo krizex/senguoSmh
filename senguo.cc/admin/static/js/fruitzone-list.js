@@ -249,7 +249,7 @@ var shopItem=function (shops){
                                     '<p class="text-grey9 adre-box"><span class="distance {{dishide}}">{{distance}}</span><i class="location"></i><span class="shop_code">{{address}}</span></p>'+
                                 '</div>'+
                             '</div>'+
-                            '<p class="sty1 shop-intro">店铺简介：<span class="intro">{{intro}}</span></p>'+
+                            //'<p class="sty1 shop-intro">店铺简介：<span class="intro">{{intro}}</span></p>'+
                             '</a>'+
                         '</li>';
     for(var key in shops){
