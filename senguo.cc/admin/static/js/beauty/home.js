@@ -78,13 +78,13 @@ $(document).ready(function(){
     else{
         if($("#menu").hasClass("menu-active")){
             $(this).removeClass("menu-active");
-            $("#groupt-list").animate({"margin-left":"-75px","opacity":"0"},10);
-            $('.list-box').animate({"left":"0"},10);
+            $("#groupt-list").animate({"margin-left":"-75px","opacity":"0"},200);
+            $('.list-box').animate({"left":"0"},200);
            
         }else{
             $(this).addClass("menu-active");
-            $("#groupt-list").animate({"margin-left":"0","opacity":"1"},10);
-            $('.list-box').animate({"left":"75px"},10);
+            $("#groupt-list").animate({"margin-left":"0","opacity":"1"},200);
+            $('.list-box').animate({"left":"75px"},200);
         }
     }
     
@@ -98,8 +98,8 @@ $(document).ready(function(){
     var group_id=Number($this.attr('data-id'));
     var top=$('.goods-list-'+group_id).offset().top-40;
     $(window).scrollTop(top);
-    $('.list-box').animate({"left":"0"},10);
-    $("#groupt-list").animate({"margin-left":"-75px","opacity":0},10);
+    $('.list-box').animate({"left":"0"},200);
+    $("#groupt-list").animate({"margin-left":"-75px","opacity":0},200);
 }).on('click','.to-add',function(){
     //首次添加商品
     var $this=$(this);
