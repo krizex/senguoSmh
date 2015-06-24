@@ -331,7 +331,7 @@ class GlobalBaseHandler(BaseHandler):
 				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name,'code':d.fruit_type.code})
 		if len(datalist) == 1:
 			data = data[0]
-		print(data)
+		# print(data)
 		return data
 
 class FrontBaseHandler(GlobalBaseHandler):
@@ -618,8 +618,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	# send message to staff  , woody,6.17
 	@classmethod
 	def send_staff_message(self,session,order):
-		print('login in send_staff_message')
-		print(order.SH2_id)
+		# print('login in send_staff_message')
+		# print(order.SH2_id)
 		try:
 			staff_info = session.query(models.Accountinfo).filter_by(id = order.SH2_id).first()
 		except NoResultFound:
@@ -638,7 +638,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 		WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
 			order_totalPrice,send_time,phone,address,)
-		print('SUCCESS')
+		# print('SUCCESS')
 
 	@classmethod
 	def send_admin_message(self,session,order):
@@ -688,18 +688,20 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 	@classmethod
 	def order_done_msg(self,session,order):
-		print('login in order_done_msg')
+		# print('login in order_done_msg')
 		order_num = order.num
 		order_sendtime = order.arrival_day  + " " + order.arrival_time 
 		shop_phone = order.shop.shop_phone
 		customer_id= order.customer_id
-		print(order_num , order_sendtime , shop_phone)
+		shop_name = order.shop.shop_name
+		order_id = order.id
+		# print(order_num , order_sendtime , shop_phone)
 		try:
 			customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
 		except NoResultFound:
 			return self.send_fail('order_done: customer not found')
 		touser = customer_info.wx_openid
-		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone)
+		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name,order_id)
 	##############################################################################################
 	# 订单完成后 ，积分 相应增加 ，店铺可提现余额相应增加 
 	# 同时生成相应的积分记录 和 余额记录 
@@ -708,7 +710,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	##############################################################################################
 	@classmethod
 	def order_done(self,session,order):
-		print('login')
+		# print('login in order_done')
 		now = datetime.datetime.now()
 		order.arrival_day = now.strftime("%Y-%m-%d")
 		order.arrival_time= now.strftime("%H:%M")
@@ -724,7 +726,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		#add by jyj 2015-6-15
 		totalprice_inc = order.totalPrice
 		order.shop.shop_property += totalprice_inc
-		print(order.shop.shop_property,'order.shop.order_count')
+		# print(order.shop.shop_property,'order.shop.shop_property')
 
 		try:
 			customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
@@ -776,7 +778,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 			# 订单完成后，将相应店铺可提现 余额相应增加
 			order.shop.available_balance += totalprice
-			print(order.shop.available_balance,'order.shop.available_balance')
+			# print(order.shop.available_balance,'order.shop.available_balance')
 
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
@@ -898,7 +900,7 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 			return self._shop_id
 		shop_id = self.get_cookie("market_shop_id")
 		if not shop_id:
-			print(("shop_id error"))
+			print(("FruitzoneBaseHandler: shop_id error"))
 			#return self.redirect("/shop/1")  #todo 这里应该重定向到商铺列表
 		self._shop_id = int(shop_id)
 		# if not self.session.query(models.CustomerShopFollow).filter_by(
@@ -1388,7 +1390,7 @@ class WxOauth2:
 				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
 			"topcolor": "#FF0000",
 			"data": {
-				"first": {"value": "您好，您所申请的店铺『%s』已经通过审核！\n请添加森果客服微信 senguocc100" % shop_name, "color": "#44b549"},
+				"first": {"value": "您好，您所申请的店铺『%s』已经通过审核！\n请添加森果客服微信：senguocc100" % shop_name, "color": "#44b549"},
 				"keyword1": {"value": name, "color": "#173177"},
 				"keyword2": {"value": phone, "color": "#173177"},
 				"keyword3": {"value": time, "color": "#173177"},
@@ -1448,7 +1450,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]店铺审核消息发送失败：", data)
+			print("[模版消息]添加店铺管理员消息发送失败：", data)
 			return False
 		return True
 
@@ -1480,7 +1482,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]发送给管理员失败：",data)
+			print("[模版消息]管理员订单消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给管理员成功")
 		return True
@@ -1513,7 +1515,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]发送给配送员失败：",data)
+			print("[模版消息]配送员订单消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给配送员成功")
 		return True
@@ -1531,14 +1533,14 @@ class WxOauth2:
 				"customerInfo":{"value":"批量信息","color":"#173177"},
 				"orderItemName":{"value":"订单编号","color":"#173177"},
 				"orderItemData":{"value":"批量信息","color":"#173177"},
-				"remark":{"value":"\n有多个订单需要配送，具体信息请点击详情进入查看。","color":"#173177"},
+				"remark":{"value":"\n有多个订单需要配送，具体信息请点击“详情”进入查看。","color":"#173177"},
 			}
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]发送给配送员失败：",data)
+			print("[模版消息]配送员批量订单消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给配送员成功")
 		return True
@@ -1552,7 +1554,7 @@ class WxOauth2:
 			'url'    : 'http://i.senguo.cc/customer/orders/detail/' + str(order_realid),
 			'topcolor': "#FF0000",
 			"data":{
-				"first"    : {"value":"您的订单已提交成功\n","color":"#44b549"},
+				"first"    : {"value":"您的订单已提交成功！\n","color":"#44b549"},
 				"keyword1" : {"value":shop_name,"color":"#173177"},
 				"keyword2" : {"value":str(order_create),"color":"#173177"},
 				"keyword3" : {"value":goods,"color":"#173177"},
@@ -1565,25 +1567,25 @@ class WxOauth2:
 		data = json.loads(res.content.decode("utf-8"))
 
 		if data["errcode"] != 0:
-			print("[模版消息]发送给客户失败：",data)
+			print("[模版消息]订单提交成功消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给客户成功")
 		return True
 
 	@classmethod
-	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone):
-		describe = '\n如有任何疑问，请拨打店家电话:%s' % shop_phone   if shop_phone  else '\n如有任何疑问,请及时联系店家'
+	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id):
+		describe = '\n如有任何疑问，请拨打商家电话：%s。' % shop_phone if shop_phone else '\n如有任何疑问，请及时联系商家。'
 		# print(touser,order_num,order_sendtime,shop_phone)
 		postdata = {
 			'touser':touser,
 			'template_id':'5_JWJNqfAAH8bXu2M_v9_MFWJq4ZPUdxHItKQTRbHW0',
-			'url':'',
+			'url':'http://i.senguo.cc/customer/orders/detail/' + str(order_id),
 			'topcolor':'#FF0000',
 			"data":{
-				"first":{"value":"尊敬的用户您好，您的订单已完成。\n","color":"#44b549"},
+				"first":{"value":"您在『{0}』的订单已完成。\n".format(shop_name),"color":"#44b549"},
 				"keyword1":{"value":order_num,"color":"#173177"},
 				"keyword2":{"value":order_sendtime,"color":"#173177"},
-				"remark"  :{"value":describe},
+				"remark"  :{"value":describe+"\n您可以点击“详情”查看订单，并对订单进行评价拿积分哦！","color":"#173177"},
 			}
 		}
 		access_token = cls.get_client_access_token()
@@ -1591,7 +1593,7 @@ class WxOauth2:
 		data = json.loads(res.content.decode("utf-8"))
 
 		if data["errcode"] != 0:
-			print("[模版消息]发送给客户失败：",data)
+			print("[模版消息]订单完成消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给客户成功")
 		return True
@@ -1678,21 +1680,3 @@ class UrlShorten:
 		long_url = url.long_url
 		self.session.commit()
 		return long_url
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
