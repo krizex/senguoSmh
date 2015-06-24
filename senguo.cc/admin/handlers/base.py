@@ -25,7 +25,7 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import partial, wraps
 
 
-
+# 非阻塞
 EXECUTOR = ThreadPoolExecutor(max_workers=4)
 
 def unblock(f):
@@ -65,6 +65,7 @@ def get_unblock(f):
 				partial(callback, future)))
 
 	return wrapper
+
 # 4.14 woody
 class Pysettimer(threading.Thread):
 	def __init__(self,function,args = None ,timeout = 1 ,is_loop = False):
@@ -281,7 +282,7 @@ class GlobalBaseHandler(BaseHandler):
 		elif unit == 9 :
 			name ='件'
 		elif unit == 10 :
-			name ='框'
+			name ='筐'
 		elif unit == 11 :
 			name ='包'
 		else:
@@ -307,7 +308,12 @@ class GlobalBaseHandler(BaseHandler):
 			elif group_id == -1:
 				group_name = "店铺推荐"
 			else:
-				group_name = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id=shop_id,status=1).first().name
+				try:
+					group_name = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id=shop_id,status=1).first().name
+				except:
+					group_name = None
+				# print(group_name)
+
 
 			charge_types = []
 			for charge in d.charge_types:
@@ -323,45 +329,10 @@ class GlobalBaseHandler(BaseHandler):
 				'saled':d.saled,'storage':d.storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
 				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
 				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name,'code':d.fruit_type.code})
+		if len(datalist) == 1:
+			data = data[0]
+		print(data)
 		return data
-
-	def getGoodsOne(self,d):
-		data = {}
-		shop_id = self.current_shop.id
-		add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time else ''
-		delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
-		if d.img_url:
-			img_url= d.img_url.split(";")
-		else:
-			img_url = ''
-		intro = '' if not d.intro else d.intro
-		detail_describe = '' if not d.detail_describe else d.detail_describe
-
-		group_id = d.group_id
-		if  group_id == 0:
-			group_name = "默认分组"
-		elif group_id == -1:
-			group_name = "店铺推荐"
-		else:
-			group_name = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id=shop_id,status=1).first().name
-
-		charge_types = []
-		for charge in d.charge_types:
-			market_price ="" if charge.market_price == None else charge.market_price
-			unit = charge.unit
-			unit_name = self.getUnit(unit)
-			charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
-				'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price,'select_num':charge.select_num})
-
-		_unit = int(d.unit)
-		_unit_name = self.getUnit(_unit)
-		data = {'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
-			'saled':d.saled,'storage':d.storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
-			'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
-			'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name,'code':d.fruit_type.code}
-		return data
-
-
 
 class FrontBaseHandler(GlobalBaseHandler):
 	pass
@@ -699,24 +670,36 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		send_time = order.send_time
 		address = order.address_text
 		order_realid = order.id
-		if pay_type != 3:
-			if order.shop.super_temp_active != 0:
-				WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods,
-					phone,address)
-			try:
-				other_admin = session.query(models.HireLink).filter_by(shop_id = shop_id,active = 1, work = 9 , temp_active = 1).first()
-			except NoResultFound:
-				other_admin = None
-			if other_admin:
-				info = session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id).filter(models.ShopStaff.id
-					== other_admin.staff_id).first()
-				other_name = info.nickname
-				other_touser = info.wx_openid
-				WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,
-					send_time,goods,phone,address)
-			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
+		if order.shop.super_temp_active != 0:
+			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods,
+				phone,address)
+		try:
+			other_admin = session.query(models.HireLink).filter_by(shop_id = shop_id,active = 1, work = 9 , temp_active = 1).first()
+		except NoResultFound:
+			other_admin = None
+		if other_admin:
+			info = session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id).filter(models.ShopStaff.id
+				== other_admin.staff_id).first()
+			other_name = info.nickname
+			other_touser = info.wx_openid
+			WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,
+				send_time,goods,phone,address)
+		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
 
-
+	@classmethod
+	def order_done_msg(self,session,order):
+		print('login in order_done_msg')
+		order_num = order.num
+		order_sendtime = order.arrival_day  + " " + order.arrival_time 
+		shop_phone = order.shop.shop_phone
+		customer_id= order.customer_id
+		print(order_num , order_sendtime , shop_phone)
+		try:
+			customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
+		except NoResultFound:
+			return self.send_fail('order_done: customer not found')
+		touser = customer_info.wx_openid
+		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone)
 	##############################################################################################
 	# 订单完成后 ，积分 相应增加 ，店铺可提现余额相应增加 
 	# 同时生成相应的积分记录 和 余额记录 
@@ -725,12 +708,15 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	##############################################################################################
 	@classmethod
 	def order_done(self,session,order):
+		print('login')
 		now = datetime.datetime.now()
 		order.arrival_day = now.strftime("%Y-%m-%d")
 		order.arrival_time= now.strftime("%H:%M")
 		customer_id       = order.customer_id
 		shop_id           = order.shop_id
 		totalprice        = order.totalPrice
+
+		self.order_done_msg(session,order)
 
 		order.shop.is_balance = 1
 		order.shop.order_count += 1  #店铺订单数加1
@@ -818,23 +804,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				point_history.point_type = models.POINT_TYPE.TOTALPRICE
 				point_history.each_point = totalprice
 				session.add(point_history)
-		session.commit()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-				
+		session.commit()			
 
 class SuperBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.SuperAdmin
@@ -1588,6 +1558,32 @@ class WxOauth2:
 				"keyword3" : {"value":goods,"color":"#173177"},
 				"keyword4" : {"value":str(order_totalPrice),"color":"#173177"},
 				"remark"   : {"value":"\n您的订单我们已经收到，配货后将尽快配送~","color":"#173177"},
+			}
+		}
+		access_token = cls.get_client_access_token()
+		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
+		data = json.loads(res.content.decode("utf-8"))
+
+		if data["errcode"] != 0:
+			print("[模版消息]发送给客户失败：",data)
+			return False
+		# print("[模版消息]发送给客户成功")
+		return True
+
+	@classmethod
+	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone):
+		describe = '\n如有任何疑问，请拨打店家电话:%s' % shop_phone   if shop_phone  else '\n如有任何疑问,请及时联系店家'
+		# print(touser,order_num,order_sendtime,shop_phone)
+		postdata = {
+			'touser':touser,
+			'template_id':'5_JWJNqfAAH8bXu2M_v9_MFWJq4ZPUdxHItKQTRbHW0',
+			'url':'',
+			'topcolor':'#FF0000',
+			"data":{
+				"first":{"value":"尊敬的用户您好，您的订单已完成。\n","color":"#44b549"},
+				"keyword1":{"value":order_num,"color":"#173177"},
+				"keyword2":{"value":order_sendtime,"color":"#173177"},
+				"remark"  :{"value":describe},
 			}
 		}
 		access_token = cls.get_client_access_token()

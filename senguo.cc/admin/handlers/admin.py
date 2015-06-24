@@ -363,7 +363,6 @@ class OrderStatic(AdminBaseHandler):
 					 func.day(models.Order.create_date)).\
 			order_by(desc(models.Order.create_date)).all()
 
-
 		# 总订单数
 		total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
 			filter(models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0]))).\
@@ -1666,13 +1665,13 @@ class Goods(AdminBaseHandler):
 											relate=relate)
 							self.session.add(charge_types)
 							
-				if "del_charge_types" in data:
-					for _id in data["del_charge_types"]:
-						try:
-							q = self.session.query(models.ChargeType).filter_by(id=_id)
-						except:
-							q = None
-						q.delete()
+				if "del_charge_types" in data  and  data['del_charge_types']:
+					try:
+						q = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(data["del_charge_types"]))
+					except:
+						return self.send_fail('del_charge_types error')
+					print(q)
+					q.delete(synchronize_session=False)
 
 				detail_describe = data["detail_describe"].replace("script","'/script/'")
 
@@ -1688,8 +1687,8 @@ class Goods(AdminBaseHandler):
 						detail_describe = detail_describe,
 						tag = int(data["tag"])
 						)
-				_data = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).one()
-				data = self.getGoodsOne(_data)
+				_data = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).all()
+				data = self.getGoodsData(_data)
 				return self.send_success(data=data)
 
 			elif action == "default_goods_img":  # 恢复默认图

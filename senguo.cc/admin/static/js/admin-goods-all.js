@@ -306,7 +306,7 @@ $(document).ready(function(){
     var id=$(this).parents('.wrap-add-price').attr('data-id');
     $(this).closest(".wrap-add-price").remove();
     if(id){
-        del_list.push(id);
+        del_list.push(parseInt(id));
     }
 }).on('click','.furit-type li',function(){/*水果分类*/
     var $this=$(this);
@@ -612,7 +612,7 @@ function initEditGoods($item,index){
             $item.find(".add-img-box").addClass("hidden");
         }
         for(var i=0; i<imgUrls.length; i++){
-            var $li = $('<li class="img-bo" data-index="'+i+'" data-rel="'+i+'"><img src="'+imgUrls[i]+'?imageView2/5/w/100/h/100" url="'+imgUrls[i]+'" alt="商品图片" class="image"/><a class="del-img" href="javascript:;">x</a></li>');
+            var $li = $('<li class="img-bo" data-index="'+i+'" data-rel="'+i+'"><img src="'+imgUrls[i]+'?imageView2/1/w/100/h/100" url="'+imgUrls[i]+'" alt="商品图片" class="image"/><a class="del-img" href="javascript:;">x</a></li>');
             $item.find(".drag-img-list").children(".add-img-box").before($li);
         }
         setTimeout(function(){
@@ -657,7 +657,7 @@ function finishEditGoods($item,data){
     var goods = data;
     $item.find(".goods-goods-name").html(goods.name);
     if(goods.imgurl){
-        $item.find(".cur-goods-img").attr("src",goods.imgurl[0]+"?imageView2/5/w/100/h/100");
+        $item.find(".cur-goods-img").attr("src",goods.imgurl[0]+"?imageView2/1/w/100/h/100");
     }
     $item.find(".current-group").html(goods.group_name).attr("data-id",goods.group_id);
     $item.find(".stock-num").html(goods.storage);
@@ -902,7 +902,7 @@ function insertGoods(data){
         $item.find(".goods-add-time").html(goods.add_time);
         $item.find(".goods-goods-name").html(goods.name);
         if(goods.imgurl){
-            $item.find(".cur-goods-img").attr("src",goods.imgurl[0]+"?imageView2/5/w/100/h/100");
+            $item.find(".cur-goods-img").attr("src",goods.imgurl[0]+"?imageView2/1/w/100/h/100");
         }
         $item.find(".current-group").html(goods.group_name).attr("data-id",goods.group_id);
         $item.find(".stock-num").html(goods.storage);

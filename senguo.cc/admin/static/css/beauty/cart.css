@@ -24,7 +24,7 @@
 .cart-list-item .w75{width:75%;}
 .cart-list-item .w10{width:10%;}
 .cart-list-item .goods-info{height:100%;}
-.cart-list-item .charge-type{position:absolute;bottom:5px;left:55px;width:130px;padding-left:12px !important;}
+.cart-list-item .charge-type{position:absolute;bottom:5px;left:55px;width:130px;padding-left:10px !important;}
 .cart-list-item .action-box{position:absolute;right:5px;top:35%;}
 .cart-list-item .charge-item{height:30px;line-height:30px;position:absolute;bottom:0;}
 .cart-list-item .number-change{position:relative;width:90px;}

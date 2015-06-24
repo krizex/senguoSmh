@@ -194,6 +194,14 @@ function unitText(target,n){
         case 1:target.text('个');break;
         case 2:target.text('斤');break;
         case 3:target.text('份');break;
+        case 4:target.text('kg');break;
+        case 5:target.text('克');break;
+        case 6:target.text('升');break;
+        case 7:target.text('箱');break;
+        case 8:target.text('盒');break;
+        case 9:target.text('件');break;
+        case 10:target.text('筐');break;
+        case 11:target.text('包');break;
     }
 }
 
