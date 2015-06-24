@@ -1,4 +1,4 @@
-from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth#,get_unblock,unblock
+from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth,get_unblock,unblock
 from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
 import dal.models as models
 import tornado.web
@@ -22,27 +22,6 @@ import tornado.websocket
 from dal.db_configs import DBSession
 import urllib
 # from wxpay import QRWXpay
-
-# 非阻塞
-# EXECUTOR = ThreadPoolExecutor(max_workers=4)
-# def unblock(f):
-
-# 	@tornado.web.asynchronous
-# 	@wraps(f)
-# 	def wrapper(*args, **kwargs):
-# 		self = args[0]
-
-# 		def callback(future):
-# 			# self.write(future.result())
-# 			self.finish()
-
-# 		EXECUTOR.submit(
-# 			partial(f, *args, **kwargs)
-# 		).add_done_callback(
-# 			lambda future: tornado.ioloop.IOLoop.instance().add_callback(
-# 				partial(callback, future)))
-
-# 	return wrapper
 
 # 登录处理
 class Access(CustomerBaseHandler):
@@ -889,7 +868,7 @@ class Market(CustomerBaseHandler):
 	#	self.current_shop = None
 
 	@tornado.web.authenticated
-	#@get_unblock
+	@get_unblock
 	def get(self, shop_code):
 		w_follow = True
 		# fruits=''
@@ -1137,7 +1116,7 @@ class Market(CustomerBaseHandler):
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruit_list ,nomore = nomore)
 
-	#@unblock
+	@unblock
 	@CustomerBaseHandler.check_arguments("page?:int")
 	def commodity_list(self):
 		page = self.args["page"]
