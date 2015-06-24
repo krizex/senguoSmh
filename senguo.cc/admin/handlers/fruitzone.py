@@ -54,7 +54,7 @@ class ShopList(FruitzoneBaseHandler):
 		else:
 			city = None
 			city_id = None
-			print('get city by ip error!')
+			print('ShopList: get city by ip error!')
 		
 		province_count=self.get_shop_group()
 		shop_count = self.get_shop_count()
@@ -172,7 +172,7 @@ class ShopList(FruitzoneBaseHandler):
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
 		else:
-			print("[店铺列表]城市不存在")
+			print("ShopList: handle_filter error")
 
 		
 		# if "live_month" in self.args:
@@ -587,7 +587,7 @@ class QiniuCallback(FruitzoneBaseHandler):
 			try:
 				shop = self.session.query(models.Shop).filter_by(id=id).one()
 			except:
-				print("not found shop")
+				print("QiniuCallback: not found shop")
 				return self.send_error(404)
 			shop_trademark_url = shop.shop_trademark_url  # 要先跟新图片url，防止删除旧图片时出错
 			shop.update(session=self.session, shop_trademark_url=SHOP_IMG_HOST+key)

@@ -15,8 +15,8 @@ import json
 # add by cm 2015.5.15
 import string
 import random
-# 登陆处理
 
+# 登录处理
 class Access(AdminBaseHandler):
 	def initialize(self, action):
 		self._action = action
@@ -846,7 +846,7 @@ class Order(AdminBaseHandler):
 					balance_record = ("%{0}%").format(order.num)
 					old_balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_record.like(balance_record)).first()
 					if old_balance_history is None:
-						print('old histtory not found')
+						print('Order: old history not found')
 					else:
 						old_balance_history.is_cancel = 1
 						self.session.commit()
@@ -892,7 +892,7 @@ class Order(AdminBaseHandler):
 					staff_info = self.session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id)\
 					.filter(models.HireLink.shop_id == shop_id,models.HireLink.default_staff == 1).first()
 				except:
-					print("didn't find default staff")
+					print("Order: didn't find default staff")
 				if staff_info:
 					openid = staff_info.wx_openid
 					staff_name = staff_info.nickname
@@ -1670,7 +1670,7 @@ class Goods(AdminBaseHandler):
 						q = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(data["del_charge_types"]))
 					except:
 						return self.send_fail('del_charge_types error')
-					print(q)
+					# print(q)
 					q.delete(synchronize_session=False)
 
 				detail_describe = data["detail_describe"].replace("script","'/script/'")
@@ -2035,7 +2035,7 @@ class Staff(AdminBaseHandler):
 				shop = self.session.query(models.Shop).filter_by(id = self.current_shop.id).one()
 				admin_id  =shop.admin.accountinfo.id
 			except :
-				print('this man is not admin')
+				print('Staff: this man is not admin')
 			if hire_link.active==2:
 					hire_link.active = 1
 			else:
@@ -2420,7 +2420,7 @@ class AdminAuth(AdminBaseHandler):
 				content = message_content)
 			headers = dict(Host = '106.ihuyi.cn',connection = 'close')
 			r = requests.post(url,data = postdata , headers = headers)
-			print(r.text)
+			# print(r.text)
 			WxOauth2.post_add_msg(account_info.wx_openid, message_shop_name,account_info.nickname)
 			return self.redirect('/admin/config?action=admin')
 
@@ -2461,7 +2461,7 @@ class ShopBalance(AdminBaseHandler):
 				apply_value = format(0,'.2f')
 
 		except:
-			print("[提现申请]提现申请错误")
+			print("ShopBalance: no apply_cash found")
 			
 		if shop_auth in [1,2,3,4]:
 			show_balance = True
@@ -2756,7 +2756,7 @@ class ShopAuthenticate(AdminBaseHandler):
 			order_by(desc(models.ShopAuthenticate.id)).first()
 		except:
 			auth_apply = None
-			print('auth_apply error')
+			print('ShopAuthenticate: auth_apply error')
 		person_auth=False
 		company_auth=False
 		has_done = 0
@@ -2786,7 +2786,7 @@ class ShopAuthenticate(AdminBaseHandler):
 		try:
 			shop_auth_apply = self.session.query(models.ShopAuthenticate).filter_by(shop_id = shop_id)
 		except:
-			print('shop_auth_apply error')
+			print('ShopAuthenticate: shop_auth_apply error')
 		if action == "get_code":
 			# print("[店铺认证]发送验证码到手机：",data["phone"])
 			# gen_msg_token(phone=self.args["phone"])
