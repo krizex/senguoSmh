@@ -57,7 +57,7 @@
 .search-btn>em{display:block;background-image:url('/static/images/list_top.png');background-repeat:no-repeat;background-size:20px 40px;background-position:0 -20px;width:20px;height:20px;margin:10px 28px;}
 .shop_auth{display:inline-block;width:56px;height:18px;;line-height:17px;color:#fff;text-align:center;font-size:12px;margin-left:4px;color: #96c1a4;border: 1px solid #96c1a4;border-radius: 16px;-webkit-transform:scale(.8);}
 .shop_attr{color: #999;font-size: 12px;line-height: 18px;}
-.location{display: inline-block;width: 15px;height: 20px;float:left;background-image: url('/static/images/icon_list.png');background-repeat: no-repeat;background-size: 92%;background-position: 0 -22px;}
+.location{display: inline-block;width: 15px;height: 20px;float:left;background-image: url('/static/images/icon_list.png');background-repeat: no-repeat;background-size: 92%;background-position: 0 -24px;}
 .red-txt{color: #ff6666;}
 .shopslist li{cursor: pointer;font-size: 14px;color: #333;height: 40px;line-height: 40px;display: block;background-color: #fff;padding: 0 10px;border-bottom: 1px solid #f5f5f5;}
 .shoplist .counts{float: right;}
