@@ -100,12 +100,22 @@ function getContent(action,page){
                     //
 
                     var fshop=user[9];
-                    for(j= 0;j< 1;j++){
-                        if(fshop[j][2].length >6){
-                            fshop[j][2] = fshop[j][2].slice(0,6)+'...';
-                        }
+                    if(fshop.length != 0){
+                        if(fshop[0][2].length != 0){
+                            for(j= 0;j< 1;j++){
+                                if(fshop[j][2].length >6){
+                                    fshop[j][2] = fshop[j][2].slice(0,6)+'...';
+                                }
+                            }
+                        }    
                     }
-
+                    else{
+                        var tmp1 = [];
+                        var tmp2 = ["","","无"]; 
+                        tmp1[0] = tmp2;
+                        fshop = tmp1;
+                    }
+                    
                     var oshop=user[10];
 
                     if(!phone) phone='未绑定';
@@ -179,10 +189,20 @@ function getSearchContent(action,inputinfo,page){
                     //
 
                     var fshop=user[9];
-                    for(j= 0;j< 1;j++){
-                        if(fshop[j][2].length >6){
-                            fshop[j][2] = fshop[j][2].slice(0,6)+'...';
-                        }
+                    if(fshop.length != 0){
+                        if(fshop[0][2].length != 0){
+                            for(j= 0;j< 1;j++){
+                                if(fshop[j][2].length >6){
+                                    fshop[j][2] = fshop[j][2].slice(0,6)+'...';
+                                }
+                            }
+                        }    
+                    }
+                    else{
+                        var tmp1 = [];
+                        var tmp2 = ["","","无"]; 
+                        tmp1[0] = tmp2;
+                        fshop = tmp1;
                     }
 
                     var oshop=user[10];
