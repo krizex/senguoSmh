@@ -44,8 +44,8 @@
         <p>配送时间：<span class="send_date m-r10" style="display: none;">今天</span><span>{{order.send_time}}</span></p>
         {% if order.message %}<p>订单备注：<span>{{order.message or '无'}}</span></p>{% end %}
         <p class="{% if order.remark == None%}hide{% end %} remark">商家备注：<spanc class="con">{{order.remark or '无'}}</span></p>
-        <p class="text-black">支付方式：<span class="">{{order.pay_type_con}}</span></p>
-        <p class="del-reason hide">订单删除备注：<span class="text">{{order.del_reason}}</span></p>
+        <p class="text-black">支付方式：<span>{{order.pay_type_con}}</span></p>
+        <p class="del-reason hide">订单删除原因：<span class="text">{{order.del_reason}}</span></p>
     </div>
     <div class="order-item">
         <h4 class="top-title"><span class="black-txt">{{handler.current_shop.shop_name}}</span><span class="arr-right"></span></h4>
@@ -101,10 +101,11 @@
 <div class="pop-win pop-del hide">
     <div class="pop-content">
         <div class="pop-staff-box">
+            <p class="title"></p>
+            <span class="close close-btn">X</span>
             <textarea  id="order-del"></textarea>
-            <div class="btn-box">
+            <div class="button-box">
                 <button type="button" class="sure-btn">确定</button>
-                <button type="button" class="close">取消</button>
             </div>
         </div>
     </div>
@@ -113,9 +114,9 @@
     <div class="pop-content">
         <div class="pop-staff-box">
             <p class="text txt-center"></p>
-            <div class="btn-box">
+            <span class="close close-btn">X</span>
+            <div class="button-box">
                 <button type="button" class="func-sure" id="">确定</button>
-                <button type="button" class="close">取消</button>
             </div>
         </div>
     </div>

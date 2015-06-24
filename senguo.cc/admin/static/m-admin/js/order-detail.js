@@ -44,6 +44,7 @@ $(document).ready(function(){
     var $this=$(this);
     $(".sure-btn").attr("id","del-sure");
     $('.pop-del').removeClass('hide').find('#order-del').val('').attr({'placeholder':'为防止误删除操作，请输入订单删除原因'});
+    $('.pop-del').find('.title').text('订单删除');
 }).on('click','#del-sure',function(){
     var $this=$(this);
     if($this.attr("data-flag")=="off") return false;
@@ -70,8 +71,14 @@ $(document).ready(function(){
     };
     $.postJson(url,args,function(res){
             if(res.success){
-               $this.attr("data-flag","on");
-               $('.pop-del').addClass('hide').find('#order-del').val('').attr({'placeholder':'为防止误删除操作，请输入订单删除原因'});
+                $this.attr("data-flag","on");
+                $('.pop-del').addClass('hide').find('#order-del').val('').attr({'placeholder':''});
+                $('.wrap-bm-btn').hide();
+                $("#status-txt").text('该订单已删除');
+                $(".order-wawa").css("left","0");
+                $(".order-line-grade").css("width","0");
+                $(".order-status-txt").css("left","0");
+                $(".tel-btn").hide();
             }
             else {
                 $this.attr("data-flag","on");
@@ -82,6 +89,7 @@ $(document).ready(function(){
 }).on('click','.remark-order',function(){
     $(".sure-btn").attr("id","remark-sure");
     $('.pop-del').removeClass('hide').find('#order-del').val('').attr({'placeholder':'请输入您的订单备注'});
+    $('.pop-del').find('.title').text('订单备注');
 }).on('click','#remark-sure',function(){
     var remark=$('#order-del').val();
     var $this=$(this);

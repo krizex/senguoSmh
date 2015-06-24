@@ -222,9 +222,9 @@ handlers = [
 	# (r"/admin/settings/profile", handlers.admin.Settings,
 	#  {"action":"profile"}, "adminSettingsProfile")
 	##移动端后台
+	(r"/madmin", handlers.madmin.Home, {}, "MadminHome"),
 	(r"/madmin/order", handlers.madmin.Order, {}, "MadminOrder"),
 	(r"/madmin/orderDetail/(\w+)", handlers.madmin.OrderDetail, {}, "MadminOrderDetail"),
-	(r"/madmin/shopProfile", handlers.madmin.ShopProfile, {}, "MadminCenter"),
 	(r"/madmin/orderSearch", handlers.madmin.OrderSearch, {}, "MadminSearch"),
 	(r"/madmin/comment", handlers.madmin.Comment, {}, "MadminComment"),
 	# (r"/staff/...")

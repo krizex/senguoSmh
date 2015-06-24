@@ -69,6 +69,9 @@ class Access(AdminBaseHandler):
 class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		if self.is_pc_browser()==False:
+			return self.redirect(self.reverse_url("MadminHome"))
+
 		# if not self.current_user.shops:
 		#     return self.write("你还没有店铺，请先申请")
 		# if not self.current_shop: #设置默认店铺
