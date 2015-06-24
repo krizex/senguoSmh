@@ -169,7 +169,7 @@ function insertGoods(data){
         $item.find(".goods-add-time").html(goods.add_time);
         $item.find(".goods-goods-name").html(goods.name);
         if(goods.imgurl){
-            $item.find(".cur-goods-img").attr("src",goods.imgurl[0]+"?imageView2/5/w/100/h/100");
+            $item.find(".cur-goods-img").attr("src",goods.imgurl[0]+"?imageView2/1/w/100/h/100");
         }
         $item.find(".current-group").html(goods.group_name);
         $item.find(".stock-num").html(goods.storage);
