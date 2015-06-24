@@ -19,7 +19,7 @@
 .cart-list-item{position:relative;}
 .cart-list-item .box{padding:5px;}
 .cart-list-item .goods-img{border-radius:2px;width:60px;}
-.cart-list-item .name{display:inline-block;min-width:90px;width:120px;height:40px;overflow:hidden;}
+.cart-list-item .name{display:inline-block;min-width:90px;width:110px;height:40px;overflow:hidden;}
 .cart-list-item .w15{width:60px;height:60px;}
 .cart-list-item .w75{width:75%;}
 .cart-list-item .w10{width:10%;}
