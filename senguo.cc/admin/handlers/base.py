@@ -1554,7 +1554,7 @@ class WxOauth2:
 			'url'    : 'http://i.senguo.cc/customer/orders/detail/' + str(order_realid),
 			'topcolor': "#FF0000",
 			"data":{
-				"first"    : {"value":"您的订单已提交成功\n","color":"#44b549"},
+				"first"    : {"value":"您的订单已提交成功！\n","color":"#44b549"},
 				"keyword1" : {"value":shop_name,"color":"#173177"},
 				"keyword2" : {"value":str(order_create),"color":"#173177"},
 				"keyword3" : {"value":goods,"color":"#173177"},
@@ -1582,10 +1582,10 @@ class WxOauth2:
 			'url':'http://i.senguo.cc/customer/orders/detail/' + str(order_id),
 			'topcolor':'#FF0000',
 			"data":{
-				"first":{"value":"您在店铺『{0}』的订单已完成。\n".format(shop_name),"color":"#44b549"},
+				"first":{"value":"您在『{0}』的订单已完成。\n".format(shop_name),"color":"#44b549"},
 				"keyword1":{"value":order_num,"color":"#173177"},
 				"keyword2":{"value":order_sendtime,"color":"#173177"},
-				"remark"  :{"value":describe+"\n点击“详情”可以查看订单，并对订单进行评价拿积分哦！","color":"#173177"},
+				"remark"  :{"value":describe+"\n您可以点击“详情”查看订单，并对订单进行评价拿积分哦！","color":"#173177"},
 			}
 		}
 		access_token = cls.get_client_access_token()
