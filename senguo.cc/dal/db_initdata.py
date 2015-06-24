@@ -75,6 +75,7 @@ fruit_types = [{'id': 1, 'name': '梨子', 'code': 'Li','color':2,'length':2,'ga
                {'id': 67, 'name': '杨梅', 'code':'yangmei','color':4,'length':2,'garden':2,'nature':2},
                {'id': 68, 'name': '李子', 'code':'lizi','color':1,'length':2,'garden':2,'nature':1},
                {'id': 69, 'name': '杏子', 'code':'xingzi','color':2,'length':2,'garden':2,'nature':3},
+               {'id': 70, 'name': '毛桃', 'code':'maotao','color':1,'length':2,'garden':2,'nature':2},
 
 
                
