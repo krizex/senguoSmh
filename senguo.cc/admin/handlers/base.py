@@ -701,7 +701,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		except NoResultFound:
 			return self.send_fail('order_done: customer not found')
 		touser = customer_info.wx_openid
-		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name.order_id)
+		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name,order_id)
 	##############################################################################################
 	# 订单完成后 ，积分 相应增加 ，店铺可提现余额相应增加 
 	# 同时生成相应的积分记录 和 余额记录 
