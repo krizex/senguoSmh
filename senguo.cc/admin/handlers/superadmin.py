@@ -693,14 +693,7 @@ class User(SuperBaseHandler):
 			if users[i][7] == None:
 				birthday = 0
 			else:
-<<<<<<< HEAD
 				birthday = users[i][7]
-=======
-				b_time_stamp = users[i][7]
-				# print(type(b_time_stamp))
-				dateArray = datetime.datetime.utcfromtimestamp(b_time_stamp)
-				birthday = dateArray.strftime("%Y-%m-%d")
->>>>>>> senguo2.0
 			##
 			users[i] = list(users[i])
 			users[i].append(birthday)
