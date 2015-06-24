@@ -246,7 +246,7 @@ var shopItem=function (shops){
                                 '<div class="pull-left info">'+
                                     '<p class="shop_name font14">{{shop_name}}<span class="shop_auth  {{hide}}">{{shop_auth}}</span></p>'+
                                     '<p class="shop_attr">满意度 {{satisfy}}&nbsp;&nbsp;&nbsp;评价 {{comment_count}}&nbsp;&nbsp;&nbsp;商品数 {{goods_count}}</p>'+
-                                    '<i class="location"></i><p class="text-grey9 adre-box"><span class="distance {{dishide}}">{{distance}}</span><span class="shop_code">{{address}}</span></p>'+
+                                    '<p class="text-grey9 adre-box"><span class="distance {{dishide}}">{{distance}}</span><i class="location"></i><span class="shop_code">{{address}}</span></p>'+
                                 '</div>'+
                             '</div>'+
                             //'<p class="sty1 shop-intro">店铺简介：<span class="intro">{{intro}}</span></p>'+
