@@ -19,7 +19,7 @@
 .cart-list-item{position:relative;}
 .cart-list-item .box{padding:5px;}
 .cart-list-item .goods-img{border-radius:2px;width:60px;}
-.cart-list-item .name{display:inline-block;min-width:90px;width:130px;height:40px;overflow:hidden;}
+.cart-list-item .name{display:inline-block;min-width:90px;width:120px;height:40px;overflow:hidden;}
 .cart-list-item .w15{width:60px;height:60px;}
 .cart-list-item .w75{width:75%;}
 .cart-list-item .w10{width:10%;}
@@ -33,7 +33,7 @@
 .cart-list-item .number-plus{right:0;background-position:-34px -72px;}
 .cart-list-item .number-minus{left:0;background-position:0 -72px;}
 .cart-list-item .disable{border-color:#ccc;color:#ccc;}
-.cart-list-item .delete-btn a{display:inline-block;width:25px;height:30px;line-height:26px;margin-left:5px;}
+.cart-list-item .delete-btn a{display:inline-block;width:25px;height:30px;line-height:26px;}
 
 .send_type{border-top-left-radius:2px;border-top-right-radius:2px;overflow:hidden;margin-bottom:0;}
 .send_type li{padding:6px 15px;}
