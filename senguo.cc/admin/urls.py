@@ -58,7 +58,7 @@ handlers = [
 	(r"/customer/qrwxpay",handlers.customer.QrWxpay,{},"customerQrWxpay"),
 
 	#商品详情
-	(r"/customer/goods/(\w+)",handlers.customer.customerGoods,{},"customerGoods"),
+	#(r"/customer/goods/(\w+)",handlers.customer.customerGoods,{},"customerGoods"),
 	(r"/customer/overtime",handlers.customer.Overtime,{},"customerOverTime"),
 
 	# (r"/fruitzone/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
