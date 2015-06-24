@@ -270,7 +270,7 @@ class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
 		# shop_id = self.shop_id
-		print("**********************[个人中心]店铺号：",shop_code)
+		# print("[个人中心]店铺号：",shop_code)
 
 		# 用于标识 是否现实 用户余额 ，当 店铺 认证 通过之后 为 True ，否则为False
 		show_balance = False
@@ -278,7 +278,6 @@ class Home(CustomerBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
 		except:
 			return self.send_fail('shop error')
-		print("**********************",shop_code)
 		# print(shop.shop_code)
 		if shop is not None:
 			shop_name = shop.shop_name
@@ -421,12 +420,12 @@ class CustomerProfile(CustomerBaseHandler):
 			elif action == 'wxbinded':
 				wxnotice='该微信账号已被绑定，请更换其它微信账号'
 		try:
-				follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id).order_by(models.CustomerShopFollow.create_time.desc()).limit(3).all()
+			follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id).order_by(models.CustomerShopFollow.create_time.desc()).limit(3).all()
 		except:
-				print('[个人中心]该用户未关注任何店铺')
+			print('[个人中心]该用户未关注任何店铺')
 		for shopfollow in follow:
-				shop=self.session.query(models.Shop).filter_by(id = shopfollow.shop_id).first()
-				shop_info.append({'logo':shop.shop_trademark_url,'shop_code':shop.shop_code})
+			shop=self.session.query(models.Shop).filter_by(id = shopfollow.shop_id).first()
+			shop_info.append({'logo':shop.shop_trademark_url,'shop_code':shop.shop_code})
 		# print(self.current_shop,self.current_shop.shop_auth)
 
 		third=[]
@@ -1059,7 +1058,7 @@ class Market(CustomerBaseHandler):
 	def fruit_list(self):
 		page = int(self.args["page"])
 		group_id = int(self.args['group_id'])
-		print(group_id,'group_id')
+		# print(group_id,'group_id')
 		page_size = 10
 		nomore = True
 		offset = (page-1) * page_size
@@ -1163,7 +1162,7 @@ class Market(CustomerBaseHandler):
 					self.session.add(point_history)
 					self.session.commit()
 				else:
-					print("point_history None")
+					print("Market: point_history None")
 				if shop_follow:
 					shop_follow.shop_point += 1
 					now = datetime.datetime.now()
@@ -1185,13 +1184,13 @@ class Market(CustomerBaseHandler):
 				self.session.add(point_history)
 				self.session.commit()
 			else:
-				print("point_history None")
+				print("Market: point_history None")
 
 			if shop_follow:
 					shop_follow.shop_point += 1
 					now = datetime.datetime.now()
 			else:
-				print('customer_shop_follow not fount')
+				print('Market: customer_shop_follow not fount')
 		# 商品赞+1
 	
 		try:
@@ -1269,7 +1268,7 @@ class Cart(CustomerBaseHandler):
 
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		if self.get_cookie("market_shop_code") != shop_code:
-			print("present market_shop_code doesn't exist in cookie" )
+			print("Cart: present market_shop_code doesn't exist in cookie" )
 
 		# print("[购物篮]当前店铺：",shop)
 		if shop.shop_auth in [1,2,3,4]:
@@ -1288,7 +1287,7 @@ class Cart(CustomerBaseHandler):
 			customer_follow =self.session.query(models.CustomerShopFollow).\
 			filter_by(customer_id = customer_id,shop_id =shop_id ).first()
 		except:
-			print('custormer_balance error')
+			print('Cart: custormer_balance error')
 		if customer_follow:
 			if customer_follow.shop_balance:
 				balance_value = format(customer_follow.shop_balance,'.2f')
@@ -1321,7 +1320,7 @@ class Cart(CustomerBaseHandler):
 		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
-		print(json.dumps(self.args))
+		# print(json.dumps(self.args))
 		current_shop = self.session.query(models.Shop).filter_by( id = shop_id).first()
 		online_type = ''
 		shop_status = current_shop.status
@@ -1360,7 +1359,7 @@ class Cart(CustomerBaseHandler):
 					.order_by(models.GoodsLimit.create_time.desc()).first()
 				except:
 					limit_if = None
-				print(limit_num)
+				# print(limit_num)
 				if limit_num !=0:
 					allow_num = limit_num - buy_num
 					if allow_num < 0:
@@ -1483,7 +1482,7 @@ class Cart(CustomerBaseHandler):
 		try:
 			default_staff = self.session.query(models.HireLink).filter_by( shop_id =shop_id,default_staff=1).first()
 		except:
-			print('this shop has no default staff')
+			print('Cart: this shop has no default staff')
 		if default_staff:
 			w_SH2_id =default_staff.staff_id
 		else:
@@ -1541,7 +1540,7 @@ class Cart(CustomerBaseHandler):
 			elif online_type == 'alipay':
 				success_url = self.reverse_url('onlineAliPay')
 			else:
-				print(online_type,'wx or alipay?')
+				print("Cart: online_type error")
 			
 			return self.send_success(success_url=success_url,order_id = order.id)
 		return self.send_success(order_id = order.id)
@@ -1567,11 +1566,11 @@ class CartCallback(CustomerBaseHandler):
 	def post(self):
 		try:
 			order_id = int(self.args['order_id'])
-			print(order_id)
+			# print(order_id)
 		except:
 			Logger.error("CartCallback: get order_id error")
 			return self.send_fail("CartCallback: get order_id error")
-		order    = self.session.query(models.Order).filter_by(id = order_id).first()
+		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			Logger.warn("CartCallback: order not found")
 			return self.send_fail("CartCallback: order not found")
@@ -1803,11 +1802,11 @@ class Order(CustomerBaseHandler):
 				#将 该订单 对应的 余额记录取出来 ，置为 不可用
 
 				balance_record = ("%{0}%").format(order.num)
-				print(balance_record)
+				# print(balance_record)
 
 				old_balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_record.like(balance_record)).first()
 				if old_balance_history is None:
-					print('old histtory not found')
+					print('Order: old history not found')
 				else:
 					old_balance_history.is_cancel = 1
 					self.session.commit()
@@ -2008,16 +2007,16 @@ class Balance(CustomerBaseHandler):
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 			shop_id = shop_id).first()
 		except:
-			print('shop_follow none')
+			print('Balance: shop_follow none')
 		try:
 			shop=self.session.query(models.Shop).filter_by(id = shop_id).first()
 		except:
-			print('shop none')
+			print('Balance: shop none')
 		if shop:
 			shop_name=shop.shop_name
 			shop_logo=shop.shop_trademark_url
 		if not shop_follow:
-			print('shop_follow not fount')
+			print('Balance: shop_follow not fount')
 		if shop_follow:
 			if shop_follow.shop_balance:
 				shop_balance = shop_follow.shop_balance
@@ -2053,7 +2052,7 @@ class Balance(CustomerBaseHandler):
 				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,4,5])).count()
 			pages = int(count/page_size) if count % page_size == 0 else int(count/page_size) + 1
 		except:
-			print('pages 0')
+			print('Balance: pages 0')
 
 		if pages == page:
 			nomore = True
@@ -2111,7 +2110,7 @@ class Points(CustomerBaseHandler):
 			shop_history = self.session.query(models.PointHistory).filter_by(customer_id =\
 				customer_id,shop_id = shop_id).all()
 		except:
-			print("point history error 2222")
+			print("Points: point history error")
 
 		if shop_history:
 			for temp in shop_history:
@@ -2146,20 +2145,20 @@ class Recharge(CustomerBaseHandler):
 		url=''
 		action = self.args['action']
 		next_url = self.get_argument('next', '')
-		print("[微信充值]next_url：",next_url)
+		# print("[微信充值]next_url：",next_url)
 		if action == 'get_code':
-			print(self.request.full_url())
+			# print(self.request.full_url())
 			path_url = self.request.full_url()
 			jsApi  = JsApi_pub()
 			#path = 'http://auth.senguo.cc/fruitzone/paytest'
 			path = APP_OAUTH_CALLBACK_URL + self.reverse_url('customerRecharge')
-			print("[微信充值]redirect_uri：",path)
-			#print(self.args['code'],'sorry  i dont know')
+			# print("[微信充值]redirect_uri：",path)
+			# print(self.args['code'],'sorry  i dont know')
 			code = self.args.get('code',None)
-			print("[微信充值]当前code：",code)
+			# print("[微信充值]当前code：",code)
 			if len(code) is 2:
 				url = jsApi.createOauthUrlForCode(path)
-				print("[微信充值]获取code的url：",url)
+				# print("[微信充值]获取code的url：",url)
 				#return self.redirect(url)
 			return self.send_success(url = url)
 		return self.render("customer/recharge.html",code = code,url=url )

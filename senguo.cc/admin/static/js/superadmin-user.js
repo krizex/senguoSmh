@@ -1,3 +1,4 @@
+var page=0;
 $(document).ready(function(){
     $.ajaxSetup({'async':false});
     $.getItem(item_link+'/user-item.html?v=20150613',function(data){item=data;});
@@ -59,7 +60,6 @@ $(document).ready(function(){
 });
 var item;
 var action='all';
-var page=0;
 function classify(target,act){
     target.on('click',function(){getContent(act,0);action=act;page=0;});
 }
@@ -98,11 +98,11 @@ function getContent(action,page){
                     $item.find('.user-id').text(user_id);
                     $item.find('.birthday').text(birthday);
                     //
-
+                     //change by jyj 2015-6-24
                     var fshop=user[9];
                     if(fshop.length != 0){
                         if(fshop[0][2].length != 0){
-                            for(j= 0;j< 1;j++){
+                            for(j= 0;j< fshop.length;j++){
                                 if(fshop[j][2].length >6){
                                     fshop[j][2] = fshop[j][2].slice(0,6)+'...';
                                 }
@@ -115,6 +115,7 @@ function getContent(action,page){
                         tmp1[0] = tmp2;
                         fshop = tmp1;
                     }
+                    //
                     
                     var oshop=user[10];
 
@@ -188,10 +189,11 @@ function getSearchContent(action,inputinfo,page){
                     $item.find('.birthday').text(birthday);
                     //
 
+                    //change by jyj 2015-6-24
                     var fshop=user[9];
                     if(fshop.length != 0){
                         if(fshop[0][2].length != 0){
-                            for(j= 0;j< 1;j++){
+                            for(j= 0;j< fshop.length;j++){
                                 if(fshop[j][2].length >6){
                                     fshop[j][2] = fshop[j][2].slice(0,6)+'...';
                                 }
@@ -204,6 +206,7 @@ function getSearchContent(action,inputinfo,page){
                         tmp1[0] = tmp2;
                         fshop = tmp1;
                     }
+                    //
 
                     var oshop=user[10];
 

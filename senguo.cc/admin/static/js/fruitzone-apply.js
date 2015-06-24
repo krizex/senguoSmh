@@ -287,13 +287,10 @@ function Apply(target){
                 $('#submitApply').removeAttr('disabled').addClass('bg-green');
             }
             else {
-                noticeBox(res.error_text);
                 $('#submitApply').removeAttr('disabled').addClass('bg-green');
+                return noticeBox(res.error_text);
+                
             }
-        },
-        function(){
-            noticeBox('网络好像不给力呢~ ( >O< ) ~');
-            $('#submitApply').removeAttr('disabled').addClass('bg-green');
         }
     );
 }

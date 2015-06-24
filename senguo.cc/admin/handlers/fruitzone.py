@@ -54,7 +54,7 @@ class ShopList(FruitzoneBaseHandler):
 		else:
 			city = None
 			city_id = None
-			print('get city by ip error!')
+			print('ShopList: get city by ip error!')
 		
 		province_count=self.get_shop_group()
 		shop_count = self.get_shop_count()
@@ -172,7 +172,7 @@ class ShopList(FruitzoneBaseHandler):
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
 		else:
-			print("[店铺列表]城市不存在")
+			print("ShopList: handle_filter error")
 
 		
 		# if "live_month" in self.args:
@@ -403,6 +403,7 @@ class ShopApply(FruitzoneBaseHandler):
 
 		if self._action == "apply":
 			account_id = self.current_user.accountinfo.id
+			#判断申请店铺的微信是否已是某店铺的管理员身份
 			try:
 				if_admin = self.session.query(models.HireLink).join(models.ShopStaff,models.HireLink.staff_id == models.ShopStaff.id)\
 				.filter(models.HireLink.active==1,models.HireLink.work ==9 ,models.ShopStaff.id == account_id).first()
@@ -414,6 +415,24 @@ class ShopApply(FruitzoneBaseHandler):
 				if_shop = None
 			if if_admin:
 				return self.send_fail('该账号已是'+if_shop.shop_name+'的管理员，不能使用该账号申请店铺，若要使用该账号，请退出'+if_shop.shop_name+'管理员身份更换或其它账号')
+			
+
+			#首个店铺未进行店铺认证不允许再申请店铺
+			try:
+				shops = self.session.query(models.Shop).filter_by(admin_id=account_id)
+			except:
+				shops = None
+
+			if shops:
+				shop_frist = shops.first()
+				if shop_frist:
+					if shop_frist.shop_auth==0:
+						return self.send_fail("您的第一个店铺还未进行认证，店铺认证后才可申请多个店铺。个人认证可申请5个店铺，企业认证可申请15个店铺。")
+					elif shop_frist.shop_auth in [1,4] and shops.count() >= 5:
+						return self.send_fail("首个店铺为个人认证最多只可申请5个店铺")
+					elif shop_frist.shop_auth in [2,3] and shops.count() >= 15:
+						return self.send_fail("首个店铺为企业认证最多只可申请15个店铺")
+
 			if not check_msg_token(phone=self.args['shop_phone'], code=self.args["code"]):
 				# print('check_msg_token' + self.current_user.accountinfo.wx_unionid)
 				return self.send_fail(error_text="验证码过期或者不正确")  #
@@ -587,7 +606,7 @@ class QiniuCallback(FruitzoneBaseHandler):
 			try:
 				shop = self.session.query(models.Shop).filter_by(id=id).one()
 			except:
-				print("not found shop")
+				print("QiniuCallback: not found shop")
 				return self.send_error(404)
 			shop_trademark_url = shop.shop_trademark_url  # 要先跟新图片url，防止删除旧图片时出错
 			shop.update(session=self.session, shop_trademark_url=SHOP_IMG_HOST+key)
