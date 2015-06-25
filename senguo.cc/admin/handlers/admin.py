@@ -1702,7 +1702,7 @@ class Goods(AdminBaseHandler):
 				self.session.commit()
 			elif action == "delete_goods":
 				time_now = datetime.datetime.now()
-				goods.update(session=self.session, active = 0,delete_time = time_now)
+				goods.update(session=self.session, active = 0,delete_time = time_now,group_id = 0)
 
 		elif action in ["del_charge_type", "edit_charge_type"]:  # charge_type_id
 			charge_type_id = self.args["charge_type_id"]
