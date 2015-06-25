@@ -713,11 +713,13 @@ class IncStatic(SuperBaseHandler):
 		if page == 0:
 			now = datetime.datetime.now()
 			start_date = datetime.datetime(now.year, now.month, 1)
-			end_date = now +datetime.timedelta(1)
+			end_date =datetime.datetime(now.year,now.month,now.day,23,59,59)
+			print(end_date)
 		else:
 			date = self.monthdelta(datetime.datetime.now(), page)
 			start_date = datetime.datetime(date.year, date.month, 1)
-			end_date = datetime.datetime(date.year, date.month, date.day)
+			end_date = datetime.datetime(date.year, date.month, date.day,23,59,59)
+			print(end_date)
 
 		q = self.session.query(models.Accountinfo.id, models.Accountinfo.create_date_timestamp).\
 			filter(models.Accountinfo.create_date_timestamp >= start_date.timestamp(),
@@ -815,16 +817,17 @@ class ShopStatic(SuperBaseHandler):
 		if page == 0:
 			now = datetime.datetime.now()
 			start_date = datetime.datetime(now.year, now.month, 1)
-			end_date = now +datetime.timedelta(1)
+			# end_date = now +datetime.timedelta(1)
+			end_date =datetime.datetime(now.year,now.month,now.day,23,59,59)
 		else:
 			date = self.monthdelta(datetime.datetime.now(), page)
 			start_date = datetime.datetime(date.year, date.month, 1)
-			end_date = datetime.datetime(date.year, date.month, date.day)
+			end_date = datetime.datetime(date.year, date.month, date.day,23,59,59)
 
 		# 日订单数，日总订单金额
 		s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
 			filter(models.Order.create_date >= start_date,
-				   models.Order.create_date < end_date,models.Order.status !=0).\
+				   models.Order.create_date <= end_date,models.Order.status !=0).\
 			group_by(func.year(models.Order.create_date),
 					 func.month(models.Order.create_date),
 					 func.day(models.Order.create_date)).\
@@ -832,7 +835,7 @@ class ShopStatic(SuperBaseHandler):
 
 		# 总订单数
 		total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
-			filter(models.Order.create_date <end_date,models.Order.status != 0).all()
+			filter(models.Order.create_date <=end_date,models.Order.status != 0).all()
 		total = list(total[0])
 
 		data = []
@@ -882,7 +885,7 @@ class OrderStatic(SuperBaseHandler):
 		elif type == 2:  # 昨天数据
 			now = datetime.datetime.now() - datetime.timedelta(1)
 			start_date = datetime.datetime(now.year, now.month, now.day, 0)
-			end_date = datetime.datetime(now.year, now.month, now.day, 23)
+			end_date = datetime.datetime(now.year, now.month, now.day, 23,59,59)
 			q = q.filter(models.Order.create_date >= start_date,
 					   models.Order.create_date <= end_date)
 		else:
@@ -911,7 +914,7 @@ class OrderStatic(SuperBaseHandler):
 		elif type == 2:
 			now = datetime.datetime.now() - datetime.timedelta(1)
 			start_date = datetime.datetime(now.year, now.month, now.day, 0)
-			end_date = datetime.datetime(now.year, now.month, now.day, 23)
+			end_date = datetime.datetime(now.year, now.month, now.day, 23,59,59)
 			orders = q.filter(models.Order.create_date >= start_date,
 							  models.Order.create_date <= end_date).all()
 		else:
