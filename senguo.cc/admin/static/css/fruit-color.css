@@ -26,11 +26,11 @@
 .Xg .icon-bg{border-color:transparent #EE618C transparent transparent;}
 .Lz .color{color:#F97060}
 .Lz .bg{background-color:#FFF9F5}
-.Lz .bg-color{background-color:#fecfac}
+.Lz .bg-color{background-color:#fc7867}
 .Lz .icon-bg{border-color:transparent #F97060 transparent transparent;}
 .Nm .color{color:#C0CB04}
 .Nm .bg{background-color:#F9FAE9}
-.Nm .bg-color{background-color:#f1f962}
+.Nm .bg-color{background-color:#effb20}
 .Nm .icon-bg{border-color:transparent #C0CB04 transparent transparent;}
 .Pt .color{color:#ED3B94}
 .Pt .bg{background-color:#FFFAFB}
@@ -65,16 +65,16 @@
 .Xj .bg-color{background-color:#ffee6f}
 .Xj .icon-bg{border-color:transparent #FBDF12 transparent transparent;}
 .Tz .color{color:#b3c802}
-.Tz .bg-color{background-color:#e4f45f}
+.Tz .bg-color{background-color:#c5dc09}
 .Tz .bg{background-color:#fdfff0}
 .Tz .icon-bg{border-color:transparent #e4f45f transparent transparent;}
 .Mg .color{color:#F8BC14}
 .Mg .bg{background-color:#FFFDEF}
-.Mg .bg-color{background-color:#ffef60}
+.Mg .bg-color{background-color:#f6be1c}
 .Mg .icon-bg{border-color:transparent #F8BC14 transparent transparent;}
 .Mht .color{color:#A3D221}
 .Mht .bg{background-color:#FDFFF2}
-.Mht .bg-color{background-color:#d1ff53}
+.Mht .bg-color{background-color:#a3d221}
 .Mht .icon-bg{border-color:transparent #A3D221 transparent transparent;}
 .Mug .color{color:#FD9242}
 .Mug .bg{background-color:#FFFDF4}
@@ -82,11 +82,11 @@
 .Mug .icon-bg{border-color:transparent #FD9242 transparent transparent;}
 .Ll .color{color:#DAB954}
 .Ll .bg{background-color:#FFFEF2}
-.Ll .bg-color{background-color:#fee28c}
+.Ll .bg-color{background-color:#dec96c}
 .Ll .icon-bg{border-color:transparent #DAB954 transparent transparent;}
 .Yz .color{color:#FFE633}
 .Yz .bg{background-color:#FFFFF1}
-.Yz .bg-color{background-color:#ffee73}
+.Yz .bg-color{background-color:#f7d02d}
 .Yz .icon-bg{border-color:transparent #FFE633 transparent transparent;}
 .Hmg .color{color:#FFA030}
 .Hmg .bg{background-color:#FFFBF1}
@@ -114,7 +114,7 @@
 .Cz .icon-bg{border-color:transparent #FBAB2D transparent transparent;}
 .Bdg .color{color:#93724C}
 .Bdg .bg{background-color:#FFFBF8}
-.Bdg .bg-color{background-color:#ffd2ae}
+.Bdg .bg-color{background-color:#e0bb9d}
 .Bdg .icon-bg{border-color:transparent #93724C transparent transparent;}
 .Blm .color{color:#A5A026}
 .Blm .bg{background-color:#FFFEF2}
@@ -126,7 +126,7 @@
 .Sz .icon-bg{border-color:transparent #F78F1E transparent transparent;}
 .Gy .color{color:#916231}
 .Gy .bg{background-color:#fffaef}
-.Gy .bg-color{background-color:#ffebbc}
+.Gy .bg-color{background-color:#d4a563}
 .Gy .icon-bg{border-color:transparent #ffebbc transparent transparent;}
 .Pp .color{color:#F07D06}
 .Pp .bg{background-color:#FFF8EE}
@@ -239,7 +239,7 @@
 .jialiguo .icon-bg{border-color:transparent #9C4547 transparent transparent;}
 .longyan .color{color:#916231}
 .longyan .bg{background-color:#fffaef}
-.longyan .bg-color{background-color:#ffebbc}
+.longyan .bg-color{background-color:#bb844b}
 .longyan .icon-bg{border-color:transparent #ffebbc transparent transparent;}
 .chelizhi .color{color:#E23457}
 .chelizhi .bg{background-color:#FFF7F8}
@@ -260,7 +260,7 @@
 
 .huanggua .color{color:#FFD800}
 .huanggua .bg{background-color:#FFFAF6}
-.huanggua .bg-color{background-color:#FFD800}
+.huanggua .bg-color{background-color:#dce89d}
 .huanggua .icon-bg{border-color:transparent #FFD800 transparent transparent;}
 .renshenguo .color{color:#FFD800}
 .renshenguo .bg{background-color:#FFFAF6}
@@ -280,7 +280,7 @@
 .ugly .icon-bg{border-color:transparent #FBAB2D transparent transparent;}
 .yangmei .color{color:#FF6740}
 .yangmei .bg{background-color:#FEF6F6}
-.yangmei .bg-color{background-color:#ff9175}
+.yangmei .bg-color{background-color:#f07070}
 .yangmei .icon-bg{border-color:transparent #FF6740 transparent transparent;}
 .lizi .color{color:#ED3B94}
 .lizi .bg{background-color:#FFFAFB}
@@ -319,7 +319,7 @@
 .huasheng .icon-bg{border-color:transparent #B4916B transparent transparent;}
 .kaixinguo .color{color:#D4D65B}
 .kaixinguo .bg{background-color:#FDFFFB}
-.kaixinguo .bg-color{background-color:#e0e999}
+.kaixinguo .bg-color{background-color:#e09774}
 .kaixinguo .icon-bg{border-color:transparent #D4D65B transparent transparent;}
 .sognzi .color{color:#D8BB8E}
 .sognzi .bg{background-color:#FEFAF4}
@@ -352,7 +352,7 @@
 .candou .icon-bg{border-color:transparent #96B937 transparent transparent;}
 .wandou .color{color:#5B8000}
 .wandou .bg{background-color:#F8FFE3}
-.wandou .bg-color{background-color:#d7eba5}
+.wandou .bg-color{background-color:#94bb3d}
 .wandou .icon-bg{border-color:transparent #5B8000 transparent transparent;}
 .shibing .color{color:#C74E18}
 .shibing .bg{background-color:#FFF4F0}
@@ -360,20 +360,20 @@
 .shibing .icon-bg{border-color:transparent #C74E18 transparent transparent;}
 .bigenguo .color{color:#AC4B2A}
 .bigenguo .bg{background-color:#FFF7EA}
-.bigenguo .bg-color{background-color:#fcf1e0}
+.bigenguo .bg-color{background-color:#ce8046}
 .bigenguo .icon-bg{border-color:transparent #AC4B2A transparent transparent;}
 
 .xiangjiaopian .color{color:#AC4B2A}
 .xiangjiaopian .bg{background-color:#FFF7EA}
-.xiangjiaopian .bg-color{background-color:#fdf38a}
+.xiangjiaopian .bg-color{background-color:#fde848}
 .xiangjiaopian .icon-bg{border-color:transparent #AC4B2A transparent transparent;}
 .zhenzi .color{color:#AC4B2A}
 .zhenzi .bg{background-color:#FFF7EA}
-.zhenzi .bg-color{background-color:#f5dcbc}
+.zhenzi .bg-color{background-color:#ec9a34}
 .zhenzi .icon-bg{border-color:transparent #AC4B2A transparent transparent;}
 .ganguiyuan .color{color:#AC4B2A}
 .ganguiyuan .bg{background-color:#FFF7EA}
-.ganguiyuan .bg-color{background-color:#fdd091}
+.ganguiyuan .bg-color{background-color:#d4a563}
 .ganguiyuan .icon-bg{border-color:transparent #AC4B2A transparent transparent;}
 .tianjiao .color{color:#AC4B2A}
 .tianjiao .bg{background-color:#FFF7EA}

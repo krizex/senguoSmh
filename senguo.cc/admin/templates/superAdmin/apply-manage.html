@@ -39,9 +39,9 @@
                 <span class="tit1">申请状态：{{handler.code_to_text('have_offline_entity',shop.have_offline_entity)}}</span>
             </p>
 
-            <div class="show-info clearfix mb10 bottom-d bg_gray divm1">
+            <div class="show-info clearfix mb10 bg_gray divm1">
                 <span class="shop-img">
-                    <img src="{{shop.admin.accountinfo.headimgurl}}" class="w60"/>
+                    <img src="{{shop.admin.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}" class="w60"/>
                 </span>
                 <div class="tit1 ml10">
                     <a href="/super/user" target="_blank"><p class="text-blue">{{shop.admin.accountinfo.nickname}}</p></a>
