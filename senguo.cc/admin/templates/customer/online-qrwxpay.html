@@ -68,7 +68,7 @@
         <p class="text-black">支付方式：<span class="">{% if order.pay_type==1 %}货到付款{% elif order.pay_type==2 %}余额支付{% elif order.pay_type==3 %}在线支付{% if online_type=='wx'%}-微信支付{% elif online_type=='alipay'%}-支付宝支付{% end %}{% end %}</span></p>
     </div>
     <div class="wrap-qrcode text-center">
-        <p class="text-center font14">长按图片或扫描【识别二维码】付款</p>
+        <p class="text-center font14">长按图片【识别二维码】</p><p>或使用微信【扫一扫】付款</p>
         <div class="qrcode" id="qrcode"></div>
     </div>
 </div>
