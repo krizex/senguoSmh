@@ -21,7 +21,7 @@
                     {% if order.status == -1%}
                     <img src="/static/images/TDSG.png" alt="配送员头像"/>
                     {% else %}
-                    <img src="{{order.sender_img}} or '/static/images/TDSG.png'" alt="配送员头像"/>
+                    <img src="{{order.sender_img or '/static/images/TDSG.png'}}" alt="配送员头像"/>
                     {% end %}
                 </a>
             </div>
@@ -38,7 +38,7 @@
                 <dl class="goods-item group">
                     <dd>
                         {% if charge_type.fruit.img_url%}
-                        <img src="{{charge_type.fruit.img_url}}?imageView2/1/w/170/h/170" alt="商品图片"/>
+                        <img src="{{charge_type.fruit.img_url.split(';')[0]}}?imageView2/1/w/170/h/170" alt="商品图片"/>
                         {% else %}
                         <img src="/static/design_img/TDSG.png" alt="商品图片"/>
                         {% end %}
@@ -68,7 +68,7 @@
         <p class="text-black">支付方式：<span class="">{% if order.pay_type==1 %}货到付款{% elif order.pay_type==2 %}余额支付{% elif order.pay_type==3 %}在线支付{% if online_type=='wx'%}-微信支付{% elif online_type=='alipay'%}-支付宝支付{% end %}{% end %}</span></p>
     </div>
     <div class="wrap-qrcode text-center">
-        <p class="text-center font14">长按图片或扫描【识别二维码】付款</p>
+        <p class="text-center font14">长按图片【识别二维码】</p><p class="text-center font14">或使用微信【扫一扫】付款</p>
         <div class="qrcode" id="qrcode"></div>
     </div>
 </div>

@@ -22,7 +22,7 @@
     </div>
     <script type="text/javascript" src="{{static_url('js/zepto.min.js')}}"></script> 
     <script type="text/javascript" src="{{static_url('js/zepto.qrcode.min.js')}}"></script> 
-   <script type="text/javascript">
+    <script type="text/javascript">
         $("#qrcode").qrcode({render: "canvas",width: 250,height:250,text: '{{url}}' ,typeNumber  : -1});//需要生成的页面
     </script>
 </body>
