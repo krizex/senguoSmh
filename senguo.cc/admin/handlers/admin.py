@@ -1677,6 +1677,8 @@ class Goods(AdminBaseHandler):
 					q.delete(synchronize_session=False)
 
 				detail_describe = data["detail_describe"].replace("script","'/script/'")
+				if (not detail_describe) or detail_describe == "":
+					detail_describe = None
 
 				goods.update(session=self.session,
 						name = data["name"],

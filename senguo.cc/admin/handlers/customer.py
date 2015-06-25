@@ -1044,6 +1044,7 @@ class Market(CustomerBaseHandler):
 
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 				saled = fruit.saled if fruit.saled else 0
+				# print(fruit.name,fruit.len(fruit.img_url.split(";")),fruit.detail_describe)
 				if img_url == None or len(fruit.img_url.split(";"))==1 and fruit.detail_describe ==None:
 					detail_no = True
 				else:
