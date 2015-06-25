@@ -486,7 +486,7 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id=
                     '<div class="clearfix box bg {{if storage<=0 }}desaturate{{/if}}">'+
                         '<div class="goods-img pull-left forbid_click">'+
                             '<a href="javascript:;" class="check-lg-img">'+
-                                '<img src="/static/images/holder.png?v=20150330" class="img lazy_img" data-original="{{ori_img}}">'+
+                                '<img src="/static/images/holder.png" class="img lazy_img" data-original="{{ori_img}}">'+
                                 '<span class="tag text-white text-center tagItem font8 {{tag}}"></span>'+
                             '</a>'+
                         '</div>'+

@@ -7,7 +7,7 @@
 {%block back%}{{reverse_url('customerHome',handler.shop_code)}}{% end %}
 {% block content %}
 <div class="points_box bg-blue mt40 text-white">
-        <img src="{{static_url('images/points.png')}}" class="points_img pull-left"/>
+        <img src="/static/images/points.png" class="points_img pull-left"/>
         <span class="pull-left font14 ml10">店铺积分：<span class="current_point" data-point="{{shop_point}}"></span></span>
         <button class="rules pull-right btn bg-blue">积分规则</button>
 </div>

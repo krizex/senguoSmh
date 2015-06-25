@@ -29,7 +29,7 @@
     <div class="w1200 header-box">
         <div class="logo-con height50 pull-left">
             <a href="{{reverse_url('adminHome')}}" class="navbar-brand logo height50 padding-none">
-                <img src="{{static_url('images/logo.png')}}" class="height50"/>
+                <img src="/static/images/logo.png" class="height50"/>
             </a>
             <span class="title">后台管理系统</span>
             <span class="beta">Beta2.0</span>
@@ -58,7 +58,7 @@
                     </a>
                 </li>-->
                 <li class="area-info">
-                    <img src="{{current_shop.shop_trademark_url or '/static/design_img/TDSG.png'}}?imageView2/1/w/100/h/100" class="admin-img height50 pull-left"/>
+                    <img src="{{current_shop.shop_trademark_url or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" class="admin-img height50 pull-left"/>
                     <div class="admin-info area pull-right">
                         <!-- <p class="job pull-left text-left">{{current_user.accountinfo.nickname}}</p> -->
                         {% if _shop_auth in [1,4] %}

@@ -6,8 +6,8 @@
 </form>
 {% end %}
 {% block js %}
-<script src="{{static_url('js/editor/kindeditor-min.js')}}"></script>
-<script src="{{static_url('js/editor/zh_CN.js')}}"></script>
+<script src="/static/js/editor/kindeditor-min.js"></script>
+<script src="/static/js/editor/zh_CN.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	$.ajax({url: '/admin/editorTest?action=editor', async: false, success: function(data){

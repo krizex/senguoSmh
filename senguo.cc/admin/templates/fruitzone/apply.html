@@ -21,12 +21,12 @@
 	{% else %}
 	<div class="count-box {{context['subscribe']}}">
 	    <div class="text-center mtp5">
-		<img src="{{static_url('images/apply_logo.png')}}" class="logo"/>
+		<img src="/static/images/apply_logo.png" class="logo"/>
 	    </div>
 	    <div class="count-list-box center-block">
 		<ul class="count-list" id="realShop">
 		    <li data-id="2" class="active">
-		        <img src="{{static_url('images/apply_pear1.png')}}" class="pear_img"/>
+		        <img src="/static/images/apply_pear1.png" class="pear_img"/>
 		        <div class="word bg-green">
 		            <p class="text-yellow font16">没有卖过水果想尝试</p>
 		            <p class="text-white font14">我们为您提供从采购到配送全流程</p>
@@ -35,7 +35,7 @@
 		        <span class="check text-white">✓</span>
 		    </li>
 		    <li data-id="1">
-		        <img src="{{static_url('images/apply_pear2.png')}}" class="pear_img"/>
+		        <img src="/static/images/apply_pear2.png" class="pear_img"/>
 		        <div class="word bg-green">
 		            <p class="text-yellow font16">已有实体店，并在经营中</p>
 		            <p class="text-white font14">我们满足您线上水果的一切技术需求</p>
@@ -43,7 +43,7 @@
 		        <span class="check text-white hidden">✓</span>
 		    </li>
 		    <li data-id="0">
-		        <img src="{{static_url('images/apply_pear3.png')}}" class="pear_img"/>
+		        <img src="/static/images/apply_pear3.png" class="pear_img"/>
 		        <div class="word bg-green">
 		            <p class="text-yellow font16">没有实体店，水果o2o探索中</p>
 		            <p class="text-white font14">这里有来自天南地北的同行</p>
@@ -205,7 +205,7 @@
 	{% end %}
 {% end %}
 {% block bottom %}
-<!--<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>-->
+<!--<script src="/static/js/jquery.uploadifive.min.js"></script>-->
 <script src="{{static_url('js/area.js')}}"></script>
 <script src="{{static_url('js/fruitzone-apply.js')}}"></script>
 {% end %}

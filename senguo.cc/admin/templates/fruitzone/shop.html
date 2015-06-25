@@ -44,12 +44,12 @@
             <div class="logo col-xs-5 col-sm-3 {{bt_edit_show}}">
                 <div id="shopLogoUpload">
                     <p class="text-change text-notice">点击修改</p>
-                    <img src="{{shop.shop_trademark_url or static_url('images/anoa-2-lg.gif')}}?imageView2/1/w/130/h/130" id="logoImg"/>
+                    <img src="{{shop.shop_trademark_url or '/static/images/anoa-2-lg.gif'}}?imageView2/1/w/130/h/130" id="logoImg"/>
                     <input id="file_upload" type="file" name="file_upload" class="uploadImg" />
                 </div>
             </div>
             <div class="logo col-xs-5 col-sm-3 {{bt_edit_hide}}">
-                  <img src="{{shop.shop_trademark_url or static_url('images/anoa-2-lg.gif')}}?imageView2/1/w/130/h/130"/>
+                  <img src="{{shop.shop_trademark_url or '/static/images/anoa-2-lg.gif'}}?imageView2/1/w/130/h/130"/>
             </div>
             <div class="info col-xs-7 col-sm-9">
                 <p class="shop-name">{{shop.shop_name}}</p>
@@ -301,6 +301,6 @@
 </div>
 {% end %}
 {% block bottom %}
-<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>
+<script src="/static/js/jquery.uploadifive.min.js"></script>
 <script src="{{static_url('js/fruitzone-admin-shop.js')}}"></script>
 {% end %}
