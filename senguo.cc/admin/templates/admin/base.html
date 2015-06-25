@@ -18,6 +18,7 @@
 </head>
 <body>
 {% set current_shop = handler.current_shop %}
+{% set _shop_auth = current_shop.shop_auth %}
 {% set num=0 %}
 {% for order in current_shop.orders %}
     {% if order.type==1 and order.status==1 %}
@@ -60,9 +61,9 @@
                     <img src="{{current_shop.shop_trademark_url or '/static/design_img/TDSG.png'}}?imageView2/1/w/100/h/100" class="admin-img height50 pull-left"/>
                     <div class="admin-info area pull-right">
                         <!-- <p class="job pull-left text-left">{{current_user.accountinfo.nickname}}</p> -->
-                        {% if current_shop.shop_auth in [1,4] %}
+                        {% if _shop_auth in [1,4] %}
                         <p class="job pull-left text-left">个人认证</p>
-                        {% elif current_shop.shop_auth in [2,3] %}
+                        {% elif _shop_auth in [2,3] %}
                         <p class="job pull-left text-left">企业认证</p>
                         {% else %}
                         <div class="noauth pull-left text-left"><a href="javascript:;" class="text-grey">未认证</a> <a href="{{reverse_url('adminShopAuth')}}" class="text-link">去认证</a></div>
@@ -109,6 +110,7 @@
 {% set order_static_active='' %}
 {% set shopBlance='' %}
 {% set marketing_active='' %}
+{% set market_set_active=''%}
 
 {% if subpage == 'goods' %}
     {% set goods_active = 'active' %}
@@ -130,6 +132,13 @@
     {% set shopBlance = 'active' %}
 {% elif subpage == 'marketing' %}
     {% set marketing_active = 'active' %}
+{% elif subpage == 'market_set'%}
+    {% set market_set_active = 'active' %}
+{% end %}
+
+{% set no_auth ="" %}
+{% if  _shop_auth == 0 %}
+{% set no_auth="no_auth"%}
 {% end %}
 <main class="container mt100">
     <div class="container-left pull-left">
@@ -146,12 +155,10 @@
                 <span class="server"><i></i>客服</span>
                 <a href="{{reverse_url('adminComment')}}?action=all&&page=0" class="{{comment_active}} has-red-tip" data-action="msg">消息与评价<b class="red-tip hidden" id="comment_num">10</b></a>
             </li>
-            {% if current_shop.shop_auth !=0 %}
             <li>
                 <span class="account"><i></i>账户</span>
-                <a href="{{reverse_url('adminShopBalance')}}" class="{{shopBlance}} has-red-tip" data-action="account">账户余额<b class="red-toll hidden" id="is_balance"></b></a>
+                <a href="{{reverse_url('adminShopBalance')}}" class="{{shopBlance}} has-red-tip {{no_auth}}" data-action="account">账户余额<b class="red-toll hidden" id="is_balance"></b></a>
             </li>
-            {% end %}
             <li>
                 <span class="manage"><i></i>管理</span>
                 <a href="{{reverse_url('adminOrder')}}?order_type=1" class="{{order_active}} has-red-tip" data-action="order">订单管理<b class="red-tip hidden" id="order_ordernum">200</b></a>
@@ -164,13 +171,12 @@
             <li>
                 <span class="set"><i></i>设置</span>
                 <a href="{{reverse_url('adminShopConfig')}}" class="{{shop_set_active}}" id="shopPage">店铺设置</a>
+                <a href="{{reverse_url('adminConfig')}}?action={% if _shop_auth ==0 %}notice{% else%}template{%end%}" class="{{market_set_active}}">商城设置</a>
             </li>
-            {% if current_shop.shop_auth !=0 %}
              <li>
                 <span class="market"><i></i>营销</span>
-                <a href="{{reverse_url('adminMarketing')}}?action=lovewall" class="{{marketing_active}}" id="shopPage">营销和玩法</a>
+                <a href="{{reverse_url('adminMarketing')}}?action=lovewall" class="{{marketing_active}} {{no_auth}}" id="shopPage">营销和玩法</a>
             </li>
-            {% end %}
         </ul>
     </div>
     <div class="container-right pull-left">

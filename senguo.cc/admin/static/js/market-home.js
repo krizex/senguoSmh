@@ -156,7 +156,9 @@ $(document).ready(function(){
     var link_search=$.getUrlParam("search");
      if(link_search != null){
         var shop_code=$('#shop_code').val();
-        window.location.href="/"+shop_code;
+        var link="/"+shop_code
+        window.location.href=link;
+        addCart(link);
     }else{
         $('.classify-list').toggle();
     }
@@ -392,6 +394,11 @@ $(document).ready(function(){
     //    $parent.find('.toggle_icon').toggleClass('arrow');
     //    $parent.toggleClass('pr35');
     //};
+}).on('click','._add_cart',function(e){
+    //添加到购物车
+    stopDefault(e);
+    var link=$(this).attr('href');
+    addCart(link);
 });
 window.dataObj.page=1;
 window.dataObj.count=1;

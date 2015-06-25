@@ -73,7 +73,9 @@ $(document).ready(function(){
     var link_search=$.getUrlParam("search");
     if(link_search != null){
         var shop_code=$('#shop_code').val();
-        window.location.href="/"+shop_code;
+        var link="/"+shop_code;
+        window.location.href=link;
+        addCart(link);
     }
     else{
         if($("#menu").hasClass("menu-active")){
@@ -172,6 +174,11 @@ $(document).ready(function(){
     stopDefault(e);
     var link=$(this).attr('href');
     addCart(link);
+}).on('click','._add_cart',function(e){
+    //添加到购物车
+    stopDefault(e);
+    var link=$(this).attr('href');
+    addCart(link);
 });
 var _group_id;
 var _search;
@@ -249,7 +256,7 @@ var goods_item1='<li class="{{code}}">'+
                     '</a>'+
                 '</li>';
 var goods_item2='<li class="{{code}} goods-list-item" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{detail_no}}">'+
-                '<a href="{{link}}" class="add_cart"><img src="/static/images/holder_fruit.jpg" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/></a>'+
+                '<a href="{{link}}" class="_add_cart"><img src="/static/images/holder_fruit.jpg" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/></a>'+
                 '<div class="fruit-right charge-item"  data-id="{{charge_types["id"]}}" data-relate="{{charge_types["relate"]}}" data-buy="{{charge_types["limit_today"]}}" data-allow={{charge_types["allow_num"]}}>'+
                     '<p class="name">{{name}}</p>'+
                     '<div class="price charge-type">'+

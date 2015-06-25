@@ -1,39 +1,43 @@
-{% extends 'shop-set-base.html' %}
+{% extends 'market-set-base.html' %}
 {% block title%}商城模板{% end %}
 
 {% block setcontent %}
 <!-- <div class="set-description">
     <p>注意：商城模板一个月只能修改一次，请谨慎选择</p>
 </div> -->
-<ul class="tpl-list font14 mt20" data-id="{{current_shop.shop_tpl}}">
-	<li>
-		<a href="javascript:;" class="pull-right pre-view">预览</a>
-		<div class="view-box pull-right mr10"><img src="{{static_url('images/tpl-0.png')}}" class="view-img" alt="预览"></div>
-		<a href="javascript:;" class="pull-left choose-btn mr10" data-id="0"></a>
-		<span class="pull-left mr20">森果商城模板一</span>
-		<span class="pull-left text-grey2">简约，直观，操作简单。适合高校经营。</span>
-	</li>
-	<li>
-		<a href="javascript:;" class="pull-right pre-view">预览</a>
-		<div class="view-box pull-right mr10"><img src="{{static_url('images/tpl-1.png')}}" class="view-img" alt="预览"></div>
-		<a href="javascript:;" class="pull-left choose-btn mr10"  data-id="1"></a>
-		<span class="pull-left mr20"> 森果商城模板二</span>
-		<span class="pull-left text-grey2">大图，美观，对上传的图片要求比较高 。</span>
-	</li>
-</ul>
-<div class="preview_box modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header text-center">
-                <span class="title c333">
-                   商城预览
-                </span>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            </div>
-            <div class="modal-body text-center">
-                <img src="" id="preview-img"/>
-            </div>
-        </div>
-    </div>
-</div>
+	{% if _shop_auth ==0 %}
+	 <h4 class="mt20">您还未进行店铺认证，暂不能使用该功能，<a href="{{reverse_url('adminShopAuth')}}">点击进行店铺认证</a></h4>
+	{% else %}
+	<ul class="tpl-list font14 mt20" data-id="{{current_shop.shop_tpl}}">
+		<li>
+			<a href="javascript:;" class="pull-right pre-view">预览</a>
+			<div class="view-box pull-right mr10"><img src="{{static_url('images/tpl-0.png')}}" class="view-img" alt="预览"></div>
+			<a href="javascript:;" class="pull-left choose-btn mr10" data-id="0"></a>
+			<span class="pull-left mr20">森果商城模板一</span>
+			<span class="pull-left text-grey2">简约，直观，操作简单。适合高校经营。</span>
+		</li>
+		<li>
+			<a href="javascript:;" class="pull-right pre-view">预览</a>
+			<div class="view-box pull-right mr10"><img src="{{static_url('images/tpl-1.png')}}" class="view-img" alt="预览"></div>
+			<a href="javascript:;" class="pull-left choose-btn mr10"  data-id="1"></a>
+			<span class="pull-left mr20"> 森果商城模板二</span>
+			<span class="pull-left text-grey2">大图，美观，对上传的图片要求比较高 。</span>
+		</li>
+	</ul>
+	<div class="preview_box modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	            <div class="modal-header text-center">
+	                <span class="title c333">
+	                   商城预览
+	                </span>
+	                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	            </div>
+	            <div class="modal-body text-center">
+	                <img src="" id="preview-img"/>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	{% end %}
 {% end %}
