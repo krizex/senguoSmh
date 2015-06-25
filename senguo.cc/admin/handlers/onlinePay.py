@@ -75,14 +75,14 @@ class OnlineWxPay(CustomerBaseHandler):
 		for f in f_d:
 			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
 
-		url=""
+		qr_url=""
 		if not self.is_wexin_browser():
 			res_dict = self._qrwxpay(order,wxPrice)		
 			if 'code_url' in res_dict:
-				url = res_dict['code_url']
+				qr_url = res_dict['code_url']
 				print(res_dict['code_url'])
 				# return self.send_success(url = res_dict['code_url'])
-				return self.render('customer/qrwxpay.html',url = url,totalPrice = totalPrice,\
+				return self.render('customer/qrwxpay.html',qr_url = qr_url,totalPrice = totalPrice,\
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
 			send_time = send_time,remark=remark,pay_type=pay_type,online_type=online_type,freight = freight,\
 			goods = goods,sender_phone=sender_phone,sender_img=sender_img,charge_types=charge_types,\
@@ -127,9 +127,9 @@ class OnlineWxPay(CustomerBaseHandler):
 
 			res_dict = self._qrwxpay(order,wxPrice)		
 			if 'code_url' in res_dict:
-				url = res_dict['code_url']
+				qr_url = res_dict['code_url']
 				print(res_dict['code_url'])
-		return self.render("fruitzone/paywx.html",url = url ,renderPayParams = renderPayParams,wxappid = wxappid,\
+		return self.render("fruitzone/paywx.html",qr_url = qr_url ,renderPayParams = renderPayParams,wxappid = wxappid,\
 			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice,\
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
 			send_time = send_time,remark=remark,pay_type=pay_type,online_type=online_type,freight = freight,\

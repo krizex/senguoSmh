@@ -116,8 +116,9 @@
                                     // 支付成功后的回调函数
                                     window.location.href = '/notice/success';
                                 },
-                                fail:function(res){
-                                    $('.wrap-qrcode').remmoveClass("hidden");
+                                fail:function(){
+                                    $('.wrap-qrcode').removeClass("hidden");
+                                    alter("oh,no i failed");
                                 }
                             });
                         }
@@ -126,6 +127,6 @@
             });
         }
     });
-     $("#qrcode").qrcode({render: "canvas",width: 250,height:250,text: '{{url}}' ,typeNumber  : -1});//需要生成的页面
+     $("#qrcode").qrcode({render: "canvas",width: 250,height:250,text: '{{qr_url}}' ,typeNumber  : -1});//需要生成的页面
 </script>
 {% end %}
