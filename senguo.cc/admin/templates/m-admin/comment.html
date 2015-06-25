@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}消息与评价{% end %}
 {% block head %}
-<link rel="stylesheet" href="{{static_url('css/baguetteBox.css')}}"/>
+<link rel="stylesheet" href="/static/css/baguetteBox.css"/>
 {% end %}
 {% block header %}
 <div class="header">
@@ -80,6 +80,7 @@
     <div class="pop-content">
         <div class="reply-box">
             <p class="title">商家回复</p>
+            <span class="close close-btn">X</span>
             <textarea class="textarea" id="reply-text"></textarea>
             <a href="javascript:;" class="commit-reply" id="reply-commit">确认回复</a>
         </div>
@@ -87,7 +88,7 @@
 </div>
 {% end %}
 {% block bottom %}
-<script src="{{static_url('js/template.js')}}"></script>
-<script src="{{static_url('js/third/baguetteBox.min.js')}}"></script>
+<script src="/static/js/template.js"></script>
+<script src="/static/js/third/baguetteBox.min.js"></script>
 <script src="{{static_url('m-admin/js/comment.js')}}"></script>
 {% end %}

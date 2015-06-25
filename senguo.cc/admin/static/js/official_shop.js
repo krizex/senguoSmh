@@ -258,7 +258,7 @@ function initShop(res){
 
                 }
             }
-            if(!shop_trademark_url) {shop_trademark_url='/static/design_img/TDSG_l.png'}
+            if(!shop_trademark_url) {shop_trademark_url='/static/images/TDSG_l.png'}
             $item.find('.shop_link').attr({'href':'/'+shop_code});
             $item.find('.shop_log').attr({'src':shop_trademark_url+'?imageView2/1/w/470/h/470'});
             $item.find('.shop_name').text(shop_name);

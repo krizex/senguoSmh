@@ -189,7 +189,7 @@ class ShopManage(SuperBaseHandler):
 		##
 		
 		offset = (self.args.get("page", 1) - 1) * self._page_count
-		#print ("**************offset = %d"%(offset))
+		#print("**************offset = %d"%(offset))
 
 
 		#add6.5pm shop_auth:
@@ -383,7 +383,7 @@ class ShopManage(SuperBaseHandler):
 				
 			if flag==1:
 				#print(flag)
-				return self.render("superAdmin/shop-manage.html", output_data=output_data,output_data_count=output_data_count,context=dict(subpage='shop',action=action,count=count))
+				return self.render("superAdmin/shop-manage.html", output_data=output_data,output_data_count=output_data_count,context=dict(subpage='all',action=action,count=count))
 			else :
 				return self.send_success(output_data=output_data,output_data_count=output_data_count)
 
@@ -397,7 +397,7 @@ class ShopManage(SuperBaseHandler):
 		# shops 是models.Shop实例的列表
 		
 		return self.render("superAdmin/apply-manage.html", context=dict(
-				shops = shops,subpage='shop', action=action,
+				shops = shops,subpage='apply', action=action,
 				count=count))
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action")
@@ -429,6 +429,22 @@ class ShopManage(SuperBaseHandler):
 		mobile = shop_temp.shop_phone
 		if not self.args["new_status"] in models.SHOP_STATUS.DATA_LIST:
 			return self.send_error(400)
+
+		#首个店铺未进行店铺认证不允许再申请店铺
+		try:
+			shops = self.session.query(models.Shop).filter_by(admin_id=shop_temp.admin_id)
+		except:
+			shops = None
+
+		if shops:
+			shop_frist = shops.first()
+			if shop_frist:
+				if shop_frist.shop_auth==0:
+					return self.send_fail("该商家第一个店铺还未进行认证")
+				elif shop_frist.shop_auth in [1,4] and shops.count() >= 5:
+					return self.send_fail("该商家第首个店铺为个人认证,最多只可申请5个店铺")
+				elif shop_frist.shop_auth in [2,3] and shops.count() >= 15:
+					return self.send_fail("该商家第首个店铺为企业认证,最多只可申请15个店铺")
 
 		if self.args["new_status"] == models.SHOP_STATUS.DECLINED:
 			shop_temp.update(self.session, shop_status=3,
@@ -653,23 +669,19 @@ class User(SuperBaseHandler):
 		sum["admin"] = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).count()
 		sum["customer"] = q.filter(exists().where(models.Accountinfo.id == models.CustomerShopFollow.customer_id)).count()
 		sum["phone"] = q.filter(models.Accountinfo.phone != '').count()
-		return self.render("superAdmin/user.html", sum=sum, context=dict(subpage='user'))
+		return self.render("superAdmin/user.html", sum=sum, context=dict(subpage='user'))      
 
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments("action:str", "page:int")
+	@SuperBaseHandler.check_arguments("action:str","inputinfo?:str","page:int")
 	def post(self):
 		action = self.args["action"]
 		page = self.args["page"]
 		page_size = 20
 
-		q = self.session.query(models.Accountinfo.id,
-									   models.Accountinfo.headimgurl,
-									   models.Accountinfo.nickname,
-									   models.Accountinfo.sex,
-									   models.Accountinfo.wx_province,
-									   models.Accountinfo.wx_city,
-									   models.Accountinfo.phone).order_by(desc(models.Accountinfo.id))
-
+		#change by jyj 2015-6-22
+		q = self.session.query(models.Accountinfo.id,models.Accountinfo.headimgurl_small,models.Accountinfo.nickname,models.Accountinfo.sex, \
+					models.Accountinfo.wx_province,models.Accountinfo.wx_city,models.Accountinfo.phone,func.FROM_UNIXTIME(models.Accountinfo.birthday,"%Y-%m-%d")).order_by(desc(models.Accountinfo.id))
+		##
 		if action == "all":
 			pass
 		elif action == "admin":
@@ -678,6 +690,10 @@ class User(SuperBaseHandler):
 			q = q.filter(exists().where(models.Accountinfo.id == models.CustomerShopFollow.customer_id))
 		elif action == "phone":
 			q = q.filter(models.Accountinfo.phone != '')
+		# add by jyj 2015-6-23:
+		elif action == "search":
+			inputinfo = self.args["inputinfo"]
+			q = q.filter(or_(models.Accountinfo.nickname.like("%{0}%".format(inputinfo)),(func.concat(models.Accountinfo.id,'')).like("%{0}%".format(inputinfo))))
 		else:
 			return self.send_error(404)
 		users = q.offset(page*page_size).limit(page_size).all()
@@ -686,7 +702,17 @@ class User(SuperBaseHandler):
 				join(models.CustomerShopFollow).\
 				filter(models.CustomerShopFollow.customer_id == users[i][0]).all()
 			h_names = self.session.query(models.Shop.id,models.Shop.shop_code,models.Shop.shop_name).filter_by(admin_id=users[i][0]).all()
+
+			#add by jyj 2015-6-22
+			#将生日的时间戳转换为日期类型：
+			# print(users[i][7])
+			if users[i][7] == None:
+				birthday = 0
+			else:
+				birthday = users[i][7]
+			##
 			users[i] = list(users[i])
+			users[i].append(birthday)
 			users[i].append(f_names)
 			users[i].append(h_names)
 		return self.send_success(data=users)
@@ -862,7 +888,7 @@ class ShopStatic(SuperBaseHandler):
 # add by jyj 2015-6-15
 class OrderStatic(SuperBaseHandler):
 	def get(self):
-		return self.render("superAdmin/count-order.html",context=dict(subpage='orderstatic'))
+		return self.render("superAdmin/count-order.html",context=dict(subcount='orderstatic'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action:str")
@@ -1010,7 +1036,7 @@ class Comment(SuperBaseHandler):
 				comment = comment)
 			data.append([shop_code,shop_name,admin_name ,create_date, comment_apply.delete_reason,order_info,has_done,apply_id])
 		# return self.send_success(data = data)
-		self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'del_apply':apply_count,'all_temp':'','all':'','auth_apply':''},data=data))
+		self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'del_apply':apply_count,'all_temp':'','all':'','auth_apply':''},subpage="delete",data=data))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id:int','decline_reason?:str')
@@ -1048,7 +1074,7 @@ class ShopAuthenticate(SuperBaseHandler):
 		#apply_list=self.session.query(models.ShopAuthenticate).all()[page_area:page_area+10]
 		apply_list=self.session.query(models.ShopAuthenticate).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
 		count = {'all':'','all_temp':'','del_apply':'','auth_apply':auth_apply}
-		self.render('superAdmin/shop-cert-apply.html',context=dict(count = count,auth_apply_list=apply_list))
+		self.render('superAdmin/shop-cert-apply.html',context=dict(count = count,subpage="auth",auth_apply_list=apply_list))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id','decline_reason?:str','apply_type:int')
@@ -1059,12 +1085,12 @@ class ShopAuthenticate(SuperBaseHandler):
 		try:
 			shop_auth_apply = self.session.query(models.ShopAuthenticate).filter_by(id = apply_id).first()
 		except:
-			print('shop_auth_apply')
+			print('ShopAuthenticate: shop_auth_apply not found')
 
 		try:
 			shop = self.session.query(models.Shop).filter_by(id = shop_auth_apply.shop_id).first()
 		except:
-			print('shop')
+			print('ShopAuthenticate: shop not found')
 
 		if not shop_auth_apply:
 			return self.error(404)
@@ -1195,7 +1221,7 @@ class Balance(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 		if not history_list:
-			print('history_list error')
+			print('Balance: history_list error')
 		for temp in history_list:
 				shop = self.session.query(models.Shop).filter_by(id=temp.shop_id).first()
 				shop_name = shop.shop_name
@@ -1239,7 +1265,7 @@ class ApplyCash(SuperBaseHandler):
 		try:
 			cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).all()
 		except:
-			print('no cash_history')
+			print('ApplyCash: no cash_history')
 		if cash_history!=[]:
 			alls = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0).all()
 			persons = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0)\
@@ -1329,7 +1355,7 @@ class ApplyCash(SuperBaseHandler):
 class CheckCash(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render("superAdmin/balance-check.html",context=dict())
+		return self.render("superAdmin/balance-check.html",context=dict(page='check'))
 	
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','data','page?:int')

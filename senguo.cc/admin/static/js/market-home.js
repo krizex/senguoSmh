@@ -156,7 +156,9 @@ $(document).ready(function(){
     var link_search=$.getUrlParam("search");
      if(link_search != null){
         var shop_code=$('#shop_code').val();
-        window.location.href="/"+shop_code;
+        var link="/"+shop_code
+        window.location.href=link;
+        addCart(link);
     }else{
         $('.classify-list').toggle();
     }
@@ -392,6 +394,11 @@ $(document).ready(function(){
     //    $parent.find('.toggle_icon').toggleClass('arrow');
     //    $parent.toggleClass('pr35');
     //};
+}).on('click','._add_cart',function(e){
+    //添加到购物车
+    stopDefault(e);
+    var link=$(this).attr('href');
+    addCart(link);
 });
 window.dataObj.page=1;
 window.dataObj.count=1;
@@ -455,9 +462,7 @@ var goodsList=function(page,action){
                 noticeBox(res.error_text);
                 $(".wrap-loading-box").addClass("hidden");
             }
-        },
-        function(){noticeBox('网络好像不给力呢~ ( >O< ) ~');},
-        function(){noticeBox('服务器貌似出错了~ ( >O< ) ~');});
+        });
         var initData=function(data){
             var data=data;
             for(var key in data){
@@ -479,7 +484,7 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id=
                     '<div class="clearfix box bg {{if storage<=0 }}desaturate{{/if}}">'+
                         '<div class="goods-img pull-left forbid_click">'+
                             '<a href="javascript:;" class="check-lg-img">'+
-                                '<img src="/static/images/holder.png?v=20150330" class="img lazy_img" data-original="{{ori_img}}">'+
+                                '<img src="/static/images/holder.png" class="img lazy_img" data-original="{{ori_img}}">'+
                                 '<span class="tag text-white text-center tagItem font8 {{tag}}"></span>'+
                             '</a>'+
                         '</div>'+
@@ -708,9 +713,7 @@ function addCart(link){
                 window.location.href=link;
             }
             else return noticeBox(res.error_text);
-        },
-        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        }
     );
 }
 
@@ -746,9 +749,7 @@ function great(type,id){
                 }
             }
             else noticeBox(res.error_text);
-        },
-        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        }
     );
 }
 
@@ -763,9 +764,7 @@ function focus(){
                 $('#if_focus').val('true');
             }
             else return noticeBox(res.error_text);
-        },
-        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        }
     );
 }
 

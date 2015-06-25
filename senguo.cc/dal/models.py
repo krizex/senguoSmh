@@ -1518,6 +1518,8 @@ class Config(MapBase, _CommonApi):
 	balance_on_active = Column(Integer,default = 1) #0:余额支付关闭 1:余额支付开启 5.4
 	text_message_active = Column(Integer,default = 0) #首单短信验证 0:关闭 1:开启 5.7
 
+	day_on_time = Column(Integer,default = 0) #按时达 0:all 1:今天 2:明天
+
 #店铺营销
 class Marketing(MapBase, _CommonApi):
 	__tablename__="marketing"

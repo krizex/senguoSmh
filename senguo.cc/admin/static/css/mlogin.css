@@ -1,5 +1,5 @@
 .title{padding:10px 0 3px 0;}
-.other_way{padding:15px 40px;}
+.other_way{padding:15px 10px;}
 .other_way .box{padding-left:10px;}
 .other_way li{width:25%;float:left;font-size:0;text-align:center;}
 .other_way .login_btn{display:inline-block;width:50px;height:50px;border-radius:50%;margin:0 auto;margin-right:10px;background-size:50px !important;}
@@ -8,12 +8,13 @@
 .other_way .alipay_login{background:url('/static/images/alipay_l.png') no-repeat;}
 .other_way .weibo_login{background:url('/static/images/wb_l.png') no-repeat;}
 
- .input_sty{width:100%;height:40px;text-indent:10px;}
- .border_bf8{border-bottom:1px solid #f8f8f8;}
+.input_sty{width:100%;height:40px;text-indent:10px;}
+.border_bf8{border-bottom:1px solid #f8f8f8;}
 .phone_login{padding:0 10px;}
 
 .login_check{width:60%;min-width:186px;max-width:280px;margin-top:20px;}
 .login_check .login{width:100%;border-radius:30px;padding:9px 0;margin-bottom:20px;}
+.login-text{height: 20px;line-height: 20px;color: #999;text-align: center;font-size: 12px;padding-right: 10px;}
 /*register*/
 .progress_box{padding:10px 0;}
 .progress_box li{}

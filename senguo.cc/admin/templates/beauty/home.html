@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}【{{context['shop_name']}}】一家不错的O2O店铺，快来关注吧~{% end %}
 {% block head %}
-<link rel="stylesheet" href="{{static_url('css/idangerous.swiper.css')}}"/>
+<link rel="stylesheet" href="/static/css/idangerous.swiper.css"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/beauty/home.css')}}"/>
 {% end %}
@@ -50,7 +50,7 @@
     <div class="header">
         <a href="javascript:;" class="menu" id="menu"></a>
         <span id="classify">{% if len(context['group_list'])>0 %}{{context['group_list'][0]['name']}}{% end %}</span>
-        <a href="{{reverse_url('customerGoodsSearch')}}" class="head-right search"></a>
+        <a href="{{reverse_url('customerGoodsSearch')}}" class="head-right search _add_cart"></a>
     </div>
     <div class="wrap-list">
         <ul class="groupt-list classify-list" id="groupt-list">
@@ -82,6 +82,6 @@
 
 {% end %}
 {% block bottom %}
-<script src="{{static_url('js/third/idangerous.swiper.min.js')}}"></script>
+<script src="/static/js/third/idangerous.swiper.min.js"></script>
 <script src="{{static_url('js/beauty/home.js')}}"></script>
 {% end %}
