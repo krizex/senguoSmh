@@ -82,7 +82,7 @@ class OnlineWxPay(CustomerBaseHandler):
 				qr_url = res_dict['code_url']
 				# print(res_dict['code_url'])
 				# return self.send_success(url = res_dict['code_url'])
-				return self.render('customer/qrwxpay.html',qr_url = qr_url,totalPrice = totalPrice,\
+				return self.render('customer/online-qrwxpay.html',qr_url = qr_url,totalPrice = totalPrice,\
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
 			send_time = send_time,remark=remark,pay_type=pay_type,online_type=online_type,freight = freight,\
 			goods = goods,sender_phone=sender_phone,sender_img=sender_img,charge_types=charge_types,\

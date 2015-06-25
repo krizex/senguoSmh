@@ -2211,9 +2211,9 @@ class payTest(CustomerBaseHandler):
 			unifiedOrder.setParameter('trade_type',"NATIVE")
 			res = unifiedOrder.postXml().decode('utf-8')
 			res_dict = unifiedOrder.xmlToArray(res)
-			print(res,type(res_dict))
+			# print(res,type(res_dict))
 			if 'code_url' in res_dict:
-				print(res_dict['code_url'])
+				# print(res_dict['code_url'])
 				# url = pyqrcode.create(res_dict['code_url'])
 				# url.png('really.png',scale = 8)
 				return self.render("customer/qrwxpay.html" , url = res_dict['code_url'])

@@ -1200,7 +1200,7 @@ class Goods(AdminBaseHandler):
 					count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 					datalist = goods.offset(offset).limit(page_size).all()
 					if goods:
-						data = self.getGoodsData(goods)
+						data = self.getGoodsData(datalist)
 					else:
 						data = []
 					return self.send_success(data=data,count=count)
