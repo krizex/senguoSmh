@@ -80,7 +80,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			res_dict = self._qrwxpay(order,wxPrice)		
 			if 'code_url' in res_dict:
 				qr_url = res_dict['code_url']
-				print(res_dict['code_url'])
+				# print(res_dict['code_url'])
 				# return self.send_success(url = res_dict['code_url'])
 				return self.render('customer/qrwxpay.html',qr_url = qr_url,totalPrice = totalPrice,\
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
@@ -128,7 +128,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			res_dict = self._qrwxpay(order,wxPrice)		
 			if 'code_url' in res_dict:
 				qr_url = res_dict['code_url']
-				print(res_dict['code_url'])
+				# print(res_dict['code_url'])
 		return self.render("fruitzone/paywx.html",qr_url = qr_url ,renderPayParams = renderPayParams,wxappid = wxappid,\
 			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice,\
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\

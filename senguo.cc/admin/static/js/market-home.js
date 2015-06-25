@@ -462,9 +462,7 @@ var goodsList=function(page,action){
                 noticeBox(res.error_text);
                 $(".wrap-loading-box").addClass("hidden");
             }
-        },
-        function(){noticeBox('网络好像不给力呢~ ( >O< ) ~');},
-        function(){noticeBox('服务器貌似出错了~ ( >O< ) ~');});
+        });
         var initData=function(data){
             var data=data;
             for(var key in data){
@@ -715,9 +713,7 @@ function addCart(link){
                 window.location.href=link;
             }
             else return noticeBox(res.error_text);
-        },
-        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        }
     );
 }
 
@@ -753,9 +749,7 @@ function great(type,id){
                 }
             }
             else noticeBox(res.error_text);
-        },
-        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        }
     );
 }
 
@@ -770,9 +764,7 @@ function focus(){
                 $('#if_focus').val('true');
             }
             else return noticeBox(res.error_text);
-        },
-        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        }
     );
 }
 
