@@ -38,7 +38,7 @@
     <li class="item clearfix">
         <span class="w1 pull-left set-inl-blo">店铺Logo</span>
         <div class="w2 pull-left logo-box">
-           <img src="{{current_shop.shop_trademark_url or static_url('design_img/TDSG.png')}}?imageView2/1/w/100/h/100" id="logoImg">
+           <img src="{{current_shop.shop_trademark_url or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" id="logoImg">
             <div class="upload-img green-color">
                 <input id="file_upload" type="file" name="file_upload" class="uploadImg" />
                 <span class="title set-inl-blo text-white text-center">点击修改</span>
@@ -215,8 +215,8 @@
 {% end %}
 {% block bottom %}
 <script src="http://api.map.baidu.com/api?v=2.0&ak=2595684c343d6499bf469da8a9c18231"></script>
-<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>
-<script src="{{static_url('js/jquery.qrcode.min.js')}}"></script>
+<script src="/static/js/jquery.uploadifive.min.js"></script>
+<script src="/static/js/jquery.qrcode.min.js"></script>
 <script src="{{static_url('js/area.js')}}"></script>
 <script src="{{static_url('js/admin-info-set.js')}}"></script>
 {% end %}

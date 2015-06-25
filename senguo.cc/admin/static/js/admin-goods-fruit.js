@@ -87,7 +87,7 @@ $(document).ready(function(){
            {
                var $item=$(data);
                $item.find('.link').attr({'href':'/admin/shelf?action=fruit&id='+key});
-               $item.find('.img').attr({'src':'/static/design_img/'+fruit_type[key]['code']+'.png?v=20150316'});
+               $item.find('.img').attr({'src':'/static/design_img/'+fruit_type[key]['code']+'.png'});
                $item.find('.name').text(fruit_type[key]['name']+'('+fruit_type[key]['sum']+')');
                //if(fruit_type[key]['sum']!==0) $item.css({'border-color':'#44b549'});
                $('.preview-shelve-list').append($item);

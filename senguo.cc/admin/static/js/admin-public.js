@@ -53,7 +53,19 @@ $(document).ready(function(){
 }).on("click",".has-red-tip",function(){
     var action = $(this).attr("data-action");
 
+}).on("click",".no_auth",function(e){
+    stopDefault(e);
+    return Tip("您的店铺还未进行认证，此功能暂不可用");
 });
+
+function stopDefault(e){       
+    if(e&&e.preventDefault){
+        e.preventDefault(); 
+    }else{
+        window.event.returnValue = false;
+    }                        
+    return false;
+} 
 
 function switchTitle(title){
     if(title.indexOf("【　　　】")!=-1){
@@ -166,7 +178,6 @@ function otherShop(){
             if(res.data.length!=0){
                 var data=res.data;
                 for (var i in data){
-                    console.log();
                      var item='<li role="presentation" data-id="{{id}}">'+
                                         '<a role="menuitem" tabindex="-1" href="javascript:;">{{shop_name}}</a>'+
                                     '</li>';

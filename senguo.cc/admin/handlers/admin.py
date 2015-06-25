@@ -1206,7 +1206,7 @@ class Goods(AdminBaseHandler):
 					count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 					datalist = goods.offset(offset).limit(page_size).all()
 					if goods:
-						data = self.getGoodsData(goods)
+						data = self.getGoodsData(datalist)
 					else:
 						data = []
 					return self.send_success(data=data,count=count)
@@ -1683,6 +1683,8 @@ class Goods(AdminBaseHandler):
 					q.delete(synchronize_session=False)
 
 				detail_describe = data["detail_describe"].replace("script","'/script/'")
+				if (not detail_describe) or detail_describe == "":
+					detail_describe = None
 
 				goods.update(session=self.session,
 						name = data["name"],
@@ -2125,44 +2127,35 @@ class Config(AdminBaseHandler):
 		except:return self.send_error(404)
 		action = self.args["action"]
 		if action == "delivery":
-			return self.render("admin/shop-address-set.html", addresses=config.addresses,context=dict(subpage='shop_set',shopSubPage='delivery_set'))
-		elif action == "notice":
-			token = self.get_qiniu_token("shop_notice_cookie",self.current_shop.id)
-			return self.render("admin/shop-notice-set.html", notices=config.notices,token=token,context=dict(subpage='shop_set',shopSubPage='notice_set'))
+			return self.render("admin/shop-address-set.html", addresses=config.addresses,context=dict(subpage='shop_set',shopSubPage='delivery_set'))	
 		elif action == "recharge":
 			pass
 		elif action == "receipt":
 			return self.render("admin/shop-receipt-set.html", receipt_msg=config.receipt_msg,context=dict(subpage='shop_set',shopSubPage='receipt_set'))
-
-		elif action == "cert":
-			pass
-			#return self.render("admin/shop-cert-set.html",context=dict(subpage='shop_set',shopSubPage='cert_set'))
-		elif action == "pay":
-			if self.current_shop.shop_auth !=0:
-				return self.render("admin/shop-pay-set.html",context=dict(subpage='shop_set',shopSubPage='pay_set'))
-			else:
-				return self.redirect(self.reverse_url('adminShopConfig'))
 		elif action == "phone":
 			return self.render('admin/shop-phone-set.html',context=dict(subpage='shop_set',shopSubPage='phone_set'))
 		elif action == "admin":
-			if self.current_shop.shop_auth !=0:
-				notice=''
-				if 'status' in self.args:
-					status = self.args["status"]
-					if status == 'success':
-						notice='管理员添加成功'
-					elif status == 'fail':
-						notice='您不是超级管理员，无法进行管理员添加操作'
-				admin_list = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,active =1,work = 9 ).all()
-				datalist =[]
-				for admin in admin_list:
-					info = self.session.query(models.ShopStaff).filter_by(id=admin.staff_id).first()
-					datalist.append({'id':info.accountinfo.id,'imgurl':info.accountinfo.headimgurl_small,'nickname':info.accountinfo.nickname,'temp_active':admin.temp_active})
-				return self.render('admin/admin-set.html',context=dict(subpage='shop_set',shopSubPage='admin_set'),notice=notice,datalist=datalist)
-			else:
-				return self.redirect(self.reverse_url('adminShopConfig'))
+			notice=''
+			if 'status' in self.args:
+				status = self.args["status"]
+				if status == 'success':
+					notice='管理员添加成功'
+				elif status == 'fail':
+					notice='您不是超级管理员，无法进行管理员添加操作'
+			admin_list = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,active =1,work = 9 ).all()
+			datalist =[]
+			for admin in admin_list:
+				info = self.session.query(models.ShopStaff).filter_by(id=admin.staff_id).first()
+				datalist.append({'id':info.accountinfo.id,'imgurl':info.accountinfo.headimgurl_small,'nickname':info.accountinfo.nickname,'temp_active':admin.temp_active})
+			return self.render('admin/admin-set.html',context=dict(subpage='shop_set',shopSubPage='admin_set'),notice=notice,datalist=datalist)
+
 		elif action == "template":
-			return self.render('admin/shop-template-set.html',context=dict(subpage='shop_set',shopSubPage='template_set'))
+			return self.render('admin/shop-template-set.html',context=dict(subpage='market_set',shopSubPage='template_set'))
+		elif action == "pay":
+			return self.render("admin/shop-pay-set.html",context=dict(subpage='market_set',shopSubPage='pay_set'))
+		elif action == "notice":
+			token = self.get_qiniu_token("shop_notice_cookie",self.current_shop.id)
+			return self.render("admin/shop-notice-set.html", notices=config.notices,token=token,context=dict(subpage='market_set',shopSubPage='notice_set'))
 			
 		else:
 			return self.send_error(404)

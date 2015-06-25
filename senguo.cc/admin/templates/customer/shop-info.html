@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}【{{shop_name}}】一家不错的O2O店铺，快来关注吧~{% end %}
 {% block head %}
-<link rel="stylesheet" href="{{static_url('css/baguetteBox.css')}}"/>
+<link rel="stylesheet" href="/static/css/baguetteBox.css"/>
 <link rel="stylesheet" href="{{static_url('css/market-shop.css')}}"/>
 {% end %}
 {% block content %}
@@ -19,7 +19,7 @@
 <div class="rainshed text-center font18 text-black fix-title bg_change">店铺详情</div>
  <div class="info1 bg-white clearfix mt42 pt20">
      <div class="shop-logo pull-left">
-         <img src="{{shop.shop_trademark_url or static_url('images/TDSG.png')}}?imageView2/1/w/170/h/170">
+         <img src="{{shop.shop_trademark_url or '/static/images/TDSG.png'}}?imageView2/1/w/170/h/170">
      </div>
      <div class="info set-w100-fle">
         <p class="font16 line18"><span class="shop-name">{{shop.shop_name}}</span><span class="cert-type {{color}}">{{shop_auth}}</span></p>
@@ -159,6 +159,6 @@
 {% end %}-->
 {% end %}
 {% block bottom %}
-<script src="{{static_url('js/third/baguetteBox.min.js')}}"></script>
+<script src="/static/js/third/baguetteBox.min.js"></script>
 <script src="{{static_url('js/market-shop.js')}}"></script>
 {% end %}

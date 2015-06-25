@@ -87,7 +87,7 @@ function wexin(link,imgurl){
         link='';
     }
     if(!imgurl){
-        imgurl='/static/design_img/TDSG.png';
+        imgurl='/static/images/TDSG.png';
     }
     $.postJson(url,args,function(res){
         if(res.success){
@@ -155,15 +155,15 @@ function AndroidImg(target){
             if(target=='bg_change'){
                 var src=$this.css('background');
                 var src_android
-                if(dpi>1)  src_android=src.replace('.svg','@2x.png?v=2015-03-13');
-                else    src_android=src.replace('.svg','.png?v=2015-03-13');
+                if(dpi>1)  src_android=src.replace('.svg','@2x.png');
+                else    src_android=src.replace('.svg','.png');
                 $this.css({'background':src_android});
             }
             else {
                 var src=$this.attr('src');
                 var src_android
-                if(dpi>1)  src_android=src.replace('.svg','@2x.png?v=2015-03-13');
-                else    src_android=src.replace('.svg','.png?v=2015-03-13');
+                if(dpi>1)  src_android=src.replace('.svg','@2x.png');
+                else    src_android=src.replace('.svg','.png');
                 $this.attr({'src':src_android});
             }   	
         });

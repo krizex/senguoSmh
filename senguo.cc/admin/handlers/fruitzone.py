@@ -842,10 +842,10 @@ class SystemPurchase(FruitzoneBaseHandler):
 
 	def post(self):
 		if self._action == "dealNotify":
-			print("原来你也没有被调用么")
+			# print("原来你也没有被调用么")
 			return self.handle_deal_notify()
 		elif self._action == "aliyNotify":
-			print('aliyNotify aaaaaaaaaaaaaaa')
+			# print('aliyNotify aaaaaaaaaaaaaaa')
 			return self.handle_alipay_notify()
 		if not self.current_user:
 			return self.send_error(403)
@@ -853,7 +853,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		if self._action == "chargeDetail":
 			return self.handle_confirm_payment()
 		elif self._action == "alipaytest":
-			print('is here?')
+			# print('is here?')
 			return self.handle_alipaytest()
 		else:
 			return self.send_error(404)
@@ -862,10 +862,10 @@ class SystemPurchase(FruitzoneBaseHandler):
 	def handle_alipaytest(self):
 		shop_id = self.get_cookie("market_shop_id")
 		customer_id = self.current_user.id
-		print(shop_id,customer_id,'idddddddddddddddddddddd')
+		# print(shop_id,customer_id,'idddddddddddddddddddddd')
 		price = float(self.args['price'])
-		print(price)
-		print('find the correct way to login?')
+		# print(price)
+		# print('find the correct way to login?')
 		try:
 			url = self.test_create_tmporder_url(price,shop_id,customer_id)
 		except Exception as e:

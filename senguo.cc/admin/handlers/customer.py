@@ -1044,6 +1044,7 @@ class Market(CustomerBaseHandler):
 
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 				saled = fruit.saled if fruit.saled else 0
+				# print(fruit.name,fruit.len(fruit.img_url.split(";")),fruit.detail_describe)
 				if img_url == None or len(fruit.img_url.split(";"))==1 and fruit.detail_describe ==None:
 					detail_no = True
 				else:
@@ -2210,9 +2211,9 @@ class payTest(CustomerBaseHandler):
 			unifiedOrder.setParameter('trade_type',"NATIVE")
 			res = unifiedOrder.postXml().decode('utf-8')
 			res_dict = unifiedOrder.xmlToArray(res)
-			print(res,type(res_dict))
+			# print(res,type(res_dict))
 			if 'code_url' in res_dict:
-				print(res_dict['code_url'])
+				# print(res_dict['code_url'])
 				# url = pyqrcode.create(res_dict['code_url'])
 				# url.png('really.png',scale = 8)
 				return self.render("customer/qrwxpay.html" , url = res_dict['code_url'])
