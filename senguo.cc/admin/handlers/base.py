@@ -1462,7 +1462,9 @@ class WxOauth2:
 
 	@classmethod
 	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,\
-		order_totalPrice,send_time,goods,phone,address):
+		order_totalPrice,send_time,goods,phone,address,other_access_token = None):
+		access_token = other_access_token if other_access_token else access_token
+
 		remark = "订单总价：" + str(order_totalPrice) + '\n'\
 			   + "送达时间：" + send_time + '\n'\
 			   + "客户电话：" + phone + '\n'\
@@ -1495,7 +1497,8 @@ class WxOauth2:
 
 	@classmethod
 	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
-		order_totalPrice,send_time,phone,address):
+		order_totalPrice,send_time,phone,address,other_access_token = None):
+		access_token = other_access_token if other_access_token else access_token
 		remark = "订单总价：" + str(order_totalPrice)+ '\n'\
 			   + "送达时间：" + send_time + '\n'\
 			   + "客户电话：" + phone + '\n'\
@@ -1553,7 +1556,8 @@ class WxOauth2:
 
 
 	@classmethod
-	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice):
+	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice,other_access_token = None):
+		access_token = other_access_token if other_access_token else access_token
 		postdata = {
 			'touser' : touser,
 			'template_id':'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0',
@@ -1579,7 +1583,8 @@ class WxOauth2:
 		return True
 
 	@classmethod
-	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone):
+	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,other_access_token = None):
+		access_token = other_access_token if other_access_token else access_token
 		describe = '\n如有任何疑问，请拨打店家电话:%s' % shop_phone   if shop_phone  else '\n如有任何疑问,请及时联系店家'
 		# print(touser,order_num,order_sendtime,shop_phone)
 		postdata = {
