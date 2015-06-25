@@ -5,7 +5,7 @@ import time, datetime
 from settings import ROOT_HOST_NAME
 from sqlalchemy import exists, func, extract, DATE, desc,or_
 from dal.dis_dict import dis_dict
-from libs.msgverify import check_msg_token,get_access_token,user_subscribe
+from libs.msgverify import check_msg_token,get_access_token,user_subscribe,shop_auth_msg,shop_auth_fail_msg
 
 #add by jyj 2015-6-15
 from sqlalchemy import func, desc, and_, or_, exists,not_
@@ -713,7 +713,7 @@ class IncStatic(SuperBaseHandler):
 		if page == 0:
 			now = datetime.datetime.now()
 			start_date = datetime.datetime(now.year, now.month, 1)
-			end_date = now
+			end_date = now +datetime.timedelta(1)
 		else:
 			date = self.monthdelta(datetime.datetime.now(), page)
 			start_date = datetime.datetime(date.year, date.month, 1)
@@ -721,7 +721,7 @@ class IncStatic(SuperBaseHandler):
 
 		q = self.session.query(models.Accountinfo.id, models.Accountinfo.create_date_timestamp).\
 			filter(models.Accountinfo.create_date_timestamp >= start_date.timestamp(),
-				   models.Accountinfo.create_date_timestamp <= end_date.timestamp())
+				   models.Accountinfo.create_date_timestamp < end_date.timestamp())
 
 		all_infos = q.all()
 		admin_infos = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).all()  # 至少有一家店铺
@@ -815,7 +815,7 @@ class ShopStatic(SuperBaseHandler):
 		if page == 0:
 			now = datetime.datetime.now()
 			start_date = datetime.datetime(now.year, now.month, 1)
-			end_date = now
+			end_date = now +datetime.timedelta(1)
 		else:
 			date = self.monthdelta(datetime.datetime.now(), page)
 			start_date = datetime.datetime(date.year, date.month, 1)
@@ -824,7 +824,7 @@ class ShopStatic(SuperBaseHandler):
 		# 日订单数，日总订单金额
 		s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
 			filter(models.Order.create_date >= start_date,
-				   models.Order.create_date <= end_date,models.Order.status !=0).\
+				   models.Order.create_date < end_date,models.Order.status !=0).\
 			group_by(func.year(models.Order.create_date),
 					 func.month(models.Order.create_date),
 					 func.day(models.Order.create_date)).\
@@ -832,7 +832,7 @@ class ShopStatic(SuperBaseHandler):
 
 		# 总订单数
 		total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
-			filter(models.Order.create_date <= end_date,models.Order.status != 0).all()
+			filter(models.Order.create_date <end_date,models.Order.status != 0).all()
 		total = list(total[0])
 
 		data = []
@@ -1082,6 +1082,13 @@ class ShopAuthenticate(SuperBaseHandler):
 					shop.shop_auth = 3
 					shop.auth_change = 2
 			self.session.commit()
+			#发送短消息提醒
+			if shop.shop_phone:
+				shop_auth_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.name)
+			else:
+				print("店铺没有预留电话！")
+			#发送模板消息
+			self.shop_auth_msg(shop,True)
 		elif action == 'decline':
 			decline_reason = self.args['decline_reason']
 			shop_auth_apply.has_done = 2
@@ -1089,6 +1096,13 @@ class ShopAuthenticate(SuperBaseHandler):
 			if shop.auth_change == 0:
 				shop.shop_auth = 0
 			self.session.commit()
+			#发送短消息提醒
+			if shop.shop_phone:
+				shop_auth_fail_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.name)
+			else:
+				print("店铺没有预留电话！")
+			#发送模板消息
+			self.shop_auth_msg(shop,False)
 		else:
 			return self.send_error(404)
 		return self.send_success(status=0,msg = 'success',data = {})

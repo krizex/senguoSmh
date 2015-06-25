@@ -9,7 +9,7 @@ import qiniu
 import random
 import base64
 import json
-from libs.msgverify import gen_msg_token,check_msg_token
+from libs.msgverify import gen_msg_token,check_msg_token,shop_auth_fail_msg
 from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
 
 from concurrent.futures import ThreadPoolExecutor
@@ -866,6 +866,7 @@ class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@get_unblock
 	def get(self, shop_code):
+		print('login in ')
 		w_follow = True
 		# fruits=''
 		# page_size = 10
@@ -873,6 +874,7 @@ class Market(CustomerBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		except:
 			return self.send_error(404)
+
 		# self.current_shop = shop
 		# print(self,self.current_shop)
 		shop_name = shop.shop_name
@@ -883,10 +885,12 @@ class Market(CustomerBaseHandler):
 		else:
 			shop_marketing = 0
 
+
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		self.set_cookie("shop_marketing", str(shop_marketing))
+
 		if not self.session.query(models.CustomerShopFollow).filter_by(
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			w_follow = False
@@ -919,7 +923,7 @@ class Market(CustomerBaseHandler):
 			  # 添加关注
 			self.session.commit()
 
-
+		print('login in second ')
 		if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
 			self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
 			self.session.commit()
@@ -927,8 +931,10 @@ class Market(CustomerBaseHandler):
 		cart_count = len(cart_f) 
 		
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]  if cart_count > 0 else []
+		print(cart_fs)
 		notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
 		self.set_cookie("cart_count", str(cart_count))
+		print(notices)
 
 		group_list=[]
 
@@ -2357,10 +2363,16 @@ class InsertData(CustomerBaseHandler):
 		# import datetime
 		# from sqlalchemy import create_engine, func, ForeignKey, Column
 		# session = self.session	
-		from handlers.base import UrlShorten
-		short = UrlShorten.get_short_url('http://www.baidu.com/haha/hehe/gaga/memeda')
-		print(short,type(short))
-		print(UrlShorten.get_long_url(short))
+		# from handlers.base import UrlShorten
+		# short = UrlShorten.get_short_url('http://www.baidu.com/haha/hehe/gaga/memeda')
+		# print(short,type(short))
+		# print(UrlShorten.get_long_url(short))
+		try:
+			shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
+		except:
+			return self.send_fail('shop not found')
+		self.shop_auth_msg(shop,False)
+		shop_auth_fail_msg('13163263783','woody','woody')
 		self.render('customer/storage-change.html')
 
 # 支付超时判断
