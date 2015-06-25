@@ -75,21 +75,14 @@ class OnlineWxPay(CustomerBaseHandler):
 		for f in f_d:
 			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
 
-
+		url=""
 		if not self.is_wexin_browser():
-			unifiedOrder =  UnifiedOrder_pub()
-			unifiedOrder.setParameter("body",'QrWxpay')
-			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
-			unifiedOrder.setParameter("out_trade_no",order.num)
-			unifiedOrder.setParameter('total_fee',wxPrice)
-			unifiedOrder.setParameter('trade_type',"NATIVE")
-			res = unifiedOrder.postXml().decode('utf-8')
-			res_dict = unifiedOrder.xmlToArray(res)
-			print(res,type(res_dict))
+			res_dict = self._qrwxpay(order,wxPrice)		
 			if 'code_url' in res_dict:
+				url = res_dict['code_url']
 				print(res_dict['code_url'])
 				# return self.send_success(url = res_dict['code_url'])
-				return self.render('customer/qrwxpay.html',url = res_dict['code_url'],totalPrice = totalPrice,\
+				return self.render('customer/qrwxpay.html',url = url,totalPrice = totalPrice,\
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
 			send_time = send_time,remark=remark,pay_type=pay_type,online_type=online_type,freight = freight,\
 			goods = goods,sender_phone=sender_phone,sender_img=sender_img,charge_types=charge_types,\
@@ -132,11 +125,11 @@ class OnlineWxPay(CustomerBaseHandler):
 			wxappid = 'wx0ed17cdc9020a96e'
 			signature = self.signature(noncestr,timestamp,path_url)
 
-			res = unifiedOrder.postXml().decode('utf-8')
-			res_dict = unifiedOrder.xmlToArray(res)
+			res_dict = self._qrwxpay(order,wxPrice)		
 			if 'code_url' in res_dict:
+				url = res_dict['code_url']
 				print(res_dict['code_url'])
-		return self.render("fruitzone/paywx.html",url = res_dict['code_url'],renderPayParams = renderPayParams,wxappid = wxappid,\
+		return self.render("fruitzone/paywx.html",url = url ,renderPayParams = renderPayParams,wxappid = wxappid,\
 			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice,\
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
 			send_time = send_time,remark=remark,pay_type=pay_type,online_type=online_type,freight = freight,\
@@ -147,6 +140,18 @@ class OnlineWxPay(CustomerBaseHandler):
 		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		pass
 		return
+
+	def _qrwxpay(self,order,wxPrice):
+		unifiedOrder =  UnifiedOrder_pub()
+		unifiedOrder.setParameter("body",'QrWxpay')
+		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
+		unifiedOrder.setParameter("out_trade_no",order.num)
+		unifiedOrder.setParameter('total_fee',wxPrice)
+		unifiedOrder.setParameter('trade_type',"NATIVE")
+		res = unifiedOrder.postXml().decode('utf-8')
+		res_dict = unifiedOrder.xmlToArray(res)
+		print(res,type(res_dict))
+		return res_dict
 
 	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?:str')
 	def post(self):
