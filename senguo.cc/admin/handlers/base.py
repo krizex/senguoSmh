@@ -289,7 +289,7 @@ class GlobalBaseHandler(BaseHandler):
 			name =''
 		return name
  
-	def getGoodsData(self,datalist):
+	def getGoodsData(self,datalist,_type):
 		data = []
 		shop_id = self.current_shop.id
 		for d in datalist:
@@ -329,7 +329,7 @@ class GlobalBaseHandler(BaseHandler):
 				'saled':d.saled,'storage':d.storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
 				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
 				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name,'code':d.fruit_type.code})
-		if len(datalist) == 1:
+		if _type and _type=="one":
 			data = data[0]
 		# print(data)
 		return data
