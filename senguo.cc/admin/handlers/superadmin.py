@@ -189,7 +189,7 @@ class ShopManage(SuperBaseHandler):
 		##
 		
 		offset = (self.args.get("page", 1) - 1) * self._page_count
-		#print ("**************offset = %d"%(offset))
+		#print("**************offset = %d"%(offset))
 
 
 		#add6.5pm shop_auth:
@@ -430,6 +430,22 @@ class ShopManage(SuperBaseHandler):
 		if not self.args["new_status"] in models.SHOP_STATUS.DATA_LIST:
 			return self.send_error(400)
 
+		#首个店铺未进行店铺认证不允许再申请店铺
+		try:
+			shops = self.session.query(models.Shop).filter_by(admin_id=shop_temp.admin_id)
+		except:
+			shops = None
+
+		if shops:
+			shop_frist = shops.first()
+			if shop_frist:
+				if shop_frist.shop_auth==0:
+					return self.send_fail("该商家第一个店铺还未进行认证")
+				elif shop_frist.shop_auth in [1,4] and shops.count() >= 5:
+					return self.send_fail("该商家第首个店铺为个人认证,最多只可申请5个店铺")
+				elif shop_frist.shop_auth in [2,3] and shops.count() >= 15:
+					return self.send_fail("该商家第首个店铺为企业认证,最多只可申请15个店铺")
+
 		if self.args["new_status"] == models.SHOP_STATUS.DECLINED:
 			shop_temp.update(self.session, shop_status=3,
 						declined_reason=self.args["declined_reason"])
@@ -663,8 +679,8 @@ class User(SuperBaseHandler):
 		page_size = 20
 
 		#change by jyj 2015-6-22
-		q = self.session.query(models.Accountinfo.id,models.Accountinfo.headimgurl,models.Accountinfo.nickname,models.Accountinfo.sex, \
-					models.Accountinfo.wx_province,models.Accountinfo.wx_city,models.Accountinfo.phone,models.Accountinfo.birthday).order_by(desc(models.Accountinfo.id))
+		q = self.session.query(models.Accountinfo.id,models.Accountinfo.headimgurl_small,models.Accountinfo.nickname,models.Accountinfo.sex, \
+					models.Accountinfo.wx_province,models.Accountinfo.wx_city,models.Accountinfo.phone,func.FROM_UNIXTIME(models.Accountinfo.birthday,"%Y-%m-%d")).order_by(desc(models.Accountinfo.id))
 		##
 		if action == "all":
 			pass
@@ -692,12 +708,8 @@ class User(SuperBaseHandler):
 			# print(users[i][7])
 			if users[i][7] == None:
 				birthday = 0
-				# print("aaaaaaaaaaaaaa")
 			else:
-				b_time_stamp = users[i][7]
-				print(type(b_time_stamp))
-				dateArray = datetime.datetime.utcfromtimestamp(b_time_stamp)
-				birthday = dateArray.strftime("%Y-%m-%d")
+				birthday = users[i][7]
 			##
 			users[i] = list(users[i])
 			users[i].append(birthday)
@@ -1070,12 +1082,12 @@ class ShopAuthenticate(SuperBaseHandler):
 		try:
 			shop_auth_apply = self.session.query(models.ShopAuthenticate).filter_by(id = apply_id).first()
 		except:
-			print('shop_auth_apply')
+			print('ShopAuthenticate: shop_auth_apply not found')
 
 		try:
 			shop = self.session.query(models.Shop).filter_by(id = shop_auth_apply.shop_id).first()
 		except:
-			print('shop')
+			print('ShopAuthenticate: shop not found')
 
 		if not shop_auth_apply:
 			return self.error(404)
@@ -1192,7 +1204,7 @@ class Balance(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 		if not history_list:
-			print('history_list error')
+			print('Balance: history_list error')
 		for temp in history_list:
 				shop = self.session.query(models.Shop).filter_by(id=temp.shop_id).first()
 				shop_name = shop.shop_name
@@ -1236,7 +1248,7 @@ class ApplyCash(SuperBaseHandler):
 		try:
 			cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).all()
 		except:
-			print('no cash_history')
+			print('ApplyCash: no cash_history')
 		if cash_history!=[]:
 			alls = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0).all()
 			persons = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0)\

@@ -243,9 +243,10 @@ function Pass(evt){
     };
     $.postJson(url,args,
         function(res){
-            if(res.success)
-            {
+            if(res.success){
                 evt.parents('.shop-list-item').addClass('hidden');
+            }else{
+                return alert(res.error_text)
             }
         }
 
@@ -268,11 +269,12 @@ function Reject(evt){
     };
     $.postJson(url,args,
         function(res){
-            if(res.success)
-            {
+            if(res.success){
                 alert('拒绝成功！');
                 evt.parents('.modal').modal('hide');
                 evt.parents('.shop-list-item').addClass('hidden');
+            }else{
+                return alert(res.error_text)
             }
         }
 
