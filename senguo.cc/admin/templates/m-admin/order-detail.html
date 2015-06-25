@@ -88,7 +88,7 @@
                 {% for SH2 in order.SH2s %}
                 <li data-id="{{SH2['id']}}" data-tel="{{SH2['phone']}}">
                     <span class="check fr">✓</span>
-                    <span class="img-border mr10"><img src="{{SH2['headimgurl']}} or '/static/images/TDSG.png'" alt="员工头像"/></span>
+                    <span class="img-border mr10"><img src="{{SH2['headimgurl'] or '/static/images/TDSG.png'}}" alt="员工头像"/></span>
                     <span>{{SH2['nickname']}}</span>
                 </li>
                {% end %}
