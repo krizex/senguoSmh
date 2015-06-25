@@ -18,7 +18,7 @@
                     {% if fruit.img_url%}
                     <img src="{{fruit.img_url}}?imageView2/1/w/100/h/100"/>
                     {% else %}
-                    <img src="/static/design_img/{{fruit.fruit_type.code}}.png?v=20150316"/>
+                    <img src="/static/design_img/{{fruit.fruit_type.code}}.png"/>
                     {% end %}
                 </div>
                 <div class="info-box pull-right">
@@ -69,7 +69,7 @@
                     {% if fruit.img_url%}
                     <img src="{{fruit.img_url}}?imageView2/1/w/100/h/100" class="imgPreview" data-key="{{fruit.img_url}}" data-code="{{fruit.fruit_type.code}}"/>
                     {% else %}
-                    <img src="/static/design_img/{{fruit.fruit_type.code}}.png?v=20150316" class="imgPreview" data-key="{{fruit.img_url}}" data-code="{{fruit.fruit_type.code}}"/>
+                    <img src="/static/design_img/{{fruit.fruit_type.code}}.png" class="imgPreview" data-key="{{fruit.img_url}}" data-code="{{fruit.fruit_type.code}}"/>
                     {% end %}
                     <div class="upload-box btn-style2 green-color">
 
@@ -234,6 +234,6 @@
 </div>
 {% end %}
 {% block bottom %}
-<script src="{{static_url('js/jquery.uploadifive.min.js')}}"></script>
+<script src="/static/js/jquery.uploadifive.min.js"></script>
 <script src="{{static_url('js/admin-goods-fruit.js')}}"></script>
 {% end %}
