@@ -1,8 +1,13 @@
-{% extends '../customer/detail-base.html' %}
+{% extends 'detail-base.html' %}
 {% block title %}我的订单{% end %}
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/market-order-detail.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
+<style type="text/css">
+.wrap-qrcode{width:100%;padding:10px 0; background:#fff;margin-top:10px;}
+.qrcode{margin: 0 auto;width:100%;margin-top:10px;}
+.qrcode canvas{width:40%;}
+</style>
 {% end %}
 {% block top %}订单详情{% end %}
 {% block content %}
@@ -62,14 +67,13 @@
         <p>订单备注：<span>{{order.message or '无'}}</span></p>
         <p class="text-black">支付方式：<span class="">{% if order.pay_type==1 %}货到付款{% elif order.pay_type==2 %}余额支付{% elif order.pay_type==3 %}在线支付{% if online_type=='wx'%}-微信支付{% elif online_type=='alipay'%}-支付宝支付{% end %}{% end %}</span></p>
     </div>
-</div>
-<div class="wrap-qrcode text-center hidden">
-    <p>遇到不允许跨号支付？</p> 
-    <div class="qrcode mt10" id="qrcode"></div>
-    <p class="text-center font14">长按图片或扫描【识别二维码】付款</p>
+    <div class="wrap-qrcode text-center">
+        <p class="text-center font14">长按图片【识别二维码】</p><p class="text-center font14">或使用微信【扫一扫】付款</p>
+        <div class="qrcode" id="qrcode"></div>
+    </div>
 </div>
 <div class="wrap-bm-btn" id="nav">
-    <a class="fr add-comment red-btn" href="javascript:;" id="getBrandWCPayRequest">去支付</a>
+    <!-- <a class="fr add-comment red-btn" href="javascript:;" id="getBrandWCPayRequest">去支付</a> -->
     <a class="fr white-btn" href="javascript:;" data-id="{{order.id}}" id="cancel-order">取消订单</a>
 </div>
 <input type="hidden" value="{{order.create_date}}" class="create_time"/>
@@ -83,50 +87,6 @@
 <script type="text/javascript" src="{{static_url('js/zepto.qrcode.min.js')}}"></script> 
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
 <script type="text/javascript">
-    wx.config({
-        debug: false,
-        appId: "{{wxappid}}",
-        timestamp: {{timestamp}},
-        nonceStr: "{{noncestr}}",
-            signature: "{{signature}}",
-            jsApiList: ['onMenuShareTimeline','chooseWXPay','hideMenuItems']
-        });
-    wx.ready(function(){
-        document.querySelector('#getBrandWCPayRequest').onclick = function () {
-            $.ajax({
-                url:"/customer/overtime?order_id="+$("#order-id").val(),
-                type:"get",
-                success:function(res){
-                    if(res.success){
-                        if(res.overtime == 1){
-                            noticeBox("当前订单15分钟未支付，已自动取消，请重新下单");
-                            setTimeout(function(){
-                                window.location.href="/"+res.shop_code;
-                            },2000);
-                        }
-
-                        else{
-                            wx.chooseWXPay({
-                                timestamp: '{{renderPayParams['timeStamp']}}',
-                                nonceStr: '{{renderPayParams['nonceStr']}}',
-                                package: '{{renderPayParams['package']}}',
-                                signType: '{{renderPayParams['signType']}}',
-                                paySign: '{{renderPayParams['paySign']}}',
-                                success: function (res) {
-                                    // 支付成功后的回调函数
-                                    window.location.href = '/notice/success';
-                                },
-                                fail:function(){
-                                    $('.wrap-qrcode').removeClass("hidden");
-                                    alter("oh,no i failed");
-                                }
-                            });
-                        }
-                    }
-                }
-            });
-        }
-    });
-     $("#qrcode").qrcode({render: "canvas",width: 250,height:250,text: '{{qr_url}}' ,typeNumber  : -1});//需要生成的页面
+    $("#qrcode").qrcode({render: "canvas",width: 250,height:250,text: '{{qr_url}}' ,typeNumber  : -1});//需要生成的页面
 </script>
 {% end %}

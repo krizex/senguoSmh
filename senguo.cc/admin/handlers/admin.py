@@ -1181,7 +1181,7 @@ class Goods(AdminBaseHandler):
 						count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 						datalist = goods.offset(offset).limit(page_size).all()
 						if datalist:
-							data = self.getGoodsData(datalist)
+							data = self.getGoodsData(datalist,"all")
 						else:
 							datalist = []
 						return self.send_success(data=data,count=count)
@@ -1200,7 +1200,7 @@ class Goods(AdminBaseHandler):
 					count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 					datalist = goods.offset(offset).limit(page_size).all()
 					if goods:
-						data = self.getGoodsData(goods)
+						data = self.getGoodsData(datalist,"all")
 					else:
 						data = []
 					return self.send_success(data=data,count=count)
@@ -1235,7 +1235,8 @@ class Goods(AdminBaseHandler):
 					filter_status2 = int(filter_status2)
 					# print(filter_status2)
 					if filter_status2 == -2:
-						goods = goods	
+						goods = goods
+						print(goods.count())
 					else:
 						goods = goods.filter_by(group_id = filter_status2)
 						
@@ -1260,7 +1261,7 @@ class Goods(AdminBaseHandler):
 				count = goods.count()
 				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 				datalist = goods.offset(offset).limit(page_size).all()
-				data = self.getGoodsData(datalist)
+				data = self.getGoodsData(datalist,"all")
 				return self.send_success(data=data,count=count)
 
 			group_list = []
@@ -1434,7 +1435,7 @@ class Goods(AdminBaseHandler):
 				count = goods.count()
 				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 				datalist = goods.offset(offset).limit(page_size).all()
-				data = self.getGoodsData(datalist)
+				data = self.getGoodsData(datalist,"all")
 				return self.send_success(data=data,count=count)
 			return self.render("admin/goods-delete.html",context=dict(subpage="goods"))
 
@@ -1693,7 +1694,7 @@ class Goods(AdminBaseHandler):
 						tag = int(data["tag"])
 						)
 				_data = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).all()
-				data = self.getGoodsData(_data)
+				data = self.getGoodsData(_data,"one")
 				return self.send_success(data=data)
 
 			elif action == "default_goods_img":  # 恢复默认图
@@ -1701,7 +1702,7 @@ class Goods(AdminBaseHandler):
 				self.session.commit()
 			elif action == "delete_goods":
 				time_now = datetime.datetime.now()
-				goods.update(session=self.session, active = 0,delete_time = time_now)
+				goods.update(session=self.session, active = 0,delete_time = time_now,group_id = 0)
 
 		elif action in ["del_charge_type", "edit_charge_type"]:  # charge_type_id
 			charge_type_id = self.args["charge_type_id"]
