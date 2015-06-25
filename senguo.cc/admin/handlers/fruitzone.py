@@ -1,4 +1,4 @@
-from handlers.base import FruitzoneBaseHandler, _AccountBaseHandler,WxOauth2
+from handlers.base import FruitzoneBaseHandler, _AccountBaseHandler,WxOauth2,unblock
 
 import dal.models as models
 import tornado.web
@@ -65,7 +65,7 @@ class ShopList(FruitzoneBaseHandler):
 		return self.render("fruitzone/list.html", context=dict(province_count=province_count,\
 			city = city ,city_id = city_id,shop_count=shop_count,subpage="home"))
 
-	
+	@unblock
 	@FruitzoneBaseHandler.check_arguments("action")
 	def post(self):
 		action = self.args["action"]
