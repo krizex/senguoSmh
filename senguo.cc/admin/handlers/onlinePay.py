@@ -150,7 +150,7 @@ class OnlineWxPay(CustomerBaseHandler):
 		unifiedOrder.setParameter('trade_type',"NATIVE")
 		res = unifiedOrder.postXml().decode('utf-8')
 		res_dict = unifiedOrder.xmlToArray(res)
-		print(res,type(res_dict))
+		# print(res,type(res_dict))
 		return res_dict
 
 	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?:str')
