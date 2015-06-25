@@ -63,6 +63,11 @@
         <p class="text-black">支付方式：<span class="">{% if order.pay_type==1 %}货到付款{% elif order.pay_type==2 %}余额支付{% elif order.pay_type==3 %}在线支付{% if online_type=='wx'%}-微信支付{% elif online_type=='alipay'%}-支付宝支付{% end %}{% end %}</span></p>
     </div>
 </div>
+<div class="wrap-qrcode text-center hidden">
+    <p>遇到不允许跨号支付？</p> 
+    <div class="qrcode mt10" id="qrcode"></div>
+    <p class="text-center font14">长按图片或扫描【识别二维码】付款</p>
+</div>
 <div class="wrap-bm-btn" id="nav">
     <a class="fr add-comment red-btn" href="javascript:;" id="getBrandWCPayRequest">去支付</a>
     <a class="fr white-btn" href="javascript:;" data-id="{{order.id}}" id="cancel-order">取消订单</a>
@@ -75,6 +80,7 @@
 <input type="hidden" value="{{order.id}}" id="order-id"/>
 {% end %}
 {% block bottom %}
+<script type="text/javascript" src="{{static_url('js/zepto.qrcode.min.js')}}"></script> 
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
 <script type="text/javascript">
     wx.config({
@@ -98,6 +104,7 @@
                                 window.location.href="/"+res.shop_code;
                             },2000);
                         }
+
                         else{
                             wx.chooseWXPay({
                                 timestamp: '{{renderPayParams['timeStamp']}}',
@@ -108,6 +115,9 @@
                                 success: function (res) {
                                     // 支付成功后的回调函数
                                     window.location.href = '/notice/success';
+                                },
+                                fail:function(res){
+                                    $('.wrap-qrcode').remmoveClass("hidden");
                                 }
                             });
                         }
@@ -116,5 +126,6 @@
             });
         }
     });
+     $("#qrcode").qrcode({render: "canvas",width: 250,height:250,text: '{{url}}' ,typeNumber  : -1});//需要生成的页面
 </script>
 {% end %}
