@@ -1581,7 +1581,7 @@ class ShopFavorComment(MapBase):
 	order_id = Column(Integer, ForeignKey(Order.id), primary_key=True, nullable=False)
 
 
-
+#告白墙
 class ConfessionWall(MapBase, _CommonApi):
 	__tablename__ = 'confession_wall'
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -1614,6 +1614,38 @@ class ConfessionGreat(MapBase, _CommonApi):
 	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
 	customer_id = Column(Integer, ForeignKey(Customer.id),nullable=False)
 	wall_id = Column(Integer,ForeignKey(ConfessionWall.id),nullable = False)
+	create_time = Column(DateTime,default = func.now())
+
+#官网文章
+class Article(MapBase, _CommonApi):
+	__tablename__ = 'article'
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	account_id = Column(Integer, ForeignKey(Accountinfo.id),nullable=False)
+	title = Column(String(20))
+	article = Column(String(2000))
+	classify = Column(Integer,default = 0)
+	create_time = Column(DateTime,default = func.now())
+	_type = Column(Integer,default = 0) #0:匿名 1:实名
+	great = Column(Integer,default = 0) #点赞数
+	comment = Column(Integer,default = 0)#评论数
+	status = Column(Integer,default = 1) #0:删除 1:正常
+	scan = Column(Integer,default = 0) #0:浏览数
+
+class ArticleComment(MapBase, _CommonApi):
+	__tablename__ = 'article_comment'
+	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
+	article_id = Column(Integer,ForeignKey(Article.id),nullable = False)
+	account_id = Column(Integer, ForeignKey(Accountinfo.id),nullable=False)
+	comment = Column(String(500))
+	create_time = Column(DateTime,default = func.now())
+	_type = Column(Integer,default = 0) #0: 评论  1:回复
+	comment_author_id = Column(Integer,default = 0)#评论作者id
+
+class ArticleGreat(MapBase, _CommonApi):
+	__tablename__ = 'article_great'
+	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
+	account_id = Column(Integer, ForeignKey(Accountinfo.id),nullable=False)
+	article_id = Column(Integer,ForeignKey(Article.id),nullable = False)
 	create_time = Column(DateTime,default = func.now())
 
 class ShortUrl(MapBase,_CommonApi):
