@@ -233,9 +233,9 @@ function orderItem(page){
             if(res.success){
                 var data=res.data;
                 $('.page-total').text(parseInt(res.page_sum));
-                _page_total=parseInt(res.page_sum);
+                var _page_total=parseInt(res.page_sum);
                 if(res.count){
-                     _count=res.count;
+                     var _count=res.count;
                     var type=parseInt($.getUrlParam("order_type"));
                     $('.order-status li').each(function(){
                         var $this=$(this);
