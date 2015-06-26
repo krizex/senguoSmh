@@ -70,7 +70,7 @@ handlers = [
 
 	(r"/official/shoplist",handlers.official.ShopList,{},"OfficialShopList"),
 	(r"/official/about",handlers.official.About,{},"OfficialAbout"),
-
+	(r"/official/product",handlers.official.Product,{},"OfficialProduct"),
 	#to remove
 	(r"/m", handlers.superadmin.Official,{},"test"),
 
@@ -102,6 +102,8 @@ handlers = [
 	(r"/customer/phoneVerify", handlers.fruitzone.PhoneVerify, {
 		"action":"customer"}, "customerPhoneVerify"),
 	(r"/customer/onlinewxpay",handlers.onlinePay.OnlineWxPay,{},"onlineWxPay"),
+	(r"/customer/wxpayCallBack",handlers.onlinePay.wxpayCallBack,{},"wxpayCallBack"),
+	(r"/customer/wxChargeCallBack",handlers.customer.wxChargeCallBack,{},"wxChargeCallBack"),
 	(r"/customer/(\w+)", handlers.customer.Home, {}, "customerHome"),
 	#店铺地图
 	(r"/shoparea/(\w+)",handlers.customer.ShopArea,{},"shoparea"),

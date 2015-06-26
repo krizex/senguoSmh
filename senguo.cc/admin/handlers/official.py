@@ -19,6 +19,10 @@ class About(FruitzoneBaseHandler):
 	def get(self):
 		return self.render("official/about.html",context=dict(subpage="about"))
 
+class Product(FruitzoneBaseHandler):
+	def get(self):
+		return self.render("official/product.html",context=dict(subpage="product"))		
+
 class ShopList(FruitzoneBaseHandler):
 	def get(self):
 		# print(self)

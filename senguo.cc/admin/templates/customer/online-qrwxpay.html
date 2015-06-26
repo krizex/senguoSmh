@@ -3,15 +3,11 @@
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/market-order-detail.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
-<style type="text/css">
-.wrap-qrcode{width:100%;padding:10px 0; background:#fff;margin-top:10px;}
-.qrcode{margin: 0 auto;width:100%;margin-top:10px;}
-.qrcode canvas{width:40%;}
-</style>
 {% end %}
 {% block top %}订单详情{% end %}
 {% block content %}
 {% set fruits=eval(order.fruits)%}
+<input type="hidden" value="{{qr_url}}" id="qr_url">
 <div class="container mb50" id="container">
     <div class="order-grade">
         <div class="order-line">
@@ -84,9 +80,16 @@
 <input type="hidden" value="{{order.id}}" id="order-id"/>
 {% end %}
 {% block bottom %}
-<script type="text/javascript" src="{{static_url('js/zepto.qrcode.min.js')}}"></script> 
+<script type="text/javascript" src="/static/js/third/qrcode.min.js"></script> 
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
 <script type="text/javascript">
-    $("#qrcode").qrcode({render: "canvas",width: 250,height:250,text: '{{qr_url}}' ,typeNumber  : -1});//需要生成的页面
+$(document).ready(function(){
+   new QRCode(document.getElementById('qrcode'), {
+        width : 120,//设置宽高
+        height : 120
+    }).makeCode($("#qr_url").val());
+    $.scrollTo({endY:$('.wrap-qrcode').offset().top,duration:300,callback:function(){}});
+});
+    
 </script>
 {% end %}

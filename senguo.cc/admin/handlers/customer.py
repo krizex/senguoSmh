@@ -2202,21 +2202,17 @@ class payTest(CustomerBaseHandler):
 		totalPrice = float(self.get_cookie('money'))
 		wxPrice    = int(totalPrice * 100)
 		orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(wxPrice)+'a'+str(int(time.time()))
+		qr_url=""
 		if not self.is_wexin_browser():
-			unifiedOrder =   UnifiedOrder_pub()
-			unifiedOrder.setParameter("body",'QrWxpay')
-			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/fruitzone/paytest')
-			unifiedOrder.setParameter("out_trade_no",orderId)
-			unifiedOrder.setParameter('total_fee',wxPrice)
-			unifiedOrder.setParameter('trade_type',"NATIVE")
-			res = unifiedOrder.postXml().decode('utf-8')
-			res_dict = unifiedOrder.xmlToArray(res)
+			res_dict=self._qr_pay(orderId,wxPrice)
 			# print(res,type(res_dict))
 			if 'code_url' in res_dict:
+				qr_url = res_dict['code_url']
 				# print(res_dict['code_url'])
 				# url = pyqrcode.create(res_dict['code_url'])
 				# url.png('really.png',scale = 8)
-				return self.render("customer/qrwxpay.html" , url = res_dict['code_url'])
+				print(qr_url,'chargewxpay no in weixin')
+				return self.render("customer/qrwxpay.html" , qr_url =qr_url ,totalPrice=totalPrice)
 			else:
 				return self.send_fail('can not get code_url!')
 		else:
@@ -2260,16 +2256,29 @@ class payTest(CustomerBaseHandler):
 				wxappid = 'wx0ed17cdc9020a96e'
 				signature = self.signature(noncestr,timestamp,path_url)
 				# totalPrice = float(totalPrice/100)
-		
+				res_dict=self._qr_pay(orderId,wxPrice)
+				print(res_dict,'chargewxpay in weixin 11111')
+				if 'code_url' in res_dict:
+					qr_url = res_dict['code_url']
+					print(qr_url,'chargewxpay in weixin 22222')
 			# return self.send_success(renderPayParams = renderPayParams)
-			return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
+			return self.render("fruitzone/paytest.html",qr_url=qr_url,renderPayParams = renderPayParams,wxappid = wxappid,\
 				noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)
 
 	def check_xsrf_cookie(self):
 		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		pass
 		return
-
+	def _qr_pay(self,orderId,wxPrice):
+		unifiedOrder =   UnifiedOrder_pub()
+		unifiedOrder.setParameter("body",'QrWxpay')
+		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/fruitzone/paytest')
+		unifiedOrder.setParameter("out_trade_no",orderId)
+		unifiedOrder.setParameter('total_fee',wxPrice)
+		unifiedOrder.setParameter('trade_type',"NATIVE")
+		res = unifiedOrder.postXml().decode('utf-8')
+		res_dict = unifiedOrder.xmlToArray(res)
+		return res_dict
 
 	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?:str')
 	def post(self):
@@ -2348,6 +2357,26 @@ class payTest(CustomerBaseHandler):
 			return self.write('success')
 	#	else:
 	#		return self.send_fail('其它支付方式尚未开发')
+
+class wxChargeCallBack(CustomerBaseHandler):
+	def get(self):
+		totalPrice = float(self.get_cookie('money'))
+		wxPrice    = int(totalPrice * 100)
+		orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(wxPrice)+'a'+str(int(time.time()))
+		unifiedOrder =   UnifiedOrder_pub()
+		unifiedOrder.setParameter("body",'QrWxpay')
+		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/fruitzone/paytest')
+		unifiedOrder.setParameter("out_trade_no",orderId)
+		unifiedOrder.setParameter('total_fee',wxPrice)
+		unifiedOrder.setParameter('trade_type',"NATIVE")
+		res = unifiedOrder.postXml().decode('utf-8')
+		res_dict = unifiedOrder.xmlToArray(res)
+		print(res,type(res_dict))
+		if 'code_url' in res_dict:
+				qr_url = res_dict['code_url']
+		else:
+			qr_url = ""
+		return self.send_success(qr_url=qr_url)
 
 class InsertData(CustomerBaseHandler):
 	# @tornado.web.authenticated

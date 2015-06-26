@@ -42,6 +42,7 @@ class OnlineWxPay(CustomerBaseHandler):
 		if not shop:
 			return self.send_fail('shop not found')
 		shop_name = shop.shop_name
+		shop_code = shop.shop_code
 		jsApi  = JsApi_pub()
 
 		# order detail
@@ -80,7 +81,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			res_dict = self._qrwxpay(order,wxPrice)		
 			if 'code_url' in res_dict:
 				qr_url = res_dict['code_url']
-				# print(res_dict['code_url'])
+				print(qr_url,'onlinewxpay not in weixin')
 				# return self.send_success(url = res_dict['code_url'])
 				return self.render('customer/online-qrwxpay.html',qr_url = qr_url,totalPrice = totalPrice,\
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
@@ -125,16 +126,17 @@ class OnlineWxPay(CustomerBaseHandler):
 			wxappid = 'wx0ed17cdc9020a96e'
 			signature = self.signature(noncestr,timestamp,path_url)
 
-			res_dict = self._qrwxpay(order,wxPrice)		
+			res_dict = self._qrwxpay(order,wxPrice)
+			print(res_dict,'onlinewxpay in weixin 111111111')		
 			if 'code_url' in res_dict:
 				qr_url = res_dict['code_url']
-				# print(res_dict['code_url'])
+				print(qr_url,'onlinewxpay in weixin 2222222')
 		return self.render("fruitzone/paywx.html",qr_url = qr_url ,renderPayParams = renderPayParams,wxappid = wxappid,\
 			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice,\
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
 			send_time = send_time,remark=remark,pay_type=pay_type,online_type=online_type,freight = freight,\
 			goods = goods,sender_phone=sender_phone,sender_img=sender_img,charge_types=charge_types,\
-			order=order)
+			order=order,shop_code = shop_code)
 
 	def check_xsrf_cookie(self):
 		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -171,6 +173,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
 			status       = xmlArray['result_code']
 			order_num    = str(xmlArray['out_trade_no'])
+			order_num    = order_num.split('a')[0]
 
 			# result       = orderId.split('a')
 			# customer_id  = int(result[0])
@@ -268,6 +271,29 @@ class OnlineWxPay(CustomerBaseHandler):
 			# WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 			return self.write('success')
 
+class wxpayCallBack(CustomerBaseHandler):
+	def get(self):
+		order_id = self.get_cookie("order_id")
+		order = self.session.query(models.Order).filter_by(id = order_id).first()
+		if not order:
+			return self.send_fail('order not found')
+		totalPrice = order.totalPrice
+		wxPrice =int(totalPrice * 100)
+		unifiedOrder =  UnifiedOrder_pub()
+		unifiedOrder.setParameter("body",'QrWxpay')
+		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
+		unifiedOrder.setParameter("out_trade_no",order.num )
+		unifiedOrder.setParameter('total_fee',wxPrice)
+		unifiedOrder.setParameter('trade_type',"NATIVE")
+		res = unifiedOrder.postXml().decode('utf-8')
+		res_dict = unifiedOrder.xmlToArray(res)
+		print(res,type(res_dict))
+		if 'code_url' in res_dict:
+				qr_url = res_dict['code_url']
+		else:
+			qr_url = ""
+		return self.send_success(qr_url=qr_url)
+
 class OrderDetail(CustomerBaseHandler):
 	#@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("alipayUrl?:str","order_id?:str")
@@ -326,6 +352,7 @@ class OnlineAliPay(CustomerBaseHandler):
 
 			shop_id   = order.shop_id
 			shopName  = order.shop.shop_name
+			shop_code = order.shop.shop_code
 			# order detail
 			create_date = order.create_date
 			receiver    = order.receiver
@@ -358,7 +385,7 @@ class OnlineAliPay(CustomerBaseHandler):
 				alipayUrl = alipayUrl,create_date=create_date,receiver=receiver,phone=phone,\
 				address=address,send_time=send_time,remark=remark,pay_type=pay_type,online_type=\
 				online_type,status=status,freight=freight,goods = goods,order=order,charge_types=\
-				charge_types)
+				charge_types,shop_code = shop_code)
 		else:
 			return self.send_fail('404')
 	# @tornado.web.authenticated

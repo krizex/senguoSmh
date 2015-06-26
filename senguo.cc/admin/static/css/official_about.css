@@ -13,7 +13,7 @@
 .list li .img{width:180px;}
 .list li .word{margin-top:80px;}
 .video{width:615px;height:360px;background:url('/static/official_img/video.png') no-repeat;margin-top: 15px;}
-.video embed{width:478px;height:295px;margin-top:19px;margin-left:70px;}
+.video embed{width:478px;height:295px;margin-top:19px;margin-left:70px;position: absolute;}
 .new_list .item{width:25%;}
 .new_list .item a{display:inline-block;width:180px;word-break:break-all;color: #777;}
 .new_list2 .box{width:48%;}
