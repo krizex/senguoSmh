@@ -67,12 +67,14 @@
                             url:"/customer/wxChargeCallBack",
                             type:"get",
                             success:function(res){
-                                 new QRCode(document.getElementById('qrcode'), {
-                                    width : 150,//设置宽高
-                                    height : 150
-                                }).makeCode(res.qr_url);
-                            }});
-                        
+                                if(res.success){
+                                    new QRCode(document.getElementById('qrcode'), {
+                                        width : 150,//设置宽高
+                                        height : 150
+                                    }).makeCode(res.qr_url);
+                                }
+                            }
+                        });                      
                     }
                 });
             }
