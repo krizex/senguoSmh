@@ -1,4 +1,4 @@
-{% extends 'shop-set-base.html' %}
+{% extends 'market-set-base.html' %}
 {% block title%}公告设置{% end %}
 
 {% block setcontent %}
@@ -75,8 +75,8 @@
     </div>
 {% end %}
 {% block setbottom %}
-<script src="{{static_url('js/plupload/plupload.full.min.js')}}"></script>
-<script src="{{static_url('js/plupload/i18n/zh_CN.js')}}"></script>
-<script src="{{static_url('js/qiniu.min.js')}}"></script>
+<script src="/static/js/plupload/plupload.full.min.js"></script>
+<script src="/static/js/plupload/i18n/zh_CN.js"></script>
+<script src="/static/js/qiniu.min.js"></script>
 <script src="{{static_url('js/admin-notice-set.js')}}"></script>
 {% end %}

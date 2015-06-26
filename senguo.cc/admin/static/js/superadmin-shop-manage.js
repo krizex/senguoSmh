@@ -243,9 +243,10 @@ function Pass(evt){
     };
     $.postJson(url,args,
         function(res){
-            if(res.success)
-            {
+            if(res.success){
                 evt.parents('.shop-list-item').addClass('hidden');
+            }else{
+                return alert(res.error_text)
             }
         }
 
@@ -268,11 +269,12 @@ function Reject(evt){
     };
     $.postJson(url,args,
         function(res){
-            if(res.success)
-            {
+            if(res.success){
                 alert('拒绝成功！');
                 evt.parents('.modal').modal('hide');
                 evt.parents('.shop-list-item').addClass('hidden');
+            }else{
+                return alert(res.error_text)
             }
         }
 
@@ -347,7 +349,6 @@ function searchshop(page){
                                         }else{
                                             $item.find(".shop-img").attr("src","/static/images/TDSG.png");
                                         }     
-                                        $item.find(".ushop_name").html(shop.shop_name);
                                         $item.find(".uauth_type").html(shop.auth_type);
                                         $item.find(".uadmin_nickname").html(shop.admin_nickname);
                                         $item.find(".ushop_address_name").html(shop.shop_address_detail);
@@ -363,6 +364,12 @@ function searchshop(page){
                                         $item.find(".uavailable_balance").html(shop.available_balance);
                                         $item.find(".ufans_count").html(shop.fans_count);
                                         $item.find(".uold_user").html(shop.old_user);
+
+                                        // add by jyj 2015-6-23:
+                                        $item.find(".ushop_code_link").attr("href",'/'+shop.shop_code);
+                                        $item.find(".ushop_code_link").text(shop.shop_name);
+                                        //
+                                        
                                         $("#list-group").append($item);
                           }
                      }

@@ -5,7 +5,6 @@ small, strike, strong, tt, var,
 b, i, dl, dt, dd, ol, ul, li,
 form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td {margin: 0; padding: 0; list-style:none;border: none; outline: none; vertical-align: baseline;font-weight:normal;}
-html,body,div,p,textarea,input,select,button,h1,h2,h3,h4,h5,h6{line-height: 1.25;font-family: "Microsoft YaHei","Helvetica Neue","Arial";}
 a,a:link,a:visited,a:hover,a:active{text-decoration: none;}
 img,input,button,select{vertical-align: middle;border:none;width: 100%;}
 div,p,h1,h2,h3,h4,h5,h6{word-break:break-all;}
@@ -50,7 +49,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .tit3{display:inline-block;width:330px;}
 .bottom-d{border-bottom:1px solid #e7e7eb;}
 .boder-rd{border-right:1px solid #e7e7eb;}
-.show-info{width:100%;padding-bottom:10px;}
+.show-info{width:100%;padding:10px;}
 .action-box{width:400px;height:40px;}
 .action-box .btn{height:30px;line-height:30px;width:40%;padding:0;}
 .w80{width:80px;height:80px;}

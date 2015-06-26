@@ -12,7 +12,7 @@ function wexin(link,imgurl){
         link='';
     }
     if(!imgurl){
-        imgurl='/static/design_img/TDSG.png';
+        imgurl='/static/images/TDSG.png';
     }
     $.postJson(url,args,function(res){
         if(res.success){

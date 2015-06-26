@@ -200,6 +200,8 @@ $(document).ready(function(){
     cancelAddGoods();
 }).on("click",".ok-edit-goods",function(){  //保存编辑后的商品
     var _this = $(this);
+    if(_this.attr("data-flag")=="off") return false;
+    _this.attr("data-flag","off");
     var $item = _this.closest(".goods-all-item");
     if($item.attr("data-id")){
         dealGoods($item,"edit");
@@ -306,7 +308,7 @@ $(document).ready(function(){
     var id=$(this).parents('.wrap-add-price').attr('data-id');
     $(this).closest(".wrap-add-price").remove();
     if(id){
-        del_list.push(id);
+        del_list.push(parseInt(id));
     }
 }).on('click','.furit-type li',function(){/*水果分类*/
     var $this=$(this);
@@ -450,9 +452,11 @@ function dealGoods($item,type){
     var unit = $item.find(".current-unit").attr("data-id");
     var tag =$item.find(".tag-item.active").attr("data-id");
     if(name.length>12 || name==""){
+        $('.ok-edit-goods').attr("data-flag","on");
         return Tip("商品名称不能为空且不能超过12个字");
     }
     if(!testNum.test(storage)){
+        $('.ok-edit-goods').attr("data-flag","on");
         return Tip("请填写正确的库存，只能为数字")
     }
 
@@ -463,8 +467,10 @@ function dealGoods($item,type){
     var imgUrls = $item.find(".drag-img-list").find("img");
     var imgList = {};
     if(imgUrls.size()==0){
+        $('.ok-edit-goods').attr("data-flag","on");
         return Tip("请至少添加一张商品图片");
     }else if(imgUrls.size()>5){
+        $('.ok-edit-goods').attr("data-flag","on");
         return Tip("商品图片最多只能添加5张");
     }else{
         var arr1 = [];
@@ -485,6 +491,7 @@ function dealGoods($item,type){
     var price_null = false;
     var market_price_null = false;
     if(price_type.size()==0){
+        $('.ok-edit-goods').attr("data-flag","on");
         return Tip("请至少添加一种售价方式");
     }else{
         price_type.each(function(){
@@ -516,15 +523,18 @@ function dealGoods($item,type){
         });
     }
     if(price_null){
+        $('.ok-edit-goods').attr("data-flag","on");
         return Tip("请填写正确的数量和售价，最多保留2位小数");
     }
     if(market_price_null){
+        $('.ok-edit-goods').attr("data-flag","on");
         return Tip("请填写正确的市场价，若不需要设置市场价，请留空");
     }
 
     //商品简介
     var info = $item.find(".goods-info").val();
     if(info.length>100){
+        $('.ok-edit-goods').attr("data-flag","on");
         return Tip("商品简介不能超过100个字，更多内容请在商品图文详情中添加");
     }
 
@@ -538,9 +548,11 @@ function dealGoods($item,type){
     var limit_num = $item.find(".limit_num").val().trim();
     var priority = $item.find(".goods-priority").val().trim();
     if(parseInt(limit_num)!=limit_num || parseInt(limit_num)<0){
+        $('.ok-edit-goods').attr("data-flag","on");
         return Tip("商品限购必须为正整数");
     }
     if(parseInt(priority)!=priority || parseInt(priority)>9 || parseInt(priority)<0){
+        $('.ok-edit-goods').attr("data-flag","on");
         return Tip("优先级必须为0-9之间的整数");
     }
     
@@ -593,8 +605,10 @@ function dealGoods($item,type){
                 curPrice = null;
                 cur_code = "";
                 goodsEdit = false;
+                $('.ok-edit-goods').attr("data-flag","on");
             }
         }else{
+            $('.ok-edit-goods').attr("data-flag","on");
             Tip(res.error_text);
         }
     });
@@ -612,7 +626,7 @@ function initEditGoods($item,index){
             $item.find(".add-img-box").addClass("hidden");
         }
         for(var i=0; i<imgUrls.length; i++){
-            var $li = $('<li class="img-bo" data-index="'+i+'" data-rel="'+i+'"><img src="'+imgUrls[i]+'?imageView2/5/w/100/h/100" url="'+imgUrls[i]+'" alt="商品图片" class="image"/><a class="del-img" href="javascript:;">x</a></li>');
+            var $li = $('<li class="img-bo" data-index="'+i+'" data-rel="'+i+'"><img src="'+imgUrls[i]+'?imageView2/1/w/100/h/100" url="'+imgUrls[i]+'" alt="商品图片" class="image"/><a class="del-img" href="javascript:;">x</a></li>');
             $item.find(".drag-img-list").children(".add-img-box").before($li);
         }
         setTimeout(function(){
@@ -657,7 +671,7 @@ function finishEditGoods($item,data){
     var goods = data;
     $item.find(".goods-goods-name").html(goods.name);
     if(goods.imgurl){
-        $item.find(".cur-goods-img").attr("src",goods.imgurl[0]+"?imageView2/5/w/100/h/100");
+        $item.find(".cur-goods-img").attr("src",goods.imgurl[0]+"?imageView2/1/w/100/h/100");
     }
     $item.find(".current-group").html(goods.group_name).attr("data-id",goods.group_id);
     $item.find(".stock-num").html(goods.storage);
@@ -902,7 +916,7 @@ function insertGoods(data){
         $item.find(".goods-add-time").html(goods.add_time);
         $item.find(".goods-goods-name").html(goods.name);
         if(goods.imgurl){
-            $item.find(".cur-goods-img").attr("src",goods.imgurl[0]+"?imageView2/5/w/100/h/100");
+            $item.find(".cur-goods-img").attr("src",goods.imgurl[0]+"?imageView2/1/w/100/h/100");
         }
         $item.find(".current-group").html(goods.group_name).attr("data-id",goods.group_id);
         $item.find(".stock-num").html(goods.storage);

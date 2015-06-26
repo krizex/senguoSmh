@@ -6,10 +6,10 @@
 <span class="right-title">营销和玩法</span>
 <div class="subnav-box">
 <ul class="subnav  group">
-    <li class="active" id="infoSet"><a href="{{reverse_url('adminMarketing')}}?action=lovewall">告白墙</a></li>
-    <li class="" id="coupon"><a href="{{reverse_url('adminMarketing')}}?action=coupon">优惠券</a></li>
-    <li class="" id="noticeSet"><a href="#">商品预售</a></li>
-    <li class="" id="receiptSet"><a href="#">商品秒杀</a></li>
+    <li class="active {{no_auth}}" id="infoSet"><a href="{{reverse_url('adminMarketing')}}?action=lovewall">告白墙</a></li>
+    <!-- <li class="{{no_auth}}" id="coupon"><a href="{{reverse_url('adminMarketing')}}?action=coupon">优惠券</a></li>
+    <li class="{{no_auth}}" id="noticeSet"><a href="#">商品预售</a></li>
+    <li class="{{no_auth}}" id="receiptSet"><a href="#">商品秒杀</a></li> -->
 </ul>
 </div>
 {% block setcontent %}{% end %}

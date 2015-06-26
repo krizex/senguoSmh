@@ -15,8 +15,8 @@ import json
 # add by cm 2015.5.15
 import string
 import random
-# 登陆处理
 
+# 登录处理
 class Access(AdminBaseHandler):
 	def initialize(self, action):
 		self._action = action
@@ -362,7 +362,6 @@ class OrderStatic(AdminBaseHandler):
 					 func.month(models.Order.create_date),
 					 func.day(models.Order.create_date)).\
 			order_by(desc(models.Order.create_date)).all()
-
 
 		# 总订单数
 		total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
@@ -772,6 +771,9 @@ class Order(AdminBaseHandler):
 			except:return self.send_error(404)
 			q.delete()
 			self.session.commit()
+		elif action == "edit_send_day":
+			self.current_shop.config.day_on_time = int(data["day"])
+			self.session.commit()
 		elif action == "edit_ontime_on":
 			self.current_shop.config.ontime_on = not self.current_shop.config.ontime_on
 			self.session.commit()
@@ -847,7 +849,7 @@ class Order(AdminBaseHandler):
 					balance_record = ("%{0}%").format(order.num)
 					old_balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_record.like(balance_record)).first()
 					if old_balance_history is None:
-						print('old histtory not found')
+						print('Order: old history not found')
 					else:
 						old_balance_history.is_cancel = 1
 						self.session.commit()
@@ -893,7 +895,7 @@ class Order(AdminBaseHandler):
 					staff_info = self.session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id)\
 					.filter(models.HireLink.shop_id == shop_id,models.HireLink.default_staff == 1).first()
 				except:
-					print("didn't find default staff")
+					print("Order: didn't find default staff")
 				if staff_info:
 					openid = staff_info.wx_openid
 					staff_name = staff_info.nickname
@@ -1179,7 +1181,7 @@ class Goods(AdminBaseHandler):
 						count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 						datalist = goods.offset(offset).limit(page_size).all()
 						if datalist:
-							data = self.getGoodsData(datalist)
+							data = self.getGoodsData(datalist,"all")
 						else:
 							datalist = []
 						return self.send_success(data=data,count=count)
@@ -1198,7 +1200,7 @@ class Goods(AdminBaseHandler):
 					count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 					datalist = goods.offset(offset).limit(page_size).all()
 					if goods:
-						data = self.getGoodsData(goods)
+						data = self.getGoodsData(datalist,"all")
 					else:
 						data = []
 					return self.send_success(data=data,count=count)
@@ -1233,7 +1235,8 @@ class Goods(AdminBaseHandler):
 					filter_status2 = int(filter_status2)
 					# print(filter_status2)
 					if filter_status2 == -2:
-						goods = goods	
+						goods = goods
+						print(goods.count())
 					else:
 						goods = goods.filter_by(group_id = filter_status2)
 						
@@ -1258,7 +1261,7 @@ class Goods(AdminBaseHandler):
 				count = goods.count()
 				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 				datalist = goods.offset(offset).limit(page_size).all()
-				data = self.getGoodsData(datalist)
+				data = self.getGoodsData(datalist,"all")
 				return self.send_success(data=data,count=count)
 
 			group_list = []
@@ -1432,7 +1435,7 @@ class Goods(AdminBaseHandler):
 				count = goods.count()
 				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 				datalist = goods.offset(offset).limit(page_size).all()
-				data = self.getGoodsData(datalist)
+				data = self.getGoodsData(datalist,"all")
 				return self.send_success(data=data,count=count)
 			return self.render("admin/goods-delete.html",context=dict(subpage="goods"))
 
@@ -1666,15 +1669,17 @@ class Goods(AdminBaseHandler):
 											relate=relate)
 							self.session.add(charge_types)
 							
-				if "del_charge_types" in data:
-					for _id in data["del_charge_types"]:
-						try:
-							q = self.session.query(models.ChargeType).filter_by(id=_id)
-						except:
-							q = None
-						q.delete()
+				if "del_charge_types" in data  and  data['del_charge_types']:
+					try:
+						q = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(data["del_charge_types"]))
+					except:
+						return self.send_fail('del_charge_types error')
+					# print(q)
+					q.delete(synchronize_session=False)
 
 				detail_describe = data["detail_describe"].replace("script","'/script/'")
+				if (not detail_describe) or detail_describe == "":
+					detail_describe = None
 
 				goods.update(session=self.session,
 						name = data["name"],
@@ -1688,8 +1693,8 @@ class Goods(AdminBaseHandler):
 						detail_describe = detail_describe,
 						tag = int(data["tag"])
 						)
-				_data = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).one()
-				data = self.getGoodsOne(_data)
+				_data = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).all()
+				data = self.getGoodsData(_data,"one")
 				return self.send_success(data=data)
 
 			elif action == "default_goods_img":  # 恢复默认图
@@ -1697,7 +1702,7 @@ class Goods(AdminBaseHandler):
 				self.session.commit()
 			elif action == "delete_goods":
 				time_now = datetime.datetime.now()
-				goods.update(session=self.session, active = 0,delete_time = time_now)
+				goods.update(session=self.session, active = 0,delete_time = time_now,group_id = 0)
 
 		elif action in ["del_charge_type", "edit_charge_type"]:  # charge_type_id
 			charge_type_id = self.args["charge_type_id"]
@@ -2036,7 +2041,7 @@ class Staff(AdminBaseHandler):
 				shop = self.session.query(models.Shop).filter_by(id = self.current_shop.id).one()
 				admin_id  =shop.admin.accountinfo.id
 			except :
-				print('this man is not admin')
+				print('Staff: this man is not admin')
 			if hire_link.active==2:
 					hire_link.active = 1
 			else:
@@ -2117,44 +2122,35 @@ class Config(AdminBaseHandler):
 		except:return self.send_error(404)
 		action = self.args["action"]
 		if action == "delivery":
-			return self.render("admin/shop-address-set.html", addresses=config.addresses,context=dict(subpage='shop_set',shopSubPage='delivery_set'))
-		elif action == "notice":
-			token = self.get_qiniu_token("shop_notice_cookie",self.current_shop.id)
-			return self.render("admin/shop-notice-set.html", notices=config.notices,token=token,context=dict(subpage='shop_set',shopSubPage='notice_set'))
+			return self.render("admin/shop-address-set.html", addresses=config.addresses,context=dict(subpage='shop_set',shopSubPage='delivery_set'))	
 		elif action == "recharge":
 			pass
 		elif action == "receipt":
 			return self.render("admin/shop-receipt-set.html", receipt_msg=config.receipt_msg,context=dict(subpage='shop_set',shopSubPage='receipt_set'))
-
-		elif action == "cert":
-			pass
-			#return self.render("admin/shop-cert-set.html",context=dict(subpage='shop_set',shopSubPage='cert_set'))
-		elif action == "pay":
-			if self.current_shop.shop_auth !=0:
-				return self.render("admin/shop-pay-set.html",context=dict(subpage='shop_set',shopSubPage='pay_set'))
-			else:
-				return self.redirect(self.reverse_url('adminShopConfig'))
 		elif action == "phone":
 			return self.render('admin/shop-phone-set.html',context=dict(subpage='shop_set',shopSubPage='phone_set'))
 		elif action == "admin":
-			if self.current_shop.shop_auth !=0:
-				notice=''
-				if 'status' in self.args:
-					status = self.args["status"]
-					if status == 'success':
-						notice='管理员添加成功'
-					elif status == 'fail':
-						notice='您不是超级管理员，无法进行管理员添加操作'
-				admin_list = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,active =1,work = 9 ).all()
-				datalist =[]
-				for admin in admin_list:
-					info = self.session.query(models.ShopStaff).filter_by(id=admin.staff_id).first()
-					datalist.append({'id':info.accountinfo.id,'imgurl':info.accountinfo.headimgurl_small,'nickname':info.accountinfo.nickname,'temp_active':admin.temp_active})
-				return self.render('admin/admin-set.html',context=dict(subpage='shop_set',shopSubPage='admin_set'),notice=notice,datalist=datalist)
-			else:
-				return self.redirect(self.reverse_url('adminShopConfig'))
+			notice=''
+			if 'status' in self.args:
+				status = self.args["status"]
+				if status == 'success':
+					notice='管理员添加成功'
+				elif status == 'fail':
+					notice='您不是超级管理员，无法进行管理员添加操作'
+			admin_list = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,active =1,work = 9 ).all()
+			datalist =[]
+			for admin in admin_list:
+				info = self.session.query(models.ShopStaff).filter_by(id=admin.staff_id).first()
+				datalist.append({'id':info.accountinfo.id,'imgurl':info.accountinfo.headimgurl_small,'nickname':info.accountinfo.nickname,'temp_active':admin.temp_active})
+			return self.render('admin/admin-set.html',context=dict(subpage='shop_set',shopSubPage='admin_set'),notice=notice,datalist=datalist)
+
 		elif action == "template":
-			return self.render('admin/shop-template-set.html',context=dict(subpage='shop_set',shopSubPage='template_set'))
+			return self.render('admin/shop-template-set.html',context=dict(subpage='market_set',shopSubPage='template_set'))
+		elif action == "pay":
+			return self.render("admin/shop-pay-set.html",context=dict(subpage='market_set',shopSubPage='pay_set'))
+		elif action == "notice":
+			token = self.get_qiniu_token("shop_notice_cookie",self.current_shop.id)
+			return self.render("admin/shop-notice-set.html", notices=config.notices,token=token,context=dict(subpage='market_set',shopSubPage='notice_set'))
 			
 		else:
 			return self.send_error(404)
@@ -2421,7 +2417,7 @@ class AdminAuth(AdminBaseHandler):
 				content = message_content)
 			headers = dict(Host = '106.ihuyi.cn',connection = 'close')
 			r = requests.post(url,data = postdata , headers = headers)
-			print(r.text)
+			# print(r.text)
 			WxOauth2.post_add_msg(account_info.wx_openid, message_shop_name,account_info.nickname)
 			return self.redirect('/admin/config?action=admin')
 
@@ -2462,7 +2458,7 @@ class ShopBalance(AdminBaseHandler):
 				apply_value = format(0,'.2f')
 
 		except:
-			print("[提现申请]提现申请错误")
+			print("ShopBalance: no apply_cash found")
 			
 		if shop_auth in [1,2,3,4]:
 			show_balance = True
@@ -2757,7 +2753,7 @@ class ShopAuthenticate(AdminBaseHandler):
 			order_by(desc(models.ShopAuthenticate.id)).first()
 		except:
 			auth_apply = None
-			print('auth_apply error')
+			print('ShopAuthenticate: auth_apply error')
 		person_auth=False
 		company_auth=False
 		has_done = 0
@@ -2787,7 +2783,7 @@ class ShopAuthenticate(AdminBaseHandler):
 		try:
 			shop_auth_apply = self.session.query(models.ShopAuthenticate).filter_by(shop_id = shop_id)
 		except:
-			print('shop_auth_apply error')
+			print('ShopAuthenticate: shop_auth_apply error')
 		if action == "get_code":
 			# print("[店铺认证]发送验证码到手机：",data["phone"])
 			# gen_msg_token(phone=self.args["phone"])

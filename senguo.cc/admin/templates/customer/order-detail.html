@@ -1,7 +1,7 @@
 {% extends 'detail-base.html' %}
 {% block title %}我的订单{% end %}
 {% block head %}
-<link rel="stylesheet" href="{{static_url('css/baguetteBox.css')}}"/>
+<link rel="stylesheet" href="/static/css/baguetteBox.css"/>
 <link rel="stylesheet" href="{{static_url('css/market-order-detail.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 {% end %}
@@ -17,7 +17,7 @@
                 {% if order.status == -1%}
                 <img src="/static/images/TDSG.png" alt="配送员头像"/>
                 {% else %}
-                <img src="{{order.sender_img}} or '/static/images/TDSG.png'" alt="配送员头像"/>
+                <img src="{{order.sender_img or '/static/images/TDSG.png'}}" alt="配送员头像"/>
                 {% end %}
                 </a>
             </div>
@@ -135,6 +135,6 @@
     </div>
 </div>
 {% block bottom %}
-<script src="{{static_url('js/third/baguetteBox.min.js')}}"></script>
+<script src="/static/js/third/baguetteBox.min.js"></script>
 <script src="{{static_url('js/market-order-detail.js')}}"></script>
 {% end %}

@@ -25,7 +25,7 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import partial, wraps
 
 
-
+# 非阻塞
 EXECUTOR = ThreadPoolExecutor(max_workers=4)
 
 def unblock(f):
@@ -65,6 +65,7 @@ def get_unblock(f):
 				partial(callback, future)))
 
 	return wrapper
+
 # 4.14 woody
 class Pysettimer(threading.Thread):
 	def __init__(self,function,args = None ,timeout = 1 ,is_loop = False):
@@ -281,14 +282,14 @@ class GlobalBaseHandler(BaseHandler):
 		elif unit == 9 :
 			name ='件'
 		elif unit == 10 :
-			name ='框'
+			name ='筐'
 		elif unit == 11 :
 			name ='包'
 		else:
 			name =''
 		return name
  
-	def getGoodsData(self,datalist):
+	def getGoodsData(self,datalist,_type):
 		data = []
 		shop_id = self.current_shop.id
 		for d in datalist:
@@ -307,7 +308,12 @@ class GlobalBaseHandler(BaseHandler):
 			elif group_id == -1:
 				group_name = "店铺推荐"
 			else:
-				group_name = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id=shop_id,status=1).first().name
+				try:
+					group_name = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id=shop_id,status=1).first().name
+				except:
+					group_name = None
+				# print(group_name)
+
 
 			charge_types = []
 			for charge in d.charge_types:
@@ -323,45 +329,10 @@ class GlobalBaseHandler(BaseHandler):
 				'saled':d.saled,'storage':d.storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
 				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
 				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name,'code':d.fruit_type.code})
+		if _type and _type=="one":
+			data = data[0]
+		# print(data)
 		return data
-
-	def getGoodsOne(self,d):
-		data = {}
-		shop_id = self.current_shop.id
-		add_time = d.add_time.strftime('%Y-%m-%d %H:%M:%S') if d.add_time else ''
-		delete_time = d.delete_time.strftime('%Y-%m-%d %H:%M:%S') if d.delete_time else ''
-		if d.img_url:
-			img_url= d.img_url.split(";")
-		else:
-			img_url = ''
-		intro = '' if not d.intro else d.intro
-		detail_describe = '' if not d.detail_describe else d.detail_describe
-
-		group_id = d.group_id
-		if  group_id == 0:
-			group_name = "默认分组"
-		elif group_id == -1:
-			group_name = "店铺推荐"
-		else:
-			group_name = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id=shop_id,status=1).first().name
-
-		charge_types = []
-		for charge in d.charge_types:
-			market_price ="" if charge.market_price == None else charge.market_price
-			unit = charge.unit
-			unit_name = self.getUnit(unit)
-			charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
-				'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price,'select_num':charge.select_num})
-
-		_unit = int(d.unit)
-		_unit_name = self.getUnit(_unit)
-		data = {'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
-			'saled':d.saled,'storage':d.storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
-			'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
-			'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name,'code':d.fruit_type.code}
-		return data
-
-
 
 class FrontBaseHandler(GlobalBaseHandler):
 	pass
@@ -647,8 +618,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	# send message to staff  , woody,6.17
 	@classmethod
 	def send_staff_message(self,session,order):
-		print('login in send_staff_message')
-		print(order.SH2_id)
+		# print('login in send_staff_message')
+		# print(order.SH2_id)
 		try:
 			staff_info = session.query(models.Accountinfo).filter_by(id = order.SH2_id).first()
 		except NoResultFound:
@@ -667,7 +638,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 		WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
 			order_totalPrice,send_time,phone,address,)
-		print('SUCCESS')
+		# print('SUCCESS')
 
 	@classmethod
 	def send_admin_message(self,session,order):
@@ -699,24 +670,38 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		send_time = order.send_time
 		address = order.address_text
 		order_realid = order.id
-		if pay_type != 3:
-			if order.shop.super_temp_active != 0:
-				WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods,
-					phone,address)
-			try:
-				other_admin = session.query(models.HireLink).filter_by(shop_id = shop_id,active = 1, work = 9 , temp_active = 1).first()
-			except NoResultFound:
-				other_admin = None
-			if other_admin:
-				info = session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id).filter(models.ShopStaff.id
-					== other_admin.staff_id).first()
-				other_name = info.nickname
-				other_touser = info.wx_openid
-				WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,
-					send_time,goods,phone,address)
-			WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
+		if order.shop.super_temp_active != 0:
+			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods,
+				phone,address)
+		try:
+			other_admin = session.query(models.HireLink).filter_by(shop_id = shop_id,active = 1, work = 9 , temp_active = 1).first()
+		except NoResultFound:
+			other_admin = None
+		if other_admin:
+			info = session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id).filter(models.ShopStaff.id
+				== other_admin.staff_id).first()
+			other_name = info.nickname
+			other_touser = info.wx_openid
+			WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,
+				send_time,goods,phone,address)
+		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
 
-
+	@classmethod
+	def order_done_msg(self,session,order):
+		# print('login in order_done_msg')
+		order_num = order.num
+		order_sendtime = order.arrival_day  + " " + order.arrival_time 
+		shop_phone = order.shop.shop_phone
+		customer_id= order.customer_id
+		shop_name = order.shop.shop_name
+		order_id = order.id
+		# print(order_num , order_sendtime , shop_phone)
+		try:
+			customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
+		except NoResultFound:
+			return self.send_fail('order_done: customer not found')
+		touser = customer_info.wx_openid
+		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name,order_id)
 	##############################################################################################
 	# 订单完成后 ，积分 相应增加 ，店铺可提现余额相应增加 
 	# 同时生成相应的积分记录 和 余额记录 
@@ -725,6 +710,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	##############################################################################################
 	@classmethod
 	def order_done(self,session,order):
+		# print('login in order_done')
 		now = datetime.datetime.now()
 		order.arrival_day = now.strftime("%Y-%m-%d")
 		order.arrival_time= now.strftime("%H:%M")
@@ -732,13 +718,15 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		shop_id           = order.shop_id
 		totalprice        = order.totalPrice
 
+		self.order_done_msg(session,order)
+
 		order.shop.is_balance = 1
 		order.shop.order_count += 1  #店铺订单数加1
 
 		#add by jyj 2015-6-15
 		totalprice_inc = order.totalPrice
 		order.shop.shop_property += totalprice_inc
-		print(order.shop.shop_property,'order.shop.order_count')
+		# print(order.shop.shop_property,'order.shop.shop_property')
 
 		try:
 			customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
@@ -790,7 +778,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 			# 订单完成后，将相应店铺可提现 余额相应增加
 			order.shop.available_balance += totalprice
-			print(order.shop.available_balance,'order.shop.available_balance')
+			# print(order.shop.available_balance,'order.shop.available_balance')
 
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
@@ -818,23 +806,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				point_history.point_type = models.POINT_TYPE.TOTALPRICE
 				point_history.each_point = totalprice
 				session.add(point_history)
-		session.commit()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-				
+		session.commit()			
 
 class SuperBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.SuperAdmin
@@ -928,7 +900,7 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 			return self._shop_id
 		shop_id = self.get_cookie("market_shop_id")
 		if not shop_id:
-			print(("shop_id error"))
+			print(("FruitzoneBaseHandler: shop_id error"))
 			#return self.redirect("/shop/1")  #todo 这里应该重定向到商铺列表
 		self._shop_id = int(shop_id)
 		# if not self.session.query(models.CustomerShopFollow).filter_by(
@@ -1418,7 +1390,7 @@ class WxOauth2:
 				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
 			"topcolor": "#FF0000",
 			"data": {
-				"first": {"value": "您好，您所申请的店铺『%s』已经通过审核！\n请添加森果客服微信 senguocc100" % shop_name, "color": "#44b549"},
+				"first": {"value": "您好，您所申请的店铺『%s』已经通过审核！\n请添加森果客服微信：senguocc100" % shop_name, "color": "#44b549"},
 				"keyword1": {"value": name, "color": "#173177"},
 				"keyword2": {"value": phone, "color": "#173177"},
 				"keyword3": {"value": time, "color": "#173177"},
@@ -1478,7 +1450,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]店铺审核消息发送失败：", data)
+			print("[模版消息]添加店铺管理员消息发送失败：", data)
 			return False
 		return True
 
@@ -1510,7 +1482,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]发送给管理员失败：",data)
+			print("[模版消息]管理员订单消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给管理员成功")
 		return True
@@ -1543,7 +1515,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]发送给配送员失败：",data)
+			print("[模版消息]配送员订单消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给配送员成功")
 		return True
@@ -1561,14 +1533,14 @@ class WxOauth2:
 				"customerInfo":{"value":"批量信息","color":"#173177"},
 				"orderItemName":{"value":"订单编号","color":"#173177"},
 				"orderItemData":{"value":"批量信息","color":"#173177"},
-				"remark":{"value":"\n有多个订单需要配送，具体信息请点击详情进入查看。","color":"#173177"},
+				"remark":{"value":"\n有多个订单需要配送，具体信息请点击“详情”进入查看。","color":"#173177"},
 			}
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]发送给配送员失败：",data)
+			print("[模版消息]配送员批量订单消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给配送员成功")
 		return True
@@ -1582,7 +1554,7 @@ class WxOauth2:
 			'url'    : 'http://i.senguo.cc/customer/orders/detail/' + str(order_realid),
 			'topcolor': "#FF0000",
 			"data":{
-				"first"    : {"value":"您的订单已提交成功\n","color":"#44b549"},
+				"first"    : {"value":"您的订单已提交成功！\n","color":"#44b549"},
 				"keyword1" : {"value":shop_name,"color":"#173177"},
 				"keyword2" : {"value":str(order_create),"color":"#173177"},
 				"keyword3" : {"value":goods,"color":"#173177"},
@@ -1595,7 +1567,33 @@ class WxOauth2:
 		data = json.loads(res.content.decode("utf-8"))
 
 		if data["errcode"] != 0:
-			print("[模版消息]发送给客户失败：",data)
+			print("[模版消息]订单提交成功消息发送失败：",data)
+			return False
+		# print("[模版消息]发送给客户成功")
+		return True
+
+	@classmethod
+	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id):
+		describe = '\n如有任何疑问，请拨打商家电话：%s。' % shop_phone if shop_phone else '\n如有任何疑问，请及时联系商家。'
+		# print(touser,order_num,order_sendtime,shop_phone)
+		postdata = {
+			'touser':touser,
+			'template_id':'5_JWJNqfAAH8bXu2M_v9_MFWJq4ZPUdxHItKQTRbHW0',
+			'url':'http://i.senguo.cc/customer/orders/detail/' + str(order_id),
+			'topcolor':'#FF0000',
+			"data":{
+				"first":{"value":"您在『{0}』的订单已完成。\n".format(shop_name),"color":"#44b549"},
+				"keyword1":{"value":order_num,"color":"#173177"},
+				"keyword2":{"value":order_sendtime,"color":"#173177"},
+				"remark"  :{"value":describe+"\n您可以点击“详情”查看订单，并对订单进行评价拿积分哦！","color":"#173177"},
+			}
+		}
+		access_token = cls.get_client_access_token()
+		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
+		data = json.loads(res.content.decode("utf-8"))
+
+		if data["errcode"] != 0:
+			print("[模版消息]订单完成消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给客户成功")
 		return True
@@ -1682,21 +1680,3 @@ class UrlShorten:
 		long_url = url.long_url
 		self.session.commit()
 		return long_url
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

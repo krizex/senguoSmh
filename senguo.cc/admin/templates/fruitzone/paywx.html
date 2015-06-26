@@ -7,6 +7,7 @@
 {% block top %}订单详情{% end %}
 {% block content %}
 {% set fruits=eval(order.fruits)%}
+<input type="hidden" value="{{qr_url}}" id="qr_url">
 <div class="container mb50" id="container">
     <div class="order-grade">
         <div class="order-line">
@@ -16,7 +17,7 @@
                     {% if order.status == -1%}
                     <img src="/static/images/TDSG.png" alt="配送员头像"/>
                     {% else %}
-                    <img src="{{order.sender_img}} or '/static/images/TDSG.png'" alt="配送员头像"/>
+                    <img src="{{order.sender_img or '/static/images/TDSG.png'}}" alt="配送员头像"/>
                     {% end %}
                 </a>
             </div>
@@ -33,7 +34,7 @@
                 <dl class="goods-item group">
                     <dd>
                         {% if charge_type.fruit.img_url%}
-                        <img src="{{charge_type.fruit.img_url}}?imageView2/1/w/170/h/170" alt="商品图片"/>
+                        <img src="{{charge_type.fruit.img_url.split(';')[0]}}?imageView2/1/w/170/h/170" alt="商品图片"/>
                         {% else %}
                         <img src="/static/design_img/TDSG.png" alt="商品图片"/>
                         {% end %}
@@ -62,6 +63,12 @@
         <p>订单备注：<span>{{order.message or '无'}}</span></p>
         <p class="text-black">支付方式：<span class="">{% if order.pay_type==1 %}货到付款{% elif order.pay_type==2 %}余额支付{% elif order.pay_type==3 %}在线支付{% if online_type=='wx'%}-微信支付{% elif online_type=='alipay'%}-支付宝支付{% end %}{% end %}</span></p>
     </div>
+    <div class="wrap-qrcode text-center visible-hide" id="wrap-qrcode">
+        <p class="text-centert font14">遇到不允许跨号支付？</p> 
+        <div class="qrcode" id="qrcode"></div>
+        <p class="text-center font14">长按图片【识别二维码】</p>
+        <p class="text-center font14">或使用微信【扫一扫】付款</p>
+    </div>
 </div>
 <div class="wrap-bm-btn" id="nav">
     <a class="fr add-comment red-btn" href="javascript:;" id="getBrandWCPayRequest">去支付</a>
@@ -75,6 +82,7 @@
 <input type="hidden" value="{{order.id}}" id="order-id"/>
 {% end %}
 {% block bottom %}
+<script type="text/javascript" src="{{static_url('js/third/qrcode.min.js')}}"></script> 
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
 <script type="text/javascript">
     wx.config({
@@ -98,6 +106,7 @@
                                 window.location.href="/"+res.shop_code;
                             },2000);
                         }
+
                         else{
                             wx.chooseWXPay({
                                 timestamp: '{{renderPayParams['timeStamp']}}',
@@ -108,6 +117,10 @@
                                 success: function (res) {
                                     // 支付成功后的回调函数
                                     window.location.href = '/notice/success';
+                                },
+                                fail:function(){
+                                    $('#wrap-qrcode').removeClass("visible-hide");
+                                    $(window).scrollTop($(window).scrollTop()+100);
                                 }
                             });
                         }
@@ -116,5 +129,13 @@
             });
         }
     });
+$(document).ready(function(){
+    // alert($("#qr_url").val());
+    new QRCode(document.getElementById('qrcode'), {
+        width : 120,//设置宽高
+        height : 120
+    }).makeCode($("#qr_url").val()); 
+});
+ 
 </script>
 {% end %}

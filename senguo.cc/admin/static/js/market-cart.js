@@ -534,11 +534,11 @@ function goodsNum(target,action){
                                 SetCookie('cart_count',cart_n-1);
                                 parent.remove();
                             }
-                           else{
+                            else{
                                 $('.cart_num').text(0).addClass('hidden');
                                 SetCookie('cart_count',0);
                                 parent.remove();
-                           }
+                            }
                         }
                         num--;
                         item.val(num);

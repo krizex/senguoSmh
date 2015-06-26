@@ -44,3 +44,7 @@
 .i-contact{width: 15px;height: 15px;background: url('../images/icon_phone.png');background-size: 15px 15px;display: inline-block;position: relative;top: 3px;}
 .arr-right{display: inline-block;width: 8px;height:14px;background-image: url("../images/arr-right.png");background-size: contain;background-repeat: no-repeat;position: relative;top: 2px;left: 10px;}
 .goods-info-lst{padding-bottom:50px;}
+
+.wrap-qrcode{width:100%;padding:10px 0; background:#fff;margin-top:10px;}
+.wrap-qrcode p{text-align:center;}
+.qrcode{margin: 0 auto;width:120px;height:120px;margin-top:10px;}

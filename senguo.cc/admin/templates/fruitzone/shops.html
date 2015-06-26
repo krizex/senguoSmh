@@ -40,7 +40,7 @@
             {% for shops in context['shops']%}
             <li>
                 <a href="{{reverse_url('fruitzoneShop',shops.id)}}">
-                    <img src="{{static_url('images/anoa-4-md.gif')}}"/>
+                    <img src="/static/images/anoa-4-md.gif"/>
                     <p>{{shops.shop_name}}</p>
                 </a>
             </li>
@@ -53,7 +53,7 @@
             {% for shops in context['shops']%}
             <li data-status="{{shops.shop_status}}">
                 <a href="{{reverse_url('fruitzoneAdminShop',shops.id)}}">
-                    <img src="{{static_url('images/anoa-4-md.gif')}}"/>
+                    <img src="/static/images/anoa-4-md.gif"/>
                     <p>{{shops.shop_name}}</p>
                     <span class="status">{{handler.code_to_text('shop_status',shops.shop_status)}}</span>
                     <small class="edit">点击修改</small>
@@ -63,7 +63,7 @@
             {% for shop_temp in context['shop_temps']%}
             <li data-status="{{shop_temp.shop_status}}">
                 <a href="{{reverse_url('fruitzoneShopReApply')}}?shop_id={{shop_temp.id}}">
-                    <img src="{{static_url('images/anoa-4-md.gif')}}"/>
+                    <img src="/static/images/anoa-4-md.gif"/>
                     <p>{{shop_temp.shop_name}}</p>
                     <span class="status">{{handler.code_to_text('shop_status',shop_temp.shop_status)}}</span>
                     <small class="edit">点击重新申请</small>

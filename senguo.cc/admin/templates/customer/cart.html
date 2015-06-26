@@ -13,9 +13,9 @@
             <li class="cart-list-item set-w100-fle fruit_item text-grey m-b5 {{cart_f[key]['code']}}" data-limit="{{cart_f[key]['limit_num']}}">
                 <div class="box bg set-w100-fle">
                     {% if cart_f[key]['img_url'] %}
-                    <img src="/static/images/holder.png?v=20150330" class="goods-img pull-left w15 lazy_img" data-original="{{cart_f[key]['img_url']}}?imageView2/1/w/170/h/170"/>
+                    <img src="/static/images/holder.png" class="goods-img pull-left w15 lazy_img" data-original="{{cart_f[key]['img_url']}}?imageView2/1/w/170/h/170"/>
                     {% else %}
-                    <img src="/static/images/holder.png?v=20150330" class="goods-img pull-left w15 lazy_img" data-original="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.png?v=20150316"/>
+                    <img src="/static/images/holder.png" class="goods-img pull-left w15 lazy_img" data-original="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.png"/>
                     {% end %}
                     <div class="goods-info pull-left font14 p010">
                         <div class="clearfix">
@@ -23,9 +23,7 @@
                             <span class="price pull-left">￥<span class="item_total_price"></span>元</span>
                         </div>
                     <span class="p0 charge-type pull-left color" data-id="{{cart_f[key]['charge_type'].id}}">
-                        <span class="item_price">{{cart_f[key]['charge_type'].price}}</span>
-                        元/{{cart_f[key]['charge_type'].num}}
-                        <span data-id="{{cart_f[key]['charge_type'].unit}}" class="chargeUnit"></span>
+                        <span class="item_price">{{cart_f[key]['charge_type'].price}}</span>元/{{cart_f[key]['charge_type'].num}}<span data-id="{{cart_f[key]['charge_type'].unit}}" class="chargeUnit"></span>
                     </span>
                     </div>
                     <div class="action-box font14">
@@ -52,7 +50,7 @@
                 <span class="pull-right tit text-right">配送费：</span>
             </div>
             <div class="clearfix m-b10 font14 p010 text-grey3">
-                <span class="pull-right tit2 text-right"><span id="final_price"></span>元</span>
+                <span class="pull-right tit2 text-right"><span id="final_price" class="final_price"></span>元</span>
                 <span class="pull-right tit text-right">实付金额：</span>
             </div>
             <p class="text-center text-pink mincharge_intime mincharge" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到“按时达”起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元</p>
@@ -85,8 +83,9 @@
                     <div id="sendPeriod" class="send_period list-group font14">
                         <div class="arrow-top left70"></div>
                         <ul id="sendDay" class="send_day nav-pills clearfix text-center type-choose m-b10 font14 mt10">
-                            <li data-id="1" class="active pull-left item" id="send_today"><a href="javascript:;" class="text-green">今天</a></li>
-                            <li data-id="2" id="send_tomorrow" class="pull-left item"><a href="javascript:;" class="text-green">明天</a></li>
+                            {% set day=config.day_on_time %}
+                            <li data-id="1" class="{% if day == 0 or day==1 %}active{% end %} {% if day==2 %}hidden{% end %} pull-left item" id="send_today"><a href="javascript:;" class="text-green">今天</a></li>
+                            <li data-id="2" id="send_tomorrow" class="{% if day==2 %}active{% end %} {% if day==1 %}hidden{% end %} pull-left item"><a href="javascript:;" class="text-green">明天</a></li>
                         </ul>
                         <div id="sendPerTime" class="">
                         {% for period in periods%}
@@ -231,7 +230,7 @@
                 <button  class="sure_btn  text-center  pull-right" id="phoneNumber">绑定手机号</button>
             </div>
             {% else %}
-             <button id="submitOrder" class="sub-btn w-per6 bg-green text-white text-center center-block btn mt10 clearfix sure_btn">提交订单</button>
+             <button id="submitOrder" class="sub-btn w-per6 bg-green text-white text-center center-block btn mt20 clearfix sure_btn">提交订单</button>
             {% end %}
         </div>
         <div class="bottom-line"></div>
