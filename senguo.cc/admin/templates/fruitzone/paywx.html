@@ -126,8 +126,6 @@
                                                 width : 150,//设置宽高
                                                 height : 150
                                             }).makeCode(res.qr_url);
-                                            $('#wrap-qrcode').removeClass("visible-hide");
-                                            $(window).scrollTop($('.wrap-qrcode').offset().top);
                                         }});
                                 }
                             });
@@ -137,13 +135,5 @@
             });
         }
     });
-$(document).ready(function(){
-    // alert($("#qr_url").val());
-    new QRCode(document.getElementById('qrcode'), {
-        width : 120,//设置宽高
-        height : 120
-    }).makeCode($("#qr_url").val()); 
-});
- 
 </script>
 {% end %}
