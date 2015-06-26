@@ -2211,6 +2211,7 @@ class payTest(CustomerBaseHandler):
 				# print(res_dict['code_url'])
 				# url = pyqrcode.create(res_dict['code_url'])
 				# url.png('really.png',scale = 8)
+				print(qr_url,'chargewxpay no in weixin')
 				return self.render("customer/qrwxpay.html" , qr_url =qr_url ,totalPrice=totalPrice)
 			else:
 				return self.send_fail('can not get code_url!')
@@ -2258,6 +2259,7 @@ class payTest(CustomerBaseHandler):
 				res_dict=self._qr_pay(orderId,wxPrice)
 				if 'code_url' in res_dict:
 					qr_url = res_dict['code_url']
+					print(qr_url,'chargewxpay in weixin')
 			# return self.send_success(renderPayParams = renderPayParams)
 			return self.render("fruitzone/paytest.html",qr_url=qr_url,renderPayParams = renderPayParams,wxappid = wxappid,\
 				noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)
