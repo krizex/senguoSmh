@@ -8,6 +8,7 @@ import handlers.official
 import handlers.onlinePay
 import handlers.activity
 import handlers.madmin
+import handlers.bbs
 from dal import models
 #todo:handlers太大会不会影响性能？
 
@@ -27,6 +28,14 @@ handlers = [
 	(r"/lovewall/list/(\w+)", handlers.activity.ConfessionList, {}, "ConfessionList"),
 	(r"/lovewall/comment/(\w+)", handlers.activity.ConfessionComment, {}, "ConfessionComment"),
 	(r"/lovewall/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
+
+	#bbs
+	(r"/bbs", handlers.bbs.Main, {}, "BbsMain"),
+	(r"/bbs/detail/(\w+)", handlers.bbs.Detail, {}, "BbsDetail"),
+	(r"/bbs/publish", handlers.bbs.Publish, {}, "BbsPublish"),
+	(r"/bbs/search", handlers.bbs.Search, {}, "BbsSearch"),
+	(r"/bbs/profile", handlers.bbs.Profile, {}, "BbsProfile"),
+
 
 	#优惠券
 	(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),

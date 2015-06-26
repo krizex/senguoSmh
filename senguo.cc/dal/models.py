@@ -1634,19 +1634,23 @@ class Article(MapBase, _CommonApi):
 class ArticleComment(MapBase, _CommonApi):
 	__tablename__ = 'article_comment'
 	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
-	article_id = Column(Integer,ForeignKey(Article.id),nullable = False)
 	account_id = Column(Integer, ForeignKey(Accountinfo.id),nullable=False)
+	article_id = Column(Integer,ForeignKey(Article.id),nullable = False)
 	comment = Column(String(500))
 	create_time = Column(DateTime,default = func.now())
 	_type = Column(Integer,default = 0) #0: 评论  1:回复
 	comment_author_id = Column(Integer,default = 0)#评论作者id
+	great = Column(Integer,default = 0) #点赞数
 
-class ArticleGreat(MapBase, _CommonApi):
+class ArticleGreat(MapBase, _CommonApi):#文章点赞
 	__tablename__ = 'article_great'
 	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
 	account_id = Column(Integer, ForeignKey(Accountinfo.id),nullable=False)
-	article_id = Column(Integer,ForeignKey(Article.id),nullable = False)
+	article_id = Column(Integer,default = 0)#文章id
+	comment_id = Column(Integer,default = 0)#评论id
+	_type = Column(Integer,default = 0) #0: 文章点赞  1:评论点赞
 	create_time = Column(DateTime,default = func.now())
+
 
 class ShortUrl(MapBase,_CommonApi):
 	__tablename__ = 'shorturl'
