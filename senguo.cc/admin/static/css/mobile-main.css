@@ -176,7 +176,10 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .no-recored{width:50%;margin:0 auto;}
 .no-recored img{width:50px;}
 
-
+.wrap-qrcode{width:100%;}
+.qrcode{margin: 0 auto;width:250px;}
+.wrap-qrcode p{color:#333;text-align:center;}
+.qrcode img{margin: 0 auto;}
 
 
 
