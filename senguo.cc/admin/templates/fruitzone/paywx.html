@@ -119,6 +119,7 @@
                                 },
                                 fail:function(){
                                     $('.wrap-qrcode').removeClass("hidden");
+                                    $(window).scrollTop($('.wrap-qrcode').offset().top);
                                 }
                             });
                         }

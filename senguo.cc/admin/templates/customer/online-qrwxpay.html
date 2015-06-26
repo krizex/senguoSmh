@@ -83,8 +83,9 @@
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
 <script type="text/javascript">
     new QRCode(document.getElementById('qrcode'), {
-            width : 200,//设置宽高
-            height : 200
-        }).makeCode('{{qr_url}}');
+        width : 200,//设置宽高
+        height : 200
+    }).makeCode('{{qr_url}}');
+    $(window).scrollTop($('.wrap-qrcode').offset().top);
 </script>
 {% end %}
