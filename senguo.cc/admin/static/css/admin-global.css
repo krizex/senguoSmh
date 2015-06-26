@@ -53,7 +53,7 @@ img{border:none;}
 .backstage-header .logo-con .beta{width:54px;height:24px;color:#999;line-height:24px;text-align:center;font-size:12px;}
 .backstage-header .header-nav{}
 .backstage-header .header-nav li{float:left;padding:0 15px;}
-.backstage-header .header-nav li a{color:#000;display:block;font-size: 12px;}
+.backstage-header .header-nav li a{color:#222;display:block;font-size: 12px;}
 .backstage-header .header-nav li i{margin-right:5px;}
 .backstage-header .header-nav li span{font-weight:bold;margin-left:5px;font-size:14px;}
 .backstage-header .header-nav li .now{color:#ff6563;}
