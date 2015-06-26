@@ -4,7 +4,6 @@
 <link rel="stylesheet" href="{{static_url('css/mobile-main.css')}}"/>
 {% end %}
 {% block content%}
-<input type="hidden" value="{{qr_url}}" id="qr_url">
      <p class="pay-title">余额充值</p>
      <p class="pay-money">¥<span>{{totalPrice}}</span></p>
     <div class="wrap-pay">
@@ -63,8 +62,18 @@
                         }
                     },
                     fail:function(){
-                        $('.wrap-qrcode').removeClass("visible-hide");
-                        $(window).scrollTop($('.wrap-qrcode').offset().top);
+                         $.ajax({
+                            url:"/customer/wxChargeCallBack",
+                            type:"get",
+                            success:function(res){
+                                 new QRCode(document.getElementById('qrcode'), {
+                                    width : 150,//设置宽高
+                                    height : 150
+                                }).makeCode(res.qr_url);
+                                $('#wrap-qrcode').removeClass("visible-hide");
+                                $(window).scrollTop($('.wrap-qrcode').offset().top);
+                            }});
+                        
                     }
                 });
             }
@@ -74,10 +83,7 @@
 $(document).ready(function(){
   $(".container").height($(window).height()).css({background:"#f5f5f5"});
   $("#shopName").html(getCookie("shopName"));
-  new QRCode(document.getElementById('qrcode'), {
-    width : 150,//设置宽高
-    height : 150
-    }).makeCode($("#qr_url").val());  
+   
 });
 </script>
 {% end %}

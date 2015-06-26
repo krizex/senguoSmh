@@ -119,8 +119,17 @@
                                     window.location.href = '/notice/success';
                                 },
                                 fail:function(){
-                                    $('#wrap-qrcode').removeClass("visible-hide");
-                                    $(window).scrollTop($(window).scrollTop()+100);
+                                     $.ajax({
+                                        url:"/customer/wxpayCallBack",
+                                        type:"get",
+                                        success:function(res){
+                                             new QRCode(document.getElementById('qrcode'), {
+                                                width : 150,//设置宽高
+                                                height : 150
+                                            }).makeCode(res.qr_url);
+                                            $('#wrap-qrcode').removeClass("visible-hide");
+                                            $(window).scrollTop($('.wrap-qrcode').offset().top);
+                                        }});
                                 }
                             });
                         }
