@@ -118,7 +118,7 @@ img{border:none;}
 .subnav .active{border-bottom:3px solid #52b43f;margin-top:-1px;}
 .subnav .active:hover{border-bottom:3px solid #52b43f;margin-top:-1px;}
 .subnav .active a{display:block;}
-.subnav-box .search-input{top:5px;}
+.subnav-box .search-input{top:5px;background:#fff;}
 
 /*部分按钮样式*/
 .btn-style{display:inline-block;width:74px;height:24px;border:1px solid #ccc;border-top-left-radius:2px;border-top-right-radius:2px;line-height:24px;text-align:center;}
