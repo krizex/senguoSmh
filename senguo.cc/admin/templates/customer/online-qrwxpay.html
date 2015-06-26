@@ -80,7 +80,7 @@
 <input type="hidden" value="{{order.id}}" id="order-id"/>
 {% end %}
 {% block bottom %}
-<script type="text/javascript" src="{{static_url('js/third/qrcode.min.js')}}"></script> 
+<script type="text/javascript" src="/static/js/third/qrcode.min.js"></script> 
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
 <script type="text/javascript">
 $(document).ready(function(){
@@ -88,7 +88,7 @@ $(document).ready(function(){
         width : 120,//设置宽高
         height : 120
     }).makeCode($("#qr_url").val());
-    $(window).scrollTop($('.wrap-qrcode').offset().top); 
+    $.scrollTo({endY:$('.wrap-qrcode').offset().top,duration:300,callback:function(){}});
 });
     
 </script>
