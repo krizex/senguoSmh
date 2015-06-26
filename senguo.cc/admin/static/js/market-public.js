@@ -38,6 +38,7 @@ $(document).ready(function(){
         $.scrollTo({
             endY:0,
             duration:500
+            callback:function() {}
         });
         $('.little_pear').css("display","none");
     });
