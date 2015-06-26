@@ -35,7 +35,10 @@ $(document).ready(function(){
         unitText($this,id);
     });
     $(document).on('click','#backTop',function(){
-        $(window).scrollTop(0);
+        $.scrollTo({
+            endY:0,
+            duration:500
+        });
         $('.little_pear').css("display","none");
     });
     //从cookie中提取数据
