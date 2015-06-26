@@ -27,14 +27,14 @@
         </div>
     </div>
     <div class="order-item">
-        <h4 class="top-title"><span class="black-txt">{{shopName}}</span><span class="arr-right"></span><a href="tel:{{order.phone}}" class="contact-us fr tel-btn"><i class="i-contact"></i>联系客服</a></h4>
+        <h4 class="top-title"><a href="/{{shop_code}}"><span class="black-txt">{{shopName}}</span><span class="arr-right"></span><a href="tel:{{order.phone}}" class="contact-us fr tel-btn"><i class="i-contact"></i>联系客服</a></a></h4>
         <ul class="goods-lst">
             {% for charge_type in charge_types%}
             <li class="group {{charge_type.fruit.fruit_type.code}}">
                 <dl class="goods-item group">
                     <dd>
                         {% if charge_type.fruit.img_url%}
-                        <img src="{{charge_type.fruit.img_url}}?imageView2/1/w/170/h/170" alt="商品图片"/>
+                        <img src="{{charge_type.fruit.img_url.split(';')[0]}}?imageView2/1/w/170/h/170" alt="商品图片"/>
                         {% else %}
                         <img src="/static/design_img/TDSG.png" alt="商品图片"/>
                         {% end %}

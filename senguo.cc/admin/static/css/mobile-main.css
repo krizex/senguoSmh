@@ -28,6 +28,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .clip{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fl{float: left;}
 .fr{float: right;}
+.visible-hide{visibility:hidden;}
 .hide{display: none!important;}
 .show{display: block!important;}
 .f12{font-size: 12px !important;}
@@ -176,6 +177,9 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .no-recored{width:50%;margin:0 auto;}
 .no-recored img{width:50px;}
 
+.wrap-qrcode{width:100%;clear:both;}
+.qrcode{margin: 0 auto;width:120px;height:120px;margin-top:10px;}
+.wrap-qrcode p{color:#333;text-align:center;}
 
 
 

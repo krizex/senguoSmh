@@ -7,6 +7,7 @@
 {% block top %}订单详情{% end %}
 {% block content %}
 {% set fruits=eval(order.fruits)%}
+<input type="hidden" value="{{qr_url}}" id="qr_url">
 <div class="container mb50" id="container">
     <div class="order-grade">
         <div class="order-line">
@@ -26,14 +27,14 @@
         </div>
     </div>
     <div class="order-item">
-        <h4 class="top-title"><span class="black-txt">{{shop_name}}</span><span class="arr-right"></span><a href="tel:{{order.phone}}" class="contact-us fr tel-btn"><i class="i-contact"></i>联系客服</a></h4>
+        <h4 class="top-title"><a href="/{{shop_code}}"><span class="black-txt">{{shop_name}}</span><span class="arr-right"></span><a href="tel:{{order.phone}}" class="contact-us fr tel-btn"><i class="i-contact"></i>联系客服</a></a></h4>
         <ul class="goods-lst">
             {% for charge_type in charge_types%}
             <li class="group {{charge_type.fruit.fruit_type.code}}">
                 <dl class="goods-item group">
                     <dd>
                         {% if charge_type.fruit.img_url%}
-                        <img src="{{charge_type.fruit.img_url}}?imageView2/1/w/170/h/170" alt="商品图片"/>
+                        <img src="{{charge_type.fruit.img_url.split(';')[0]}}?imageView2/1/w/170/h/170" alt="商品图片"/>
                         {% else %}
                         <img src="/static/design_img/TDSG.png" alt="商品图片"/>
                         {% end %}
@@ -62,11 +63,12 @@
         <p>订单备注：<span>{{order.message or '无'}}</span></p>
         <p class="text-black">支付方式：<span class="">{% if order.pay_type==1 %}货到付款{% elif order.pay_type==2 %}余额支付{% elif order.pay_type==3 %}在线支付{% if online_type=='wx'%}-微信支付{% elif online_type=='alipay'%}-支付宝支付{% end %}{% end %}</span></p>
     </div>
-</div>
-<div class="wrap-qrcode text-center hidden">
-    <p>遇到不允许跨号支付？</p> 
-    <div class="qrcode mt10" id="qrcode"></div>
-    <p class="text-center font14">长按图片或扫描【识别二维码】付款</p>
+    <div class="wrap-qrcode text-center" id="wrap-qrcode" style="display:none">
+        <p class="text-centert font14">遇到不允许跨号支付？</p> 
+        <div class="qrcode" id="qrcode"></div>
+        <p class="text-center font14">长按图片【识别二维码】</p>
+        <p class="text-center font14">或使用微信【扫一扫】付款</p>
+    </div>
 </div>
 <div class="wrap-bm-btn" id="nav">
     <a class="fr add-comment red-btn" href="javascript:;" id="getBrandWCPayRequest">去支付</a>
@@ -80,9 +82,13 @@
 <input type="hidden" value="{{order.id}}" id="order-id"/>
 {% end %}
 {% block bottom %}
-<script type="text/javascript" src="{{static_url('js/zepto.qrcode.min.js')}}"></script> 
+<script type="text/javascript" src="{{static_url('js/third/qrcode.min.js')}}"></script> 
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
 <script type="text/javascript">
+    new QRCode(document.getElementById('qrcode'), {
+            width : 120,//设置宽高
+            height : 120
+        }).makeCode($("#qr_url").val());
     wx.config({
         debug: false,
         appId: "{{wxappid}}",
@@ -117,8 +123,18 @@
                                     window.location.href = '/notice/success';
                                 },
                                 fail:function(){
-                                    $('.wrap-qrcode').removeClass("hidden");
-                                    alter("oh,no i failed");
+                                    //  $.ajax({
+                                    //     url:"/customer/wxpayCallBack",
+                                    //     type:"get",
+                                    //     success:function(res){
+                                    //         if(res.success){
+                                    //             new QRCode(document.getElementById('qrcode'), {
+                                    //                 width : 150,//设置宽高
+                                    //                 height : 150
+                                    //             }).makeCode(res.qr_url);
+                                    //         }
+                                    //     }
+                                    // });
                                 }
                             });
                         }
@@ -127,6 +143,5 @@
             });
         }
     });
-     $("#qrcode").qrcode({render: "canvas",width: 250,height:250,text: '{{qr_url}}' ,typeNumber  : -1});//需要生成的页面
 </script>
 {% end %}
