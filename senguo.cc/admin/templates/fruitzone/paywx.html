@@ -7,6 +7,7 @@
 {% block top %}订单详情{% end %}
 {% block content %}
 {% set fruits=eval(order.fruits)%}
+<input type="hidden" value="{{qr_url}}" id="qr_url">
 <div class="container mb50" id="container">
     <div class="order-grade">
         <div class="order-line">
@@ -84,6 +85,10 @@
 <script type="text/javascript" src="{{static_url('js/third/qrcode.min.js')}}"></script> 
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
 <script type="text/javascript">
+    new QRCode(document.getElementById('qrcode'), {
+            width : 120,//设置宽高
+            height : 120
+        }).makeCode($("#qr_url").val());
     wx.config({
         debug: false,
         appId: "{{wxappid}}",
@@ -118,18 +123,18 @@
                                     window.location.href = '/notice/success';
                                 },
                                 fail:function(){
-                                     $.ajax({
-                                        url:"/customer/wxpayCallBack",
-                                        type:"get",
-                                        success:function(res){
-                                            if(res.success){
-                                                new QRCode(document.getElementById('qrcode'), {
-                                                    width : 150,//设置宽高
-                                                    height : 150
-                                                }).makeCode(res.qr_url);
-                                            }
-                                        }
-                                    });
+                                    //  $.ajax({
+                                    //     url:"/customer/wxpayCallBack",
+                                    //     type:"get",
+                                    //     success:function(res){
+                                    //         if(res.success){
+                                    //             new QRCode(document.getElementById('qrcode'), {
+                                    //                 width : 150,//设置宽高
+                                    //                 height : 150
+                                    //             }).makeCode(res.qr_url);
+                                    //         }
+                                    //     }
+                                    // });
                                 }
                             });
                         }
