@@ -425,10 +425,7 @@ function wobble(target){
         target.removeClass('anim-wobble');
     });
 }
-/* Author:
-    Max Degterev @suprMax
-*/
-
+//屏幕滚动动画
 ;(function($) {
   var DEFAULTS = {
     endY: $.os.android ? 1 : 0,
