@@ -54,15 +54,14 @@ img{border:none;}
 .backstage-header .header-nav{}
 .backstage-header .header-nav li{float:left;padding:0 15px;}
 .backstage-header .header-nav li a{color:#222;display:block;font-size: 12px;}
-.backstage-header .header-nav li i{margin-right:5px;}
 .backstage-header .header-nav li span{font-weight:bold;margin-left:5px;font-size:14px;}
 .backstage-header .header-nav li .now{color:#ff6563;}
-.backstage-header .header-nav li i{display:inline-block;background:url("../images/admin_top.png") no-repeat;}
+.backstage-header .header-nav li i{display:inline-block;background:url("../images/admin_top.png") no-repeat;margin-right:5px;height:20px;margin-top:11px;}
 .backstage-header .header-nav li .notice-img{width:24px;background-position:0 15px;}
 .backstage-header .header-nav li .send-img{width:24px;background-position:-52px 15px;}
 .backstage-header .header-nav li .message-img{width:26px;background-position:-98px 15px;}
 .backstage-header .header-nav .active .notice-img{background-position:0 -22px;}
-.backstage-header .header-nav .active .send-img{background-position:-52px -25px;}
+.backstage-header .header-nav .active .send-img{background-position:0 0;}
 .backstage-header .header-nav .active .message-img{background-position:-98px -22px;}
 .backstage-header .header-nav .active span{color:#ff6666;}
 .backstage-header .header-nav .admin-img{width:45px;margin-right:10px;}
