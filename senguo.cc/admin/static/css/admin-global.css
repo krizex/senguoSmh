@@ -57,7 +57,7 @@ img{border:none;}
 .backstage-header .header-nav li i{margin-right:5px;}
 .backstage-header .header-nav li span{font-weight:bold;margin-left:5px;font-size:14px;}
 .backstage-header .header-nav li .now{color:#ff6563;}
-.backstage-header .header-nav li i{display:inline-block;background:url("../images/header-nav-img.gif") no-repeat;}
+.backstage-header .header-nav li i{display:inline-block;background:url("../images/admin_top.png") no-repeat;}
 .backstage-header .header-nav li .notice-img{width:24px;background-position:0 15px;}
 .backstage-header .header-nav li .send-img{width:24px;background-position:-52px 15px;}
 .backstage-header .header-nav li .message-img{width:26px;background-position:-98px 15px;}
