@@ -173,7 +173,7 @@ textarea{border-color:#eee;padding: 2px 5px;}
 .fruit-item-list>li{float: left;width: 80px;text-align: center;border: 1px solid #eee;margin: 0 10px 10px 0;height: 28px;line-height: 28px;color: #333;white-space: nowrap;cursor: pointer;}
 .fruit-item-list>li a{color:#333;}
 .classify-input .search-con{text-indent: 10px;background: none;}
-.classify-input .fruit-search{background: url("../images/search-icon.gif") no-repeat 8px center;width: 32px;}
+.classify-input .fruit-search{background: url("../images/admin_search.png") no-repeat 8px center;width: 32px;}
 .furit-type{padding-left: 150px;}
 
 .title.unknow{background:#eee;}
