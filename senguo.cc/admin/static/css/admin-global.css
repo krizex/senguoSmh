@@ -71,7 +71,7 @@ img{border:none;}
 .backstage-header .header-nav .admin-info .area{display:inline-block;width:100%;background:#fff;color:#000;border:1px solid #e7e7eb;margin-left:0;}
 .backstage-header .header-nav .admin-info .slide-btn{height: 24px;line-height: 24px;display: block;border: none;outline: none;}
 .backstage-header .header-nav .admin-info .area em{font-style:normal;display:inline-block;width:84px;font-size:12px;overflow:hidden;}
-.backstage-header .header-nav .admin-info p{font-size:12px;color:#fff;display:inline-block;line-height:16px;height:16px;background-color:#52b43f;padding:0 10px;border-radius:16px;margin-bottom:3px;overflow:hidden;}
+.backstage-header .header-nav .admin-info p{font-size:12px;color:#52b43f;display:inline-block;line-height:16px;height:16px;padding:0 10px;border-radius:16px;margin-bottom:3px;overflow:hidden;border:1px solid #52b43f;}
 .backstage-header .header-nav .dropdown-toggle{padding:0 4px;}
 .backstage-header .header-nav .dropdown-menu li{width:100%;padding:0;}
 .backstage-header .header-nav .dropdown-menu li a:hover{color:#fff;background-color: #6ba4ef;}
