@@ -63,12 +63,12 @@
         <p>订单备注：<span>{{order.message or '无'}}</span></p>
         <p class="text-black">支付方式：<span class="">{% if order.pay_type==1 %}货到付款{% elif order.pay_type==2 %}余额支付{% elif order.pay_type==3 %}在线支付{% if online_type=='wx'%}-微信支付{% elif online_type=='alipay'%}-支付宝支付{% end %}{% end %}</span></p>
     </div>
-</div>
-<div class="wrap-qrcode text-center visible-hide">
-    <p class="text-centert font14">遇到不允许跨号支付？</p> 
-    <div class="qrcode mt10" id="qrcode"></div>
-    <p class="text-center font14">长按图片【识别二维码】</p>
-    <p class="text-center font14">或使用微信【扫一扫】付款</p>
+    <div class="wrap-qrcode text-center visible-hide" id="wrap-qrcode">
+        <p class="text-centert font14">遇到不允许跨号支付？</p> 
+        <div class="qrcode" id="qrcode"></div>
+        <p class="text-center font14">长按图片【识别二维码】</p>
+        <p class="text-center font14">或使用微信【扫一扫】付款</p>
+    </div>
 </div>
 <div class="wrap-bm-btn" id="nav">
     <a class="fr add-comment red-btn" href="javascript:;" id="getBrandWCPayRequest">去支付</a>
@@ -119,8 +119,8 @@
                                     window.location.href = '/notice/success';
                                 },
                                 fail:function(){
-                                    $('.wrap-qrcode').removeClass("visible-hide");
-                                    $(window).scrollTop($('.wrap-qrcode').offset().top);
+                                    $('#wrap-qrcode').removeClass("visible-hide");
+                                    $(window).scrollTop($(window).scrollTop()+100);
                                 }
                             });
                         }
@@ -130,6 +130,7 @@
         }
     });
 $(document).ready(function(){
+    alert($("#qr_url").val());
     new QRCode(document.getElementById('qrcode'), {
         width : 120,//设置宽高
         height : 120
