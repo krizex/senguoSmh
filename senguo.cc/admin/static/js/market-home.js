@@ -176,7 +176,7 @@ $(document).ready(function(){
     if(group_id==-1){
         top=$('.goods-list--1').offset().top-40;
     }
-    $(window).scrollTop(top);
+    $.scrollTo({endY:top,duration:500,callback:function(){}});
     // $('.classify-title').addClass('hidden');
     // $('.goods-list').empty();
     // if(group_id!=-2){

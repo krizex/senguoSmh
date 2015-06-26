@@ -35,12 +35,7 @@ $(document).ready(function(){
         unitText($this,id);
     });
     $(document).on('click','#backTop',function(){
-        $.scrollTo({
-            endY:0,
-            duration:500,
-            callback:function() {}
-        });
-        //$('.little_pear').css("display","none");
+        $.scrollTo({endY:0,duration:500,callback:function() {}});
     });
     //从cookie中提取数据
     window.dataObj.shop_id=getCookie('market_shop_id');
