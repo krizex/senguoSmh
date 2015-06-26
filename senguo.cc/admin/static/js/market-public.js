@@ -35,7 +35,7 @@ $(document).ready(function(){
         unitText($this,id);
     });
     $(document).on('click','#backTop',function(){
-        $(window).animate({scrollTop:0},800);
+        $('body,html').animate({scrollTop:0},800);
         $('.little_pear').css("display","none");
     });
     //从cookie中提取数据
