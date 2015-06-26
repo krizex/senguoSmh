@@ -268,6 +268,25 @@ class OnlineWxPay(CustomerBaseHandler):
 			# WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 			return self.write('success')
 
+class wxpayCallBack(CustomerBaseHandler):
+	@CustomerBaseHandler.check_arguments("order_num:int","totalPrice:float")
+	def post(self):
+		wxPrice =int(float(totalPrice) * 100)
+		unifiedOrder =  UnifiedOrder_pub()
+		unifiedOrder.setParameter("body",'QrWxpay')
+		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
+		unifiedOrder.setParameter("out_trade_no",order_num)
+		unifiedOrder.setParameter('total_fee',wxPrice)
+		unifiedOrder.setParameter('trade_type',"NATIVE")
+		res = unifiedOrder.postXml().decode('utf-8')
+		res_dict = unifiedOrder.xmlToArray(res)
+		print(res,type(res_dict))
+		if 'code_url' in res_dict:
+				qr_url = res_dict['code_url']
+		else:
+			qr_url = ""
+		return qr_url
+
 class OrderDetail(CustomerBaseHandler):
 	#@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("alipayUrl?:str","order_id?:str")
