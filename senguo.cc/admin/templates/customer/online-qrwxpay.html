@@ -7,6 +7,7 @@
 {% block top %}订单详情{% end %}
 {% block content %}
 {% set fruits=eval(order.fruits)%}
+<input type="hidden" value="{{qr_url}}" id="qr_url">
 <div class="container mb50" id="container">
     <div class="order-grade">
         <div class="order-line">
@@ -82,10 +83,13 @@
 <script type="text/javascript" src="{{static_url('js/third/qrcode.min.js')}}"></script> 
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
 <script type="text/javascript">
-    new QRCode(document.getElementById('qrcode'), {
-        width : 200,//设置宽高
-        height : 200
-    }).makeCode('{{qr_url}}');
-    $(window).scrollTop($('.wrap-qrcode').offset().top);
+$(document).ready(function(){
+   new QRCode(document.getElementById('qrcode'), {
+        width : 120,//设置宽高
+        height : 120
+    }).makeCode($("#qr_url").val());
+    $(window).scrollTop($('.wrap-qrcode').offset().top); 
+});
+    
 </script>
 {% end %}

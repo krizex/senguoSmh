@@ -7,6 +7,7 @@
 {% block top %}订单详情{% end %}
 {% block content %}
 {% set fruits=eval(order.fruits)%}
+<input type="hidden" value="{{qr_url}}" id="qr_url">
 <div class="container mb50" id="container">
     <div class="order-grade">
         <div class="order-line">
@@ -63,7 +64,7 @@
         <p class="text-black">支付方式：<span class="">{% if order.pay_type==1 %}货到付款{% elif order.pay_type==2 %}余额支付{% elif order.pay_type==3 %}在线支付{% if online_type=='wx'%}-微信支付{% elif online_type=='alipay'%}-支付宝支付{% end %}{% end %}</span></p>
     </div>
 </div>
-<div class="wrap-qrcode text-center">
+<div class="wrap-qrcode text-center visible-hide">
     <p class="text-centert font14">遇到不允许跨号支付？</p> 
     <div class="qrcode mt10" id="qrcode"></div>
     <p class="text-center font14">长按图片【识别二维码】</p>
@@ -118,7 +119,7 @@
                                     window.location.href = '/notice/success';
                                 },
                                 fail:function(){
-                                    $('.wrap-qrcode').removeClass("hidden");
+                                    $('.wrap-qrcode').removeClass("visible-hide");
                                     $(window).scrollTop($('.wrap-qrcode').offset().top);
                                 }
                             });
@@ -128,9 +129,12 @@
             });
         }
     });
-  new QRCode(document.getElementById('qrcode'), {
-        width : 200,//设置宽高
-        height : 200
-    }).makeCode('{{qr_url}}');
+$(document).ready(function(){
+    new QRCode(document.getElementById('qrcode'), {
+        width : 120,//设置宽高
+        height : 120
+    }).makeCode($("#qr_url").val()); 
+});
+ 
 </script>
 {% end %}
