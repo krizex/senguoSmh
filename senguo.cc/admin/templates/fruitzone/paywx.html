@@ -64,9 +64,10 @@
     </div>
 </div>
 <div class="wrap-qrcode text-center hidden">
-    <p>遇到不允许跨号支付？</p> 
+    <p class="text-centert font14">遇到不允许跨号支付？</p> 
     <div class="qrcode mt10" id="qrcode"></div>
-    <p class="text-center font14">长按图片或扫描【识别二维码】付款</p>
+    <p class="text-center font14">长按图片【识别二维码】</p>
+    <p class="text-center font14">或使用微信【扫一扫】付款</p>
 </div>
 <div class="wrap-bm-btn" id="nav">
     <a class="fr add-comment red-btn" href="javascript:;" id="getBrandWCPayRequest">去支付</a>
@@ -80,7 +81,7 @@
 <input type="hidden" value="{{order.id}}" id="order-id"/>
 {% end %}
 {% block bottom %}
-<script type="text/javascript" src="{{static_url('js/zepto.qrcode.min.js')}}"></script> 
+<script type="text/javascript" src="{{static_url('js/third/qrcode.min.js')}}"></script> 
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
 <script type="text/javascript">
     wx.config({
@@ -118,7 +119,6 @@
                                 },
                                 fail:function(){
                                     $('.wrap-qrcode').removeClass("hidden");
-                                    alter("oh,no i failed");
                                 }
                             });
                         }
@@ -127,6 +127,9 @@
             });
         }
     });
-     $("#qrcode").qrcode({render: "canvas",width: 250,height:250,text: '{{qr_url}}' ,typeNumber  : -1});//需要生成的页面
+  new QRCode(document.getElementById('qrcode'), {
+        width : 200,//设置宽高
+        height : 200
+    }).makeCode('{{qr_url}}');
 </script>
 {% end %}

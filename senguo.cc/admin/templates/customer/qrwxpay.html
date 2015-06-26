@@ -11,7 +11,8 @@
     body{background-color: rgba(0,0,0,0.8);overflow: hidden;}
     .wrap-qrcode{width:100%;padding-top: 100px;}
     .qrcode{margin: 0 auto;width:250px;}
-    p{color:#fff;text-align:center;}
+    .wrap-qrcode p{color:#fff;text-align:center;}
+    .qrcode img{margin: 0 auto;}
     </style>
 </head>
 
@@ -20,10 +21,12 @@
         <p>微信安全扫码支付</p>
         <div class="qrcode mt10" id="qrcode"></div>
     </div>
-    <script type="text/javascript" src="{{static_url('js/zepto.min.js')}}"></script> 
-    <script type="text/javascript" src="{{static_url('js/zepto.qrcode.min.js')}}"></script> 
+    <script type="text/javascript" src="{{static_url('js/third/qrcode.min.js')}}"></script> 
     <script type="text/javascript">
-        $("#qrcode").qrcode({render: "canvas",width: 250,height:250,text: '{{url}}' ,typeNumber  : -1});//需要生成的页面
+        new QRCode(document.getElementById('qrcode'), {
+            width : 200,//设置宽高
+            height : 200
+        }).makeCode('{{url}}');
     </script>
 </body>
 </html>
