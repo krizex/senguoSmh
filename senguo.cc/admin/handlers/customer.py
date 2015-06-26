@@ -2257,9 +2257,10 @@ class payTest(CustomerBaseHandler):
 				signature = self.signature(noncestr,timestamp,path_url)
 				# totalPrice = float(totalPrice/100)
 				res_dict=self._qr_pay(orderId,wxPrice)
+				print(res_dict,'chargewxpay in weixin 11111')
 				if 'code_url' in res_dict:
 					qr_url = res_dict['code_url']
-					print(qr_url,'chargewxpay in weixin')
+					print(qr_url,'chargewxpay in weixin 22222')
 			# return self.send_success(renderPayParams = renderPayParams)
 			return self.render("fruitzone/paytest.html",qr_url=qr_url,renderPayParams = renderPayParams,wxappid = wxappid,\
 				noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)

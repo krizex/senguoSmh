@@ -125,10 +125,11 @@ class OnlineWxPay(CustomerBaseHandler):
 			wxappid = 'wx0ed17cdc9020a96e'
 			signature = self.signature(noncestr,timestamp,path_url)
 
-			res_dict = self._qrwxpay(order,wxPrice)		
+			res_dict = self._qrwxpay(order,wxPrice)
+			print(res_dict,'onlinewxpay in weixin 111111111')		
 			if 'code_url' in res_dict:
 				qr_url = res_dict['code_url']
-				print(qr_url,'onlinewxpay in weixin')
+				print(qr_url,'onlinewxpay in weixin 2222222')
 		return self.render("fruitzone/paywx.html",qr_url = qr_url ,renderPayParams = renderPayParams,wxappid = wxappid,\
 			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice,\
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
