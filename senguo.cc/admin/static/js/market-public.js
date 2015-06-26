@@ -40,7 +40,7 @@ $(document).ready(function(){
             duration:500,
             callback:function() {}
         });
-        $('.little_pear').css("display","none");
+        //$('.little_pear').css("display","none");
     });
     //从cookie中提取数据
     window.dataObj.shop_id=getCookie('market_shop_id');
