@@ -42,6 +42,7 @@ class OnlineWxPay(CustomerBaseHandler):
 		if not shop:
 			return self.send_fail('shop not found')
 		shop_name = shop.shop_name
+		shop_code = shop.shop_code
 		jsApi  = JsApi_pub()
 
 		# order detail
@@ -135,7 +136,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
 			send_time = send_time,remark=remark,pay_type=pay_type,online_type=online_type,freight = freight,\
 			goods = goods,sender_phone=sender_phone,sender_img=sender_img,charge_types=charge_types,\
-			order=order)
+			order=order,shop_code = shop_code)
 
 	def check_xsrf_cookie(self):
 		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -351,6 +352,7 @@ class OnlineAliPay(CustomerBaseHandler):
 
 			shop_id   = order.shop_id
 			shopName  = order.shop.shop_name
+			shop_code = order.shop.shop_code
 			# order detail
 			create_date = order.create_date
 			receiver    = order.receiver
@@ -383,7 +385,7 @@ class OnlineAliPay(CustomerBaseHandler):
 				alipayUrl = alipayUrl,create_date=create_date,receiver=receiver,phone=phone,\
 				address=address,send_time=send_time,remark=remark,pay_type=pay_type,online_type=\
 				online_type,status=status,freight=freight,goods = goods,order=order,charge_types=\
-				charge_types)
+				charge_types,shop_code = shop_code)
 		else:
 			return self.send_fail('404')
 	# @tornado.web.authenticated

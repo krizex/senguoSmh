@@ -70,7 +70,7 @@ handlers = [
 
 	(r"/official/shoplist",handlers.official.ShopList,{},"OfficialShopList"),
 	(r"/official/about",handlers.official.About,{},"OfficialAbout"),
-
+	(r"/official/product",handlers.official.Product,{},"OfficialProduct"),
 	#to remove
 	(r"/m", handlers.superadmin.Official,{},"test"),
 
