@@ -47,7 +47,6 @@
                 </dl>
             </li>
             {% end %}
-          
         </ul>
         <p>商品总价<span class="fr"><span class="text-red3">{{order.totalPrice-order.freight}}元</span></span></p>
         <p>配送费<span class="fr"><span class="text-red3">{{order.freight}}元</span></span></p>
@@ -64,7 +63,7 @@
         <p class="text-black">支付方式：<span class="">{% if order.pay_type==1 %}货到付款{% elif order.pay_type==2 %}余额支付{% elif order.pay_type==3 %}在线支付{% if online_type=='wx'%}-微信支付{% elif online_type=='alipay'%}-支付宝支付{% end %}{% end %}</span></p>
     </div>
     <div class="wrap-qrcode text-center">
-        <p class="text-center font14">长按图片【识别二维码】</p><p class="text-center font14">或使用微信【扫一扫】付款</p>
+        <p class="text-center font14">请使用微信【扫一扫】二维码付款</p>
         <div class="qrcode" id="qrcode"></div>
     </div>
 </div>
