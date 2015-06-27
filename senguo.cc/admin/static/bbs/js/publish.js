@@ -15,7 +15,7 @@ function publishAtical(id){
     var url = "";
     var args = {
         action:"",
-        
+
     };
 
     $.postJson(url,args,function(res){

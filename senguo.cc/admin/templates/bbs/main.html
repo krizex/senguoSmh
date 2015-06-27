@@ -4,9 +4,19 @@
 {% end %}
 {% block header %}
 <div class="header">
-    <a href="javascript:;" class="back bbs-menu">所有版块</a>
+    <a href="javascript:;" class="back bbs-menu" id="bbs-menu">所有版块</a>
     <span>森果社区</span>
     <a href="/madmin/orderSearch" class="head-right search"></a>
+    <div class="wrap-menu-list h0">
+        <ul class="menu-list">
+            <li data-id="0">官方公告</li>
+            <li data-id="1">产品更新</li>
+            <li data-id="2">运营干货</li>
+            <li data-id="3">使用教程</li>
+            <li data-id="4">水果百科</li>
+            <li data-id="5">水果供求</li>
+        </ul>
+    </div>
 </div>
 {% end %}
 {% block content %}
@@ -50,5 +60,5 @@
 </div>
 {% end %}
 {% block bottom %}
-
+<script src="{{static_url('bbs/js/main.js')}}"></script>
 {% end %}

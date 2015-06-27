@@ -12,7 +12,7 @@ $(document).ready(function(){
      $(".close").on("click",function(){/*关闭模态框*/
          $(".pop-win").addClass("hide");
     });
-    $(".back").on("click",function(){
+    $(".goback").on("click",function(){
         history.go(-1);
     });
     

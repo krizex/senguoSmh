@@ -1,5 +1,8 @@
 /*首页*/
 .bbs-menu{background-image: url('/static/bbs/img/icon_menu.png');background-size: 20px;padding-left: 26px;}
+.wrap-menu-list{position: absolute;width: 100px;background-color: #48b6a4;top:100%;left: 0;-webkit-transition:all .2s ease-in-out;height: 176px;z-index:99;}
+.menu-list{padding: 10px 0;}
+.menu-list>li{cursor: pointer;height: 26px;line-height: 26px;text-align: center;color: #fff;}
 .atical-list{background-color: #fff;}
 .atical-list>li{padding: 10px;border-bottom: 1px solid #dadada;}
 .atical-list .title{color: #333;line-height: 18px;}

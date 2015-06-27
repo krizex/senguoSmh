@@ -16,17 +16,13 @@
 {% block setcontent %}
 <div class="container">
 <div class="order-list-box">
-    <ul class="order-lists pt10" id="order-lists">
-
+    <ul class="order-lists pt10">
+        
     </ul>
     <p class="no-result mt30 hide">没有搜索到任何数据！</p>
 </div>
 </div>
-<ul id="order-item">
-   
-</ul>
 {% end %}
 {% block bottom %}
-<script src="/static/js/template.js"></script>
-<script src="{{static_url('m-admin/js/order-search.js')}}"></script>
+<script src="{{static_url('bbs/js/search.js')}}"></script>
 {% end %}

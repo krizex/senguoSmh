@@ -10,6 +10,7 @@ html,body,textarea,input,select,button,h1,h2,h3,h4,h5,h6{line-height: 1.25;font-
 html{overflow-x: hidden;-webkit-overflow-scrolling:touch;overflow-scrolling:touch;min-height: 100%;}
 body{background-color: #f0f4f0;overflow-x: hidden;max-width: 800px;min-width: 320px;margin: 0 auto;}
 .h100{height: 100%;overflow: hidden;}
+.h0{height: 0 !important;overflow: hidden;}
 i{display: inline-block;background-size: contain;background-repeat: no-repeat;}
 ol, ul{list-style: none;padding:0;}
 img,input,button,select{vertical-align: middle;border:none;outline: none;}
