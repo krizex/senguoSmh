@@ -14,6 +14,23 @@ $(document).ready(function(){
     });
     articleList(0,100);
     scrollLoading();
+}).on("click",".atical-list li",function(e){
+    var id=$(this).attr("data-id");
+    if($(e.target).closest(".dianzan").size()==0){
+    	window.location.href="/bbs/detail/"+id;
+    } 
+}).on("click",".dianzan",function(){
+	var $this=$(this);
+	var id=$this.parents("li").attr("data-id");
+	var url="/bbs/detail/"+id;
+    var args={action:"article_great",data:""};
+    $.postJson(url,args,function(res){
+        if(res.success){
+        	$this.text(parseInt($this.text()+1));
+        }else{
+            Tip(res.error_text);
+        }
+    });
 });
 var item='<li data-id="{{id}}">'+
             '<p class="title"><span class="atical-mark">{{type}}</span>{{title}}</p>'+
@@ -43,7 +60,7 @@ function scrollLoading(){
             articleList(page);
         }
         else if(nomore==true){
-              $('.loading').html("~没有更多了呢 ( > < )~").show();
+              $('.loading').html("~没有更多了~").show();
         }
     });
 }
@@ -59,7 +76,7 @@ function articleList(page,type){
                 $('.atical-list').empty();
                 if(nomore==true){
                 	$('.wrap-loading-box').addClass('hide');
-                    $('.loading').html("~没有更多了呢 ( > < )~").show();
+                    $('.loading').html("~没有更多了~").show();
                 }
                 for(var i in datalist){
                         var render = template.compile(item);

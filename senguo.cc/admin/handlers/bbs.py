@@ -212,15 +212,16 @@ class Search(FruitzoneBaseHandler):
 		return self.render("bbs/search.html")
 
 	@tornado.web.authenticated
-	@FruitzoneBaseHandler.check_arguments("data")	
+	@FruitzoneBaseHandler.check_arguments("page","data")	
 	def post(self):
 		page = int(self.args["page"])
+		data = self.args["data"]
 		page_size = 10
 		nomore = False
 		datalist = []
 		try:
 			article_lsit = self.session.query(models.Article,models.Accountinfo.nickname)\
-				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
+				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.title.like("%%%s%%" % data))\
 				.order_by(models.Article.create_time.desc())
 		except:
 			nomore = True
