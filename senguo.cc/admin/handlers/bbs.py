@@ -14,17 +14,113 @@ class Main(FruitzoneBaseHandler):
 		return self.render("bbs/main.html")
 
 class Detail(FruitzoneBaseHandler):
+	@tornado.web.authenticated
 	def get(self,_id):
-		article = self.session.query(models.Article).filter_by(id=_id).first()
-		comments = self.session.query(models.ArticleComment).filter_by(article_id=_id).all()
-		return self.render("bbs/artical-detail.html")
+		try:
+			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id)\
+				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.id==_id).first()
+		except:
+			return self.write("没有该文章的任何信息")
+
+		article.scan_num = article.scan_num +1
+		self.session.commit()
+
+		try:
+			comments = self.session.query(models.ArticleComment,models.Accountinfo.nickname)\
+				.outerjoin(models.Accountinfo,models.ArticleComment.comment_author_id==models.Accountinfo.id)\
+				.filter(models.ArticleComment.article_id==_id).order_by(models.ArticleComment.create_time.desc()).all()
+		except:
+			comments = None
+		comments_list=[]
+		if comments:
+			for comment in comments:
+				comments_list.append({"id":comment[0].id,"nickname":comment[0].accountinfo.nickname,"imgurl":comment[0].accountinfo.headimgurl_small,\
+					"comment":comment[0].comment,"time":self.timedelta(comment[0].create_time),"great_num":comment[0].great_num,"@nickname":comment[1]})
+		return self.render("bbs/artical-detail.html",article=article,comments_list=comments_list)
+	
+	@tornado.web.authenticated
+	@FruitzoneBaseHandler.check_arguments("action:str","data?")
+	def post(self,_id):
+		action=self.args["action"]
+		if "data" in self.args:
+			data=self.args["data"]
+
+		if action in ["article_great","comment_great"]:
+			now =  time.strftime('%Y-%m-%d', time.localtime() )
+			_great = self.session.query(models.ArticleGreat).filter_by(account_id = self.current_user.id)
+			if action == "article_great":
+				_type = 0
+				comment_id = 0
+			else:
+				_type = 1
+				comment_id = data["comment_id"]
+
+			try:
+				new_great = _great.filter_by(article_id = _id,comment_id=comment_id,_type=_type).order_by(models.ArticleGreat.create_time.desc()).first()
+			except:
+				new_great = None
+
+			if new_great and new_great.create_time.strftime('%Y-%m-%d') == now:
+				return self.send_fail('您今天已经点过赞啦！')
+			
+			if _type == 0:		
+				article = self.session.query(models.Article).filter_by( id = _id).first()
+				article.great_num = article.great_num +1
+				article.if_scan = 0
+			else:
+				_comment = self.session.query(models.ArticleComment).filter_by(id=comment_id).first()
+				_comment.great_num = article.great_num +1
+				_comment.if_scan = 0
+
+			great = models.ArticleGreat(
+				article_id = _id,
+				comment_id = comment_id,
+				account_id = self.current_user.id,
+				_type = _type
+			)
+			self.session.add(great)
+			self.session.commit()
+			return self.send_success()
+
+		elif action in ["comment","replay"]:
+			try:
+				article = self.session.query(models.Article).filter_by( id = _id).first()
+			except:
+				return self.send_fail("no such article")
+			if action=="comment":
+				_type = 0
+				comment_author_id = 0
+			else:
+				_type = 1
+				comment_author_id = self.session.query(models.ArticleComment).filter_by(id=data["comment_id"]).first().account_id
+
+			comment =models.ArticleComment(
+				article_id = _id,
+				account_id = self.current_user.id,
+				comment = self.args["data"]["comment"],
+				comment_author_id = comment_author_id,
+				_type = _type
+			)
+			article.comment_num = article.comment_num +1
+			article.if_scan = 0
+			self.session.add(comment)
+			self.session.commit()
+			new_comment = self.session.query(models.ArticleComment,models.Accountinfo.nickname)\
+				.outerjoin(models.Accountinfo,models.ArticleComment.comment_author_id==models.Accountinfo.id)\
+				.filter(models.ArticleComment.article_id==_id,models.ArticleComment._type==_type).order_by(models.ArticleComment.create_time.desc()).first()
+			data={"id":new_comment[0].id,"nickname":new_comment[0].accountinfo.nickname,"imgurl":new_comment[0].accountinfo.headimgurl_small,\
+					"comment":new_comment[0].comment,"time":self.timedelta(new_comment[0].create_time),"great_num":new_comment[0].great_num,"@nickname":new_comment[1]}
+			return self.send_success(data=data)
+
 
 class Publish(FruitzoneBaseHandler):
+	@tornado.web.authenticated
 	def get(self):
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('article',_id)
 		return self.render("bbs/publish.html",token=qiniuToken)
 
+	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("data")	
 	def post(self):
 		data=self.args["data"]
