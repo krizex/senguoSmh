@@ -99,7 +99,7 @@ $(document).ready(function(){
     $('#classify').text(text);
     var group_id=Number($this.attr('data-id'));
     var top=$('.goods-list-'+group_id).offset().top-40;
-    $(window).scrollTop(top);
+    $.scrollTo({endY:top,duration:500,callback:function(){}});
     $('.list-box').animate({"left":"0"},100);
     $("#groupt-list").animate({"margin-left":"-75px","opacity":0},100);
 }).on('click','.to-add',function(){
