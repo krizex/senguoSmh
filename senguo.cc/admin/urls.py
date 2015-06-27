@@ -31,7 +31,7 @@ handlers = [
 
 	#bbs
 	(r"/bbs", handlers.bbs.Main, {}, "BbsMain"),
-	(r"/bbs/detail/(\w+)", handlers.bbs.Detail, {}, "BbsDetail"),
+	(r"/bbs/detail", handlers.bbs.Detail, {}, "BbsDetail"),
 	(r"/bbs/publish", handlers.bbs.Publish, {}, "BbsPublish"),
 	(r"/bbs/search", handlers.bbs.Search, {}, "BbsSearch"),
 	(r"/bbs/profile", handlers.bbs.Profile, {}, "BbsProfile"),

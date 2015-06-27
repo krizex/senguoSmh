@@ -22,8 +22,6 @@ $(document).ready(function(){
         }
     }
    
-}).on("click",".developing",function(){
-    return Tip("该功能正在开发中，客官不要急～");
-}).on("click",".shop-balance",function(){
-    return Tip("账户余额查询及提现操作只能在电脑上进行操作！");
+}).on("click",".cancel-btn",function(){
+    $(".pop-win").addClass("hide");
 });
