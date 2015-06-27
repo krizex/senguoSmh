@@ -6,7 +6,7 @@
 <div class="header">
     <a href="javascript:;" class="back bbs-menu" id="bbs-menu">所有版块</a>
     <span>森果社区</span>
-    <a href="/madmin/orderSearch" class="head-right search"></a>
+    <a href="/bbs/search" class="head-right search"></a>
     <div class="wrap-menu-list h0">
         <ul class="menu-list">
             <li data-id="0">官方公告</li>
@@ -22,18 +22,6 @@
 {% block content %}
 <div class="wrap-main">
     <ul class="atical-list">
-        <li>
-            <p class="title"><span class="atical-mark">产品更新</span>号外号外！森果商城新版功能上线啦，店铺现在有多套模版可
-            切换了哦！森果商城新版功能上线啦，店铺现在有多套模版可切换了哦！</p>
-            <div class="atical-attr">
-                <span class="fr">
-                    <a href="javascript:;" class="wrap-icon dianzan"><i class="icon-dz"></i>122</a>
-                    <a href="javascript:;" class="wrap-icon comment"><i class="icon-com"></i>133</a>
-                </span>
-                <span class="time mr10">一天前</span>
-                <span class="author">森果运营</span>
-            </div>
-        </li>
         <li>
             <p class="title"><span class="atical-mark">产品更新</span>号外号外！森果商城新版功能上线啦，店铺现在有多套模版可
                 切换了哦！森果商城新版功能上线啦，店铺现在有多套模版可切换了哦！</p>
@@ -58,6 +46,7 @@
         <div class="load-txt">加载中...</div>
     </div>
 </div>
+<p class="loading txt-center c999 mt10" style="display:none"></p>
 {% end %}
 {% block bottom %}
 <script src="{{static_url('bbs/js/main.js')}}"></script>
