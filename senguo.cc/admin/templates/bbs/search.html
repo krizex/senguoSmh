@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}文章搜索{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back">返回</a>
+    <div class="wrap-order-tab">
+        <ul class="group order-type-list">
+            <div class="wrap-ipt"><input type="text" class="search-ipt" placeholder="请输入文章标题" id="search-ipt"/></div>
+        </ul>
+    </div>
+    <a href="javascript:;" class="head-right search" id="search-order"></a>
+</div>
+{% end %}
+{% block setcontent %}
+<div class="container">
+<div class="order-list-box">
+    <ul class="order-lists pt10" id="order-lists">
+
+    </ul>
+    <p class="no-result mt30 hide">没有搜索到任何数据！</p>
+</div>
+</div>
+<ul id="order-item">
+   
+</ul>
+{% end %}
+{% block bottom %}
+<script src="/static/js/template.js"></script>
+<script src="{{static_url('m-admin/js/order-search.js')}}"></script>
+{% end %}
