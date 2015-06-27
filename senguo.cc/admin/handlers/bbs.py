@@ -62,7 +62,7 @@ class Detail(FruitzoneBaseHandler):
 		if comments:
 			for comment in comments:
 				comments_list.append({"id":comment[0].id,"nickname":comment[0].accountinfo.nickname,"imgurl":comment[0].accountinfo.headimgurl_small,\
-					"comment":comment[0].comment,"time":self.timedelta(comment[0].create_time),"great_num":comment[0].great_num,"@nickname":comment[1]})
+					"comment":comment[0].comment,"time":self.timedelta(comment[0].create_time),"great_num":comment[0].great_num,"nick_name":comment[1],"type":comment[0]._type})
 		if_admin = False
 		try:
 			current_user = self.session.query(models.SuperAdmin).filter_by(id=self.current_user.id).first()
@@ -70,7 +70,7 @@ class Detail(FruitzoneBaseHandler):
 			current_user = None
 		if current_user:
 			if_admin = True
-		return self.render("bbs/artical-detail.html",article=article,comments_list=comments_list,if_admin=if_admin)
+		return self.render("bbs/artical-detail.html",article=article_data,comments_list=comments_list,if_admin=if_admin)
 	
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("action:str","data?")

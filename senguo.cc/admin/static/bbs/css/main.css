@@ -54,6 +54,9 @@
 .board-list .active{background-color: #48b6a4;color: #fff;}
 .board-list .active span{color: #fff;}
 .plr0{padding-left: 0;padding-right: 0;}
+.wrap-reply-box{bottom:0;background-color: #f9f9f9;border-top: 1px solid #e7e7eb;padding: 5px;}
+.wrap-reply-box input{display: inline-block;width: 78%;border:1px solid #e7e7eb;height:30px;padding: 0 10px;-webkit-box-sizing: border-box;}
+.wrap-reply-box a{width:20%;height:30px;position:relative;top:3px;font-size:14px;display:inline-block;padding:8px;border:1px solid #e7e7eb;border-radius:4px;color:#666;-webkit-box-sizing: border-box;text-align: center;}
 /*search*/
 .wrap-order-tab{padding: 6px 70px;}
 .order-type-list{background-color: #318b7d;border-radius: 28px;position: relative;z-index:1;}
