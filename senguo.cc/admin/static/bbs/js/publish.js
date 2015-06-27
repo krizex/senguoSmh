@@ -12,7 +12,22 @@ $(document).ready(function(){
     initEditor();
 });
 function publishAtical(id){
-    
+    var url = "";
+    var args = {
+        action:"",
+        
+    };
+
+    $.postJson(url,args,function(res){
+        if(res.success){
+            Tip("发布成功");
+            setTimeout(function(){
+
+            },2000);
+        }else{
+            Tip(res.error_text);
+        }
+    });
 }
 
 function initEditor(){

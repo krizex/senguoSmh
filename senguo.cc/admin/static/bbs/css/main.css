@@ -47,7 +47,7 @@
 .publish-btns .publish-tie{color: #fff;background-color: #48b6a4;}
 .board-box .title{height: 28px;text-align: center;color: #333;}
 .board-list>li{cursor: pointer;height: 24px;line-height: 24px;color: #333;padding: 0 12px;}
-.board-list>li span{color: #999;margin-left: 5px;}
+.board-list>li span{color: #999;margin-left: 10px;}
 .board-list .active{background-color: #48b6a4;color: #fff;}
 .board-list .active span{color: #fff;}
 .plr0{padding-left: 0;padding-right: 0;}
