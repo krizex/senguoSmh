@@ -19,7 +19,7 @@
     <div class="copy-right text-center">powered by senguo.cc</div>
 {% end %}
 {% block bottom %}
-<script type="text/javascript" src="{{static_url('js/third/qrcode.min.js')}}"></script> 
+<script type="text/javascript" src="/static/js/third/qrcode.min.js"></script> 
  <script type="text/javascript">
   function getCookie(key){
         var aCookie = document.cookie.split("; ");
@@ -34,8 +34,8 @@
         $(".container").height($(window).height()).css({background:"#f5f5f5"});
         $("#shopName").html(getCookie("shopName"));
         new QRCode(document.getElementById('qrcode'), {
-            width : 120,//设置宽高
-            height : 120
+            width : 280,//设置宽高
+            height : 280
         }).makeCode($("#qr_url").val());
     });
     

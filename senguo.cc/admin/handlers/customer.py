@@ -2358,6 +2358,26 @@ class payTest(CustomerBaseHandler):
 	#	else:
 	#		return self.send_fail('其它支付方式尚未开发')
 
+class wxChargeCallBack(CustomerBaseHandler):
+	def get(self):
+		totalPrice = float(self.get_cookie('money'))
+		wxPrice    = int(totalPrice * 100)
+		orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(wxPrice)+'a'+str(int(time.time()))
+		unifiedOrder =   UnifiedOrder_pub()
+		unifiedOrder.setParameter("body",'QrWxpay')
+		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/fruitzone/paytest')
+		unifiedOrder.setParameter("out_trade_no",orderId)
+		unifiedOrder.setParameter('total_fee',wxPrice)
+		unifiedOrder.setParameter('trade_type',"NATIVE")
+		res = unifiedOrder.postXml().decode('utf-8')
+		res_dict = unifiedOrder.xmlToArray(res)
+		print(res,type(res_dict))
+		if 'code_url' in res_dict:
+				qr_url = res_dict['code_url']
+		else:
+			qr_url = ""
+		return self.send_success(qr_url=qr_url)
+
 class InsertData(CustomerBaseHandler):
 	# @tornado.web.authenticated
 	# @CustomerBaseHandler.check_arguments("code?:str")

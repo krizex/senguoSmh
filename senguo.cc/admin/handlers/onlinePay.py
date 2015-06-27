@@ -173,6 +173,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
 			status       = xmlArray['result_code']
 			order_num    = str(xmlArray['out_trade_no'])
+			order_num    = order_num.split('a')[0]
 
 			# result       = orderId.split('a')
 			# customer_id  = int(result[0])
@@ -269,6 +270,29 @@ class OnlineWxPay(CustomerBaseHandler):
 			# # send message to customer
 			# WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 			return self.write('success')
+
+class wxpayCallBack(CustomerBaseHandler):
+	def get(self):
+		order_id = self.get_cookie("order_id")
+		order = self.session.query(models.Order).filter_by(id = order_id).first()
+		if not order:
+			return self.send_fail('order not found')
+		totalPrice = order.totalPrice
+		wxPrice =int(totalPrice * 100)
+		unifiedOrder =  UnifiedOrder_pub()
+		unifiedOrder.setParameter("body",'QrWxpay')
+		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
+		unifiedOrder.setParameter("out_trade_no",order.num )
+		unifiedOrder.setParameter('total_fee',wxPrice)
+		unifiedOrder.setParameter('trade_type',"NATIVE")
+		res = unifiedOrder.postXml().decode('utf-8')
+		res_dict = unifiedOrder.xmlToArray(res)
+		print(res,type(res_dict))
+		if 'code_url' in res_dict:
+				qr_url = res_dict['code_url']
+		else:
+			qr_url = ""
+		return self.send_success(qr_url=qr_url)
 
 class OrderDetail(CustomerBaseHandler):
 	#@tornado.web.authenticated
