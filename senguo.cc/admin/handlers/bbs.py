@@ -180,7 +180,9 @@ class Publish(FruitzoneBaseHandler):
 		new_article=models.Article(
 			title=title,
 			article=article,
-			classify=classify
+			classify=classify,
+			account_id=self.current_user.id,
+			status = 1
 		)
 		self.session.add(new_article)
 		self.session.commit()

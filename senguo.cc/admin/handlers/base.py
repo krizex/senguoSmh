@@ -337,7 +337,7 @@ class GlobalBaseHandler(BaseHandler):
 			data = data[0]
 		# print(data)
 		return data
-		
+
 	def getArticle(self,article):
 		data={"id":article[0].id,"title":article[0].title,"time":self.timedelta(article[0].create_time),\
 			"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
@@ -530,7 +530,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 
 		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*100,
-							  policy={"returnUrl": "http://i.senguo.cc/admin/editorCallback",
+							  policy={"returnUrl": "http://zone.senguo.cc/admin/editorCallback",
 									  "returnBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 		print("[七牛授权]发送Token：",token)
 		return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))

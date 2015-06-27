@@ -5,17 +5,32 @@ $(document).ready(function(){
         $(".board-list li").removeClass("active").eq(index).addClass("active");
         $("#publish").attr("data-id",$(this).attr("data-id"));
     });
-    $("#publish").on("click",function(){
-        var id = $(this).attr("data-id")
-        publishAtical(id);
-    });
     initEditor();
+}).on("click",".select-box",function(){
+    $(".pop-reply").removeClass("hide");
+}).on("click",".type-sure",function(){
+    var type=$(".board-list .active .tit").text();
+    var type_id=$(".board-list .active").attr("data-id");
+    $(".type").text(type).attr("data-id",type_id);
+    $(".pop-reply").addClass("hide");
+}).on("click",".publish-tie",function(){
+    publishAtical();
 });
-function publishAtical(id){
+function publishAtical(){
     var url = "";
+    var classify =$(".type").attr("data-id");
+    var title=$(".title-ipt").val();
+    var article=$(".sumary-text").val();
+    if(!classify){
+        return Tip("请选择板块");
+    }
     var args = {
         action:"",
-        
+        data:{
+            classify:classify,
+            title:title,
+            article:article
+        }
     };
 
     $.postJson(url,args,function(res){
