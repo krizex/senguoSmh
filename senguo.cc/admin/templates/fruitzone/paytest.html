@@ -5,22 +5,21 @@
 {% end %}
 {% block content%}
     <input type="hidden" value="{{qr_url}}" id="qr_url">
-     <p class="pay-title">余额充值</p>
-     <p class="pay-money">¥<span>{{totalPrice}}</span></p>
+        <p class="pay-title">余额充值</p>
+        <p class="pay-money">¥<span>{{totalPrice}}</span></p>
     <div class="wrap-pay">
         <p><span class="left c999">所在店铺：</span><span class="left txt-ar" id="shopName"></span></p>
         <p><span class="left c999">支付方式：</span><span class="left txt-ar">微信支付</span></p>
     </div>
     <a href="javascript:;" class="pay-btn" id="getBrandWCPayRequest">现在支付</a>
-     <div class="wrap-qrcode mt10" style="display:none">
-       <p class="text-centert font14">遇到不允许跨号支付？</p> 
+    <div class="wrap-qrcode mt10" style="display:none">
+        <p class="text-centert font14">遇到不允许跨号支付？</p> 
         <div class="qrcode mt10" id="qrcode"></div>
         <p class="text-center font14">长按图片【识别二维码】</p>
         <p class="text-center font14">或使用微信【扫一扫】付款</p>
     </div>
     <div class="copy-right text-center">powered by senguo.cc</div>
 {% end %}
-
 {% block bottom %}
 <script type="text/javascript" src="/static/js/third/qrcode.min.js"></script> 
 <script src="/static/js/jweixin-1.0.js"></script>
@@ -34,19 +33,21 @@
             }
         }
     }
-  $(".container").height($(window).height()).css({background:"#f5f5f5"});
-  $("#shopName").html(getCookie("shopName"));
-  new QRCode(document.getElementById('qrcode'), {
-    width : 280,//设置宽高
-    height : 280
-}).makeCode($("#qr_url").val());
-   wx.config({
-            debug: false,
-            appId: "{{wxappid}}",
-            timestamp: {{timestamp}},
-            nonceStr: "{{noncestr}}",
-            signature: "{{signature}}",
-            jsApiList: ['onMenuShareTimeline','chooseWXPay','hideMenuItems']
+    $(".container").height($(window).height()).css({background:"#f5f5f5"});
+    $("#shopName").html(getCookie("shopName"));
+    new QRCode(document.getElementById('qrcode'), {
+        width : 280,//设置宽高
+        height : 280,
+        colorDark : "#433943",
+        colorLight : "#f5f5f5"
+    }).makeCode($("#qr_url").val());
+    wx.config({
+        debug: false,
+        appId: "{{wxappid}}",
+        timestamp: {{timestamp}},
+        nonceStr: "{{noncestr}}",
+        signature: "{{signature}}",
+        jsApiList: ['onMenuShareTimeline','chooseWXPay','hideMenuItems']
     });
     wx.ready(function(){
         document.querySelector('#getBrandWCPayRequest').onclick = function () {
@@ -57,37 +58,36 @@
                 signType: '{{renderPayParams['signType']}}',
                 paySign: '{{renderPayParams['paySign']}}',
                 success: function (res) {
-                // 支付成功后的回调函数
-                $.ajax({
-                    url:"/fruitzone/paytest",
-                    type:"post",
-                    data:{action:"wx_pay",_xsrf:window.dataObj._xsrf},
-                    success:function(res){
-                        if(res.success){
-                            window.location.href = '/customer/balance';
+                    // 支付成功后的回调函数
+                    $.ajax({
+                        url:"/fruitzone/paytest",
+                        type:"post",
+                        data:{action:"wx_pay",_xsrf:window.dataObj._xsrf},
+                        success:function(res){
+                            if(res.success){
+                                window.location.href = '/customer/balance';
+                            }
+                        },
+                        fail:function(){
+                            //  $.ajax({
+                            //     url:"/customer/wxChargeCallBack",
+                            //     type:"get",
+                            //     success:function(res){
+                            //         if(res.success){
+                            //             new QRCode(document.getElementById('qrcode'), {
+                            //                 width : 280,//设置宽高
+                            //                 height : 280,
+                            //                 colorDark : "#433943",
+                            //                 colorLight : "#f5f5f5"
+                            //             }).makeCode(res.qr_url);
+                            //         }
+                            //     }
+                            // });                      
                         }
-                    },
-                    fail:function(){
-                        //  $.ajax({
-                        //     url:"/customer/wxChargeCallBack",
-                        //     type:"get",
-                        //     success:function(res){
-                        //         if(res.success){
-                        //             new QRCode(document.getElementById('qrcode'), {
-                        //                 width : 280,//设置宽高
-                        //                 height : 280,
-                        //                 colorDark : "#433943",
-                        //                 colorLight : "#f5f5f5"
-                        //             }).makeCode(res.qr_url);
-                        //         }
-                        //     }
-                        // });                      
-                    }
-                });
-            }
-        });
-    }
-});
-
+                    });
+                }
+            });
+        }
+    });
 </script>
 {% end %}
