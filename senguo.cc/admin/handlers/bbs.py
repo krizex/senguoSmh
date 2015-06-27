@@ -46,7 +46,7 @@ class Detail(FruitzoneBaseHandler):
 		except:
 			return self.write("没有该文章的任何信息")
 
-		article.scan_num = article.scan_num +1
+		article[0].scan_num = article[0].scan_num +1
 		self.session.commit()
 		article_data={"id":article[0].id,"title":article[0].title,"time":article[0].create_time,"article":article[0].article,\
 						"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
