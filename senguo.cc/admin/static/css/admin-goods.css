@@ -164,12 +164,12 @@ textarea{border-color:#eee;padding: 2px 5px;}
 /*分类*/
 .wrap-fruit-select{position: relative;height: 30px;margin: 10px 0;}
 .fruit-select{position: absolute;right: 0;top: 0;}
-.fruit-list .title{height: 30px;line-height: 30px;text-indent: 5px;color: #333;background:#eee;}
+.fruit-list .title{height: 30px;line-height: 30px;text-indent: 10px;color: #333;background:#eee;}
 .dry-list .title{height: 30px;line-height: 30px;text-indent: 5px;color: #333;border: 1px solid #eee;}
 .other-list .title{height: 30px;line-height: 30px;text-indent: 5px;color: #333;border: 1px solid #eee;background: #ddd;}
 .red-bg{background-color: #efcccc;}
 .yellow-bg{background-color: #fffeed;}
-.fruit-item-list{padding: 10px 0 0 10px;}
+.fruit-item-list{padding: 10px 0 0 20px;}
 .fruit-item-list>li{float: left;width: 80px;text-align: center;border: 1px solid #eee;margin: 0 10px 10px 0;height: 28px;line-height: 28px;color: #333;white-space: nowrap;cursor: pointer;}
 .fruit-item-list>li a{color:#333;}
 .classify-input .search-con{text-indent: 10px;background: none;}
