@@ -19,6 +19,9 @@ function publishAtical(){
     var url = "";
     var classify =$(".type").attr("data-id");
     var title=$(".title-ipt").val();
+    if(title == "" || title.length>20){
+        return Tip("标题不能为空且不能超过20个字");
+    }
     var article=$(".sumary-text").val();
     if(!classify){
         return Tip("请选择板块");

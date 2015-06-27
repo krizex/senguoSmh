@@ -54,7 +54,11 @@
 .board-list .active{background-color: #48b6a4;color: #fff;}
 .board-list .active span{color: #fff;}
 .plr0{padding-left: 0;padding-right: 0;}
-
+/*search*/
+.wrap-order-tab{padding: 6px 70px;}
+.order-type-list{background-color: #318b7d;border-radius: 28px;position: relative;z-index:1;}
+.search-ipt{width: 100%;background-color: transparent;border: none;height: 28px;color:#fff;padding: 2px 10px;-webkit-box-sizing: border-box;font-size: 14px;}
+.wrap-ipt{line-height: 1;height: 28px;}
 
 
 
