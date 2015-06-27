@@ -26,7 +26,29 @@ $(document).ready(function(){
     var id = $(this).attr("data-id");
     $(".reply-ipt").attr("placeholder","@"+$(this).html());
     $(".wrap-reply-box").removeClass("hide");
+}).on("click","#del-atical",function(){//删除
+    if(confirm("确认删除？")){
+        var id = $(this).attr("data-id");
+        delAtical(id);
+    }
 });
+function delAtical(id){
+    var url = "";
+    var args = {
+        action:"delete",
+        data:{id:id}
+    };
+    $.postJson(url,args,function(res){
+        if(res.success){
+            Tip("删除成功");
+            setTimeout(function(){
+                window.location.href="/bbs"
+            },2000);
+        }else{
+            Tip(res.error_text);
+        }
+    });
+}
 function replyComment(id){
     var url = "";
     var args = "";

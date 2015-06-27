@@ -17,7 +17,7 @@
 .wrap-icon .icon-see{background-position: 0 0;width: 15px;height: 9px;background-size: 15px;}
 .wrap-icon .post-dz{background-position: 0 -45px;top:4px;}
 .wrap-icon .post-dz-active{background-position: 0 -56px;}
-.wrap-post{margin-top:-40px;}
+.wrap-post{}
 .post-box{background-color: #fff;padding: 10px;}
 .post-title{font-size: 20px;color: #333;font-weight:  normal;}
 .post-2title{color: #999;}
@@ -57,6 +57,7 @@
 .wrap-reply-box{bottom:0;background-color: #f9f9f9;border-top: 1px solid #e7e7eb;padding: 5px;}
 .wrap-reply-box input{display: inline-block;width: 78%;border:1px solid #e7e7eb;height:30px;padding: 0 10px;-webkit-box-sizing: border-box;}
 .wrap-reply-box a{width:20%;height:30px;position:relative;top:3px;font-size:14px;display:inline-block;padding:8px;border:1px solid #e7e7eb;border-radius:4px;color:#666;-webkit-box-sizing: border-box;text-align: center;}
+.post-cont img{max-width: 100% !important;}
 /*search*/
 .wrap-order-tab{padding: 6px 70px;}
 .order-type-list{background-color: #318b7d;border-radius: 28px;position: relative;z-index:1;}

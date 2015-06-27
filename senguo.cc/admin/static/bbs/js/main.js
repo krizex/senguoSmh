@@ -19,14 +19,15 @@ $(document).ready(function(){
     if($(e.target).closest(".dianzan").size()==0){
     	window.location.href="/bbs/detail/"+id;
     } 
-}).on("click",".dianzan",function(){
+}).on("click",".atical-attr .dianzan",function(){
 	var $this=$(this);
 	var id=$this.parents("li").attr("data-id");
 	var url="/bbs/detail/"+id;
     var args={action:"article_great",data:""};
     $.postJson(url,args,function(res){
         if(res.success){
-        	$this.text(parseInt($this.text()+1));
+            var num = parseInt($this.text()+1);
+        	$this.children("span").html(num);
         }else{
             Tip(res.error_text);
         }
@@ -36,7 +37,7 @@ var item='<li data-id="{{id}}">'+
             '<p class="title"><span class="atical-mark">{{type}}</span>{{title}}</p>'+
             '<div class="atical-attr">'+
                 '<span class="fr">'+
-                    '<a href="javascript:;" class="wrap-icon dianzan"><i class="icon-dz"></i>{{great_num}}</a>'+
+                    '<a href="javascript:;" class="wrap-icon dianzan"><i class="icon-dz"></i><span>{{great_num}}</span></a>'+
                     '<a href="javascript:;" class="wrap-icon comment"><i class="icon-com"></i>{{comment_num}}</a>'+
                 '</span>'+
                 '<span class="time mr10">{{time}}</span>'+

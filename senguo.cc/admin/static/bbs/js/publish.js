@@ -18,13 +18,16 @@ $(document).ready(function(){
 function publishAtical(){
     var url = "";
     var classify =$(".type").attr("data-id");
+    if(!classify){
+        return Tip("请选择板块");
+    }
     var title=$(".title-ipt").val();
     if(title == "" || title.length>20){
         return Tip("标题不能为空且不能超过20个字");
     }
-    var article=$(".sumary-text").val();
-    if(!classify){
-        return Tip("请选择板块");
+    var article=$("#kindEditor").val();
+    if(article>4000){
+        return Tip("文章内容太长了");
     }
     var args = {
         action:"",
