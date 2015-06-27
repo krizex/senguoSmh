@@ -7,13 +7,13 @@ var zb_timer = null;
 function Tip(text){
     clearTimeout(zb_timer);
     if($("#zb-tip").size()>0){
-        $("#zb-tip").html(text).removeClass("hidden");
+        $("#zb-tip").html(text).removeClass("hide");
     }else{
         var tip = '<div class="zb-tip" id="zb-tip">'+text+'</div>';
         $("body").append(tip);
     }
     zb_timer = setTimeout(function(){
-        $("#zb-tip").addClass("hidden");
+        $("#zb-tip").addClass("hide");
     },2000);
 }
 /*获取滑动方向，touch*/

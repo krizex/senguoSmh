@@ -61,6 +61,11 @@ $(document).ready(function(){
 }).on("click","#comment",function(){//发表评论
     var id = $(this).attr("data-id");
     admireAtical(id,"comment");
+}).on("click","#del-atical",function(){//删除
+    if(confirm("确认删除？")){
+        var id = $(this).attr("data-id");
+        delAtical(id);
+    }
 });
 var item=' <li data-id="{{id}}">'+
                 '<dl class="group comment-item">'+
@@ -78,7 +83,25 @@ var item=' <li data-id="{{id}}">'+
                         '<p class="f12 c999 mt4">{{time}}</p>'+
                     '</dt>'+
                 '</dl>'+
-            '</li>'
+            '</li>';
+            
+function delAtical(id){
+    var url = "";
+    var args = {
+        action:"delete",
+        data:{id:id}
+    };
+    $.postJson(url,args,function(res){
+        if(res.success){
+            Tip("删除成功");
+            setTimeout(function(){
+                window.location.href="/bbs"
+            },2000);
+        }else{
+            Tip(res.error_text);
+        }
+    });
+}
 
 function replyComment(id){
     var url = "";

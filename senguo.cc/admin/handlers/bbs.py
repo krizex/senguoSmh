@@ -42,7 +42,7 @@ class Detail(FruitzoneBaseHandler):
 	def get(self,_id):
 		try:
 			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id)\
-				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.id==_id).first()
+				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.id==_id,models.Article.status==1).first()
 		except:
 			return self.write("没有该文章的任何信息")
 
@@ -226,7 +226,8 @@ class Search(FruitzoneBaseHandler):
 		datalist = []
 		try:
 			article_lsit = self.session.query(models.Article,models.Accountinfo.nickname)\
-				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.title.like("%%%s%%" % data))\
+				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
+				.filter(models.Article.status==1,models.Article.title.like("%%%s%%" % data))\
 				.order_by(models.Article.create_time.desc())
 		except:
 			nomore = True
