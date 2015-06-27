@@ -10,7 +10,31 @@ import base64
 import json
 
 class Main(FruitzoneBaseHandler):
+	@tornado.web.authenticated
+	@FruitzoneBaseHandler.check_arguments("type?","page?")
 	def get(self):
+		if "page" in self.args and self.args["page"] !=[]:
+			_type = int(self.args["type"])
+			page = int(self.args["page"])
+			page_size = 10
+			nomore = Falsef
+			datalist = []
+			try:
+				article_lsit = self.session.query(models.Article,models.Accountinfo.nickname)\
+					.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter_by(models.Article.status==1)\
+					.order_by(models.Article.create_time.desc())
+			except:
+				article_lsit = None
+
+			if _type<100:
+					article_lsit=article_lsit.filter(models.Article.classify==_type)
+			if page == article_lsit.count()//page_size:
+				nomore = True
+			if article_lsit:
+				article_lsit = article_lsit.offset(page*page_size).limit(page_size).all()
+				for article in article_lsit:
+					datalist.append(self.getArticle(article))
+			return self.send_success(datalist=datalist,nomore=nomore)
 		return self.render("bbs/main.html")
 
 class Detail(FruitzoneBaseHandler):
@@ -24,6 +48,9 @@ class Detail(FruitzoneBaseHandler):
 
 		article.scan_num = article.scan_num +1
 		self.session.commit()
+		article_data={"id":article[0].id,"title":article[0].title,"time":article[0].create_time,"article":article[0].article,\
+						"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
+						"comment_num":article[0].comment_num,"scan_num":article[0].scan_num}
 
 		try:
 			comments = self.session.query(models.ArticleComment,models.Accountinfo.nickname)\
@@ -82,17 +109,20 @@ class Detail(FruitzoneBaseHandler):
 			self.session.commit()
 			return self.send_success()
 
-		elif action in ["comment","replay"]:
+		elif action in ["comment","replay","collect"]:
 			try:
 				article = self.session.query(models.Article).filter_by( id = _id).first()
 			except:
 				return self.send_fail("no such article")
-			if action=="comment":
+			if action == "comment":
 				_type = 0
 				comment_author_id = 0
-			else:
+			elif action == "replay":
 				_type = 1
 				comment_author_id = self.session.query(models.ArticleComment).filter_by(id=data["comment_id"]).first().account_id
+			elif action == "collect":
+				_type = 2
+				comment_author_id = 0
 
 			comment =models.ArticleComment(
 				article_id = _id,
@@ -111,6 +141,19 @@ class Detail(FruitzoneBaseHandler):
 			data={"id":new_comment[0].id,"nickname":new_comment[0].accountinfo.nickname,"imgurl":new_comment[0].accountinfo.headimgurl_small,\
 					"comment":new_comment[0].comment,"time":self.timedelta(new_comment[0].create_time),"great_num":new_comment[0].great_num,"@nickname":new_comment[1]}
 			return self.send_success(data=data)
+
+		elif action == "delete":
+			try:
+				article = self.session.query(models.Article).filter_by( id = _id).first()
+			except:
+				return self.send_fail("no such article")
+			try:
+				current_user = self.session.query(models.SuperAdmin).filter_by(id=self.current_user.id).first()
+			except:
+				return self.send_fail("you has no priority to delete this article")
+			article.status=0
+			self.session.commit()
+			return self.send_success()
 
 
 class Publish(FruitzoneBaseHandler):
@@ -133,12 +176,53 @@ class Publish(FruitzoneBaseHandler):
 			classify=classify
 		)
 		self.session.add(new_article)
+		self.session.commit()
 		return self.send_success()
 
+class Edit(FruitzoneBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		_id = str(time.time())
+		qiniuToken = self.get_qiniu_token('article',_id)
+		return self.render("bbs/publish.html",token=qiniuToken)
+
+	@tornado.web.authenticated
+	@FruitzoneBaseHandler.check_arguments("data")	
+	def post(self):
+		data=self.args["data"]
+		article = self.session.query(models.Article).filter_by(id=int(data["id"])).first()
+		article.title=data["title"]
+		article.article=data["article"]
+		article.classify=data["classify"]
+		self.session.commit()
+		return self.send_success()
 
 class Search(FruitzoneBaseHandler):
+	@tornado.web.authenticated
 	def get(self):
-		return self.render("bbs/search.html") 
+		return self.render("bbs/search.html")
+
+	@tornado.web.authenticated
+	@FruitzoneBaseHandler.check_arguments("data")	
+	def post(self):
+		page = int(self.args["page"])
+		page_size = 10
+		nomore = False
+		datalist = []
+		try:
+			article_lsit = self.session.query(models.Article,models.Accountinfo.nickname)\
+				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
+				.order_by(models.Article.create_time.desc())
+		except:
+			nomore = True
+
+		if page == article_lsit.count()//page_size:
+			nomore = True
+		if article_lsit:
+			article_lsit = article_lsit.offset(page*page_size).limit(page_size).all()
+			for article in article_lsit:
+				datalist.append(self.getArticle(article))
+		return self.send_success(datalist=datalist,nomore=nomore)
 
 class Profile(FruitzoneBaseHandler):
 	def get(self):
