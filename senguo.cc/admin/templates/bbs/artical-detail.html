@@ -14,13 +14,12 @@
             {% raw article["article"] %}
         </div>
         <div class="post-attr">
-            <span class="wrap-icon people-see"><i class="icon-see"></i>{{article["scan_num"]}}</span>
-            <span class="wrap-icon dianzan" data-id='{{article["id"]}}'><i class="icon-dz"></i>{{article["great_num"]}}</span>
-            <span class="wrap-icon comment" data-id='{{article["id"]}}'><i class="icon-com"></i>{{article["comment_num"]}}</span>
+            <span class="wrap-icon people-see"><i class="icon-see"></i><span class="num">{{article["scan_num"]}}</span></span>
+            <span class="wrap-icon dianzan" data-id='{{article["id"]}}'><i class="icon-dz"></i><span class="num">{{article["great_num"]}}</span></span>
+            <span class="wrap-icon comment" data-id='{{article["id"]}}'><i class="icon-com"></i><span class="num">{{article["comment_num"]}}</span></span>
         </div>
     </div>
     <div class="wrap-comment">
-        {% if comments_list %}
         <ul class="comment-list">
             {% for comment in comments_list %}
             <li>
@@ -29,15 +28,14 @@
                         <span class="img-border"><img src="{{comment['imgurl'] or '/static/images/TDSG.png'}}" alt="用户头像"/></span>
                     </dd>
                     <dt>
-                        <p class="com-first"><a href="javascript:;" class="wrap-icon dianzan fr comment-great" data-id="{{comment['id']}}"><i class="post-dz"></i>{{comment['great_num']}}</a><a href="javascript:;" class="nickname"  data-id="{{comment['id']}}">{{comment['nickname']}}</a></p>
-                        <p class="com-detail">{% if comment['type']==1 %}{{comment['nick_name']}}{% end %} {{comment['comment']}}</p>
+                        <p class="com-first"><a href="javascript:;" class="wrap-icon dianzan fr comment-great" data-id="{{comment['id']}}"><i class="post-dz"></i><span class="num">{{comment['great_num']}}</span></a><a href="javascript:;" class="nickname"  data-id="{{comment['id']}}">{{comment['nickname']}}</a></p>
+                        <p class="com-detail">{% if comment['type']==1 %}@{{comment['nick_name']}}{% end %} {{comment['comment']}}</p>
                         <p class="f12 c999 mt4">{{comment['time']}}</p>
                     </dt>
                 </dl>
             </li>
             {% end %}
         </ul>
-        {% end %}
     </div>
 </div>
 <div class="fix-center wrap-reply-box hide">

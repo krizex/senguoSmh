@@ -343,6 +343,11 @@ class GlobalBaseHandler(BaseHandler):
 			"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
 			"comment_num":article[0].comment_num}
 		return data
+	def getArticleComment(self,new_comment):
+		data={"id":new_comment[0].id,"nickname":new_comment[0].accountinfo.nickname,"imgurl":new_comment[0].accountinfo.headimgurl_small,\
+				"comment":new_comment[0].comment,"time":self.timedelta(new_comment[0].create_time),"great_num":new_comment[0].great_num,"nick_name":new_comment[1],
+				"type":new_comment[0]._type}
+		return data
 
 class FrontBaseHandler(GlobalBaseHandler):
 	pass

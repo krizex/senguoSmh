@@ -61,8 +61,7 @@ class Detail(FruitzoneBaseHandler):
 		comments_list=[]
 		if comments:
 			for comment in comments:
-				comments_list.append({"id":comment[0].id,"nickname":comment[0].accountinfo.nickname,"imgurl":comment[0].accountinfo.headimgurl_small,\
-					"comment":comment[0].comment,"time":self.timedelta(comment[0].create_time),"great_num":comment[0].great_num,"nick_name":comment[1],"type":comment[0]._type})
+				comments_list.append(self.getArticleComment(comment))
 		if_admin = False
 		try:
 			current_user = self.session.query(models.SuperAdmin).filter_by(id=self.current_user.id).first()
@@ -79,32 +78,40 @@ class Detail(FruitzoneBaseHandler):
 		if "data" in self.args:
 			data=self.args["data"]
 
-		if action in ["article_great","comment_great"]:
+		if action in ["article_great","comment_great","collect"]:
 			now =  time.strftime('%Y-%m-%d', time.localtime() )
 			_great = self.session.query(models.ArticleGreat).filter_by(account_id = self.current_user.id)
 			if action == "article_great":
 				_type = 0
 				comment_id = 0
-			else:
+			elif action == "comment_great":
 				_type = 1
 				comment_id = data["comment_id"]
-
+			elif action == "collect":
+				_type = 2
+				comment_id = 0
+			else:
+				return send_fail("no such action")
 			try:
 				new_great = _great.filter_by(article_id = _id,comment_id=comment_id,_type=_type).order_by(models.ArticleGreat.create_time.desc()).first()
 			except:
 				new_great = None
 
-			if new_great and new_great.create_time.strftime('%Y-%m-%d') == now:
+			if new_great and _type == 2:
+				return self.send_fail('已收藏过该文章啦！')
+
+			if new_great and new_great.create_time.strftime('%Y-%m-%d') == now and _type!=2:
 				return self.send_fail('您今天已经点过赞啦！')
-			
+
 			if _type == 0:		
 				article = self.session.query(models.Article).filter_by( id = _id).first()
 				article.great_num = article.great_num +1
 				article.if_scan = 0
-			else:
+			elif _type == 1:
 				_comment = self.session.query(models.ArticleComment).filter_by(id=comment_id).first()
-				_comment.great_num = article.great_num +1
+				_comment.great_num = _comment.great_num +1
 				_comment.if_scan = 0
+
 
 			great = models.ArticleGreat(
 				article_id = _id,
@@ -116,22 +123,21 @@ class Detail(FruitzoneBaseHandler):
 			self.session.commit()
 			return self.send_success()
 
-		elif action in ["comment","replay","collect"]:
+		elif action in ["comment","reply"]:
 			try:
 				article = self.session.query(models.Article).filter_by( id = _id).first()
 			except:
 				return self.send_fail("no such article")
+			print(article)
 			if action == "comment":
 				_type = 0
 				comment_author_id = 0
-			elif action == "replay":
+			elif action == "reply":
 				_type = 1
 				comment_author_id = self.session.query(models.ArticleComment).filter_by(id=data["comment_id"]).first().account_id
-			elif action == "collect":
-				_type = 2
-				comment_author_id = 0
-
-			comment =models.ArticleComment(
+			else:
+				return send_fail("no such action")
+			comment = models.ArticleComment(
 				article_id = _id,
 				account_id = self.current_user.id,
 				comment = self.args["data"]["comment"],
@@ -145,8 +151,7 @@ class Detail(FruitzoneBaseHandler):
 			new_comment = self.session.query(models.ArticleComment,models.Accountinfo.nickname)\
 				.outerjoin(models.Accountinfo,models.ArticleComment.comment_author_id==models.Accountinfo.id)\
 				.filter(models.ArticleComment.article_id==_id,models.ArticleComment._type==_type).order_by(models.ArticleComment.create_time.desc()).first()
-			data={"id":new_comment[0].id,"nickname":new_comment[0].accountinfo.nickname,"imgurl":new_comment[0].accountinfo.headimgurl_small,\
-					"comment":new_comment[0].comment,"time":self.timedelta(new_comment[0].create_time),"great_num":new_comment[0].great_num,"@nickname":new_comment[1]}
+			data=self.getArticleComment(new_comment)
 			return self.send_success(data=data)
 
 		elif action == "delete":
