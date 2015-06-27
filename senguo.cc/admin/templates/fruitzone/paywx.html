@@ -47,7 +47,6 @@
                 </dl>
             </li>
             {% end %}
-          
         </ul>
         <p>商品总价<span class="fr"><span class="text-red3">{{order.totalPrice-order.freight}}元</span></span></p>
         <p>配送费<span class="fr"><span class="text-red3">{{order.freight}}元</span></span></p>
@@ -86,9 +85,10 @@
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
 <script type="text/javascript">
     new QRCode(document.getElementById('qrcode'), {
-            width : 120,//设置宽高
-            height : 120
-        }).makeCode($("#qr_url").val());
+        width : 280,//设置宽高
+        height : 280,
+        colorDark : "#433943"
+    }).makeCode($("#qr_url").val());
     wx.config({
         debug: false,
         appId: "{{wxappid}}",
@@ -96,7 +96,7 @@
         nonceStr: "{{noncestr}}",
             signature: "{{signature}}",
             jsApiList: ['onMenuShareTimeline','chooseWXPay','hideMenuItems']
-        });
+    });
     wx.ready(function(){
         document.querySelector('#getBrandWCPayRequest').onclick = function () {
             $.ajax({
@@ -110,7 +110,6 @@
                                 window.location.href="/"+res.shop_code;
                             },2000);
                         }
-
                         else{
                             wx.chooseWXPay({
                                 timestamp: '{{renderPayParams['timeStamp']}}',
@@ -131,8 +130,7 @@
                                     //             new QRCode(document.getElementById('qrcode'), {
                                     //                 width : 280,//设置宽高
                                     //                 height : 280,
-                                    //                 colorDark : "#433943",
-                                    //                 colorLight : "#f5f5f5"
+                                    //                 colorDark : "#433943"
                                     //             }).makeCode(res.qr_url);
                                     //         }
                                     //     }

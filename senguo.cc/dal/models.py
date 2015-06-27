@@ -1623,24 +1623,28 @@ class Article(MapBase, _CommonApi):
 	account_id = Column(Integer, ForeignKey(Accountinfo.id),nullable=False)
 	title = Column(String(20))
 	article = Column(String(2000))
-	classify = Column(Integer,default = 0)
-	create_time = Column(DateTime,default = func.now())
-	_type = Column(Integer,default = 0) #0:匿名 1:实名
-	great = Column(Integer,default = 0) #点赞数
-	comment = Column(Integer,default = 0)#评论数
+	classify = Column(Integer,default = 0) #0:官方公告 1:产品更新 2:运营干货 3:水果百科 4:使用教程 5:水果供求
+	great_num = Column(Integer,default = 0) #点赞数
+	comment_num = Column(Integer,default = 0)#评论数
+	scan_num = Column(Integer,default = 0) #0:浏览数
+	if_scan = Column(Integer,default = 0) #0:是否浏览
 	status = Column(Integer,default = 1) #0:删除 1:正常
-	scan = Column(Integer,default = 0) #0:浏览数
+	del_reason = Column(String(100)) #删除reason
+	create_time = Column(DateTime,default = func.now())
 
 class ArticleComment(MapBase, _CommonApi):
 	__tablename__ = 'article_comment'
 	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
 	account_id = Column(Integer, ForeignKey(Accountinfo.id),nullable=False)
 	article_id = Column(Integer,ForeignKey(Article.id),nullable = False)
+	comment_author_id = Column(Integer,default = 0)#评论作者id
 	comment = Column(String(500))
 	create_time = Column(DateTime,default = func.now())
 	_type = Column(Integer,default = 0) #0: 评论  1:回复
-	comment_author_id = Column(Integer,default = 0)#评论作者id
-	great = Column(Integer,default = 0) #点赞数
+	great_num = Column(Integer,default = 0) #点赞数
+	if_scan = Column(Integer,default = 0) #0:是否浏览
+
+	accountinfo = relationship(Accountinfo)
 
 class ArticleGreat(MapBase, _CommonApi):#文章点赞
 	__tablename__ = 'article_great'
@@ -1648,7 +1652,7 @@ class ArticleGreat(MapBase, _CommonApi):#文章点赞
 	account_id = Column(Integer, ForeignKey(Accountinfo.id),nullable=False)
 	article_id = Column(Integer,default = 0)#文章id
 	comment_id = Column(Integer,default = 0)#评论id
-	_type = Column(Integer,default = 0) #0: 文章点赞  1:评论点赞
+	_type = Column(Integer,default = 0) #0: 文章点赞  1:评论点赞 2:文章收藏
 	create_time = Column(DateTime,default = func.now())
 
 

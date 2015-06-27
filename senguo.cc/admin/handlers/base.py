@@ -288,6 +288,10 @@ class GlobalBaseHandler(BaseHandler):
 		else:
 			name =''
 		return name
+
+	def article_type(self,_type):
+		types=['官方公告','产品更新','运营干货','水果百科','使用教程','水果供求']
+		return types[_type]
  
 	def getGoodsData(self,datalist,_type):
 		data = []
@@ -332,6 +336,12 @@ class GlobalBaseHandler(BaseHandler):
 		if _type and _type=="one":
 			data = data[0]
 		# print(data)
+		return data
+		
+	def getArticle(self,article):
+		data={"id":article[0].id,"title":article[0].title,"time":self.timedelta(article[0].create_time),\
+			"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
+			"comment_num":article[0].comment_num}
 		return data
 
 class FrontBaseHandler(GlobalBaseHandler):

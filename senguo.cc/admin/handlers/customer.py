@@ -863,7 +863,7 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 # 商城入口
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
-	@get_unblock
+	# @get_unblock
 	def get(self, shop_code):
 		w_follow = True
 		# fruits=''
@@ -958,21 +958,30 @@ class Market(CustomerBaseHandler):
 		# 			group_list.append({'id':-1,'name':'店铺推荐'})
 		# 		if default_count !=0 :
 		# 			group_list.append({'id':0,'name':'默认分组'})
-		
-		goods = self.session.query(models.Fruit.group_id,models.GroupPriority.priority).outerjoin(models.GroupPriority,and_(models.Fruit.shop_id ==
-			models.GroupPriority.shop_id,models.GroupPriority.group_id == models.Fruit.group_id)).filter(
-		models.Fruit.shop_id == shop.id,models.Fruit.active == 1).order_by(models.GroupPriority.priority).distinct(models.Fruit.id)
-		for temp in goods:
-			# print(temp)
-			if temp.group_id == 0:
-				group_list.append({'id':0,'name':'默认分组'})
-			elif temp.group_id == -1:
-				group_list.append({'id':-1,'name':'店铺推荐'})
-			else:
-				_group = self.session.query(models.GoodsGroup).filter_by(id=temp.group_id,shop_id = shop.id,status = 1).first()
-				if _group:
-					group_list.append({'id':_group.id,'name':_group.name})
+		try:
+			goods = self.session.query(models.Fruit.group_id,models.GroupPriority.priority).outerjoin(models.GroupPriority,and_(models.Fruit.shop_id ==
+				models.GroupPriority.shop_id,models.GroupPriority.group_id == models.Fruit.group_id)).filter(
+			models.Fruit.shop_id == shop.id,models.Fruit.active == 1).order_by(models.GroupPriority.priority).distinct(models.Fruit.id)
+		except:
+			goods = None
 
+		if goods:
+			for temp in goods:
+				# print(temp)
+				if temp[0] == 0:
+					if temp[1]:
+						group_list.append({'id':0,'name':'默认分组'})
+					else:
+						group_list.insert(1,{'id':0,'name':'默认分组'})
+				elif temp[0] == -1:
+					if temp[1]:
+						group_list.append({'id':-1,'name':'店铺推荐'})
+					else:
+						group_list.insert(0,{'id':-1,'name':'店铺推荐'})
+				else:
+					_group = self.session.query(models.GoodsGroup).filter_by(id=temp.group_id,shop_id = shop.id,status = 1).first()
+					if _group:
+						group_list.append({'id':_group.id,'name':_group.name})
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 						   	w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
