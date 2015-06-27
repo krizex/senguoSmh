@@ -35,7 +35,9 @@
         $("#shopName").html(getCookie("shopName"));
         new QRCode(document.getElementById('qrcode'), {
             width : 280,//设置宽高
-            height : 280
+            height : 280,
+            colorDark : "#433943",
+            colorLight : "#f5f5f5"
         }).makeCode($("#qr_url").val());
     });
     
